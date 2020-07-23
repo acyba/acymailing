@@ -1,0 +1,206 @@
+#acym_form {
+    .acym__entity_select {
+
+        .acym_area {
+            box-shadow: none;
+
+            .acym__entity_select__title {
+                font-size: 1rem;
+                font-weight: 500;
+                opacity: .8;
+            }
+
+            @keyframes dash {
+                to {
+                    stroke-dashoffset: 5000;
+                }
+            }
+
+            .acym__entity_select__loading {
+                svg {
+                    width: 30px;
+                    height: 30px;
+
+                    .acym__svg__loader {
+                        fill: none;
+                        stroke: $primary-color;
+                        stroke-width: 15px;
+                        stroke-dasharray: 500;
+                        animation: dash 3.5s linear infinite;
+                    }
+                }
+            }
+
+            .acym__entity_select__columns {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .plus-container {
+                cursor: pointer;
+
+                .top-plus, .bottom-plus {
+                    width: 2px;
+                    height: 6px;
+                    margin-left: 6px;
+                    transition: transform .2s ease-in-out;
+                    border-radius: 5px;
+                }
+
+                &.acym__entity_select__selected__listing__row__unselect {
+                    .top-plus, .bottom-plus {
+                        visibility: hidden;
+                    }
+                }
+
+                .plus-bar {
+                    background-color: $font-primary;
+                    border-radius: 2px;
+                }
+
+                .plus {
+                    height: 2px;
+                    width: 14px;
+                    background-color: black;
+                }
+            }
+
+            .acym__entity_select__header {
+                position: relative;
+
+                .acym__entity_select__header__loaded {
+                    opacity: .2;
+                }
+            }
+        }
+
+        a {
+            &.acym__entity_select__switch_all {
+                color: $primary-color;
+                font-size: 1rem;
+            }
+
+            &.acym__entity_select__unselect_all:hover {
+                color: map-get($foundation-palette, alert);
+            }
+        }
+
+        .acym__entity_select__available, .acym__entity_select__selected {
+            margin-top: 0;
+        }
+
+        .acym__entity_select__select__all {
+            min-height: 1.3rem;
+
+            .acym__entity_select__select__all__button {
+                cursor: pointer;
+                color: $primary-color;
+                font-size: 1rem;
+                font-weight: 500;
+            }
+        }
+
+        .acym__entity_select__available, .acym__entity_select__selected {
+
+        }
+
+        .acym__listing {
+            padding: 0 .5rem !important;
+
+            .acym__listing__row__header {
+                font-weight: 500;
+                border-bottom: 1px solid $font-primary !important;
+            }
+
+            .acym__listing__row {
+                height: auto;
+                padding: .3rem;
+                box-shadow: none;
+                border-bottom: 1px solid $light-gray;
+                border-radius: 0;
+                background-color: $white !important;
+                cursor: pointer;
+
+                &:not(.acym__listing__row__header):hover {
+                    background-color: $very-light-gray !important;
+
+                    .plus-container {
+                        .top-plus, .bottom-plus {
+                            visibility: visible;
+                        }
+
+                        &.acym__entity_select__available__listing__row__select .plus-bar {
+                            background-color: map-get($editor-wysid-palette, primary-ui);
+                        }
+
+                        &.acym__entity_select__selected__listing__row__unselect .plus-bar {
+                            background-color: $alert-color;
+                        }
+
+                        &.acym__entity_select__available__listing__row__select .top-plus {
+                            transform: translateX(5px) translateY(2.4px) rotate(-45deg);
+                        }
+
+                        &.acym__entity_select__available__listing__row__select .bottom-plus {
+                            transform: translateX(5px) translateY(-2.4px) rotate(45deg);
+                        }
+
+                        &.acym__entity_select__selected__listing__row__unselect .top-plus {
+                            transform: translateX(-5px) translateY(2.4px) rotate(45deg);
+                        }
+
+                        &.acym__entity_select__selected__listing__row__unselect .bottom-plus {
+                            transform: translateX(-5px) translateY(-2.4px) rotate(-45deg);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        .acym__entity_select__available__listing__row {
+
+            .acym__entity_select__available__listing__row__select {
+                display: inline-block;
+                color: $dark-gray;
+
+                &:hover {
+                    color: map-get($foundation-palette, success);
+                    cursor: pointer;
+                }
+            }
+
+            .acym__entity_select__selected__listing__row__unselect {
+                display: none;
+            }
+        }
+
+        .acym__entity_select__selected__listing__row {
+            max-height: 3rem;
+
+            .acym__entity_select__selected__listing__row__unselect {
+                display: inline-block;
+                color: $dark-gray;
+
+                &:hover {
+                    color: map-get($foundation-palette, alert);
+                    cursor: pointer;
+                }
+            }
+
+            .acym__entity_select__available__listing__row__select {
+                display: none;
+            }
+        }
+
+        .acym__entity_select__available__listing, .acym__entity_select__selected__listing {
+            padding: 1rem;
+            height: 25rem;
+            overflow: auto;
+        }
+    }
+}
+
+
+

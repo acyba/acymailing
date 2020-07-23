@@ -1,0 +1,22 @@
+#elementor-controls {
+    .elementor-control-content {
+        .widget-title-action {
+            display: none;
+        }
+
+        .widget-title {
+            background-color: transparent !important;
+
+            h3 {
+                text-decoration: underline;
+                font-size: 1rem;
+                font-weight: 500;
+                padding: 0;
+            }
+        }
+    }
+}
+
+.widget-top {
+    background: transparent !important;
+}

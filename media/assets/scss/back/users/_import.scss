@@ -1,0 +1,91 @@
+#acym_wrapper {
+    .button.acym__users__import__from_file__button-valid {
+        background-color: $primary-color;
+
+        &[disabled] {
+            background-color: $primary-color !important;
+        }
+    }
+
+    .acym__users__import__from_file__file {
+        font-size: 17px;
+        display: none;
+
+        .acym__users__import__from_file__file__icon {
+            vertical-align: middle;
+        }
+
+        .acym__users__import__from_file__file__close {
+            vertical-align: middle;
+            font-weight: bolder;
+            cursor: pointer;
+        }
+    }
+
+    .acym__users__import__from_file__import__label {
+        text-decoration: underline;
+    }
+
+    #acym__users__import__generic {
+
+        .fieldAssignment {
+            border-radius: $primary-radius;
+            background-color: $light-blue;
+            border-color: $light-blue;
+            box-shadow: none;
+            width: 180px;
+
+            &.select2-hidden-accessible {
+                display: none;
+            }
+        }
+
+        .fieldAssignmentError {
+            border-color: map-get($foundation-palette, alert);
+            color: map-get($foundation-palette, alert);
+        }
+
+        td {
+            padding-right: 1rem;
+        }
+
+        tr, tbody {
+            border: 0;
+        }
+
+        h4 {
+            font-weight: bold;
+        }
+
+        .acym__users__import__generic__column_name {
+            padding-bottom: 1rem;
+        }
+
+        .acym__users__import__generic__column_name td {
+            border-bottom: 1px solid $light-gray;
+        }
+
+        #acym__users__import__generic__matchdata {
+            margin-bottom: 2rem;
+        }
+
+        label[for="acyencoding"] {
+            line-height: 3em;
+        }
+
+        .acym__users__import__generic__instructions {
+            padding-top: $global-padding;
+            font-size: $form-label-font-size;
+        }
+    }
+
+    #acym__users__import__generic__matchdata div.table-scroll {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    #acym__user__import__add-subscription__modal .acym_area {
+        padding-bottom: 0;
+        margin-bottom: 1rem;
+    }
+}

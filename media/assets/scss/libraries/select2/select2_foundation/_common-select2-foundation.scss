@@ -1,0 +1,268 @@
+// -*- mode: css -*-
+
+@mixin foundation-input-defaults {
+    background-color: $input-background;
+    border: $input-border;
+    border-radius: $select-radius;
+    color: $input-color;
+    font-family: $input-font-family;
+    font-size: $input-font-size;
+}
+
+span.select2-container--foundation .selection {
+    margin: 0 0 $form-spacing;
+}
+
+.select2-container--foundation {
+    vertical-align: top;
+    margin-bottom: 1rem;
+    font-size: .8rem;
+    background-color: black;
+
+    .select2-selection {
+        @include foundation-input-defaults;
+        background: $white;
+        outline: 0;
+    }
+
+    /**
+     * Search field in the Select2 dropdown.
+     */
+    .select2-search--dropdown {
+        .select2-search__field {
+            @include foundation-input-defaults;
+            border-radius: $input-radius;
+        }
+    }
+
+    /**
+     * No outline for all search fields - in the dropdown
+     * and inline in multi Select2s.
+     */
+
+    .select2-search__field {
+        outline: 0;
+
+        &::-webkit-input-placeholder {
+            color: $input-color-placeholder;
+        }
+
+        /* Firefox 18- */
+        &:-moz-placeholder {
+            color: $input-color-placeholder;
+        }
+
+        /**
+         * Firefox 19+
+         *
+         * @see http://stackoverflow.com/questions/24236240/color-for-styled-placeholder-text-is-muted-in-firefox
+         */
+        &::-moz-placeholder {
+            color: $input-color-placeholder;
+            opacity: 1;
+        }
+
+        &:-ms-input-placeholder {
+            color: $input-color-placeholder;
+        }
+    }
+
+    .select2-search, .select2-results__option, .select2-results {
+        font-family: Poppins, sans-serif;
+        background-color: $white;
+    }
+
+    .select2-search.select2-search--dropdown {
+        .select2-search__field {
+            border: none;
+            border-bottom: 1px solid #ebebeb;
+            outline: none;
+            box-shadow: none;
+            font-size: 14px;
+            padding-left: 10px;
+        }
+    }
+
+    .select2-results__option {
+        color: $dark-gray;
+        padding-left: 15px;
+
+        &[role=group] {
+            padding: 0;
+
+            strong {
+                padding-left: rem-calc(2);
+            }
+        }
+
+        /**
+         * Disabled results.
+         *
+         * @see https://select2.github.io/examples.html#disabled-results
+         */
+        &[aria-disabled=true] {
+            color: $dropdown-link-disabled-color;
+            cursor: $input-cursor-disabled;
+        }
+
+        /**
+         * Hover state.
+         */
+        &[aria-selected=true] {
+        }
+
+        /**
+         * Selected state.
+         */
+        &--highlighted[aria-selected] {
+            background-color: $dropdown-link-active-bg;
+            color: $dropdown-link-active-color;
+        }
+
+    }
+
+    &.select2-container--focus {
+        .select2-selection {
+            border: $input-border-focus;
+        }
+    }
+
+    &.select2-container--open {
+        .select2-selection {
+            border: $input-border-focus;
+            // would like to have bottom
+            // with 0 radius but can not
+            // know if opening above or below
+            border-radius: $select-radius;
+        }
+    }
+
+    &.select2-container--open {
+        /**
+         * Make the dropdown arrow point up while the dropdown is visible.
+         */
+        .select2-selection__arrow {
+            b {
+                transform: rotate(180deg);
+            }
+        }
+    }
+
+    .select2-choice {
+        box-shadow: none;
+        background-image: none;
+
+        div {
+            background-clip: padding-box;
+        }
+
+        .select2-arrow {
+            border: 0px;
+            border-radius: 0px;
+            background: transparent;
+            background-image: none;
+        }
+    }
+
+    *:focus {
+        outline: 0px;
+    }
+
+    &.select2-dropdown--above .select2-choice {
+    }
+
+    /* Clear the selection. */
+    .select2-selection__clear {
+        color: $clear-selection-color;
+        cursor: pointer;
+        float: left;
+        font-weight: bold;
+        margin-right: 0px;
+
+        &:hover {
+            color: $select-triangle-color;
+        }
+    }
+
+    /**
+     * Address disabled Select2 styles.
+     *
+     * @see https://select2.github.io/examples.html#disabled
+     * @see http://getbootstrap.com/css/#forms-control-disabled
+     */
+    &.select2-container--disabled {
+
+        .select2-selection {
+            border: $input-border;
+        }
+
+        .select2-selection,
+        .select2-search__field {
+            cursor: $input-cursor-disabled;
+        }
+
+        .select2-selection,
+        .select2-selection--multiple .select2-selection__choice {
+            background-color: $input-background-disabled;
+            color: foreground($input-background-disabled);
+        }
+
+        .select2-selection__clear,
+        .select2-selection--multiple .select2-selection__choice__remove {
+            display: none;
+        }
+    }
+
+    /*------------------------------------*\
+            #DROPDOWN
+    \*------------------------------------*/
+    .select2-dropdown {
+        border: none;
+        background: $white;
+        border-radius: 5px;
+        overflow-x: hidden;
+        margin-top: 5px;
+        box-shadow: 2px 2px 15px 2px $medium-gray;
+        z-index: 100000 !important;
+
+        &--above {
+            margin-top: rem-calc(1);
+            border-radius: $select-radius;
+            border-top: $input-border-focus;
+            border-bottom: $input-border;
+        }
+    }
+
+    .select2-results > .select2-results__options {
+        /* Limit the dropdown height. */
+        max-height: 200px;
+        overflow-y: auto;
+    }
+}
+
+/**
+ * Temporary fix for https://github.com/select2/select2-bootstrap-theme/issues/9
+ *
+ * Provides `!important` for certain properties of the class applied to the
+ * original `<select>` element to hide it.
+ *
+ * @see https://github.com/select2/select2/pull/3301
+ * @see https://github.com/fk/select2/commit/31830c7b32cb3d8e1b12d5b434dee40a6e753ada
+ */
+.form-control.select2-hidden-accessible {
+    position: absolute !important;
+    width: 1px !important;
+}
+
+/**
+ * Display override for inline forms
+ */
+.input-group span.select2-container--foundation {
+    margin: 0;
+    vertical-align: middle;
+
+    .selection .select2-selection {
+        vertical-align: middle;
+        border-radius: 0;
+    }
+}

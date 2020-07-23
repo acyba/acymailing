@@ -1,0 +1,32 @@
+#wpcontent {
+    padding-left: 0 !important;
+}
+
+#wpwrap, #wpbody {
+    min-height: 100%;
+}
+
+.wp-submenu {
+    margin-left: 0;
+}
+
+#wpfooter, #update-nag, .update-nag, .updated {
+    display: none;
+}
+
+#wpbody-content {
+    padding-bottom: 0;
+    min-height: 100%;
+
+    .acym_no_foundation, #acym_wrapper {
+        height: 100%;
+    }
+
+    .button {
+        box-shadow: inherit;
+    }
+}
+
+#dolly {
+    display: none;
+}

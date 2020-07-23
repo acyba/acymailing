@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" version="3.0" method="upgrade" group="user">
+	<name>AcyMailing CB Plugin</name>
+	<creationDate>October 2019</creationDate>
+	<version>1.0.0</version>
+	<author>Acyba</author>
+	<authorEmail>dev@acyba.com</authorEmail>
+	<authorUrl>https://www.acyba.com</authorUrl>
+	<copyright>Copyright (C) 2009-2020 ACYBA SAS - All rights reserved.</copyright>
+	<license>GNU/GPLv3 https://www.gnu.org/licenses/gpl-3.0.html</license>
+	<description>CB plugin for AcyMailing: manage the Mailing List subscription via CB</description>
+	<files>
+		<filename plugin="acym">acym.php</filename>
+		<filename>acym.xml</filename>
+		<filename>index.html</filename>
+	</files>
+	<scriptfile>installviacb.php</scriptfile>
+</extension>

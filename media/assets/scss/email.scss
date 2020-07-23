@@ -1,0 +1,38 @@
+.acymailing_content {
+    margin-bottom: 10px;
+
+    .acymailing_readmore {
+        margin-top: 10px;
+        display: block;
+    }
+
+    td.cflabel, td.cfvalue {
+        padding: .2rem .625rem;
+    }
+}
+
+#acym_wrapper{
+    td.cflabel, td.cfvalue {
+        padding: .2rem .625rem;
+    }
+}
+
+.alignleft {
+    float: left;
+    margin: 0.5em 1em 0.5em 0;
+}
+
+.aligncenter {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.alignright {
+    float: right;
+    margin: 0.5em 0 0.5em 1em;
+}
+
+.revealonline {
+    display: none;
+}

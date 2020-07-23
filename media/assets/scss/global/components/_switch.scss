@@ -1,0 +1,11 @@
+.switch.tiny .switch-paddle {
+    margin-left: 15px;
+}
+
+input:checked ~ .switch-paddle {
+    background: $primary-light-color;
+}
+
+.switch-active, .switch-inactive, input[type="checkbox"].switch-input {
+    display: none;
+}

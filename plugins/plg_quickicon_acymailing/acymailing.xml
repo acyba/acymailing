@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5" method="upgrade" type="plugin" group="quickicon">
+	<name>Quick Icon - AcyMailing</name>
+	<creationDate>October 2019</creationDate>
+	<author>Acyba</author>
+	<authorEmail>dev@acyba.com</authorEmail>
+	<authorUrl>https://www.acyba.com</authorUrl>
+	<copyright>Copyright (C) 2009-2020 ACYBA SAS - All rights reserved.</copyright>
+	<license>GNU/GPLv3 https://www.gnu.org/licenses/gpl-3.0.html</license>
+	<version>1.0.0</version>
+	<description>AcyMailing Quick Icon for the Joomla dashboard</description>
+	<files>
+		<filename plugin="acymailing">acymailing.php</filename>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="context" type="text" default="mod_quickicon" description="The group of this plugin (this value is compared with the group value used in Quick Icons modules to inject icons)" label="Group" />
+				<field name="displayedtext" type="text" default="" description="Text displayed below the icon" label="Icon legend" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

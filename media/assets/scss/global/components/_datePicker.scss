@@ -1,0 +1,19 @@
+.c-datepicker__day-body:hover {
+    background-color: #b2e4ff !important;
+    border-radius: 30px !important;
+}
+
+.c-datepicker, .c-scrim {
+    z-index: 99999;
+}
+
+#acym_wrapper {
+    .acy_date_picker {
+        cursor: pointer;
+    }
+
+    input.rs_date_field {
+        margin: 0;
+        width: 160px;
+    }
+}

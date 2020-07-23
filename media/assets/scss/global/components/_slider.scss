@@ -1,0 +1,29 @@
+.slider {
+    height: 0.2rem !important;
+
+    &.vertical {
+        height: 6rem !important;
+        width: .2rem !important;
+
+        .slider-fill {
+            width: .2rem !important;
+        }
+    }
+
+    .slider-fill {
+        height: 0.2rem;
+        background: map-get($editor-wysid-palette, primary-ui);
+    }
+
+    .slider-handle {
+        background: map-get($editor-wysid-palette, primary-ui);
+        border-radius: 50% !important;
+        outline: 0 !important;
+        width: 1rem !important;
+        height: 1rem !important;
+
+        &:hover {
+            background: map-get($editor-wysid-palette, primary-ui) !important;
+        }
+    }
+}

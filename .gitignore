@@ -1,0 +1,17 @@
+# Ignore
+/.idea
+/.project
+/.settings
+/logs
+/tmp
+/node_modules
+/gulp/gulp-settings.js
+/package-lock.json
+
+**/.DS_Store
+**/.sass-cache/
+
+media/assets/css/
+media/css/
+media/js/*
+!media/js/tinymce/

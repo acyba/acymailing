@@ -1,0 +1,37 @@
+.site-content-contain {
+    .acym_front_page {
+        #acyuseractions {
+            padding-top: 5px;
+
+            button {
+                font-size: 12px;
+                line-height: 1;
+            }
+        }
+    }
+}
+
+.acym_front_page {
+    .acym_list {
+        display: block;
+
+        .acystatus {
+            margin-right: .2rem;
+            display: inline-block;
+
+            .acym_radio_group {
+                input {
+                    margin: 0 4px;
+                }
+
+                label {
+                    display: inline-block;
+                }
+            }
+        }
+
+        .list_name {
+            display: inline-block;
+        }
+    }
+}

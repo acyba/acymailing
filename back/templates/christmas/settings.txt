@@ -1,0 +1,1 @@
+{"p":{"font-family":"Helvetica","font-size":"12px","color":"#8b747a"},"#acym__wysid__background-colorpicker":{"background-color":"#4c3950"},"h1":{"font-family":"Helvetica","font-size":"36px","color":"#a44b57"},"h2":{"font-family":"Helvetica","font-size":"30px","color":"#d0756b"},"h3":{"font-family":"Helvetica","font-size":"14px","font-weight":"bold","color":"#d0756b"}}

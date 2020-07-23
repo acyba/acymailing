@@ -1,0 +1,143 @@
+// -*- mode: css -*-
+
+//////////////////////
+// foundation settings
+//<% if options.singular? %>
+
+// Foundation for Sites by ZURB
+// foundation.zurb.com
+// Licensed under MIT Open Source
+
+////
+/// @group functions
+////
+
+$global-font-size: 100% !default;
+
+// scss-lint:disable ZeroUnit
+
+/// Removes the unit (e.g. px, em, rem) from a value, returning the number only.
+///
+/// @param {Number} $num - Number to strip unit from.
+///
+/// @returns {Number} The same number, sans unit.
+@function strip-unit($num) {
+    @return $num / ($num * 0 + 1);
+}
+
+/// Converts one or more pixel values into matching rem values.
+///
+/// @param {Number|List} $values - One or more values to convert. Be sure to separate them with spaces and not commas. If you need to convert a comma-separated list, wrap the list in parentheses.
+/// @param {Number} $base [null] - The base value to use when calculating the `rem`. If you are using Foundation out of the box, this is 16px. If this parameter is `null`, the function will reference the `$base-font-size` variable as the base.
+///
+/// @returns {List} A list of converted values.
+@function rem-calc($values, $base: null) {
+    $rem-values: ();
+    $count: length($values);
+
+    // If no base is defined, defer to the global font size
+    @if $base == null {
+        $base: $global-font-size;
+    }
+
+    // If the base font size is a %, then multiply it by 16px
+    // This is because 100% font size = 16px in most all browsers
+    @if unit($base) == '%' {
+        $base: ($base / 100%) * 16px;
+    }
+
+    @if $count == 1 {
+        @return -zf-to-rem($values, $base);
+    }
+
+    @for $i from 1 through $count {
+        $rem-values: append($rem-values, -zf-to-rem(nth($values, $i), $base));
+    }
+
+    @return $rem-values;
+}
+
+/// Converts a pixel value to matching rem value. *Any* value passed, regardless of unit, is assumed to be a pixel value. By default, the base pixel value used to calculate the rem value is taken from the `$global-font-size` variable.
+/// @access private
+///
+/// @param {Number} $value - Pixel value to convert.
+/// @param {Number} $base [null] - Base for pixel conversion.
+///
+/// @returns {Number} A number in rems, calculated based on the given value and the base pixel value. rem values are passed through as is.
+@function -zf-to-rem($value, $base: null) {
+    // Check if the value is a number
+    @if type-of($value) != 'number' {
+        @warn inspect($value) + ' was passed to rem-calc(), which is not a number.';
+        @return $value;
+    }
+
+    // Calculate rem if units for $value is not rem
+    @if unit($value) != 'rem' {
+        $value: strip-unit($value) / strip-unit($base) * 1rem;
+    }
+
+    // Turn 0rem into 0
+    @if $value == 0rem {
+        $value: 0;
+    }
+
+    @return $value;
+}
+
+$global-font-size: 100%;
+$global-width: rem-calc(1200);
+$global-lineheight: 1.5;
+$primary-color: #2199e8;
+$secondary-color: #777;
+$success-color: #3adb76;
+$warning-color: #ffae00;
+$alert-color: #ec5840;
+$light-gray: #e6e6e6;
+$medium-gray: #cacaca;
+$dark-gray: #8a8a8a;
+$black: #0a0a0a;
+$white: #fefefe;
+$body-background: $white;
+$body-font-color: $black;
+$body-font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
+$body-antialiased: true;
+$global-margin: 1rem;
+$global-padding: 1rem;
+$global-weight-normal: normal;
+$global-weight-bold: bold;
+$global-radius: 0;
+$global-text-direction: ltr;
+
+$input-color: $black;
+$input-font-family: inherit;
+$input-font-size: rem-calc(16);
+$input-background: $white;
+$input-background-focus: $white;
+$input-background-disabled: $light-gray;
+$input-border: 1px solid $medium-gray;
+$input-border-focus: 1px solid $dark-gray;
+$input-shadow: inset 0 1px 2px rgba($black, 0.1);
+$input-shadow-focus: 0 0 5px $medium-gray;
+$input-cursor-disabled: default;
+$input-transition: box-shadow 0.5s, border-color 0.25s ease-in-out;
+$input-radius: $global-radius;
+
+$select-background: $white;
+$select-triangle-color: #333;
+$select-radius: $global-radius;
+
+$form-spacing: rem-calc(16);
+
+//<% end %>///////////////////////////
+// select2 defined settings
+
+$padding-base-horizontal: ($form-spacing / 2);
+$padding-base-vertical: ($form-spacing / 2);
+$input-height-base: ($input-font-size + ($form-spacing * 1.5) - rem-calc(1));
+
+// color settings
+$clear-selection-color: $dark-gray;
+$dropdown-link-active-bg: $primary-color;
+$dropdown-link-active-color: foreground($dropdown-link-active-bg);
+$dropdown-link-disabled-color: $dark-gray;
+$input-color-placeholder: $dark-gray;

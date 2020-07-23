@@ -1,0 +1,121 @@
+#acym_wrapper {
+    &.configuration_listing {
+        .acym__configuration__upgrade__license {
+            .acym__configuration__upgrade__license__images {
+                width: 250px;
+            }
+
+            .acym__configuration__upgrade__license__images__larger {
+                width: 400px;
+            }
+
+            .acym__configuration__upgrade__license__text {
+                align-content: baseline;
+
+                h3 {
+                    font-size: 1.1rem;
+                }
+            }
+
+            .acym__configuration__upgrade__license__separator {
+                border-bottom: 2px solid $light-blue;
+                margin: 2rem 0;
+            }
+        }
+
+        #acym__configuration__subscription__page {
+            font-size: .7rem;
+            text-decoration: underline;
+            color: $font-primary;
+        }
+
+        #acym__configuration__license-key, #acym__configuration__button__license, #acym__configuration__button__cron {
+            margin-bottom: 0;
+        }
+
+        .select2-container {
+            margin-bottom: 1rem !important;
+        }
+
+        #acym__configuration__languages {
+            .acym__configuration__languages__listing {
+                .acym__listing__header__title:first-child {
+                    padding-left: 0;
+                }
+            }
+        }
+
+        #sending_method_options {
+            margin-top: 30px;
+        }
+
+        #available_ports {
+            max-width: 900px;
+
+            a {
+                color: cornflowerblue;
+            }
+        }
+
+        #dkim_config {
+            input {
+                font-size: 13px;
+
+                &[type="text"] {
+                    display: inline;
+                    width: 200px;
+                    height: 32px;
+
+                    &#dkim_domain {
+                        width: 100px;
+                    }
+
+                    &#dkim_key {
+                        width: 120px;
+                        font-size: 10px;
+                    }
+
+                    &#dkim_value {
+                        width: 220px;
+                        font-size: 10px;
+                    }
+                }
+            }
+
+            textarea {
+                font-size: 13px;
+                height: 200px;
+                max-width: 480px;
+            }
+        }
+
+        [type="checkbox"] + label.switch-label {
+            margin-left: 0;
+        }
+
+        .input__in__checkbox {
+            margin-top: -6px !important;
+        }
+
+        select.intext_select {
+            width: 150px;
+
+            + .select2 {
+                margin-bottom: 0 !important;
+                vertical-align: middle;
+            }
+        }
+
+        .acym_auto_tasks .select2 {
+            width: 50px !important;
+        }
+
+        #checkdb_report {
+            padding-top: 5px;
+        }
+
+        .acym__configuration__content {
+            padding: 0 20px;
+        }
+    }
+}

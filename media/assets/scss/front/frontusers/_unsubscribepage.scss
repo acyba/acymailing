@@ -1,0 +1,54 @@
+#acym_wrapper {
+    &.frontusers_unsubscribepage {
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+
+        fieldset {
+            background-color: $white;
+
+            legend {
+                background-color: $white;
+                margin-left: 1rem;
+            }
+        }
+    }
+
+    .acym_front_page__unsubscribe {
+        .acym_front_page__unsubscribe__title {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .acym_front_page__unsubscribe__sub-title {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .acym_front_page__unsubscribe__lists__container {
+            border: 2px solid #cacaca;
+            padding: 2rem;
+        }
+
+        input[type="checkbox"] {
+            vertical-align: bottom;
+            margin: 0 .3rem;
+        }
+
+        label {
+            margin: 0;
+        }
+
+        .acym_front_page__unsubscribe__lists__actions {
+            text-align: center;
+        }
+
+        ul {
+            list-style: none;
+
+            li {
+                padding: .3rem 0;
+            }
+        }
+    }
+}

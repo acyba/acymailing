@@ -1,0 +1,31 @@
+
+.acym__search__button {
+    height: auto;
+    align-self: stretch;
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 1rem;
+
+    i {
+        margin-top: 5px;
+        color: $dark-gray;
+    }
+
+    [class^="acymicon-"], [class*=" acymicon-"] {
+        font-size: 20px;
+        font-style: inherit;
+    }
+
+    &.button {
+        border-radius: $primary-radius 0 0 $primary-radius !important;
+        background-color: $light-blue;
+
+        &:hover, &focus {
+            background-color: $light-blue;
+        }
+
+        &:active {
+            transform: none;
+        }
+    }
+}

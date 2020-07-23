@@ -1,0 +1,59 @@
+#acym_wrapper {
+    #acym_migrate {
+        .acym__content__reduced {
+
+            padding-left: 80px;
+            padding-right: 80px;
+
+            @media screen and (max-width: 640px) {
+                padding: 2rem;
+            }
+        }
+
+        .acym__migrate__titles {
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        .acym__migrate__content__titles {
+            margin-bottom: 2rem;
+        }
+
+        .acym__migrate__content__title {
+            font-weight: bold;
+            font-size: 23px;
+        }
+
+        .acym__migrate__subtitle {
+            font-size: 23px;
+            margin-top: 10px;
+        }
+
+        .acym__migrate__title {
+            font-weight: bold;
+            font-size: 34px;
+        }
+
+        .acym__migrate__input__element {
+            padding: 5px;
+
+            i {
+                vertical-align: sub;
+                font-size: 23px;
+            }
+        }
+
+        .acym-logo {
+            display: block;
+            width: 35px;
+            height: 35px;
+            background: url(../images/logo_acym.svg);
+            background-repeat: no-repeat;
+        }
+
+        #acym__migrate__result__ok, #acym__migrate__result__error {
+            display: none;
+        }
+
+    }
+}

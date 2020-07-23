@@ -1,0 +1,28 @@
+#acym_wrapper {
+    #acym__automation {
+        position: relative;
+
+        .switch-paddle {
+            margin: 0;
+        }
+
+        .acym__automation__listing {
+            margin-top: 3px;
+        }
+
+        .switch {
+            margin-bottom: 0;
+        }
+
+        .acym__automation__title {
+            padding-left: 10px;
+            word-break: break-word; //TODO - compatible chrome seulement! et pour les autres navigateurs ?
+            margin-top: 3px;
+
+            a {
+                color: inherit;
+            }
+        }
+    }
+}
+

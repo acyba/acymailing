@@ -1,0 +1,52 @@
+@import "../../settings";
+
+.acym__tooltip {
+    cursor: help;
+}
+
+.acym__tooltip__text {
+    white-space: normal;
+    font-family: Poppins !important;
+    visibility: hidden;
+    border-radius: 3px;
+    position: fixed;
+    max-height: 300px;
+    max-width: 400px;
+    z-index: 10000;
+    padding: 10px 10px;
+    font-weight: normal;
+    text-transform: none;
+    font-size: 14px;
+    color: $white;
+    background-color: $very-dark-gray !important;
+    text-align: left;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+
+    .acym__tooltip__title {
+        display: block;
+        font-weight: 600;
+    }
+}
+
+.acym__tooltip:hover .acym__tooltip__text {
+    visibility: visible;
+    transform: translateY(-12px);
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out, transform 0.2s cubic-bezier(0.71, 1.7, 0.77, 1.24);
+
+    &.acym__tooltip__text__right, &.acym__tooltip__text__left {
+        transform: translateY(+12px);
+    }
+}
+
+.acym__tooltip__info {
+    margin-left: 1rem;
+    margin-right: 1rem;
+
+    .acym__tooltip__info__container {
+        .acym__tooltip__info__icon {
+            font-size: 1rem;
+            color: $dark-gray;
+            vertical-align: middle;
+        }
+    }
+}

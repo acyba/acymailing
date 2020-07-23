@@ -1,0 +1,98 @@
+// -*- mode: css -*-
+
+.select2-container {
+    .select2-dropdown--below {
+        border: none;
+        box-shadow: $listing-box-shadow;
+        margin-top: 5px;
+
+        .select2-search, .select2-results__option {
+            background-color: $white;
+        }
+
+        .select2-results__option {
+            color: $dark-gray;
+            padding-left: 15px;
+        }
+
+    }
+}
+
+/****** Multiple SCSS *******/
+.select2-container--foundation {
+    .select2-selection--multiple {
+
+        .select2-selection__choice__remove:hover {
+            cursor: pointer;
+        }
+
+        ul.select2-selection__rendered,
+        .select2-selection__rendered {
+            display: inherit;
+
+            box-sizing: border-box;
+            list-style: none;
+            margin: 0;
+            padding: 0 5px;
+            width: 100%;
+
+            li {
+                list-style: none;
+            }
+        }
+
+        .select2-selection__choice {
+            border-radius: 0;
+            padding: rem-calc(3) rem-calc(5);
+            cursor: default;
+            float: left;
+            margin-right: rem-calc(5);
+            margin-top: rem-calc(2);
+            margin-bottom: rem-calc(2);
+            border: $input-border-focus;
+        }
+
+        .select2-selection__choice__remove {
+            margin-right: 6px;
+            margin-left: 6px;
+            float: right;
+        }
+
+        .select2-search--inline {
+            .select2-search__field {
+                background: transparent;
+                line-height: $global-lineheight;
+                border: 0;
+                margin-top: 0;
+                min-width: rem-calc(80);
+
+                height: $input-height-base - rem-calc(1);
+                box-shadow: none;
+                margin: 0;
+                margin-right: rem-calc(-32);
+            }
+        }
+
+        .select2-selection__choice__remove {
+            color: $clear-selection-color;
+            cursor: pointer;
+            display: inline-block;
+            font-weight: bold;
+            margin-right: $padding-base-vertical / 2;
+
+            &:hover {
+                color: $select-triangle-color
+            }
+        }
+
+        /* Clear the selection.  */
+        .select2-selection__clear {
+            margin-right: rem-calc(3);
+            margin-top: $padding-base-vertical;
+        }
+    }
+
+    .select2-container--focus .select2-selection--multiple {
+
+    }
+}

@@ -1,0 +1,99 @@
+/* Date picker icons on after */
+.acymicon-grid_on {
+    &:before {
+        content: "" !important;
+    }
+
+    &:after {
+        content: "\e92a";
+    }
+}
+
+.acymicon-access_time {
+    &:before {
+        content: "" !important;
+    }
+
+    &:after {
+        content: "\e92b";
+    }
+}
+
+// Spin icons
+@-moz-keyframes acy-spin {
+    100% {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes acy-spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes acy-spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+.acymicon-spin {
+    -webkit-animation: acy-spin 4s linear infinite;
+    -moz-animation: acy-spin 4s linear infinite;
+    animation: acy-spin 4s linear infinite;
+    display: inline-block;
+}
+
+// Stack icons
+.acymicon-stack {
+    display: inline-block;
+    height: 2em;
+    line-height: 2em;
+    position: relative;
+    vertical-align: middle;
+    width: 2.5em;
+}
+
+.acymicon-stack-1x, .acymicon-stack-2x {
+    left: 0;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+}
+
+.acymicon-stack-2x {
+    font-size: 2em;
+}
+
+.acymicon-stack-1x {
+    line-height: inherit;
+}
+
+#acym_wrapper {
+    // Used for the DText icon in the TinyMCE editor when editing a text zone
+    .mce-ico.mce-i-codesample {
+        font-family: 'tinymce', Arial;
+        display: inline-block;
+
+        &:before {
+            content: "\e603";
+        }
+    }
+
+    .rotate180deg:before {
+        -moz-transform: rotate(180deg);
+        -ms-transform: rotate(180deg);
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+        display: inline-block;
+    }
+
+    .centered_spinner {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        width: 26px;
+    }
+}

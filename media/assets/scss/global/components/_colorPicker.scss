@@ -1,0 +1,99 @@
+.sp-preview-inner {
+    border-radius: 20px !important;
+    border: 1px solid;
+}
+
+.sp-container {
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: 0 0 5px $medium-gray;
+    border-radius: $primary-radius;
+
+    .sp-color {
+        border: none;
+    }
+
+    .sp-dragger {
+        background-color: transparent;
+    }
+
+
+    .sp-initial {
+        border: none;
+
+        span {
+            width: 25px;
+            height: 22px;
+        }
+    }
+
+    .sp-preview {
+        height: 28px;
+        border-radius: 20px;
+    }
+
+    .sp-preview-inner {
+        border-radius: $primary-radius;
+    }
+
+    .sp-dd {
+        line-height: 26px;
+        color: #8a8a8a;
+    }
+
+    .sp-replacer {
+        background: $white;
+        border-color: $white;
+    }
+
+    .sp-picker-container {
+        background: $white;
+        border: none !important;
+        padding-top: 20px;
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+
+    .sp-palette-container {
+        background: $white;
+        border: none !important;
+
+        .sp-palette {
+            .sp-thumb-el {
+                border-radius: $primary-radius;
+                margin: 3px 2px;
+                border: 0;
+                width: 18px;
+                height: 18px;
+            }
+
+            .sp-thumb-inner {
+                border-radius: $primary-radius;
+                border: 1px solid $dark-gray;
+            }
+        }
+    }
+
+    .sp-input-container {
+        margin-bottom: 10px;
+    }
+
+    .sp-input {
+        padding: 3px 5px;
+        border-radius: 0;
+    }
+
+    .sp-button-container {
+        margin-top: 8px;
+    }
+
+    .sp-cancel, .sp-choose {
+        border-radius: $primary-radius;
+        background-color: $light-gray;
+        margin: 0 5px;
+    }
+}
+
+#acym__list__settings__color-picker {
+    display: none !important;
+}

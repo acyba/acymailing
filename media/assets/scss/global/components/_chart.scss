@@ -1,0 +1,83 @@
+.acym__chart__doughnut {
+    .acym__chart__doughnut__container__bottom-label {
+        font-size: 11px;
+        font-weight: bold;
+        color: $dark-gray;
+        margin-top: 6px;
+    }
+
+    .acym__chart__doughnut__container__top-label {
+        margin-bottom: 6px;
+    }
+
+    .acym__chart__doughnut__container {
+        width: 110px;
+        margin: 0 auto;
+
+    }
+}
+
+.acym__chart__line__container {
+    padding: 60px 15px 30px 15px;
+    border: 1px solid $light-gray;
+    border-radius: 10px;
+    height: 400px;
+    width: 100%;
+    position: relative;
+
+    .acym__chart__line__choose__by {
+        font-size: 15px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        user-select: none;
+        cursor: pointer;
+
+        p {
+            color: $medium-gray;
+            margin-left: 10px;
+            display: inline-block;
+        }
+
+        .selected__choose_by {
+            color: $very-dark-gray;
+            border-bottom: 2px solid $very-dark-gray;
+        }
+
+        @media screen and (max-width: 639px) {
+            margin-top: 20px;
+        }
+    }
+
+    .acym__chart__line__legend {
+        position: absolute;
+        top: 10px;
+        right: 0px;
+
+        .acym_chart_line_labels {
+            cursor: pointer;
+            display: inline-block;
+
+            .acym_chart_line_labels_circle {
+                width: 10px;
+                height: 10px;
+                display: inline-block;
+                margin-right: 5px;
+                border-radius: 50%;
+            }
+        }
+
+        i {
+            font-size: 12px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        span {
+            margin-right: 10px;
+            user-select: none;
+            font-weight: bold;
+        }
+    }
+}
+

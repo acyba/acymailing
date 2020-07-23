@@ -1,0 +1,258 @@
+const acym_editorWysidTinymce = {
+    addTinyMceWYSID: function () {
+        tinymce.remove();
+
+        tinymce.init({
+            relative_urls: false,
+            selector: '.acym__wysid__tinymce--text',
+            inline: true,
+            menubar: false,
+            plugins: 'textcolor colorpicker lists link code acydtext noneditable',
+            image_class_list: [
+                {
+                    title: 'Responsive',
+                    value: 'img-responsive',
+                },
+            ],
+            fixed_toolbar_container: '#acym__wysid__text__tinymce__editor',
+            fontsize_formats: '10px=10px 12px=12px 14px=14px 16px=16px 18px=18px 20px=20px 22px=22px 24px=24px 26px=26px 28px=28px 30px=30px 32px=32px 34px=34px 36px=36px',
+            toolbar: [
+                'undo redo formatselect fontselect fontsizeselect | alignmentsplit | listsplit',
+                'bold italic underline strikethrough removeformat | forecolor backcolor | link unlink | code | acydtext',
+            ],
+            link_class_list: [
+                {
+                    title: 'None',
+                    value: '',
+                },
+                {
+                    title: ACYM_JS_TXT.ACYM_DONT_APPLY_STYLE_TAG_A,
+                    value: 'acym__wysid__content-no-settings-style',
+                },
+            ],
+            formats: {
+                removeformat: [
+                    {
+                        selector: 'b,strong,em,i,font,u,strike,pre,code',
+                        remove: 'all',
+                        split: true,
+                        expand: false,
+                        block_expand: true,
+                        deep: true,
+                    },
+                    {
+                        selector: 'span',
+                        attributes: [
+                            'style',
+                            'class',
+                        ],
+                        remove: 'empty',
+                        split: true,
+                        expand: false,
+                        deep: true,
+                    },
+                    {
+                        selector: '*',
+                        attributes: [
+                            'style',
+                            'class',
+                        ],
+                        split: false,
+                        expand: false,
+                        deep: true,
+                    },
+                ],
+            },
+            preview_styles: false,
+            block_formats: 'Paragraph=p;Heading 1=h1;Heading 2=h2;Heading 3=h3;Heading 4=h4;Heading 5=h5;Heading 6=h6',
+            init_instance_callback: function (editor) {
+                acym_editorWysidDynammic.setDynamicsActions();
+                editor.on('keydown', function (e) {
+                    let currentText = jQuery(editor.getElement()).find('>:first-child');
+                    if (acym_editorWysidTinymce.isCurrentTextEmpty(currentText) && e.which === 8) {
+                        e.preventDefault();
+                        return true;
+                    }
+                });
+                editor.on('keyup', function () {
+                    let currentText = jQuery(editor.getElement()).find('>:first-child');
+                    if (acym_editorWysidTinymce.isCurrentTextEmpty(currentText)) {
+                        currentText.addClass('acym__wysid__tinymce--text--placeholder acym__wysid__tinymce--text--placeholder--empty');
+                    } else {
+                        currentText.removeClass('acym__wysid__tinymce--text--placeholder--empty');
+                    }
+                    acym_editorWysidTinymce.checkForEmptyText();
+                });
+                editor.on('click', function () {
+                    acym_editorWysidToolbox.setDeleteAlltoolbox();
+                });
+                editor.off('change').on('change', function (e) {
+                    acym_editorWysidFontStyle.setAllHtmlElementStyleWYSID();
+                });
+                editor.on('blur', function (e) {
+                    let initialContent = e.target.startContent;
+                    let finalContent = e.target.bodyElement.innerHTML;
+                    if (initialContent !== finalContent) acym_editorWysidVersioning.setUndoAndAutoSave();
+                    acym_editorWysidRowSelector.setRowSelector();
+                    acym_editorWysidTinymce.checkForEmptyText();
+                });
+                editor.addButton('listsplit', {
+                    type: 'splitbutton',
+                    text: '',
+                    icon: 'bullist',
+                    onclick: function (e) {
+                        tinyMCE.execCommand(this.value);
+                    },
+                    menu: [
+                        {
+                            icon: 'bullist',
+                            text: 'Bullet list',
+                            onclick: function () {
+                                tinyMCE.execCommand('InsertUnorderedList');
+                                this.parent().parent().icon('bullist');
+                                this.parent().parent().value = 'InsertUnorderedList';
+                            },
+                        },
+                        {
+                            icon: 'numlist',
+                            text: 'Ordered List',
+                            onclick: function () {
+                                tinyMCE.execCommand('InsertOrderedList');
+                                this.parent().parent().icon('numlist');
+                                this.parent().parent().value = 'InsertOrderedList';
+                            },
+                        },
+                    ],
+                    onPostRender: function () {
+                        // Select the first item by default
+                        this.value = 'InsertUnorderedList';
+                    },
+                });
+                editor.addButton('alignmentsplit', {
+                    type: 'splitbutton',
+                    text: '',
+                    icon: 'alignleft',
+                    onclick: function (e) {
+                        tinyMCE.execCommand(this.value);
+                    },
+                    menu: [
+                        {
+                            icon: 'alignleft',
+                            text: 'Align Left',
+                            onclick: function () {
+                                tinyMCE.execCommand('JustifyLeft');
+                                this.parent().parent().icon('alignleft');
+                                this.parent().parent().value = 'JustifyLeft';
+                            },
+                        },
+                        {
+                            icon: 'alignright',
+                            text: 'Align Right',
+                            onclick: function () {
+                                tinyMCE.execCommand('JustifyRight');
+                                this.parent().parent().icon('alignright');
+                                this.parent().parent().value = 'JustifyRight';
+                            },
+                        },
+                        {
+                            icon: 'aligncenter',
+                            text: 'Align Center',
+                            onclick: function () {
+                                tinyMCE.execCommand('JustifyCenter');
+                                this.parent().parent().icon('aligncenter');
+                                this.parent().parent().value = 'JustifyCenter';
+                            },
+                        },
+                        {
+                            icon: 'alignjustify',
+                            text: 'Justify',
+                            onclick: function () {
+                                tinyMCE.execCommand('JustifyFull');
+                                this.parent().parent().icon('alignjustify');
+                                this.parent().parent().value = 'JustifyFull';
+                            },
+                        },
+                    ],
+                    onPostRender: function () {
+                        // Select the first item by default
+                        this.value = 'JustifyLeft';
+                    },
+                });
+            },
+        });
+
+        tinymce.execCommand('mceAddEditor', true, '');
+
+
+        tinymce.init({
+            selector: '.acym__wysid__tinymce--image',
+            inline: true,
+            menubar: false,
+            plugins: 'image nonbreaking',
+            toolbar: [],
+            image_class_list: [
+                {
+                    title: 'Responsive',
+                    value: 'img-responsive',
+                },
+            ],
+            preview_styles: false,
+            init_instance_callback: function (editor) {
+                acym_editorWysidImage.setDoubleClickImage();
+                editor.on('click', function (e) {
+                    let $img = jQuery(editor.getElement()).find('img');
+                    acym_helperEditorWysid.timeClickImage = new Date().getTime();
+                    acym_editorWysidToolbox.setDeleteAlltoolbox();
+                    acym_editorWysidContextModal.setImageContextModal($img);
+                });
+                editor.on('blur', function () {
+                    acym_editorWysidRowSelector.setRowSelector();
+                    acym_helperEditorWysid.removeBlankCharacters();
+                });
+            },
+            formats: {
+                alignleft: {
+                    selector: 'img',
+                    styles: {
+                        float: 'left',
+                        marginTop: '-10px',
+                        marginBottom: '10px',
+                    },
+                },
+                alignright: {
+                    selector: 'img',
+                    styles: {
+                        float: 'right',
+                        marginTop: '-10px',
+                        marginBottom: '10px',
+                    },
+                },
+            },
+            style_formats: [
+                {
+                    title: 'Align left',
+                    format: 'alignleft',
+                },
+                {
+                    title: 'Align right',
+                    format: 'alignright',
+                },
+            ],
+            themes: 'modern',
+        });
+        tinymce.execCommand('mceAddEditor', true, '');
+    },
+    isCurrentTextEmpty: function (currentText) {
+        return (currentText.is(':empty') || currentText.html() === '&nbsp;<br>' || currentText.html() === '<br>' || escape(currentText.html()) == '%u200D');
+    },
+    checkForEmptyText: function () {
+        jQuery('.acym__wysid__tinymce--text--placeholder, .acym__wysid__tinymce--title--placeholder').each(function () {
+            let severalTags = jQuery(this).closest('.acym__wysid__tinymce--text').find('.acym__wysid__tinymce--text--placeholder, .acym__wysid__tinymce--title--placeholder').length > 1;
+            if (acym_editorWysidTinymce.isCurrentTextEmpty(jQuery(this)) && !severalTags) {
+                jQuery(this).addClass('acym__wysid__tinymce--text--placeholder acym__wysid__tinymce--text--placeholder--empty');
+            } else {
+                jQuery(this).removeClass('acym__wysid__tinymce--text--placeholder--empty');
+            }
+        });
+    },
+};

@@ -1,0 +1,13 @@
+@import "compass/css3";
+@import "compass/support";
+@import "../settings";
+@import "components/joomlaFix";
+@import "components/joomla4Fix";
+@import "components/joomlaLeftMenu";
+@import "components/wordpressFix";
+
+#acym_wrapper {
+    @import "components/header";
+    @import "components/input";
+    @import "components/button";
+}

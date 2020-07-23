@@ -1,0 +1,309 @@
+#acym__header__banner__news {
+    margin: -20px -20px 20px -20px;
+}
+
+#acym_header {
+    background-color: $white;
+    border-radius: $primary-radius;
+    padding: $global-padding;
+    box-shadow: $primary-box-shadow;
+
+    #acym__check__version__last__check {
+        color: $white;
+    }
+
+    .acym-logo {
+        display: block;
+        width: 35px;
+        height: 35px;
+        background: url(../images/logo_acym.svg);
+        background-repeat: no-repeat;
+    }
+
+    .input-group {
+        margin: 0;
+    }
+
+    .breadcrumbs {
+        margin: 0;
+
+        li {
+            text-transform: none;
+            font-size: 18px;
+            line-height: inherit;
+
+            a {
+                text-decoration: none;
+                color: $font-primary;
+            }
+
+            &.last_link, &.last_link a {
+                color: map-get($foundation-palette, primary-light);
+                font-size: 18px;
+                vertical-align: initial;
+            }
+
+            &.last_link a {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                width: calc(100% - 0px);
+                display: inline-block;
+            }
+        }
+    }
+
+    #acym_global_navigation {
+        margin: 3px 0 0 16px;
+    }
+
+    a[type="button"], .acym__header__notification {
+        margin: -5px 5px -3px 5px;
+        height: 47px;
+        width: 47px;
+    }
+
+    .button_header {
+        border-radius: 50%;
+        color: $font-primary;
+        background-color: $white;
+        box-shadow: $box-shadow-button;
+
+        i {
+            font-size: 1.4rem;
+        }
+
+        &:hover {
+            box-shadow: $box-shadow-button-hover;
+        }
+    }
+
+    #acym_global_search {
+        margin-bottom: 0;
+        border: none;
+        border-bottom: 3px solid $very-dark-gray;
+        background-color: transparent;
+        box-shadow: none;
+        height: 35px;
+        min-height: 35px;
+        width: 200px;
+        float: right;
+        display: none;
+    }
+
+    #acym_global_search_button {
+        display: none;
+        cursor: pointer;
+        color: $font-primary;
+        margin-left: 10px;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    #acym_level_version_area {
+        float: right;
+        font-weight: 600;
+
+        .acy_updateversion {
+            &:hover {
+                color: $alert-color !important;
+            }
+        }
+
+        .acyversion_uptodate, .acy_updateversion {
+            font-weight: 600;
+        }
+    }
+
+    @media screen and (max-width: 1024px) {
+        #acym_level_version_area {
+            float: none;
+        }
+    }
+
+    #acym_expiration {
+        font-weight: 600;
+
+        a:hover {
+            transition: .2s;
+            color: $alert-color !important;
+        }
+    }
+
+    .check-version-area {
+        font-size: 12px;
+        line-height: 17px;
+    }
+
+    :root {
+        --shadow-color: #{rgba(80, 80, 80, .4)};
+    }
+
+    @mixin notificationButtonColor($level) {
+        @if $level == 'success' {
+            --shadow-color: #{$green-opacity};
+        } @else if $level == 'info' {
+            --shadow-color: #{$blue-opacity};
+        } @else if $level == 'warning' {
+            --shadow-color: #{$orange-opacity};
+        } @else {
+            --shadow-color: #{$red-opacity};
+        }
+
+        box-shadow: 0 0 4px 1px var(--shadow-color);
+
+        &.acym__header__notification__pulse {
+            animation: pulse 2s;
+            animation-iteration-count: infinite;
+        }
+    }
+
+    .acym__header__notification__button__success {
+        @include notificationButtonColor('success');
+    }
+
+    .acym__header__notification__button__info {
+        @include notificationButtonColor('info');
+    }
+
+    .acym__header__notification__button__warning {
+        @include notificationButtonColor('warning');
+    }
+
+    .acym__header__notification__button__error {
+        @include notificationButtonColor('error');
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 8px 2px var(--shadow-color);
+        }
+        20% {
+            box-shadow: 0 0 4px 1px var(--shadow-color);
+        }
+        40% {
+            box-shadow: 0 0 8px 2px var(--shadow-color);
+        }
+        80% {
+            box-shadow: 0 0 4px 1px var(--shadow-color);
+        }
+        100% {
+            box-shadow: 0 0 8px 2px var(--shadow-color);
+        }
+    }
+
+    .acym__header__notification__center {
+        position: fixed;
+        visibility: hidden;
+        width: 400px;
+        height: auto;
+        min-height: 75px;
+        box-shadow: $box-shadow-button;
+        background-color: $light-gray;
+        max-height: 500px;
+        overflow-y: scroll;
+        z-index: 9999;
+        border-radius: 5px;
+        transform: translateY(-10px);
+        transition: transform .3s ease-in-out;
+
+        &.acym__header__notification__center__visible {
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .acym__header__notification__toolbox {
+            padding: .5rem;
+            background-color: $white;
+
+            p {
+                font-weight: 500;
+                font-size: .9rem;
+            }
+
+            div {
+                text-decoration: underline;
+            }
+        }
+
+
+        @mixin notificationIcon($level) {
+            @if $level == 'info' {
+                border-left: 4px solid map-get($foundation-palette, primary-hot);
+                .acym__header__notification__one__icon i {
+                    color: map-get($foundation-palette, primary-hot);
+                }
+            } @else if $level == 'warning' {
+                border-left: 4px solid map-get($foundation-palette, warning);
+                .acym__header__notification__one__icon i {
+                    color: map-get($foundation-palette, warning);
+                }
+            } @else {
+                border-left: 4px solid map-get($foundation-palette, alert);
+                .acym__header__notification__one__icon i {
+                    color: map-get($foundation-palette, alert);
+                }
+            }
+            .acym__header__notification__one__icon i {
+                font-size: 1rem;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                text-align: center;
+                line-height: 50px;
+            }
+        }
+
+        .acym__header__notification__one {
+            cursor: default;
+            align-items: center;
+            display: flex;
+            transition: max-height .5s ease-in-out, max-height .5s ease-in-out;
+            margin-top: 2px;
+            background-color: $white;
+
+            h2 {
+                font-size: 1rem;
+            }
+
+            &.acym__header__notification__one__read {
+                opacity: .6;
+            }
+
+            .acym__header__notification__message {
+                word-break: break-word;
+                margin: .7rem 0;
+            }
+
+            &.acym__header__notification__one__empty {
+                box-shadow: none;
+                margin: 0;
+                max-height: 75px;
+            }
+
+            .acym__header__notification__one__delete {
+                font-size: 1.3rem;
+                cursor: pointer;
+            }
+
+            .acym__header__notification__one__date {
+                font-size: .7rem;
+                color: $medium-gray;
+            }
+
+            &.acym__header__notification__one__info {
+                @include notificationIcon('info');
+            }
+
+            &.acym__header__notification__one__warning {
+                @include notificationIcon('warning');
+            }
+
+            &.acym__header__notification__one__error {
+                @include notificationIcon('error');
+            }
+        }
+    }
+}

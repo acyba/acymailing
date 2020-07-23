@@ -1,0 +1,115 @@
+.acym__toolbar__button {
+    background-color: white;
+    padding: .7rem;
+    cursor: pointer;
+    text-align: center;
+    transition: .2s;
+
+    &.disabled {
+        cursor: not-allowed;
+        opacity: .4;
+    }
+
+    &.acym__toolbar__non-permanent-button {
+        display: none;
+    }
+
+    &.acym__toolbar__search-button {
+        border: 0;
+    }
+
+    &.acym__toolbar__button-primary {
+        border-radius: 6px;
+        background-color: $primary-toolbar-color;
+        color: $white;
+
+        &:hover {
+            background-color: #00CCFF;
+        }
+    }
+
+    &.acym__toolbar__button-secondary {
+        border-radius: 6px;
+        border: solid 1px $secondary-toolbar-color;
+        color: $font-color-toolbar;
+
+        &.toggled {
+            background-color: $more-options-toggled-toolbar;
+            color: white;
+        }
+
+        &:not(.toggled) {
+            &:hover {
+                background-color: $more-options-toggled-toolbar-light;
+            }
+        }
+    }
+
+    &#acym__toolbar__more-filters-clear {
+        color: $more-options-toggled-toolbar;
+        border-radius: 3px;
+        border: 1px solid $more-options-toggled-toolbar;
+        background-color: transparent;
+        margin-top: 0;
+    }
+
+    &#acym__toolbar__more-filters-apply {
+        border-radius: 3px;
+        margin-top: 0;
+    }
+}
+
+.acym__toolbar__search-field {
+    .input-group-button {
+        .acym__search__button {
+            background-color: $white;
+            border-radius: 0 6px 6px 0 !important;
+            border: 1px solid $secondary-toolbar-color;
+            border-left: 0 !important;
+
+            i {
+                vertical-align: middle;
+            }
+
+            &:hover, &:focus {
+                border-color: $secondary-toolbar-color;
+                background-color: $more-options-toggled-toolbar-light !important;
+            }
+        }
+    }
+
+    .input-group-field {
+        background-color: $white;
+        border-radius: 6px 0 0 6px !important;
+        border: 1px solid $secondary-toolbar-color;
+        border-right: 0 !important;
+
+        &:hover, &:focus {
+            border-color: $secondary-toolbar-color;
+            background-color: $white !important;
+        }
+    }
+}
+
+.acym__toolbar__more-filters {
+    background-color: $more-options-background-toolbar;
+    margin-bottom: 1rem;
+
+    .acym__toolbar__filters__select {
+        label {
+            padding-left: .5rem;
+            color: $font-color-filters;
+            margin-bottom: 6px;
+        }
+    }
+
+    .select2-selection--single {
+        background: $white !important;
+        border-radius: 2px !important;
+        border: solid 1px $light-blue-border !important;
+    }
+}
+
+.acym__toolbar {
+    margin: 1rem 0;
+}

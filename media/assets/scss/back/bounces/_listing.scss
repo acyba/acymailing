@@ -1,0 +1,37 @@
+#acym_wrapper {
+    #acym__bounces {
+        .acym__sortable__listing__handle {
+            i {
+                line-height: 5px;
+                font-size: 14px;
+
+                &:first-of-type {
+                    padding-top: 7px;
+                }
+            }
+        }
+
+        .acym__listing__row {
+            min-height: 80px;
+
+            .acym__bounce__listing__handle {
+                margin-top: -2px;
+            }
+        }
+
+        .acym__bounce__listing__handle {
+            i {
+                line-height: 5px;
+                font-size: 14px;
+
+                &:first-of-type {
+                    padding-top: 7px;
+                }
+            }
+        }
+    }
+
+    #acym__bounces .acym__listing__row {
+        min-height: 0;
+    }
+}

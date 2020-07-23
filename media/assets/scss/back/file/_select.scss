@@ -1,0 +1,87 @@
+#acym_wrapper.file_select {
+    background-color: white;
+
+    .acym__content {
+        padding: 0;
+    }
+}
+
+#acym_wrapper {
+    .acym__file__select {
+        .acym__file__select__area {
+            box-shadow: 2px 2px 15px 2px #ebebeb;
+            padding: 2rem;
+            margin: 1rem;
+
+            .acym__file__select__onepic {
+                padding: 2rem;
+                border-radius: 1px;
+                box-shadow: 2px 2px 15px 2px #ebebeb;
+                text-align: center;
+                margin: 0.5rem;
+
+                &:hover {
+                    box-shadow: 2px 2px 30px 2px #ebebeb;
+                }
+            }
+
+            .acym__file__select__onepic img {
+                max-width: 120px;
+
+            }
+
+            #acym__file__select__area__import {
+                margin-bottom: 0;
+            }
+
+            #currentPath {
+                cursor: pointer;
+            }
+
+            #treefile {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 6rem;
+                background-color: white;
+                -webkit-box-shadow: 0 4px 8px #d7d7d7;
+                -moz-box-shadow: 0 4px 8px #d7d7d7;
+                box-shadow: 0 4px 8px #d7d7d7;
+                max-width: calc(100% - 100px);
+                margin-left: auto;
+                margin-right: auto;
+
+                li {
+                    list-style: none;
+                }
+
+                ul {
+                    margin-left: 10px;
+                }
+
+                & > ul {
+                    margin: 15px 0;
+                }
+
+                .tree-child-item {
+                    cursor: pointer;
+                    font-size: 15px;
+
+                    i {
+                        padding-right: 5px;
+                        padding-left: 5px;
+                        font-size: 16px;
+                    }
+                }
+
+                li.tree-current > span, .tree-child-item:hover > span {
+                    color: $primary-color;
+                }
+            }
+        }
+
+        .acym__file__select__title {
+            overflow: hidden;
+        }
+    }
+}

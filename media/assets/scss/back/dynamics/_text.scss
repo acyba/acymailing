@@ -1,0 +1,45 @@
+#acym_wrapper {
+    &.frontdynamics_popup {
+        padding: 20px;
+    }
+
+    &.dynamics_popup {
+        background-color: white;
+    }
+
+    // CSS applied on the DText popup
+    #acym_content {
+        .acym__dynamics__popup__menu {
+            #acym__dynamics__popup__menu__insert__tag, .acym__popup__listing {
+                padding: 1rem;
+                position: sticky;
+                background: white;
+                top: 0;
+            }
+
+            .acym__popup__listing {
+                padding: 1rem;
+            }
+
+            #acym__popup__subscription__listids {
+                font-size: 20px;
+                font-weight: bold;
+                margin-left: 20px;
+                line-height: 40px;
+            }
+
+            #acym__popup__subscription__text__list {
+                line-height: 40px;
+            }
+
+            .acym__popup__plugin__title {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+
+            .acym__listing__title__dynamics {
+                cursor: pointer;
+            }
+        }
+    }
+}

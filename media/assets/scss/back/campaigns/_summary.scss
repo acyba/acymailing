@@ -1,0 +1,183 @@
+#acym_wrapper {
+    li.fa, i.fa {
+        font-family: FontAwesome;
+    }
+
+    .acym__fadeout {
+        position: absolute;
+        bottom: 30px;
+        height: 100px;
+        width: 100%;
+        background: -webkit-linear-gradient(
+                        rgba(255, 255, 255, 0) 0%,
+                        rgba(255, 255, 255, 1) 100%
+        );
+        background-image: -moz-linear-gradient(
+                        rgba(255, 255, 255, 0) 0%,
+                        rgba(255, 255, 255, 1) 100%
+        );
+        background-image: -o-linear-gradient(
+                        rgba(255, 255, 255, 0) 0%,
+                        rgba(255, 255, 255, 1) 100%
+        );
+        background-image: linear-gradient(
+                        rgba(255, 255, 255, 0) 0%,
+                        rgba(255, 255, 255, 1) 100%
+        );
+        background-image: -ms-linear-gradient(
+                        rgba(255, 255, 255, 0) 0%,
+                        rgba(255, 255, 255, 1) 100%
+        );
+    }
+
+    .acym__preview__toggle {
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+        text-align: center;
+        color: $medium-gray;
+        font-size: 100px;
+        cursor: pointer;
+        user-select: none;
+        line-height: 1;
+    }
+
+    .acym__preview__toggle__top {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        text-align: center;
+        color: $white;
+        font-size: 20px;
+        cursor: pointer;
+        user-select: none;
+        padding: 5px 10px;
+        background-color: $dark-gray;
+        border-radius: 5px;
+        transition: .2s;
+
+        &:hover {
+            background-color: $very-dark-gray;
+        }
+    }
+
+    .acym__middle_absolute__text {
+        position: absolute;
+        width: 100%;
+        left: 50%;
+        top: 50%;
+        z-index: 1030;
+        transform: translate(-50%, -50%);
+    }
+
+    .acym__hide__div {
+        position: absolute;
+        z-index: 1028;
+        background-color: $light-gray;
+        opacity: 0.8;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+
+    #acym__campaign__summary {
+        font-size: 16px;
+
+        .acym__tag__full {
+            font-size: 12px;
+            margin-top: 6px;
+
+            div {
+                max-width: 100%;
+                cursor: default;
+                padding: 2px 5px;
+                float: left;
+                margin: 0 4px 4px 4px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                color: white;
+                background-color: map-get($foundation-palette, primary);
+                border-radius: $primary-radius;
+            }
+        }
+
+        .acym__campaign__summary__modify {
+            a, span {
+                color: $dark-gray;
+                line-height: 28px;
+
+                i {
+                    font-size: 15px;
+                }
+            }
+
+            span {
+                visibility: hidden;
+            }
+
+        }
+
+        .acym__tag__full {
+            margin-top: 0;
+        }
+
+        .acym__campaign__summary__recipients__list__color {
+            font-size: 20px;
+            vertical-align: bottom;
+        }
+
+        hr {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .acym__campaign__summary__section:hover .acym__campaign__summary__modify span {
+            visibility: visible;
+        }
+
+        @keyframes extendIframe {
+            from {
+                transform: translateY(0%);
+            }
+
+            to {
+                transform: translateY(10%);
+            }
+        }
+        @keyframes collapseIframe {
+            from {
+                transform: translateY(0%);
+            }
+
+            to {
+                transform: translateY(-10%);
+            }
+        }
+
+        .acym__preview__extend:hover {
+            animation: 0.5s ease extendIframe forwards;
+            color: $dark-gray;
+        }
+
+        .acym__preview__collapse:hover {
+            animation: 0.5s ease collapseIframe forwards;
+            color: $dark-gray;
+        }
+
+        .acym__zone__warning {
+            background-color: #fcf8e3;
+            border-radius: 4px;
+        }
+
+        #acym__campaign__summary__resendoptions {
+            .acym_radio_group {
+                margin-top: 0.6rem;
+
+                label {
+                    color: #0a0a0a;
+                }
+            }
+        }
+    }
+}

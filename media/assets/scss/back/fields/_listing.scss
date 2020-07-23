@@ -1,0 +1,14 @@
+#acym_wrapper {
+    #acym__fields {
+        .acym__sortable__listing__handle {
+            i {
+                line-height: 5px;
+                font-size: 14px;
+
+                &:first-of-type {
+                    padding-top: 7px;
+                }
+            }
+        }
+    }
+}

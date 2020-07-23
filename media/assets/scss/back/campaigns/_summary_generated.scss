@@ -1,0 +1,153 @@
+#acym_wrapper {
+    #acym__campaign__summary__generated {
+
+        .acym__content {
+            padding: 2rem 3rem;
+
+            a {
+                color: $primary-color;
+            }
+
+
+            .acym__campaign__summary__generated__title {
+                font-size: 2rem;
+                font-weight: 500;
+            }
+
+            .acym__campaign__summary__generated__disabled__text {
+                color: map-get($foundation-palette, alert);
+            }
+
+            .acym__campaign__summary__generated__list {
+
+                .acym__campaign__summary__generated__list__title {
+                    font-size: 1.4rem;
+                    font-weight: 500;
+                }
+
+                .acym__campaign__summary__generated__list__tag {
+                    border: 2px solid $medium-gray;
+                    border-radius: 4px;
+                    padding: .2rem;
+
+                    i {
+                        vertical-align: middle;
+                        margin-right: 5px;
+                        font-size: 1rem;
+                    }
+                }
+            }
+
+            .acym__campaign__summary__generated__action {
+                i {
+                    font-size: 1.2rem;
+                }
+
+                a {
+                    color: $font-primary;
+                }
+
+                .button-cancel {
+                    i {
+                        transition: transform .5s ease-in-out;
+                    }
+                }
+
+                @keyframes fly {
+                    10% {
+                        transform: translateY(3px) translateX(-3px);
+                    }
+                    40% {
+                        transform: translateY(-40px) translateX(40px);
+                    }
+                    41% {
+                        transform: translateY(40px) translateX(40px);
+                    }
+                    60% {
+                        transform: translateY(40px) translateX(-40px);
+                    }
+                    100% {
+                        transform: translateY(0px) translateX(0px);
+                    }
+                }
+
+                .button-send:hover {
+                    overflow: hidden;
+
+                    i {
+                        animation: fly 1s ease-in-out;
+                    }
+                }
+
+                .acym__campaign__summary__generated__action__text {
+                    font-size: 1.1rem;
+                }
+            }
+
+            .acym__campaign__summary__generated__mail {
+                background-color: $light-gray;
+                border-radius: 10px;
+
+                .acym__campaign__summary__generated__mail__preview {
+                    position: relative;
+
+                    .acym__campaign__summary__generated__mail__toogle__preview {
+                        position: absolute;
+                        top: 20px;
+                        right: 15px;
+                        z-index: 1100;
+                        border-radius: 4px;
+                        padding: .2rem .5rem;
+                        box-shadow: 0 0 4px 2px rgba(100, 100, 100, .3);
+                        cursor: pointer;
+                        transition: box-shadow .2s ease-in-out;
+
+                        &:hover {
+                            box-shadow: 0 0 8px 3px rgba(100, 100, 100, .3);
+                        }
+                    }
+
+                    #acym__wysid__email__preview {
+                        padding-bottom: 200px;
+
+                        &.acym__wysid__email__preview__extend {
+                            padding-bottom: 800px;
+                        }
+                    }
+                }
+
+                .acym__campaign__summary__generated__mail__one:first-child {
+                    border-bottom: 1px solid $medium-gray;
+                }
+
+                .acym__campaign__summary__generated__mail__one {
+                    padding: 1.5rem;
+                }
+
+                .acym__campaign__summary__generated__mail__one__info {
+                    font-size: 1rem;
+
+                    i {
+                        font-size: .8rem;
+                    }
+                }
+
+                .acym__campaign__summary__generated__mail__one__subject {
+                    font-size: 1.4rem;
+                }
+
+                .acym__campaign__summary__generated__mail__one__preview {
+                    font-size: 1.1rem;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    color: $dark-gray;
+                }
+
+                .acym__campaign__summary__generated__mail__one__bold {
+                    font-weight: 500;
+                }
+            }
+        }
+    }
+}

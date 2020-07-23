@@ -1,0 +1,246 @@
+.acym__wysid__right__toolbar__settings__stylesheet {
+    .acym__wysid__right__toolbar__settings__stylesheet__title {
+        font-weight: 600;
+    }
+
+    #acym__wysid__right__toolbar__settings__stylesheet__textarea {
+        border-radius: 4px;
+    }
+}
+
+.acym__listing__empty__search__modal {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 2em;
+}
+
+.acym__listing__empty__load-more {
+    font-size: .9rem;
+    font-weight: 500;
+    margin: 1rem 0;
+    color: $dark-gray;
+}
+
+#acym__modal__lists__import__create-area {
+    position: relative;
+
+    #acym__modal__lists_import__clear {
+        position: absolute;
+        top: 7px;
+        right: 12px;
+        cursor: pointer;
+        color: $medium-gray;
+
+        &:hover {
+            color: $dark-gray;
+        }
+    }
+}
+
+.reveal {
+    padding-top: 3rem !important;
+}
+
+div[data-reveal-larger] {
+    @media screen and (min-width: 649px) {
+        & {
+            width: 70% !important;
+            height: 80%;
+        }
+    }
+}
+
+.reveal-overlay .reveal.acym__template__choose__modal__listing {
+    width: 75%;
+    max-height: calc(100vh - 110px);
+}
+
+.reveal-overlay {
+    overflow-y: auto;
+    z-index: 99999 !important;
+
+    iframe {
+        border: none;
+        width: 100%;
+        margin-top: 1rem;
+        height: 95%;
+    }
+}
+
+.modal__pagination__show {
+    font-weight: bold;
+    padding-right: 20px;
+}
+
+.modal__pagination__search {
+    position: relative;
+}
+
+.modal__pagination__listing__lists {
+    overflow: auto;
+    padding: 10px;
+}
+
+.modal__pagination__listing__lists__in-form {
+
+    .modal__pagination__listing__lists__in-form__list {
+        padding: 5px;
+    }
+
+    i.acymicon-circle {
+        margin-left: 10px;
+        margin-right: 8px;
+        line-height: 22px;
+    }
+
+    label {
+        line-height: 22px;
+
+        span {
+            font-weight: normal;
+
+            &.modal__pagination__listing__lists__list-name {
+                font-weight: bold;
+                font-size: 14px;
+                vertical-align: middle;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+            &.modal__pagination__listing__lists__list-subscribers {
+                font-weight: bold;
+                font-size: 16px;
+                color: $dark-gray;
+                margin-left: 5px;
+            }
+        }
+    }
+}
+
+div[aria-haspopup='true'] {
+    display: inline-block;
+}
+
+#modal__pagination__listing__button-submit {
+    margin-left: 0;
+    margin-top: 20px;
+
+    #no-list {
+        margin-left: 0;
+    }
+
+    #lists {
+        margin-right: 0;
+    }
+}
+
+@media screen and (min-width: 639px) {
+    #modal__pagination__listing__button-submit {
+        #lists {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+    }
+}
+
+@media screen and (max-width: 639px) {
+    #modal__pagination__listing__button-submit {
+
+        #no-list {
+            margin-right: 0;
+            width: 100%;
+        }
+
+        #lists {
+            margin-left: 0;
+            width: 100%;
+        }
+    }
+}
+
+#modal__pagination__create__list {
+    margin-top: 20px;
+}
+
+#modal__pagination__search__spinner {
+    i {
+        color: $primary-color;
+    }
+}
+
+.acym__modal__pagination__title {
+    font-weight: 500;
+    margin-bottom: 1em;
+}
+
+/*Users*/
+
+.modal__pagination__users__listing {
+    padding: 10px;
+    overflow: auto;
+}
+
+.modal__pagination__users__listing__in-form {
+
+    .modal__pagination__users__listing__in-form__user {
+        padding: 5px;
+        margin-bottom: 5px;
+    }
+
+    label {
+        line-height: 22px;
+
+        span {
+            font-weight: normal;
+            display: block;
+
+            &.modal__pagination__users__listing__user-name {
+                font-weight: 500;
+                font-size: 16px;
+                vertical-align: middle;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                margin-left: 15px;
+            }
+        }
+    }
+}
+
+#modal__pagination__users__confirm {
+    margin-bottom: 0;
+    margin-top: 10px;
+}
+
+#modal__pagination__users__search__spinner {
+    i {
+        color: $primary-color;
+    }
+}
+
+.acym__modal__pagination__users__title {
+    font-weight: 500;
+    margin-bottom: 1em;
+}
+
+.acym__modal__close__button {
+    background: $light-gray;
+    border-radius: 50% !important;
+    width: 1em;
+    height: 1em;
+
+    span {
+        color: red;
+    }
+
+    &:hover {
+        span {
+            color: white
+        }
+
+        background: red;
+    }
+}

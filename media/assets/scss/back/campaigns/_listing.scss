@@ -1,0 +1,99 @@
+#acym_wrapper {
+    #acym__campaigns {
+
+        .tabs-content {
+            border: 0;
+
+            .acym__emails__content {
+                padding: 20px 0;
+            }
+        }
+
+        .acym__campaign__auto__generation {
+            margin: 0 10px;
+        }
+
+        .acym__campaign__duplicate {
+            display: none;
+        }
+
+        .acym__campaign__status__status {
+            border-radius: 5px;
+            font-weight: 400;
+            line-height: 21px;
+        }
+
+        .acym__campaign__status__draft {
+            span {
+                color: map-get($foundation-palette, alert);
+            }
+        }
+
+        .acym__campaign__cancel-scheduling, .acym__campaign__pause-sending {
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+            line-height: 26px;
+        }
+
+        @media screen and (max-width: 639px) {
+            .acym__campaign__status {
+                margin-top: 30px;
+            }
+            .acym__campaign__cancel-scheduling, .acym__campaign__pause-sending {
+                margin-top: 15px;
+            }
+        }
+
+        .acym__campaign__listing__draft {
+            color: map-get($foundation-palette, alert);
+            font-weight: bold;
+            margin-right: 3px;
+        }
+
+        .acym__campaign__listing__scheduled__stop, .acym__campaign__listing__automatic__deactivate {
+            cursor: pointer;
+
+            span {
+                color: $dark-gray;
+            }
+
+            i {
+                color: $dark-gray;
+                font-size: 20px;
+                margin-right: 8px;
+                vertical-align: middle;
+            }
+        }
+
+        .acym__campaign__listing__sending__stop {
+            cursor: pointer;
+        }
+
+        .acym__campaign__listing__status__controls {
+            padding-top: .5rem;
+
+            .acym__campaign__listing__scheduled__stop {
+                font-size: 12px;
+            }
+
+            .acym__campaign__listing__automatic__deactivate {
+                i {
+                    font-size: 19px;
+                }
+
+                span {
+                    font-size: 12px;
+                }
+            }
+
+            .switch {
+                margin-bottom: inherit;
+            }
+        }
+
+        .acym__tag {
+            margin-top: 0;
+        }
+    }
+}

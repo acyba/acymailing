@@ -1,0 +1,50 @@
+$foundation-palette: (
+        primary: #0079d3,
+        primary-light: #00a4ff,
+        primary-hot: #5d77ff,
+        secondary: #767676,
+        success: #3dea91,
+        warning: #ffab15,
+        alert: #ff5259,
+);
+$editor-wysid-palette: (
+        primary: #2f3d45,
+        secondary: #e6f2fb,
+        primary-ui:#00a3fe,
+        secondary-ui: #b9b9b9,
+        alert: #ff5259,
+);
+$primary-color: map-get($foundation-palette, primary);
+$primary-light-color: map-get($foundation-palette, primary-light);
+$tabs-background: #f6f6f6;
+$primary-color-unselected: #beddf7;
+$very-light-gray: #f1f1f1;
+$light-gray: #e3e3e3;
+$medium-gray: #cacaca;
+$dark-gray: #8a8a8a;
+$very-dark-gray: #444444;
+$black: #0a0a0a;
+$white: #fefefe;
+$dark-red: #69282e;
+$font-primary: #303e46;
+$font-primary-light: #939294;
+$font-secondary: #9bced7;
+$light-blue: #daf0fe;
+$dark-blue: #0ca0e4;
+$alert-light: #ffedee;
+$green-opacity: rgba(62, 234, 145, 0.4);
+$blue-opacity: rgba(0, 121, 210, 0.4);
+$red-opacity: rgba(255, 82, 89, 0.4);
+$orange-opacity: rgba(255, 171, 21, 0.4);
+$body-background: $white;
+$body-font-color: $black;
+$global-color-pick-contrast-tolerance: 0;
+$print-transparent-backgrounds: true;
+$primary-toolbar-color: #00a4ff;
+$secondary-toolbar-color: #eaeaf2;
+$font-color-toolbar: #303030;
+$more-options-background-toolbar: #ecf8ff;
+$more-options-toggled-toolbar: #01095e;
+$more-options-toggled-toolbar-light: rgba(1, 9, 94, .05);
+$light-blue-border: rgba(0, 164, 255, 0.16);
+$font-color-filters: #01095e;

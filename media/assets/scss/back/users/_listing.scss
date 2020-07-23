@@ -1,0 +1,38 @@
+#acym_wrapper {
+    #acym__users {
+        @media screen and (max-width: 639px) {
+            .acym__users__subscription {
+                padding-left: 7px;
+                margin-top: 22px;
+            }
+            .acym_subscription_more {
+                display: none;
+            }
+            .acym__user__show-subscription-bt {
+                margin-top: 5px;
+                font-size: 8px;
+            }
+            .acym__user__show-subscription {
+                height: inherit;
+                vertical-align: top;
+                cursor: pointer;
+            }
+            .acym__user__button__showsubscription {
+                color: #daf0fe;
+                margin-top: 0;
+            }
+        }
+
+        #acym__users__listing__number_to_add_to_list, #acym__users__listing__number_to_export {
+            color: inherit;
+        }
+
+        .secondary_status {
+            margin-left: 5px;
+        }
+
+        .acym__listing__header__title__container .acym__listing__header__title:first-of-type {
+            padding-left: 10px;
+        }
+    }
+}

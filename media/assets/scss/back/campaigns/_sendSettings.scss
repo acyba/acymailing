@@ -1,0 +1,99 @@
+#acym_wrapper {
+    #acym__campaign__sendsettings {
+
+        .acym__campaign__sendsettings__params .select2-container--foundation {
+            background-color: transparent;
+            border: 0;
+            border-bottom: 2px solid $medium-gray;
+            color: $font-primary;
+            transition: .2s;
+            transition-property: border;
+            border-radius: 0;
+            margin: 0;
+            box-shadow: none;
+
+            .select2-selection {
+                background-color: transparent;
+                border: 0;
+                border-radius: 0;
+
+                .select2-selection__rendered {
+                    padding: 0 1rem 0 0;
+                }
+            }
+
+            .select2-search__field {
+                background-color: transparent;
+            }
+
+            .select2-selection__choice {
+                background-color: transparent;
+                border: 2px solid $font-primary;
+                color: $font-primary;
+                margin-top: 3px;
+
+                .select2-selection__choice__remove {
+                    color: $font-primary;
+                }
+            }
+
+            &:hover, &:focus {
+                border-bottom: 2px solid $font-primary;
+            }
+        }
+
+        input[type="number"] {
+            height: 2.4375rem;
+        }
+
+        .acym__campaign__sendsettings__suggest {
+            padding: 0 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: $global-radius;
+
+            .acym__campaign__sendsettings__suggest__date {
+                font-weight: bold;
+            }
+
+            .acym__campaign__sendsettings__suggest--choose {
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                color: map-get($foundation-palette, primary);
+
+                &:hover {
+                    color: map-get($foundation-palette, primary-light);
+                }
+            }
+        }
+
+        .acym__campaign__sendsettings__send-type {
+            padding-top: 20px;
+            position: relative;
+
+            button {
+                max-width: 300px;
+            }
+
+        }
+
+        .acym__campaign__sendsettings__save {
+            margin-top: 20px;
+        }
+
+        .acym__campaign__sendsettings__title-settings {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .acym__campaign__sendsettings__label-settings {
+            font-size: 14px;
+        }
+
+        #acym__campaign__sendsettings__scheduled__send-date__label {
+            padding: 8px;
+            padding-left: 0;
+        }
+    }
+}

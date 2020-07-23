@@ -1,0 +1,103 @@
+.acym__color__blue {
+    color: map-get($foundation-palette, primary);
+}
+
+.acym__color__light-blue {
+    color: map-get($foundation-palette, primary-light);
+}
+
+.acym__color__dark-blue {
+    color: $dark-blue;
+}
+
+.acym__color__green {
+    color: map-get($foundation-palette, success);
+}
+
+.acym__color__orange {
+    color: map-get($foundation-palette, warning);
+}
+
+.acym__color__red {
+    color: map-get($foundation-palette, alert);
+}
+
+.acym__color__dark-red {
+    color: $dark-red;
+}
+
+.acym__color__light-gray {
+    color: $light-gray;
+}
+
+.acym__color__medium-gray {
+    color: $medium-gray;
+}
+
+.acym__color__dark-gray {
+    color: $dark-gray;
+}
+
+.acym__color__very-dark-gray {
+    color: $very-dark-gray;
+}
+
+.acym__color__black {
+    color: $black;
+}
+
+.acym__color__white {
+    color: $white;
+}
+
+.acym__background-color__blue {
+    background-color: map-get($foundation-palette, primary);
+}
+
+.acym__background-color__dark-blue {
+    background-color: $dark-blue;
+}
+
+.acym__background-color__green {
+    background-color: map-get($foundation-palette, success);
+}
+
+.acym__background-color__orange {
+    background-color: map-get($foundation-palette, warning);
+}
+
+.acym__background-color__red {
+    background-color: map-get($foundation-palette, alert);
+}
+
+.acym__background-color__dark-red {
+    background-color: $dark-red;
+}
+
+.acym__background-color__light-gray {
+    background-color: $light-gray;
+}
+
+.acym__background-color__medium-gray {
+    background-color: $medium-gray;
+}
+
+.acym__background-color__dark-gray {
+    background-color: $dark-gray;
+}
+
+.acym__background-color__very-dark-gray {
+    background-color: $very-dark-gray;
+}
+
+.acym__background-color__black {
+    background-color: $black;
+}
+
+.acym__background-color__white {
+    background-color: $white;
+}
+
+.acym__background-color__purple {
+    background-color: map-get($foundation-palette, primary-hot);
+}

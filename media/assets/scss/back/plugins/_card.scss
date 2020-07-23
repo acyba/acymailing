@@ -1,0 +1,300 @@
+@import "compass/css3";
+@import "compass/support";
+
+$perspective: 600;
+
+#acym_wrapper {
+    #acym__plugin__available__application, #acym__plugin__installed__application {
+        .acym__plugins__card {
+            @include transform3d(perspective($perspective) rotateY(0));
+            border-radius: 5px;
+            box-shadow: 0 0 8px 3px rgba(100, 100, 100, .1);
+            transition: .3s ease-in-out;
+            transition-property: box-shadow, transform;
+            border: 0;
+            align-content: baseline;
+            position: relative;
+            height: 435px;
+
+            .acym__plugins__button__delete {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                padding: .4rem .6rem;
+                background-color: map-get($foundation-palette, alert);
+                visibility: hidden;
+                transition: opacity .2s;
+                cursor: pointer;
+                z-index: 1101;
+
+                i {
+                    color: $white
+                }
+            }
+
+            &:hover {
+                .acym__plugins__button__delete {
+                    visibility: visible;
+
+                    &:hover {
+                        opacity: .8;
+                    }
+                }
+
+                .acym__plugins__card__image {
+                    img {
+                        transform: scale(1.07);
+                    }
+                }
+            }
+
+            .acym__plugins__card__image {
+                overflow: hidden;
+                height: 180px;
+                position: relative;
+
+                img {
+                    transition: transform .3s ease-in-out;
+                    background: linear-gradient(115deg, #dcefff, transparent);;
+                }
+
+                .acym__plugins__card__params_type {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    border-radius: 0 4px 0 0;
+                    padding: .2rem;
+                    opacity: .9;
+                    font-weight: 500;
+                }
+            }
+
+            .acym__plugins__card__params {
+                padding: .5rem 1rem;
+                height: 100%;
+                max-height: 175px;
+
+                .acym__plugins__card__params__first {
+                    align-items: start;
+
+                    .acym__plugins__card__params__title {
+                        font-size: 1rem;
+                        font-weight: 600;
+                        margin: 0;
+                        height: 35px;
+                    }
+
+                    .acym__plugins__card__params_type {
+                        padding: .2rem;
+                        background-color: #ffab15;
+                        border-radius: 5px;
+                        font-weight: 600;
+                    }
+
+                    .acym__plugins__card__params_features {
+                        margin: 0 .4rem;
+                        font-size: 1.4rem;
+                    }
+                }
+
+                .acym__plugins__card__params_desc {
+                    color: #8a8a8a;
+                    height: 100%;
+                    margin: .5rem 0;
+                    max-height: 130px;
+                    overflow: auto;
+
+                    &.acym__plugins__card__params_desc__overflown {
+                        background: linear-gradient($white 76%, $light-gray);
+                    }
+                }
+
+                .acym__plugins__link {
+                    color: $primary-color;
+
+                    i {
+                        font-size: 1.1rem;
+                    }
+
+                    &:hover {
+                        color: $primary-color;
+                        text-decoration: underline;
+                    }
+                }
+
+                .acym__plugins__settings__toggle {
+                    font-size: 1.1rem;
+                    transition: .2s;
+
+                    &:hover {
+                        transform: rotate(15deg);
+                    }
+                }
+
+                .acym__plugins__card__actions {
+                    margin: 0;
+                    height: 100%;
+                    max-height: 40px;
+                    align-items: flex-end;
+
+                    .switch {
+                        margin: 0;
+
+                        label.switch-paddle {
+                            margin-right: 0;
+                            margin-left: 5px;
+                        }
+                    }
+
+                    .acym__card__loader {
+                        font-size: 1.5rem;
+                    }
+
+                    .acym__plugins__card__not-good-level {
+                        font-size: 1rem;
+                        font-weight: 500;
+                    }
+
+                    .acym__plugins__button {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        cursor: pointer;
+                        font-size: .8rem;
+                        background: white;
+                        border: 2px solid $primary-light-color;
+                        color: $primary-light-color;
+                        border-radius: 4px;
+                        padding: 0;
+                        transition: .2s ease-in-out;
+                        height: 100%;
+
+                        &.acym__plugins__button__purchase {
+                            padding: .5rem;
+                            height: auto;
+                        }
+
+                        &.acym__plugins__button-disabled {
+                            opacity: .3;
+                            cursor: not-allowed;
+
+                            .acym__tooltip__text {
+                                opacity: 1;
+                            }
+                        }
+
+                        .acym__tooltip__text {
+                            color: $white;
+                        }
+
+                        i {
+                            font-size: 1.3rem;
+                            vertical-align: middle;
+                            display: inline-block;
+                        }
+
+                        &.acym__plugins__button__update {
+                            border-color: map-get($foundation-palette, warning);
+                            color: map-get($foundation-palette, warning);
+
+                            span {
+                                color: map-get($foundation-palette, warning);
+                            }
+
+                            .acym_loader_logo svg .acym__svg__loader {
+                                stroke: map-get($foundation-palette, warning);
+                            }
+                        }
+
+                        span {
+                            color: $primary-light-color;
+                            transition: .2s ease-in-out;
+                        }
+
+                        &.active {
+                            color: map-get($foundation-palette, success);
+                            border-color: map-get($foundation-palette, success);
+
+                            i {
+                                color: map-get($foundation-palette, success);
+                            }
+                        }
+
+                        &.deactivate {
+                            color: map-get($foundation-palette, alert);
+                            border-color: map-get($foundation-palette, alert);
+
+                            i {
+                                color: map-get($foundation-palette, alert);
+                            }
+                        }
+
+                        .acym_loader_logo svg {
+                            width: 17px;
+                            height: 17px;
+                        }
+                    }
+
+                    .acym__plugins__card__actions__installed {
+                        margin: 0;
+                    }
+
+                    .acym__plugins__card__actions__label {
+                        font-size: .9rem;
+                    }
+                }
+            }
+
+            &.acym__plugins__card__flip {
+                @include transform3d(perspective($perspective) rotateY(180deg));
+            }
+
+            &.acym__plugins__card__flipped {
+                .acym__plugins__info__container {
+                    display: none;
+                }
+
+                .acym__plugins__settings__container {
+                    display: inline-block;
+                }
+            }
+
+            .acym__plugins__settings__container {
+                padding: .5rem 1rem;
+                transform: rotateY(180deg);
+                display: none;
+
+                label {
+                    margin-right: 10px;
+                }
+
+                input[type="text"] {
+                    margin: 0 !important;
+                }
+
+                .acym__plugins__settings__options__container {
+                    height: 320px;
+                    margin: 10px 0;
+                    overflow-y: auto;
+
+                    .acym__plugins__settings-one {
+                        margin: .7rem 0;
+
+                        .switch {
+                            margin-bottom: 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        .vertical_align {
+            align-items: center;
+            display: flex;
+        }
+
+        .margin-left-1 {
+            margin-left: 1rem;
+        }
+    }
+}

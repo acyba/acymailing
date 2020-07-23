@@ -1,0 +1,88 @@
+button[data-task="save"] i.acymicon-chevron-right {
+    font-size: 15px;
+    margin-left: 5px;
+    line-height: 15px;
+}
+
+ul#workflow {
+    overflow-x: auto;
+    white-space: nowrap;
+    text-align: left;
+    list-style-type: none;
+    margin-left: 0;
+    cursor: default;
+    margin-bottom: 1rem;
+
+    li.step_separator {
+        font-size: 50px;
+        vertical-align: top;
+        color: $light-gray;
+        display: inline-block;
+        margin: 0 .2rem;
+    }
+
+    li.step {
+        display: inline-block;
+
+        &:not(.current_step) a {
+            cursor: pointer;
+        }
+
+        &:not(.disabled_step):hover a {
+            background-color: $light-blue;
+        }
+
+        &.current_step a {
+            color: $dark-blue;
+            background-color: $light-blue;
+            font-weight: 500;
+            border-radius: 4px;
+        }
+
+        &.disabled_step {
+            padding: 15px;
+
+            color: $medium-gray;
+            cursor: default;
+        }
+
+        a {
+            display: block;
+
+            padding: 15px;
+
+            border-radius: 4px;
+            color: $very-dark-gray;
+            transition: .2s;
+        }
+    }
+
+    &.tabs {
+        width: calc(100% - -1.8rem);
+        margin: -0.9rem -0.9rem 2rem;
+        border-radius: 4px 4px 0 0;
+
+        li.step {
+            padding: 15px 30px;
+            height: 60px;
+            line-height: 30px;
+
+            &:first-of-type {
+                border-top-left-radius: 3px !important;
+            }
+
+            &:not(.disabled_step):hover {
+                background-color: $white;
+            }
+
+            &.current_step {
+                background-color: $white;
+                border-radius: 0;
+            }
+
+            &.acy_button_submit {
+                cursor: pointer;
+            }
+        }
+    }
+}

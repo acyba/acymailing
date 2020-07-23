@@ -1,0 +1,114 @@
+input[type="checkbox"] {
+    @supports (-ms-ime-align:auto) {
+        visibility: visible;
+        border: none;
+    }
+    @media screen and (min-width: 0 \0
+    ) {
+        visibility: visible !important;
+    }
+    position: relative;
+    visibility: hidden;
+    cursor: pointer;
+    font-family: 'acymicon' !important;
+    @include appearance('none');
+
+    &:after {
+        @supports (-ms-ime-align:auto) {
+            visibility: hidden;
+        }
+        font-weight: 100;
+        display: block;
+        content: "\e926";
+        position: absolute;
+        visibility: visible;
+        font-size: 23px;
+        padding-left: 10px;
+        color: map-get($foundation-palette, primary);
+        cursor: pointer;
+        top: -9px;
+        left: -10px;
+    }
+
+    &:checked:after {
+        content: "\e925";
+    }
+
+    &:disabled {
+        opacity: 0.4;
+    }
+}
+
+.acym__label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.8;
+    color: $black;
+}
+
+.smaller-checkbox:after {
+    font-size: 25px !important;
+    top: -5px !important;
+}
+
+.acym__input-error {
+    position: absolute;
+    padding: 10px 5px;
+    border-radius: $primary-radius;
+    z-index: 1000000;
+    max-width: 300px;
+    background-color: $white;
+    box-shadow: $primary-box-shadow;
+    margin-top: - $global-margin;
+
+    i {
+        margin: auto 5px auto auto !important;
+        border-radius: 50px;
+        height: 25px;
+        width: 25px;
+        line-height: 25px;
+        text-align: center;
+        font-size: 16px;
+        color: map-get($foundation-palette, alert);
+        background-color: #ffedef;
+    }
+}
+
+[type="checkbox"] + .acym__input-error, [type="radio"] + .acym__input-error {
+    margin-top: 0;
+
+    & + label {
+        display: inline-block;
+        vertical-align: baseline;
+        margin-left: 0.5rem;
+        margin-right: 1rem;
+        margin-bottom: 0;
+    }
+}
+
+input[type="text"].intext_input, input[type="number"].intext_input {
+    width: 60px;
+    display: inline-block;
+    margin-bottom: 0;
+}
+
+input[type="text"].intext_input_large, input[type="email"].intext_input_large {
+    width: 80%;
+    display: inline-block;
+    margin-bottom: 0;
+}
+
+textarea.acym__blue {
+    background-color: $light-blue;
+    border-color: $light-blue;
+    border-radius: 4px;
+    box-shadow: none;
+    font-size: .8rem;
+
+    &:focus {
+        background-color: $light-blue;
+        border-color: map-get($foundation-palette, primary);
+        box-shadow: none;
+    }
+}

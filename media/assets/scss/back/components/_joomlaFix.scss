@@ -1,0 +1,46 @@
+body {
+    @media (max-width: 767px) {
+        &.com_acym {
+            padding-top: 35px;
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+
+    &.com_acym {
+        background-color: $very-light-gray;
+
+        & > header, & > #isisJsData {
+            display: none;
+        }
+
+        .select2-container--foundation .select2-search--dropdown .select2-search__field {
+            height: inherit;
+        }
+
+        #acym_wrapper [type='checkbox']:checked:before {
+            display: none;
+        }
+    }
+
+    .container-main {
+        padding: 0;
+    }
+
+    @media (max-width: 639px) {
+        .navbar-fixed-top .brand {
+            padding-left: 160px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .navbar-fixed-top {
+            position: fixed;
+            margin: inherit;
+        }
+    }
+
+    #subhead {
+        display: none;
+    }
+}

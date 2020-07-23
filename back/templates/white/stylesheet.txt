@@ -1,0 +1,19 @@
+h2 {
+  text-transform: uppercase;
+}
+#acym__wysid__template a {
+  cursor: pointer;
+  color: #5eb4d1;
+  text-decoration: none;
+  border: none;
+}
+#acym__wysid__template span a .acym_online, #acym__wysid__template span a .acym_unsubscribe {
+  color: #cecece;
+}
+#acym__wysid__template a.acymailing_readmore_link {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  color: #5eb4d1;
+  text-decoration: underline;
+}

@@ -1,0 +1,135 @@
+#acym__popup__plugin__subscription__lists__modal {
+    .pagination_one_pagination {
+        padding: 3px 15px;
+        margin-top: 3px;
+    }
+
+    .pagination-previous, .pagination-next {
+        margin-top: 0;
+    }
+}
+
+.acym__select__pagination {
+    width: 80px !important;
+    margin: 0 .3rem;
+}
+
+.pagination_input {
+    margin: 0 0 .2rem 0 !important;
+}
+
+.pagination {
+    margin-top: 10px;
+    user-select: none;
+    height: 38px;
+
+    .pagination_container {
+        background-color: inherit;
+        box-shadow: $listing-box-shadow;
+        border-radius: 5px;
+
+        #acym_pagination {
+            max-width: 100px;
+        }
+
+        .pagination_disabled {
+            cursor: not-allowed;
+            opacity: 0.3;
+
+            &:hover {
+                cursor: not-allowed !important;
+                opacity: 0.3 !important;
+            }
+        }
+
+        .pagination_text {
+            font-size: .9rem;
+            margin-left: .5rem;
+            margin-bottom: 0;
+        }
+
+        .pagination_border_left {
+            display: inline-block;
+            border-left: 1px solid $light-gray;
+            height: 80%;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .pagination_border_right {
+            display: inline-block;
+            border-left: 1px solid $light-gray;
+            height: 80%;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .pagination_one_pagination {
+            display: inline-block;
+            border-radius: 5px;
+            padding: 5px 15px;
+            margin-top: 1px;
+
+            &:hover {
+                cursor: pointer;
+                opacity: 0.8;
+            }
+
+            .pagination__i {
+                vertical-align: middle;
+            }
+
+            a {
+                padding: 0;
+
+                &:hover {
+                    background-color: inherit;
+                }
+            }
+        }
+
+        .pagination-turbo-right i:last-child {
+            margin-left: -17px;
+        }
+
+        .pagination-turbo-left i:first-child {
+            margin-right: -17px;
+        }
+
+        .pagination-turbo-left, .pagination-turbo-right i {
+            color: $primary-color;
+        }
+
+        .pagination-previous, .pagination-next {
+            color: $primary-color;
+
+            &:before {
+                display: none;
+            }
+
+            &:after {
+                display: none;
+            }
+
+            .acym__pagination__page {
+                padding: 0;
+                color: $primary-color;
+
+                &:before {
+                    display: none;
+                }
+
+                &:after {
+                    display: none;
+                }
+            }
+        }
+
+        @media screen and (max-width: 640px) {
+            .pagination_one_pagination {
+                padding: 3px 6px;
+            }
+        }
+    }
+}
+

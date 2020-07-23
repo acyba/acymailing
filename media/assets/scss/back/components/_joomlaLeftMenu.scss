@@ -1,0 +1,121 @@
+//TODO align vertically the logo on mobile
+.admin {
+    #system-message-container {
+        margin: 0 20px 0 215px;
+    }
+
+    .notify-alerts {
+        z-index: 1000000;
+    }
+}
+
+#acym_wrapper {
+    #acym__joomla__left-menu {
+        padding-bottom: 40px;
+        position: fixed;
+        left: 0;
+        height: 100%;
+        background-color: $font-primary;
+        overflow-y: auto;
+
+        a {
+            display: block;
+            padding: 15px 15px 15px 15px;
+            font-size: 15px;
+            color: $white;
+
+            i {
+                font-size: 24px;
+                width: 24px;
+                display: inline-block;
+            }
+
+            span {
+                color: $white;
+                vertical-align: super;
+                margin-left: 15px;
+            }
+
+            .acym__joomla__left-menu__fa {
+                vertical-align: text-top;
+            }
+        }
+    }
+
+    @media screen and (max-width: 639px) {
+        #acym__joomla__left-menu--show {
+            position: fixed;
+            z-index: 1100;
+            top: 0;
+            left: 10px;
+            margin-left: 45px;
+            padding: 0 10px;
+            background-color: #2f3d45;
+
+            #acym__joomla__left-menu--burger {
+                font-size: 25px;
+                color: $white;
+                margin-top: 3px;
+            }
+
+            .acym-logo {
+                background: url(../images/logo_acym.svg) no-repeat;
+                display: inline-block;
+                width: 25px;
+                height: 25px;
+                margin-right: 10px;
+            }
+        }
+        #acym__joomla__left-menu {
+            #acym__joomla__left-menu--toggle {
+                display: none;
+            }
+
+            display: none;
+            width: 100%;
+            z-index: 67000;
+
+            #acym__joomla__left-menu--close {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                font-size: 30px;
+            }
+        }
+        #acym_content {
+            width: 100%;
+        }
+    }
+    @media screen and (min-width: 640px) {
+        #acym__joomla__left-menu--show {
+            display: none;
+        }
+        #acym__joomla__left-menu {
+            width: $menu-joomla-width;
+
+            #acym__joomla__left-menu--toggle:hover {
+                transition: .2s;
+                background-color: $dark-gray;
+            }
+
+            margin-top: -20px;
+
+            a {
+                transition: .2s;
+
+                span {
+                    display: none;
+                }
+
+                &:hover, &.acym__joomla__left-menu--current {
+                    background-color: $dark-gray;
+                }
+            }
+        }
+        #acym_content:not(.popup_size), .acym_no_foundation {
+            width: calc(100% - #{$menu-joomla-width});
+            margin-left: $menu-joomla-width;
+            margin-bottom: 100px;
+        }
+    }
+}

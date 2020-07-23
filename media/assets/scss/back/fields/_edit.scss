@@ -1,0 +1,64 @@
+#acym_wrapper {
+    #acym__fields__edit {
+        .acym__fields__value__sortable {
+            padding: 20px 10px 0 20px;
+        }
+
+        .acym__fields__edit__section__title {
+            position: relative;
+
+            &:first-of-type {
+                padding-top: 0 !important;
+
+                &:before {
+                    display: none;
+                }
+            }
+
+            &:before {
+                content: "";
+                position: absolute;
+                left: calc(50% - 25%);
+                border-top: 1px solid $light-gray;
+                width: 50%;
+            }
+
+            padding-top: 1.5rem;
+        }
+
+        .acym__listing {
+            margin-bottom: 0;
+        }
+
+        .select2-container--foundation {
+            z-index: 1007;
+        }
+
+        .acym__fields__edit__field__general {
+            .acym_fields__vertical__center {
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        .acym__field__sortable__listing__handle {
+            margin-top: 14px;
+            display: inline-table;
+
+            i {
+                line-height: 5px;
+                font-size: 14px;
+            }
+        }
+
+        .acym__field__delete__value {
+            margin-top: 6px;
+        }
+
+        .acym__fields__change {
+            .acym__fields__values__listing__sortable .acym__fields__value__sortable {
+                margin-left: 0;
+            }
+        }
+    }
+}

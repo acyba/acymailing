@@ -1,0 +1,155 @@
+#acym_wrapper {
+    #acym__wysid__context__plugins {
+        font-size: 0.8rem;
+
+        label {
+            font-size: 0.8rem;
+        }
+
+        .tabs-panel {
+            padding: 0;
+        }
+
+        .acym__wysid__context__modal__container {
+            label {
+                margin-bottom: 0;
+            }
+        }
+
+        .tabs {
+            background-color: $white;
+            position: relative;
+            padding: .2rem;
+            border: 0;
+
+            .tabs-title > a {
+                border-radius: 4px;
+                padding: .6rem;
+                margin: 0 .2rem;
+                transition: .2s;
+
+                &:hover {
+                    color: map-get($editor-wysid-palette, primary-ui);
+                }
+
+                &[aria-selected=true], &:focus {
+                    color: $white;
+                    box-shadow: 0 0 3px 1px rgba(0, 0, 0, .18);
+                    background-color: map-get($editor-wysid-palette, primary-ui);
+                }
+            }
+        }
+
+        .tabs-content {
+            width: 100%;
+            border: 0;
+        }
+
+        .acym__wysid__right__toolbar__p {
+            margin-top: 1rem !important;
+        }
+
+        [type=radio] + label {
+            margin-left: 0;
+            margin-right: 0.5rem;
+        }
+
+        .plugin_category_select, .plugin_category_select + .select2-container--foundation {
+            width: 150px !important;
+        }
+
+        .acym__wysid__right__toolbar__design [type=number] {
+            margin: 0;
+        }
+
+        .acym__popup__listing {
+            padding: 0 0.5rem;
+
+            &#plugin_listing {
+                max-height: 200px;
+                overflow-y: auto;
+            }
+
+            .plugin_listing_headers {
+                padding: .4rem;
+
+                .plugin_listing_headers__title {
+                    font-weight: 500;
+                }
+            }
+
+            .acym__listing__row__popup {
+                cursor: pointer;
+                padding: 0.4rem;
+                box-shadow: none;
+                border-radius: 0;
+                margin-top: 0;
+                margin-bottom: 0;
+                border-bottom: 1px solid $light-gray;
+
+                &:hover {
+                    background-color: $light-gray;
+                }
+
+                &.selected_row {
+                    background-color: #d2d2d2;
+                }
+            }
+
+            .acymicon-warning {
+                margin-right: 5px;
+                font-size: 12px;
+                color: #c58a0f;
+            }
+
+            .acym__listing__title__dynamics {
+                font-size: 15px;
+            }
+        }
+
+        .acym__listing__row {
+            cursor: pointer;
+        }
+
+        .acym_plugin_options {
+            padding: 0 20px;
+        }
+
+        input[type="number"] {
+            width: 60px;
+        }
+
+        select {
+            width: 200px;
+            max-width: 100%;
+        }
+
+        .acy_date_picker {
+            width: 200px;
+        }
+
+        .acym_plugin_text_field {
+            width: 60px;
+        }
+
+        .acym_plugin__larger_text_field {
+            width: 200px;
+        }
+
+        .acym_plugin_field {
+            padding: 0;
+
+            & + div {
+                padding-left: 1rem;
+            }
+
+            &.acym_plugin_field_select + div .select2 {
+                width: 100%;
+            }
+
+            .acym_plugin_field_min > i {
+                color: orange;
+            }
+        }
+    }
+}

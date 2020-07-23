@@ -1,0 +1,75 @@
+.acym__front__archive {
+    .acym__front__archive__modal {
+        position: fixed;
+        z-index: 10000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .acym__front__archive__modal__content {
+        background-color: #ffffff;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 60%;
+        height: 80%;
+    }
+
+    .acym__front__archive__modal__close {
+
+        width: 100%;
+
+        display: inline-block;
+
+        span {
+            color: #aaa;
+            float: right;
+            font-size: 25px;
+            font-weight: bold;
+
+            &:hover, &:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .acym__front__archive__modal__iframe {
+        width: 100%;
+        height: 90%;
+        border: none;
+
+        &.acym__front__not_connected_user {
+            height: 83%;
+        }
+    }
+
+    .acym__front__archive__newsletter_name {
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .acym__front__archive__newsletter_sending-date {
+        color: #8a8a8a;
+        font-size: 11px;
+    }
+
+    .acym__front__archive__title {
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+}
+
+.widget-area {
+    .acym__front__archive__title {
+        display: none;
+    }
+}

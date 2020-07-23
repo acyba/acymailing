@@ -1,0 +1,34 @@
+body {
+    #acym_wrapper {
+        .input-group {
+            flex-wrap: inherit;
+        }
+
+        @media print, screen and (min-width: 40em) {
+            .medium-text-left {
+                text-align: left !important;
+            }
+        }
+
+        a[target="_blank"]::before {
+            content: '';
+        }
+    }
+
+    &.com_acym {
+        &.layout-edit .sidebar-wrapper .no-dropdown:hover {
+            cursor: pointer;
+            background-color: #3073bb;
+        }
+
+        .container-main {
+            &::before, &::after {
+                background: $very-light-gray;
+            }
+        }
+
+        .col-md-12 {
+            padding: 0;
+        }
+    }
+}

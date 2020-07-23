@@ -1,0 +1,28 @@
+#acym_wrapper {
+    &.campaigns_edit_email {
+        a#acym__campaigns__attach__add {
+            color: $primary-color;
+        }
+
+        button.acym__campaign__attach__button {
+            padding: 10px 15px;
+        }
+
+        .acym__campaigns__attachments__already {
+            line-height: 2.1em;
+            word-break: break-word;
+        }
+
+        .acym__campaigns__attach__elements {
+            margin-top: 0.5rem;
+        }
+
+        .acy_selected_attachment {
+            line-height: 3em;
+        }
+
+        .acym__campaigns__attach__remove {
+            cursor: pointer;
+        }
+    }
+}

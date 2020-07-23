@@ -1,0 +1,211 @@
+div.acym_module_error {
+    color: #400;
+    background-color: #fdd;
+    padding: 1em !important;
+    margin-bottom: 10px;
+}
+
+div.acym_module_success {
+    color: #130;
+    background-color: #dfc;
+    padding: 1em !important;
+    z-index: 10;
+    margin-bottom: 10px;
+}
+
+.acym_module_form {
+    .acyfield_date div.cell {
+        display: inline-block;
+        max-width: 100%;
+
+        &.medium-3 {
+            max-width: 25%;
+        }
+
+        &.medium-5 {
+            max-width: 41%;
+        }
+
+        &.medium-4 {
+            max-width: 33%;
+        }
+    }
+
+    .onefield {
+        margin: 10px 0;
+
+        label div.cell, textarea {
+            max-width: 100%;
+        }
+    }
+
+    label {
+        max-width: 100%;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    input {
+        cursor: pointer;
+        max-width: 90%;
+
+        &[type="radio"] {
+            margin: 0 5px;
+        }
+    }
+
+    // Joomla modal system
+
+    div.modal {
+        position: fixed;
+        top: 5%;
+        left: 50%;
+        z-index: 10050;
+        width: 80%;
+        margin-left: -40%;
+        background-color: #fff;
+        border: 1px solid #999;
+        border-radius: 6px;
+        box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+        background-clip: padding-box;
+        outline: none;
+    }
+
+    div.modal.fade {
+        transition: opacity .3s linear, top .3s ease-out;
+        top: 5%;
+    }
+
+    .fade.in {
+        opacity: 1;
+    }
+
+    div.modal.jviewport-width80 {
+        width: 80vw;
+        margin-left: -40vw;
+    }
+
+    .hide {
+        display: none;
+    }
+
+    .fade {
+        -webkit-transition: opacity .15s linear;
+        -moz-transition: opacity .15s linear;
+        -o-transition: opacity .15s linear;
+        transition: opacity .15s linear;
+    }
+
+    button.close {
+        cursor: pointer;
+        background: transparent;
+        border: 0;
+        -webkit-appearance: none;
+    }
+
+    .close {
+        float: right;
+        font-size: 20px;
+        font-weight: bold;
+        line-height: 18px;
+        color: #000;
+        text-shadow: 0 1px 0 #ffffff;
+        opacity: 0.2;
+        filter: alpha(opacity=20);
+    }
+
+    .modal-header {
+        padding: 9px 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .modal-header .close {
+        margin-top: 2px;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        line-height: 30px;
+    }
+
+    .modal-body {
+        width: 98%;
+        position: relative;
+        max-height: 400px;
+        padding: 1%;
+    }
+
+    .modal-body iframe {
+        width: 100%;
+        max-height: none;
+        border: 0 !important;
+    }
+
+    .modal-form {
+        margin-bottom: 0;
+    }
+
+    .modal-footer {
+        padding: 14px 15px 15px;
+        margin-bottom: 0;
+        text-align: right;
+        background-color: #f5f5f5;
+        border-top: 1px solid #ddd;
+        -webkit-border-radius: 0 0 6px 6px;
+        -moz-border-radius: 0 0 6px 6px;
+        border-radius: 0 0 6px 6px;
+        -webkit-box-shadow: inset 0 1px 0 #fff;
+        -moz-box-shadow: inset 0 1px 0 #fff;
+        box-shadow: inset 0 1px 0 #fff;
+        *zoom: 1;
+    }
+
+    .modal-footer:before,
+    .modal-footer:after {
+        display: table;
+        content: "";
+        line-height: 0;
+    }
+
+    .modal-footer:after {
+        clear: both;
+    }
+
+    .modal-footer .btn + .btn {
+        margin-left: 5px;
+        margin-bottom: 0;
+    }
+
+    .modal-footer .btn-group .btn + .btn {
+        margin-left: -1px;
+    }
+
+    .modal-footer .btn-block + .btn-block {
+        margin-left: 0;
+    }
+}
+
+div.modal {
+    z-index: 10050;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10040;
+    background-color: #000;
+}
+
+.modal-backdrop.fade {
+    visibility: hidden;
+}
+
+.modal-backdrop,
+.modal-backdrop.fade.in {
+    visibility: visible;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+}

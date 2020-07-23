@@ -1,0 +1,201 @@
+#acym_wrapper {
+    #acym__walkthrough {
+
+        #acym__walkthrough__list {
+            #acym__walkthrough__list__receivers {
+                display: inline-table;
+                max-width: 370px;
+
+                th, td {
+                    padding: 0.4rem;
+                }
+
+                .acym__walkthrough__list__receivers__remove {
+                    font-size: 0.8rem;
+                    cursor: pointer;
+                }
+            }
+
+            label[for="acym__walkthrough__list__new-address"] {
+                display: inline-block;
+            }
+
+            #acym__walkthrough__list__new-address {
+                display: inline-block;
+                text-align: left;
+                width: 200px;
+                margin: 0 0.5rem;
+            }
+        }
+
+
+        .acym__walk-through__step {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .acym__walk_through__back {
+            margin-bottom: 10px;
+
+            i {
+                vertical-align: baseline;
+                font-size: 15px;
+            }
+
+            span {
+                font-size: 15px;
+                margin-left: 5px;
+            }
+        }
+
+        .acym__walkthrough__title__welcome {
+            font-weight: bold;
+            font-size: 2.4rem;
+        }
+
+        .acym__walkthrough__title__subwelcome {
+            font-size: 1.5rem;
+        }
+
+        .acym__walkthrough__title {
+            font-weight: bold;
+            font-size: 1.6rem;
+        }
+
+        .acym__walkthrough__sub-title {
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .acym__walk-through__content__save {
+            margin-top: 40px;
+        }
+
+        .acym__walk-through__content__label {
+            margin-top: 20px;
+            margin-bottom: 7px;
+        }
+
+        .acym__walk-through__content__title {
+            font-weight: bold;
+            font-size: 23px;
+        }
+
+        .acym__walkthrough__content {
+            margin-top: 40px;
+            position: relative;
+
+            #acym__walkthrough__skip {
+                position: absolute;
+                font-size: .8rem;
+                top: 10px;
+                right: 10px;
+                cursor: pointer;
+                font-weight: 500;
+            }
+
+            #acym__wysid__edit {
+                height: 500px;
+
+                #acym__wysid__preview__iframe__acym__wysid__email__preview {
+                    height: 400px;
+                }
+
+                #acym__wysid__email__preview {
+                    padding-bottom: 400px;
+                    box-shadow: 0 0 15px 2px #c7c7c7;
+                }
+
+                #acym__wysid__edit__preview {
+                    height: 440px;
+                }
+
+                #acym__wysid__edit__button {
+                    background-color: $light-blue;
+                    color: $primary-color;
+                    padding: 0.05em 1em;
+                    width: auto;
+                }
+            }
+        }
+
+        .acym__walkthrough__section {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: $global-margin;
+        }
+
+        .acym__walkthrough__section__help {
+            margin-right: 1rem;
+            margin-left: 2rem;
+            color: $dark-gray;
+        }
+
+        .acym__walkthrough__text {
+            font-size: 1rem;
+        }
+
+        .acym__walkthrough__fail__label {
+            font-size: .9rem;
+            font-weight: 600;
+            color: $font-primary;
+        }
+
+        .acym__walkthrough__fail__choice {
+            font-size: .9rem;
+            font-weight: 600;
+            color: $medium-gray;
+            transition: color .2s ease;
+            cursor: pointer;
+            text-decoration: underline;
+
+            &.selected {
+                color: $primary-color;
+            }
+        }
+
+        #acym__walkthrough__success__img {
+            width: 250px;
+        }
+
+        #acym__walkthrough__result__choice {
+            .acym__walkthrough__result__choice__one {
+                cursor: pointer;
+                transition: 0.2s ease;
+                opacity: 0.3;
+
+                i {
+                    font-size: 5rem;
+                    line-height: 1;
+                }
+
+                &:hover, &.selected {
+                    opacity: 1;
+
+                    &#acym__walkthrough__result__choice__yes {
+                        color: $success-color;
+                    }
+
+                    &#acym__walkthrough__result__choice__no {
+                        color: $alert-color;
+                    }
+                }
+            }
+        }
+
+        #acym__walkthrough__result__spam {
+            visibility: hidden;
+            transform: translateY(-20px);
+            transition: transform 0.2s ease-in, 0.16s visibility;
+
+            &.visible {
+                visibility: visible;
+                transform: translateY(20px);
+            }
+
+            p {
+                font-weight: 600;
+            }
+        }
+    }
+}

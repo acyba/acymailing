@@ -1,0 +1,166 @@
+input[type="number"] {
+    height: 1.8rem;;
+    line-height: 1.5;
+    color: $font-primary;
+    appearance: none;
+    border: none;
+    border-bottom: 2px solid $light-gray;
+    background-color: transparent;
+    border-radius: 0;
+    text-align: center;
+    box-shadow: none;
+
+    &:hover, &:focus {
+        border: none;
+        border-bottom: 2px solid $primary-light-color;
+        background-color: transparent;
+        box-shadow: none;
+        color: $primary-light-color;
+    }
+}
+
+.input-group {
+    margin-bottom: 0;
+}
+
+input[type=search].select2-search__field {
+    border-radius: 0;
+
+    &:hover, &:active, &:focus {
+        border-radius: 0;
+    }
+}
+
+select[multiple] {
+    height: 41px;
+    visibility: hidden;
+}
+
+.acym_radio_group {
+    input[type="radio"] {
+        display: none;
+    }
+
+    i.acym_radio_checked, i.acym_radio_unchecked {
+        cursor: pointer;
+        color: $primary-color;
+        height: 27px;
+        width: 27px;
+        vertical-align: middle;
+    }
+
+    &.dcontent_pictures {
+        display: inline-block;
+    }
+}
+
+[type='radio'] {
+    margin: .3rem 0 .5rem;
+}
+
+[type="checkbox"] {
+    margin: 0 !important;
+}
+
+input[type='text'], input[type='email'], input[type='tel'], textarea, input[type='password'] {
+    background-color: $light-blue;
+    border-color: $light-blue;
+    border-radius: $primary-radius;
+    box-shadow: none;
+    font-size: 0.8rem;
+
+
+    &.acym__light__input, &.acym__light__input {
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
+        border-bottom: 2px solid $light-gray;
+        color: $font-primary;
+
+        &:hover, &:focus {
+            background-color: transparent;
+            border-bottom-color: $primary-color;
+        }
+    }
+
+    &:focus {
+        background-color: $light-blue;
+        border-color: map-get($foundation-palette, primary);
+        box-shadow: none;
+    }
+}
+
+.input-group {
+    & > :first-child {
+        border-radius: $primary-radius 0 0 $primary-radius;
+    }
+
+    & :last-child {
+        border-radius: 0 $primary-radius $primary-radius 0;
+    }
+}
+
+#acym__wysid__context__follow {
+    color: map-get($editor-wysid-palette, primary-ui);
+    background-color: $white;
+
+    select {
+        margin-bottom: 0;
+        color: map-get($editor-wysid-palette, primary-ui);
+        border-color: $white;
+        background-color: $white;
+        box-shadow: none;
+    }
+
+    .input-group {
+        margin-bottom: 0;
+        color: map-get($editor-wysid-palette, primary-ui);
+        border-color: $white;
+        background-color: $white;
+        box-shadow: none;
+    }
+
+    .input-group-label {
+        border-color: $white;
+        background-color: $white;
+    }
+
+    .select2-container .select2-selection--single {
+        height: 39px;
+        border-radius: $primary-radius;
+        background-color: map-get($editor-wysid-palette, secondary);
+        text-align: center;
+        outline: 0;
+        border: none;
+    }
+
+    .select2-container--default .select2-selection--single {
+        .select2-selection__rendered {
+            line-height: 39px;
+            z-index: 67000;
+
+            span {
+                font-size: 18px;
+                margin-left: -8px;
+                color: map-get($editor-wysid-palette, primary-ui);
+            }
+        }
+
+        .select2-selection__arrow {
+            height: 37px;
+        }
+    }
+
+}
+
+@media screen and (min-width: 640px) {
+    .acym__search-field {
+        border-radius: 0 $primary-radius $primary-radius 0;
+    }
+}
+
+@media screen and (max-width: 639px) {
+    .input-group :last-child {
+        border-radius: $primary-radius;
+    }
+}

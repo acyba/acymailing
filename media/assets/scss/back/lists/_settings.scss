@@ -1,0 +1,116 @@
+#acym__list__settings {
+    button.acym_template_option {
+        padding: 5px 15px;
+        width: 100%;
+        border: 4px dashed transparent;
+        cursor: pointer;
+    }
+
+    #acym__list__settings__list-id, #acym__lists__settings__list-color {
+        font-size: 1rem;
+        @media screen and (max-width: 639px) {
+            line-height: inherit;
+            margin-bottom: 1rem;
+        }
+    }
+
+    .acym__list__settings__subscriber__nb {
+        .acym__list__settings__subscriber__nb__display {
+            font-size: 1rem;
+        }
+    }
+
+    .acym__list__button__add__mail {
+        .acym__list__button__add__mail__disabled {
+            font-size: 70px;
+            color: #e3e3e3;
+        }
+    }
+
+    .acym__list__settings__tmpls {
+        min-height: 320px;
+
+        .acym__list__settings__tmpls__welcome {
+            border-right: 2px solid $very-light-gray;
+            border-left: 2px solid $very-light-gray;
+        }
+
+        .acym__list__settings__tmpls__title {
+            border-bottom: 2px solid $very-light-gray;
+
+            label {
+                font-weight: 500;
+                cursor: default;
+            }
+        }
+    }
+
+    .acym__list__settings__subscribers {
+        .acym__listing {
+            .acym__listing__header__title:first-child {
+                padding-left: 0;
+            }
+
+            .acym__listing__row {
+                padding: 0.6rem 1rem;
+            }
+        }
+
+        .acym__list__settings__subscribers__users--action {
+            text-align: right;
+            cursor: pointer;
+
+            i {
+                line-height: 22px;
+                font-size: 22px;
+                vertical-align: middle;
+                color: map-get($foundation-palette, alert);
+            }
+
+            span {
+                margin-left: 5px;
+                color: map-get($foundation-palette, alert);
+            }
+        }
+
+        .acym__list__settings__subscribers__listing {
+            height: 25rem;
+            overflow: auto;
+            align-content: baseline;
+        }
+
+        .acym__list__subscribers__loading {
+            svg {
+                width: 30px;
+                height: 30px;
+
+                .acym__svg__loader {
+                    fill: none;
+                    stroke: $primary-color;
+                    stroke-width: 15px;
+                    stroke-dasharray: 500;
+                    animation: dash 3.5s linear infinite;
+                }
+            }
+
+            .acym__list__subscribers__loading__title {
+                font-size: 1.2rem;
+                font-weight: 500;
+            }
+        }
+    }
+
+    @media screen and (max-width: 639px) {
+        .acym__list__settings__subscriber__nb__display {
+            margin-top: 0.5rem;
+        }
+        .acym__list__settings__tmpls .acym__list__settings__tmpls__welcome {
+            border-left: none;
+            border-right: none;
+        }
+
+        .acym__list__settings__tmpls .acym__list__settings__tmpls__title {
+            border-bottom: none;
+        }
+    }
+}

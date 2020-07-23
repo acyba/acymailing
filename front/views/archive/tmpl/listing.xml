@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="ACYM_MENU_ARCHIVE">
+		<message>ACYM_MENU_ARCHIVE_DESC</message>
+	</layout>
+	<fields name="params" addfieldpath="/components/com_acym/params">
+		<fieldset name="basic">
+			<field name="archiveNbNewsletters" type="archive" min="0" default="0" label="ACYM_NUMBER_CAMPAIGNS_TO_DISPLAY" description="ACYM_ZERO_ALL"/>
+			<field name="lists" type="lists" default="" label="ACYM_LISTS" description="ACYM_LISTS_ARCHIVE"/>
+			<field name="popup" type="radio" default="1" label="ACYM_ARCHIVE_POPUP" description="ACYM_ARCHIVE_POPUP_DESC">
+				<option value="0">ACYM_NO</option>
+				<option value="1">ACYM_YES</option>
+			</field>
+		</fieldset>
+	</fields>
+</metadata>

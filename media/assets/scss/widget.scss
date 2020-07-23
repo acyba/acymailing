@@ -1,0 +1,30 @@
+.acyblock {
+    margin: 10px 0;
+
+    .widget-top {
+        cursor: pointer !important;
+    }
+
+    &.widget:not(.open) .toggle-indicator:before {
+        content: "\f140" !important;
+    }
+
+    .acyWPconfig {
+        font-weight: bold;
+        display: block;
+    }
+
+    .acym_radio_group {
+        input[type="radio"] {
+            margin-top: 0;
+        }
+
+        label {
+            margin-right: 6px;
+        }
+
+        i.acym_radio_checked, i.acym_radio_unchecked {
+            display: none;
+        }
+    }
+}

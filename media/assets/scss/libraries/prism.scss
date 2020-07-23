@@ -1,0 +1,181 @@
+#acym_wrapper {
+    /**
+ * prism.js tomorrow night eighties for JavaScript, CoffeeScript, CSS and HTML
+ * Based on https://github.com/chriskempson/tomorrow-theme
+ * @author Rose Pritchard
+ */
+
+    .prism-editor-wrapper code {
+        font-family: inherit;
+        line-height: inherit
+    }
+
+    .prism-editor-wrapper {
+        width: 100%;
+        height: 100%;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: start;
+        -ms-flex-align: start;
+        align-items: flex-start;
+        overflow: auto;
+        -o-tab-size: 1.5em;
+        tab-size: 1.5em;
+        -moz-tab-size: 1.5em
+    }
+
+    .prism-editor__line-numbers {
+        height: 100%;
+        overflow: hidden;
+        -ms-flex-negative: 0;
+        flex-shrink: 0;
+        padding-top: 4px;
+        margin-top: 0
+    }
+
+    .prism-editor__line-number {
+        text-align: right;
+        white-space: nowrap
+    }
+
+    .prism-editor__code {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        -webkit-box-flex: 2;
+        -ms-flex-positive: 2;
+        flex-grow: 2;
+        min-height: 100%;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        -o-tab-size: 4;
+        tab-size: 4;
+        -moz-tab-size: 4;
+        outline: none;
+
+        code {
+            border: none !important;
+        }
+    }
+
+    pre.prism-editor__code:focus {
+        outline: none
+    }
+
+    code[class*="language-"],
+    pre[class*="language-"] {
+        color: #ccc;
+        background: none;
+        font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        text-align: left;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        line-height: 1.5;
+
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+
+        -webkit-hyphens: none;
+        -moz-hyphens: none;
+        -ms-hyphens: none;
+        hyphens: none;
+
+    }
+
+    /* Code blocks */
+    pre[class*="language-"] {
+        padding: 1em;
+        margin: .5em 0;
+        overflow: auto;
+    }
+
+    :not(pre) > code[class*="language-"],
+    pre[class*="language-"] {
+        background: #2d2d2d;
+    }
+
+    /* Inline code */
+    :not(pre) > code[class*="language-"] {
+        padding: .1em;
+        border-radius: .3em;
+        white-space: normal;
+    }
+
+    .token.comment,
+    .token.block-comment,
+    .token.prolog,
+    .token.doctype,
+    .token.cdata {
+        color: #999;
+    }
+
+    .token.punctuation {
+        color: #ccc;
+    }
+
+    .token.tag,
+    .token.attr-name,
+    .token.namespace,
+    .token.deleted {
+        color: #e2777a;
+    }
+
+    .token.function-name {
+        color: #6196cc;
+    }
+
+    .token.boolean,
+    .token.number,
+    .token.function {
+        color: #f08d49;
+    }
+
+    .token.property,
+    .token.class-name,
+    .token.constant,
+    .token.symbol {
+        color: #f8c555;
+    }
+
+    .token.selector,
+    .token.important,
+    .token.atrule,
+    .token.keyword,
+    .token.builtin {
+        color: #cc99cd;
+    }
+
+    .token.string,
+    .token.char,
+    .token.attr-value,
+    .token.regex,
+    .token.variable {
+        color: #7ec699;
+    }
+
+    .token.operator,
+    .token.entity,
+    .token.url {
+        color: #67cdcc;
+    }
+
+    .token.important,
+    .token.bold {
+        font-weight: bold;
+    }
+
+    .token.italic {
+        font-style: italic;
+    }
+
+    .token.entity {
+        cursor: help;
+    }
+
+    .token.inserted {
+        color: green;
+    }
+}

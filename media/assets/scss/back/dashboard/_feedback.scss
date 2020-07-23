@@ -1,0 +1,39 @@
+#acym_wrapper {
+    #acym__feedback {
+        padding: 0 !important;
+
+        #acym__feedback__header {
+            min-height: 200px;
+            background: linear-gradient(90deg, #00efff, #00a4ff);
+            border-radius: 4px;
+
+            i {
+                font-size: 80px;
+            }
+
+            h1 {
+                font-weight: bold;
+                font-size: 3rem;
+                color: $white;
+            }
+        }
+
+        h2 {
+            font-weight: 500;
+            font-size: 2rem;
+        }
+
+        p {
+            font-size: 1rem;
+        }
+
+        .button {
+            height: auto;
+
+            i {
+                vertical-align: middle;
+                margin-right: 1rem;
+            }
+        }
+    }
+}

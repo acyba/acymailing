@@ -1,0 +1,38 @@
+#acym__lists {
+    .acym__lists__clean {
+        font-size: 12px;
+        font-weight: 400;
+        padding: 6px 6px 12px 9px;
+
+        div {
+            padding: 2px 1px;
+
+            &:first-child {
+                border-radius: 20px 0 0 20px;
+            }
+
+            &:last-child {
+                border-radius: 0 20px 20px 0;
+            }
+        }
+    }
+
+    #acym__lists__listing__number_to_export {
+        color: inherit;
+    }
+
+    .secondary_status {
+        margin-left: 5px;
+    }
+
+    .acym__listing {
+        .acym__listing__title {
+            .acym__listing__title__secondary {
+                overflow: hidden;
+                line-height: 1;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+}

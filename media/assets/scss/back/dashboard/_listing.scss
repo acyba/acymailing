@@ -1,0 +1,140 @@
+#acym_wrapper {
+
+    #acym__dashboard {
+
+        .acym__dashboard__card {
+            margin-left: 0;
+
+            .acym__dashboard__one-card {
+                position: relative;
+                display: inline-block;
+                margin-top: 20px;
+
+                .acym__dashboard__card__picto {
+                    border-radius: 100px;
+                    height: 150px;
+                    width: 150px;
+                    display: inline-block;
+
+                    i {
+                        font-size: 90px;
+                        transform: translateY(33%);
+                        display: inline-block;
+                        line-height: 1;
+                    }
+                }
+
+                .acym__dashboard__card__picto__audience {
+                    background-color: #E5F6FE;
+
+                    .acym__dashboard__card__icon__audience {
+                        color: #00A3FE;
+                    }
+                }
+
+                .acym__dashboard__card__picto__campaigns {
+                    background-color: #ECFDF3;
+
+                    .acym__dashboard__card__icon__campaigns {
+                        color: #3DEA91;
+                    }
+                }
+
+                .acym__dashboard__card__picto__automation {
+                    background-color: #FEEEEF;
+
+                    .acym__dashboard__card__icon__automation {
+                        color: #FF5059;
+                    }
+                }
+
+                .acym__dashboard__card__title {
+                    font-size: 30px;
+                    margin-top: 20px;
+                }
+
+                hr {
+                    margin-top: 25px;
+                }
+
+                .acym__dashboard__card__link {
+                    display: block;
+                    font-size: 20px;
+                    margin-top: 30px;
+                    transition: 0.2s;
+
+                    .acym__dashboard__card__link__unclickable {
+                        user-select: none;
+                        color: $dark-gray;
+                    }
+
+                    &:hover {
+                        color: $dark-gray;
+                    }
+                }
+            }
+        }
+
+        .acym__dashboard__active-campaigns {
+            position: relative;
+            margin-top: 30px;
+            margin-bottom: 30px;
+
+            .acym__dashboard__active-campaigns__title {
+                font-size: 1.5rem;
+                font-weight: bold;
+                display: block;
+                text-align: left;
+            }
+
+            .acym__dashboard__active-campaigns__none {
+                text-align: center;
+                font-size: 17px;
+            }
+
+            .acym__dashboard__active-campaigns__one-campaign {
+                padding: 20px 0 20px 0;
+
+                .acym__dashboard__active-campaigns__one-campaign__title {
+                    font-size: 16px;
+                }
+
+                .acym__dashboard__active-campaigns__one-campaign__state {
+                    border-radius: 5px;
+                    font-weight: bold;
+                    line-height: 21px;
+                    max-height: 25px;
+
+                    span {
+                        color: $white;
+                        font-weight: 500;
+                        vertical-align: sub;
+                    }
+                }
+
+                .acym__dashboard__active-campaigns__one-campaign__action {
+                    font-size: 16px;
+                    cursor: pointer;
+                }
+            }
+        }
+
+        @media screen and(max-width: 639px) {
+            .acym__dashboard__active-campaigns__one-campaign {
+                text-align: center;
+
+                .acym__dashboard__active-campaigns__one-campaign__title, .acym__dashboard__active-campaigns__one-campaign__action {
+                    padding: 20px 0 20px 0;
+                }
+            }
+        }
+
+        @media screen and(min-width: 639px) {
+            .acym__dashboard__active-campaigns__one-campaign__action {
+                font-size: 16px;
+                text-align: right;
+                cursor: pointer;
+            }
+        }
+    }
+}

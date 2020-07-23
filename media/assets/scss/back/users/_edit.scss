@@ -1,0 +1,112 @@
+#acym_wrapper {
+    #acym__user__edit {
+        .acym__user__edit__custom__fields .grid-margin-x {
+            margin: 0;
+        }
+
+        .acym__users__display__click {
+            max-height: 200px;
+        }
+
+        .acym__users__creation__fields__title {
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .acym__listing__header__title {
+            font-weight: 600;
+        }
+
+        .acym__users__creation__fields__checkbox {
+            margin-left: 13px;
+        }
+
+        .acym__users__display__list__name {
+            h6 {
+                display: inline-block;
+                margin-left: 10px;
+                word-break: break-all;
+            }
+
+            i {
+                line-height: 22px;
+                font-size: 22px;
+                vertical-align: sub;
+            }
+        }
+
+        .acym__users__display__list--action {
+            text-align: right;
+            cursor: pointer;
+
+            i {
+                line-height: 22px;
+                font-size: 22px;
+                vertical-align: middle;
+                color: map-get($foundation-palette, alert);
+            }
+
+            span {
+                margin-left: 5px;
+                color: map-get($foundation-palette, alert);
+            }
+        }
+
+        .acym__users__display__delete__icon {
+            line-height: 0;
+            vertical-align: inherit;
+            margin-left: 0;
+        }
+
+        .acym__users__display__subscriptions--list {
+            margin-top: 2em;
+
+            .button {
+                margin: 0;
+            }
+        }
+
+        #acym__button--delete {
+            color: $white;
+        }
+
+        .history_details {
+            cursor: pointer;
+        }
+
+        #acym__listing__header__user_history {
+            margin-left: 5px;
+        }
+
+        #acym__users__display__history__listing {
+            max-height: 240px;
+            overflow: auto;
+            margin-left: 5px;
+
+            .acym__listing__row {
+                margin-top: 2px;
+                margin-bottom: 2px;
+                padding: .7rem 0;
+                border-bottom: 1px solid $light-gray;
+                border-radius: 0;
+                box-shadow: none;
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+
+        @media screen and (max-width: 639px) {
+            .acym__users__display__delete {
+                padding-top: 1em;
+            }
+
+            .modal__pagination__button-open {
+                margin-right: 0 !important;
+            }
+
+            .acym__users__display__list--action, .acym__users__display__click {
+                margin-top: $global-margin;
+            }
+        }
+    }
+}

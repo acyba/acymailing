@@ -1,0 +1,63 @@
+#acym_wrapper {
+    .acym__toggle__arrow {
+        .acym__toggle__arrow__trigger {
+            font-size: 16px;
+            color: $primary-light-color;
+            font-weight: 500;
+            cursor: pointer;
+            -webkit-user-select: none;
+
+            i {
+                vertical-align: middle;
+            }
+        }
+
+        .acym__toggle__arrow__contain {
+            display: none;
+        }
+    }
+
+    #acym__template__choose__modal {
+        width: 75%;
+        padding-top: 1rem !important;
+
+        @media screen and (min-width: 1024px) {
+            .acym__template__choose__list {
+                max-height: 600px;
+                overflow-y: auto;
+            }
+        }
+    }
+
+    .acym__mail__edit__type__label {
+        font-size: .875rem;
+    }
+
+    .acym__mail__edit__type {
+
+    }
+
+    .acym__template__edit__choose-template__ajax {
+        margin-top: 20px;
+    }
+
+    #acym__wysid__edit__button {
+        i {
+            margin-right: 5px;
+        }
+    }
+
+    @media screen and (max-width: 639px) {
+        #acym__template__choose__modal {
+            width: 100%;
+        }
+    }
+
+    #acym__editor__content {
+        @media screen and (max-width: 639px) {
+            .acym__editor__content__options > div {
+                padding: 0;
+            }
+        }
+    }
+}

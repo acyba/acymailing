@@ -1,0 +1,60 @@
+#acym_wrapper {
+    #campaigns_tests_step {
+        margin-bottom: 4rem;
+
+        .acym_zone_title {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .acym_zone_separator {
+            border-right: 1px solid $light-gray;
+        }
+    }
+
+    #spam_test_zone {
+        i {
+            font-size: 24px;
+        }
+
+        #launch_spamtest {
+            margin: .5rem 0 1rem 0;
+
+            &.acym_icon_disabled {
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+
+        .acym_icon_green {
+            color: #6ee89f;
+        }
+
+        .acym_icon_blue {
+            color: #0179d3;
+        }
+
+        .acym_icon_red {
+            color: #fb5e5e;
+        }
+
+        .acym_clickable {
+            cursor: pointer;
+        }
+
+        .acym__campaigns__tests__starter {
+            .acym_check_results {
+                display: none;
+            }
+        }
+
+        #safe_check_results > div.acym_vcenter {
+            min-height: 30px;
+        }
+
+        .acym_check_results {
+            padding: 10px;
+            word-wrap: break-word;
+        }
+    }
+}

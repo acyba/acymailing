@@ -1,0 +1,49 @@
+@mixin enqueueMessage($type) {
+    @if $type == 'info' {
+        border-left: 4px solid map-get($foundation-palette, primary-hot);
+    } @else if $type == 'warning' {
+        border-left: 4px solid map-get($foundation-palette, warning);
+    } @else {
+        border-left: 4px solid map-get($foundation-palette, alert);
+    }
+}
+
+.acym__message {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: $white;
+    box-shadow: $primary-box-shadow;
+    border-radius: 4px;
+
+    &.acym__message__info {
+        @include enqueueMessage('info');
+    }
+
+    &.acym__message__warning {
+        @include enqueueMessage('warning');
+    }
+
+    &.acym__message__error {
+        @include enqueueMessage('error');
+    }
+
+    p {
+        color: $font-primary;
+    }
+
+    i.acym__message__close {
+        font-size: 16px;
+        cursor: pointer;
+
+        &:hover {
+            color: $medium-gray;
+        }
+    }
+}
+
+.warning-message {
+    background-color: map_get($foundation-palette, warning);
+    font-weight: bold;
+    padding: 10px;
+    margin: 2px 0;
+}

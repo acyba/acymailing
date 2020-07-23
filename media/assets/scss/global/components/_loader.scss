@@ -1,0 +1,20 @@
+@keyframes dash {
+    to {
+        stroke-dashoffset: 5000;
+    }
+}
+
+.acym_loader_logo {
+    svg {
+        width: 25px;
+        height: 25px;
+
+        .acym__svg__loader {
+            fill: none;
+            stroke: $primary-color;
+            stroke-width: 15px;
+            stroke-dasharray: 500;
+            animation: dash 3.5s linear infinite;
+        }
+    }
+}

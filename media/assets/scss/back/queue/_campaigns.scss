@@ -1,0 +1,103 @@
+#acym_wrapper {
+    #acym__queue {
+        .queue_lists i.acym_subscription {
+            float: none;
+
+            &.acymicon-plus-circle {
+                font-size: 22px;
+                cursor: pointer;
+            }
+        }
+
+        .acym__listing .acym__listing__header .acym__listing__header__title:first-child {
+            padding-left: 0;
+        }
+
+        .acym__listing__title {
+            max-width: 90%;
+        }
+
+        .acym__listing__title, .acym__listing__title__primary, .acym__listing__title__secondary {
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .progress_bar {
+            margin-left: auto;
+            margin-right: auto;
+            width: 180px;
+            padding: 4px;
+            text-align: center;
+            position: relative;
+            height: 26px;
+            border-radius: 6px;
+
+            .progress_bar_text {
+                position: absolute;
+                left: 0;
+                right: 0;
+            }
+
+            .progress_bar_left {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+            }
+
+            &.acym_status_scheduled {
+                background-color: #9b9b9b;
+
+                .progress_bar_text span {
+                    color: white;
+                }
+            }
+
+            &.acym_status_sending {
+                border: 1px solid map-get($foundation-palette, success);
+
+                .progress_bar_left {
+                    background-color: map-get($foundation-palette, success);
+                }
+            }
+
+            &.acym_status_ready, &.acym_status_paused {
+                border: 1px solid #ffab15;
+
+                .progress_bar_left {
+                    background-color: #ffab15;
+                }
+            }
+        }
+
+        .acym_action_buttons {
+            margin-left: auto;
+
+            i {
+                color: #9b9b9b;
+                margin-left: 10px;
+                cursor: pointer;
+            }
+        }
+
+        i.acym_delete_queue {
+            line-height: 0;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+
+        .acym_sendnow {
+
+            button {
+                margin-top: 10px;
+                cursor: pointer;
+            }
+
+            i.acymicon-paper-plane {
+                font-size: 18px;
+                vertical-align: middle;
+                color: #9b9b9b;
+            }
+        }
+    }
+}

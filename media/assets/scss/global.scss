@@ -1,0 +1,30 @@
+@import "settings";
+
+#acym_wrapper {
+
+    box-sizing: border-box;
+
+    .acym_area {
+        padding: 1.5rem;
+    }
+
+    .acym__content {
+        background-color: $white;
+        padding: 0.9rem;
+        border-radius: $border-radius;
+        box-shadow: $primary-box-shadow;
+
+        .acy_coming_soon_icon {
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        .acy_coming_soon {
+            color: $dark-blue;
+        }
+    }
+}
+
+.is-hidden {
+    display: none !important;
+}

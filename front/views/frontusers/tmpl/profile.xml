@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="ACYM_MENU_PROFILE">
+		<message>ACYM_MENU_PROFILE_DESC</message>
+	</layout>
+	<fields name="params" addfieldpath="/components/com_acym/params">
+		<fieldset name="basic">
+			<field name="lists" type="lists" default="All" label="ACYM_VISIBLE_LISTS" description="ACYM_VISIBLE_LISTS_DESC"/>
+			<field name="listschecked" type="lists" default="All" label="ACYM_LISTS_CHECKED_DEFAULT" description="ACYM_LISTS_CHECKED_DEFAULT_DESC"/>
+			<field name="dropdown" type="radio" default="0" label="ACYM_DROPDOWN_LISTS" description="ACYM_DROPDOWN_LISTS_DESC">
+				<option value="0">ACYM_NO</option>
+				<option value="1">ACYM_YES</option>
+			</field>
+			<field name="hiddenlists" type="lists" default="None" label="ACYM_AUTO_SUBSCRIBE_TO" description="ACYM_AUTO_SUBSCRIBE_TO_DESC"/>
+			<field name="fields" type="fields" default="1,2" label="ACYM_FIELDS_TO_DISPLAY" description="ACYM_FIELDS_TO_DISPLAY_DESC"/>
+			<field name="introtext" type="textarea" rows="5" cols="35" default="" label="ACYM_INTRO_TEXT" description="ACYM_INTRO_TEXT_DESC" filter="SAFEHTML"/>
+			<field name="posttext" type="textarea" rows="5" cols="35" default="" label="ACYM_POST_TEXT" description="ACYM_POST_TEXT_DESC" filter="SAFEHTML"/>
+		</fieldset>
+	</fields>
+</metadata>

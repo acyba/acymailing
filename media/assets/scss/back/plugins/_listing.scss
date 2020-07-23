@@ -1,0 +1,19 @@
+#acym_wrapper {
+    .acym__plugin__available__loader__page {
+        .acym_loader_logo svg {
+            width: 100px;
+            height: 100px;
+        }
+    }
+
+    #acym__plugin__installed__application {
+        .acym__plugin__installed__application__download__now {
+            font-size: 1.2rem;
+            color: $primary-color;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

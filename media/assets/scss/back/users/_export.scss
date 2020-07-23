@@ -1,0 +1,24 @@
+#acym_wrapper {
+    #acym__users__export {
+        #acym__users__export__select_all {
+            font-size: 1rem;
+        }
+
+        #acym__users__export__check_default_field,
+        #acym__users__export__check_all_field,
+        #acym__users__export__check_all_list,
+        #acym__users__export__check_none_list {
+            cursor: pointer;
+            color: map-get($foundation-palette, secondary);
+
+            &:hover {
+                color: $black;
+            }
+        }
+
+        .acym__users__export__labels {
+            user-select: none;
+        }
+    }
+}
+

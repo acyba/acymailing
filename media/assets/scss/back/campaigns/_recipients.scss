@@ -1,0 +1,87 @@
+#acym_wrapper {
+    #acym__campaigns__recipients {
+        .acym__campaigns__recipients__modal {
+            position: relative;
+
+            .acym__entity_select__available, .acym__entity_select__selected {
+                margin-bottom: 1rem;
+            }
+        }
+
+        .acym__campaigns__recipients__show-selected {
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .acym__campaign__recipients__listing__lists {
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-x: hidden;
+        }
+
+        .acym__campaign__recipients__listing__lists__in-form {
+
+            .acym__campaign__recipients__list {
+                padding: 5px;
+            }
+
+            label {
+                line-height: 22px;
+
+                span:first-of-type {
+                    line-height: 22px;
+                    font-weight: bold;
+                    font-size: 16px;
+                    vertical-align: middle;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    display: block;
+                }
+            }
+
+            i {
+                vertical-align: inherit;
+                margin: 0 8px;
+                line-height: 22px;
+            }
+
+        }
+
+        .acym__campaign__recipients__search-list {
+            margin-top: 15px;
+        }
+
+        .acym__campaign__recipients__number-display {
+            min-height: 30px;
+        }
+
+        .acym__campaign__recipients__save-button {
+            margin-top: 15px;
+        }
+
+        .acym__campaign__recipients__search {
+            position: relative;
+        }
+
+        .acym__campaign__recipients__search-icon {
+            margin-top: -4px;
+            position: absolute;
+            right: 0;
+            cursor: pointer;
+        }
+
+        @media screen and (max-width: 639px) {
+            .acym__campaign__recipients__save-button__quit {
+                margin-top: 15px;
+            }
+        }
+
+
+        .acym__campaign__recipients__number-recipients {
+            i {
+                font-size: 20px;
+            }
+        }
+    }
+}

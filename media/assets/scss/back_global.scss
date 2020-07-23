@@ -1,0 +1,59 @@
+@import "compass/css3";
+@import "compass/support";
+@import "vendor/foundation";
+@import "back/components";
+@import "global/components";
+// Load select2 CSS
+@import "libraries/select2";
+
+
+.acym_no_foundation {
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+#acym_wrapper {
+
+    @include foundation-everything-acyba;
+
+    background-color: $very-light-gray;
+    padding: 20px;
+    color: $font-primary;
+
+    * {
+        outline: 0;
+    }
+
+    .acym_area {
+        background-color: $white;
+        box-shadow: 0 0 15px 2px #ebebeb;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 5px;
+
+        .acym_area_title {
+            color: map-get($foundation-palette, primary);
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: $global-margin;
+        }
+    }
+
+    .word-break {
+        word-wrap: break-word;
+    }
+
+    @media screen and (max-width: 639px) {
+        padding: 0;
+        border-radius: 0;
+    }
+}
+
+
+#acym__reviews__footer {
+    margin: 0 0 30px 30px;
+
+    #acym__reviews__footer__link i {
+        display: contents;
+    }
+}

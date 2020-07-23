@@ -1,0 +1,39 @@
+@import 'vendor/foundation-sites/scss/util/util';
+//variables
+@import "settings/global";
+@import "settings/colors";
+
+@include add-foundation-colors;
+
+@import "settings/font";
+@import "settings/abide";
+@import "settings/menu";
+@import "settings/accordion";
+@import "settings/badge";
+@import "settings/breadcrumbs";
+@import "settings/breakpoint";
+@import "settings/button";
+@import "settings/callout";
+@import "settings/card";
+@import "settings/drilldown";
+@import "settings/typography";
+@import "settings/dropdown";
+@import "settings/flexbox";
+@import "settings/grid";
+@import "settings/form";
+@import "settings/foundation_element";
+@import "settings/pagination";
+@import "settings/progress_bar";
+@import "settings/reveal";
+@import "settings/slider";
+@import "settings/switch";
+@import "settings/table";
+@import "settings/tabs";
+@import "settings/thumbnail";
+@import "settings/title_top_bar";
+
+
+//mixin
+@import "settings/mixin_align";
+
+

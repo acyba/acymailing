@@ -1,0 +1,59 @@
+#acym_wrapper {
+    .acym__plugins__installed__custom-view {
+        height: 100%;
+
+        .acym__plugins__installed__custom-view__edit-container {
+            height: 600px;
+
+            .acym__plugins__installed__custom-view__editor-loader {
+                position: absolute;
+                @include acym_set_position();
+                background-color: rgba(0, 0, 0, 0.5);
+
+                .acym_loader_logo svg {
+                    width: 80px;
+                    height: 80px;
+                }
+            }
+
+            .acym__plugins__installed__custom-view__code {
+                border-radius: 5px;
+            }
+
+            .acym__plugins__installed__custom-view__tags {
+                align-content: baseline;
+                border-radius: 5px;
+                border: 2px solid $medium-gray;
+                padding: 0.8rem;
+                height: 100%;
+                overflow-x: hidden;
+                overflow-y: auto;
+
+                .acym__plugins__installed__custom-view__tag {
+                    padding: .4rem;
+                    transition: .2s;
+                    border-bottom: 1px solid $light-gray;
+                    cursor: pointer;
+                    overflow-x: hidden;
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+
+                    &:hover {
+                        background-color: $light-gray;
+                    }
+                }
+            }
+        }
+
+
+        .acym__plugins__installed__custom-view__loading {
+            height: 100%;
+        }
+
+        .button {
+            margin: 0;
+        }
+    }
+}
