@@ -51,9 +51,9 @@ class plgAcymArticle extends acymPlugin
         $format = new stdClass();
         $format->tag = $tag;
         $format->title = '{title}';
-        $format->afterTitle = '';
+        $format->afterTitle = '{picthtml}';
         $format->afterArticle = '';
-        $format->imagePath = '{picthtml}';
+        $format->imagePath = '';
         $format->description = '{intro}';
         $format->link = '{link}';
         $format->customFields = [];

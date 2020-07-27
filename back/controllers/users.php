@@ -857,6 +857,13 @@ class UsersController extends acymController
             }
             acym_setVar('id', $userId);
         } else {
+            $existingUser = $this->currentClass->getOneByEmail($user->email);
+            if (!empty($existingUser) && $existingUser->id != $userId) {
+                acym_enqueueMessage(acym_translation_sprintf('ACYM_X_ALREADY_EXIST', $user->email), 'error');
+                $this->edit();
+
+                return;
+            }
             $user->id = $userId;
             $this->currentClass->save($user, $customFields);
         }

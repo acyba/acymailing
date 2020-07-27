@@ -32,7 +32,7 @@ const acym_helperPreview = {
         newContent += '<div class="cell auto"></div>';
         newContent += '<div class="acym__fadeout"></div>';
         newContent += '<i class="acymicon-keyboard_arrow_down acym__preview__extend acym__preview__toggle acym__preview-toggle"></i>';
-        newContent += '<i class="acymicon-unsorted acym__preview-toggle acym__preview__toggle__top"></i>';
+        newContent += '<i class="acymicon-sort acym__preview-toggle acym__preview__toggle__top"></i>';
 
         jQuery('#' + where).html(newContent);
 

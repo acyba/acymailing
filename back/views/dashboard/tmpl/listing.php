@@ -17,7 +17,7 @@
 			<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('mails&task=edit&type_editor=acyEditor'); ?>"><?php echo acym_translation('ACYM_CREATE_TEMPLATE'); ?></a>
 		</div>
 		<div class="cell acym__content acym__dashboard__one-card text-center grid-x">
-			<div class="acym__dashboard__card__picto__automation acym__dashboard__card__picto"><i class="acymicon-gears acym__dashboard__card__icon__automation"></i></div>
+			<div class="acym__dashboard__card__picto__automation acym__dashboard__card__picto"><i class="acymicon-cog acym__dashboard__card__icon__automation"></i></div>
 			<h1 class="acym__dashboard__card__title"><?php echo acym_translation('ACYM_AUTOAMTION'); ?></h1>
 			<hr class="cell small-10">
 			<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('automation&task=listing'); ?>"><?php echo acym_translation('ACYM_VIEW_ALL_AUTOMATIONS'); ?></a>

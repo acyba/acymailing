@@ -97,7 +97,7 @@ class acyActivation extends acyHook
         $updateHelper->installNotifications();
         // Only install the templates if it is the first install
         if (!$installClass->update) {
-            $updateHelper->installTemplates();
+            $updateHelper->installTemplates(true);
         }
         $updateHelper->installFields();
         $updateHelper->installAdminNotif();

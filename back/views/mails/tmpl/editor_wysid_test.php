@@ -1,6 +1,6 @@
 <div id="acym__wysid__send__test" class="cell grid-y" style="display: flex">
 	<div class="cell text-center margin-bottom-3 margin-top-1">
-		<i class="acymicon-send-o acym__wysid__send__test__icon"></i>
+		<i class="acymicon-paper-plane-o acym__wysid__send__test__icon"></i>
 		<div class="acym__wysid__send__test__icon__loader"><?php echo acym_loaderLogo(); ?></div>
 	</div>
 	<i class="acymicon-close acym__wysid__send__test-close"></i>
