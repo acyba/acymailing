@@ -6,7 +6,6 @@ This is the code of the AcyMailing Starter version.
 
 ### Requirements
 
-- NodeJs
 - npm
 - PHP 5.6
 
