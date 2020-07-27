@@ -1,7 +1,7 @@
 <div id="acym__wysid__top-toolbar" class="grid-x cell">
 	<div class="cell grid-x" id="acym__wysid__top-toolbar__actions">
 		<div class="cell grid-x align-left small-4 acym_vcenter ">
-			<i id="acym__wysid__top-toolbar__undo" class="cell shrink acymicon-undo acym__wysid__top-toolbar__icon"></i>
+			<i id="acym__wysid__top-toolbar__undo" class="cell shrink acymicon-rotate-left acym__wysid__top-toolbar__icon"></i>
 			<p class="cell shrink">|</p>
 			<i id="acym__wysid__top-toolbar__redo" class="cell shrink acymicon-repeat acym__wysid__top-toolbar__icon"></i>
 		</div>
@@ -15,9 +15,9 @@
             $ctrl = acym_getVar('cmd', 'ctrl', 'dashboard');
             if (acym_isAdmin() && 'campaigns' === $ctrl) {
                 ?>
-				<button id="acym__wysid__saveastmpl__button" type="button" class="cell small-6 medium-shrink margin-bottom-0 margin-right-0"><i class="acymicon-save acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_SAVE_AS_TMPL'); ?>"></i></button>
+				<button id="acym__wysid__saveastmpl__button" type="button" class="cell small-6 medium-shrink margin-bottom-0 margin-right-0"><i class="acymicon-floppy-o acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_SAVE_AS_TMPL'); ?>"></i></button>
             <?php } ?>
-			<button id="acym__wysid__test__button" type="button" class="cell small-6 medium-shrink margin-bottom-0"><i class="acymicon-send-o acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_SEND_TEST'); ?>"></i></button>
+			<button id="acym__wysid__test__button" type="button" class="cell small-6 medium-shrink margin-bottom-0"><i class="acymicon-paper-plane-o acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_SEND_TEST'); ?>"></i></button>
 			<p class="acym__color__white margin-bottom-0 margin-right-1" style="font-size: 26px">|</p>
 			<button id="acym__wysid__cancel__button" type="button" class="cell small-6 medium-shrink margin-bottom-0 margin-right-1"><i class="acymicon-ban acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_CANCEL'); ?>"></i></button>
 			<button id="acym__wysid__save__button" type="button" class="cell small-6 medium-shrink margin-bottom-0"><i class="acymicon-check-circle acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_APPLY'); ?>"></i></button>

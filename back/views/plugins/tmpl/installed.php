@@ -47,7 +47,7 @@
 									<div class="cell grid-x acym_vcenter acym__plugins__card__params__first">
 										<h2 class="cell medium-10 acym__plugins__card__params__title">{{ plugin.title }}</h2>
 										<a target="_blank" :href="documentationUrl(plugin.folder_name)" class="acym__plugins__link cell medium-1"><i class="acymicon-book"></i></a>
-										<i v-if="plugin.settings" @click="toggleSettings(plugin.folder_name)" class="acymicon-gear cell shrink acym__plugins__settings__toggle cursor-pointer"></i>
+										<i v-if="plugin.settings" @click="toggleSettings(plugin.folder_name)" class="acymicon-cog cell shrink acym__plugins__settings__toggle cursor-pointer"></i>
 									</div>
 									<div ref="plugins" :class="isOverflown(index)" class="acym__plugins__card__params_desc cell" v-html="plugin.description"></div>
 									<div v-if="plugin.core == 0" class="acym__plugins__card__actions cell grid-x acym_vcenter" v-show="rightLevel(plugin.level)">

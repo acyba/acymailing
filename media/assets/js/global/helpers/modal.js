@@ -189,7 +189,7 @@ const acym_helperModal = {
         }
     },
     setClearButtonStartFrom: function () {
-        jQuery('.acym__search-clear').off('click').on('click', function () {
+        jQuery('.modal__pagination__search .acym__search-clear').off('click').on('click', function () {
             jQuery('input[name="mailchoose_search__ajax"]').val('');
             jQuery('#acym_search_template_choose__ajax').val('');
             acym_helperModal.setAjaxAndResetPaginationStartFrom();
