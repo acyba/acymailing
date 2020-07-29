@@ -6,7 +6,7 @@ define('ACYM_COMPONENT', 'acymailing');
 define('ACYM_DEFAULT_LANGUAGE', 'en-US');
 
 define('ACYM_BASE', '');
-// On wordpress.com, websites have access restrictions on the base folder. According to they we need $_SERVER['DOCUMENT_ROOT'] instead of the standard ABSPATH
+// On wordpress.com, websites have access restrictions on the base folder. According to them we need $_SERVER['DOCUMENT_ROOT'] instead of the standard ABSPATH
 $acyAbsPath = ABSPATH;
 if (!empty($_SERVER['DOCUMENT_ROOT'])) {
     $docRoot = $_SERVER['DOCUMENT_ROOT'];
@@ -456,7 +456,7 @@ function acym_getLanguages($installed = false)
 
     $result = [];
 
-    require_once ACYM_ROOT.'wp-admin/includes/translation-install.php';
+    require_once ABSPATH.'wp-admin/includes/translation-install.php';
     $wplanguages = wp_get_available_translations();
     $languages = get_available_languages();
     foreach ($languages as $oneLang) {
@@ -708,7 +708,7 @@ function acym_loadLanguageFile($extension, $basePath = null, $lang = null, $relo
         $acymLanguages[$acymLanguages['currentLanguage']][$extension][$key] = trim(implode('=', $keyval), "\"\r\n\t ");
     }
 
-    if ($language == ACYM_DEFAULT_LANGUAGE) return;
+    if (!empty($acymLanguages[ACYM_DEFAULT_LANGUAGE])) return;
 
     $data = acym_fileGetContent($base.ACYM_DEFAULT_LANGUAGE.'.'.$extension.'.ini');
     $data = str_replace('"_QQ_"', '"', $data);
@@ -1503,7 +1503,8 @@ function acym_languageOption($emailLanguage, $name)
     return '';
 }
 
-function acym_coreAddons(){
+function acym_coreAddons()
+{
     return [
         (object)[
             'title' => acym_translation('ACYM_ARTICLE'),

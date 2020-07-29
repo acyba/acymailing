@@ -3,7 +3,6 @@
     <?php
     $isEmpty = empty($data['allMails']) && empty($data['search']) && empty($data['tag']) && empty($data['status']);
     if (!$isEmpty) {
-        include acym_getView('mails', 'listing_actions');
         $data['toolbar']->displayToolbar($data);
     }
     ?>
@@ -14,7 +13,7 @@
 				<h1 class="acym__listing__empty__subtitle cell"><?php echo acym_translation('ACYM_CREATE_AN_AMAZING_TEMPLATE_WITH_OUR_AMAZING_EDITOR'); ?></h1>
 				<div class="medium-3"></div>
 				<div class="medium-6 small-12 cell">
-                    <?php include acym_getView('mails', 'listing_actions'); ?>
+                    <?php include acym_getView('mails', 'listing_empty'); ?>
 				</div>
 				<div class="medium-3"></div>
 			</div>
