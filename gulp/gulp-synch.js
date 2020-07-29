@@ -12,7 +12,7 @@ let minifyCSS = require('gulp-cssmin');
 let multidest = require('gulp-multi-dest');
 let babel = require('gulp-babel');
 
-let version = '6.13.0';
+let version = '6.13.1';
 
 let minifyJSOptions = {
     ext: {

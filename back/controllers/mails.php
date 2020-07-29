@@ -54,6 +54,10 @@ class MailsController extends acymController
         // Prepare the pagination
         $pagination->setStatus($matchingMails['total'], $page, $mailsPerPage);
 
+        ob_start();
+        require acym_getView('mails', 'listing_import');
+        $templateImportView = ob_get_clean();
+
         $mailsData = [
             'allMails' => $matchingMails['elements'],
             'allTags' => acym_get('class.tag')->getAllTagsByType('mail'),
@@ -64,6 +68,7 @@ class MailsController extends acymController
             'status' => $status,
             'mailNumberPerStatus' => $matchingMails['status'],
             'orderingSortOrder' => $orderingSortOrder,
+            'templateImportView' => $templateImportView,
         ];
 
         if (!empty($mailsData['tag'])) {
@@ -72,6 +77,7 @@ class MailsController extends acymController
             ];
         }
 
+        $this->prepareToolbar($mailsData);
         parent::display($mailsData);
 
         return;
@@ -85,7 +91,7 @@ class MailsController extends acymController
         $toolbarHelper->addButton(acym_translation('ACYM_ADD_DEFAULT_TMPL'), ['data-task' => 'installDefaultTmpl', 'id' => 'acym__mail__install-default'], 'content_copy');
         $otherContent = acym_modal(
             '<i class="acymicon-download"></i>'.acym_translation('ACYM_IMPORT'),
-            $data['templateTips'],
+            $data['templateImportView'],
             null,
             '',
             'class="acym__toolbar__button acym__toolbar__button-secondary cell medium-6 large-shrink" data-reload="true" data-ajax="false"'
