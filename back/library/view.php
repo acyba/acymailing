@@ -49,7 +49,7 @@ class acymView extends acymObject
         if (ACYM_CMS === 'wordpress') echo ob_get_clean();
 
         // Load the needed scripts and styles
-        if (ACYM_CMS !== 'wordpress' || ($name === 'frontusers' && $view === 'unsubscribe') || !defined('DOING_AJAX') || !DOING_AJAX) {
+        if (ACYM_CMS !== 'wordpress' || ($name === 'frontusers' && ($view === 'unsubscribe' || $view === 'unsubscribepage')) || !defined('DOING_AJAX') || !DOING_AJAX) {
             acym_loadAssets($name, $view);
             $controller->loadScripts($view);
         }

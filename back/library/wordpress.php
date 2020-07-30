@@ -54,7 +54,7 @@ define('ACYM_CORE_DYNAMICS_URL', plugins_url().'/'.ACYM_COMPONENT.'/back/dynamic
 define('ACYM_DYNAMICS_URL', ACYM_UPLOADS_URL.'addons/');
 define('ACYM_ADDONS_FOLDER_PATH', ACYM_UPLOADS_PATH.'addons'.DS);
 
-define('ACYM_MEDIA_FOLDER', str_replace(ACYM_ROOT, '', WP_PLUGIN_DIR).'/'.ACYM_COMPONENT.'/media');
+define('ACYM_MEDIA_FOLDER', str_replace([ABSPATH, ACYM_ROOT], '', WP_PLUGIN_DIR).'/'.ACYM_COMPONENT.'/media');
 define('ACYM_UPLOAD_FOLDER_THUMBNAIL', WP_CONTENT_DIR.DS.'uploads'.DS.ACYM_COMPONENT.DS.'thumbnails'.DS);
 define('ACYM_CUSTOM_PLUGIN_LAYOUT', ACYM_UPLOADS_PATH.'plugins'.DS);
 define('ACYM_LOGS_FOLDER', ACYM_WP_UPLOADS.'logs'.DS);
