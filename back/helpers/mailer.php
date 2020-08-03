@@ -352,6 +352,8 @@ class acymmailerHelper extends acyPHPMailer
             $result = false;
         }
 
+        $this->mailHeader = '';
+
         $receivers = [];
         foreach ($this->to as $oneReceiver) {
             $receivers[] = $oneReceiver[0];
@@ -459,10 +461,10 @@ class acymmailerHelper extends acyPHPMailer
     }
 
     /**
-     * @param $mailId   the Id of the acym_mail row
-     * @param $user     Can be the user Id, an email address or the user object
-     * @param $isTest   If we send a test
-     * @param $testNote Message added at the top of the sent test
+     * @param $mailId   Int the Id of the acym_mail row
+     * @param $user     Mixed Can be the user Id, an email address or the user object
+     * @param $isTest   Boolean If we send a test
+     * @param $testNote String Message added at the top of the sent test
      *
      * @return bool
      * @throws acyException
