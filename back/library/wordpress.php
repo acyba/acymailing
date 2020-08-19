@@ -24,7 +24,7 @@ define('ACYM_FOLDER', WP_PLUGIN_DIR.DS.ACYM_COMPONENT.DS);
 define('ACYM_FRONT', ACYM_FOLDER.'front'.DS);
 define('ACYM_BACK', ACYM_FOLDER.'back'.DS);
 define('ACYM_VIEW', ACYM_BACK.'views'.DS);
-define('ACYM_PARTIAL_TOOLBAR', ACYM_BACK.'partial'.DS.'toolbar'.DS);
+define('ACYM_PARTIAL', ACYM_BACK.'partial'.DS);
 define('ACYM_VIEW_FRONT', ACYM_FRONT.'views'.DS);
 define('ACYM_HELPER', ACYM_BACK.'helpers'.DS);
 define('ACYM_CLASS', ACYM_BACK.'classes'.DS);
@@ -609,18 +609,7 @@ function acym_getLanguageTag($simple = false)
         $currentLocale = get_locale();
     }
 
-    if (strpos($currentLocale, '-') === false) {
-        global $acyWPLangCodes;
-        if (empty($acyWPLangCodes[$currentLocale])) {
-            if (strpos($currentLocale, '_') === false) {
-                $currentLocale = $currentLocale.'-'.strtoupper($currentLocale);
-            } else {
-                $currentLocale = str_replace('_', '-', $currentLocale);
-            }
-        } else {
-            $currentLocale = $acyWPLangCodes[$currentLocale];
-        }
-    }
+    $currentLocale = convertWPLocaleToAcyLocale($currentLocale);
 
     global $acymLanguages;
     if (!isset($acymLanguages['currentLanguage']) || $acymLanguages['currentLanguage'] !== $currentLocale) {
@@ -699,13 +688,14 @@ function acym_loadLanguageFile($extension, $basePath = null, $lang = null, $relo
     $data = acym_fileGetContent($base.$language.'.'.$extension.'.ini');
     $data = str_replace('"_QQ_"', '"', $data);
     $separate = explode("\n", $data);
+    $storeExtension = $extension === ACYM_LANGUAGE_FILE.'_custom' ? ACYM_LANGUAGE_FILE : $extension;
     foreach ($separate as $raw) {
         if (strpos($raw, '=') === false) continue;
 
         $keyval = explode('=', $raw);
         $key = array_shift($keyval);
 
-        $acymLanguages[$acymLanguages['currentLanguage']][$extension][$key] = trim(implode('=', $keyval), "\"\r\n\t ");
+        $acymLanguages[$acymLanguages['currentLanguage']][$storeExtension][$key] = trim(implode('=', $keyval), "\"\r\n\t ");
     }
 
     if (!empty($acymLanguages[ACYM_DEFAULT_LANGUAGE])) return;
@@ -808,6 +798,8 @@ function acym_date($time = 'now', $format = null, $useTz = true, $gregorian = fa
 
 function acym_loadObject($query)
 {
+    acym_addLimit($query);
+
     global $wpdb;
     $query = acym_prepareQuery($query);
 
@@ -1127,7 +1119,7 @@ function acym_frontendLink($link, $complete = true)
 
 function acym_getMenu()
 {
-    return null;
+    return get_post();
 }
 
 function acym_extractArchive($archive, $destination)
@@ -1533,6 +1525,48 @@ function acym_coreAddons()
             'core' => '1',
         ],
     ];
+}
+
+function convertWPLocaleToAcyLocale($locale)
+{
+    if (strpos($locale, '-') !== false) return $locale;
+
+    global $acyWPLangCodes;
+    if (!empty($acyWPLangCodes[$locale])) return $acyWPLangCodes[$locale];
+
+    if (strpos($locale, '_') === false) {
+        return $locale.'-'.strtoupper($locale);
+    } else {
+        return str_replace('_', '-', $locale);
+    }
+}
+
+function acym_getCmsUserLanguage($userId = null)
+{
+    if ($userId === null) $userId = acym_currentUserId();
+    if (empty($userId)) return '';
+
+    return convertWPLocaleToAcyLocale(get_user_locale($userId));
+}
+
+function acym_getAllPages()
+{
+    $allPges = get_pages();
+    if (empty($allPges)) return [];
+
+    $return = [];
+
+    foreach ($allPges as $page) {
+        $return[$page->ID] = $page->post_title;
+    }
+
+    return $return;
+}
+
+function acym_checkVersion($ajax = false)
+{
+
+    return false;
 }
 
 global $acymCmsUserVars;

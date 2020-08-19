@@ -15,7 +15,7 @@ class plgAcymGravityforms extends acymPlugin
 
         $this->propertyLabels = [
             'acymDisplayedList' => acym_translation('ACYM_DISPLAYED_LISTS'),
-            'acymCheckedList' => acym_translation('ACYM_CHECKED_LISTS'),
+            'acymCheckedList' => acym_translation('ACYM_LISTS_CHECKED_DEFAULT'),
             'acymAutoSubList' => acym_translation('ACYM_AUTO_SUBSCRIBE_TO'),
         ];
     }

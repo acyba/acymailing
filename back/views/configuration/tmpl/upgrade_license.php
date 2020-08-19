@@ -38,6 +38,6 @@
 		</div>
 		<div class="cell grid-x align-center"><span class="cell medium-2 acym__configuration__upgrade__license__separator"></span></div>
 		<p class="cell text-center"><?php echo acym_translation('ACYM_AND_MANY_MORE_FEATURE_YOU_MISSING'); ?></p>
-		<a href="<?php echo ACYM_ACYMAILLING_WEBSITE.'pricing' ?>;" class="button" target="_blank"><?php echo acym_translation('ACYM_SEE_MORE'); ?></a>
+		<a href="<?php echo ACYM_ACYMAILLING_WEBSITE.'pricing'; ?>;" class="button" target="_blank"><?php echo acym_translation('ACYM_SEE_MORE'); ?></a>
 	</div>
 </div>

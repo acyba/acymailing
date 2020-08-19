@@ -10,11 +10,15 @@ jQuery(document).ready(function ($) {
 
         $('#results_' + and).css('maxHeight', '18px').html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
-        ajaxCalls[and] = $.get(ajaxUrl, $(element).closest('#acym_form').serialize() + '&page=acymailing_automation&ctrl=automation&task=countresults&or=' + or + '&and=' + and).done(function (result) {
-            $('#results_' + and).css('maxHeight', '').html(result);
-        }).fail(function () {
-            $('#results_' + and).css('maxHeight', '').html(ACYM_JS_TXT.ACYM_ERROR);
-        });
+        ajaxCalls[and] = $.get(ajaxUrl,
+            $(element).closest('#acym_form').serialize() + '&page=acymailing_automation&ctrl=automation&task=countresults&or=' + or + '&and=' + and
+        )
+                          .done(function (result) {
+                              $('#results_' + and).css('maxHeight', '').html(result);
+                          })
+                          .fail(function () {
+                              $('#results_' + and).css('maxHeight', '').html(ACYM_JS_TXT.ACYM_ERROR);
+                          });
 
         reloadGlobalCounter($or);
     };
@@ -35,11 +39,13 @@ jQuery(document).ready(function ($) {
 
         $counterInput.html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
-        $.get(ajaxUrlTotal, groupFilter.closest('#acym_form').serialize() + '&page=acymailing_automation&ctrl=automation&task=countResultsOrTotal&or=' + or).done(function (result) {
-            $counterInput.html(result);
-        }).fail(function () {
-            $counterInput.html(ACYM_JS_TXT.ACYM_ERROR);
-        });
+        $.get(ajaxUrlTotal, groupFilter.closest('#acym_form').serialize() + '&page=acymailing_automation&ctrl=automation&task=countResultsOrTotal&or=' + or)
+         .done(function (result) {
+             $counterInput.html(result);
+         })
+         .fail(function () {
+             $counterInput.html(ACYM_JS_TXT.ACYM_ERROR);
+         });
     }
 
     function refreshFilterProcess() {
@@ -68,7 +74,15 @@ jQuery(document).ready(function ($) {
             $(this).parent().parent().find('.acym__automation__inserted__filter').remove();
             let html = filters[$(this).val()].replace(/__numor__/g, $(this).closest('.acym__automation__group__filter').attr('data-filter-number'));
             html = html.replace(/__numand__/g, $inputAnd.val());
-            $(this).parent().after('<div data-and="' + $inputAnd.val() + '" class="cell grid-x grid-margin-x grid-margin-y acym__automation__inserted__filter margin-top-1 margin-left-2"><span class="countresults margin-bottom-1" id="results_' + $inputAnd.val() + '"></span>' + html + '</div>');
+            $(this)
+                .parent()
+                .after('<div data-and="'
+                       + $inputAnd.val()
+                       + '" class="cell grid-x grid-margin-x grid-margin-y acym__automation__inserted__filter margin-top-1 margin-left-2"><span class="countresults margin-bottom-1" id="results_'
+                       + $inputAnd.val()
+                       + '"></span>'
+                       + html
+                       + '</div>');
             acym_helperSelect2.setSelect2();
             acym_helperDatePicker.setDatePickerGlobal();
 
@@ -110,14 +124,19 @@ jQuery(document).ready(function ($) {
             }).trigger('change');
 
             if ('classic' === type) {
-                $(this).closest('.acym__automation__one__filter.acym__automation__one__filter__classic').find('.acym__automation__inserted__filter input, .acym__automation__inserted__filter select').on('change', function () {
-                    $.reloadCounters(this);
-                });
+                $(this)
+                    .closest('.acym__automation__one__filter.acym__automation__one__filter__classic')
+                    .find('.acym__automation__inserted__filter input, .acym__automation__inserted__filter select')
+                    .on('change', function () {
+                        $.reloadCounters(this);
+                    });
 
                 if ($(this).val() == 0) {
                     reloadGlobalCounter($(this).closest('.acym__automation__group__filter'));
                 } else {
-                    $.reloadCounters($(this).closest('.acym__automation__one__filter.acym__automation__one__filter__classic').find('.acym__automation__inserted__filter input, .acym__automation__inserted__filter select'));
+                    $.reloadCounters($(this)
+                        .closest('.acym__automation__one__filter.acym__automation__one__filter__classic')
+                        .find('.acym__automation__inserted__filter input, .acym__automation__inserted__filter select'));
                 }
             }
 
@@ -145,7 +164,7 @@ jQuery(document).ready(function ($) {
                        .addClass('acym__select')
                        .select2({
                            theme: 'foundation',
-                           width: '100%',
+                           width: '100%'
                        });
             refreshFilterProcess();
         });
@@ -215,11 +234,17 @@ jQuery(document).ready(function ($) {
             // Foreach filters in this OR block
             $.each(oneORBlock, function (numAND, oneFilter) {
                 // Create a new AND block if needed
-                if (and !== 0) $('.acym__automation__group__filter[data-filter-number="' + or + '"]').find('.acym__automation__add-filter[data-filter-type="' + type + '"]').click();
+                if (and !== 0) {
+                    $('.acym__automation__group__filter[data-filter-number="' + or + '"]')
+                        .find('.acym__automation__add-filter[data-filter-type="' + type + '"]')
+                        .click();
+                }
 
                 $.each(oneFilter, function (filterName, filterOptions) {
                     // Select the filter type in the correct dropdown
-                    let $filterSelect = $('.acym__automation__group__filter[data-filter-number="' + or + '"]').find('.acym__automation__select__' + type + '__filter').last();
+                    let $filterSelect = $('.acym__automation__group__filter[data-filter-number="' + or + '"]')
+                        .find('.acym__automation__select__' + type + '__filter')
+                        .last();
                     $filterSelect.val(filterName);
                     $filterSelect.trigger('change');
 
@@ -229,7 +254,15 @@ jQuery(document).ready(function ($) {
                         let optionValue = filterOptions[keys[key]];
 
                         // Set the option values
-                        let $optionField = $('[name="acym_action[filters][' + or + '][' + $('#acym__automation__filters__count__and').val() + '][' + filterName + '][' + optionName + ']"]');
+                        let $optionField = $('[name="acym_action[filters]['
+                                             + or
+                                             + ']['
+                                             + $('#acym__automation__filters__count__and').val()
+                                             + ']['
+                                             + filterName
+                                             + ']['
+                                             + optionName
+                                             + ']"]');
 
                         $.setFieldValue($optionField, optionValue);
 

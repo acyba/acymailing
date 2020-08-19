@@ -4,10 +4,10 @@
         <?php
         $data['tab']->content[] = '
         <div class="cell grid-x align-right">
-            <button type="submit" data-task="test" class="cell medium-shrink button margin-1 acy_button_submit button-secondary">
+            <button acym-data-before="jQuery.acymConfigSave();" type="submit" data-task="test" class="cell medium-shrink button margin-1 acy_button_submit button-secondary">
                 '.acym_translation('ACYM_SEND_TEST').'
             </button>
-            <button type="submit" data-task="save" class="cell medium-shrink button margin-1 acy_button_submit">
+            <button acym-data-before="jQuery.acymConfigSave();" type="submit" data-task="save" class="cell medium-shrink button margin-1 acy_button_submit">
                 '.acym_translation('ACYM_SAVE').'
             </button>
         </div>';

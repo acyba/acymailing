@@ -97,14 +97,17 @@ class acymmailStatClass extends acymClass
 
         $query = 'SELECT mail.* 
                   FROM #__acym_mail AS mail 
-                  JOIN #__acym_mail_stat AS mail_stat ON mail.id = mail_stat.mail_id ';
+                  JOIN #__acym_mail_stat AS mail_stat ON mail.id = mail_stat.mail_id';
+
+        $querySearch = '';
 
         if (!empty($search)) {
-            $query .= 'WHERE mail.name LIKE '.acym_escapeDB('%'.$search.'%').' ';
+            $querySearch .= ' AND mail.name LIKE '.acym_escapeDB('%'.$search.'%').' ';
         }
 
-        $query .= 'ORDER BY mail_stat.send_date DESC 
-                   LIMIT 20';
+        $query .= ' WHERE mail.parent_id IS NULL '.$querySearch;
+
+        $query .= ' ORDER BY mail_stat.send_date DESC LIMIT 20';
 
         return $mailClass->decode(acym_loadObjectList($query));
     }

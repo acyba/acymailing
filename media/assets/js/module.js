@@ -1,8 +1,8 @@
-var task, formName;
+let acytask, acyformName;
 
 function submitAcymForm(newtask, newformName, submitFunction) {
-    task = newtask;
-    formName = newformName;
+    acytask = newtask;
+    acyformName = newformName;
     submitFunction = submitFunction === undefined ? 'acySubmitSubForm' : submitFunction;
 
     let recaptchaid = 'acym-captcha';
@@ -22,7 +22,7 @@ function submitAcymForm(newtask, newformName, submitFunction) {
             'sitekey': invisibleRecaptcha.getAttribute('data-sitekey'),
             'callback': submitFunction,
             'size': 'invisible',
-            'expired-callback': 'resetRecaptcha',
+            'expired-callback': 'resetRecaptcha'
         });
 
         invisibleRecaptcha.setAttribute('grcID', grcID);
@@ -39,7 +39,7 @@ function submitAcymForm(newtask, newformName, submitFunction) {
 
 function resetRecaptcha() {
     let recaptchaid = 'acym-captcha';
-    if (formName) recaptchaid = formName + '-captcha';
+    if (acyformName) recaptchaid = acyformName + '-captcha';
 
     let invisibleRecaptcha = document.querySelector('#' + recaptchaid + '[class="g-recaptcha"][data-size="invisible"]');
     if (!invisibleRecaptcha) return;
@@ -49,7 +49,7 @@ function resetRecaptcha() {
 }
 
 function acySubmitSubForm() {
-    let varform = document[formName];
+    let varform = document[acyformName];
     let filterEmail = acymModule['emailRegex'];
     let errorMessages = '';
     let i;
@@ -65,7 +65,7 @@ function acySubmitSubForm() {
     }
 
     // Reset invalid CSS class
-    let invalidFields = document.querySelectorAll('#' + formName + ' .invalid');
+    let invalidFields = document.querySelectorAll('#' + acyformName + ' .invalid');
     if (invalidFields.length != 0) {
         for (i = 0 ; i < invalidFields.length ; i++) {
             invalidFields[i].classList.remove('invalid');
@@ -82,7 +82,7 @@ function acySubmitSubForm() {
 
     //required fields
     let lastName, checked, required, reg, previousRequired;
-    let requiredRadio = document.querySelectorAll('#' + formName + ' [type="radio"][data-required]');
+    let requiredRadio = document.querySelectorAll('#' + acyformName + ' [type="radio"][data-required]');
     if (requiredRadio.length > 0) {
         lastName = '';
         checked = 0;
@@ -91,7 +91,7 @@ function acySubmitSubForm() {
             if (lastName !== '' && lastName != requiredRadio[i].getAttribute('name') && checked === 0) {
                 previousRequired = JSON.parse(requiredRadio[i - 1].getAttribute('data-required'));
                 errorMessages += '\r\n' + previousRequired.message;
-                acymAddInvalidClass(formName, lastName);
+                acymAddInvalidClass(acyformName, lastName);
             } else if (lastName !== '' && lastName != requiredRadio[i].getAttribute('name') && checked > 0) {
                 checked = 0;
             }
@@ -102,21 +102,23 @@ function acySubmitSubForm() {
         }
         if (checked === 0) {
             errorMessages += '\r\n' + required.message;
-            acymAddInvalidClass(formName, lastName);
+            acymAddInvalidClass(acyformName, lastName);
         }
     }
 
-    let requiredCheckbox = document.querySelectorAll('#' + formName + ' [type="checkbox"][data-required]');
+    let requiredCheckbox = document.querySelectorAll('#' + acyformName + ' [type="checkbox"][data-required]');
     if (requiredCheckbox.length > 0) {
         lastName = '';
         checked = 0;
         for (i = 0 ; i < requiredCheckbox.length ; i++) {
             required = JSON.parse(requiredCheckbox[i].getAttribute('data-required'));
-            if (lastName !== '' && lastName != requiredCheckbox[i].getAttribute('name').slice(0, requiredCheckbox[i].getAttribute('name').lastIndexOf('[')) && checked === 0) {
+            if (lastName !== '' && lastName != requiredCheckbox[i].getAttribute('name')
+                                                                  .slice(0, requiredCheckbox[i].getAttribute('name').lastIndexOf('[')) && checked === 0) {
                 previousRequired = JSON.parse(requiredCheckbox[i - 1].getAttribute('data-required'));
                 errorMessages += '\r\n' + previousRequired.message;
-                acymAddInvalidClass(formName, lastName);
-            } else if (lastName !== '' && lastName != requiredCheckbox[i].getAttribute('name').slice(0, requiredCheckbox[i].getAttribute('name').lastIndexOf('[')) && checked > 0) {
+                acymAddInvalidClass(acyformName, lastName);
+            } else if (lastName !== '' && lastName != requiredCheckbox[i].getAttribute('name')
+                                                                         .slice(0, requiredCheckbox[i].getAttribute('name').lastIndexOf('[')) && checked > 0) {
                 checked = 0;
             }
             if (requiredCheckbox[i].checked) {
@@ -126,11 +128,11 @@ function acySubmitSubForm() {
         }
         if (checked === 0) {
             errorMessages += '\r\n' + required.message;
-            acymAddInvalidClass(formName, lastName);
+            acymAddInvalidClass(acyformName, lastName);
         }
     }
 
-    let requiredDate = document.querySelectorAll('#' + formName + ' [acym-field-type="date"][data-required]');
+    let requiredDate = document.querySelectorAll('#' + acyformName + ' [acym-field-type="date"][data-required]');
     if (requiredDate.length != 0) {
         lastName = '';
         checked = 0;
@@ -142,7 +144,8 @@ function acySubmitSubForm() {
                 checked = 0;
                 previousRequired = JSON.parse(requiredDate[i - 1].getAttribute('data-required'));
                 errorMessages += '\r\n' + previousRequired.message;
-            } else if (lastName !== '' && lastName != currentField.getAttribute('name').slice(0, currentField.getAttribute('name').lastIndexOf('[')) && checked > 0) {
+            } else if (lastName !== '' && lastName != currentField.getAttribute('name')
+                                                                  .slice(0, currentField.getAttribute('name').lastIndexOf('[')) && checked > 0) {
                 checked = 0;
             }
             if (currentField.value != '') {
@@ -157,7 +160,9 @@ function acySubmitSubForm() {
         }
     }
 
-    let requiredFields = document.querySelectorAll('#' + formName + ' [data-required]:not([type="checkbox"]):not([type="radio"]):not([acym-field-type="date"])');
+    let requiredFields = document.querySelectorAll('#'
+                                                   + acyformName
+                                                   + ' [data-required]:not([type="checkbox"]):not([type="radio"]):not([acym-field-type="date"])');
     if (requiredFields.length > 0) {
         for (i = 0 ; i < requiredFields.length ; i++) {
             required = JSON.parse(requiredFields[i].getAttribute('data-required'));
@@ -166,7 +171,7 @@ function acySubmitSubForm() {
                      'textarea',
                      'single_dropdown',
                      'multiple_dropdown',
-                     'phone',
+                     'phone'
                  ].indexOf(required.type) !== -1) && (requiredFields[i].value === '' || requiredFields[i].value == '0')) {
                 errorMessages += '\r\n' + required.message;
                 requiredFields[i].classList.add('invalid');
@@ -179,7 +184,7 @@ function acySubmitSubForm() {
         }
     }
 
-    let authorizeContent = document.querySelectorAll('#' + formName + ' [data-authorized-content]');
+    let authorizeContent = document.querySelectorAll('#' + acyformName + ' [data-authorized-content]');
     if (authorizeContent.length > 0) {
         for (i = 0 ; i < authorizeContent.length ; i++) {
             let json = authorizeContent[i].getAttribute('data-authorized-content');
@@ -243,7 +248,7 @@ function acySubmitSubForm() {
         }
     }
 
-    if (task !== 'unsubscribe') {
+    if (acytask !== 'unsubscribe') {
         let termsandconditions = varform.elements['terms'];
         if (termsandconditions && !termsandconditions.checked) {
             if (typeof acymModule != 'undefined') {
@@ -252,10 +257,13 @@ function acySubmitSubForm() {
             return false;
         }
 
-        if (typeof acymModule != 'undefined' && typeof acymModule['excludeValues' + formName] != 'undefined') {
-            for (let fieldName in acymModule['excludeValues' + formName]) {
-                if (!acymModule['excludeValues' + formName].hasOwnProperty(fieldName)) continue;
-                if (!varform.elements['user[' + fieldName + ']'] || varform.elements['user[' + fieldName + ']'].value != acymModule['excludeValues' + formName][fieldName]) continue;
+        if (typeof acymModule != 'undefined' && typeof acymModule['excludeValues' + acyformName] != 'undefined') {
+            for (let fieldName in acymModule['excludeValues' + acyformName]) {
+                if (!acymModule['excludeValues' + acyformName].hasOwnProperty(fieldName)) continue;
+                if (!varform.elements['user[' + fieldName + ']'] || varform.elements['user[' + fieldName + ']'].value != acymModule['excludeValues'
+                                                                                                                                    + acyformName][fieldName]) {
+                    continue;
+                }
 
                 varform.elements['user[' + fieldName + ']'].value = '';
             }
@@ -264,13 +272,13 @@ function acySubmitSubForm() {
 
     // Handle google analytics
     if (typeof ga != 'undefined') {
-        let gaType = task === 'unsubscribe' ? 'unsubscribe' : 'subscribe';
+        let gaType = acytask === 'unsubscribe' ? 'unsubscribe' : 'subscribe';
         ga('send', 'pageview', gaType);
     }
 
     // Set the form's task field to subscribe / unsubscribe
     taskField = varform.task;
-    taskField.value = task;
+    taskField.value = acytask;
 
     // If no ajax, submit the form
     if (!varform.elements['ajax'] || !varform.elements['ajax'].value || varform.elements['ajax'].value == '0') {
@@ -278,7 +286,7 @@ function acySubmitSubForm() {
         return false;
     }
 
-    let form = document.getElementById(formName);
+    let form = document.getElementById(acyformName);
     let formData = new FormData(form);
     // Change the acyba form's opacity to show we are doing stuff
     form.className += ' acym_module_loading';
@@ -286,7 +294,7 @@ function acySubmitSubForm() {
     form.style.opacity = '0.5';
 
     // Delete the previous error messages if the user re-submits the form
-    let previousErrorMessages = document.querySelectorAll('.responseContainer.acym_module_error.message_' + formName);
+    let previousErrorMessages = document.querySelectorAll('.responseContainer.acym_module_error.message_' + acyformName);
     Array.prototype.forEach.call(previousErrorMessages, function (node) {
         node.parentNode.removeChild(node);
     });
@@ -302,7 +310,7 @@ function acySubmitSubForm() {
             message = response.message;
             type = response.type;
         }
-        acymDisplayAjaxResponse(decodeURIComponent(message), type, formName);
+        acymDisplayAjaxResponse(decodeURIComponent(message), type, acyformName);
     };
     xhr.send(formData);
 
@@ -321,9 +329,12 @@ function acymDisplayAjaxResponse(message, type, formName, replace) {
     //create a new div class=responseContainer as we didn't have one already to display the answer
     let responseContainer = document.createElement('div');
     let fulldiv = document.getElementById('acym_fulldiv_' + formName);
+    let classErase = 'acym__subscription__form-erase';
 
-    if (fulldiv.firstChild) {
+    if (fulldiv.firstChild && !fulldiv.classList.contains('acym__subscription__form__popup__overlay')) {
         fulldiv.insertBefore(responseContainer, fulldiv.firstChild);
+    } else if (fulldiv.classList.contains('acym__subscription__form__popup__overlay')) {
+        fulldiv.querySelector('.acym__subscription__form__popup').appendChild(responseContainer);
     } else {
         fulldiv.appendChild(responseContainer);
     }
@@ -357,4 +368,11 @@ function acymDisplayAjaxResponse(message, type, formName, replace) {
     }
     responseContainer.className += ' message_' + formName;
     responseContainer.className += ' slide_open';
+
+    if (fulldiv.classList.contains(classErase)) {
+        document.cookie = 'acym_form_' + document.getElementById(formName).getAttribute('acym-data-id') + '=' + Date.now() + ';';
+        setTimeout(() => {
+            fulldiv.remove();
+        }, 2000);
+    }
 }

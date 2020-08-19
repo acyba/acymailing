@@ -27,6 +27,7 @@ class ToggleController extends acymController
         $this->toggleableColumns['list'] = ['active' => 'id', 'visible' => 'id'];
         $this->toggleableColumns['rule'] = ['active' => 'id'];
         $this->toggleableColumns['user'] = ['active' => 'id', 'confirmed' => 'id'];
+        $this->toggleableColumns['form'] = ['active' => 'id'];
 
         // $this->icons[TABLE NAME WITHOUT PREFIX][COLUMN NAME][VALUE] = ICON CLASS;
         $this->icons['automation']['active'][1] = 'acymicon-check-circle acym__color__green';
@@ -53,6 +54,8 @@ class ToggleController extends acymController
         $this->icons['user']['active'][0] = 'acymicon-times-circle acym__color__red';
         $this->icons['user']['confirmed'][1] = 'acymicon-check-circle acym__color__green';
         $this->icons['user']['confirmed'][0] = 'acymicon-times-circle acym__color__red';
+        $this->icons['form']['active'][1] = 'acymicon-check-circle acym__color__green';
+        $this->icons['form']['active'][0] = 'acymicon-times-circle acym__color__red';
 
         $this->tooltips['user']['active'][1] = 'ACYM_ACTIVATED';
         $this->tooltips['user']['active'][0] = 'ACYM_DEACTIVATED';

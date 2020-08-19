@@ -21,16 +21,16 @@ class plgAcymFlexicontent extends acymPlugin
                     'type' => 'custom_view',
                     'tags' => array_merge($this->replaceOptions, $this->elementOptions),
                 ],
-            'front' => [
-                'type' => 'select',
-                'label' => 'ACYM_FRONT_ACCESS',
-                'value' => 'all',
-                'data' => [
-                    'all' => 'ACYM_ALL_ELEMENTS',
-                    'author' => 'ACYM_ONLY_AUTHORS_ELEMENTS',
-                    'hide' => 'ACYM_DONT_SHOW',
+                'front' => [
+                    'type' => 'select',
+                    'label' => 'ACYM_FRONT_ACCESS',
+                    'value' => 'all',
+                    'data' => [
+                        'all' => 'ACYM_ALL_ELEMENTS',
+                        'author' => 'ACYM_ONLY_AUTHORS_ELEMENTS',
+                        'hide' => 'ACYM_DONT_SHOW',
+                    ],
                 ],
-            ],
             ];
         }
     }

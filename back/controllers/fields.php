@@ -231,7 +231,7 @@ class FieldsController extends acymController
         $newField->backend_listing = $field['backend_listing'];
         $newField->access = 'all';
         if (empty($id)) {
-            $newField->ordering = $fieldClass->getOrdering()->ordering_number + 1;
+            $newField->ordering = $fieldClass->getOrdering() + 1;
         } else {
             $newField->id = $id;
         }

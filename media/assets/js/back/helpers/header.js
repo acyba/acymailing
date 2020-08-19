@@ -16,5 +16,5 @@ const acym_helperHeader = {
         if (1 === $checkVersionButton.data('check')) {
             $checkVersionButton.click();
         }
-    },
+    }
 };

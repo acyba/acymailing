@@ -72,6 +72,19 @@ class acymView extends acymObject
 
         if (!empty($data['header'])) echo $data['header'];
 
+        $remindme = json_decode($this->config->get('remindme', '[]'), true);
+        if (acym_isAdmin() && !in_array('multilingual', $remindme) && acym_level(1) && $this->config->get('multilingual', '0') === '0') {
+            if (count(acym_getLanguages(true)) > 1) {
+                $message = acym_translation('ACYM_MULTILINGUAL_OPTIONS_PROMPT');
+                $message .= ' <a id="acym__multilingual__reminder" href="'.acym_completeLink('configuration&task=multilingual').'">'.acym_translation('ACYM_YES').'</a>';
+                $message .= ' / <a href="#" class="acym__do__not__remindme" title="multilingual">'.acym_translation('ACYM_NO').'</a>';
+                acym_display($message, 'info', false);
+            } else {
+                $remindme[] = 'multilingual';
+                $this->config->save(['remindme' => json_encode($remindme)]);
+            }
+        }
+
         if (acym_isAdmin()) acym_displayMessages();
 
         include acym_getView($name, $view);

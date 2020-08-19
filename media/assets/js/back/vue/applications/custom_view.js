@@ -9,7 +9,7 @@ jQuery(document).on('acym_plugins_installed_loaded', function () {
         appVue[$modal.attr('acym-data-plugins-id')] = new Vue({
             el: '#' + $modal.attr('acym-data-plugins-id'),
             components: {
-                'vue-prism-editor': VuePrismEditor,
+                'vue-prism-editor': VuePrismEditor
             },
             data: () => {
                 return {
@@ -24,9 +24,9 @@ jQuery(document).on('acym_plugins_installed_loaded', function () {
                     tags: [],
                     optionIndent: {
                         indent_size: 2,
-                        wrap_line_length: '120',
+                        wrap_line_length: '120'
                     },
-                    loading: true,
+                    loading: true
                 };
             },
             mounted() {
@@ -102,8 +102,8 @@ jQuery(document).on('acym_plugins_installed_loaded', function () {
                     for (let [tag, params] of Object.entries(this.tags)) {
                         this.tags[tag] = ACYM_JS_TXT[params[0]] === undefined ? params[0] : ACYM_JS_TXT[params[0]];
                     }
-                },
-            },
+                }
+            }
         });
     });
 });

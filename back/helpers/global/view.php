@@ -39,7 +39,7 @@ function acym_loadAssets($ctrl, $task)
 
     // Include JS
     acym_addScript(false, ACYM_JS.'helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'helpers.min.js'), 'text/javascript', true);
-    if ('back' == $scope) acym_addScript(false, ACYM_JS.$scope.'_helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'back_helpers.min.js'));
+    if ('back' == $scope) acym_addScript(false, ACYM_JS.$scope.'_helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_helpers.min.js'));
     acym_addScript(false, ACYM_JS.'global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'global.min.js'));
     acym_addScript(false, ACYM_JS.$scope.'_global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_global.min.js'));
 
@@ -200,6 +200,13 @@ function acym_getJSMessages()
         'ACYM_AUTHOR',
         'ACYM_SHOW_FILTERS',
         'ACYM_HIDE_FILTERS',
+        'ACYM_PLEASE_FILL_FORM_NAME',
+        'ACYM_SELECT',
+        'ACYM_CHANGE',
+        'ACYM_ENTER_SUBJECT',
+        'ACYM_REMOVE_LANG_CONFIRMATION',
+        'ACYM_RESET_TRANSLATION',
+        'ACYM_MAX_EXEC_TIME_GET_ERROR',
     ];
 
     foreach ($keysToLoad as $oneKey) {

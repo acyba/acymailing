@@ -166,6 +166,7 @@ class acymupdateHelper extends acymObject
             'ACYM_MENU_USERS_DESC',
             'ACYM_MENU_CAMPAIGNS',
             'ACYM_MENU_CAMPAIGNS_DESC',
+            'ACYM_SUBSCRIPTION_FORMS',
         ];
 
         $siteLanguages = empty($onlyCode) ? array_keys(acym_getLanguages()) : [$onlyCode];

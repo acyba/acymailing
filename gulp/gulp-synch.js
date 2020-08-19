@@ -12,20 +12,20 @@ let minifyCSS = require('gulp-cssmin');
 let multidest = require('gulp-multi-dest');
 let babel = require('gulp-babel');
 
-let version = '6.13.3';
+let version = '6.14.1';
 
 let minifyJSOptions = {
     ext: {
-        min: '.js',
+        min: '.js'
     },
-    noSource: true,
+    noSource: true
 };
 let renameOptions = {
-    suffix: '.min',
+    suffix: '.min'
 };
 let compassOptions = {
     css: 'media/assets/css',
-    sass: 'media/assets/scss',
+    sass: 'media/assets/scss'
 };
 
 
@@ -42,7 +42,7 @@ gulp.task('synch_copy-files', gulp.series(function () {
         'acym.xml',
         'install.joomla.php',
         'install.class.php',
-        'LICENSE',
+        'LICENSE'
     ])
                .pipe(replace('{__LEVEL__}', 'enterprise'))
                .pipe(replace('{__CMS__}', 'Joomla'))
@@ -52,7 +52,7 @@ gulp.task('synch_copy-files', gulp.series(function () {
     return gulp.src([
         'index.php',
         'install.class.php',
-        'LICENSE',
+        'LICENSE'
     ])
                .pipe(replace('{__LEVEL__}', 'enterprise'))
                .pipe(replace('{__CMS__}', 'WordPress'))
@@ -92,7 +92,7 @@ gulp.task('synch_copy-languages', gulp.series(function () {
     return gulp.src([
         'language/en-GB.com_acym.ini',
         'language/en-US.com_acym.ini',
-        'language/fr-FR.com_acym.ini',
+        'language/fr-FR.com_acym.ini'
     ])
                .pipe(cache('language'))
                .pipe(rename((path) => {
@@ -108,67 +108,67 @@ gulp.task('synch_copy-languages', gulp.series(function () {
 let babelled = [
     [
         'global/helpers/editor_wysid/*.js',
-        'editor_wysid_utils.js',
+        'editor_wysid_utils.js'
     ],
     [
         'back/*.js',
-        'back_global.js',
+        'back_global.js'
     ],
     [
         'front/*.js',
-        'front_global.js',
+        'front_global.js'
     ],
     [
         'back/helpers/*.js',
-        'back_helpers.js',
+        'back_helpers.js'
     ],
     [
         'global/helpers/*.js',
-        'helpers.js',
+        'helpers.js'
     ],
     [
         'front/helpers/*.js',
-        'front_helpers.js',
-    ],
+        'front_helpers.js'
+    ]
 ];
 
 let simple = [
     [
         'back/controllers/*.js',
-        '/back',
+        '/back'
     ],
     [
         'back/controllers/**/*.js',
-        '/back',
+        '/back'
     ],
     [
         'back/vue/applications/*.js',
-        '/vue',
+        '/vue'
     ],
     [
         'front/controllers/*.js',
-        '/front',
+        '/front'
     ],
     [
         'front/controllers/**/*.js',
-        '/front',
+        '/front'
     ],
     [
         'libraries/*.js',
-        '/libraries',
+        '/libraries'
     ],
     [
         '*.js',
-        '',
-    ],
+        ''
+    ]
 ];
 
 let groupped = [
     [
         'back/vue/components/*.js',
         'vue_components.js',
-        '/vue',
-    ],
+        '/vue'
+    ]
 ];
 
 gulp.task('clear_cache', (done) => {
@@ -212,7 +212,7 @@ let scssBlocks = [
     'back/*.scss',
     'front/*.scss',
     'libraries/*.scss',
-    '*.scss',
+    '*.scss'
 ];
 
 gulp.task('synch_handle-css', gulp.parallel(function (done) {
@@ -234,7 +234,7 @@ gulp.task('synch_copy-media', gulp.series(function () {
     return gulp.src([
         'media/**/*',
         '!media/assets/**',
-        '!media/assets',
+        '!media/assets'
     ])
                .pipe(cache('media'))
                .pipe(multidest(getPaths('/media/com_acym')));
@@ -242,7 +242,7 @@ gulp.task('synch_copy-media', gulp.series(function () {
     return gulp.src([
         'media/**/*',
         '!media/assets/**',
-        '!media/assets',
+        '!media/assets'
     ])
                .pipe(cache('wpmedia'))
                .pipe(multidest(getPaths('/wp-content/plugins/acymailing/media', settings.wordpress)));
@@ -276,7 +276,7 @@ gulp.task('synch_copy-addons', gulp.series(function () {
 }, function () {
     let mask = [
         'addons/page/**',
-        'addons/post/**',
+        'addons/post/**'
     ];
     return gulp.src('addons/**/*')
                .pipe(cache('addonswpcore'))
@@ -288,7 +288,7 @@ gulp.task('synch_copy-addons', gulp.series(function () {
         '!addons/page/**',
         '!addons/page',
         '!addons/post/**',
-        '!addons/post',
+        '!addons/post'
     ];
     return gulp.src('addons/**/*')
                .pipe(cache('addonswp'))
@@ -304,7 +304,17 @@ gulp.task('synch_copy-wpinit', function () {
                .pipe(multidest(getPaths('/wp-content/plugins/acymailing/wpinit', settings.wordpress)));
 });
 
-gulp.task('synch_copy-all', gulp.parallel('synch_copy-files', 'synch_copy-back', 'synch_copy-front', gulp.series(gulp.parallel('synch_handle-js', 'synch_handle-css'), 'synch_copy-media'), 'synch_copy-languages', 'synch_copy-modules', 'synch_copy-plugins', 'synch_copy-addons', 'synch_copy-wpinit'));
+gulp.task('synch_copy-all', gulp.parallel(
+    'synch_copy-files',
+    'synch_copy-back',
+    'synch_copy-front',
+    gulp.series(gulp.parallel('synch_handle-js', 'synch_handle-css'), 'synch_copy-media'),
+    'synch_copy-languages',
+    'synch_copy-modules',
+    'synch_copy-plugins',
+    'synch_copy-addons',
+    'synch_copy-wpinit'
+));
 
 gulp.task('synch_watch', function () {
     gulp.watch('*', gulp.series('synch_copy-files'));
@@ -315,7 +325,7 @@ gulp.task('synch_watch', function () {
     gulp.watch([
         'media/**/*',
         '!media/assets/**',
-        '!media/assets',
+        '!media/assets'
     ], gulp.series('synch_copy-media'));
     gulp.watch('media/assets/js/**/*', gulp.series('synch_handle-js'));
     gulp.watch('media/assets/scss/**/*', gulp.series('synch_handle-css'));

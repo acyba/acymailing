@@ -71,7 +71,7 @@ class plgAcymCbuilder extends acymPlugin
 
         $uservalues = null;
         if (!empty($user->cms_id)) {
-            $uservalues = acym_loadObject('SELECT * FROM #__comprofiler WHERE user_id = '.intval($user->cms_id).' LIMIT 1');
+            $uservalues = acym_loadObject('SELECT * FROM #__comprofiler WHERE user_id = '.intval($user->cms_id));
         }
 
         $fieldObjects = acym_loadObjectList('SELECT fieldid, `table`, name, type, params FROM #__comprofiler_fields', 'name');
@@ -92,7 +92,7 @@ class plgAcymCbuilder extends acymPlugin
             //Load sender information... or
             if (!empty($oneTag->info) && $oneTag->info == 'sender') {
                 if (empty($this->sendervalues[$email->id]) && !empty($email->creator_id)) {
-                    $this->sendervalues[$email->id] = acym_loadObject('SELECT * FROM #__comprofiler WHERE user_id = '.intval($email->creator_id).' LIMIT 1');
+                    $this->sendervalues[$email->id] = acym_loadObject('SELECT * FROM #__comprofiler WHERE user_id = '.intval($email->creator_id));
                 }
                 if (!empty($this->sendervalues[$email->id])) {
                     $values = $this->sendervalues[$email->id];

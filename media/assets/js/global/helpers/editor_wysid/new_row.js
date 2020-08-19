@@ -126,5 +126,5 @@ const acym_editorWysidNewRow = {
         jQuery(ui).replaceWith(content);
         acym_editorWysidVersioning.setUndoAndAutoSave();
         acym_helperEditorWysid.setColumnRefreshUiWYSID();
-    },
+    }
 };

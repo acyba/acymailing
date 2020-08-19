@@ -23,5 +23,5 @@ const acym_helperUser = {
             form.find('[name="task"]').attr('value', 'resubscribeUserToAll');
             form.submit();
         });
-    },
+    }
 };

@@ -14,28 +14,35 @@ $editor-wysid-palette: (
         secondary-ui: #b9b9b9,
         alert: #ff5259,
 );
-$primary-color: map-get($foundation-palette, primary);
-$primary-light-color: map-get($foundation-palette, primary-light);
-$tabs-background: #f6f6f6;
-$primary-color-unselected: #beddf7;
+
+$dark-red: #69282e;
+$light-blue: #daf0fe;
+$dark-blue: #0ca0e4;
+$green: #4dd64d;
+$black: #0a0a0a;
+$white: #fefefe;
+
 $very-light-gray: #f1f1f1;
 $light-gray: #e3e3e3;
 $medium-gray: #cacaca;
 $dark-gray: #8a8a8a;
 $very-dark-gray: #444444;
-$black: #0a0a0a;
-$white: #fefefe;
-$dark-red: #69282e;
+
+$primary-color: map-get($foundation-palette, primary);
+$primary-light-color: map-get($foundation-palette, primary-light);
+$tabs-background: #f6f6f6;
+$primary-color-unselected: #beddf7;
+
 $font-primary: #303e46;
 $font-primary-light: #939294;
 $font-secondary: #9bced7;
-$light-blue: #daf0fe;
-$dark-blue: #0ca0e4;
 $alert-light: #ffedee;
+
 $green-opacity: rgba(62, 234, 145, 0.4);
 $blue-opacity: rgba(0, 121, 210, 0.4);
 $red-opacity: rgba(255, 82, 89, 0.4);
 $orange-opacity: rgba(255, 171, 21, 0.4);
+
 $body-background: $white;
 $body-font-color: $black;
 $global-color-pick-contrast-tolerance: 0;

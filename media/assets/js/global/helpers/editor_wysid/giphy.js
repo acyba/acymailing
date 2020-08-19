@@ -12,12 +12,18 @@ const acym_editorWysidGiphy = {
         //We get the grid where we display the result and then we initiate masonry
         let $grid = jQuery('#acym__wysid__modal__giphy--results');
         $grid = $grid.masonry({
-            itemSelector: 'img',
+            itemSelector: 'img'
         });
         //We make the call on giphy to get all the gif
         jQuery.ajax({
-            url: 'https://api.giphy.com/v1/gifs/search?limit=' + limitSearch + '&offset=' + acym_helperEditorWysid.offsetGiphy + '&q=' + acym_helperEditorWysid.queryGiphy + '&api_key=6hR2IN2Db2aw4XdtNxLELKtOh66F5XSo&rating=PG',
-            dataType: 'json',
+            url: 'https://api.giphy.com/v1/gifs/search?limit='
+                 + limitSearch
+                 + '&offset='
+                 + acym_helperEditorWysid.offsetGiphy
+                 + '&q='
+                 + acym_helperEditorWysid.queryGiphy
+                 + '&api_key=6hR2IN2Db2aw4XdtNxLELKtOh66F5XSo&rating=PG',
+            dataType: 'json'
         }).then((res) => {
             if (res.data.length === 0 && acym_helperEditorWysid.offsetGiphy === 0) {
                 //If there is no result
@@ -151,7 +157,9 @@ const acym_editorWysidGiphy = {
             let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
             content += '<td class="large-12 acym__wysid__column__element__td">';
             content += '<div class="acym__wysid__tinymce--image">';
-            content += '<img class="acym__wysid__media__inserted acym__wysid__media__inserted--focus acym__wysid__media__giphy" src="' + $selectedImg.attr('data-full-res-src') + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;"/>';
+            content += '<img class="acym__wysid__media__inserted acym__wysid__media__inserted--focus acym__wysid__media__giphy" src="'
+                       + $selectedImg.attr('data-full-res-src')
+                       + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;"/>';
             content += '</div>';
             content += '</td>';
             content += '</tr>';
@@ -166,5 +174,5 @@ const acym_editorWysidGiphy = {
                 acym_editorWysidVersioning.setUndoAndAutoSave();
             });
         });
-    },
+    }
 };

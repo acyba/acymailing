@@ -160,6 +160,7 @@ class acymheaderHelper extends acymObject
 
     private function getCheckVersionButton()
     {
+        if (ACYM_CMS == 'wordpress' && !acym_level(1)) return '';
         $lastLicenseCheck = $this->config->get('lastlicensecheck', 0);
         $time = time();
         $checking = ($time > $lastLicenseCheck + 604800) ? $checking = '1' : '0';

@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_user` (
 	`confirmation_date` DATETIME DEFAULT NULL,
 	`confirmation_ip` VARCHAR(16) DEFAULT NULL,
 	`tracking` TINYINT(1) NOT NULL DEFAULT 1,
+	`language` VARCHAR(10) NOT NULL DEFAULT '',
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX `email_UNIQUE`(`email` ASC)
 )
@@ -62,10 +63,18 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail` (
 	`headers` TEXT NULL,
 	`autosave` LONGTEXT NULL,
 	`preheader` VARCHAR(255) NULL,
-	`links_language` varchar(10) NOT NULL DEFAULT '',
-	`access` varchar(50) NOT NULL DEFAULT '',
+	`links_language` VARCHAR(10) NOT NULL DEFAULT '',
+	`access` VARCHAR(50) NOT NULL DEFAULT '',
 	`tracking` TINYINT(1) NOT NULL DEFAULT 1,
-	PRIMARY KEY (`id`)
+	`language` VARCHAR(10) NOT NULL DEFAULT '',
+	`parent_id` INT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `fk_#__acym_mail1`(`parent_id` ASC),
+	CONSTRAINT `fk_#__acym_mail1`
+		FOREIGN KEY (`parent_id`)
+			REFERENCES `#__acym_mail`(`id`)
+			ON DELETE NO ACTION
+			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
 	/*!40100
@@ -88,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_list` (
 	`unsubscribe_id` INT NULL,
 	`cms_user_id` INT NOT NULL,
 	`front_management` INT NULL,
-	`access` varchar(50) NOT NULL DEFAULT '',
+	`access` VARCHAR(50) NOT NULL DEFAULT '',
 	`description` TEXT NOT NULL,
 	`tracking` TINYINT(1) NOT NULL DEFAULT 1,
 	PRIMARY KEY (`id`),
@@ -454,8 +463,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_rule` (
 CREATE TABLE IF NOT EXISTS `#__acym_history` (
 	`user_id` INT NOT NULL,
 	`date` INT NOT NULL,
-	`ip` varchar(16) DEFAULT NULL,
-	`action` varchar(50) NOT NULL,
+	`ip` VARCHAR(16) DEFAULT NULL,
+	`action` VARCHAR(50) NOT NULL,
 	`data` text,
 	`source` text,
 	`mail_id` MEDIUMINT DEFAULT NULL,
@@ -526,6 +535,29 @@ CREATE TABLE IF NOT EXISTS `#__acym_plugin` (
 	`latest_version` VARCHAR(10) NOT NULL,
 	`settings` LONGTEXT NULL,
 	`core` TINYINT(1) NOT NULL DEFAULT 0,
+	PRIMARY KEY (`id`)
+)
+	ENGINE = InnoDB
+	/*!40100
+	DEFAULT CHARACTER SET utf8
+	COLLATE utf8_general_ci*/;
+
+-- -----------------------------------------------------
+-- Table `#__acym_form`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `#__acym_form` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(255) NOT NULL,
+	`creation_date` DATETIME NOT NULL,
+	`active` TINYINT(1) NOT NULL DEFAULT 1,
+	`type` VARCHAR(20) NOT NULL,
+	`lists_options` LONGTEXT,
+	`fields_options` LONGTEXT,
+	`style_options` LONGTEXT,
+	`button_options` LONGTEXT,
+	`image_options` LONGTEXT,
+	`delay` SMALLINT(10),
+	`pages` TEXT,
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB

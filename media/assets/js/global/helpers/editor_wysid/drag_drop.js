@@ -5,7 +5,7 @@ const acym_editorWysidDragDrop = {
             helper: 'clone', //Clone the element that has been dragged instead of directly dragging it
             cursorAt: {
                 top: 12,
-                left: 40,
+                left: 40
             }, //Cursor position when you start to drag an element
             connectToSortable104: '.acym__wysid__row', //Allows the drag element to be dropped onto this sortables
 
@@ -23,11 +23,11 @@ const acym_editorWysidDragDrop = {
                 jQuery(ui.helper)
                     .css({
                         'width': jQuery(this).width() + 'px',
-                        'opacity': 1,
+                        'opacity': 1
                     });
                 jQuery('.acym__wysid__column__element').off('mouseenter mouseleave');
                 jQuery('.acym__wysid__row__element').off('mouseenter mouseleave');
-            },
+            }
         });
     },
     setRowElementSortableWYSID: function () {
@@ -53,12 +53,21 @@ const acym_editorWysidDragDrop = {
 
                 //Test the item that was dropped for replace it with the desired content
                 let $item = ui.item;
-                $item.hasClass('acym__wysid__row__element--new--1') ? acym_editorWysidNewRow.addRow1WYSID($item) : $item.hasClass('acym__wysid__row__element--new--2') ? acym_editorWysidNewRow.addRow2WYSID($item) : $item.hasClass('acym__wysid__row__element--new--3') ? acym_editorWysidNewRow.addRow3WYSID($item) : $item.hasClass('acym__wysid__row__element--new--4') ? acym_editorWysidNewRow.addRow4WYSID($item) : $item.hasClass('acym__wysid__row__element--new--5') ? acym_editorWysidNewRow.addRow5WYSID($item) : $item.hasClass('acym__wysid__row__element--new--6') ? acym_editorWysidNewRow.addRow6WYSID($item) : true;
+                $item.hasClass('acym__wysid__row__element--new--1') ? acym_editorWysidNewRow.addRow1WYSID($item) : $item.hasClass(
+                    'acym__wysid__row__element--new--2') ? acym_editorWysidNewRow.addRow2WYSID($item) : $item.hasClass('acym__wysid__row__element--new--3')
+                                                                                                        ? acym_editorWysidNewRow.addRow3WYSID($item)
+                                                                                                        : $item.hasClass('acym__wysid__row__element--new--4')
+                                                                                                          ? acym_editorWysidNewRow.addRow4WYSID($item)
+                                                                                                          : $item.hasClass('acym__wysid__row__element--new--5')
+                                                                                                            ? acym_editorWysidNewRow.addRow5WYSID($item)
+                                                                                                            : $item.hasClass('acym__wysid__row__element--new--6')
+                                                                                                              ? acym_editorWysidNewRow.addRow6WYSID($item)
+                                                                                                              : true;
 
                 acym_editorWysidDragDrop.setColumnSortableWYSID();
                 acym_helperEditorWysid.checkForEmptyTbodyWYSID();
                 acym_editorWysidRowSelector.setRowSelector();
-            },
+            }
         });
     },
     setColumnElementDraggableWYSID: function () {
@@ -69,7 +78,7 @@ const acym_editorWysidDragDrop = {
             handle: '.acym__wysid__column__element__toolbox__move', //Restricts sort start click to this element
             cursorAt: {
                 top: 20,
-                left: 50,
+                left: 50
             }, //Cursor position when you start to drag an element
             connectToSortable104: '.acym__wysid__column tbody', //Allows the drag element to be dropped onto this sortables
             revertDuration: 300,
@@ -90,10 +99,10 @@ const acym_editorWysidDragDrop = {
                     'left': 'inherit',
                     'right': 'inherit',
                     'bottom': 'inherit',
-                    'height': 'auto',
+                    'height': 'auto'
                 });
                 acym_editorWysidRowSelector.setRowSelector();
-            },
+            }
         });
     },
     setColumnSortableWYSID: function () {
@@ -104,7 +113,7 @@ const acym_editorWysidDragDrop = {
             forcePlaceholderSize: true, //Forces the placeholder to have a size
             cursorAt: {
                 top: 20,
-                left: 50,
+                left: 50
             }, //Cursor position when you start to drag an element
 
             stop: function (event, ui) {
@@ -167,7 +176,7 @@ const acym_editorWysidDragDrop = {
             start: function () {
                 jQuery('.acym__wysid__column__element--placeholder').html('');
                 jQuery('.acym__wysid__row__selector, .acym__wysid__element__toolbox').remove();
-            },
+            }
         });
     },
     setNewColumnElementDraggableWYSID: function () {
@@ -177,7 +186,7 @@ const acym_editorWysidDragDrop = {
             helper: 'clone', //Clone the element that has been dragged instead of directly dragging it
             cursorAt: {
                 top: 12,
-                left: 40,
+                left: 40
             }, //Cursor position when you start to drag an element
             //appendTo: 'body', //Which element the draggable helper should be appended to while dragging
             connectToSortable104: '.acym__wysid__column > tbody', //Allows the drag element to be dropped onto this sortable
@@ -196,7 +205,7 @@ const acym_editorWysidDragDrop = {
                 jQuery(ui.helper)
                     .css({
                         'width': jQuery(this).width() + 'px',
-                        'opacity': 1,
+                        'opacity': 1
                     });
                 jQuery('.acym__wysid__column').addClass('acym__wysid__column--drag-start');
                 jQuery('.acym__wysid__column__element').off('mouseenter mouseleave');
@@ -207,7 +216,14 @@ const acym_editorWysidDragDrop = {
                     let $startDragging = jQuery('#acym__wysid__default__dragging');
                     startHeight = $startDragging.closest('.columns').height();
                     $startDragging.show();
-                    $startDragging.closest('#acym__wysid__default').attr('height', 'auto').closest('.columns').height($startDragging.height()).find('table').height($startDragging.height()).find('tbody').height($startDragging.height());
+                    $startDragging.closest('#acym__wysid__default')
+                                  .attr('height', 'auto')
+                                  .closest('.columns')
+                                  .height($startDragging.height())
+                                  .find('table')
+                                  .height($startDragging.height())
+                                  .find('tbody')
+                                  .height($startDragging.height());
                 }
             },
 
@@ -221,9 +237,16 @@ const acym_editorWysidDragDrop = {
                     $default.find('#acym__wysid__default__dragging').hide();
 
                     let $startDefault = jQuery('#acym__wysid__default__start');
-                    $startDefault.closest('#acym__wysid__default').attr('height', 'auto').closest('.columns').height($startDefault.height()).find('table').height($startDefault.height()).find('tbody').height($startDefault.height());
+                    $startDefault.closest('#acym__wysid__default')
+                                 .attr('height', 'auto')
+                                 .closest('.columns')
+                                 .height($startDefault.height())
+                                 .find('table')
+                                 .height($startDefault.height())
+                                 .find('tbody')
+                                 .height($startDefault.height());
                 }
-            },
+            }
         });
     },
     setFixJquerySortableWYSID: function () {
@@ -231,7 +254,7 @@ const acym_editorWysidDragDrop = {
             start: function (event, ui, draggable) {
 
                 let inst = jQuery(this).data('ui-draggable'), o = inst.options, uiSortable = jQuery.extend({}, ui, {
-                    item: inst.element,
+                    item: inst.element
                 });
                 inst.sortables = [];
                 jQuery(draggable.options.connectToSortable104).each(function () {
@@ -239,7 +262,7 @@ const acym_editorWysidDragDrop = {
                     if (sortable && !sortable.options.disabled) {
                         inst.sortables.push({
                             instance: sortable,
-                            shouldRevert: sortable.options.revert,
+                            shouldRevert: sortable.options.revert
                         });
                         // Call the sortable's refreshPositions at drag start to refresh the containerCache since the sortable container cache is used in drag
                         // and needs to be up to date (this will ensure it's initialised as well as being kept in step with any changes that might have happened on the page).
@@ -253,7 +276,7 @@ const acym_editorWysidDragDrop = {
 
                 //If we are still over the sortable, we fake the stop event of the sortable, but also remove helper
                 let inst = jQuery(this).data('ui-draggable'), uiSortable = jQuery.extend({}, ui, {
-                    item: inst.element,
+                    item: inst.element
                 });
 
                 jQuery.each(inst.sortables, function () {
@@ -280,7 +303,7 @@ const acym_editorWysidDragDrop = {
                         if (inst.options.helper === 'original') {
                             this.instance.currentItem.css({
                                 top: 'auto',
-                                left: 'auto',
+                                left: 'auto'
                             });
                         }
 
@@ -311,7 +334,10 @@ const acym_editorWysidDragDrop = {
                             this.instance.positionAbs = inst.positionAbs;
                             this.instance.helperProportions = inst.helperProportions;
                             this.instance.offset.click = inst.offset.click;
-                            if (this !== thisSortable && this.instance._intersectsWith(this.instance.containerCache) && jQuery.contains(thisSortable.instance.element[0], this.instance.element[0])) {
+                            if (this
+                                !== thisSortable
+                                && this.instance._intersectsWith(this.instance.containerCache)
+                                && jQuery.contains(thisSortable.instance.element[0], this.instance.element[0])) {
                                 innermostIntersecting = false;
                             }
                             return innermostIntersecting;
@@ -388,7 +414,7 @@ const acym_editorWysidDragDrop = {
                         }
                     }
                 });
-            },
+            }
         });
-    },
+    }
 };

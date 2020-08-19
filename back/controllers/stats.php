@@ -39,17 +39,47 @@ class StatsController extends acymController
         $data['show_date_filters'] = true;
         $data['page_title'] = false;
 
+        if (acym_isMultilingual()) {
+            $multilingualMailSelected = acym_getVar('int', 'mail_id_language', 0);
+            if (!empty($multilingualMailSelected)) $data['selectedMailid'] = $multilingualMailSelected;
+        }
+
         $this->prepareDetailedListing($data);
-        $this->prepareMailFilter($data);
         $this->prepareClickStats($data);
         $this->preparecharts($data);
         $this->prepareDefaultRoundCharts($data);
         $this->prepareDefaultLineChart($data);
+        if (acym_isMultilingual()) $this->prepareMultilingualMails($data);
+        $this->prepareMailFilter($data);
 
         $data['url_foundation_email'] = ACYM_CSS.'libraries/foundation_email.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'foundation_email.min.css');
         $data['url_click_map_email'] = ACYM_CSS.'click_map.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'click_map.min.css');
 
         parent::display($data);
+    }
+
+    private function prepareMultilingualMails(&$data)
+    {
+        if (empty($data['selectedMailid'])) return;
+
+        $mailClass = acym_get('class.mail');
+
+        $translatedEmails = [];
+
+        if (empty($data['mailInformation']->parent_id)) {
+            $translatedEmails = $mailClass->getTranslationsById($data['mailInformation']->id, true, true);
+        } elseif (!empty($data['mailInformation']->parent_id)) {
+            $parentEmail = $mailClass->getOneById($data['mailInformation']->parent_id);
+            if (empty($parentEmail)) return;
+            $translatedEmails = $mailClass->getTranslationsById($parentEmail->id, true, true);
+        }
+
+        $data['emailTranslations'] = [];
+        $allLanguages = acym_getLanguages();
+
+        foreach ($translatedEmails as $email) {
+            if (!empty($email->language)) $data['emailTranslations'][$email->id] = empty($allLanguages[$email->language]) ? $email->language : $allLanguages[$email->language]->name;
+        }
     }
 
     private function prepareDetailedListing(&$data)
@@ -93,6 +123,17 @@ class StatsController extends acymController
             $data['selectedMailid'],
             'class="acym__select acym_select2_ajax" acym-data-default="'.acym_translation('ACYM_ALL_EMAILS', true).'" data-placeholder="'.acym_translation('ACYM_ALL_EMAILS', true).'" data-ctrl="stats" data-task="searchSentMail" data-min="0" data-selected="'.$data['selectedMailid'].'"'
         );
+
+        $data['emailTranslationsFilters'] = '';
+
+        if (!empty($data['emailTranslations'])) {
+            $data['emailTranslationsFilters'] = acym_select(
+                $data['emailTranslations'],
+                'mail_id_language',
+                $data['selectedMailid'],
+                'class="acym__select acym__stats__select__language"'
+            );
+        }
     }
 
     private function prepareClickStats(&$data)
@@ -353,7 +394,11 @@ class StatsController extends acymController
         $data['page_title'] = false;
         $timeLinechart = acym_getVar('string', 'time_linechart', 'month');
 
-        //$this->prepareDetailedListing($data);
+        if (acym_isMultilingual()) {
+            $multilingualMailSelected = acym_getVar('int', 'mail_id_language', 0);
+            if (!empty($multilingualMailSelected)) $data['selectedMailid'] = $multilingualMailSelected;
+        }
+
         $this->prepareMailFilter($data);
         $this->prepareClickStats($data);
         $this->preparecharts($data);
@@ -372,6 +417,11 @@ class StatsController extends acymController
     {
         $exportHelper = acym_get('helper.export');
         $selectedMailid = acym_getVar('int', 'mail_id', '');
+
+        if (acym_isMultilingual()) {
+            $multilingualMailSelected = acym_getVar('int', 'mail_id_language', 0);
+            if (!empty($multilingualMailSelected)) $data['selectedMailid'] = $multilingualMailSelected;
+        }
 
         $where = '';
         if (!empty($selectedMailid)) $where = 'WHERE mail_id = '.intval($selectedMailid);
@@ -396,6 +446,12 @@ class StatsController extends acymController
     {
         $exportHelper = acym_get('helper.export');
         $selectedMailid = acym_getVar('int', 'mail_id', '');
+
+
+        if (acym_isMultilingual()) {
+            $multilingualMailSelected = acym_getVar('int', 'mail_id_language', 0);
+            if (!empty($multilingualMailSelected)) $data['selectedMailid'] = $multilingualMailSelected;
+        }
 
         $where = '';
         if (!empty($selectedMailid)) $where = 'WHERE userstat.`mail_id` = '.intval($selectedMailid);

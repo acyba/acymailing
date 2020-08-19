@@ -2,13 +2,13 @@ jQuery(document).ready(function ($) {
     Vue.component('vue-switch', {
         props: [
             'plugin',
-            'ischecked',
+            'ischecked'
         ],
         data: function () {
             return {
                 id: 'vue-switch_',
                 loading: false,
-                disabled: false,
+                disabled: false
             };
         },
         mounted: function () {
@@ -29,9 +29,14 @@ jQuery(document).ready(function ($) {
                     this.loading = false;
                     this.disabled = false;
                 });
-            },
+            }
         },
-        template: '<div class="cell shrink grid-x"><div class="switch tiny cell shrink"> ' + '<input class="switch-input" :id="id" type="checkbox" name="exampleSwitch" :checked="ischecked"> ' + '<label class="switch-paddle" @click="toggleActive(plugin.id)" :for="id"> ' + '</label> ' + '</div>' + '<i v-show="loading" class="cell shrink acym__card__loader acymicon-circle-o-notch acymicon-spin"></i></div>',
+        template: '<div class="cell shrink grid-x"><div class="switch tiny cell shrink"> '
+                  + '<input class="switch-input" :id="id" type="checkbox" name="exampleSwitch" :checked="ischecked"> '
+                  + '<label class="switch-paddle" @click="toggleActive(plugin.id)" :for="id"> '
+                  + '</label> '
+                  + '</div>'
+                  + '<i v-show="loading" class="cell shrink acym__card__loader acymicon-circle-o-notch acymicon-spin"></i></div>'
     });
 
     if ($('#acym__plugin__installed__application').length > 0) {
@@ -54,7 +59,7 @@ jQuery(document).ready(function ($) {
                     'Subscription system': 'background-color: #FFC7C7;',
                     'Others': 'background-color: #FFF1BC;',
                     'User management': 'background-color: #CAFFBA;',
-                    'Events management': 'background-color: #C2FFF9;',
+                    'Events management': 'background-color: #C2FFF9;'
                 },
                 noPluginTodisplay: false,
                 typingTimer: '',
@@ -65,7 +70,7 @@ jQuery(document).ready(function ($) {
                 updating: {},
                 pageDisplay: 1,
                 busy: false,
-                showSettings: {},
+                showSettings: {}
             },
             mounted: function () {
                 acym_helperBack.config_get('level').done((resConfig) => {
@@ -132,7 +137,7 @@ jQuery(document).ready(function ($) {
                     $.ajax({
                         url: ajaxUrl,
                         type: 'POST',
-                        data: {'plugin': plugin},
+                        data: {'plugin': plugin}
                     }).then((res) => {
                         res = acym_helper.parseJson(res);
                         if (undefined !== res.error) {
@@ -163,7 +168,7 @@ jQuery(document).ready(function ($) {
                     if (pluginLevel === 'starter') return true;
                     if (pluginLevel === 'essential' && [
                         'essential',
-                        'enterprise',
+                        'enterprise'
                     ].indexOf(this.currentLevel) !== -1) {
                         return true;
                     }
@@ -172,7 +177,10 @@ jQuery(document).ready(function ($) {
                 },
                 filterPlugin() {
                     return this.allPlugins.filter((plugin) => {
-                        return (plugin.level.toLowerCase().indexOf(this.level.toLowerCase()) !== -1) && (plugin.category.toLowerCase().indexOf(this.type.toLowerCase()) !== -1) && (plugin.folder_name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1);
+                        return (plugin.level.toLowerCase().indexOf(this.level.toLowerCase()) !== -1)
+                               && (plugin.category.toLowerCase()
+                                         .indexOf(this.type.toLowerCase()) !== -1)
+                               && (plugin.folder_name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1);
                     });
                 },
                 toggleCurrentApp(pluginId) {
@@ -235,7 +243,7 @@ jQuery(document).ready(function ($) {
                 isOverflown(index) {
                     if (this.$refs.plugins === undefined || this.$refs.plugins[index] === undefined) return '';
                     return this.$refs.plugins[index].scrollHeight > this.$refs.plugins[index].clientHeight ? 'acym__plugins__card__params_desc__overflown' : '';
-                },
+                }
             },
             watch: {
                 displayedPlugins(newVal, oldVal) {
@@ -256,8 +264,8 @@ jQuery(document).ready(function ($) {
                 },
                 level() {
                     this.resetDisplay();
-                },
-            },
+                }
+            }
         });
     }
 });

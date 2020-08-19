@@ -5,7 +5,7 @@ define('ACYM_DBPREFIX', '#__acym_');
 define('ACYM_LANGUAGE_FILE', 'com_acym');
 define('ACYM_ACYMAILLING_WEBSITE', 'https://www.acymailing.com/');
 define('ACYM_ACYWEBSITE', 'https://www.acyba.com/');
-define('ACYM_UPDATEMEURL', ACYM_ACYWEBSITE.'index.php?option=com_updateme&ctrl=');
+define('ACYM_UPDATEMEURL', ACYM_ACYWEBSITE.'index.php?option=com_updateme&nocache='.time().'&ctrl=');
 define('ACYM_SPAMURL', ACYM_UPDATEMEURL.'spamsystem&task=');
 define('ACYM_HELPURL', ACYM_UPDATEMEURL.'doc&component='.ACYM_NAME.'&page=');
 define('ACYM_REDIRECT', ACYM_UPDATEMEURL.'redirect&page=');

@@ -105,10 +105,15 @@
 			</div>
 		</div>
     <?php } ?>
-	<div class="cell grid-x margin-top-1 medium-4">
+	<div class="cell grid-x margin-top-1 medium-10 large-7 xlarge-5">
         <?php
         $label = acym_translation('ACYM_TRACK_THIS_CAMPAIGN');
         $label .= acym_info(acym_translation('ACYM_TRACK_THIS_CAMPAIGN_DESC'));
-        echo acym_switch('senderInformation[tracking]', isset($data['currentCampaign']->tracking) ? $data['currentCampaign']->tracking : 1, $label, []); ?>
+        echo acym_switch(
+            'senderInformation[tracking]',
+            isset($data['currentCampaign']->tracking) ? $data['currentCampaign']->tracking : 1,
+            $label,
+            []
+        ); ?>
 	</div>
 </div>

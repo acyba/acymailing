@@ -6,5 +6,5 @@ const acym_helperEditorHtml = {
         jQuery('#acym_form').on('submit', function () {
             if (typeof acyOnSaveEditor === 'function') acyOnSaveEditor();
         });
-    },
+    }
 };

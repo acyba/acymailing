@@ -1,6 +1,6 @@
 document.addEventListener('wpcf7submit', function (event) {
     let allAcyFields = jQuery('[name^="acymhiddenlists_"]');
-    
+
     for (let i = 0 ; i < allAcyFields.length ; i++) {
         let currentfield = jQuery(allAcyFields[i]);
         let listField = currentfield.attr('data-acymfield');
@@ -37,27 +37,28 @@ document.addEventListener('wpcf7submit', function (event) {
             data: {
                 'user[email]': emailAddress,
                 'hiddenlists': hiddenLists,
-                'subscription': allLists,
+                'subscription': allLists
             },
             timeout: 5000,
             error: function () {
                 console.log('Error subscribing user');
-            },
+            }
         });
     }
 }, false);
 
 jQuery(document).ready(function ($) {
-    jQuery('.tag-generator-panel [name="displayLists[]"], .tag-generator-panel [name="defaultLists[]"], .tag-generator-panel [name="autoLists[]"]').on('change', function () {
-        let displayLists = jQuery('.tag-generator-panel [name="displayLists[]"]').val();
-        let defaultLists = jQuery('.tag-generator-panel [name="defaultLists[]"]').val();
-        let autoLists = jQuery('.tag-generator-panel [name="autoLists[]"]').val();
+    jQuery('.tag-generator-panel [name="displayLists[]"], .tag-generator-panel [name="defaultLists[]"], .tag-generator-panel [name="autoLists[]"]')
+        .on('change', function () {
+            let displayLists = jQuery('.tag-generator-panel [name="displayLists[]"]').val();
+            let defaultLists = jQuery('.tag-generator-panel [name="defaultLists[]"]').val();
+            let autoLists = jQuery('.tag-generator-panel [name="autoLists[]"]').val();
 
-        let finalVal = '';
-        if (null != displayLists) finalVal += 'displayLists:' + displayLists.join(',') + '\n';
-        if (null != defaultLists) finalVal += 'defaultLists:' + defaultLists.join(',') + '\n';
-        if (null != autoLists) finalVal += 'autoLists:' + autoLists.join(',') + '\n';
+            let finalVal = '';
+            if (null != displayLists) finalVal += 'displayLists:' + displayLists.join(',') + '\n';
+            if (null != defaultLists) finalVal += 'defaultLists:' + defaultLists.join(',') + '\n';
+            if (null != autoLists) finalVal += 'autoLists:' + autoLists.join(',') + '\n';
 
-        jQuery('[name="values"]').val(finalVal).change();
-    });
+            jQuery('[name="values"]').val(finalVal).change();
+        });
 });

@@ -106,22 +106,25 @@ class acymClass extends acymObject
         $column = is_numeric(reset($elements)) ? $this->pkey : $this->namekey;
 
         //Secure the query
+        $escapedElements = [];
         foreach ($elements as $key => $val) {
-            $elements[$key] = acym_escapeDB($val);
+            $escapedElements[$key] = acym_escapeDB($val);
         }
 
-        if (empty($column) || empty($this->pkey) || empty($this->table) || empty($elements)) {
+        if (empty($column) || empty($this->pkey) || empty($this->table) || empty($escapedElements)) {
             return false;
         }
 
-        $query = 'DELETE FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE '.acym_secureDBColumn($column).' IN ('.implode(',', $elements).')';
+        acym_trigger('onAcymBefore'.ucfirst($this->table).'Delete', [&$elements]);
+
+        $query = 'DELETE FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE '.acym_secureDBColumn($column).' IN ('.implode(',', $escapedElements).')';
         $result = acym_query($query);
 
         if (!$result) {
             return false;
         }
 
-        acym_trigger('onAcymAfter'.$this->table.'Delete', [&$elements]);
+        acym_trigger('onAcymAfter'.ucfirst($this->table).'Delete', [&$elements]);
 
         return $result;
     }

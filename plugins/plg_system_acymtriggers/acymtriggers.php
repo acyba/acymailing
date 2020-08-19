@@ -3,6 +3,7 @@
 class plgSystemAcymtriggers extends JPlugin
 {
     var $oldUser = null;
+    var $formToDisplay = [];
 
     // Loads the Acy library
     public function initAcy()
@@ -81,9 +82,45 @@ class plgSystemAcymtriggers extends JPlugin
         acym_trigger('onAfterOrderUpdate', [&$order], 'plgAcymHikashop');
     }
 
+    public function onBeforeCompileHead()
+    {
+        if (!$this->initAcy()) return;
+        $isPreview = acym_getVar('bool', 'acym_preview', false);
+        if ($isPreview) return;
+
+        $app = JFactory::getApplication();
+        if ($app->getName() != 'site') return;
+
+        $formClass = acym_get('class.form');
+        $forms = $formClass->getAllFormsToDisplay();
+        if (empty($forms)) return;
+
+        $menu = acym_getMenu();
+        if (empty($menu)) return;
+
+        foreach ($forms as $form) {
+            if (!empty($form->pages) && (in_array($menu->id, $form->pages) || in_array('all', $form->pages))) $this->formToDisplay[] = $formClass->renderForm($form);
+        }
+
+        if (!empty($this->formToDisplay)) acym_initModule();
+    }
+
+    private function displayForms()
+    {
+        if (empty($this->formToDisplay)) return;
+
+        $buffer = JFactory::getApplication()->getBody();
+
+        $buffer = preg_replace('/(<body.*>)/Ui', '$1'.implode('', $this->formToDisplay), $buffer);
+
+        JFactory::getApplication()->setBody($buffer);
+    }
+
     public function onAfterRender()
     {
         if (!$this->initAcy()) return;
+
+        $this->displayForms();
 
         $config = acym_config();
         if (!$config->get('regacy', 0)) return;

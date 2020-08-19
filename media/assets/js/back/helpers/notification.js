@@ -7,7 +7,9 @@ const acym_helperNotification = {
             setTimeout(function () {
                 $button.find('> i').attr('class', 'acymicon-bell-o');
                 $button.find('.acym__tooltip__text').remove();
-                $button.removeAttr('data-acym-tooltip').removeAttr('data-acym-tooltip-position').removeClass('acym__header__notification__button__success acym__header__notification__pulse');
+                $button.removeAttr('data-acym-tooltip')
+                       .removeAttr('data-acym-tooltip-position')
+                       .removeClass('acym__header__notification__button__success acym__header__notification__pulse');
             }, 8000);
         }
 
@@ -20,7 +22,7 @@ const acym_helperNotification = {
             let top = (notifButtonOffset.top + $notifButton.height()) + 10 + 'px';
             $notificationCenter.css({
                 'top': top,
-                'left': left,
+                'left': left
             }).addClass('acym__header__notification__center__visible');
 
             let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=markNotificationRead';
@@ -28,19 +30,29 @@ const acym_helperNotification = {
             jQuery.get(ajaxUrl, function (res) {
                 res = acym_helper.parseJson(res);
                 if (undefined === res.error) {
-                    jQuery('.acym__header__notification').removeClass('acym__header__notification__pulse acym__header__notification__button__success acym__header__notification__button__info acym__header__notification__button__warning acym__header__notification__button__error').find('> i').attr('class', 'acymicon-bell-o');
+                    jQuery('.acym__header__notification')
+                        .removeClass(
+                            'acym__header__notification__pulse acym__header__notification__button__success acym__header__notification__button__info acym__header__notification__button__warning acym__header__notification__button__error')
+                        .find('> i')
+                        .attr('class', 'acymicon-bell-o');
                 } else {
                     console.log(res.error);
                 }
             });
 
             $button.off('click').on('click', function (e) {
-                if (jQuery(e.target).hasClass('acym__header__notification__center__visible') || jQuery(e.target).closest('.acym__header__notification__center__visible').length > 0) return true;
+                if (jQuery(e.target).hasClass('acym__header__notification__center__visible') || jQuery(e.target)
+                    .closest('.acym__header__notification__center__visible').length > 0) {
+                    return true;
+                }
                 acym_helperNotification.removeNotificationsCenter();
             });
             setTimeout(function () {
                 jQuery(window).off('click').on('click', function (e) {
-                    if (jQuery(e.target).hasClass('acym__header__notification__center__visible') || jQuery(e.target).closest('.acym__header__notification__center__visible').length > 0) return true;
+                    if (jQuery(e.target).hasClass('acym__header__notification__center__visible') || jQuery(e.target)
+                        .closest('.acym__header__notification__center__visible').length > 0) {
+                        return true;
+                    }
                     acym_helperNotification.removeNotificationsCenter();
                 });
             }, 100);
@@ -87,11 +99,16 @@ const acym_helperNotification = {
         jQuery(window).off('click');
         acym_helperNotification.setNotificationCenter();
     },
-    addNotification: function (message, type) {
-        if (type == undefined || jQuery.inArray(type, [
+    addNotification: function (message, type, clear) {
+        if (clear === undefined) clear = false;
+        if (clear) {
+            jQuery('.acym__message').remove();
+        }
+
+        if (type === undefined || jQuery.inArray(type, [
             'success',
             'warning',
-            'error',
+            'error'
         ]) == -1) {
             type = 'info';
         }
@@ -112,7 +129,16 @@ const acym_helperNotification = {
         });
     },
     addHeaderNotification: function (message, type) {
-        let structure = '<div class="acym__message grid-x acym__message__' + type + '">' + '<div class="cell auto">' + '<p>' + message + '</p>' + '</div>' + '<i data-id="0" class="cell shrink acym__message__close acymicon-remove"></i>' + '</div>';
+        let structure = '<div class="acym__message grid-x acym__message__'
+                        + type
+                        + '">'
+                        + '<div class="cell auto">'
+                        + '<p>'
+                        + message
+                        + '</p>'
+                        + '</div>'
+                        + '<i data-id="0" class="cell shrink acym__message__close acymicon-remove"></i>'
+                        + '</div>';
 
         return structure;
     },

@@ -177,7 +177,7 @@
 
 			<div class="cell xlarge-3 medium-5">
 				<label for="acym__config__regacy-checkedlists">
-                    <?php echo acym_translation('ACYM_CHECKED_LISTS').acym_info(acym_translation('ACYM_LISTS_CHECKED_DEFAULT_DESC')); ?>
+                    <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info(acym_translation('ACYM_LISTS_CHECKED_DEFAULT_DESC')); ?>
 				</label>
 			</div>
 			<div class="cell xlarge-4 medium-7">

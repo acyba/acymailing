@@ -66,15 +66,17 @@ jQuery(document).ready(function ($) {
             'bounce': $('#acym__migrate__bounce').is(':checked') && !$('#acym__migrate__bounce').hasClass('acym__migrate__migrate_with_success_element'),
             'lists': $('#acym__migrate__lists').is(':checked') && !$('#acym__migrate__lists').hasClass('acym__migrate__migrate_with_success_element'),
             'mails': $('#acym__migrate__mails').is(':checked') && !$('#acym__migrate__mails').hasClass('acym__migrate__migrate_with_success_element'),
-            'templates': $('#acym__migrate__templates').is(':checked') && !$('#acym__migrate__templates').hasClass('acym__migrate__migrate_with_success_element'),
+            'templates': $('#acym__migrate__templates').is(':checked') && !$('#acym__migrate__templates')
+                .hasClass('acym__migrate__migrate_with_success_element'),
             'fields': $('#acym__migrate__fields').is(':checked') && !$('#acym__migrate__fields').hasClass('acym__migrate__migrate_with_success_element'),
-            'users': $('#acym__migrate__users').is(':checked') && !$('#acym__migrate__users').hasClass('acym__migrate__migrate_with_success_element'),
+            'users': $('#acym__migrate__users').is(':checked') && !$('#acym__migrate__users').hasClass('acym__migrate__migrate_with_success_element')
         };
 
 
         elementsToMigrate['subscriptions'] = elementsToMigrate['users'] && elementsToMigrate['lists'];
         elementsToMigrate['users_fields'] = elementsToMigrate['users'] && elementsToMigrate['fields'];
-        elementsToMigrate['mailstats'] = $('#acym__migrate__mailstats').is(':checked') && !$('#acym__migrate__mailstats').hasClass('acym__migrate__migrate_with_success_element');
+        elementsToMigrate['mailstats'] = $('#acym__migrate__mailstats').is(':checked') && !$('#acym__migrate__mailstats')
+            .hasClass('acym__migrate__migrate_with_success_element');
         elementsToMigrate['mailhaslists'] = elementsToMigrate['mails'] && elementsToMigrate['lists'];
         elementsToMigrate['welcomeunsub'] = elementsToMigrate['mails'] && elementsToMigrate['lists'];
 
@@ -83,9 +85,10 @@ jQuery(document).ready(function ($) {
 
         let params = {
             'migrateMails': elementsToMigrate['mails'] ? 1 : 0,
-            'migrateMailStats': $('#acym__migrate__mailstats').is(':checked') && !$('#acym__migrate__mailstats').hasClass('acym__migrate__migrate_with_success_element') ? 1 : 0,
+            'migrateMailStats': $('#acym__migrate__mailstats').is(':checked') && !$('#acym__migrate__mailstats')
+                .hasClass('acym__migrate__migrate_with_success_element') ? 1 : 0,
             'migrateMailHasLists': elementsToMigrate['mails'] && elementsToMigrate['lists'] ? 1 : 0,
-            'migrateLists': elementsToMigrate['lists'] ? 1 : 0,
+            'migrateLists': elementsToMigrate['lists'] ? 1 : 0
         };
 
 
@@ -111,7 +114,13 @@ jQuery(document).ready(function ($) {
         for (let i = 0 ; i < callsPerBatch ; i++) {
             if (totalCallWhereWeAre > totalCallsToDo) break;//If we did all the element
             let currentElement = totalCallWhereWeAre * insertPerCall;
-            let ajax = $.post(ACYM_AJAX_URL + '&ctrl=dashboard&task=migrate&element=' + element + '&currentElement=' + currentElement + '&insertPerCalls=' + insertPerCall);
+            let ajax = $.post(ACYM_AJAX_URL
+                              + '&ctrl=dashboard&task=migrate&element='
+                              + element
+                              + '&currentElement='
+                              + currentElement
+                              + '&insertPerCalls='
+                              + insertPerCall);
             ajaxCalls.push(ajax);
             totalCallWhereWeAre++;
         }
@@ -203,7 +212,7 @@ jQuery(document).ready(function ($) {
             baseURL: 'https://api.giphy.com/v1/gifs/',
             key: 'rLgg3ulcXQFtjFxwMqgP85ZNXXMpsK3D',
             tag: 'fail',
-            type: 'random',
+            type: 'random'
         };
         let xhr = $.get(giphy.baseURL + giphy.type + '?api_key=' + giphy.key + '&tag=' + giphy.tag);
         xhr.done(function (data) {

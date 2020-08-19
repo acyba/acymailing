@@ -47,7 +47,15 @@ const acym_editorWysidTest = {
         });
     },
     sendTest: function (id) {
-        let url = ACYM_AJAX_URL + '&page=acymailing_mails&ctrl=' + acym_helper.ctrlMails + '&task=sendTest&id=' + id + '&controller=' + jQuery('[name="ctrl"]').val() + '&test_note=' + encodeURIComponent(jQuery('#acym__wysid__send__test__note').val()) + '&test_emails=' + encodeURIComponent(jQuery('.acym__multiselect__email').val().join(','));
+        let url = ACYM_AJAX_URL;
+        url += '&page=acymailing_mails';
+        url += '&ctrl=' + acym_helper.ctrlMails;
+        url += '&task=sendTest';
+        url += '&id=' + id;
+        url += '&controller=' + jQuery('[name="ctrl"]').val();
+        url += '&test_note=' + encodeURIComponent(jQuery('#acym__wysid__send__test__note').val());
+        url += '&test_emails=' + encodeURIComponent(jQuery('.acym__multiselect__email').val().join(','));
+        url += '&lang_version=' + acym_editorWysidMultilingual.currentLanguage;
 
         jQuery.post(url, function (res) {
             res = acym_helper.parseJson(res);
@@ -60,5 +68,5 @@ const acym_editorWysidTest = {
             if (res.level === 'info') jQuery('.acym__wysid__send__test-close').click();
             acym_helperEditorWysid.setColumnRefreshUiWYSID();
         });
-    },
+    }
 };

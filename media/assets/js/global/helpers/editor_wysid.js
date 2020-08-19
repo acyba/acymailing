@@ -5,7 +5,8 @@ jQuery(document).ready(function ($) {
             if (jQuery('#acym__wysid').length < 1) return false;
             acym_helperEditorWysid.mailsSettings = acym_helperEditorWysid.saveSettings === '' ? {} : JSON.parse(acym_helperEditorWysid.saveSettings);
             jQuery('#editor_thumbnail').val('');
-            jQuery('#acym__wysid__edit').append('<style id="acym__wysid__custom__style">' + acym_helperEditorWysid.parseTextToCss(acym_helperEditorWysid.savedStylesheet) + '</style>');
+            jQuery('#acym__wysid__edit')
+                .append('<style id="acym__wysid__custom__style">' + acym_helperEditorWysid.parseTextToCss(acym_helperEditorWysid.savedStylesheet) + '</style>');
             acym_editorWysidVersioning.checkForUnsavedVersion();
             if (jQuery('#acym__walkthrough__email').length > 0) {
                 jQuery('#acym__wysid').parent().insertAfter('#acym__walkthrough__email');
@@ -33,6 +34,8 @@ jQuery(document).ready(function ($) {
             acym_editorWysidTest.sendTestAjax();
             acym_helperEditorWysid.preventSubmitEditor();
             jQuery('[id^="mce_"]').removeAttr('id');
+
+            acym_editorWysidMultilingual.setLanguageSelection();
         },
         setColumnRefreshUiWYSID: function (reloadTinyMCE = true) {
             acym_editorWysidRowSelector.setRowSelector();
@@ -46,7 +49,8 @@ jQuery(document).ready(function ($) {
             acym_editorWysidContextModal.setSpaceContextModalWYSID();
             acym_editorWysidContextModal.setFollowContextModalWYSID();
             acym_editorWysidContextModal.setSeparatorContextModalWYSID();
-            acym_editorWysidColorPicker.setSettingsColorPickerWYSID(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID(jQuery('#acym__wysid__right__toolbar__settings__font--select').val(), 'color'));
+            acym_editorWysidColorPicker.setSettingsColorPickerWYSID(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID(jQuery(
+                '#acym__wysid__right__toolbar__settings__font--select').val(), 'color'));
             acym_editorWysidFontStyle.setSettingsWYSID();
             acym_editorWysidFontStyle.setSettingsControlsWYSID();
             acym_editorWysidFontStyle.setAllHtmlElementStyleWYSID();
@@ -84,7 +88,14 @@ jQuery(document).ready(function ($) {
                     dropMessage += '</div>';
                     $columns.before(dropMessage);
                     let $startDefault = jQuery('#acym__wysid__default__start');
-                    $startDefault.closest('#acym__wysid__default').attr('height', 'auto').closest('.columns').height($startDefault.height()).find('table').height($startDefault.height()).find('tbody').height($startDefault.height());
+                    $startDefault.closest('#acym__wysid__default')
+                                 .attr('height', 'auto')
+                                 .closest('.columns')
+                                 .height($startDefault.height())
+                                 .find('table')
+                                 .height($startDefault.height())
+                                 .find('tbody')
+                                 .height($startDefault.height());
                 }
             }
 
@@ -98,7 +109,7 @@ jQuery(document).ready(function ($) {
                     jQuery(this)
                         .css({
                             'min-height': '0',
-                            'display': 'table-cell',
+                            'display': 'table-cell'
                         });
                 }
             });
@@ -106,14 +117,14 @@ jQuery(document).ready(function ($) {
                 jQuery(this).children().length == 0 ? jQuery(this)
                     .css({
                         'min-height': '75px',
-                        'display': 'block',
+                        'display': 'block'
                     })
                     .closest('table')
                     .css('min-height', '75px')
                     .css('display', 'block') : jQuery(this)
                     .css({
                         'min-height': '0px',
-                        'display': 'table-row-group',
+                        'display': 'table-row-group'
                     })
                     .closest('table')
                     .css('min-height', '0')
@@ -134,8 +145,8 @@ jQuery(document).ready(function ($) {
                         {
                             element: '.mce-widget .mce-i-codesample',
                             text: ACYM_JS_TXT.ACYM_INTRO_ADD_DTEXT,
-                            position: 'right',
-                        },
+                            position: 'right'
+                        }
                     ];
                     acym_helperIntroJS.setIntrojs('mail_editor_dtext');
                 }, 200);
@@ -160,7 +171,7 @@ jQuery(document).ready(function ($) {
             jQuery('#acym__wysid').css('min-height', jQuery(window).height() - (wrapperPaddingTop + adminHeight));
             jQuery('#acym__wysid__template').css({
                 'max-height': jQuery(window).height() - (wrapperPaddingTop + adminHeight + toolbarTop + 64),
-                'min-height': jQuery(window).height() - (wrapperPaddingTop + adminHeight + toolbarTop + 64),
+                'min-height': jQuery(window).height() - (wrapperPaddingTop + adminHeight + toolbarTop + 64)
             });
             jQuery('.acym__wysid__right-toolbar__content').css('max-height', jQuery(window).height() - (wrapperPaddingTop + adminHeight + 48));
         },
@@ -169,7 +180,8 @@ jQuery(document).ready(function ($) {
                 jQuery('.acym__template__choose__list .acym__templates__oneTpl').off('click').on('click', function (e) {
                     e.preventDefault();
                     let thisLink = jQuery(this).find('a').attr('href');
-                    let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_mails&ctrl=' + acym_helper.ctrlMails + '&task=getMailContent&from=' + jQuery(this).attr('id');
+                    let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_mails&ctrl=' + acym_helper.ctrlMails + '&task=getMailContent&from=' + jQuery(this)
+                        .attr('id');
 
                     jQuery.post(ajaxUrl, function (response) {
                         if (response == 'error') {
@@ -190,7 +202,8 @@ jQuery(document).ready(function ($) {
                 let stylesheetToApply = e;
                 for (let key in stylesheetToApply) {
                     let allCss = stylesheetToApply[key];
-                    css += '#acym__wysid__template .body ' + key + '{';
+                    let prependClass = key.indexOf('#acym__wysid__template') !== -1 ? '' : '#acym__wysid__template .body ';
+                    css += prependClass + key + '{';
                     for (let keyCss in allCss) {
                         css += keyCss + ':' + allCss[keyCss] + ';';
                     }
@@ -214,7 +227,7 @@ jQuery(document).ready(function ($) {
             setTimeout(function () {
                 acym_editorWysidNotifications.addEditorNotification({
                     'message': ACYM_JS_TXT.ACYM_SESSION_IS_GOING_TO_END,
-                    'level': 'warning',
+                    'level': 'warning'
                 });
             }, $timeoutToDisplayAlertInMilliseconds);
         },
@@ -241,90 +254,90 @@ jQuery(document).ready(function ($) {
                 'font-size': '12px',
                 'font-weight': 'normal',
                 'font-style': 'normal',
-                'color': '#000000',
+                'color': '#000000'
             },
             'a': {
                 'font-family': 'Helvetica',
                 'font-size': '12px',
                 'font-weight': 'normal',
                 'font-style': 'normal',
-                'color': '#0000F1',
+                'color': '#0000F1'
             },
             'li': {
                 'font-family': 'Helvetica',
                 'font-size': '12px',
                 'font-weight': 'normal',
                 'font-style': 'normal',
-                'color': '#000000',
+                'color': '#000000'
             },
             'h1': {
                 'font-family': 'Helvetica',
                 'font-size': '34px',
                 'font-weight': 'normal',
                 'font-style': 'normal',
-                'color': '#000000',
+                'color': '#000000'
             },
             'h2': {
                 'font-family': 'Helvetica',
                 'font-size': '30px',
                 'font-weight': 'normal',
                 'font-style': 'normal',
-                'color': '#000000',
+                'color': '#000000'
             },
             'h3': {
                 'font-family': 'Helvetica',
                 'font-size': '28px',
                 'font-weight': 'normal',
                 'font-style': 'normal',
-                'color': '#000000',
+                'color': '#000000'
             },
             'h4': {
                 'font-family': 'Helvetica',
                 'font-size': '24px',
                 'font-weight': 'normal',
                 'font-style': 'normal',
-                'color': '#000000',
+                'color': '#000000'
             },
             'h5': {
                 'font-family': 'Helvetica',
                 'font-size': '20px',
                 'font-weight': 'normal',
                 'font-style': 'normal',
-                'color': '#000000',
+                'color': '#000000'
             },
             'h6': {
                 'font-family': 'Helvetica',
                 'font-size': '18px',
                 'font-weight': 'normal',
                 'font-style': 'normal',
-                'color': '#000000',
-            },
+                'color': '#000000'
+            }
         },
         socialMedia: {
             'facebook': {
                 'src': MEDIA_URL_ACYM + '/images/logo/facebook.png',
                 'link': '#',
-                'text': 'Like',
+                'text': 'Like'
             },
             'twitter': {
                 'src': MEDIA_URL_ACYM + '/images/logo/twitter.png',
                 'link': '#',
-                'text': 'Tweet',
+                'text': 'Tweet'
             },
             'pinterest': {
                 'src': MEDIA_URL_ACYM + '/images/logo/pinterest.png',
                 'link': '#',
-                'text': 'pin it',
+                'text': 'pin it'
             },
             'linkedin': {
                 'src': MEDIA_URL_ACYM + '/images/logo/linkedin.png',
                 'link': '#',
-                'text': 'share',
+                'text': 'share'
             },
             'instagram': {'src': MEDIA_URL_ACYM + '/images/logo/instagram.png'},
             'vimeo': {'src': MEDIA_URL_ACYM + '/images/logo/vimeo.png'},
             'wordpress': {'src': MEDIA_URL_ACYM + '/images/logo/wordpress.png'},
-            'youtube': {'src': MEDIA_URL_ACYM + '/images/logo/youtube.png'},
-        },
+            'youtube': {'src': MEDIA_URL_ACYM + '/images/logo/youtube.png'}
+        }
     };
 });

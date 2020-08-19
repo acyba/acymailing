@@ -13,7 +13,7 @@ class plgAcymContactform7 extends acymPlugin
 
         $this->propertyLabels = [
             'displayLists' => acym_translation('ACYM_DISPLAYED_LISTS'),
-            'defaultLists' => acym_translation('ACYM_CHECKED_LISTS'),
+            'defaultLists' => acym_translation('ACYM_LISTS_CHECKED_DEFAULT'),
             'autoLists' => acym_translation('ACYM_AUTO_SUBSCRIBE_TO'),
         ];
     }

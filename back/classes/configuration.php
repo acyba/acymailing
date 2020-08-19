@@ -32,6 +32,14 @@ class acymconfigurationClass extends acymClass
                 continue;
             }
 
+            if ($name === 'multilingual' && $value === '1') {
+                $remindme = json_decode($this->get('remindme', '[]'), true);
+                if (!in_array('multilingual', $remindme)) {
+                    $remindme[] = 'multilingual';
+                    $this->save(['remindme' => json_encode($remindme)]);
+                }
+            }
+
             if (is_array($value)) {
                 $value = implode(',', $value);
             }
@@ -46,9 +54,7 @@ class acymconfigurationClass extends acymClass
             $params[] = '('.acym_escapeDB(strip_tags($name)).','.acym_escapeDB(strip_tags($value)).')';
         }
 
-        if (empty($params)) {
-            return true;
-        }
+        if (empty($params)) return true;
 
         $query .= implode(',', $params);
 

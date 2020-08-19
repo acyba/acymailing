@@ -151,7 +151,7 @@ class plgAcymUser extends acymPlugin
             }
 
             if (!empty($idused) && empty($this->sendervalues[$idused]) && empty($receivervalues[$idused])) {
-                $receivervalues[$idused] = acym_loadObject('SELECT * FROM '.$this->cmsUserVars->table.' WHERE '.$this->cmsUserVars->id.' = '.intval($idused).' LIMIT 1');
+                $receivervalues[$idused] = acym_loadObject('SELECT * FROM '.$this->cmsUserVars->table.' WHERE '.$this->cmsUserVars->id.' = '.intval($idused));
 
                 //If we save the value in the object as we may reuse it...
                 if ($save) {
@@ -472,7 +472,8 @@ class plgAcymUser extends acymPlugin
 
         // Handle custom fields
         if (strpos($options['field'], 'cf_') !== false) {
-            $query->leftjoin['cmsuserfields'.$num] = '#__fields_values AS cmsuserfields'.$num.' ON cmsuserfields'.$num.'.item_id = user.cms_id AND cmsuserfields'.$num.'.field_id = '.intval($options['field']);
+            $cfId = substr($options['field'], 3);
+            $query->leftjoin['cmsuserfields'.$num] = '#__fields_values AS cmsuserfields'.$num.' ON cmsuserfields'.$num.'.item_id = user.cms_id AND cmsuserfields'.$num.'.field_id = '.intval($cfId);
             $query->where[] = $query->convertQuery('cmsuserfields'.$num, 'value', $options['operator'], $options['value'], '');
         } else {
             // Handle normal fields

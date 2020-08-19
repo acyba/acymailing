@@ -10,6 +10,9 @@ const acym_editorWysidFormAction = {
 
             return jQuery.when(acym_helperThumbnail.setAjaxSaveThumbnail()).done(function () {
                 return acym_editorWysidFormAction._ajaxCall(controller, sendTest, saveAsTmpl);
+            }).fail(function (err) {
+                console.log(err);
+                return acym_editorWysidFormAction._ajaxCall(controller, sendTest, saveAsTmpl);
             });
         } else {
             return acym_editorWysidFormAction._ajaxCall(controller, sendTest, saveAsTmpl);
@@ -19,13 +22,13 @@ const acym_editorWysidFormAction = {
         let $template = jQuery('#acym__wysid__template');
         $template.css({
             'overflow': 'hidden',
-            'overflow-y': 'auto',
+            'overflow-y': 'auto'
         });
 
         jQuery('.acym__wysid__row__selector, .acym__wysid__element__toolbox').remove();
         jQuery('.acym__wysid__tinymce--text--placeholder--empty').removeClass('acym__wysid__tinymce--text--placeholder--empty');
 
-        jQuery('img').each(function () {
+        jQuery('#acym__wysid__template img').each(function () {
             let width = jQuery(this).width();
             let outerWidth = jQuery(this).outerWidth();
             jQuery(this)
@@ -77,6 +80,9 @@ const acym_editorWysidFormAction = {
         return acym_editorWysidFormAction.saveAjaxMail(jQuery('[name="ctrl"]').val(), sendTest, saveAsTmpl);
     },
     _ajaxCall: function (controller, fromSendTest, saveAsTmpl) {
+        // Handle when multilingual
+        acym_editorWysidMultilingual.storeCurrentValues();
+
         let ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + controller;
         if (saveAsTmpl) {
             jQuery('input[name="task"]').val('saveAsTmplAjax');
@@ -88,7 +94,7 @@ const acym_editorWysidFormAction = {
         return jQuery.ajax({
             type: 'POST',
             url: ajaxUrl,
-            data: jQuery('#acym_form').serialize(),
+            data: jQuery('#acym_form').serialize()
         }).done(function (res) {
             res = acym_helper.parseJson(res);
             if ('' !== res.error) {
@@ -99,7 +105,7 @@ const acym_editorWysidFormAction = {
                 } else {
                     acym_editorWysidNotifications.addEditorNotification({
                         'message': ACYM_JS_TXT.ACYM_TEMPLATE_CREATED,
-                        'level': 'success',
+                        'level': 'success'
                     }, 3000, false);
                 }
                 if (fromSendTest) acym_editorWysidTest.sendTest(res.data);
@@ -148,7 +154,7 @@ const acym_editorWysidFormAction = {
     setThumbnailPreSave: function () {
         jQuery('#acym__wysid__template').css({
             'overflow': 'unset',
-            'overflow-y': 'unset',
+            'overflow-y': 'unset'
         });
 
         let tmplheight = jQuery('.acym__wysid__template__content').height();
@@ -156,29 +162,34 @@ const acym_editorWysidFormAction = {
 
         return html2canvas(node, {
             height: tmplheight,
-            logging: false,
+            logging: false
         }).then(canvas => {
             return canvas.toDataURL('image/png');
         });
     },
     setEditButtonWYSID: function () {
         jQuery('#acym__wysid__edit__button').off('click').on('click', function () {
-            if (jQuery('#acym__wysid .acym__wysid__template__content').css('background-image') !== 'none') jQuery('#acym__wysid__background-image__template-delete').hide();
+            if (jQuery('#acym__wysid .acym__wysid__template__content').css('background-image') !== 'none') {
+                jQuery('#acym__wysid__background-image__template-delete').hide();
+            }
             acym_helperEditorWysid.insertDTextInSubject = false;
             jQuery('.acym__wysid__row__element__toolbox__colorpicker').spectrum('destroy');
             jQuery('.sp-container').remove();
             jQuery('#acym_header').css('display', 'none');
             jQuery('.acym__content').css('display', 'none');
             let acymWysidDivStyle = {
-                'display': 'inherit',
+                'display': 'inherit'
             };
             if (CMS_ACYM === 'joomla') {
                 acymWysidDivStyle.top = jQuery('.navbar-fixed-top').height() + 'px';
             }
             jQuery('#acym__wysid').css(acymWysidDivStyle);
             jQuery('#acym__wysid__edit').css('display', 'none');
-            if ('' !== jQuery('.acym__wysid__hidden__save__content').val()) jQuery('#acym__wysid__template').replaceWith(jQuery('.acym__wysid__hidden__save__content').val());
-            acym_helperEditorWysid.saveSettings = jQuery('.acym__wysid__hidden__save__settings').val() != '' ? jQuery('.acym__wysid__hidden__save__settings').val() : '';
+            if ('' !== jQuery('.acym__wysid__hidden__save__content').val()) {
+                jQuery('#acym__wysid__template').replaceWith(jQuery('.acym__wysid__hidden__save__content').val());
+            }
+            acym_helperEditorWysid.saveSettings = jQuery('.acym__wysid__hidden__save__settings').val() != '' ? jQuery('.acym__wysid__hidden__save__settings')
+                .val() : '';
             acym_helperEditorWysid.mailsSettings = acym_helperEditorWysid.saveSettings == '' ? {} : JSON.parse(acym_helperEditorWysid.saveSettings);
             if (jQuery('.acym__wysid__hidden__save__stylesheet').val() != '') {
                 acym_helperEditorWysid.savedStylesheet = jQuery('.acym__wysid__hidden__save__stylesheet').val();
@@ -218,5 +229,5 @@ const acym_editorWysidFormAction = {
             jQuery('#acym__wysid__edit').css('display', '');
             jQuery('.acym__wysid__hidden__save__stylesheet').val(acym_helperEditorWysid.savedStylesheet);
         });
-    },
+    }
 };

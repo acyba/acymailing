@@ -4,5 +4,5 @@ const acym_helperSearch = {
             jQuery('.acym__search-field').attr('value', '');
             acym_helperPagination.initPagination();
         });
-    },
+    }
 };

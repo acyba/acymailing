@@ -7,10 +7,6 @@ const acym_helperCampaigns = {
         acym_helperCampaigns.setStopSending();
         acym_helperCampaigns.setDeactivateAutomatic();
         acym_helperCampaigns.setSummaryScroll();
-        this.setSelectionCreateNewMail();
-        this.setSelectCreateNewMail();
-        this.setButtonCreateNewEmail();
-        if (ACYM_IS_ADMIN) this.setSelectSelect2Theme();
 
         if (jQuery('#acym__wysid').length < 1) {
             acym_helperCampaigns.setSendSettingsButtons();
@@ -142,7 +138,8 @@ const acym_helperCampaigns = {
             allCards.removeClass('acym__email__new__card-selected');
             jQuery(this).addClass('acym__email__new__card-selected');
 
-            if ((jQuery(this).hasClass('acym__email__new__card-list') && jQuery(this).find('.acym__email__new__card__select').val() !== '') || !jQuery(this).hasClass('acym__email__new__card-list')) {
+            if ((jQuery(this).hasClass('acym__email__new__card-list') && jQuery(this).find('.acym__email__new__card__select').val() !== '') || !jQuery(this)
+                .hasClass('acym__email__new__card-list')) {
                 jQuery('#acym__email__new__button-create').removeAttr('disabled');
             } else {
                 jQuery('#acym__email__new__button-create').attr('disabled', 'true');
@@ -174,7 +171,28 @@ const acym_helperCampaigns = {
     setSelectSelect2Theme: function () {
         jQuery('.acym__email__new__card__select').select2({
             theme: 'sortBy',
-            minimumResultsForSearch: Infinity,
+            minimumResultsForSearch: Infinity
         });
     },
+    setClickFlagsSummary: function () {
+        jQuery('.acym__campaign__summary__preview__languages-one')
+            .not('.acym__campaign__summary__preview__languages-one__empty')
+            .off('click')
+            .on('click', function () {
+                if (jQuery(this).hasClass('language__selected')) return;
+
+                jQuery('.language__selected').removeClass('language__selected');
+                jQuery(this).addClass('language__selected');
+
+                let idBody = '#acym__summary-body-' + jQuery(this).attr('data-acym-lang');
+                let idSubject = '#acym__summary-subject-' + jQuery(this).attr('data-acym-lang');
+                let idPreview = '#acym__summary-preview-' + jQuery(this).attr('data-acym-lang');
+
+                jQuery('.acym__hidden__mail__content').val(jQuery(idBody).val());
+                acym_helperPreview.loadIframe('acym__wysid__preview__iframe__acym__wysid__email__preview', false);
+
+                jQuery('.acym__campaign__summary__email__information-subject').html(jQuery(idSubject).val());
+                jQuery('.acym__campaign__summary__generated__mail__one__preview').html(jQuery(idPreview).val());
+            });
+    }
 };

@@ -26,10 +26,20 @@ const acym_editorWysidDynammic = {
         previewTooltip += '</span>';
 
         if (0 === previewContent.length) {
-            previewContent = '<div class="acym_default_dcontent"><span class="acym_default_dcontent_text">' + ACYM_JS_TXT.ACYM_NO_DCONTENT_TEXT + '</span></div>';
+            previewContent = '<div class="acym_default_dcontent"><span class="acym_default_dcontent_text">'
+                             + ACYM_JS_TXT.ACYM_NO_DCONTENT_TEXT
+                             + '</span></div>';
         }
 
-        let insertedContent = '<tr id="' + uniqueId + '" class="acym__wysid__column__element ui-draggable" data-dynamic="' + shortcode + '" style="' + style + '" data-plugin="' + plugin + '">';
+        let insertedContent = '<tr id="'
+                              + uniqueId
+                              + '" class="acym__wysid__column__element ui-draggable" data-dynamic="'
+                              + shortcode
+                              + '" style="'
+                              + style
+                              + '" data-plugin="'
+                              + plugin
+                              + '">';
         insertedContent += '<td class="large-12 acym__wysid__column__element__td">' + previewTooltip;
         insertedContent += previewContent;
         insertedContent += '<div class="plugin_loader" style="display: none;"><i class="fa acymicon-spin acymicon-circle-o-notch">&zwj;</i></div>';
@@ -75,8 +85,8 @@ const acym_editorWysidDynammic = {
             type: 'POST',
             data: {
                 'mailId': mailId,
-                'code': shortcode,
-            },
+                'code': shortcode
+            }
         }).then(function (response) {
             // Another option has been changed, apply the newest only
             if (currentPreviewIdentifier !== acym_helperEditorWysid.dynamicPreviewIdentifier) return;
@@ -149,7 +159,7 @@ const acym_editorWysidDynammic = {
                 acym_helperDatePicker.setRSDateChoice();
                 acym_editorWysidToolbar.setRightToolbarWYSID();
                 if (0 === shortcode.length) acym_editorWysidDynammic.insertDContent('');
-            },
+            }
         });
     },
     setPluginFilters: function () {
@@ -173,7 +183,7 @@ const acym_editorWysidDynammic = {
             jQuery('#acym__wysid__context__plugins select')
                 .select2({
                     theme: 'foundation',
-                    width: '115px',
+                    width: '115px'
                 });
         }
     },
@@ -221,7 +231,9 @@ const acym_editorWysidDynammic = {
         const $pluginListing = jQuery('#plugin_listing');
 
         //If there is no more elements to show
-        if ($pluginListing.find('.acym__listing__empty__load-more').length > 0 || $pluginListing.find('.acym__listing__empty__search__modal').length > 0) return true;
+        if ($pluginListing.find('.acym__listing__empty__load-more').length > 0 || $pluginListing.find('.acym__listing__empty__search__modal').length > 0) {
+            return true;
+        }
 
         $pluginListing.on('scroll', function () {
             //We subtract 80 this way the call trigger before the user touch the bottom and he have to wait less time
@@ -303,5 +315,5 @@ const acym_editorWysidDynammic = {
             jQuery('pre').css('white-space', '-o-pre-wrap');
             jQuery('code').css('white-space', '-o-pre-wrap');
         }
-    },
+    }
 };

@@ -85,7 +85,10 @@
 						<div data-acy-elementid="<?php echo acym_escape($row->id); ?>" class="cell grid-x acym__listing__row">
 							<div class="cell medium-auto acym_vcenter">
 								<div class="acym__listing__title">
-									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo $row->name; ?></h6>
+                                    <?php
+                                    $row->language = empty($data['languages'][$row->language]) ? $row->language : $data['languages'][$row->language]->name;
+                                    ?>
+									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo $row->name.(empty($row->language) ? '' : ' - '.$row->language); ?></h6>
 									<p class="acym__listing__title__secondary">
                                         <?php echo acym_date($row->sending_date, 'ACYM_DATE_FORMAT_LC2'); ?>
 									</p>

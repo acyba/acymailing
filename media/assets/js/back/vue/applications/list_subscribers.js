@@ -4,10 +4,12 @@ jQuery(document).ready(function ($) {
         let subPerCalls = 500;
         const columns = [
             'email',
-            'name',
+            'name'
         ];
 
-        const search = (array, search, columns) => array.filter((subscriber) => columns.map((column) => subscriber[column].toLowerCase().indexOf(search.toLowerCase()) !== -1).indexOf(true) !== -1);
+        const search = (array, search, columns) => array.filter((subscriber) => columns.map((column) => subscriber[column].toLowerCase()
+                                                                                                                          .indexOf(search.toLowerCase()) !== -1)
+                                                                                       .indexOf(true) !== -1);
 
         let subscriberVue = new Vue({
             directives: {infiniteScroll},
@@ -20,7 +22,7 @@ jQuery(document).ready(function ($) {
                 total: 0,
                 loading: true,
                 searchSubscribers: '',
-                requireConfirmation: 0,
+                requireConfirmation: 0
             },
             mounted: function () {
                 document.querySelector('.acym__list__settings__subscribers__search input.acym__light__input').addEventListener('keydown', function (event) {
@@ -45,11 +47,23 @@ jQuery(document).ready(function ($) {
             methods: {
                 loadMoreSubscriber() {
                     start += perScroll;
-                    this.displayedSubscribers = '' === this.searchSubscribers ? this.subscribed.slice(0, start) : search(this.subscribed, this.searchSubscribers, columns);
+                    this.displayedSubscribers = '' === this.searchSubscribers ? this.subscribed.slice(0, start) : search(
+                        this.subscribed,
+                        this.searchSubscribers,
+                        columns
+                    );
                 },
                 getAllSubscribers() {
                     let ctrl = document.querySelector('[name="ctrl"]').value;
-                    $.get(ACYM_AJAX_URL + '&ctrl=' + ctrl + '&task=loadMoreSubscribers&offset=' + this.total + '&perCalls=' + subPerCalls + '&listid=' + this.listid, (res) => {
+                    $.get(ACYM_AJAX_URL
+                          + '&ctrl='
+                          + ctrl
+                          + '&task=loadMoreSubscribers&offset='
+                          + this.total
+                          + '&perCalls='
+                          + subPerCalls
+                          + '&listid='
+                          + this.listid, (res) => {
                         res = JSON.parse(res);
 
                         if (undefined !== res.error) {
@@ -89,13 +103,13 @@ jQuery(document).ready(function ($) {
                     $('[name="acym__entity_select__unselected"]').val('[' + subscriberId + ']');
                     form.find('[name="task"]').attr('value', 'saveSubscribers');
                     form.submit();
-                },
+                }
             },
             watch: {
                 searchSubscribers() {
                     this.doSearch();
-                },
-            },
+                }
+            }
         });
     }
 });

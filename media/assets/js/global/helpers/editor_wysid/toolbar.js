@@ -26,7 +26,7 @@ const acym_editorWysidToolbar = {
         $tabs.removeClass('acym__wysid__right__toolbar__selected');
         let direction = {
             hide: '',
-            show: '',
+            show: ''
         };
         $tabs.each(function () {
             if (jQuery(this).attr('data-attr-show') === $elementToHide.attr('id')) {
@@ -46,5 +46,5 @@ const acym_editorWysidToolbar = {
                 acym_editorWysidToolbar.setRightToolbarWYSID();
             });
         });
-    },
+    }
 };

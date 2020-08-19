@@ -49,8 +49,9 @@ jQuery(document).ready(function ($) {
             revertDuration: 300,
             start: function (event, ui) {
                 //We start to display the trigger in the drop zone
-                $('.acym__automation__user-trigger__' + type).append('<div class="acym__automation__droppable__drag margin-top-1">' + $(ui.helper).html() + '</div>');
-            },
+                $('.acym__automation__user-trigger__' + type)
+                    .append('<div class="acym__automation__droppable__drag margin-top-1">' + $(ui.helper).html() + '</div>');
+            }
         });
 
         $('.acym__automation__droppable__' + type).droppable({
@@ -63,18 +64,29 @@ jQuery(document).ready(function ($) {
                     $userTriggers.append('<div class="acym_trigger_delimiter">' + ACYM_JS_TXT.ACYM_OR + '</div>');
                 }
                 //we create a new trigger
-                $userTriggers.append('<div class="acym__automation__droppable__trigger margin-top-1"><div class="acym__automation__one__trigger">' + $(ui.helper).html() + '</div><i data-trigger-show="' + $(ui.helper).attr('data-trigger') + '" class="acymicon-close acym__color__red acym__automation__delete__trigger cursor-pointer"></i></div>');
+                $userTriggers.append('<div class="acym__automation__droppable__trigger margin-top-1"><div class="acym__automation__one__trigger">'
+                                     + $(ui.helper).html()
+                                     + '</div><i data-trigger-show="'
+                                     + $(ui.helper).attr('data-trigger')
+                                     + '" class="acymicon-close acym__color__red acym__automation__delete__trigger cursor-pointer"></i></div>');
                 //We remove the placeholder
                 $('.acym__automation__droppable__drag').remove();
 
                 //we hide the trigger from the the selection
-                $('.acym__automation__all-trigger__' + type).append('<div class="acym__automation__trigger__droppable__' + type + ' margin-top-1 cell" style="display: none" data-trigger="' + $(ui.helper).attr('data-trigger') + '">' + $(ui.helper).html() + '</div>');
+                $('.acym__automation__all-trigger__' + type)
+                    .append('<div class="acym__automation__trigger__droppable__'
+                            + type
+                            + ' margin-top-1 cell" style="display: none" data-trigger="'
+                            + $(ui.helper).attr('data-trigger')
+                            + '">'
+                            + $(ui.helper).html()
+                            + '</div>');
                 $(ui.helper).remove();
 
                 //We generate all the select and set name
                 setElementTrigger(type);
                 setDeleteTrigger(type);
-            },
+            }
         });
     }
 

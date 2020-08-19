@@ -43,14 +43,15 @@ const acym_editorWysidToolbox = {
                 .closest('table')
                 .css({
                     'border-collapse': 'initial',
-                    'border-spacing': '',
+                    'border-spacing': ''
                 });
             jQuery(document).on('mousemove', function (event) {
                 if (acym_helperEditorWysid.clicking) {
                     let delta = acym_helperEditorWysid.$resizingElement.offset().top;
                     let height = event.pageY - (delta - 10);
                     acym_helperEditorWysid.$resizingElement.find('th:first').height(height).attr('height', height);
-                    acym_helperEditorWysid.$resizingElement.find('.acym__wysid__row__selector').css('height', acym_helperEditorWysid.$resizingElement.css('height'));
+                    acym_helperEditorWysid.$resizingElement.find('.acym__wysid__row__selector')
+                                          .css('height', acym_helperEditorWysid.$resizingElement.css('height'));
                 }
             });
             jQuery(document).off('mouseup').on('mouseup', function () {
@@ -62,5 +63,5 @@ const acym_editorWysidToolbox = {
     },
     setDeleteAlltoolbox: function () {
         jQuery('.acym__wysid__row__selector, .acym__wysid__element__toolbox').remove();
-    },
+    }
 };

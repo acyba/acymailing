@@ -387,7 +387,7 @@ class FrontusersController extends UsersController
         }
 
         $fromModuleOrWidget = acym_getVar('string', 'acysubmode', '');
-        if (!empty($fromModuleOrWidget) && ($fromModuleOrWidget == 'mod_acym' || $fromModuleOrWidget == 'widget_acym')) {
+        if (!empty($fromModuleOrWidget) && in_array($fromModuleOrWidget, ['form_acym', 'mod_acym', 'widget_acym'])) {
             $this->unsubscribeDirectly($alreadyExists, $ajax);
         } elseif ($redirectToUnsubPage && !$ajax) {
             $this->unsubscribePage($alreadyExists);

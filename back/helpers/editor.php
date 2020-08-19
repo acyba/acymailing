@@ -1,6 +1,6 @@
 <?php
 
-use Joomla\CMS\Editor\Editor AS Editor;
+use Joomla\CMS\Editor\Editor as Editor;
 
 class acymeditorHelper extends acymObject
 {
@@ -23,16 +23,26 @@ class acymeditorHelper extends acymObject
     var $walkThrough = false;
     var $emailsTest;
 
+    // Used in the d&d
+    var $data = [];
+    var $defaultTemplate = '';
+
     /**
      * Function to display the editor
      */
     public function display()
     {
         if ($this->isDragAndDrop()) {
+            ob_start();
+            include ACYM_PARTIAL.'editor'.DS.'default_template.php';
+            $this->defaultTemplate = ob_get_clean();
+
             acym_disableCmsEditor();
             $currentEmail = acym_currentUserEmail();
             $this->emailsTest = [$currentEmail => $currentEmail];
             acym_addScript(false, ACYM_JS.'tinymce/tinymce.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'tinymce/tinymce.min.js'));
+
+            $data = $this->data;
             include ACYM_VIEW.'mails'.DS.'tmpl'.DS.'editor_wysid.php';
         } else {
             // Outside of the Acy wrapper to prevent foundation from breaking the 100 different editors we could have here

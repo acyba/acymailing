@@ -62,6 +62,11 @@ const acym_helper = {
                 return false;
             }
 
+            if (jQuery(this).attr('acym-data-before')) {
+                let result = eval(jQuery(this).attr('acym-data-before'));
+                if (result === false) return false;
+            }
+
             let $form = jQuery('#acym_form');
             let task = jQuery(this).attr('data-task');
             let controller = jQuery(this).attr('data-ctrl');
@@ -134,4 +139,18 @@ const acym_helper = {
         if (undefined === str || '' === str) return 0;
         return parseInt(str.replace(/[^-\d\.]/g, ''));
     },
+    empty: function (str) {
+        if (str === null) return true;
+        if (typeof str === 'undefined') return true;
+        if (str === undefined) return true;
+        if (str === '') return true;
+        if (str.length === 0) return true;
+        if (str === 0) return true;
+        if (str === '0') return true;
+
+        return str === false;
+    },
+    alert: function (text) {
+        return alert(text);
+    }
 };

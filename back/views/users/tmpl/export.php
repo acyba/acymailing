@@ -71,7 +71,7 @@
                         <?php echo acym_radio(['all' => acym_translation('ACYM_ALL_USERS'), 'list' => acym_translation('ACYM_USERS_FROM_LISTS')], 'export_users-to-export', $data['isPreselectedList'] ? 'list' : 'all'); ?>
 					</fieldset>
 					<div id="acym__users__export__select_all" style="display: <?php echo $data['isPreselectedList'] ? 'none' : 'block'; ?>">
-						<?php echo acym_translation('ACYM_ALL_USER_WILL_BE_EXPORTED'); ?>
+                        <?php echo acym_translation('ACYM_ALL_USER_WILL_BE_EXPORTED'); ?>
 					</div>
 					<div id="acym__users__export__select_lists" class="margin-bottom-1" style="display: <?php echo $data['isPreselectedList'] ? 'block' : 'none'; ?>">
                         <?php echo $data['entitySelect']; ?>

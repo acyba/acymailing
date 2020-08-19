@@ -66,6 +66,7 @@
 			<menu link="option=com_acym&amp;ctrl=stats">ACYM_STATISTICS</menu>
 			<menu link="option=com_acym&amp;ctrl=bounces">ACYM_BOUNCE_HANDLING</menu>
 			<menu link="option=com_acym&amp;ctrl=plugins">ACYM_ADD_ONS</menu>
+			<menu link="option=com_acym&amp;ctrl=forms">ACYM_SUBSCRIPTION_FORMS</menu>
 			<menu link="option=com_acym&amp;ctrl=configuration">ACYM_CONFIGURATION</menu>
 		</submenu>
 	</administration>

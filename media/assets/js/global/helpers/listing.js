@@ -25,7 +25,7 @@ const acym_helperListing = {
                         console.log('Error can\'t order these elements');
                     }
                 });
-            },
+            }
         });
     },
     setCheckAll: function () {
@@ -66,7 +66,7 @@ const acym_helperListing = {
             jQuery('#listing_actions')
                 .select2({
                     theme: 'foundation',
-                    minimumResultsForSearch: Infinity,
+                    minimumResultsForSearch: Infinity
                 });
         }
 
@@ -156,5 +156,5 @@ const acym_helperListing = {
             }
         });
         listing_checkboxes.trigger('change');
-    },
+    }
 };

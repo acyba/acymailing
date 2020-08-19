@@ -49,9 +49,7 @@ class acymfieldClass extends acymClass
 
     public function getOrdering()
     {
-        $query = 'SELECT COUNT(id) AS ordering_number FROM #__acym_field';
-
-        return acym_loadObject($query);
+        return acym_loadResult('SELECT COUNT(id) FROM #__acym_field');
     }
 
     public function getAllfields()
@@ -178,7 +176,7 @@ class acymfieldClass extends acymClass
                     if ($field->type === 'phone' && !empty($fieldOptions->max_characters) && !empty($value['phone'])) {
                         $value['phone'] = substr($value['phone'], 0, $fieldOptions->max_characters);
                     }
-                    
+
                     $value = implode(',', $value);
                     if ($value === ',') $value = '';
                 } elseif ($field->type == 'checkbox') {

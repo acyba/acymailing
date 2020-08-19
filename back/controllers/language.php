@@ -203,7 +203,7 @@ class LanguageController extends acymController
 
         if ($loadLatest || acym_getVar('cmd', 'task') == 'latest') {
             if (file_exists(acym_getLanguagePath(ACYM_ROOT, $code))) {
-                acym_addScript(false, ACYM_UPDATEMEURL.'update&component=acym&task=languageload&code='.acym_getVar('cmd', 'code'));
+                acym_addScript(false, ACYM_UPDATEURL.'languageload&component=acym&code='.acym_getVar('cmd', 'code'));
             } else {
                 acym_enqueueMessage('The specified language "'.acym_escape($code).'" is not installed on your site', 'warning');
             }

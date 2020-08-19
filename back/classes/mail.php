@@ -58,6 +58,8 @@ class acymmailClass extends acymClass
             $filters[] = 'mail.type = "standard"';
         }
 
+        $filters[] = 'mail.parent_id IS NULL';
+
         if (empty($settings['automation'])) {
             $filters[] = 'mail.template = 1';
         }
@@ -174,7 +176,7 @@ class acymmailClass extends acymClass
      */
     public function getOneByName($name, $library = false)
     {
-        $query = 'SELECT * FROM #__acym_mail WHERE `name` = '.acym_escapeDB($name);
+        $query = 'SELECT * FROM #__acym_mail WHERE `parent_id` IS NULL AND `name` = '.acym_escapeDB($name);
         if ($library) $query .= ' AND `library` = 1';
 
         $mail = $this->decode(acym_loadObject($query));
@@ -250,7 +252,7 @@ class acymmailClass extends acymClass
         }
 
         $query .= 'ON list.id = userLists.list_id    
-                    WHERE mailLists.mail_id IN ('.implode(",", $ids).')
+                    WHERE mailLists.mail_id IN ('.implode(',', $ids).')
                     GROUP BY mailLists.list_id, mailLists.mail_id';
 
         //This line if for guys with big database to not break the page
@@ -339,11 +341,25 @@ class acymmailClass extends acymClass
         return $mailID;
     }
 
-    public function autoSave($mail)
+    public function autoSave($mail, $language = 'main')
     {
         if (empty($mail->id)) return false;
-
         $mail->autosave = str_replace(' contenteditable="true"', '', $mail->autosave);
+
+        if (acym_isMultilingual() && $language !== 'main') {
+            $translationId = $this->getTranslationId($mail->id, $language);
+            if (empty($translationId)) {
+                $parentCopy = $this->getOneById($mail->id);
+                if (empty($parentCopy)) return false;
+
+                unset($parentCopy->id);
+                $parentCopy->parent_id = $mail->id;
+                $parentCopy->language = $language;
+                $translationId = $this->save($parentCopy);
+            }
+            $mail->id = $translationId;
+        }
+
         $mail = $this->encode($mail);
 
         return parent::save($mail);
@@ -359,12 +375,14 @@ class acymmailClass extends acymClass
         acym_arrayToInteger($elements);
 
         $allThumbnailToDelete = acym_loadResultArray('SELECT thumbnail FROM #__acym_mail WHERE id IN ('.implode(',', $elements).')');
-
         foreach ($allThumbnailToDelete as $one) {
             if (!empty($one) && file_exists(ACYM_UPLOAD_FOLDER_THUMBNAIL.$one)) {
                 unlink(ACYM_UPLOAD_FOLDER_THUMBNAIL.$one);
             }
         }
+
+        $translations = acym_loadResultArray('SELECT id FROM #__acym_mail WHERE parent_id IN ('.implode(',', $elements).')');
+        $elements = array_merge($elements, $translations);
 
         acym_query('UPDATE #__acym_list SET welcome_id = null WHERE welcome_id IN ('.implode(',', $elements).')');
         acym_query('UPDATE #__acym_list SET unsubscribe_id = null WHERE unsubscribe_id IN ('.implode(',', $elements).')');
@@ -896,5 +914,61 @@ class acymmailClass extends acymClass
         }
 
         return $mail;
+    }
+
+    public function getTranslationId($parentId, $langCode)
+    {
+        return acym_loadResult(
+            'SELECT `id` 
+            FROM #__acym_mail 
+            WHERE `parent_id` = '.intval($parentId).' 
+                AND `language` = '.acym_escapeDB($langCode)
+        );
+    }
+
+    public function getTranslationsById($mailId, $full = false, $includeParent = false)
+    {
+        $data = $full ? '*' : '`language`, `subject`, `preheader`, `body`, `autosave`';
+        $where = $includeParent ? ' OR `id` = '.intval($mailId) : '';
+
+        return $this->decode(
+            acym_loadObjectList(
+                'SELECT '.$data.' 
+                FROM #__acym_mail 
+                WHERE `parent_id` = '.intval($mailId).$where,
+                'language'
+            )
+        );
+    }
+
+    public function deleteByTranslationLang($languageCodes)
+    {
+        if (!is_array($languageCodes)) $languageCodes = [$languageCodes];
+        if (empty($languageCodes)) return;
+
+        foreach ($languageCodes as $key => $oneLangCode) {
+            $languageCodes[$key] = acym_escapeDB($oneLangCode);
+        }
+
+        $this->delete(
+            acym_loadResultArray(
+                'SELECT `id` 
+                FROM #__acym_mail 
+                WHERE `parent_id` IS NOT NULL 
+                    AND `language` IN ('.implode(', ', $languageCodes).')'
+            )
+        );
+    }
+
+    /**
+     * Get all multilingual mails linked to a parent mail, also get the parent mail
+     *
+     * @param $parentId
+     *
+     * @return array
+     */
+    public function getMultilingualMails($parentId)
+    {
+        return $this->decode(acym_loadObjectList('SELECT * FROM #__acym_mail WHERE parent_id = '.intval($parentId).' OR id = '.intval($parentId), 'language'));
     }
 }

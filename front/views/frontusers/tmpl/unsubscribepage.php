@@ -17,7 +17,7 @@
             ?>
 		</div>
 		<div class="acym_front_page__unsubscribe__lists__actions">
-			<h5 class="margin-top-1 margin-bottom-1 acym_front_page__unsubscribe__sub-title"><?php echo acym_translation('ACYM_CLICK_HERE_TO_MAKE_CHANGES') ?></h5>
+			<h5 class="margin-top-1 margin-bottom-1 acym_front_page__unsubscribe__sub-title"><?php echo acym_translation('ACYM_CLICK_HERE_TO_MAKE_CHANGES'); ?></h5>
 			<button type="button" class="button margin-right-1" id="acym__save" onclick="return acymSubmitForm('saveSubscriptions');"><?php echo acym_translation('ACYM_UPDATE'); ?></button>
 			<button type="button" class="button button-secondary" id="acym__unsub__all" onclick="return acymSubmitForm('unsubscribeAll');"><?php echo acym_translation('ACYM_UNSUBSCRIBE_ALL'); ?></button>
 		</div>

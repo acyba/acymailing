@@ -7,5 +7,5 @@ const acym_helperDebugger = {
         }
 
         window.addEventListener('keydown', KeyCheck, false);
-    },
+    }
 };

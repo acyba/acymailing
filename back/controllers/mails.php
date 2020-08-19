@@ -461,10 +461,11 @@ class MailsController extends acymController
         $mailClass = acym_get('class.mail');
         $mail = new stdClass();
 
+        $language = acym_getVar('string', 'language', 'main');
         $mail->id = acym_getVar('int', 'mailId', 0);
         $mail->autosave = acym_getVar('string', 'autoSave', '', 'REQUEST', ACYM_ALLOWRAW);
 
-        if (empty($mail->id) || !$mailClass->autoSave($mail)) {
+        if (empty($mail->id) || !$mailClass->autoSave($mail, $language)) {
             echo 'error';
         } else {
             echo 'saved';
@@ -627,7 +628,14 @@ class MailsController extends acymController
 
                 exit;
             }
+
             $mailId = $campaign->mail_id;
+
+            $languageVersion = acym_getVar('string', 'lang_version', 'main');
+            if (!empty($languageVersion) && $languageVersion !== 'main') {
+                $translationId = $this->currentClass->getTranslationId($mailId, $languageVersion);
+                if (!empty($translationId)) $mailId = $translationId;
+            }
         }
 
         $mailClass = acym_get('class.mail');
@@ -851,7 +859,6 @@ class MailsController extends acymController
 
     public function duplicate()
     {
-
         $templateId = acym_getVar('int', 'templateId', 0);
 
         if (empty($templateId)) {

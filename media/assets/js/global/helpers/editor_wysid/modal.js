@@ -2,14 +2,21 @@ const acym_editorWysidModal = {
     setModalWindowWYSID: function () {
         jQuery('.acym__wysid__modal--close').click(function () {
             jQuery('.acym__wysid__modal').hide();
-            if (acym_helperEditorWysid.$focusElement.length && acym_helperEditorWysid.$focusElement.prop('tagName') != 'TR') acym_helperEditorWysid.$focusElement.replaceWith('');
+            if (acym_helperEditorWysid.$focusElement.length && acym_helperEditorWysid.$focusElement.prop('tagName') != 'TR') {
+                acym_helperEditorWysid.$focusElement.replaceWith('');
+            }
             acym_helperEditorWysid.checkForEmptyTbodyWYSID();
         });
 
         if (CMS_ACYM == 'joomla') {
             jQuery('.acym__wysid__modal__joomla-image--close').click(function () {
                 jQuery('#acym__wysid__modal__joomla-image').hide();
-                if (acym_helperEditorWysid.$focusElement.length && acym_helperEditorWysid.$focusElement.prop('tagName') != 'TR' && !acym_helperEditorWysid.$focusElement.hasClass('acym__wysid__template__content')) acym_helperEditorWysid.$focusElement.replaceWith('');
+                if (acym_helperEditorWysid.$focusElement.length
+                    && acym_helperEditorWysid.$focusElement.prop('tagName')
+                    != 'TR'
+                    && !acym_helperEditorWysid.$focusElement.hasClass('acym__wysid__template__content')) {
+                    acym_helperEditorWysid.$focusElement.replaceWith('');
+                }
                 acym_helperEditorWysid.checkForEmptyTbodyWYSID();
             });
         }
@@ -51,15 +58,19 @@ const acym_editorWysidModal = {
                             type: 'POST',
                             data: {
                                 'mailId': mailId,
-                                'code': $toInsert,
-                            },
+                                'code': $toInsert
+                            }
                         }).then(function (response) {
                             if (response) {
                                 response = acym_helper.parseJson(response);
                             } else {
                                 response = {'content': $toInsert};
                             }
-                            $toInsert = '<span class="acym_dynamic mceNonEditable" data-dynamic="' + $toInsert + '">' + response.content + '<i class="acym_remove_dynamic acymicon-close">&zwj;</i></span> ';
+                            $toInsert = '<span class="acym_dynamic mceNonEditable" data-dynamic="'
+                                        + $toInsert
+                                        + '">'
+                                        + response.content
+                                        + '<i class="acym_remove_dynamic acymicon-close">&zwj;</i></span> ';
 
                             // Magic line, I don't know why but without it the previous dtext isn't replaced by the new one
                             window.getSelection().getRangeAt(0).extractContents();

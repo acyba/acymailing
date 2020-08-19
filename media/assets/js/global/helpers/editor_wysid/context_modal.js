@@ -22,7 +22,7 @@ const acym_editorWysidContextModal = {
             'acy-editor__space',
             'acym__wysid__column__element__button',
             'acym__wysid__row__selector',
-            'acym__wysid__right__toolbar__tabs',
+            'acym__wysid__right__toolbar__tabs'
         ];
         jQuery.each(classesOpeningContext, function (index, value) {
             if ($element.closest('.' + value).length > 0) isOpening = true;
@@ -54,8 +54,18 @@ const acym_editorWysidContextModal = {
             $selector.addClass('acym__wysid__row__selector--focus');
             $selector.closest('.acym__wysid__row__element').addClass('acym__wysid__row__element--focus');
 
-            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__block__background-color'), 'background-color', $table, $table, 'background-color');
-            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__block__border__color'), 'border-color', $table, $table, 'border-color');
+            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__block__background-color'),
+                'background-color',
+                $table,
+                $table,
+                'background-color'
+            );
+            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__block__border__color'),
+                'border-color',
+                $table,
+                $table,
+                'border-color'
+            );
             acym_editorWysidColorPicker.setRowColorPickerWYSID($table);
 
             acym_editorWysidImage.addBackgroundImgToRows($table);
@@ -89,7 +99,11 @@ const acym_editorWysidContextModal = {
                 jQuery(this).off('change').on('change', function (event) {
                     $table.css('padding-' + jQuery(this).attr('data-block-padding'), jQuery(this).val() + 'px');
                     if (jQuery(this).attr('data-block-padding') === 'top' || jQuery(this).attr('data-block-padding') === 'bottom') {
-                        $selector.css('height', $table.height() + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, '')) + parseInt($table.css('padding-bottom').replace(/[^-\d\.]/g, '')) + 'px');
+                        $selector.css('height', $table.height()
+                                                + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, ''))
+                                                + parseInt($table.css('padding-bottom')
+                                                                 .replace(/[^-\d\.]/g, ''))
+                                                + 'px');
                     }
                 });
             });
@@ -106,11 +120,14 @@ const acym_editorWysidContextModal = {
                         $table.css('border-style', jQuery(this).val() === 0 ? 'none' : 'solid');
                         let offsetTemplate = jQuery('.acym__wysid__template__content').offset();
                         let offsetTable = $selector.closest('.acym__wysid__row__element').offset();
-                        let heightSelector = $table.height() + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, '')) + parseInt($table.css('padding-bottom').replace(/[^-\d\.]/g, '')) + (parseInt($table.css('border-width').replace(/[^-\d\.]/g, '')) * 2);
+                        let heightSelector = $table.height() + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, '')) + parseInt($table.css(
+                            'padding-bottom').replace(/[^-\d\.]/g, '')) + (parseInt($table.css('border-width').replace(/[^-\d\.]/g, '')) * 2);
                         $selector.css({
-                            'left': '-' + (offsetTable.left - offsetTemplate.left + parseInt($selector.closest('.acym__wysid__row__element').css('border-width').replace(/[^-\d\.]/g, ''))) + 'px',
+                            'left': '-' + (offsetTable.left - offsetTemplate.left + parseInt($selector.closest('.acym__wysid__row__element')
+                                                                                                      .css('border-width')
+                                                                                                      .replace(/[^-\d\.]/g, ''))) + 'px',
                             'height': heightSelector,
-                            'top': (0 - parseInt($table.css('border-width').replace(/[^-\d\.]/g, ''))) + 'px',
+                            'top': (0 - parseInt($table.css('border-width').replace(/[^-\d\.]/g, ''))) + 'px'
                         });
                     }
                 });
@@ -136,7 +153,8 @@ const acym_editorWysidContextModal = {
 
             jQuery(window).off('mousedown').on('mousedown', function (event) {
                 if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextBlock)) return true;
-                if (!jQuery(event.target).hasClass('acym__wysid__row__selector') && !jQuery('.sp-container').is(':visible') && !jQuery(event.target).closest('#acym__wysid__editor__source').length > 0) {
+                if (!jQuery(event.target).hasClass('acym__wysid__row__selector') && !jQuery('.sp-container').is(':visible') && !jQuery(event.target)
+                    .closest('#acym__wysid__editor__source').length > 0) {
                     jQuery('#acym__wysid__editor__source, #acym__wysid__right-toolbar__overlay').removeClass('acym__wysid__visible');
                     jQuery('.acym__wysid__row__selector--focus').removeClass('acym__wysid__row__selector--focus');
                     jQuery('.acym__wysid__row__element--focus').removeClass('acym__wysid__row__element--focus');
@@ -192,7 +210,9 @@ const acym_editorWysidContextModal = {
                 return true;
             }
             if ($link.length === 0) {
-                jQuery('.acym__wysid__media__inserted--selected').replaceWith('<a href="' + jQuery(this).val() + '" target="_blank" class="acym__wysid__link__image">' + jQuery('.acym__wysid__media__inserted--selected')[0].outerHTML + '</a>');
+                jQuery('.acym__wysid__media__inserted--selected')
+                    .replaceWith('<a href="' + jQuery(this).val() + '" target="_blank" class="acym__wysid__link__image">' + jQuery(
+                        '.acym__wysid__media__inserted--selected')[0].outerHTML + '</a>');
             } else {
                 $link.attr('href', jQuery(this).val());
             }
@@ -205,7 +225,10 @@ const acym_editorWysidContextModal = {
         });
 
         jQuery(window).off('mousedown').on('mousedown', function (event) {
-            if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextImage) || jQuery(event.target).hasClass('acym__wysid__media__inserted')) return true;
+            if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextImage) || jQuery(event.target)
+                .hasClass('acym__wysid__media__inserted')) {
+                return true;
+            }
             jQuery('.acym__wysid__media__inserted--selected').removeClass('acym__wysid__media__inserted--selected');
             jQuery(this).off('mousedown');
             let time = new Date().getTime();
@@ -229,8 +252,18 @@ const acym_editorWysidContextModal = {
 
             let $button = jQuery(this);
 
-            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__button__background-color'), 'background-color', $button, $button, 'background-color');
-            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__button__border-color'), 'border-left-color', $button, $button, 'border-color');
+            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__button__background-color'),
+                'background-color',
+                $button,
+                $button,
+                'background-color'
+            );
+            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__button__border-color'),
+                'border-left-color',
+                $button,
+                $button,
+                'border-color'
+            );
             acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__button__color'), 'color', $button, $button, 'color');
 
             let $inputLink = jQuery('.acym__wysid__context__button__link__container');
@@ -270,12 +303,18 @@ const acym_editorWysidContextModal = {
 
             let $contextBtn = jQuery('#acym__wysid__context__button');
 
-            jQuery('#acym__wysid__context__button__border-radius').val($button.css('border-radius').replace(/[^-\d\.]/g, '')).off('change paste keyup').on('change paste keyup', function () {
-                $button.css('border-radius', jQuery(this).val() + 'px');
-            });
-            jQuery('#acym__wysid__context__button__border-width').val($button.css('border-left-width').replace(/[^-\d\.]/g, '')).off('change paste keyup').on('change paste keyup', function () {
-                $button.css('border-width', jQuery(this).val() + 'px');
-            });
+            jQuery('#acym__wysid__context__button__border-radius')
+                .val($button.css('border-radius').replace(/[^-\d\.]/g, ''))
+                .off('change paste keyup')
+                .on('change paste keyup', function () {
+                    $button.css('border-radius', jQuery(this).val() + 'px');
+                });
+            jQuery('#acym__wysid__context__button__border-width')
+                .val($button.css('border-left-width').replace(/[^-\d\.]/g, ''))
+                .off('change paste keyup')
+                .on('change paste keyup', function () {
+                    $button.css('border-width', jQuery(this).val() + 'px');
+                });
             jQuery('#acym__wysid__context__button__font-family').val($button.css('font-family').replace(/['"]/g, '')).off('change').on('change', function () {
                 $button.css('font-family', jQuery(this).val());
             });
@@ -288,17 +327,36 @@ const acym_editorWysidContextModal = {
             jQuery('#acym__wysid__context__button__link').val($button.attr('href')).off('change paste keyup').on('change paste keyup', function () {
                 $button.attr('href', jQuery(this).val());
             });
-            jQuery('#acym__wysid__context__button__bold').css('background-color', $button.css('font-weight') == 700 ? '' : 'inherit').off('click').on('click', function () {
-                $button.css('font-weight') == 700 ? jQuery('#acym__wysid__context__button__bold').css('background-color', 'inherit') && $button.css('font-weight', 'inherit') : jQuery('#acym__wysid__context__button__bold').css('background-color', '') && $button.css('font-weight', 700);
+            jQuery('#acym__wysid__context__button__bold')
+                .css('background-color', $button.css('font-weight') == 700 ? '' : 'inherit')
+                .off('click')
+                .on('click', function () {
+                    $button.css('font-weight') == 700 ? jQuery('#acym__wysid__context__button__bold').css('background-color', 'inherit') && $button.css('font-weight',
+                        'inherit'
+                    ) : jQuery('#acym__wysid__context__button__bold').css('background-color', '') && $button.css(
+                        'font-weight',
+                        700
+                    );
 
-            });
+                });
 
-            jQuery('#acym__wysid__context__button__italic').css('background-color', $button.css('font-style') == 'italic' ? '' : 'inherit').off('click').on('click', function () {
-                $button.css('font-style') == 'italic' ? jQuery('#acym__wysid__context__button__italic').css('background-color', 'inherit') && $button.css('font-style', 'inherit') : jQuery('#acym__wysid__context__button__italic').css('background-color', '') && $button.css('font-style', 'italic');
-            });
+            jQuery('#acym__wysid__context__button__italic')
+                .css('background-color', $button.css('font-style') == 'italic' ? '' : 'inherit')
+                .off('click')
+                .on('click', function () {
+                    $button.css('font-style') == 'italic' ? jQuery('#acym__wysid__context__button__italic').css('background-color', 'inherit') && $button.css('font-style',
+                        'inherit'
+                    ) : jQuery('#acym__wysid__context__button__italic').css('background-color', '') && $button.css(
+                        'font-style',
+                        'italic'
+                    );
+                });
 
             jQuery('.acym__wysid__context__button__align').each(function () {
-                jQuery(this).css('background-color', 'acym__wysid__context__button__align__' + $button.closest('div').css('text-align') === jQuery(this).attr('id') ? '' : 'inherit');
+                jQuery(this)
+                    .css('background-color',
+                        'acym__wysid__context__button__align__' + $button.closest('div').css('text-align') === jQuery(this).attr('id') ? '' : 'inherit'
+                    );
                 jQuery(this).off('click').on('click', function () {
                     $button.closest('div').css('text-align', jQuery(this).attr('data-align'));
                     jQuery('.acym__wysid__context__button__align').css('background-color', 'inherit');
@@ -317,31 +375,35 @@ const acym_editorWysidContextModal = {
                 jQuery('#acym__wysid__context__button__font-family')
                     .select2({
                         theme: 'foundation',
-                        width: '40%',
+                        width: '40%'
                     });
                 jQuery('#acym__wysid__context__button__font-size')
                     .select2({
                         theme: 'foundation',
                         width: '15%',
-                        minimumResultsForSearch: Infinity,
+                        minimumResultsForSearch: Infinity
                     });
                 jQuery('#acym__wysid__context__button__border-width')
                     .select2({
                         theme: 'foundation',
                         width: '15%',
-                        minimumResultsForSearch: Infinity,
+                        minimumResultsForSearch: Infinity
                     });
                 jQuery('#acym__wysid__context__button__border-radius')
                     .select2({
                         theme: 'foundation',
                         width: '15%',
-                        minimumResultsForSearch: Infinity,
+                        minimumResultsForSearch: Infinity
                     });
             }
 
             $contextBtn.find('.switch-input').off('change');
 
-            if ((document.getElementsByClassName('acym__wysid__column__element__button--focus')[0].style.width === '100%' && !$contextBtn.find('.switch-input').is(':checked')) || (document.getElementsByClassName('acym__wysid__column__element__button--focus')[0].style.width !== '100%' && $contextBtn.find('.switch-input').is(':checked'))) {
+            if ((document.getElementsByClassName('acym__wysid__column__element__button--focus')[0].style.width === '100%' && !$contextBtn.find('.switch-input')
+                                                                                                                                         .is(':checked'))
+                || (document.getElementsByClassName('acym__wysid__column__element__button--focus')[0].style.width
+                    !== '100%'
+                    && $contextBtn.find('.switch-input').is(':checked'))) {
                 $contextBtn.find('.switch-paddle').click();
             }
 
@@ -376,7 +438,7 @@ const acym_editorWysidContextModal = {
                 $button.css({
                     'width': toggle,
                     'padding-right': padding,
-                    'padding-left': padding,
+                    'padding-left': padding
                 });
             });
 
@@ -384,10 +446,10 @@ const acym_editorWysidContextModal = {
                 let value = jQuery('#' + jQuery(this).attr('data-output')).val();
                 let cssRules = 'slider__output__button__width' !== jQuery(this).attr('data-output') ? {
                     'padding-top': value + 'px',
-                    'padding-bottom': value + 'px',
+                    'padding-bottom': value + 'px'
                 } : {
                     'padding-right': value + 'px',
-                    'padding-left': value + 'px',
+                    'padding-left': value + 'px'
                 };
 
                 $button.css(cssRules);
@@ -493,7 +555,7 @@ const acym_editorWysidContextModal = {
                 'pinterest',
                 'vimeo',
                 'wordpress',
-                'youtube',
+                'youtube'
             ];
             let $selectSocialSelect = jQuery('#acym__wysid__context__follow__select');
 
@@ -508,18 +570,26 @@ const acym_editorWysidContextModal = {
                         let content = '<div class="grid-x small-12 cell acym__wysid__context__follow__list__item">';
 
                         content += '<div class="small-3 cell">';
-                        content += '<img style="height: auto;  box-sizing: border-box; width: 42px; padding: 5px; margin-left: 5px" src="' + acym_helperEditorWysid.socialMedia[currentSocialNetwork].src + '" alt="">';
+                        content += '<img style="height: auto;  box-sizing: border-box; width: 42px; padding: 5px; margin-left: 5px" src="'
+                                   + acym_helperEditorWysid.socialMedia[currentSocialNetwork].src
+                                   + '" alt="">';
                         content += '</div>';
 
                         content += '<div class="small-7 cell">';
                         content += '<div class="input-group small-12 cell">';
 
-                        content += '<input id="acym__wysid__context__button__link" class="input-group-field acym__wysid__context__button__link--' + currentSocialNetwork + '" type="text" placeholder="https://" value="' + jQuery(this).attr('href') + '">';
+                        content += '<input id="acym__wysid__context__button__link" class="input-group-field acym__wysid__context__button__link--'
+                                   + currentSocialNetwork
+                                   + '" type="text" placeholder="https://" value="'
+                                   + jQuery(this).attr('href')
+                                   + '">';
                         content += '</div>';
                         content += '</div>';
 
                         content += '<div class="auto cell">';
-                        content += '<p class="acym__wysid__context__follow__list__remove acym__wysid__context__follow__list__remove--' + currentSocialNetwork + '" aria-hidden="true">×</p>';
+                        content += '<p class="acym__wysid__context__follow__list__remove acym__wysid__context__follow__list__remove--'
+                                   + currentSocialNetwork
+                                   + '" aria-hidden="true">×</p>';
                         content += '</div>';
 
                         content += '</div>';
@@ -534,7 +604,9 @@ const acym_editorWysidContextModal = {
                         });
 
                         jQuery('.acym__wysid__context__button__link--' + currentSocialNetwork).off('change paste keyup').on('change paste keyupe', function () {
-                            jQuery('.acym__wysid__column__element__follow--focus').find('.acym__wysid__column__element__follow__' + currentSocialNetwork).attr('href', jQuery(this).val());
+                            jQuery('.acym__wysid__column__element__follow--focus')
+                                .find('.acym__wysid__column__element__follow__' + currentSocialNetwork)
+                                .attr('href', jQuery(this).val());
                         });
                     }
                 });
@@ -549,7 +621,8 @@ const acym_editorWysidContextModal = {
             let $contextFollow = jQuery('#acym__wysid__context__follow');
 
             jQuery('.acym__wysid__context__follow__align').each(function () {
-                jQuery(this).css('background-color', 'acym__wysid__context__follow__align__' + $follow.css('text-align') === jQuery(this).attr('id') ? '' : 'inherit');
+                jQuery(this)
+                    .css('background-color', 'acym__wysid__context__follow__align__' + $follow.css('text-align') === jQuery(this).attr('id') ? '' : 'inherit');
                 jQuery(this).off('click').on('click', function () {
                     let alignement = jQuery(this).attr('data-align');
                     $follow.css('text-align', alignement);
@@ -573,7 +646,7 @@ const acym_editorWysidContextModal = {
                     closeOnSelect: true,
                     width: '50px',
                     templateResult: acym_editorWysidContextModal.getFollowDataFormatWYSID,
-                    templateSelection: acym_editorWysidContextModal.getFollowDataFormatWYSID,
+                    templateSelection: acym_editorWysidContextModal.getFollowDataFormatWYSID
                 });
 
                 $selectSocialSelect.off('select2:select').on('select2:select', function (e) {
@@ -600,7 +673,8 @@ const acym_editorWysidContextModal = {
             });
 
             jQuery('#acym__wysid__context__social__width__slider').off('moved.zf.slider').on('moved.zf.slider', function () {
-                width = jQuery('#acym__wysid__context__social__width').val() <= 80 ? jQuery('#acym__wysid__context__social__width').val() >= 30 ? jQuery('#acym__wysid__context__social__width').val() : 30 : 80;
+                width = jQuery('#acym__wysid__context__social__width').val() <= 80 ? jQuery('#acym__wysid__context__social__width').val() >= 30 ? jQuery(
+                    '#acym__wysid__context__social__width').val() : 30 : 80;
                 jQuery('.acym__wysid__column__element__follow--focus img').css('width', width).attr('width', width);
             });
         });
@@ -621,7 +695,13 @@ const acym_editorWysidContextModal = {
         let $contextSocial = jQuery('#acym__wysid__context__social__width');
         let width = $contextSocial.val() <= 80 ? $contextSocial.val() >= 30 ? $contextSocial.val() : 30 : 80;
         let content = '<a class="acym__wysid__column__element__follow__' + selectedNetwork + '" href="">';
-        content += '<img style="display: inline-block; max-width: 100%; height: auto; box-sizing: border-box; width: ' + width + 'px; padding: 3px;" src="' + acym_helperEditorWysid.socialMedia[selectedNetwork].src + '" width="' + width + '" alt="">';
+        content += '<img style="display: inline-block; max-width: 100%; height: auto; box-sizing: border-box; width: '
+                   + width
+                   + 'px; padding: 3px;" src="'
+                   + acym_helperEditorWysid.socialMedia[selectedNetwork].src
+                   + '" width="'
+                   + width
+                   + '" alt="">';
         content += '</a>';
         $followContainer.append(content);
         acym_editorWysidContextModal.setFollowContextModalWYSID();
@@ -649,7 +729,12 @@ const acym_editorWysidContextModal = {
             jQuery('[aria-controls="sliderOutput4"]').css('left', leftSlider4).next().css('width', leftSlider4);
 
             //We set the colors picker of the separator
-            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__separator__color'), 'border-bottom-color', $hr, $hr, 'border-bottom-color');
+            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__separator__color'),
+                'border-bottom-color',
+                $hr,
+                $hr,
+                'border-bottom-color'
+            );
 
             let $allType = jQuery('.acym__wysid__context__separator__kind');
             $allType.removeClass('separator-selected');
@@ -707,7 +792,7 @@ const acym_editorWysidContextModal = {
                 acym_editorWysidVersioning.setUndoAndAutoSave();
             });
         });
-    },
+    }
 };
 
 // setShareContextModalWYSID: function () {

@@ -20,7 +20,7 @@ class acymInstall
         include_once $path.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
     }
 
-    //Function to add all pref...
+    // Function to add all pref...
     public function addPref()
     {
         $this->level = ucfirst($this->level);
@@ -221,8 +221,8 @@ class acymInstall
                 'CREATE TABLE IF NOT EXISTS `#__acym_history` (
                     `user_id` INT NOT NULL,
                     `date` INT NOT NULL,
-                    `ip` varchar(16) DEFAULT NULL,
-                    `action` varchar(50) NOT NULL,
+                    `ip` VARCHAR(16) DEFAULT NULL,
+                    `action` VARCHAR(50) NOT NULL,
                     `data` text,
                     `source` text,
                     `mail_id` MEDIUMINT DEFAULT NULL,
@@ -660,7 +660,7 @@ class acymInstall
         }
 
         if (version_compare($this->fromVersion, '6.10.2', '<')) {
-            $this->updateQuery('ALTER TABLE #__acym_mail ADD COLUMN `links_language` varchar(10) NOT NULL DEFAULT ""');
+            $this->updateQuery('ALTER TABLE #__acym_mail ADD COLUMN `links_language` VARCHAR(10) NOT NULL DEFAULT ""');
         }
 
         if (version_compare($this->fromVersion, '6.10.4', '<')) {
@@ -681,15 +681,15 @@ class acymInstall
 
             $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `type` `type` VARCHAR(30) NOT NULL');
             $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `media_folder` `media_folder` VARCHAR(100) NULL');
-            $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `links_language` `links_language` varchar(10) NOT NULL');
+            $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `links_language` `links_language` VARCHAR(10) NOT NULL');
         }
 
         if (version_compare($this->fromVersion, '6.11.0', '<')) {
             $splashscreenHelper = acym_get('helper.splashscreen');
             $splashscreenHelper->setDisplaySplashscreenForViewName('bounces', 1);
 
-            $this->updateQuery('ALTER TABLE #__acym_mail ADD `access` varchar(50) NOT NULL DEFAULT ""');
-            $this->updateQuery('ALTER TABLE #__acym_list ADD `access` varchar(50) NOT NULL DEFAULT ""');
+            $this->updateQuery('ALTER TABLE #__acym_mail ADD `access` VARCHAR(50) NOT NULL DEFAULT ""');
+            $this->updateQuery('ALTER TABLE #__acym_list ADD `access` VARCHAR(50) NOT NULL DEFAULT ""');
 
             $sourceMap = [
                 'wordpress_profile' => 'WordPress user profile',
@@ -719,6 +719,44 @@ class acymInstall
         if (version_compare($this->fromVersion, '6.13.0', '<')) {
             $this->updateQuery('ALTER TABLE #__acym_plugin ADD `core` TINYINT(1) NOT NULL DEFAULT 0');
             $this->updateQuery('ALTER TABLE #__acym_plugin CHANGE `latest_version` `latest_version` VARCHAR(10) NOT NULL');
+        }
+
+        if (version_compare($this->fromVersion, '6.14.0', '<')) {
+            $this->updateQuery(
+                'CREATE TABLE IF NOT EXISTS `#__acym_form` (
+                        	`id` INT NOT NULL AUTO_INCREMENT,
+                        	`name` VARCHAR(255) NOT NULL,
+                        	`creation_date` DATETIME NOT NULL,
+                        	`active` TINYINT(1) NOT NULL DEFAULT 1,
+                        	`type` VARCHAR(20) NOT NULL,
+                        	`lists_options` LONGTEXT,
+                        	`fields_options` LONGTEXT,
+                        	`style_options` LONGTEXT,
+                        	`button_options` LONGTEXT,
+                        	`image_options` LONGTEXT,
+                        	`delay` SMALLINT(10),
+                        	`pages` TEXT,
+                        	PRIMARY KEY (`id`)
+                        )
+                        	ENGINE = InnoDB
+                        	/*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;'
+            );
+
+            // In a release, all the content insertion addons had the structure Volumes/workspace/acymailing/addons/folder_name/plugin.php instead of just folder_name/plugin.php
+            if (file_exists(ACYM_ADDONS_FOLDER_PATH.'Volumes')) {
+                $wrongAddons = acym_getFolders(ACYM_ADDONS_FOLDER_PATH.'Volumes'.DS.'workspace'.DS.'acymailing'.DS.'addons'.DS);
+
+                $pluginsController = acym_get('controller.plugins');
+                foreach ($wrongAddons as $oneGoneWrong) {
+                    $pluginsController->downloadUpload($oneGoneWrong, false);
+                }
+
+                acym_deleteFolder(ACYM_ADDONS_FOLDER_PATH.'Volumes');
+            }
+
+            $this->updateQuery('ALTER TABLE #__acym_user ADD `language` VARCHAR(10) NOT NULL');
+            $this->updateQuery('ALTER TABLE #__acym_mail ADD `language` VARCHAR(10) NOT NULL');
+            $this->updateQuery('ALTER TABLE #__acym_mail ADD `parent_id` INT NULL');
         }
     }
 

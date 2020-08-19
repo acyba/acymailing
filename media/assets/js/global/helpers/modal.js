@@ -22,7 +22,8 @@ const acym_helperModal = {
         /**
          * Move foundation's modal inside our AcyMailing wrapper (for foundation css)
          */
-        if (jQuery('#acym_form').length && !jQuery('#acym__editor__content').length && !jQuery('.campaigns_edit_email').length && !jQuery('.frontcampaigns_edit_email').length) {
+        if (jQuery('#acym_form').length && !jQuery('#acym__editor__content').length && !jQuery('.campaigns_edit_email').length && !jQuery(
+            '.frontcampaigns_edit_email').length) {
             jQuery('.reveal-overlay').appendTo('#acym_form');
         } else {
             jQuery('.reveal-overlay').appendTo('#acym_wrapper');
@@ -46,7 +47,9 @@ const acym_helperModal = {
         let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_mails&ctrl=' + acym_helper.ctrlMails + '&task=getTemplateAjax';
 
         let $returnInput = jQuery('input[name="return"]');
-        let automation = ($returnInput.length > 0 && $returnInput.val().indexOf('automation') !== -1) || jQuery('#acym__automation__actions__json').length > 0 ? '1' : '0';
+        let automation = ($returnInput.length > 0 && $returnInput.val().indexOf('automation') !== -1) || jQuery('#acym__automation__actions__json').length > 0
+                         ? '1'
+                         : '0';
         let mailId = jQuery('input[name="id"]').val();
 
         ajaxUrl += '&search=' + jQuery('#acym_search_template_choose__ajax').val();
@@ -79,7 +82,7 @@ const acym_helperModal = {
             jQuery('[name="acym_pagination_element_per_page"]')
                 .select2({
                     theme: 'foundation',
-                    width: '100%',
+                    width: '100%'
                 });
         }
 
@@ -104,7 +107,8 @@ const acym_helperModal = {
     },
     chooseOneTemplate: function () {
         jQuery('.acym__templates__oneTpl').off('click').on('click', function () {
-            let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_mails&ctrl=' + acym_helper.ctrlMails + '&task=duplicateMailAutomation&id=' + jQuery(this).attr('id');
+            let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_mails&ctrl=' + acym_helper.ctrlMails + '&task=duplicateMailAutomation&id=' + jQuery(this)
+                .attr('id');
 
             let $modal = jQuery('#acym__template__choose__modal');
             let $actionContainer = jQuery('[data-modal-name="' + $modal.attr('data-button') + '"]').closest('.acym__automation__inserted__action');
@@ -118,7 +122,9 @@ const acym_helperModal = {
                     return false;
                 }
 
-                $actionContainer.find('.acym__automation__action__mail__name').html(mail.name + '<i class="cursor-pointer acymicon-close acym__color__red acym__automation__action__reset__mail margin-left-1"></i>');
+                $actionContainer.find('.acym__automation__action__mail__name')
+                                .html(mail.name
+                                      + '<i class="cursor-pointer acymicon-close acym__color__red acym__automation__action__reset__mail margin-left-1"></i>');
                 $actionContainer.find('[name$="[mail_id]"]').val(mail.id);
                 $actionContainer.find('[data-task="createMail"]').html(ACYM_JS_TXT.ACYM_EDIT_MAIL);
                 jQuery('.reveal').foundation('close');
@@ -256,7 +262,10 @@ const acym_helperModal = {
         });
     },
     getContentAjaxModalPaginationLists: function () {
-        let ajaxURL = ACYM_AJAX_URL + '&page=acymailing_lists&ctrl=' + acym_helper.ctrlLists + '&action=acymailing_router&noheader=1&task=setAjaxListing&listsPerPage=10';
+        let ajaxURL = ACYM_AJAX_URL
+                      + '&page=acymailing_lists&ctrl='
+                      + acym_helper.ctrlLists
+                      + '&action=acymailing_router&noheader=1&task=setAjaxListing&listsPerPage=10';
 
         ajaxURL += '&pagination_page_ajax=' + jQuery('#acym_pagination__ajax').val();
         ajaxURL += '&selectedLists=' + jQuery('#acym__modal__lists-selected').val();
@@ -370,7 +379,10 @@ const acym_helperModal = {
         });
     },
     getContentAjaxModalPaginationUsers: function () {
-        let ajaxURL = ACYM_AJAX_URL + '&page=acymailing_users&ctrl=' + acym_helper.ctrlUsers + '&action=acymailing_router&noheader=1&task=setAjaxListing&usersPerPage=10';
+        let ajaxURL = ACYM_AJAX_URL
+                      + '&page=acymailing_users&ctrl='
+                      + acym_helper.ctrlUsers
+                      + '&action=acymailing_router&noheader=1&task=setAjaxListing&usersPerPage=10';
 
         ajaxURL += '&pagination_page_ajax=' + jQuery('#acym_pagination__ajax').val();
         ajaxURL += '&selectedUsers=' + jQuery('#acym__modal__users-selected').val();
@@ -536,5 +548,5 @@ const acym_helperModal = {
         jQuery('#acym__modal__lists_import__clear').off('click').on('click', function () {
             jQuery('#modal__pagination__create__list').val('');
         });
-    },
+    }
 };

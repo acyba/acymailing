@@ -1,0 +1,55 @@
+.acym__selection {
+    .acym__selection__title {
+        font-size: 1.6rem;
+        font-weight: 500;
+    }
+
+    .acym__selection__card {
+        padding: 20px;
+        border: 2px solid $dark-gray;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: .2s;
+        position: relative;
+
+        &.acym__selection__card__disabled {
+            padding-bottom: 50px;
+
+            &:hover {
+                cursor: not-allowed;
+            }
+
+            .acym__selection__card__disabled__container {
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                padding: 10px 10px;
+                background-color: $dark-gray;
+                color: $very-light-gray;
+            }
+        }
+
+        &:not(.acym__selection__card__disabled):hover {
+            border-color: map-get($foundation-palette, primary-light);
+        }
+
+        &.acym__selection__card-selected {
+            background-color: $light-blue;
+            border-color: map-get($foundation-palette, primary-light);
+        }
+
+        .acym__selection__card__title {
+            font-size: 1.2rem;
+        }
+
+        .acym__selection__card__icon {
+            font-size: 35px;
+        }
+
+        .acym__selection__card__description {
+            margin-bottom: 10px;
+        }
+    }
+}
+
