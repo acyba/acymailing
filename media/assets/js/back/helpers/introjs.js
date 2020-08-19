@@ -13,12 +13,12 @@ const acym_helperIntroJS = {
                     optionsIntro.push({
                         element: document.querySelector('' + tmpIntro[i].element),
                         intro: tmpIntro[i].text,
-                        position: tmpIntro[i].position === undefined ? 'bottom' : tmpIntro[i].position,
+                        position: tmpIntro[i].position === undefined ? 'bottom' : tmpIntro[i].position
                     });
                 }
                 let intro = introJs();
                 intro.setOptions({
-                    steps: optionsIntro,
+                    steps: optionsIntro
                 });
                 intro.start();
                 jQuery('.introjs-nextbutton').html(ACYM_JS_TXT.ACYM_NEXT);
@@ -29,5 +29,5 @@ const acym_helperIntroJS = {
                 });
             }
         });
-    },
+    }
 };

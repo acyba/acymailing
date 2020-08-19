@@ -10,7 +10,7 @@ jQuery(document).ready(function ($) {
             '#acym__fields__error-message-invalid',
             '#acym__fields__default-value',
             '#acym__fields__max_characters',
-            '#acym__fields__size',
+            '#acym__fields__size'
         ],
         textarea: [
             '#acym__fields__required',
@@ -20,7 +20,7 @@ jQuery(document).ready(function ($) {
             '#acym__fields__default-value',
             '#acym__fields__max_characters',
             '#acym__fields__rows',
-            '#acym__fields__columns',
+            '#acym__fields__columns'
         ],
         radio: [
             '#acym__fields__required',
@@ -29,7 +29,7 @@ jQuery(document).ready(function ($) {
             '#acym__fields__error-message',
             '#acym__fields__default-value',
             '#acym__fields__value',
-            '#acym__fields__from-db',
+            '#acym__fields__from-db'
         ],
         checkbox: [
             '#acym__fields__required',
@@ -38,7 +38,7 @@ jQuery(document).ready(function ($) {
             '#acym__fields__error-message',
             '#acym__fields__default-value',
             '#acym__fields__value',
-            '#acym__fields__from-db',
+            '#acym__fields__from-db'
         ],
         single_dropdown: [
             '#acym__fields__required',
@@ -48,7 +48,7 @@ jQuery(document).ready(function ($) {
             '#acym__fields__default-value',
             '#acym__fields__value',
             '#acym__fields__from-db',
-            '#acym__fields__size',
+            '#acym__fields__size'
         ],
         multiple_dropdown: [
             '#acym__fields__required',
@@ -58,21 +58,21 @@ jQuery(document).ready(function ($) {
             '#acym__fields__default-value',
             '#acym__fields__value',
             '#acym__fields__from-db',
-            '#acym__fields__size',
+            '#acym__fields__size'
         ],
         date: [
             '#acym__fields__required',
             '#acym__fields__editable-user-creation',
             '#acym__fields__editable-user-modification',
             '#acym__fields__error-message',
-            '#acym__fields__format',
+            '#acym__fields__format'
         ],
         file: [
             '#acym__fields__required',
             '#acym__fields__editable-user-creation',
             '#acym__fields__editable-user-modification',
             '#acym__fields__error-message',
-            '#acym__fields__size',
+            '#acym__fields__size'
         ],
         phone: [
             '#acym__fields__required',
@@ -81,13 +81,13 @@ jQuery(document).ready(function ($) {
             '#acym__fields__error-message',
             '#acym__fields__default-value',
             '#acym__fields__max_characters',
-            '#acym__fields__size',
+            '#acym__fields__size'
         ],
         custom_text: [
             '#acym__fields__editable-user-creation',
             '#acym__fields__editable-user-modification',
-            '#acym__fields__custom-text',
-        ],
+            '#acym__fields__custom-text'
+        ]
     };
 
     let categoriesByElement = {
@@ -103,7 +103,7 @@ jQuery(document).ready(function ($) {
         '#acym__fields__columns': '#acym__fields__edit__section__title--style',
         '#acym__fields__size': '#acym__fields__edit__section__title--style',
         '#acym__fields__value': '#acym__fields__edit__section__title--values',
-        '#acym__fields__from-db': '#acym__fields__edit__section__title--values',
+        '#acym__fields__from-db': '#acym__fields__edit__section__title--values'
     };
 
     function Init() {
@@ -138,13 +138,17 @@ jQuery(document).ready(function ($) {
         $('.acym__fields__values__listing__sortable').sortable({
             item: '.acym__fields__value__sortable',
             handle: '.acym__sortable__field__edit__handle',
-            animation: 150,
+            animation: 150
         });
     }
 
     function setValueCustomFields() {
         $('#acym__fields__value__add-value').off('click').on('click', function () {
-            let htmlSelect = '<select acym-data-infinite class="acym__fields__edit__select acym__select" name="field[value][disabled][]" class=""><option value="n">' + ACYM_JS_TXT.ACYM_NO + '</option><option value="y">' + ACYM_JS_TXT.ACYM_YES + '</option></select>';
+            let htmlSelect = '<select acym-data-infinite class="acym__fields__edit__select acym__select" name="field[value][disabled][]" class=""><option value="n">'
+                             + ACYM_JS_TXT.ACYM_NO
+                             + '</option><option value="y">'
+                             + ACYM_JS_TXT.ACYM_YES
+                             + '</option></select>';
             let newContent = '<div class="grid-x cell acym__fields__value__sortable acym__content margin-bottom-1 grid-margin-x">';
             newContent += '<div class="medium-1 cell acym_vcenter align-center acym__field__sortable__listing__handle">';
             newContent += '<div class="grabbable acym__sortable__field__edit__handle grid-x">';
@@ -208,8 +212,28 @@ jQuery(document).ready(function ($) {
                 selectFields += '<option value="' + $(this).html() + '">' + $(this).html() + '</option>';
             });
             selectFields += '</select>';
-            let selectSign = '<select name="field[option][display_sign][]" class="acym__fields__edit__select">' + '<option value="=">=</option>' + '<option value="!=">!=</option>' + '<option value=">">></option>' + '<option value="<"><</option>' + '<option value="<="><=</option>' + '<option value=">=">>=</option>' + '</select>';
-            $('.acym__display_if_add').before('<input type="hidden" name="field[option][display_and_or][]" value="' + $(this).find('option:selected').val() + '"><div class="cell grid-x grid-margin-x"><h6 class="cell">' + $(this).find('option:selected').text() + '</h6>' + '<div class="cell medium-5">' + selectFields + '</div>' + '<div class="cell medium-2">' + selectSign + '</div>' + '<input class="medium-5 cell" type="text" name="field[option][display_value][]">' + '</div>');
+            let selectSign = '<select name="field[option][display_sign][]" class="acym__fields__edit__select">'
+                             + '<option value="=">=</option>'
+                             + '<option value="!=">!=</option>'
+                             + '<option value=">">></option>'
+                             + '<option value="<"><</option>'
+                             + '<option value="<="><=</option>'
+                             + '<option value=">=">>=</option>'
+                             + '</select>';
+            $('.acym__display_if_add')
+                .before('<input type="hidden" name="field[option][display_and_or][]" value="'
+                        + $(this).find('option:selected').val()
+                        + '"><div class="cell grid-x grid-margin-x"><h6 class="cell">'
+                        + $(this).find('option:selected').text()
+                        + '</h6>'
+                        + '<div class="cell medium-5">'
+                        + selectFields
+                        + '</div>'
+                        + '<div class="cell medium-2">'
+                        + selectSign
+                        + '</div>'
+                        + '<input class="medium-5 cell" type="text" name="field[option][display_value][]">'
+                        + '</div>');
             acym_helperSelect2.setSelect2();
             $(this).val('none');
         });

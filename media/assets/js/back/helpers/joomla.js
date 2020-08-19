@@ -13,10 +13,10 @@ const acym_helperJoomla = {
 
         jQuery('#acym_content, .acym_no_foundation').css({
             'width': 'calc(100% - ' + menuWidth + 'px)',
-            'margin-left': menuWidth + 'px',
+            'margin-left': menuWidth + 'px'
         });
         jQuery('#system-message-container').css({
-            'margin-left': (menuWidth + 15) + 'px',
+            'margin-left': (menuWidth + 15) + 'px'
         });
     },
     setJoomlaLeftMenu: function () {
@@ -62,12 +62,13 @@ const acym_helperJoomla = {
         });
 
         jQuery('#acym__joomla__left-menu--show').off('click').on('click', function () {
-            !jQuery('.btn-navbar').hasClass('collapsed') ? ('.nav-collapse').css('height', '0px').removeClass('in') & jQuery('.btn-navbar').removeClass('collapsed') : true;
+            !jQuery('.btn-navbar').hasClass('collapsed') ? ('.nav-collapse').css('height', '0px').removeClass('in') & jQuery('.btn-navbar')
+                .removeClass('collapsed') : true;
             $leftMenu.toggle();
         });
 
         jQuery(window).on('resize', function () {
             acym_helperJoomla.setWidthJoomlaContent();
         });
-    },
+    }
 };

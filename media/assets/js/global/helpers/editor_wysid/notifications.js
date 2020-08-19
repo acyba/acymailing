@@ -36,5 +36,5 @@ const acym_editorWysidNotifications = {
                 acym_editorWysidNotifications.hideNotification();
             }, timeout);
         }
-    },
+    }
 };

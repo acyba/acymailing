@@ -39,11 +39,17 @@ jQuery(document).ready(function ($) {
             // Foreach conditions in this OR block
             $.each(oneORBlock, function (numAND, oneCondition) {
                 // Create a new AND block if needed
-                if (and !== 0) $('.acym__automation__group__condition[data-condition-number="' + or + '"]').find('.acym__automation__add-condition[data-condition-type="' + type + '"]').click();
+                if (and !== 0) {
+                    $('.acym__automation__group__condition[data-condition-number="' + or + '"]')
+                        .find('.acym__automation__add-condition[data-condition-type="' + type + '"]')
+                        .click();
+                }
 
                 $.each(oneCondition, function (conditionName, conditionOptions) {
                     // Select the condition type in the correct dropdown
-                    let $conditionSelect = $('.acym__automation__group__condition[data-condition-number="' + or + '"]').find('.acym__automation__select__' + type + '__condition').last();
+                    let $conditionSelect = $('.acym__automation__group__condition[data-condition-number="' + or + '"]')
+                        .find('.acym__automation__select__' + type + '__condition')
+                        .last();
                     $conditionSelect.val(conditionName);
                     $conditionSelect.trigger('change');
 
@@ -53,7 +59,15 @@ jQuery(document).ready(function ($) {
                         let optionValue = conditionOptions[keys[key]];
 
                         // Set the option values
-                        let $optionField = $('[name="acym_condition[conditions][' + or + '][' + $('#acym__automation__conditions__count__and').val() + '][' + conditionName + '][' + optionName + ']"]');
+                        let $optionField = $('[name="acym_condition[conditions]['
+                                             + or
+                                             + ']['
+                                             + $('#acym__automation__conditions__count__and').val()
+                                             + ']['
+                                             + conditionName
+                                             + ']['
+                                             + optionName
+                                             + ']"]');
 
                         $.setFieldValue($optionField, optionValue);
 
@@ -79,7 +93,13 @@ jQuery(document).ready(function ($) {
             $(this).parent().parent().find('.acym__automation__inserted__condition').remove();
             let html = conditions[$(this).val()].replace(/__numor__/g, $(this).closest('.acym__automation__group__condition').attr('data-condition-number'));
             html = html.replace(/__numand__/g, $inputAnd.val());
-            $(this).parent().after('<div data-and="' + $inputAnd.val() + '" class="cell grid-x grid-margin-x grid-margin-y acym__automation__inserted__condition margin-top-1 margin-left-2">' + html + '</div>');
+            $(this)
+                .parent()
+                .after('<div data-and="'
+                       + $inputAnd.val()
+                       + '" class="cell grid-x grid-margin-x grid-margin-y acym__automation__inserted__condition margin-top-1 margin-left-2">'
+                       + html
+                       + '</div>');
             acym_helperSelect2.setSelect2();
             acym_helperDatePicker.setDatePickerGlobal();
 
@@ -144,7 +164,7 @@ jQuery(document).ready(function ($) {
                        .addClass('acym__select')
                        .select2({
                            theme: 'foundation',
-                           width: '100%',
+                           width: '100%'
                        });
             refreshConditionProcess();
         });

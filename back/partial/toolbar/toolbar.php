@@ -9,7 +9,7 @@
                 <?php if (!empty($data['moreOptionsPart'])) { ?>
 					<button id="acym__toolbar__button-more-filters" type="button" class="acym__toolbar__button medium-6 acym__toolbar__button-secondary cell large-shrink">
 						<i class="acymicon-filter"></i>
-						<?php echo acym_translation('ACYM_SHOW_FILTERS'); ?>
+                        <?php echo acym_translation('ACYM_SHOW_FILTERS'); ?>
 					</button>
                 <?php } ?>
             <?php } ?>

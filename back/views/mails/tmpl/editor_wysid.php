@@ -1,37 +1,60 @@
+<input type="hidden" id="default_template" value="<?php echo acym_escape($this->defaultTemplate); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__content" id="editor_content" name="editor_content" value="" />
 <input type="hidden" class="acym__wysid__hidden__save__stylesheet" id="editor_stylesheet" name="editor_stylesheet" value="<?php echo acym_escape($this->getWYSIDStylesheet()); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__settings" id="editor_settings" name="editor_settings" value="<?php echo acym_escape($this->getWYSIDSettings()); ?>" />
-<input type="hidden" id="acym__wysid__session--lifetime" name="acym_session_lifetime" value="<?php echo acym_escape(ini_get("session.gc_maxlifetime")); ?>" />
+<input type="hidden" id="acym__wysid__session--lifetime" name="acym_session_lifetime" value="<?php echo acym_escape(ini_get('session.gc_maxlifetime')); ?>" />
 <input type="hidden" class="acym__wysid__hidden__mailId" id="editor_mailid" name="editor_autoSave" value="<?php echo intval($this->mailId); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__auto" id="editor_autoSave" value="<?php echo acym_escape($this->autoSave); ?>">
 <input type="hidden" id="acym__template__preview">
 <input type="hidden" id="acym__wysid__block__html__content">
 
-<div id="acym__wysid__edit" class="cell grid-x">
-	<div class="cell grid-x padding-1 padding-bottom-0">
-		<div class="cell medium-auto hide-for-small-only"></div>
-		<button id="acym__wysid__edit__button" type="button" class="cell button xlarge-3 medium-4 margin-bottom-0">
-			<i class="acymicon-edit" style="vertical-align: middle"></i>
-            <?php
-            $ctrl = acym_getVar('string', 'ctrl');
-            echo acym_translation(in_array($ctrl, ['campaigns', 'frontcampaigns']) ? 'ACYM_EDIT_MAIL' : ($this->walkThrough ? 'ACYM_EDIT' : 'ACYM_EDIT_TEMPLATE'));
-            ?>
-		</button>
-		<div class="cell medium-auto hide-for-small-only"></div>
-	</div>
-	<div class="cell grid-x" id="acym__wysid__edit__preview">
-		<div class="cell medium-auto hide-for-small-only"></div>
+<div id="acym__wysid__edit" class="cell grid-x margin-top-1">
+	<div class="cell medium-auto"></div>
+	<div class="cell <?php echo acym_isAdmin() ? 'xxlarge-9' : ''; ?> grid-x grid-margin-x acym__content">
         <?php
-        if (!acym_isAdmin()) {
-            $classes = 'medium-12 margin-top-1';
-        } else {
-            $classes = 'large-9 margin-top-1';
-            if (!$this->walkThrough) $classes .= ' xxlarge-6';
+        if (!empty($data['multilingual'])) {
+            include ACYM_PARTIAL.'editor'.DS.'languages.php';
+            $preheaderSize = 'large-6';
+            include acym_getView('campaigns', 'edit_email_info_content', true);
+            echo '<div id="acym__wysid__edit__separator" class="cell grid-x align-center"><div class="cell small-9"></div></div>';
         }
         ?>
-		<div id="acym__wysid__email__preview" class="acym__email__preview grid-x cell <?php echo $classes ?>"></div>
-		<div class="cell medium-auto hide-for-small-only"></div>
+
+		<div class="cell grid-x padding-1 padding-bottom-0">
+			<div class="cell medium-auto hide-for-small-only"></div>
+			<button id="acym__wysid__edit__button" type="button" class="cell button xlarge-4 medium-5 margin-bottom-0">
+				<i class="acymicon-edit" style="vertical-align: middle"></i>
+                <?php
+                $ctrl = acym_getVar('string', 'ctrl');
+                echo acym_translation(in_array(acym_getVar('string', 'ctrl'), ['campaigns', 'frontcampaigns']) ? 'ACYM_EDIT_MAIL' : ($this->walkThrough ? 'ACYM_EDIT' : 'ACYM_EDIT_TEMPLATE'));
+                ?>
+			</button>
+			<div class="cell medium-auto hide-for-small-only"></div>
+		</div>
+
+		<div class="cell grid-x" id="acym__wysid__edit__preview">
+            <?php
+            if (!empty($data['multilingual'])) {
+                echo acym_tooltip(
+                    '<div id="acym__wysid__edit__preview__reset__content"><i class="acymicon-rotate-left"></i></div>',
+                    acym_translation('ACYM_REMOVE_TRANSLATION_DESC'),
+                    'acym__wysid__edit__preview__reset is-hidden'
+                );
+            }
+            ?>
+			<div class="cell medium-auto hide-for-small-only"></div>
+            <?php
+            $classes = '';
+            if (acym_isAdmin()) {
+                $classes = 'large-10';
+                if (!$this->walkThrough) $classes .= ' xxlarge-9';
+            }
+            ?>
+			<div id="acym__wysid__email__preview" class="acym__email__preview grid-x cell <?php echo $classes; ?> margin-top-1"></div>
+			<div class="cell medium-auto hide-for-small-only"></div>
+		</div>
 	</div>
+	<div class="cell medium-auto"></div>
 </div>
 
 <div class="grid-x grid-margin-x">

@@ -36,7 +36,9 @@ jQuery(document).ready(function ($) {
                     $.setFieldValue($optionField, optionValue);
 
                     if ('acy_add_queue' === actionName && 'mail_id' === optionName && '' !== optionValue) {
-                        $optionField.next().html(actionOptions.mail_name + '<i class="cursor-pointer acymicon-close acym__color__red acym__automation__action__reset__mail margin-left-1"></i>');
+                        $optionField.next()
+                                    .html(actionOptions.mail_name
+                                          + '<i class="cursor-pointer acymicon-close acym__color__red acym__automation__action__reset__mail margin-left-1"></i>');
                         $optionField.prev().html(ACYM_JS_TXT.ACYM_EDIT_MAIL);
                     }
 
@@ -73,7 +75,9 @@ jQuery(document).ready(function ($) {
         $('.acym__automation__actions__select').off('change.loadoptions').on('change.loadoptions', function () {
             $(this).parent().parent().find('.acym__automation__inserted__action').remove();
             let html = actions[$(this).val()].option.replace(/__and__/g, $(this).closest('.acym__automation__actions__one__action').attr('data-action-number'));
-            $(this).parent().after('<div class="grid-x acym__automation__inserted__action margin-top-1 margin-left-2 grid-margin-x cell acym_vcenter">' + html + '</div>');
+            $(this)
+                .parent()
+                .after('<div class="grid-x acym__automation__inserted__action margin-top-1 margin-left-2 grid-margin-x cell acym_vcenter">' + html + '</div>');
             if ($('#adminAutomation').val() == 1) {
                 $(this).parent().next().find('[data-open*="acy_add_queuetime"]').attr('disabled', 'disabled');
             }
@@ -136,7 +140,7 @@ jQuery(document).ready(function ($) {
             $newElement.find('select')
                        .select2({
                            theme: 'foundation',
-                           width: '100%',
+                           width: '100%'
                        });
             refreshActionsProcess();
         });

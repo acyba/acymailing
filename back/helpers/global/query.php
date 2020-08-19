@@ -44,3 +44,12 @@ function acym_getDatabases()
 
     return $databases;
 }
+
+function acym_addLimit(&$query, $limit = 1, $offset = null)
+{
+    if (strpos($query, 'LIMIT ') !== false) return;
+
+    $query .= ' LIMIT ';
+    if (!empty($offset)) $query .= intval($offset).',';
+    $query .= intval($limit);
+}

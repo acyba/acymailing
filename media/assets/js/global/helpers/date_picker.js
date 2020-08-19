@@ -93,5 +93,5 @@ const acym_helperDatePicker = {
                 $modal.find('.acy_date_picker').val(moment.unix($input.val()).format('YYYY-MM-DD HH:mm'));
             }
         });
-    },
+    }
 };

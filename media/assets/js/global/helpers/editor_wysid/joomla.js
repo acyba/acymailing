@@ -15,7 +15,9 @@ const acym_editorWysidJoomla = {
         $modalUi.contents().find('.button-cancel').attr('onclick', '').off('click').on('click', function () {
             jQuery('#acym__wysid__modal__joomla-image').hide();
             if (!rows) {
-                if (acym_helperEditorWysid.$focusElement.length && acym_helperEditorWysid.$focusElement.html().indexOf('insert_photo') !== -1) acym_helperEditorWysid.$focusElement.replaceWith('');
+                if (acym_helperEditorWysid.$focusElement.length && acym_helperEditorWysid.$focusElement.html().indexOf('insert_photo') !== -1) {
+                    acym_helperEditorWysid.$focusElement.replaceWith('');
+                }
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
                 acym_editorWysidVersioning.setUndoAndAutoSave();
                 acym_helperEditorWysid.checkForEmptyTbodyWYSID();
@@ -38,14 +40,30 @@ const acym_editorWysidJoomla = {
                             let padding = acym_helperEditorWysid.$focusElement.css('padding-top');
                             if (!acym_helperEditorWysid.$focusElement.hasClass('acym__wysid__template__content')) {
                                 acym_helperEditorWysid.$focusElement.css('background-color', '').attr('bgcolor', '');
-                                acym_helperEditorWysid.$focusElement.attr('style', 'background-image: url(\'' + jQuery(this).find('img').attr('src') + '\'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: ' + padding + ' 0').attr('width', acym_helperEditorWysid.$focusElement.width());
+                                acym_helperEditorWysid.$focusElement.attr(
+                                    'style',
+                                    'background-image: url(\''
+                                    + jQuery(this).find('img').attr('src')
+                                    + '\'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: '
+                                    + padding
+                                    + ' 0'
+                                ).attr('width', acym_helperEditorWysid.$focusElement.width());
                             } else {
-                                acym_helperEditorWysid.$focusElement.attr('style', 'background-image: url(\'' + jQuery(this).find('img').attr('src') + '\'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: ' + padding + ' 0 40px 0');
-                                if (acym_helperEditorWysid.$focusElement.css('background-image') !== 'none') jQuery('#acym__wysid__background-image__template-delete').css('display', 'flex');
+                                acym_helperEditorWysid.$focusElement.attr(
+                                    'style',
+                                    'background-image: url(\''
+                                    + jQuery(this).find('img').attr('src')
+                                    + '\'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: '
+                                    + padding
+                                    + ' 0 40px 0'
+                                );
+                                if (acym_helperEditorWysid.$focusElement.css('background-image') !== 'none') {
+                                    jQuery('#acym__wysid__background-image__template-delete').css('display', 'flex');
+                                }
                             }
                             acym_editorWysidNotifications.addEditorNotification({
                                 'message': ACYM_JS_TXT.ACYM_BECARFUL_BACKGROUND_IMG,
-                                'level': 'warning',
+                                'level': 'warning'
                             });
                         } else {
                             let alt = '';
@@ -55,7 +73,13 @@ const acym_editorWysidJoomla = {
                             let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
                             content += '<td class="large-12 acym__wysid__column__element__td">';
                             content += '<div class="acym__wysid__tinymce--image">';
-                            content += '<img class="acym__wysid__media__inserted" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;" src="' + jQuery(this).find('img').attr('src') + '" alt="' + acym_helper.escape(alt) + '" title="' + acym_helper.escape(title) + '"/>';
+                            content += '<img class="acym__wysid__media__inserted" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;" src="'
+                                       + jQuery(this).find('img').attr('src')
+                                       + '" alt="'
+                                       + acym_helper.escape(alt)
+                                       + '" title="'
+                                       + acym_helper.escape(title)
+                                       + '"/>';
                             content += '</div>';
                             content += '</td>';
                             content += '</tr>';
@@ -73,7 +97,11 @@ const acym_editorWysidJoomla = {
                 let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
                 content += '<td class="large-12 acym__wysid__column__element__td">';
                 content += '<div class="acym__wysid__tinymce--image">';
-                content += '<img class="acym__wysid__media__inserted" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;" src="' + inputUrlImg + '" alt="' + jQuery(this).attr('title') + '"/>';
+                content += '<img class="acym__wysid__media__inserted" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;" src="'
+                           + inputUrlImg
+                           + '" alt="'
+                           + jQuery(this).attr('title')
+                           + '"/>';
                 content += '</div>';
                 content += '</td>';
                 content += '</tr>';

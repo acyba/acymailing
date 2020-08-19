@@ -9,15 +9,21 @@ const acym_editorWysidFontStyle = {
         acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('h4');
         acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('h5');
         acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('h6');
-        jQuery('.acym__wysid__template__content').css('background-color', acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID('#acym__wysid__background-colorpicker', 'background-color'));
+        jQuery('.acym__wysid__template__content')
+            .css('background-color', acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID('#acym__wysid__background-colorpicker', 'background-color'));
     },
     setAllSettingsOfHtmlElementWYSID: function (element) {
         jQuery.each(acym_helperEditorWysid.defaultMailsSettings[element], function (property) {
-            jQuery('.acym__wysid__column__element ' + element + ':not(.acym__wysid__content-no-settings-style)').css(property, acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID(element, property));
+            jQuery('.acym__wysid__column__element ' + element + ':not(.acym__wysid__content-no-settings-style)')
+                .css(property, acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID(element, property));
         });
     },
     getSettingsOfHtmlElementWYSID: function (element, property) {
-        return acym_helperEditorWysid.mailsSettings[element] !== undefined && acym_helperEditorWysid.mailsSettings[element][property] && acym_helperEditorWysid.mailsSettings[element][property] !== undefined ? acym_helperEditorWysid.mailsSettings[element][property] : acym_helperEditorWysid.defaultMailsSettings[element][property];
+        return acym_helperEditorWysid.mailsSettings[element]
+               !== undefined
+               && acym_helperEditorWysid.mailsSettings[element][property]
+               && acym_helperEditorWysid.mailsSettings[element][property]
+               !== undefined ? acym_helperEditorWysid.mailsSettings[element][property] : acym_helperEditorWysid.defaultMailsSettings[element][property];
     },
     setSettingsElementStyle: function (element, property, value) {
         acym_helperEditorWysid.mailsSettings[element] === undefined ? acym_helperEditorWysid.mailsSettings[element] = {} : true;
@@ -31,12 +37,19 @@ const acym_editorWysidFontStyle = {
         let $currentFont = jQuery('#acym__wysid__right__toolbar__settings__font--select').val();
         let $contentTemplate = jQuery('#acym__wysid .acym__wysid__template__content');
         let $deleteBackgroundImage = jQuery('#acym__wysid__background-image__template-delete');
-        jQuery('#acym__wysid__right__toolbar__settings__font-family').val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-family')).trigger('change');
-        jQuery('#acym__wysid__right__toolbar__settings__font-size').val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-size')).trigger('change');
+        jQuery('#acym__wysid__right__toolbar__settings__font-family')
+            .val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-family'))
+            .trigger('change');
+        jQuery('#acym__wysid__right__toolbar__settings__font-size')
+            .val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-size'))
+            .trigger('change');
 
-        $settingsBold.val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-weight') == 'bold' ? $settingsBold.addClass('acym__wysid__right__toolbar__settings__bold--selected') : $settingsBold.removeClass('acym__wysid__right__toolbar__settings__bold--selected'));
+        $settingsBold.val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-weight') == 'bold' ? $settingsBold.addClass(
+            'acym__wysid__right__toolbar__settings__bold--selected') : $settingsBold.removeClass('acym__wysid__right__toolbar__settings__bold--selected'));
 
-        $settingsItalic.val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-style') == 'italic' ? $settingsItalic.addClass('acym__wysid__right__toolbar__settings__italic--selected') : $settingsItalic.removeClass('acym__wysid__right__toolbar__settings__italic--selected'));
+        $settingsItalic.val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-style') == 'italic'
+                            ? $settingsItalic.addClass('acym__wysid__right__toolbar__settings__italic--selected')
+                            : $settingsItalic.removeClass('acym__wysid__right__toolbar__settings__italic--selected'));
 
         acym_editorWysidColorPicker.setSettingsColorPickerWYSID(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'color'));
         acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID($currentFont);
@@ -78,19 +91,45 @@ const acym_editorWysidFontStyle = {
         });
 
         jQuery('#acym__wysid__right__toolbar__settings__font-family').on('change', function () {
-            acym_editorWysidFontStyle.setSettingsElementStyle(jQuery('#acym__wysid__right__toolbar__settings__font--select').val(), 'font-family', jQuery(this).val());
+            acym_editorWysidFontStyle.setSettingsElementStyle(
+                jQuery('#acym__wysid__right__toolbar__settings__font--select').val(),
+                'font-family',
+                jQuery(this).val()
+            );
         });
 
         jQuery('#acym__wysid__right__toolbar__settings__font-size').on('change', function () {
-            acym_editorWysidFontStyle.setSettingsElementStyle(jQuery('#acym__wysid__right__toolbar__settings__font--select').val(), 'font-size', jQuery(this).val());
+            acym_editorWysidFontStyle.setSettingsElementStyle(
+                jQuery('#acym__wysid__right__toolbar__settings__font--select').val(),
+                'font-size',
+                jQuery(this).val()
+            );
         });
 
         $settingsBold.off('click').on('click', function () {
-            $settingsBold.hasClass('acym__wysid__right__toolbar__settings__bold--selected') ? $settingsBold.removeClass('acym__wysid__right__toolbar__settings__bold--selected') && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(), 'font-weight', 'normal') : $settingsBold.addClass('acym__wysid__right__toolbar__settings__bold--selected') && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(), 'font-weight', 'bold');
+            $settingsBold.hasClass('acym__wysid__right__toolbar__settings__bold--selected') ? $settingsBold.removeClass(
+                'acym__wysid__right__toolbar__settings__bold--selected') && acym_editorWysidFontStyle.setSettingsElementStyle(
+                $toolbarFont.val(),
+                'font-weight',
+                'normal'
+            ) : $settingsBold.addClass('acym__wysid__right__toolbar__settings__bold--selected') && acym_editorWysidFontStyle.setSettingsElementStyle(
+                $toolbarFont.val(),
+                'font-weight',
+                'bold'
+            );
         });
 
         $settingsItalic.off('click').on('click', function () {
-            $settingsItalic.hasClass('acym__wysid__right__toolbar__settings__italic--selected') ? $settingsItalic.removeClass('acym__wysid__right__toolbar__settings__italic--selected') && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(), 'font-style', 'normal') : $settingsItalic.addClass('acym__wysid__right__toolbar__settings__italic--selected') && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(), 'font-style', 'italic');
+            $settingsItalic.hasClass('acym__wysid__right__toolbar__settings__italic--selected') ? $settingsItalic.removeClass(
+                'acym__wysid__right__toolbar__settings__italic--selected') && acym_editorWysidFontStyle.setSettingsElementStyle(
+                $toolbarFont.val(),
+                'font-style',
+                'normal'
+            ) : $settingsItalic.addClass('acym__wysid__right__toolbar__settings__italic--selected') && acym_editorWysidFontStyle.setSettingsElementStyle(
+                $toolbarFont.val(),
+                'font-style',
+                'italic'
+            );
         });
     },
     setApplyStylesheetSettings: function () {
@@ -143,7 +182,12 @@ const acym_editorWysidFontStyle = {
         });
 
         jQuery('.acym__wysid__social__icons__import').off('click').on('click', function () {
-            jQuery(this).closest('div').find('.acym__wysid__social__icons__import__delete').html('').attr('class', 'acymicon-circle-o-notch acymicon-spin acym__wysid__social__icons__import__delete').css('color', '#303e46');
+            jQuery(this)
+                .closest('div')
+                .find('.acym__wysid__social__icons__import__delete')
+                .html('')
+                .attr('class', 'acymicon-circle-o-notch acymicon-spin acym__wysid__social__icons__import__delete')
+                .css('color', '#303e46');
             let $input = jQuery(this).closest('.acym__wysid__right__toolbar__design__social__icons__one').find('input');
             let file_data = $input.prop('files')[0];
             let form_data = new FormData();
@@ -175,11 +219,11 @@ const acym_editorWysidFontStyle = {
                         $input.val('').trigger('change');
                         acym_editorWysidNotifications.addEditorNotification({
                             'message': res.message,
-                            'level': res.type,
+                            'level': res.type
                         });
                     }
-                },
+                }
             });
         });
-    },
+    }
 };

@@ -17,5 +17,5 @@ const acym_helperRadio = {
                 }
             });
         }).change();
-    },
+    }
 };

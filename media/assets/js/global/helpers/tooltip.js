@@ -3,8 +3,12 @@ const acym_helperTooltip = {
         jQuery('.acym__tooltip, [data-acym-tooltip]').off('mouseenter').on('mouseenter', function () {
             if (undefined !== jQuery(this).attr('data-acym-tooltip')) {
                 jQuery(this).addClass('acym__tooltip');
-                let position = jQuery(this).attr('data-acym-tooltip-position') !== undefined ? 'acym__tooltip__text__' + jQuery(this).attr('data-acym-tooltip-position') : '';
-                if (jQuery(this).find('.acym__tooltip__text').length == 0) jQuery(this).append('<span class="acym__tooltip__text ' + position + '">' + jQuery(this).attr('data-acym-tooltip') + '</span>');
+                let position = jQuery(this).attr('data-acym-tooltip-position') !== undefined ? 'acym__tooltip__text__' + jQuery(this)
+                    .attr('data-acym-tooltip-position') : '';
+                if (jQuery(this).find('.acym__tooltip__text').length == 0) {
+                    jQuery(this)
+                        .append('<span class="acym__tooltip__text ' + position + '">' + jQuery(this).attr('data-acym-tooltip') + '</span>');
+                }
             }
             acym_helperTooltip.setPositionTooltip(jQuery(this).find('.acym__tooltip__text'), jQuery(this));
         });
@@ -15,7 +19,7 @@ const acym_helperTooltip = {
                 position: 'absolute',
                 top: ($parent.outerHeight() + 14) + 'px',
                 left: '-' + ((250 - $parent.outerWidth()) / 2) + 'px',
-                width: '250px',
+                width: '250px'
             });
             return;
         }

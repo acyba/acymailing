@@ -12,14 +12,15 @@ function readyFunction($) {
 
     let perScroll = 20, start = {
         'available': perScroll,
-        'selected': perScroll,
+        'selected': perScroll
     };
 
     //get all entities in a which aren't in b
     const diff = (a, b) => a.filter((i) => JSON.stringify(b).indexOf(JSON.stringify(i)) === -1);
 
     //search in array
-    const search = (array, search, columns) => array.filter((entity) => columns.map((column) => entity[column].toLowerCase().indexOf(search.toLowerCase()) !== -1).indexOf(true) !== -1);
+    const search = (array, search, columns) => array.filter((entity) => columns.map((column) => entity[column].toLowerCase().indexOf(search.toLowerCase())
+                                                                        !== -1).indexOf(true) !== -1);
 
     //remove from array
     const remove = (array, entityId) => array.filter((entity) => entity.id !== entityId);
@@ -40,12 +41,12 @@ function readyFunction($) {
             url: ajaxUrl,
             type: 'POST',
             data: {
-                listsSelected: selectedLists,
+                listsSelected: selectedLists
             },
             beforeSend: function () {
                 $('.acym__campaign__recipients__number-recipients').hide();
                 $('.acym_loader_logo').show();
-            },
+            }
         }).done(function (result) {
             $('.acym__campaign__recipients__number-recipients').html(result).show();
             $('.acym_loader_logo').hide();
@@ -78,7 +79,7 @@ function readyFunction($) {
                 selectedSearch: '',
                 displaySelectAll_available: true,
                 displaySelectAll_selected: true,
-                columnsClasses: [],
+                columnsClasses: []
             },
             mounted: function () {
                 let entitySelectContainer = document.getElementById('acym__entity_select');
@@ -130,7 +131,13 @@ function readyFunction($) {
                     start[type] += perScroll;
                     let variableName = 'entitiesToDisplay_' + type;
                     let variableNameAll = 'entities' + type.charAt(0).toUpperCase() + type.slice(1);
-                    this[variableName] = '' === this[type + 'Search'] ? this[variableNameAll].slice(0, start[type]) : search(this['entities' + type.charAt(0).toUpperCase() + type.slice(1)], this[type + 'Search'], this.columnsToDisplay);
+                    this[variableName] = '' === this[type + 'Search'] ? this[variableNameAll].slice(0, start[type]) : search(this['entities'
+                                                                                                                                  + type.charAt(0)
+                                                                                                                                        .toUpperCase()
+                                                                                                                                  + type.slice(1)],
+                        this[type + 'Search'],
+                        this.columnsToDisplay
+                    );
                 },
                 loadMoreEntityAvailable() {
                     this.loadMoreEntity('available');
@@ -159,7 +166,10 @@ function readyFunction($) {
                         this['entitiesToDisplay_' + type] = this['entities' + type.charAt(0).toUpperCase() + type.slice(1)].slice(0, start[type]);
                     } else {
                         this['displaySelectAll_' + type] = false;
-                        this['entitiesToDisplay_' + type] = search(this['entities' + type.charAt(0).toUpperCase() + type.slice(1)], this[type + 'Search'], this.columnsToDisplay);
+                        this['entitiesToDisplay_' + type] = search(this['entities' + type.charAt(0).toUpperCase() + type.slice(1)],
+                            this[type + 'Search'],
+                            this.columnsToDisplay
+                        );
                     }
                 },
                 handleEntities(data) {
@@ -185,7 +195,20 @@ function readyFunction($) {
                     let joinColumn = '';
                     if (this.tableJoin !== undefined && this.columnJoin !== undefined) joinColumn = '&join_table=' + this.tableJoin + '.' + this.columnJoin;
                     let ctrl = ACYM_IS_ADMIN ? 'entitySelect' : 'frontentityselect';
-                    $.get(ACYM_AJAX_URL + '&ctrl=' + ctrl + '&task=loadEntityFront&offset=' + entityNumber + '&perCalls=' + entityPerCalls + '&entity=' + entity + '&join=' + this.join + '&columns=' + this.columnsToDisplay.join(',') + joinColumn, (res) => {
+                    $.get(ACYM_AJAX_URL
+                          + '&ctrl='
+                          + ctrl
+                          + '&task=loadEntityFront&offset='
+                          + entityNumber
+                          + '&perCalls='
+                          + entityPerCalls
+                          + '&entity='
+                          + entity
+                          + '&join='
+                          + this.join
+                          + '&columns='
+                          + this.columnsToDisplay.join(',')
+                          + joinColumn, (res) => {
                         res = acym_helper.parseJson(res);
                         if (undefined !== res.error) {
                             console.log(res.error);
@@ -216,7 +239,9 @@ function readyFunction($) {
                     this.loadMoreEntity('available');
                     this.loadMoreEntity('selected');
                     let buttonSubmit = document.getElementById('acym__entity_select__button__submit');
-                    if (typeof buttonSubmit != 'undefined' && buttonSubmit != null && buttonSubmit.classList.contains('acy_button_submit')) acym_helper.setSubmitButtonGlobal();
+                    if (typeof buttonSubmit != 'undefined' && buttonSubmit != null && buttonSubmit.classList.contains('acy_button_submit')) {
+                        acym_helper.setSubmitButtonGlobal();
+                    }
 
                     $('.acym__entity_select__button__close').off('click').on('click', function () {
                         $(this).closest('.reveal').foundation('close');
@@ -225,7 +250,7 @@ function readyFunction($) {
                     acym_helperImport.setVerificationGenericImport();
                     acym_helperImport.setImportCMSLists();
                     acym_helperImport.setCreateListFromImportPage();
-                },
+                }
             },
             watch: {
                 availableSearch: function () {

@@ -64,5 +64,5 @@ const acym_helperToolbar = {
         });
 
         jQuery('#acym__toolbar__button-more-filters').click();
-    },
+    }
 };

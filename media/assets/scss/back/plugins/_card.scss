@@ -264,6 +264,12 @@ $perspective: 600;
                 transform: rotateY(180deg);
                 display: none;
 
+                @-moz-document url-prefix() {
+                    & {
+                        transform: rotateY(0deg) !important;
+                    }
+                }
+
                 label {
                     margin-right: 10px;
                 }

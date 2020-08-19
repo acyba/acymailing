@@ -20,15 +20,20 @@
 				<div class="cell shrink acym__campaign__summary__generated__list__title margin-right-1"><?php echo acym_translation('ACYM_LISTS_SUMMARY'); ?></div>
 				<div class="cell auto grid-x grid-margin-x grid-margin-y">
                     <?php foreach ($data['lists'] as $list) { ?>
-						<div class="cell shrink acym__campaign__summary__generated__list__tag"><i class="acymicon-circle" style="color: <?php echo $list->color ?>;"></i><?php echo $list->name; ?></div>
+						<div class="cell shrink acym__campaign__summary__generated__list__tag"><i class="acymicon-circle" style="color: <?php echo $list->color; ?>;"></i><?php echo $list->name; ?></div>
                     <?php } ?>
 				</div>
 			</div>
+            <?php
+            if ($data['multilingual']) {
+                include acym_getView('campaigns', 'summary_languages', true);
+            }
+            ?>
 			<div class="cell grid-x acym__campaign__summary__generated__mail">
 				<div class="cell grid-x acym__campaign__summary__generated__mail__one">
 					<div class="cell grid-x acym_vcenter">
 						<div class="cell shrink acym__campaign__summary__generated__mail__one__subject">
-							<span class="acym__campaign__summary__generated__mail__one__bold"><?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?></span> <?php echo $data['mail']->subject; ?>
+							<span class="acym__campaign__summary__generated__mail__one__bold"><?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?></span> <span class="acym__campaign__summary__email__information-subject"><?php echo $data['mail']->subject; ?></span>
 						</div>
 						<div class="cell auto acym__campaign__summary__generated__mail__one__preview margin-left-1">
                             <?php echo empty($data['mail']->preheader) ? '' : $data['mail']->preheader; ?>
@@ -49,7 +54,7 @@
 					<input type="hidden" class="acym__hidden__mail__content" value="<?php echo acym_escape(acym_absoluteURL($data['mail']->body)); ?>">
 					<div style="display: none" class="acym__hidden__mail__stylesheet"><?php echo $data['mail']->stylesheet; ?></div>
 					<div class="cell grid-x acym__campaign__summary__generated__mail__preview">
-						<i class="acymicon-unsorted acym__campaign__summary__generated__mail__toogle__preview"></i>
+						<i class="acymicon-sort acym__campaign__summary__generated__mail__toogle__preview"></i>
 						<div id="acym__wysid__email__preview" class="acym__email__preview grid-x cell margin-top-1"></div>
 					</div>
 				</div>

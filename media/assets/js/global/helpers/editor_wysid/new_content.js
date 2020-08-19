@@ -55,11 +55,15 @@ const acym_editorWysidNewContent = {
         content += '<p class="acym__wysid__column__element__follow" style="text-align: center; cursor: pointer; padding: 0;margin: 0;">';
 
         content += '<a class="acym__wysid__column__element__follow__facebook" href="">';
-        content += '<img style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="' + acym_helperEditorWysid.socialMedia.facebook.src + '" width="40" alt="facebook">';
+        content += '<img style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="'
+                   + acym_helperEditorWysid.socialMedia.facebook.src
+                   + '" width="40" alt="facebook">';
         content += '</a>';
 
         content += '<a class="acym__wysid__column__element__follow__twitter" href="">';
-        content += '<img style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="' + acym_helperEditorWysid.socialMedia.twitter.src + '"  width="40" alt="twitter">';
+        content += '<img style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="'
+                   + acym_helperEditorWysid.socialMedia.twitter.src
+                   + '"  width="40" alt="twitter">';
         content += '</a>';
 
         content += '</p>';
@@ -112,14 +116,30 @@ const acym_editorWysidNewContent = {
 
         content += '<div class="acym__wysid__column__element__share acym__wysid__column__element__share--add acy" style="text-align: center; margin-top: 10px; margin-bottom: 10px;">';
 
-        content += '<a style="display: inline-block" class="acym__wysid__column__element__share__social acym__wysid__column__element__share__facebook" href="' + acym_helperEditorWysid.socialMedia.facebook.link + '">';
-        content += '<img style="vertical-align: middle; width: 30px; display: inline; margin-right: 5px;" src="' + acym_helperEditorWysid.socialMedia.facebook.src + '" alt="' + acym_helperEditorWysid.socialMedia.facebook.src + '">';
-        content += '<span style="color: #303e46; vertical-align: middle; margin-right: 10px; font-size: 15px">' + acym_helperEditorWysid.socialMedia.facebook.text + '</span>';
+        content += '<a style="display: inline-block" class="acym__wysid__column__element__share__social acym__wysid__column__element__share__facebook" href="'
+                   + acym_helperEditorWysid.socialMedia.facebook.link
+                   + '">';
+        content += '<img style="vertical-align: middle; width: 30px; display: inline; margin-right: 5px;" src="'
+                   + acym_helperEditorWysid.socialMedia.facebook.src
+                   + '" alt="'
+                   + acym_helperEditorWysid.socialMedia.facebook.src
+                   + '">';
+        content += '<span style="color: #303e46; vertical-align: middle; margin-right: 10px; font-size: 15px">'
+                   + acym_helperEditorWysid.socialMedia.facebook.text
+                   + '</span>';
         content += '</a>';
 
-        content += '<a style="display: inline-block" class="acym__wysid__column__element__share__social acym__wysid__column__element__share__twitter" href="' + acym_helperEditorWysid.socialMedia.twitter.link + '">';
-        content += '<img style="vertical-align: middle; width: 30px; display: inline; margin-right: 5px;" src="' + acym_helperEditorWysid.socialMedia.twitter.src + '" alt="' + acym_helperEditorWysid.socialMedia.twitter.src + '">';
-        content += '<span style="color: #303e46; vertical-align: middle; margin-right: 10px; font-size: 15px">' + acym_helperEditorWysid.socialMedia.twitter.text + '</span>';
+        content += '<a style="display: inline-block" class="acym__wysid__column__element__share__social acym__wysid__column__element__share__twitter" href="'
+                   + acym_helperEditorWysid.socialMedia.twitter.link
+                   + '">';
+        content += '<img style="vertical-align: middle; width: 30px; display: inline; margin-right: 5px;" src="'
+                   + acym_helperEditorWysid.socialMedia.twitter.src
+                   + '" alt="'
+                   + acym_helperEditorWysid.socialMedia.twitter.src
+                   + '">';
+        content += '<span style="color: #303e46; vertical-align: middle; margin-right: 10px; font-size: 15px">'
+                   + acym_helperEditorWysid.socialMedia.twitter.text
+                   + '</span>';
         content += '</a>';
 
         content += '</div>';
@@ -133,8 +153,12 @@ const acym_editorWysidNewContent = {
     setModalGiphyWYSID: function () {
         let content = '<div class="grid-container"><div class="cell grid-x align-center grid-padding-x">';
         content += '<img class="cell" id="acym__wysid__modal__giphy--image" src="' + MEDIA_URL_ACYM + 'images/giphy.png" alt="">';
-        content += '<div class="cell grid-x grid-margin-x"><input class="cell auto" type="text" id="acym__wysid__modal__giphy--search" placeholder="' + ACYM_JS_TXT.ACYM_SEARCH_FOR_GIFS + '">';
-        content += '<button type="button" class="cell shrink button button-secondary" id="acym__wysid__modal__giphy--search--button">' + ACYM_JS_TXT.ACYM_SEARCH_GIFS + '</button></div>';
+        content += '<div class="cell grid-x grid-margin-x"><input class="cell auto" type="text" id="acym__wysid__modal__giphy--search" placeholder="'
+                   + ACYM_JS_TXT.ACYM_SEARCH_FOR_GIFS
+                   + '">';
+        content += '<button type="button" class="cell shrink button button-secondary" id="acym__wysid__modal__giphy--search--button">'
+                   + ACYM_JS_TXT.ACYM_SEARCH_GIFS
+                   + '</button></div>';
         content += '<p class="cell text-center" id="acym__wysid__modal__giphy--low-res-message">' + ACYM_JS_TXT.ACYM_GIPHY_LOW_RES_TEXT + '</p>';
         content += '</div></div>';
         jQuery('#acym__wysid__modal__ui__fields').html(content);
@@ -145,7 +169,9 @@ const acym_editorWysidNewContent = {
         jQuery('#acym__wysid__modal__ui__display').html(content);
 
         content = '<div class="grid-container"><div class="cell grid-x align-right grid-padding-x">';
-        content += '<button class="button" type="button" id="acym__wysid__modal__giphy--insert" disabled="disabled">' + ACYM_JS_TXT.ACYM_INSERT_GIF + '</button>';
+        content += '<button class="button" type="button" id="acym__wysid__modal__giphy--insert" disabled="disabled">'
+                   + ACYM_JS_TXT.ACYM_INSERT_GIF
+                   + '</button>';
         content += '</div></div>';
         jQuery('#acym__wysid__modal__ui__search').html(content);
 
@@ -216,7 +242,10 @@ const acym_editorWysidNewContent = {
             let url = $searchInput.val();
 
             $insertBtn.unbind('click').click(function () {
-                acym_helperEditorWysid.$focusElement.replaceWith('<tr class="acym__wysid__column__element"><td class="large-12 acym__wysid__column__element__td"><div class="acym__wysid__tinymce--image"><p>' + $result.html() + '</p></div></td></tr>');
+                acym_helperEditorWysid.$focusElement.replaceWith(
+                    '<tr class="acym__wysid__column__element"><td class="large-12 acym__wysid__column__element__td"><div class="acym__wysid__tinymce--image"><p>'
+                    + $result.html()
+                    + '</p></div></td></tr>');
                 acym_editorWysidTinymce.addTinyMceWYSID();
                 jQuery('#acym__wysid__modal').css('display', 'none');
                 acym_editorWysidVersioning.setUndoAndAutoSave();
@@ -228,14 +257,26 @@ const acym_editorWysidNewContent = {
             let vimeoId = url.match(/^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/);
 
             if (youtubeId != null) {
-                $result.html('<a href="https://www.youtube.com/watch?v=' + youtubeId[1] + '"><img alt="" src="https://img.youtube.com/vi/' + youtubeId[1] + '/0.jpg" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block;margin-left: auto; margin-right: auto;"/></a>');
+                $result.html('<a href="https://www.youtube.com/watch?v='
+                             + youtubeId[1]
+                             + '"><img alt="" src="https://img.youtube.com/vi/'
+                             + youtubeId[1]
+                             + '/0.jpg" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block;margin-left: auto; margin-right: auto;"/></a>');
                 $insertBtn.removeClass('disabled');
             } else if (dailymotionId != null) {
                 if (dailymotionId !== null) {
                     if (dailymotionId[4] !== undefined) {
-                        $result.html('<a href="https://www.dailymotion.com/video/' + dailymotionId[4] + '"><img alt="" src="https://www.dailymotion.com/thumbnail/video/' + dailymotionId[4] + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;"/></a>');
+                        $result.html('<a href="https://www.dailymotion.com/video/'
+                                     + dailymotionId[4]
+                                     + '"><img alt="" src="https://www.dailymotion.com/thumbnail/video/'
+                                     + dailymotionId[4]
+                                     + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;"/></a>');
                     }
-                    $result.html('<a href="https://www.dailymotion.com/video/' + dailymotionId[2] + '"><img alt="" src="https://www.dailymotion.com/thumbnail/video/' + dailymotionId[2] + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;"/></a>');
+                    $result.html('<a href="https://www.dailymotion.com/video/'
+                                 + dailymotionId[2]
+                                 + '"><img alt="" src="https://www.dailymotion.com/thumbnail/video/'
+                                 + dailymotionId[2]
+                                 + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;"/></a>');
                 }
                 $insertBtn.removeClass('disabled');
             } else if (vimeoId != null) {
@@ -243,9 +284,13 @@ const acym_editorWysidNewContent = {
                     url: 'https://www.vimeo.com/api/v2/video/' + vimeoId[5] + '.json',
                     dataType: 'jsonp',
                     success: function (data) {
-                        $result.html('<a href="https://vimeo.com/' + vimeoId[5] + '"><img alt="" src="' + data[0].thumbnail_large + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;"/></a>');
+                        $result.html('<a href="https://vimeo.com/'
+                                     + vimeoId[5]
+                                     + '"><img alt="" src="'
+                                     + data[0].thumbnail_large
+                                     + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;"/></a>');
                         $insertBtn.removeClass('disabled');
-                    },
+                    }
                 });
             } else {
                 $result.html('<div class="acym__wysid__error_msg" style="text-align: center; margin-top: 100px;">' + ACYM_JS_TXT.ACYM_NON_VALID_URL + '</div>');
@@ -263,5 +308,5 @@ const acym_editorWysidNewContent = {
                 $loadBtn.click();
             }
         });
-    },
+    }
 };

@@ -1,0 +1,244 @@
+#acym_wrapper {
+    #acym__forms {
+
+        #acym__forms__left {
+            align-content: baseline;
+
+            #acym__forms__information {
+                input {
+                    margin-bottom: 0 !important;
+                }
+
+                .switch {
+                    margin-bottom: 0;
+                }
+
+                .acym__forms__information__shortcode {
+                    border: none;
+                    border-radius: 5px;
+                }
+
+                .acym__forms__information__shortcode__warning {
+                    vertical-align: sub;
+                    font-size: 16px;
+                }
+            }
+
+            #acym__forms__preview {
+                height: 590px;
+                padding: 0 !important;
+                position: relative;
+                align-content: baseline;
+
+                #acym__forms__preview__content__loader {
+                    position: absolute;
+                    @include acym_set_position();
+                    background-color: rgba(0, 0, 0, 0.5);
+                    border-radius: 4px;
+
+                    svg {
+                        width: 100px;
+                        height: 100px;
+
+                        .acym__svg__loader {
+                            stroke: $white;
+                        }
+                    }
+                }
+
+                #acym__forms__preview__bar {
+                    height: 40px;
+                    padding: .3rem;
+                    background-color: $light-gray;
+                    border-top-left-radius: 4px;
+                    border-top-right-radius: 4px;
+
+                    .acym__forms__preview__bar__button {
+                        width: 13px;
+                        height: 13px;
+                        border-radius: 50%;
+                        margin: 0 .3rem;
+
+                        &.acym__forms__preview__button-red {
+                            background-color: #fe5f56;
+                        }
+
+                        &.acym__forms__preview__button-orange {
+                            background-color: #ffc12f;
+                        }
+
+                        &.acym__forms__preview__button-green {
+                            background-color: #2acb40;
+                        }
+                    }
+
+                    .acym__forms__preview__bar__search {
+                        width: 90%;
+                        background-color: $white;
+                        border-radius: 4px;
+                        padding: .3rem .6rem;
+                        color: $font-primary;
+                        margin-left: 2%;
+                    }
+                }
+
+                #acym__forms__preview__content {
+                    height: calc(100% - 40px);
+                    border: none;
+                }
+
+                #acym__forms__preview__content__hidden {
+                    display: none;
+                }
+            }
+        }
+
+        #acym__forms__menu {
+            padding: 1rem;
+            align-content: baseline;
+            height: 790px;
+            overflow: hidden;
+
+            .acym__forms__menu__switch__container {
+                height: 60px;
+
+                .acym__forms__menu__switch {
+                    padding: 1rem;
+                    border-bottom: 1px solid $light-gray;
+                    cursor: pointer;
+                    position: relative;
+                    transition: .2s;
+
+                    i {
+                        color: $dark-gray;
+                        font-size: 29px;
+                    }
+
+                    &.acym__forms__menu__switch__active {
+                        &:after {
+                            content: "";
+                            position: absolute;
+                            bottom: 0;
+                            right: 0;
+                            left: 0;
+                            height: 3px;
+                            background-color: $font-primary;
+                        }
+
+                        i {
+                            color: $font-primary;
+                        }
+                    }
+                }
+            }
+
+            .acym__forms__menu__container {
+                overflow: auto;
+                height: 700px;
+                align-content: baseline;
+
+                .acym__forms__menu__title {
+                    padding: .5rem;
+                    font-size: 1rem;
+                    border-bottom: 1px solid $font-primary;
+                }
+
+                .acym__forms__menu__options {
+                    padding: .5rem 1.5rem;
+
+                    .acym__forms__menu__options__style__size__default {
+                        font-size: 1rem;
+                    }
+
+                    input {
+                        margin-bottom: 0 !important;
+                    }
+
+                    .acym__forms__menu__options__input-color-disabled {
+                        border-top-right-radius: 0 !important;
+                        border-bottom-right-radius: 0 !important;
+                        border: 1px solid $light-gray;
+
+                        &:focus {
+                            background-color: $light-gray !important;
+                        }
+                    }
+
+                    .sp-preview {
+                        height: 2.4375rem;
+                        width: 40px;
+                        border: 1px solid $light-gray;
+                        border-left: 0;
+                        border-radius: 0 !important;
+
+                        .sp-preview-inner {
+                            border-radius: 0 !important;
+                            border: 0 !important;
+                        }
+                    }
+                }
+
+                .acym__forms__menu__position__button {
+                    padding: 1rem;
+                    border: 1px solid $light-gray;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    margin: .2rem;
+
+                    &.position_selected {
+                        background-color: $light-blue;
+                        border-color: $primary-toolbar-color;
+                    }
+
+                    i {
+                        font-size: 24px;
+                    }
+
+                    &.grid-x {
+                        padding: .3rem 1rem;
+                    }
+                }
+
+                #acym__form__modal__joomla-image {
+                    z-index: 160000;
+                    top: 0;
+                    right: 0;
+                    left: 0;
+                    bottom: 0;
+                    position: fixed;
+                    display: none;
+
+                    #acym__form__modal__joomla-image__bg {
+                        z-index: 160100;
+                        opacity: 0.7;
+                        background-color: black;
+                        top: 0;
+                        right: 0;
+                        left: 0;
+                        bottom: 0;
+                        position: fixed;
+                    }
+
+                    #acym__form__modal__joomla-image__ui {
+                        background-color: white;
+                        z-index: 160200;
+                        box-shadow: 0 0 10px #191919;
+                        max-width: 1000px;
+                        border-radius: $primary-radius;
+                        height: 700px;
+                    }
+                }
+
+                @media screen and (min-width: 640px) {
+                    #acym__form__modal__joomla-image__ui {
+                        max-height: 650px;
+                        max-width: 1000px;
+                        position: relative;
+                        margin-top: 75px;
+                        padding: 5px;
+                    }
+                }
+            }
+        }
+    }
+}

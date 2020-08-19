@@ -73,6 +73,7 @@ class acyMenu extends acyHook
             'ACYM_STATISTICS' => 'stats',
             'ACYM_BOUNCE_HANDLING' => 'bounces',
             empty($nbPluginNotUptodate) ? 'ACYM_ADD_ONS' : acym_translation_sprintf('ACYM_ADD_ONS_X', $nbPluginNotUptodate) => 'plugins',
+            'ACYM_SUBSCRIPTION_FORMS' => 'forms',
             'ACYM_CONFIGURATION' => 'configuration',
         ];
         foreach ($menus as $title => $ctrl) {

@@ -16,7 +16,7 @@ jQuery(document).ready(function ($) {
             $('.acym__campaign__sendsettings__params__one select')
                 .select2({
                     theme: 'foundation',
-                    width: '100%',
+                    width: '100%'
                 });
         });
         $selectTriggers.trigger('change');

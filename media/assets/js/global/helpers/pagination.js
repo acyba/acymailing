@@ -40,7 +40,7 @@ const acym_helperPagination = {
             jQuery('.acym__select__pagination__dropdown')
                 .select2({
                     theme: 'foundation',
-                    width: '60px',
+                    width: '60px'
                 });
         }
 
@@ -51,5 +51,5 @@ const acym_helperPagination = {
     initPagination: function () {
         jQuery('#acym_pagination').val(1);
         jQuery('#acym_form').submit();
-    },
+    }
 };

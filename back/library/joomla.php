@@ -10,7 +10,7 @@ define('ACYM_ROOT', rtrim(JPATH_ROOT, DS).DS);
 define('ACYM_FRONT', rtrim(JPATH_SITE, DS).DS.'components'.DS.ACYM_COMPONENT.DS);
 define('ACYM_BACK', rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.ACYM_COMPONENT.DS);
 define('ACYM_VIEW', ACYM_BACK.'views'.DS);
-define('ACYM_PARTIAL_TOOLBAR', ACYM_BACK.'partial'.DS.'toolbar'.DS);
+define('ACYM_PARTIAL', ACYM_BACK.'partial'.DS);
 define('ACYM_VIEW_FRONT', ACYM_FRONT.'views'.DS);
 define('ACYM_HELPER', ACYM_BACK.'helpers'.DS);
 define('ACYM_CLASS', ACYM_BACK.'classes'.DS);
@@ -505,8 +505,9 @@ function acym_loadObjectList($query, $key = '', $offset = null, $limit = null)
 
 function acym_loadObject($query)
 {
-    $acydb = acym_getGlobal('db');
+    acym_addLimit($query);
 
+    $acydb = acym_getGlobal('db');
     $acydb->setQuery($query);
 
     return $acydb->loadObject();
@@ -937,6 +938,7 @@ function acym_getLeftMenu($name)
         'stats' => ['title' => 'ACYM_STATISTICS', 'class-i' => 'acymicon-bar-chart', 'span-class' => 'acym__joomla__left-menu__fa'],
         'bounces' => ['title' => 'ACYM_BOUNCE_HANDLING', 'class-i' => 'acymicon-random', 'span-class' => 'acym__joomla__left-menu__fa'],
         'plugins' => ['title' => $addOnsTitle, 'class-i' => 'acymicon-plug', 'span-class' => 'acym__joomla__left-menu__fa'],
+        'forms' => ['title' => 'ACYM_SUBSCRIPTION_FORMS', 'class-i' => 'acymicon-edit', 'span-class' => 'acym__joomla__left-menu__fa'],
         'configuration' => ['title' => 'ACYM_CONFIGURATION', 'class-i' => 'acymicon-settings', 'span-class' => ''],
     ];
 
@@ -1106,6 +1108,79 @@ function acym_coreAddons()
             'core' => '1',
         ],
     ];
+}
+
+function acym_getCmsUserLanguage($userId = null)
+{
+    if ($userId === null) $userId = acym_currentUserId();
+    if (empty($userId)) return '';
+
+    $user = JFactory::getUser($userId);
+
+    return $user->getParam('language', $user->getParam('admin_language', ''));
+}
+
+function acym_getAllPages()
+{
+    $menuType = acym_loadResultArray('SELECT menutype FROM #__menu_types');
+    if (empty($menuType)) $menuType = [];
+    $menuItems = acym_loadObjectList('SELECT id, title FROM #__menu WHERE menutype IN ("'.implode('","', $menuType).'")');
+    $pages = [];
+    foreach ($menuItems as $item) {
+        $pages[$item->id] = $item->title;
+    }
+
+    return $pages;
+}
+
+function acym_checkVersion($ajax = false)
+{
+    // Get any error correctly
+    ob_start();
+    $config = acym_config();
+    $url = ACYM_UPDATEURL.'loadUserInformation';
+
+    $paramsForLicenseCheck = [
+        'component' => 'acymailing', // Know which product to look at
+        'level' => strtolower($config->get('level', 'starter')), // Know which version to look at
+        'domain' => rtrim(ACYM_LIVE, '/'), // Tell the user if the automatic features are available for the current installation
+        'version' => $config->get('version'), // Tell the user if a newer version is available
+        'cms' => ACYM_CMS, // We may delay some new Acy versions depending on the CMS
+        'cmsv' => ACYM_CMSV, // Acy isn't available for some versions
+    ];
+
+
+    foreach ($paramsForLicenseCheck as $param => $value) {
+        $url .= '&'.$param.'='.urlencode($value);
+    }
+
+    $userInformation = acym_fileGetContent($url, 30);
+    $warnings = ob_get_clean();
+    $result = (!empty($warnings) && acym_isDebug()) ? $warnings : '';
+
+    // Could not load the user information
+    if (empty($userInformation) || $userInformation === false) {
+        if ($ajax) {
+            echo json_encode(['content' => '<br/><span style="color:#C10000;">'.acym_translation('ACYM_ERROR_LOAD_FROM_ACYBA').'</span><br/>'.$result]);
+            exit;
+        } else {
+            return '';
+        }
+    }
+
+    $decodedInformation = json_decode($userInformation, true);
+
+    $newConfig = new stdClass();
+
+    $newConfig->latestversion = $decodedInformation['latestversion'];
+    $newConfig->expirationdate = $decodedInformation['expiration'];
+    $newConfig->lastlicensecheck = time();
+    $config->save($newConfig);
+
+    //check for plugins
+    acym_checkPluginsVersion();
+
+    return $newConfig->lastlicensecheck;
 }
 
 global $acymCmsUserVars;

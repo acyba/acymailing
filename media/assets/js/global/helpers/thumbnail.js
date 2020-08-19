@@ -20,7 +20,7 @@ const acym_helperThumbnail = {
                 url: ajaxUrl,
                 data: {
                     content: $editorThumbnail.val(),
-                    thumbnail: generatedThumbnail,
+                    thumbnail: generatedThumbnail
                 },
                 timeout: 5000,
                 success: function (res) {
@@ -30,8 +30,8 @@ const acym_helperThumbnail = {
                     if (textStatus === 'timeout') errorThrown = ACYM_JS_TXT.ACYM_REQUEST_FAILED_TIMEOUT;
                     acym_helperNotification.addNotification(acym_helper.sprintf(ACYM_JS_TXT.ACYM_COULD_NOT_SAVE_THUMBNAIL_ERROR_X, errorThrown), 'error');
                     $editorThumbnail.val('');
-                },
+                }
             });
         }
-    },
+    }
 };

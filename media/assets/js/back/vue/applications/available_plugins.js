@@ -20,7 +20,7 @@ jQuery(document).ready(function ($) {
                     'Subscription system': 'background-color: #FFC7C7;',
                     'Others': 'background-color: #FFF1BC;',
                     'User management': 'background-color: #CAFFBA;',
-                    'Events management': 'background-color: #C2FFF9;',
+                    'Events management': 'background-color: #C2FFF9;'
                 },
                 noPluginTodisplay: false,
                 typingTimer: '',
@@ -30,7 +30,7 @@ jQuery(document).ready(function ($) {
                 allPluginsInstalled: {},
                 pageDisplay: 1,
                 busy: false,
-                installed: {},
+                installed: {}
 
             },
             mounted: function () {
@@ -58,7 +58,7 @@ jQuery(document).ready(function ($) {
                             this.resetDisplay();
                             $('[name="acym__plugins__level"], [name="acym__plugins__type"]').select2({
                                 theme: 'foundation',
-                                width: '100%',
+                                width: '100%'
                             });
                             if (this.displayedPlugins.length === 0) {
                                 this.noPluginTodisplay = true;
@@ -82,7 +82,7 @@ jQuery(document).ready(function ($) {
                     return $.ajax({
                         type: 'POST',
                         url: ajaxUrl,
-                        dataType: 'json',
+                        dataType: 'json'
                     });
                 },
                 download(plugin) {
@@ -93,7 +93,7 @@ jQuery(document).ready(function ($) {
                     $.ajax({
                         url: ajaxUrl,
                         type: 'POST',
-                        data: {'plugin': plugin},
+                        data: {'plugin': plugin}
                     }).then((res) => {
                         res = acym_helper.parseJson(res);
                         if (undefined !== res.error) {
@@ -119,7 +119,7 @@ jQuery(document).ready(function ($) {
                     if (pluginLevel === 'starter') return true;
                     if (pluginLevel === 'essential' && [
                         'essential',
-                        'enterprise',
+                        'enterprise'
                     ].indexOf(this.currentLevel) !== -1) {
                         return true;
                     }
@@ -140,13 +140,16 @@ jQuery(document).ready(function ($) {
                     return this.allPluginsInstalled.find(plugin => plugin.title == pluginName) !== undefined;
                 },
                 filter() {
-                    return this.allPlugins.filter((plugin) => (plugin.level.toLowerCase().indexOf(this.level.toLowerCase()) !== -1) && (plugin.category.toLowerCase().indexOf(this.type.toLowerCase()) !== -1) && (plugin.name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1));
+                    return this.allPlugins.filter((plugin) => (plugin.level.toLowerCase().indexOf(this.level.toLowerCase()) !== -1)
+                                                              && (plugin.category.toLowerCase().indexOf(this.type.toLowerCase()) !== -1)
+                                                              && (plugin.name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1));
                 },
                 handlePluginsInstalled(pluginsFromServer) {
                     if (undefined === this.allPluginsInstalled) {
                         return pluginsFromServer;
                     } else {
-                        return pluginsFromServer.filter((plugin) => this.allPluginsInstalled.map((pluginsInstalled) => plugin.file_name.replace('.zip', '') === pluginsInstalled.folder_name).indexOf(true) === -1);
+                        return pluginsFromServer.filter((plugin) => this.allPluginsInstalled.map((pluginsInstalled) => plugin.file_name.replace('.zip', '')
+                                                                    === pluginsInstalled.folder_name).indexOf(true) === -1);
                     }
                 },
                 loadMorePlugins() {
@@ -167,7 +170,7 @@ jQuery(document).ready(function ($) {
                 isOverflown(index) {
                     if (this.$refs.plugins === undefined || this.$refs.plugins[index] === undefined) return '';
                     return this.$refs.plugins[index].scrollHeight > this.$refs.plugins[index].clientHeight ? 'acym__plugins__card__params_desc__overflown' : '';
-                },
+                }
             },
             watch: {
                 displayedPlugins(newVal, oldVal) {
@@ -188,8 +191,8 @@ jQuery(document).ready(function ($) {
                 },
                 level() {
                     this.resetDisplay();
-                },
-            },
+                }
+            }
         });
     }
 });

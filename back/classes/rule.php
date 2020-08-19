@@ -19,7 +19,7 @@ class acymruleClass extends acymClass
 
     public function getOneById($id)
     {
-        $rule = acym_loadObject('SELECT * FROM `#__acym_rule` WHERE `id` = '.intval($id).' LIMIT 1');
+        $rule = acym_loadObject('SELECT * FROM `#__acym_rule` WHERE `id` = '.intval($id));
 
         return $this->_prepareRule($rule);
     }

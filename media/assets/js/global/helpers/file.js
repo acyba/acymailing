@@ -51,5 +51,5 @@ const acym_helperFile = {
             }
             window.location.href = url;
         });
-    },
+    }
 };

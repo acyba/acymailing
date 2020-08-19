@@ -78,5 +78,5 @@ const acym_helperErrorMessage = {
         }
 
         return errorTxt.join(' ');
-    },
+    }
 };

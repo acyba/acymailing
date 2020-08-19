@@ -8,5 +8,5 @@ const acym_helperInput = {
                 $button.next().html(jQuery(this).val().split('\\').pop());
             });
         });
-    },
+    }
 };

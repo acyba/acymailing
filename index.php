@@ -5,7 +5,7 @@ Description: Manage your contact lists and send newsletters from your site.
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acyba.com
 License: GPLv3
-Version: 6.13.3
+Version: 6.14.1
 Text Domain: acymailing
 Domain Path: /language
 */
@@ -26,4 +26,5 @@ if (file_exists($helperFile) && include_once $helperFile) {
     include_once __DIR__.DS.'wpinit'.DS.'elementor.php';
     include_once __DIR__.DS.'wpinit'.DS.'ultimatemember.php';
     include_once __DIR__.DS.'wpinit'.DS.'addons.php';
+    include_once __DIR__.DS.'wpinit'.DS.'forms.php';
 }

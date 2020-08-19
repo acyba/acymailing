@@ -96,7 +96,18 @@ function acym_checkChangeForm() {
     if (requiredFields.length > 0) {
         for (i = 0 ; i < requiredFields.length ; i++) {
             required = JSON.parse(requiredFields[i].getAttribute('data-required'));
-            if ((required.type === 'text' || required.type === 'textarea' || required.type === 'single_dropdown' || required.type === 'multiple_dropdown' || required.type === 'phone' || required.type === 'file') && requiredFields[i].value === '') {
+            if ((required.type
+                 === 'text'
+                 || required.type
+                 === 'textarea'
+                 || required.type
+                 === 'single_dropdown'
+                 || required.type
+                 === 'multiple_dropdown'
+                 || required.type
+                 === 'phone'
+                 || required.type
+                 === 'file') && requiredFields[i].value === '') {
                 alert(required.message);
                 return false;
             } else if (required.type === 'file' && requiredFields[i].files.length === 0) {

@@ -211,19 +211,20 @@ function acym_selectOption($value, $text = '', $optKey = 'value', $optText = 'te
 }
 
 /**
- * @param        $name
- * @param        $value
- * @param null   $label
- * @param array  $attrInput            as [attribute_name=>value]
- * @param string $labelClass           css class for the label
- * @param string $switchContainerClass css class for the switch container
- * @param string $switchClass          css class for the switch
- * @param string $toggle               show / hide the element with this ID depending on the switch
- * @param string $toggleOpen           show on switch or hide
+ * @param         $name
+ * @param         $value
+ * @param null    $label
+ * @param array   $attrInput            as [attribute_name=>value]
+ * @param string  $labelClass           css class for the label
+ * @param string  $switchContainerClass css class for the switch container
+ * @param string  $switchClass          css class for the switch
+ * @param string  $toggle               show / hide the element with this ID depending on the switch
+ * @param boolean $toggleOpen           show on switch or hide
+ * @param string  $vModel               to add v-model for vue apps
  *
  * @return string
  */
-function acym_switch($name, $value, $label = null, $attrInput = [], $labelClass = 'medium-6 small-9', $switchContainerClass = 'auto', $switchClass = 'tiny', $toggle = null, $toggleOpen = true)
+function acym_switch($name, $value, $label = null, $attrInput = [], $labelClass = 'medium-6 small-9', $switchContainerClass = 'auto', $switchClass = 'tiny', $toggle = null, $toggleOpen = true, $vModel = '')
 {
     static $occurrence = 100;
     $occurrence++;
@@ -233,7 +234,7 @@ function acym_switch($name, $value, $label = null, $attrInput = [], $labelClass 
 
     $switch = '
     <div class="switch '.acym_escape($switchClass).'">
-        <input type="hidden" name="'.acym_escape($name).'" data-switch="'.$id.'" value="'.acym_escape($value).'"';
+        <input type="hidden" name="'.acym_escape($name).'" data-switch="'.$id.'" value="'.acym_escape($value).'" '.$vModel;
 
     if (!empty($toggle)) {
         $switch .= ' data-toggle-switch="'.acym_escape($toggle).'" data-toggle-switch-open="'.($toggleOpen ? 'show' : 'hide').'"';

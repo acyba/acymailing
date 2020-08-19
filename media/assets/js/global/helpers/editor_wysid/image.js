@@ -36,5 +36,5 @@ const acym_editorWysidImage = {
                 $insertedImg.attr('height', $insertedImg.height()).attr('width', $insertedImg.width());
             }, 200);
         }
-    },
+    }
 };

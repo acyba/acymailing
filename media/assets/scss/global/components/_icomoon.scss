@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'acymicon';
-  src:  url('fonts/acymicon.eot?nqw21');
-  src:  url('fonts/acymicon.eot?nqw21#iefix') format('embedded-opentype'),
-    url('fonts/acymicon.ttf?nqw21') format('truetype'),
-    url('fonts/acymicon.woff?nqw21') format('woff'),
-    url('fonts/acymicon.svg?nqw21#acymicon') format('svg');
+  src: url('fonts/acymicon.eot?9585w4');
+  src: url('fonts/acymicon.eot?9585w4#iefix') format('embedded-opentype'),
+  url('fonts/acymicon.ttf?9585w4') format('truetype'),
+  url('fonts/acymicon.woff?9585w4') format('woff'),
+  url('fonts/acymicon.svg?9585w4#acymicon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,15 +25,66 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.acymicon-chevrons:before {
+  content: "\e935";
+}
+
+.acymicon-puzzle-piece:before {
+  content: "\e934";
+}
+
+.acymicon-filter:before {
+  content: "\f0b0";
+}
+
+.acymicon-vertical_align_bottom:before {
+  content: "\e931";
+}
+
+.acymicon-vertical_align_top:before {
+  content: "\e932";
+}
+
+.acymicon-plus-circle:before {
+  content: "\e930";
+}
+
+.acymicon-user-plus:before {
+  content: "\e90e";
+}
+
+.acymicon-bell1:before {
+  content: "\e927";
+}
+
+.acymicon-download:before {
+  content: "\e92c";
+}
+
+.acymicon-upload:before {
+  content: "\e92d";
+}
+
+.acymicon-playlist_add:before {
+  content: "\e92f";
+}
+
+.acymicon-window:before {
+  content: "\e933";
+}
+
 .acymicon-new_releases:before {
   content: "\e900";
 }
+
 .acymicon-play_arrow:before {
   content: "\e901";
 }
+
 .acymicon-play_circle_filled:before {
   content: "\e902";
 }
+
 .acymicon-email:before {
   content: "\e903";
 }
@@ -336,25 +387,4 @@
 }
 .acymicon-address-book-o:before {
   content: "\f2ba";
-}
-.acymicon-filter:before {
-  content: "\f0b0";
-}
-.acymicon-plus-circle:before {
-  content: "\e930";
-}
-.acymicon-user-plus:before {
-  content: "\e90e";
-}
-.acymicon-bell1:before {
-  content: "\e927";
-}
-.acymicon-download:before {
-  content: "\e92c";
-}
-.acymicon-upload:before {
-  content: "\e92d";
-}
-.acymicon-playlist_add:before {
-  content: "\e92f";
 }

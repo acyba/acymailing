@@ -235,7 +235,7 @@ class acymlistClass extends acymClass
 
     public function getOneByName($name)
     {
-        return acym_loadObject('SELECT * FROM #__acym_list WHERE name='.acym_escapeDB($name));
+        return acym_loadObject('SELECT * FROM #__acym_list WHERE `name` = '.acym_escapeDB($name));
     }
 
     public function getListsByIds($ids)
@@ -418,7 +418,7 @@ class acymlistClass extends acymClass
 
     public function synchDeleteCmsList($userId)
     {
-        $query = 'SELECT * FROM #__acym_list WHERE front_management =  1 AND cms_user_id = '.intval($userId);
+        $query = 'SELECT * FROM #__acym_list WHERE front_management = 1 AND cms_user_id = '.intval($userId);
         $listFrontManagement = acym_loadObject($query);
         if (!empty($listFrontManagement)) $this->delete([$listFrontManagement->id]);
     }
@@ -443,7 +443,7 @@ class acymlistClass extends acymClass
         }
 
         if (empty($list->description)) $list->description = '';
-        
+
         $listID = parent::save($list);
 
         if (!empty($listID) && isset($tags)) {
@@ -476,13 +476,13 @@ class acymlistClass extends acymClass
         return $listsToReturn;
     }
 
-    public function getAllForSelect()
+    public function getAllForSelect($emptyFirst = true)
     {
         $lists = acym_loadObjectList('SELECT * FROM #__acym_list WHERE front_management IS NULL', 'id');
 
         $return = [];
 
-        $return[''] = acym_translation('ACYM_SELECT_A_LIST');
+        if ($emptyFirst) $return[''] = acym_translation('ACYM_SELECT_A_LIST');
 
         foreach ($lists as $key => $list) {
             $return[$key] = $list->name;

@@ -51,6 +51,13 @@ class ConfigurationController extends acymController
 
             $data['languages'][] = $oneLanguage;
         }
+
+        usort(
+            $data['languages'],
+            function ($a, $b) {
+                return strtolower($a->name) > strtolower($b->name);
+            }
+        );
     }
 
     private function prepareLists(&$data)
@@ -336,6 +343,7 @@ class ConfigurationController extends acymController
             'acy_notification_profile',
             'acy_notification_confirm',
             'wp_access',
+            'multilingual_languages',
         ];
 
         foreach ($select2Fields as $oneField) {
@@ -372,6 +380,16 @@ class ConfigurationController extends acymController
             }
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
+        }
+
+        // Remove unused email translations
+        $removed = array_diff(
+            explode(',', acym_getVar('string', 'previous_multilingual_languages', '')),
+            $formData['multilingual_languages']
+        );
+        if (!empty($removed)) {
+            $mailClass = acym_get('class.mail');
+            $mailClass->deleteByTranslationLang($removed);
         }
 
         $this->config->load();
@@ -912,5 +930,14 @@ class ConfigurationController extends acymController
         acym_enqueueMessage(acym_translation($correspondences[$message]['message']), $correspondences[$message]['type']);
 
         return $correspondences[$message]['type'] == 'info';
+    }
+
+    public function multilingual()
+    {
+        $remindme = json_decode($this->config->get('remindme', '[]'), true);
+        $remindme[] = 'multilingual';
+        $this->config->save(['remindme' => json_encode($remindme)]);
+
+        $this->listing();
     }
 }

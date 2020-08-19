@@ -362,7 +362,13 @@ class acymmigrationHelper extends acymObject
 
     public function migrateUsers_fields($params = [])
     {
-        $fieldsV5InDB = acym_loadObjectList('SELECT `namekey`, `type` FROM #__acymailing_fields WHERE `namekey` NOT IN ("name", "email", "html") AND `type` NOT IN ("customtext", "category", "gravatar")', 'namekey');
+        $fieldsV5InDB = acym_loadObjectList(
+            'SELECT `namekey`, `type` 
+            FROM #__acymailing_fields 
+            WHERE `namekey` NOT IN ("name", "email", "html") 
+                AND `type` NOT IN ("customtext", "category", "gravatar")',
+            'namekey'
+        );
 
         if (empty($fieldsV5InDB)) return true;
 
@@ -371,7 +377,7 @@ class acymmigrationHelper extends acymObject
         $fieldsV5 = [];
 
         foreach ($fieldsV5InDB as $key => $field) {
-            if (in_array($field, $columnUserTable)) $fieldsV5[$key] = '`'.$field.'`';
+            if (in_array($key, $columnUserTable)) $fieldsV5[$key] = $field;
         }
 
         if (empty($fieldsV5)) return true;

@@ -13,7 +13,13 @@ jQuery(document).ready(function ($) {
             $('#acym__campaigns__send-test__spinner').show();
             let test = $(this);
             test.attr('disabled', 'true');
-            let url = ACYM_AJAX_URL + '&page=acymailing_campaigns&ctrl=campaigns&task=test&id=' + $('input[name="id"]').val() + '&test_note=' + encodeURIComponent(jQuery('#acym__wysid__send__test__note').val()) + '&test_emails=' + encodeURIComponent($('.acym__multiselect__email').val().join(','));
+            let url = ACYM_AJAX_URL
+                      + '&page=acymailing_campaigns&ctrl=campaigns&task=test&id='
+                      + $('input[name="id"]').val()
+                      + '&test_note='
+                      + encodeURIComponent(jQuery('#acym__wysid__send__test__note').val())
+                      + '&test_emails='
+                      + encodeURIComponent($('.acym__multiselect__email').val().join(','));
             $.post(url, function (res) {
                 test.removeAttr('disabled');
                 $('#acym__campaigns__send-test__spinner').hide();
@@ -28,8 +34,8 @@ jQuery(document).ready(function ($) {
             {
                 element: '#spam_test_zone',
                 text: ACYM_JS_TXT.ACYM_INTRO_SAFE_CHECK,
-                position: 'right',
-            },
+                position: 'right'
+            }
         ];
         acym_helperIntroJS.setIntrojs('campaigns_tests');
     }
@@ -131,7 +137,7 @@ jQuery(document).ready(function ($) {
                     _spamtestStep = 0;
                     $('#launch_spamtest').removeClass('acym_icon_disabled');
                 }
-            },
+            }
         });
     }
 });

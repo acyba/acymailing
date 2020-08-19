@@ -21,20 +21,20 @@ jQuery(document).ready(function ($) {
             acym_helperIntroJS.introContent = [
                 {
                     element: 'table.body',
-                    text: ACYM_JS_TXT.ACYM_INTRO_TEMPLATE,
+                    text: ACYM_JS_TXT.ACYM_INTRO_TEMPLATE
                 },
                 {
                     element: '.acym__wysid__right__toolbar__blocks',
-                    text: ACYM_JS_TXT.ACYM_INTRO_DRAG_BLOCKS,
+                    text: ACYM_JS_TXT.ACYM_INTRO_DRAG_BLOCKS
                 },
                 {
                     element: '.acym__wysid__right__toolbar__contents',
-                    text: ACYM_JS_TXT.ACYM_INTRO_DRAG_CONTENT,
+                    text: ACYM_JS_TXT.ACYM_INTRO_DRAG_CONTENT
                 },
                 {
                     element: '#acym__wysid__right__toolbar__settings__tab',
-                    text: ACYM_JS_TXT.ACYM_INTRO_SETTINGS,
-                },
+                    text: ACYM_JS_TXT.ACYM_INTRO_SETTINGS
+                }
             ];
             acym_helperIntroJS.setIntrojs('mail_editor_content');
         });
@@ -44,12 +44,12 @@ jQuery(document).ready(function ($) {
                 acym_helperIntroJS.introContent = [
                     {
                         element: '.acym__wysid__right__toolbar__design',
-                        text: ACYM_JS_TXT.ACYM_INTRO_CUSTOMIZE_FONT,
+                        text: ACYM_JS_TXT.ACYM_INTRO_CUSTOMIZE_FONT
                     },
                     {
                         element: '#acym__wysid__right__toolbar__settings__stylesheet__open',
-                        text: ACYM_JS_TXT.ACYM_INTRO_IMPORT_CSS,
-                    },
+                        text: ACYM_JS_TXT.ACYM_INTRO_IMPORT_CSS
+                    }
                 ];
                 acym_helperIntroJS.setIntrojs('mail_editor_settings');
             }, 500);

@@ -18,8 +18,8 @@ function acym_debug($file = false)
 {
     $debug = debug_backtrace();
     $takenPath = [];
-    foreach($debug as $step){
-        if(empty($step['file']) || empty($step['line'])) continue;
+    foreach ($debug as $step) {
+        if (empty($step['file']) || empty($step['line'])) continue;
         $takenPath[] = $step['file'].' => '.$step['line'];
     }
     acydump(implode('<br/>', $takenPath), $file);
@@ -62,7 +62,9 @@ function acym_get($path)
 }
 
 /**
- * $type IN (success, error, warning, info)
+ * @param mixed  $messages The messages displayed, either a string or an array or strings
+ * @param string $type     Type of the message: success, error, warning, info
+ * @param bool   $close    Allow or not to close the message zone
  */
 function acym_display($messages, $type = 'success', $close = true)
 {

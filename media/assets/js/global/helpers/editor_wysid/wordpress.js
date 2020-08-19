@@ -6,7 +6,7 @@ const acym_editorWysidWordpress = {
         file_frame = wp.media.frames.file_frame = wp.media({
             title: 'Select a image to upload',
             button: {text: 'Use this image'},
-            multiple: false,
+            multiple: false
         });
         file_frame.on('select', function () {
             let attachment = file_frame.state().get('selection').first().toJSON();
@@ -19,20 +19,43 @@ const acym_editorWysidWordpress = {
                     let padding = jQuery(ui).css('padding-top');
                     if (!jQuery(ui).hasClass('acym__wysid__template__content')) {
                         jQuery(ui).css('background-color', '').attr('bgcolor', '');
-                        jQuery(ui).attr('style', 'background-image: url(\'' + attachment.url + '\'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: ' + padding + ' 0').attr('width', jQuery(ui).width());
+                        jQuery(ui)
+                            .attr(
+                                'style',
+                                'background-image: url(\''
+                                + attachment.url
+                                + '\'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: '
+                                + padding
+                                + ' 0'
+                            )
+                            .attr('width', jQuery(ui).width());
                     } else {
-                        jQuery(ui).attr('style', 'background-image: url(\'' + attachment.url + '\'); background-size: cover; background-position: center top; background-repeat: no-repeat; padding: ' + padding + ' 0 40px 0');
+                        jQuery(ui)
+                            .attr(
+                                'style',
+                                'background-image: url(\''
+                                + attachment.url
+                                + '\'); background-size: cover; background-position: center top; background-repeat: no-repeat; padding: '
+                                + padding
+                                + ' 0 40px 0'
+                            );
                         if (jQuery(ui).css('background-image') !== 'none') jQuery('#acym__wysid__background-image__template-delete').css('display', 'flex');
                     }
                     acym_editorWysidNotifications.addEditorNotification({
                         'message': ACYM_JS_TXT.ACYM_BECARFUL_BACKGROUND_IMG,
-                        'level': 'warning',
+                        'level': 'warning'
                     });
                 } else {
                     let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
                     content += '<td class="large-12 acym__wysid__column__element__td">';
                     content += '<div class="acym__wysid__tinymce--image">';
-                    content += '<img class="acym__wysid__media__inserted acym__wysid__media__inserted--focus" src="' + attachment.url + '" title="' + acym_helper.escape(attachment.title) + '" alt="' + acym_helper.escape(attachment.alt) + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;"/>';
+                    content += '<img class="acym__wysid__media__inserted acym__wysid__media__inserted--focus" src="'
+                               + attachment.url
+                               + '" title="'
+                               + acym_helper.escape(attachment.title)
+                               + '" alt="'
+                               + acym_helper.escape(attachment.alt)
+                               + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;"/>';
                     content += '</div>';
                     content += '</td>';
                     content += '</tr>';
@@ -59,5 +82,5 @@ const acym_editorWysidWordpress = {
             }
         });
         file_frame.open();
-    },
+    }
 };

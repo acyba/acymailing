@@ -9,7 +9,7 @@ jQuery(document).ready(function ($) {
                     'ctrl': 'dynamics',
                     'task': 'trigger',
                     'plugin': decodedParams['plugin'],
-                    'trigger': decodedParams['trigger'],
+                    'trigger': decodedParams['trigger']
                 };
 
                 if (decodedParams['name']) {
@@ -46,7 +46,7 @@ jQuery(document).ready(function ($) {
                             .on('change', function () {
                                 $.reloadCounters($container);
                             });
-                    },
+                    }
                 });
             });
         });

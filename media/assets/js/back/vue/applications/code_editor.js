@@ -12,10 +12,10 @@ jQuery(document).ready(function ($) {
                     language: 'html',
                     optionIndent: {
                         indent_size: 2, // space_in_empty_paren: true,
-                        wrap_line_length: '120',
+                        wrap_line_length: '120'
                     },
                     typingTimer: '',
-                    doneTypingInterval: 1000,
+                    doneTypingInterval: 1000
                 };
             },
             mounted() {
@@ -41,7 +41,7 @@ jQuery(document).ready(function ($) {
                     let $focusedSelector = $('.acym__wysid__row__selector--focus');
                     $focusedSelector.closest('.acym__wysid__row__element').find('> tbody').html(newCodeValue);
                     $focusedSelector.css('height', $focusedSelector.closest('.acym__wysid__row__element').css('height'));
-                },
+                }
             },
             watch: {
                 code(value) {
@@ -49,8 +49,8 @@ jQuery(document).ready(function ($) {
                     this.typingTimer = setTimeout(() => {
                         this.applyModification(value);
                     }, this.doneTypingInterval);
-                },
-            },
+                }
+            }
         });
     }
 

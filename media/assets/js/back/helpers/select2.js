@@ -1,36 +1,36 @@
 const acym_helperSelect2 = {
     initJsSelect2: function () {
-        acym_helperSelect2.setSelect2();
-        acym_helperSelect2.setAjaxSelect2();
-        acym_helperSelect2.setSelect2Email();
-        acym_helperSelect2.setSelect2ChooseTagsGlobal();
-        acym_helperSelect2.setSelect2SortBy();
+        this.setSelect2();
+        this.setAjaxSelect2();
+        this.setSelect2Email();
+        this.setSelect2ChooseTagsGlobal();
+        this.setSelect2SortBy();
     },
     setSelect2: function () {
         jQuery('.acym__select:not([acym-data-infinite])')
             .select2({
                 theme: 'foundation',
-                width: '100%',
+                width: '100%'
             });
 
         jQuery('.acym__select[acym-data-infinite]')
             .select2({
                 theme: 'foundation',
                 width: '100%',
-                minimumResultsForSearch: Infinity,
+                minimumResultsForSearch: Infinity
             });
 
         jQuery('.intext_select')
             .select2({
                 theme: 'foundation',
-                minimumResultsForSearch: Infinity,
+                minimumResultsForSearch: Infinity
             });
     },
     setSelect2SortBy: function () {
         jQuery('#acym__listing__ordering')
             .select2({
                 theme: 'sortBy',
-                minimumResultsForSearch: Infinity,
+                minimumResultsForSearch: Infinity
             });
     },
     setAjaxSelect2: function () {
@@ -47,7 +47,7 @@ const acym_helperSelect2 = {
 
             let searchParams = {
                 'ctrl': ctrl,
-                'task': task,
+                'task': task
             };
 
             let dataParams = jQuery(this).attr('data-params');
@@ -74,27 +74,27 @@ const acym_helperSelect2 = {
                         if (undefined !== defaultOption && (searchParams.search === '' || undefined === searchParams.search)) {
                             options.push({
                                 id: 0,
-                                text: defaultOption,
+                                text: defaultOption
                             });
                         }
                         if (data) {
                             jQuery.each(data, function (index, text) {
                                 options.push({
                                     id: text[0],
-                                    text: text[1],
+                                    text: text[1]
                                 });
                             });
                         }
                         return {
-                            results: options,
+                            results: options
                         };
                     },
-                    cache: true,
+                    cache: true
                 },
                 minimumInputLength: dataMin,
                 width: '100%',
                 allowClear: true,
-                placeholder: $placeholder,
+                placeholder: $placeholder
             });
 
 
@@ -115,7 +115,7 @@ const acym_helperSelect2 = {
         let $emailsField = jQuery('.acym__multiselect__email');
         let searchParams = {
             'ctrl': 'campaigns',
-            'task': 'searchTestReceivers',
+            'task': 'searchTestReceivers'
         };
 
         $emailsField.select2({
@@ -125,7 +125,7 @@ const acym_helperSelect2 = {
             tokenSeparators: [
                 ' ',
                 ',',
-                ';',
+                ';'
             ],
             createTag: function (params) {
                 let term = jQuery.trim(params.term);
@@ -135,7 +135,7 @@ const acym_helperSelect2 = {
 
                 return {
                     id: term,
-                    text: term,
+                    text: term
                 };
             },
             ajax: {
@@ -156,16 +156,16 @@ const acym_helperSelect2 = {
                             }
                             options.push({
                                 id: value,
-                                text: text[1],
+                                text: text[1]
                             });
                         });
                     }
                     return {
-                        results: options,
+                        results: options
                     };
-                },
+                }
             },
-            minimumInputLength: 3,
+            minimumInputLength: 3
         });
     },
     setSelect2ChooseTagsGlobal: function () {
@@ -187,9 +187,9 @@ const acym_helperSelect2 = {
                 return {
                     id: 'acy_new_tag_' + term,
                     text: term,
-                    newTag: true,
+                    newTag: true
                 };
-            },
+            }
         });
-    },
+    }
 };

@@ -16,7 +16,7 @@ class acymqueueClass extends acymClass
         $mailStatClass = acym_get('class.mailstat');
         $query = 'FROM #__acym_mail AS mail
                     LEFT JOIN #__acym_queue AS queue ON mail.id = queue.mail_id 
-                    LEFT JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id ';
+                    LEFT JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id OR mail.parent_id = campaign.mail_id';
 
         // This query returns an array like "number of mails" => score. cf the equivalent in the list class to understand how it works
         $queryStatus = 'SELECT COUNT(DISTINCT mail.id) AS number, IF(queue.mail_id IS NULL, campaign.active + 2, campaign.active) AS score
@@ -62,27 +62,49 @@ class acymqueueClass extends acymClass
         $queryCount = 'SELECT COUNT(DISTINCT mail.id) '.$query;
         $query .= ' GROUP BY mail.id';
 
-        $query = 'SELECT mail.name, mail.subject, mail.id, campaign.id AS campaign, IF(campaign.sending_date IS NULL, queue.sending_date, campaign.sending_date) AS sending_date, campaign.sending_type, campaign.active, COUNT(queue.mail_id) AS nbqueued '.$query.' ORDER BY queue.sending_date ASC';
+        $query = 'SELECT mail.name, mail.subject, mail.id, campaign.id AS campaign, IF(campaign.sending_date IS NULL, queue.sending_date, campaign.sending_date) AS sending_date, campaign.sending_type, campaign.active, COUNT(queue.mail_id) AS nbqueued, mail.language, mail.parent_id '.$query.' ORDER BY queue.sending_date ASC';
 
         $mailClass = acym_get('class.mail');
         $results['elements'] = $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['campaignsPerPage']));
         $results['total'] = acym_loadResult($queryCount);
 
+        $isMultilingual = acym_isMultilingual();
+        $campaignRecipientsMultilingual = [];
+
         // Get the recipients
-        foreach ($results['elements'] as $i => $oneCampaign) {
-            if (empty($oneCampaign->campaign)) {
+        foreach ($results['elements'] as $i => $oneMail) {
+            if (empty($oneMail->campaign)) {
                 $results['elements'][$i]->iscampaign = false;
                 $results['elements'][$i]->lists = acym_translation('ACYM_MAIL_FROM_AUTOMATION_SENT_TO');
-                $results['elements'][$i]->recipients = acym_loadResult('SELECT COUNT(*) FROM #__acym_queue WHERE mail_id = '.intval($oneCampaign->id));
+                $results['elements'][$i]->recipients = acym_loadResult('SELECT COUNT(*) FROM #__acym_queue WHERE mail_id = '.intval($oneMail->id));
             } else {
+                $mailId = empty($oneMail->parent_id) ? $oneMail->id : $oneMail->parent_id;
                 $results['elements'][$i]->iscampaign = true;
                 $results['elements'][$i]->lists = acym_loadObjectList(
                     'SELECT l.color, l.name , l.id
                     FROM #__acym_list AS l 
                     JOIN #__acym_mail_has_list AS ml ON ml.list_id = l.id 
-                    WHERE ml.mail_id = '.intval($oneCampaign->id)
+                    WHERE ml.mail_id = '.intval($mailId),
+                    'id'
                 );
-                $results['elements'][$i]->recipients = intval($mailStatClass->getTotalSubscribersByMailId($oneCampaign->id));
+                if ($isMultilingual && !empty($oneMail->campaign)) {
+                    if (empty($campaignRecipientsMultilingual[$oneMail->campaign])) {
+                        $listIds = array_keys($results['elements'][$i]->lists);
+                        acym_arrayToInteger($listIds);
+                        $campaignRecipientsMultilingual[$oneMail->campaign] = acym_loadObjectList(
+                            'SELECT COUNT(DISTINCT ul.`user_id`) AS elements, IF(mail.id IS NULL, '.intval($mailId).', `mail`.`id`) as mail_id
+                        FROM `#__acym_user_has_list` AS `ul`
+                        JOIN `#__acym_user` AS `user` ON `user`.`id` = `ul`.`user_id`
+                        LEFT JOIN `#__acym_mail` AS mail ON `mail`.`language` = `user`.language AND `mail`.`parent_id` = '.intval($mailId).'
+                         WHERE `ul`.`list_id` IN ('.implode(',', $listIds).') AND `ul`.`status` = 1
+                         GROUP BY mail_id',
+                            'mail_id'
+                        );
+                    }
+                    $results['elements'][$i]->recipients = intval($campaignRecipientsMultilingual[$oneMail->campaign][$oneMail->id]->elements);
+                } else {
+                    $results['elements'][$i]->recipients = intval($mailStatClass->getTotalSubscribersByMailId($mailId));
+                }
             }
         }
 
@@ -151,12 +173,15 @@ class acymqueueClass extends acymClass
 
         $campaignClass = acym_get('class.campaign');
         $mailClass = acym_get('class.mail');
+
+        $multilingualQuery = acym_isMultilingual() ? ' OR mail.parent_id = campaign.mail_id ' : '';
+
         $mailReady = $mailClass->decode(
             acym_loadObjectList(
-                'SELECT mail.id, campaign.sending_date, mail.name 
+                'SELECT mail.id, campaign.sending_date, mail.name, campaign.mail_id AS parent_id, mail.language
             FROM #__acym_campaign AS campaign 
             JOIN #__acym_mail AS mail 
-                ON campaign.mail_id = mail.id 
+                ON campaign.mail_id = mail.id '.$multilingualQuery.'
             WHERE campaign.sending_type = '.acym_escapeDB($campaignClass::SENDING_TYPE_SCHEDULED).' 
                 AND campaign.draft = 0
                 AND campaign.sending_date <= '.acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false)).'  
@@ -165,7 +190,6 @@ class acymqueueClass extends acymClass
             )
         );
 
-
         if (empty($mailReady)) {
             return false;
         }
@@ -173,7 +197,7 @@ class acymqueueClass extends acymClass
         $nbQueue = [];
 
         foreach ($mailReady as $mailid => $mail) {
-            $nbQueue[$mailid] = $this->queue($mailid, $mail->sending_date);
+            $nbQueue[$mailid] = $this->queue($mail);
             $this->messages[] = acym_translation_sprintf('ACYM_ADDED_QUEUE_SCHEDULE', $nbQueue, '<b>'.$mail->name.'</b>');
         }
 
@@ -356,16 +380,22 @@ class acymqueueClass extends acymClass
         );
     }
 
-    public function queue($mailId, $sending_date)
+    public function queue($mail)
     {
         $priority = $this->config->get('priority_newsletter', 3);
 
+        $where = $mail->id == $mail->parent_id ? ' OR user.language = "" OR (user.language != "" AND user.language != childmail.language)' : '';
+        $join = $mail->id == $mail->parent_id ? ' LEFT JOIN #__acym_mail AS childmail ON childmail.parent_id = '.$mail->id : '';
+        $multilingualWhere = acym_isMultilingual() ? ' AND (user.language = '.acym_escapeDB($mail->language).' '.$where.')' : '';
+
         return acym_query(
-            'INSERT IGNORE INTO #__acym_queue 
-                SELECT '.intval($mailId).', userlist.user_id, '.acym_escapeDB($sending_date).', '.intval($priority).', 0 
-                FROM #__acym_user_has_list AS userlist 
-                JOIN #__acym_mail_has_list AS maillist ON userlist.list_id = maillist.list_id 
-                WHERE userlist.status = 1 AND maillist.mail_id = '.intval($mailId)
+            'INSERT IGNORE INTO #__acym_queue
+               SELECT '.intval($mail->id).', userlist.user_id, '.acym_escapeDB($mail->sending_date).', '.intval($priority).', 0
+                FROM #__acym_user_has_list AS userlist
+                JOIN #__acym_mail_has_list AS maillist ON userlist.list_id = maillist.list_id
+                JOIN #__acym_user AS user ON user.id = userlist.user_id
+                '.$join.'
+                WHERE userlist.status = 1 AND maillist.mail_id = '.intval($mail->parent_id).$multilingualWhere
         );
     }
 

@@ -11,7 +11,7 @@ const acym_helperBlockSeparator = {
         0: 'A',
         1: 'B',
         2: 'C',
-        3: 'D',
+        3: 'D'
     },
     initBlockSeparator: function () {
         acym_helperBlockSeparator.$container = jQuery('.acym__wysid__context__modal__container__block-settings');
@@ -44,12 +44,15 @@ const acym_helperBlockSeparator = {
         let posLeftPath = $path.offset().left;
         let grabbingRight = event.clientX > posLeftPath;
         let distance = grabbingRight ? event.clientX - posLeftPath : posLeftPath - event.clientX;
-        let plusOnX = distance > acym_helperBlockSeparator.distanceMax ? acym_helperBlockSeparator.maxXAxis : ((distance * acym_helperBlockSeparator.maxXAxis) / acym_helperBlockSeparator.distanceMax);
+        let plusOnX = distance > acym_helperBlockSeparator.distanceMax ? acym_helperBlockSeparator.maxXAxis : ((distance * acym_helperBlockSeparator.maxXAxis)
+                                                                                                               / acym_helperBlockSeparator.distanceMax);
         acym_helperBlockSeparator.newXAxis = grabbingRight ? acym_helperBlockSeparator.xAxis + plusOnX : acym_helperBlockSeparator.xAxis - plusOnX;
         $path.attr('d', 'M 10,10 C 10 10, ' + acym_helperBlockSeparator.newXAxis + ' 50, 10 90');
     },
     releaseSVG: function () {
-        let beforeResetAxis = acym_helperBlockSeparator.newXAxis > acym_helperBlockSeparator.xAxis ? acym_helperBlockSeparator.xAxis - 6 : acym_helperBlockSeparator.xAxis + 6;
+        let beforeResetAxis = acym_helperBlockSeparator.newXAxis > acym_helperBlockSeparator.xAxis
+                              ? acym_helperBlockSeparator.xAxis - 6
+                              : acym_helperBlockSeparator.xAxis + 6;
         let $separatorGrabbed = jQuery('.separator_grabbed');
         $separatorGrabbed.find('path').attr('d', 'M 10,10 C 10 10, ' + beforeResetAxis + ' 50, 10 90');
         setTimeout(() => {
@@ -92,7 +95,7 @@ const acym_helperBlockSeparator = {
         if (null !== className) {
             return [
                 className[1],
-                parseInt(className[2]),
+                parseInt(className[2])
             ];
         }
         return false;
@@ -104,14 +107,22 @@ const acym_helperBlockSeparator = {
             acym_helperBlockSeparator.elasticSVG(event);
             let cursor = event.clientX;
             if (cursor > acym_helperBlockSeparator.rightBorder) {
-                if (!isLeft && (acym_helperBlockSeparator.rightBorder + acym_helperBlockSeparator.onePartContainer) < cursor) acym_helperBlockSeparator.up($parent, $parentSiblings, $parentSiblingsBefore, false);
+                if (!isLeft && (acym_helperBlockSeparator.rightBorder + acym_helperBlockSeparator.onePartContainer) < cursor) {
+                    acym_helperBlockSeparator.up($parent, $parentSiblings, $parentSiblingsBefore, false);
+                }
             } else if (cursor < acym_helperBlockSeparator.rightBorder) {
-                if (!isLeft && (acym_helperBlockSeparator.rightBorder - acym_helperBlockSeparator.onePartContainer) > cursor) acym_helperBlockSeparator.down($parent, $parentSiblings, $parentSiblingsBefore, false);
+                if (!isLeft && (acym_helperBlockSeparator.rightBorder - acym_helperBlockSeparator.onePartContainer) > cursor) {
+                    acym_helperBlockSeparator.down($parent, $parentSiblings, $parentSiblingsBefore, false);
+                }
             }
             if (cursor > acym_helperBlockSeparator.leftBorder) {
-                if (isLeft && (acym_helperBlockSeparator.leftBorder + acym_helperBlockSeparator.onePartContainer) < cursor) acym_helperBlockSeparator.down($parent, $parentSiblings, $parentSiblingsBefore, true);
+                if (isLeft && (acym_helperBlockSeparator.leftBorder + acym_helperBlockSeparator.onePartContainer) < cursor) {
+                    acym_helperBlockSeparator.down($parent, $parentSiblings, $parentSiblingsBefore, true);
+                }
             } else if (cursor < acym_helperBlockSeparator.leftBorder) {
-                if (isLeft && (acym_helperBlockSeparator.leftBorder - acym_helperBlockSeparator.onePartContainer) > cursor) acym_helperBlockSeparator.up($parent, $parentSiblings, $parentSiblingsBefore, true);
+                if (isLeft && (acym_helperBlockSeparator.leftBorder - acym_helperBlockSeparator.onePartContainer) > cursor) {
+                    acym_helperBlockSeparator.up($parent, $parentSiblings, $parentSiblingsBefore, true);
+                }
             }
         });
     },
@@ -238,6 +249,6 @@ const acym_helperBlockSeparator = {
             jQuery($th[idSplit[1]]).css('padding-right', newValue + 'px');
             jQuery($th[(idSplit[1] + 1)]).css('padding-left', newValue + 'px');
         });
-    },
+    }
 
 };

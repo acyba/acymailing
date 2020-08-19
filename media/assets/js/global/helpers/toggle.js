@@ -20,7 +20,7 @@ const acym_helperToggle = {
 
             jQuery.ajax({
                 url: url,
-                type: 'GET',
+                type: 'GET'
             }).done(function (result) {
                 let json = jQuery.parseJSON(result);
                 let toggleElement = jQuery('[data-acy-table=' + table + '][data-acy-field=' + field + '][data-acy-elementid=' + elementid + ']');
@@ -49,7 +49,7 @@ const acym_helperToggle = {
 
                 jQuery.ajax({
                     url: url,
-                    type: 'GET',
+                    type: 'GET'
                 }).done(function (result) {
                     if ('mail' === table) {
                         jQuery('#acym_form').submit();
@@ -76,7 +76,7 @@ const acym_helperToggle = {
 
             jQuery.ajax({
                 url: url,
-                type: 'GET',
+                type: 'GET'
             }).done(function (result) {
                 let json = jQuery.parseJSON(result);
                 $element.attr('data-acy-newvalue', json.value);
@@ -161,5 +161,5 @@ const acym_helperToggle = {
                 }
             });
         }).trigger('change');
-    },
+    }
 };

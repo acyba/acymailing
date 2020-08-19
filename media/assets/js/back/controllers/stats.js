@@ -1,13 +1,42 @@
+jQuery(document).on('acy_preview_loaded', () => {
+    let $clicksValue = jQuery('#acym__stats_click__map__all-links__click');
+    if ($clicksValue.length < 1) return;
+    let allLinksClick = JSON.parse($clicksValue.val());
+    jQuery('#acym__wysid__preview__iframe__acym__wysid__email__preview')
+        .contents()
+        .find('body')
+        .prepend(jQuery('#acym__stats__add_style_export__click-map').html());
+    jQuery.each(allLinksClick, (index, value) => {
+        if (index === 'allClick') return;
+        let $link = jQuery('#acym__wysid__preview__iframe__acym__wysid__email__preview').contents().find('[href="' + index + '"]');
+        $link.css({
+            'position': 'relative',
+            'overflow': 'initial',
+            'display': 'inline-block'
+        })
+             .append('<span class="acym__stats__cliked__link__percentage overviewbubble" style="background-color: rgba('
+                     + value.color
+                     + ', 0.8);"><span class="acym__tooltip" style="display:flex;justify-content:center;align-items:center;"><span class="acym__tooltip__text"> <span class="acym__tooltip__title">'
+                     + acym_helper.sprintf(ACYM_JS_TXT.ACYM_OF_CLICKS, '<span class="acym__color__light-blue">' + value.percentage + '%</span> ')
+                     + '</span>'
+                     + acym_helper.sprintf(ACYM_JS_TXT.ACYM_CLICKS_OUT_OF, '<b>' + value.numberClick + '</b>', ' <b> ' + allLinksClick.allClick + '</b>')
+                     + '</span>'
+                     + value.percentage
+                     + '%</span></span>');
+    });
+    acym_helperTooltip.setTooltip();
+});
+
 jQuery(document).ready(function ($) {
 
     function stats() {
         setDropdownChooseCampaign();
         setStartEndDate();
         fixSelect2DetailedStatsSortBy();
-        setBubbleClickMap();
         resetExportButton();
         setSelect2();
         setChartExport();
+        setSelect2Language();
     }
 
     stats();
@@ -53,7 +82,7 @@ jQuery(document).ready(function ($) {
         $('[name="export_type"]')
             .select2({
                 theme: 'sortBy',
-                minimumResultsForSearch: Infinity,
+                minimumResultsForSearch: Infinity
             })
             .on('change', function () {
                 let $exportButton = $('[data-task="exportGlobal"]');
@@ -77,6 +106,7 @@ jQuery(document).ready(function ($) {
 
     function setDropdownChooseCampaign() {
         $('#mail_id').off('change').on('change', function () {
+            $('.acym__stats__select__language').val(0);
             $('#formSubmit').click();
         });
     }
@@ -113,24 +143,13 @@ jQuery(document).ready(function ($) {
         $('.select2-container--sortBy')
             .css({
                 'width': 'auto',
-                'min-width': '140px',
+                'min-width': '140px'
             });
     }
 
-    function setBubbleClickMap() {
-        let $clicksValue = $('#acym__stats_click__map__all-links__click');
-        if ($clicksValue.length < 1) return;
-        let allLinksClick = JSON.parse($clicksValue.val());
-        $('#acym__wysid__preview__iframe__acym__wysid__email__preview').contents().find('body').prepend($('#acym__stats__add_style_export__click-map').html());
-        $.each(allLinksClick, function (index, value) {
-            if (index === 'allClick') return;
-            let $link = $('#acym__wysid__preview__iframe__acym__wysid__email__preview').contents().find('[href="' + index + '"]');
-            $link.css({
-                'position': 'relative',
-                'overflow': 'initial',
-                'display': 'inline-block',
-            }).append('<span class="acym__stats__cliked__link__percentage overviewbubble" style="background-color: rgba(' + value.color + ', 0.8);"><span class="acym__tooltip" style="display:flex;justify-content:center;align-items:center;"><span class="acym__tooltip__text"> <span class="acym__tooltip__title">' + acym_helper.sprintf(ACYM_JS_TXT.ACYM_OF_CLICKS, '<span class="acym__color__light-blue">' + value.percentage + '%</span> ') + '</span>' + acym_helper.sprintf(ACYM_JS_TXT.ACYM_CLICKS_OUT_OF, '<b>' + value.numberClick + '</b>', ' <b> ' + allLinksClick.allClick + '</b>') + '</span>' + value.percentage + '%</span></span>');
+    function setSelect2Language() {
+        $('.acym__stats__select__language').off('change').on('change', function () {
+            $('#formSubmit').click();
         });
-        acym_helperTooltip.setTooltip();
     }
 });

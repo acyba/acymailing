@@ -28,7 +28,7 @@ const acym_helperPreview = {
 
         //Add the iframe
         let newContent = '<div class="cell auto"></div>';
-        newContent += '<iframe id="' + idIframe + '" src="about:blank" frameborder="0" class="cell shrink" style="width: 100%"/>';
+        newContent += '<iframe id="' + idIframe + '" src="about:blank" frameborder="0" class="cell shrink" style="width: 100%"></iframe>';
         newContent += '<div class="cell auto"></div>';
         newContent += '<div class="acym__fadeout"></div>';
         newContent += '<i class="acymicon-keyboard_arrow_down acym__preview__extend acym__preview__toggle acym__preview-toggle"></i>';
@@ -52,12 +52,20 @@ const acym_helperPreview = {
             jQuery('.acym__preview-toggle').off('click').on('click', function () {
                 jQuery('.acym__fadeout').toggle();
                 if (collapse) {
-                    jQuery('.acym__preview__toggle').removeClass('acymicon-keyboard_arrow_down').removeClass('acym__preview__extend').addClass('acymicon-keyboard_arrow_up').addClass('acym__preview__collapse');
+                    jQuery('.acym__preview__toggle')
+                        .removeClass('acymicon-keyboard_arrow_down')
+                        .removeClass('acym__preview__extend')
+                        .addClass('acymicon-keyboard_arrow_up')
+                        .addClass('acym__preview__collapse');
                     $iframe.css({'height': heightIframe}).contents().find('body').css('overflow', 'auto');
                     $divIframe.css('padding-bottom', heightIframe);
                     collapse = !collapse;
                 } else {
-                    jQuery('.acym__preview__toggle').removeClass('acymicon-keyboard_arrow_up').removeClass('acym__preview__collapse').addClass('acymicon-keyboard_arrow_down').addClass('acym__preview__extend');
+                    jQuery('.acym__preview__toggle')
+                        .removeClass('acymicon-keyboard_arrow_up')
+                        .removeClass('acym__preview__collapse')
+                        .addClass('acymicon-keyboard_arrow_down')
+                        .addClass('acym__preview__extend');
                     $iframe.css({'height': heightForce}).contents().find('body').css('overflow', 'hidden');
                     $divIframe.css('padding-bottom', heightForce);
                     collapse = !collapse;
@@ -95,7 +103,7 @@ const acym_helperPreview = {
     loadIframe: function (idIframe, onEditor) {
         let defaultContentWYSID = '<div id="acym__wysid__template" class="cell acym__foundation__for__email">';
         defaultContentWYSID += '<table class="body"><tbody><tr>';
-        defaultContentWYSID += '<td align="center" class="center acym__wysid__template__content" valign="top" style="background-color: rgb(120, 120, 120);"><center>';
+        defaultContentWYSID += '<td align="center" class="center acym__wysid__template__content" valign="top" style="background-color: rgb(239, 239, 239);"><center>';
         defaultContentWYSID += '<table align="center" border="0" cellpadding="0" cellspacing="0"><tbody>';
         defaultContentWYSID += '<tr><td class="acym__wysid__row ui-droppable ui-sortable">';
         defaultContentWYSID += '<table class="row acym__wysid__row__element" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: rgb(255, 255, 255);">';
@@ -162,6 +170,7 @@ const acym_helperPreview = {
             if ($mailStylesheet != undefined && $mailStylesheet != '') {
                 $iframeHead.append('<style>' + $mailStylesheet + '</style>');
             }
+            $iframeBody.html('');
             $iframeBody.append($mailContent);
         }
 
@@ -174,5 +183,7 @@ const acym_helperPreview = {
         // Add blank target to 'a' tags except anchors
         $iframeContents.find('a').attr('target', '_blank');
         $iframeContents.find('a[href^="#"]').attr('target', '_top');
-    },
+
+        jQuery(document).trigger('acy_preview_loaded');
+    }
 };

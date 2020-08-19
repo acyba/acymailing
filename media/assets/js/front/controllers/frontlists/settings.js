@@ -11,7 +11,7 @@ jQuery(document).ready(function ($) {
             $colorField
                 .spectrum({
                     showInput: true,
-                    preferredFormat: 'hex',
+                    preferredFormat: 'hex'
                 });
         }
     }

@@ -12,6 +12,7 @@ jQuery(document).ready(function ($) {
         setSelect2ChooseEmails();
         setAttachLicenseKey();
         setModifyCron();
+        setMultilingualOptions();
     }
 
     Configuration();
@@ -30,13 +31,13 @@ jQuery(document).ready(function ($) {
                 {
                     element: '.acym__configuration__mail-settings',
                     text: ACYM_JS_TXT.ACYM_INTRO_MAIL_SETTINGS,
-                    position: 'top',
+                    position: 'top'
                 },
                 {
                     element: '.acym__configuration__advanced',
                     text: ACYM_JS_TXT.ACYM_INTRO_ADVANCED,
-                    position: 'top',
-                },
+                    position: 'top'
+                }
             ];
             acym_helperIntroJS.setIntrojs('configuration__mail-settings');
         }
@@ -45,8 +46,8 @@ jQuery(document).ready(function ($) {
                 {
                     element: '.acym__configuration__dkim',
                     text: ACYM_JS_TXT.ACYM_INTRO_DKIM,
-                    position: 'top',
-                },
+                    position: 'top'
+                }
             ];
             acym_helperIntroJS.setIntrojs('configuration__dkim');
         });
@@ -54,8 +55,8 @@ jQuery(document).ready(function ($) {
             acym_helperIntroJS.introContent = [
                 {
                     element: '.acym__configuration__cron',
-                    text: ACYM_JS_TXT.ACYM_INTRO_CRON,
-                },
+                    text: ACYM_JS_TXT.ACYM_INTRO_CRON
+                }
             ];
             acym_helperIntroJS.setIntrojs('configuration__cron');
         }
@@ -63,8 +64,8 @@ jQuery(document).ready(function ($) {
             acym_helperIntroJS.introContent = [
                 {
                     element: '.acym__configuration__subscription',
-                    text: ACYM_JS_TXT.ACYM_INTRO_SUBSCRIPTION,
-                },
+                    text: ACYM_JS_TXT.ACYM_INTRO_SUBSCRIPTION
+                }
             ];
             acym_helperIntroJS.setIntrojs('configuration__subscription');
         }
@@ -72,8 +73,8 @@ jQuery(document).ready(function ($) {
             acym_helperIntroJS.introContent = [
                 {
                     element: '.acym__configuration__check-database',
-                    text: ACYM_JS_TXT.ACYM_INTRO_CHECK_DATABASE,
-                },
+                    text: ACYM_JS_TXT.ACYM_INTRO_CHECK_DATABASE
+                }
             ];
             acym_helperIntroJS.setIntrojs('configuration__check-database');
         }
@@ -85,11 +86,11 @@ jQuery(document).ready(function ($) {
     }
 
     function setPlatformSwitchConfiguration() {
-        var $platform = $('input[name="config[sending_platform]"]');
+        let $platform = $('input[name="config[sending_platform]"]');
         $platform.on('change', function () {
-            var $selected = $('input[name="config[sending_platform]"]:checked').val();
+            let $selected = $('input[name="config[sending_platform]"]:checked').val();
 
-            if ($selected == 'server') {
+            if ($selected === 'server') {
                 $('i[data-radio="config_mailer_methodelasticemail"], label[for="config_mailer_methodelasticemail"]').addClass('is-hidden');
                 $('i[data-radio="config_mailer_methodsmtp"], label[for="config_mailer_methodsmtp"]').addClass('is-hidden');
 
@@ -106,8 +107,8 @@ jQuery(document).ready(function ($) {
             }
         });
 
-        var $selected = $('input[name="config[mailer_method]"]:checked').val();
-        if ($selected == 'phpmail' || $selected == 'sendmail' || $selected == 'qmail') {
+        let $selected = $('input[name="config[mailer_method]"]:checked').val();
+        if ($selected === 'phpmail' || $selected === 'sendmail' || $selected === 'qmail') {
             $('#config_sending_platformserver').click();
         } else {
             $('#config_sending_platformexternal').click();
@@ -118,18 +119,18 @@ jQuery(document).ready(function ($) {
     }
 
     function setSendingMethodSwitchConfiguration() {
-        var $method = $('input[name="config[mailer_method]"]');
+        let $method = $('input[name="config[mailer_method]"]');
         $method.on('change', function () {
             $('.send_settings').hide();
-            var $selected = $('input[name="config[mailer_method]"]:checked').val();
+            let $selected = $('input[name="config[mailer_method]"]:checked').val();
 
-            if ($selected == 'sendmail') {
+            if ($selected === 'sendmail') {
                 $('#sendmail_settings').show();
             }
-            if ($selected == 'smtp') {
+            if ($selected === 'smtp') {
                 $('#smtp_settings').show();
             }
-            if ($selected == 'elasticemail') {
+            if ($selected === 'elasticemail') {
                 $('#elastic_settings').show();
             }
         });
@@ -141,7 +142,7 @@ jQuery(document).ready(function ($) {
         $('#available_ports_check').off('click').on('click', function (e) {
             e.preventDefault();
 
-            var $container = $(this).parent();
+            let $container = $(this).parent();
             $container.html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
             $.get(ACYM_AJAX_URL + '&ctrl=configuration&task=ports', function (response) {
@@ -167,7 +168,7 @@ jQuery(document).ready(function ($) {
                     $('#timeoutcheck').html('Done!');
                 });
             } catch (err) {
-                alert('Could not load the max execution time value : ' + err);
+                alert(acym_helper.sprintf(ACYM_JS_TXT.ACYM_MAX_EXEC_TIME_GET_ERROR, err));
             }
         });
     }
@@ -192,9 +193,9 @@ jQuery(document).ready(function ($) {
 
 
     function setSelect2ChooseEmails() {
-        var $selectMultipleTags = $('#acym__configuration__cron__report--send-to');
+        let $selectMultipleTags = $('#acym__configuration__cron__report--send-to');
 
-        var $placeholderSelect = $selectMultipleTags.attr('placeholder');
+        let $placeholderSelect = $selectMultipleTags.attr('placeholder');
 
         $selectMultipleTags.select2({
             width: '100%',
@@ -202,10 +203,10 @@ jQuery(document).ready(function ($) {
             tags: true,
             tokenSeparators: [
                 ',',
-                ' ',
+                ' '
             ],
             createTag: function (params) {
-                var term = $.trim(params.term);
+                let term = $.trim(params.term);
 
                 if (!acym_helper.emailValid(term)) {
                     return null;
@@ -214,9 +215,9 @@ jQuery(document).ready(function ($) {
                 return {
                     id: term,
                     text: term,
-                    newTag: true,
+                    newTag: true
                 };
-            },
+            }
         });
     }
 
@@ -246,5 +247,51 @@ jQuery(document).ready(function ($) {
 
             $('#acym_form').submit();
         });
+    }
+
+    function setMultilingualOptions() {
+        let previousOption = '';
+        $('#configmultilingual_default')
+            .on('change', function () {
+                let newOption = $(this).val();
+                let $langSelectionOption = $('#configmultilingual_languages');
+
+                // Disable the selected option and unselect it
+                $langSelectionOption
+                    .find('option[value="' + newOption + '"]')
+                    .prop('disabled', true)
+                    .prop('selected', false);
+
+                // Enabled back the previously selected option
+                $langSelectionOption
+                    .find('option[value="' + previousOption + '"]')
+                    .prop('disabled', false);
+
+                // Reload the select
+                $langSelectionOption
+                    .select2({
+                        theme: 'foundation',
+                        width: '100%'
+                    });
+
+                previousOption = newOption;
+            })
+            .trigger('change');
+
+        $.acymConfigSave = function () {
+            let currentLanguages = $('#configmultilingual_languages').val();
+            let previousLanguages = $('[name="previous_multilingual_languages"]').val();
+            if (acym_helper.empty(previousLanguages)) return true;
+            previousLanguages = previousLanguages.split(',');
+
+            let removedLanguages = acym_helper.empty(currentLanguages) ? previousLanguages : previousLanguages.filter(x => !currentLanguages.includes(x));
+            if (acym_helper.empty(removedLanguages)) return true;
+
+            $.each(removedLanguages, function (key) {
+                removedLanguages[key] = $('#configmultilingual_default option[value="' + removedLanguages[key] + '"]').text();
+            });
+
+            return acym_helper.confirm(acym_helper.sprintf(ACYM_JS_TXT.ACYM_REMOVE_LANG_CONFIRMATION, removedLanguages.join(', ')));
+        };
     }
 });

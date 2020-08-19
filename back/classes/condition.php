@@ -7,7 +7,7 @@ class acymconditionClass extends acymClass
 
     public function getOneByStepId($stepId)
     {
-        $query = "SELECT * FROM #__acym_condition WHERE step_id = ".intval($stepId);
+        $query = 'SELECT * FROM #__acym_condition WHERE step_id = '.intval($stepId);
 
         return acym_loadObject($query);
     }

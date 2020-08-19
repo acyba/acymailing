@@ -16,7 +16,7 @@ class acymtoolbarHelper extends acymObject
         $data['isPrimary'] = $isPrimary;
 
         ob_start();
-        include ACYM_PARTIAL_TOOLBAR.'button_main.php';
+        include ACYM_PARTIAL.'toolbar'.DS.'button_main.php';
         $this->rightPart .= ob_get_clean();
     }
 
@@ -70,6 +70,6 @@ class acymtoolbarHelper extends acymObject
         $data['rightPart'] = $this->rightPart;
         $data['nonPermanentPart'] = $this->nonPermanentPart;
         $data['moreOptionsPart'] = $this->moreOptionsPart;
-        include ACYM_PARTIAL_TOOLBAR.'toolbar.php';
+        include ACYM_PARTIAL.'toolbar'.DS.'toolbar.php';
     }
 }

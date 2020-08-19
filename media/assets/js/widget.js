@@ -19,7 +19,7 @@ const acym_widget = {
                         ctrl: 'dynamics',
                         task: 'trigger',
                         plugin: 'plgAcymPost',
-                        trigger: 'getPosts',
+                        trigger: 'getPosts'
                     };
                 },
                 processResults: function (data) {
@@ -28,20 +28,20 @@ const acym_widget = {
                         jQuery.each(data, function (index, text) {
                             options.push({
                                 id: text[0],
-                                text: text[1],
+                                text: text[1]
                             });
                         });
                     }
                     return {
-                        results: options,
+                        results: options
                     };
                 },
-                cache: true,
+                cache: true
             },
             minimumInputLength: 3,
             width: '100%',
             allowClear: true,
-            placeholder: '- - -',
+            placeholder: '- - -'
         });
     },
     initWordpressWidget: function () {
@@ -52,7 +52,7 @@ const acym_widget = {
         jQuery(document).on('widget-updated', () => {
             this.initSelect();
         });
-    },
+    }
 };
 
 acym_widget.init();

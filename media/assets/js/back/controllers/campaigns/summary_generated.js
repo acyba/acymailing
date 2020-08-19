@@ -2,6 +2,7 @@ jQuery(document).ready(function ($) {
 
     function Init() {
         setToggleCampaignSummaryGenerated();
+        acym_helperCampaigns.setClickFlagsSummary();
     }
 
     Init();

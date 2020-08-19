@@ -11,7 +11,7 @@ const acym_editorWysidColorPicker = {
             change: function (color) {
                 $elementFocus.css(cssPropertyNew, color.toHexString());
             },
-            containerClassName: 'acym__context__color__picker',
+            containerClassName: 'acym__context__color__picker'
         });
     },
     setRowColorPickerWYSID: function ($current) {
@@ -25,7 +25,7 @@ const acym_editorWysidColorPicker = {
             showPalette: true,
             palette: [
                 ['#fff'],
-                ['#000'],
+                ['#000']
             ],
             maxSelectionSize: 1,
             move: function (color) {
@@ -35,7 +35,7 @@ const acym_editorWysidColorPicker = {
             change: function (color) {
                 $current.css('background-color', color.toHexString()).attr('bgcolor', color.toHexString());
                 $current.css('background-image', '');
-            },
+            }
         });
     },
     setGeneralColorPickerWYSID: function () {
@@ -54,7 +54,7 @@ const acym_editorWysidColorPicker = {
             showPalette: true,
             palette: [
                 ['#fff'],
-                ['#000'],
+                ['#000']
             ],
             maxSelectionSize: 1,
             move: function (color) {
@@ -62,7 +62,7 @@ const acym_editorWysidColorPicker = {
             },
             change: function (color) {
                 acym_editorWysidFontStyle.setSettingsElementStyle('#acym__wysid__background-colorpicker', 'background-color', color.toHexString());
-            },
+            }
         });
     },
     setSettingsColorPickerWYSID: function (colorHex) {
@@ -78,7 +78,7 @@ const acym_editorWysidColorPicker = {
             showPalette: true,
             palette: [
                 ['#fff'],
-                ['#000'],
+                ['#000']
             ],
             maxSelectionSize: 1,
             move: function (color) {
@@ -86,7 +86,7 @@ const acym_editorWysidColorPicker = {
             },
             change: function (color) {
                 acym_editorWysidFontStyle.setSettingsElementStyle($element, 'color', color.toHexString());
-            },
+            }
         });
-    },
+    }
 };

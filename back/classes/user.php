@@ -678,6 +678,7 @@ class acymuserClass extends acymClass
             }
         }
 
+        $userCmsID = 0;
         if (empty($user->id)) {
             if (empty($user->cms_id) && !empty($user->email)) {
                 $userCmsID = acym_loadResult('SELECT '.acym_secureDBColumn($this->cmsUserVars->id).' FROM '.$this->cmsUserVars->table.' WHERE '.acym_secureDBColumn($this->cmsUserVars->email).' = '.acym_escapeDB($user->email));
@@ -685,8 +686,13 @@ class acymuserClass extends acymClass
             }
             acym_trigger('onAcymBeforeUserCreate', [&$user]);
         } else {
+            $currentUser = $this->getOneById($user->id);
+            $userCmsID = $currentUser->cms_id;
+
             acym_trigger('onAcymBeforeUserModify', [&$user]);
         }
+
+        $user->language = acym_getCmsUserLanguage($userCmsID);
 
         $userID = parent::save($user);
 

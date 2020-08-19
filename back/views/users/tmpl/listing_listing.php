@@ -95,10 +95,10 @@
 							<div><?php echo acym_escape($user->email); ?></div>
 						</a>
 					</div>
-					<div class="cell hide-for-small-only hide-for-medium-only large-2 acym__listing__header__title">
+					<div class="cell hide-for-small-only hide-for-medium-only large-2">
                         <?php echo acym_escape($user->name); ?>
 					</div>
-					<div class="cell hide-for-small-only hide-for-medium-only large-2 xlarge-1 acym__listing__header__title">
+					<div class="cell hide-for-small-only hide-for-medium-only large-2 xlarge-1">
                         <?php
                         echo acym_tooltip(
                             acym_date(

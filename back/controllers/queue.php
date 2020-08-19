@@ -52,6 +52,7 @@ class QueueController extends acymController
             'numberPerStatus' => $matchingElements['status'],
             'status' => $status,
             'campaignClass' => $campaignClass,
+            'languages' => acym_getLanguages(),
         ];
 
         $this->breadcrumb[acym_translation('ACYM_CAMPAIGNS')] = acym_completeLink('queue');

@@ -149,7 +149,8 @@ const acym_helperImport = {
     },
     setChangeCharset: function () {
         jQuery('#acyencoding').off('change').on('change', function () {
-            let URL = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlUsers + '&task=ajaxEncoding&encoding=' + jQuery(this).val() + '&filename=' + jQuery(this).attr('data-filename');
+            let URL = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlUsers + '&task=ajaxEncoding&encoding=' + jQuery(this).val() + '&filename=' + jQuery(this)
+                .attr('data-filename');
             let selectedDropdowns = '';
             let fieldNb = jQuery('.fieldAssignment').length;
             if (isNaN(fieldNb)) fieldNb = 1;
@@ -200,12 +201,22 @@ const acym_helperImport = {
             if ($field.val() === '') return;
             jQuery('#acym__users__import__create-list__loading-logo').show();
             let selectedListsIds = jQuery('[name="acym__entity_select__selected"]').val();
-            let url = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlLists + '&task=ajaxCreateNewList&list_name=' + encodeURIComponent($field.val()) + '&generic=' + (isGeneric ? '1' : '0') + '&selected=' + selectedListsIds;
+            let url = ACYM_AJAX_URL
+                      + '&ctrl='
+                      + acym_helper.ctrlLists
+                      + '&task=ajaxCreateNewList&list_name='
+                      + encodeURIComponent($field.val())
+                      + '&generic='
+                      + (isGeneric ? '1' : '0')
+                      + '&selected='
+                      + selectedListsIds;
 
             jQuery.post(url, function (response) {
                 $modalWindow.html(response);
                 $modalWindow.children().show();
-                $modalWindow.children().append('<button class="close-button" data-close aria-label="Close reveal" type="button"><span aria-hidden="true">&times;</span></button>');
+                $modalWindow.children()
+                            .append(
+                                '<button class="close-button" data-close aria-label="Close reveal" type="button"><span aria-hidden="true">&times;</span></button>');
                 $fieldDiv.hide();
                 jQuery(window).trigger('refreshEntitySelect');
                 jQuery('#acym__users__import__create-list__loading-logo').hide();
@@ -222,5 +233,5 @@ const acym_helperImport = {
                 return false;
             }
         });
-    },
+    }
 };

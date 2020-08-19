@@ -9,7 +9,7 @@
         <?php echo acym_switch('list[active]', acym_escape($data['listInformation']->active), acym_translation('ACYM_ACTIVE'), [], 'shrink', 'shrink', 'tiny margin-0'); ?>
 	</div>
 	<div class="cell margin-bottom-1 small-6 grid-x acym_vcenter align-left" id="acym__lists__settings__list-color">
-		<?php echo acym_translation('ACYM_COLOR'); ?> :
+        <?php echo acym_translation('ACYM_COLOR'); ?> :
 		<input type="text" name="list[color]" id="acym__list__settings__color-picker" class="cell small-8" value="<?php echo acym_escape($data['listInformation']->color); ?>" />
 	</div>
 	<div class="cell grid-x acym__list__settings__visible small-6">
