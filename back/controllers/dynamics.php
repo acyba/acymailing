@@ -56,6 +56,15 @@ class DynamicsController extends acymController
             $email->links_language = '';
         }
 
+        $language = acym_getVar('string', 'language', 'main');
+        if (!empty($language)) {
+            if ($language === 'main') {
+                $language = $this->config->get('multilingual_default', ACYM_DEFAULT_LANGUAGE);
+            }
+            $email->links_language = $language;
+        }
+
+
         $email->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
         $email->creator_id = acym_currentUserId();
         $email->thumbnail = '';

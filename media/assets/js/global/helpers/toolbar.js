@@ -26,7 +26,6 @@ const acym_helperToolbar = {
         let $moreOptionsButton = jQuery('#acym__toolbar__button-more-filters');
         let $moreOptionsDiv = jQuery('.acym__toolbar__more-filters');
         let $applyButton = jQuery('#acym__toolbar__more-filters-apply');
-        let $clearButton = jQuery('#acym__toolbar__more-filters-clear');
 
         $moreOptionsButton.off('click').on('click', function () {
             $moreOptionsDiv.toggle();
@@ -40,14 +39,6 @@ const acym_helperToolbar = {
         });
 
         $applyButton.off('click').on('click', function () {
-            jQuery('#acym_form').submit();
-        });
-
-        $clearButton.off('click').on('click', function () {
-            $moreOptionsDiv.find('select').each(function () {
-                this.selectedIndex = 0;
-            });
-            jQuery('.acym__search-field').val('');
             jQuery('#acym_form').submit();
         });
     },

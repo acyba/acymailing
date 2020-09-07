@@ -47,6 +47,14 @@
             font-size: 1rem;
             color: $dark-gray;
             vertical-align: middle;
+
+            &.acym__tooltip__info__warning {
+                color: $warning-color;
+            }
         }
+    }
+
+    .acym__tooltip__in__listing__header .acym__tooltip__info__icon {
+        color: $white;
     }
 }

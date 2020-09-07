@@ -885,9 +885,7 @@ class acymmigrationHelper extends acymObject
         $queryInsert = 'INSERT INTO #__acym_rule (`id`, `name`, `active`, `ordering`, `regex`, `executed_on`, `execute_action_after`, `increment_stats`, `action_user`, `action_message`) VALUES '.implode(', ', $migratedRules);
 
         try {
-            $resultQuery = acym_query($queryInsert);
-
-            return $resultQuery;
+            return acym_query($queryInsert);
         } catch (Exception $e) {
             $this->errors[] = acym_getDBError();
 

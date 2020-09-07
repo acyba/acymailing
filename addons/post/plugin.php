@@ -359,4 +359,36 @@ class plgAcymPost extends acymPlugin
         echo json_encode($return);
         exit;
     }
+
+    protected function getTranslationId($elementId, $translationTool, $defaultLanguage = false)
+    {
+        $elementId = intval($elementId);
+        $languageCode = $this->emailLanguage;
+
+        if ($defaultLanguage) {
+            $languageCode = $this->config->get('multilingual_default', ACYM_DEFAULT_LANGUAGE);
+        } else {
+            $idDefaultLanguage = $this->getTranslationId($elementId, $translationTool, true);
+
+            // We only translate inserted articles of the default language
+            if ($idDefaultLanguage !== $elementId) {
+                return $elementId;
+            }
+        }
+
+        $languageCode = substr($languageCode, 0, 2);
+
+        if ($translationTool === 'polylang') {
+            if (acym_isExtensionActive('polylang/polylang.php') && function_exists('pll_get_post')) {
+                $translationId = pll_get_post($elementId, $languageCode);
+                if (!empty($translationId)) $elementId = $translationId;
+            }
+        } elseif ($translationTool === 'wpml') {
+            if (acym_isExtensionActive('sitepress-multilingual-cms/sitepress.php')) {
+                $elementId = apply_filters('wpml_object_id', $elementId, 'post', true, $languageCode);
+            }
+        }
+
+        return intval($elementId);
+    }
 }

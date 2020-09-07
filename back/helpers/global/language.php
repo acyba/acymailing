@@ -17,10 +17,10 @@ function acym_isMultilingual()
 
     $config = acym_config();
     $mainLanguage = $config->get('multilingual_default');
-    $languages = explode(',', $config->get('multilingual_languages'));
+    $languages = $config->get('multilingual_languages');
 
     if ($config->get('multilingual', '0') === '0') return false;
     if (empty($mainLanguage)) return false;
 
-    return count($languages) !== 0;
+    return !empty($languages);
 }

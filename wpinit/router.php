@@ -52,6 +52,7 @@ class acyRouter extends acyHook
     {
         wp_dequeue_style('saswp-main-css');
         wp_dequeue_style('WP REST API Controller');
+        wp_dequeue_style('wpml-select-2');
     }
 
     public function frontRouter()
@@ -91,6 +92,13 @@ class acyRouter extends acyHook
         $ctrl = acym_getVar('cmd', 'ctrl', '');
         $task = acym_getVar('cmd', 'task', '');
 
+        if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN) && $task != 'deleteFeatures') {
+            $ctrl = 'dashboard';
+            $task = 'features';
+            acym_setVar('ctrl', $ctrl);
+            acym_setVar('task', $task);
+        }
+
         $needToMigrate = $config->get('migration') == 0 && acym_existsAcyMailing59() && acym_getVar('string', 'task') != 'migrationDone';
 
         if ((($needToMigrate || $config->get('walk_through') == 1) && !(defined('DOING_AJAX') && DOING_AJAX)) && 'dynamics' != $ctrl) {
@@ -123,7 +131,7 @@ class acyRouter extends acyHook
             $task = acym_getVar('cmd', 'defaulttask', $controller->defaulttask);
         }
 
-        $controller->$task();
+        $controller->call($task);
     }
 
     private function deactivateHookAdminFooter()

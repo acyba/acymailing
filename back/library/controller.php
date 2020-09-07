@@ -11,6 +11,8 @@ class acymController extends acymObject
     var $currentClass = null;
     var $authorizedFrontTasks = [];
     var $urlFrontMenu = '';
+    var $sessionName = '';
+    var $taskCalled = '';
 
     public function __construct()
     {
@@ -20,8 +22,57 @@ class acymController extends acymObject
         $ctrlpos = strpos($classname, 'Controller');
         $this->name = strtolower(substr($classname, 0, $ctrlpos));
         $this->currentClass = acym_get('class.'.rtrim(str_replace('front', '', $this->name), 's'));
+        $this->sessionName = 'acym_filters_'.$this->name;
+        $this->taskCalled = acym_getVar('string', 'task', '');
 
         $this->breadcrumb['AcyMailing'] = acym_completeLink('dashboard');
+        acym_session();
+        if (empty($_SESSION[$this->sessionName])) $_SESSION[$this->sessionName] = [];
+    }
+
+    public function getVarFiltersListing($type, $varName, $default)
+    {
+        if ($this->taskCalled == 'clearFilters') return $default;
+
+        $returnValue = acym_getVar($type, $varName);
+        if (!is_null($returnValue)) {
+            $_SESSION[$this->sessionName][$varName] = $returnValue;
+
+            return $returnValue;
+        }
+
+        if (!empty($_SESSION[$this->sessionName][$varName])) return $_SESSION[$this->sessionName][$varName];
+
+        return $default;
+    }
+
+    public function clearFilters()
+    {
+        $_SESSION[$this->sessionName] = [];
+
+        $taskToCall = acym_getVar('string', 'cleartask', $this->defaulttask);
+        $this->call($taskToCall);
+    }
+
+    public function call($task)
+    {
+        // If not authorized, display message and redirect to dashboard
+        if (!acym_isAllowed($this->name, $task)) {
+            acym_enqueueMessage(acym_translation('ACYM_ACCESS_DENIED'), 'warning');
+            acym_redirect(acym_completeLink('dashboard'));
+
+            return;
+        }
+
+        // If task doesn't exist, redirect to default task + add message
+        if (!method_exists($this, $task)) {
+            acym_enqueueMessage(acym_translation('ACYM_NON_EXISTING_PAGE'), 'warning');
+            $task = $this->defaulttask;
+            acym_setVar('task', $task);
+        }
+
+        // Call the task
+        $this->$task();
     }
 
     public function loadScripts($task)

@@ -72,19 +72,13 @@ class BouncesController extends acymController
     public function apply()
     {
         $this->saveRule();
-        acym_setVar("id", acym_getVar('array', 'bounce')['id']);
         $this->edit();
-
-
-        return;
     }
 
     public function save()
     {
         $this->saveRule();
         $this->listing();
-
-        return;
     }
 
     /**
@@ -133,6 +127,7 @@ class BouncesController extends acymController
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
         } else {
             acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
+            acym_setVar('id', $res);
         }
     }
 

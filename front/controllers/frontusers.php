@@ -412,7 +412,7 @@ class FrontusersController extends UsersController
         return $user;
     }
 
-    private function unsubscribeAllInner()
+    private function unsubscribeAllInner($update = false)
     {
         $userClass = acym_get('class.user');
         $user = $this->getUserFromUnsubPage();
@@ -425,7 +425,9 @@ class FrontusersController extends UsersController
 
         $lists = [];
         foreach ($allLists as $list) {
-            $lists[] = $list->id;
+            if (!$update || $list->visible == 1) {
+                $lists[] = $list->id;
+            }
         }
 
         $userClass->sendNotification($user->id, 'acy_notification_unsuball');
@@ -457,7 +459,7 @@ class FrontusersController extends UsersController
         $listsChecked = acym_getVar('array', 'lists');
         //if he uncheck all lists we directly unsubscribe to all lists
         if (empty($listsChecked)) {
-            $this->unsubscribeAllInner();
+            $this->unsubscribeAllInner(true);
             $this->redirectUnsubWorked();
         }
         $listsChecked = array_keys($listsChecked);
@@ -471,7 +473,10 @@ class FrontusersController extends UsersController
         //we unsub to the unchecked lists
         $listsToUnsub = [];
         foreach ($userSubscriptions as $subscription) {
-            if (!in_array($subscription->id, $listsChecked) && $subscription->status == 1) $listsToUnsub[] = $subscription->id;
+            // The list wasn't displayed || the user checked the list || the user isn't subscribed
+            if ($subscription->visible === '0' || in_array($subscription->id, $listsChecked) || $subscription->status !== '1') continue;
+
+            $listsToUnsub[] = $subscription->id;
         }
 
         $userClass->unsubscribe($user->id, $listsToUnsub);
@@ -539,8 +544,6 @@ class FrontusersController extends UsersController
     public function profile()
     {
         $userClass = acym_get('class.user');
-
-        //We have a key and we have a subid...
         $user = $userClass->identify(true);
 
         if (empty($user)) {
@@ -555,7 +558,7 @@ class FrontusersController extends UsersController
 
         acym_addScript(false, ACYM_JS.'module.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'module.min.js'));
 
-        // Get the parameters
+        // Get the page parameters
         $params = new stdClass();
         $menu = acym_getMenu();
         if (is_object($menu)) {
@@ -589,8 +592,14 @@ class FrontusersController extends UsersController
                 $params->page_title = $menuparams->get('page_title', '');
             }
         }
-
         $data = $this->prepareParams($params);
+
+        if (empty($data['user']->language)) {
+            $cmsUserLanguage = acym_getCmsUserLanguage();
+            $data['user']->language = empty($cmsUserLanguage) ? acym_getLanguageTag() : $cmsUserLanguage;
+        }
+
+        $this->prepareLanguageEdit($data);
 
         acym_setVar('layout', 'profile');
         parent::display($data);

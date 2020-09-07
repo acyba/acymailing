@@ -501,8 +501,7 @@ class acymformClass extends acymClass
 
         ob_start();
         include $formFieldRender;
-        $render = ob_get_clean();
 
-        return $render;
+        return ob_get_clean();
     }
 }

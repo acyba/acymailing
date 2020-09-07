@@ -139,6 +139,8 @@ class plgAcymExample extends acymPlugin
      * It is used to show the options needed to customize what you want to insert in the email.
      *
      * For a better example, take a look at the code for the post / article insertion plugins
+     *
+     * @param null $defaultValues
      */
     public function insertionOptions($defaultValues = null)
     {
@@ -228,8 +230,8 @@ class plgAcymExample extends acymPlugin
      * * * * * * * * * * */
 
     /**
-     * $email => The email object, if you need to modify something in this object, make sure to do it right...
-     * $send  => If this variable is true, the email will be sent, if it's false the email won't be sent (on the summary page for example)
+     * @param object $email The email object, if you need to modify something in this object, make sure to do it right
+     * @param bool   $send  If this variable is true, the email will be sent, if it's false the email won't be sent (on the summary page for example)
      */
     public function replaceContent(&$email, $send = true)
     {
@@ -273,9 +275,9 @@ class plgAcymExample extends acymPlugin
      * This method is almost the same as the previous one, except that it is called FOR EACH user the email is sent to
      * used to replace the "shortcodes" in the sent emails. {exampleidentifier:7} in this example
      *
-     * $email => The email object, if you need to modify something in this object, make sure to do it right...
-     * $user  => The user object, you can then access to its data if you want to customize what you display
-     * $send  => If this variable is true, the email will be sent, if it's false the email won't be sent (on the summary page for example)
+     * @param object $email The email object, if you need to modify something in this object, make sure to do it right
+     * @param object $user  The user object, you can then access to its data if you want to customize what you display
+     * @param bool   $send  If this variable is true, the email will be sent, if it's false the email won't be sent (on the summary page for example)
      */
     public function replaceUserInformation(&$email, &$user, $send = true)
     {

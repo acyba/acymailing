@@ -121,13 +121,14 @@ const acym_editorWysidFormAction = {
                 acym_editorWysidFormAction.saveTemplate(false, false);
                 return true;
             }
-
             acym_editorWysidFormAction.setSaveTmpl(false);
         });
     },
     setSaveAsTmplButtonWYSID: function () {
         jQuery('#acym__wysid__saveastmpl__button').off('click').on('click', function () {
-            acym_editorWysidFormAction.setSaveTmpl(true);
+            if (acym_helper.confirm(ACYM_JS_TXT.ACYM_SAVE_AS_TEMPLATE_CONFIRMATION)) {
+                acym_editorWysidFormAction.setSaveTmpl(true);
+            }
         });
     },
     setSaveTmpl: function (saveAsTmpl) {
@@ -136,19 +137,21 @@ const acym_editorWysidFormAction = {
         let heightOverlay = window.innerHeight - jQuery('#acym__wysid__top-toolbar').offset().top - $editorArea.height();
         $warningThumbnail.css('bottom', '-' + heightOverlay + 'px').toggle();
 
-        acym_editorWysidFormAction.setThumbnailPreSave()
-                                  .then(function (dataUrl) {
-                                      // Copy img content in hidden input
-                                      jQuery('#editor_thumbnail').attr('value', dataUrl);
-                                      acym_editorWysidFormAction.saveTemplate(false, saveAsTmpl);
-                                  })
-                                  .catch(function (err) {
-                                      console.error('Error generating template thumbnail: ' + err);
-                                      acym_editorWysidFormAction.saveTemplate(false, saveAsTmpl);
-                                  })
-                                  .finally(function () {
-                                      $warningThumbnail.toggle();
-                                  });
+        setTimeout(() => {
+            acym_editorWysidFormAction.setThumbnailPreSave()
+                                      .then(function (dataUrl) {
+                                          // Copy img content in hidden input
+                                          jQuery('#editor_thumbnail').attr('value', dataUrl);
+                                          acym_editorWysidFormAction.saveTemplate(false, saveAsTmpl);
+                                      })
+                                      .catch(function (err) {
+                                          console.error('Error generating template thumbnail: ' + err);
+                                          acym_editorWysidFormAction.saveTemplate(false, saveAsTmpl);
+                                      })
+                                      .finally(function () {
+                                          $warningThumbnail.toggle();
+                                      });
+        }, 10);
 
     },
     setThumbnailPreSave: function () {

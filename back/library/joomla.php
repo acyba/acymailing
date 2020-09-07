@@ -11,6 +11,7 @@ define('ACYM_FRONT', rtrim(JPATH_SITE, DS).DS.'components'.DS.ACYM_COMPONENT.DS)
 define('ACYM_BACK', rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.ACYM_COMPONENT.DS);
 define('ACYM_VIEW', ACYM_BACK.'views'.DS);
 define('ACYM_PARTIAL', ACYM_BACK.'partial'.DS);
+define('ACYM_NEW_FEATURES_SPLASHSCREEN', ACYM_BACK.'partial'.DS.'update'.DS.'new_features.php');
 define('ACYM_VIEW_FRONT', ACYM_FRONT.'views'.DS);
 define('ACYM_HELPER', ACYM_BACK.'helpers'.DS);
 define('ACYM_CLASS', ACYM_BACK.'classes'.DS);
@@ -51,6 +52,7 @@ define('ACYM_J40', version_compare($jversion, '4.0.0', '>='));
 
 define('ACYM_ALLOWRAW', defined('JREQUEST_ALLOWRAW') ? JREQUEST_ALLOWRAW : 2);
 define('ACYM_ALLOWHTML', defined('JREQUEST_ALLOWHTML') ? JREQUEST_ALLOWHTML : 4);
+define('ACYM_ADMIN_GROUP', 8);
 
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\Archive\Archive;
@@ -253,9 +255,13 @@ function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
 
 function acym_getGroups()
 {
-    $groups = acym_loadObjectList('SELECT a.*, a.title AS text, a.id AS value, COUNT(ugm.user_id) AS nbusers FROM #__usergroups AS a LEFT JOIN #__user_usergroup_map ugm ON a.id = ugm.group_id GROUP BY a.id', 'id');
-
-    return $groups;
+    return acym_loadObjectList(
+        'SELECT `groups`.*, `groups`.title AS text, `groups`.id AS `value`, COUNT(ugm.user_id) AS nbusers 
+        FROM #__usergroups AS `groups` 
+        LEFT JOIN #__user_usergroup_map ugm ON `groups`.id = ugm.group_id 
+        GROUP BY `groups`.id',
+        'id'
+    );
 }
 
 function acym_getLanguages($installed = false, $uppercase = false)
@@ -946,6 +952,8 @@ function acym_getLeftMenu($name)
                     <div id="acym__joomla__left-menu" class="'.$isCollapsed.'">
                         <i class="acymicon-close" id="acym__joomla__left-menu--close"></i>';
     foreach ($menus as $oneMenu => $menuOption) {
+        if (!acym_isAllowed($oneMenu)) continue;
+
         $class = $name == $oneMenu ? 'acym__joomla__left-menu--current' : '';
         $leftMenu .= '<a href="'.acym_completeLink($oneMenu).'" class="'.$class.'"><i class="'.$menuOption['class-i'].'"></i><span class="'.$menuOption['span-class'].'">'.acym_translation($menuOption['title']).'</span></a>';
     }
@@ -1063,7 +1071,7 @@ function acym_cmsPermission()
     $url = 'index.php?option=com_config&view=component&component='.ACYM_COMPONENT.'&return='.urlencode(base64_encode((string)JUri::getInstance()));
 
     return '
-		<div class="cell medium-6 grid-x">
+		<div class="cell medium-7 grid-x">
 			<label class="cell medium-6 small-9">'.acym_translation('ACYM_JOOMLA_PERMISSIONS').'</label>
 			<div class="cell auto">
 				<a class="button button-secondary" href="'.$url.'">'.acym_translation('JTOOLBAR_OPTIONS').'</a>
@@ -1124,13 +1132,24 @@ function acym_getAllPages()
 {
     $menuType = acym_loadResultArray('SELECT menutype FROM #__menu_types');
     if (empty($menuType)) $menuType = [];
-    $menuItems = acym_loadObjectList('SELECT id, title FROM #__menu WHERE menutype IN ("'.implode('","', $menuType).'")');
+    $menuItems = acym_loadObjectList('SELECT id, title FROM #__menu WHERE published = 1 AND menutype IN ("'.implode('","', $menuType).'")');
     $pages = [];
     foreach ($menuItems as $item) {
         $pages[$item->id] = $item->title;
     }
 
     return $pages;
+}
+
+function acym_getPageLink($menu)
+{
+    $menuDB = acym_loadObject(
+        'SELECT menu.link, menu.id FROM #__menu AS menu
+                JOIN #__menu_types AS menu_types ON menu_types.menutype = menu.menutype
+                WHERE menu.published = 1 AND menu.link LIKE '.acym_escapeDB('%'.$menu.'%')
+    );
+
+    return empty($menuDB) ? '' : acym_frontendLink($menuDB->link.'&Itemid='.$menuDB->id, false);
 }
 
 function acym_checkVersion($ajax = false)
@@ -1181,6 +1200,16 @@ function acym_checkVersion($ajax = false)
     acym_checkPluginsVersion();
 
     return $newConfig->lastlicensecheck;
+}
+
+function acym_getTranslationTools()
+{
+    return [];
+}
+
+function acym_isTrackingSalesActive()
+{
+    return false;
 }
 
 global $acymCmsUserVars;

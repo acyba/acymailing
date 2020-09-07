@@ -9,7 +9,7 @@ const acym_editorWysidTinymce = {
             selector: '.acym__wysid__tinymce--text',
             inline: true,
             menubar: false,
-            plugins: 'textcolor colorpicker lists link code acydtext noneditable',
+            plugins: 'textcolor colorpicker lists link code acydtext noneditable lineheight table',
             image_class_list: [
                 {
                     title: 'Responsive',
@@ -19,7 +19,7 @@ const acym_editorWysidTinymce = {
             fixed_toolbar_container: '#acym__wysid__text__tinymce__editor',
             fontsize_formats: '10px=10px 12px=12px 14px=14px 16px=16px 18px=18px 20px=20px 22px=22px 24px=24px 26px=26px 28px=28px 30px=30px 32px=32px 34px=34px 36px=36px',
             toolbar: [
-                'undo redo formatselect fontselect fontsizeselect | alignmentsplit | listsplit',
+                'undo redo formatselect fontselect fontsizeselect | alignmentsplit | listsplit lineheightselect | table',
                 'bold italic underline strikethrough removeformat | forecolor backcolor | link unlink | code | acydtext'
             ],
             link_class_list: [
@@ -97,6 +97,25 @@ const acym_editorWysidTinymce = {
                     if (initialContent !== finalContent) acym_editorWysidVersioning.setUndoAndAutoSave();
                     acym_editorWysidRowSelector.setRowSelector();
                     acym_editorWysidTinymce.checkForEmptyText();
+                });
+                editor.on('ExecCommand', function (e) {
+                    let currentText = jQuery(editor.getElement()).find('>:first-child');
+                    if (e.command == 'mceTableDelete' && acym_editorWysidTinymce.isCurrentTextEmpty(currentText)) {
+                        e.target.bodyElement.innerHTML = '<p class="acym__wysid__tinymce--text--placeholder">&zwj;</p>';
+                        jQuery(':focus').blur();
+                    }
+                });
+                editor.on('BeforeSetContent', function (e) {
+                    if (e.content.indexOf('<table id="__mce"') == 0) {
+                        let currentText = jQuery(editor.getElement()).find('>:first-child');
+                        if (acym_editorWysidTinymce.isCurrentTextEmpty(currentText)) {
+                            currentText.remove();
+                        }
+                        let sUsrAg = navigator.userAgent;
+                        if (sUsrAg.indexOf('Firefox') > -1) {
+                            acym_editorWysidTinymce.cleanForFirefox(jQuery(editor.getElement()), 0);
+                        }
+                    }
                 });
                 editor.addButton('listsplit', {
                     type: 'splitbutton',
@@ -245,7 +264,15 @@ const acym_editorWysidTinymce = {
         tinymce.execCommand('mceAddEditor', true, '');
     },
     isCurrentTextEmpty: function (currentText) {
-        return (currentText.is(':empty') || currentText.html() === '&nbsp;<br>' || currentText.html() === '<br>' || escape(currentText.html()) == '%u200D');
+        return (currentText.is(':empty')
+                || currentText.html()
+                === '&nbsp;<br>'
+                || currentText.html()
+                === '<br>'
+                || escape(currentText.html())
+                == '%u200D'
+                || currentText.html()
+                == '<br data-mce-bogus="1">');
     },
     checkForEmptyText: function () {
         jQuery('.acym__wysid__tinymce--text--placeholder, .acym__wysid__tinymce--title--placeholder').each(function () {
@@ -258,5 +285,15 @@ const acym_editorWysidTinymce = {
                 jQuery(this).removeClass('acym__wysid__tinymce--text--placeholder--empty');
             }
         });
+    },
+    cleanForFirefox: function (currentArea, timerTotal) {
+        let tinymceP = currentArea.find('>p');
+        if (tinymceP.length == 0 && timerTotal < 1000) {
+            setTimeout(() => {
+                acym_editorWysidTinymce.cleanForFirefox(currentArea, timerTotal + 50);
+            }, 50);
+        } else if (tinymceP.length == 1 && acym_editorWysidTinymce.isCurrentTextEmpty(tinymceP)) {
+            tinymceP.remove();
+        }
     }
 };

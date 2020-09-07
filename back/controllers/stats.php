@@ -33,14 +33,14 @@ class StatsController extends acymController
 
         $data = [];
         $data['tab'] = acym_get('helper.tab');
-        $data['selectedMailid'] = acym_getVar('int', 'mail_id', '');
+        $data['selectedMailid'] = $this->getVarFiltersListing('int', 'mail_id', '');
         $mailStatClass = acym_get('class.mailstat');
         $data['sentMails'] = $mailStatClass->getAllMailsForStats();
         $data['show_date_filters'] = true;
         $data['page_title'] = false;
 
         if (acym_isMultilingual()) {
-            $multilingualMailSelected = acym_getVar('int', 'mail_id_language', 0);
+            $multilingualMailSelected = $this->getVarFiltersListing('int', 'mail_id_language', 0);
             if (!empty($multilingualMailSelected)) $data['selectedMailid'] = $multilingualMailSelected;
         }
 
@@ -87,9 +87,9 @@ class StatsController extends acymController
         $userStatClass = acym_get('class.userstat');
         $pagination = acym_get('helper.pagination');
 
-        $search = acym_getVar('string', 'detailed_stats_search', '');
-        $ordering = acym_getVar('string', 'detailed_stats_ordering', 'send_date');
-        $orderingSortOrder = acym_getVar('string', 'detailed_stats_ordering_sort_order', 'desc');
+        $search = $this->getVarFiltersListing('string', 'detailed_stats_search', '');
+        $ordering = $this->getVarFiltersListing('string', 'detailed_stats_ordering', 'send_date');
+        $orderingSortOrder = $this->getVarFiltersListing('string', 'detailed_stats_ordering_sort_order', 'desc');
 
         $detailedStatsPerPage = $pagination->getListLimit();
         $page = acym_getVar('int', 'detailed_stats_pagination_page', 1);
@@ -121,7 +121,15 @@ class StatsController extends acymController
             [],
             'mail_id',
             $data['selectedMailid'],
-            'class="acym__select acym_select2_ajax" acym-data-default="'.acym_translation('ACYM_ALL_EMAILS', true).'" data-placeholder="'.acym_translation('ACYM_ALL_EMAILS', true).'" data-ctrl="stats" data-task="searchSentMail" data-min="0" data-selected="'.$data['selectedMailid'].'"'
+            [
+                'class' => 'acym__select acym_select2_ajax',
+                'acym-data-default' => acym_translation('ACYM_ALL_EMAILS'),
+                'data-placeholder' => acym_translation('ACYM_ALL_EMAILS'),
+                'data-ctrl' => 'stats',
+                'data-task' => 'searchSentMail',
+                'data-min' => '0',
+                'data-selected' => $data['selectedMailid'],
+            ]
         );
 
         $data['emailTranslationsFilters'] = '';
@@ -131,7 +139,9 @@ class StatsController extends acymController
                 $data['emailTranslations'],
                 'mail_id_language',
                 $data['selectedMailid'],
-                'class="acym__select acym__stats__select__language"'
+                [
+                    'class' => 'acym__select acym__stats__select__language',
+                ]
             );
         }
     }
@@ -463,6 +473,7 @@ class StatsController extends acymController
 
         $columnsToExport['mail.subject'] = acym_translation('ACYM_EMAIL_SUBJECT');
         $columnsToExport['user.email'] = acym_translation('ACYM_USER_EMAIL');
+        $columnsToExport['user.name'] = acym_translation('ACYM_USER_NAME');
         foreach ($columnsMailStat as $column) {
             if (in_array($column, ['user_id', 'mail_id'])) continue;
             $trad = acym_translation('ACYM_'.strtoupper($column).'_COLUMN_STAT');

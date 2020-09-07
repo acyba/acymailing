@@ -12,7 +12,7 @@ let minifyCSS = require('gulp-cssmin');
 let multidest = require('gulp-multi-dest');
 let babel = require('gulp-babel');
 
-let version = '6.14.1';
+let version = '6.15.0';
 
 let minifyJSOptions = {
     ext: {
@@ -28,6 +28,7 @@ let compassOptions = {
     sass: 'media/assets/scss'
 };
 
+let backFolder = ['back/**/*'];
 
 function getPaths(path, websites = settings.joomla) {
     let paths = [];
@@ -61,13 +62,13 @@ gulp.task('synch_copy-files', gulp.series(function () {
 }));
 
 gulp.task('synch_copy-back', gulp.series(function () {
-    return gulp.src('back/**/*')
+    return gulp.src(backFolder)
                .pipe(cache('back'))
                .pipe(replace('{__CMS__}', 'Joomla'))
                .pipe(replace('{__VERSION__}', version))
                .pipe(multidest(getPaths('/administrator/components/com_acym')));
 }, function () {
-    return gulp.src('back/**/*')
+    return gulp.src(backFolder)
                .pipe(cache('wpback'))
                .pipe(replace('{__CMS__}', 'WordPress'))
                .pipe(replace('{__VERSION__}', version))
@@ -319,7 +320,7 @@ gulp.task('synch_copy-all', gulp.parallel(
 gulp.task('synch_watch', function () {
     gulp.watch('*', gulp.series('synch_copy-files'));
     gulp.watch('addons/**/*', gulp.series('synch_copy-addons'));
-    gulp.watch('back/**/*', gulp.series('synch_copy-back'));
+    gulp.watch(backFolder, gulp.series('synch_copy-back'));
     gulp.watch('front/**/*', gulp.series('synch_copy-front'));
     gulp.watch('language/*', gulp.series('synch_copy-languages'));
     gulp.watch([
@@ -347,5 +348,6 @@ gulp.task('minify_release', gulp.series(function (done) {
 
 gulp.task('default', gulp.series(function (done) {
     minifyJSOptions.ignoreFiles = ['*.js'];
+    backFolder.push('!back/partial/update/new_features.php');
     done();
 }, 'synch_copy-all', 'synch_watch'));

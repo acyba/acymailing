@@ -54,6 +54,10 @@ class plgAcymVirtuemart extends acymPlugin
                     'value' => 1,
                 ],
             ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
+            ];
         }
     }
 
@@ -516,7 +520,7 @@ class plgAcymVirtuemart extends acymPlugin
         $price = $currencyHelper->priceDisplay($price1, $element->product_currency);
         if (!empty($price2)) $price2 = $currencyHelper->priceDisplay($price2, $element->product_currency);
 
-        $varFields['{finalPrice}'] = empty($price2) ? $price : '<strike>'.$price.'</strike> '.$price2;
+        $varFields['{finalPrice}'] = empty($price2) ? $price : '<span style="text-decoration: line-through;">'.$price.'</span> '.$price2;
         $varFields['{price}'] = $price;
         $varFields['{price2}'] = empty($price2) ? 0 : $price2;
     }

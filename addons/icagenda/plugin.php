@@ -53,6 +53,10 @@ class plgAcymIcagenda extends acymPlugin
                     'value' => 1,
                 ],
             ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
+            ];
         }
     }
 

@@ -48,9 +48,9 @@ jQuery(document).ready(function ($) {
             data: {
                 allPlugins: [],
                 displayedPlugins: [1],
-                search: '',
-                type: '',
-                level: '',
+                search: acym_helper.getCookie('acym_installed_plugins_search'),
+                type: acym_helper.getCookie('acym_installed_plugins_type'),
+                level: acym_helper.getCookie('acym_installed_plugins_level'),
                 loading: true,
                 typesColors: {
                     'Files management': 'background-color: #C5EAFF;',
@@ -127,6 +127,7 @@ jQuery(document).ready(function ($) {
                     $element.toggleClass('acym__plugins__card__flip');
                     setTimeout(() => {
                         $element.toggleClass('acym__plugins__card__flipped');
+                        acym_helperTooltip.setTooltip();
                     }, 110);
                 },
                 updatePlugin(plugin) {
@@ -251,6 +252,7 @@ jQuery(document).ready(function ($) {
                 },
                 search(newValue) {
                     clearTimeout(this.typingTimer);
+                    document.cookie = 'acym_installed_plugins_search=' + newValue + ';';
                     if ('' === newValue) {
                         this.resetDisplay();
                     } else {
@@ -260,9 +262,11 @@ jQuery(document).ready(function ($) {
                     }
                 },
                 type() {
+                    document.cookie = 'acym_installed_plugins_type=' + this.type + ';';
                     this.resetDisplay();
                 },
                 level() {
+                    document.cookie = 'acym_installed_plugins_level=' + this.level + ';';
                     this.resetDisplay();
                 }
             }

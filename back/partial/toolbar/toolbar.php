@@ -30,7 +30,10 @@
 	</div>
 	<div class="cell">
 		<div class="grid-x grid-margin-x grid-margin-y align-right">
-			<button id="acym__toolbar__more-filters-clear" type="button" class="cell medium-shrink acym__toolbar__button"><?php echo acym_translation('ACYM_CLEAR_FILTERS'); ?></button>
+            <?php if (!empty($data['cleartask'])) { ?>
+				<input type="hidden" name="cleartask" value="<?php echo acym_escape($data['cleartask']); ?>" />
+            <?php } ?>
+			<button id="acym__toolbar__more-filters-clear" data-task="clearFilters" type="button" class="cell medium-shrink acy_button_submit acym__toolbar__button"><?php echo acym_translation('ACYM_CLEAR_FILTERS'); ?></button>
 			<button id="acym__toolbar__more-filters-apply" type="button" class="cell medium-shrink acym__toolbar__button acym__toolbar__button-primary"><?php echo acym_translation('ACYM_APPLY_FILTERS'); ?></button>
 		</div>
 	</div>

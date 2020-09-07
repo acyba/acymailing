@@ -221,7 +221,7 @@
     z-index: 655360 !important;
 }
 
-.mce-btn, .mce-panel, .mce-textbox, .mce-floatpanel.mce-popover {
+.mce-btn, .mce-panel, .mce-textbox, .mce-floatpanel.mce-popover, .mce-tabs, .mce-tab, .mce-tabs + .mce-container-body {
     background-color: map-get($editor-wysid-palette, primary) !important;
 }
 
@@ -1640,6 +1640,24 @@
         .acym__wysid__context__modal__block-padding {
             padding: .3rem;
             overflow-y: auto;
+
+            .acym__wysid__context__block__padding__horizontal {
+                position: relative;
+
+                &:after {
+                    content: "";
+                    position: absolute;
+                    right: 20px;
+                    height: 80%;
+                    top: 10%;
+                    width: 3px;
+                    background-color: $light-gray;
+                }
+            }
+
+            .acym__wysid__context__block__padding__title {
+                font-weight: 500;
+            }
 
             .acym__wysid__context__block__padding--input {
                 padding: 0;

@@ -1,11 +1,11 @@
-<div id="acym_fulldiv_<?php echo $form->form_tag_name; ?>" class="acym__subscription__form__shortcode">
+<div id="acym_fulldiv_<?php echo $form->form_tag_name; ?>" class="acym__subscription__form__shortcode acym__subscription__form-erase">
     <?php if ($edition) {
         echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';
     } else {
         echo '<form action="'.$form->form_tag_action.'" id="'.$form->form_tag_name.'" name="'.$form->form_tag_name.'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acySubmitSubForm\')">';
     }
-    include ACYM_PARTIAL.'forms'.DS.'fields.php';
-    include ACYM_PARTIAL.'forms'.DS.'button.php';
+    include acym_getPartial('forms', 'fields');
+    include acym_getPartial('forms', 'button');
     ?>
 	<input type="hidden" name="ctrl" value="frontusers" />
 	<input type="hidden" name="task" value="notask" />

@@ -3,6 +3,24 @@
 		<div class="acym_area_title"><?php echo acym_translation('ACYM_PERMISSIONS'); ?></div>
 		<div class="grid-x grid-margin-x">
             <?php echo $data['acl']; ?>
+			<div class="cell medium-7 grid-x">
+				<label class="cell medium-6 small-9"><?php echo acym_translation('ACYM_ADVANCED_ACL').acym_info('ACYM_ADVANCED_ACL_DESC'); ?></label>
+				<div class="cell auto">
+					<button type="button" class="button button-secondary" id="acym__configuration__acl__toggle"><?php echo acym_translation('ACYM_SHOW_HIDE'); ?></button>
+				</div>
+			</div>
+		</div>
+		<div class="grid-x grid-margin-x" id="acym__configuration__acl__zone">
+            <?php foreach ($data['acl_advanced'] as $page => $title) { ?>
+				<div class="cell grid-x acym__configuration__acl__row">
+					<div class="cell large-4 xlarge-3 xxlarge-2">
+                        <?php echo acym_translation($title); ?>
+					</div>
+					<div class="cell large-auto">
+                        <?php echo $data['aclType']->display($page); ?>
+					</div>
+				</div>
+            <?php } ?>
 		</div>
 	</div>
 <?php } ?>

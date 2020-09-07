@@ -564,9 +564,8 @@ function acym_writeFile($file, $buffer, $use_streams = false)
     }
 
     $file = acym_cleanPath($file);
-    $ret = is_int(file_put_contents($file, $buffer));
 
-    return $ret;
+    return is_int(file_put_contents($file, $buffer));
 }
 
 function acym_moveFile($src, $dest, $path = '', $use_streams = false)
@@ -645,9 +644,8 @@ function acym_fileGetExt($file)
 
     $dot = strrpos($file, '.');
     if (false === $dot) return '';
-    $extension = substr($file, $dot + 1);
 
-    return $extension;
+    return substr($file, $dot + 1);
 }
 
 function acym_cleanPath($path, $ds = DIRECTORY_SEPARATOR)

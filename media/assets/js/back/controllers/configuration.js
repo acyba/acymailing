@@ -13,6 +13,7 @@ jQuery(document).ready(function ($) {
         setAttachLicenseKey();
         setModifyCron();
         setMultilingualOptions();
+        setAcl();
     }
 
     Configuration();
@@ -293,5 +294,24 @@ jQuery(document).ready(function ($) {
 
             return acym_helper.confirm(acym_helper.sprintf(ACYM_JS_TXT.ACYM_REMOVE_LANG_CONFIRMATION, removedLanguages.join(', ')));
         };
+    }
+
+    function setAcl() {
+        let aclZone = $('#acym__configuration__acl__zone');
+        $('#acym__configuration__acl__toggle').off('click').on('click', function () {
+            aclZone.slideToggle();
+        }).click();
+
+        $('input[name^="config[acl_"]').on('change', function () {
+            let aclName = $(this).attr('name');
+            let $choicesContainer = $('#' + aclName.substring(7, aclName.length - 1) + '_container');
+            if (!$choicesContainer.length) return;
+
+            if ($('input[name="' + aclName + '"]:checked').val() === 'all') {
+                $choicesContainer.addClass('is-hidden');
+            } else {
+                $choicesContainer.removeClass('is-hidden');
+            }
+        });
     }
 });

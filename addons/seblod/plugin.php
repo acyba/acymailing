@@ -32,6 +32,10 @@ class plgAcymSeblod extends acymPlugin
                     ],
                 ],
             ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
+            ];
         }
     }
 
@@ -381,7 +385,11 @@ class plgAcymSeblod extends acymPlugin
         $result = preg_replace('#administrator/#', '', $result);
 
         $result = str_replace('&nbsp;', ' ', $result);
-        $result = preg_replace('#<iframe[^>]*(http[^"]*embed/)([^"]*)[^<]*</iframe>#', '<a href="$1$2" target="_blank"><img src="http://img.youtube.com/vi/$2/1.jpg"/></a>', $result);
+        $result = preg_replace(
+            '#<iframe[^>]*(http[^"]*embed/)([^"]*)[^<]*</iframe>#',
+            '<a href="$1$2" target="_blank"><img alt="" src="http://img.youtube.com/vi/$2/1.jpg"/></a>',
+            $result
+        );
         $result = str_replace('/embed/', '/watch?v=', $result);
 
         //if the user created a custom template

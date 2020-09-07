@@ -15,13 +15,14 @@ const acym_helperPagination = {
             jQuery('#acym_pagination').val(1);
         });
 
+        jQuery('.acym__choose_template__filter__tags').on('change', function () {
+            jQuery('#acym_pagination').val(1);
+            jQuery('#acym_form').submit();
+        });
+
         jQuery('.acym__campaigns__filter__tags').off('change').on('change', function () {
             jQuery('#select2-campaigns_tag-container').html(jQuery(this).find('option:selected').text());
             jQuery('#acym_pagination').val(1);
-        });
-
-        jQuery('.acym__queue__filter__tags').off('change').on('change', function () {
-            acym_helperPagination.initPagination();
         });
 
         jQuery('.acym__type__choosen').off('click').on('click', function () {

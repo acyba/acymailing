@@ -15,11 +15,11 @@ class FormsController extends acymController
     {
         acym_setVar('layout', 'listing');
         $pagination = acym_get('helper.pagination');
-        $searchFilter = acym_getVar('string', 'forms_search', '');
-        $status = acym_getVar('string', 'forms_status', '');
-        $tagFilter = acym_getVar('string', 'forms_tag', '');
-        $ordering = acym_getVar('string', 'forms_ordering', 'id');
-        $orderingSortOrder = acym_getVar('string', 'forms_ordering_sort_order', 'asc');
+        $searchFilter = $this->getVarFiltersListing('string', 'forms_search', '');
+        $status = $this->getVarFiltersListing('string', 'forms_status', '');
+        $tagFilter = $this->getVarFiltersListing('string', 'forms_tag', '');
+        $ordering = $this->getVarFiltersListing('string', 'forms_ordering', 'id');
+        $orderingSortOrder = $this->getVarFiltersListing('string', 'forms_ordering_sort_order', 'asc');
         $formClass = acym_get('class.form');
 
         // Get pagination data

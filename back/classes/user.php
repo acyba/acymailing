@@ -70,7 +70,9 @@ class acymuserClass extends acymClass
             if (empty($settings['creator_id'])) $settings['creator_id'] = '-1';
         }
         if (!empty($settings['creator_id'])) {
-            $joinList = ' JOIN #__acym_user_has_list as user_list ON user_list.user_id = user.id JOIN #__acym_list AS list ON list.id = user_list.list_id AND list.cms_user_id = '.intval($settings['creator_id']);
+            $userGroups = acym_getGroupsByUser($settings['creator_id']);
+            $groupCondition = 'list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%"';
+            $joinList = ' JOIN #__acym_user_has_list as user_list ON user_list.user_id = user.id JOIN #__acym_list AS list ON list.id = user_list.list_id AND (list.cms_user_id = '.intval($settings['creator_id']).' OR '.$groupCondition.')';
             $query .= $joinList;
             $queryCount .= $joinList;
             $queryStatus .= $joinList;
@@ -209,7 +211,6 @@ class acymuserClass extends acymClass
 
         //This line if for guys with big database to not break the page
         acym_query('SET SQL_BIG_SELECTS=1');
-
         $results['elements'] = acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']);
         $results['total'] = acym_loadResult($queryCount);
 
@@ -325,7 +326,11 @@ class acymuserClass extends acymClass
                 AND userlist.status = 1
                 AND l.front_management is NULL';
 
-        if (!empty($creatorId)) $query .= ' AND l.cms_user_id = '.intval($creatorId);
+        if (!empty($creatorId)) {
+            $userGroups = acym_getGroupsByUser($creatorId);
+            $groupCondition = 'l.access LIKE "%,'.implode(',%" OR l.access LIKE "%,', $userGroups).',%"';
+            $query .= ' AND (l.cms_user_id = '.intval($creatorId).' OR '.$groupCondition.')';
+        }
 
         return acym_loadObjectList($query);
     }
@@ -614,7 +619,6 @@ class acymuserClass extends acymClass
     {
         if (empty($user->email) && empty($user->id)) return false;
 
-        if (empty($user->id) && !isset($user->active)) $user->active = 1;
 
         if (isset($user->email)) {
             $user->email = strtolower($user->email);
@@ -626,6 +630,13 @@ class acymuserClass extends acymClass
         }
 
         if (empty($user->id)) {
+            if (!isset($user->active)) $user->active = 1;
+
+            if (empty($user->language) && acym_isMultilingual()) {
+                if (!acym_isAdmin()) $cmsUserLanguage = acym_getCmsUserLanguage();
+                $user->language = empty($cmsUserLanguage) ? acym_getLanguageTag() : $cmsUserLanguage;
+            }
+
             $currentUserid = acym_currentUserId();
             $currentEmail = acym_currentUserEmail();
             if ($this->checkVisitor && !acym_isAdmin() && intval($this->config->get('allow_visitor', 1)) != 1 && (empty($currentUserid) || strtolower($currentEmail) != $user->email)) {
@@ -634,9 +645,7 @@ class acymuserClass extends acymClass
 
                 return false;
             }
-        }
 
-        if (empty($user->id)) {
             if (empty($user->name) && $this->config->get('generate_name', 1)) {
                 $user->name = ucwords(trim(str_replace(['.', '_', ')', ',', '(', '-', 1, 2, 3, 4, 5, 6, 7, 8, 9, 0], ' ', substr($user->email, 0, strpos($user->email, '@')))));
             }
@@ -678,7 +687,6 @@ class acymuserClass extends acymClass
             }
         }
 
-        $userCmsID = 0;
         if (empty($user->id)) {
             if (empty($user->cms_id) && !empty($user->email)) {
                 $userCmsID = acym_loadResult('SELECT '.acym_secureDBColumn($this->cmsUserVars->id).' FROM '.$this->cmsUserVars->table.' WHERE '.acym_secureDBColumn($this->cmsUserVars->email).' = '.acym_escapeDB($user->email));
@@ -686,13 +694,8 @@ class acymuserClass extends acymClass
             }
             acym_trigger('onAcymBeforeUserCreate', [&$user]);
         } else {
-            $currentUser = $this->getOneById($user->id);
-            $userCmsID = $currentUser->cms_id;
-
             acym_trigger('onAcymBeforeUserModify', [&$user]);
         }
-
-        $user->language = acym_getCmsUserLanguage($userCmsID);
 
         $userID = parent::save($user);
 
@@ -1128,9 +1131,8 @@ class acymuserClass extends acymClass
     public function getUsersLikeEmail($pattern)
     {
         $query = 'SELECT id, email FROM #__acym_user WHERE email LIKE '.acym_escapeDB('%'.$pattern.'%');
-        $res = acym_loadObjectList($query);
 
-        return $res;
+        return acym_loadObjectList($query);
     }
 
     public function sendNotification($userId, $notification, $params = [])
@@ -1173,5 +1175,15 @@ class acymuserClass extends acymClass
             if (!acym_isValidEmail($oneUser)) continue;
             $mailer->sendOne($notification, $oneUser);
         }
+    }
+
+    public function getMailHistory($userId)
+    {
+        $query = 'SELECT user_stat.*, mail.subject, SUM(url_click.click) as click FROM #__acym_user_stat AS user_stat
+                  JOIN #__acym_mail AS mail ON mail.id = user_stat.mail_id
+                  LEFT JOIN #__acym_url_click AS url_click ON user_stat.mail_id = url_click.mail_id AND url_click.user_id = '.intval($userId).'
+                  WHERE user_stat.user_id = '.intval($userId).' GROUP BY mail_id ORDER BY send_date DESC LIMIT 50';
+
+        return acym_loadObjectList($query, 'mail_id');
     }
 }

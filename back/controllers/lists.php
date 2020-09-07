@@ -16,11 +16,11 @@ class ListsController extends acymController
         acym_setVar('layout', 'listing');
 
         $data = [];
-        $data['search'] = acym_getVar('string', 'lists_search', '');
-        $data['tag'] = acym_getVar('string', 'lists_tag', '');
-        $data['ordering'] = acym_getVar('string', 'lists_ordering', 'id');
-        $data['orderingSortOrder'] = acym_getVar('string', 'lists_ordering_sort_order', 'desc');
-        $data['status'] = acym_getVar('string', 'lists_status', '');
+        $data['search'] = $this->getVarFiltersListing('string', 'lists_search', '');
+        $data['tag'] = $this->getVarFiltersListing('string', 'lists_tag', '');
+        $data['ordering'] = $this->getVarFiltersListing('string', 'lists_ordering', 'id');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'lists_ordering_sort_order', 'desc');
+        $data['status'] = $this->getVarFiltersListing('string', 'lists_status', '');
         $data['allTags'] = acym_get('class.tag')->getAllTagsByType('list');
         $data['pagination'] = acym_get('helper.pagination');
 
@@ -285,13 +285,9 @@ class ListsController extends acymController
         if ($this->currentClass->save($list)) {
             acym_setVar('id', $id);
             $this->settings();
-
-            return;
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVE_LIST'), 'error');
             $this->listing();
-
-            return;
         }
     }
 

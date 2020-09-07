@@ -30,7 +30,8 @@
                             'open_date' => acym_translation('ACYM_OPEN_DATE'),
                             'sent' => acym_translation('ACYM_SENT'),
                         ],
-                        "detailed_stats"
+                        "detailed_stats",
+                        $data['ordering']
                     ); ?>
 				</div>
 			</div>
@@ -53,12 +54,17 @@
 					<div class="large-1 medium-1 small-1 cell acym__listing__header__title text-center">
                         <?php echo acym_translation('ACYM_OPENED'); ?>
 					</div>
-					<div class="large-2 hide-for-small-only hide-for-medium-only cell acym__listing__header__title text-center">
+					<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__header__title text-center">
                         <?php echo acym_translation('ACYM_OPEN_DATE'); ?>
 					</div>
 					<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__header__title text-center">
                         <?php echo acym_translation('ACYM_BOUNCES'); ?>
 					</div>
+                    <?php if (acym_isTrackingSalesActive()) { ?>
+						<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__header__title text-center">
+                            <?php echo acym_translation('ACYM_INCOME'); ?>
+						</div>
+                    <?php } ?>
 					<div class="large-1 medium-1 small-1 cell acym__listing__header__title text-center">
                         <?php echo acym_translation('ACYM_SENT'); ?>
 					</div>
@@ -99,7 +105,7 @@
 						<div class="large-1 medium-1 small-1 cell acym__listing__detailed__stats__content text-center">
 							<p class="hide-for-medium-only hide-for-small-only"><?php echo $detailed_stat->open; ?></p>
 						</div>
-						<div class="large-2 hide-for-small-only hide-for-medium-only cell acym__listing__detailed__stats__content text-center">
+						<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__detailed__stats__content text-center">
                             <?php
                             echo empty($detailed_stat->open_date) ? '' : acym_tooltip('<p>'.acym_date(acym_getTime($detailed_stat->open_date), 'd F H:i').'</p>', acym_date(acym_getTime($detailed_stat->open_date), 'd F Y H:i:s')); ?>
 						</div>
@@ -109,6 +115,17 @@
                             echo empty($detailed_stat->bounce) ? $detailed_stat->bounce : acym_tooltip($detailed_stat->bounce, $detailed_stat->bounce_rule);
                             ?>
 						</div>
+                        <?php if (acym_isTrackingSalesActive()) { ?>
+							<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__detailed__stats__content text-center">
+                                <?php
+                                if (!empty($detailed_stat->sales) && !empty($detailed_stat->currency)) {
+                                    echo round($detailed_stat->sales, 2).' '.$detailed_stat->currency;
+                                } else {
+                                    echo '-';
+                                }
+                                ?>
+							</div>
+                        <?php } ?>
 						<div class="large-1 medium-1  small-1 cell acym__listing__detailed__stats__content text-center cursor-default">
                             <?php
                             $targetSuccess = '<i class="acymicon-check acym__listing__detailed_stats_sent__success" ></i>';

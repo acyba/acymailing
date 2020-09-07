@@ -54,4 +54,4 @@
 		align-items: center
 	}
 </style>
-<?php include ACYM_PARTIAL.'forms'.DS.'cookie.php'; ?>
+<?php if (!$edition) include acym_getPartial('forms', 'cookie'); ?>

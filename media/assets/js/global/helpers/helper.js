@@ -152,5 +152,25 @@ const acym_helper = {
     },
     alert: function (text) {
         return alert(text);
+    },
+    getCookie: function (cookieKey) {
+        let returnValue = '';
+        let cookies = document.cookie.split(';');
+        cookies.map(cookie => {
+            cookie = cookie.trim().split('=');
+            if (cookie[0] === cookieKey) returnValue = cookie[1];
+        });
+        return returnValue;
+    },
+    setCookie: function (cookieName, value, expiredays) {
+        let newCookie = cookieName + '=' + this.escape(value);
+
+        if (expiredays != null) {
+            let exdate = new Date();
+            exdate.setDate(exdate.getDate() + expiredays);
+            newCookie += ';expires=' + exdate.toUTCString();
+        }
+
+        document.cookie = newCookie;
     }
 };

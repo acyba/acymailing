@@ -6,12 +6,12 @@
         } else {
             echo '<form acym-data-id="'.$form->id.'" action="'.$form->form_tag_action.'" id="'.$form->form_tag_name.'" name="'.$form->form_tag_name.'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acySubmitSubForm\')">';
         }
-        if (in_array($form->style_options['position'], ['image-top', 'image-left'])) include ACYM_PARTIAL.'forms'.DS.'image.php';
+        if (in_array($form->style_options['position'], ['image-top', 'image-left'])) include acym_getPartial('forms', 'image');
         echo '<div class="acym__subscription__form__popup__fields-button">';
-        include ACYM_PARTIAL.'forms'.DS.'fields.php';
-        include ACYM_PARTIAL.'forms'.DS.'button.php';
+        include acym_getPartial('forms', 'fields');
+        include acym_getPartial('forms', 'button');
         echo '</div>';
-        if (in_array($form->style_options['position'], ['image-bottom', 'image-right'])) include ACYM_PARTIAL.'forms'.DS.'image.php';
+        if (in_array($form->style_options['position'], ['image-bottom', 'image-right'])) include acym_getPartial('forms', 'image');
         ?>
 		<input type="hidden" name="ctrl" value="frontusers" />
 		<input type="hidden" name="task" value="notask" />
@@ -105,7 +105,11 @@
 	<script type="text/javascript">
         function acym_closePopupform<?php echo $form->form_tag_name;?>(element) {
             element.style.display = 'none';
-            document.cookie = 'acym_form_<?php echo $form->id;?>=' + Date.now() + ';';
+
+            let exdate = new Date();
+            exdate.setDate(exdate.getDate() + 1);
+            document.cookie = 'acym_form_<?php echo $form->id;?>=' + Date.now() + ';expires=' + exdate.toUTCString();
+
         }
 
         document.querySelector('.acym__subscription__form__popup__overlay').addEventListener('click', function (event) {
@@ -126,4 +130,4 @@
 
 	</script>
 <?php } ?>
-<?php include ACYM_PARTIAL.'forms'.DS.'cookie.php'; ?>
+<?php if (!$edition) include acym_getPartial('forms', 'cookie'); ?>

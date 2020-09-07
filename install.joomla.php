@@ -1,8 +1,8 @@
 <?php
 
 //DISPLAY PHP5.3 WARNING!
-if (version_compare(PHP_VERSION, '5.4.0', '<')) {
-    echo '<p style="color:red">This version of AcyMailing requires at least PHP 5.4.0, it is time to upgrade the PHP version of your server!</p>';
+if (version_compare(PHP_VERSION, '5.6.0', '<')) {
+    echo '<p style="color:red">This version of AcyMailing requires at least PHP 5.6.0, it is time to upgrade the PHP version of your server!</p>';
     exit;
 }
 
@@ -31,6 +31,7 @@ function installAcym()
     $updateHelper->installNotifications();
     // Only install the templates if it is the first install
     if (!$installClass->update) {
+        $installClass->deleteNewSplashScreenInstall();
         $updateHelper->installTemplates(true);
     }
     $updateHelper->installFields();
@@ -86,6 +87,7 @@ function uninstallAcym()
         'mail',
         'configuration',
         'user',
+        'form',
     ];
 
     $prefix = $db->getPrefix().'acym_';

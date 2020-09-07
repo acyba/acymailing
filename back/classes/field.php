@@ -323,7 +323,7 @@ class acymfieldClass extends acymClass
 
         $cmsUser = false;
         if ($displayFront && !empty($user->id)) {
-            $cmsUser = !empty($user->cms_id) ? true : false;
+            $cmsUser = !empty($user->cms_id);
             if ($field->id == 1) {
                 $defaultValue = $user->name;
             } elseif ($field->id == 2) {

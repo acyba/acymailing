@@ -70,28 +70,56 @@
             color: $white;
         }
 
-        .history_details {
-            cursor: pointer;
-        }
+        .acym__users__display__history {
+            padding: 0;
 
-        #acym__listing__header__user_history {
-            margin-left: 5px;
-        }
+            h2.acym__title__primary__color {
+                font-size: 1rem;
+            }
 
-        #acym__users__display__history__listing {
-            max-height: 240px;
-            overflow: auto;
-            margin-left: 5px;
+            .acym__users__history__toggle {
+                .acym__users__history__toggle-button {
+                    padding: .9rem;
+                    background-color: $light-gray;
+                    cursor: pointer;
+                    border-radius: 0;
+                    color: $font-primary;
 
-            .acym__listing__row {
-                margin-top: 2px;
-                margin-bottom: 2px;
-                padding: .7rem 0;
-                border-bottom: 1px solid $light-gray;
-                border-radius: 0;
-                box-shadow: none;
-                margin-left: 0;
-                margin-right: 0;
+                    &.acym__users__history__toggle-button-selected {
+                        background-color: $white;
+                        color: $primary-color;
+                    }
+                }
+            }
+
+            [data-acym-type] {
+                padding: .9rem;
+
+                &[data-acym-type="user"] {
+                    display: none;
+                }
+            }
+
+            .history_details {
+                cursor: pointer;
+            }
+
+            .acym__users__display__history__listing {
+                max-height: 240px;
+                overflow: auto;
+
+                .acym__listing__row {
+                    margin: 2px 0;
+                    padding: .7rem 0;
+                    border-bottom: 1px solid $light-gray;
+                    border-radius: 0;
+                    box-shadow: none;
+
+                    .acym__users__email__history__subject {
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                    }
+                }
             }
         }
 

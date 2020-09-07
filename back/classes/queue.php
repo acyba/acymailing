@@ -25,7 +25,7 @@ class acymqueueClass extends acymClass
                         LEFT JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id';
 
         $filters = [];
-        $filters[] = '(campaign.id IS NULL AND queue.mail_id IS NOT NULL) OR (campaign.id IS NOT NULL AND campaign.draft = 0 AND ((queue.mail_id IS NULL AND campaign.sending_type = '.acym_escapeDB($campaignClass::SENDING_TYPE_SCHEDULED).' AND campaign.sent = 0) OR queue.mail_id IS NOT NULL))';
+        $filters[] = '(campaign.id IS NULL AND queue.mail_id IS NOT NULL) OR (campaign.id IS NOT NULL AND campaign.draft = 0 AND ((queue.mail_id IS NULL AND campaign.sending_type = '.acym_escapeDB($campaignClass->getConstScheduled()).' AND campaign.sent = 0) OR queue.mail_id IS NOT NULL))';
 
         if (!empty($settings['tag'])) {
             $query .= ' JOIN #__acym_tag AS tag ON mail.id = tag.id_element AND tag.type = "mail" AND tag.name = '.acym_escapeDB($settings['tag']);
@@ -182,7 +182,7 @@ class acymqueueClass extends acymClass
             FROM #__acym_campaign AS campaign 
             JOIN #__acym_mail AS mail 
                 ON campaign.mail_id = mail.id '.$multilingualQuery.'
-            WHERE campaign.sending_type = '.acym_escapeDB($campaignClass::SENDING_TYPE_SCHEDULED).' 
+            WHERE campaign.sending_type = '.acym_escapeDB($campaignClass->getConstScheduled()).' 
                 AND campaign.draft = 0
                 AND campaign.sending_date <= '.acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false)).'  
                 AND campaign.sent = 0',

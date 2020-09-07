@@ -18,8 +18,8 @@ class UsersController extends acymController
         acym_setVar('layout', 'listing');
 
         $data = [];
-        $data['ordering'] = acym_getVar('string', 'users_ordering', 'id');
-        $data['orderingSortOrder'] = acym_getVar('string', 'users_ordering_sort_order', 'desc');
+        $data['ordering'] = $this->getVarFiltersListing('string', 'users_ordering', 'id');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'users_ordering_sort_order', 'desc');
         $data['pagination'] = acym_get('helper.pagination');
 
         $this->prepareListingFilters($data);
@@ -83,9 +83,11 @@ class UsersController extends acymController
 
     protected function prepareListingFilters(&$data)
     {
-        $data['status'] = acym_getVar('string', 'users_status', '');
-        $data['search'] = acym_getVar('string', 'users_search', '');
-        $data['list'] = acym_getVar('int', 'users_list', 0);
+        $data['status'] = $this->getVarFiltersListing('string', 'users_status', '');
+        $data['search'] = $this->getVarFiltersListing('string', 'users_search', '');
+        $data['list'] = $this->getVarFiltersListing('int', 'users_list', 0);
+        $data['list_status'] = $this->getVarFiltersListing('string', 'list_status', 'sub');
+
 
         $listClass = acym_get('class.list');
         $data['lists'] = $listClass->getAll('name');
@@ -99,7 +101,6 @@ class UsersController extends acymController
             'unsub' => acym_translation('ACYM_UNSUBSCRIBED'),
             'none' => acym_translation('ACYM_NO_SUBSCRIPTION_STATUS'),
         ];
-        $data['list_status'] = acym_getVar('string', 'list_status', 'sub');
 
         if (!empty($data['list'])) {
             $data['status_toolbar'] = [
@@ -217,11 +218,13 @@ class UsersController extends acymController
         $userId = acym_getVar('int', 'id', 0);
 
         if (!$this->prepareUserEdit($data, $userId)) return;
+        $this->prepareLanguageEdit($data);
         $this->prepareEntitySelectEdit($data, $userId);
         $this->prepareUserFieldsEdit($data, $userId);
         $this->prepareSubscriptionsEdit($data, $userId);
         $this->prepareStatsEdit($data, $userId);
         $this->prepareHistoryEdit($data, $userId);
+        $this->prepareMailHistory($data, $userId);
         $this->prepareFieldsEdit($data);
 
         parent::display($data);
@@ -237,6 +240,7 @@ class UsersController extends acymController
             $data['user-information']->confirmed = '1';
             $data['user-information']->cms_id = null;
             $data['user-information']->tracking = 1;
+            $data['user-information']->language = '';
 
             $this->breadcrumb[acym_escape(acym_translation('ACYM_NEW_USER'))] = acym_completeLink('users&task=edit');
         } else {
@@ -252,7 +256,36 @@ class UsersController extends acymController
             $this->breadcrumb[acym_escape($data['user-information']->email)] = acym_completeLink('users&task=edit&id='.$userId);
         }
 
+        if (empty($data['user-information']->language)) {
+            $data['user-information']->language = acym_getLanguageTag();
+        }
+
         return true;
+    }
+
+    public function prepareLanguageEdit(&$data)
+    {
+        if (!acym_isMultilingual()) return;
+
+        $languages = acym_getLanguages();
+        $data['languages'] = [];
+
+        foreach ($languages as $langCode => $language) {
+            if (strlen($langCode) != 5 || $langCode == "xx-XX") continue;
+
+            $oneLanguage = new stdClass();
+            $oneLanguage->value = $langCode;
+            $oneLanguage->text = $language->name;
+
+            $data['languages'][] = $oneLanguage;
+        }
+
+        usort(
+            $data['languages'],
+            function ($a, $b) {
+                return strtolower($a->text) > strtolower($b->text);
+            }
+        );
     }
 
     private function prepareEntitySelectEdit(&$data, $userId)
@@ -348,6 +381,12 @@ class UsersController extends acymController
 
         $data['pourcentageOpen'] = $userStat->pourcentageOpen;
         $data['pourcentageClick'] = $userStat->pourcentageOpen;
+    }
+
+    private function prepareMailHistory(&$data, $userId)
+    {
+        if (empty($userId)) return;
+        $data['userMailHistory'] = $this->currentClass->getMailHistory($userId);
     }
 
     private function prepareHistoryEdit(&$data, $userId)
@@ -827,6 +866,7 @@ class UsersController extends acymController
         $user = new stdClass();
         $user->name = $userInformation['name'];
         $user->email = $userInformation['email'];
+        if (!empty($userInformation['language'])) $user->language = $userInformation['language'];
         $user->active = $userInformation['active'];
         $user->confirmed = $userInformation['confirmed'];
         $user->tracking = $userInformation['tracking'];
@@ -876,8 +916,6 @@ class UsersController extends acymController
         } else {
             $this->edit();
         }
-
-        return;
     }
 
     public function getColumnsFromTable()

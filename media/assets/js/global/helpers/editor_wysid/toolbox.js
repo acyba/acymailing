@@ -1,7 +1,8 @@
 const acym_editorWysidToolbox = {
     setRefreshAfterToolbox: function () {
         jQuery('.acym__wysid__row__toolbox__copy').unbind('click').click(function () {
-            jQuery(this).closest('.acym__wysid__row__element').clone().insertAfter(jQuery(this).closest('.acym__wysid__row__element'));
+            acym_helperBlockSeparator.changeIdOnduplicate(jQuery(this).closest('.acym__wysid__row__element').clone())
+                                     .insertAfter(jQuery(this).closest('.acym__wysid__row__element'));
             acym_helperEditorWysid.setColumnRefreshUiWYSID();
             acym_editorWysidVersioning.setUndoAndAutoSave();
         });

@@ -34,13 +34,8 @@ const acym_helperBack = {
             });
         });
 
-        jQuery('#acym__multilingual__reminder').on('click', function(){
+        jQuery('#acym__multilingual__reminder').on('click', function () {
             localStorage.setItem('acyconfiguration', 'languages');
         });
-    },
-    setCookie: function (c_name, value, expiredays) {
-        let exdate = new Date();
-        exdate.setDate(exdate.getDate() + expiredays);
-        document.cookie = c_name + '=' + escape(value) + ((expiredays == null) ? '' : ';expires=' + exdate.toGMTString());
     }
 };

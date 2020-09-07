@@ -45,6 +45,25 @@
                     echo '</span>';
                 }
 
+                if (acym_isMultilingual()) {
+                    ?>
+					<div class="cell grid-x margin-top-1">
+						<label for="userlanguage" class="cell large-6 xlarge-5" title="<?php echo acym_escape(acym_translation('ACYM_LANGUAGE_DESC')); ?>">
+                            <?php echo acym_translation('ACYM_LANGUAGE'); ?>
+						</label>
+						<div class="cell large-6 xlarge-7">
+                            <?php
+                            echo acym_select(
+                                $data['languages'],
+                                'user[language]',
+                                $data['user']->language,
+                                ['class' => 'acym__select']
+                            );
+                            ?>
+						</div>
+					</div>
+                    <?php
+                }
                 ?>
 			</div>
 

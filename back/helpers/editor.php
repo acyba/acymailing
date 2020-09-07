@@ -34,7 +34,7 @@ class acymeditorHelper extends acymObject
     {
         if ($this->isDragAndDrop()) {
             ob_start();
-            include ACYM_PARTIAL.'editor'.DS.'default_template.php';
+            include acym_getPartial('editor', 'default_template');
             $this->defaultTemplate = ob_get_clean();
 
             acym_disableCmsEditor();
@@ -43,7 +43,7 @@ class acymeditorHelper extends acymObject
             acym_addScript(false, ACYM_JS.'tinymce/tinymce.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'tinymce/tinymce.min.js'));
 
             $data = $this->data;
-            include ACYM_VIEW.'mails'.DS.'tmpl'.DS.'editor_wysid.php';
+            include acym_getPartial('editor', 'editor_wysid');
         } else {
             // Outside of the Acy wrapper to prevent foundation from breaking the 100 different editors we could have here
 
@@ -87,6 +87,22 @@ class acymeditorHelper extends acymObject
             if ($this->editor == 'tinymce') {
                 $this->editorConfig['content_css_custom'] = $cssurl.'&local=http';
                 $this->editorConfig['content_css'] = '0';
+
+                // Joomla broke the custom css feature in the v3.9.21 so we have to do this
+                $access = [];
+                for ($i = 1 ; $i < 20 ; $i++) {
+                    $access[] = $i;
+                }
+                $this->editorConfig['configuration'] = (object)[
+                    'toolbars' => (object)['joomlaBrokeItInAMinorRelease' => []],
+                    'setoptions' => [
+                        'joomlaBrokeItInAMinorRelease' => (object)[
+                            'access' => $access,
+                            'content_css' => '0',
+                            'content_css_custom' => $cssurl.'&local=http',
+                        ],
+                    ],
+                ];
             } elseif ($this->editor == 'jckeditor' || $this->editor == 'fckeditor') {
                 //For jckeditor, we need to create a fake template.css file... lets do that on the template/css/folder
                 $this->editorConfig['content_css_custom'] = $filepath;

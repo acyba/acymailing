@@ -36,13 +36,25 @@ const acym_helperTooltip = {
             newTop = (top - $tooltipText.height()) < 0 ? 0 : top - $tooltipText.height();
             newLeft = (pos.left - $tooltipText.width() - $parent.width() - 10) < 0 ? 0 : pos.left - $tooltipText.width() - $parent.width() - 10;
         } else {
-            newTop = (top - $tooltipText.height() - 15) < 0 ? 0 : top - $tooltipText.height() - 15;
-            newLeft = (pos.left - $tooltipText.height() / 2) < 0 ? 0 : pos.left - $tooltipText.height() / 2;
+            newTop = Math.max(0, top - $tooltipText.height() - 15);
+            newLeft = Math.max(0, pos.left - $tooltipText.width() / 2 + $parent.width() / 2);
         }
 
         $tooltipText.css({
             top: newTop + 'px',
-            left: newLeft + 'px',
+            left: newLeft + 'px'
         });
     },
+    addTooltip: function (hoveredText, textShownInTooltip, classContainer, classText) {
+        return `<span class="acym__tooltip ${classContainer}"><span class="acym__tooltip__text ${classText}">${textShownInTooltip}</span>${hoveredText}</span>`;
+    },
+    addInfo: function (tooltipText, classText) {
+        classText = classText === undefined ? '' : classText;
+        return this.addTooltip(
+            `<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>`,
+            tooltipText,
+            'acym__tooltip__info',
+            classText
+        );
+    }
 };

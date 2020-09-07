@@ -1,7 +1,11 @@
 <?php
 
-function acym_escape($text, $isURL = false)
+function acym_escape($text)
 {
+    if (is_array($text) || is_object($text)) {
+        $text = json_encode($text);
+    }
+
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 }
 
@@ -94,4 +98,26 @@ function acym_noCache()
     acym_header('Cache-Control: post-check=0, pre-check=0', false);
     acym_header('Pragma: no-cache');
     acym_header('Expires: Wed, 17 Sep 1975 21:32:10 GMT');
+}
+
+function acym_isAllowed($controller, $task = '')
+{
+    $config = acym_config();
+    $globalAccess = $config->get('acl_'.$controller, 'all');
+    if ($globalAccess === 'all') return true;
+
+    $userId = acym_currentUserId();
+    if (empty($userId)) return false;
+
+    $userGroups = acym_getGroupsByUser($userId);
+    if (empty($userGroups)) return false;
+
+    foreach ($userGroups as $oneGroup) {
+        if ($oneGroup === ACYM_ADMIN_GROUP) return true;
+
+        $groupAccess = $config->get('acl_'.$controller.'_'.$oneGroup, '1');
+        if ($groupAccess === '1') return true;
+    }
+
+    return false;
 }

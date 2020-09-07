@@ -32,6 +32,10 @@ class plgAcymFlexicontent extends acymPlugin
                     ],
                 ],
             ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
+            ];
         }
     }
 

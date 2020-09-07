@@ -16,7 +16,7 @@
         );
         echo '<div data-acym-lang="'.$language->code.'" class="cell shrink acym__campaign__summary__preview__languages-one '.$class.'">'.$flag.'</div>';
 
-        if (empty($data['multilingual_mails'][$language->code]) && $language->code !== $data['main_language']->code) continue;
+        if (empty($data['multilingual_mails'][$language->code])) continue;
 
         echo '<input type="hidden" id="acym__summary-body-'.$language->code.'" value="'.acym_escape(acym_absoluteURL($data['multilingual_mails'][$language->code]->body)).'">';
         echo '<input type="hidden" id="acym__summary-subject-'.$language->code.'" value="'.acym_escape($data['multilingual_mails'][$language->code]->subject).'">';

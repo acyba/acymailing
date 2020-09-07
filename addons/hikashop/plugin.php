@@ -46,6 +46,10 @@ class plgAcymHikashop extends acymPlugin
                     'value' => 0,
                 ],
             ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
+            ];
         }
     }
 

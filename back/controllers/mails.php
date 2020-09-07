@@ -18,11 +18,11 @@ class MailsController extends acymController
         acym_setVar('layout', 'listing');
 
         // Get filters data
-        $searchFilter = acym_getVar('string', 'mails_search', '');
-        $tagFilter = acym_getVar('string', 'mails_tag', '');
-        $ordering = acym_getVar('string', 'mails_ordering', 'creation_date');
+        $searchFilter = $this->getVarFiltersListing('string', 'mails_search', '');
+        $tagFilter = $this->getVarFiltersListing('string', 'mails_tag', '');
+        $ordering = $this->getVarFiltersListing('string', 'mails_ordering', 'creation_date');
         $status = 'standard';
-        $orderingSortOrder = acym_getVar('cmd', 'mails_ordering_sort_order', 'desc');
+        $orderingSortOrder = $this->getVarFiltersListing('cmd', 'mails_ordering_sort_order', 'desc');
 
         $pagination = acym_get('helper.pagination');
         // Get pagination data
@@ -79,8 +79,6 @@ class MailsController extends acymController
 
         $this->prepareToolbar($mailsData);
         parent::display($mailsData);
-
-        return;
     }
 
     public function prepareToolbar(&$data)
@@ -229,6 +227,7 @@ class MailsController extends acymController
                     $mail->editor = !empty($typeEditor) ? $typeEditor : 'acyEditor';
                 }
             }
+            $mail->access = [];
 
             if (!empty($type)) $mail->type = $type;
 
@@ -316,16 +315,6 @@ class MailsController extends acymController
 
         acym_setVar('layout', 'edit');
         parent::display($data);
-    }
-
-    /**
-     * What You See Is Draggable
-     */
-    public function editor_wysid()
-    {
-        acym_setVar('layout', 'editor_wysid');
-
-        parent::display();
     }
 
     public function store($ajax = false)
@@ -698,6 +687,7 @@ class MailsController extends acymController
 
     public function loadCSS()
     {
+        header('Content-Type: text/css');
         $idMail = acym_getVar('int', 'id', 0);
         if (empty($idMail)) {
             exit;
@@ -721,6 +711,15 @@ class MailsController extends acymController
     public function setNewIconShare()
     {
         $socialName = acym_getVar('string', 'social', '');
+        if (!in_array($socialName, ['facebook', 'twitter', 'instagram', 'linkedin', 'pinterest', 'vimeo', 'wordpress', 'youtube'])) {
+            echo json_encode(
+                [
+                    'type' => 'error',
+                    'message' => acym_translation_sprintf('ACYM_UNKNOWN_SOCIAL', $socialName),
+                ]
+            );
+            exit;
+        }
         $extension = pathinfo($_FILES['file']['name']);
         $newPath = ACYM_UPLOAD_FOLDER.'socials'.DS.$socialName;
         $newPathComplete = $newPath.'.'.$extension['extension'];

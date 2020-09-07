@@ -1,6 +1,6 @@
 <?php
-if (version_compare(PHP_VERSION, '5.4.0', '<')) {
-    echo '<p style="color:red">This version of AcyMailing requires at least PHP 5.4.0, it is time to update the PHP version of your server!</p>';
+if (version_compare(PHP_VERSION, '5.6.0', '<')) {
+    echo '<p style="color:red">This version of AcyMailing requires at least PHP 5.6.0, it is time to update the PHP version of your server!</p>';
     exit;
 }
 
@@ -18,6 +18,13 @@ $ctrl = acym_getVar('cmd', 'ctrl', 'dashboard');
 $task = acym_getVar('cmd', 'task');
 
 $config = acym_config();
+
+if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN) && $task != 'deleteFeatures') {
+    $ctrl = 'dashboard';
+    $task = 'features';
+    acym_setVar('ctrl', $ctrl);
+    acym_setVar('task', $task);
+}
 
 $needToMigrate = $config->get('migration') == 0 && acym_existsAcyMailing59() && acym_getVar('string', 'task') != 'migrationDone';
 
@@ -45,4 +52,4 @@ if (file_exists(ACYM_BACK.'extensions')) {
     $updateHelper->installExtensions(false);
 }
 
-$controller->$task();
+$controller->call($task);

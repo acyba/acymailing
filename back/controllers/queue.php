@@ -19,9 +19,9 @@ class QueueController extends acymController
         }
 
         // Get filters data
-        $searchFilter = acym_getVar('string', 'cqueue_search', '');
-        $tagFilter = acym_getVar('string', 'cqueue_tag', '');
-        $status = acym_getVar('string', 'cqueue_status', '');
+        $searchFilter = $this->getVarFiltersListing('string', 'cqueue_search', '');
+        $tagFilter = $this->getVarFiltersListing('string', 'cqueue_tag', '');
+        $status = $this->getVarFiltersListing('string', 'cqueue_status', '');
 
         // Get pagination data
         $campaignsPerPage = $pagination->getListLimit();
@@ -48,29 +48,57 @@ class QueueController extends acymController
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
-            'tags' => acym_get('class.tag')->getAllTagsByType('mail'),
+            'allTags' => acym_get('class.tag')->getAllTagsByType('mail'),
             'numberPerStatus' => $matchingElements['status'],
             'status' => $status,
             'campaignClass' => $campaignClass,
             'languages' => acym_getLanguages(),
         ];
 
+        $this->prepareToolbar($viewData);
+
         $this->breadcrumb[acym_translation('ACYM_CAMPAIGNS')] = acym_completeLink('queue');
         parent::display($viewData);
     }
 
-    public function automated()
+    public function prepareToolbar(&$data)
     {
+        $toolbarHelper = acym_get('helper.toolbar');
+        $toolbarHelper->addSearchBar($data['search'], 'cqueue_search', 'ACYM_SEARCH');
+        $toolbarHelper->addButton(
+            acym_translation('ACYM_EMPTY_QUEUE'),
+            [
+                'data-task' => 'emptyQueue',
+                'data-confirmation-message' => 'ACYM_ARE_YOU_SURE',
+            ],
+            'close'
+        );
+        $otherContent = acym_modal(
+            '<i class="acymicon-paper-plane-o"></i>'.acym_translation('ACYM_SEND_MAILS_MANUALLY'),
+            '',
+            null,
+            'data-reveal-larger',
+            'class="cell medium-6 large-shrink acym__toolbar__button acym__toolbar__button-primary" data-reload="true" data-ajax="true" data-iframe="&ctrl=queue&task=continuesend&id=0&totalsend=0"'
+        );
+        $toolbarHelper->addOtherContent($otherContent);
+        $toolbarHelper->addFilterByTag($data, 'cqueue_tag', 'acym__queue__filter__tags acym__select');
+
+        $data['toolbar'] = $toolbarHelper;
+        if (!empty($data['tag'])) {
+            $data['status_toolbar'] = [
+                'cqueue_tag' => $data['tag'],
+            ];
+        }
     }
 
     public function detailed()
     {
-        acym_setVar("layout", "detailed");
+        acym_setVar('layout', 'detailed');
         $pagination = acym_get('helper.pagination');
 
         // Get filters data
-        $searchFilter = acym_getVar('string', 'dqueue_search', '');
-        $tagFilter = acym_getVar('string', 'dqueue_tag', '');
+        $searchFilter = $this->getVarFiltersListing('string', 'dqueue_search', '');
+        $tagFilter = $this->getVarFiltersListing('string', 'dqueue_tag', '');
 
         // Get pagination data
         $elementsPerPage = $pagination->getListLimit();
@@ -94,11 +122,36 @@ class QueueController extends acymController
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
-            'tags' => acym_get('class.tag')->getAllTagsByType('mail'),
+            'allTags' => acym_get('class.tag')->getAllTagsByType('mail'),
         ];
+
+        $this->prepareToolbarDetailed($viewData);
 
         $this->breadcrumb[acym_translation('ACYM_QUEUE_DETAILED')] = acym_completeLink('queue&task=detailed');
         parent::display($viewData);
+    }
+
+    public function prepareToolbarDetailed(&$data)
+    {
+        $toolbarHelper = acym_get('helper.toolbar');
+        $toolbarHelper->addSearchBar($data['search'], 'dqueue_search', 'ACYM_SEARCH');
+        $otherContent = acym_modal(
+            '<i class="acymicon-paper-plane-o"></i>'.acym_translation('ACYM_SEND_ALL'),
+            '',
+            null,
+            'data-reveal-larger',
+            'class="cell medium-shrink acym__toolbar__button acym__toolbar__button-primary" data-reload="true" data-ajax="true" data-iframe="&ctrl=queue&task=continuesend&id=0&totalsend=0"'
+        );
+        $toolbarHelper->addOtherContent($otherContent);
+        $toolbarHelper->addFilterByTag($data, 'dqueue_tag', 'acym__queue__filter__tags acym__select');
+
+        $data['toolbar'] = $toolbarHelper;
+        $data['cleartask'] = 'detailed';
+        if (!empty($data['tag'])) {
+            $data['status_toolbar'] = [
+                'dqueue_tag' => $data['tag'],
+            ];
+        }
     }
 
     public function scheduleReady()
@@ -158,7 +211,7 @@ class QueueController extends acymController
         $mailId = acym_getVar('int', 'acym__queue__cancel__mail_id');
 
         if (!empty($mailId)) {
-            $hasStat = acym_loadResult("SELECT COUNT(*) FROM #__acym_user_stat WHERE mail_id = ".intval($mailId));
+            $hasStat = acym_loadResult('SELECT COUNT(*) FROM #__acym_user_stat WHERE mail_id = '.intval($mailId));
 
             $result = [];
 
@@ -170,24 +223,24 @@ class QueueController extends acymController
                 $result[] = acym_query('DELETE FROM #__acym_mail_stat WHERE mail_id = '.intval($mailId));
             }
         } else {
-            acym_enqueueMessage(acym_translation('ACYM_ERROR_QUEUE_CANCEL_CAMPAIGN'), "error");
+            acym_enqueueMessage(acym_translation('ACYM_ERROR_QUEUE_CANCEL_CAMPAIGN'), 'error');
         }
         $this->campaigns();
     }
 
     public function playPauseSending()
     {
-        $active = acym_getVar("int", "acym__queue__play_pause__active__new_value");
-        $campaignId = acym_getVar("int", "acym__queue__play_pause__campaign_id");
+        $active = acym_getVar('int', 'acym__queue__play_pause__active__new_value');
+        $campaignId = acym_getVar('int', 'acym__queue__play_pause__campaign_id');
 
         if (!empty($campaignId)) {
             $queueClass = acym_get('class.queue');
             $queueClass->unpauseCampaign($campaignId, $active);
         } else {
             if (!empty($active)) {
-                acym_enqueueMessage(acym_translation('ACYM_ERROR_QUEUE_RESUME'), "error");
+                acym_enqueueMessage(acym_translation('ACYM_ERROR_QUEUE_RESUME'), 'error');
             } else {
-                acym_enqueueMessage(acym_translation('ACYM_ERROR_QUEUE_PAUSE'), "error");
+                acym_enqueueMessage(acym_translation('ACYM_ERROR_QUEUE_PAUSE'), 'error');
             }
         }
 

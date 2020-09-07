@@ -58,6 +58,9 @@ class ConfigurationController extends acymController
                 return strtolower($a->name) > strtolower($b->name);
             }
         );
+
+
+        $data['content_translation'] = acym_getTranslationTools();
     }
 
     private function prepareLists(&$data)
@@ -105,6 +108,21 @@ class ConfigurationController extends acymController
     private function prepareAcl(&$data)
     {
         $data['acl'] = acym_cmsPermission();
+        $data['acl_advanced'] = [
+            'users' => 'ACYM_USERS',
+            'fields' => 'ACYM_CUSTOM_FIELDS',
+            'lists' => 'ACYM_LISTS',
+            'campaigns' => 'ACYM_EMAILS',
+            'mails' => 'ACYM_TEMPLATES',
+            'automation' => 'ACYM_AUTOAMTION',
+            'queue' => 'ACYM_QUEUE',
+            'stats' => 'ACYM_STATISTICS',
+            'bounces' => 'ACYM_BOUNCE_HANDLING',
+            'plugins' => 'ACYM_ADD_ONS',
+            'forms' => 'ACYM_SUBSCRIPTION_FORMS',
+            'configuration' => 'ACYM_CONFIGURATION',
+        ];
+        $data['aclType'] = acym_get('type.acl');
     }
 
     /**

@@ -135,6 +135,14 @@ class acym_profile_widget extends WP_Widget
 
         $userController = acym_get('controller_front.frontusers');
         $data = $userController->prepareParams((object)$instance);
+
+        if (empty($data['user']->language)) {
+            $cmsUserLanguage = acym_getCmsUserLanguage();
+            $data['user']->language = empty($cmsUserLanguage) ? acym_getLanguageTag() : $cmsUserLanguage;
+        }
+
+        $userController->prepareLanguageEdit($data);
+
         acym_setVar('layout', 'profile');
         $userController->display($data);
 

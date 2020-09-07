@@ -85,7 +85,8 @@ const acym_editorWysidDynammic = {
             type: 'POST',
             data: {
                 'mailId': mailId,
-                'code': shortcode
+                'code': shortcode,
+                'language': acym_editorWysidMultilingual.currentLanguage
             }
         }).then(function (response) {
             // Another option has been changed, apply the newest only

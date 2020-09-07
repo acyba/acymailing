@@ -191,13 +191,11 @@ class AutomationController extends acymController
 
         $condition->id = $conditionClass->save($condition);
 
-        $returnIds = [
+        return [
             'automationId' => $automationID,
             'stepId' => $stepAutomationId,
             'conditionId' => $condition->id,
         ];
-
-        return $returnIds;
     }
 
     private function _saveFilters($isMassAction = false)
@@ -244,13 +242,11 @@ class AutomationController extends acymController
 
         $action->id = $actionClass->save($action);
 
-        $returnIds = [
+        return [
             'automationId' => $automationID,
             'stepId' => $stepAutomationId,
             'actionId' => $action->id,
         ];
-
-        return $returnIds;
     }
 
     private function _saveActions($isMassAction = false)
@@ -300,13 +296,11 @@ class AutomationController extends acymController
 
         $action->id = $actionClass->save($action);
 
-        $returnIds = [
+        return [
             'automationId' => $automationID,
             'stepId' => $stepAutomationId,
             'actionId' => $action->id,
         ];
-
-        return $returnIds;
     }
 
     private function _saveAutomation($from, $isMassAction = false)

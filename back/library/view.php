@@ -49,7 +49,7 @@ class acymView extends acymObject
         if (ACYM_CMS === 'wordpress') echo ob_get_clean();
 
         // Load the needed scripts and styles
-        if (ACYM_CMS !== 'wordpress' || ($name === 'frontusers' && ($view === 'unsubscribe' || $view === 'unsubscribepage')) || !defined('DOING_AJAX') || !DOING_AJAX) {
+        if (ACYM_CMS !== 'wordpress' || ($name === 'frontusers' && ($view === 'unsubscribe' || $view === 'unsubscribepage')) || !defined('DOING_AJAX') || !DOING_AJAX || ($name === 'archive' && $view === 'view')) {
             acym_loadAssets($name, $view);
             $controller->loadScripts($view);
         }
@@ -84,6 +84,8 @@ class acymView extends acymObject
                 $this->config->save(['remindme' => json_encode($remindme)]);
             }
         }
+
+        acym_trigger('acym_displayTrackingMessage', [&$message], 'plgAcymWoocommerce');
 
         if (acym_isAdmin()) acym_displayMessages();
 

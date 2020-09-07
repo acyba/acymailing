@@ -1,10 +1,30 @@
 <div class="cell acym__content acym__user__edit__custom__fields">
-    <?php if (!empty($data['allFields'])) { ?>
-        <?php foreach ($data['allFields'] as $field) {
+    <?php
+    if (!empty($data['allFields'])) {
+        foreach ($data['allFields'] as $field) {
             if ($field->active === '0') continue;
             echo $field->html;
-        } ?>
-    <?php } ?>
+        }
+    }
+
+    if (acym_isMultilingual()) {
+        ?>
+		<div class="cell grid-x margin-top-1">
+			<label for="userlanguage" class="cell large-6 xlarge-5"><?php echo acym_translation('ACYM_LANGUAGE'); ?></label>
+			<div class="cell large-6 xlarge-7">
+                <?php
+                echo acym_select(
+                    $data['languages'],
+                    'user[language]',
+                    $data['user-information']->language,
+                    ['class' => 'acym__select']
+                );
+                ?>
+			</div>
+		</div>
+        <?php
+    }
+    ?>
 	<div class="cell grid-x margin-top-1">
         <?php echo acym_switch('user[active]', $data['user-information']->active, acym_translation('ACYM_ACTIVE'), []); ?>
 	</div>

@@ -32,7 +32,7 @@
                         'type' => acym_translation('ACYM_TYPE'),
                     ],
                     'forms',
-                    '',
+                    $data['ordering'],
                     'asc'
                 ); ?>
 			</div>
