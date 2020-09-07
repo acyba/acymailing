@@ -430,10 +430,15 @@ class acymPlugin extends acymObject
 
         if (false === $this->loadLibraries($email)) return;
         $this->emailLanguage = $email->links_language;
+        $translationTool = $this->config->get('translate_content', 'no');
 
         $tagsReplaced = [];
         foreach ($tags as $i => $oneTag) {
             if (isset($tagsReplaced[$i])) continue;
+
+            if (!empty($this->emailLanguage) && $translationTool !== 'no' && acym_isMultilingual()) {
+                $oneTag->id = $this->getTranslationId($oneTag->id, $translationTool);
+            }
             $tagsReplaced[$i] = $this->replaceIndividualContent($oneTag, $email);
         }
 
@@ -743,6 +748,12 @@ class acymPlugin extends acymObject
     {
         if (empty($plugin->settings)) return false;
 
+        if (array_key_exists('not_installed', $plugin->settings)) {
+            $plugin->settings = 'not_installed';
+
+            return true;
+        }
+
         foreach ($plugin->settings as $key => $field) {
             $text = '';
             if (empty($field['type'])) {
@@ -753,6 +764,15 @@ class acymPlugin extends acymObject
             $id = $plugin->folder_name.'_'.$key;
             $name = $plugin->folder_name.'['.$key.']';
             if (!empty($field['label'])) $field['label'] = acym_translation($field['label']);
+            if (!empty($field['info'])) {
+                $field['label'] .= acym_info(
+                    acym_translation($field['info']),
+                    '',
+                    '',
+                    'wysid_tooltip',
+                    !empty($field['info_warning'])
+                );
+            }
 
             if ($field['type'] == 'checkbox') {
                 $classLabel = 'shrink';
@@ -789,6 +809,10 @@ class acymPlugin extends acymObject
             } elseif ($field['type'] == 'text') {
                 $text .= '<label class="cell shrink">'.$field['label'].'</label>';
                 $text .= '<input type="text" name="'.$name.'" value="'.acym_escape($field['value']).'" class="cell shrink">';
+            } elseif ($field['type'] == 'number') {
+                $text .= '<label class="cell shrink">'.$field['label'].'</label>';
+                $text .= '<input type="number" name="'.$name.'" value="'.acym_escape($field['value']).'" class="cell large-2 medium-5">';
+                if (!empty($field['post_text'])) $text .= '<span class="cell shrink">'.strtolower($field['post_text']).'</span>';
             } elseif ($field['type'] == 'radio') {
                 $text .= '<p class="cell">'.$field['label'].'</p>';
                 $text .= acym_radio(
@@ -845,8 +869,8 @@ class acymPlugin extends acymObject
     }
 
     /**
-     * @param      $css This attribute is the name of the file in the folder css of the plugin OR it can be raw CSS
-     * @param bool $raw
+     * @param string $css This attribute is the name of the file in the folder css of the plugin OR it can be raw CSS
+     * @param bool   $raw
      */
     public function loadCSS($css, $raw = false)
     {
@@ -855,8 +879,8 @@ class acymPlugin extends acymObject
     }
 
     /**
-     * @param      $js This attribute is the name of the file in the folder js of the plugin OR it can be raw Javascript
-     * @param bool $raw
+     * @param string $js This attribute is the name of the file in the folder js of the plugin OR it can be raw Javascript
+     * @param bool   $raw
      */
     public function loadJavascript($js, $raw = false)
     {
@@ -899,5 +923,10 @@ class acymPlugin extends acymObject
         if (empty($this->savedSettings) || !isset($this->savedSettings[$name]['value'])) return $default;
 
         return $this->savedSettings[$name]['value'];
+    }
+
+    protected function getTranslationId($elementId, $translationTool, $defaultLanguage = false)
+    {
+        return $elementId;
     }
 }

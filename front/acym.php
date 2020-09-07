@@ -1,6 +1,6 @@
 <?php
-if (version_compare(PHP_VERSION, '5.4.0', '<')) {
-    echo '<p style="color:red">This version of AcyMailing requires at least PHP 5.4.0, it is time to update the PHP version of your server!</p>';
+if (version_compare(PHP_VERSION, '5.6.0', '<')) {
+    echo '<p style="color:red">This version of AcyMailing requires at least PHP 5.6.0, it is time to update the PHP version of your server!</p>';
     exit;
 }
 

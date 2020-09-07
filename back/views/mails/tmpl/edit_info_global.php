@@ -52,7 +52,8 @@ if ($data['mail']->type === 'standard') {
 		</div>
         <?php
     }
-} elseif (!empty($data['langChoice'])) {
+}
+if (!empty($data['langChoice'])) {
     ?>
 	<div class="cell xlarge-3 medium-6">
 		<label class="cell">
@@ -91,22 +92,22 @@ if ($data['mail']->type === 'standard') {
 				</div>
 				<input id="acym__mail__edit__preheader" name="mail[preheader]" type="text" maxlength="255" value="<?php echo acym_escape($data['mail']->preheader); ?>">
 			</div>
-
-			<div class="cell grid-x medium-6" id="acym__mail__edit__html__stylesheet__container">
-				<div class="cell medium-shrink">
-					<label for="acym__mail__edit__html__stylesheet">
-                        <?php
-                        echo acym_tooltip(
-                            acym_translation('ACYM_CUSTOM_ADD_STYLESHEET'),
-                            acym_translation('ACYM_STYLESHEET_HTML_DESC')
-                        );
-                        $stylesheet = empty($data['mail']->stylesheet) ? '' : $data['mail']->stylesheet;
-                        ?>
-					</label>
+            <?php if (empty($data['mail']->drag_editor)) { ?>
+				<div class="cell grid-x medium-6" id="acym__mail__edit__html__stylesheet__container">
+					<div class="cell medium-shrink">
+						<label for="acym__mail__edit__html__stylesheet">
+                            <?php
+                            echo acym_tooltip(
+                                acym_translation('ACYM_CUSTOM_ADD_STYLESHEET'),
+                                acym_translation('ACYM_STYLESHEET_HTML_DESC')
+                            );
+                            $stylesheet = empty($data['mail']->stylesheet) ? '' : $data['mail']->stylesheet;
+                            ?>
+						</label>
+					</div>
+					<textarea class="acym__blue" name="editor_stylesheet" id="acym__mail__edit__html__stylesheet" cols="30" rows="15" type="text"><?php echo $stylesheet; ?></textarea>
 				</div>
-				<textarea class="acym__blue" name="editor_stylesheet" id="acym__mail__edit__html__stylesheet" cols="30" rows="15" type="text"><?php echo $stylesheet; ?></textarea>
-			</div>
-
+            <?php } ?>
 			<div class="cell medium-auto">
 				<label for="acym__mail__edit__custom__header"><?php
                     echo acym_translation('ACYM_CUSTOM_HEADERS');

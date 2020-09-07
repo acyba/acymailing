@@ -72,15 +72,15 @@ class GF_Field_Acy extends GF_Field
             }
         }
 
-        $return = '<br>'.$checkboxes.$inputHidden;
-
-        return $return;
+        return '<br>'.$checkboxes.$inputHidden;
     }
 
     /**
      * @param $value
      * @param $form
      *  This function is triggered when the form is validated in the front-end, so here we can create and subscribe our user
+     *
+     * @return bool
      */
     public function validate($value, $form)
     {
@@ -154,7 +154,7 @@ class GF_Field_Acy extends GF_Field
 
         $this->validation_message = $msg;
 
-        return;
+        return true;
     }
 }
 

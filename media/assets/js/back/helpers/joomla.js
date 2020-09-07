@@ -33,7 +33,7 @@ const acym_helperJoomla = {
                 $iTagforCollapse.removeClass('acymicon-keyboard_arrow_left').addClass('acymicon-keyboard_arrow_right');
             } else {
                 $textLeftMenu.show();
-                $leftMenu.css({'width': '200px'});
+                $leftMenu.css({'width': '260px'});
                 $iTagforCollapse.removeClass('acymicon-keyboard_arrow_right').addClass('acymicon-keyboard_arrow_left');
             }
 
@@ -43,15 +43,15 @@ const acym_helperJoomla = {
                 if ($leftMenu.hasClass('collapsed')) {
                     $leftMenu.removeClass('collapsed');
                     $textLeftMenu.show();
-                    $leftMenu.css({'width': '200px'});
+                    $leftMenu.css({'width': '260px'});
                     $iTagforCollapse.removeClass('acymicon-keyboard_arrow_right').addClass('acymicon-keyboard_arrow_left');
-                    acym_helperBack.setCookie('menuJoomla', '', 365);
+                    acym_helper.setCookie('menuJoomla', '', 365);
                 } else {
                     $leftMenu.addClass('collapsed');
                     $textLeftMenu.hide();
                     $leftMenu.css({'width': '55px'});
                     $iTagforCollapse.removeClass('acymicon-keyboard_arrow_left').addClass('acymicon-keyboard_arrow_right');
-                    acym_helperBack.setCookie('menuJoomla', 'collapsed', 365);
+                    acym_helper.setCookie('menuJoomla', 'collapsed', 365);
                 }
                 acym_helperJoomla.setWidthJoomlaContent();
             });

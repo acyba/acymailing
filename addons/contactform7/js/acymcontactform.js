@@ -7,17 +7,17 @@ document.addEventListener('wpcf7submit', function (event) {
         let urlAction = jQuery('[name="acymaction_' + listField + '"]').val();
 
         let mailField = currentfield.attr('data-acymmail');
-        if (undefined == mailField || mailField.length == 0) {
+        if (undefined === mailField || mailField.length === 0) {
             let inputs = event.detail.inputs;
             for (let k = 0 ; k < inputs.length ; k++) {
-                if (jQuery('[name="' + inputs[k].name + '"]').attr('type') == 'email') {
+                if (jQuery('[name="' + inputs[k].name + '"]').attr('type') === 'email') {
                     mailField = inputs[k].name;
                     break;
                 }
             }
         }
 
-        if (mailField.length == 0 || listField.length == 0 || urlAction.length == 0) return;
+        if (mailField.length === 0 || listField.length === 0 || urlAction.length === 0) return;
 
         let emailAddress = jQuery('[name="' + mailField + '"]').val();
 
@@ -28,7 +28,7 @@ document.addEventListener('wpcf7submit', function (event) {
             if (allListsField[j].checked) allLists.push(allListsField[j].value);
         }
 
-        if (allLists.length == 0 && hiddenLists.length == 0) continue;
+        if (allLists.length === 0 && hiddenLists.length === 0) continue;
 
         // Subscribe
         jQuery.ajax({

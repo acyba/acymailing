@@ -1,9 +1,5 @@
+<span class="wpcf7-form-control-wrap <?php echo sanitize_html_class($data['tagName']); ?>"><span class="<?php echo $data['class']; ?>">
 <?php
-printf(
-    '<span class="wpcf7-form-control-wrap %1$s"><span %2$s>',
-    sanitize_html_class($data['tagName']),
-    'class="'.$data['class'].'" '
-);
 
 foreach ($data['detailsLists']['displayLists'] as $listId) {
     $check = '';

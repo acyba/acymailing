@@ -28,6 +28,7 @@ class ToggleController extends acymController
         $this->toggleableColumns['rule'] = ['active' => 'id'];
         $this->toggleableColumns['user'] = ['active' => 'id', 'confirmed' => 'id'];
         $this->toggleableColumns['form'] = ['active' => 'id'];
+        $this->toggleableColumns['campaign'] = ['visible' => 'id'];
 
         // $this->icons[TABLE NAME WITHOUT PREFIX][COLUMN NAME][VALUE] = ICON CLASS;
         $this->icons['automation']['active'][1] = 'acymicon-check-circle acym__color__green';
@@ -56,6 +57,8 @@ class ToggleController extends acymController
         $this->icons['user']['confirmed'][0] = 'acymicon-times-circle acym__color__red';
         $this->icons['form']['active'][1] = 'acymicon-check-circle acym__color__green';
         $this->icons['form']['active'][0] = 'acymicon-times-circle acym__color__red';
+        $this->icons['campaign']['visible'][1] = 'acymicon-eye';
+        $this->icons['campaign']['visible'][0] = 'acymicon-eye-slash acym__color__dark-gray';
 
         $this->tooltips['user']['active'][1] = 'ACYM_ACTIVATED';
         $this->tooltips['user']['active'][0] = 'ACYM_DEACTIVATED';
@@ -65,6 +68,8 @@ class ToggleController extends acymController
         $this->tooltips['list']['active'][0] = 'ACYM_DEACTIVATED';
         $this->tooltips['list']['visible'][1] = 'ACYM_VISIBLE';
         $this->tooltips['list']['visible'][0] = 'ACYM_INVISIBLE';
+        $this->tooltips['campaign']['visible'][0] = 'ACYM_INVISIBLE';
+        $this->tooltips['campaign']['visible'][1] = 'ACYM_VISIBLE';
 
         // $this->deletableRows[] = TABLE NAME WITHOUT PREFIX;
         $this->deletableRows[] = 'mail';

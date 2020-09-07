@@ -79,12 +79,18 @@ function acym_boolean($name, $selected = null, $id = null, $attributes = [], $ye
         '0' => acym_translation($no),
     ];
 
+    $params = ['id' => $id];
+    if (!empty($attributes['containerClass'])) {
+        $params['containerClass'] = $attributes['containerClass'];
+        unset($attributes['containerClass']);
+    }
+
     return acym_radio(
         $options,
         $name,
         $selected ? 1 : 0,
         $attributes,
-        ['id' => $id],
+        $params,
         !acym_isAdmin()
     );
 }
@@ -760,10 +766,12 @@ function acym_tooltip($hoveredText, $textShownInTooltip, $classContainer = '', $
     return '<span class="acym__tooltip '.$classContainer.'"><span class="acym__tooltip__text '.$classText.'">'.$titleShownInTooltip.$textShownInTooltip.'</span>'.$hoveredText.'</span>';
 }
 
-function acym_info($tooltipText, $class = '', $containerClass = '', $classText = '')
+function acym_info($tooltipText, $class = '', $containerClass = '', $classText = '', $warningInfo = false)
 {
+    $classWarning = $warningInfo ? 'acym__tooltip__info__warning' : '';
+
     return acym_tooltip(
-        '<span class="acym__tooltip__info__container '.$class.'"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+        '<span class="acym__tooltip__info__container '.$class.'"><i class="acym__tooltip__info__icon acymicon-info-circle '.$classWarning.'"></i></span>',
         acym_translation($tooltipText),
         'acym__tooltip__info '.$containerClass,
         '',

@@ -78,7 +78,7 @@ class plgAcymContactform7 extends acymPlugin
         $this->loadJavascript('acymcontactform');
         $this->loadCSS('acymcontactform');
 
-        if (empty($tag->name)) return;
+        if (empty($tag->name)) return '';
 
         $class = wpcf7_form_controls_class($tag->type);
         $tagName = $tag->name;

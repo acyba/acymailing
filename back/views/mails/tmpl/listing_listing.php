@@ -11,7 +11,7 @@
                         'creation_date' => acym_translation('ACYM_DATE_CREATED'),
                     ],
                     'mails',
-                    '',
+                    $data['ordering'],
                     $data['orderingSortOrder']
                 );
                 ?>

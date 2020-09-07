@@ -56,4 +56,4 @@
 <script type="text/javascript">
     document.body.prepend(document.querySelector('#acym_fulldiv_<?php echo $form->form_tag_name; ?>'));
 </script>
-<?php include ACYM_PARTIAL.'forms'.DS.'cookie.php'; ?>
+<?php if (!$edition) include acym_getPartial('forms', 'cookie'); ?>

@@ -364,9 +364,7 @@ class acymlistClass extends acymClass
             $query .= ' AND user.confirmed = 1';
         }
 
-        $nbSubscribers = acym_loadResult($query);
-
-        return $nbSubscribers;
+        return acym_loadResult($query);
     }
 
     public function getSubscribersIdsById($listId, $returnUnsubscribed = false)

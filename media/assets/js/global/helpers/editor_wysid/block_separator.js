@@ -205,8 +205,11 @@ const acym_helperBlockSeparator = {
     initPadding: function () {
         let $th = jQuery('.acym__wysid__row__element--focus .acym__wysid__row__element__th');
         let $paddingContainer = jQuery('.acym__wysid__context__modal__block-padding');
-        let html = `<h6 class="cell margin-top-1">${ACYM_JS_TXT.ACYM_SPACE_BETWEEN_BLOCK}</h6>`;
+        let html = `<h6 class="cell margin-top-1 acym__wysid__context__block__padding__title">${ACYM_JS_TXT.ACYM_SPACE_BETWEEN_BLOCK}</h6>`;
         $paddingContainer.html(html);
+
+        let horizontalPadding = '';
+        let verticalPadding = '';
         for (let i = 0 ; i < ($th.length - 1) ; i++) {
             //get the padding of the current and next element and calculate the global
             let paddingElementLeft = acym_helper.getIntValueWithoutPixel($th[i].style.paddingRight);
@@ -222,13 +225,32 @@ const acym_helperBlockSeparator = {
 
             //add the input to change this value
             let content = `<div class="cell grid-x acym_vcenter margin-bottom-1"><p class="cell shrink">${textToDisplay}</p>`;
-            content += `<input type="number" min="0" id="acym__wysid__context__block__padding-${i}" value="${paddingGlobal}" class="cell margin-bottom-0 small-2 margin-left-1 acym__wysid__context__block__padding--input">`;
+            content += `<input type="number" min="0" id="acym__wysid__context__block__padding-${i}" value="${paddingGlobal}" class="cell margin-bottom-0 small-4 margin-left-1 acym__wysid__context__block__padding--input">`;
             content += '</div>';
 
-            html += content;
+            horizontalPadding += content;
+
+
+            //add the input to change this value
+            let contentVertical = `<div class="cell grid-x acym_vcenter margin-bottom-1"><p class="cell shrink">${textToDisplay}</p>`;
+            contentVertical += `<input type="number" min="0" id="acym__wysid__context__block__vertical__padding-${i}" value="0" class="cell margin-bottom-0 small-4 margin-left-1 acym__wysid__context__block__vertical__padding--input">`;
+            contentVertical += '</div>';
+            verticalPadding += contentVertical;
         }
+        html += `<div class="cell grid-x small-6 acym__wysid__context__block__padding__horizontal">`;
+        html += `<p class="cell margin-bottom-1">${ACYM_JS_TXT.ACYM_HORIZONTAL_PADDING} ${acym_helperTooltip.addInfo(ACYM_JS_TXT.ACYM_HORIZONTAL_PADDING_DESC)}</p>`;
+        html += horizontalPadding;
+        html += `</div>`;
+
+
+        html += `<div class="cell grid-x small-6">`;
+        html += `<p class="cell margin-bottom-1">${ACYM_JS_TXT.ACYM_VERTICAL_PADDING} ${acym_helperTooltip.addInfo(ACYM_JS_TXT.ACYM_VERTICAL_PADDING_DESC)}</p>`;
+        html += verticalPadding;
+        html += `</div>`;
         $paddingContainer.html(html);
+        acym_helperTooltip.setTooltip();
         acym_helperBlockSeparator.setPadding($th);
+        acym_helperBlockSeparator.setVerticalPadding($th);
     },
     setPadding: function ($th) {
         jQuery('.acym__wysid__context__block__padding--input').off('change').on('change', function (e) {
@@ -249,6 +271,90 @@ const acym_helperBlockSeparator = {
             jQuery($th[idSplit[1]]).css('padding-right', newValue + 'px');
             jQuery($th[(idSplit[1] + 1)]).css('padding-left', newValue + 'px');
         });
-    }
+    },
+    setVerticalPadding: function ($th) {
+        let $parentTable = jQuery($th[0]).closest('.acym__wysid__row__element');
+        if ($parentTable.attr('id') === '' || $parentTable.attr('id') === undefined) {
+            $parentTable.attr('id', this.generatedNewIdParentTable());
+        }
 
+        let $styleTag = jQuery(`[data-vertical-padding="${$parentTable.attr('id')}"]`);
+        for (let i = 0 ; i < $th.length ; i++) {
+            if (jQuery($th[i]).attr('class').indexOf('acym__wysid__row__element__th__vertical__padding') === -1) {
+                jQuery($th[i]).addClass('acym__wysid__row__element__th__vertical__padding-' + i);
+            } else if ($styleTag.length > 0) {
+                let styleTagText = $styleTag.html();
+                let rulePaddingTop = `acym__wysid__row__element__th__vertical__padding-${i}{padding-top: ([0-9]*)px`;
+                let rulePaddingBottom = `acym__wysid__row__element__th__vertical__padding-${i}{padding-bottom: ([0-9]*)px`;
+
+                let topRegex = new RegExp(rulePaddingTop, 'g');
+                let bottomRegex = new RegExp(rulePaddingBottom, 'g');
+                let topPadding = topRegex.exec(styleTagText);
+                let bottomPadding = bottomRegex.exec(styleTagText);
+
+                if (topPadding !== null) {
+                    let $previousInput = jQuery(`#acym__wysid__context__block__vertical__padding-${i - 1}`);
+                    $previousInput.val(parseInt($previousInput.val()) + parseInt(topPadding[1]));
+                }
+                if (bottomPadding !== null) {
+                    let $currentInput = jQuery(`#acym__wysid__context__block__vertical__padding-${i}`);
+                    $currentInput.val(parseInt($currentInput.val()) + parseInt(bottomPadding[1]));
+                }
+            }
+        }
+
+
+        jQuery('.acym__wysid__context__block__vertical__padding--input').off('change').on('change', function () {
+            let $self = jQuery(this);
+            let valueEntered = $self.val();
+            if (valueEntered < 0) {
+                $self.val(0);
+                return;
+            }
+
+            $styleTag = jQuery(`[data-vertical-padding="${$parentTable.attr('id')}"]`);
+
+            if ($styleTag.length > 0) $styleTag.remove();
+
+            let style = '';
+            jQuery('.acym__wysid__context__block__vertical__padding--input').each((index, $input) => {
+                $input = jQuery($input);
+                let indexUp = index + 1;
+                let inputValue = Math.round($input.val() / 2);
+                style += `#${$parentTable.attr('id')} .acym__wysid__row__element__th__vertical__padding-${index}{padding-bottom: ${inputValue}px !important}`;
+                style += `#${$parentTable.attr('id')} .acym__wysid__row__element__th__vertical__padding-${indexUp}{padding-top: ${inputValue}px !important}`;
+            });
+
+            $parentTable.prepend(`<style data-vertical-padding="${$parentTable.attr('id')}">
+                                            @media screen and (max-width: 480px){
+                                                ${style}
+                                            }
+                                         </style>`);
+        });
+    },
+    generatedNewIdParentTable: function () {
+        let id = 'acym__wysid__row__element' + Math.floor(Math.random() * Math.floor(9999999));
+
+        if (jQuery(`#${id}`).length > 0) {
+            return this.generatedNewIdParentTable();
+        } else {
+            return id;
+        }
+    },
+    changeIdOnduplicate: function ($element) {
+        let newId = this.generatedNewIdParentTable();
+        let formerId = $element.attr('id');
+        if (formerId === undefined) return $element;
+        $element.attr('id', newId);
+
+        let $styleTag = $element.find('[data-vertical-padding]');
+        if ($styleTag.length === 0) return $element;
+
+        let styleTagHtml = $styleTag.html();
+        $styleTag.attr('data-vertical-padding', newId);
+        let formerIdRegex = new RegExp(formerId, 'g');
+        $styleTag.html(styleTagHtml.replace(formerIdRegex, newId));
+
+        return $element;
+    }
 };

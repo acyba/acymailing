@@ -22,9 +22,8 @@ class acymactionClass extends acymClass
     public function getAllActionsIdByConditionsId($elements)
     {
         acym_arrayToInteger($elements);
-        $actions = acym_loadResultArray('SELECT id FROM #__acym_action WHERE condition_id IN ('.implode(',', $elements).')');
 
-        return $actions;
+        return acym_loadResultArray('SELECT id FROM #__acym_action WHERE condition_id IN ('.implode(',', $elements).')');
     }
 
     public function delete($elements)

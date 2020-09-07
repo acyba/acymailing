@@ -3,7 +3,6 @@
 
 class charsetType extends acymObject
 {
-    var $addinfo = '';
     var $charsets = [];
     var $values = [];
 
@@ -49,6 +48,14 @@ class charsetType extends acymObject
 
     public function display($map, $value)
     {
-        return acym_select($this->values, $map, $value, 'size="1" style="width:150px;" '.$this->addinfo, 'value', 'text');
+        return acym_select(
+            $this->values,
+            $map,
+            $value,
+            [
+                'size' => 1,
+                'style' => 'width:150px;',
+            ]
+        );
     }
 }

@@ -14,6 +14,11 @@ function acym_getView($ctrl, $view, $forceBackend = false)
     }
 }
 
+function acym_getPartial($family, $view)
+{
+    return ACYM_PARTIAL.$family.DS.$view.'.php';
+}
+
 function acym_loadAssets($ctrl, $task)
 {
     $scope = acym_isAdmin() ? 'back' : 'front';
@@ -28,7 +33,8 @@ function acym_loadAssets($ctrl, $task)
         var ACYM_FIXES_FOR_EMAIL = "'.str_replace('"', '\"', acym_getEmailCssFixes()).'";
         var ACYM_REGEX_EMAIL = /^'.acym_getEmailRegex(true).'$/i;
         var ACYM_JS_TXT = '.acym_getJSMessages().';
-        var ACYM_CORE_DYNAMICS_URL = "'.ACYM_CORE_DYNAMICS_URL.'";'
+        var ACYM_CORE_DYNAMICS_URL = "'.ACYM_CORE_DYNAMICS_URL.'";
+        var ACYM_ROOT_URI = "'.acym_rootURI().'";'
     );
 
     acym_addScript(false, ACYM_JS.'libraries/foundation.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'foundation.min.js'));
@@ -207,6 +213,12 @@ function acym_getJSMessages()
         'ACYM_REMOVE_LANG_CONFIRMATION',
         'ACYM_RESET_TRANSLATION',
         'ACYM_MAX_EXEC_TIME_GET_ERROR',
+        'ACYM_SAVE_AS_TEMPLATE_CONFIRMATION',
+        'ACYM_VERTICAL_PADDING',
+        'ACYM_HORIZONTAL_PADDING',
+        'ACYM_VERTICAL_PADDING_DESC',
+        'ACYM_HORIZONTAL_PADDING_DESC',
+        'ACYM_SELECT_A_PICTURE',
     ];
 
     foreach ($keysToLoad as $oneKey) {

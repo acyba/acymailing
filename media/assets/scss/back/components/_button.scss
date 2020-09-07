@@ -8,7 +8,6 @@
 
     i {
         margin-top: 5px;
-        color: $dark-gray;
     }
 
     [class^="acymicon-"], [class*=" acymicon-"] {
@@ -17,7 +16,6 @@
     }
 
     &.button {
-        border-radius: $primary-radius 0 0 $primary-radius !important;
         background-color: $light-blue;
 
         &:hover, &focus {

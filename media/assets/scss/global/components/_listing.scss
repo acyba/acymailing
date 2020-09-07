@@ -6,7 +6,16 @@
     margin-top: 0.3rem;
     margin-bottom: 0.3rem;
 
-    &.acym__listing__row__popup:hover {
+    &.acym__listing__row__popup--disabled {
+        opacity: .5;
+        cursor: not-allowed !important;
+
+        .acym__listing__title__dynamics {
+            cursor: not-allowed !important;
+        }
+    }
+
+    &.acym__listing__row__popup:not(.acym__listing__row__popup--disabled):hover {
         background-color: $light-gray;
     }
 }

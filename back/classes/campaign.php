@@ -14,6 +14,21 @@ class acymcampaignClass extends acymClass
     ];
     var $encodedColumns = ['sending_params'];
 
+    public function getConstNow()
+    {
+        return self::SENDING_TYPE_NOW;
+    }
+
+    public function getConstScheduled()
+    {
+        return self::SENDING_TYPE_SCHEDULED;
+    }
+
+    public function getConstAuto()
+    {
+        return self::SENDING_TYPE_AUTO;
+    }
+
     public function decode($campaign, $decodeMail = true)
     {
         if (empty($campaign)) return $campaign;
@@ -178,6 +193,16 @@ class acymcampaignClass extends acymClass
             $clicksNb = $urlClickClass->getNumberUsersClicked($element->mail_id);
             $element->click = number_format($clicksNb / $element->subscribers * 100, 2);
         }
+
+        //Tracking sales
+        if (!acym_isTrackingSalesActive()) return;
+
+        if (acym_isMultilingual()) {
+            $trackingSales = acym_loadObject('SELECT SUM(tracking_sale) as sale, currency FROM #__acym_user_stat WHERE mail_id IN (SELECT id FROM #__acym_mail WHERE id = '.intval($element->mail_id).' OR parent_id = '.intval($element->mail_id).') AND currency IS NOT NULL');
+        } else {
+            $trackingSales = acym_loadObject('SELECT SUM(tracking_sale) as sale, currency FROM #__acym_user_stat WHERE mail_id = '.intval($element->mail_id).' AND currency IS NOT NULL');
+        }
+        $this->formatSaleTracking($element, $trackingSales);
     }
 
     private function getStatsCampaignAuto(&$element, $urlClickClass)
@@ -198,6 +223,23 @@ class acymcampaignClass extends acymClass
             $element->open = number_format($element->open / $element->subscribers * 100, 2);
             $element->click = number_format($element->click / $element->subscribers * 100, 2);
         }
+
+        //Tracking sales
+        if (!acym_isTrackingSalesActive()) return;
+
+        $trackingSales = acym_loadObject(
+            'SELECT SUM(user_stat.tracking_sale) as sale, user_stat.currency 
+            FROM #__acym_user_stat AS user_stat 
+            WHERE mail_id IN (SELECT mail_id FROM #__acym_campaign WHERE parent_id = '.intval($element->id).') AND currency IS NOT NULL'
+        );
+        $this->formatSaleTracking($element, $trackingSales);
+    }
+
+    private function formatSaleTracking(&$element, $trackingSales)
+    {
+        $element->sale = $trackingSales->sale;
+        if (empty($element->currency)) $element->currency = '';
+        acym_trigger('getCurrency', [&$element->currency]);
     }
 
     public function getOneById($id)
@@ -528,7 +570,7 @@ class acymcampaignClass extends acymClass
         }
 
         // Make sure we display only active campaigns
-        $where = 'WHERE campaign.active = 1 AND campaign.sent = 1 AND mail.type = "standard" ';
+        $where = 'WHERE campaign.active = 1 AND campaign.sent = 1 AND mail.type = "standard" AND campaign.visible = 1 ';
 
         // If we want an archive of some specific lists
         if (isset($params['lists'])) {

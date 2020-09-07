@@ -39,6 +39,12 @@
             color: $medium-gray;
         }
     }
+
+    .acym__do__not__remindme__info {
+        float: right;
+        color: $font-primary;
+        text-decoration: underline;
+    }
 }
 
 .warning-message {

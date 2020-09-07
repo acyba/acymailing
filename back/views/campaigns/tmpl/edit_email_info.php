@@ -27,4 +27,10 @@
 if (empty($data['multilingual'])) {
     $preheaderSize = 'large-6';
     include acym_getView('campaigns', 'edit_email_info_content');
-}
+} ?>
+
+<div class="cell margin-top-1 grid-x">
+    <?php
+    echo acym_switch('visible', $data['mailInformation']->visible, acym_translation('ACYM_VISIBLE').acym_info(acym_translation('ACYM_VISIBLE_CAMPAIGN_DESC')), [], 'shrink')
+    ?>
+</div>

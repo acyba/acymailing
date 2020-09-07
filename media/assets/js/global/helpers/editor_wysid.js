@@ -38,6 +38,7 @@ jQuery(document).ready(function ($) {
             acym_editorWysidMultilingual.setLanguageSelection();
         },
         setColumnRefreshUiWYSID: function (reloadTinyMCE = true) {
+            jQuery('.ui-helper-hidden-accessible').remove();
             acym_editorWysidRowSelector.setRowSelector();
             acym_editorWysidImage.setImageWidthHeightOnInsert();
             acym_editorWysidDragDrop.setRowElementSortableWYSID();

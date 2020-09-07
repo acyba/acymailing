@@ -16,11 +16,14 @@ class plgAcymEasyprofile extends acymPlugin
         if ($this->installed) {
             $this->epfields = acym_loadObjectList('SELECT title, alias, type FROM #__jsn_fields');
             $jsnColumns = acym_getColumns('jsn_users', false);
+            $jUserColumns = acym_getColumns('users', false);
             foreach ($this->epfields as $key => $field) {
                 if (in_array($field->alias, $jsnColumns)) {
                     $this->epfields[$key]->table = '#__jsn_users';
-                } else {
+                } elseif (in_array($field->alias, $jUserColumns)) {
                     $this->epfields[$key]->table = '#__users';
+                } else {
+                    unset($this->epfields[$key]);
                 }
             }
             $this->bannedFields = ['password', 'avatar'];
@@ -43,6 +46,10 @@ class plgAcymEasyprofile extends acymPlugin
                         'hide' => 'ACYM_DONT_SHOW',
                     ],
                 ],
+            ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
             ];
         }
     }
@@ -325,6 +332,8 @@ class plgAcymEasyprofile extends acymPlugin
 
             $this->tags[$oneTag] = $this->finalizeCategoryFormat($query, $parameter, 'jsnuser');
         }
+
+        return $this->generateCampaignResult;
     }
 
     public function onAcymDeclareConditions(&$conditions)

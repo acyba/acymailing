@@ -21,14 +21,12 @@ class plgAcymCbuilder extends acymPlugin
     public function textPopup()
     {
         ?>
-
-		<script language="javascript" type="text/javascript">
+		<script type="text/javascript">
             function applyCB(tagname, element) {
-                var string = '{cbtag:' + tagname + '|info:' + jQuery('input[name="typeinfo"]:checked').val() + '}';
+                let string = '{cbtag:' + tagname + '|info:' + jQuery('input[name="typeinfo"]:checked').val() + '}';
                 setTag(string, jQuery(element));
             }
 		</script>
-
         <?php
 
         $text = '<div class="grid-x acym__popup__listing">';

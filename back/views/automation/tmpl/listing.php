@@ -54,7 +54,7 @@
                                     "active" => acym_translation('ACYM_ACTIVE'),
                                 ],
                                 "automation",
-                                '',
+                                $data['ordering'],
                                 'asc'
                             ); ?>
 						</div>

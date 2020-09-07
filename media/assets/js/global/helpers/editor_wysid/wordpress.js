@@ -49,14 +49,16 @@ const acym_editorWysidWordpress = {
                     let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
                     content += '<td class="large-12 acym__wysid__column__element__td">';
                     content += '<div class="acym__wysid__tinymce--image">';
+                    content += '<p style="text-align: center" data-mce-style="text-align: center">';
                     content += '<img class="acym__wysid__media__inserted acym__wysid__media__inserted--focus" src="'
                                + attachment.url
                                + '" title="'
                                + acym_helper.escape(attachment.title)
                                + '" alt="'
                                + acym_helper.escape(attachment.alt)
-                               + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;"/>';
+                               + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;"/>';
                     content += '</div>';
+                    content += '</p>';
                     content += '</td>';
                     content += '</tr>';
                     jQuery(ui).replaceWith(content);

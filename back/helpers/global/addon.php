@@ -1,6 +1,7 @@
 <?php
 
 global $acymPlugins;
+global $acymAddonsForSettings;
 function acym_loadPlugins()
 {
     $dynamics = acym_getFolders(ACYM_BACK.'dynamics');
@@ -22,6 +23,7 @@ function acym_loadPlugins()
     $dynamics[] = 'managetext';
 
     global $acymPlugins;
+    global $acymAddonsForSettings;
     foreach ($dynamics as $oneDynamic) {
         $dynamicFile = acym_getPluginPath($oneDynamic);
         $className = 'plgAcym'.ucfirst($oneDynamic);
@@ -32,6 +34,7 @@ function acym_loadPlugins()
 
         // If it's for another CMS or if the related extension isn't installed, skip it
         $plugin = new $className();
+        if (in_array($plugin->cms, ['all', '{__CMS__}'])) $acymAddonsForSettings[$className] = $plugin;
         if (!in_array($plugin->cms, ['all', '{__CMS__}']) || !$plugin->installed) continue;
 
         $acymPlugins[$className] = $plugin;
@@ -44,10 +47,13 @@ function acym_trigger($method, $args = [], $plugin = null)
     if (!in_array(acym_getPrefix().'acym_configuration', acym_getTableList())) return null;
 
     global $acymPlugins;
+    global $acymAddonsForSettings;
     if (empty($acymPlugins)) acym_loadPlugins();
 
     $result = [];
-    foreach ($acymPlugins as $class => $onePlugin) {
+    $listAddons = $acymPlugins;
+    if ($method == 'onAcymAddSettings') $listAddons = $acymAddonsForSettings;
+    foreach ($listAddons as $class => $onePlugin) {
         if (!method_exists($onePlugin, $method)) continue;
         if (!empty($plugin) && $class != $plugin) continue;
 

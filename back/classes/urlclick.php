@@ -105,12 +105,10 @@ class acymurlClickClass extends acymClass
 
         $queryCountAllClicks = 'SELECT SUM(click) FROM #__acym_url_click WHERE `mail_id` = '.intval($id);
 
-        $return = [
+        return [
             'urls_click' => acym_loadObjectList($queryClickUrl),
             'allClick' => acym_loadResult($queryCountAllClicks),
         ];
-
-        return $return;
     }
 
     public function getClickRateByMailIds($mailsIds = [])

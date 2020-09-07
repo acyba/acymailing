@@ -121,8 +121,7 @@ class acymmailStatClass extends acymClass
         }
 
         $query = 'SELECT SUM(sent) AS sent, SUM(open_unique) AS open, SUM(fail) AS fails, SUM(bounce_unique) AS bounces FROM #__acym_mail_stat '.$condMailIds;
-        $result = acym_loadObject($query);
 
-        return $result;
+        return acym_loadObject($query);
     }
 }

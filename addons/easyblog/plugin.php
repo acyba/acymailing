@@ -43,6 +43,10 @@ class plgAcymEasyblog extends acymPlugin
                     ],
                 ],
             ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
+            ];
         }
     }
 

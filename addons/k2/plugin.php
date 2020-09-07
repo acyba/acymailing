@@ -33,6 +33,10 @@ class plgAcymK2 extends acymPlugin
                     ],
                 ],
             ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
+            ];
         }
     }
 

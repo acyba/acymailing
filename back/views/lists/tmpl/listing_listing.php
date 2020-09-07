@@ -34,7 +34,8 @@
                         'active' => acym_translation('ACYM_ACTIVE'),
                         'visible' => acym_translation('ACYM_VISIBLE'),
                     ],
-                    'lists'
+                    'lists',
+                    $data['ordering']
                 ); ?>
 			</div>
 		</div>

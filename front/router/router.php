@@ -173,7 +173,7 @@ class AcymRouter extends AcymRouterBase
 
     private function getCampaignSEF($campaignId)
     {
-        if (empty($campaignId)) return '0'.$this->separator.'new';
+        if (empty($campaignId) || !is_numeric($campaignId)) return '0'.$this->separator.'new';
         $campaignClass = acym_get('class.campaign');
         $campaign = $campaignClass->getOneByIdWithMail($campaignId);
 

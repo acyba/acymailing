@@ -5,8 +5,8 @@ require_once ACYM_INC.'phpmailer'.DS.'smtp.php';
 require_once ACYM_INC.'phpmailer'.DS.'phpmailer.php';
 require_once ACYM_INC.'emogrifier.php';
 
-use acyPHPMailer\acyException;
-use acyPHPMailer\acySMTP;
+use acyPHPMailer\Exception;
+use acyPHPMailer\SMTP;
 use acyPHPMailer\acyPHPMailer;
 use acymEmogrifier\acymEmogrifier;
 
@@ -448,7 +448,7 @@ class acymmailerHelper extends acyPHPMailer
 
     private function canTrack($mailId, $user)
     {
-        if (empty($mailId) || empty($user) || $user->tracking != 1) return false;
+        if (empty($mailId) || empty($user) || !isset($user->tracking) || $user->tracking != 1) return false;
 
         $mailClass = acym_get('class.mail');
 
@@ -471,7 +471,7 @@ class acymmailerHelper extends acyPHPMailer
      * @param $testNote String Message added at the top of the sent test
      *
      * @return bool
-     * @throws acyException
+     * @throws Exception
      */
     public function sendOne($mailId, $user, $isTest = false, $testNote = '')
     {
@@ -631,6 +631,7 @@ class acymmailerHelper extends acyPHPMailer
         $this->links_language = $this->defaultMail[$mailId]->links_language;
 
         if (!$isTest && $this->canTrack($mailId, $receiver)) {
+            if (acym_isTrackingSalesActive()) $this->trackingSales($this->id, $receiver->id);
             $this->statPicture($this->id, $receiver->id);
             $this->body = acym_absoluteURL($this->body);
             $this->statClick($this->id, $receiver->id);
@@ -660,6 +661,30 @@ class acymmailerHelper extends acyPHPMailer
 
         return $status;
     }
+
+    private function trackingSales($mailId, $userId)
+    {
+        preg_match_all('#href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:|tel:)([^"]+)"#Ui', $this->body, $results);
+        if (empty($results)) return;
+
+        foreach ($results[1] as $key => $url) {
+            $simplifiedUrl = str_replace(['https://', 'http://', 'www.'], '', $url);
+            $simplifiedWebsite = str_replace(['https://', 'http://', 'www.'], '', ACYM_LIVE);
+            if (strpos($simplifiedUrl, rtrim($simplifiedWebsite, '/')) === false || strpos($url, 'task=unsub')) continue;
+
+            $toAddUrl = (strpos($url, '?') === false ? '?' : '&').'linkReferal='.$mailId.'-'.$userId;
+
+            $posHash = strpos($url, '#');
+            if ($posHash !== false) {
+                $newURL = substr($url, 0, $posHash).$toAddUrl.substr($url, $posHash);
+            } else {
+                $newURL = $url.$toAddUrl;
+            }
+
+            $this->body = preg_replace('#href="('.preg_quote($url, '#').')"#Uis', 'href="'.$newURL.'"', $this->body);
+        }
+    }
+
 
     public function statPicture($mailId, $userId)
     {
@@ -1027,15 +1052,6 @@ class acymmailerHelper extends acyPHPMailer
         if (!empty($name) && $this->config->get('add_names', true)) {
             $this->FromName = $this->cleanText($name);
         }
-    }
-
-    public function getSMTPInstance()
-    {
-        if (!is_object($this->smtp)) {
-            $this->smtp = new acySMTP();
-        }
-
-        return $this->smtp;
     }
 
     /**

@@ -30,6 +30,23 @@ class plgAcymWoocommerce extends acymPlugin
                     'type' => 'custom_view',
                     'tags' => array_merge($this->displayOptions, $this->replaceOptions, $this->elementOptions),
                 ],
+                'track' => [
+                    'type' => 'switch',
+                    'label' => 'ACYM_TRACKING',
+                    'value' => 0,
+                    'info' => 'ACYM_TRACKING_WOOCOMMERCE_DESC',
+                ],
+                'cookie_expire' => [
+                    'type' => 'number',
+                    'label' => 'ACYM_COOKIE_EXPIRATION',
+                    'value' => 1,
+                    'info' => 'ACYM_COOKIE_EXPIRATION_DESC',
+                    'post_text' => acym_translation('ACYM_HOURS'),
+                ],
+            ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
             ];
         }
     }
@@ -1019,5 +1036,163 @@ class plgAcymWoocommerce extends acymPlugin
     public function onBeforeSaveConfigFields(&$formData)
     {
         $formData['woocommerce_autolists'] = !empty($formData['woocommerce_autolists']) ? $formData['woocommerce_autolists'] : [];
+    }
+
+    public function onAcymIsTrackingWoocommerce(&$trackingWoocommerce)
+    {
+        $trackingWoocommerce = $this->getParam('track', 0) == 1;
+    }
+
+    public function formatCookie(&$cookie, &$formattedCookie)
+    {
+        $cookie = explode('_', $cookie);
+
+        foreach ($cookie as $value) {
+            $value = explode('-', $value);
+            $formattedCookie[$value[0]] = $value[1];
+        }
+    }
+
+    public function getCurrency(&$currency)
+    {
+        if (empty($currency)) $currency = get_woocommerce_currency();
+        $woocommerceCurrencies = get_woocommerce_currency_symbols();
+        $currency = $woocommerceCurrencies[$currency];
+    }
+
+    public function onAcymInitWordpressAddons()
+    {
+        add_filter('woocommerce_checkout_fields', [$this, 'addSubsciptionFieldWC']);
+        add_action('woocommerce_checkout_order_processed', [$this, 'subscribeUserOnCheckoutWC'], 15, 3);
+        if (acym_isTrackingSalesActive()) {
+            add_action('woocommerce_payment_successful_result', [$this, 'trackingWoocommerce'], 10, 2);
+            add_action('init', [$this, 'trackingWoocommerceAddCookie']);
+        }
+    }
+
+    public function acym_displayTrackingMessage(&$message)
+    {
+
+        $remindme = json_decode($this->config->get('remindme', '[]'), true);
+
+        if ($this->getParam('track', 0) != 1 && acym_isExtensionActive('woocommerce/woocommerce.php') && acym_isAdmin() && ACYM_CMS == 'wordpress' && !in_array('woocommerce_tracking', $remindme)) {
+            $message = acym_translation('ACYM_WOOCOMMERCE_TRACKING_INFO');
+            $message .= ' <a target="_blank" href="https://docs.acymailing.com/addons/wordpress-add-ons/woocommerce#tracking">'.acym_translation('ACYM_READ_MORE').'</a>';
+            $message .= ' <a href="#" class="acym__do__not__remindme acym__do__not__remindme__info" title="woocommerce_tracking">'.acym_translation('ACYM_DO_NOT_REMIND_ME').'</a>';
+            acym_display($message, 'info', false);
+        } elseif (!in_array('woocommerce_tracking', $remindme)) {
+            $remindme[] = 'woocommerce_tracking';
+            $this->config->save(['remindme' => json_encode($remindme)]);
+        }
+    }
+
+    public function trackingWoocommerceAddCookie()
+    {
+        $trackingWoo = acym_getVar('string', 'linkReferal', '');
+        if (empty($trackingWoo)) return;
+
+        $trackingWoo = explode('-', $trackingWoo);
+
+        $hours = $this->getParam('cookie_expire', 1);
+
+        $time = time() + (3600 * $hours);
+
+        setcookie('acym_track_woocommerce', 'mailid-'.$trackingWoo[0].'_userid-'.$trackingWoo[1], $time, COOKIEPATH, COOKIE_DOMAIN);
+    }
+
+    public function trackingWoocommerce($result, $order_id)
+    {
+        if (empty($_COOKIE['acym_track_woocommerce'])) return $result;
+        $cookie = $_COOKIE['acym_track_woocommerce'];
+
+        $formattedCookie = [];
+
+        acym_trigger('formatCookie', [&$cookie, &$formattedCookie], 'plgAcymWoocommerce');
+
+        if (empty($formattedCookie['userid']) || empty($formattedCookie['mailid'])) return $result;
+        $userStatClass = acym_get('class.userstat');
+        $userStat = $userStatClass->getOneByMailAndUserId($formattedCookie['mailid'], $formattedCookie['userid']);
+        if (empty($userStat)) return $result;
+        unset($userStat->statusSending);
+        unset($userStat->open);
+        unset($userStat->open_date);
+
+        $order = wc_get_order($order_id);
+        $currency = $order->get_currency();
+        if (empty($currency)) return $result;
+
+        $total = (float)$order->get_total() - $order->get_total_tax() - $order->get_total_shipping() - $order->get_shipping_tax();
+
+        $userStat->tracking_sale = empty($userStat->tracking_sale) ? $total : $userStat->tracking_sale + $total;
+        $userStat->currency = $currency;
+
+        $userStatClass->save($userStat);
+
+        return $result;
+    }
+
+
+    /**
+     * Subscribe user when the WooCommerce checkout is processed
+     *
+     * @param $order_id    : WooCommerce order ID
+     * @param $posted_data : All data WooCommerce will get from form on checkout process
+     * @param $order       : WooCommerce order
+     */
+    public function subscribeUserOnCheckoutWC($order_id, $posted_data, $order)
+    {
+        $config = acym_config();
+        if (!$config->get('woocommerce_sub', 0)) return;
+
+        if (empty($posted_data['billing_email']) || empty($posted_data['acym_regacy_sub'])) return;
+
+
+        // Get existing AcyMailing user or create one
+        $userClass = acym_get('class.user');
+
+        $user = $userClass->getOneByEmail($posted_data['billing_email']);
+        if (empty($user)) {
+            $user = new stdClass();
+            $user->email = $posted_data['billing_email'];
+            $userName = [];
+            if (!empty($posted_data['billing_first_name'])) $userName[] = $posted_data['billing_first_name'];
+            if (!empty($posted_data['billing_last_name'])) $userName[] = $posted_data['billing_last_name'];
+            if (!empty($userName)) $user->name = implode(' ', $userName);
+            $user->source = 'woocommerce';
+            $user->id = $userClass->save($user);
+        }
+
+        if (empty($user->id)) return;
+
+        // Subscribe the user
+        $listsToSubscribe = $config->get('woocommerce_autolists', '');
+        if (empty($listsToSubscribe)) return;
+        $hiddenLists = explode(',', $listsToSubscribe);
+        $userClass->subscribe($user->id, $hiddenLists);
+    }
+
+    /**
+     * Declare the field for WooCommerce to display it in the checkout and get it on checkout validation.
+     *
+     * @param $fields (available WooCommerce fields)
+     *
+     * @return mixed
+     */
+    public function addSubsciptionFieldWC($fields)
+    {
+        $config = acym_config();
+        if (!$config->get('woocommerce_sub', 0)) return $fields;
+
+        // Add our field at the end of the billing fields (where the email is mandatory)
+        $displayTxt = !empty($config->get('woocommerce_text')) ? $config->get('woocommerce_text') : acym_translation('ACYM_SUBSCRIBE_NEWSLETTER');
+        $acyfield = [
+            'type' => 'checkbox',
+            'label' => $displayTxt,
+            'required' => false,
+            'class' => ['form-row-wide'],
+        ];
+        $fields['billing']['acym_regacy_sub'] = $acyfield;
+
+        return $fields;
     }
 }

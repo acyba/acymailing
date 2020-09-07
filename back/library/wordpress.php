@@ -25,6 +25,7 @@ define('ACYM_FRONT', ACYM_FOLDER.'front'.DS);
 define('ACYM_BACK', ACYM_FOLDER.'back'.DS);
 define('ACYM_VIEW', ACYM_BACK.'views'.DS);
 define('ACYM_PARTIAL', ACYM_BACK.'partial'.DS);
+define('ACYM_NEW_FEATURES_SPLASHSCREEN', ACYM_BACK.'partial'.DS.'update'.DS.'new_features.php');
 define('ACYM_VIEW_FRONT', ACYM_FRONT.'views'.DS);
 define('ACYM_HELPER', ACYM_BACK.'helpers'.DS);
 define('ACYM_CLASS', ACYM_BACK.'classes'.DS);
@@ -63,6 +64,7 @@ define('ACYM_CMSV', get_bloginfo('version'));
 
 define('ACYM_ALLOWRAW', 2);
 define('ACYM_ALLOWHTML', 4);
+define('ACYM_ADMIN_GROUP', 'administrator');
 
 include_once(rtrim(__DIR__, DS).DS.'punycode.php');
 
@@ -216,7 +218,12 @@ function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true)
         }
     }
 
-    if (!empty($acymailingEnglishText)) {
+    global $customTranslation;
+    acym_getCustomTranslation();
+
+    if (!empty($customTranslation) && isset($customTranslation[$key])) {
+        $translation = $customTranslation[$key];
+    } elseif (!empty($acymailingEnglishText)) {
         // If there is an english translation, get the wordpress translation. By default it returns the text passed, so the english translation
         $translation = __($acymailingEnglishText, 'acymailing');
 
@@ -662,6 +669,28 @@ function acym_currentUserEmail($userid = null)
     $current_user = wp_get_current_user();
 
     return $current_user->user_email;
+}
+
+function acym_getCustomTranslation()
+{
+    global $customTranslation;
+    if (isset($customTranslation)) return;
+    $customTranslation = [];
+    $currentLanguage = acym_getLanguageTag();
+    $filePath = ACYM_LANGUAGE.$currentLanguage.'.'.ACYM_LANGUAGE_FILE.'_custom.ini';
+    if (file_exists($filePath)) {
+        $data = acym_fileGetContent($filePath);
+        $data = str_replace('"_QQ_"', '"', $data);
+        $separate = explode("\n", $data);
+        foreach ($separate as $raw) {
+            if (strpos($raw, '=') === false) continue;
+
+            $keyval = explode('=', $raw);
+            $key = array_shift($keyval);
+
+            $customTranslation[$key] = trim(implode('=', $keyval), "\"\r\n\t ");
+        }
+    }
 }
 
 function acym_loadLanguageFile($extension, $basePath = null, $lang = null, $reload = false, $default = true)
@@ -1473,7 +1502,7 @@ function acym_cmsPermission()
     asort($options);
 
     $option = '
-		<div class="cell medium-6 grid-x">
+		<div class="cell medium-7 grid-x">
 			<label class="cell medium-6 small-9">'.acym_translation('ACYM_ACCESS').' '.acym_info('ACYM_ACCESS_DESC').'</label>
 			<div class="cell auto">';
 
@@ -1567,6 +1596,31 @@ function acym_checkVersion($ajax = false)
 {
 
     return false;
+}
+
+function acym_getTranslationTools()
+{
+    $options = [
+        (object)['value' => 'no', 'text' => 'ACYM_NO'],
+    ];
+
+    $polylangOption = (object)['value' => 'polylang', 'text' => 'Polylang'];
+    if (!acym_isExtensionActive('polylang/polylang.php')) $polylangOption->disable = true;
+    $options[] = $polylangOption;
+
+    $wpmlOption = (object)['value' => 'wpml', 'text' => 'WPML'];
+    if (!acym_isExtensionActive('sitepress-multilingual-cms/sitepress.php')) $wpmlOption->disable = true;
+    $options[] = $wpmlOption;
+
+    return $options;
+}
+
+function acym_isTrackingSalesActive()
+{
+    $trackingWoocommerce = false;
+    acym_trigger('onAcymIsTrackingWoocommerce', [&$trackingWoocommerce], 'plgAcymWoocommerce');
+
+    return $trackingWoocommerce;
 }
 
 global $acymCmsUserVars;

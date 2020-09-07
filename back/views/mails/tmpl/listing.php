@@ -1,5 +1,6 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" enctype="multipart/form-data">
 	<input type="hidden" id="acym_create_template_type_editor" name="type_editor">
+	<input type="hidden" id="acym_create_template_type_tmpl" name="type" value="standard">
     <?php
     $isEmpty = empty($data['allMails']) && empty($data['search']) && empty($data['tag']) && empty($data['status']);
     if (!$isEmpty) {

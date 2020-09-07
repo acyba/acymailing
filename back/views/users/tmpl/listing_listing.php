@@ -35,7 +35,8 @@
                         'active' => acym_translation('ACYM_ACTIVE'),
                         'confirmed' => acym_translation('ACYM_CONFIRMED'),
                     ],
-                    'users'
+                    'users',
+                    $data['ordering']
                 ); ?>
 			</div>
 		</div>

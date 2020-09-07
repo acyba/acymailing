@@ -52,9 +52,21 @@ class plgSystemAcymtriggers extends JPlugin
         return true;
     }
 
+    public function plgVmOnUpdateOrderPayment($orderData)
+    {
+        $this->handleVirtuemartOrderCreateUpdate($orderData);
+    }
+
     public function plgVmOnUserOrder($orderData)
     {
-        if (empty($orderData->virtuemart_user_id) || !$this->initAcy()) return;
+        $this->handleVirtuemartOrderCreateUpdate($orderData);
+    }
+
+    private function handleVirtuemartOrderCreateUpdate($orderData)
+    {
+        static $alreadyTriggerVirtuemart = false;
+        if (empty($orderData->virtuemart_user_id) || !$this->initAcy() || $alreadyTriggerVirtuemart) return;
+        $alreadyTriggerVirtuemart = true;
 
         $userID = acym_loadResult(
             'SELECT `user`.`id` 
@@ -84,12 +96,13 @@ class plgSystemAcymtriggers extends JPlugin
 
     public function onBeforeCompileHead()
     {
-        if (!$this->initAcy()) return;
-        $isPreview = acym_getVar('bool', 'acym_preview', false);
-        if ($isPreview) return;
-
         $app = JFactory::getApplication();
         if ($app->getName() != 'site') return;
+
+        if (!$this->initAcy()) return;
+
+        $isPreview = acym_getVar('bool', 'acym_preview', false);
+        if ($isPreview) return;
 
         $formClass = acym_get('class.form');
         $forms = $formClass->getAllFormsToDisplay();
@@ -99,7 +112,9 @@ class plgSystemAcymtriggers extends JPlugin
         if (empty($menu)) return;
 
         foreach ($forms as $form) {
-            if (!empty($form->pages) && (in_array($menu->id, $form->pages) || in_array('all', $form->pages))) $this->formToDisplay[] = $formClass->renderForm($form);
+            if (!empty($form->pages) && (in_array($menu->id, $form->pages) || in_array('all', $form->pages))) {
+                $this->formToDisplay[] = $formClass->renderForm($form);
+            }
         }
 
         if (!empty($this->formToDisplay)) acym_initModule();

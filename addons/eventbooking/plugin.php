@@ -56,6 +56,10 @@ class plgAcymEventbooking extends acymPlugin
                     'value' => 1,
                 ],
             ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
+            ];
         }
     }
 
@@ -418,9 +422,9 @@ class plgAcymEventbooking extends acymPlugin
 
         $varFields['{title}'] = $element->title;
         if (in_array('title', $tag->display)) $title = $varFields['{title}'];
-        $varFields['{short}'] = $element->title;
+        $varFields['{short}'] = $element->short_description;
         if (in_array('short', $tag->display)) $contentText .= $varFields['{short}'];
-        $varFields['{desc}'] = $element->title;
+        $varFields['{desc}'] = $element->description;
         if (in_array('desc', $tag->display)) $contentText .= $varFields['{desc}'];
 
         $varFields['{image}'] = acym_frontendLink($element->image, false);

@@ -6,9 +6,8 @@ $perspective: 600;
 #acym_wrapper {
     #acym__plugin__available__application, #acym__plugin__installed__application {
         .acym__plugins__card {
-            @include transform3d(perspective($perspective) rotateY(0));
             border-radius: 5px;
-            box-shadow: 0 0 8px 3px rgba(100, 100, 100, .1);
+            box-shadow: 0 0 8px 3px rgba(100, 100, 100, 0.1);
             transition: .3s ease-in-out;
             transition-property: box-shadow, transform;
             border: 0;
@@ -129,6 +128,11 @@ $perspective: 600;
                     &:hover {
                         transform: rotate(15deg);
                     }
+                }
+
+                .acym__plugins__settings__toggle__blocked {
+                    font-size: 1.1rem;
+                    cursor: not-allowed;
                 }
 
                 .acym__plugins__card__actions {
@@ -285,6 +289,10 @@ $perspective: 600;
 
                     .acym__plugins__settings-one {
                         margin: .7rem 0;
+
+                        input[type="number"] {
+                            margin-bottom: 0 !important;
+                        }
 
                         .switch {
                             margin-bottom: 0;

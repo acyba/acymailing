@@ -256,10 +256,6 @@ class plgAcymSubscriber extends acymPlugin
         if (!in_array($options['field'], $usersColumns)) {
             $fieldClass = acym_get('class.field');
             $field = $fieldClass->getOneFieldByID($options['field']);
-            if ('date' == $field->type) {
-                $options['value'] = explode('/', $options['value']);
-                $options['value'] = json_encode($options['value']);
-            }
 
             $type = 'phone' == $field->type ? 'phone' : '';
 
@@ -431,6 +427,13 @@ class plgAcymSubscriber extends acymPlugin
             'class="acym_select2_ajax" data-min="0" data-placeholder="'.acym_translation('ACYM_SELECT_AN_EMAIL', true).'" data-params="'.acym_escape($ajaxParams).'"'
         );
         $actions['acy_remove_queue']->option .= '</div>';
+
+        if ($this->config->get('require_confirmation', '1') === '1') {
+            $actions['resend_confirmation'] = new stdClass();
+            $actions['resend_confirmation']->name = acym_translation('ACYM_RESEND_CONFIRMATION');
+            // The action doesn't save if there are no options
+            $actions['resend_confirmation']->option = '<input type="hidden" name="acym_action[actions][__and__][resend_confirmation][save]" />';
+        }
     }
 
     public function onAcymProcessAction_acy_user(&$query, $action)
@@ -556,6 +559,31 @@ class plgAcymSubscriber extends acymPlugin
         return acym_translation_sprintf('ACYM_EMAILS_REMOVED_QUEUE', $nbRows);
     }
 
+    public function onAcymProcessAction_resend_confirmation(&$query, &$action, $automationAdmin)
+    {
+        $mailClass = acym_get('class.mail');
+        $confirmationMail = $mailClass->getOneByName('acy_confirm');
+        $sendDate = acym_date('now', 'Y-m-d H:i:s', false);
+
+        $queryInsert = 'INSERT IGNORE INTO #__acym_queue ';
+        $queryInsert .= $query->getQuery(
+            [
+                intval($confirmationMail->id),
+                'user.id',
+                acym_escapeDB($sendDate),
+                '1',
+                '0',
+            ]
+        );
+        $nbInserted = acym_query($queryInsert);
+
+        if (is_numeric($nbInserted)) {
+            return acym_translation_sprintf('ACYM_EMAILS_ADDED_QUEUE', $nbInserted);
+        } else {
+            return $nbInserted;
+        }
+    }
+
     public function onAcymAfterUserCreate(&$user)
     {
         $automationClass = acym_get('class.automation');
@@ -644,6 +672,10 @@ class plgAcymSubscriber extends acymPlugin
             } else {
                 $automationAction = acym_translation_sprintf('ACYM_ACTION_REMOVE_QUEUE_SUMMARY', $mail->name);
             }
+        }
+
+        if (!empty($automationAction['resend_confirmation'])) {
+            $automationAction = acym_translation('ACYM_RESEND_CONFIRMATION_SUMMARY');
         }
     }
 

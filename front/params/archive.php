@@ -12,8 +12,6 @@ class JFormFieldArchive extends JFormField
 
         $value = empty($this->value) ? 0 : $this->value;
 
-        $return = '<input type="number" value="'.$value.'" name="'.$this->name.'" min="0">';
-
-        return $return;
+        return '<input type="number" value="'.$value.'" name="'.$this->name.'" min="0">';
     }
 }

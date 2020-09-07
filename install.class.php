@@ -205,6 +205,11 @@ class acymInstall
         return true;
     }
 
+    public function deleteNewSplashScreenInstall()
+    {
+        unlink(ACYM_NEW_FEATURES_SPLASHSCREEN);
+    }
+
     //Update the SQL from one version to the other if needed
     public function updateSQL()
     {
@@ -757,6 +762,15 @@ class acymInstall
             $this->updateQuery('ALTER TABLE #__acym_user ADD `language` VARCHAR(10) NOT NULL');
             $this->updateQuery('ALTER TABLE #__acym_mail ADD `language` VARCHAR(10) NOT NULL');
             $this->updateQuery('ALTER TABLE #__acym_mail ADD `parent_id` INT NULL');
+        }
+
+        if (version_compare($this->fromVersion, '6.15.0', '<')) {
+            $this->updateQuery('ALTER TABLE #__acym_user_stat ADD `tracking_sale` FLOAT NULL');
+            $this->updateQuery('ALTER TABLE #__acym_user_stat ADD `currency` VARCHAR(10) NULL');
+            $this->updateQuery('ALTER TABLE #__acym_campaign ADD `visible` TINYINT(1) NOT NULL DEFAULT 1');
+            $this->updateQuery('ALTER TABLE #__acym_user MODIFY `language` VARCHAR(10) NOT NULL DEFAULT ""');
+            $this->updateQuery('ALTER TABLE #__acym_mail MODIFY `language` VARCHAR(10) NOT NULL DEFAULT ""');
+            $this->updateQuery('ALTER TABLE `#__acym_mail` CHANGE `preheader` `preheader` TEXT NULL');
         }
     }
 

@@ -64,6 +64,31 @@
 						<input type="hidden" name="previous_multilingual_languages" value="<?php echo acym_escape($selectedLanguages); ?>" />
 					</div>
 				</div>
+                <?php if (!empty($data['content_translation'])) { ?>
+					<div class="cell grid-x">
+						<div class="cell xlarge-3 medium-5">
+							<label for="acym__config__multilingual-languages">
+                                <?php echo acym_translation('ACYM_TRANSLATE_CONTENT').acym_info(acym_translation('ACYM_TRANSLATE_CONTENT_DESC')); ?>
+							</label>
+						</div>
+						<div class="cell xlarge-4 medium-7">
+                            <?php
+                            echo acym_select(
+                                $data['content_translation'],
+                                'config[translate_content]',
+                                $this->config->get('translate_content', 'no'),
+                                [
+                                    'class' => 'acym__select',
+                                ],
+                                'value',
+                                'text',
+                                false,
+                                true
+                            );
+                            ?>
+						</div>
+					</div>
+                <?php } ?>
 			</div>
 		</div>
 	</div>

@@ -884,6 +884,11 @@ class acymmailClass extends acymClass
 
                 $value = utf8_decode($value);
             }
+
+            if (!empty($mail->name) && $mail->name === 'acy_confirm') {
+                $mail->name = acym_translation('ACYM_CONFIRMATION_EMAIL');
+            }
+            //TODO: Also translate the other core mails names
         }
 
         return $mail;

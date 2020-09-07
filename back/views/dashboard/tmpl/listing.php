@@ -13,7 +13,7 @@
 			<h1 class="acym__dashboard__card__title"><?php echo acym_translation('ACYM_EMAILS'); ?></h1>
 			<hr class="cell small-10">
 			<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('campaigns'); ?>"><?php echo acym_translation('ACYM_VIEW_ALL_EMAILS'); ?></a>
-			<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('campaigns&task=edit&step=chooseTemplate'); ?>"><?php echo acym_translation('ACYM_CREATE_NEW_EMAIL'); ?></a>
+			<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('campaigns&task=newEmail'); ?>"><?php echo acym_translation('ACYM_CREATE_NEW_EMAIL'); ?></a>
 			<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('mails&task=edit&type_editor=acyEditor'); ?>"><?php echo acym_translation('ACYM_CREATE_TEMPLATE'); ?></a>
 		</div>
 		<div class="cell acym__content acym__dashboard__one-card text-center grid-x">

@@ -248,8 +248,6 @@ class plgAcymSubscription extends acymPlugin
         } else {
             $tags[$key] = $oneTag->default;
         }
-
-        return;
     }
 
     // Available tags: {automail:number_generated}
@@ -630,6 +628,13 @@ class plgAcymSubscription extends acymPlugin
         $filters['acy_list']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';
         $filters['acy_list']->option .= acym_dateField('acym_action[filters][__numor__][__numand__][acy_list][date-max]');
         $filters['acy_list']->option .= '</div>';
+
+        if ($this->config->get('require_confirmation', '1') === '1') {
+            $filters['unconfirmed'] = new stdClass();
+            $filters['unconfirmed']->name = acym_translation('ACYM_UNCONFIRMED_USERS');
+            // The count results doesn't show up if there are no options
+            $filters['unconfirmed']->option = '<input type="hidden" name="acym_action[filters][__numor__][__numand__][unconfirmed][countresults]" />';
+        }
     }
 
     public function onAcymDeclareActions(&$actions)
@@ -710,6 +715,18 @@ class plgAcymSubscription extends acymPlugin
         }
 
         if (!$res) $conditionNotValid++;
+    }
+
+    public function onAcymProcessFilter_unconfirmed(&$query, &$options, $num)
+    {
+        $query->where[] = 'user.confirmed = 0';
+    }
+
+    public function onAcymProcessFilterCount_unconfirmed(&$query, $options, $num)
+    {
+        $this->onAcymProcessFilter_unconfirmed($query, $options, $num);
+
+        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_acy_list(&$query, &$options, $num)
@@ -816,6 +833,10 @@ class plgAcymSubscription extends acymPlugin
                 ).' ';
 
             $automation = $this->_summaryDate($automation['acy_list'], $finalText);
+        }
+
+        if (!empty($automation['unconfirmed'])) {
+            $automation = acym_translation('ACYM_ACTION_UNCONFIRM');
         }
     }
 

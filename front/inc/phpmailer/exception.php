@@ -23,9 +23,9 @@ namespace acyPHPMailer;
 /**
  * PHPMailer exception handler.
  *
- * @author  Marcus Bointon <phpmailer@synchromedia.co.uk>
+ * @author Marcus Bointon <phpmailer@synchromedia.co.uk>
  */
-class acyException extends \Exception
+class Exception extends \Exception
 {
     /**
      * Prettify error message output.
@@ -34,6 +34,6 @@ class acyException extends \Exception
      */
     public function errorMessage()
     {
-        return '<strong>' . acym_escape($this->getMessage()) . "</strong><br />\n";
+        return '<strong>'.acym_escape($this->getMessage())."</strong><br />\n";
     }
 }

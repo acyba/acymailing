@@ -66,7 +66,11 @@ jQuery(document).ready(function ($) {
     }
 
     function downloadImage(node, $button, imageName) {
-        html2canvas(node[0]).then(canvas => {
+        html2canvas(node[0], {
+            height: node.height() + 100,
+            width: node.width() + 100,
+            scrollY: -window.scrollY
+        }).then(canvas => {
             let dataUrl = canvas.toDataURL('image/png');
             let link = document.createElement('a');
             let d = new Date;
@@ -106,7 +110,7 @@ jQuery(document).ready(function ($) {
 
     function setDropdownChooseCampaign() {
         $('#mail_id').off('change').on('change', function () {
-            $('.acym__stats__select__language').val(0);
+            $('.acym__stats__select__language option:selected').val(0);
             $('#formSubmit').click();
         });
     }

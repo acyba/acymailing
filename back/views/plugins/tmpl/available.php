@@ -22,7 +22,7 @@
                     <?php echo acym_loaderLogo(); ?>
 				</div>
 				<div class="cell grid-x grid-margin-x grid-margin-y" v-show="!loading" style="display: none;" v-infinite-scroll="loadMorePlugins" :infinite-scroll-disabled="busy">
-					<div class="acym__plugins__card cell grid-x xlarge-3 large-4 medium-6" v-for="(plugin, index) in allPlugins">
+					<div class="acym__plugins__card cell grid-x xlarge-3 large-4 medium-6" v-for="(plugin, index) in displayedPlugins">
 						<div class="acym__plugins__card__image margin-bottom-1 cell grid-x align-center">
 							<img :src="imageUrl(plugin.file_name)" alt="plugin image" class="cell">
 							<div class="acym__plugins__card__params_type shrink cell" :style="typesColors[plugin.category]">{{ plugin.category }}</div>

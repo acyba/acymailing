@@ -58,7 +58,7 @@
 				<div class="medium-auto small-11 cell acym__listing__header__title">
                     <?php echo acym_translation('ACYM_CAMPAIGNS'); ?>
 				</div>
-				<div class="large-2 medium-3 hide-for-small-only cell acym__listing__header__title">
+				<div class="<?php echo $data['campaign_type'] == 'campaigns_auto' ? 'large-1' : 'large-2'; ?> medium-3 hide-for-small-only cell acym__listing__header__title">
                     <?php echo acym_translation('ACYM_LISTS'); ?>
 				</div>
 				<div class="large-2 medium-4 hide-for-small-only cell acym__listing__header__title text-center">
@@ -78,6 +78,16 @@
 				<div class="large-1 hide-for-small-only hide-for-medium-only text-center cell acym__listing__header__title">
                     <?php echo acym_translation('ACYM_CLICK'); ?>
 				</div>
+                <?php if (acym_isTrackingSalesActive()) { ?>
+					<div class="large-1 hide-for-small-only hide-for-medium-only text-center cell acym__listing__header__title">
+                        <?php echo acym_translation('ACYM_INCOME'); ?>
+					</div>
+                <?php } ?>
+                <?php if (acym_isAdmin()) { ?>
+					<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
+                        <?php echo acym_translation('ACYM_VISIBLE').acym_info(acym_translation('ACYM_VISIBLE_CAMPAIGN_DESC'), 'acym__tooltip__in__listing__header'); ?>
+					</div>
+                <?php } ?>
 				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
                     <?php echo acym_translation('ACYM_ID'); ?>
 				</div>
@@ -110,7 +120,7 @@
                             ?>
 						</p>
 					</div>
-					<div class="large-2 medium-3 small-5 cell">
+					<div class="<?php echo $data['campaign_type'] == 'campaigns_auto' ? 'large-1' : 'large-2'; ?> medium-3 small-5 cell">
                         <?php
                         if (!empty($campaign->lists)) {
                             echo '<div class="grid-x cell text-center">';
@@ -209,6 +219,35 @@
                         }
                         ?>
 					</div>
+                    <?php if (acym_isTrackingSalesActive()) { ?>
+						<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
+                            <?php
+                            if (!empty($campaign->sale) && !empty($campaign->currency)) {
+                                echo round($campaign->sale, 2).' '.$campaign->currency;
+                            } else {
+                                echo '-';
+                            }
+                            ?>
+						</div>
+                    <?php } ?>
+                    <?php if (acym_isAdmin()) { ?>
+						<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
+                            <?php
+                            if ($campaign->visible == 1) {
+                                $class = 'acymicon-eye" data-acy-newvalue="0';
+                                $tooltip = 'ACYM_VISIBLE';
+                            } else {
+                                $class = 'acymicon-eye-slash acym__color__dark-gray" data-acy-newvalue="1';
+                                $tooltip = 'ACYM_INVISIBLE';
+                            }
+                            echo acym_tooltip(
+                                '<i data-acy-table="campaign" data-acy-field="visible" data-acy-elementid="'.acym_escape($campaign->id).'" class="acym_toggleable '.$class.'"></i>',
+                                acym_translation($tooltip),
+                                'secondary_status'
+                            );
+                            ?>
+						</div>
+                    <?php } ?>
 					<h6 class="large-1 hide-for-medium-only hide-for-small-only cell text-center acym__listing__text"><?php echo acym_escape($campaign->id); ?></h6>
 				</div>
 			</div>

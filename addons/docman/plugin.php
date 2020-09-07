@@ -47,6 +47,10 @@ class plgAcymDocman extends acymPlugin
                     'value' => '',
                 ],
             ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
+            ];
         }
     }
 
@@ -315,7 +319,7 @@ class plgAcymDocman extends acymPlugin
         $varFields['{details}'] = [];
         if (!empty($element->storage_path)) {
             //Display the extension of the file
-            preg_match('/\.[^\.]+$/i', $element->storage_path, $ext);
+            preg_match('/\.[^.]+$/i', $element->storage_path, $ext);
             $details[] = [$ext[0], acym_translation('ACYM_FILE_TYPE')];
             $varFields['{details}'][] = acym_translation('ACYM_FILE_TYPE').': '.$ext[0];
 

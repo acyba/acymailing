@@ -403,8 +403,6 @@ class DashboardController extends acymController
         $this->config->save($newConfig);
 
         acym_redirect(acym_completeLink('users&task=import', false, true));
-
-        return;
     }
 
     public function preMigration()
@@ -683,5 +681,28 @@ class DashboardController extends acymController
             $newParams[$key] = $value;
         }
         $this->config->save(['walkthrough_params' => json_encode($newParams)]);
+    }
+
+    public function features()
+    {
+        if (!file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN)) {
+            $this->listing();
+
+            return;
+        }
+
+        $data = [
+            'content' => acym_fileGetContent(ACYM_NEW_FEATURES_SPLASHSCREEN),
+        ];
+
+        if (!@unlink(ACYM_NEW_FEATURES_SPLASHSCREEN)) {
+            $this->listing();
+
+            return;
+        }
+
+        acym_setVar('layout', 'features');
+
+        parent::display($data);
     }
 }

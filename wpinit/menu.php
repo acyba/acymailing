@@ -77,13 +77,29 @@ class acyMenu extends acyHook
             'ACYM_CONFIGURATION' => 'configuration',
         ];
         foreach ($menus as $title => $ctrl) {
-            add_submenu_page(ACYM_COMPONENT.'_dashboard', acym_translation($title), acym_translation($title), $capability, ACYM_COMPONENT.'_'.$ctrl, [$this->router, 'router']);
+            if (!acym_isAllowed($ctrl)) continue;
+
+            add_submenu_page(
+                ACYM_COMPONENT.'_dashboard',
+                acym_translation($title),
+                acym_translation($title),
+                $capability,
+                ACYM_COMPONENT.'_'.$ctrl,
+                [$this->router, 'router']
+            );
         }
 
         // Declare invisible menus
         $controllers = ['dynamics', 'file', 'language'];
         foreach ($controllers as $oneCtrl) {
-            add_submenu_page(null, $oneCtrl, $oneCtrl, $capability, ACYM_COMPONENT.'_'.$oneCtrl, [$this->router, 'router']);
+            add_submenu_page(
+                null,
+                $oneCtrl,
+                $oneCtrl,
+                $capability,
+                ACYM_COMPONENT.'_'.$oneCtrl,
+                [$this->router, 'router']
+            );
         }
 
         // In WordPress, the first submenu is called "AcyMailing" instead of "Dashboard" so we rename it manually

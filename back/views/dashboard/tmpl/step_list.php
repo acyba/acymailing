@@ -20,11 +20,11 @@
 	</table>
 </div>
 <div class="cell margin-bottom-3">
-	<button type="button" class="button light_button light_button_grey" id="acym__walkthrough__list__new"><?php echo acym_translation('ACYM_ADD_NEW'); ?></button>
+	<button type="button" class="button light_button button-secondary" id="acym__walkthrough__list__new"><?php echo acym_translation('ACYM_ADD_NEW'); ?></button>
 	<div id="acym__walkthrough__list__add-zone" style="display: none;">
 		<label for="acym__walkthrough__list__new-address"><?php echo acym_translation('ACYM_EMAIL_ADDRESS'); ?></label>
 		<input type="text" id="acym__walkthrough__list__new-address" class="acym__light__input" />
-		<button type="button" class="button light_button light_button_grey" id="acym__walkthrough__list__add"><?php echo acym_translation('ACYM_ADD'); ?></button>
+		<button type="button" class="button light_button button-secondary" id="acym__walkthrough__list__add"><?php echo acym_translation('ACYM_ADD'); ?></button>
 	</div>
 </div>
 

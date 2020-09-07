@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail` (
 	`media_folder` VARCHAR(100) NULL,
 	`headers` TEXT NULL,
 	`autosave` LONGTEXT NULL,
-	`preheader` VARCHAR(255) NULL,
+	`preheader` TEXT NULL,
 	`links_language` VARCHAR(10) NOT NULL DEFAULT '',
 	`access` VARCHAR(50) NOT NULL DEFAULT '',
 	`tracking` TINYINT(1) NOT NULL DEFAULT 1,
@@ -135,6 +135,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_campaign` (
 	`parent_id` INT DEFAULT NULL,
 	`last_generated` INT DEFAULT NULL,
 	`next_trigger` INT DEFAULT NULL,
+	`visible` TINYINT(1) NOT NULL DEFAULT 1,
 	PRIMARY KEY (`id`),
 	INDEX `fk_#__acym_campaign_has_mail1`(`mail_id` ASC),
 	CONSTRAINT `fk_#__acym_campaign_has_mail1`
@@ -324,6 +325,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_user_stat` (
 	`open_date` DATETIME NULL,
 	`bounce` TINYINT(4) NOT NULL,
 	`bounce_rule` VARCHAR(255) NULL,
+	`tracking_sale` FLOAT NULL,
+	`currency` VARCHAR(10) NULL,
 	PRIMARY KEY (`user_id`, `mail_id`),
 	CONSTRAINT `fk_#__acym_user_stat1`
 		FOREIGN KEY (`mail_id`)
