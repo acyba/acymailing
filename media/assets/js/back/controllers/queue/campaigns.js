@@ -5,6 +5,7 @@ jQuery(document).ready(function ($) {
         setToggleDeleteCampaign();
         setTogglePlayPauseCampaign();
         setButtonConfigureCron();
+        setConfigurationLink();
     }
 
     Init();
@@ -48,6 +49,12 @@ jQuery(document).ready(function ($) {
     function setButtonConfigureCron() {
         $('#acym__queue__configure-cron').on('click', function () {
             localStorage.setItem('acyconfiguration', 'queue_process');
+        });
+    }
+
+    function setConfigurationLink() {
+        $('#acym__queue__configure-cron').on('click', function () {
+            localStorage.setItem('acyconfiguration', 'license');
         });
     }
 });

@@ -1,5 +1,9 @@
 <?php
 
-class configurationViewConfiguration extends acymView
+namespace AcyMailing\Views;
+
+use AcyMailing\Libraries\acymView;
+
+class ConfigurationViewConfiguration extends acymView
 {
 }

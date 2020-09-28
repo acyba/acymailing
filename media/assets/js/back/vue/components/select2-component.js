@@ -106,4 +106,78 @@ jQuery(document).ready(function ($) {
             $('[name="' + this.name + '"]').off().select2('destroy');
         }
     });
+
+    Vue.component('select2ajax', {
+        name: 'select2ajax',
+        template: '<div class="cell"><select :name="name">'
+                  + '<option v-for="(option, key) in options" :value="option.id">{{ option.text }}</option>'
+                  + '</select></div>',
+        props: [
+            'value',
+            'name',
+            'urlselected',
+            'ctrl',
+            'task'
+        ],
+        data: () => {
+            return {
+                options: []
+            };
+        },
+        mounted: function () {
+            let vueComp = this;
+            $.get(ACYM_AJAX_URL + vueComp.urlselected + this.value, (data) => {
+                data = acym_helper.parseJson(data);
+                let $selectAjax = $('[name="' + this.name + '"]');
+                if (!acym_helper.empty(data)) {
+                    let newOption = new Option(data.title, data.id, false, false);
+                    $selectAjax.append(newOption);
+                }
+
+                // init select2
+                $selectAjax.select2({
+                    ajax: {
+                        url: ACYM_AJAX_URL,
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                searchedterm: params.term,
+                                ctrl: vueComp.ctrl,
+                                task: vueComp.task
+                            };
+                        },
+                        processResults: function (data) {
+                            vueComp.options = [];
+                            if (data) {
+                                jQuery.each(data, function (index, text) {
+                                    vueComp.options.push({
+                                        id: text[0],
+                                        text: text[1]
+                                    });
+                                });
+                            }
+                            return {
+                                results: vueComp.options
+                            };
+                        }
+                    },
+                    theme: 'foundation',
+                    width: '100%',
+                    minimumInputLength: 3,
+                    allowClear: true,
+                    placeholder: '- - -'
+                })
+                           .val(this.value)
+                    // emit event on change.
+                           .on('change', function () {
+                               //it allows to tells to the higher application that the value changed
+                               vueComp.$emit('input', this.value);
+                           });
+            });
+        },
+        destroyed: function () {
+            $('[name="' + this.name + '"]').off().select2('destroy');
+        }
+    });
 });

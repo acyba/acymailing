@@ -14,7 +14,7 @@
 			</div>
 
 			<div class="cell grid-x" id="acym__users__import__generic__matchdata">
-                <?php include_once(ACYM_BACK.'views'.DS.'users'.DS.'tmpl'.DS.'ajaxencoding.php'); ?>
+                <?php include_once ACYM_BACK.'views'.DS.'users'.DS.'tmpl'.DS.'ajaxencoding.php'; ?>
 			</div>
 		</div>
 
@@ -25,7 +25,7 @@
 					<label for="acyencoding" class="cell medium-6">File charset</label>
 					<div class="cell medium-6">
                         <?php
-                        $encodingHelper = acym_get('helper.encoding');
+                        $encodingHelper = new AcyMailing\Helpers\EncodingHelper();
                         $default = $encodingHelper->detectEncoding($this->content);
                         $urlEncodedFilename = urlencode($filename);
                         $attribs = [
@@ -79,9 +79,8 @@
                 'button medium-6 large-shrink margin-bottom-0'
             );
 
-            $entityHelper = acym_get('helper.entitySelect');
-            $importHelper = acym_get('helper.import');
-
+            $entityHelper = new AcyMailing\Helpers\EntitySelectHelper();
+            $importHelper = new AcyMailing\Helpers\ImportHelper();
             $modalData = $entityHelper->entitySelect(
                 'list',
                 ['join' => ''],

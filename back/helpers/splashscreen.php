@@ -1,6 +1,10 @@
 <?php
 
-class acymsplashscreenHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+
+class SplashscreenHelper extends acymObject
 {
     const SPLASHSCREEN_OPTION_NAME = 'display_splashscreen';
 

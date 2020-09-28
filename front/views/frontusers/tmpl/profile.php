@@ -169,8 +169,7 @@
 
         if (empty($data['user']->id) && $data['config']->get('captcha', '') == 1) {
             echo '<div id="trcaptcha" class="acy_onefield">';
-            $captchaHelper = acym_get('helper.captcha');
-            echo $captchaHelper->display('acyprofileform');
+            echo $data['captchaHelper']->display('acyprofileform');
             echo '</div>';
         }
 

@@ -4,7 +4,7 @@
 		<div class="cell medium-auto"></div>
 		<div id="acym__campaigns__tests" class="cell xxlarge-9 grid-x acym__content">
             <?php
-            $workflow = acym_get('helper.workflow');
+            $workflow = $data['workflowHelper'];
             echo $workflow->display($this->steps, $this->step);
             ?>
 			<div class="cell grid-x grid-margin-x" id="campaigns_tests_step">

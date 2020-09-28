@@ -2,7 +2,7 @@ const acym_editorWysidTinymce = {
     addTinyMceWYSID: function () {
         tinymce.remove();
 
-        tinymce.baseURL = MEDIA_URL_ACYM + 'js/tinymce';
+        tinymce.baseURL = ACYM_MEDIA_URL + 'js/tinymce';
 
         tinymce.init({
             relative_urls: false,

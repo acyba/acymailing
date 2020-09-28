@@ -1,6 +1,10 @@
 <?php
 
-class acymexportHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+
+class ExportHelper extends acymObject
 {
     var $eol = "\r\n";
     var $before = '"';
@@ -231,7 +235,7 @@ class acymexportHelper extends acymObject
     {
         $nbExport = $this->getExportLimit();
         acym_displayErrors();
-        $encodingClass = acym_get('helper.encoding');
+        $encodingClass = new EncodingHelper();
         $excelSecure = $this->config->get('export_excelsecurity', 0);
 
         if (!in_array($separator, [',', ';'])) $separator = ',';

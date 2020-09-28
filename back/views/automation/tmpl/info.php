@@ -4,11 +4,10 @@
 	<input type="hidden" name="automation[admin]" value="<?php echo empty($data['automation']->admin) ? '' : intval($data['automation']->admin); ?>">
 	<div class="acym__content cell grid-x" id="acym__automation__info">
         <?php
-        $workflow = acym_get('helper.workflow');
         if (empty($data['automation']->id)) {
-            $workflow->disabledAfter = 'info';
+            $data['workflowHelper']->disabledAfter = 'info';
         }
-        echo $workflow->display($this->steps, $this->step);
+        echo $data['workflowHelper']->display($this->steps, $this->step);
         ?>
 		<div class="cell grid-x grid-margin-x">
 			<div class="medium-12 small-12 cell grid-x acym__content acym__automation__info__first margin-top-2">

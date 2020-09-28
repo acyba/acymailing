@@ -13,15 +13,13 @@
         ?>
 	</div>
     <?php
-    $entityHelper = acym_get('helper.entitySelect');
-    $importHelper = acym_get('helper.import');
-    $modalData = $entityHelper->entitySelect(
+    $modalData = $data['entitySelect']->entitySelect(
         'list',
         ['join' => ''],
-        $entityHelper->getColumnsForList(),
+        $data['entitySelect']->getColumnsForList(),
         ['text' => acym_translation('ACYM_IMPORT_USERS'), 'class' => 'acym__users__import__button'],
         true,
-        $importHelper->additionalDataUsersImport(true)
+        $data['importHelper']->additionalDataUsersImport(true)
     );
 
     echo acym_modal(

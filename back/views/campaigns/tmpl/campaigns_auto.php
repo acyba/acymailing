@@ -7,7 +7,7 @@
     ?>
 	<div id="acym__campaigns" class="acym__content">
         <?php
-        $workflow = acym_get('helper.workflow');
+        $workflow = $data['workflowHelper'];
         echo $workflow->displayTabs($this->tabs, 'campaigns_auto');
 
         if ($isEmpty) {

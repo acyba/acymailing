@@ -1,6 +1,10 @@
 <?php
 
-class acymformpositionHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+
+class FormPositionHelper extends acymObject
 {
     public function displayPositionButtons($positions, $vModel)
     {

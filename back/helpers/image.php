@@ -1,6 +1,10 @@
 <?php
 
-class acymimageHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+
+class ImageHelper extends acymObject
 {
     //Handle error messages
     var $error;
@@ -126,7 +130,7 @@ class acymimageHelper extends acymObject
         $paramsPos = strpos($picturePath, '?');
         if ($paramsPos !== false) $picturePath = substr($picturePath, 0, $paramsPos);
 
-        list($currentwidth, $currentheight) = getimagesize($picturePath);
+        list($currentwidth, $currentheight) = @getimagesize($picturePath);
         if (empty($currentwidth) || empty($currentheight)) {
             return false;
         }

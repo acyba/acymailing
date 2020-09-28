@@ -1,4 +1,7 @@
 <?php
+
+use AcyMailing\Helpers\UpdateHelper;
+
 if (version_compare(PHP_VERSION, '5.6.0', '<')) {
     echo '<p style="color:red">This version of AcyMailing requires at least PHP 5.6.0, it is time to update the PHP version of your server!</p>';
     exit;
@@ -32,15 +35,14 @@ if ((($needToMigrate || $config->get('walk_through') == 1) && !acym_isNoTemplate
     $ctrl = 'dashboard';
 }
 
-if (!include_once ACYM_CONTROLLER.$ctrl.'.php') {
+$controllerNamespace = 'AcyMailing\\Controllers\\'.ucfirst($ctrl).'Controller';
+$controller = new $controllerNamespace;
+if (empty($controller)) {
     //We redirect to the dashboard...
     acym_redirect(acym_completeLink('dashboard'));
 
     return;
 }
-
-$className = ucfirst($ctrl).'Controller';
-$controller = new $className();
 
 if (empty($task)) {
     $task = acym_getVar('cmd', 'defaulttask', $controller->defaulttask);
@@ -48,7 +50,7 @@ if (empty($task)) {
 }
 
 if (file_exists(ACYM_BACK.'extensions')) {
-    $updateHelper = acym_get('helper.update');
+    $updateHelper = new UpdateHelper();
     $updateHelper->installExtensions(false);
 }
 

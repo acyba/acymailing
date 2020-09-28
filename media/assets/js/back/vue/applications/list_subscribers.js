@@ -22,7 +22,9 @@ jQuery(document).ready(function ($) {
                 total: 0,
                 loading: true,
                 searchSubscribers: '',
-                requireConfirmation: 0
+                requireConfirmation: 0,
+                users_ordering: 'id',
+                users_ordering_sort_order: 'desc'
             },
             mounted: function () {
                 document.querySelector('.acym__list__settings__subscribers__search input.acym__light__input').addEventListener('keydown', function (event) {
@@ -47,8 +49,7 @@ jQuery(document).ready(function ($) {
             methods: {
                 loadMoreSubscriber() {
                     start += perScroll;
-                    this.displayedSubscribers = '' === this.searchSubscribers ? this.subscribed.slice(0, start) : search(
-                        this.subscribed,
+                    this.displayedSubscribers = '' === this.searchSubscribers ? this.subscribed.slice(0, start) : search(this.subscribed,
                         this.searchSubscribers,
                         columns
                     );
@@ -63,7 +64,11 @@ jQuery(document).ready(function ($) {
                           + '&perCalls='
                           + subPerCalls
                           + '&listid='
-                          + this.listid, (res) => {
+                          + this.listid
+                          + '&orderBy='
+                          + this.users_ordering
+                          + '&orderByOrdering='
+                          + this.users_ordering_sort_order, (res) => {
                         res = JSON.parse(res);
 
                         if (undefined !== res.error) {
@@ -80,6 +85,7 @@ jQuery(document).ready(function ($) {
 
                         this.subscribed = this.subscribed.concat(res.data);
                         this.total += nbLoaded;
+                        this.displayedSubscribers = this.subscribed.slice(0, perScroll);
 
                         if (nbLoaded < subPerCalls) {
                             this.loading = false;
@@ -103,11 +109,28 @@ jQuery(document).ready(function ($) {
                     $('[name="acym__entity_select__unselected"]').val('[' + subscriberId + ']');
                     form.find('[name="task"]').attr('value', 'saveSubscribers');
                     form.submit();
+                },
+                sortOrdering(event) {
+                    let inputSortOrder = $('[name="users_ordering_sort_order"]');
+                    inputSortOrder.val(inputSortOrder.val() == 'asc' ? 'desc' : 'asc');
+                    $(event.target).toggleClass('acymicon-sort-amount-desc acymicon-sort-amount-asc');
+                    this.users_ordering_sort_order = inputSortOrder.val();
+                    this.getAgainSubscribers();
+                },
+                getAgainSubscribers() {
+                    this.subscribed = [];
+                    this.displayedSubscribers = [];
+                    this.total = 0;
+                    this.loading = true;
+                    this.getAllSubscribers();
                 }
             },
             watch: {
                 searchSubscribers() {
                     this.doSearch();
+                },
+                users_ordering() {
+                    this.getAgainSubscribers();
                 }
             }
         });

@@ -1,5 +1,8 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Helpers\TabHelper;
+
 class plgAcymRseventspro extends acymPlugin
 {
     var $rsconfig;
@@ -108,7 +111,7 @@ class plgAcymRseventspro extends acymPlugin
         acym_loadLanguageFile('com_rseventspro', JPATH_SITE);
         $this->categories = acym_loadObjectList('SELECT `id`, `parent_id`, `title` FROM `#__categories` WHERE published = 1 AND `extension` = "com_rseventspro"', 'id');
 
-        $tabHelper = acym_get('helper.tab');
+        $tabHelper = new TabHelper();
         $identifier = $this->name;
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 

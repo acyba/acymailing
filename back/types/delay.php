@@ -1,6 +1,10 @@
 <?php
 
-class delayType extends acymObject
+namespace AcyMailing\Types;
+
+use AcyMailing\Libraries\acymObject;
+
+class DelayType extends acymObject
 {
     var $values = [];
     var $num = 0;
@@ -60,13 +64,21 @@ class delayType extends acymObject
         $delayValue = '<input class="intext_input" onchange="updateDelay'.$this->num.'();'.$this->onChange.'" type="text" id="delayvalue'.$this->num.'" value="'.$return->value.'" /> ';
         $delayVar = '<input type="hidden" name="'.$map.'" id="delayvar'.$this->num.'" value="'.$value.'"/>';
 
-        return $delayValue.acym_select($this->values, 'delaytype'.$this->num, $return->type, 'class="intext_select" onchange="updateDelay'.$this->num.'();'.$this->onChange.'"', 'value', 'text', 'delaytype'.$this->num).$delayVar;
+        return $delayValue.acym_select(
+                $this->values,
+                'delaytype'.$this->num,
+                $return->type,
+                'class="intext_select" onchange="updateDelay'.$this->num.'();'.$this->onChange.'"',
+                'value',
+                'text',
+                'delaytype'.$this->num
+            ).$delayVar;
     }
 
     public function get($value, $type)
     {
 
-        $return = new stdClass();
+        $return = new \stdClass();
 
         $return->value = $value;
         if ($type == 0) {

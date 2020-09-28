@@ -184,7 +184,7 @@
 			</div>
 			<div class="cell large-6">
                 <?php
-                $encodingHelper = acym_get('helper.encoding');
+                $encodingHelper = $data['encodingHelper'];
                 $encodingHelper->encodingField('config[encoding_format]', $this->config->get('encoding_format', '8bit'));
                 ?>
 			</div>

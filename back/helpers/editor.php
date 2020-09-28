@@ -1,8 +1,12 @@
 <?php
 
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Libraries\acymObject;
 use Joomla\CMS\Editor\Editor as Editor;
 
-class acymeditorHelper extends acymObject
+class EditorHelper extends acymObject
 {
     var $width = '95%';
     var $height = '600';
@@ -81,7 +85,7 @@ class acymeditorHelper extends acymObject
         if (!empty($this->mailId)) {
             //Load Css editor
             $cssurl = acym_completeLink((acym_isAdmin() ? '' : 'front').'mails&task=loadCSS&id='.$this->mailId.'&time='.time());
-            $classMail = acym_get('class.mail');
+            $classMail = new MailClass();
             $filepath = $classMail->createTemplateFile($this->mailId);
 
             if ($this->editor == 'tinymce') {
@@ -141,7 +145,7 @@ class acymeditorHelper extends acymObject
         add_filter('mce_buttons', [$this, 'addButtons']);
         add_filter('mce_buttons_2', [$this, 'addButtonsToolbar']);
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         $mail = $mailClass->getOneById($this->mailId);
         $stylesheet = empty($mail) ? '' : trim(preg_replace('/\s\s+/', ' ', $mailClass->buildCSS($mail->stylesheet)));

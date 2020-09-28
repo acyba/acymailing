@@ -1,6 +1,10 @@
 <?php
 
-class aclType extends acymObject
+namespace AcyMailing\Types;
+
+use AcyMailing\Libraries\acymObject;
+
+class AclType extends acymObject
 {
     private $groups;
     private $choices = [];

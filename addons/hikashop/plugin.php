@@ -1,5 +1,10 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Classes\AutomationClass;
+
 class plgAcymHikashop extends acymPlugin
 {
     var $hikaConfig;
@@ -107,7 +112,7 @@ class plgAcymHikashop extends acymPlugin
 
         $this->categories = acym_loadObjectList("SELECT category_id AS id, category_parent_id AS parent_id, category_name AS title FROM `#__hikashop_category` WHERE category_type = 'product'", 'id');
 
-        $tabHelper = acym_get('helper.tab');
+        $tabHelper = new TabHelper();
         $identifier = $this->name;
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
@@ -1080,11 +1085,11 @@ class plgAcymHikashop extends acymPlugin
         if (empty($hikaUser)) return;
 
         // Trigger the automation
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $user = $userClass->getOneByEmail($hikaUser->email);
         if (empty($user->id)) return;
 
-        $automationClass = acym_get('class.automation');
+        $automationClass = new AutomationClass();
         $automationClass->trigger(
             'hikashoporder',
             [

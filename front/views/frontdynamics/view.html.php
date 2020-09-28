@@ -1,5 +1,9 @@
 <?php
 
+namespace AcyMailing\FrontViews;
+
+use AcyMailing\Libraries\acymView;
+
 class FrontdynamicsViewFrontdynamics extends acymView
 {
     public function __construct()

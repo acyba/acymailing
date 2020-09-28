@@ -1,0 +1,301 @@
+#acym__wysid__template {
+
+    overflow: hidden;
+    overflow-y: auto;
+    padding: 0;
+    height: 100%;
+
+    span {
+        font-family: inherit;
+    }
+
+    center, table.container {
+        width: 100% !important;
+        max-width: 580px !important;
+        min-width: inherit !important;
+        margin: auto;
+    }
+
+    a {
+        font-weight: inherit;
+    }
+
+    .row {
+        left: inherit !important;
+    }
+
+    .acym__wysid__row {
+        padding: 0;
+    }
+
+    .acym__wysid__row__element {
+        z-index: 100;
+        overflow: inherit !important;
+
+        &.acym__wysid__row__element--focus {
+
+            .acym__wysid__row__toolbox, .acym__wysid__row__height__container {
+                background-color: $font-primary !important;
+                display: inline;
+            }
+
+            .acym__wysid__row__selector {
+                outline: 2px solid $font-primary !important;
+                outline-offset: -2px;
+            }
+        }
+
+        .acym__wysid__row__selector {
+            position: absolute;
+            cursor: pointer;
+            user-select: none;
+
+            &.acym__wysid__row__selector--focus {
+                outline: 2px solid $font-primary !important;
+                outline-offset: -2px;
+
+                .acym__wysid__row__toolbox, .acym__wysid__row__height__container {
+                    background-color: $font-primary !important;
+                    display: inline;
+                }
+            }
+
+            .acym__wysid__row__toolbox {
+                position: absolute;
+                top: 0;
+                right: 0;
+                padding: 7px 3px;
+                background-color: $font-primary-light;
+                border-bottom-left-radius: 4px;
+                display: none;
+                z-index: 1100;
+
+                i.acym__wysid__row__toolbox__actions {
+                    display: inline-block;
+                    margin: 0 3px 0 3px;
+                    font-size: 17px;
+                    vertical-align: middle;
+                    color: $white;
+                }
+            }
+        }
+
+        .acym__wysid__row__height__container {
+            padding: 7px 12px 4px 12px;
+            background-color: $font-primary-light;
+            position: absolute;
+            bottom: -17px;
+            left: calc(50% - 25px);
+            display: none;
+            border-radius: 4px;
+            cursor: ns-resize;
+            z-index: 100;
+
+            .acym__wysid__row__toolbox__height {
+                color: white;
+                transform: rotate(90deg);
+                display: inline-block;
+                font-size: 22px;
+            }
+        }
+
+        .acym__wysid__column--drag-start .acym__wysid__column__element {
+            outline: none !important;
+        }
+
+        &:hover, &.acym__wysid__row__element--focus {
+            z-index: 102 !important;
+
+            .acym__wysid__element__toolbox__delete:hover, .acym__wysid__row__toolbox__delete__row:hover {
+                color: $alert-color !important;
+            }
+
+            .acym__wysid__row__selector {
+                outline: 2px solid $font-primary-light;
+                outline-offset: -2px;
+            }
+
+            &.acym__wysid__row__selector--focus {
+                outline: 2px solid $font-primary !important;
+            }
+
+            .acym__wysid__row__toolbox, &.acym__wysid__row__selector--focus .acym__wysid__row__toolbox, .acym__wysid__row__height__container {
+                display: inline;
+            }
+
+            .acym__wysid__column {
+                outline: 1px dashed $light-gray;
+            }
+
+            .acym__wysid__column__element {
+                outline: 1px dashed $light-gray;
+
+                &:hover {
+                    outline: 1px dashed $primary-light-color;
+
+                    > .acym__wysid__element__toolbox {
+                        visibility: visible;
+                        transform: translateY(0) rotateX(0);
+                    }
+                }
+            }
+        }
+    }
+
+    .acym__wysid__column {
+        position: relative;
+
+        &:empty {
+            min-height: 75px !important;
+            display: block !important;
+        }
+
+        tbody:empty {
+            min-height: 75px !important;
+            display: block !important;
+        }
+
+        .acym__wysid__column__element {
+            position: relative;
+
+            &:hover {
+                outline: 1px dashed $primary-light-color;
+            }
+
+            .acym__wysid__element__toolbox {
+                position: absolute;
+                // for safari 9 and up
+                @supports (-webkit-marquee-repetition:infinite) and (object-fit:fill) {
+                    top: initial !important;
+                }
+                min-width: 75px;
+                margin-top: -28px;
+                left: calc(50% - 38px);
+                display: inline-block;
+                padding: 3px;
+                background-color: map-get($editor-wysid-palette, primary-ui);;
+                border-top-left-radius: 4px;
+                border-top-right-radius: 4px;
+                visibility: hidden;
+                transform: translateY(8px) rotateX(-70deg);
+                transition: transform .3s ease-in-out, visibility .2s ease-in-out;
+
+                .acym__wysid__element__toolbox__actions {
+                    display: inline-block;
+                    cursor: pointer;
+                    margin: 0 3px 0 3px;
+                    font-size: 17px;
+                    vertical-align: middle;
+                    color: $white;
+                }
+            }
+        }
+    }
+
+    .acym__wysid__column__element {
+        overflow: inherit !important;
+        position: relative;
+    }
+
+    .acym__wysid__row__element--sortable {
+        overflow: hidden !important;
+        display: block;
+        max-height: 40px;
+        outline: none;
+        height: 40px;
+
+        > tbody {
+            display: block;
+            max-height: 70px;
+            height: 40px;
+
+            .acym__wysid__column {
+                visibility: hidden;
+            }
+        }
+
+        .acym__wysid__row__element__toolbox__group, .acym__wysid__column__element__toolbox__group, .acym__wysid__row__element__toolbox__height {
+            display: none;
+        }
+    }
+
+    .acym__wysid__column--drag-start {
+        outline: 1px dashed $light-gray !important;
+    }
+
+    .acym__wysid__column__element__follow {
+        min-height: 20px;
+
+        img {
+            display: inline-block;
+        }
+    }
+
+    .acym__wysid__column__element__share {
+        cursor: pointer;
+        min-height: 20px;
+    }
+
+    #acym__wysid__default {
+        position: absolute;
+        outline: 1px dashed $dark-blue;
+        text-align: center;
+        padding: .2rem;
+        width: 100%;
+
+        top: 0;
+        left: 0;
+        right: 0;
+
+        height: 100%;
+
+        #acym__wysid__default__start {
+            height: auto;
+            padding: 10px 10px 0 10px;
+
+            h1, p {
+                text-align: center;
+                margin: 0;
+                color: $dark-gray;
+                font-family: $primary-font-family;
+                user-select: none;
+            }
+        }
+
+        #acym__wysid__default__dragging {
+            height: auto;
+
+            h1 {
+                padding: 20px 10px 0 10px;
+                color: $dark-gray;
+            }
+        }
+    }
+
+    /* =============================================== Fix for firefox ============================================== */
+    @-moz-document url-prefix() {
+        .row:hover, .row:hover .acym__wysid__column, .acym__wysid__column__element:hover {
+            outline: none !important;
+            outline-offset: 0;
+        }
+
+        .row:hover .acym__wysid__column {
+            box-shadow: 0px 0px 0px 1px map-get($editor-wysid-palette, secondary-ui);
+        }
+
+        .acym__wysid__column__element:hover .acym__wysid__column__element__td {
+            outline: none !important;
+            box-shadow: 0px 0px 0px 1px map-get($editor-wysid-palette, primary-ui);
+        }
+
+        .row:hover:before {
+            content: '';
+            position: absolute;
+            box-shadow: 0px 0px 0px 2px map-get($editor-wysid-palette, primary-ui);
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+    }
+}

@@ -19,7 +19,7 @@
         }
     }
 
-    $uploadfileType = acym_get('type.uploadFile');
+    $uploadfileType = $data['uploadFileType'];
     for ($i = 0 ; $i < 10 ; $i++) {
         $result = '<div '.($i >= 1 ? 'style="display:none"' : '').' class="cell grid-x grid-margin-x acym__campaigns__attach__elements" id="acym__campaigns__attach__'.$i.'">';
         $result .= $uploadfileType->display('attachments', $i);

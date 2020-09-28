@@ -1,6 +1,16 @@
 <?php
 
-class acymbounceHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Classes\HistoryClass;
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\RuleClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Libraries\acymObject;
+use AcyMailing\Types\CharsetType;
+
+class BounceHelper extends acymObject
 {
     // Needed information for the connection
     var $server;
@@ -38,16 +48,16 @@ class acymbounceHelper extends acymObject
     {
         parent::__construct();
 
-        $this->mailer = acym_get('helper.mailer');
-        $this->ruleClass = acym_get('class.rule');
+        $this->mailer = new MailerHelper();
+        $this->ruleClass = new RuleClass();
         $this->mailer->report = false;
         //As if we already checked e-mail addresses to avoid errors when we foward the message...
         $this->mailer->alreadyCheckedAddresses = true;
-        $this->userClass = acym_get('class.user');
-        $this->mailClass = acym_get('class.mail');
-        $this->historyClass = acym_get('class.history');
-        $this->encodingHelper = acym_get('helper.encoding');
-        $charset = acym_get('type.charset');
+        $this->userClass = new UserClass();
+        $this->mailClass = new MailClass();
+        $this->historyClass = new HistoryClass();
+        $this->encodingHelper = new EncodingHelper();
+        $charset = new CharsetType();
         $this->allCharsets = $charset->charsets;
         $this->allowed_extensions = explode(',', $this->config->get('allowed_files', ''));
         $this->detectEmail = '/'.acym_getEmailRegex(false, true).'/i';
@@ -66,7 +76,7 @@ class acymbounceHelper extends acymObject
 
         if ($this->connectMethod == 'pear') {
             $this->usepear = true;
-            include_once(ACYM_INC.'pear'.DS.'pop3.php');
+            include_once ACYM_INC.'pear'.DS.'pop3.php';
 
             return true;
         }
@@ -116,7 +126,7 @@ class acymbounceHelper extends acymObject
     {
         ob_start();
 
-        $this->mailbox = new Net_POP3();
+        $this->mailbox = new \Net_POP3();
 
         $timeout = $this->timeout;
         if (!empty($timeout)) {
@@ -260,7 +270,7 @@ class acymbounceHelper extends acymObject
     public function getMessage($msgNB)
     {
         if ($this->usepear) {
-            $message = new stdClass();
+            $message = new \stdClass();
             $message->headerString = $this->mailbox->getRawHeaders($msgNB);
             if (empty($message->headerString)) {
                 return false;
@@ -393,7 +403,7 @@ class acymbounceHelper extends acymObject
                             if (acym_writeFile($pathToUpload.$filename.'.'.$extension, $data)) {
                                 $inlineImages['cid:'.$contentID] = acym_rootURI().$uploadFolder.'/'.$filename.'.'.$extension;
                             }
-                        } catch (Exception $e) {
+                        } catch (\Exception $e) {
                             $this->_display(acym_translation_sprintf('ACYM_ERROR_UPLOAD_ATTACHMENT', $filename.'.'.$extension, $e->getMessage()), false);
                         }
                     }
@@ -407,7 +417,7 @@ class acymbounceHelper extends acymObject
 
         $this->_message->subject = $this->_decodeHeader($this->_message->headerinfo['subject']);
         if (empty($this->_message->header)) {
-            $this->_message->header = new stdClass();
+            $this->_message->header = new \stdClass();
         }
         $this->_message->header->sender_email = @$this->_message->headerinfo['return-path'];
         if (is_array($this->_message->header->sender_email)) {
@@ -534,7 +544,7 @@ class acymbounceHelper extends acymObject
         $rules = $this->ruleClass->getAll(null, true);
 
         $msgNB = $maxMessages;
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $this->allLists = $listClass->getAll('id');
 
         //Exclude some email addresses...
@@ -1034,7 +1044,7 @@ class acymbounceHelper extends acymObject
         $var = $this->_message->$type;
 
         if (empty($this->_message->header)) {
-            $this->_message->header = new stdClass();
+            $this->_message->header = new \stdClass();
         }
 
         if (!empty($this->_message->$address)) {

@@ -1,5 +1,8 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Helpers\TabHelper;
+
 class plgAcymSeblod extends acymPlugin
 {
     public function __construct()
@@ -124,7 +127,7 @@ class plgAcymSeblod extends acymPlugin
 
         $this->categories = acym_loadObjectList('SELECT id, parent_id, title FROM #__categories WHERE extension = "com_content" ORDER BY `id` DESC');
 
-        $tabHelper = acym_get('helper.tab');
+        $tabHelper = new TabHelper();
         $identifier = $this->name;
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
@@ -395,12 +398,12 @@ class plgAcymSeblod extends acymPlugin
         //if the user created a custom template
         if (!empty($tag->tmpl) && file_exists(ACYM_MEDIA.'plugins'.DS.'seblod_'.$tag->tmpl.'.php')) {
             ob_start();
-            require(ACYM_MEDIA.'plugins'.DS.'seblod_'.$tag->tmpl.'.php');
+            require ACYM_MEDIA.'plugins'.DS.'seblod_'.$tag->tmpl.'.php';
             $result = ob_get_clean();
             $result = str_replace(array_keys($varFields), $varFields, $result);
         } elseif (file_exists(ACYM_MEDIA.'plugins'.DS.'seblod.php')) {
             ob_start();
-            require(ACYM_MEDIA.'plugins'.DS.'seblod.php');
+            require ACYM_MEDIA.'plugins'.DS.'seblod.php';
             $result = ob_get_clean();
             $result = str_replace(array_keys($varFields), $varFields, $result);
         }

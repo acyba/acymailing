@@ -14,13 +14,11 @@
                     [
                         'id' => strtolower(acym_translation('ACYM_ID')),
                         'name' => acym_translation('ACYM_NAME'),
-                        'sending_date' => acym_translation('ACYM_SENDING_DATE'),
                         'creation_date' => acym_translation('ACYM_DATE_CREATED'),
-                        'draft' => acym_translation('ACYM_DRAFT'),
-                        'active' => acym_translation('ACYM_ACTIVE'),
-                        'sent' => acym_translation('ACYM_SENT'),
                     ],
-                    'campaigns'
+                    $data['email_type'],
+                    $data['ordering'],
+                    $data['orderingSortOrder']
                 ); ?>
 			</div>
 		</div>

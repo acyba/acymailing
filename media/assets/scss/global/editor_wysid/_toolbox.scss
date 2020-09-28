@@ -1,0 +1,97 @@
+
+.acym__wysid__column__element__td {
+    position: relative;
+}
+
+#acym__wysid {
+    .acym__wysid__column__element--helper, .acym__wysid__column__element--helper:nth-child(even), .ui-draggable-dragging {
+        height: 60px !important;
+        width: 100px !important;
+        overflow: hidden !important;
+        border-radius: $primary-radius !important;
+        background-color: map-get($editor-wysid-palette, primary-ui) !important;
+        border: 2px solid $font-primary !important;
+        position: absolute !important;
+        z-index: 99999999 !important;
+
+        * {
+            visibility: hidden;
+        }
+    }
+}
+
+.acym__wysid__column__element--helper *, .acym__wysid__column__element--helper:nth-child(even) * {
+    visibility: hidden;
+}
+
+.acym__wysid__column__element__original--helper {
+    opacity: 0.5;
+    outline: 2px dashed map-get($editor-wysid-palette, primary);
+    outline-offset: -2px;
+}
+
+.acym__wysid__row__element--placeholder {
+    height: 75px;
+    text-align: center;
+    padding: 10px;
+    display: block;
+    width: 100%;
+    position: relative;
+    background-color: map-get($editor-wysid-palette, primary-ui) !important;
+}
+
+.acym__wysid__column {
+    &.acym__wysid__column--drag-start {
+        min-height: 75px;
+
+        tbody {
+            min-height: 75px;
+        }
+    }
+
+    .acym__wysid__column__element--placeholder {
+        padding: 0 !important;
+        text-align: center;
+        top: -2px;
+        display: block;
+        width: 100%;
+        position: relative;
+        height: 2px !important;
+        background-color: map-get($editor-wysid-palette, primary-ui) !important;
+
+        &::after, &::before {
+            position: absolute;
+            width: 0;
+            content: "";
+            top: -5px;
+            height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+
+        &::after {
+            right: -4px;
+            border-right: 6px solid map-get($editor-wysid-palette, primary-ui);
+        }
+
+        &::before {
+            left: -4px;
+            border-left: 6px solid map-get($editor-wysid-palette, primary-ui);
+        }
+    }
+}
+
+#acym__wysid__modal__ui .acym__wysid__error_msg {
+    color: map-get($editor-wysid-palette, alert);
+}
+
+.select2-container #select2-acym__wysid__context__follow__select-results {
+    li.select2-results__option {
+        padding-left: 5px;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}

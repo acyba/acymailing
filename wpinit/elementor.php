@@ -1,5 +1,7 @@
 <?php
 
+namespace AcyMailing\Init;
+
 class acyElementor extends acyHook
 {
     public function __construct()

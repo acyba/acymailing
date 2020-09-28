@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+
 class plgAcymPage extends acymPlugin
 {
     public function __construct()

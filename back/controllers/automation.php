@@ -1,5 +1,19 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Classes\ActionClass;
+use AcyMailing\Classes\AutomationClass;
+use AcyMailing\Classes\ConditionClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\StepClass;
+use AcyMailing\Classes\TagClass;
+use AcyMailing\Helpers\AutomationHelper;
+use AcyMailing\Helpers\PaginationHelper;
+use AcyMailing\Helpers\ToolbarHelper;
+use AcyMailing\Helpers\WorkflowHelper;
+use AcyMailing\Libraries\acymController;
+
 class AutomationController extends acymController
 {
     var $regexSwitches = '#(switch_[0-9]*".*)(data\-switch=")(switch_.+id=")(switch_.+for=")(switch_)#Uis';
@@ -27,7 +41,7 @@ class AutomationController extends acymController
 
     public function prepareToolbar(&$data)
     {
-        $toolbarHelper = acym_get('helper.toolbar');
+        $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'automation_search', 'ACYM_SEARCH');
         $toolbarHelper->addButton(acym_translation('ACYM_NEW_MASS_ACTION'), ['data-task' => 'edit', 'data-step' => 'action'], 'cog');
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit', 'data-step' => 'info'], 'add', true);
@@ -88,11 +102,11 @@ class AutomationController extends acymController
 
         $automationId = acym_getVar('int', 'id');
         $automation = acym_getVar('array', 'automation');
-        $automationClass = acym_get('class.automation');
+        $automationClass = new AutomationClass();
 
         $stepAutomationId = acym_getVar('int', 'stepAutomationId');
         $stepAutomation = acym_getVar('array', 'stepAutomation');
-        $stepClass = acym_get('class.step');
+        $stepClass = new StepClass();
 
         if (!empty($automationId)) {
             $automation['id'] = $automationId;
@@ -104,8 +118,10 @@ class AutomationController extends acymController
 
         $typeTrigger = acym_getVar('string', 'type_trigger');
 
-        if (empty($automation['admin']) && empty($automation['name'])) {
-            return false;
+        if (empty($automation['admin'])) {
+            if (empty($automation['name'])) return false;
+
+            $automation['admin'] = 0;
         }
 
         if (empty($stepAutomation['triggers'][$typeTrigger])) {
@@ -157,7 +173,7 @@ class AutomationController extends acymController
         $automationID = acym_getVar('int', 'id');
         $conditionId = acym_getVar('int', 'conditionId');
         $condition = acym_getVar('array', 'acym_condition', []);
-        $conditionClass = acym_get('class.condition');
+        $conditionClass = new ConditionClass();
 
         $stepAutomationId = acym_getVar('int', 'stepAutomationId');
 
@@ -203,7 +219,7 @@ class AutomationController extends acymController
         $automationID = acym_getVar('int', 'id');
         $actionId = acym_getVar('int', 'actionId');
         $action = acym_getVar('array', 'acym_action', []);
-        $actionClass = acym_get('class.action');
+        $actionClass = new ActionClass();
         $conditionId = acym_getVar('int', 'conditionId');
 
         $stepAutomationId = acym_getVar('int', 'stepAutomationId');
@@ -259,7 +275,7 @@ class AutomationController extends acymController
         $stepID = acym_getVar('int', 'id');
         $actionId = acym_getVar('int', 'actionId');
         $action = acym_getVar('array', 'acym_action');
-        $actionClass = acym_get('class.action');
+        $actionClass = new ActionClass();
         $stepAutomationId = acym_getVar('int', 'stepAutomationId');
         $conditionId = acym_getVar('int', 'conditionId');
 
@@ -311,11 +327,11 @@ class AutomationController extends acymController
 
         $automationId = acym_getVar('int', 'id');
         $automation = acym_getVar('array', 'automation');
-        $automationClass = acym_get('class.automation');
+        $automationClass = new AutomationClass();
 
         $stepAutomationId = acym_getVar('int', 'stepAutomationId');
         $stepAutomation = acym_getVar('array', 'stepAutomation');
-        $stepClass = acym_get('class.step');
+        $stepClass = new StepClass();
 
         if (!empty($automationId)) {
             $automation['id'] = $automationId;
@@ -537,7 +553,7 @@ class AutomationController extends acymController
 
     public function activeAutomation()
     {
-        $automationClass = acym_get('class.automation');
+        $automationClass = new AutomationClass();
         $automation = $automationClass->getOneById(acym_getVar('int', 'id'));
         $automation->active = 1;
         $saved = $automationClass->save($automation);
@@ -568,10 +584,10 @@ class AutomationController extends acymController
     public function processMassAction()
     {
         acym_session();
-        $automationClass = acym_get('class.automation');
+        $automationClass = new AutomationClass();
         $massAction = empty($_SESSION['massAction']) ? '' : $_SESSION['massAction'];
         if (!empty($massAction)) {
-            $automation = new stdClass();
+            $automation = new \stdClass();
             $automation->filters = json_encode($massAction['filters']);
             $automation->actions = json_encode($massAction['actions']);
             $automationClass->execute($automation);
@@ -608,7 +624,7 @@ class AutomationController extends acymController
 
         if (empty($stepAutomation['filters'][$or][$and])) die(acym_translation('ACYM_AUTOMATION_NOT_FOUND'));
 
-        $query = acym_get('class.query');
+        $query = new AutomationHelper();
         $messages = '';
 
         foreach ($stepAutomation['filters'][$or][$and] as $filterName => $options) {
@@ -625,7 +641,7 @@ class AutomationController extends acymController
         $or = acym_getVar('int', 'or');
         $stepAutomation = acym_getVar('array', 'acym_action');
 
-        $query = acym_get('class.query');
+        $query = new AutomationHelper();
 
         if (!empty($stepAutomation) && !empty($stepAutomation['filters'][$or])) {
             foreach ($stepAutomation['filters'][$or] as $and => $andValues) {

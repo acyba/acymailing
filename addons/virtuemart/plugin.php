@@ -1,5 +1,10 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Types\OperatorinType;
+use AcyMailing\Types\OperatorType;
+
 class plgAcymVirtuemart extends acymPlugin
 {
     var $lang = null;
@@ -142,7 +147,7 @@ class plgAcymVirtuemart extends acymPlugin
             JOIN `#__virtuemart_categories_'.$this->lang.'` AS cattrans ON cat.category_child_id = cattrans.virtuemart_category_id'
         );
 
-        $tabHelper = acym_get('helper.tab');
+        $tabHelper = new TabHelper();
         $identifier = $this->name;
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
@@ -834,7 +839,7 @@ class plgAcymVirtuemart extends acymPlugin
                 $groups[$i]->text = acym_translation($oneGroup->text);
             }
 
-            $operatorIn = acym_get('type.operatorin');
+            $operatorIn = new OperatorinType();
 
             $conditions['user']['vmgroups'] = new stdClass();
             $conditions['user']['vmgroups']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_GROUP'));
@@ -851,7 +856,7 @@ class plgAcymVirtuemart extends acymPlugin
         if (!empty($fields)) {
             $fields = array_combine($fields, $fields);
             ksort($fields);
-            $operator = acym_get('type.operator');
+            $operator = new OperatorType();
 
             $conditions['user']['vmfield'] = new stdClass();
             $conditions['user']['vmfield']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_FIELDS'));

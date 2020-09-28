@@ -1,5 +1,11 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Classes\PluginClass;
+use AcyMailing\Helpers\WorkflowHelper;
+use AcyMailing\Libraries\acymController;
+
 class PluginsController extends acymController
 {
     var $tabs, $types, $level, $features, $errors;
@@ -62,6 +68,7 @@ class PluginsController extends acymController
         $data['level'] = $this->level;
         $data['features'] = $this->features;
         $data['plugins'] = $this->getAllPlugins();
+        $data['workflowHelper'] = new WorkflowHelper();
 
         parent::display($data);
     }
@@ -75,6 +82,7 @@ class PluginsController extends acymController
         $data['types'] = $this->types;
         $data['level'] = $this->level;
         $data['features'] = $this->features;
+        $data['workflowHelper'] = new WorkflowHelper();
 
         parent::display($data);
     }
@@ -137,14 +145,14 @@ class PluginsController extends acymController
     {
         $this->isLastestAcyMailingVersion();
 
-        $pluginClass = acym_get('class.plugin');
+        $pluginClass = new PluginClass();
         $plugin = acym_getVar('array', 'plugin');
 
         $this->downloadUpload($plugin['folder_name']);
 
         $plugin['version'] = $plugin['latest_version'];
 
-        $pluginToSave = new stdClass();
+        $pluginToSave = new \stdClass();
         $pluginToSave->id = $plugin['id'];
         $pluginToSave->version = $plugin['latest_version'];
         $pluginToSave->uptodate = 1;
@@ -163,7 +171,7 @@ class PluginsController extends acymController
     {
         $plugin = [];
 
-        $pluginClass = acym_get('class.plugin');
+        $pluginClass = new PluginClass();
         if (empty($pluginFromUpdate)) {
             $this->isLastestAcyMailingVersion();
             $plugin = acym_getVar('array', 'plugin');
@@ -187,7 +195,7 @@ class PluginsController extends acymController
         $this->downloadUpload($plugin['file_name'], $ajax);
 
         //We update the plugin info in DB
-        $pluginToSave = new stdClass();
+        $pluginToSave = new \stdClass();
         $pluginToSave->title = $plugin['name'];
         $pluginToSave->folder_name = $plugin['file_name'];
         $pluginToSave->version = $plugin['version'];
@@ -213,14 +221,14 @@ class PluginsController extends acymController
 
     public function getAllPlugins()
     {
-        $pluginClass = acym_get('class.plugin');
+        $pluginClass = new PluginClass();
         $plugins = $pluginClass->getMatchingElements(['ordering' => 'title']);
 
-
         foreach ($plugins['elements'] as $key => $plugin) {
-            if (!empty($plugin->settings)) $plugins['elements'][$key]->settings = json_decode($plugin->settings, true);
+            if (!empty($plugin->settings)) {
+                $plugins['elements'][$key]->settings = json_decode($plugin->settings, true);
+            }
         }
-
         acym_trigger('onAcymAddSettings', [&$plugins['elements']]);
 
         return json_encode($plugins);
@@ -234,7 +242,7 @@ class PluginsController extends acymController
 
     public function deletePlugin()
     {
-        $pluginClass = acym_get('class.plugin');
+        $pluginClass = new PluginClass();
         $id = acym_getVar('int', 'id');
 
         $plugin = $pluginClass->getOneById($id);
@@ -261,7 +269,7 @@ class PluginsController extends acymController
 
     public function toggleActivate()
     {
-        $pluginClass = acym_get('class.plugin');
+        $pluginClass = new PluginClass();
         $id = acym_getVar('int', 'id');
 
         $plugin = $pluginClass->getOneById($id);
@@ -303,7 +311,7 @@ class PluginsController extends acymController
             return;
         }
 
-        $pluginClass = acym_get('class.plugin');
+        $pluginClass = new PluginClass();
         $plugin = $pluginClass->getOneByFolderName($pluginFolderName);
 
         if (empty($plugin)) {

@@ -1,5 +1,19 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\UrlClass;
+use AcyMailing\Helpers\EncodingHelper;
+use AcyMailing\Helpers\HeaderHelper;
+use AcyMailing\Helpers\MailerHelper;
+use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Libraries\acymController;
+use AcyMailing\Types\AclType;
+use AcyMailing\Types\DelayType;
+use AcyMailing\Types\FailactionType;
+
 class ConfigurationController extends acymController
 {
     public function __construct()
@@ -16,13 +30,21 @@ class ConfigurationController extends acymController
         acym_setVar('layout', 'listing');
 
         $data = [];
-        $data['tab'] = acym_get('helper.tab');
+        $data['tab'] = new TabHelper();
         $this->prepareLanguages($data);
         $this->prepareLists($data);
         $this->prepareNotifications($data);
         $this->prepareAcl($data);
+        $this->prepareClass($data);
 
         parent::display($data);
+    }
+
+    private function prepareClass(&$data)
+    {
+        $data['typeDelay'] = new DelayType();
+        $data['failaction'] = new FailactionType();
+        $data['encodingHelper'] = new EncodingHelper();
     }
 
     private function prepareLanguages(&$data)
@@ -33,7 +55,7 @@ class ConfigurationController extends acymController
         foreach ($langs as $lang => $obj) {
             if (strlen($lang) != 5 || $lang == "xx-XX") continue;
 
-            $oneLanguage = new stdClass();
+            $oneLanguage = new \stdClass();
             $oneLanguage->language = $lang;
             $oneLanguage->name = $obj->name;
 
@@ -65,7 +87,7 @@ class ConfigurationController extends acymController
 
     private function prepareLists(&$data)
     {
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $lists = $listClass->getAllWIthoutManagement();
         foreach ($lists as $i => $oneList) {
             if ($oneList->active == 0) {
@@ -122,7 +144,7 @@ class ConfigurationController extends acymController
             'forms' => 'ACYM_SUBSCRIPTION_FORMS',
             'configuration' => 'ACYM_CONFIGURATION',
         ];
-        $data['aclType'] = acym_get('type.acl');
+        $data['aclType'] = new AclType();
     }
 
     /**
@@ -183,7 +205,7 @@ class ConfigurationController extends acymController
         foreach ($tableNames as $oneTableName) {
             try {
                 $columns = acym_loadObjectList('SHOW COLUMNS FROM '.$oneTableName);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $columns = null;
             }
 
@@ -205,7 +227,7 @@ class ConfigurationController extends acymController
 
                 try {
                     $isError = acym_query($repairQuery);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $isError = null;
                 }
 
@@ -221,7 +243,7 @@ class ConfigurationController extends acymController
             //Table does not exist? lets create it...
             try {
                 $isError = acym_query($createTable[$oneTableName]);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $isError = null;
             }
 
@@ -246,7 +268,7 @@ class ConfigurationController extends acymController
                     $messages[] = '<span style="color:blue">'.acym_translation_sprintf('ACYM_CHECKDB_MISSING_COLUMN', $oneColumn, $oneTableName).'</span>';
                     try {
                         $isError = acym_query('ALTER TABLE '.$oneTableName.' ADD '.$structure[$oneTableName][$oneColumn]);
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $isError = null;
                     }
                     if ($isError === null) {
@@ -276,7 +298,7 @@ class ConfigurationController extends acymController
                 $messages[] = '<span style="color:blue">'.acym_translation_sprintf('ACYM_CHECKDB_MISSING_INDEX', $keyName, $oneTableName).'</span>';
                 try {
                     $isError = acym_query('ALTER TABLE '.$oneTableName.' ADD '.$query);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $isError = null;
                 }
 
@@ -290,7 +312,7 @@ class ConfigurationController extends acymController
         }
 
         // Clean the duplicates in the acym_url table, caused by a bug before the 12/04/19
-        $urlClass = acym_get('class.url');
+        $urlClass = new UrlClass();
         $duplicatedUrls = $urlClass->getDuplicatedUrls();
 
         if (!empty($duplicatedUrls)) {
@@ -406,7 +428,7 @@ class ConfigurationController extends acymController
             $formData['multilingual_languages']
         );
         if (!empty($removed)) {
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             $mailClass->deleteByTranslationLang($removed);
         }
 
@@ -419,7 +441,7 @@ class ConfigurationController extends acymController
     {
         $this->store();
 
-        $mailerHelper = acym_get('helper.mailer');
+        $mailerHelper = new MailerHelper();
         $addedName = $this->config->get('add_names', true) ? $mailerHelper->cleanText(acym_currentUserName()) : '';
 
         $mailerHelper->AddAddress(acym_currentUserEmail(), $addedName);
@@ -571,7 +593,7 @@ class ConfigurationController extends acymController
                     $report = substr($report, strpos($report, "\n") + 1);
                 }
                 fclose($f);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $report = '';
             }
         }
@@ -586,7 +608,7 @@ class ConfigurationController extends acymController
 
     public function redomigration()
     {
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->migration = 0;
         $this->config->save($newConfig);
 
@@ -610,7 +632,7 @@ class ConfigurationController extends acymController
             unset($notifications[$whichNotification]);
             $this->config->save(['notifications' => json_encode($notifications)]);
         }
-        $helperHeader = acym_get('helper.header');
+        $helperHeader = new HeaderHelper();
 
         echo json_encode(['data' => $helperHeader->getNotificationCenterInner($notifications)]);
         exit;
@@ -654,9 +676,9 @@ class ConfigurationController extends acymController
             exit;
         }
 
-        $helperHeader = acym_get('helper.header');
+        $helperHeader = new HeaderHelper();
 
-        $newNotification = new stdClass();
+        $newNotification = new \stdClass();
         $newNotification->message = $message;
         $newNotification->level = $level;
         $newNotification->read = false;
@@ -957,5 +979,15 @@ class ConfigurationController extends acymController
         $this->config->save(['remindme' => json_encode($remindme)]);
 
         $this->listing();
+    }
+
+    public function call($task, $allowedTasks = [])
+    {
+        $allowedTasks[] = 'markNotificationRead';
+        $allowedTasks[] = 'removeNotification';
+        $allowedTasks[] = 'getAjax';
+        $allowedTasks[] = 'addNotification';
+
+        parent::call($task, $allowedTasks);
     }
 }

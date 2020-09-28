@@ -1,6 +1,10 @@
 <?php
 
-class acymtabHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+
+class TabHelper extends acymObject
 {
     var $titles = [];
     var $content = [];

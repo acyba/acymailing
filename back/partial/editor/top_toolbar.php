@@ -13,7 +13,7 @@
 		<div class="cell grid-x small-4 align-right">
             <?php
             $ctrl = acym_getVar('cmd', 'ctrl', 'dashboard');
-            if (acym_isAdmin() && 'campaigns' === $ctrl) {
+            if (acym_isAdmin() && 'campaigns' === $ctrl && acym_isAllowed('mails')) {
                 ?>
 				<button id="acym__wysid__saveastmpl__button" type="button" class="cell small-6 medium-shrink margin-bottom-0 margin-right-0">
 					<i class="acymicon-file-picture acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_SAVE_AS_TMPL'); ?>"></i>

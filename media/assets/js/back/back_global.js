@@ -27,7 +27,7 @@ jQuery(document).ready(function ($) {
         acym_helperErrorMessage.initErrorMessage();
         acym_helperModal.initModal();
         acym_helperDebugger.initDebugger();
-        if (CMS_ACYM === 'joomla') acym_helperJoomla.setJoomlaLeftMenu();
+        if (ACYM_CMS === 'joomla') acym_helperJoomla.setJoomlaLeftMenu();
 
     }
 

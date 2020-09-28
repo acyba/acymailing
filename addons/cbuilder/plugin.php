@@ -1,5 +1,8 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Types\OperatorType;
+
 class plgAcymCbuilder extends acymPlugin
 {
     var $sendervalues = [];
@@ -199,7 +202,7 @@ class plgAcymCbuilder extends acymPlugin
 
         usort($cbfields, [$this, 'sortFields']);
 
-        $operator = acym_get('type.operator');
+        $operator = new OperatorType();
 
         $conditions['user']['cbfield'] = new stdClass();
         $conditions['user']['cbfield']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'Community Builder', acym_translation('ACYM_FIELDS'));

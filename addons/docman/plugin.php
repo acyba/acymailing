@@ -1,5 +1,8 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Helpers\TabHelper;
+
 class plgAcymDocman extends acymPlugin
 {
     public function __construct()
@@ -109,7 +112,7 @@ class plgAcymDocman extends acymPlugin
         acym_loadLanguageFile('com_docman', JPATH_ADMINISTRATOR.DS.'components'.DS.'com_docman');
         $this->categories = acym_loadObjectList('SELECT `docman_category_id` AS id, 0 AS `parent_id`, `title` FROM `#__docman_categories` WHERE enabled = 1', 'id');
 
-        $tabHelper = acym_get('helper.tab');
+        $tabHelper = new TabHelper();
         $identifier = $this->name;
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 

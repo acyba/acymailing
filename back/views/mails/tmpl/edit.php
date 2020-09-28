@@ -27,12 +27,4 @@
 <?php
 acym_formOptions();
 
-$editor = acym_get('helper.editor');
-$editor->content = $data['mail']->body;
-$editor->autoSave = !empty($data['mail']->autosave) ? $data['mail']->autosave : '';
-if (!empty($data['mail']->editor)) $editor->editor = $data['mail']->editor;
-if (!empty($data['mail']->id)) $editor->mailId = $data['mail']->id;
-if (!empty($data['mail']->type)) $editor->automation = $data['isAutomationAdmin'];
-if (!empty($data['mail']->settings)) $editor->settings = $data['mail']->settings;
-if (!empty($data['mail']->stylesheet)) $editor->stylesheet = $data['mail']->stylesheet;
-echo $editor->display();
+echo $data['editor']->display();

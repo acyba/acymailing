@@ -1,6 +1,12 @@
 <?php
 
-class acymregacyHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Libraries\acymObject;
+
+class RegacyHelper extends acymObject
 {
     // Display options
     var $options = [];
@@ -19,7 +25,7 @@ class acymregacyHelper extends acymObject
         $visibleLists = explode(',', $visibleLists);
         acym_arrayToInteger($visibleLists);
 
-        $listsClass = acym_get('class.list');
+        $listsClass = new ListClass();
         $allLists = $listsClass->getAllWIthoutManagement();
 
         // Display only published and visible lists, except if we're on the back-end
@@ -34,7 +40,7 @@ class acymregacyHelper extends acymObject
         // 2 - Get the lists we should check by default
         $checkedLists = explode(',', $this->config->get('regacy_checkedlists'));
         acym_arrayToInteger($checkedLists);
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
 
         if ('wordpress' === ACYM_CMS) {
             // If editing a user, get its lists

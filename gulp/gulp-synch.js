@@ -10,9 +10,10 @@ let replace = require('gulp-replace');
 let minifyJS = require('gulp-minify');
 let minifyCSS = require('gulp-cssmin');
 let multidest = require('gulp-multi-dest');
+let command = require('gulp-run-command').default;
 let babel = require('gulp-babel');
 
-let version = '6.15.0';
+let version = '6.16.0';
 
 let minifyJSOptions = {
     ext: {
@@ -28,7 +29,9 @@ let compassOptions = {
     sass: 'media/assets/scss'
 };
 
-let backFolder = ['back/**/*'];
+let backFolder = [
+    'back/**/*'
+];
 
 function getPaths(path, websites = settings.joomla) {
     let paths = [];
@@ -59,6 +62,28 @@ gulp.task('synch_copy-files', gulp.series(function () {
                .pipe(replace('{__CMS__}', 'WordPress'))
                .pipe(replace('{__VERSION__}', version))
                .pipe(multidest(getPaths('/wp-content/plugins/acymailing', settings.wordpress)));
+}));
+
+gulp.task('synch_copy-autoload', command('composer dumpautoload -o'));
+
+gulp.task('synch_copy-vendor', gulp.series(function () {
+    return gulp.src([
+        'vendor/**',
+        '!vendor/composer/autoload_classmap.php',
+        '!vendor/composer/autoload_static.php'
+    ]).pipe(multidest(getPaths('/administrator/components/com_acym/vendor')));
+}, function () {
+    return gulp.src([
+        'vendor/composer/autoload_classmap.php',
+        'vendor/composer/autoload_static.php'
+    ])
+               .pipe(replace('/back', ''))
+               .pipe(replace('/front/', '/../../../components/com_acym/'))
+               .pipe(multidest(getPaths('/administrator/components/com_acym/vendor/composer/')));
+}, function () {
+    return gulp.src([
+        'vendor/**'
+    ]).pipe(multidest(getPaths('/wp-content/plugins/acymailing/vendor', settings.wordpress)));
 }));
 
 gulp.task('synch_copy-back', gulp.series(function () {
@@ -235,7 +260,9 @@ gulp.task('synch_copy-media', gulp.series(function () {
     return gulp.src([
         'media/**/*',
         '!media/assets/**',
-        '!media/assets'
+        '!media/assets',
+        '!media/images/plugins/**',
+        '!media/images/plugins'
     ])
                .pipe(cache('media'))
                .pipe(multidest(getPaths('/media/com_acym')));
@@ -258,16 +285,20 @@ gulp.task('synch_copy-modules', gulp.series(function () {
 }));
 
 gulp.task('synch_copy-plugins', gulp.series(function () {
-    return gulp.src('plugins/**/*')
+    return gulp.src('plugins/joomla/plg_*/*')
                .pipe(cache('plugins'))
                .pipe(rename((path) => {
                    path.dirname = path.dirname.replace(/^plg_([a-zA-Z0-9]+)_([a-zA-Z0-9]+)\/?/, '$1/$2/');
                }))
                .pipe(multidest(getPaths('/plugins')));
 }, function () {
-    return gulp.src('plugins/**/plug_*/*')
+    return gulp.src('plugins/joomla/plug_*/*')
                .pipe(cache('pluginscb'))
                .pipe(multidest(getPaths('/components/com_comprofiler/plugin/user')));
+}, function () {
+    return gulp.src('plugins/wordpress/**/*')
+               .pipe(cache('pluginswp'))
+               .pipe(multidest(getPaths('/wp-content/plugins', settings.wordpress)));
 }));
 
 gulp.task('synch_copy-addons', gulp.series(function () {
@@ -307,6 +338,7 @@ gulp.task('synch_copy-wpinit', function () {
 
 gulp.task('synch_copy-all', gulp.parallel(
     'synch_copy-files',
+    gulp.series('synch_copy-autoload', 'synch_copy-vendor'),
     'synch_copy-back',
     'synch_copy-front',
     gulp.series(gulp.parallel('synch_handle-js', 'synch_handle-css'), 'synch_copy-media'),
@@ -319,6 +351,7 @@ gulp.task('synch_copy-all', gulp.parallel(
 
 gulp.task('synch_watch', function () {
     gulp.watch('*', gulp.series('synch_copy-files'));
+    gulp.watch('*', gulp.series('synch_copy-vendor'));
     gulp.watch('addons/**/*', gulp.series('synch_copy-addons'));
     gulp.watch(backFolder, gulp.series('synch_copy-back'));
     gulp.watch('front/**/*', gulp.series('synch_copy-front'));
@@ -350,4 +383,4 @@ gulp.task('default', gulp.series(function (done) {
     minifyJSOptions.ignoreFiles = ['*.js'];
     backFolder.push('!back/partial/update/new_features.php');
     done();
-}, 'synch_copy-all', 'synch_watch'));
+}, 'clear_cache', 'synch_copy-all', 'synch_watch'));

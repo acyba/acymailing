@@ -25,6 +25,12 @@
     .button {
         box-shadow: inherit;
     }
+
+    #acym_wrapper {
+        .hide_for_wordpress {
+            display: none;
+        }
+    }
 }
 
 #dolly {

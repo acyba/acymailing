@@ -3,7 +3,7 @@
 		<input type="hidden" name="all__plugins" id="acym__plugins__all" value="<?php echo empty($data['plugins']) ? '[]' : acym_escape($data['plugins']); ?>">
 		<input type="hidden" name="plugin__folder_name" value="">
         <?php
-        $workflow = acym_get('helper.workflow');
+        $workflow = $data['workflowHelper'];
         echo $workflow->display($data['tabs'], $data['tab'], false, true);
         ?>
 		<div id="acym__plugin__installed__application" class="cell grid-x">
@@ -36,11 +36,11 @@
 					<div class="cell grid-x grid-margin-x grid-margin-y" v-show="!loading" style="display: none;" v-infinite-scroll="loadMorePlugins" :infinite-scroll-disabled="busy">
 						<div class="acym__plugins__card cell grid-x xlarge-3 large-4 medium-6" :id="'acym__plugins__card__' + plugin.folder_name" v-for="(plugin, index) in displayedPlugins" :key="plugin">
 							<div v-show="!showSettings[plugin.id]" class="acym__plugins__info__container">
-								<button v-if="plugin.core == 0" @click="deletePlugin(plugin.id)" type="button" class="acym__plugins__button__delete">
+								<button v-if="plugin.type == 'ADDON'" @click="deletePlugin(plugin.id)" type="button" class="acym__plugins__button__delete">
 									<i class="acymicon-trash-o"></i>
 								</button>
 								<div class="acym__plugins__card__image margin-bottom-1 cell grid-x align-center">
-									<img :src="imageUrl(plugin.folder_name, plugin.core)" alt="plugin image" class="cell">
+									<img :src="imageUrl(plugin.folder_name, plugin.type)" alt="plugin image" class="cell">
 									<div class="acym__plugins__card__params_type shrink cell" :style="typesColors[plugin.category]">{{ plugin.category }}</div>
 								</div>
 								<div class="acym__plugins__card__params cell grid-x">
@@ -53,7 +53,7 @@
 										</i>
 									</div>
 									<div ref="plugins" :class="isOverflown(index)" class="acym__plugins__card__params_desc cell" v-html="plugin.description"></div>
-									<div v-if="plugin.core == 0" class="acym__plugins__card__actions cell grid-x acym_vcenter" v-show="rightLevel(plugin.level)">
+									<div v-if="plugin.type == 'ADDON'" class="acym__plugins__card__actions cell grid-x acym_vcenter" v-show="rightLevel(plugin.level)">
 										<div class="cell grid-x acym_vcenter medium-8">
 											<span class="cell shrink"><?php echo acym_translation('ACYM_ENABLED'); ?>:</span>
 											<vue-switch :plugin="plugin" :ischecked="isActivated(plugin.active)"></vue-switch>

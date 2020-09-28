@@ -1,6 +1,11 @@
 <?php
 
-class acymencodingHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+use AcyMailing\Types\CharsetType;
+
+class EncodingHelper extends acymObject
 {
     /**
      * Changes the encoding of data from input to output charset
@@ -56,7 +61,7 @@ class acymencodingHelper extends acymObject
         }
 
         if (function_exists('iconv')) {
-            set_error_handler('acym_error_handler_encoding');
+            set_error_handler('AcyMailing\Helpers\acym_error_handler_encoding');
             $encodedData = iconv($inputCharset, $outputCharset.'//IGNORE', $data);
             restore_error_handler();
             //Sometimes the function does not return error but remove the whole content...
@@ -139,7 +144,7 @@ class acymencodingHelper extends acymObject
 
     public function charsetField($name, $selected, $attribs = null)
     {
-        $charsetType = acym_get('type.charset');
+        $charsetType = new CharsetType();
 
         return acym_select($charsetType->charsets, $name, $selected, $attribs, '', '');
     }

@@ -1,5 +1,9 @@
 <?php
 
+namespace AcyMailing\Views;
+
+use AcyMailing\Libraries\acymView;
+
 /**
  * Class CampaignsViewLists
  */
@@ -23,7 +27,9 @@ class CampaignsViewCampaigns extends acymView
         ];
 
 
-        $this->tabs['welcome'] = 'ACYM_WELCOME_EMAILS';
-        $this->tabs['unsubscribe'] = 'ACYM_UNSUBSCRIBE_EMAILS';
+        if (acym_isAllowed('mails')) {
+            $this->tabs['welcome'] = 'ACYM_WELCOME_EMAILS';
+            $this->tabs['unsubscribe'] = 'ACYM_UNSUBSCRIBE_EMAILS';
+        }
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
 //DISPLAY PHP5.3 WARNING!
+use AcyMailing\Helpers\UpdateHelper;
+
 if (version_compare(PHP_VERSION, '5.6.0', '<')) {
     echo '<p style="color:red">This version of AcyMailing requires at least PHP 5.6.0, it is time to upgrade the PHP version of your server!</p>';
     exit;
@@ -24,7 +26,7 @@ function installAcym()
     $installClass->updatePref();
     $installClass->updateSQL();
 
-    $updateHelper = acym_get('helper.update');
+    $updateHelper = new UpdateHelper();
     $updateHelper->fromLevel = $installClass->fromLevel;
     $updateHelper->fromVersion = $installClass->fromVersion;
     $updateHelper->installList();
@@ -148,4 +150,4 @@ class com_acymInstallerScript
     }
 }
 
-include_once(__DIR__.DIRECTORY_SEPARATOR.'install.class.php');
+include_once __DIR__.DIRECTORY_SEPARATOR.'install.class.php';

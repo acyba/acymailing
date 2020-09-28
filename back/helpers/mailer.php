@@ -1,17 +1,30 @@
 <?php
 
+namespace AcyMailing\Helpers;
+
 require_once ACYM_INC.'phpmailer'.DS.'exception.php';
 require_once ACYM_INC.'phpmailer'.DS.'smtp.php';
 require_once ACYM_INC.'phpmailer'.DS.'phpmailer.php';
 require_once ACYM_INC.'emogrifier.php';
 
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\UrlClass;
+use AcyMailing\Classes\UserClass;
 use acyPHPMailer\Exception;
 use acyPHPMailer\SMTP;
 use acyPHPMailer\acyPHPMailer;
 use acymEmogrifier\acymEmogrifier;
 
-class acymmailerHelper extends acyPHPMailer
+class MailerHelper extends acyPHPMailer
 {
+    // The DKIM fails when the X-Mailer is added and the user uses their own keys, it makes no sense D:
+    public $XMailer = ' ';
+
+    // We remove default values
+    public $From = '';
+    public $FromName = '';
+    public $SMTPAutoTLS = false;
+
     var $encodingHelper;
     var $editorHelper;
     var $userClass;
@@ -26,11 +39,6 @@ class acymmailerHelper extends acyPHPMailer
 
     // Should we track the sending of a	message (used for welcoming message)
     var $trackEmail = false;
-
-    // We remove default values
-    public $From = '';
-    public $FromName = '';
-    public $SMTPAutoTLS = false;
 
     // We need those attributes to be public for our tag system
     public $to = [];
@@ -51,9 +59,9 @@ class acymmailerHelper extends acyPHPMailer
     {
         parent::__construct();
 
-        $this->encodingHelper = acym_get('helper.encoding');
-        $this->editorHelper = acym_get('helper.editor');
-        $this->userClass = acym_get('class.user');
+        $this->encodingHelper = new EncodingHelper();
+        $this->editorHelper = new EditorHelper();
+        $this->userClass = new UserClass();
         $this->config = acym_config();
         $this->setFrom($this->config->get('from_email'), $this->config->get('from_name'));
         $this->Sender = $this->cleanText($this->config->get('bounce_email'));
@@ -108,9 +116,9 @@ class acymmailerHelper extends acyPHPMailer
                     $this->SMTPAuth = true;
                 } else {
                     //REST API!
-                    include_once(ACYM_INC.'phpmailer'.DS.'elasticemail.php');
+                    include_once ACYM_INC.'phpmailer'.DS.'elasticemail.php';
                     $this->Mailer = 'elasticemail';
-                    $this->{$this->Mailer} = new acyElasticemail();
+                    $this->{$this->Mailer} = new \acyElasticemail();
                     $this->{$this->Mailer}->Username = trim($this->config->get('elasticemail_username'));
                     $this->{$this->Mailer}->Password = trim($this->config->get('elasticemail_password'));
                 }
@@ -409,7 +417,7 @@ class acymmailerHelper extends acyPHPMailer
 
     public function load($mailId)
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $this->defaultMail[$mailId] = $mailClass->getOneById($mailId);
 
         if (empty($this->defaultMail[$mailId])) {
@@ -430,7 +438,7 @@ class acymmailerHelper extends acyPHPMailer
 
             $attachments = json_decode($this->defaultMail[$mailId]->attachments);
             foreach ($attachments as $oneAttach) {
-                $attach = new stdClass();
+                $attach = new \stdClass();
                 $attach->name = basename($oneAttach->filename);
                 $attach->filename = str_replace(['/', '\\'], DS, ACYM_ROOT).$oneAttach->filename;
                 $attach->url = ACYM_LIVE.$oneAttach->filename;
@@ -450,7 +458,7 @@ class acymmailerHelper extends acyPHPMailer
     {
         if (empty($mailId) || empty($user) || !isset($user->tracking) || $user->tracking != 1) return false;
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         $mail = $mailClass->getOneById($mailId);
         if (!empty($mail) && $mail->tracking != 1) return false;
@@ -494,7 +502,7 @@ class acymmailerHelper extends acyPHPMailer
             //If we send notifications or tests, we will automatically add the user in order to have the links working fine
             if (empty($receiver) && $this->autoAddUser && acym_isValidEmail($user)) {
                 //We directly add the user and send and load him.
-                $newUser = new stdClass();
+                $newUser = new \stdClass();
                 $newUser->email = $user;
                 $this->userClass->checkVisitor = false;
                 $this->userClass->sendConf = false;
@@ -652,7 +660,7 @@ class acymmailerHelper extends acyPHPMailer
 
         $status = $this->send();
         if ($this->trackEmail) {
-            $helperQueue = acym_get('helper.queue');
+            $helperQueue = new QueueHelper();
             $statsAdd = [];
             $statsAdd[$this->id][$status][] = $receiver->id;
             $helperQueue->statsAdd($statsAdd);
@@ -709,9 +717,9 @@ class acymmailerHelper extends acyPHPMailer
 
     public function statClick($mailId, $userid, $fromStat = false)
     {
-        if (!$fromStat && !in_array($this->type, ['standard', 'automation'])) return;
+        if (!$fromStat && !in_array($this->type, ['standard', 'automation', 'welcome', 'unsubscribe'])) return;
 
-        $urlClass = acym_get('class.url');
+        $urlClass = new UrlClass();
         if ($urlClass === null) return;
 
         $urls = [];
@@ -721,7 +729,7 @@ class acymmailerHelper extends acyPHPMailer
         if (false === strpos($trackingSystem, 'acymailing') && false === strpos($trackingSystem, 'google')) return;
 
         if (strpos($trackingSystem, 'google') !== false) {
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             $mail = $mailClass->getOneById($mailId);
 
             $utmCampaign = acym_getAlias($mail->subject);
@@ -963,7 +971,7 @@ class acymmailerHelper extends acyPHPMailer
     {
         if (empty($this->parameters)) return;
 
-        $helperPlugin = acym_get('helper.plugin');
+        $helperPlugin = new PluginHelper();
 
         //We create an extra tag which contains all possible parameters...
         $this->generateAllParams();

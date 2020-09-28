@@ -1,5 +1,10 @@
 <?php
 
+namespace AcyMailing\Init;
+
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Helpers\RegacyHelper;
+
 class acyUsersynch extends acyHook
 {
     public function __construct()
@@ -26,7 +31,7 @@ class acyUsersynch extends acyHook
         $config = acym_config();
         if (!$config->get('regacy', 0)) return;
 
-        $regacyHelper = acym_get('helper.regacy');
+        $regacyHelper = new RegacyHelper();
         if (!$regacyHelper->prepareLists([])) return;
 
         ?>
@@ -75,7 +80,7 @@ class acyUsersynch extends acyHook
 
         $oldUser = empty($oldUser->user_email) ? null : ['email' => $oldUser->user_email];
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $userClass->synchSaveCmsUser($user, $isnew, $oldUser);
     }
 
@@ -84,7 +89,7 @@ class acyUsersynch extends acyHook
         $cmsUser = get_user_by('id', $userId);
         if (empty($cmsUser->user_email)) return;
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $userClass->synchDeleteCmsUser($cmsUser->user_email);
     }
 }

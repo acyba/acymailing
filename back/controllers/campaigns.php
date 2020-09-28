@@ -1,5 +1,23 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailStatClass;
+use AcyMailing\Classes\TagClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Helpers\EditorHelper;
+use AcyMailing\Helpers\EntitySelectHelper;
+use AcyMailing\Helpers\MailerHelper;
+use AcyMailing\Helpers\PaginationHelper;
+use AcyMailing\Helpers\PluginHelper;
+use AcyMailing\Helpers\ToolbarHelper;
+use AcyMailing\Helpers\WorkflowHelper;
+use AcyMailing\Libraries\acymController;
+use AcyMailing\Types\UploadfileType;
+
 class CampaignsController extends acymController
 {
     var $stepContainerClass = '';
@@ -10,7 +28,6 @@ class CampaignsController extends acymController
         parent::__construct();
         $this->breadcrumb[acym_translation('ACYM_EMAILS')] = acym_completeLink('campaigns');
         $this->loadScripts = [
-            'edit_email' => ['editor-wysid'],
             'recipients' => ['vue-applications' => ['entity_select']],
             'send_settings' => ['datepicker'],
             'all' => ['introjs'],
@@ -26,7 +43,7 @@ class CampaignsController extends acymController
         $this->storeRedirectListing(true);
     }
 
-    private function storeRedirectListing($fromListing = false)
+    public function storeRedirectListing($fromListing = false)
     {
         $isFrontJoomla = !acym_isAdmin() && ACYM_CMS == 'joomla';
         $variableName = $isFrontJoomla ? 'ctrl_stored_front' : 'ctrl_stored';
@@ -63,6 +80,11 @@ class CampaignsController extends acymController
         return true;
     }
 
+    private function prepareListingClasses(&$data)
+    {
+        $data['workflowHelper'] = new WorkflowHelper();
+    }
+
     public function campaigns()
     {
         acym_setVar('layout', 'campaigns');
@@ -73,13 +95,14 @@ class CampaignsController extends acymController
         ];
         $this->prepareAllCampaignsListing($data);
         $this->prepareToolbar($data);
+        $this->prepareListingClasses($data);
 
         parent::display($data);
     }
 
     public function prepareToolbar(&$data)
     {
-        $toolbarHelper = acym_get('helper.toolbar');
+        $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'campaigns_search', 'ACYM_SEARCH');
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'newEmail'], 'add', true);
         $toolbarHelper->addFilterByTag($data, 'campaigns_tag', 'acym__campaigns__filter__tags acym__select');
@@ -105,6 +128,7 @@ class CampaignsController extends acymController
 
         $this->prepareWelcomeUnsubListing($data);
         $this->prepareToolbar($data);
+        $this->prepareListingClasses($data);
 
         parent::display($data);
     }
@@ -120,6 +144,7 @@ class CampaignsController extends acymController
 
         $this->prepareWelcomeUnsubListing($data);
         $this->prepareToolbar($data);
+        $this->prepareListingClasses($data);
 
         parent::display($data);
     }
@@ -127,19 +152,25 @@ class CampaignsController extends acymController
     private function prepareWelcomeUnsubListing(&$data)
     {
         $this->getAllParamsRequest($data);
-        $this->prepareEmailsListing($data, $data['email_type'], 'mail');
+        $this->prepareEmailsListing($data, $data['email_type'], 'Mail');
     }
 
     private function getAllParamsRequest(&$data)
     {
+        $tagClass = new TagClass();
         $data['search'] = $this->getVarFiltersListing('string', 'campaigns_search', '');
-        $data['ordering'] = $this->getVarFiltersListing('string', 'campaigns_ordering', 'id');
-        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'campaigns_ordering_sort_order', 'desc');
-        $data['status'] = $this->getVarFiltersListing('string', 'campaigns_status', '');
         $data['tag'] = $this->getVarFiltersListing('string', 'campaigns_tag', '');
-        $data['allTags'] = acym_get('class.tag')->getAllTagsByType('mail');
-        $data['pagination'] = acym_get('helper.pagination');
-
+        $data['allTags'] = $tagClass->getAllTagsByType('mail');
+        $data['pagination'] = new PaginationHelper();
+        $data['status'] = '';
+        if (isset($data['campaign_type'])) {
+            $data['status'] = $this->getVarFiltersListing('string', $data['campaign_type'].'_status', '');
+            $data['ordering'] = $this->getVarFiltersListing('string', $data['campaign_type'].'_ordering', 'id');
+            $data['orderingSortOrder'] = $this->getVarFiltersListing('string', $data['campaign_type'].'_ordering_sort_order', 'desc');
+        } elseif (isset($data['email_type'])) {
+            $data['ordering'] = $this->getVarFiltersListing('string', $data['email_type'].'_ordering', 'id');
+            $data['orderingSortOrder'] = $this->getVarFiltersListing('string', $data['email_type'].'_ordering_sort_order', 'desc');
+        }
 
         if (!empty($data['tag'])) {
             $data['status_toolbar'] = [
@@ -162,7 +193,7 @@ class CampaignsController extends acymController
     {
         foreach ($data['allCampaigns'] as $key => $campaign) {
             if (empty($campaign->sending_params)) continue;
-            $textToDisplay = new stdClass();
+            $textToDisplay = new \stdClass();
             $textToDisplay->triggers = $campaign->sending_params;
             acym_trigger('onAcymDeclareSummary_triggers', [&$textToDisplay], 'plgAcymTime');
             $textToDisplay = array_values($textToDisplay->triggers);
@@ -178,7 +209,7 @@ class CampaignsController extends acymController
         $status = $data['status'];
 
         // Get the matching campaigns
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $matchingCampaigns = $this->getMatchingElementsFromData(
             [
                 'element_tab' => $campaignType,
@@ -217,7 +248,7 @@ class CampaignsController extends acymController
 
     private function getIsPendingGenerated(&$data)
     {
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $campaingsGenerated = $campaignClass->getAllCampaignsGenerated();
         $data['generatedPending'] = !empty($campaingsGenerated);
     }
@@ -226,7 +257,7 @@ class CampaignsController extends acymController
     {
         acym_setVar('layout', 'new_email');
 
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         if (acym_isAdmin()) {
             $returnUrl = urlencode(base64_encode(acym_completeLink('campaigns')));
             $data = [
@@ -256,11 +287,11 @@ class CampaignsController extends acymController
     {
         acym_setVar('layout', 'choose_email');
         acym_setVar('step', 'chooseTemplate');
-        $pagination = acym_get('helper.pagination');
+        $pagination = new PaginationHelper();
 
         // Get filters data
         $campaignId = $this->getVarFiltersListing('int', 'id', 0);
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $searchFilter = $this->getVarFiltersListing('string', 'mailchoose_search', '');
         $tagFilter = $this->getVarFiltersListing('string', 'mailchoose_tag', '');
         $ordering = $this->getVarFiltersListing('string', 'mailchoose_ordering', 'creation_date');
@@ -280,7 +311,7 @@ class CampaignsController extends acymController
         $mailsPerPage = $pagination->getListLimit();
         $page = acym_getVar('int', 'mailchoose_pagination_page', 1);
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $matchingMails = $mailClass->getMatchingElements(
             [
                 'ordering' => $ordering,
@@ -297,9 +328,11 @@ class CampaignsController extends acymController
         // Prepare the pagination
         $pagination->setStatus($matchingMails['total'], $page, $mailsPerPage);
 
+        $tagClass = new TagClass();
+
         $data = [
             'allMails' => $matchingMails['elements'],
-            'allTags' => acym_get('class.tag')->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType('mail'),
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
@@ -307,6 +340,7 @@ class CampaignsController extends acymController
             'campaignID' => $campaignId,
             'campaign_type' => $campaignType,
         ];
+        $this->prepareListingClasses($data);
 
 
         parent::display($data);
@@ -326,7 +360,7 @@ class CampaignsController extends acymController
         $editLink = 'campaigns&task=edit&step=editEmail';
 
         if (empty($campaignId)) {
-            $data['mailInformation'] = new stdClass();
+            $data['mailInformation'] = new \stdClass();
             $data['mailInformation']->id = 0;
             $data['mailInformation']->name = '';
             $data['mailInformation']->tags = [];
@@ -339,7 +373,7 @@ class CampaignsController extends acymController
 
             $editLink .= '&from='.$mailId;
         } else {
-            $campaignClass = acym_get('class.campaign');
+            $campaignClass = new CampaignClass();
             $data['mailInformation'] = $campaignClass->getOneByIdWithMail($campaignId);
             if (empty($mailId)) {
                 $mailId = $data['mailInformation']->mail_id;
@@ -359,7 +393,7 @@ class CampaignsController extends acymController
             $data['mailInformation']->headers = '';
             $data['typeEditor'] = 'acyEditor';
         } elseif (!empty($mailId)) {
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             $mail = $mailClass->getOneById($mailId);
             $data['mailInformation']->tags = $mail->tags;
             $data['mailInformation']->subject = $mail->subject;
@@ -378,7 +412,7 @@ class CampaignsController extends acymController
         $data['mailId'] = $mailId;
         $data['campaignID'] = $data['mailInformation']->id;
 
-        $pluginHelper = acym_get('helper.plugin');
+        $pluginHelper = new PluginHelper();
         $pluginHelper->cleanHtml($data['mailInformation']->body);
 
         $editLink .= '&type_editor='.$data['typeEditor'];
@@ -387,7 +421,7 @@ class CampaignsController extends acymController
 
     private function prepareEditor(&$data)
     {
-        $data['editor'] = acym_get('helper.editor');
+        $data['editor'] = new EditorHelper();
         $data['editor']->content = $data['mailInformation']->body;
         $data['editor']->autoSave = !empty($data['mailInformation']->autosave) ? $data['mailInformation']->autosave : '';
         if (!empty($data['mailInformation']->settings)) {
@@ -411,6 +445,10 @@ class CampaignsController extends acymController
         }
 
         $data['editor']->mailId = empty($data['mailId']) ? 0 : $data['mailId'];
+
+        if ($data['editor']->isDragAndDrop()) {
+            $this->loadScripts['edit_email'][] = 'editor-wysid';
+        }
     }
 
     private function prepareMaxUpload(&$data)
@@ -428,7 +466,7 @@ class CampaignsController extends acymController
 
     private function prepareAllMailsForMultilingual(&$data)
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         $mails = $mailClass->getMultilingualMails($data['mailId']);
 
@@ -451,18 +489,22 @@ class CampaignsController extends acymController
         acym_setVar('numberattachment', '0');
         acym_setVar('step', 'editEmail');
 
+        $tagClass = new TagClass();
+
         $data = [
             'containerClass' => $this->stepContainerClass,
             'social_icons' => $this->config->get('social_icons', '{}'),
-            'allTags' => acym_get('class.tag')->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType('mail'),
             'campaign_type' => acym_getVar('string', 'campaign_type', 'now'),
             'typeEditor' => acym_getVar('string', 'type_editor', ''),
+            'uploadFileType' => new UploadfileType(),
         ];
 
         $this->prepareEditCampaign($data);
         $this->prepareEditor($data);
         $this->prepareMaxUpload($data);
         $this->prepareMultilingual($data);
+        $this->prepareListingClasses($data);
 
         parent::display($data);
     }
@@ -471,15 +513,15 @@ class CampaignsController extends acymController
     {
         acym_setVar('layout', 'recipients');
         $campaignId = acym_getVar('int', 'id');
-        $campaignClass = acym_get('class.campaign');
-        $mailClass = acym_get('class.mail');
+        $campaignClass = new CampaignClass();
+        $mailClass = new MailClass();
         acym_setVar('step', 'recipients');
 
         if (!empty($campaignId)) {
             $currentCampaign = $campaignClass->getOneByIdWithMail($campaignId);
             $this->breadcrumb[acym_escape($currentCampaign->name)] = acym_completeLink('campaigns&task=edit&step=recipients&id='.$campaignId);
         } else {
-            $currentCampaign = new stdClass();
+            $currentCampaign = new \stdClass();
             $this->breadcrumb[acym_translation('ACYM_NEW_CAMPAIGN')] = acym_completeLink('campaigns&task=edit&step=recipients');
         }
 
@@ -487,6 +529,7 @@ class CampaignsController extends acymController
             'campaignInformation' => $campaignId,
             'currentCampaign' => $currentCampaign,
             'containerClass' => $this->stepContainerClass,
+            'entitySelectHelper' => new EntitySelectHelper(),
         ];
 
         // Get saved data if edition of a campaign
@@ -496,6 +539,7 @@ class CampaignsController extends acymController
             acym_arrayToInteger($campaign['campaignListsId']);
             $campaign['campaignListsSelected'] = json_encode($campaign['campaignListsId']);
         }
+        $this->prepareListingClasses($campaign);
 
         parent::display($campaign);
     }
@@ -505,7 +549,7 @@ class CampaignsController extends acymController
         acym_setVar('layout', 'send_settings');
         acym_setVar('step', 'sendSettings');
         $campaignId = acym_getVar('int', 'id');
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $campaignInformation = empty($campaignId) ? null : $campaignClass->getOneById($campaignId);
 
         if (is_null($campaignInformation)) {
@@ -518,7 +562,7 @@ class CampaignsController extends acymController
         //To know if we create or modify the campaign
         $from = acym_getVar('string', 'from');
 
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $currentCampaign = $campaignClass->getOneByIdWithMail($campaignId);
         $this->breadcrumb[acym_escape($currentCampaign->name)] = acym_completeLink('campaigns&task=edit&step=sendSettings&id='.$campaignId);
 
@@ -531,8 +575,8 @@ class CampaignsController extends acymController
         $campaign['currentCampaign'] = $currentCampaign;
         $campaign['from'] = $from;
         $campaign['suggestedDate'] = acym_date('1534771620', 'j M Y H:i');
-        $campaign['senderInformations'] = new stdClass();
-        $campaign['config_values'] = new stdClass();
+        $campaign['senderInformations'] = new \stdClass();
+        $campaign['config_values'] = new \stdClass();
         $campaign['currentCampaign']->send_now = $currentCampaign->sending_type == $campaignClass::SENDING_TYPE_NOW;
         $campaign['currentCampaign']->send_scheduled = $currentCampaign->sending_type == $campaignClass::SENDING_TYPE_SCHEDULED;
         $campaign['currentCampaign']->send_auto = $currentCampaign->sending_type == $campaignClass::SENDING_TYPE_AUTO;
@@ -563,6 +607,7 @@ class CampaignsController extends acymController
 
         $campaign['containerClass'] = $this->stepContainerClass;
         $campaign['langChoice'] = acym_isMultilingual() ? '' : acym_languageOption($campaign['currentCampaign']->links_language, 'senderInformation[links_language]');
+        $this->prepareListingClasses($campaign);
 
         return parent::display($campaign);
     }
@@ -571,8 +616,8 @@ class CampaignsController extends acymController
     {
         acym_checkToken();
 
-        $campaignClass = acym_get('class.campaign');
-        $mailClass = acym_get('class.mail');
+        $campaignClass = new CampaignClass();
+        $mailClass = new MailClass();
         $formData = acym_getVar('array', 'mail', []);
         $multilingual = acym_getVar('array', 'multilingual', [], 'REQUEST', ACYM_ALLOWRAW);
         $allowedFields = acym_getColumns('mail');
@@ -586,13 +631,13 @@ class CampaignsController extends acymController
         ];
 
         if (empty($campaignId)) {
-            $mail = new stdClass();
+            $mail = new \stdClass();
             $mail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
             $mail->type = 'standard';
             $mail->template = 0;
             $mail->library = 0;
 
-            $campaign = new stdClass();
+            $campaign = new \stdClass();
             $campaign->draft = 1;
             $campaign->active = 0;
             $campaign->sending_type = $types[$campaignType];
@@ -631,7 +676,7 @@ class CampaignsController extends acymController
             foreach ($attachments as $id => $filepath) {
                 if (empty($filepath)) continue;
 
-                $attachment = new stdClass();
+                $attachment = new \stdClass();
                 $attachment->filename = $filepath;
                 $attachment->size = filesize(ACYM_ROOT.$filepath);
 
@@ -732,13 +777,13 @@ class CampaignsController extends acymController
         $allListsUnselected = json_decode(acym_getVar('string', 'acym__entity_select__unselected'));
         $campaignId = acym_getVar('int', 'id');
 
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $currentCampaign = $campaignClass->getOneByIdWithMail($campaignId);
 
 
         if ($currentCampaign->sent && !$currentCampaign->active) {
-            $mailStatClass = acym_get('class.mailstat');
-            $listClass = acym_get('class.list');
+            $mailStatClass = new MailStatClass();
+            $listClass = new ListClass();
             $mailStat = $mailStatClass->getOneRowByMailId($currentCampaign->mail_id);
             $mailStat->total_subscribers = $listClass->getTotalSubCount($allLists);
             $mailStatClass->save($mailStat);
@@ -754,8 +799,8 @@ class CampaignsController extends acymController
 
     public function saveSendSettings()
     {
-        $campaignClass = acym_get('class.campaign');
-        $mailClass = acym_get('class.mail');
+        $campaignClass = new CampaignClass();
+        $mailClass = new MailClass();
         $campaignId = acym_getVar('int', 'id');
         $senderInformation = acym_getVar('', 'senderInformation');
         $sendingDate = acym_getVar('string', 'sendingDate');
@@ -843,8 +888,8 @@ class CampaignsController extends acymController
         //We get the id of campaign checked
         $campaignsSelected = acym_getVar('int', 'elements_checked');
 
-        $campaignClass = acym_get('class.campaign');
-        $mailClass = acym_get('class.mail');
+        $campaignClass = new CampaignClass();
+        $mailClass = new MailClass();
         $campaignId = 0;
 
         foreach ($campaignsSelected as $campaignSelected) {
@@ -908,7 +953,7 @@ class CampaignsController extends acymController
         acym_setVar('layout', 'summary');
 
         $data = [
-            'mailClass' => acym_get('class.mail'),
+            'mailClass' => new MailClass(),
             'campaignClass' => $this->currentClass,
             'containerClass' => $this->stepContainerClass,
         ];
@@ -924,6 +969,7 @@ class CampaignsController extends acymController
         $this->prepareReceiversSummary($data);
         $this->prepareMultilingual($data, false);
         $this->prepareAllMailsForMultilingual($data);
+        $this->prepareListingClasses($data);
 
         $this->breadcrumb[$data['campaignInformation']->name] = acym_completeLink('campaigns&task=edit&step=summary&id='.$data['campaignInformation']->id);
         parent::display($data);
@@ -931,11 +977,11 @@ class CampaignsController extends acymController
 
     protected function prepareCurrentUserSummary(&$data)
     {
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $currentUserEmail = acym_currentUserEmail();
         $data['receiver'] = $userClass->getOneByEmail($currentUserEmail);
         if (empty($data['receiver'])) {
-            $receiver = new stdClass();
+            $receiver = new \stdClass();
             $receiver->email = $currentUserEmail;
             $newID = $userClass->save($receiver);
             $data['receiver'] = $userClass->getOneById($newID);
@@ -951,7 +997,7 @@ class CampaignsController extends acymController
         $campaign->isAuto = $campaign->sending_type == $this->currentClass->getConstAuto();
 
         if ($campaign->isAuto) {
-            $textToDisplay = new stdClass();
+            $textToDisplay = new \stdClass();
             $textToDisplay->triggers = $campaign->sending_params;
             acym_trigger('onAcymDeclareSummary_triggers', [&$textToDisplay], 'plgAcymTime');
             $textToDisplay = $textToDisplay->triggers;
@@ -995,7 +1041,7 @@ class CampaignsController extends acymController
         acym_trigger('replaceContent', [&$mailData, false]);
         acym_trigger('replaceUserInformation', [&$mailData, &$data['receiver'], false]);
 
-        $editorHelper = acym_get('helper.editor');
+        $editorHelper = new EditorHelper();
         $mailData->settings = json_decode($mailData->settings, true);
         $mailData->stylesheet .= $editorHelper->getSettingsStyle($mailData->settings);
 
@@ -1008,7 +1054,7 @@ class CampaignsController extends acymController
         $campaignLists = $data['mailClass']->getAllListsWithCountSubscribersByMailIds([$data['campaignInformation']->mail_id]);
 
         if ($data['campaignInformation']->sent) {
-            $mailstatClass = acym_get('class.mailstat');
+            $mailstatClass = new MailStatClass();
             $nbSubscribers = $mailstatClass->getTotalSubscribersByMailId($data['campaignInformation']->mail_id);
         } else {
             if (!empty($campaignLists)) {
@@ -1016,7 +1062,7 @@ class CampaignsController extends acymController
                 foreach ($campaignLists as $oneList) {
                     $listsIds[] = $oneList->list_id;
                 }
-                $listClass = acym_get('class.list');
+                $listClass = new ListClass();
                 $nbSubscribers = $listClass->getSubscribersCount($listsIds);
             }
         }
@@ -1043,10 +1089,10 @@ class CampaignsController extends acymController
         acym_checkToken();
 
         $campaignID = acym_getVar('int', $action);
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
 
         if (!empty($campaignID)) {
-            $campaign = new stdClass();
+            $campaign = new \stdClass();
             $campaign->id = $campaignID;
             $campaign->active = 0;
             $campaign->draft = 1;
@@ -1078,9 +1124,9 @@ class CampaignsController extends acymController
         $campaignId = acym_getVar('int', 'id');
         $campaignSendingDate = acym_getVar('string', 'sending_date');
         $resendTarget = acym_getVar('cmd', 'resend_target', '');
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
 
-        $campaign = new stdClass();
+        $campaign = new \stdClass();
         $campaign->id = $campaignId;
         $campaign->draft = 0;
         $campaign->active = 1;
@@ -1106,9 +1152,9 @@ class CampaignsController extends acymController
     public function activeAutoCampaign()
     {
         $campaignId = acym_getVar('int', 'id');
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
 
-        $campaign = new stdClass();
+        $campaign = new \stdClass();
         $campaign->id = $campaignId;
         $campaign->draft = 0;
         $campaign->active = 1;
@@ -1128,9 +1174,9 @@ class CampaignsController extends acymController
     public function saveAsDraftCampaign()
     {
         $campaignId = acym_getVar('int', 'id');
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
 
-        $campaign = new stdClass();
+        $campaign = new \stdClass();
         $campaign->id = $campaignId;
         $campaign->draft = 1;
         $campaign->active = 0;
@@ -1150,7 +1196,7 @@ class CampaignsController extends acymController
     {
 
         $campaignId = acym_getVar('int', 'id');
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
 
         $campaign = $campaignClass->getOneById($campaignId);
         if (empty($campaign)) {
@@ -1178,8 +1224,8 @@ class CampaignsController extends acymController
      */
     public function getAll()
     {
-        $campaignClass = acym_get('class.campaign');
-        $listClass = acym_get('class.list');
+        $campaignClass = new CampaignClass();
+        $listClass = new ListClass();
 
         $allCampaigns = $campaignClass->getAll();
 
@@ -1213,8 +1259,8 @@ class CampaignsController extends acymController
      */
     public function getCountStatusFilter($allCampaigns, $type)
     {
-        $campaignClass = acym_get('class.campaign');
-        $allCountStatus = new stdClass();
+        $campaignClass = new CampaignClass();
+        $allCountStatus = new \stdClass();
 
         if ($type == 'campaigns') {
             $this->getCountStatusFilterCampaigns($allCampaigns, $allCountStatus, $campaignClass);
@@ -1256,10 +1302,10 @@ class CampaignsController extends acymController
     public function cancelDashboardAndGetCampaignsAjax()
     {
         $campaignId = acym_getVar('int', 'id');
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
 
         if (!empty($campaignId)) {
-            $campaign = new stdClass();
+            $campaign = new \stdClass();
             $campaign->id = $campaignId;
             $campaign->active = 0;
             $campaign->draft = 1;
@@ -1304,7 +1350,7 @@ class CampaignsController extends acymController
         if (empty($campaignID)) {
             acym_enqueueMessage(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), 'error');
         } else {
-            $campaignClass = acym_get('class.campaign');
+            $campaignClass = new CampaignClass();
             $campaign = $campaignClass->getOneByIdWithMail($campaignID);
 
             $resendTarget = acym_getVar('cmd', 'resend_target', '');
@@ -1347,7 +1393,7 @@ class CampaignsController extends acymController
             exit;
         }
 
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         echo $listClass->getTotalSubCount($listsSelected);
         exit;
     }
@@ -1358,7 +1404,7 @@ class CampaignsController extends acymController
         $attachid = acym_getVar('int', 'id', 0);
 
         if (!empty($mailid) && $attachid >= 0) {
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
 
             if ($mailClass->deleteOneAttachment($mailid, $attachid)) {
                 echo json_encode(['message' => acym_translation('ACYM_ATTACHMENT_WELL_DELETED')]);
@@ -1372,14 +1418,14 @@ class CampaignsController extends acymController
 
     public function test()
     {
-        $result = new stdClass();
+        $result = new \stdClass();
         $result->type = 'info';
         $result->timer = 5000;
         $result->message = '';
 
         $campaignId = acym_getVar('int', 'id', 0);
 
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $campaign = $campaignClass->getOneById($campaignId);
 
         if (empty($campaign)) {
@@ -1389,7 +1435,7 @@ class CampaignsController extends acymController
             exit;
         }
 
-        $mailerHelper = acym_get('helper.mailer');
+        $mailerHelper = new MailerHelper();
         $mailerHelper->autoAddUser = true;
         $mailerHelper->checkConfirmField = false;
         $mailerHelper->report = false;
@@ -1417,7 +1463,7 @@ class CampaignsController extends acymController
 
     public function tests()
     {
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         acym_setVar('step', 'tests');
         acym_setVar('layout', 'tests');
         $campaignId = acym_getVar('int', 'id', 0);
@@ -1443,6 +1489,8 @@ class CampaignsController extends acymController
             'version' => 'enterprise',
         ];
 
+        $this->prepareListingClasses($data);
+
         $this->breadcrumb[acym_escape($campaign->name)] = acym_completeLink('campaigns&task=edit&step=tests&id='.$campaign->id);
         parent::display($data);
     }
@@ -1455,7 +1503,7 @@ class CampaignsController extends acymController
     public function checkContent()
     {
         $campaignId = acym_getVar('int', 'id', 0);
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $campaign = $campaignClass->getOneByIdWithMail($campaignId);
 
         $spamWords = [
@@ -1658,16 +1706,16 @@ class CampaignsController extends acymController
     public function checkLinks()
     {
         $campaignId = acym_getVar('int', 'id', 0);
-        $campaignClass = acym_get('class.campaign');
-        $mailClass = acym_get('class.mail');
+        $campaignClass = new CampaignClass();
+        $mailClass = new MailClass();
         $campaign = $campaignClass->getOneById($campaignId);
         $mail = $mailClass->getOneById($campaign->mail_id);
 
         acym_trigger('replaceContent', [&$mail, false]);
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $receiver = $userClass->getOneByEmail(acym_currentUserEmail());
         if (empty($receiver)) {
-            $receiver = new stdClass();
+            $receiver = new \stdClass();
             $receiver->email = acym_currentUserEmail();
             $newID = $userClass->save($receiver);
             $receiver = $userClass->getOneById($newID);
@@ -1702,12 +1750,12 @@ class CampaignsController extends acymController
 
     public function checkSPAM()
     {
-        $result = new stdClass();
+        $result = new \stdClass();
         $result->type = 'error';
         $result->message = '';
 
         $campaignId = acym_getVar('int', 'id', 0);
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $campaign = $campaignClass->getOneByIdWithMail($campaignId);
 
         if (empty($campaign->mail_id)) {
@@ -1732,14 +1780,14 @@ class CampaignsController extends acymController
                     if (empty($decodedInformation['email'])) {
                         $result->message = acym_translation('ACYM_SPAMTEST_MISSING_EMAIL');
                     } else {
-                        $mailerHelper = acym_get('helper.mailer');
+                        $mailerHelper = new MailerHelper();
                         $mailerHelper->checkConfirmField = false;
                         $mailerHelper->checkEnabled = false;
                         $mailerHelper->loadedToSend = true;
                         $mailerHelper->report = false;
 
                         //send a message to acy-WEBSITE-randnumber@mail-tester.com
-                        $receiver = new stdClass();
+                        $receiver = new \stdClass();
                         $receiver->id = 0;
                         $receiver->email = $decodedInformation['email'];
                         $receiver->name = $decodedInformation['name'];
@@ -1771,7 +1819,7 @@ class CampaignsController extends acymController
 
     public function saveAsTmplAjax()
     {
-        $mailController = acym_get('controller.mails');
+        $mailController = new MailsController();
         $isWellSaved = $mailController->store(true);
         echo json_encode(['error' => $isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), 'data' => $isWellSaved]);
         exit;
@@ -1783,7 +1831,7 @@ class CampaignsController extends acymController
     public function searchTestReceivers()
     {
         $search = acym_getVar('string', 'search', '');
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $users = $userClass->getUsersLikeEmail($search);
 
         $return = [];
@@ -1797,7 +1845,7 @@ class CampaignsController extends acymController
     public function summaryGenerated()
     {
         $campaignId = acym_getVar('int', 'id', 0);
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         acym_setVar('layout', 'summary_generated');
 
@@ -1844,6 +1892,7 @@ class CampaignsController extends acymController
             'lists' => $lists,
             'parent_campaign' => $parentCampaign['campaign'],
             'parent_mail' => $parentCampaign['mail'],
+            'mailClass' => $mailClass,
         ];
 
         $this->prepareMultilingual($data, false);
@@ -1856,7 +1905,7 @@ class CampaignsController extends acymController
     protected function changeStatusGeneratedCampaign($statusToApply = 'disable')
     {
         $campaignId = acym_getVar('int', 'id', 0);
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
 
         $campaign = $this->_loadCampaignMail($campaignId);
 
@@ -1909,8 +1958,8 @@ class CampaignsController extends acymController
     {
         if (empty($campaignId)) return false;
 
-        $campaignClass = acym_get('class.campaign');
-        $mailClass = acym_get('class.mail');
+        $campaignClass = new CampaignClass();
+        $mailClass = new MailClass();
 
         $campaign = $campaignClass->getOneById($campaignId);
         if (empty($campaign)) return false;

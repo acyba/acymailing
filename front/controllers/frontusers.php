@@ -1,6 +1,17 @@
 <?php
 
-include ACYM_CONTROLLER.'users.php';
+namespace AcyMailing\FrontControllers;
+
+use AcyMailing\Classes\FieldClass;
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Controllers\UsersController;
+use AcyMailing\Helpers\CaptchaHelper;
+use AcyMailing\Helpers\EntitySelectHelper;
+use AcyMailing\Helpers\ToolbarHelper;
+use AcyMailing\Helpers\UserHelper;
+use AcyMailing\Libraries\acymParameter;
 
 class FrontusersController extends UsersController
 {
@@ -17,7 +28,7 @@ class FrontusersController extends UsersController
 
         if (empty($data['allUsers'])) return;
 
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
         $fieldsToDisplay = $fieldClass->getAllFieldsFrontendListing();
         if (empty($fieldsToDisplay['ids'])) return;
 
@@ -102,10 +113,10 @@ class FrontusersController extends UsersController
 
     protected function prepareToolbar(&$data)
     {
-        $toolbarHelper = acym_get('helper.toolbar');
+        $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'users_search', 'ACYM_SEARCH');
         $toolbarHelper->addButton(acym_translation('ACYM_IMPORT'), ['data-task' => 'import'], 'download');
-        $entityHelper = acym_get('helper.entitySelect');
+        $entityHelper = new EntitySelectHelper();
         $otherContent = acym_modal(
             '<i class="acymicon-bell1"></i>'.acym_translation('ACYM_SUBSCRIBE').' (<span id="acym__users__listing__number_to_add_to_list">0</span>)',
             $entityHelper->entitySelect(
@@ -170,14 +181,14 @@ class FrontusersController extends UsersController
 
         $currentUserid = acym_currentUserId();
         if (empty($currentUserid) && $this->config->get('captcha', '') == 1) {
-            $captchaHelper = acym_get('helper.captcha');
+            $captchaHelper = new CaptchaHelper();
             if (!$captchaHelper->check()) {
                 $this->displayMessage('ACYM_WRONG_CAPTCHA', $ajax);
             }
         }
 
         $formData = acym_getVar('array', 'user', [], '');
-        $user = new stdClass();
+        $user = new \stdClass();
 
         // Clean data
         foreach ($formData as $column => $value) {
@@ -191,7 +202,7 @@ class FrontusersController extends UsersController
             }
         }
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         if (empty($user->email)) {
             $connectedUser = $userClass->identify(true);
             if (!empty($connectedUser->email)) {
@@ -297,7 +308,7 @@ class FrontusersController extends UsersController
 
     private function unsubscribeDirectly($alreadyExists, $ajax)
     {
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $visibleSubscription = acym_getVar('array', 'subscription', []);
         $hiddenLists = trim(acym_getVar('string', 'hiddenlists', ''));
         $hiddenSubscription = empty($hiddenLists) ? [] : explode(',', $hiddenLists);
@@ -305,7 +316,7 @@ class FrontusersController extends UsersController
 
         $mailId = acym_getVar('int', 'mail_id', 0);
         if (!empty($mailId)) {
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             $unsubscribeLists = array_keys($mailClass->getAllListsByMailId($mailId));
         }
 
@@ -336,7 +347,7 @@ class FrontusersController extends UsersController
     public function unsubscribe()
     {
         acym_checkRobots();
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
 
         $redirectToUnsubPage = $this->config->get('unsubscribe_page', 1);
 
@@ -350,7 +361,7 @@ class FrontusersController extends UsersController
         $currentUserid = acym_currentUserId();
         $user = $userClass->identify();
         if (empty($user) && empty($currentUserid) && $this->config->get('captcha', '') == 1) {
-            $captchaClass = acym_get('helper.captcha');
+            $captchaClass = new CaptchaHelper();
             if (!$captchaClass->check()) {
                 $this->displayMessage('ACYM_WRONG_CAPTCHA', $ajax);
             }
@@ -399,7 +410,7 @@ class FrontusersController extends UsersController
     private function getUserFromUnsubPage()
     {
         $userID = acym_getVar('int', 'user_id');
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
 
         $user = $userClass->getOneById($userID);
 
@@ -414,7 +425,7 @@ class FrontusersController extends UsersController
 
     private function unsubscribeAllInner($update = false)
     {
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $user = $this->getUserFromUnsubPage();
 
         $allLists = $userClass->getUserSubscriptionById($user->id);
@@ -450,7 +461,7 @@ class FrontusersController extends UsersController
 
     public function saveSubscriptions()
     {
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
 
         //get the user
         $user = $this->getUserFromUnsubPage();
@@ -485,7 +496,7 @@ class FrontusersController extends UsersController
 
     public function unsubscribePage($alreadyExists)
     {
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $userSubscriptions = $userClass->getUserSubscriptionById($alreadyExists->id);
 
         $data = [
@@ -502,7 +513,7 @@ class FrontusersController extends UsersController
         if (acym_isRobot()) return false;
 
         // We identify the user
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $user = $userClass->identify();
         if (empty($user)) {
             acym_enqueueMessage(acym_translation('ACYM_USER_NOT_FOUND'), 'error');
@@ -543,7 +554,7 @@ class FrontusersController extends UsersController
 
     public function profile()
     {
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $user = $userClass->identify(true);
 
         if (empty($user)) {
@@ -559,11 +570,12 @@ class FrontusersController extends UsersController
         acym_addScript(false, ACYM_JS.'module.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'module.min.js'));
 
         // Get the page parameters
-        $params = new stdClass();
+        $params = new \stdClass();
         $menu = acym_getMenu();
         if (is_object($menu)) {
             $params->source = 'Menu n°'.$menu->id;
-            $menuparams = new acymParameter($menu->params);
+            $menuParameters = method_exists($menu, 'getParams') ? $menu->getParams() : $menu->params;
+            $menuparams = new acymParameter($menuParameters);
 
             if (!empty($menuparams)) {
                 // Joomla specific params
@@ -598,6 +610,8 @@ class FrontusersController extends UsersController
             $cmsUserLanguage = acym_getCmsUserLanguage();
             $data['user']->language = empty($cmsUserLanguage) ? acym_getLanguageTag() : $cmsUserLanguage;
         }
+
+        $data['captchaHelper'] = new CaptchaHelper();
 
         $this->prepareLanguageEdit($data);
 
@@ -643,12 +657,12 @@ class FrontusersController extends UsersController
         }
 
         // Get the current user and his subscription
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $user = $userClass->identify(true);
         if (empty($user)) {
-            $listClass = acym_get('class.list');
+            $listClass = new ListClass();
             $subscription = $listClass->getAll('id');
-            $user = new stdClass();
+            $user = new \stdClass();
             $user->id = 0;
             $user->key = 0;
 
@@ -751,7 +765,7 @@ class FrontusersController extends UsersController
             }
         }
 
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
         $allfields = $fieldClass->getFieldsByID($values->fields);
         $fields = [];
         foreach ($allfields as $field) {
@@ -780,7 +794,7 @@ class FrontusersController extends UsersController
         acym_checkToken();
         acym_checkRobots();
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $userClass->extendedEmailVerif = true;
 
 
@@ -808,14 +822,14 @@ class FrontusersController extends UsersController
     {
         acym_checkToken();
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $user = $userClass->identify(true);
 
         if (empty($user->id)) {
             acym_redirect(acym_rootURI());
         }
 
-        $userHelper = acym_get('helper.user');
+        $userHelper = new UserHelper();
         $userHelper->exportdata($user->id);
     }
 
@@ -823,7 +837,7 @@ class FrontusersController extends UsersController
     {
         $listsToSave = json_decode(acym_getVar('string', 'acym__entity_select__selected'));
         if (empty($listsToSave)) {
-            $listClass = acym_get('class.list');
+            $listClass = new ListClass();
             $listManagementId = $listClass->getfrontManagementList();
             if (empty($listManagementId)) {
                 acym_redirect(acym_rootURI(), 'ACYM_UNABLE_TO_CREATE_MANAGEMENT_LIST', 'error');

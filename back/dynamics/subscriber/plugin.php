@@ -1,5 +1,12 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\FieldClass;
+use AcyMailing\Classes\AutomationClass;
+use AcyMailing\Types\OperatorType;
+
 class plgAcymSubscriber extends acymPlugin
 {
     /**
@@ -53,7 +60,7 @@ class plgAcymSubscriber extends acymPlugin
 		</script>
 
         <?php
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
         $fieldsUser = acym_getColumns('user');
         $fieldsStats = acym_getColumns('user_stat');
         $fields = array_merge($fieldsUser, $fieldsStats);
@@ -128,7 +135,7 @@ class plgAcymSubscriber extends acymPlugin
 
         if (empty($extractedTags)) return;
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $user = $userClass->getAllUserFields($user);
 
         $tags = [];
@@ -144,7 +151,7 @@ class plgAcymSubscriber extends acymPlugin
 
     private function replaceSubTag(&$mytag, $user)
     {
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
         $field = $mytag->id;
         if (strpos($mytag->id, 'custom') === false) {
             $replaceme = (isset($user->$field) && strlen($user->$field) > 0) ? $user->$field : $mytag->default;
@@ -186,8 +193,8 @@ class plgAcymSubscriber extends acymPlugin
 
     public function onAcymDeclareConditions(&$conditions)
     {
-        $userClass = acym_get('class.user');
-        $fieldClass = acym_get('class.field');
+        $userClass = new UserClass();
+        $fieldClass = new FieldClass();
         $fields = $userClass->getAllColumnsUserAndCustomField();
         unset($fields['automation']);
 
@@ -221,7 +228,7 @@ class plgAcymSubscriber extends acymPlugin
                 );
             }
         }
-        $operator = acym_get('type.operator');
+        $operator = new OperatorType();
 
         $conditions['user']['acy_field'] = new stdClass();
         $conditions['user']['acy_field']->name = acym_translation('ACYM_ACYMAILING_FIELD');
@@ -254,7 +261,7 @@ class plgAcymSubscriber extends acymPlugin
         $usersColumns = acym_getColumns('user');
 
         if (!in_array($options['field'], $usersColumns)) {
-            $fieldClass = acym_get('class.field');
+            $fieldClass = new FieldClass();
             $field = $fieldClass->getOneFieldByID($options['field']);
 
             $type = 'phone' == $field->type ? 'phone' : '';
@@ -352,7 +359,7 @@ class plgAcymSubscriber extends acymPlugin
         $actions['acy_user']->option = '<div class="intext_select_automation cell">'.acym_select($userActions, 'acym_action[actions][__and__][acy_user][action]', null, 'class="acym__select"').'</div>';
 
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $userFields = $userClass->getAllColumnsUserAndCustomField(true);
         unset($userFields['id']);
         unset($userFields['cms_id']);
@@ -371,7 +378,7 @@ class plgAcymSubscriber extends acymPlugin
             'add_begin' => acym_translation('ACYM_ADD_AT_BEGINNING'),
         ];
 
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
         $customFields = $fieldClass->getAllFieldsForUser();
         $customFieldValues = [];
         foreach ($customFields as $field) {
@@ -439,7 +446,7 @@ class plgAcymSubscriber extends acymPlugin
     public function onAcymProcessAction_acy_user(&$query, $action)
     {
         if ($action['action'] == 'delete') {
-            $userClass = acym_get('class.user');
+            $userClass = new UserClass();
             $usersToDelete = acym_loadResultArray($query->getQuery(['user.id']));
             if (!empty($usersToDelete)) $userClass->delete($usersToDelete);
         } else {
@@ -476,7 +483,7 @@ class plgAcymSubscriber extends acymPlugin
 
             $column = "user.`".acym_secureDBColumn($action['field'])."`";
         } else {
-            $fieldClass = acym_get('class.field');
+            $fieldClass = new FieldClass();
             $field = $fieldClass->getOneFieldById($action['field']);
             if (empty($field)) return 'Unknown field: '.$action['field'];
             if ('date' == $field->type) $value = acym_escapeDB(json_encode(explode('/', trim($value, '"\''))));
@@ -520,7 +527,7 @@ class plgAcymSubscriber extends acymPlugin
 
         $sendDate = acym_replaceDate($action['time']);
         $sendDate = acym_date($sendDate, "Y-m-d H:i:s", false);
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         //We generate the new mail if it's a template
         $mail = $mailClass->getOneById($action['mail_id']);
@@ -561,7 +568,7 @@ class plgAcymSubscriber extends acymPlugin
 
     public function onAcymProcessAction_resend_confirmation(&$query, &$action, $automationAdmin)
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $confirmationMail = $mailClass->getOneByName('acy_confirm');
         $sendDate = acym_date('now', 'Y-m-d H:i:s', false);
 
@@ -586,13 +593,13 @@ class plgAcymSubscriber extends acymPlugin
 
     public function onAcymAfterUserCreate(&$user)
     {
-        $automationClass = acym_get('class.automation');
+        $automationClass = new AutomationClass();
         $automationClass->trigger('user_creation', ['userId' => $user->id]);
     }
 
     public function onAcymAfterUserModify(&$user)
     {
-        $automationClass = acym_get('class.automation');
+        $automationClass = new AutomationClass();
         $automationClass->trigger('user_modification', ['userId' => $user->id]);
     }
 
@@ -613,7 +620,7 @@ class plgAcymSubscriber extends acymPlugin
             $usersColumns = acym_getColumns('user');
 
             if (!in_array($automation['acy_field']['field'], $usersColumns)) {
-                $fieldClass = acym_get('class.field');
+                $fieldClass = new FieldClass();
                 $field = $fieldClass->getOneFieldById($automation['acy_field']['field']);
                 $automation['acy_field']['field'] = $field->name;
             }
@@ -643,7 +650,7 @@ class plgAcymSubscriber extends acymPlugin
             $usersColumns = acym_getColumns('user');
 
             if (!in_array($automationAction['acy_user_value']['field'], $usersColumns)) {
-                $fieldClass = acym_get('class.field');
+                $fieldClass = new FieldClass();
                 $field = $fieldClass->getOneFieldById($automationAction['acy_user_value']['field']);
                 $automationAction['acy_user_value']['field'] = $field->name;
             }
@@ -651,7 +658,7 @@ class plgAcymSubscriber extends acymPlugin
         }
 
         if (!empty($automationAction['acy_add_queue'])) {
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             $mail = $mailClass->getOneById($automationAction['acy_add_queue']['mail_id']);
             if (empty($mail)) {
                 $automationAction = '<span class="acym__color__red">'.acym_translation('ACYM_SELECT_AN_EMAIL').'</span>';
@@ -661,7 +668,7 @@ class plgAcymSubscriber extends acymPlugin
         }
 
         if (!empty($automationAction['acy_remove_queue'])) {
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             $mail = $mailClass->getOneById($automationAction['acy_remove_queue']['mail_id']);
             if (empty($mail)) {
                 if ($automationAction['acy_remove_queue']['mail_id'] == -1) {
@@ -693,7 +700,7 @@ class plgAcymSubscriber extends acymPlugin
     public function onAcymToggleUserConfirmed($userId, $newValue)
     {
         if ($newValue == 1) {
-            $userClass = acym_get('class.user');
+            $userClass = new UserClass();
             $userClass->confirm($userId);
         }
     }
@@ -706,7 +713,7 @@ class plgAcymSubscriber extends acymPlugin
             'no_fields_error_message' => 'ACYM_NO_FIELDS_BIRTHDAY_TRIGGER',
         ];
 
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
 
         $fieldsData = $fieldClass->getMatchingElements(['types' => ['date']]);
         $fields = $fieldsData['elements'];

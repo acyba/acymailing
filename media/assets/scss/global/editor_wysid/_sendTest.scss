@@ -1,0 +1,56 @@
+
+#acym__wysid__send__test {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    width: 100%;
+    z-index: 1100;
+    visibility: hidden;
+    border-radius: 4px;
+    box-shadow: $primary-box-shadow;
+    background-color: white;
+    padding: 2rem;
+    transform: rotateX(50deg);
+    transform-origin: top;
+    transition: transform .5s ease-in-out;
+
+    .select2-selection__choice {
+        margin: 5px;
+    }
+
+    &.acym__wysid__show {
+        visibility: visible;
+        transform: rotateX(0deg);
+        transform-origin: top;
+    }
+
+    .acym__wysid__send__test__icon__loader {
+        display: none;
+    }
+
+    .acym__wysid__send__test-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+
+    .acym__wysid__send__test__icon {
+        font-size: 2rem;
+        margin-bottom: 2px;
+    }
+
+    .acym__wysid__send__test__title {
+        font-size: 1.3rem;
+        padding: 0 0 1rem 0;
+        border-bottom: 2px solid $font-primary;
+    }
+
+    label[for] {
+        font-size: 1rem;
+    }
+
+    .acym__wysid__send__test__container__button {
+        margin-top: auto;
+    }
+}

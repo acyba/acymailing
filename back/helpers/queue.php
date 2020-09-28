@@ -1,6 +1,14 @@
 <?php
 
-class acymqueueHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Classes\MailStatClass;
+use AcyMailing\Classes\QueueClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Classes\UserStatClass;
+use AcyMailing\Libraries\acymObject;
+
+class QueueHelper extends acymObject
 {
     var $id = 0;
     var $report = true;
@@ -27,8 +35,8 @@ class acymqueueHelper extends acymObject
     {
         parent::__construct();
 
-        $this->queueClass = acym_get('class.queue');
-        $this->userClass = acym_get('class.user');
+        $this->queueClass = new QueueClass();
+        $this->userClass = new UserClass();
 
         $this->send_limit = (int)$this->config->get('queue_nbmail', 40);
 
@@ -60,7 +68,7 @@ class acymqueueHelper extends acymObject
 
     public function process()
     {
-        $queueClass = acym_get('class.queue');
+        $queueClass = new QueueClass();
         $queueClass->emailtypes = $this->emailtypes;
         $queueElements = $queueClass->getReady($this->send_limit, $this->id);
 
@@ -129,7 +137,7 @@ class acymqueueHelper extends acymObject
             }
         }//endifreport
 
-        $mailHelper = acym_get('helper.mailer');
+        $mailHelper = new MailerHelper();
         $mailHelper->report = false;
         if ($this->config->get('smtp_keepalive', 1) || in_array($this->config->get('mailer_method'), ['elasticemail'])) {
             $mailHelper->SMTPKeepAlive = true;
@@ -339,8 +347,8 @@ class acymqueueHelper extends acymObject
             return true;
         }
 
-        $userStatClass = acym_get('class.userstat');
-        $mailStatClass = acym_get('class.mailstat');
+        $userStatClass = new UserStatClass();
+        $mailStatClass = new MailStatClass();
 
         $time = acym_date("now", "Y-m-d H:i:s");
 

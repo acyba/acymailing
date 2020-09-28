@@ -1,0 +1,46 @@
+#acym__wysid__editor__source {
+    position: relative;
+    transform: scaleY(0);
+    height: 0;
+    transition: transform .2s ease-in-out;
+    transform-origin: top;
+
+    &.acym__wysid__visible {
+        height: auto;
+        max-height: 400px;
+        overflow: auto;
+        transform: scaleY(1);
+
+        .prism-editor__code {
+            border-radius: 0;
+        }
+    }
+
+    .acym__wysid__editor__source__buttons {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        cursor: pointer;
+        color: $light-gray;
+
+        .button {
+            background-color: transparent;
+            padding: .7rem;
+            transition: .2s;
+
+            &:hover {
+                opacity: .8;
+            }
+
+            &#acym__wysid__editor__source-revert {
+                border: 2px solid $alert-color;
+                color: $alert-color;
+            }
+
+            &#acym__wysid__editor__source-keep {
+                border: 2px solid $primary-light-color;
+                color: $primary-light-color;
+            }
+        }
+    }
+}

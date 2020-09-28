@@ -231,9 +231,11 @@ jQuery(document).ready(function ($) {
                     this.pageDisplay++;
                     this.fillDisplayPlugins();
                 },
-                imageUrl(pluginName, core) {
-                    if (core === '1') {
+                imageUrl(pluginName, type) {
+                    if (type === 'CORE') {
                         return ACYM_CORE_DYNAMICS_URL + pluginName + '/banner.png';
+                    } else if (type === 'PLUGIN') {
+                        return ACYM_PLUGINS_URL + '/acymailing-' + pluginName + '/banner.png';
                     } else {
                         return AJAX_URL_UPDATEME + 'integrationv6&task=getImage&plugin=' + pluginName;
                     }

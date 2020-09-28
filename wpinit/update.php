@@ -1,5 +1,7 @@
 <?php
 
+namespace AcyMailing\Init;
+
 class acyUpdate extends acyHook
 {
     public function __construct()
@@ -45,10 +47,10 @@ class acyUpdate extends acyHook
         $updateInformation = substr($updateInformation, strpos($updateInformation, '<?xml'));
 
         try {
-            $xml = new SimpleXMLElement($updateInformation);
+            $xml = new \SimpleXMLElement($updateInformation);
             $latestVersion = (string)$xml->update[0]->version;
             $downloadURL = (string)$xml->update[0]->downloadurl;
-        } catch (Exception $err) {
+        } catch (\Exception $err) {
             return $transient;
         }
 
@@ -72,7 +74,7 @@ class acyUpdate extends acyHook
                 'package' => $downloadURL,
                 'slug' => $plugin_slug,
                 'icons' => [
-                    '1x' => ACYM_ACYWEBSITE.'images/logo_icon.png',
+                    '1x' => ACYM_IMAGES.'logo_icon.png',
                 ],
                 'url' => 'https://wordpress.org/plugins/acymailing/',
             ];
@@ -81,7 +83,7 @@ class acyUpdate extends acyHook
         }
 
         // Save the latest version and the license expiration date to warn the user when something's wrong
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->lastupdatecheck = time();
         $newConfig->latestversion = $latestVersion;
         $newConfig->downloadurl = $downloadURL;
@@ -108,7 +110,7 @@ class acyUpdate extends acyHook
         if (!empty($options['plugin']) && $options['plugin'] == $current_plugin_path_name) {
             $config = acym_config();
 
-            $newConfig = new stdClass();
+            $newConfig = new \stdClass();
             $newConfig->downloadurl = '';
             $newConfig->lastupdatecheck = 0;
             $config->save($newConfig);
@@ -120,7 +122,7 @@ class acyUpdate extends acyHook
                 // If the website isn't attached to any license
                 $downloadURL = $config->get('downloadurl');
                 if (empty($downloadURL)) {
-                    $dummyTransient = new stdClass();
+                    $dummyTransient = new \stdClass();
                     $this->checkUpdates($dummyTransient);
 
                     $downloadURL = $config->get('downloadurl');
@@ -130,7 +132,7 @@ class acyUpdate extends acyHook
                     }
                 }
 
-                $newConfig = new stdClass();
+                $newConfig = new \stdClass();
                 $newConfig->downloadurl = '';
                 $newConfig->lastupdatecheck = 0;
                 $config->save($newConfig);

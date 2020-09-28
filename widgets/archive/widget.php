@@ -1,5 +1,8 @@
 <?php
 
+use AcyMailing\Classes\ListClass;
+use AcyMailing\FrontControllers\ArchiveController;
+
 class acym_archive_widget extends WP_Widget
 {
     public function __construct()
@@ -25,7 +28,7 @@ class acym_archive_widget extends WP_Widget
             'popup' => '1',
         ];
 
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $lists = $listClass->getAllWIthoutManagement();
         foreach ($lists as $i => $oneList) {
             if ($oneList->active == 0) {
@@ -84,7 +87,7 @@ class acym_archive_widget extends WP_Widget
             'paramsCMS' => [],
         ];
 
-        $archiveController = acym_get('controller_front.archive');
+        $archiveController = new ArchiveController();
         $archiveController->showArchive($viewParams);
 
         echo $args['after_widget'];

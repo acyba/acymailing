@@ -1,5 +1,8 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Helpers\TabHelper;
+
 class plgAcymFlexicontent extends acymPlugin
 {
     public function __construct()
@@ -108,7 +111,7 @@ class plgAcymFlexicontent extends acymPlugin
 
         $optionsFields['readmore'] = ['ACYM_READ_MORE', true];
 
-        $tabHelper = acym_get('helper.tab');
+        $tabHelper = new TabHelper();
         $identifier = $this->name;
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 

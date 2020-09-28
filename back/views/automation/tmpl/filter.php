@@ -9,8 +9,7 @@
 
 	<div class="acym__content grid-x cell" id="acym__automation__filters">
         <?php
-        $workflow = acym_get('helper.workflow');
-        echo $workflow->display($this->steps, 'filter');
+        echo $data['workflowHelper']->display($this->steps, 'filter');
         ?>
 		<div id="acym__automation__or__example" style="display: none;">
 			<h6 class="cell acym__content__title__light-blue margin-top-1"><?php echo acym_translation('ACYM_OR'); ?></h6>

@@ -23,6 +23,7 @@
     "gulp-recursive-folder": "^0.9.4",
     "gulp-rename": "^1.4.0",
     "gulp-replace": "^1.0.0",
+    "gulp-run-command": "0.0.10",
     "gulp-tar": "^2.1.0"
   },
   "devDependencies": {

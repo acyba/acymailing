@@ -3,7 +3,7 @@ let acytask, acyformName;
 function submitAcymForm(newtask, newformName, submitFunction) {
     acytask = newtask;
     acyformName = newformName;
-    submitFunction = submitFunction === undefined ? 'acySubmitSubForm' : submitFunction;
+    submitFunction = submitFunction === undefined ? 'acymSubmitSubForm' : submitFunction;
 
     let recaptchaid = 'acym-captcha';
     if (newformName) recaptchaid = newformName + '-captcha';
@@ -48,7 +48,7 @@ function resetRecaptcha() {
     grecaptcha.reset(grcID);
 }
 
-function acySubmitSubForm() {
+function acymSubmitSubForm() {
     let varform = document[acyformName];
     let filterEmail = acymModule['emailRegex'];
     let errorMessages = '';
@@ -343,6 +343,11 @@ function acymDisplayAjaxResponse(message, type, formName, replace) {
     responseContainer.className = 'responseContainer';
 
     let form = document.getElementById(formName);
+    let varform = document[formName];
+    let successMode = 'replace';
+    if (varform.elements['successmode'] != undefined) {
+        successMode = varform.elements['successmode'].value;
+    }
 
     //We can remove the loading class from the form
     let elclass = form.className;
@@ -363,11 +368,22 @@ function acymDisplayAjaxResponse(message, type, formName, replace) {
         form.style.opacity = '1';
     }
 
-    if (replace || type == 'success') {
+    if (replace || (type == 'success' && successMode != 'toptemp')) {
         form.style.display = 'none';
     }
     responseContainer.className += ' message_' + formName;
     responseContainer.className += ' slide_open';
+
+    if (successMode == 'replacetemp' || successMode == 'toptemp') {
+        setTimeout(() => {
+            responseContainer.remove();
+            form.style.filter = 'alpha(opacity=100)';
+            form.style.opacity = '1';
+            if (successMode == 'replacetemp') {
+                form.style.display = '';
+            }
+        }, 3000);
+    }
 
     if (fulldiv.classList.contains(classErase)) {
         document.cookie = 'acym_form_' + document.getElementById(formName).getAttribute('acym-data-id') + '=' + Date.now() + ';';
@@ -376,3 +392,4 @@ function acymDisplayAjaxResponse(message, type, formName, replace) {
         }, 2000);
     }
 }
+

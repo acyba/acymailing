@@ -1,5 +1,14 @@
 <?php
 
+use AcyMailing\Classes\ActionClass;
+use AcyMailing\Classes\ConditionClass;
+use AcyMailing\Classes\FieldClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\PluginClass;
+use AcyMailing\Controllers\PluginsController;
+use AcyMailing\Helpers\SplashscreenHelper;
+use AcyMailing\Helpers\UpdateHelper;
+
 class acymInstall
 {
     var $cms = '{__CMS__}';
@@ -207,7 +216,9 @@ class acymInstall
 
     public function deleteNewSplashScreenInstall()
     {
-        unlink(ACYM_NEW_FEATURES_SPLASHSCREEN);
+        if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN)) {
+            @unlink(ACYM_NEW_FEATURES_SPLASHSCREEN);
+        }
     }
 
     //Update the SQL from one version to the other if needed
@@ -364,7 +375,7 @@ class acymInstall
                 }
             }
 
-            $fieldClass = acym_get('class.field');
+            $fieldClass = new FieldClass();
             $fields = acym_loadObjectList('SELECT * FROM #__acym_field');
             foreach ($fields as $field) {
                 if (!empty($field->namekey)) continue;
@@ -426,7 +437,7 @@ class acymInstall
             $this->updateQuery('ALTER TABLE #__acym_user ADD `confirmation_ip` VARCHAR(16) DEFAULT NULL');
 
             //Handle Emoji support
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             $query = 'SELECT subject, id FROM #__acym_mail';
 
             $mails = acym_loadObjectList($query);
@@ -439,7 +450,7 @@ class acymInstall
 
         if (version_compare($this->fromVersion, '6.1.6', '<')) {
             // Handle emojis in body, name, preheader and autosave
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             $mails = acym_loadObjectList('SELECT `id`, `name`, `body`, `autosave`, `preheader` FROM #__acym_mail');
             $mails = $mailClass->encode($mails);
 
@@ -449,7 +460,7 @@ class acymInstall
         }
 
         if (version_compare($this->fromVersion, '6.1.7', '<')) {
-            $actionClass = acym_get('class.action');
+            $actionClass = new ActionClass();
             $actions = $actionClass->getAll();
             foreach ($actions as $action) {
                 $action->actions = str_replace('{time}', '[time]', $action->actions);
@@ -457,7 +468,7 @@ class acymInstall
                 $actionClass->save($action);
             }
 
-            $conditionClass = acym_get('class.condition');
+            $conditionClass = new ConditionClass();
             $conditions = $conditionClass->getAll();
             foreach ($conditions as $condition) {
                 $condition->conditions = str_replace('{time}', '[time]', $condition->conditions);
@@ -540,7 +551,7 @@ class acymInstall
                 ],
             ];
 
-            $pluginsController = acym_get('controller.plugins');
+            $pluginsController = new PluginsController();
             foreach ($pluginsBefore650['{__CMS__}'] as $plugin => $extension) {
                 $install = false;
                 if (defined('JPATH_ADMINISTRATOR') && file_exists(rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.$extension.DS)) {
@@ -562,8 +573,8 @@ class acymInstall
         }
 
         if (version_compare($this->fromVersion, '6.6.0', '<')) {
-            $updateHelper = acym_get('helper.update');
-            $mailClass = acym_get('class.mail');
+            $updateHelper = new UpdateHelper();
+            $mailClass = new MailClass();
             $firstEmail = $mailClass->getOneByName(acym_translation($updateHelper::FIRST_EMAIL_NAME_KEY));
             if (!empty($firstEmail)) {
                 // If the user installed AcyMailing but didn't save the first template, we just complete the <em>
@@ -650,7 +661,7 @@ class acymInstall
             if (in_array('backend_filter', $fieldColumns)) $this->updateQuery('ALTER TABLE #__acym_field DROP COLUMN backend_filter');
             if (in_array('frontend_filter', $fieldColumns)) $this->updateQuery('ALTER TABLE #__acym_field DROP COLUMN frontend_filter');
             $mails = acym_loadObjectList('SELECT * FROM #__acym_mail WHERE thumbnail LIKE "%data:image/png;base64%"');
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             foreach ($mails as $mail) {
                 unset($mail->thumbnail);
                 $mailClass->save($mail);
@@ -676,7 +687,7 @@ class acymInstall
                 }
 
                 $customFieldsWrongNamekey = acym_loadObjectList('SELECT * FROM #__acym_field WHERE namekey IN ('.implode(', ', $columnsUser).')');
-                $fieldClass = acym_get('class.field');
+                $fieldClass = new FieldClass();
 
                 foreach ($customFieldsWrongNamekey as $field) {
                     $field->namekey = $fieldClass->generateNamekey($field->name);
@@ -690,7 +701,7 @@ class acymInstall
         }
 
         if (version_compare($this->fromVersion, '6.11.0', '<')) {
-            $splashscreenHelper = acym_get('helper.splashscreen');
+            $splashscreenHelper = new SplashscreenHelper();
             $splashscreenHelper->setDisplaySplashscreenForViewName('bounces', 1);
 
             $this->updateQuery('ALTER TABLE #__acym_mail ADD `access` VARCHAR(50) NOT NULL DEFAULT ""');
@@ -751,7 +762,7 @@ class acymInstall
             if (file_exists(ACYM_ADDONS_FOLDER_PATH.'Volumes')) {
                 $wrongAddons = acym_getFolders(ACYM_ADDONS_FOLDER_PATH.'Volumes'.DS.'workspace'.DS.'acymailing'.DS.'addons'.DS);
 
-                $pluginsController = acym_get('controller.plugins');
+                $pluginsController = new PluginsController();
                 foreach ($wrongAddons as $oneGoneWrong) {
                     $pluginsController->downloadUpload($oneGoneWrong, false);
                 }
@@ -771,6 +782,17 @@ class acymInstall
             $this->updateQuery('ALTER TABLE #__acym_user MODIFY `language` VARCHAR(10) NOT NULL DEFAULT ""');
             $this->updateQuery('ALTER TABLE #__acym_mail MODIFY `language` VARCHAR(10) NOT NULL DEFAULT ""');
             $this->updateQuery('ALTER TABLE `#__acym_mail` CHANGE `preheader` `preheader` TEXT NULL');
+        }
+
+        if (version_compare($this->fromVersion, '6.16.0', '<')) {
+            $this->updateQuery('ALTER TABLE `#__acym_mail_stat` CHANGE `bounce_unique` `bounce_unique` MEDIUMINT(8) NOT NULL DEFAULT 0');
+            $this->updateQuery('ALTER TABLE `#__acym_user_stat` CHANGE `bounce` `bounce` TINYINT(4) NOT NULL DEFAULT 0');
+            $this->updateQuery('ALTER TABLE #__acym_plugin ADD `type` VARCHAR(20) NOT NULL DEFAULT "ADDON"');
+            $this->updateQuery('UPDATE `#__acym_plugin` SET `type` = "ADDON" WHERE `core` = 0');
+            $this->updateQuery('UPDATE `#__acym_plugin` SET `type` = "CORE" WHERE `core` = 1');
+            $this->updateQuery('ALTER TABLE #__acym_plugin DROP `core`');
+            $this->updateQuery('ALTER TABLE `#__acym_form` ADD termspolicy_options LONGTEXT');
+            $this->updateQuery('UPDATE `#__acym_form` SET `termspolicy_options` = "{\"termscond\":0,\"privacy\":0}" WHERE `termspolicy_options` is NULL');
         }
     }
 

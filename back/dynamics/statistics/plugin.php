@@ -1,5 +1,8 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Classes\MailClass;
+
 class plgAcymStatistics extends acymPlugin
 {
     public function searchMail()
@@ -35,7 +38,7 @@ class plgAcymStatistics extends acymPlugin
             ORDER BY mail.`subject` ASC'
         );
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $mails = $mailClass->decode($mails);
 
         foreach ($mails as $oneMail) {
@@ -122,8 +125,8 @@ class plgAcymStatistics extends acymPlugin
         if (!empty($automationFilter['statistics'])) {
             $status = acym_translation('ACYM_'.strtoupper($automationFilter['statistics']['status']));
 
-            $mailClass = acym_get('class.mail');
-            $mail = $mailClass->getOneById($automationFilter['statistics']['mail']);
+            $mailClass = new MailClass();
+            $mail = $mailClass->getOneById(empty($automationFilter['statistics']['mail']) ? 0 : $automationFilter['statistics']['mail']);
 
             if (empty($mail)) {
                 $automationFilter = acym_translation_sprintf('ACYM_NOT_FOUND', acym_translation('ACYM_MAIL'));

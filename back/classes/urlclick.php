@@ -1,6 +1,10 @@
 <?php
 
-class acymurlClickClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class UrlClickClass extends acymClass
 {
     var $table = 'url_click';
 
@@ -27,7 +31,7 @@ class acymurlClickClass extends acymClass
 
         if (!empty($urlClick['click'])) {
             $onDuplicate[] = "click = click + 1";
-            $automationClass = acym_get('class.automation');
+            $automationClass = new AutomationClass();
             $automationClass->trigger('user_click', ['userId' => $urlClick['user_id']]);
         }
 

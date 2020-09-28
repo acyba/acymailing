@@ -28,7 +28,7 @@ const acym_editorWysidNewContent = {
         acym_editorWysidVersioning.setUndoAndAutoSave();
     },
     addMediaWysid: function (ui, rows) {
-        if (CMS_ACYM === 'wordpress') {
+        if (ACYM_CMS === 'wordpress') {
             acym_editorWysidWordpress.addMediaWPWYSID(ui, rows);
         } else {
             acym_editorWysidJoomla.addMediaJoomlaWYSID(ui, rows);
@@ -152,7 +152,7 @@ const acym_editorWysidNewContent = {
     },
     setModalGiphyWYSID: function () {
         let content = '<div class="grid-container"><div class="cell grid-x align-center grid-padding-x">';
-        content += '<img class="cell" id="acym__wysid__modal__giphy--image" src="' + MEDIA_URL_ACYM + 'images/giphy.png" alt="">';
+        content += '<img class="cell" id="acym__wysid__modal__giphy--image" src="' + ACYM_MEDIA_URL + 'images/giphy.png" alt="">';
         content += '<div class="cell grid-x grid-margin-x"><input class="cell auto" type="text" id="acym__wysid__modal__giphy--search" placeholder="'
                    + ACYM_JS_TXT.ACYM_SEARCH_FOR_GIFS
                    + '">';
@@ -185,15 +185,15 @@ const acym_editorWysidNewContent = {
         content += '<div class="auto cell"></div>';
 
         content += '<div class="small-3 medium-3 cell" style="display: inline-flex">';
-        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + MEDIA_URL_ACYM + 'images/vimeo.png">';
+        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + ACYM_MEDIA_URL + 'images/vimeo.png">';
         content += '</div>';
 
         content += '<div class="small-3 medium-3 cell" style="display: inline-flex">';
-        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + MEDIA_URL_ACYM + 'images/youtube.png">';
+        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + ACYM_MEDIA_URL + 'images/youtube.png">';
         content += '</div>';
 
         content += '<div class="small-4 medium-3 cell" style="display: inline-flex; padding: 15px 0 0 30px;">';
-        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + MEDIA_URL_ACYM + 'images/dailymotion.png">';
+        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + ACYM_MEDIA_URL + 'images/dailymotion.png">';
         content += '</div>';
 
         content += '<div class="auto cell"></div>';

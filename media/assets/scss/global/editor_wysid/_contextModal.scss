@@ -1,0 +1,435 @@
+.acym__wysid__context__modal {
+    label, .switch-label .acym__tooltip {
+        cursor: default;
+        padding: 7px 0 7px 5px;
+        margin-bottom: 0;
+        box-shadow: none;
+        user-select: none;
+        color: $font-primary;
+        border-color: $white;
+        margin-bottom: 10px;
+    }
+
+    .switch-label .acym__tooltip {
+        padding: 0;
+    }
+
+    .sp-replacer {
+        margin-top: 9px;
+        //margin-left: 1rem;
+    }
+
+    .switch.tiny .switch-paddle {
+        margin-left: 5px;
+    }
+
+    .switch-label {
+        cursor: pointer;
+    }
+
+    #acym__wysid__context__block__background-image__remove {
+        margin-left: -26px;
+    }
+
+    .acym__wysid__context__button__actions-i, .acym__wysid__context__button__align, .acym__wysid__context__follow__align, .acym__wysid__context__image__align {
+        cursor: pointer;
+        text-align: center;
+        color: map-get($editor-wysid-palette, primary-ui);
+        background-color: map-get($editor-wysid-palette, secondary);
+    }
+
+    .acym__wysid__context__button__align, .acym__wysid__context__follow__align, .acym__wysid__context__image__align {
+        padding: 2px 10px;
+    }
+
+    i {
+        user-select: none;
+        line-height: 37px;
+        border-radius: $primary-radius;
+        border: $white;
+        margin-bottom: 10px;
+    }
+}
+
+#acym__wysid__context__block {
+    .sp-replacer {
+        margin: 0;
+    }
+
+    .acym__wysid__context__block__code-source .acym__tooltip__info__icon {
+        color: $warning-color;
+    }
+
+    .acym__wysid__context__block__padding__exemple {
+        height: 60px;
+        margin: 0 10px;
+        background-color: $light-gray;
+        border-radius: 4px;
+    }
+
+    .acymicon-book {
+        font-size: 20px;
+    }
+
+    .acym__wysid__context__modal__container--structure {
+        display: none;
+        overflow: hidden;
+
+        h6 {
+            font-size: .9rem;
+            font-weight: 400;
+        }
+    }
+
+    .acym__wysid__context__modal__block-padding {
+        padding: .3rem;
+        overflow-y: auto;
+
+        .acym__wysid__context__block__padding__horizontal {
+            position: relative;
+
+            &:after {
+                content: "";
+                position: absolute;
+                right: 20px;
+                height: 80%;
+                top: 10%;
+                width: 3px;
+                background-color: $light-gray;
+            }
+        }
+
+        .acym__wysid__context__block__padding__title {
+            font-weight: 500;
+        }
+
+        .acym__wysid__context__block__padding--input {
+            padding: 0;
+        }
+
+        .acym__wysid__context__modal__block-padding--overflow {
+            min-width: 360px;
+
+            &.acym__wysid__context__modal__block-padding--overflow--min-width {
+                min-width: 500px;
+            }
+
+            input, .acymicon-play_arrow {
+                margin-bottom: 0 !important;
+            }
+
+            .acym__wysid__context__block__padding--area {
+                border-radius: $primary-radius;
+                background-color: $light-gray;
+                min-width: 50px;
+
+                i {
+                    color: $dark-gray;
+                }
+            }
+        }
+
+        i.acymicon-play_arrow {
+            font-size: 18px;
+        }
+    }
+
+    .acym__wysid__context__modal__container__block-settings {
+        margin: 2rem auto 0 auto;
+        background-color: $light-gray;
+        border-radius: 5px;
+        padding: .3rem;
+        position: relative;
+
+        .acym__wysid__context__modal__container__block-settings--grid {
+            position: absolute;
+            @include acym_set_position();
+            height: calc(100px + .6rem) !important;
+            z-index: 1;
+            opacity: 0;
+            margin: 0 !important;
+            transition: .2s;
+
+            &.grid-visible {
+                opacity: .4;
+            }
+
+            & > .cell:not(:first-child) {
+                box-shadow: inset 2px 0 0 $light-gray;
+            }
+        }
+
+        & > .acym__block__separator__area {
+            height: 100px !important;
+            border-radius: 5px;
+            background-color: $font-primary;
+            position: relative;
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            position: relative;
+
+            .area__name {
+                position: absolute;
+                @include acym_set_position($top: 3px, $left: calc(50% - 5px));
+                font-size: .8rem;
+                font-weight: 600;
+                color: $white;
+                opacity: .5;
+            }
+
+            .area__length {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                color: #efefef;
+                display: flex;
+                font-weight: 600;
+                font-size: 1.3rem;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .separator_right {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                left: calc(100% - 20px);
+                border-top-right-radius: 50%;
+                border-bottom-right-radius: 50%;
+            }
+
+            .separator_left, .separator_right {
+                z-index: 1000;
+                cursor: col-resize;
+                display: flex;
+                align-items: center;
+                padding: .1rem;
+                background-color: transparent;
+                opacity: .5;
+                transition: opacity .2s;
+                width: 20px;
+
+                &:hover, &.separator_grabbed {
+                    opacity: 1;
+                }
+
+                path {
+                    transition: .1s;
+                    stroke-width: 5px;
+                    cursor: col-resize;
+                    stroke: #efefef;
+                }
+            }
+
+            .separator_left {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: calc(100% - 20px);
+                border-top-left-radius: 50%;
+                border-bottom-left-radius: 50%;
+            }
+        }
+    }
+}
+
+#acym__wysid__context__button {
+    color: map-get($editor-wysid-palette, primary-ui);
+
+    span.select2-container {
+        border: $white;
+        margin-bottom: 10px !important;
+    }
+
+    .slider.vertical {
+        height: 6rem;
+    }
+
+    .acym__button__padding {
+        input {
+            margin-bottom: 0;
+        }
+
+        .acym__button__padding__shape {
+            height: 60px;
+            background-color: $light-gray;
+            border-radius: 4px;
+            font-size: .8rem;
+        }
+    }
+
+    .input-group {
+        margin-bottom: 0;
+        box-shadow: none;
+        color: map-get($editor-wysid-palette, primary-ui);
+        border-color: $white;
+        background-color: $white;
+        margin-bottom: 10px;
+    }
+
+    .input-group-label {
+        border-color: $white;
+        background-color: $white;
+        margin-bottom: 10px;
+    }
+}
+
+#acym__wysid__context__space {
+    vertical-align: middle;
+    background-color: $white;
+
+    #acym__wysid__context__space__input input {
+        float: right;
+        margin: 4px 0;
+        padding: 3px 0 0 14px;
+    }
+}
+
+.acy-editor__space {
+    cursor: pointer;
+
+    &:hover {
+        background-color: map-get($editor-wysid-palette, primary-ui);
+    }
+}
+
+#acym__wysid__context__follow {
+    color: map-get($editor-wysid-palette, primary-ui);
+    background-color: $white;
+
+    #acym__wysid__context__follow__list {
+        padding: 0 0 16px 0;
+    }
+
+    .acym__wysid__context__follow__list__remove {
+        text-align: center;
+        cursor: pointer;
+        font-size: 42px;
+        line-height: 42px;
+        color: #c02218;
+        margin: 0;
+    }
+}
+
+#acym__wysid__context__separator {
+    color: map-get($editor-wysid-palette, primary-ui);
+    background-color: $white;
+
+    .acym__wysid__context__separator__kind {
+        padding: 2px;
+        cursor: pointer;
+        border-radius: $primary-radius;
+
+        &.separator-selected {
+            background-color: map-get($foundation-palette, primary-light);
+
+            hr {
+                border-bottom-color: $white !important;
+            }
+        }
+    }
+}
+
+#acym__wysid__context__share {
+    position: absolute;
+    width: 350px;
+    padding: 2px;
+    z-index: 1000;
+    box-shadow: $primary-box-shadow;
+    border-radius: $primary-radius;
+    color: map-get($editor-wysid-palette, primary-ui);
+    background-color: map-get($editor-wysid-palette, primary);
+
+    label {
+        cursor: default;
+        margin-bottom: 0;
+        color: map-get($editor-wysid-palette, primary-ui);
+        border-color: map-get($editor-wysid-palette, primary);
+        background-color: map-get($editor-wysid-palette, primary);
+        box-shadow: none;
+    }
+
+    select {
+        margin-bottom: 0;
+        color: map-get($editor-wysid-palette, primary-ui);
+        border-color: map-get($editor-wysid-palette, primary);
+        background-color: map-get($editor-wysid-palette, primary);
+        box-shadow: none;
+    }
+
+    input {
+        margin-bottom: 0;
+        border-radius: $primary-radius;
+        color: map-get($editor-wysid-palette, primary-ui);
+        border-color: map-get($editor-wysid-palette, primary);
+        background-color: map-get($editor-wysid-palette, secondary);
+    }
+
+    .input-group {
+        margin-bottom: 0;
+        color: map-get($editor-wysid-palette, primary-ui);
+        border-color: map-get($editor-wysid-palette, primary);
+        background-color: map-get($editor-wysid-palette, primary);
+        box-shadow: none;
+    }
+
+    .input-group-label {
+        border-color: map-get($editor-wysid-palette, primary);
+        background-color: map-get($editor-wysid-palette, primary);
+    }
+
+    #acym__wysid__context__share__list {
+        max-height: 150px;
+        padding: 0 0 16px 0;
+        overflow: auto;
+    }
+
+    .acym__wysid__context__share__list__remove {
+        text-align: center;
+        cursor: pointer;
+        font-size: 42px;
+        line-height: 42px;
+        color: #c02218;
+        margin: 0;
+    }
+
+    .select2-container .select2-selection--single {
+        height: 39px;
+        border-radius: $primary-radius;
+        background-color: map-get($editor-wysid-palette, secondary);
+        border: 1px solid;
+        text-align: center;
+        outline: 0;
+    }
+
+    .select2-container--default .select2-selection--single {
+        .select2-selection__rendered {
+            line-height: 39px;
+            z-index: 67000;
+
+            span {
+                font-size: 18px;
+                margin-left: -8px;
+                color: map-get($editor-wysid-palette, primary-ui);
+            }
+        }
+
+        .select2-selection__arrow {
+            height: 37px;
+        }
+    }
+
+    i {
+        font-size: 30px;
+    }
+
+    .acym__wysid__context__share__select__item {
+        font-size: 30px;
+    }
+}

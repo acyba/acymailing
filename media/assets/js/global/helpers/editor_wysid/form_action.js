@@ -183,7 +183,7 @@ const acym_editorWysidFormAction = {
             let acymWysidDivStyle = {
                 'display': 'inherit'
             };
-            if (CMS_ACYM === 'joomla') {
+            if (ACYM_CMS === 'joomla') {
                 acymWysidDivStyle.top = jQuery('.navbar-fixed-top').height() + 'px';
             }
             jQuery('#acym__wysid').css(acymWysidDivStyle);

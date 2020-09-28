@@ -1,5 +1,9 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Types\OperatorType;
+
 class plgAcymEasyprofile extends acymPlugin
 {
     var $epfields = [];
@@ -14,10 +18,14 @@ class plgAcymEasyprofile extends acymPlugin
 
         $this->installed = acym_isExtensionActive('com_jsn');
         if ($this->installed) {
-            $this->epfields = acym_loadObjectList('SELECT title, alias, type FROM #__jsn_fields');
+            $this->epfields = acym_loadObjectList('SELECT `title`, `alias`, `type`, `params` FROM #__jsn_fields');
             $jsnColumns = acym_getColumns('jsn_users', false);
             $jUserColumns = acym_getColumns('users', false);
             foreach ($this->epfields as $key => $field) {
+                if (!empty($field->params) && is_string($field->params)) {
+                    $this->epfields[$key]->params = json_decode($field->params);
+                }
+
                 if (in_array($field->alias, $jsnColumns)) {
                     $this->epfields[$key]->table = '#__jsn_users';
                 } elseif (in_array($field->alias, $jUserColumns)) {
@@ -86,7 +94,7 @@ class plgAcymEasyprofile extends acymPlugin
         foreach ($this->epfields as $field) {
             if ($field->type == '' || in_array($field->alias, $this->bannedFields)) continue;
             if ($field->table == '#__jsn_users') {
-                $fieldsToSelect[] = 'jsnuser.'.$field->alias;
+                $fieldsToSelect[] = 'jsnuser.`'.$field->alias.'`';
             } else {
                 $fieldsToSelect[] = 'juser.'.$field->alias;
             }
@@ -129,7 +137,7 @@ class plgAcymEasyprofile extends acymPlugin
             FROM #__usergroups'
         );
 
-        $tabHelper = acym_get('helper.tab');
+        $tabHelper = new TabHelper();
         $identifier = $this->name;
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
@@ -244,7 +252,7 @@ class plgAcymEasyprofile extends acymPlugin
         foreach ($this->epfields as $field) {
             if ($field->type == '' || in_array($field->alias, $this->bannedFields)) continue;
             if ($field->table == '#__jsn_users') {
-                $fieldsToSelect[] = 'jsnuser.'.$field->alias;
+                $fieldsToSelect[] = 'jsnuser.`'.$field->alias.'`';
             } else {
                 $fieldsToSelect[] = 'juser.'.$field->alias;
             }
@@ -252,7 +260,7 @@ class plgAcymEasyprofile extends acymPlugin
         $fieldsToSelect[] = 'jsnuser.avatar ';
 
         $query .= implode(', ', $fieldsToSelect).'FROM #__users AS juser
-                JOIN #__jsn_users AS jsnuser ON juser.id=jsnuser.id
+                JOIN #__jsn_users AS jsnuser ON juser.id = jsnuser.id
                 WHERE jsnuser.id = '.intval($tag->id);
 
         $element = $this->initIndividualContent($tag, $query);
@@ -280,14 +288,25 @@ class plgAcymEasyprofile extends acymPlugin
         $titleElements = implode(' ', $titleElements);
         $title = $titleElements;
 
+        $customFieldsNoTitle = [];
         foreach ($this->epfields as $field) {
             if (in_array($field->alias, $titleAliases) || in_array($field->alias, $this->bannedFields)) continue;
+
             $varFields['{'.$field->alias.'}'] = $element->{$field->alias};
             if (in_array($field->alias, $tag->display)) {
-                $contentText .= $element->{$field->alias}.'</br>';
+                $varFields['{'.$field->alias.'}'] = $this->formatFieldDisplay($element->{$field->alias}, $field);
+                if (empty($field->params->hidetitle)) {
+                    $fieldTitle = $field->title;
+                    if ($field->table === '#__users') {
+                        $fieldTitle = ucfirst(strtolower($fieldTitle));
+                    }
+                    $customFields[] = [$varFields['{'.$field->alias.'}'], $fieldTitle];
+                } else {
+                    $customFieldsNoTitle[] = [$varFields['{'.$field->alias.'}']];
+                }
             }
         }
-
+        $customFields = array_merge($customFields, $customFieldsNoTitle);
 
         $imagePath = empty($element->avatar) ? '' : acym_rootURI().$element->avatar;
         $varFields['{picthtml}'] = '<img alt="" src="'.acym_escape($imagePath).'" />';
@@ -306,6 +325,73 @@ class plgAcymEasyprofile extends acymPlugin
 
 
         return $this->finalizeElementFormat($result, $tag, $varFields);
+    }
+
+    private function formatFieldDisplay($value, $field)
+    {
+        if ($field->type === 'image') {
+            return '<img src="'.$value.'"/>';
+        }
+
+        if (in_array($field->type, ['date', 'registerdate', 'lastvisitdate'])) {
+            $format = $field->params->date_format;
+            if (empty($format)) $format = acym_translation('DATE_FORMAT_LC');
+
+            return acym_getDate(
+                acym_getTime($value),
+                $format
+            );
+        }
+
+        if ($field->type === 'link') {
+            return '<a href="'.$value.'" target="_blank">'.$value.'</a>';
+        }
+
+        if (in_array($field->type, ['email', 'usermail'])) {
+            return '<a href="mailto:'.$value.'">'.$value.'</a>';
+        }
+
+        if ($field->type === 'radiolist') {
+            $allOptions = explode("\n", $field->params->radio_options);
+            foreach ($allOptions as $oneOpt) {
+                $values = explode('|', $oneOpt);
+                if ($values[0] != $value) continue;
+
+                return $values[1];
+            }
+
+            return '';
+        }
+
+        if ($field->type === 'selectlist') {
+            $allOptions = explode("\n", $field->params->select_options);
+            foreach ($allOptions as $oneOpt) {
+                $values = explode('|', $oneOpt);
+                $uservalue = json_decode($value);
+                if (($uservalue !== null && $values[0] != $uservalue) || ($uservalue === null && $values[0] != $value)) continue;
+
+                return $values[1];
+            }
+
+            return '';
+        }
+
+        if ($field->type === 'checkboxlist') {
+            $options = [];
+            $optionsBrutes = explode("\n", $field->params->checkbox_options);
+            foreach ($optionsBrutes as $oneOpt) {
+                $values = explode('|', $oneOpt);
+                $options[$values[0]] = $values[1];
+            }
+            $selected = json_decode($value);
+            foreach ($selected as $i => $oneOpt) {
+                $selected[$i] = $options[$oneOpt];
+            }
+
+            return implode(', ', $selected);
+        }
+
+        return $value;
     }
 
     public function generateByCategory(&$email)
@@ -348,7 +434,7 @@ class plgAcymEasyprofile extends acymPlugin
         $conditions['user']['epfield'] = new stdClass();
         $conditions['user']['epfield']->name = 'Easy Profile - '.acym_translation('ACYM_FIELDS');
 
-        $operator = acym_get('type.operator');
+        $operator = new OperatorType();
 
         $conditions['user']['epfield']->option = '<div class="intext_select_automation cell">';
         $conditions['user']['epfield']->option .= acym_select($fields, 'acym_condition[conditions][__numor__][__numand__][epfield][field]', null, 'class="acym__select"');

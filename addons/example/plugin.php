@@ -1,4 +1,6 @@
 <?php
+
+use AcyMailing\Libraries\acymPlugin;
 // The class name must be "plgAcym" followed by the add-on's folder name with an uppercase at the beginning
 // Any other uppercase character in the class name will prevent the good execution
 class plgAcymExample extends acymPlugin

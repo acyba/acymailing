@@ -1,6 +1,12 @@
 <?php
 
-class acymimportHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Libraries\acymObject;
+
+class ImportHelper extends acymObject
 {
     var $importUserInLists = [];
     var $totalInserted = 0;
@@ -78,7 +84,7 @@ class acymimportHelper extends acymObject
 
         $uploadPath = $this->_createUploadFolder();
 
-        $attachment = new stdClass();
+        $attachment = new \stdClass();
         $attachment->filename = uniqid('import_').'.csv';
         acym_setVar('filename', $attachment->filename);
 
@@ -129,7 +135,7 @@ class acymimportHelper extends acymObject
         $deletedSubid = array_merge(acym_loadResultArray($query), $deletedSubid);
 
         if (!empty($deletedSubid)) {
-            $userClass = acym_get('class.user');
+            $userClass = new UserClass();
             $deletedUsers = $userClass->delete($deletedSubid);
             acym_enqueueMessage(acym_translation_sprintf('ACYM_IMPORT_DELETE', $deletedUsers), 'success');
         }
@@ -315,7 +321,7 @@ class acymimportHelper extends acymObject
         $this->overwrite = acym_getVar('int', 'import_overwrite_generic');
 
         // Remember user's choices
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->import_confirmed = $this->forceconfirm;
         $newConfig->import_generate = $this->generatename;
         $newConfig->import_overwrite = $this->overwrite;
@@ -341,7 +347,7 @@ class acymimportHelper extends acymObject
 
         //We convert into the correct charset
         if (acym_getVar('cmd', 'acyencoding', '') != '') {
-            $encodingHelper = acym_get('helper.encoding');
+            $encodingHelper = new EncodingHelper();
             $contentFile = $encodingHelper->change($contentFile, acym_getVar('cmd', 'acyencoding'), 'UTF-8');
         }
 
@@ -412,7 +418,7 @@ class acymimportHelper extends acymObject
 
         $numberColumns = count($this->columns);
 
-        $encodingHelper = acym_get('helper.encoding');
+        $encodingHelper = new EncodingHelper();
 
         $importUsers = [];
 
@@ -420,11 +426,11 @@ class acymimportHelper extends acymObject
 
         $errorMessageInvalidEmails = "";
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
 
         $countUsersBeforeImport = $userClass->getCountTotalUsers();
 
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $allLists = $listClass->getAll('name');
 
         //Step 4 : we start importing the file as everything is OK
@@ -553,7 +559,7 @@ class acymimportHelper extends acymObject
                 continue;
             }
 
-            $newUser = new stdClass();
+            $newUser = new \stdClass();
             $newUser->customfields = [];
 
             // Handle email column first to be able to use it with listids and listname
@@ -606,7 +612,7 @@ class acymimportHelper extends acymObject
                         }
                         $onelistName = trim($onelistName);
                         if (empty($allLists[$onelistName])) {
-                            $newList = new stdClass();
+                            $newList = new \stdClass();
                             $newList->name = $onelistName;
                             $newList->active = 1;
                             $colors = ['#3366ff', '#7240A4', '#7A157D', '#157D69', '#ECE649'];
@@ -889,7 +895,7 @@ class acymimportHelper extends acymObject
 
     public function getImportedLists()
     {
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $listsId = json_decode(acym_getVar('string', 'acym__entity_select__selected'));
         $newListName = acym_getVar('string', 'new_list');
 
@@ -900,7 +906,7 @@ class acymimportHelper extends acymObject
         $lists = [];
 
         if (!empty($newListName)) {
-            $newList = new stdClass();
+            $newList = new \stdClass();
             $newList->name = $newListName;
             $newList->active = 1;
             $colors = '#'.substr(str_shuffle('ABCDEF0123456789'), 0, 6);
@@ -929,11 +935,11 @@ class acymimportHelper extends acymObject
 
         $subdate = date('Y-m-d H:i:s', time());
 
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $lists = $this->getImportedLists();
 
         if (!acym_isAdmin() && 'joomla' === ACYM_CMS) {
-            $listClass = acym_get('class.list');
+            $listClass = new ListClass();
             $listManagementId = $listClass->getfrontManagementList();
             if (empty($listManagementId)) {
                 acym_redirect(acym_rootURI(), 'ACYM_UNABLE_TO_CREATE_MANAGEMENT_LIST', 'error');

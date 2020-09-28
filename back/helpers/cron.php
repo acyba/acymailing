@@ -1,6 +1,13 @@
 <?php
 
-class acymcronHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Classes\AutomationClass;
+use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\QueueClass;
+use AcyMailing\Libraries\acymObject;
+
+class CronHelper extends acymObject
 {
     var $report = false;
     var $messages = [];
@@ -38,7 +45,7 @@ class acymcronHelper extends acymObject
         if ($this->config->get('cron_next') > $time) {
             if ($this->config->get('cron_next') > ($time + $this->config->get('cron_frequency'))) {
                 //There is something wrong here... so we put back the normal time
-                $newConfig = new stdClass();
+                $newConfig = new \stdClass();
                 $newConfig->cron_next = $time + $this->config->get('cron_frequency');
                 $this->config->save($newConfig);
             }
@@ -58,7 +65,7 @@ class acymcronHelper extends acymObject
 
 
         // Step 2: we update the next cron and the last cron dates
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->cron_last = $time;
         $newConfig->cron_fromip = acym_getIP();
         $newConfig->cron_next = $this->config->get('cron_next') + $this->config->get('cron_frequency');
@@ -73,7 +80,7 @@ class acymcronHelper extends acymObject
 
         // Step 3: Enqueue the scheduled campaigns
         if (!in_array('schedule', $this->skip)) {
-            $queueClass = acym_get('class.queue');
+            $queueClass = new QueueClass();
             $nbScheduled = $queueClass->scheduleReady();
             if ($nbScheduled) {
                 $this->messages[] = acym_translation_sprintf('ACYM_NB_SCHEDULED', $nbScheduled);
@@ -94,7 +101,7 @@ class acymcronHelper extends acymObject
 
         // Step 5: We send the queued emails that are ready
         if ($this->config->get('queue_type') != 'manual' && !in_array('send', $this->skip)) {
-            $queueHelper = acym_get('helper.queue');
+            $queueHelper = new QueueHelper();
             $queueHelper->send_limit = (int)$this->config->get('queue_nbmail_auto');
             $queueHelper->report = false;
             $queueHelper->emailtypes = $this->emailtypes;
@@ -121,14 +128,14 @@ class acymcronHelper extends acymObject
         if (!in_array('bounce', $this->skip) && acym_level(2) && $this->config->get('auto_bounce', 0) && $time > (int)$this->config->get('auto_bounce_next', 0) && (empty($queueHelper->stoptime) || time() < $queueHelper->stoptime - 5)) {
 
             //First we update the config
-            $newConfig = new stdClass();
+            $newConfig = new \stdClass();
             $newConfig->auto_bounce_next = $time + (int)$this->config->get('auto_bounce_frequency', 0);
             $newConfig->auto_bounce_last = $time;
             $this->config->save($newConfig);
-            $bounceClass = acym_get('helper.bounce');
+            $bounceClass = new BounceHelper();
             $bounceClass->report = false;
             $bounceClass->stoptime = $queueHelper->stoptime;
-            $newConfig = new stdClass();
+            $newConfig = new \stdClass();
             if ($bounceClass->init() && $bounceClass->connect()) {
                 $nbMessages = $bounceClass->getNBMessages();
                 $this->messages[] = acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
@@ -161,7 +168,7 @@ class acymcronHelper extends acymObject
 
         // Step 7: Automations
         if (!in_array('automation', $this->skip) && acym_level(2)) {
-            $automationClass = acym_get('class.automation');
+            $automationClass = new AutomationClass();
             $automationClass->trigger('classic');
 
             $userStatusCheckTriggers = [];
@@ -181,7 +188,7 @@ class acymcronHelper extends acymObject
 
         // Step 8: Automatic campaign
         if (!in_array('campaign', $this->skip) && acym_level(2)) {
-            $campaignClass = acym_get('class.campaign');
+            $campaignClass = new CampaignClass();
             $campaignClass->triggerAutoCampaign();
             if (!empty($campaignClass->messages)) {
                 $this->messages = array_merge($this->messages, $campaignClass->messages);
@@ -196,7 +203,7 @@ class acymcronHelper extends acymObject
     {
         //Send the report
         $sendreport = $this->config->get('cron_sendreport');
-        $mailer = acym_get('helper.mailer');
+        $mailer = new MailerHelper();
 
         if (($sendreport == 2 && $this->processed) || $sendreport == 1 || ($sendreport == 3 && $this->errorDetected)) {
             $mailer->report = false;
@@ -229,7 +236,7 @@ class acymcronHelper extends acymObject
             $this->saveReport();
         }
 
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->cron_report = implode("\n", $this->messages);
         if (strlen($newConfig->cron_report) > 800) {
             $newConfig->cron_report = substr($newConfig->cron_report, 0, 795).'...';

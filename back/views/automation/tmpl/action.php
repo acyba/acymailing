@@ -9,8 +9,7 @@
 
 	<div style="display: none">
         <?php
-        $tagClass = acym_get('class.tag');
-        $dataForTemplate = ['allTags' => $tagClass->getAllTagsByType('mail')];
+        $dataForTemplate = ['allTags' => $data['tagClass']->getAllTagsByType('mail')];
         echo acym_modal_include(
             '',
             ACYM_VIEW.'mails'.DS.'tmpl'.DS.'choose_template_ajax.php',
@@ -24,8 +23,7 @@
 
 	<div class="acym__content grid-x cell" id="acym__automation__actions">
         <?php
-        $workflow = acym_get('helper.workflow');
-        echo $workflow->display($this->steps, 'action');
+        echo $data['workflowHelper']->display($this->steps, 'action');
         ?>
 		<div id="acym__automation__example" style="display: none">
 			<div class="acym__automation__actions__one__action cell grid-x">

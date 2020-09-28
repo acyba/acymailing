@@ -1,5 +1,9 @@
 <?php
 
+namespace AcyMailing\Init;
+
+use AcyMailing\Classes\FormClass;
+
 class acyForms extends acyHook
 {
     var $formToDisplay = [];
@@ -9,7 +13,7 @@ class acyForms extends acyHook
     {
         $isPreview = acym_getVar('bool', 'acym_preview', false);
         if ($isPreview) return;
-        $this->formClass = acym_get('class.form');
+
         add_action('wp_head', [$this, 'prepareFormsToDisplay']);
         add_action('wp_footer', [$this, 'displayForms']);
         add_action('init', [$this, 'registerShortcodes']);
@@ -17,7 +21,8 @@ class acyForms extends acyHook
 
     public function prepareFormsToDisplay()
     {
-        $forms = $this->formClass->getAllFormsToDisplay();
+        $formClass = new FormClass();
+        $forms = $formClass->getAllFormsToDisplay();
 
         if (empty($forms)) return;
 
@@ -26,7 +31,7 @@ class acyForms extends acyHook
 
         foreach ($forms as $form) {
             if (!empty($form->pages) && (in_array($menu->ID, $form->pages) || in_array('all', $form->pages))) {
-                $this->formToDisplay[] = $this->formClass->renderForm($form);
+                $this->formToDisplay[] = $formClass->renderForm($form);
             }
         }
 
@@ -58,11 +63,12 @@ class acyForms extends acyHook
 
         if (empty($params['id'])) return;
 
-        $form = $this->formClass->getOneById($params['id']);
+        $formClass = new FormClass();
+        $form = $formClass->getOneById($params['id']);
 
         if (empty($form) || empty($form->active)) return;
 
-        return $this->formClass->renderForm($form);
+        return $formClass->renderForm($form);
     }
 }
 

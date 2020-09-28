@@ -1,6 +1,10 @@
 <?php
 
-class acympluginHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+
+class PluginHelper extends acymObject
 {
     //Did we wrap the text?
     public $wraped = false;
@@ -126,11 +130,11 @@ class acympluginHelper extends acymObject
                     if (is_numeric($date)) {
                         $date = acym_getDate($replaceme, '%Y-%m-%d %H:%M:%S');
                     }
-                    $dateObj = new DateTime($date);
-                    $nowObj = new DateTime();
+                    $dateObj = new \DateTime($date);
+                    $nowObj = new \DateTime();
                     $diff = $dateObj->diff($nowObj);
                     $replaceme = $diff->format($mytag->format);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $replaceme = 'Error using the "diff" parameter in your tag. Please make sure the DateTime() and diff() functions are available on your server.';
                 }
             }
@@ -168,7 +172,7 @@ class acympluginHelper extends acymObject
 
 
         if (!empty($mytag->maxheight) || !empty($mytag->maxwidth)) {
-            $imageHelper = acym_get('helper.image');
+            $imageHelper = new ImageHelper();
             $imageHelper->maxHeight = empty($mytag->maxheight) ? 999 : $mytag->maxheight;
             $imageHelper->maxWidth = empty($mytag->maxwidth) ? 999 : $mytag->maxwidth;
             $replaceme = $imageHelper->resizePictures($replaceme);
@@ -417,7 +421,7 @@ class acympluginHelper extends acymObject
 
         if ($html) {
             if (empty($this->mailerHelper)) {
-                $this->mailerHelper = acym_get('helper.mailer');
+                $this->mailerHelper = new MailerHelper();
             }
 
             $textreplace = [];
@@ -531,7 +535,7 @@ class acympluginHelper extends acymObject
     {
         $oneTag = str_replace(['[time]+', '[time]-'], [urlencode('[time]+'), urlencode('[time]-')], $oneTag);
         $arguments = explode('|', strip_tags(urldecode($oneTag)));
-        $tag = new stdClass();
+        $tag = new \stdClass();
         $tag->id = $arguments[0];
         $tag->default = '';
         for ($i = 1, $a = count($arguments) ; $i < $a ; $i++) {
@@ -844,7 +848,7 @@ class acympluginHelper extends acymObject
             return $result;
         }
 
-        $imageHelper = acym_get('helper.image');
+        $imageHelper = new ImageHelper();
         if ($tag->pict === 'resized') {
             $imageHelper->maxHeight = empty($tag->maxheight) ? 150 : $tag->maxheight;
             $imageHelper->maxWidth = empty($tag->maxwidth) ? 150 : $tag->maxwidth;

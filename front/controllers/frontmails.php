@@ -1,5 +1,8 @@
 <?php
-include ACYM_CONTROLLER.'mails.php';
+
+namespace AcyMailing\FrontControllers;
+
+use AcyMailing\Controllers\MailsController;
 
 class FrontmailsController extends MailsController
 {

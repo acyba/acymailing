@@ -36,7 +36,7 @@ const acym_helperSelectionPage = {
             const $cardSelected = jQuery('.acym__selection__card-selected');
             let link = $cardSelected.attr('acym-data-link');
             if (link.indexOf('{dataid}') !== -1) {
-                const listId = $cardSelected.find('.acym__selection__select-card__select').val();
+                const listId = $cardSelected.find('.acym__email__new__card__select').val();
                 link = link.replace('{dataid}', listId);
             }
             window.location.href = link;

@@ -70,7 +70,7 @@ jQuery(document).ready(function ($) {
             }
 
             $(this).attr('disabled', 'true');
-            let ajaxUrl = AJAX_URL_UPDATEME + 'subscription&task=subscribe&email=' + emailUser + '&cms=' + CMS_ACYM;
+            let ajaxUrl = AJAX_URL_UPDATEME + 'subscription&task=subscribe&email=' + emailUser + '&cms=' + ACYM_CMS;
 
             $.get(ajaxUrl);
             $('.acy_button_submit').click();

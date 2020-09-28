@@ -28,7 +28,9 @@
                         'draft' => ['ACYM_DRAFT', $data['allStatusFilter']->draft],
                     ];
                 }
-                echo acym_filterStatus($options, $data['status'], 'campaigns_status');
+                if (isset($data['campaign_type'])) {
+                    echo acym_filterStatus($options, $data['status'], $data['campaign_type'].'_status');
+                }
                 ?>
 			</div>
 		</div>
@@ -44,7 +46,9 @@
                         'active' => acym_translation('ACYM_ACTIVE'),
                         'sent' => acym_translation('ACYM_SENT'),
                     ],
-                    'campaigns'
+                    $data['campaign_type'],
+                    $data['ordering'],
+                    $data['orderingSortOrder']
                 ); ?>
 			</div>
 		</div>

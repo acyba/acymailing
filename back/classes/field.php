@@ -1,6 +1,10 @@
 <?php
 
-class acymfieldClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class FieldClass extends acymClass
 {
     var $table = 'field';
     var $pkey = 'id';
@@ -430,13 +434,13 @@ class acymfieldClass extends acymClass
             } else {
                 if (!empty($defaultValue) && !is_object($defaultValue)) {
                     $defaultValue = explode(',', $defaultValue);
-                    $temporaryObject = new stdClass();
+                    $temporaryObject = new \stdClass();
                     foreach ($defaultValue as $oneValue) {
                         $temporaryObject->$oneValue = 'on';
                     }
                     $defaultValue = $temporaryObject;
                 }
-                $defaultValue = is_object($defaultValue) ? $defaultValue : new stdClass();
+                $defaultValue = is_object($defaultValue) ? $defaultValue : new \stdClass();
                 foreach ($valuesArray as $key => $oneValue) {
                     if (empty($defaultValue->$key)) {
                         $labelClass = 'class="cell margin-top-1"';

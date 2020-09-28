@@ -27,13 +27,14 @@ function acym_loadAssets($ctrl, $task)
     acym_addScript(
         true,
         'var AJAX_URL_UPDATEME = "'.ACYM_UPDATEMEURL.'";
-        var MEDIA_URL_ACYM = "'.ACYM_MEDIA_URL.'";
-        var CMS_ACYM = "'.ACYM_CMS.'";
+        var ACYM_MEDIA_URL = "'.ACYM_MEDIA_URL.'";
+        var ACYM_CMS = "'.ACYM_CMS.'";
         var FOUNDATION_FOR_EMAIL = "'.ACYM_CSS.'libraries/foundation_email.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'foundation_email.min.css').'";
         var ACYM_FIXES_FOR_EMAIL = "'.str_replace('"', '\"', acym_getEmailCssFixes()).'";
         var ACYM_REGEX_EMAIL = /^'.acym_getEmailRegex(true).'$/i;
         var ACYM_JS_TXT = '.acym_getJSMessages().';
         var ACYM_CORE_DYNAMICS_URL = "'.ACYM_CORE_DYNAMICS_URL.'";
+        var ACYM_PLUGINS_URL = "'.ACYM_PLUGINS_URL.'";
         var ACYM_ROOT_URI = "'.acym_rootURI().'";'
     );
 
@@ -232,7 +233,7 @@ function acym_getJSMessages()
 
 function acym_isExcludedFrontView($ctrl, $task)
 {
-    if ('archive' === $ctrl && in_array($task, ['view', 'listing'])) return true;
+    if ('archive' === $ctrl && in_array($task, ['view'])) return true;
     if ('frontusers' === $ctrl && 'profile' === $task) return true;
 
     return false;

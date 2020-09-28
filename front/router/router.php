@@ -1,5 +1,9 @@
 <?php
 
+use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailClass;
+
 class AcymRouter extends AcymRouterBase
 {
     private $pagesNotSef = [];
@@ -11,13 +15,13 @@ class AcymRouter extends AcymRouterBase
         parent::__construct($app, $menu);
         require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
 
-        $this->pagesNotSEF = [
+        $this->pagesNotSef = [
             'cron',
             'fronturl',
             'frontmails',
         ];
 
-        $this->paramsNotSEF = [
+        $this->paramsNotSef = [
             'acyformname',
             'format',
             'hiddenlists',
@@ -45,7 +49,7 @@ class AcymRouter extends AcymRouterBase
         $segments = [];
 
         // We don't SEF these links
-        if (isset($query['ctrl']) && in_array($query['ctrl'], $this->pagesNotSEF)) {
+        if (isset($query['ctrl']) && in_array($query['ctrl'], $this->pagesNotSef)) {
             return $segments;
         }
 
@@ -106,7 +110,7 @@ class AcymRouter extends AcymRouterBase
 
         foreach ($query as $name => $value) {
             // We don't add to the SEF url these elements
-            if (in_array($name, $this->paramsNotSEF)) continue;
+            if (in_array($name, $this->paramsNotSef)) continue;
             $segments[] = $name.$this->separator.$value;
             unset($query[$name]);
         }
@@ -165,7 +169,7 @@ class AcymRouter extends AcymRouterBase
 
     private function getMailSEF($id)
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $mail = $mailClass->getOneById($id);
 
         return $id.$this->separator.acym_getAlias($mail->subject);
@@ -174,7 +178,8 @@ class AcymRouter extends AcymRouterBase
     private function getCampaignSEF($campaignId)
     {
         if (empty($campaignId) || !is_numeric($campaignId)) return '0'.$this->separator.'new';
-        $campaignClass = acym_get('class.campaign');
+
+        $campaignClass = new CampaignClass();
         $campaign = $campaignClass->getOneByIdWithMail($campaignId);
 
         return $campaignId.$this->separator.acym_getAlias($campaign->subject);
@@ -182,7 +187,7 @@ class AcymRouter extends AcymRouterBase
 
     private function getListSEF($id)
     {
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $list = $listClass->getOneById($id);
 
         return $id.$this->separator.acym_getAlias($list->name);

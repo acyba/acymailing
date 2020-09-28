@@ -1,6 +1,10 @@
 <?php
 
-class acympaginationHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+
+class PaginationHelper extends acymObject
 {
     // The total number of elements in the database
     var $total;
@@ -12,7 +16,7 @@ class acympaginationHelper extends acymObject
     public function setStatus($total, $page, $nbPerPage)
     {
         $this->total = $total;
-        $this->page = $page;
+        $this->page = empty($page) ? 1 : $page;
         $this->nbPerPage = $nbPerPage;
     }
 
@@ -118,7 +122,7 @@ class acympaginationHelper extends acymObject
 
         if ($this->page != 1) {
             $pagination .= '<span class="acym__front__pagination__element" onclick="acym_changePageFront(1)"><</span>';
-            $pagination .= '<span class="acym__front__pagination__element" onclick="acym_changePageFront($previousPage)">'.$previousPage.'</span>';
+            $pagination .= '<span class="acym__front__pagination__element" onclick="acym_changePageFront('.$previousPage.')">'.$previousPage.'</span>';
         }
         $pagination .= '<b>'.$this->page.'</b>';
         if ($this->page != $nbPages) {

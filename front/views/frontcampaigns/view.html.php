@@ -1,5 +1,9 @@
 <?php
 
+namespace AcyMailing\FrontViews;
+
+use AcyMailing\Libraries\acymView;
+
 class FrontcampaignsViewFrontcampaigns extends acymView
 {
     public function __construct()

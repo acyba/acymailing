@@ -3,7 +3,7 @@
 		<div class="acym__file__select grid-x">
 			<div class="acym__file__select__arbo acym__file__select__area cell grid-x">
                 <?php
-                $fileTreeType = acym_get('type.fileTree');
+                $fileTreeType = $data['fileTreeType'];
                 echo $fileTreeType->display($data['folders'], $data['uploadFolder'], 'currentFolder');
                 ?>
 			</div>

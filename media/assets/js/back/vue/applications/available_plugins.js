@@ -74,8 +74,12 @@ jQuery(document).ready(function ($) {
             },
             methods: {
                 getAllPlugins() {
-                    let ajaxUrl = AJAX_URL_UPDATEME + 'integrationv6&task=getAllPlugin&cms=' + CMS_ACYM;
-                    return $.post(ajaxUrl);
+                    if (ACYM_CMS === 'joomla') {
+                        let ajaxUrl = AJAX_URL_UPDATEME + 'integrationv6&task=getAllPlugin&cms=' + ACYM_CMS;
+                        return $.post(ajaxUrl);
+                    } else if (ACYM_CMS === 'wordpress') {
+                        return Promise.resolve($('#acym__plugin__available__plugins').val());
+                    }
                 },
                 getAllPluginsInstalled() {
                     let ajaxUrl = ACYM_AJAX_URL + '&ctrl=plugins&task=getAllPluginsAjax';
@@ -86,8 +90,8 @@ jQuery(document).ready(function ($) {
                     });
                 },
                 download(plugin) {
-                    if (this.downloading[plugin.id]) return true;
-                    this.downloading[plugin.id] = true;
+                    if (this.downloading[plugin.image]) return true;
+                    this.downloading[plugin.image] = true;
                     this.downloading = {...this.downloading};
                     let ajaxUrl = ACYM_AJAX_URL + '&ctrl=plugins&task=download';
                     $.ajax({
@@ -98,13 +102,13 @@ jQuery(document).ready(function ($) {
                         res = acym_helper.parseJson(res);
                         if (undefined !== res.error) {
                             acym_helperNotification.addNotification(res.error, 'error');
-                            this.downloading[plugin.id] = false;
+                            this.downloading[plugin.image] = false;
                             this.downloading = {...this.downloading};
                             return false;
                         }
                         acym_helperNotification.addNotification(res.message, 'info');
-                        this.downloading[plugin.id] = false;
-                        this.installed[plugin.id] = true;
+                        this.downloading[plugin.image] = false;
+                        this.installed[plugin.image] = true;
                     });
                 },
                 resetDisplay() {
@@ -132,8 +136,8 @@ jQuery(document).ready(function ($) {
                 },
                 setStatus() {
                     for (let plugin in this.allPlugins) {
-                        this.downloading[this.allPlugins[plugin].id] = false;
-                        this.installed[this.allPlugins[plugin].id] = this.isInstalled(this.allPlugins[plugin].name);
+                        this.downloading[this.allPlugins[plugin].image] = false;
+                        this.installed[this.allPlugins[plugin].image] = this.isInstalled(this.allPlugins[plugin].name);
                     }
                 },
                 isInstalled(pluginName) {
@@ -157,15 +161,14 @@ jQuery(document).ready(function ($) {
                     this.fillDisplayPlugins();
                 },
                 imageUrl(pluginName) {
-                    if (undefined !== pluginName) {
-                        pluginName = pluginName.substring(0, pluginName.indexOf('.'));
-                    }
-                    return AJAX_URL_UPDATEME + 'integrationv6&task=getImage&plugin=' + pluginName;
-                },
-                documentationUrl(pluginName) {
                     if (undefined === pluginName) return '';
-                    pluginName = pluginName.replace('.zip', '');
-                    return AJAX_URL_UPDATEME + 'integrationv6&task=getDocumentation&plugin=' + pluginName;
+
+                    if (ACYM_CMS === 'joomla') {
+                        pluginName = pluginName.substring(0, pluginName.indexOf('.'));
+                        return AJAX_URL_UPDATEME + 'integrationv6&task=getImage&plugin=' + pluginName;
+                    } else if (ACYM_CMS === 'wordpress') {
+                        return ACYM_MEDIA_URL + 'images/plugins/' + pluginName;
+                    }
                 },
                 isOverflown(index) {
                     if (this.$refs.plugins === undefined || this.$refs.plugins[index] === undefined) return '';

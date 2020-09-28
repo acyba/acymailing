@@ -43,8 +43,7 @@
 				<div class="grid-x">
 					<label class="cell medium-6 xxlarge-3"><?php echo acym_translation('ACYM_ENCODING'); ?>
                         <?php
-                        $encodingHelper = acym_get('helper.encoding');
-                        echo $encodingHelper->charsetField(
+                        echo $data['encodingHelper']->charsetField(
                             'export_charset',
                             $this->config->get('export_charset', 'UTF-8'),
                             'class="acym__select"'
@@ -95,9 +94,8 @@
 					<div class="grid-x">
                         <?php
                         if (!$data['isPreselectedList']) {
-                            $userClass = acym_get('class.user');
                             foreach ($data['checkedElements'] as $id) {
-                                $user = $userClass->getOneById($id);
+                                $user = $data['userClass']->getOneById($id);
                                 echo '<div class="cell grid-x acym__listing__row">';
                                 echo '    <div class="cell small-6">'.$user->name.'</div>
                                       <div class="cell small-6">'.$user->email.'</div>';

@@ -1,5 +1,11 @@
 <?php
 
+namespace AcyMailing\FrontControllers;
+
+use AcyMailing\Classes\MailStatClass;
+use AcyMailing\Classes\UserStatClass;
+use AcyMailing\Libraries\acymController;
+
 class FrontStatsController extends acymController
 {
     public function __construct()
@@ -14,7 +20,7 @@ class FrontStatsController extends acymController
         $userId = acym_getVar('int', 'userid');
 
         if (!empty($mailId) && !empty($userId)) {
-            $userStatClass = acym_get('class.userstat');
+            $userStatClass = new UserStatClass();
             $userStat = $userStatClass->getOneByMailAndUserId($mailId, $userId);
             if (!empty($userStat)) {
                 $openUnique = 1;
@@ -27,7 +33,7 @@ class FrontStatsController extends acymController
                 $mailStat['open_unique'] = $openUnique;
                 $mailStat['open_total'] = 1;
 
-                $mailStatClass = acym_get('class.mailstat');
+                $mailStatClass = new MailStatClass();
                 $mailStatClass->save($mailStat);
 
                 $userStatToInsert = [];

@@ -15,7 +15,7 @@
 		<div class="cell medium-3 margin-top-1"><?php echo acym_translation('ACYM_AUTO_SEND_PROCESS'); ?></div>
 		<div class="cell medium-9 margin-top-1">
             <?php
-            $delayTypeAuto = acym_get('type.delay');
+            $delayTypeAuto = $data['typeDelay'];
             echo acym_translation_sprintf(
                 'ACYM_SEND_X_EVERY_Y',
                 '<input class="intext_input" type="text" name="config[queue_nbmail_auto]" value="'.intval($this->config->get('queue_nbmail_auto')).'" />',
@@ -25,7 +25,7 @@
 		<div class="cell medium-3 margin-top-1"><?php echo acym_translation('ACYM_MANUAL_SEND_PROCESS'); ?></div>
 		<div class="cell medium-9 margin-top-1">
             <?php
-            $delayTypeAuto = acym_get('type.delay');
+            $delayTypeAuto = $data['typeDelay'];
             echo acym_translation_sprintf(
                 'ACYM_SEND_X_WAIT_Y',
                 '<input class="intext_input" type="text" name="config[queue_nbmail]" value="'.intval($this->config->get('queue_nbmail')).'" />',
@@ -36,7 +36,7 @@
 		<div class="cell medium-9 margin-top-1">
             <?php echo acym_translation_sprintf('ACYM_CONFIG_TRY', '<input class="intext_input" type="text" name="config[queue_try]" value="'.intval($this->config->get('queue_try')).'">');
 
-            $failaction = acym_get('type.failaction');
+            $failaction = $data['failaction'];
             echo ' '.acym_translation_sprintf('ACYM_CONFIG_TRY_ACTION', $failaction->display('maxtry', $this->config->get('bounce_action_maxtry'))); ?>
 		</div>
 		<div class="cell medium-3 margin-top-1"><?php echo acym_translation('ACYM_MAX_EXECUTION_TIME'); ?></div>
@@ -81,6 +81,6 @@ if (!acym_level(1)) {
     $data['version'] = 'essential';
     echo '<div class="acym_area">
             <div class="acym_area_title">'.acym_translation('ACYM_CRON').'</div>';
-    include(ACYM_VIEW.'dashboard'.DS.'tmpl'.DS.'upgrade.php');
+    include acym_getView('dashboard', 'upgrade');
     echo '</div>';
 }

@@ -14,11 +14,11 @@
                 <?php echo acym_translation('ACYM_ASSIGN_ACY_WEBSITE_TO_LICENCE_AND_MAGIC'); ?></p>
 		</div>
 		<div class="cell grid-x medium-6 align-center">
-			<img class="cell acym__configuration__upgrade__license__images" src="<?php echo ACYM_ACYWEBSITE.'images/acymailing/tablet_smartphone.png'; ?>" alt="Screenshots of AcyMailing stats on tablet and smartphone">
+			<img class="cell acym__configuration__upgrade__license__images" src="<?php echo ACYM_IMAGES.'starter/tablet_smartphone.png'; ?>" alt="Screenshots of AcyMailing stats on tablet and smartphone">
 		</div>
 		<div class="cell grid-x align-center"><span class="cell medium-2 acym__configuration__upgrade__license__separator"></span></div>
 		<div class="cell grid-x medium-6 align-center">
-			<img class="cell acym__configuration__upgrade__license__images__larger" src="<?php echo ACYM_ACYWEBSITE.'images/acymailing/Safe-content-check.png'; ?>" alt="">
+			<img class="cell acym__configuration__upgrade__license__images__larger" src="<?php echo ACYM_IMAGES.'starter/safe-content-check.png'; ?>" alt="">
 		</div>
 		<div class="cell grid-x medium-6 acym__configuration__upgrade__license__text">
 			<h3 class="cell"><?php echo acym_translation('ACYM_CAMPAING_QUALITY_TEST'); ?></h3>
@@ -34,7 +34,7 @@
                 <?php echo acym_translation('ACYM_FILTER_USERS_BASE_ON_FIELDS_DATA'); ?></p>
 		</div>
 		<div class="cell grid-x medium-6 align-center">
-			<img class="cell acym__configuration__upgrade__license__images__larger" src="<?php echo ACYM_ACYWEBSITE.'images/acymailing/custom-fields.png'; ?>" alt="">
+			<img class="cell acym__configuration__upgrade__license__images__larger" src="<?php echo ACYM_MEDIA_URL.'/images/custom-fields.png'; ?>" alt="">
 		</div>
 		<div class="cell grid-x align-center"><span class="cell medium-2 acym__configuration__upgrade__license__separator"></span></div>
 		<p class="cell text-center"><?php echo acym_translation('ACYM_AND_MANY_MORE_FEATURE_YOU_MISSING'); ?></p>

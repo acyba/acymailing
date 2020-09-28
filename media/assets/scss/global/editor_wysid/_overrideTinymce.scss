@@ -1,0 +1,100 @@
+.mce-tinymce {
+    border-radius: $primary-radius;
+    z-index: 655350 !important;
+}
+
+.mce-toolbar-grp, #wpforms-modal-wrap, #wp-link-wrap {
+    z-index: 1001000 !important;
+}
+
+.mce-floatpanel, .mce-tooltip {
+    z-index: 655360 !important;
+}
+
+.mce-btn, .mce-panel, .mce-textbox, .mce-floatpanel.mce-popover, .mce-tabs, .mce-tab, .mce-tabs + .mce-container-body {
+    background-color: map-get($editor-wysid-palette, primary) !important;
+}
+
+.mce-container-body textarea {
+    background: map-get($editor-wysid-palette, primary) !important;
+}
+
+.mce-custom-color-btn {
+    .mce-btn {
+        background-color: map-get($editor-wysid-palette, primary) !important;
+
+        button {
+            color: $medium-gray !important;
+        }
+    }
+}
+
+.mce-btn {
+    border-radius: 4px !important;
+
+    &.mce-active, &.mce-active:hover, &:hover, &:focus, &:active {
+        background-color: map-get($editor-wysid-palette, primary) !important;
+        border-color: $white !important;
+
+        .mce-ico {
+            color: $white !important;
+        }
+    }
+}
+
+.mce-menu-item:hover, .mce-menu-item.mce-selected, .mce-menu-item:focus, .mce-menu-item-normal.mce-active {
+    background-color: map-get($editor-wysid-palette, primary) !important;
+    opacity: 0.7 !important;
+}
+
+.mce-ico, .mce-btn .mce-txt, .mce-menu-item .mce-ico, .mce-menu-item .mce-text {
+    color: $medium-gray !important;
+    background-color: inherit !important;
+}
+
+.mce-i-backcolor {
+    background-color: $dark-gray !important;
+}
+
+.mce-label, .mce-container *, .mce-tooltip-inner {
+    text-shadow: none !important;
+    color: $medium-gray !important;
+}
+
+.mce-caret {
+    border-top-color: $white !important;
+}
+
+.mce-btn-group:not(:first-child), .mce-colorbutton:hover .mce-open, .mce-grid td.mce-grid-cell div {
+    border: none !important;
+}
+
+.mce-floatpanel.mce-popover.mce-bottom > .mce-arrow:after {
+    border-bottom-color: map-get($editor-wysid-palette, primary) !important;
+}
+
+.acym__wysid__tinymce--text--placeholder, .acym__wysid__tinymce--title--placeholder {
+    position: relative;
+
+    &.acym__wysid__tinymce--text--placeholder--empty {
+        min-height: 70px;
+        overflow: hidden;
+        cursor: text;
+
+        &:after {
+            position: absolute;
+            @include acym_set_position();
+            opacity: .7;
+        }
+    }
+}
+
+.acym__wysid__tinymce--text--placeholder.acym__wysid__tinymce--text--placeholder--empty:after {
+    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam in magna in leo volutpat congue vitae eu nibh. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In varius sed ipsum vel egestas.';
+    color: $medium-gray;
+}
+
+.acym__wysid__tinymce--title--placeholder.acym__wysid__tinymce--text--placeholder--empty:after {
+    content: 'Write something here ...';
+    color: $light-gray;
+}

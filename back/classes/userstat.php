@@ -1,6 +1,10 @@
 <?php
 
-class acymuserStatClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class UserStatClass extends acymClass
 {
     var $table = 'user_stat';
 
@@ -29,7 +33,7 @@ class acymuserStatClass extends acymClass
 
         if (!empty($userStat['open'])) {
             $onDuplicate[] = "open = open + 1";
-            $automationClass = acym_get('class.automation');
+            $automationClass = new AutomationClass();
             $automationClass->trigger('user_open', ['userId' => $userStat['user_id']]);
         }
 
@@ -70,7 +74,7 @@ class acymuserStatClass extends acymClass
 
     public function getDetailedStats($settings)
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         $query = 'SELECT us.*, m.name, m.subject, u.email, c.id as campaign_id, c.parent_id, 0 AS total_click 
                     FROM #__acym_user_stat AS us

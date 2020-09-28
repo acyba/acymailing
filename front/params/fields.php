@@ -1,16 +1,20 @@
 <?php
 
+use AcyMailing\Classes\FieldClass;
+
 class JFormFieldFields extends JFormField
 {
     var $type = 'fields';
 
     public function getInput()
     {
-        if ('{__CMS__}' == 'Joomla' && !include_once(rtrim(JPATH_ADMINISTRATOR, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php')) {
+        //__START__joomla_
+        if ('{__CMS__}' === 'Joomla' && !include_once(rtrim(JPATH_ADMINISTRATOR, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php')) {
             echo 'This extension cannot work without AcyMailing';
         }
+        //__END__joomla_
 
-        $fieldsClass = acym_get('class.field');
+        $fieldsClass = new FieldClass();
         $allFields = $fieldsClass->getAllFieldsForModuleFront();
         $fields = [];
         foreach ($allFields as $field) {

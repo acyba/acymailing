@@ -1,5 +1,8 @@
 <?php
-include ACYM_CONTROLLER.'entitySelect.php';
+
+namespace AcyMailing\FrontControllers;
+
+use AcyMailing\Controllers\EntitySelectController;
 
 class FrontentityselectController extends EntitySelectController
 {

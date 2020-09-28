@@ -1,10 +1,15 @@
 <?php
 
+use AcyMailing\Classes\FieldClass;
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Libraries\acymParameter;
+
 class acym_subscriptionform_widget extends WP_Widget
 {
     public function __construct()
     {
-        require_once(rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php');
+        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
 
         parent::__construct(
             'acym_subscriptionform_widget',
@@ -16,15 +21,15 @@ class acym_subscriptionform_widget extends WP_Widget
     // Configuration
     public function form($instance)
     {
-        require_once(rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php');
+        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
 
         wp_enqueue_style('select2lib', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css');
         wp_enqueue_script('select2lib', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js', ['jquery']);
         wp_enqueue_script('acym_widget_article', ACYM_JS.'widget.min.js', ['select2lib']);
         acym_addStyle(false, ACYM_CSS.'widget.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'widget.min.css'));
 
-        $listClass = acym_get('class.list');
-        $fieldClass = acym_get('class.field');
+        $listClass = new ListClass();
+        $fieldClass = new FieldClass();
         $allFields = $fieldClass->getAllfields();
         $fields = [];
         foreach ($allFields as $field) {
@@ -58,6 +63,7 @@ class acym_subscriptionform_widget extends WP_Widget
             'unsub' => '0',
             'unsubtext' => '',
             'unsubredirect' => '',
+            'successmode' => 'replace',
             'redirect' => '',
             'introtext' => '',
             'posttext' => '',
@@ -183,6 +189,14 @@ class acym_subscriptionform_widget extends WP_Widget
         	<label class="acyWPconfig" for="'.$this->get_field_id('unsubredirect').'" title="'.acym_translation('ACYM_REDIRECT_LINK_UNSUB_DESC').'">'.acym_translation('ACYM_REDIRECT_LINK_UNSUB').'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('unsubredirect').'" name="'.$this->get_field_name('unsubredirect').'" value="'.$params['unsubredirect'].'" /></p>';
 
+        $optionsSuccess = [];
+        $optionsSuccess[] = acym_selectOption('replace', 'ACYM_SUCCESS_REPLACE');
+        $optionsSuccess[] = acym_selectOption('replacetemp', 'ACYM_SUCCESS_REPLACE_TEMP');
+        $optionsSuccess[] = acym_selectOption('toptemp', 'ACYM_SUCCESS_TOP_TEMP');
+        $optionsSuccess[] = acym_selectOption('standard', 'ACYM_SUCCESS_STANDARD');
+        echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_SUCCESS_MODE_DESC').'">'.acym_translation('ACYM_SUCCESS_MODE').'</label>';
+        echo acym_select($optionsSuccess, $this->get_field_name('successmode'), $params['successmode'], 'class="acym_simple_select2"', 'value', 'text', $this->get_field_id('successmode')).'</p>';
+
         echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('redirect').'" title="'.acym_translation('ACYM_REDIRECT_LINK_DESC').'">'.acym_translation('ACYM_REDIRECT_LINK').'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('redirect').'" name="'.$this->get_field_name('redirect').'" value="'.$params['redirect'].'" /></p>';
 
@@ -221,7 +235,7 @@ class acym_subscriptionform_widget extends WP_Widget
     // Widget's output
     public function widget($args, $instance)
     {
-        require_once(rtrim(dirname(dirname(__DIR__)), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php');
+        require_once rtrim(dirname(dirname(__DIR__)), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
 
         echo $args['before_widget'];
 
@@ -236,7 +250,7 @@ class acym_subscriptionform_widget extends WP_Widget
         $identifiedUser = null;
         $currentUserEmail = acym_currentUserEmail();
         if ($params->get('userinfo', '1') == '1' && !empty($currentUserEmail)) {
-            $userClass = acym_get('class.user');
+            $userClass = new UserClass();
             $identifiedUser = $userClass->getOneByEmail($currentUserEmail);
         }
 
@@ -250,8 +264,8 @@ class acym_subscriptionform_widget extends WP_Widget
         acym_arrayToInteger($hiddenLists);
         acym_arrayToInteger($allfields);
 
-        $listClass = acym_get('class.list');
-        $fieldClass = acym_get('class.field');
+        $listClass = new ListClass();
+        $fieldClass = new FieldClass();
 
         $allLists = $listClass->getAllWIthoutManagement();
         $visibleLists = array_intersect($visibleLists, array_keys($allLists));
@@ -315,10 +329,13 @@ class acym_subscriptionform_widget extends WP_Widget
         $listPosition = $params->get('listposition', 'before');
         $displayOutside = $params->get('textmode') == '0';
 
+        // Display success message
+        $successMode = $params->get('successmode', 'replace');
+
         // Redirections
         $redirectURL = $params->get('redirect', '');
         $unsubRedirectURL = $params->get('unsubredirect', '');
-        $ajax = empty($redirectURL) && empty($unsubRedirectURL) ? '1' : '0';
+        $ajax = empty($redirectURL) && empty($unsubRedirectURL) && $successMode != 'standard' ? '1' : '0';
 
         // Customization
         $formClass = $params->get('formclass', '');
@@ -362,7 +379,7 @@ class acym_subscriptionform_widget extends WP_Widget
         ?>
 		<div class="acym_module <?php echo acym_escape($formClass); ?>" id="acym_module_<?php echo $formName; ?>">
 			<div class="acym_fulldiv" id="acym_fulldiv_<?php echo $formName; ?>" <?php echo $style; ?>>
-				<form enctype="multipart/form-data" id="<?php echo acym_escape($formName); ?>" name="<?php echo acym_escape($formName); ?>" method="POST" action="<?php echo acym_escape($formAction); ?>" onsubmit="return submitAcymForm('subscribe','<?php echo $formName; ?>', 'acySubmitSubForm')">
+				<form enctype="multipart/form-data" id="<?php echo acym_escape($formName); ?>" name="<?php echo acym_escape($formName); ?>" method="POST" action="<?php echo acym_escape($formAction); ?>" onsubmit="return submitAcymForm('subscribe','<?php echo $formName; ?>', 'acymSubmitSubForm')">
 					<div class="acym_module_form">
                         <?php
                         $introText = $params->get('introtext', '');
@@ -370,10 +387,10 @@ class acym_subscriptionform_widget extends WP_Widget
                             echo '<div class="acym_introtext">'.$introText.'</div>';
                         }
                         if ($params->get('mode', 'tableless') == 'tableless') {
-                            include(__DIR__.DS.'tmpl'.DS.'tableless.php');
+                            include __DIR__.DS.'tmpl'.DS.'tableless.php';
                         } else {
                             $displayInline = $params->get('mode', 'tableless') != 'vertical';
-                            include(__DIR__.DS.'tmpl'.DS.'default.php');
+                            include __DIR__.DS.'tmpl'.DS.'default.php';
                         }
                         ?>
 					</div>
@@ -388,6 +405,7 @@ class acym_subscriptionform_widget extends WP_Widget
                     if (!empty($unsubRedirectURL)) echo '<input type="hidden" name="redirectunsub" value="'.acym_escape($unsubRedirectURL).'"/>';
                     ?>
 					<input type="hidden" name="ajax" value="<?php echo acym_escape($ajax); ?>" />
+					<input type="hidden" name="successmode" value="<?php echo acym_escape($successMode); ?>" />
 					<input type="hidden" name="acy_source" value="<?php echo acym_escape($params->get('source', '')); ?>" />
 					<input type="hidden" name="hiddenlists" value="<?php echo implode(',', $hiddenLists); ?>" />
 					<input type="hidden" name="acyformname" value="<?php echo acym_escape($formName); ?>" />

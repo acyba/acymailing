@@ -8,7 +8,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 		<div class="cell <?php echo $data['containerClass']; ?> acym__content">
 
             <?php
-            $workflow = acym_get('helper.workflow');
+            $workflow = $data['workflowHelper'];
             echo $workflow->display($this->steps, $this->step);
             ?>
 

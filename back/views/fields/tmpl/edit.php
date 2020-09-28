@@ -305,7 +305,7 @@
 					</label>
 					<label class="cell margin-top-1 medium-3 margin-right-1"><?php echo acym_translation('ACYM_WHERE_OPERATION'); ?>
                         <?php
-                        $operator = acym_get('type.operator');
+                        $operator = $data['operatorType'];
                         $operator->class = 'acym__fields__edit__select acym__select';
                         echo $operator->display('fieldDB[where_sign]', empty($data['field']->fieldDB->where_sign) ? '' : $data['field']->fieldDB->where_sign);
                         ?>
