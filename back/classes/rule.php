@@ -1,6 +1,10 @@
 <?php
 
-class acymruleClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class RuleClass extends acymClass
 {
     var $table = 'rule';
     var $pkey = 'id';

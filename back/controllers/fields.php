@@ -1,5 +1,12 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Classes\FieldClass;
+use AcyMailing\Helpers\ToolbarHelper;
+use AcyMailing\Libraries\acymController;
+use AcyMailing\Types\OperatorType;
+
 class FieldsController extends acymController
 {
     public function __construct()
@@ -21,7 +28,7 @@ class FieldsController extends acymController
 
     protected function prepareToolbar(&$data)
     {
-        $toolbarHelper = acym_get('helper.toolbar');
+        $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit'], 'add', true);
 
         $data['toolbar'] = $toolbarHelper;
@@ -31,10 +38,10 @@ class FieldsController extends acymController
     {
         acym_setVar('layout', 'edit');
         $id = acym_getVar('int', 'id');
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
 
         if (empty($id)) {
-            $field = new stdClass();
+            $field = new \stdClass();
             $field->id = 0;
             $field->name = '';
             $field->active = 1;
@@ -48,12 +55,12 @@ class FieldsController extends acymController
             $field->frontend_edition = 1;
             $field->frontend_listing = 0;
             $field->access = 1;
-            $field->fieldDB = new stdClass();
+            $field->fieldDB = new \stdClass();
         } else {
             $field = $fieldClass->getOneFieldByID($id);
             $field->option = json_decode($field->option);
             $field->value = json_decode($field->value);
-            $field->fieldDB = empty($field->option->fieldDB) ? new stdClass() : json_decode($field->option->fieldDB);
+            $field->fieldDB = empty($field->option->fieldDB) ? new \stdClass() : json_decode($field->option->fieldDB);
             if (!in_array($id, [1, 2]) && !empty($field->fieldDB->table)) {
                 $tables = acym_loadResultArray('SHOW TABLES FROM `'.acym_secureDBColumn($field->fieldDB->database).'`');
                 $field->fieldDB->tables = [];
@@ -88,6 +95,7 @@ class FieldsController extends acymController
             'field' => $field,
             'database' => acym_getDatabases(),
             'allFields' => $allFieldsName,
+            'operatorType' => new OperatorType(),
         ];
 
         $data['fieldType'] = [
@@ -139,7 +147,7 @@ class FieldsController extends acymController
 
     protected function saveField()
     {
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
         $newField = $this->setFieldToSave();
         $id = $fieldClass->save($newField);
         if (!empty($id)) {
@@ -152,7 +160,7 @@ class FieldsController extends acymController
 
     private function setFieldToSave()
     {
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
         $field = acym_getVar('array', 'field');
         $fieldDB = json_encode(acym_getVar('array', 'fieldDB'));
         $id = acym_getVar('int', 'id');
@@ -214,7 +222,7 @@ class FieldsController extends acymController
         $field['value'] = json_encode($value);
         $field['option']['fieldDB'] = $fieldDB;
         $field['option']['format'] = !empty($field['option']['format']) ? preg_replace('/[^a-zA-Z\%]/', '', $field['option']['format']) : $field['option']['format'];
-        $newField = new stdClass();
+        $newField = new \stdClass();
         $newField->name = $field['name'];
         $newField->active = $field['active'];
         $newField->namekey = $field['namekey'];

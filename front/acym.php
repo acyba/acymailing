@@ -24,16 +24,15 @@ if (empty($Itemid)) {
 }
 
 $ctrl = acym_getVar('cmd', 'ctrl', acym_getVar('cmd', 'view', ''));
-if (!include_once ACYM_CONTROLLER_FRONT.$ctrl.'.php') {
+$controllerNamespace = 'AcyMailing\\FrontControllers\\'.ucfirst($ctrl).'Controller';
+$controller = new $controllerNamespace;
+if (empty($controller)) {
     //We redirect to the homepage...
     acym_redirect(acym_rootURI());
 
     return;
 }
 acym_setVar('ctrl', $ctrl);
-
-$className = ucfirst($ctrl).'Controller';
-$controller = new $className();
 
 $task = acym_getVar('cmd', 'task', acym_getVar('cmd', 'layout', ''));
 if (empty($task)) {

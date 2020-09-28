@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cbinstall type="plugin" version="1.0" method="upgrade" group="user">
+	<name>AcyMailing CB integration</name>
+	<creationDate>October 2019</creationDate>
+	<version>2.4.2</version>
+	<release>1.0.0</release>
+	<author>Acyba</author>
+	<authorEmail>dev@acyba.com</authorEmail>
+	<authorUrl>https://www.acyba.com</authorUrl>
+	<copyright>Copyright (C) 2009-2020 ACYBA SAS - All rights reserved.</copyright>
+	<license>GNU/GPLv3 https://www.gnu.org/licenses/gpl-3.0.html</license>
+	<description>CB plugin for AcyMailing: manage the subscription to mailing lists via CB</description>
+	<files>
+		<filename plugin="acym">acym.php</filename>
+		<filename>index.html</filename>
+	</files>
+	<params>
+		<param type="custom" class="getAcymTab" method="lists" default="" name="lists" label="Lists displayed on the registration form" description="The following selected lists will be displayed on the CB registration page if they are not selected in the field auto-subscribe to."/>
+		<param type="custom" class="getAcymTab" method="lists" default="" name="listschecked" label="Lists checked by default" description="The selected lists will be checked by default on your CB Registration Form. This option does only apply to visible lists as hidden lists will be always checked."/>
+		<param type="custom" class="getAcymTab" method="lists" default="" name="listsprofile" label="Lists displayed on the user profile view" description="The following selected lists will be displayed on the CB User profile in frontend"/>
+		<param type="custom" class="getAcymTab" method="lists" default="" name="listsprofileback" label="Lists displayed on the user profile in the back office" description="The following selected lists will be displayed on the CB User profile in backend"/>
+
+		<param name="updateonregister" type="radio" default="0" label="Update user subscription on registration" description="Should the user's subscriptions be updated during the registration if the user already exists in AcyMailing?">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+
+		<param name="subcaption" type="text" default="" label="Subscribe Caption" description="Text displayed for the subscription field. If you don't specify anything, the default value will be used from the current language file"/>
+		<param name="css" type="textarea" rows="5" cols="35" default="
+.acym_cb_registration input[type='checkbox'] {
+    margin-top: 0;
+	vertical-align: unset;
+margin-right: 5px;
+}
+.acym_cb_registration label {
+    margin-bottom: 0;
+}
+
+.acym_introtext {
+    margin-left: 1rem;
+}
+.acym_cb_subscription {
+    margin: 1rem;
+}
+.acym_cb_subscription.edition {
+    margin-left: auto;
+    margin-right: auto;
+}
+.acym_cb_subscription th, .acym_cb_subscription td {
+    padding: 4px 10px;
+}
+.acym_cb_subscription label {
+    margin-bottom: 0;
+    margin-left: 5px;
+    margin-right: 8px;
+}
+.acym_cb_subscription input[type='radio'] {
+    margin-top: 0;
+    vertical-align: unset;
+}" label="CSS applied on the subscription tab" description="You can personalize the content displayed in the tab on the user profile page"/>
+		<param name="introtext" type="textarea" rows="5" cols="35" default="" label="Intro Text" description="This text will be displayed on the profile page before the form inside a div class=acym_introtext"/>
+		<param name="enabled" type="radio" default="0" label="Directly enable the user" description="Directly enable the AcyMailing user on registration, regardless if the CB user is blocked.">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+	</params>
+	<tabs>
+		<tab name="Mailing lists" description="Enables the user to manage his subscription to the AcyMailing Mailing Lists" class="getAcymTab" fields="0" position="cb_tabmain" displaytype="tab">
+		</tab>
+	</tabs>
+	<scriptfile>installviacb.php</scriptfile>
+</cbinstall>

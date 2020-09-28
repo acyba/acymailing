@@ -31,8 +31,16 @@
 		</div>
 		<div class="cell grid-x acym__template__block align-center acym_vcenter small-10 acym__list__button__add__mail">
             <?php
-            if (empty($data['listInformation']->id)) {
-                echo acym_tooltip('<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>', acym_translation('ACYM_SAVE_LIST_FIRST'));
+            if (!acym_isAllowed('mails')) {
+                echo acym_tooltip(
+                    '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                    acym_translation('ACYM_UNAUTHORIZED_ACCESS')
+                );
+            } elseif (empty($data['listInformation']->id)) {
+                echo acym_tooltip(
+                    '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                    acym_translation('ACYM_SAVE_LIST_FIRST')
+                );
             } elseif (empty($data['listInformation']->welcome_id)) { ?>
 				<a class="acym_vcenter text-center align-center acym__color__white acym__list__button__add__mail__welcome__unsub" href="<?php echo $data['tmpls']['welcomeTmplUrl']; ?>">
 					<i class="acymicon-add"></i>
@@ -69,8 +77,16 @@
 		</div>
 		<div class="cell grid-x acym__template__block align-center acym_vcenter small-10 acym__list__button__add__mail">
             <?php
-            if (empty($data['listInformation']->id)) {
-                echo acym_tooltip('<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>', acym_translation('ACYM_SAVE_LIST_FIRST'));
+            if (!acym_isAllowed('mails')) {
+                echo acym_tooltip(
+                    '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                    acym_translation('ACYM_UNAUTHORIZED_ACCESS')
+                );
+            } elseif (empty($data['listInformation']->id)) {
+                echo acym_tooltip(
+                    '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                    acym_translation('ACYM_SAVE_LIST_FIRST')
+                );
             } elseif (empty($data['listInformation']->unsubscribe_id)) { ?>
 				<a class="acym_vcenter text-center align-center acym__color__white acym__list__button__add__mail__welcome__unsub" href="<?php echo $data['tmpls']['unsubTmplUrl']; ?>">
 					<i class="acymicon-add"></i>

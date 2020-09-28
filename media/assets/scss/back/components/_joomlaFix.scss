@@ -21,6 +21,12 @@ body {
         #acym_wrapper [type='checkbox']:checked:before {
             display: none;
         }
+
+        #acym_wrapper {
+            .hide_for_joomla {
+                display: none;
+            }
+        }
     }
 
     .container-main {

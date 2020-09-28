@@ -1,2 +1,17 @@
 @import "../settings";
 @import "language/default";
+
+#acym_wrapper {
+    .acym__language__modal {
+        height: 80%;
+
+        .acym__language__modal__custom {
+            height: 100%;
+            align-content: baseline;
+
+            .acym__language__modal__body {
+                height: 88%;
+            }
+        }
+    }
+}

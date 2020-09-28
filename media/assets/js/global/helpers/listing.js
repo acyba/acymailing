@@ -42,7 +42,10 @@ const acym_helperListing = {
     setOrdering: function () {
         jQuery('#acym__listing__ordering').off('change').on('change', function () {
             let form = jQuery(this).closest('#acym_form');
-            form.find('[name="task"]').val('listing');
+            let ctrl = form.find('[name="ctrl"]').val();
+            if (ctrl != 'campaigns') {
+                form.find('[name="task"]').val('listing');
+            }
             form.submit();
         });
 

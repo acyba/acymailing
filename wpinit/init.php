@@ -1,5 +1,9 @@
 <?php
 
+namespace AcyMailing\Init;
+
+use AcyMailing\Helpers\RegacyHelper;
+
 abstract class acyHook
 {
     public function addRegistrationFields($externalPluginConfig = '')
@@ -11,7 +15,7 @@ abstract class acyHook
 
         if (!$config->get('regacy', 0) || !$displayOnExternalPlugin) return;
 
-        $regacyHelper = acym_get('helper.regacy');
+        $regacyHelper = new RegacyHelper();
         if (!$regacyHelper->prepareLists(['formatted' => true])) return;
 
         ?>

@@ -81,7 +81,7 @@
 						</div>
 						<div class="large-2 medium-3 small-3 cell acym__listing__detailed__stats__content">
                             <?php
-                            if (!empty($detailed_stat->campaign_id)) {
+                            if (!empty($detailed_stat->campaign_id) && acym_isAllowed('campaigns')) {
                                 if (empty($detailed_stat->parent_id)) {
                                     $link = acym_completeLink('campaigns&task=edit&step=editEmail&id='.$detailed_stat->campaign_id);
                                 } else {
@@ -97,7 +97,11 @@
                             ?>
 						</div>
 						<div class="large-2 medium-3 small-4 cell acym__listing__detailed__stats__content">
-							<a href="<?php echo acym_completeLink('users&task=edit&id='.$detailed_stat->user_id); ?>" class="acym__color__blue word-break"><?php echo $detailed_stat->email; ?></a>
+                            <?php if (acym_isAllowed('users')) { ?>
+								<a href="<?php echo acym_completeLink('users&task=edit&id='.$detailed_stat->user_id); ?>" class="acym__color__blue word-break"><?php echo $detailed_stat->email; ?></a>
+                            <?php } else { ?>
+                                <?php echo $detailed_stat->email; ?>
+                            <?php } ?>
 						</div>
 						<div class="large-1 medium-1 small-1 cell acym__listing__detailed__stats__content text-center">
 							<p class="hide-for-medium-only hide-for-small-only"><?php echo empty($detailed_stat->total_click) ? 0 : $detailed_stat->total_click; ?></p>

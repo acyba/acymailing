@@ -1,5 +1,8 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Types\OperatorinType;
+
 class plgAcymContact extends acymPlugin
 {
     public function __construct()
@@ -24,7 +27,7 @@ class plgAcymContact extends acymPlugin
         $conditions['user']['contact'] = new stdClass();
         $conditions['user']['contact']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', acym_translation('COM_CONTACT'), acym_translation('COM_CONTACT_SUBMENU_CATEGORIES'));
 
-        $operatorIn = acym_get('type.operatorin');
+        $operatorIn = new OperatorinType();
         $conditions['user']['contact']->option = '<div class="intext_select_automation cell">';
         $conditions['user']['contact']->option .= $operatorIn->display('acym_condition[conditions][__numor__][__numand__][contact][type]');
         $conditions['user']['contact']->option .= '</div>';

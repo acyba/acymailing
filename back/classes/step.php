@@ -1,6 +1,10 @@
 <?php
 
-class acymstepClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class StepClass extends acymClass
 {
     var $table = 'step';
     var $pkey = 'id';
@@ -63,7 +67,7 @@ class acymstepClass extends acymClass
         if (empty($elements)) return 0;
 
         $conditions = acym_loadResultArray('SELECT id FROM #__acym_condition WHERE step_id IN ('.implode(',', $elements).')');
-        $conditionClass = acym_get('class.condition');
+        $conditionClass = new ConditionClass();
         $conditionsDeleted = $conditionClass->delete($conditions);
 
         return parent::delete($elements);

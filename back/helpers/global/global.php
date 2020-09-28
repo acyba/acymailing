@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Classes\ConfigurationClass;
+
 function acydump($arg, $ajax = false, $indent = true)
 {
     ob_start();
@@ -29,7 +31,7 @@ function acym_config($reload = false)
 {
     static $configClass = null;
     if ($configClass === null || $reload) {
-        $configClass = acym_get('class.configuration');
+        $configClass = new ConfigurationClass();
         $configClass->load();
     }
 
@@ -40,20 +42,32 @@ function acym_get($path)
 {
     list($group, $class) = explode('.', $path);
 
-    $className = $class.ucfirst(str_replace('_front', '', $group));
-    // All classes and helpers start with acym
-    if ($group == 'class' || ($group == 'helper' && strpos($className, 'acym') !== 0)) {
-        $className = 'acym'.$className;
-    }
+    $className = ucfirst($class).ucfirst(str_replace('_front', '', $group));
 
     if (substr($group, 0, 4) == 'view') {
-        $className = $className.ucfirst($class);
+        $className .= ucfirst($class);
         $class .= DS.'view.html';
+    }
+
+    if ($group === 'class') {
+        $className = 'AcyMailing\\Classes\\'.$className;
+    } elseif ($group === 'controller') {
+        $className = 'AcyMailing\\Controllers\\'.$className;
+    } elseif ($group === 'view') {
+        $className = 'AcyMailing\\Views\\'.$className;
+    } elseif ($group === 'helper') {
+        $className = 'AcyMailing\\Helpers\\'.$className;
+    } elseif ($group === 'controller_front') {
+        $className = 'AcyMailing\\FrontControllers\\'.$className;
+    } elseif ($group === 'type') {
+        $className = 'AcyMailing\\Types\\'.$className;
+    } elseif ($group === 'view_front') {
+        $className = 'AcyMailing\\FrontViews\\'.$className;
     }
 
     if (!class_exists($className)) {
         $classFile = constant(strtoupper('ACYM_'.$group)).$class.'.php';
-        if (file_exists($classFile)) include_once $classFile;
+        if (file_exists($classFile)) require_once $classFile;
 
         if (!class_exists($className)) return null;
     }

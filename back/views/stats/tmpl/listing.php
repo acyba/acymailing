@@ -24,7 +24,7 @@
 
         if (!acym_level(1)) {
             $data['version'] = 'essential';
-            include ACYM_VIEW.'dashboard'.DS.'tmpl'.DS.'upgrade.php';
+            include acym_getView('dashboard', 'upgrade');
         }
         $data['tab']->endTab();
 
@@ -33,7 +33,7 @@
 
             if (!acym_level(1)) {
                 $data['version'] = 'essential';
-                include ACYM_VIEW.'dashboard'.DS.'tmpl'.DS.'upgrade.php';
+                include acym_getView('dashboard', 'upgrade');
             }
             $data['tab']->endTab();
         }

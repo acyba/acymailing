@@ -1,6 +1,10 @@
 <?php
 
-class acymactionClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class ActionClass extends acymClass
 {
     var $table = 'action';
     var $pkey = 'id';
@@ -32,7 +36,7 @@ class acymactionClass extends acymClass
         $actions = acym_loadObjectList('SELECT * FROM #__acym_action WHERE id IN ('.implode(',', $elements).')');
         if (empty($actions)) return;
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         foreach ($actions as $action) {
             $action->actions = json_decode($action->actions, true);
@@ -44,5 +48,11 @@ class acymactionClass extends acymClass
         }
 
         parent::delete($elements);
+    }
+
+    public function save($element)
+    {
+        if (!isset($element->order)) $element->order = 1;
+        parent::save($element);
     }
 }

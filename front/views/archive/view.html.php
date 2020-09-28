@@ -1,6 +1,9 @@
 <?php
 
+namespace AcyMailing\FrontViews;
 
-class archiveViewArchive extends acymView
+use AcyMailing\Libraries\acymView;
+
+class ArchiveViewArchive extends acymView
 {
 }

@@ -1,45 +1,9 @@
 <?php
 
+use AcyMailing\Classes\PluginClass;
+
 global $acymPlugins;
 global $acymAddonsForSettings;
-function acym_loadPlugins()
-{
-    $dynamics = acym_getFolders(ACYM_BACK.'dynamics');
-
-    $pluginClass = acym_get('class.plugin');
-    $plugins = $pluginClass->getAll('folder_name');
-
-    foreach ($dynamics as $key => $oneDynamic) {
-        if (!empty($plugins[$oneDynamic]) && '0' === $plugins[$oneDynamic]->active) unset($dynamics[$key]);
-        if ('managetext' === $oneDynamic) unset($dynamics[$key]);
-    }
-
-    foreach ($plugins as $pluginFolder => $onePlugin) {
-        if (in_array($pluginFolder, $dynamics) || '0' === $onePlugin->active) continue;
-        $dynamics[] = $pluginFolder;
-    }
-
-    // Make sure the Manage text plugin is called last, we'll clean the inserted content in it
-    $dynamics[] = 'managetext';
-
-    global $acymPlugins;
-    global $acymAddonsForSettings;
-    foreach ($dynamics as $oneDynamic) {
-        $dynamicFile = acym_getPluginPath($oneDynamic);
-        $className = 'plgAcym'.ucfirst($oneDynamic);
-
-        // Load the plugin
-        if (isset($acymPlugins[$className]) || !file_exists($dynamicFile) || !include_once $dynamicFile) continue;
-        if (!class_exists($className)) continue;
-
-        // If it's for another CMS or if the related extension isn't installed, skip it
-        $plugin = new $className();
-        if (in_array($plugin->cms, ['all', '{__CMS__}'])) $acymAddonsForSettings[$className] = $plugin;
-        if (!in_array($plugin->cms, ['all', '{__CMS__}']) || !$plugin->installed) continue;
-
-        $acymPlugins[$className] = $plugin;
-    }
-}
 
 function acym_trigger($method, $args = [], $plugin = null)
 {
@@ -72,7 +36,7 @@ function acym_trigger($method, $args = [], $plugin = null)
 function acym_checkPluginsVersion()
 {
     //first we get all installed plugins
-    $pluginClass = acym_get('class.plugin');
+    $pluginClass = new PluginClass();
     $pluginsInstalled = $pluginClass->getMatchingElements();
     $pluginsInstalled = $pluginsInstalled['elements'];
     //if we don't have any no need to go further

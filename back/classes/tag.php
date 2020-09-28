@@ -1,6 +1,10 @@
 <?php
 
-class acymtagClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class TagClass extends acymClass
 {
     var $table = 'tag';
     var $pkey = 'id';
@@ -21,7 +25,7 @@ class acymtagClass extends acymClass
 
         foreach ($newTags as $oneTag) {
 
-            $newTag = new stdClass();
+            $newTag = new \stdClass();
             $newTag->type = $type;
 
             if (strpos($oneTag, "acy_new_tag_") !== false) {

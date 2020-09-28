@@ -1,7 +1,10 @@
 <?php
 
+namespace AcyMailing\Types;
 
-class charsetType extends acymObject
+use AcyMailing\Libraries\acymObject;
+
+class CharsetType extends acymObject
 {
     var $charsets = [];
     var $values = [];

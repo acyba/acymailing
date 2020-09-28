@@ -1,5 +1,13 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Helpers\PluginHelper;
+use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Libraries\acymController;
+
 class DynamicsController extends acymController
 {
     public function __construct()
@@ -23,7 +31,7 @@ class DynamicsController extends acymController
 
         acym_addScript(true, $js);
 
-        $tab = acym_get('helper.tab');
+        $tab = new TabHelper();
 
         $data = [
             "type" => acym_getVar('string', 'type', 'news'),
@@ -39,12 +47,12 @@ class DynamicsController extends acymController
     {
         $mailId = acym_getVar('int', 'mailId', 0);
         if (!empty($mailId)) {
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             $email = $mailClass->getOneById($mailId);
         }
 
         if (empty($email)) {
-            $email = new stdClass();
+            $email = new \stdClass();
             $email->id = 0;
             $email->name = '';
             $email->subject = '';
@@ -80,12 +88,12 @@ class DynamicsController extends acymController
 
         @acym_trigger('replaceContent', [&$email]);
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $userEmail = acym_currentUserEmail();
         $user = $userClass->getOneByEmail($userEmail);
 
         if (empty($user)) {
-            $user = new stdClass();
+            $user = new \stdClass();
             $user->email = acym_currentUserEmail();
             $user->name = acym_currentUserName();
             $user->cms_id = acym_currentUserId();
@@ -109,14 +117,14 @@ class DynamicsController extends acymController
         if (empty($plugin) || empty($trigger)) exit;
         $shortcode = acym_getVar('string', 'shortcode', '');
 
-        $defaultValues = new stdClass();
+        $defaultValues = new \stdClass();
 
         $shortcode = trim($shortcode, '{}');
         $separatorPosition = strpos($shortcode, ':');
         if (false !== $separatorPosition) {
             $pluginSubType = substr($shortcode, 0, $separatorPosition);
             $shortcode = substr($shortcode, $separatorPosition + 1);
-            $pluginHelper = acym_get('helper.plugin');
+            $pluginHelper = new PluginHelper();
             $defaultValues = $pluginHelper->extractTag($shortcode);
             $defaultValues->defaultPluginTab = $pluginSubType;
         }

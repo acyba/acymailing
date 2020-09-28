@@ -1,5 +1,18 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\MailStatClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Helpers\EditorHelper;
+use AcyMailing\Helpers\MailerHelper;
+use AcyMailing\Helpers\MigrationHelper;
+use AcyMailing\Helpers\UpdateHelper;
+use AcyMailing\Libraries\acymController;
+use AcyMailing\Classes\CampaignClass;
+
 class DashboardController extends acymController
 {
     public function __construct()
@@ -19,9 +32,9 @@ class DashboardController extends acymController
         if ($this->feedback()) return;
         if ($this->walkthrough()) return;
 
-        $campaignClass = acym_get('class.campaign');
-        $mailStatClass = acym_get('class.mailstat');
-        $statsController = acym_get('controller.stats');
+        $campaignClass = new CampaignClass();
+        $mailStatClass = new MailStatClass();
+        $statsController = new StatsController();
 
         $data = [];
         $data['page_title'] = true;
@@ -63,13 +76,12 @@ class DashboardController extends acymController
 
         $walkthroughParams = json_decode($this->config->get('walkthrough_params', '[]'), true);
 
-        $mailClass = acym_get('class.mail');
-        $updateHelper = acym_get('helper.update');
+        $mailClass = new MailClass();
+        $updateHelper = new UpdateHelper();
 
         $mail = empty($walkthroughParams['mail_id']) ? $mailClass->getOneByName(acym_translation($updateHelper::FIRST_EMAIL_NAME_KEY)) : $mailClass->getOneById($walkthroughParams['mail_id']);
 
         if (empty($mail)) {
-            $updateHelper = acym_get('helper.update');
             if (!$updateHelper->installNotifications()) {
                 $this->stepSubscribe();
 
@@ -78,7 +90,7 @@ class DashboardController extends acymController
             $mail = $mailClass->getOneByName(acym_translation($updateHelper::FIRST_EMAIL_NAME_KEY));
         }
 
-        $editor = acym_get('helper.editor');
+        $editor = new EditorHelper();
         $editor->content = $mail->body;
         $editor->autoSave = '';
         $editor->settings = $mail->settings;
@@ -99,7 +111,7 @@ class DashboardController extends acymController
 
     public function saveAjax()
     {
-        $mailController = acym_get('controller.mails');
+        $mailController = new MailsController();
 
         $isWellSaved = $mailController->store(true);
         echo json_encode(['error' => $isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), 'data' => $isWellSaved]);
@@ -108,7 +120,7 @@ class DashboardController extends acymController
 
     public function saveStepEmail()
     {
-        $mailController = acym_get('controller.mails');
+        $mailController = new MailsController();
 
         $mailId = $mailController->store();
 
@@ -124,7 +136,7 @@ class DashboardController extends acymController
     public function stepList()
     {
         acym_setVar('layout', 'walk_through');
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $walkthroughParams = json_decode($this->config->get('walkthrough_params', '[]'), true);
 
         $users = empty($walkthroughParams['list_id']) ? [] : $listClass->getSubscribersForList($walkthroughParams['list_id'], 0, 500);
@@ -149,13 +161,13 @@ class DashboardController extends acymController
     {
         $walkthroughParams = json_decode($this->config->get('walkthrough_params', '[]'), true);
         if (empty($walkthroughParams['list_id'])) {
-            $testingList = new stdClass();
+            $testingList = new \stdClass();
             $testingList->name = acym_translation('ACYM_TESTING_LIST');
             $testingList->visible = 0;
             $testingList->active = 1;
             $testingList->color = '#94d4a6';
 
-            $listClass = acym_get('class.list');
+            $listClass = new ListClass();
             $listId = $listClass->save($testingList);
         } else {
             $listId = $walkthroughParams['list_id'];
@@ -168,7 +180,7 @@ class DashboardController extends acymController
             return;
         }
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
 
         $addresses = acym_getVar('array', 'addresses', []);
         $addresses = array_unique($addresses);
@@ -181,7 +193,7 @@ class DashboardController extends acymController
 
             $existing = $userClass->getOneByEmail($oneAddress);
             if (empty($existing)) {
-                $newUser = new stdClass();
+                $newUser = new \stdClass();
                 $newUser->email = $oneAddress;
                 $newUser->confirmed = 1;
                 acym_setVar('acy_source', 'walkthrough');
@@ -398,7 +410,7 @@ class DashboardController extends acymController
 
     public function passWalkThrough()
     {
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->walk_through = 0;
         $this->config->save($newConfig);
 
@@ -408,7 +420,7 @@ class DashboardController extends acymController
     public function preMigration()
     {
         $elementToMigrate = acym_getVar('string', 'element');
-        $helperMigration = acym_get('helper.migration');
+        $helperMigration = new MigrationHelper();
 
         $result = $helperMigration->preMigration($elementToMigrate);
 
@@ -437,7 +449,7 @@ class DashboardController extends acymController
     public function migrate()
     {
         $elementToMigrate = acym_getVar('string', 'element');
-        $helperMigration = acym_get('helper.migration');
+        $helperMigration = new MigrationHelper();
         $functionName = 'do'.ucfirst($elementToMigrate).'Migration';
 
         $result = $helperMigration->$functionName($elementToMigrate);
@@ -466,11 +478,11 @@ class DashboardController extends acymController
 
     public function migrationDone()
     {
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->migration = '1';
         $this->config->save($newConfig);
 
-        $updateHelper = acym_get('helper.update');
+        $updateHelper = new UpdateHelper();
         $updateHelper->installNotifications();
         $updateHelper->installTemplates(true);
 
@@ -514,7 +526,7 @@ class DashboardController extends acymController
             return true;
         }
 
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->migration = '1';
         $this->config->save($newConfig);
 
@@ -571,8 +583,8 @@ class DashboardController extends acymController
         $fromName = acym_getVar('string', 'from_name', 'Test');
         $fromAddress = acym_getVar('string', 'from_address', 'test@test.com');
 
-        $mailClass = acym_get('class.mail');
-        $updateHelper = acym_get('helper.update');
+        $mailClass = new MailClass();
+        $updateHelper = new UpdateHelper();
 
         $firstMail = $mailClass->getOneByName(acym_translation($updateHelper::FIRST_EMAIL_NAME_KEY));
 
@@ -646,10 +658,10 @@ class DashboardController extends acymController
     private function _sendFirstEmail()
     {
         $walkthroughParams = json_decode($this->config->get('walkthrough_params', '[]'), true);
-        $listClass = acym_get('class.list');
-        $mailClass = acym_get('class.mail');
-        $updateHelper = acym_get('helper.update');
-        $mailerHelper = acym_get('helper.mailer');
+        $listClass = new ListClass();
+        $mailClass = new MailClass();
+        $updateHelper = new UpdateHelper();
+        $mailerHelper = new MailerHelper();
 
         $testingList = empty($walkthroughParams['list_id']) ? $listClass->getOneByName(acym_translation('ACYM_TESTING_LIST')) : $listClass->getOneById($walkthroughParams['list_id']);
         $firstMail = empty($walkthroughParams['mail_id']) ? $mailClass->getOneByName(acym_translation($updateHelper::FIRST_EMAIL_NAME_KEY)) : $mailClass->getOneById($walkthroughParams['mail_id']);

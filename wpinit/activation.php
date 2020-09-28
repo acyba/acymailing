@@ -1,5 +1,9 @@
 <?php
 
+namespace AcyMailing\Init;
+
+use AcyMailing\Helpers\UpdateHelper;
+
 class acyActivation extends acyHook
 {
     public function __construct()
@@ -75,23 +79,24 @@ class acyActivation extends acyHook
         //First we increase the perfs so that we won't have any surprise.
         acym_increasePerf();
 
-        $installClass = new acymInstall();
+        $installClass = new \acymInstall();
         $installClass->addPref();
         $installClass->updatePref();
         $installClass->updateSQL();
 
-        $updateHelper = acym_get('helper.update');
+        $updateHelper = new UpdateHelper();
         $updateHelper->fromLevel = $installClass->fromLevel;
         $updateHelper->fromVersion = $installClass->fromVersion;
 
         $languageFiles = acym_getFiles(ACYM_FOLDER.'language'.DS, '\.ini');
         acym_createFolder(ACYM_LANGUAGE);
         acym_createFolder(ACYM_UPLOAD_FOLDER_THUMBNAIL);
-        foreach ($languageFiles as $oneFile) {
-            acym_copyFile(ACYM_FOLDER.'language'.DS.$oneFile, ACYM_LANGUAGE.$oneFile);
+        if (!empty($languageFiles)) {
+            foreach ($languageFiles as $oneFile) {
+                acym_copyFile(ACYM_FOLDER.'language'.DS.$oneFile, ACYM_LANGUAGE.$oneFile);
+            }
         }
 
-        $updateHelper->installLanguages();
         $updateHelper->installBounceRules();
         $updateHelper->installList();
         $updateHelper->installNotifications();
@@ -104,7 +109,7 @@ class acyActivation extends acyHook
         $updateHelper->installAdminNotif();
         $updateHelper->installAddons();
 
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->installcomplete = 1;
         $config->save($newConfig);
 

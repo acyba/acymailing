@@ -297,7 +297,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail_stat` (
 	`fail` INT NULL DEFAULT 0,
 	`open_unique` INT NOT NULL DEFAULT 0,
 	`open_total` INT NOT NULL DEFAULT 0,
-	`bounce_unique` MEDIUMINT(8) NOT NULL,
+	`bounce_unique` MEDIUMINT(8) NOT NULL DEFAULT 0,
 	`bounce_details` LONGTEXT NULL,
 	PRIMARY KEY (`mail_id`),
 	CONSTRAINT `fk_#__acym_mail_stat1`
@@ -323,7 +323,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_user_stat` (
 	`sent` INT NOT NULL DEFAULT 0,
 	`open` INT NOT NULL DEFAULT 0,
 	`open_date` DATETIME NULL,
-	`bounce` TINYINT(4) NOT NULL,
+	`bounce` TINYINT(4) NOT NULL DEFAULT 0,
 	`bounce_rule` VARCHAR(255) NULL,
 	`tracking_sale` FLOAT NULL,
 	`currency` VARCHAR(10) NULL,
@@ -537,7 +537,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_plugin` (
 	`description` LONGTEXT NOT NULL,
 	`latest_version` VARCHAR(10) NOT NULL,
 	`settings` LONGTEXT NULL,
-	`core` TINYINT(1) NOT NULL DEFAULT 0,
+	`type` VARCHAR(20) NOT NULL DEFAULT "ADDON",
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB
@@ -559,6 +559,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_form` (
 	`style_options` LONGTEXT,
 	`button_options` LONGTEXT,
 	`image_options` LONGTEXT,
+	`termspolicy_options` LONGTEXT,
 	`delay` SMALLINT(10),
 	`pages` TEXT,
 	PRIMARY KEY (`id`)

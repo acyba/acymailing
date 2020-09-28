@@ -1,6 +1,10 @@
 <?php
 
-class acymqueueClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class QueueClass extends acymClass
 {
     /**
      * Get users depending on filters (search, status, pagination)
@@ -12,8 +16,8 @@ class acymqueueClass extends acymClass
 
     public function getMatchingCampaigns($settings)
     {
-        $campaignClass = acym_get('class.campaign');
-        $mailStatClass = acym_get('class.mailstat');
+        $campaignClass = new CampaignClass();
+        $mailStatClass = new MailStatClass();
         $query = 'FROM #__acym_mail AS mail
                     LEFT JOIN #__acym_queue AS queue ON mail.id = queue.mail_id 
                     LEFT JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id OR mail.parent_id = campaign.mail_id';
@@ -64,7 +68,8 @@ class acymqueueClass extends acymClass
 
         $query = 'SELECT mail.name, mail.subject, mail.id, campaign.id AS campaign, IF(campaign.sending_date IS NULL, queue.sending_date, campaign.sending_date) AS sending_date, campaign.sending_type, campaign.active, COUNT(queue.mail_id) AS nbqueued, mail.language, mail.parent_id '.$query.' ORDER BY queue.sending_date ASC';
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
+        acym_query('SET SQL_BIG_SELECTS=1;');
         $results['elements'] = $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['campaignsPerPage']));
         $results['total'] = acym_loadResult($queryCount);
 
@@ -160,7 +165,7 @@ class acymqueueClass extends acymClass
         $queryCount = 'SELECT COUNT(queue.mail_id) '.$query;
         $query = 'SELECT mail.id, queue.sending_date, mail.name, mail.subject, user.email, user.name AS user_name, queue.user_id, queue.try '.$query.' ORDER BY queue.sending_date ASC';
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $results['elements'] = $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']));
         $results['total'] = acym_loadResult($queryCount);
 
@@ -171,8 +176,8 @@ class acymqueueClass extends acymClass
     {
         $this->messages = [];
 
-        $campaignClass = acym_get('class.campaign');
-        $mailClass = acym_get('class.mail');
+        $campaignClass = new CampaignClass();
+        $mailClass = new MailClass();
 
         $multilingualQuery = acym_isMultilingual() ? ' OR mail.parent_id = campaign.mail_id ' : '';
 
@@ -204,7 +209,7 @@ class acymqueueClass extends acymClass
         $mailIds = array_keys($mailReady);
         acym_arrayToInteger($mailIds);
         $campaigns = acym_loadObjectList('SELECT id, mail_id FROM #__acym_campaign WHERE mail_id IN ('.implode(',', $mailIds).')');
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         foreach ($campaigns as $campaign) {
             $campaignClass->send($campaign->id, $nbQueue[$campaign->mail_id]);
         }
@@ -313,7 +318,7 @@ class acymqueueClass extends acymClass
         $query .= ' LIMIT '.intval($startqueue).','.intval($limit);
         try {
             $results = acym_loadObjectList($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $results = null;
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Helpers\ImageHelper;
+
 /**
  * Function to return the number of bytes of a val like 2M
  */
@@ -79,16 +81,16 @@ function acym_createDir($dir, $report = true, $secured = false)
 
 function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
 {
-    //Check the token... no import without token!
+    // Check the token... no import without token!
     acym_checkToken();
 
     $config = acym_config();
     $additionalMsg = '';
 
-    if ($file["error"] > 0) {
-        $file["error"] = intval($file["error"]);
-        if ($file["error"] > 8) {
-            $file["error"] = 0;
+    if ($file['error'] > 0) {
+        $file['error'] = intval($file['error']);
+        if ($file['error'] > 8) {
+            $file['error'] = 0;
         }
 
         $phpFileUploadErrors = [
@@ -102,7 +104,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
             8 => 'A PHP extension stopped the file upload',
         ];
 
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_ERROR_UPLOADING_FILE_X', $phpFileUploadErrors[$file["error"]]), 'error');
+        acym_enqueueMessage(acym_translation_sprintf('ACYM_ERROR_UPLOADING_FILE_X', $phpFileUploadErrors[$file['error']]), 'error');
 
         return false;
     }
@@ -124,9 +126,9 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
         $allowedExtensions = explode(',', $config->get('allowed_files'));
     }
 
-    //We don't allow to upload anything else than a picture extension
-    if (!preg_match('#\.('.implode('|', $allowedExtensions).')$#Ui', $file["name"], $extension)) {
-        $ext = substr($file["name"], strrpos($file["name"], '.') + 1);
+    // We don't allow to upload anything else than a picture extension
+    if (!preg_match('#\.('.implode('|', $allowedExtensions).')$#Ui', $file['name'], $extension)) {
+        $ext = substr($file['name'], strrpos($file['name'], '.') + 1);
         acym_display(
             acym_translation_sprintf(
                 'ACYM_ACCEPTED_TYPE',
@@ -139,9 +141,9 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
         return false;
     }
 
-    //We will never allow some files to be uploaded...
-    //This should never happen... only if there is an hack tentative so no need to translate this error message
-    if (preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)#Ui', $file["name"])) {
+    // We will never allow some files to be uploaded...
+    // This should never happen... only if there is an hack tentative so no need to translate this error message
+    if (preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)#Ui', $file['name'])) {
         acym_display(
             'This extension name is blocked by the system regardless your configuration for security reasons',
             'error'
@@ -150,33 +152,33 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
         return false;
     }
 
-    //We remove all dots or space from the file name to avoid the double extension security issue and the fact some mail clients don't like spaces
-    $file["name"] = preg_replace(
+    // We remove all dots or space from the file name to avoid the double extension security issue and the fact some mail clients don't like spaces
+    $file['name'] = preg_replace(
             '#[^a-z0-9]#i',
             '_',
-            strtolower(substr($file["name"], 0, strrpos($file["name"], '.')))
+            strtolower(substr($file['name'], 0, strrpos($file['name'], '.')))
         ).'.'.$extension[1];
 
     if ($onlyPict) {
-        //Extra security : we make sure we only have a valid picture format
-        $imageSize = getimagesize($file['tmp_name']);
+        // Extra security: we make sure we only have a valid picture format
+        $imageSize = @getimagesize($file['tmp_name']);
         if (empty($imageSize)) {
-            acym_display('Invalid image', 'error');
+            acym_display(acym_translation('ACYM_INVALID_IMAGE'), 'error');
 
             return false;
         }
     }
 
-    if (file_exists($uploadPath.DS.$file["name"])) {
+    if (file_exists($uploadPath.DS.$file['name'])) {
         $i = 1;
-        $nameFile = preg_replace("/\\.[^.\\s]{3,4}$/", "", $file["name"]);
-        $ext = substr($file["name"], strrpos($file["name"], '.') + 1);
+        $nameFile = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file['name']);
+        $ext = substr($file['name'], strrpos($file['name'], '.') + 1);
         while (file_exists($uploadPath.DS.$nameFile.'_'.$i.'.'.$ext)) {
             $i++;
         }
 
-        $file["name"] = $nameFile.'_'.$i.'.'.$ext;
-        $additionalMsg = '<br />'.acym_translation_sprintf('ACYM_FILE_RENAMED', $file["name"]);
+        $file['name'] = $nameFile.'_'.$i.'.'.$ext;
+        $additionalMsg = '<br />'.acym_translation_sprintf('ACYM_FILE_RENAMED', $file['name']);
         if ($onlyPict) {
             $additionalMsg .= '<br /><a style="color: blue; cursor: pointer;" onclick="confirmBox(\'rename\', \''.$file['name'].'\', \''.$nameFile.'.'.$ext.'\')">'.acym_translation(
                     'ACYM_RENAME_OR_REPLACE'
@@ -184,13 +186,13 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
         }
     }
 
-    if (!acym_uploadFile($file["tmp_name"], rtrim($uploadPath, DS).DS.$file["name"])) {
-        if (!move_uploaded_file($file["tmp_name"], rtrim($uploadPath, DS).DS.$file["name"])) {
+    if (!acym_uploadFile($file['tmp_name'], rtrim($uploadPath, DS).DS.$file['name'])) {
+        if (!move_uploaded_file($file['tmp_name'], rtrim($uploadPath, DS).DS.$file['name'])) {
             acym_display(
                 acym_translation_sprintf(
                     'ACYM_FAIL_UPLOAD',
-                    '<b><i>'.acym_escape($file["tmp_name"]).'</i></b>',
-                    '<b><i>'.acym_escape(rtrim($uploadPath, DS).DS.$file["name"]).'</i></b>'
+                    '<b><i>'.acym_escape($file['tmp_name']).'</i></b>',
+                    '<b><i>'.acym_escape(rtrim($uploadPath, DS).DS.$file['name']).'</i></b>'
                 ),
                 'error'
             );
@@ -200,7 +202,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
     }
 
     if (!empty($maxwidth) || ($onlyPict && $imageSize[0] > 1000)) {
-        $imageHelper = acym_get('helper.image');
+        $imageHelper = new ImageHelper();
         if ($imageHelper->available()) {
             $imageHelper->maxHeight = 9999;
             if (empty($maxwidth)) {
@@ -210,8 +212,8 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
             }
             $message = 'ACYM_IMAGE_RESIZED';
             $imageHelper->destination = $uploadPath;
-            $thumb = $imageHelper->generateThumbnail(rtrim($uploadPath, DS).DS.$file["name"], $file["name"]);
-            $resize = acym_moveFile($thumb['file'], $uploadPath.DS.$file["name"]);
+            $thumb = $imageHelper->generateThumbnail(rtrim($uploadPath, DS).DS.$file['name']);
+            $resize = acym_moveFile($thumb['file'], $uploadPath.DS.$file['name']);
             if ($thumb) {
                 $additionalMsg .= '<br />'.acym_translation($message);
             }
@@ -219,7 +221,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
     }
     acym_enqueueMessage(acym_translation('ACYM_SUCCESS_FILE_UPLOAD').$additionalMsg, 'success');
 
-    return $file["name"];
+    return $file['name'];
 }
 
 function acym_inputFile($name, $value = '', $id = '', $class = '', $attributes = '')

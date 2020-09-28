@@ -1,5 +1,7 @@
 <?php
 
+namespace AcyMailing\Init;
+
 class acyAddons extends acyHook
 {
     public function __construct()

@@ -1,10 +1,14 @@
 <?php
 
+use AcyMailing\Classes\ListClass;
+use AcyMailing\FrontControllers\FrontusersController;
+use AcyMailing\Libraries\acymParameter;
+
 class acym_profile_widget extends WP_Widget
 {
     public function __construct()
     {
-        require_once(rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php');
+        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
 
         parent::__construct(
             'acym_profile_widget',
@@ -16,11 +20,11 @@ class acym_profile_widget extends WP_Widget
     // Configuration
     public function form($instance)
     {
-        require_once(rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php');
+        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
 
         acym_addStyle(false, ACYM_CSS.'widget.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'widget.min.css'));
 
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $lists = $listClass->getAllWIthoutManagement();
         foreach ($lists as $i => $oneList) {
             if ($oneList->active == 0) {
@@ -133,7 +137,7 @@ class acym_profile_widget extends WP_Widget
         $params = new acymParameter($instance);
         acym_initModule($params);
 
-        $userController = acym_get('controller_front.frontusers');
+        $userController = new FrontusersController();
         $data = $userController->prepareParams((object)$instance);
 
         if (empty($data['user']->language)) {

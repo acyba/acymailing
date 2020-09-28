@@ -161,7 +161,7 @@ jQuery(document).ready(function ($) {
 
             let adminHeight = 0;
 
-            if (CMS_ACYM == 'wordpress') {
+            if (ACYM_CMS == 'wordpress') {
                 adminHeight = jQuery('#wpadminbar').innerHeight();
             } else {
                 adminHeight = jQuery('nav.navbar').innerHeight() + jQuery('#status').innerHeight();
@@ -316,29 +316,29 @@ jQuery(document).ready(function ($) {
         },
         socialMedia: {
             'facebook': {
-                'src': MEDIA_URL_ACYM + '/images/logo/facebook.png',
+                'src': ACYM_MEDIA_URL + '/images/logo/facebook.png',
                 'link': '#',
                 'text': 'Like'
             },
             'twitter': {
-                'src': MEDIA_URL_ACYM + '/images/logo/twitter.png',
+                'src': ACYM_MEDIA_URL + '/images/logo/twitter.png',
                 'link': '#',
                 'text': 'Tweet'
             },
             'pinterest': {
-                'src': MEDIA_URL_ACYM + '/images/logo/pinterest.png',
+                'src': ACYM_MEDIA_URL + '/images/logo/pinterest.png',
                 'link': '#',
                 'text': 'pin it'
             },
             'linkedin': {
-                'src': MEDIA_URL_ACYM + '/images/logo/linkedin.png',
+                'src': ACYM_MEDIA_URL + '/images/logo/linkedin.png',
                 'link': '#',
                 'text': 'share'
             },
-            'instagram': {'src': MEDIA_URL_ACYM + '/images/logo/instagram.png'},
-            'vimeo': {'src': MEDIA_URL_ACYM + '/images/logo/vimeo.png'},
-            'wordpress': {'src': MEDIA_URL_ACYM + '/images/logo/wordpress.png'},
-            'youtube': {'src': MEDIA_URL_ACYM + '/images/logo/youtube.png'}
+            'instagram': {'src': ACYM_MEDIA_URL + '/images/logo/instagram.png'},
+            'vimeo': {'src': ACYM_MEDIA_URL + '/images/logo/vimeo.png'},
+            'wordpress': {'src': ACYM_MEDIA_URL + '/images/logo/wordpress.png'},
+            'youtube': {'src': ACYM_MEDIA_URL + '/images/logo/youtube.png'}
         }
     };
 });

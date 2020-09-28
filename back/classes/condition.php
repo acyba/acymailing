@@ -1,6 +1,10 @@
 <?php
 
-class acymconditionClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class ConditionClass extends acymClass
 {
     var $table = 'condition';
     var $pkey = 'id';
@@ -23,7 +27,7 @@ class acymconditionClass extends acymClass
             return 0;
         }
 
-        $actionClass = acym_get('class.action');
+        $actionClass = new ActionClass();
         $actionsIds = $actionClass->getAllActionsIdByConditionsId($elements);
         if (!empty($actionsIds)) $actionClass->delete($actionsIds);
 

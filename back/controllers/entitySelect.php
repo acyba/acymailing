@@ -1,5 +1,10 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Helpers\EntitySelectHelper;
+use AcyMailing\Libraries\acymController;
+
 class EntitySelectController extends acymController
 {
     var $entitySelectHelper;
@@ -7,7 +12,7 @@ class EntitySelectController extends acymController
     public function __construct()
     {
         parent::__construct();
-        $this->entitySelectHelper = acym_get('helper.entitySelect');
+        $this->entitySelectHelper = new EntitySelectHelper();
         $this->loadScripts = [
             'all' => ['vue-applications' => ['entity_select']],
         ];
@@ -42,7 +47,9 @@ class EntitySelectController extends acymController
 
         if (!acym_isAdmin()) $entityParams['creator_id'] = acym_currentUserId();
 
-        $entityClass = acym_get('class.'.$entity);
+        $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($entity).'Class';
+        $entityClass = new $namespaceClass;
+
         $availableEntity = $entityClass->getMatchingElements($entityParams);
 
         $this->formatEntites($availableEntity, $entity);
@@ -80,7 +87,8 @@ class EntitySelectController extends acymController
             exit;
         }
 
-        $entityClass = acym_get('class.'.$entity);
+        $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($entity).'Class';
+        $entityClass = new $namespaceClass;
 
         $joinQuery = '';
         if (!empty($join)) $joinQuery = $entityClass->getJoinForQuery($join);

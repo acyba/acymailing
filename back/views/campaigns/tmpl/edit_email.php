@@ -8,7 +8,7 @@
 		<div class="cell medium-auto"></div>
 		<div class="cell <?php echo $data['containerClass']; ?> grid-x grid-margin-x acym__content acym__editor__area">
             <?php
-            $workflow = acym_get('helper.workflow');
+            $workflow = $data['workflowHelper'];
             if (empty($data['campaignID'])) {
                 $workflow->disabledAfter = 'editEmail';
             }

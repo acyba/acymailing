@@ -1,6 +1,10 @@
 <?php
 
-class acymconfigurationClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class ConfigurationClass extends acymClass
 {
     var $table = 'configuration';
     var $pkey = 'name';
@@ -46,7 +50,7 @@ class acymconfigurationClass extends acymClass
 
             //We update the current instance in the same time
             if (empty($this->values[$name])) {
-                $this->values[$name] = new stdClass();
+                $this->values[$name] = new \stdClass();
             }
             $this->values[$name]->value = $value;
 
@@ -60,7 +64,7 @@ class acymconfigurationClass extends acymClass
 
         try {
             $status = acym_query($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $status = false;
         }
         if ($status === false) {
@@ -73,23 +77,5 @@ class acymconfigurationClass extends acymClass
     public function setLicenseKeyByDomain()
     {
         if (!acym_level(1)) return true;
-        $licenseKey = $this->config->get('license_key', '');
-        if (!empty($licenseKey)) return true;
-
-        $url = ACYM_UPDATEMEURL.'license&task=getLicenseKeyByWebsite';
-
-        $result = acym_makeCurlCall($url, ['domain' => ACYM_LIVE]);
-
-        if (empty($result) || empty($result['message']) || $result['type'] == 'error') {
-            acym_enqueueMessage(acym_translation('ACYM_COULD_SET_LICENSE_KEY'), 'warning');
-
-            return false;
-        }
-
-        if (!empty($result['message'])) {
-            $this->config->save(['license_key' => $result['message']]);
-
-            return true;
-        }
     }
 }

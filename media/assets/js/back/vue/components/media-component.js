@@ -12,14 +12,14 @@ jQuery(document).ready(function ($) {
         },
         data: () => {
             return {
-                joomlaIframe: CMS_ACYM === 'wordpress'
+                joomlaIframe: ACYM_CMS === 'wordpress'
                               ? ''
                               : '<div id="acym__form__modal__joomla-image"><div id="acym__form__modal__joomla-image__bg" class="acym__form__modal__joomla-image--close"></div><div id="acym__form__modal__joomla-image__ui" class="float-center cell"><iframe id="acym__form__modal__joomla-image__ui__iframe" src="index.php?option=com_media&amp;view=images&amp;tmpl=component&amp;e_name=imageurl&amp;asset=com_content&amp;author=\'acymailing\'" frameborder="0"></iframe></div></div>'
             };
         },
         methods: {
             openMedia() {
-                if (CMS_ACYM === 'wordpress') {
+                if (ACYM_CMS === 'wordpress') {
                     this.openMediaWordpress();
                 } else {
                     this.openMediaJoomla();

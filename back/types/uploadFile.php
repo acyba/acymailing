@@ -1,6 +1,10 @@
 <?php
 
-class uploadfileType extends acymObject
+namespace AcyMailing\Types;
+
+use AcyMailing\Libraries\acymObject;
+
+class UploadfileType extends acymObject
 {
     public function display($map, $value)
     {

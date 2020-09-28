@@ -1,6 +1,11 @@
 <?php
 
-class acymcampaignClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Helpers\PaginationHelper;
+use AcyMailing\Libraries\acymClass;
+
+class CampaignClass extends acymClass
 {
     var $table = 'campaign';
     var $pkey = 'id';
@@ -46,7 +51,7 @@ class acymcampaignClass extends acymClass
         }
 
         if ($decodeMail) {
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             $campaign = $mailClass->decode($campaign);
         }
 
@@ -62,8 +67,8 @@ class acymcampaignClass extends acymClass
 
     public function getMatchingElements($settings = [])
     {
-        $tagClass = acym_get('class.tag');
-        $mailClass = acym_get('class.mail');
+        $tagClass = new TagClass();
+        $mailClass = new MailClass();
 
         $query = 'SELECT campaign.*, mail.name, mail_stat.sent AS subscribers, mail_stat.open_unique FROM #__acym_campaign AS campaign';
         $queryCount = 'SELECT campaign.* FROM #__acym_campaign AS campaign';
@@ -111,8 +116,10 @@ class acymcampaignClass extends acymClass
         }
 
         if (empty($settings['status'])) $settings['status'] = 'all';
-        $query .= empty($filters) ? ' WHERE ' : ' AND ';
-        $query .= $statusRequests[$settings['status']];
+        if (!empty($statusRequests[$settings['status']])) {
+            $query .= empty($filters) ? ' WHERE ' : ' AND ';
+            $query .= $statusRequests[$settings['status']];
+        }
 
         if (!empty($settings['ordering']) && !empty($settings['ordering_sort_order'])) {
             $table = in_array($settings['ordering'], ['name', 'creation_date']) ? 'mail' : 'campaign';
@@ -125,7 +132,7 @@ class acymcampaignClass extends acymClass
         }
 
         if (empty($settings['elementsPerPage']) || $settings['elementsPerPage'] < 1) {
-            $pagination = acym_get('helper.pagination');
+            $pagination = new PaginationHelper();
             $settings['elementsPerPage'] = $pagination->getListLimit();
         }
 
@@ -142,7 +149,7 @@ class acymcampaignClass extends acymClass
 
         $isMultilingual = acym_isMultilingual();
 
-        $urlClickClass = acym_get('class.urlclick');
+        $urlClickClass = new UrlClickClass();
         foreach ($results['elements'] as $i => $oneCampaign) {
             $results['elements'][$i]->tags = [];
             $results['elements'][$i]->lists = [];
@@ -331,7 +338,7 @@ class acymcampaignClass extends acymClass
         $campaignID = parent::save($campaign);
 
         if (!empty($campaignID) && isset($tags)) {
-            $tagClass = acym_get('class.tag');
+            $tagClass = new TagClass();
             $tagClass->setTags('mail', $campaign->mail_id, $tags);
         }
 
@@ -376,7 +383,7 @@ class acymcampaignClass extends acymClass
             acym_query('UPDATE #__acym_campaign SET mail_id = NULL WHERE id = '.intval($id));
         }
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $mailClass->delete($mailsToDelete);
 
         return parent::delete($elements);
@@ -438,7 +445,7 @@ class acymcampaignClass extends acymClass
             $this->save($campaign);
         }
 
-        $mailStatClass = acym_get('class.mailstat');
+        $mailStatClass = new MailStatClass();
         $mailStat = $mailStatClass->getOneRowByMailId($campaign->mail_id);
 
         if (empty($mailStat)) {
@@ -614,7 +621,7 @@ class acymcampaignClass extends acymClass
         $return['count'] = acym_loadResult($queryCountSelect.$query.') AS r ');
         $return['matchingNewsletters'] = $this->decode(acym_loadObjectList($querySelect.$query.$endQuerySelect));
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $userEmail = acym_currentUserEmail();
         $user = $userClass->getOneByEmail($userEmail);
 
@@ -647,12 +654,12 @@ class acymcampaignClass extends acymClass
 
         if (empty($activeAutoCampaigns)) return;
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $time = time();
 
         foreach ($activeAutoCampaigns as $campaign) {
             //check if we trigger the campaign
-            $step = new stdClass();
+            $step = new \stdClass();
             $step->triggers = $campaign->sending_params;
             $step->last_execution = $campaign->last_generated;
             $step->next_execution = $campaign->next_trigger;
@@ -717,7 +724,7 @@ class acymcampaignClass extends acymClass
     private function _generateCampaign($campaign, $campaignMail, $lastGenerated, $mailClass)
     {
         $newMail = $this->_generateMailAutoCampaign($campaignMail, $campaign->sending_params['number_generated']);
-        $newCampaign = new stdClass();
+        $newCampaign = new \stdClass();
         $newCampaign->mail_id = $newMail->id;
         $newCampaign->parent_id = $campaign->id;
         $newCampaign->active = 1;
@@ -741,7 +748,7 @@ class acymcampaignClass extends acymClass
         unset($newMail->id);
         $newMail->name .= ' #'.$generatedMail;
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $newMail->id = $mailClass->save($newMail);
         $this->_setListToGeneratedCampaign($mailId, $newMail->id);
 
@@ -752,7 +759,7 @@ class acymcampaignClass extends acymClass
 
     private function generateMailAutoCampaignMultilingual($mailId, $generatedMail, $newParentId)
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $mails = $mailClass->getTranslationsById($mailId, true);
 
         foreach ($mails as $mail) {
@@ -766,7 +773,7 @@ class acymcampaignClass extends acymClass
 
     private function _setListToGeneratedCampaign($parentMailId, $newMailId)
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $lists = $mailClass->getAllListsByMailId($parentMailId);
         $listIds = [];
         foreach ($lists as $list) {

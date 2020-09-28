@@ -1,8 +1,9 @@
 <?php
 
-/**
- * Class MailsViewMails
- */
+namespace AcyMailing\Views;
+
+use AcyMailing\Libraries\acymView;
+
 class MailsViewMails extends acymView
 {
 }

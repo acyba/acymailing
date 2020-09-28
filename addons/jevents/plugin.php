@@ -1,5 +1,9 @@
 <?php
 
+use AcyMailing\Libraries\acymParameter;
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Helpers\TabHelper;
+
 class plgAcymJevents extends acymPlugin
 {
     var $imgFolder = '';
@@ -108,7 +112,7 @@ class plgAcymJevents extends acymPlugin
 
         $this->categories = acym_loadObjectList('SELECT id, parent_id, title FROM `#__categories` WHERE extension = "com_jevents"', 'id');
 
-        $tabHelper = acym_get('helper.tab');
+        $tabHelper = new TabHelper();
         $identifier = $this->name;
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 

@@ -1,6 +1,10 @@
 <?php
 
-class acymworkflowHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+
+class WorkflowHelper extends acymObject
 {
     // Disable all the steps after this one
     var $disabledAfter = null;

@@ -1,6 +1,10 @@
 <?php
 
-class acymmailStatClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class MailStatClass extends acymClass
 {
     var $table = 'mail_stat';
     var $pkey = 'mail_id';
@@ -93,7 +97,7 @@ class acymmailStatClass extends acymClass
 
     public function getAllMailsForStats($search = '')
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         $query = 'SELECT mail.* 
                   FROM #__acym_mail AS mail 

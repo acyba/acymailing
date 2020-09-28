@@ -1,0 +1,58 @@
+#acym__wysid__modal__dynamic-text__ui__iframe {
+    width: 100%;
+    @media screen and (min-width: 649px) {
+        & {
+            min-height: 600px;
+        }
+    }
+
+    @media screen and (max-width: 649px) {
+        & {
+            min-height: 100%;
+        }
+    }
+}
+
+.acym__wysid__modal {
+    #acym__wysid__modal__cms__load {
+        margin-top: 24px;
+    }
+
+    #acym__wysid__modal__cms__insert {
+        margin-bottom: 15px;
+    }
+
+    #acym__wysid__modal__cms__result {
+        padding: 5px;
+        height: calc(100% - 5px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        background-color: $very-light-gray;
+        border-radius: $primary-radius;
+
+        .acym__wysid__cms__post {
+            box-shadow: $primary-box-shadow;
+            border-radius: $primary-radius;
+            max-height: 200px;
+            overflow: hidden;
+            border: 3px white dashed;
+            background-color: $white;
+            cursor: pointer;
+            user-select: none;
+
+            &:hover {
+                border: 3px map-get($foundation-palette, primary) dashed;
+            }
+        }
+
+        .acym__wysid__cms__post--selected {
+            border: 3px map-get($foundation-palette, primary) solid;
+        }
+    }
+
+    @media screen and (max-width: 639px) {
+        #acym__wysid__modal__cms__result {
+            height: calc(100% - 90px);
+        }
+    }
+}

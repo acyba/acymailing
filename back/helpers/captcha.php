@@ -1,6 +1,10 @@
 <?php
 
-class acymcaptchaHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+
+class CaptchaHelper extends acymObject
 {
     public function display($formName = '', $loadJsModule = false)
     {

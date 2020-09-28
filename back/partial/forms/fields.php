@@ -7,6 +7,7 @@
         echo $form->fieldClass->displayField($field, $field->default_value, $size, $field->valuesArray, $form->fields_options['display_mode'] == 'outside', true);
     }
     if ($form->lists_options['display_position'] == 'after') include acym_getPartial('forms', 'lists');
+    include acym_getPartial('forms', 'termspolicy');
     ?>
 	<style>
 		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields{

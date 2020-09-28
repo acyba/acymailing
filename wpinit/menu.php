@@ -1,5 +1,9 @@
 <?php
 
+namespace AcyMailing\Init;
+
+use AcyMailing\Classes\PluginClass;
+
 class acyMenu extends acyHook
 {
     var $router;
@@ -44,11 +48,7 @@ class acyMenu extends acyHook
         }
         if (!$allowed) return;
 
-
         // Add the Acy menu items to the WP menu
-        $pluginClass = acym_get('class.plugin');
-        $nbPluginNotUptodate = $pluginClass->getNotUptoDatePlugins();
-
         $svg = acym_fileGetContent(ACYM_IMAGES.'loader.svg');
         add_menu_page(
             acym_translation('ACYM_DASHBOARD'),
@@ -72,7 +72,7 @@ class acyMenu extends acyHook
             'ACYM_QUEUE' => 'queue',
             'ACYM_STATISTICS' => 'stats',
             'ACYM_BOUNCE_HANDLING' => 'bounces',
-            empty($nbPluginNotUptodate) ? 'ACYM_ADD_ONS' : acym_translation_sprintf('ACYM_ADD_ONS_X', $nbPluginNotUptodate) => 'plugins',
+            'ACYM_ADD_ONS' => 'plugins',
             'ACYM_SUBSCRIPTION_FORMS' => 'forms',
             'ACYM_CONFIGURATION' => 'configuration',
         ];

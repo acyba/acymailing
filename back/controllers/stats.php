@@ -1,5 +1,18 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\MailStatClass;
+use AcyMailing\Classes\UrlClickClass;
+use AcyMailing\Classes\UserStatClass;
+use AcyMailing\Helpers\ExportHelper;
+use AcyMailing\Helpers\MailerHelper;
+use AcyMailing\Helpers\PaginationHelper;
+use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Libraries\acymController;
+
 class StatsController extends acymController
 {
     public function __construct()
@@ -13,13 +26,13 @@ class StatsController extends acymController
 
     public function saveSendingStatUser($userId, $mailId, $sendDate = null)
     {
-        $userStatClass = acym_get('class.userstat');
+        $userStatClass = new UserStatClass();
 
         if ($sendDate == null) {
             $sendDate = acym_date();
         }
 
-        $userStat = new stdClass();
+        $userStat = new \stdClass();
         $userStat->mail_id = $mailId;
         $userStat->user_id = $userId;
         $userStat->send_date = $sendDate;
@@ -32,9 +45,9 @@ class StatsController extends acymController
         acym_setVar('layout', 'listing');
 
         $data = [];
-        $data['tab'] = acym_get('helper.tab');
+        $data['tab'] = new TabHelper();
         $data['selectedMailid'] = $this->getVarFiltersListing('int', 'mail_id', '');
-        $mailStatClass = acym_get('class.mailstat');
+        $mailStatClass = new MailStatClass();
         $data['sentMails'] = $mailStatClass->getAllMailsForStats();
         $data['show_date_filters'] = true;
         $data['page_title'] = false;
@@ -62,7 +75,7 @@ class StatsController extends acymController
     {
         if (empty($data['selectedMailid'])) return;
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         $translatedEmails = [];
 
@@ -84,8 +97,8 @@ class StatsController extends acymController
 
     private function prepareDetailedListing(&$data)
     {
-        $userStatClass = acym_get('class.userstat');
-        $pagination = acym_get('helper.pagination');
+        $userStatClass = new UserStatClass();
+        $pagination = new PaginationHelper();
 
         $search = $this->getVarFiltersListing('string', 'detailed_stats_search', '');
         $ordering = $this->getVarFiltersListing('string', 'detailed_stats_ordering', 'send_date');
@@ -150,7 +163,7 @@ class StatsController extends acymController
     {
         if (empty($data['selectedMailid'])) return;
 
-        $urlClickClass = acym_get('class.urlclick');
+        $urlClickClass = new UrlClickClass();
         $allClickInfo = $urlClickClass->getAllLinkFromEmail($data['selectedMailid']);
 
         $data['url_click'] = [];
@@ -168,10 +181,10 @@ class StatsController extends acymController
             $allPercentage[] = $percentage;
         }
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $data['mailInformation'] = $mailClass->getOneById($data['selectedMailid']);
 
-        $helperMailer = acym_get('helper.mailer');
+        $helperMailer = new MailerHelper();
         $helperMailer->body = $data['mailInformation']->body;
         $helperMailer->statClick($data['mailInformation']->id, 0, true);
         $data['mailInformation']->body = $helperMailer->body;
@@ -198,13 +211,13 @@ class StatsController extends acymController
 
     public function preparecharts(&$data)
     {
-        $mailStatClass = acym_get('class.mailstat');
+        $mailStatClass = new MailStatClass();
 
         $data['mail'] = $mailStatClass->getOneByMailId($data['selectedMailid']);
         if (empty($data['mail'])) return;
 
-        $campaignClass = acym_get('class.campaign');
-        $urlClickClass = acym_get('class.urlclick');
+        $campaignClass = new CampaignClass();
+        $urlClickClass = new UrlClickClass();
 
         //For the total opening, the doughnut chart
         $data['mail']->totalMail = $data['mail']->sent + $data['mail']->fail;
@@ -289,7 +302,7 @@ class StatsController extends acymController
             exit;
         }
 
-        $statsCampaignSelected = new stdClass();
+        $statsCampaignSelected = new \stdClass();
 
         $this->prepareLineChart($statsCampaignSelected, $mailIdOfCampaign, $newStart, $newEnd);
 
@@ -309,13 +322,13 @@ class StatsController extends acymController
             $clicks[acym_date(acym_getTime($one->date_click), $dateCode)] = $one->click;
         }
 
-        $begin = new DateTime(empty($campaignClicks) ? $campaignOpens[0]->open_date : min([$campaignOpens[0]->open_date, $campaignClicks[0]->date_click]));
-        $end = new DateTime(empty($campaignClicks) ? end($campaignOpens)->open_date : max([end($campaignOpens)->open_date, end($campaignClicks)->date_click]));
+        $begin = new \DateTime(empty($campaignClicks) ? $campaignOpens[0]->open_date : min([$campaignOpens[0]->open_date, $campaignClicks[0]->date_click]));
+        $end = new \DateTime(empty($campaignClicks) ? end($campaignOpens)->open_date : max([end($campaignOpens)->open_date, end($campaignClicks)->date_click]));
 
         $end->modify('+1 '.$modifier);
 
-        $interval = new DateInterval($intervalCode);
-        $daterange = new DatePeriod($begin, $interval, $end);
+        $interval = new \DateInterval($intervalCode);
+        $daterange = new \DatePeriod($begin, $interval, $end);
 
         $result = [];
         foreach ($daterange as $date) {
@@ -334,7 +347,7 @@ class StatsController extends acymController
 
     public function prepareLineChart(&$statsCampaignSelected, $mailIdOfCampaign, $newStart = '', $newEnd = '')
     {
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $statsCampaignSelected->hasStats = true;
 
         //We get the opening by month, day, hour
@@ -348,7 +361,7 @@ class StatsController extends acymController
             return;
         }
 
-        $urlClickClass = acym_get('class.urlclick');
+        $urlClickClass = new UrlClickClass();
         $campaignClickByMonth = $urlClickClass->getAllClickByMailMonth($mailIdOfCampaign, $newStart, $newEnd);
         $campaignClickByDay = $urlClickClass->getAllClickByMailDay($mailIdOfCampaign, $newStart, $newEnd);
         $campaignClickByHour = $urlClickClass->getAllClickByMailHour($mailIdOfCampaign, $newStart, $newEnd);
@@ -369,7 +382,7 @@ class StatsController extends acymController
     {
         $idSelected = acym_getVar('int', 'id', 0);
         if (!empty($idSelected)) {
-            $mailClass = acym_get('class.mail');
+            $mailClass = new MailClass();
             $mail = $mailClass->getOneById($idSelected);
             $name = empty($mail->name) ? '' : $mail->name;
 
@@ -385,7 +398,7 @@ class StatsController extends acymController
         $return = [];
         $search = acym_getVar('string', 'search', '');
 
-        $mailstatClass = acym_get('class.mailstat');
+        $mailstatClass = new MailStatClass();
         $mails = $mailstatClass->getAllMailsForStats($search);
 
         foreach ($mails as $oneMail) {
@@ -398,7 +411,7 @@ class StatsController extends acymController
 
     private function exportGlobalFormatted()
     {
-        $exportHelper = acym_get('helper.export');
+        $exportHelper = new ExportHelper();
         $data['selectedMailid'] = acym_getVar('int', 'mail_id', '');
         $data['show_date_filters'] = true;
         $data['page_title'] = false;
@@ -425,7 +438,7 @@ class StatsController extends acymController
 
     private function exportGlobalFull()
     {
-        $exportHelper = acym_get('helper.export');
+        $exportHelper = new ExportHelper();
         $selectedMailid = acym_getVar('int', 'mail_id', '');
 
         if (acym_isMultilingual()) {
@@ -454,7 +467,7 @@ class StatsController extends acymController
 
     public function exportDetailed()
     {
-        $exportHelper = acym_get('helper.export');
+        $exportHelper = new ExportHelper();
         $selectedMailid = acym_getVar('int', 'mail_id', '');
 
 

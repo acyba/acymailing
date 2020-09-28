@@ -1,6 +1,10 @@
 <?php
 
-class operatorinType extends acymObject
+namespace AcyMailing\Types;
+
+use AcyMailing\Libraries\acymObject;
+
+class OperatorinType extends acymObject
 {
     var $values = [];
     var $class = 'acym__select';

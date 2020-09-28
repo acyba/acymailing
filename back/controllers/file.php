@@ -1,5 +1,10 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Libraries\acymController;
+use AcyMailing\Types\FileTreeType;
+
 class FileController extends acymController
 {
     public function __construct()
@@ -50,6 +55,7 @@ class FileController extends acymController
             'imageExtensions' => $imageExtensions,
             'allowedExtensions' => $allowedExtensions,
             'folders' => $folders,
+            'fileTreeType' => new FileTreeType(),
         ];
 
         parent::display($data);

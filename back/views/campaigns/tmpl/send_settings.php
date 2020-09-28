@@ -7,7 +7,7 @@
 		<div id="acym__campaigns" class="cell <?php echo $data['containerClass']; ?> grid-x grid-margin-x acym__content">
 
             <?php
-            $workflow = acym_get('helper.workflow');
+            $workflow = $data['workflowHelper'];
             echo $workflow->display($this->steps, $this->step);
             include acym_getView('campaigns', 'send_settings_info', true);
             include acym_getView('campaigns', 'send_settings_sending');

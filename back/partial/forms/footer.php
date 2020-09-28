@@ -2,7 +2,7 @@
     <?php if ($edition) {
         echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';
     } else {
-        echo '<form acym-data-id="'.$form->id.'" action="'.$form->form_tag_action.'" id="'.$form->form_tag_name.'" name="'.$form->form_tag_name.'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acySubmitSubForm\')">';
+        echo '<form acym-data-id="'.$form->id.'" action="'.$form->form_tag_action.'" id="'.$form->form_tag_name.'" name="'.$form->form_tag_name.'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acymSubmitSubForm\')">';
     }
     $files = [
         0 => $form->style_options['position'] == 'button-right' ? 'fields' : 'button',

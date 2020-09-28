@@ -1,6 +1,12 @@
 <?php
 
-class acymuserHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Libraries\acymObject;
+
+class UserHelper extends acymObject
 {
     public function exportdata($id)
     {
@@ -8,7 +14,7 @@ class acymuserHelper extends acymObject
             die('No user found');
         }
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $user = $userClass->getOneByIdWithCustomFields($id);
         if (empty($user)) {
             die('No user found');
@@ -23,7 +29,7 @@ class acymuserHelper extends acymObject
         // It will contain the generated xml with all the collected user data, and the files he uploaded
         $exportFiles = [];
 
-        $xml = new SimpleXMLElement('<xml/>');
+        $xml = new \SimpleXMLElement('<xml/>');
         $userNode = $xml->addChild('user');
 
         $fields = acym_loadObjectList('SELECT name, field.option as options, type, value FROM #__acym_field as field', 'name');
@@ -145,7 +151,7 @@ class acymuserHelper extends acymObject
         //}
 
         // History
-        // $mailClass = acym_get('class.mail');
+        // $mailClass = new MailClass();
         //$history = $mailClass->decode(acym_loadObjectList(
         //    'SELECT h.action, h.date, h.ip, h.data, h.source, m.subject AS newsletter
         //									FROM #__acym_history AS h
@@ -177,7 +183,7 @@ class acymuserHelper extends acymObject
         //}
 
         // Statistics
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $statistics = $mailClass->decode(acym_loadObjectList('SELECT mail.subject, user_stats.* FROM #__acym_user_stat AS user_stats JOIN #__acym_mail AS mail ON mail.id = user_stats.mail_id WHERE user_stats.user_id = '.intval($id)));
         if (!empty($statistics)) {
             $dateFields = ['send_date', 'open_date'];
@@ -237,7 +243,7 @@ class acymuserHelper extends acymObject
         acym_createArchive($tempFolder.'export_data_user_'.$id, $exportFiles);
 
         // Export the zip
-        $exportHelper = acym_get('helper.export');
+        $exportHelper = new ExportHelper();
         $exportHelper->setDownloadHeaders('export_data_user_'.$id, 'zip');
         readfile($tempFolder.'export_data_user_'.$id.'.zip');
 

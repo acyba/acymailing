@@ -1,6 +1,12 @@
 <?php
 
-class acymlistClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Helpers\MailerHelper;
+use AcyMailing\Helpers\PaginationHelper;
+use AcyMailing\Libraries\acymClass;
+
+class ListClass extends acymClass
 {
     var $table = 'list';
     var $pkey = 'id';
@@ -104,7 +110,7 @@ class acymlistClass extends acymClass
         }
 
         if (empty($settings['elementsPerPage']) || $settings['elementsPerPage'] < 1) {
-            $pagination = acym_get('helper.pagination');
+            $pagination = new PaginationHelper();
             $settings['elementsPerPage'] = $pagination->getListLimit();
         }
 
@@ -379,7 +385,7 @@ class acymlistClass extends acymClass
         return acym_loadResultArray($query);
     }
 
-    public function getSubscribersForList($listId, $offset = 0, $perCalls = 100, $status = '')
+    public function getSubscribersForList($listId, $offset = 0, $perCalls = 100, $status = '', $orderBy = '', $orderBySort = '')
     {
         if (empty($listId)) return [];
 
@@ -389,6 +395,10 @@ class acymlistClass extends acymClass
         $requestSub = 'SELECT user.email, user.name, user.id, user.confirmed, user_list.status, user_list.subscription_date FROM #__acym_user AS user';
         $requestSub .= ' LEFT JOIN #__acym_user_has_list AS user_list ON user.id = user_list.user_id';
         $requestSub .= ' WHERE user.active = 1 AND user_list.list_id = '.intval($listId).$statusCond;
+        if (!empty($orderBy)) {
+            if (empty($orderBySort)) $orderBySort = 'desc';
+            $requestSub .= ' ORDER BY '.acym_secureDBColumn($orderBy).' '.acym_secureDBColumn($orderBySort);
+        }
 
         return acym_loadObjectList(
             $requestSub,
@@ -445,7 +455,7 @@ class acymlistClass extends acymClass
         $listID = parent::save($list);
 
         if (!empty($listID) && isset($tags)) {
-            $tagClass = acym_get('class.tag');
+            $tagClass = new TagClass();
             $tagClass->setTags('list', $listID, $tags);
         }
 
@@ -533,7 +543,7 @@ class acymlistClass extends acymClass
         }
 
         $alreadySent = [];
-        $mailerHelper = acym_get('helper.mailer');
+        $mailerHelper = new MailerHelper();
         $mailerHelper->report = $this->config->get('welcome_message', 1);
         foreach ($messages as $oneMessage) {
             $mailid = $oneMessage->welcome_id;
@@ -574,7 +584,7 @@ class acymlistClass extends acymClass
         }
 
         $alreadySent = [];
-        $mailerHelper = acym_get('helper.mailer');
+        $mailerHelper = new MailerHelper();
         $mailerHelper->report = $this->config->get('unsub_message', 1);
         foreach ($messages as $oneMessage) {
             if (!empty($oneMessage->unsubscribe_id)) {
@@ -596,7 +606,7 @@ class acymlistClass extends acymClass
     {
         $listId = acym_loadResult('SELECT `id` FROM #__acym_list LIMIT 1');
         if (empty($listId)) {
-            $defaultList = new stdClass();
+            $defaultList = new \stdClass();
             $defaultList->name = 'Newsletters';
             $defaultList->color = '#3366ff';
             $defaultList->description = '';
@@ -702,7 +712,7 @@ class acymlistClass extends acymClass
 
     private function initList($listId)
     {
-        $list = new stdClass();
+        $list = new \stdClass();
         $list->list_id = $listId;
         $list->sendable_users = 0;
         $list->unconfirmed_users = 0;
@@ -737,7 +747,7 @@ class acymlistClass extends acymClass
 
         if (!empty($frontListId)) return $frontListId;
 
-        $frontList = new stdClass();
+        $frontList = new \stdClass();
         $frontList->name = 'frontlist_'.$idCurrentUser;
         $frontList->active = 1;
         $frontList->visible = 0;

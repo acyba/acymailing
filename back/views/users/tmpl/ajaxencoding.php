@@ -1,5 +1,10 @@
 <?php
-$encodingHelper = acym_get('helper.encoding');
+
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Helpers\EncodingHelper;
+
+$encodingHelper = new EncodingHelper();
+$userClass = new UserClass();
 $filename = strtolower(acym_getVar('cmd', 'filename'));
 $encoding = acym_getVar('cmd', 'encoding');
 
@@ -162,7 +167,6 @@ $nbLines = count($this->lines);
 
 
         // This variable will be used to re-assign columns when we change the encoding option
-        $userClass = acym_get('class.user');
         $fields = $userClass->getAllColumnsUserAndCustomField();
         if (acym_isAdmin()) {
             $fields['listids'] = 'listids';

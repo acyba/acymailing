@@ -1,6 +1,10 @@
 <?php
 
-class acymtoolbarHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+
+class ToolbarHelper extends acymObject
 {
     var $leftPart = '';
     var $rightPart = '';
@@ -34,7 +38,7 @@ class acymtoolbarHelper extends acymObject
 
     public function addFilterByTag(&$data, $name, $class)
     {
-        $allTags = new stdClass();
+        $allTags = new \stdClass();
         $allTags->name = acym_translation('ACYM_ALL_TAGS');
         $allTags->value = '';
         array_unshift($data['allTags'], $allTags);

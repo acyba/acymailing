@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+
 class plgAcymBirthday extends acymPlugin
 {
     protected $dataSources = [];

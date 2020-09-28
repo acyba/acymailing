@@ -1,5 +1,8 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Types\OperatorinType;
+
 class plgAcymPayplans extends acymPlugin
 {
     public function __construct()
@@ -20,7 +23,7 @@ class plgAcymPayplans extends acymPlugin
         $conditions['user']['payplans']->name = 'Payplans';
         $conditions['user']['payplans']->option = '<div class="cell grid-x grid-margin-x">';
 
-        $operatorIn = acym_get('type.operatorin');
+        $operatorIn = new OperatorinType();
 
         $conditions['user']['payplans']->option .= '<div class="intext_select_automation cell">';
         $conditions['user']['payplans']->option .= $operatorIn->display('acym_condition[conditions][__numor__][__numand__][payplans][type]');

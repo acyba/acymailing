@@ -1,5 +1,7 @@
 <?php
 
+namespace AcyMailing\Init;
+
 include_once dirname(__DIR__).DS.'widgets'.DS.'profile'.DS.'widget.php';
 include_once dirname(__DIR__).DS.'widgets'.DS.'subscriptionform'.DS.'widget.php';
 include_once dirname(__DIR__).DS.'widgets'.DS.'archive'.DS.'widget.php';

@@ -1,5 +1,18 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\TagClass;
+use AcyMailing\Helpers\EditorHelper;
+use AcyMailing\Helpers\ExportHelper;
+use AcyMailing\Helpers\MailerHelper;
+use AcyMailing\Helpers\PaginationHelper;
+use AcyMailing\Helpers\ToolbarHelper;
+use AcyMailing\Helpers\UpdateHelper;
+use AcyMailing\Libraries\acymController;
+
 class MailsController extends acymController
 {
     public function __construct()
@@ -7,9 +20,6 @@ class MailsController extends acymController
         parent::__construct();
         $type = acym_getVar('string', 'type');
         $this->breadcrumb[acym_translation('automation' != $type ? 'ACYM_TEMPLATES' : 'ACYM_AUTOMATION')] = acym_completeLink('automation' != $type ? 'mails' : 'automation');
-        $this->loadScripts = [
-            'edit' => ['editor-wysid'],
-        ];
         acym_header('X-XSS-Protection:0');
     }
 
@@ -24,7 +34,7 @@ class MailsController extends acymController
         $status = 'standard';
         $orderingSortOrder = $this->getVarFiltersListing('cmd', 'mails_ordering_sort_order', 'desc');
 
-        $pagination = acym_get('helper.pagination');
+        $pagination = new PaginationHelper();
         // Get pagination data
         $mailsPerPage = $pagination->getListLimit();
         $page = acym_getVar('int', 'mails_pagination_page', 1);
@@ -58,9 +68,10 @@ class MailsController extends acymController
         require acym_getView('mails', 'listing_import');
         $templateImportView = ob_get_clean();
 
+        $tagClass = new TagClass();
         $mailsData = [
             'allMails' => $matchingMails['elements'],
-            'allTags' => acym_get('class.tag')->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType('mail'),
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
@@ -83,7 +94,7 @@ class MailsController extends acymController
 
     public function prepareToolbar(&$data)
     {
-        $toolbarHelper = acym_get('helper.toolbar');
+        $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'mails_search', 'ACYM_SEARCH');
         $toolbarHelper->addFilterByTag($data, 'mails_tag', 'acym__templates__filter__tags acym__select');
         $toolbarHelper->addButton(acym_translation('ACYM_ADD_DEFAULT_TMPL'), ['data-task' => 'installDefaultTmpl', 'id' => 'acym__mail__install-default'], 'content_copy');
@@ -128,7 +139,7 @@ class MailsController extends acymController
         $mailsPerPage = 12;
         $page = acym_getVar('int', 'mailchoose_pagination_page', 1);
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $matchingMails = $mailClass->getMatchingElements(
             [
                 'ordering' => $ordering,
@@ -141,12 +152,13 @@ class MailsController extends acymController
         );
 
         // Prepare the pagination
-        $pagination = acym_get('helper.pagination');
+        $pagination = new PaginationHelper();
         $pagination->setStatus($matchingMails['total'], $page, $mailsPerPage);
 
+        $tagClass = new TagClass();
         $mailsData = [
             'allMails' => $matchingMails['elements'],
-            'allTags' => acym_get('class.tag')->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType('mail'),
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
@@ -161,7 +173,7 @@ class MailsController extends acymController
     public function edit()
     {
         $tempId = acym_getVar('int', 'id');
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $typeEditor = acym_getVar('string', 'type_editor');
         $notification = acym_getVar('cmd', 'notification');
         $return = acym_getVar('string', 'return', '');
@@ -181,7 +193,7 @@ class MailsController extends acymController
             $this->breadcrumb[acym_translation('ACYM_LISTS')] = acym_completeLink('lists');
 
             if (!empty($listIds)) {
-                $campaignController = acym_get('controller.campaigns');
+                $campaignController = new CampaignsController();
                 $campaignController->setTaskListing($type);
                 $listIds = [$listIds];
             }
@@ -207,7 +219,7 @@ class MailsController extends acymController
             }
 
             if (empty($fromId)) {
-                $mail = new stdClass();
+                $mail = new \stdClass();
                 $mail->name = '';
                 $mail->subject = '';
                 $mail->preheader = '';
@@ -294,15 +306,16 @@ class MailsController extends acymController
         $lists = [];
 
         if (in_array($mail->type, ['welcome', 'unsubscribe'])) {
-            $listClass = acym_get('class.list');
+            $listClass = new ListClass();
             $lists = $listClass->getAllWithIdName();
 
             if (empty($listIds) && !empty($mail->id)) $listIds = $listClass->getListIdsByWelcomeUnsub($mail->id, $mail->type == 'welcome');
         }
 
+        $tagClass = new TagClass();
         $data = [
             'mail' => $mail,
-            'allTags' => acym_get('class.tag')->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType('mail'),
             'isAutomationAdmin' => $isAutomationAdmin,
             'social_icons' => $this->config->get('social_icons', '{}'),
             'fromId' => $fromId,
@@ -311,19 +324,37 @@ class MailsController extends acymController
             'lists' => $lists,
         ];
 
+        $this->prepareEditorEdit($data);
+
         if (!empty($return)) $data['return'] = $return;
 
         acym_setVar('layout', 'edit');
         parent::display($data);
     }
 
+    private function prepareEditorEdit(&$data)
+    {
+        $data['editor'] = new EditorHelper();
+        $data['editor']->content = $data['mail']->body;
+        $data['editor']->autoSave = empty($data['mail']->autosave) ? '' : $data['mail']->autosave;
+        if (!empty($data['mail']->editor)) $data['editor']->editor = $data['mail']->editor;
+        if (!empty($data['mail']->id)) $data['editor']->mailId = $data['mail']->id;
+        if (!empty($data['mail']->type)) $data['editor']->automation = $data['isAutomationAdmin'];
+        if (!empty($data['mail']->settings)) $data['editor']->settings = $data['mail']->settings;
+        if (!empty($data['mail']->stylesheet)) $data['editor']->stylesheet = $data['mail']->stylesheet;
+
+        if ($data['editor']->isDragAndDrop()) {
+            $this->loadScripts['edit'][] = 'editor-wysid';
+        }
+    }
+
     public function store($ajax = false)
     {
         acym_checkToken();
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $formData = acym_getVar('array', 'mail', []);
-        $mail = new stdClass();
+        $mail = new \stdClass();
         $allowedFields = acym_getColumns('mail');
         $fromId = acym_getVar('int', 'fromId', '');
         $return = acym_getVar('string', 'return');
@@ -377,7 +408,7 @@ class MailsController extends acymController
 
             if (!empty($mail->type) && in_array($mail->type, ['welcome', 'unsubscribe'])) {
                 $listIds = acym_getVar('array', 'list_ids', []);
-                $listClass = acym_get('class.list');
+                $listClass = new ListClass();
                 $listClass->setWelcomeUnsubEmail($listIds, $mailID, $mail->type);
             }
 
@@ -405,11 +436,11 @@ class MailsController extends acymController
     {
         $thumbNb = $this->config->get('numberThumbnail', 2);
         $fileName = 'thumbnail_'.($thumbNb + 1).'.png';
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->numberThumbnail = $thumbNb + 1;
         $this->config->save($newConfig);
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $fromMail = $mailClass->getOneById($fromId);
         $fromThumbnail = $fromMail->thumbnail;
 
@@ -447,8 +478,8 @@ class MailsController extends acymController
 
     public function autoSave()
     {
-        $mailClass = acym_get('class.mail');
-        $mail = new stdClass();
+        $mailClass = $this->currentClass;
+        $mail = new \stdClass();
 
         $language = acym_getVar('string', 'language', 'main');
         $mail->id = acym_getVar('int', 'mailId', 0);
@@ -465,7 +496,7 @@ class MailsController extends acymController
 
     public function getTemplateAjax()
     {
-        $pagination = acym_get('helper.pagination');
+        $pagination = new PaginationHelper();
         $id = acym_getVar('int', 'id');
         $id = empty($id) ? '' : '&id='.$id;
         $searchFilter = acym_getVar('string', 'search', '');
@@ -482,7 +513,7 @@ class MailsController extends acymController
         $page = acym_getVar('int', 'pagination_page_ajax', 1);
         $page != 'undefined' ? : $page = '1';
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $matchingMails = $mailClass->getMatchingElements(
             [
                 'ordering' => $ordering,
@@ -539,7 +570,7 @@ class MailsController extends acymController
 
     public function getMailContent()
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $from = acym_getVar('string', 'from', '');
 
         if (empty($from)) {
@@ -572,7 +603,7 @@ class MailsController extends acymController
         acym_setVar('return', $return);
         acym_setVar('id', $mailId);
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $mail = $mailClass->getOneById($mailId);
 
         if (empty($mail)) {
@@ -582,7 +613,7 @@ class MailsController extends acymController
             return;
         }
 
-        $mailerHelper = acym_get('helper.mailer');
+        $mailerHelper = new MailerHelper();
         $mailerHelper->autoAddUser = true;
         $mailerHelper->checkConfirmField = false;
         $mailerHelper->report = false;
@@ -600,7 +631,7 @@ class MailsController extends acymController
     public function sendTest()
     {
         $controller = acym_getVar('string', 'controller', 'mails');
-        $result = new stdClass();
+        $result = new \stdClass();
         $result->level = 'info';
         $result->message = '';
 
@@ -610,7 +641,7 @@ class MailsController extends acymController
             $mailId = acym_getVar('int', 'id', 0);
         } else {
             $campaingId = acym_getVar('int', 'id', 0);
-            $campaignClass = acym_get('class.campaign');
+            $campaignClass = new CampaignClass();
             $campaign = $campaignClass->getOneById($campaingId);
             if (empty($campaign)) {
                 echo json_encode(['level' => 'error', 'message' => acym_translation('ACYM_CAMPAIGN_NOT_FOUND')]);
@@ -627,7 +658,7 @@ class MailsController extends acymController
             }
         }
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $mail = $mailClass->getOneById($mailId);
 
         if (empty($mail)) {
@@ -636,7 +667,7 @@ class MailsController extends acymController
             exit;
         }
 
-        $mailerHelper = acym_get('helper.mailer');
+        $mailerHelper = new MailerHelper();
         $mailerHelper->autoAddUser = true;
         $mailerHelper->checkConfirmField = false;
         $mailerHelper->report = false;
@@ -670,7 +701,7 @@ class MailsController extends acymController
         if (empty($file) || strpos($file, 'http') === 0) {
             $thumbNb = $this->config->get('numberThumbnail', 2);
             $file = 'thumbnail_'.($thumbNb + 1).'.png';
-            $newConfig = new stdClass();
+            $newConfig = new \stdClass();
             $newConfig->numberThumbnail = $thumbNb + 1;
             $this->config->save($newConfig);
         }
@@ -693,7 +724,7 @@ class MailsController extends acymController
             exit;
         }
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $mail = $mailClass->getOneById($idMail);
 
         echo $mailClass->buildCSS($mail->stylesheet);
@@ -702,7 +733,7 @@ class MailsController extends acymController
 
     public function doUploadTemplate()
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $mailClass->doupload();
 
         $this->listing();
@@ -741,7 +772,7 @@ class MailsController extends acymController
             exit;
         }
 
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->social_icons = json_decode($this->config->get('social_icons', '{}'), true);
 
         $newImg = acym_rootURI().$newPathComplete;
@@ -764,7 +795,7 @@ class MailsController extends acymController
 
     public function deleteMailAutomation()
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $mailId = acym_getVar('int', 'id', 0);
 
         if (!empty($mailId)) $mailClass->delete($mailId);
@@ -775,7 +806,7 @@ class MailsController extends acymController
 
     public function duplicateMailAutomation()
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $mailId = acym_getVar('int', 'id', 0);
         $prevMail = acym_getVar('int', 'previousId');
 
@@ -793,7 +824,7 @@ class MailsController extends acymController
             exit;
         }
 
-        $newMail = new stdClass();
+        $newMail = new \stdClass();
         $newMail->name = $mail->name.'_copy';
         $newMail->thumbnail = '';
         $newMail->type = 'automation';
@@ -832,7 +863,7 @@ class MailsController extends acymController
 
     public function installDefaultTmpl()
     {
-        $updateHelper = acym_get('helper.update');
+        $updateHelper = new UpdateHelper();
         $updateHelper->installTemplates(true);
 
         $this->listing();
@@ -850,7 +881,7 @@ class MailsController extends acymController
         $template = $this->currentClass->getOneById($templateId);
 
         // We have all we need for the export, prepare the headers for the download
-        $exportHelper = acym_get('helper.export');
+        $exportHelper = new ExportHelper();
         $exportHelper->exportTemplate($template);
 
         exit;
@@ -867,7 +898,7 @@ class MailsController extends acymController
             return;
         }
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = $this->currentClass;
         $oldTemplate = $mailClass->getOneById($templateId);
 
         if (empty($oldTemplate)) {

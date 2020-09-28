@@ -1,5 +1,9 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Libraries\acymController;
+
 class ToggleController extends acymController
 {
     var $toggleableColumns = [];
@@ -140,7 +144,8 @@ class ToggleController extends acymController
             exit;
         }
 
-        $elementClass = acym_get('class.'.$table);
+        $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($table).'Class';
+        $elementClass = new $namespaceClass;
         $elementClass->$method($id);
 
         exit;
@@ -157,7 +162,7 @@ class ToggleController extends acymController
         $toggleElement = acym_getVar('string', 'where');
         $intro = json_decode($this->config->get('introjs', '[]'), true);
         $intro[$toggleElement] = 1;
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->introjs = json_encode($intro);
         $this->config->save($newConfig);
         exit;
@@ -176,7 +181,7 @@ class ToggleController extends acymController
             exit;
         }
 
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->remindme = json_decode($this->config->get('remindme', '[]'));
         if (!in_array($newValue, $newConfig->remindme)) array_push($newConfig->remindme, $newValue);
         $newConfig->remindme = json_encode($newConfig->remindme);

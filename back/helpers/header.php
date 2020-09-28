@@ -1,6 +1,10 @@
 <?php
 
-class acymheaderHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Libraries\acymObject;
+
+class HeaderHelper extends acymObject
 {
     public function display($breadcrumb)
     {

@@ -1,6 +1,19 @@
 <?php
 
-class acymupdateHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Classes\ActionClass;
+use AcyMailing\Classes\AutomationClass;
+use AcyMailing\Classes\ConditionClass;
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\PluginClass;
+use AcyMailing\Classes\RuleClass;
+use AcyMailing\Classes\StepClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Libraries\acymObject;
+
+class UpdateHelper extends acymObject
 {
     var $errors = [];
 
@@ -10,7 +23,7 @@ class acymupdateHelper extends acymObject
 
     public function installBounceRules()
     {
-        $ruleClass = acym_get('class.rule');
+        $ruleClass = new RuleClass();
         if ($ruleClass->getOrderingNumber() > 0) {
             return;
         }
@@ -41,10 +54,12 @@ class acymupdateHelper extends acymObject
 
         acym_query($query);
 
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $newConfig->bounceVersion = $this->bounceVersion;
         $this->config->save($newConfig);
     }
+
+    //__START__joomla_
 
     /**
      * Add update site on Joomla to handle auto-update
@@ -52,7 +67,7 @@ class acymupdateHelper extends acymObject
     public function addUpdateSite()
     {
         //We update the website url in the config... it's a check to make sure we are still on the right website
-        $newconfig = new stdClass();
+        $newconfig = new \stdClass();
         $newconfig->website = ACYM_LIVE;
         //We reset the max execution time when the website changes...
         $newconfig->max_execution_time = 0;
@@ -65,7 +80,7 @@ class acymupdateHelper extends acymObject
         //Test for the presence of acym in database.
         $update_site_id = acym_loadResult("SELECT update_site_id FROM #__update_sites WHERE location LIKE '%component=acymailing%' AND type LIKE 'extension'");
 
-        $object = new stdClass();
+        $object = new \stdClass();
         $object->name = 'AcyMailing';
         $object->type = 'extension';
         $object->location = ACYM_UPDATEMEURL.'updatexml&component=acymailing&cms=joomla&level='.$this->config->get('level').'&version='.$this->config->get('version');
@@ -137,6 +152,7 @@ class acymupdateHelper extends acymObject
         if (!empty($error)) acym_enqueueMessage($error, 'error');
         if (!empty($errorLoad)) acym_enqueueMessage(acym_translation_sprintf('ACYM_ERROR_LOAD_LANGUAGE', implode(', ', $errorLoad)), 'warning');
     }
+    //__END__joomla_
 
     // Only Joomla : translates the Acy menus on back-end and Joomla menus
     public function installBackLanguages($onlyCode = '')
@@ -211,7 +227,7 @@ class acymupdateHelper extends acymObject
 
     public function installTemplates($checkBeforeInstall = false)
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         $defaultTemplatesFolder = ACYM_BACK.'templates'.DS;
         $names = acym_getFolders($defaultTemplatesFolder);
@@ -237,7 +253,7 @@ class acymupdateHelper extends acymObject
                 $stylesheet = '""';
             }
 
-            $template = new stdClass();
+            $template = new \stdClass();
             $template->body = str_replace(
                 '{acym_media}',
                 ACYM_IMAGES,
@@ -267,14 +283,14 @@ class acymupdateHelper extends acymObject
 
     private function _newAutomationAdmin($title)
     {
-        $automationClass = acym_get('class.automation');
-        $stepClass = acym_get('class.step');
-        $conditionClass = acym_get('class.condition');
-        $mailClass = acym_get('class.mail');
-        $actionClass = acym_get('class.action');
+        $automationClass = new AutomationClass();
+        $stepClass = new StepClass();
+        $conditionClass = new ConditionClass();
+        $mailClass = new MailClass();
+        $actionClass = new ActionClass();
 
 
-        $adminCreate = new stdClass();
+        $adminCreate = new \stdClass();
         $adminCreate->desc = 'ACYM_ADMIN_USER_CREATE_DESC';
         $adminCreate->triggers = '{"user_creation":[""],"type_trigger":"user"}';
         $adminCreate->conditions = '{"type_condition":"user"}';
@@ -285,7 +301,7 @@ class acymupdateHelper extends acymObject
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{subtag:name|info:current}', 'Roger').'</p>
                     <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{subtag:email|info:current}', 'roger@example.com').'</p>';
 
-        $adminModif = new stdClass();
+        $adminModif = new \stdClass();
         $adminModif->desc = 'ACYM_ADMIN_USER_MODIFICATION_DESC';
         $adminModif->triggers = '{"user_modification":[""],"type_trigger":"user"}';
         $adminModif->conditions = '{"type_condition":"user"}';
@@ -301,7 +317,7 @@ class acymupdateHelper extends acymObject
             'ACYM_ADMIN_USER_MODIFICATION' => $adminModif,
         ];
 
-        $newAutomation = new stdClass();
+        $newAutomation = new \stdClass();
         $newAutomation->name = $title;
         $newAutomation->description = $info[$title]->desc;
         $newAutomation->active = 0;
@@ -309,20 +325,20 @@ class acymupdateHelper extends acymObject
         $newAutomation->id = $automationClass->save($newAutomation);
         if (empty($newAutomation->id)) return false;
 
-        $newStep = new stdClass();
+        $newStep = new \stdClass();
         $newStep->name = 'ACYM_ADMIN_USER_CREATE';
         $newStep->triggers = $info[$title]->triggers;
         $newStep->automation_id = $newAutomation->id;
         $newStep->id = $stepClass->save($newStep);
         if (empty($newStep->id)) return false;
 
-        $newCondition = new stdClass();
+        $newCondition = new \stdClass();
         $newCondition->step_id = $newStep->id;
         $newCondition->conditions = $info[$title]->conditions;
         $newCondition->id = $conditionClass->save($newCondition);
         if (empty($newCondition->id)) return false;
 
-        $mailAutomation = new stdClass();
+        $mailAutomation = new \stdClass();
         $mailAutomation->type = 'automation';
         $mailAutomation->library = 1;
         $mailAutomation->template = 0;
@@ -336,7 +352,7 @@ class acymupdateHelper extends acymObject
         $mailAutomation->id = $mailClass->save($mailAutomation);
         if (empty($mailAutomation->id)) return false;
 
-        $newAction = new stdClass();
+        $newAction = new \stdClass();
         $newAction->condition_id = $newCondition->id;
         $newAction->actions = '[{"acy_add_queue":{"mail_id":"'.intval($mailAutomation->id).'","time":"[time]"}}]';
         $newAction->filters = '{"0":{"1":{"acy_field":{"field":"email","operator":"=","value":"'.acym_currentUserEmail().'"}}},"type_filter":"classic"}';
@@ -347,7 +363,7 @@ class acymupdateHelper extends acymObject
 
     public function installAdminNotif()
     {
-        $automationClass = acym_get('class.automation');
+        $automationClass = new AutomationClass();
         $automationAdmin = $automationClass->getAutomationsAdmin();
 
         if (empty($automationAdmin['ACYM_ADMIN_USER_CREATE'])) {
@@ -361,7 +377,7 @@ class acymupdateHelper extends acymObject
 
     public function installList()
     {
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $listClass->addDefaultList();
     }
 
@@ -373,8 +389,8 @@ class acymupdateHelper extends acymObject
             'key' => 'name',
         ];
 
-        $mailClass = acym_get('class.mail');
-        $userClass = acym_get('class.user');
+        $mailClass = new MailClass();
+        $userClass = new UserClass();
         $notifications = $mailClass->getMailsByType('notification', $searchSettings);
         $notifications = $notifications['mails'];
 
@@ -496,7 +512,7 @@ class acymupdateHelper extends acymObject
             $user = $userClass->getOneByCMSId($currentCMSId);
             if (empty($user)) $user = $userClass->getOneByEmail($currentCMSEmail);
             if (empty($user)) {
-                $newUser = new stdClass();
+                $newUser = new \stdClass();
                 $newUser->email = $currentCMSEmail;
                 $newUser->confirmed = 1;
                 $newUser->cms_id = $currentCMSId;
@@ -532,7 +548,7 @@ class acymupdateHelper extends acymObject
 
         if (!empty($addNotif)) {
             foreach ($addNotif as $oneNotif) {
-                $notif = new stdClass();
+                $notif = new \stdClass();
                 $notif->type = empty($oneNotif['type']) ? 'notification' : $oneNotif['type'];
                 $notif->library = 1;
                 $notif->template = empty($oneNotif['template']) ? 0 : $oneNotif['template'];
@@ -592,7 +608,7 @@ class acymupdateHelper extends acymObject
             $extensionsToPublish = array_diff($extensionsToPublish, $existingExtensions);
         }
 
-        $installer = JInstaller::getInstance();
+        $installer = \JInstaller::getInstance();
         foreach ($dirs as $oneExtension) {
             $extension = ACYM_BACK.'extensions'.DS.$oneExtension;
             if (file_exists($extension)) {
@@ -615,7 +631,7 @@ class acymupdateHelper extends acymObject
 
     public function installAddons()
     {
-        $pluginClass = acym_get('class.plugin');
+        $pluginClass = new PluginClass();
         $installedAddons = array_keys($pluginClass->getAll('folder_name'));
         $coreAddons = acym_coreAddons();
 

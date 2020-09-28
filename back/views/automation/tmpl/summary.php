@@ -4,8 +4,7 @@
 		<div class="cell auto"></div>
 		<div class="acym__content grid-x cell xxlarge-7 xlarge-9" id="acym__automation__summary">
             <?php
-            $workflow = acym_get('helper.workflow');
-            echo $workflow->display($this->steps, 'summary');
+            echo $data['workflowHelper']->display($this->steps, 'summary');
             if (!empty($data['id'])) {
                 ?>
 				<div class="acym__automation__summary__info cell grid-x acym__content margin-top-2">

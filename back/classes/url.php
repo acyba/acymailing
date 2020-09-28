@@ -1,6 +1,10 @@
 <?php
 
-class acymurlClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Libraries\acymClass;
+
+class UrlClass extends acymClass
 {
     var $table = 'url';
     var $pkey = 'id';
@@ -34,7 +38,7 @@ class acymurlClass extends acymClass
     {
         $currentUrl = $this->getOneByUrl($url);
         if (empty($currentUrl->id)) {
-            $currentUrl = new stdClass();
+            $currentUrl = new \stdClass();
             $currentUrl->name = $url;
             $currentUrl->url = $url;
             $currentUrl->id = $this->save($currentUrl);
@@ -78,5 +82,15 @@ class acymurlClass extends acymClass
             WHERE click.url_id IS NULL
             LIMIT 500'
         );
+
+        /*
+        To clean the potential duplicated rows in the #__acym_url table, you can execute this query when no email is being sent:
+        DELETE url.*
+        FROM #__acym_url AS url
+        LEFT JOIN #__acym_url_click AS urlclick ON url.id = urlclick.url_id
+        WHERE urlclick.url_id IS NULL
+
+        If an email is currently being sent, exclude its urls from the delete query
+         */
     }
 }

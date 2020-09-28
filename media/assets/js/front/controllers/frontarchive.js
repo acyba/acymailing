@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-
 function acym_changePageFront(page) {
     let acymForm = document.getElementById('acym_form');
     let nextPage = document.getElementById('acym__front__archive__next-page');
@@ -50,5 +49,3 @@ function acym_changePageFront(page) {
 
     acymForm.submit();
 }
-
-

@@ -1,0 +1,81 @@
+
+#acym__wysid {
+    background-color: $white;
+    position: fixed;
+    @include acym_set_position;
+    padding: 4rem 1rem 2rem 1rem;
+    margin: 0;
+    z-index: 999;
+    width: 100%;
+    @media screen and (max-width: 1023px) {
+        padding: 1rem 0;
+    }
+
+    img.emoji {
+        display: inline !important;
+        border: none !important;
+        height: 1em !important;
+        width: 1em !important;
+        margin: 0 .07em !important;
+        vertical-align: -0.1em !important;
+        background: none !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+
+    select {
+        margin-bottom: 0;
+        height: 39px;
+        font-size: 0.8rem;
+        background-color: $light-blue;
+        border-color: $light-blue;
+        border-radius: $primary-radius;
+        box-shadow: none;
+        color: $font-primary;
+
+        &:focus {
+            background-color: $light-blue;
+            border-color: map-get($foundation-palette, primary);
+            box-shadow: none;
+        }
+    }
+
+    tbody {
+        background-color: inherit;
+    }
+
+    .sp-preview {
+        height: 20px;
+        border-radius: $primary-radius;
+    }
+
+    .sp-preview-inner {
+        border-radius: $primary-radius !important;
+    }
+
+    .sp-dd {
+        line-height: 18px;
+    }
+
+    .acym-plugin-icon {
+        height: 28px;
+        width: 28px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+#acym__wysid .button.disabled, #acym__wysid .button.disabled:focus, #acym__wysid .button.disabled:hover,
+#acym__wysid .button[disabled], #acym__wysid .button[disabled]:focus, #acym__wysid .button[disabled]:hover {
+    background-color: #202020 !important;
+    color: #fefefe !important;
+    cursor: not-allowed;
+}
+
+input:checked ~ .switch-paddle {
+    color: map-get($editor-wysid-palette, primary);
+}
+
+.slider {
+    margin-bottom: 1.25rem !important;
+}

@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+
 class plgAcymOnline extends acymPlugin
 {
     public function __construct()
@@ -93,6 +95,8 @@ class plgAcymOnline extends acymPlugin
 
             if (ACYM_CMS == 'joomla' && strpos($oneTag, 'modify_profile') !== false) {
                 $link = acym_getPageLink('view=frontusers&layout=profile');
+                $link .= strpos($link, '?') ? '&' : '?';
+                $link .= 'id={subtag:id}&key={subtag:key}';
             } else {
                 $link = 'archive&task=view&id='.$email->id.'&userid={subtag:id}-{subtag:key}&'.acym_noTemplate();
                 $link .= $this->getLanguage($email->links_language);

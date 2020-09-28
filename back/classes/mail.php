@@ -1,6 +1,13 @@
 <?php
 
-class acymmailClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Helpers\MailerHelper;
+use AcyMailing\Helpers\PaginationHelper;
+use AcyMailing\Helpers\PluginHelper;
+use AcyMailing\Libraries\acymClass;
+
+class MailClass extends acymClass
 {
     var $table = 'mail';
     var $pkey = 'id';
@@ -99,7 +106,7 @@ class acymmailClass extends acymClass
         }
 
         if (empty($settings['elementsPerPage']) || $settings['elementsPerPage'] < 1) {
-            $pagination = acym_get('helper.pagination');
+            $pagination = new PaginationHelper();
             $settings['elementsPerPage'] = $pagination->getListLimit();
         }
 
@@ -113,7 +120,7 @@ class acymmailClass extends acymClass
         $results['status'] = [];
 
         if (!empty($settings['element_tab'])) {
-            $urlClickClass = acym_get('class.urlclick');
+            $urlClickClass = new UrlClickClass();
             for ($i = 0 ; $i < count($results['elements']) ; $i++) {
                 $results['elements'][$i]->open = 0;
                 if (!empty($results['elements'][$i]->subscribers)) {
@@ -160,7 +167,7 @@ class acymmailClass extends acymClass
         $mail = $this->decode(acym_loadObject('SELECT * FROM #__acym_mail WHERE id = '.intval($id)));
 
         if (!empty($mail)) {
-            $tagsClass = acym_get('class.tag');
+            $tagsClass = new TagClass();
             $mail->tags = $tagsClass->getAllTagsByElementId('mail', $id);
         }
 
@@ -182,7 +189,7 @@ class acymmailClass extends acymClass
         $mail = $this->decode(acym_loadObject($query));
 
         if (!empty($mail)) {
-            $tagsClass = acym_get('class.tag');
+            $tagsClass = new TagClass();
             $mail->tags = $tagsClass->getAllTagsByElementId('mail', $mail->id);
         }
 
@@ -334,7 +341,7 @@ class acymmailClass extends acymClass
         $mailID = parent::save($mail);
 
         if (!empty($mailID) && isset($tags)) {
-            $tagClass = acym_get('class.tag');
+            $tagClass = new TagClass();
             $tagClass->setTags('mail', $mailID, $tags);
         }
 
@@ -622,7 +629,7 @@ class acymmailClass extends acymClass
     {
         $fileContent = acym_fileGetContent($filepath);
 
-        $newTemplate = new stdClass();
+        $newTemplate = new \stdClass();
         $newTemplate->name = trim(preg_replace('#[^a-z0-9]#i', ' ', substr(dirname($filepath), strpos($filepath, '_template'))));
         if (preg_match('#< *title[^>]*>(.*)< */ *title *>#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->name = $results[1];
 
@@ -717,7 +724,7 @@ class acymmailClass extends acymClass
 
         $uploadsFolder = ACYM_UPLOAD_FOLDER_THUMBNAIL;
 
-        $newConfig = new stdClass();
+        $newConfig = new \stdClass();
         $thumbNb = intval($this->config->get('numberThumbnail', 2));
 
         foreach ($allPictures as $folder => $pictfolders) {
@@ -758,16 +765,16 @@ class acymmailClass extends acymClass
 
         // If we send a notification
         if (isset($automationAdmin['automationAdmin']) && $automationAdmin['automationAdmin']) {
-            $userClass = acym_get('class.user');
-            $mailerHelper = acym_get('helper.mailer');
+            $userClass = new UserClass();
+            $mailerHelper = new MailerHelper();
             $mail = $this->getOneById($mailId);
             $user = $userClass->getOneById($automationAdmin['user_id']);
 
             if (empty($mail) || empty($user)) return false;
 
             // Get the current user values
-            $acympluginHelper = acym_get('helper.plugin');
-            $extractedTags = $acympluginHelper->extractTags($mail, 'subtag');
+            $PluginHelper = new PluginHelper();
+            $extractedTags = $PluginHelper->extractTags($mail, 'subtag');
             if (!empty($extractedTags)) {
                 foreach ($extractedTags as $dtext => $oneTag) {
                     if (empty($oneTag->info) || $oneTag->info != 'current' || empty($user->{$oneTag->id})) continue;
@@ -793,11 +800,11 @@ class acymmailClass extends acymClass
         );
 
 
-        $mailStatClass = acym_get('class.mailstat');
+        $mailStatClass = new MailStatClass();
         $mailStat = $mailStatClass->getOneRowByMailId($mailId);
 
         if (empty($mailStat)) {
-            $mailStat = new stdClass();
+            $mailStat = new \stdClass();
             $mailStat->mail_id = intval($mailId);
             $mailStat->total_subscribers = intval($result);
             $mailStat->send_date = $sendingDate;

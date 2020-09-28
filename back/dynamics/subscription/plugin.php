@@ -1,5 +1,12 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\AutomationClass;
+
 class plgAcymSubscription extends acymPlugin
 {
     //Set this variable to true once the list unsubscribe is added so we don't add it twice
@@ -133,7 +140,9 @@ class plgAcymSubscription extends acymPlugin
         // List tags
         $others = [];
         $others['name'] = acym_translation('ACYM_LIST_NAME');
+        $others['description'] = acym_translation('ACYM_LIST_DESCRIPTION');
         $others['names'] = acym_translation('ACYM_LIST_NAMES');
+        $others['descriptions'] = acym_translation('ACYM_LIST_DESCRIPTIONS');
         $others['id'] = acym_translation('ACYM_LIST_ID', true);
 
         $text .= '<div class="acym__popup__listing text-center grid-x">
@@ -238,7 +247,7 @@ class plgAcymSubscription extends acymPlugin
 
     private function getCampaignTags(&$email, &$tags, $oneTag, $key)
     {
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $campaignFromMail = $campaignClass->getOneCampaignByMailId($email->id);
         $campaignField = substr($oneTag->id, 8);
         if (!empty($campaignFromMail) && !empty($campaignFromMail->$campaignField)) {
@@ -263,7 +272,7 @@ class plgAcymSubscription extends acymPlugin
 
             $field = $oneTag->id;
 
-            $campaignClass = acym_get('class.campaign');
+            $campaignClass = new CampaignClass();
             $autoCampaignFromMail = $campaignClass->getAutoCampaignFromGeneratedMailId($email->id);
 
             if (!empty($autoCampaignFromMail) && !empty($autoCampaignFromMail->sending_params[$field])) {
@@ -288,7 +297,7 @@ class plgAcymSubscription extends acymPlugin
 
         $replaceTags = [];
         foreach ($tags as $oneTag => $parameter) {
-            $method = '_list'.trim(strtolower($parameter->id));
+            $method = 'list'.trim(strtolower($parameter->id));
 
             if (method_exists($this, $method)) {
                 $replaceTags[$oneTag] = $this->$method($email, $user, $parameter);
@@ -310,12 +319,12 @@ class plgAcymSubscription extends acymPlugin
             return $this->lists[$mailid][$subid];
         }
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $mailLists = array_keys($mailClass->getAllListsByMailId($mailid));
         $userLists = [];
 
         if (!empty($subid)) {
-            $userClass = acym_get('class.user');
+            $userClass = new UserClass();
             $userLists = $userClass->getUserSubscriptionById($subid);
 
             $listid = null;
@@ -384,11 +393,11 @@ class plgAcymSubscription extends acymPlugin
         return 0;
     }
 
-    private function _listnames(&$email, &$user, &$parameter)
+    private function listnames(&$email, &$user, &$parameter)
     {
         if (empty($user->id)) return '';
 
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $usersubscription = $userClass->getUserSubscriptionById($user->id);
         $lists = [];
         if (!empty($usersubscription)) {
@@ -407,7 +416,7 @@ class plgAcymSubscription extends acymPlugin
      * Replace data about the list owner
      * Use the tag:  {list:owner|field:name} or {list:owner|field:username} or {list:owner|field:email}
      */
-    private function _listowner(&$email, &$user, &$parameter)
+    private function listowner(&$email, &$user, &$parameter)
     {
         if (empty($user->id)) {
             return '';
@@ -434,11 +443,11 @@ class plgAcymSubscription extends acymPlugin
             return;
         }
 
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $this->listsinfo[$listid] = $listClass->getOneById(intval($listid));
     }
 
-    private function _listname(&$email, &$user, &$parameter)
+    private function listname(&$email, &$user, &$parameter)
     {
         if (empty($user->id)) {
             return '';
@@ -453,7 +462,44 @@ class plgAcymSubscription extends acymPlugin
         return @$this->listsinfo[$listid]->name;
     }
 
-    private function _listid(&$email, &$user, &$parameter)
+    private function listdescription(&$email, &$user, &$parameter)
+    {
+        if (empty($user->id)) {
+            return '';
+        }
+        if (!empty($parameter->listid)) $listid = $parameter->listid;
+        if (empty($listid)) $listid = $this->_getAttachedListid($email, $user->id);
+        if (empty($listid)) {
+            return '';
+        }
+
+        $this->_loadlist($listid);
+
+        return @$this->listsinfo[$listid]->description;
+    }
+
+    private function listdescriptions(&$email, &$user, &$parameter)
+    {
+        if (empty($user->id)) return '';
+
+        $userClass = new UserClass();
+        $usersubscription = $userClass->getUserSubscriptionById($user->id);
+        $listids = [];
+        if (!empty($parameter->listids)) $listids = explode(',', $parameter->listids);
+        $lists = [];
+        if (!empty($usersubscription)) {
+            foreach ($usersubscription as $onesub) {
+                if (empty($onesub->description) || $onesub->status < 1 || empty($onesub->active) || (!empty($listids) && !in_array($onesub->id, $listids))) {
+                    continue;
+                }
+                $lists[] = $onesub->description;
+            }
+        }
+
+        return implode(isset($parameter->separator) ? $parameter->separator : ', ', $lists);
+    }
+
+    private function listid(&$email, &$user, &$parameter)
     {
         if (empty($user->id)) {
             return '';
@@ -540,7 +586,7 @@ class plgAcymSubscription extends acymPlugin
 
     public function onAcymDeclareConditions(&$conditions)
     {
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $list = [
             'type' => [
                 'sub' => acym_translation('ACYM_SUBSCRIBED'),
@@ -597,7 +643,7 @@ class plgAcymSubscription extends acymPlugin
 
     public function onAcymDeclareFilters(&$filters)
     {
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $list = [
             'type' => [
                 'sub' => acym_translation('ACYM_SUBSCRIBED'),
@@ -639,7 +685,7 @@ class plgAcymSubscription extends acymPlugin
 
     public function onAcymDeclareActions(&$actions)
     {
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
 
         $listActions = [
             'sub' => acym_translation('ACYM_SUBSCRIBE_USERS_TO'),
@@ -789,7 +835,7 @@ class plgAcymSubscription extends acymPlugin
         if (!empty($automation['acy_list_all'])) {
             $operators = ['=' => acym_translation('ACYM_EXACTLY'), '>' => acym_translation('ACYM_MORE_THAN'), '<' => acym_translation('ACYM_LESS_THAN')];
             $finalText = acym_translation('ACYM_THERE_IS').' '.strtolower($operators[$automation['acy_list_all']['operator']]).' '.$automation['acy_list_all']['number'].' '.acym_translation('ACYM_ACYMAILING_USERS').' ';
-            $listClass = acym_get('class.list');
+            $listClass = new ListClass();
             $automation['acy_list_all']['list'] = $listClass->getOneById($automation['acy_list_all']['list']);
             if (empty($automation['acy_list_all']['list'])) {
                 $automation = '<span class="acym__color__red">'.acym_translation('ACYM_SELECT_A_LIST').'</span>';
@@ -816,7 +862,7 @@ class plgAcymSubscription extends acymPlugin
     {
         if (!empty($automation['acy_list'])) {
             $finalText = '';
-            $listClass = acym_get('class.list');
+            $listClass = new ListClass();
             $automation['acy_list']['list'] = $listClass->getOneById($automation['acy_list']['list']);
             if (empty($automation['acy_list']['list'])) {
                 $automation = '<span class="acym__color__red">'.acym_translation('ACYM_SELECT_A_LIST').'</span>';
@@ -843,7 +889,7 @@ class plgAcymSubscription extends acymPlugin
     public function onAcymDeclareSummary_actions(&$automationAction)
     {
         if (!empty($automationAction['acy_list'])) {
-            $listClass = acym_get('class.list');
+            $listClass = new ListClass();
             $list = $listClass->getOneById($automationAction['acy_list']['list_id']);
             if ($automationAction['acy_list']['list_actions'] == 'sub') $automationAction['acy_list']['list_actions'] = 'ACYM_SUBSCRIBED_TO';
             if ($automationAction['acy_list']['list_actions'] == 'unsub') $automationAction['acy_list']['list_actions'] = 'ACYM_UNSUBSCRIBE_FROM';
@@ -858,13 +904,13 @@ class plgAcymSubscription extends acymPlugin
 
     public function onAcymAfterUserSubscribe(&$user, $lists)
     {
-        $automationClass = acym_get('class.automation');
+        $automationClass = new AutomationClass();
         $automationClass->trigger('user_subscribe', ['userId' => $user->id]);
     }
 
     public function onAcymAfterUserUnsubscribe(&$user, $lists)
     {
-        $automationClass = acym_get('class.automation');
+        $automationClass = new AutomationClass();
         $automationClass->trigger('user_unsubscribe', ['userId' => $user->id]);
     }
 }

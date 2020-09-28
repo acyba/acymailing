@@ -8,7 +8,7 @@ const acym_editorWysidModal = {
             acym_helperEditorWysid.checkForEmptyTbodyWYSID();
         });
 
-        if (CMS_ACYM == 'joomla') {
+        if (ACYM_CMS == 'joomla') {
             jQuery('.acym__wysid__modal__joomla-image--close').click(function () {
                 jQuery('#acym__wysid__modal__joomla-image').hide();
                 if (acym_helperEditorWysid.$focusElement.length

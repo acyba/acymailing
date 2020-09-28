@@ -1,0 +1,119 @@
+#acym_wrapper {
+    tr[data-dynamic]:hover .acym__dynamics__preview {
+        display: block;
+    }
+
+    .plugin_loader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(239, 239, 239, 0.7);
+    }
+
+    #acym__wysid__edit__languages {
+        border-bottom: 1px solid black;
+        margin-bottom: 1rem;
+
+        & > div {
+            display: inline-block;
+
+            &#acym__wysid__edit__languages__legend {
+                font-size: 1.5rem;
+            }
+
+            &.acym__wysid__edit__languages__separator {
+                width: 1px;
+                height: 1.5rem;
+                vertical-align: middle;
+                background-color: $black;
+            }
+
+            &.acym__wysid__edit__languages__selection {
+                position: relative;
+                padding: 0 1rem;
+                margin-top: -0.8rem;
+
+                img {
+                    cursor: pointer;
+                }
+
+                i {
+                    display: none;
+                    position: absolute;
+                    font-size: 1.4rem;
+                    cursor: default;
+                }
+
+                .acym__wysid__edit__languages__selection__edition {
+                    top: 0.7rem;
+                    left: 1.6rem;
+                    background-color: white;
+                    border-radius: 20px;
+                    padding: 5px;
+                    opacity: 0.8;
+                }
+
+                &.acym__wysid__edit__languages__selection-done {
+                    .acym__wysid__edit__languages__selection__check {
+                        display: block;
+                        top: 1.7rem;
+                        left: 3.2rem;
+                        color: #4dd64d;
+                        cursor: pointer;
+                    }
+                }
+
+                &.acym__wysid__edit__languages-selected {
+                    img {
+                        cursor: default;
+                    }
+
+                    .acym__wysid__edit__languages__selection__check {
+                        display: none;
+                    }
+
+                    .acym__wysid__edit__languages__selection__edition {
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+
+    #acym__wysid__edit__separator div {
+        border-bottom: 1px solid black;
+        margin-bottom: 1rem;
+    }
+
+    #acym__wysid__edit__preview {
+        position: relative;
+
+        .acym__wysid__edit__preview__reset {
+            position: absolute;
+            right: 0;
+            top: 0;
+
+            #acym__wysid__edit__preview__reset__content {
+                width: 50px;
+                height: 39px;
+                background-color: #cf2b27;
+                z-index: 1;
+                cursor: pointer;
+
+                i {
+                    position: absolute;
+                    top: 11px;
+                    right: 17px;
+
+                    font-size: 18px;
+                    color: $white;
+                }
+            }
+        }
+    }
+}

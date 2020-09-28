@@ -1,5 +1,15 @@
 <?php
 
+namespace AcyMailing\FrontControllers;
+
+use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Helpers\EditorHelper;
+use AcyMailing\Helpers\MailerHelper;
+use AcyMailing\Helpers\PaginationHelper;
+use AcyMailing\Libraries\acymController;
+use AcyMailing\Libraries\acymParameter;
+
 class ArchiveController extends acymController
 {
     public function __construct()
@@ -18,7 +28,7 @@ class ArchiveController extends acymController
 
         $isPopup = acym_getVar('int', 'is_popup', 0);
 
-        $mailerHelper = acym_get('helper.mailer');
+        $mailerHelper = new MailerHelper();
         $mailerHelper->loadedToSend = false;
         $oneMail = $mailerHelper->load($mailId);
 
@@ -61,12 +71,12 @@ class ArchiveController extends acymController
 
         $currentEmail = acym_currentUserEmail();
         if (empty($receiver) && !empty($currentEmail)) {
-            $userClass = acym_get('class.user');
+            $userClass = new UserClass();
             $receiver = $userClass->getOneByEmail($currentEmail);
         }
 
         if (empty($receiver)) {
-            $receiver = new stdClass();
+            $receiver = new \stdClass();
             $receiver->name = acym_translation('ACYM_VISITOR');
         }
 
@@ -87,7 +97,7 @@ class ArchiveController extends acymController
         if (!empty($oneMail->stylesheet)) {
             acym_addStyle(true, $oneMail->stylesheet);
         }
-        $editorHelper = acym_get('helper.editor');
+        $editorHelper = new EditorHelper();
         $settings = json_decode($oneMail->settings, true);
         if (!empty($settings)) {
             $settings = $editorHelper->getSettingsStyle($settings);
@@ -123,8 +133,8 @@ class ArchiveController extends acymController
 
             return;
         }
-
-        $menuParams = new acymParameter($menu->params);
+        $params = method_exists($menu, 'getParams') ? $menu->getParams() : $menu->params;
+        $menuParams = new acymParameter($params);
 
         // Handle the core Joomla params
         $paramsJoomla = [];
@@ -166,7 +176,7 @@ class ArchiveController extends acymController
         $params = [];
 
         $userId = false;
-        $userClass = acym_get('class.user');
+        $userClass = new UserClass();
         $currentUser = $userClass->identify(true);
         if (!empty($currentUser)) {
             $params['userId'] = $currentUser->id;
@@ -184,9 +194,9 @@ class ArchiveController extends acymController
         $params['page'] = acym_getVar('int', 'page', 1);
         $params['numberPerPage'] = acym_getCMSConfig('list_limit', 10);
 
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
         $returnLastNewsletters = $campaignClass->getLastNewsletters($params);
-        $pagination = acym_get('helper.pagination');
+        $pagination = new PaginationHelper();
         $pagination->setStatus($returnLastNewsletters['count'], $params['page'], $params['numberPerPage']);
 
         $data = [

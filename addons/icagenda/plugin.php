@@ -1,5 +1,8 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Helpers\TabHelper;
+
 class plgAcymIcagenda extends acymPlugin
 {
     public function __construct()
@@ -124,7 +127,7 @@ class plgAcymIcagenda extends acymPlugin
         acym_loadLanguageFile('com_icagenda', JPATH_SITE);
         $this->categories = acym_loadObjectList('SELECT `id`, 0 AS `parent_id`, `title` FROM `#__icagenda_category` WHERE state = 1', 'id');
 
-        $tabHelper = acym_get('helper.tab');
+        $tabHelper = new TabHelper();
         $identifier = $this->name;
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 

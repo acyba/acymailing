@@ -7,7 +7,7 @@
     ?>
 	<div id="acym__unsubscribe-emails" class="acym__content">
         <?php
-        $workflow = acym_get('helper.workflow');
+        $workflow = $data['workflowHelper'];
         echo $workflow->displayTabs($this->tabs, 'unsubscribe');
 
         if ($isEmpty) {

@@ -1,5 +1,18 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\MailStatClass;
+use AcyMailing\Classes\TagClass;
+use AcyMailing\Classes\UrlClickClass;
+use AcyMailing\Helpers\EntitySelectHelper;
+use AcyMailing\Helpers\ImportHelper;
+use AcyMailing\Helpers\PaginationHelper;
+use AcyMailing\Helpers\ToolbarHelper;
+use AcyMailing\Libraries\acymController;
+
 class ListsController extends acymController
 {
     public function __construct()
@@ -15,14 +28,15 @@ class ListsController extends acymController
     {
         acym_setVar('layout', 'listing');
 
+        $tagClass = new TagClass();
         $data = [];
         $data['search'] = $this->getVarFiltersListing('string', 'lists_search', '');
         $data['tag'] = $this->getVarFiltersListing('string', 'lists_tag', '');
         $data['ordering'] = $this->getVarFiltersListing('string', 'lists_ordering', 'id');
         $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'lists_ordering_sort_order', 'desc');
         $data['status'] = $this->getVarFiltersListing('string', 'lists_status', '');
-        $data['allTags'] = acym_get('class.tag')->getAllTagsByType('list');
-        $data['pagination'] = acym_get('helper.pagination');
+        $data['allTags'] = $tagClass->getAllTagsByType('list');
+        $data['pagination'] = new PaginationHelper();
 
         if (!empty($data['tag'])) {
             $data['status_toolbar'] = [
@@ -38,7 +52,7 @@ class ListsController extends acymController
 
     protected function prepareToolbar(&$data)
     {
-        $toolbarHelper = acym_get('helper.toolbar');
+        $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'lists_search', 'ACYM_SEARCH');
         $toolbarHelper->addFilterByTag($data, 'lists_tag', 'acym__lists__filter__tags acym__select');
 
@@ -101,7 +115,7 @@ class ListsController extends acymController
     private function prepareListSettings(&$data, $listId)
     {
         if (empty($listId)) {
-            $listInformation = new stdClass();
+            $listInformation = new \stdClass();
             $listInformation->id = '';
             $listInformation->name = '';
             $listInformation->description = '';
@@ -173,7 +187,7 @@ class ListsController extends acymController
 
     private function prepareTagsSettings(&$data, $listId)
     {
-        $tagClass = acym_get('class.tag');
+        $tagClass = new TagClass();
         $data['allTags'] = $tagClass->getAllTagsByType('list');
         $data['listTagsName'] = [];
         $listsTags = $tagClass->getAllTagsByElementId('list', $listId);
@@ -184,7 +198,10 @@ class ListsController extends acymController
 
     private function prepareSubscribersSettings(&$data, $listId)
     {
-        $data['subscribers'] = $this->currentClass->getSubscribersForList($listId, 0, 500, 1);
+        $data['ordering'] = acym_getVar('string', 'users_ordering', 'id');
+        $data['orderingSortOrder'] = acym_getVar('string', 'users_ordering_sort_order', 'desc');
+        $data['classSortOrder'] = $data['orderingSortOrder'] == 'asc' ? 'acymicon-sort-amount-asc' : 'acymicon-sort-amount-desc';
+        $data['subscribers'] = $this->currentClass->getSubscribersForList($listId, 0, 500, 1, $data['ordering'], $data['orderingSortOrder']);
         foreach ($data['subscribers'] as &$oneSub) {
             $oneSub->subscription_date = acym_getDate($oneSub->subscription_date);
         }
@@ -198,7 +215,7 @@ class ListsController extends acymController
             return;
         }
 
-        $entityHelper = acym_get('helper.entitySelect');
+        $entityHelper = new EntitySelectHelper();
 
         $data['subscribersEntitySelect'] = acym_modal(
             acym_translation('ACYM_MANAGE_SUBSCRIBERS'),
@@ -221,7 +238,7 @@ class ListsController extends acymController
         $mails = $this->currentClass->getMailsByListId($listId);
         if (empty($mails)) return;
 
-        $mailListClass = acym_get('class.mailstat');
+        $mailListClass = new MailStatClass();
         $mailsStat = $mailListClass->getCumulatedStatsByMailIds($mails);
 
         if (intval($mailsStat->sent) + intval($mailsStat->fails) === 0) return;
@@ -236,7 +253,7 @@ class ListsController extends acymController
         $data['listStats']['failRate'] = number_format($mailsStat->fails / $totalSent * 100, 2);
         $data['listStats']['bounceRate'] = number_format($mailsStat->bounces / $totalSent * 100, 2);
 
-        $urlClickClass = acym_get('class.urlclick');
+        $urlClickClass = new UrlClickClass();
         $nbClicks = $urlClickClass->getClickRateByMailIds($mails);
         $data['listStats']['clickRate'] = number_format($nbClicks / $totalSent * 100, 2);
     }
@@ -246,7 +263,7 @@ class ListsController extends acymController
         $data['tmpls'] = [];
         if (empty($data['listInformation']->id)) return;
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         foreach (['welcome' => 'welcome', 'unsubscribe' => 'unsub'] as $full => $short) {
             $mailId = acym_getVar('int', $short.'mailid', 0);
@@ -318,7 +335,7 @@ class ListsController extends acymController
         }
 
         $allowedFields = acym_getColumns('list');
-        $listInformation = new stdClass();
+        $listInformation = new \stdClass();
         if (empty($formData->welcome_id)) unset($formData->welcome_id);
         if (empty($formData->unsubscribe_id)) unset($formData->unsubscribe_id);
         foreach ($formData as $name => $data) {
@@ -416,7 +433,9 @@ class ListsController extends acymController
         $offset = acym_getVar('int', 'offset');
         $perCalls = acym_getVar('int', 'perCalls');
         $status = acym_getVar('int', 'status');
-        $subscribers = $this->currentClass->getSubscribersForList($listId, $offset, $perCalls, $status);
+        $orderBy = acym_getVar('string', 'orderBy', 'id');
+        $orderingSortOrder = acym_getVar('string', 'orderByOrdering', 'desc');
+        $subscribers = $this->currentClass->getSubscribersForList($listId, $offset, $perCalls, $status, $orderBy, $orderingSortOrder);
         foreach ($subscribers as &$oneSub) {
             $oneSub->subscription_date = acym_getDate($oneSub->subscription_date);
         }
@@ -427,7 +446,7 @@ class ListsController extends acymController
     public function setAjaxListing()
     {
         $showSelected = acym_getVar('string', 'show_selected');
-        $matchingListsData = new stdClass();
+        $matchingListsData = new \stdClass();
         $matchingListsData->ordering = 'name';
         $matchingListsData->searchFilter = acym_getVar('string', 'search_lists');
         $matchingListsData->listsPerPage = acym_getVar('string', 'listsPerPage');
@@ -480,7 +499,7 @@ class ListsController extends acymController
             $return .= '</label></div>';
         }
 
-        $pagination = acym_get('helper.pagination');
+        $pagination = new PaginationHelper();
         $pagination->setStatus($lists['total'], $matchingListsData->page, $matchingListsData->listsPerPage);
 
         $return .= $pagination->displayAjax();
@@ -525,8 +544,8 @@ class ListsController extends acymController
         $genericImport = acym_getVar('boolean', 'generic', false);
         $selectedListsIds = json_decode(acym_getVar('string', 'selected', '[]'));
 
-        $listClass = acym_get('class.list');
-        $listToAdd = new stdClass();
+        $listClass = new ListClass();
+        $listToAdd = new \stdClass();
         $listToAdd->name = acym_getVar('string', 'list_name', '');
         $listToAdd->color = '#'.substr(str_shuffle('ABCDEF0123456789'), 0, 6);
         $listToAdd->visible = 1;
@@ -534,8 +553,8 @@ class ListsController extends acymController
 
         $selectedListsIds[] = $listClass->save($listToAdd);
 
-        $entityHelper = acym_get('helper.entitySelect');
-        $importHelper = acym_get('helper.import');
+        $entityHelper = new EntitySelectHelper();
+        $importHelper = new ImportHelper();
 
 
         $return = $entityHelper->entitySelect(

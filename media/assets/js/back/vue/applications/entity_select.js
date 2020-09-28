@@ -19,8 +19,12 @@ function readyFunction($) {
     const diff = (a, b) => a.filter((i) => JSON.stringify(b).indexOf(JSON.stringify(i)) === -1);
 
     //search in array
-    const search = (array, search, columns) => array.filter((entity) => columns.map((column) => entity[column].toLowerCase().indexOf(search.toLowerCase())
-                                                                        !== -1).indexOf(true) !== -1);
+    const search = (array, search, columns) => array.filter((entity) => columns.map(function (column) {
+        if (entity[column] === null) {
+            return false;
+        }
+        return entity[column].toLowerCase().indexOf(search.toLowerCase()) !== -1;
+    }).indexOf(true) !== -1);
 
     //remove from array
     const remove = (array, entityId) => array.filter((entity) => entity.id !== entityId);
@@ -272,8 +276,8 @@ function readyFunction($) {
                     if (!newValue) {
                         this.finalLoad();
                     }
-                },
-            },
+                }
+            }
         });
     }
 }

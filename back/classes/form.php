@@ -1,6 +1,12 @@
 <?php
 
-class acymformClass extends acymClass
+namespace AcyMailing\Classes;
+
+use AcyMailing\Helpers\FormPositionHelper;
+use AcyMailing\Helpers\PaginationHelper;
+use AcyMailing\Libraries\acymClass;
+
+class FormClass extends acymClass
 {
     var $table = 'form';
     var $pkey = 'id';
@@ -33,7 +39,7 @@ class acymformClass extends acymClass
 
     public function __construct()
     {
-        $this->positionHelper = acym_get('helper.formposition');
+        $this->positionHelper = new FormPositionHelper();
         parent::__construct();
     }
 
@@ -67,7 +73,7 @@ class acymformClass extends acymClass
         }
 
         if (empty($settings['elementsPerPage']) || $settings['elementsPerPage'] < 1) {
-            $pagination = acym_get('helper.pagination');
+            $pagination = new PaginationHelper();
             $settings['elementsPerPage'] = $pagination->getListLimit();
         }
 
@@ -122,7 +128,7 @@ class acymformClass extends acymClass
 
     public function initEmptyForm($type)
     {
-        $newForm = new stdClass();
+        $newForm = new \stdClass();
         $newForm->name = '';
         $newForm->creation_date = acym_date('now', 'Y-m-d H:i:s');
         $newForm->active = 1;
@@ -136,6 +142,10 @@ class acymformClass extends acymClass
         $newForm->fields_options = [
             'displayed' => [],
             'display_mode' => 'inside',
+        ];
+        $newForm->termspolicy_options = [
+            'termscond' => 0,
+            'privacy' => 0,
         ];
         if ($type == self::SUB_FORM_TYPE_POPUP) {
             $newForm->style_options = [
@@ -387,7 +397,7 @@ class acymformClass extends acymClass
             'title' => acym_translation('ACYM_LISTS'),
         ];
         $return['render'] = [];
-        $listClass = acym_get('class.list');
+        $listClass = new ListClass();
         $lists = $listClass->getAllForSelect(false);
         foreach ($options as $key => $value) {
             $name = 'form['.$optionName.']['.$key.']';
@@ -428,7 +438,7 @@ class acymformClass extends acymClass
             'title' => acym_translation('ACYM_FIELDS'),
         ];
         $return['render'] = [];
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
         $allFields = $fieldClass->getAllfields();
         $fields = [];
         foreach ($allFields as $field) {
@@ -458,11 +468,37 @@ class acymformClass extends acymClass
         return $return;
     }
 
+    private function prepareMenuHtmlSettings_termspolicy_options($optionName, $options)
+    {
+        $return = [
+            'title' => acym_translation('ACYM_ARTICLE'),
+        ];
+        $return['render'] = [];
+        foreach ($options as $key => $value) {
+            $name = 'form['.$optionName.']['.$key.']';
+            $vModel = 'form.'.$optionName.'.'.$key;
+
+            if ($key == 'termscond') {
+                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_TERMS_CONDITIONS').'</label>';
+                $return['render'][$key] .= '<div class="cell auto">
+                                                <select2ajax :name="\''.$name.'\'" :value="\''.$value.'\'" v-model="'.$vModel.'" :urlselected="\'&ctrl=forms&task=getArticlesById&article_id=\'" :ctrl="\'forms\'" :task="\'getArticles\'"></select2ajax>
+                                            </div>';
+            } elseif ($key == 'privacy') {
+                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_PRIVACY_POLICY').'</label>';
+                $return['render'][$key] .= '<div class="cell auto">
+                                                <select2ajax :name="\''.$name.'\'" :value="\''.$value.'\'" v-model="'.$vModel.'" :urlselected="\'&ctrl=forms&task=getArticlesById&article_id=\'" :ctrl="\'forms\'" :task="\'getArticles\'"></select2ajax>
+                                            </div>';
+            }
+        }
+
+        return $return;
+    }
+
     public function renderForm($form, $edition = false)
     {
         acym_initModule();
-        $fieldClass = acym_get('class.field');
-        $listClass = acym_get('class.list');
+        $fieldClass = new FieldClass();
+        $listClass = new ListClass();
         $form->fields_options['displayed'][] = 2;
         $form->fields_options['displayed'] = $fieldClass->getFieldsByID($form->fields_options['displayed']);
         foreach ($form->fields_options['displayed'] as $key => $field) {
@@ -472,7 +508,7 @@ class acymformClass extends acymClass
             $valuesArray = [];
             if (!empty($field->value)) {
                 foreach ($field->value as $value) {
-                    $valueTmp = new stdClass();
+                    $valueTmp = new \stdClass();
                     $valueTmp->text = $value->title;
                     $valueTmp->value = $value->value;
                     if ($value->disabled == 'y') $valueTmp->disable = true;

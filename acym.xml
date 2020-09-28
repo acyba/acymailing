@@ -43,11 +43,12 @@
 			<folder>dynamics</folder>
 			<folder>extensions</folder>
 			<folder>helpers</folder>
-			<folder>library</folder>
+			<folder>libraries</folder>
 			<folder>partial</folder>
 			<folder>types</folder>
 			<folder>views</folder>
 			<folder>templates</folder>
+			<folder>vendor</folder>
 			<filename>acym.php</filename>
 			<filename>config.xml</filename>
 			<filename>index.html</filename>

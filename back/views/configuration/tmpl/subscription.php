@@ -24,7 +24,11 @@
 			<div class="cell grid-x">
 				<div class="cell xlarge-3 medium-5"></div>
 				<div class="cell medium-auto">
-					<a class=" button" href="<?php echo acym_completeLink('mails&task=edit&notification=acy_confirm&type_editor=acyEditor'); ?>"><?php echo acym_translation('ACYM_EDIT_EMAIL'); ?></a>
+                    <?php if (acym_isAllowed('mails')) { ?>
+						<a class=" button" href="<?php echo acym_completeLink('mails&task=edit&notification=acy_confirm&type_editor=acyEditor'); ?>">
+                            <?php echo acym_translation('ACYM_EDIT_EMAIL'); ?>
+						</a>
+                    <?php } ?>
 				</div>
 			</div>
 			<label for="confirm_redirect" class="cell grid-x margin-bottom-1">
@@ -80,9 +84,11 @@
                 ?>
 			</div>
 			<div class="cell large-2 medium-4 shrink">
-				<a class="button" href="<?php echo acym_completeLink('mails&task=edit&notification='.$identifier.'&type_editor=acyEditor'); ?>">
-                    <?php echo acym_translation('ACYM_EDIT_EMAIL'); ?>
-				</a>
+                <?php if (acym_isAllowed('mails')) { ?>
+					<a class="button" href="<?php echo acym_completeLink('mails&task=edit&notification='.$identifier.'&type_editor=acyEditor'); ?>">
+                        <?php echo acym_translation('ACYM_EDIT_EMAIL'); ?>
+					</a>
+                <?php } ?>
 			</div>
 			<div class="cell xxlarge-2 xlarge-1 hide-for-large-only medium-8 hide-for-small-only"></div>
             <?php

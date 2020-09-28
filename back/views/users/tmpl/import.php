@@ -21,16 +21,14 @@
         ?>
 	</div>
     <?php
-    $entityHelper = acym_get('helper.entitySelect');
-    $importHelper = acym_get('helper.import');
 
-    $modalData = $entityHelper->entitySelect(
+    $modalData = $data['entitySelect']->entitySelect(
         'list',
         ['join' => ''],
-        $entityHelper->getColumnsForList(),
+        $data['entitySelect']->getColumnsForList(),
         [],
         true,
-        $importHelper->additionalDataUsersImport(false)
+        $data['importHelper']->additionalDataUsersImport(false)
     );
     echo acym_modal(
         acym_translation('ACYM_IMPORT_USERS'),

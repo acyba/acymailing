@@ -1,6 +1,11 @@
 <?php
 
-class acymentitySelectHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Controllers\EntitySelectController;
+use AcyMailing\Libraries\acymObject;
+
+class EntitySelectHelper extends acymObject
 {
     var $svg;
     var $columnsHeaderNotToDisplay;
@@ -25,7 +30,7 @@ class acymentitySelectHelper extends acymObject
                                 </div>
                             </div>
                         </div>
-                        <div v-infinite-scroll="loadMoreEntity'.ucfirst($type).'" :infinite-scroll-disabled="busy" class="acym__listing cell acym__entity_select__'.$type.'__listing acym__content">';
+                        <div v-infinite-scroll="loadMoreEntity'.ucfirst($type).'" :infinite-scroll-disabled="busy" class="acym__listing cell acym__entity_select__'.$type.'__listing acym__content" infinite-scroll-distance="10">';
         $emptyMessage = acym_translation($type === 'available' ? 'ACYM_NOTHING_TO_SHOW_HERE_RIGHT_PANEL' : 'ACYM_PLEASE_CLICK_ON_THE_LEFT_PANEL');
         $display .= '<div class="cell text-center acym__entity_select__title margin-top-2" v-show="Object.keys(entitiesToDisplay_'.$type.').length == 0 && !loading">'.$emptyMessage.'</div>
                     <div class="cell acym_vcenter acym__listing__row grid-x acym__listing__row__header" v-if="Object.keys(entitiesToDisplay_'.$type.').length != 0">';
@@ -87,8 +92,9 @@ class acymentitySelectHelper extends acymObject
 
     public function entitySelect($entity, $entityParams = [], $columnsToDisplay = ['name'], $buttonSubmit = ['text' => '', 'action' => '', 'class' => ''], $displaySelected = true, $additionalData = '')
     {
-        $entityClass = acym_get('class.'.$entity);
-        $entitySelectController = acym_get('controller.entitySelect');
+        $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($entity).'Class';
+        $entityClass = new $namespaceClass;
+        $entitySelectController = new EntitySelectController();
 
         $columnJoin = '';
         $columnsToGet = $columnsToDisplay;
@@ -112,7 +118,7 @@ class acymentitySelectHelper extends acymObject
         if (empty($entityClass)) return false;
 
         if (empty($entityParams['elementsPerPage']) || $entityParams['elementsPerPage'] < 1) {
-            $paginationHelper = acym_get('helper.pagination');
+            $paginationHelper = new PaginationHelper();
             $entityParams['elementsPerPage'] = $paginationHelper->getListLimit();
         }
 

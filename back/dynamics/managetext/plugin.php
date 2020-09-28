@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+
 class plgAcymManagetext extends acymPlugin
 {
     public function replaceContent(&$email, $send = true)

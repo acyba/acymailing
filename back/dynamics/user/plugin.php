@@ -1,5 +1,10 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Types\OperatorType;
+use AcyMailing\Types\OperatorinType;
+use AcyMailing\Classes\AutomationClass;
+
 class plgAcymUser extends acymPlugin
 {
     //Keep the sender information to not load them every time
@@ -267,7 +272,7 @@ class plgAcymUser extends acymPlugin
         foreach ($allGroups as $group) {
             $groups[$group->id] = $group->text;
         }
-        $operatorIn = acym_get('type.operatorin');
+        $operatorIn = new OperatorinType();
 
         $conditions['user']['acy_group'] = new stdClass();
         $conditions['user']['acy_group']->name = acym_translation('ACYM_GROUP');
@@ -308,7 +313,7 @@ class plgAcymUser extends acymPlugin
             unset($cmsFields[$oneExcluded]);
         }
 
-        $operator = acym_get('type.operator');
+        $operator = new OperatorType();
 
         $conditions['user']['acy_cmsfield'] = new stdClass();
         $conditions['user']['acy_cmsfield']->name = acym_translation('ACYM_ACCOUNT_USER_FIELD');
@@ -341,7 +346,7 @@ class plgAcymUser extends acymPlugin
         foreach ($allGroups as $group) {
             $groups[$group->id] = $group->text;
         }
-        $operatorIn = acym_get('type.operatorin');
+        $operatorIn = new OperatorinType();
 
         $filters['acy_group'] = new stdClass();
         $filters['acy_group']->name = acym_translation('ACYM_GROUP');
@@ -382,7 +387,7 @@ class plgAcymUser extends acymPlugin
             unset($cmsFields[$oneExcluded]);
         }
 
-        $operator = acym_get('type.operator');
+        $operator = new OperatorType();
 
         $filters['acy_cmsfield'] = new stdClass();
         $filters['acy_cmsfield']->name = acym_translation('ACYM_ACCOUNT_USER_FIELD');
@@ -571,7 +576,7 @@ class plgAcymUser extends acymPlugin
 
     public function onAcymAfterUserConfirm(&$user)
     {
-        $automationClass = acym_get('class.automation');
+        $automationClass = new AutomationClass();
         $automationClass->trigger('user_confirmation', ['userId' => $user->id]);
     }
 }

@@ -1,5 +1,16 @@
 <?php
 
+namespace AcyMailing\Controllers;
+
+use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\QueueClass;
+use AcyMailing\Classes\TagClass;
+use AcyMailing\Helpers\PaginationHelper;
+use AcyMailing\Helpers\QueueHelper;
+use AcyMailing\Helpers\ToolbarHelper;
+use AcyMailing\Helpers\WorkflowHelper;
+use AcyMailing\Libraries\acymController;
+
 class QueueController extends acymController
 {
     public function __construct()
@@ -12,10 +23,10 @@ class QueueController extends acymController
     public function campaigns()
     {
         acym_setVar('layout', 'campaigns');
-        $pagination = acym_get('helper.pagination');
+        $pagination = new PaginationHelper();
 
         if (acym_level(1) && $this->config->get('cron_last', 0) < (time() - 43200)) {
-            acym_enqueueMessage(acym_translation('ACYM_CREATE_CRON_REMINDER').' <a id="acym__queue__configure-cron" href="'.acym_completeLink('configuration&tab=queue').'">'.acym_translation('ACYM_GOTO_CONFIG').'</a>', 'warning');
+            acym_enqueueMessage(acym_translation('ACYM_CREATE_CRON_REMINDER').' <a id="acym__queue__configure-cron" href="'.acym_completeLink('configuration&tab=license').'">'.acym_translation('ACYM_GOTO_CONFIG').'</a>', 'warning');
         }
 
         // Get filters data
@@ -27,7 +38,7 @@ class QueueController extends acymController
         $campaignsPerPage = $pagination->getListLimit();
         $page = acym_getVar('int', 'cqueue_pagination_page', 1);
 
-        $queueClass = acym_get('class.queue');
+        $queueClass = new QueueClass();
         $matchingElements = $queueClass->getMatchingCampaigns(
             [
                 'search' => $searchFilter,
@@ -38,21 +49,23 @@ class QueueController extends acymController
             ]
         );
 
-        $campaignClass = acym_get('class.campaign');
+        $campaignClass = new CampaignClass();
 
         // Prepare the pagination
         $pagination->setStatus($matchingElements['total'], $page, $campaignsPerPage);
+        $tagClass = new TagClass();
 
         $viewData = [
             'allElements' => $matchingElements['elements'],
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
-            'allTags' => acym_get('class.tag')->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType('mail'),
             'numberPerStatus' => $matchingElements['status'],
             'status' => $status,
             'campaignClass' => $campaignClass,
             'languages' => acym_getLanguages(),
+            'workflowHelper' => new WorkflowHelper(),
         ];
 
         $this->prepareToolbar($viewData);
@@ -63,7 +76,7 @@ class QueueController extends acymController
 
     public function prepareToolbar(&$data)
     {
-        $toolbarHelper = acym_get('helper.toolbar');
+        $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'cqueue_search', 'ACYM_SEARCH');
         $toolbarHelper->addButton(
             acym_translation('ACYM_EMPTY_QUEUE'),
@@ -94,7 +107,7 @@ class QueueController extends acymController
     public function detailed()
     {
         acym_setVar('layout', 'detailed');
-        $pagination = acym_get('helper.pagination');
+        $pagination = new PaginationHelper();
 
         // Get filters data
         $searchFilter = $this->getVarFiltersListing('string', 'dqueue_search', '');
@@ -104,7 +117,7 @@ class QueueController extends acymController
         $elementsPerPage = $pagination->getListLimit();
         $page = acym_getVar('int', 'dqueue_pagination_page', 1);
 
-        $queueClass = acym_get('class.queue');
+        $queueClass = new QueueClass();
         $matchingElements = $queueClass->getMatchingResults(
             [
                 'search' => $searchFilter,
@@ -117,12 +130,14 @@ class QueueController extends acymController
         // Prepare the pagination
         $pagination->setStatus($matchingElements['total'], $page, $elementsPerPage);
 
+        $tagClass = new TagClass();
         $viewData = [
             'allElements' => $matchingElements['elements'],
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
-            'allTags' => acym_get('class.tag')->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType('mail'),
+            'workflowHelper' => new WorkflowHelper(),
         ];
 
         $this->prepareToolbarDetailed($viewData);
@@ -133,7 +148,7 @@ class QueueController extends acymController
 
     public function prepareToolbarDetailed(&$data)
     {
-        $toolbarHelper = acym_get('helper.toolbar');
+        $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'dqueue_search', 'ACYM_SEARCH');
         $otherContent = acym_modal(
             '<i class="acymicon-paper-plane-o"></i>'.acym_translation('ACYM_SEND_ALL'),
@@ -156,7 +171,7 @@ class QueueController extends acymController
 
     public function scheduleReady()
     {
-        $queueClass = acym_get('class.queue');
+        $queueClass = new QueueClass();
         $queueClass->scheduleReady();
     }
 
@@ -174,7 +189,7 @@ class QueueController extends acymController
         //we move the next cron task so that we won't have problem with double send process
         $newcrontime = time() + 120;
         if ($this->config->get('cron_next') < $newcrontime) {
-            $newValue = new stdClass();
+            $newValue = new \stdClass();
             $newValue->cron_next = $newcrontime;
             $this->config->save($newValue);
         }
@@ -192,7 +207,7 @@ class QueueController extends acymController
 
         $alreadySent = acym_getVar('int', 'alreadysent', 0);
 
-        $helperQueue = acym_get('helper.queue');
+        $helperQueue = new QueueHelper();
         $helperQueue->id = $mailid;
         $helperQueue->report = true;
         $helperQueue->total = $totalSend;
@@ -234,7 +249,7 @@ class QueueController extends acymController
         $campaignId = acym_getVar('int', 'acym__queue__play_pause__campaign_id');
 
         if (!empty($campaignId)) {
-            $queueClass = acym_get('class.queue');
+            $queueClass = new QueueClass();
             $queueClass->unpauseCampaign($campaignId, $active);
         } else {
             if (!empty($active)) {
@@ -251,7 +266,7 @@ class QueueController extends acymController
     {
         acym_checkToken();
 
-        $queueClass = acym_get('class.queue');
+        $queueClass = new QueueClass();
         $deleted = $queueClass->emptyQueue();
         acym_enqueueMessage(acym_translation_sprintf('ACYM_EMAILS_REMOVED_QUEUE', $deleted));
 

@@ -1,6 +1,13 @@
 <?php
 
-class acymmigrationHelper extends acymObject
+namespace AcyMailing\Helpers;
+
+use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\FieldClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Libraries\acymObject;
+
+class MigrationHelper extends acymObject
 {
     private $errors = [];
 
@@ -264,7 +271,7 @@ class acymmigrationHelper extends acymObject
 
         try {
             $result = acym_query($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->errors[] = acym_getDBError();
 
             return false;
@@ -283,7 +290,7 @@ class acymmigrationHelper extends acymObject
     {
         try {
             $resultQuery = acym_query($queryInsert);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->errors[] = acym_getDBError();
 
             return false;
@@ -302,7 +309,7 @@ class acymmigrationHelper extends acymObject
 
     public function migrateTemplates($params = [])
     {
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
         $result = 0;
 
         $queryGetTemplates = 'SELECT `tempid`, `name`, `body`, `styles`, `subject`, `stylesheet`, `fromname`, `fromemail`, `replyname`, `replyemail` FROM #__acymailing_template LIMIT '.intval($params['currentElement']).', '.intval($params['insertPerCalls']);
@@ -429,7 +436,7 @@ class acymmigrationHelper extends acymObject
     public function migrateFields($params = [])
     {
 
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
 
         $columnConnection = [
             'namekey' => 'namekey',
@@ -490,7 +497,7 @@ class acymmigrationHelper extends acymObject
         $insertedFields = [];
 
         foreach ($fieldsFromV5 as $oneField) {
-            $newField = new stdClass();
+            $newField = new \stdClass();
             foreach ($oneField as $key => $value) {
                 if (!array_key_exists($key, $columnConnection)) continue;
                 if ('type' == $columnConnection[$key]) {
@@ -509,7 +516,7 @@ class acymmigrationHelper extends acymObject
                         $var = empty($line[0]) ? '' : $line[0];
                         $val = empty($line[1]) ? '' : $line[1];
 
-                        $obj = new stdClass();
+                        $obj = new \stdClass();
                         $obj->value = $var;
                         $obj->title = $val;
                         if (!empty($line[2])) {
@@ -523,7 +530,7 @@ class acymmigrationHelper extends acymObject
                 }
                 if ('option' == $columnConnection[$key]) {
                     $options = unserialize($value);
-                    $newOption = new stdClass();
+                    $newOption = new \stdClass();
                     foreach ($options as $keyOption => $option) {
                         if (!array_key_exists($keyOption, $optionConnection)) continue;
                         if ('authorized_content' == $optionConnection[$keyOption]) {
@@ -572,8 +579,8 @@ class acymmigrationHelper extends acymObject
 
     public function migrateMails($params = [])
     {
-        $campaignClass = acym_get('class.campaign');
-        $mailClass = acym_get('class.mail');
+        $campaignClass = new CampaignClass();
+        $mailClass = new MailClass();
 
         $result = 0;
         $idsMigratedMails = [];
@@ -704,7 +711,7 @@ class acymmigrationHelper extends acymObject
 
         try {
             $resultMail = acym_query($queryMailsInsert);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->errors[] = acym_getDBError();
 
             return false;
@@ -723,7 +730,7 @@ class acymmigrationHelper extends acymObject
 
             try {
                 $resultCampaign = acym_query($queryCampaignInsert);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $this->errors[] = acym_getDBError();
 
                 return false;
@@ -886,7 +893,7 @@ class acymmigrationHelper extends acymObject
 
         try {
             return acym_query($queryInsert);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->errors[] = acym_getDBError();
 
             return false;

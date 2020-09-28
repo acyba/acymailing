@@ -1,5 +1,8 @@
 <?php
-include ACYM_CONTROLLER.'file.php';
+
+namespace AcyMailing\FrontControllers;
+
+use AcyMailing\Controllers\FileController;
 
 class FrontfileController extends FileController
 {

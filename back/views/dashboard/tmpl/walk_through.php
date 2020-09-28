@@ -13,7 +13,7 @@
                 <?php if ('subscribe' !== $data['step']) { ?>
 					<span class="acy_button_submit acym__color__dark-gray" id="acym__walkthrough__skip" data-force-submit="true" data-task="passWalkThrough"><?php echo acym_translation('ACYM_SKIP'); ?></span>
                 <?php } ?>
-                <?php include ACYM_VIEW.'dashboard'.DS.'tmpl'.DS.'step_'.$data['step'].'.php'; ?>
+                <?php include acym_getView('dashboard', 'step_'.$data['step']); ?>
 			</div>
 		</div>
 	</div>

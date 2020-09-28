@@ -1,0 +1,317 @@
+#acym__wysid__right-toolbar {
+    overflow: hidden;
+    overflow-y: auto;
+    box-shadow: $primary-box-shadow;
+    border-radius: $primary-radius;
+    background-color: $white;
+    color: map-get($editor-wysid-palette, primary);
+    user-select: none;
+
+    #acym__wysid__right-toolbar__overlay {
+        position: absolute;
+        top: 0;
+        background-color: $white;
+        opacity: 0.6;
+        z-index: 1111;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: none;
+
+        &.acym__wysid__visible {
+            display: block;
+        }
+    }
+
+    &.acym__wysid__hidden {
+        opacity: .2;
+    }
+
+    .acym__wysid__right-toolbar__content {
+        .acym__wysid__right__toolbar__tabs {
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            line-height: 60px;
+            z-index: 2;
+            height: 64px;
+            margin: 0 !important;
+            transition: 0.3s;
+            color: map-get($editor-wysid-palette, secondary-ui);
+            border-bottom: 1px solid map-get($editor-wysid-palette, secondary-ui);
+
+            > span {
+                color: map-get($editor-wysid-palette, secondary-ui);
+            }
+
+            > i {
+                vertical-align: middle;
+            }
+
+            @media only screen and (max-width: 1023px) {
+                > span {
+                    display: none;
+                }
+            }
+
+            &.acym__wysid__right__toolbar__selected {
+                color: map-get($editor-wysid-palette, primary);
+                border-bottom: 5px solid map-get($editor-wysid-palette, primary);
+
+                > span {
+                    color: map-get($editor-wysid-palette, primary);
+                }
+            }
+        }
+
+        .acym__wysid__right__toolbar__design__social__icons {
+            padding: 15px;
+
+            .acym__wysid__right__toolbar__design__social__icons__one {
+                img {
+                    width: 40px;
+                    height: 40px
+                }
+
+                input[type="file"] {
+                    display: none;
+                }
+            }
+
+            .acym__wysid__social__icons__import {
+                padding: 10px;
+                margin: 0;
+            }
+
+            .acym__wysid__social__icons__import__text {
+                color: $primary-light-color;
+                font-size: 16px;
+                cursor: pointer;
+            }
+
+            .acym__wysid__social__icons__import__delete {
+                color: $alert-color;
+                margin-left: 5px;
+                vertical-align: middle;
+            }
+        }
+
+        .acym__wysid__right__toolbar__contents .ui-draggable-handle div {
+            font-size: 12px;
+        }
+
+        #acym__wysid__right__toolbar__settings {
+
+            label {
+                cursor: default;
+                padding: 7px 0 7px 9px;
+                margin-bottom: 0;
+                box-shadow: none;
+                color: map-get($editor-wysid-palette, primary);
+            }
+
+            #acym__wysid__right__toolbar__settings__bold {
+                border-radius: $primary-radius;
+                margin: 0 5px 0 0;
+                user-select: none;
+            }
+
+            #acym__wysid__right__toolbar__settings__italic {
+                border-radius: $primary-radius;
+                margin: 0 0 0 5px;
+                user-select: none;
+            }
+
+            .acym__wysid__right__toolbar__settings__bold--selected, .acym__wysid__right__toolbar__settings__italic--selected {
+                background-color: $light-blue;
+            }
+        }
+
+        #acym__wysid__right__toolbar__design {
+            user-select: none;
+        }
+
+        .acym__wysid__right__toolbar--menu {
+            vertical-align: top;
+            width: 100%;
+            margin: 0;
+
+            @media only screen and (max-width: 639px) {
+                padding: 3px;
+            }
+
+            > div {
+                margin: 0;
+                width: 100%;
+                height: auto;
+            }
+
+            .acym__wysid__right__toolbar__p {
+                cursor: pointer;
+                font-weight: 700;
+                font-size: 1rem;
+                line-height: 40px;
+                overflow: hidden;
+                height: 40px;
+                margin: 0;
+                width: 100%;
+                @include transition-duration(0.3s);
+                position: relative;
+
+                @media only screen and (max-width: 639px) {
+                    font-size: 14px;
+                }
+
+                i {
+                    font-size: 20px;
+                    vertical-align: sub;
+                    @include transition-property(transform);
+                    @include transition-duration(0.3s);
+                }
+
+                &.acym__wysid__right__toolbar__p__open {
+                    i {
+                        transform: rotate(0.5turn);
+                    }
+                }
+            }
+        }
+
+        .acym__wysid__column__element--coming-soon {
+            text-align: center;
+            border-radius: $primary-radius;
+            color: map-get($editor-wysid-palette, primary);
+            background-color: map-get($editor-wysid-palette, secondary);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            padding: 10px 5px;
+            opacity: 0.5;
+            cursor: not-allowed;
+
+            i {
+                color: map-get($editor-wysid-palette, primary-ui);
+                font-size: 28px;
+                line-height: 28px;
+            }
+
+            @media only screen and (max-width: 639px) {
+                padding: 16px 5px;
+                margin: 0 0 5px 0;
+                width: 100%;
+            }
+        }
+
+        .acym__wysid__row__element--new {
+            text-align: center;
+            font-size: 40px;
+            height: 66px;
+            background-color: map-get($editor-wysid-palette, secondary);
+            padding: 10px 5px;
+            border-radius: $primary-radius;
+
+            &:hover {
+                cursor: move;
+                opacity: 0.7;
+            }
+
+            svg {
+
+                height: 100%;
+            }
+
+            .acym__wysid__row__element__type {
+                fill: map-get($editor-wysid-palette, primary-ui);
+                height: 100%;
+            }
+
+            @media only screen and (max-width: 639px) {
+                padding: 16px 5px;
+                margin: 0 0 5px 0;
+                width: 100%;
+            }
+        }
+
+        .acym__wysid__column__element--new {
+            text-align: center;
+            border-radius: $primary-radius;
+            color: map-get($editor-wysid-palette, primary);
+            background-color: map-get($editor-wysid-palette, secondary);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            padding: 10px 5px;
+
+            i {
+                color: map-get($editor-wysid-palette, primary-ui);
+                font-size: 28px;
+                line-height: 28px;
+            }
+
+            &:hover {
+                cursor: move;
+                opacity: 0.7;
+            }
+
+            @media only screen and (max-width: 639px) {
+                padding: 16px 5px;
+                margin: 0 0 5px 0;
+                width: 100%;
+            }
+        }
+
+        .acym__wysid__right__toolbar__design--show {
+            overflow: hidden;
+        }
+
+        .acym__wysid__right__toolbar__last--text:after {
+            display: none;
+        }
+
+        #acym__wysid__right__toolbar__settings__bold, #acym__wysid__right__toolbar__settings__italic {
+            cursor: pointer;
+            color: map-get($editor-wysid-palette, primary-ui);
+        }
+
+        #acym__wysid__right__toolbar__current-block {
+            height: calc(100% - 70px);
+
+            .acym__wysid__context__modal {
+
+                .acym__wysid__context__height {
+                    height: 100%;
+                }
+            }
+
+            .acym__wysid__right__toolbar__current-block__empty {
+                font-size: 1rem;
+                font-weight: normal;
+            }
+        }
+
+
+    }
+
+    &.acym__wysid__right-toolbar__scroll {
+        position: fixed;
+        right: 0;
+        top: 32px; // js la taille de l'admin top wp ou menu joomla
+        margin: 0;
+        border-radius: 0;
+        height: 100%;
+    }
+
+    .acym__wysid__context__modal__container {
+        border-top: 1px solid $font-primary;
+        padding-top: 1rem;
+        margin: 0;
+
+        input[type="checkbox"] {
+            margin: 0;
+        }
+    }
+
+    .acym__wysid__right__toolbar__p, .acym__wysid__context__modal__container {
+        width: 100%;
+    }
+}

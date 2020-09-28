@@ -1,5 +1,10 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Classes\FieldClass;
+use AcyMailing\Helpers\EncodingHelper;
+use AcyMailing\Helpers\ExportHelper;
+
 class plgAcymAutomationexport extends acymPlugin
 {
     public function onAcymDeclareActions(&$actions)
@@ -9,7 +14,7 @@ class plgAcymAutomationexport extends acymPlugin
         $actions['export']->option = '<div class="cell grid-x margin-bottom-1">';
 
         $fields = acym_getColumns('user');
-        $fieldClass = acym_get('class.field');
+        $fieldClass = new FieldClass();
         $customFields = $fieldClass->getAllfields();
         $fields = array_merge($fields, $customFields);
 
@@ -52,7 +57,7 @@ class plgAcymAutomationexport extends acymPlugin
 
         $actions['export']->option .= '<div class="cell medium-6 xlarge-3 grid-x margin-bottom-1">';
         $actions['export']->option .= '<div class="cell">'.acym_translation('ACYM_ENCODING').'</div>';
-        $encodingHelper = acym_get('helper.encoding');
+        $encodingHelper = new EncodingHelper();
         $actions['export']->option .= '<div class="cell">'.$encodingHelper->charsetField(
                 'acym_action[actions][__and__][export][charset]',
                 $this->config->get('export_charset', 'UTF-8'),
@@ -86,7 +91,7 @@ class plgAcymAutomationexport extends acymPlugin
         }
         $query = $cquery->getQuery([$query]);
 
-        $exportHelper = acym_get('helper.export');
+        $exportHelper = new ExportHelper();
         $realSeparators = ['comma' => ',', 'semicol' => ';'];
         $error = $exportHelper->exportCSV($query, $action['core'], $action['custom'], $realSeparators[$action['separator']], $action['charset'], $pathtolog);
 

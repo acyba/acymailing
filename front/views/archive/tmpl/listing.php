@@ -39,7 +39,12 @@
                 echo '<p class="acym__front__archive__newsletter_sending-date">'.acym_translation('ACYM_SENDING_DATE').' : '.acym_date($oneNewsletter->sending_date, 'd M Y').'</p>';
             }
 
-            echo $data['pagination']->displayFront();
+            //__START__joomla_
+            if ('{__CMS__}' === 'Joomla') {
+                echo $data['pagination']->displayFront();
+                acym_formOptions(true, 'listing');
+            }
+            //__END__joomla_
             ?>
 
 			<input type="hidden" name="page" id="acym__front__archive__next-page">

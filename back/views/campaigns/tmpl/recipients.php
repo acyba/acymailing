@@ -4,7 +4,7 @@
 	<div id="acym__campaigns__recipients" class="grid-x">
 		<div class="cell <?php echo $data['containerClass']; ?> float-center grid-x acym__content">
             <?php
-            $workflow = acym_get('helper.workflow');
+            $workflow = $data['workflowHelper'];
             echo $workflow->display($this->steps, $this->step);
 
             ?>
@@ -13,7 +13,7 @@
 					<div class="acym__hide__div"></div>
 					<h3 class="acym__title__primary__color acym__middle_absolute__text text-center"><?php echo acym_translation('ACYM_CAMPAIGN_ALREADY_QUEUED'); ?></h3>
                 <?php }
-                $entityHelper = acym_get('helper.entitySelect');
+                $entityHelper = $data['entitySelectHelper'];
 
                 echo $entityHelper->entitySelect('list', ['join' => 'join_mail-'.$data['currentCampaign']->mail_id], $entityHelper->getColumnsForList('maillist.mail_id'));
                 ?>

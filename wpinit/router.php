@@ -1,5 +1,9 @@
 <?php
 
+namespace AcyMailing\Init;
+
+use AcyMailing\Classes\PluginClass;
+
 class acyRouter extends acyHook
 {
     var $activation;
@@ -35,6 +39,7 @@ class acyRouter extends acyHook
 
     public function disableJsBreakingPages()
     {
+        // Show normal emojis on AcyMailing pages
         remove_action('admin_print_scripts', 'print_emoji_detection_script');
 
         // Slideshow ck breaks the editor
@@ -46,6 +51,9 @@ class acyRouter extends acyHook
         // Remove theme loading select2 which breaks select2 in vueJS
         wp_dequeue_script('select2.js');
         wp_dequeue_script('select2_js');
+
+        // The "Checkout Field Manager for WooCommerce" plugin breaks the js on every pages
+        wp_dequeue_script('checkout_fields_js');
     }
 
     public function removeCssBreakingPages()
@@ -57,12 +65,12 @@ class acyRouter extends acyHook
 
     public function frontRouter()
     {
-        $this->router('_front');
+        $this->router(true);
     }
 
-    public function router($suffix = '')
+    public function router($front = false)
     {
-        if (empty($suffix)) auth_redirect();
+        if (!$front) auth_redirect();
 
         if (is_multisite()) {
             $currentBlog = get_current_blog_id();
@@ -110,7 +118,7 @@ class acyRouter extends acyHook
             $ctrl = str_replace(ACYM_COMPONENT.'_', '', acym_getVar('cmd', 'page', ''));
 
             if (empty($ctrl)) {
-                echo 'Page not found';
+                echo acym_translation('ACYM_PAGE_NOT_FOUND');
 
                 return;
             }
@@ -118,15 +126,36 @@ class acyRouter extends acyHook
             acym_setVar('ctrl', $ctrl);
         }
 
-        if (!file_exists(constant('ACYM_CONTROLLER'.strtoupper($suffix)).$ctrl.'.php')) {
-            echo 'Controller not found: '.$ctrl;
+        $this->deactivateHookAdminFooter();
+        $subNamespace = $front ? 'Front' : '';
+        $controllerNamespace = 'AcyMailing\\'.$subNamespace.'Controllers\\'.ucfirst($ctrl).'Controller';
+
+        if (!class_exists($controllerNamespace)) {
+            echo acym_translation('ACYM_PAGE_NOT_FOUND').': '.$ctrl;
 
             return;
         }
 
-        $this->deactivateHookAdminFooter();
+        if ($task != 'edit' && !(defined('DOING_AJAX') && DOING_AJAX)) {
+            $pluginClass = new PluginClass();
+            $installedPlugins = $pluginClass->getAll('title');
+            $newPlugins = json_decode(ACYM_AVAILABLE_PLUGINS);
+            foreach ($newPlugins as $onePlugin) {
+                if (empty($installedPlugins[$onePlugin->name])) continue;
+                if ($installedPlugins[$onePlugin->name]->type !== 'ADDON') continue;
 
-        $controller = acym_get('controller'.$suffix.'.'.$ctrl);
+                acym_enqueueMessage(
+                    acym_translation_sprintf(
+                        'ACYM_NEW_PLUGIN_FORMAT',
+                        $onePlugin->name,
+                        '<a target="_blank" href="'.$onePlugin->downloadlink.'">wordpress.org</a>'
+                    ),
+                    'info'
+                );
+            }
+        }
+
+        $controller = new $controllerNamespace();
         if (empty($task)) {
             $task = acym_getVar('cmd', 'defaulttask', $controller->defaulttask);
         }

@@ -1,5 +1,10 @@
 <?php
-include ACYM_CONTROLLER.'lists.php';
+
+namespace AcyMailing\FrontControllers;
+
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Controllers\ListsController;
+use AcyMailing\Helpers\ToolbarHelper;
 
 class FrontlistsController extends ListsController
 {
@@ -45,7 +50,7 @@ class FrontlistsController extends ListsController
 
     protected function prepareToolbar(&$data)
     {
-        $toolbarHelper = acym_get('helper.toolbar');
+        $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'lists_search', 'ACYM_SEARCH');
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE_NEW_LIST'), ['data-task' => 'settings'], '', true);
 
@@ -57,7 +62,7 @@ class FrontlistsController extends ListsController
         $data['tmpls'] = [];
         if (empty($data['listInformation']->id)) return;
 
-        $mailClass = acym_get('class.mail');
+        $mailClass = new MailClass();
 
         foreach (['welcome' => 'welcome', 'unsubscribe' => 'unsub'] as $full => $short) {
             $mailId = acym_getVar('int', $short.'mailid', 0);
