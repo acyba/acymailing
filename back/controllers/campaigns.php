@@ -506,6 +506,8 @@ class CampaignsController extends acymController
         $this->prepareMultilingual($data);
         $this->prepareListingClasses($data);
 
+        $data['before-save'] = $data['editor']->editor != 'acyEditor' ? '' : 'acym-data-before="acym_editorWysidMultilingual.storeCurrentValues(true);"';
+
         parent::display($data);
     }
 
