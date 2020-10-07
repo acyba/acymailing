@@ -6,7 +6,7 @@ use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Libraries\acymController;
 
-class FrontStatsController extends acymController
+class FrontstatsController extends acymController
 {
     public function __construct()
     {
