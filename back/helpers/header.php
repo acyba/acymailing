@@ -35,7 +35,10 @@ class HeaderHelper extends acymObject
 
     private function getLastNews()
     {
-        $news = @simplexml_load_file(ACYM_ACYMAILLING_WEBSITE.'acymnews.xml');
+        $context = stream_context_create(['http' => ['timeout' => 1]]);
+        $news = @file_get_contents(ACYM_ACYMAILLING_WEBSITE.'acymnews.xml', false, $context);
+        if (!$news) return '';
+        $news = @simplexml_load_string($news);
         if (empty($news->news)) return '';
 
         $currentLanguage = acym_getLanguageTag();
