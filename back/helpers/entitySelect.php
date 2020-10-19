@@ -13,7 +13,7 @@ class EntitySelectHelper extends acymObject
     public function __construct()
     {
         parent::__construct();
-        $this->svg = acym_getSvg(ACYM_IMAGES.'loader.svg');
+        $this->svg = acym_loaderLogo(false);
         $this->columnsHeaderNotToDisplay = ['color'];
     }
 

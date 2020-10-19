@@ -8,7 +8,7 @@
                 'setActive' => acym_translation('ACYM_ENABLE'),
                 'setInactive' => acym_translation('ACYM_DISABLE'),
             ];
-            echo acym_listingActions($actions);
+            echo acym_listingActions($actions, acym_translation('ACYM_DELETE_CUSTOM_FIELDS_TYPE_DATE'));
             ?>
 		</div>
 

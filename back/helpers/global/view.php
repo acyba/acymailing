@@ -38,17 +38,17 @@ function acym_loadAssets($ctrl, $task)
         var ACYM_ROOT_URI = "'.acym_rootURI().'";'
     );
 
-    acym_addScript(false, ACYM_JS.'libraries/foundation.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'foundation.min.js'));
+    acym_addScript(false, ACYM_JS.'libraries/foundation.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'foundation.min.js'), 'text/javascript', true);
 
     if ('back' === $scope) {
-        acym_addScript(false, ACYM_JS.'libraries/select2.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'select2.min.js'));
+        acym_addScript(false, ACYM_JS.'libraries/select2.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'select2.min.js'), 'text/javascript', true);
     }
 
     // Include JS
     acym_addScript(false, ACYM_JS.'helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'helpers.min.js'), 'text/javascript', true);
-    if ('back' == $scope) acym_addScript(false, ACYM_JS.$scope.'_helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_helpers.min.js'));
-    acym_addScript(false, ACYM_JS.'global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'global.min.js'));
-    acym_addScript(false, ACYM_JS.$scope.'_global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_global.min.js'));
+    if ('back' == $scope) acym_addScript(false, ACYM_JS.$scope.'_helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_helpers.min.js'), 'text/javascript', true);
+    acym_addScript(false, ACYM_JS.'global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'global.min.js'), 'text/javascript', true);
+    acym_addScript(false, ACYM_JS.$scope.'_global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_global.min.js'), 'text/javascript', true);
 
     if (file_exists(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.'.min.js')) {
         acym_addScript(false, ACYM_JS.$scope.'/'.$ctrl.'.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.'.min.js'), 'text/javascript', true);
@@ -220,6 +220,11 @@ function acym_getJSMessages()
         'ACYM_VERTICAL_PADDING_DESC',
         'ACYM_HORIZONTAL_PADDING_DESC',
         'ACYM_SELECT_A_PICTURE',
+        'ACYM_PLEASE_SELECT_FILTERS',
+        'ACYM_DELETE_THIS_FILTER',
+        'ACYM_IF_YOU_SELECT_SEGMENT_FILTERS_ERASE',
+        'ACYM_PLEASE_FILL_A_NAME_FOR_YOUR_SEGMENT',
+        'ACYM_COULD_NOT_SAVE_SEGMENT',
     ];
 
     foreach ($keysToLoad as $oneKey) {

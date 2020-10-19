@@ -90,6 +90,7 @@ function uninstallAcym()
         'configuration',
         'user',
         'form',
+        'segment',
     ];
 
     $prefix = $db->getPrefix().'acym_';

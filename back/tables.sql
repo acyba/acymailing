@@ -560,8 +560,25 @@ CREATE TABLE IF NOT EXISTS `#__acym_form` (
 	`button_options` LONGTEXT,
 	`image_options` LONGTEXT,
 	`termspolicy_options` LONGTEXT,
+	`cookie` VARCHAR(30),
 	`delay` SMALLINT(10),
 	`pages` TEXT,
+	PRIMARY KEY (`id`)
+)
+	ENGINE = InnoDB
+	/*!40100
+	DEFAULT CHARACTER SET utf8
+	COLLATE utf8_general_ci*/;
+
+-- -----------------------------------------------------
+-- Table `#__acym_segment`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `#__acym_segment` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(255) NOT NULL,
+	`creation_date` DATETIME NOT NULL,
+	`active` TINYINT(1) NOT NULL DEFAULT 1,
+	`filters` LONGTEXT NULL,
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB

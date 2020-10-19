@@ -72,7 +72,7 @@ class ListsController extends acymController
         acym_setVar('layout', 'settings');
 
         $data = [];
-        $data['svg'] = acym_getSvg(ACYM_IMAGES.'loader.svg');
+        $data['svg'] = acym_loaderLogo(false);
 
         $listId = acym_getVar('int', 'id', 0);
 

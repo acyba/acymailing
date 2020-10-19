@@ -17,7 +17,7 @@
         $textFirstTab = acym_translation(empty($data['selectedMailid']) ? 'ACYM_GLOBAL_STATISTICS' : 'ACYM_OVERVIEW');
 
         $data['tab']->startTab($textFirstTab);
-        include dirname(__FILE__).DS.'global_stats.php';
+        include acym_getView('stats', 'global_stats');
         $data['tab']->endTab();
 
         $data['tab']->startTab(acym_translation('ACYM_DETAILED_STATS'));

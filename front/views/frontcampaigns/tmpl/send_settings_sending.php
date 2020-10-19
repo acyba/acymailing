@@ -1,7 +1,7 @@
 <h5 class="cell margin-top-1 acym__campaign__sendsettings__title-settings"><?php echo acym_translation('ACYM_WHEN_EMAIL_WILL_BE_SENT'); ?></h5>
 <div class="cell grid-x align-center margin-top-1">
 	<div class="cell grid-x medium-11 acym__campaign__sendsettings__send-type grid-margin-x">
-        <?php if (!empty($data['currentCampaign']->sent && empty($data['currentCampaign']->active))) { ?>
+        <?php if (!empty($data['currentCampaign']->sent) && empty($data['currentCampaign']->active)) { ?>
 			<div class="acym__hide__div"></div>
 			<h3 class="acym__title__primary__color acym__middle_absolute__text text-center"><?php echo acym_translation('ACYM_CAMPAIGN_ALREADY_QUEUED'); ?></h3>
         <?php } ?>

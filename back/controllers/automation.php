@@ -16,8 +16,6 @@ use AcyMailing\Libraries\acymController;
 
 class AutomationController extends acymController
 {
-    var $regexSwitches = '#(switch_[0-9]*".*)(data\-switch=")(switch_.+id=")(switch_.+for=")(switch_)#Uis';
-
     public function __construct()
     {
         parent::__construct();
@@ -611,7 +609,8 @@ class AutomationController extends acymController
         $this->_saveActions(empty($id));
         $actions = acym_getVar('array', 'acym_action');
         $mailId = $actions['actions'][$and]['acy_add_queue']['mail_id'];
-        acym_redirect(acym_completeLink('mails&task=edit&step=editEmail&type='.$type.'&from='.$mailId.'&return='.urlencode(acym_completeLink('automation&task=edit&step=action&id='.$id.'&fromMailEditor=1&mailid={mailid}&and='.$and)), false, true));
+        $mailId = empty($mailId) ? '' : '&id='.$mailId;
+        acym_redirect(acym_completeLink('mails&task=edit&step=editEmail&type='.$type.$mailId.'&return='.urlencode(acym_completeLink('automation&task=edit&step=action&id='.$id.'&fromMailEditor=1&mailid={mailid}&and='.$and)), false, true));
     }
 
     //Ajax calls

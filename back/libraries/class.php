@@ -18,6 +18,9 @@ class acymClass extends acymObject
     // Information messages, mainly for the cron report
     var $messages = [];
 
+    // Column used to humanely identify the element
+    var $nameColumn = 'name';
+
     /**
      * @param array $settings
      *
@@ -118,17 +121,50 @@ class acymClass extends acymObject
         }
 
         acym_trigger('onAcymBefore'.ucfirst($this->table).'Delete', [&$elements]);
+        $this->logDeletion($elements);
 
         $query = 'DELETE FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE '.acym_secureDBColumn($column).' IN ('.implode(',', $escapedElements).')';
         $result = acym_query($query);
 
-        if (!$result) {
-            return false;
-        }
+        if (!$result) return false;
 
         acym_trigger('onAcymAfter'.ucfirst($this->table).'Delete', [&$elements]);
 
         return $result;
+    }
+
+    private function logDeletion($elements)
+    {
+        $report = [];
+        $currentUser = acym_currentUserEmail();
+        foreach ($elements as $oneElementId) {
+            if (empty($oneElementId)) continue;
+            $element = $this->getOneById($oneElementId);
+            if (empty($element) || empty($element->{$this->nameColumn})) continue;
+
+            $report[] = acym_translation_sprintf(
+                'ACYM_ELEMENT_DELETED_LOG',
+                $this->table,
+                $element->{$this->nameColumn},
+                $currentUser
+            );
+        }
+
+        if (!empty($report)) {
+            ob_start();
+            acym_debug(false, false);
+            $report[] = str_replace(
+                ['<br/>', '<pre style="">string', '</pre>'],
+                ["\n", '', ''],
+                ob_get_clean()
+            );
+
+            acym_writeFile(
+                ACYM_ROOT.ACYM_UPLOAD_FOLDER.'logs'.DS.'deletion_logs_'.date('Y').'-'.date('m').'.txt',
+                implode("\n", $report)."\n",
+                FILE_APPEND
+            );
+        }
     }
 
     public function setActive($elements)

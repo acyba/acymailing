@@ -20,6 +20,11 @@ class OperatorinType extends acymObject
 
     public function display($name, $valueSelected = '')
     {
-        return acym_select($this->values, $name, $valueSelected, $this->extra.' class="'.$this->class.'"');
+        return acym_select(
+            $this->values,
+            $name,
+            $valueSelected,
+            $this->extra.' class="'.$this->class.'"'
+        );
     }
 }

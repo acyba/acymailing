@@ -1,0 +1,68 @@
+.acym__segments__edit__filters__info__users {
+    position: relative;
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        width: 40%;
+        left: 30%;
+        height: 1px;
+        background-color: $light-gray;
+    }
+
+    .acym__title__primary__color, .acym__segments__edit__filters__total, .acym__segments__edit__filters__no-users {
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0;
+    }
+}
+
+.countresults {
+    position: relative;
+    padding-left: .5rem;
+
+    &:after {
+        content: "";
+        position: absolute;
+        top: -.9rem;
+        bottom: -.9rem;
+        left: 0;
+        width: 2px;
+        background-color: $font-primary;
+    }
+
+    i {
+        font-size: 20px !important;
+    }
+
+    .acym__segments__edit__filter-results {
+        padding-left: 5px;
+        margin-bottom: 5px;
+    }
+
+    .acym__segments__delete__one__filter {
+        color: $red-opacity;
+        cursor: pointer;
+        transition: .2s;
+
+        &:hover {
+            color: map-get($foundation-palette, alert);
+        }
+    }
+}
+
+.acym__segments__group__filter {
+    box-shadow: none;
+}
+
+.intext_select_automation, .intext_input_automation {
+    width: 200px;
+    margin-bottom: 0;
+    margin-top: 0;
+    display: inline-flex;
+}
+
+.acym__segments__inserted__filter {
+    border-left: 2px solid $font-primary;
+}

@@ -280,6 +280,15 @@ jQuery(document).ready(function ($) {
             .trigger('change');
 
         $.acymConfigSave = function () {
+            // ACL handling
+            $('input[id^="config_acl_"][id$="custom"]').each(function () {
+                let checked = jQuery('input[name="' + jQuery(this).attr('name') + '"]:checked').val();
+                if (checked === 'custom') return;
+
+                jQuery(this).closest('.cell').find('div[id^="acl_"][id$="_container"]').remove();
+            });
+
+            // Multilingual options
             let currentLanguages = $('#configmultilingual_languages').val();
             let previousLanguages = $('[name="previous_multilingual_languages"]').val();
             if (acym_helper.empty(previousLanguages)) return true;

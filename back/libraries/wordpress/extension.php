@@ -1,0 +1,129 @@
+<?php
+
+use AcyMailing\Classes\PluginClass;
+
+function acym_isExtensionActive($extension)
+{
+    if (function_exists('is_plugin_active')) return is_plugin_active($extension);
+
+    return file_exists(WP_PLUGIN_DIR.DS.$extension);
+}
+
+function acym_getPluginsPath($file, $dir)
+{
+    return substr(plugin_dir_path($file), 0, strpos(plugin_dir_path($file), plugin_basename($dir)));
+}
+
+function acym_getPluginPath($plugin)
+{
+    $corePath = ACYM_BACK.'dynamics'.DS.$plugin.DS.'plugin.php';
+    if (file_exists($corePath)) return $corePath;
+
+    return ACYM_ADDONS_FOLDER_PATH.$plugin.DS.'plugin.php';
+}
+
+function acym_coreAddons()
+{
+    return [
+        (object)[
+            'title' => acym_translation('ACYM_ARTICLE'),
+            'folder_name' => 'post',
+            'version' => '{__VERSION__}',
+            'active' => '1',
+            'category' => 'Content management',
+            'level' => 'starter',
+            'uptodate' => '1',
+            'features' => '["content"]',
+            'description' => '- Insert WordPress posts in your emails<br/>- Insert the latest posts of a category in an automatic email',
+            'latest_version' => '{__VERSION__}',
+            'type' => 'CORE',
+        ],
+        (object)[
+            'title' => acym_translation('ACYM_PAGE'),
+            'folder_name' => 'page',
+            'version' => '{__VERSION__}',
+            'active' => '1',
+            'category' => 'Content management',
+            'level' => 'starter',
+            'uptodate' => '1',
+            'features' => '["content"]',
+            'description' => '- Insert pages in your emails',
+            'latest_version' => '{__VERSION__}',
+            'type' => 'CORE',
+        ],
+    ];
+}
+
+function acym_isTrackingSalesActive()
+{
+    $trackingWoocommerce = false;
+    acym_trigger('onAcymIsTrackingWoocommerce', [&$trackingWoocommerce], 'plgAcymWoocommerce');
+
+    return $trackingWoocommerce;
+}
+
+function acym_loadPlugins()
+{
+    $dynamics = acym_getFolders(ACYM_BACK.'dynamics');
+
+    $pluginClass = new PluginClass();
+    $plugins = $pluginClass->getAll('folder_name');
+
+    foreach ($dynamics as $key => $oneDynamic) {
+        if (!empty($plugins[$oneDynamic]) && '0' === $plugins[$oneDynamic]->active) unset($dynamics[$key]);
+        if ('managetext' === $oneDynamic) unset($dynamics[$key]);
+    }
+
+    foreach ($plugins as $pluginFolder => $onePlugin) {
+        if (in_array($pluginFolder, $dynamics) || '0' === $onePlugin->active) continue;
+        $dynamics[] = $pluginFolder;
+    }
+
+    // Make sure the Manage text plugin is called last, we'll clean the inserted content in it
+    $dynamics[] = 'managetext';
+
+    global $acymPlugins;
+    global $acymAddonsForSettings;
+
+    // Load the installed integrations
+    $integrations = [];
+    do_action_ref_array('acym_load_installed_integrations', [&$integrations]);
+    foreach ($integrations as $oneIntegration) {
+        $dynamicFile = $oneIntegration['path'].DS.'plugin.php';
+        $className = $oneIntegration['className'];
+
+        // Load the plugin
+        if (isset($acymPlugins[$className]) || !file_exists($dynamicFile) || (!class_exists($className) && !include_once $dynamicFile)) continue;
+        if (!class_exists($className)) continue;
+
+        // If it's for another CMS or if the related extension isn't installed, skip it
+        $plugin = new $className();
+        $pluginClass->addIntegrationIfMissing($plugin);
+
+        if (in_array($plugin->cms, ['all', '{__CMS__}'])) $acymAddonsForSettings[$className] = $plugin;
+        if (!in_array($plugin->cms, ['all', '{__CMS__}']) || !$plugin->installed) continue;
+
+        $acymPlugins[$className] = $plugin;
+    }
+
+    foreach ($dynamics as $oneDynamic) {
+        $dynamicFile = acym_getPluginPath($oneDynamic);
+        $className = 'plgAcym'.ucfirst($oneDynamic);
+
+        // Load the plugin
+        if (isset($acymPlugins[$className]) || !file_exists($dynamicFile) || (!class_exists($className) && !include_once $dynamicFile)) continue;
+        if (!class_exists($className)) continue;
+
+        // If it's for another CMS or if the related extension isn't installed, skip it
+        $plugin = new $className();
+        if (in_array($plugin->cms, ['all', '{__CMS__}'])) $acymAddonsForSettings[$className] = $plugin;
+        if (!in_array($plugin->cms, ['all', '{__CMS__}']) || !$plugin->installed) continue;
+
+        $acymPlugins[$className] = $plugin;
+    }
+}
+
+// Needed to display the fields in front / params
+class JFormField
+{
+}

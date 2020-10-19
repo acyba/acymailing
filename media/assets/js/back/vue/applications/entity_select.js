@@ -48,11 +48,12 @@ function readyFunction($) {
                 listsSelected: selectedLists
             },
             beforeSend: function () {
-                $('.acym__campaign__recipients__number-recipients').hide();
+                $('.acym__campaign__recipients__number-recipients, #acym__campaign__recipients__span').hide();
                 $('.acym_loader_logo').show();
             }
         }).done(function (result) {
             $('.acym__campaign__recipients__number-recipients').html(result).show();
+            $('#acym__campaign__recipients__span').show();
             $('.acym_loader_logo').hide();
         }).error(function () {
             $('.acym__campaign__recipients__number-recipients').html(0);

@@ -6,6 +6,7 @@ use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\PluginClass;
 use AcyMailing\Controllers\PluginsController;
+use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Helpers\SplashscreenHelper;
 use AcyMailing\Helpers\UpdateHelper;
 
@@ -158,6 +159,8 @@ class acymInstall
         $allPref['license_key'] = '';
         $allPref['active_cron'] = 0;
         $allPref['cron_updateme_frequency'] = 900;
+        $allPref['use_https'] = 1;
+        $allPref['multilingual'] = 0;
 
         $query = "INSERT IGNORE INTO `#__acym_configuration` (`name`,`value`) VALUES ";
         foreach ($allPref as $namekey => $value) {
@@ -793,6 +796,25 @@ class acymInstall
             $this->updateQuery('ALTER TABLE #__acym_plugin DROP `core`');
             $this->updateQuery('ALTER TABLE `#__acym_form` ADD termspolicy_options LONGTEXT');
             $this->updateQuery('UPDATE `#__acym_form` SET `termspolicy_options` = "{\"termscond\":0,\"privacy\":0}" WHERE `termspolicy_options` is NULL');
+        }
+        if (version_compare($this->fromVersion, '6.17.0', '<')) {
+            $this->updateQuery(
+                'CREATE TABLE IF NOT EXISTS `#__acym_segment` (
+                            `id` INT NOT NULL AUTO_INCREMENT,
+                            `name` VARCHAR(255) NOT NULL,
+                            `creation_date` DATETIME NOT NULL,
+                            `active` TINYINT(1) NOT NULL DEFAULT 1,
+                            `filters` LONGTEXT NULL,
+                            PRIMARY KEY (`id`)
+                        )
+                            ENGINE = InnoDB
+                            /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;
+            '
+            );
+            $automationHelper = new AutomationHelper();
+            $automationHelper->deleteUnusedEmails();
+            $this->updateQuery('ALTER TABLE `#__acym_form` ADD cookie VARCHAR(30)');
+            $this->updateQuery('UPDATE `#__acym_form` SET `cookie` = "{\"cookie_expiration\":1}" WHERE `cookie` IS NULL');
         }
     }
 

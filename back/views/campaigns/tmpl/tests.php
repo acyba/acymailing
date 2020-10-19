@@ -4,6 +4,7 @@
 		<div class="cell medium-auto"></div>
 		<div id="acym__campaigns__tests" class="cell xxlarge-9 grid-x acym__content">
             <?php
+        $this->addSegmentStep($data['displaySegmentTab']);
             $workflow = $data['workflowHelper'];
             echo $workflow->display($this->steps, $this->step);
             ?>

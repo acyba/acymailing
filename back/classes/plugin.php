@@ -8,6 +8,7 @@ class PluginClass extends acymClass
 {
     var $table = 'plugin';
     var $pkey = 'id';
+    var $nameColumn = 'title';
 
     public function getNotUptoDatePlugins()
     {

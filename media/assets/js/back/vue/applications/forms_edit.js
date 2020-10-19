@@ -106,6 +106,7 @@ jQuery(document).ready(function ($) {
         watch: {
             form: {
                 handler() {
+                    $('.acym__forms__menu__container').off('scroll');
                     clearTimeout(timeout);
                     for (let i = 0 ; i < this.noReloading.length ; i++) {
                         if (this.form[this.noReloading[i]] !== this.oldForm[this.noReloading[i]]) {

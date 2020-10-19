@@ -35,13 +35,13 @@
                                 <?php echo $oneMailHistory->subject; ?>
 							</div>
 							<div class="medium-2 cell">
-                                <?php echo empty($oneMailHistory->send_date) ? '' : acym_tooltip(acym_date(acym_getTime($oneMailHistory->send_date), 'd F H:i'), acym_date(acym_getTime($oneMailHistory->send_date), 'd F Y H:i:s')); ?>
+                                <?php echo empty($oneMailHistory->send_date) || '0000-00-00 00:00:00' == $oneMailHistory->send_date ? '-' : acym_tooltip(acym_date(acym_getTime($oneMailHistory->send_date), 'd F H:i'), acym_date(acym_getTime($oneMailHistory->send_date), 'd F Y H:i:s')); ?>
 							</div>
 							<div class="medium-1 cell text-center">
                                 <?php echo $oneMailHistory->open; ?>
 							</div>
 							<div class="medium-2 cell text-center">
-                                <?php echo empty($oneMailHistory->open_date) ? '' : acym_tooltip(acym_date(acym_getTime($oneMailHistory->open_date), 'd F H:i'), acym_date(acym_getTime($oneMailHistory->open_date), 'd F Y H:i:s')); ?>
+                                <?php echo empty($oneMailHistory->open_date) ? '-' : acym_tooltip(acym_date(acym_getTime($oneMailHistory->open_date), 'd F H:i'), acym_date(acym_getTime($oneMailHistory->open_date), 'd F Y H:i:s')); ?>
 							</div>
 							<div class="medium-1 cell text-center">
                                 <?php echo $oneMailHistory->click; ?>

@@ -16,7 +16,7 @@ function acydump($arg, $ajax = false, $indent = true)
     }
 }
 
-function acym_debug($file = false)
+function acym_debug($file = false, $indent = true)
 {
     $debug = debug_backtrace();
     $takenPath = [];
@@ -24,7 +24,7 @@ function acym_debug($file = false)
         if (empty($step['file']) || empty($step['line'])) continue;
         $takenPath[] = $step['file'].' => '.$step['line'];
     }
-    acydump(implode('<br/>', $takenPath), $file);
+    acydump(implode($file ? "\n" : '<br/>', $takenPath), $file, $indent);
 }
 
 function acym_config($reload = false)
@@ -38,6 +38,12 @@ function acym_config($reload = false)
     return $configClass;
 }
 
+/**
+ * @param string $path
+ *
+ * @return mixed|null
+ * @deprecated  6.16.0 Use the "use AcyMailing\Classes\ListClass;" syntax instead
+ */
 function acym_get($path)
 {
     list($group, $class) = explode('.', $path);
@@ -116,18 +122,6 @@ function acym_session()
     if (empty($sessionID)) {
         @session_start();
     }
-}
-
-function acym_getSvg($svgPath)
-{
-    $xml = @simplexml_load_file($svgPath);
-
-    if (class_exists('SimpleXMLElement') && $xml !== false) {
-        $res = $xml->asXML();
-        if (!empty($res)) return $res;
-    }
-
-    return acym_fileGetContent($svgPath);
 }
 
 function acym_getCID($field = '')

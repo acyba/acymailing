@@ -6,8 +6,10 @@ use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailStatClass;
+use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Classes\TagClass;
 use AcyMailing\Classes\UserClass;
+use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Helpers\EditorHelper;
 use AcyMailing\Helpers\EntitySelectHelper;
 use AcyMailing\Helpers\MailerHelper;
@@ -54,18 +56,24 @@ class CampaignsController extends acymController
             'campaigns_auto',
             'welcome',
             'unsubscribe',
+            'specificListing',
         ];
         $currentTask = acym_getVar('string', 'task', '');
+        $type = acym_getVar('string', 'type', '');
         if (!in_array($currentTask, $taskToStore) && !$fromListing) return;
 
         if ((empty($currentTask) || !in_array($currentTask, $taskToStore)) && !empty($_SESSION[$variableName])) {
-            $link = $isFrontJoomla ? acym_frontendLink('frontcampaigns&task='.$_SESSION[$variableName]) : acym_completeLink('campaigns&task='.$_SESSION[$variableName], false, true);
+            $taskToGo = is_array($_SESSION[$variableName]) ? $_SESSION[$variableName]['task'].'&type='.$_SESSION[$variableName]['type'] : $_SESSION[$variableName];
+            $link = $isFrontJoomla ? acym_frontendLink('frontcampaigns&task='.$taskToGo) : acym_completeLink('campaigns&task='.$taskToGo, false, true);
             acym_redirect($link);
         } else {
             if (empty($currentTask) || !in_array($currentTask, $taskToStore)) $currentTask = 'campaigns';
+            if ($currentTask == 'specificListing') $currentTask = empty($type) ? 'campaigns' : ['task' => $currentTask, 'type' => $type];
             $_SESSION[$variableName] = $currentTask;
         }
-        if ($fromListing && method_exists($this, $currentTask)) $this->$currentTask();
+
+        $taskToCall = is_array($currentTask) ? $currentTask['task'] : $currentTask;
+        if ($fromListing && method_exists($this, $taskToCall)) $this->$taskToCall();
     }
 
     public function setTaskListing($task)
@@ -83,6 +91,26 @@ class CampaignsController extends acymController
     private function prepareListingClasses(&$data)
     {
         $data['workflowHelper'] = new WorkflowHelper();
+    }
+
+    public function specificListing()
+    {
+        acym_setVar('layout', 'specific_listing');
+
+        $type = acym_getVar('string', 'type');
+
+        $data = [
+            'type' => $type,
+            //We set campaign here to generate the statuses in the campaign class in the function getCountStatusFilter
+            'campaign_type' => 'campaigns',
+        ];
+        $this->getAllParamsRequest($data);
+        $this->prepareListingClasses($data);
+        $this->prepareToolbar($data);
+
+        acym_trigger('onAcymCampaignDataSpecificListing', [&$data, $type]);
+
+        parent::display($data);
     }
 
     public function campaigns()
@@ -201,7 +229,7 @@ class CampaignsController extends acymController
         }
     }
 
-    private function prepareEmailsListing(&$data, $campaignType = '', $class = '')
+    public function prepareEmailsListing(&$data, $campaignType = '', $class = '')
     {
         // Prepare the pagination
         $campaignsPerPage = $data['pagination']->getListLimit();
@@ -283,6 +311,11 @@ class CampaignsController extends acymController
         parent::display($data);
     }
 
+    private function prepareSegmentDisplay(&$data, $sendingParams)
+    {
+        $data['displaySegmentTab'] = empty($sendingParams) ? false : array_key_exists('segment', $sendingParams);
+    }
+
     public function chooseTemplate()
     {
         acym_setVar('layout', 'choose_email');
@@ -341,6 +374,7 @@ class CampaignsController extends acymController
             'campaign_type' => $campaignType,
         ];
         $this->prepareListingClasses($data);
+        $this->prepareSegmentDisplay($data, empty($campaign->sending_params) ? false : $campaign->sending_params);
 
 
         parent::display($data);
@@ -505,6 +539,9 @@ class CampaignsController extends acymController
         $this->prepareMaxUpload($data);
         $this->prepareMultilingual($data);
         $this->prepareListingClasses($data);
+        $this->prepareSegmentDisplay($data, empty($data['mailInformation']->sending_params) ? false : $data['mailInformation']->sending_params);
+
+        $data['before-save'] = $data['editor']->editor != 'acyEditor' ? '' : 'acym-data-before="acym_editorWysidMultilingual.storeCurrentValues(true);"';
 
         $data['before-save'] = $data['editor']->editor != 'acyEditor' ? '' : 'acym-data-before="acym_editorWysidMultilingual.storeCurrentValues(true);"';
 
@@ -542,8 +579,17 @@ class CampaignsController extends acymController
             $campaign['campaignListsSelected'] = json_encode($campaign['campaignListsId']);
         }
         $this->prepareListingClasses($campaign);
+        $this->prepareSegmentDisplay($campaign, $campaign['currentCampaign']->sending_params);
 
         parent::display($campaign);
+    }
+
+    public function segment()
+    {
+        if (!acym_level(2)) {
+            acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
+        }
+
     }
 
     public function sendSettings()
@@ -584,6 +630,15 @@ class CampaignsController extends acymController
         $campaign['currentCampaign']->send_auto = $currentCampaign->sending_type == $campaignClass::SENDING_TYPE_AUTO;
         $campaign['campaignClass'] = $campaignClass;
 
+        // Handle special emails
+        $campaign['currentCampaign']->send_specific = [];
+        if (!in_array($currentCampaign->sending_type, $campaignClass::SENDING_TYPES)) {
+            acym_trigger(
+                'getCampaignSpecificSendSettings',
+                [$currentCampaign->sending_type, $currentCampaign->sending_params, &$campaign['currentCampaign']->send_specific]
+            );
+        }
+
         $campaign['senderInformations']->from_name = empty($currentCampaign->from_name) ? '' : $currentCampaign->from_name;
         $campaign['senderInformations']->from_email = empty($currentCampaign->from_email) ? '' : $currentCampaign->from_email;
         $campaign['senderInformations']->reply_to_name = empty($currentCampaign->reply_to_name) ? '' : $currentCampaign->reply_to_name;
@@ -610,6 +665,7 @@ class CampaignsController extends acymController
         $campaign['containerClass'] = $this->stepContainerClass;
         $campaign['langChoice'] = acym_isMultilingual() ? '' : acym_languageOption($campaign['currentCampaign']->links_language, 'senderInformation[links_language]');
         $this->prepareListingClasses($campaign);
+        $this->prepareSegmentDisplay($campaign, $campaign['currentCampaign']->sending_params);
 
         return parent::display($campaign);
     }
@@ -631,6 +687,8 @@ class CampaignsController extends acymController
             'auto' => $campaignClass::SENDING_TYPE_AUTO,
             'scheduled' => $campaignClass::SENDING_TYPE_SCHEDULED,
         ];
+
+        acym_trigger('getCampaignTypes', [&$types]);
 
         if (empty($campaignId)) {
             $mail = new \stdClass();
@@ -778,10 +836,10 @@ class CampaignsController extends acymController
         $allLists = json_decode(acym_getVar('string', 'acym__entity_select__selected'));
         $allListsUnselected = json_decode(acym_getVar('string', 'acym__entity_select__unselected'));
         $campaignId = acym_getVar('int', 'id');
+        $addSegmentStep = acym_getVar('int', 'add_segment_step');
 
         $campaignClass = new CampaignClass();
         $currentCampaign = $campaignClass->getOneByIdWithMail($campaignId);
-
 
         if ($currentCampaign->sent && !$currentCampaign->active) {
             $mailStatClass = new MailStatClass();
@@ -795,6 +853,60 @@ class CampaignsController extends acymController
                 acym_enqueueMessage(acym_translation_sprintf('ACYM_LIST_IS_SAVED', $currentCampaign->name), 'success');
             }
         }
+
+        if (!empty($addSegmentStep)) {
+            $currentCampaign->sending_params['segment'] = [];
+            $campaignClass->save($currentCampaign);
+            acym_setVar('nextstep', 'segment');
+            $this->segment();
+
+            return;
+        }
+
+        if (isset($currentCampaign->sending_params['segment'])) unset($currentCampaign->sending_params['segment']);
+        $campaignClass->save($currentCampaign);
+
+        $this->edit();
+    }
+
+    public function saveSegment()
+    {
+        $segmentSelected = acym_getVar('int', 'segment_selected', 0);
+        $filters = acym_getVar('array', 'acym_action', []);
+        $campaignId = acym_getVar('int', 'id', 0);
+
+        if (empty($campaignId)) {
+            acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
+            $this->listing();
+
+            return;
+        }
+
+        $segmentSavedId = acym_getVar('int', 'saved_segment_id', 0);
+
+        if (!empty($segmentSavedId)) {
+            $segmentSelected = $segmentSavedId;
+        }
+
+        $campaignClass = new CampaignClass();
+        $campaign = $campaignClass->getOneById($campaignId);
+
+        if (empty($campaign)) {
+            acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
+            $this->listing();
+
+            return;
+        }
+
+        if (empty($segmentSelected) && empty($filters)) {
+            $campaign->sending_params['segment'] = [];
+        } elseif (!empty($segmentSelected)) {
+            $campaign->sending_params['segment'] = ['segment_id' => $segmentSelected];
+        } else {
+            $campaign->sending_params['segment'] = ['filters' => $filters['filters'][0]];
+        }
+
+        $campaignClass->save($campaign);
 
         $this->edit();
     }
@@ -812,9 +924,9 @@ class CampaignsController extends acymController
 
         $isScheduled = $campaignClass::SENDING_TYPE_SCHEDULED == $sendingType;
 
-        $campaignInformation = $campaignClass->getOneById($campaignId);
+        $currentCampaign = $campaignClass->getOneById($campaignId);
 
-        if (empty($campaignInformation)) {
+        if (empty($currentCampaign)) {
             acym_enqueueMessage(acym_translation('ACYM_CAMPAIGN_DOESNT_EXISTS'), 'error');
 
             $this->listing();
@@ -836,14 +948,23 @@ class CampaignsController extends acymController
             $sendingParams = acym_getVar('array', $triggerType, '');
             $sendingParams = [$triggerType => $sendingParams, 'need_confirm_to_send' => $needConfirmToSend];
 
-            if (!empty($campaignInformation->sending_params['number_generated'])) $sendingParams['number_generated'] = $campaignInformation->sending_params['number_generated'];
+            if (!empty($currentCampaign->sending_params['number_generated'])) $sendingParams['number_generated'] = $currentCampaign->sending_params['number_generated'];
         }
 
-        $currentCampaign = $campaignClass->getOneById($campaignId);
+        // Handle special emails
+        if (!in_array($sendingType, $campaignClass::SENDING_TYPES)) {
+            $specialSendings = [];
+            acym_trigger('saveCampaignSpecificSendSettings', [$currentCampaign->sending_type, &$specialSendings]);
+            if (!empty($specialSendings)) $sendingParams = $specialSendings[0];
+        }
+
         empty($currentCampaign->mail_id) ? : $currentMail = $mailClass->getOneById($currentCampaign->mail_id);
 
         $currentCampaign->sending_type = $sendingType;
-        $currentCampaign->sending_params = $sendingParams;
+        if (empty($currentCampaign->sending_params)) $currentCampaign->sending_params = [];
+        foreach ($sendingParams as $key => $param) {
+            $currentCampaign->sending_params[$key] = $param;
+        }
         $currentCampaign->sending_date = null;
 
         if (empty($currentMail) || empty($senderInformation)) {
@@ -903,6 +1024,7 @@ class CampaignsController extends acymController
             unset($campaign->sending_date);
             $campaign->draft = 1;
             $campaign->sent = 0;
+            $campaign->active = 0;
 
             //We get the mail to duplicate it
             $mail = $mailClass->getOneById($campaign->mail_id);
@@ -972,6 +1094,7 @@ class CampaignsController extends acymController
         $this->prepareMultilingual($data, false);
         $this->prepareAllMailsForMultilingual($data);
         $this->prepareListingClasses($data);
+        $this->prepareSegmentDisplay($data, $data['campaignInformation']->sending_params);
 
         $this->breadcrumb[$data['campaignInformation']->name] = acym_completeLink('campaigns&task=edit&step=summary&id='.$data['campaignInformation']->id);
         parent::display($data);
@@ -1064,8 +1187,13 @@ class CampaignsController extends acymController
                 foreach ($campaignLists as $oneList) {
                     $listsIds[] = $oneList->list_id;
                 }
-                $listClass = new ListClass();
-                $nbSubscribers = $listClass->getSubscribersCount($listsIds);
+                if (empty($data['campaignInformation']->sending_params)) {
+                    $listClass = new ListClass();
+                    $nbSubscribers = $listClass->getSubscribersCount($listsIds);
+                } else {
+                    $campaignClass = new CampaignClass();
+                    $nbSubscribers = $campaignClass->countUsersCampaign($data['campaignInformation']->id);
+                }
             }
         }
 
@@ -1492,6 +1620,7 @@ class CampaignsController extends acymController
         ];
 
         $this->prepareListingClasses($data);
+        $this->prepareSegmentDisplay($data, $campaign->sending_params);
 
         $this->breadcrumb[acym_escape($campaign->name)] = acym_completeLink('campaigns&task=edit&step=tests&id='.$campaign->id);
         parent::display($data);

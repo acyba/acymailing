@@ -1,6 +1,11 @@
 const acym_editorWysidOutlook = {
     setButtonOutlook: function ($element) {
-        let borderRadius = parseInt($element.css('border-radius'));
+        let borderRadius = 0;
+        if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+            let borderRadius = parseInt($element.css('borderBottomLeftRadius').replace(/[^-\d\.]/g, ''));
+        } else {
+            let borderRadius = parseInt($element.css('border-radius').replace(/[^-\d\.]/g, ''));
+        }
         let borderColor = $element.css('border-color');
         let backgroundColor = $element.css('background-color');
         let href = $element.attr('href');

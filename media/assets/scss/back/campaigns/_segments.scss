@@ -1,0 +1,88 @@
+#acym_wrapper {
+    #acym__campaigns__segment {
+        .acym__campaigns__segment__summary {
+            position: relative;
+
+            .acymicon-circle {
+                margin-right: .2rem;
+            }
+        }
+
+        .acym__campaigns__segment__edit {
+
+            .acym__campaigns__segment__edit__or {
+                font-size: 1rem;
+                font-weight: 500;
+                margin: 1rem 0;
+            }
+
+            .acym__campaigns__segment__edit__filters {
+                @import "../segments/filters";
+                position: relative;
+
+                .acym__campaigns__segment__edit__filters__save {
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+
+                    .acym__campaigns__segment__edit__filters__save-icon {
+
+                        & > * {
+                            cursor: pointer !important;
+                        }
+
+                        i {
+                            transition: .2s;
+                            cursor: pointer !important;
+                            margin-left: 10px;
+                            font-size: 20px;
+
+                            &:hover {
+                                color: $dark-blue;
+                            }
+                        }
+                    }
+
+                    .acym__campaigns__segment__edit__filters__save-action {
+                        display: none;
+
+                        & > * {
+                            font-size: 13px;
+                            margin-bottom: 0;
+                            margin-right: 10px;
+                        }
+
+                        button {
+                            padding: .4rem .6rem;
+                        }
+                    }
+
+                    .acym__campaigns__segment__edit__filters__save-loading {
+                        display: none;
+
+                        i {
+                            font-size: 20px;
+                        }
+                    }
+                }
+            }
+
+            .acym__campaigns__segment__edit__count_container {
+                min-height: 60px;
+
+                #acym__campaigns__segment__edit-user-count {
+                    margin-right: .5rem;
+                    font-weight: 500;
+
+                    i {
+                        font-size: 20px;
+                    }
+                }
+            }
+
+            .acym__segments__edit__filters__info__users {
+                display: none;
+            }
+        }
+    }
+}

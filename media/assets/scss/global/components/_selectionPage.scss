@@ -1,7 +1,14 @@
 .acym__selection {
     .acym__selection__title {
-        font-size: 1.6rem;
         font-weight: 500;
+    }
+
+    h1.acym__selection__title {
+        font-size: 1.6rem;
+    }
+
+    h2.acym__selection__title {
+        font-size: 1.3rem;
     }
 
     .acym__selection__card {

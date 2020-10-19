@@ -1,0 +1,19 @@
+#acym_wrapper {
+    .acym__segments__edit__info {
+        .acym__segments__edit__info__actions {
+            align-content: baseline;
+        }
+
+        #acym__segments__edit__info__name {
+            margin-bottom: 0;
+        }
+
+        .switch {
+            margin: 0;
+        }
+    }
+
+    .acym__segments__edit__filters {
+        @import "filters";
+    }
+}

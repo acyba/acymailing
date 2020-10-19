@@ -5,15 +5,18 @@ const acym_helperRadio = {
             $radio.click();
         });
 
-        jQuery('input[type="radio"]').on('change', function () {
-            let $checked = jQuery('input[name="' + jQuery(this).attr('name') + '"]:checked').val();
-            jQuery('input[name="' + jQuery(this).attr('name') + '"]').each(function () {
-                if (jQuery(this).val() == $checked) {
-                    jQuery('i[data-radio="' + jQuery(this).attr('id') + '"].acym_radio_unchecked').hide();
-                    jQuery('i[data-radio="' + jQuery(this).attr('id') + '"].acym_radio_checked').show();
+        jQuery('.acym_radio_group > input[type="radio"]').off('change').on('change', function () {
+            let radioName = jQuery(this).attr('name');
+            let checked = jQuery('input[name="' + radioName + '"]:checked').val();
+
+            jQuery('input[name="' + radioName + '"]').each(function () {
+                let radioId = jQuery(this).attr('id');
+                if (jQuery(this).val() === checked) {
+                    jQuery('i[data-radio="' + radioId + '"].acym_radio_unchecked').hide();
+                    jQuery('i[data-radio="' + radioId + '"].acym_radio_checked').show();
                 } else {
-                    jQuery('i[data-radio="' + jQuery(this).attr('id') + '"].acym_radio_unchecked').show();
-                    jQuery('i[data-radio="' + jQuery(this).attr('id') + '"].acym_radio_checked').hide();
+                    jQuery('i[data-radio="' + radioId + '"].acym_radio_unchecked').show();
+                    jQuery('i[data-radio="' + radioId + '"].acym_radio_checked').hide();
                 }
             });
         }).change();

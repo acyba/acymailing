@@ -51,6 +51,16 @@ class FieldClass extends acymClass
         return acym_loadObjectList($query);
     }
 
+    public function getFieldsByType($types)
+    {
+        if (empty($types)) return [];
+        if (!is_array($types)) $types = [$types];
+        $types = array_map('acym_escapeDB', $types);
+        $query = 'SELECT * FROM #__acym_field WHERE `type` IN('.implode(',', $types).') ORDER BY `ordering` ASC';
+
+        return acym_loadObjectList($query);
+    }
+
     public function getOrdering()
     {
         return acym_loadResult('SELECT COUNT(id) FROM #__acym_field');
@@ -316,6 +326,8 @@ class FieldClass extends acymClass
             return 0;
         }
 
+        acym_trigger('specialActionOnDelete', ['field', $elements]);
+
         acym_query('DELETE FROM #__acym_user_has_field WHERE field_id IN ('.implode(',', $elements).')');
 
         return parent::delete($elements);
@@ -503,5 +515,12 @@ class FieldClass extends acymClass
         }
 
         return $return;
+    }
+
+    public function getFieldTypeById($id)
+    {
+        $query = 'SELECT type FROM #__acym_field WHERE id = '.intval($id);
+
+        return acym_loadResult($query);
     }
 }

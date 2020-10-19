@@ -1,13 +1,17 @@
 <?php
 
+use AcyMailing\Controllers\CampaignsController;
 use AcyMailing\Libraries\acymPlugin;
 use AcyMailing\Helpers\TabHelper;
 use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\AutomationClass;
+use AcyMailing\Classes\CampaignClass;
 
 class plgAcymWoocommerce extends acymPlugin
 {
+    const MAILTYPE = 'woocommerce_cart';
+
     public function __construct()
     {
         parent::__construct();
@@ -1273,5 +1277,141 @@ class plgAcymWoocommerce extends acymPlugin
                 'statusTo' => $statusTo,
             ]
         );
+    }
+
+    public function getNewEmailsTypeBlock(&$extraBlocks)
+    {
+        if (acym_isAdmin()) {
+            $woocomerceMailLink = acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type='.self::MAILTYPE);
+        } else {
+            $woocomerceMailLink = acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type='.self::MAILTYPE);
+        }
+
+        $extraBlocks[] = [
+            'name' => $this->pluginDescription->name,
+            'description' => acym_translation('ACYM_WOOCOMMERCE_EMAIL_DESC'),
+            'icon' => 'acymicon-cart-arrow-down',
+            'link' => $woocomerceMailLink,
+            'level' => 1,
+        ];
+    }
+
+    public function getCampaignTypes(&$types)
+    {
+        $types[self::MAILTYPE] = self::MAILTYPE;
+    }
+
+    public function getCampaignSpecificSendSettings($type, $sendingParams, &$specificSettings)
+    {
+        if ($type != self::MAILTYPE) return;
+
+        $timeSelectOptions = [
+            'days' => acym_translation('ACYM_DAYS'),
+            'weeks' => acym_translation('ACYM_WEEKS'),
+            'months' => acym_translation('ACYM_MONTHS'),
+        ];
+
+        $selectedtType = 'days';
+        if (!empty($sendingParams) && isset($sendingParams[self::MAILTYPE.'_type'])) {
+            $selectedtType = $sendingParams[self::MAILTYPE.'_type'];
+        }
+        $timeSelect = '<div class="cell medium-2 margin-left-1 margin-right-1">';
+        $timeSelect .= acym_select($timeSelectOptions, 'acym_woocomerce_time_frame', $selectedtType, 'class="acym__select"');
+        $timeSelect .= '</div>';
+
+        $defaultNumber = 1;
+        if (!empty($sendingParams) && isset($sendingParams[self::MAILTYPE.'_number'])) {
+            $defaultNumber = $sendingParams[self::MAILTYPE.'_number'];
+        }
+        $inputTime = '<input type="number" min="0" stp="1" name="acym_woocomerce_time_number" class="intext_input" value="'.intval($defaultNumber).'">';
+
+        $orderStatuses = $this->getOrderStatuses();
+        $selectedStatus = 'wc-pending';
+        if (!empty($sendingParams) && isset($sendingParams[self::MAILTYPE.'_status'])) {
+            $selectedStatus = $sendingParams[self::MAILTYPE.'_status'];
+        }
+        $inputStatus = '<div class="cell medium-2 margin-left-1 margin-right-1">';
+        $inputStatus .= acym_select($orderStatuses, 'acym_woocomerce_status', $selectedStatus, 'class="acym__select"');
+        $inputStatus .= '</div>';
+
+        $whenSettings = '<div class="cell grid-x acym_vcenter">';
+        $whenSettings .= acym_translation_sprintf('ACYM_SEND_ORDER_PLACED_STATUS_CURRENTLY', $inputTime, $timeSelect, $inputStatus);
+        $whenSettings .= '</div>';
+
+        $specificSettings[] = [
+            'whenSettings' => $whenSettings,
+            'additionnalSettings' => '',
+        ];
+    }
+
+    public function saveCampaignSpecificSendSettings($type, &$specialSendings)
+    {
+        if ($type != self::MAILTYPE) return;
+
+        $inputTime = acym_getVar('int', 'acym_woocomerce_time_number', 0);
+        $typeTime = acym_getVar('string', 'acym_woocomerce_time_frame', 'day');
+        $status = acym_getVar('string', 'acym_woocomerce_status', '0');
+
+        $specialSendings[] = [
+            self::MAILTYPE.'_number' => $inputTime,
+            self::MAILTYPE.'_type' => $typeTime,
+            self::MAILTYPE.'_status' => $status,
+        ];
+    }
+
+    public function onAcymSendCampaignSpecial($campaign, &$filters)
+    {
+        if ($campaign->sending_type != self::MAILTYPE) return;
+
+        $sendingTime = (int)$campaign->sending_params[self::MAILTYPE.'_number'];
+        if ($campaign->sending_params[self::MAILTYPE.'_type'] == 'weeks') {
+            $sendingTime *= 7;
+        } elseif ($campaign->sending_params[self::MAILTYPE.'_type'] == 'months') {
+            $sendingTime *= 30;
+        }
+        $filter = [
+            'wooreminder' => [
+                'days' => $sendingTime,
+                'status' => $campaign->sending_params[self::MAILTYPE.'_status'],
+                'payment' => 'any',
+            ],
+
+        ];
+        $filters[] = $filter;
+    }
+
+    public function onAcymDisplayCampaignListingSpecificTabs(&$tabs)
+    {
+        $tabs['specificListing&type='.self::MAILTYPE] = 'ACYM_WOOCOMMERCE_ABANDONED_CART';
+    }
+
+    public function onAcymSpecificListingActive(&$exists, $task)
+    {
+        if ($task == self::MAILTYPE) {
+            $exists = true;
+        }
+    }
+
+    public function onAcymCampaignDataSpecificListing(&$data, $type)
+    {
+        if ($type == self::MAILTYPE) {
+            $data['typeWorkflowTab'] = 'specificListing&type='.self::MAILTYPE;
+            $data['element_to_display'] = acym_translation('ACYM_WOOCOMMERCE_ABANDONED_CART_CAMPAIGN');
+            $data['type'] = self::MAILTYPE;
+            $campaignController = new CampaignsController();
+            $campaignController->prepareEmailsListing($data, $type);
+        }
+    }
+
+    public function onAcymCampaignAddFiltersSpecificListing(&$filters, $type)
+    {
+        if ($type == self::MAILTYPE) {
+            $filters[] = 'campaign.sending_type = '.acym_escapeDB(self::MAILTYPE);
+        }
+    }
+
+    public function filterSpecificMailsToSend(&$specialMails, $time)
+    {
+        $this->filterSpecialMailsDailySend($specialMails, $time, self::MAILTYPE);
     }
 }

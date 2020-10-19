@@ -130,7 +130,7 @@ class acyElasticemail
             $data .= "&channel=".urlencode($object->id);
         }
         if (!empty($object->type) && strpos($object->type, 'notification') !== false) {
-            $data .= '&isTransactional=1';
+            $data .= '&isTransactional=true';
         }
 
         $header = "POST /mailer/send HTTP/1.0\r\n";

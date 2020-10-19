@@ -8,6 +8,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 		<div class="cell <?php echo $data['containerClass']; ?> acym__content">
 
             <?php
+            $this->addSegmentStep($data['displaySegmentTab']);
             $workflow = $data['workflowHelper'];
             echo $workflow->display($this->steps, $this->step);
             ?>
@@ -87,6 +88,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                             $isSent ? 'ACYM_CAMPAIGN_HAS_BEEN_SENT_TO_A_TOTAL_OF' : 'ACYM_CAMPAIGN_WILL_BE_SENT_TO_A_TOTAL_OF',
                             acym_tooltip('<b>'.$data['nbSubscribers'].'</b>', acym_translation('ACYM_SUMMARY_NUMBER_RECEIVERS_EXPLICATION'))
                         );
+                        if (!$isSent) echo acym_info(acym_translation('ACYM_COUNT_USER_WITH_SEGMENT_CAMPAIGN_SUMMARY'));
                         ?>
 					</p>
 				</div>

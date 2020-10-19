@@ -1,10 +1,18 @@
 <div class="acym__content acym__stats" id="acym_stats_detailed">
-    <?php if (!empty($data['emptyDetailed']) && $data['emptyDetailed'] == 'campaigns') { ?>
-		<h1 class="acym__listing__empty__title text-center cell"><?php echo acym_translation('ACYM_DONT_HAVE_STATS_CAMPAIGN'); ?> <a href="<?php echo acym_completeLink('campaigns&task=edit&step=chooseTemplate'); ?>"><?php echo acym_translation('ACYM_CREATE_ONE'); ?></a></h1>
+    <?php
+    if (empty($data['selectedMailid'])) { ?>
+		<h1 class="acym__listing__empty__title text-center cell"><?php echo acym_translation('ACYM_SELECT_AN_EMAIL_FIRST'); ?></h1>
+    <?php } elseif (!empty($data['emptyDetailed']) && $data['emptyDetailed'] == 'campaigns') { ?>
+		<h1 class="acym__listing__empty__title text-center cell">
+            <?php echo acym_translation('ACYM_DONT_HAVE_STATS_CAMPAIGN'); ?>
+			<a href="<?php echo acym_completeLink('campaigns&task=edit&step=chooseTemplate'); ?>">
+                <?php echo acym_translation('ACYM_CREATE_ONE'); ?>
+			</a>
+		</h1>
     <?php } elseif (!empty($data['emptyDetailed']) && $data['emptyDetailed'] == 'stats') { ?>
-		<h1 class="acym__listing__empty__title text-center cell"><?php echo acym_translation('ACYM_DONT_HAVE_STATS_THIS_CAMPAIGN'); ?></a></h1>
+		<h1 class="acym__listing__empty__title text-center cell"><?php echo acym_translation('ACYM_DONT_HAVE_STATS_THIS_CAMPAIGN'); ?></h1>
     <?php } elseif (empty($data['detailed_stats'])) { ?>
-		<h1 class="acym__listing__empty__title text-center cell"><?php echo acym_translation('ACYM_NO_DETAILED_STATS'); ?></a></h1>
+		<h1 class="acym__listing__empty__title text-center cell"><?php echo acym_translation('ACYM_NO_DETAILED_STATS'); ?></h1>
     <?php } else { ?>
 		<div class="cell grid-x">
 			<div class="cell grid-x">
@@ -24,8 +32,9 @@
                     <?php echo acym_sortBy(
                         [
                             'send_date' => acym_translation('ACYM_SEND_DATE'),
-                            'subject' => acym_translation('ACYM_NAME'),
+                            'subject' => acym_translation('ACYM_EMAIL_SUBJECT'),
                             'email' => acym_translation('ACYM_EMAIL'),
+                            'name' => acym_translation('ACYM_NAME'),
                             'open' => acym_translation('ACYM_MAILS_OPEN'),
                             'open_date' => acym_translation('ACYM_OPEN_DATE'),
                             'sent' => acym_translation('ACYM_SENT'),
@@ -39,14 +48,17 @@
 		<div class="grid-x acym__listing cell">
 			<div class="grid-x cell acym__listing__header">
 				<div class="grid-x medium-auto small-11 cell">
-					<div class="large-2 medium-3 small-3 cell acym__listing__header__title">
+					<div class="xxlarge-1 small-2 cell acym__listing__header__title">
                         <?php echo acym_translation('ACYM_SEND_DATE'); ?>
 					</div>
-					<div class="large-2 medium-3 small-3 cell acym__listing__header__title">
-                        <?php echo acym_translation('ACYM_NAME'); ?>
+					<div class="auto cell acym__listing__header__title">
+                        <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
 					</div>
 					<div class="large-2 medium-3 small-4 cell acym__listing__header__title">
                         <?php echo acym_translation('ACYM_USER'); ?>
+					</div>
+					<div class="xlarge-1 hide-for-large-only hide-for-medium-only hide-for-small-only cell acym__listing__header__title">
+                        <?php echo acym_translation('ACYM_NAME'); ?>
 					</div>
 					<div class="large-1 medium-1 small-1 cell acym__listing__header__title text-center">
                         <?php echo acym_translation('ACYM_TOTAL_CLICK'); ?>
@@ -74,12 +86,15 @@
             foreach ($data['detailed_stats'] as $detailed_stat) { ?>
 				<div class="grid-x cell acym__listing__row">
 					<div class="grid-x medium-auto small-11 cell">
-						<div class="large-2 medium-3 small-3 cell acym__listing__detailed__stats__content">
+						<div class="xxlarge-1 small-2 cell acym__listing__detailed__stats__content">
                             <?php
-                            echo acym_tooltip('<p>'.acym_date(acym_getTime($detailed_stat->send_date), 'd F H:i').'</p>', acym_date(acym_getTime($detailed_stat->send_date), 'd F Y H:i:s'));
+                            echo acym_tooltip(
+                                '<p>'.acym_date(acym_getTime($detailed_stat->send_date), 'd/m/Y').'</p>',
+                                acym_date(acym_getTime($detailed_stat->send_date), 'd F Y H:i:s')
+                            );
                             ?>
 						</div>
-						<div class="large-2 medium-3 small-3 cell acym__listing__detailed__stats__content">
+						<div class="auto cell acym__listing__detailed__stats__content">
                             <?php
                             if (!empty($detailed_stat->campaign_id) && acym_isAllowed('campaigns')) {
                                 if (empty($detailed_stat->parent_id)) {
@@ -103,6 +118,13 @@
                                 <?php echo $detailed_stat->email; ?>
                             <?php } ?>
 						</div>
+						<div class="xlarge-1 hide-for-large-only hide-for-medium-only hide-for-small-only cell acym__listing__header__title">
+                            <?php if (acym_isAllowed('users')) { ?>
+								<a href="<?php echo acym_completeLink('users&task=edit&id='.$detailed_stat->user_id); ?>" class="acym__color__blue word-break"><?php echo $detailed_stat->username; ?></a>
+                            <?php } else { ?>
+                                <?php echo $detailed_stat->username; ?>
+                            <?php } ?>
+						</div>
 						<div class="large-1 medium-1 small-1 cell acym__listing__detailed__stats__content text-center">
 							<p class="hide-for-medium-only hide-for-small-only"><?php echo empty($detailed_stat->total_click) ? 0 : $detailed_stat->total_click; ?></p>
 						</div>
@@ -111,7 +133,13 @@
 						</div>
 						<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__detailed__stats__content text-center">
                             <?php
-                            echo empty($detailed_stat->open_date) ? '' : acym_tooltip('<p>'.acym_date(acym_getTime($detailed_stat->open_date), 'd F H:i').'</p>', acym_date(acym_getTime($detailed_stat->open_date), 'd F Y H:i:s')); ?>
+                            if (!empty($detailed_stat->open_date)) {
+                                echo acym_tooltip(
+                                    '<p>'.acym_date(acym_getTime($detailed_stat->open_date), 'd/m/Y').'</p>',
+                                    acym_date(acym_getTime($detailed_stat->open_date), 'd F Y H:i:s')
+                                );
+                            }
+                            ?>
 						</div>
 						<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__detailed__stats__content text-center">
                             <?php
@@ -130,7 +158,7 @@
                                 ?>
 							</div>
                         <?php } ?>
-						<div class="large-1 medium-1  small-1 cell acym__listing__detailed__stats__content text-center cursor-default">
+						<div class="large-1 medium-1 small-1 cell acym__listing__detailed__stats__content text-center cursor-default">
                             <?php
                             $targetSuccess = '<i class="acymicon-check acym__listing__detailed_stats_sent__success" ></i>';
                             $targetFail = '<i class="acymicon-times acym__listing__detailed_stats_sent__fail" ></i>';

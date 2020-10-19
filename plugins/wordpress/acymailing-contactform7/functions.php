@@ -1,5 +1,5 @@
 <?php
-function addFormTagAcymsubHandler($tag)
+function acym_addFormTagAcymsubHandler($tag)
 {
     include_once __DIR__.DIRECTORY_SEPARATOR.'plugin.php';
     $contactFormClass = new plgAcymContactform7();
@@ -7,7 +7,7 @@ function addFormTagAcymsubHandler($tag)
     return $contactFormClass->displayAcymsub($tag);
 }
 
-function addTagGeneratorAcymsubHandler($contact_form, $args = '')
+function acym_addTagGeneratorAcymsubHandler($contact_form, $args = '')
 {
     include_once __DIR__.DIRECTORY_SEPARATOR.'plugin.php';
     $contactFormClass = new plgAcymContactform7();

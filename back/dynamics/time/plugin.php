@@ -189,7 +189,7 @@ class plgAcymTime extends acymPlugin
                 $dayBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$dailyHour.':'.$dailyMinute);
 
                 // Only store the next Execution date if it's in the future
-                if ($day == strtolower(acym_date('now', 'l'))) {
+                if ($day == strtolower(acym_date('now', 'l', true, false))) {
                     if ($time < $dayBasedOnCMSTimezoneAtSpecifiedHour) {
                         $nextExecutionDate[] = $dayBasedOnCMSTimezoneAtSpecifiedHour;
                     } else {

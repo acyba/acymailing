@@ -264,7 +264,7 @@ jQuery(document).ready(function ($) {
                                              + optionName
                                              + ']"]');
 
-                        $.setFieldValue($optionField, optionValue);
+                        acym_helperFilter.setFieldValue($optionField, optionValue);
 
                         $optionField.trigger('change');
                     });

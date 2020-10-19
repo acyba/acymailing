@@ -4,12 +4,13 @@
 	<div id="acym__campaigns__recipients" class="grid-x">
 		<div class="cell <?php echo $data['containerClass']; ?> float-center grid-x acym__content">
             <?php
+            $this->addSegmentStep($data['displaySegmentTab']);
             $workflow = $data['workflowHelper'];
             echo $workflow->display($this->steps, $this->step);
 
             ?>
 			<div class="acym__campaigns__recipients__modal">
-                <?php if (!empty($data['currentCampaign']->sent && empty($data['currentCampaign']->active))) { ?>
+                <?php if (!empty($data['currentCampaign']->sent) && empty($data['currentCampaign']->active)) { ?>
 					<div class="acym__hide__div"></div>
 					<h3 class="acym__title__primary__color acym__middle_absolute__text text-center"><?php echo acym_translation('ACYM_CAMPAIGN_ALREADY_QUEUED'); ?></h3>
                 <?php }
@@ -18,11 +19,13 @@
                 echo $entityHelper->entitySelect('list', ['join' => 'join_mail-'.$data['currentCampaign']->mail_id], $entityHelper->getColumnsForList('maillist.mail_id'));
                 ?>
 				<div class="cell grid-x acym__campaign__recipients__total-recipients acym__content acym_vcenter">
-					<p class="cell medium-8"><?php echo acym_translation('ACYM_CAMPAIGN_SENT_TO'); ?></p>
-					<div class="medium-4 acym__campaign__recipients__number-display cell grid-x align-right acym_vcenter">
+					<p class="cell shrink"><?php echo acym_translation('ACYM_CAMPAIGN_SENT_TO'); ?>&nbsp;</p>
+					<div class="cell auto acym__campaign__recipients__number-display grid-x align-left acym_vcenter">
                         <?php echo acym_loaderLogo(); ?>
-						<div class="cell shrink margin-left-1"><span class="acym__campaign__recipients__number-recipients">0</span> <?php echo strtolower(acym_translation('ACYM_RECIPIENTS')); ?></div>
+						<div class="cell shrink"><span class="acym__campaign__recipients__number-recipients">0</span>&nbsp;<span id="acym__campaign__recipients__span"><?php echo strtolower(acym_translation('ACYM_RECIPIENTS')); ?></span></div>
 					</div>
+                    <?php
+                    ?>
 				</div>
 			</div>
 			<div class="cell grid-x text-center acym__campaign__recipients__save-button cell">

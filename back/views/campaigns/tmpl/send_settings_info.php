@@ -1,5 +1,5 @@
 <h5 class="cell acym__campaign__sendsettings__title-settings"><?php echo acym_translation('ACYM_SENDER_INFORMATION'); ?></h5>
-<div class="cell grid-x align-center margin-top-1">
+<div class="cell grid-x align-center">
 	<div class="cell grid-x medium-11 grid-margin-x">
 		<div class="cell medium-5">
 			<label for="acym__campaign__sendsettings__from-name" class="cell acym__campaign__sendsettings__label-settings"><?php echo acym_translation('ACYM_FROM_NAME'); ?></label>

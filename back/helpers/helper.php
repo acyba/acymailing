@@ -18,6 +18,8 @@ include_once rtrim(dirname(__DIR__), DS).DS.'libraries'.DS.strtolower('{__CMS__}
 define('ACYM_LIVE', rtrim(acym_rootURI(), '/').'/');
 define('ACYM_HELPER_GLOBAL', ACYM_HELPER.'global'.DS);
 
+define('ACYM_REGEX_SWITCHES', '#(switch_[0-9]*".*)(data\-switch=")(switch_.+id=")(switch_.+for=")(switch_)#Uis');
+
 //Avoid date warnings...
 if (is_callable('date_default_timezone_set')) {
     date_default_timezone_set(@date_default_timezone_get());

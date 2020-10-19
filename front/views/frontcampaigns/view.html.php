@@ -27,4 +27,9 @@ class FrontcampaignsViewFrontcampaigns extends acymView
 
         parent::__construct();
     }
+
+    public function addSegmentStep($data)
+    {
+
+    }
 }

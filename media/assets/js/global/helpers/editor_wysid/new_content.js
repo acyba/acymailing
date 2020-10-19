@@ -76,9 +76,9 @@ const acym_editorWysidNewContent = {
     },
     addSpaceWYSID: function (ui) {
         let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
-        content += '<td class="large-12 acym__wysid__column__element__td">';
+        content += '<td class="large-12 acym__wysid__column__element__td" style="height: 50px">';
 
-        content += '<span class="acy-editor__space" style="display:block; padding: 0;margin: 0; height: 50px"></span>';
+        content += '<span class="acy-editor__space" style="display:block; padding: 0;margin: 0; height: 100%"></span>';
 
         content += '</td>';
         content += '</tr>';

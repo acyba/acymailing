@@ -211,13 +211,13 @@ class MailsController extends acymController
 
         if (!empty($fromId)) $fromMail = $mailClass->getOneById($fromId);
 
-        // Automations or new mails
-        if (strpos($type, 'automation') !== false || empty($tempId)) {
-            if ($type == 'automation_admin') {
-                $type = 'automation';
-                $isAutomationAdmin = true;
-            }
+        if ($type == 'automation_admin') {
+            $type = 'automation';
+            $isAutomationAdmin = true;
+        }
 
+        // new mails
+        if (empty($tempId)) {
             if (empty($fromId)) {
                 $mail = new \stdClass();
                 $mail->name = '';
@@ -414,7 +414,6 @@ class MailsController extends acymController
 
             if (!$ajax) acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
             if ($fromAutomation) {
-                acym_setVar('from', $mailID);
                 acym_setVar('type', 'automation');
                 acym_setVar('type_editor', 'acyEditor');
             } else {
@@ -457,8 +456,7 @@ class MailsController extends acymController
 
     public function apply()
     {
-        $this->store();
-        $mailId = acym_getVar('int', 'mailID', 0);
+        $mailId = $this->store();
         acym_setVar('id', $mailId);
         $this->edit();
     }
