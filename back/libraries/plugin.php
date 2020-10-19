@@ -945,4 +945,32 @@ class acymPlugin extends acymObject
     {
         return $elementId;
     }
+
+    public function filterSpecialMailsDailySend(&$specialMails, $time, $mailType)
+    {
+        // Only once a day
+        $dailyHour = $this->config->get('daily_hour', '12');
+        $dailyMinute = $this->config->get('daily_minute', '00');
+        // The day it is currently based on the timezone specified in the CMS configuration
+        $dayBasedOnCMSTimezone = acym_date('now', 'Y-m-d');
+        // The UTC timestamp of the current day based on the CMS timezone, at the specified hour
+        $dayBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$dailyHour.':'.$dailyMinute);
+
+        $campaignClass = new CampaignClass();
+
+        $tmpMails = [];
+        foreach ($specialMails as $i => $oneMail) {
+            if ($oneMail->sending_type == $mailType) {
+                if ($time >= $dayBasedOnCMSTimezoneAtSpecifiedHour && (empty($oneMail->next_trigger) || date('m-d', $oneMail->next_trigger) == date('m-d', $dayBasedOnCMSTimezoneAtSpecifiedHour))) {
+                    $oneMail->next_trigger = acym_getTime('tomorrow '.$dailyHour.':'.$dailyMinute);
+                    $oneMail->last_generated = $time;
+                    $campaignClass->save($oneMail);
+                    $tmpMails[] = $oneMail;
+                }
+            } else {
+                $tmpMails[] = $oneMail;
+            }
+        }
+        $specialMails = $tmpMails;
+    }
 }

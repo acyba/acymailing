@@ -11,6 +11,7 @@ class UserClass extends acymClass
 {
     var $table = 'user';
     var $pkey = 'id';
+    var $nameColumn = 'email';
 
     var $sendWelcome = true;
     var $sendUnsubscribe = true;

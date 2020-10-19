@@ -6,9 +6,9 @@
 
 .select2-container--sortBy .selection .select2-selection--single {
     text-align: left;
-    box-shadow: 0 0 15px 2px #efefef !important;
     height: 30px;
     border-radius: 5px;
+    border: 1px solid map-get($foundation-palette, secondary) !important;
 }
 
 .select2-container {

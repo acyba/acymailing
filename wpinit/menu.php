@@ -66,6 +66,7 @@ class acyMenu extends acyHook
             'ACYM_USERS' => 'users',
             'ACYM_CUSTOM_FIELDS' => 'fields',
             'ACYM_LISTS' => 'lists',
+            'ACYM_SEGMENTS' => 'segments',
             'ACYM_EMAILS' => 'campaigns',
             'ACYM_TEMPLATES' => 'mails',
             'ACYM_AUTOMATION' => 'automation',

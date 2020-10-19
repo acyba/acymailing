@@ -4,7 +4,8 @@
         <?php if ($edition) {
             echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';
         } else {
-            echo '<form acym-data-id="'.$form->id.'" action="'.$form->form_tag_action.'" id="'.$form->form_tag_name.'" name="'.$form->form_tag_name.'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acymSubmitSubForm\')">';
+            $cookieExpirationAttr = empty($form->cookie['cookie_expiration']) ? 'acym-data-cookie="1"' : 'acym-data-cookie="'.$form->cookie['cookie_expiration'].'"';
+            echo '<form acym-data-id="'.$form->id.'" '.$cookieExpirationAttr.' action="'.$form->form_tag_action.'" id="'.$form->form_tag_name.'" name="'.$form->form_tag_name.'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acymSubmitSubForm\')">';
         }
         if (in_array($form->style_options['position'], ['image-top', 'image-left'])) include acym_getPartial('forms', 'image');
         echo '<div class="acym__subscription__form__popup__fields-button">';
@@ -107,9 +108,8 @@
             element.style.display = 'none';
 
             let exdate = new Date();
-            exdate.setDate(exdate.getDate() + 1);
-            document.cookie = 'acym_form_<?php echo $form->id;?>=' + Date.now() + ';expires=' + exdate.toUTCString();
-
+            exdate.setDate(exdate.getDate() + <?php echo empty($form->cookie['cookie_expiration']) ? 1 : $form->cookie['cookie_expiration'];?>);
+            document.cookie = 'acym_form_<?php echo $form->id;?>=' + Date.now() + ';expires=' + exdate.toUTCString() + ';path=/';
         }
 
         document.querySelector('.acym__subscription__form__popup__overlay').addEventListener('click', function (event) {

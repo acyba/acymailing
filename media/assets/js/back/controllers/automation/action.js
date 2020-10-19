@@ -33,7 +33,7 @@ jQuery(document).ready(function ($) {
                     // Set the option values
                     let $optionField = $('[name="acym_action[actions][' + and + '][' + actionName + '][' + optionName + ']"]');
 
-                    $.setFieldValue($optionField, optionValue);
+                    acym_helperFilter.setFieldValue($optionField, optionValue);
 
                     if ('acy_add_queue' === actionName && 'mail_id' === optionName && '' !== optionValue) {
                         $optionField.next()

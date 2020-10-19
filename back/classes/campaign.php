@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Classes;
 
+use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Libraries\acymClass;
 
@@ -99,7 +100,13 @@ class CampaignClass extends acymClass
 
         if ($settings['status'] != 'generated') {
             $operator = $settings['element_tab'] == 'campaigns_auto' ? '=' : '!=';
-            $filters[] = 'campaign.sending_type '.$operator.' '.acym_escapeDB(self::SENDING_TYPE_AUTO);
+            if ($settings['element_tab'] == 'campaigns_auto') {
+                $filters[] = 'campaign.sending_type '.$operator.' '.acym_escapeDB(self::SENDING_TYPE_AUTO);
+            } elseif ($settings['element_tab'] == 'campaigns') {
+                $filters[] = 'campaign.sending_type IN ('.acym_escapeDB(self::SENDING_TYPE_NOW).', '.acym_escapeDB(self::SENDING_TYPE_SCHEDULED).')';
+            } elseif (!empty($settings['element_tab'])) {
+                acym_trigger('onAcymCampaignAddFiltersSpecificListing', [&$filters, $settings['element_tab']]);
+            }
             $query .= ' WHERE ('.implode(') AND (', $filters).')';
             $queryCount .= ' WHERE ('.implode(') AND (', $filters).')';
         }
@@ -389,16 +396,62 @@ class CampaignClass extends acymClass
         return parent::delete($elements);
     }
 
+    public function countUsersCampaign($campaignID)
+    {
+        $campaign = $this->getOneById($campaignID);
+        if (empty($campaign)) return 0;
+
+        $mailClass = new MailClass();
+        $lists = $mailClass->getAllListsByMailId($campaign->mail_id);
+        $listsIds = [];
+        foreach ($lists as $list) {
+            $listsIds[] = $list->id;
+        }
+
+        $automationHelper = new AutomationHelper();
+        $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
+        $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(',', $listsIds).') and user_list.status = 1 '.$join;
+        $filters = $this->getFilterCampaign($campaign->sending_params);
+        foreach ($filters as $and => $andValues) {
+            $and = intval($and);
+            foreach ($andValues as $filterName => $options) {
+                acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelper, &$options, &$and]);
+            }
+        }
+
+        return $automationHelper->count();
+    }
+
+    public function getFilterCampaign($sendingParams)
+    {
+        $filters = [];
+        if (!empty($sendingParams['segment'])) {
+            if (!empty($sendingParams['segment']['filters'])) {
+                $filters = $sendingParams['segment']['filters'];
+            } else {
+                $segmentClass = new SegmentClass();
+                $segment = $segmentClass->getOneById($sendingParams['segment']['segment_id']);
+                if (!empty($segment)) $filters = $segment->filters;
+            }
+        }
+
+        return $filters;
+    }
+
     public function send($campaignID, $result = 0)
     {
         // Make sure the email we're trying to send exists
         $campaign = $this->getOneById($campaignID);
 
         if (empty($campaign->mail_id)) {
-            $this->errors[] = 'Mail not found';
+            $this->errors[] = acym_translation('ACYM_EMAIL_NOT_FOUND');
 
             return false;
         }
+
+        $filters = $this->getFilterCampaign($campaign->sending_params);
+
+        acym_trigger('onAcymSendCampaignSpecial', [$campaign, &$filters]);
 
         // Make sure some receivers have been selected
         $lists = acym_loadResultArray('SELECT list_id FROM #__acym_mail_has_list WHERE mail_id = '.intval($campaign->mail_id));
@@ -418,24 +471,31 @@ class CampaignClass extends acymClass
             ];
             if ($this->config->get('require_confirmation', 1) == 1) $conditions[] = '`user`.`confirmed` = 1';
 
+            $automationHelper = new AutomationHelper();
+            $automationHelper->join['ul'] = ' #__acym_user_has_list AS ul ON ul.user_id = user.id AND ul.list_id IN ('.implode(',', $lists).') and ul.status = 1 ';
             if (acym_isMultilingual()) {
-                $insertQuery = 'INSERT IGNORE INTO `#__acym_queue` (`mail_id`, `user_id`, `sending_date`) 
-                        SELECT DISTINCT IF(mail.id IS NULL, '.intval($campaign->mail_id).', `mail`.`id`), ul.`user_id`, '.acym_escapeDB($date).' 
-                        FROM `#__acym_user_has_list` AS `ul` 
-                        JOIN `#__acym_user` AS `user` ON `user`.`id` = `ul`.`user_id` 
-                        LEFT JOIN `#__acym_mail` AS mail ON `mail`.`language` = `user`.language AND `mail`.`parent_id` = '.intval($campaign->mail_id);
+                $select = ['IF(mail.id IS NULL, '.intval($campaign->mail_id).', `mail`.`id`)', 'ul.`user_id`', acym_escapeDB($date)];
+                $automationHelper->leftjoin['mail'] = '`#__acym_mail` AS mail ON `mail`.`language` = `user`.language AND `mail`.`parent_id` = '.intval($campaign->mail_id);
             } else {
-                $insertQuery = 'INSERT IGNORE INTO `#__acym_queue` (`mail_id`, `user_id`, `sending_date`) 
-                        SELECT '.intval($campaign->mail_id).', ul.`user_id`, '.acym_escapeDB($date).' 
-                        FROM `#__acym_user_has_list` AS `ul` 
-                        JOIN `#__acym_user` AS `user` ON `user`.`id` = `ul`.`user_id` ';
+                $select = [intval($campaign->mail_id), 'ul.`user_id`', acym_escapeDB($date)];
             }
+
             if (!empty($campaign->sending_params['resendTarget']) && 'new' === $campaign->sending_params['resendTarget']) {
-                $insertQuery .= ' LEFT JOIN `#__acym_user_stat` AS `us` ON `us`.`user_id` = `user`.`id` AND `us`.`mail_id` = '.intval($campaign->mail_id);
+                $automationHelper->leftjoin['us'] = '`#__acym_user_stat` AS `us` ON `us`.`user_id` = `user`.`id` AND `us`.`mail_id` = '.intval($campaign->mail_id);
                 $conditions[] = '`us`.`user_id` IS NULL';
             }
 
-            $insertQuery .= ' WHERE '.implode(' AND ', $conditions);
+            $automationHelper->where = $conditions;
+
+            foreach ($filters as $and => $andValues) {
+                $and = intval($and);
+                foreach ($andValues as $filterName => $options) {
+                    acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelper, &$options, &$and]);
+                }
+            }
+
+            $insertQuery = 'INSERT IGNORE INTO `#__acym_queue` (`mail_id`, `user_id`, `sending_date`) '.$automationHelper->getQuery($select);
+
             $result = acym_query($insertQuery);
         }
 
@@ -732,6 +792,7 @@ class CampaignClass extends acymClass
         $newCampaign->sending_type = self::SENDING_TYPE_NOW;
         $newCampaign->sent = 0;
         $newCampaign->last_generated = $lastGenerated;
+        $newCampaign->sending_params = empty($campaign->sending_params['segment']) ? '' : ['segment' => $campaign->sending_params['segment']];
 
         $newCampaign->id = $this->save($newCampaign);
 
@@ -797,5 +858,15 @@ class CampaignClass extends acymClass
         $query = 'SELECT id FROM #__acym_campaign WHERE parent_id IS NOT NULL AND sending_type = '.acym_escapeDB(self::SENDING_TYPE_NOW).' AND draft = 1 AND active = 1 AND sent = 0';
 
         return acym_loadObjectList($query);
+    }
+
+    public function getCampaignsByTypes($campaignTypes, $onlyActives = false)
+    {
+        if (empty($campaignTypes)) return [];
+        $campaignTypes = array_map('acym_escapeDB', $campaignTypes);
+        $query = 'SELECT campaign.* FROM #__acym_campaign AS campaign WHERE campaign.sending_type IN ('.implode(',', $campaignTypes).')';
+        if ($onlyActives) $query .= ' AND campaign.active = 1';
+
+        return $this->decode(acym_loadObjectList($query), false);
     }
 }

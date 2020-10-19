@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Helpers;
 
+use AcyMailing\Classes\MailClass;
 use AcyMailing\Libraries\acymObject;
 
 class AutomationHelper extends acymObject
@@ -11,6 +12,7 @@ class AutomationHelper extends acymObject
     var $join = [];
     var $where = [];
     var $orderBy = '';
+    var $groupBy = '';
     var $limit = '';
 
     public function getQuery($select = [])
@@ -21,6 +23,7 @@ class AutomationHelper extends acymObject
         if (!empty($this->join)) $query .= ' JOIN '.implode(' JOIN ', $this->join);
         if (!empty($this->leftjoin)) $query .= ' LEFT JOIN '.implode(' LEFT JOIN ', $this->leftjoin);
         if (!empty($this->where)) $query .= ' WHERE ('.implode(') AND (', $this->where).')';
+        if (!empty($this->groupBy)) $query .= ' GROUP BY '.$this->groupBy;
         if (!empty($this->orderBy)) $query .= ' ORDER BY '.$this->orderBy;
         if (!empty($this->limit)) $query .= ' LIMIT '.$this->limit;
 
@@ -125,5 +128,23 @@ class AutomationHelper extends acymObject
         }
 
         return acym_secureDBColumn($table).'.`'.acym_secureDBColumn($column).'` '.$operator.' '.$value;
+    }
+
+    public function deleteUnusedEmails()
+    {
+        $automationEmails = acym_loadResultArray('SELECT id FROM #__acym_mail WHERE type = "automation"');
+
+        $emailsToDelete = [];
+        foreach ($automationEmails as $email) {
+            $search = '"acy_add_queue":{"mail_id":"'.$email.'"';
+            $action = acym_loadResult('SELECT id FROM #__acym_action WHERE actions LIKE '.acym_escapeDB('%'.$search.'%'));
+
+            if (empty($action)) $emailsToDelete[] = $email;
+        }
+
+        if (!empty($emailsToDelete)) {
+            $mailClass = new MailClass();
+            $mailClass->delete($emailsToDelete);
+        }
     }
 }

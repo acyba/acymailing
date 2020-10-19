@@ -164,6 +164,7 @@ class UpdateHelper extends acymObject
             'ACYM_USERS',
             'ACYM_CUSTOM_FIELDS',
             'ACYM_LISTS',
+            'ACYM_SEGMENTS',
             'ACYM_EMAILS',
             'ACYM_TEMPLATES',
             'ACYM_AUTOMATION',

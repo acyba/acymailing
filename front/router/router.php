@@ -122,16 +122,35 @@ class AcymRouter extends AcymRouterBase
     {
         if (empty($segments)) return [];
 
-        $vars = [];
-        $vars['ctrl'] = array_shift($segments);
-        $vars['task'] = '';
-        $vars['step'] = '';
+        if (strpos(current($segments), $this->separator) === false) {
+            $vars = [];
+            $vars['ctrl'] = array_shift($segments);
+            $vars['task'] = '';
+            $vars['step'] = '';
+        } else {
+            $jsite = JFactory::getApplication('site');
+            $menus = $jsite->getMenu();
+            $menu = $menus->getActive();
+            if (!empty($menu) && !empty($menu->query)) {
+                $vars = $menu->query;
+            } else {
+                $vars = [];
+            }
+
+            if (!isset($vars['ctrl'])) {
+                $vars['ctrl'] = isset($vars['view']) ? $vars['view'] : '';
+            }
+            if (!isset($vars['task'])) {
+                $vars['task'] = isset($vars['layout']) ? $vars['layout'] : '';
+            }
+            if (!isset($vars['step'])) $vars['step'] = '';
+        }
 
         if (!empty($segments)) {
             if (strpos(current($segments), $this->separator) === false) {
                 $vars['task'] = array_shift($segments);
                 if (!empty($segments) && strpos(current($segments), $this->separator) === false) $vars['step'] = array_shift($segments);
-            } elseif ($vars['ctrl'] === 'archive') {
+            } elseif ($vars['ctrl'] === 'archive' && empty($vars['task'])) {
                 $vars['task'] = 'view';
                 $mail = array_shift($segments);
                 list($id, $alias) = explode($this->separator, $mail, 2);

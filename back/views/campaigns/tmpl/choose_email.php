@@ -3,6 +3,7 @@
 	<input type="hidden" name="mail[id]" value="<?php echo empty($data['mailInformation']->id) ? '' : intval($data['mailInformation']->id); ?>" />
 	<div id="acym__templates__choose" class="acym__content">
         <?php
+        $this->addSegmentStep($data['displaySegmentTab']);
         $workflow = $data['workflowHelper'];
         if (empty($data['campaignID'])) $workflow->disabledAfter = 'chooseTemplate';
         echo $workflow->display($this->steps, $this->step);

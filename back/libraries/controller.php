@@ -302,7 +302,7 @@ class acymController extends acymObject
         $this->listing();
     }
 
-    protected function getMatchingElementsFromData($requestData, &$status, &$page, $class = '')
+    public function getMatchingElementsFromData($requestData, &$status, &$page, $class = '')
     {
         $className = 'AcyMailing\\Classes\\'.$class.'Class';
         $classElement = empty($class) ? $this->currentClass : new $className();

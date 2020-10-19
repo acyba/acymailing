@@ -196,6 +196,18 @@ class CronHelper extends acymObject
             }
         }
 
+        // Step 9: Specific emails
+        if (!in_array('specific', $this->skip)) {
+            $campaignClass = new CampaignClass();
+            $specialTypes = [];
+            acym_trigger('getCampaignTypes', [&$specialTypes]);
+            $specialMail = $campaignClass->getCampaignsByTypes($specialTypes, true);
+            acym_trigger('filterSpecificMailsToSend', [&$specialMail, $time]);
+            foreach ($specialMail as $onespecialMail) {
+                $campaignClass->send($onespecialMail->id);
+            }
+        }
+
         return true;
     }
 
@@ -247,28 +259,29 @@ class CronHelper extends acymObject
     public function saveReport()
     {
         $saveReport = $this->config->get('cron_savereport');
-        if (empty($saveReport)) {
-            return;
-        }
-
         $reportPath = $this->config->get('cron_savepath');
-        if (empty($reportPath)) {
-            return;
-        }
+        if (empty($saveReport) || empty($reportPath)) return;
 
-        // We replace the year and the month in the file
+        // Prepare the cron file path
         $reportPath = str_replace(['{year}', '{month}'], [date('Y'), date('m')], $reportPath);
-
         $reportPath = acym_cleanPath(ACYM_ROOT.trim(html_entity_decode($reportPath)));
-
-        // We create the folder and an htaccess on it if it's not already there
         acym_createDir(dirname($reportPath), true, true);
 
-        //We only leave the first one so that we can see warnings...
+        $lr = "\r\n";
+        // Catch warnings
         ob_start();
-        file_put_contents($reportPath, "\r\n"."\r\n".str_repeat('*', 20).str_repeat(' ', 5).acym_getDate(time()).str_repeat(' ', 5).str_repeat('*', 20)."\r\n".implode("\r\n", $this->messages), FILE_APPEND);
+        file_put_contents(
+            $reportPath,
+            $lr.$lr.'********************     '.acym_getDate(time()).'     ********************'.$lr.implode($lr, $this->messages),
+            FILE_APPEND
+        );
+
         if ($saveReport == 2 && !empty($this->detailMessages)) {
-            @file_put_contents($reportPath, "\r\n"."---- Details ----"."\r\n".implode("\r\n", $this->detailMessages), FILE_APPEND);
+            file_put_contents(
+                $reportPath,
+                $lr.'---- Details ----'.$lr.implode($lr, $this->detailMessages),
+                FILE_APPEND
+            );
         }
         $potentialWarnings = ob_get_clean();
 

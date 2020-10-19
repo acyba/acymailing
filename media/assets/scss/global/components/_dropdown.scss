@@ -22,6 +22,10 @@
     text-align: left;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
 
+    &.wysid_tooltip {
+        position: absolute;
+    }
+
     .acym__tooltip__title {
         display: block;
         font-weight: 600;

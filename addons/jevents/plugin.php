@@ -611,7 +611,10 @@ class plgAcymJevents extends acymPlugin
 
 
         //load values
-        $customVDB = acym_loadObjectList('SELECT name, value FROM #__jev_customfields WHERE evdet_id = '.intval($element->evdet_id));
+        $customVDB = [];
+        if (in_array(acym_getPrefix().'jev_customfields', acym_getTableList())) {
+            $customVDB = acym_loadObjectList('SELECT name, value FROM #__jev_customfields WHERE evdet_id = '.intval($element->evdet_id));
+        }
         foreach ($customVDB as $oneField) {
             $varFields['{'.$oneField->name.'}'] = $oneField->value;
         }

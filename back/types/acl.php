@@ -43,6 +43,7 @@ class AclType extends acymObject
                 '',
                 [
                     'containerClass' => 'cell small-6 large-8 xlarge-4',
+                    'data-abide-ignore' => '',
                 ]
             );
         }

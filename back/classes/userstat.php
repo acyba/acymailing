@@ -76,7 +76,7 @@ class UserStatClass extends acymClass
     {
         $mailClass = new MailClass();
 
-        $query = 'SELECT us.*, m.name, m.subject, u.email, c.id as campaign_id, c.parent_id, 0 AS total_click 
+        $query = 'SELECT us.*, m.name, m.subject, u.email, u.name AS username, c.id as campaign_id, c.parent_id, 0 AS total_click 
                     FROM #__acym_user_stat AS us
                     LEFT JOIN #__acym_user AS u ON us.user_id = u.id
                     INNER JOIN #__acym_mail AS m ON us.mail_id = m.id
@@ -91,7 +91,8 @@ class UserStatClass extends acymClass
         }
 
         if (!empty($settings['search'])) {
-            $where[] = 'm.name LIKE '.acym_escapeDB('%'.$settings['search'].'%').' OR u.email LIKE '.acym_escapeDB('%'.$settings['search'].'%');
+            $searchTerms = acym_escapeDB('%'.$settings['search'].'%');
+            $where[] = 'm.name LIKE '.$searchTerms.' OR u.email LIKE '.$searchTerms.' OR u.name LIKE '.$searchTerms;
         }
 
         if (!empty($where)) {
@@ -102,7 +103,7 @@ class UserStatClass extends acymClass
         $query .= ' GROUP BY us.mail_id, us.user_id';
 
         if (!empty($settings['ordering']) && !empty($settings['ordering_sort_order'])) {
-            if ($settings['ordering'] == 'email') {
+            if (in_array($settings['ordering'], ['email', 'name'])) {
                 $table = 'u';
             } elseif ($settings['ordering'] == 'subject') {
                 $table = 'm';

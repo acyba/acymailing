@@ -134,6 +134,10 @@
             margin-bottom: 0;
             margin-top: 0;
             display: inline-flex;
+
+            &.acym__small_select{
+                width: 90px;
+            }
         }
 
         .acym__automation__choose__condition, .acym__automation__choose__filter {

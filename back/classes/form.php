@@ -147,6 +147,11 @@ class FormClass extends acymClass
             'termscond' => 0,
             'privacy' => 0,
         ];
+        if (in_array($type, [self::SUB_FORM_TYPE_FOOTER, self::SUB_FORM_TYPE_HEADER, self::SUB_FORM_TYPE_POPUP])) {
+            $newForm->cookie = [
+                'cookie_expiration' => 1,
+            ];
+        }
         if ($type == self::SUB_FORM_TYPE_POPUP) {
             $newForm->style_options = [
                 'position' => 'image-top',
@@ -487,6 +492,29 @@ class FormClass extends acymClass
                 $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_PRIVACY_POLICY').'</label>';
                 $return['render'][$key] .= '<div class="cell auto">
                                                 <select2ajax :name="\''.$name.'\'" :value="\''.$value.'\'" v-model="'.$vModel.'" :urlselected="\'&ctrl=forms&task=getArticlesById&article_id=\'" :ctrl="\'forms\'" :task="\'getArticles\'"></select2ajax>
+                                            </div>';
+            }
+        }
+
+        return $return;
+    }
+
+
+    private function prepareMenuHtmlSettings_cookie($optionName, $options)
+    {
+        $return = [
+            'title' => acym_translation('ACYM_COOKIE_SETTINGS'),
+        ];
+        $return['render'] = [];
+        foreach ($options as $key => $value) {
+            $name = 'form['.$optionName.']['.$key.']';
+            $vModel = 'form.'.$optionName.'.'.$key;
+
+            if ($key == 'cookie_expiration') {
+                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_COOKIE_EXPIRATION').'</label>';
+                $return['render'][$key] .= '<div class="cell auto grid-x acym_vcenter">
+                                                <input min="1" type="number" class="cell medium-3 margin-right-1" v-model="'.$vModel.'">
+                                                <span class="cell shrink">'.acym_translation('ACYM_DAYS').'</span>
                                             </div>';
             }
         }

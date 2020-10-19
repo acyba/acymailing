@@ -484,33 +484,34 @@ const acym_editorWysidContextModal = {
             let $slideHandler = $contextSpace.find('.slider-handle');
 
             acym_editorWysidContextModal.showContextModal($contextSpace);
+            let $tdParent = $space.closest('.acym__wysid__column__element__td');
 
-            let heightSpace = $space.height();
+            let heightSpace = $tdParent.css('height').replace(/[^-\d\.]/g, '');
+            $space.css('height', '100%');
+            $tdParent.css('height', heightSpace + 'px');
 
             $slideHandler.css('left', heightSpace + '%');
             $contextSpace.find('.slider-fill').css('width', heightSpace + '%');
             jQuery('#sliderOutput1').val(heightSpace);
-            jQuery('.acy-editor__space--focus').removeClass('acy-editor__space--focus');
-            $space.addClass('acy-editor__space--focus');
 
 
             let $sliderSpace = jQuery('#acym__wysid__context__space__slider');
-            $sliderSpace.on('moved.zf.slider', function () {
-                jQuery('.acy-editor__space--focus').css('height', jQuery('#sliderOutput1').val() + 'px');
+            $sliderSpace.off('moved.zf.slider').on('moved.zf.slider', function () {
+                $tdParent.css('height', jQuery('#sliderOutput1').val() + 'px');
 
             });
-            $sliderSpace.on('changed.zf.slider', function () {
+            $sliderSpace.off('changed.zf.slider').on('changed.zf.slider', function () {
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
             });
 
             $contextSpace.off('mousedown').on('mousedown', function (event) {
-                jQuery('.acy-editor__space--focus').css('height', jQuery('#sliderOutput1').val() + 'px');
+                $tdParent.css('height', jQuery('#sliderOutput1').val() + 'px');
                 event.stopPropagation();
             });
 
             jQuery(window).on('mousedown', function (event) {
                 if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextSpace)) return true;
-                jQuery('.acy-editor__space--focus').css('height', jQuery('#sliderOutput1').val() + 'px');
+                $tdParent.css('height', jQuery('#sliderOutput1').val() + 'px');
                 jQuery(this).off('mousedown');
                 acym_editorWysidContextModal.hideContextModal($contextSpace, jQuery(event.target));
                 jQuery(window).unbind('click');

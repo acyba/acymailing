@@ -97,23 +97,25 @@ class StatsController extends acymController
 
     private function prepareDetailedListing(&$data)
     {
+        $data['search'] = $this->getVarFiltersListing('string', 'detailed_stats_search', '');
+        $data['ordering'] = $this->getVarFiltersListing('string', 'detailed_stats_ordering', 'send_date');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'detailed_stats_ordering_sort_order', 'desc');
+
+        if (empty($data['selectedMailid'])) return;
+
         $userStatClass = new UserStatClass();
         $pagination = new PaginationHelper();
-
-        $search = $this->getVarFiltersListing('string', 'detailed_stats_search', '');
-        $ordering = $this->getVarFiltersListing('string', 'detailed_stats_ordering', 'send_date');
-        $orderingSortOrder = $this->getVarFiltersListing('string', 'detailed_stats_ordering_sort_order', 'desc');
 
         $detailedStatsPerPage = $pagination->getListLimit();
         $page = acym_getVar('int', 'detailed_stats_pagination_page', 1);
 
         $matchingDetailedStats = $userStatClass->getDetailedStats(
             [
-                'ordering' => $ordering,
-                'search' => $search,
+                'ordering' => $data['ordering'],
+                'search' => $data['search'],
                 'detailedStatsPerPage' => $detailedStatsPerPage,
                 'offset' => ($page - 1) * $detailedStatsPerPage,
-                'ordering_sort_order' => $orderingSortOrder,
+                'ordering_sort_order' => $data['orderingSortOrder'],
                 'mail_id' => $data['selectedMailid'],
             ]
         );
@@ -121,9 +123,6 @@ class StatsController extends acymController
         // Prepare the pagination
         $pagination->setStatus($matchingDetailedStats['total'], $page, $detailedStatsPerPage);
 
-        $data['search'] = $search;
-        $data['ordering'] = $ordering;
-        $data['orderingSortOrder'] = $orderingSortOrder;
         $data['pagination'] = $pagination;
         $data['detailed_stats'] = $matchingDetailedStats['detailed_stats'];
     }

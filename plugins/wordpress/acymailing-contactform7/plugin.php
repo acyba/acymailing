@@ -43,7 +43,7 @@ class plgAcymContactform7 extends acymPlugin
     {
         wpcf7_add_form_tag(
             ['acymsub', 'acymsub*'],
-            'addFormTagAcymsubHandler',
+            'acym_addFormTagAcymsubHandler',
             ['name-attr' => true]
         );
     }
@@ -55,7 +55,7 @@ class plgAcymContactform7 extends acymPlugin
         $tag_generator->add(
             'acymsub',
             acym_translation('ACYM_ACYMAILING_LISTS'),
-            'addTagGeneratorAcymsubHandler'
+            'acym_addTagGeneratorAcymsubHandler'
         );
     }
 
@@ -65,7 +65,8 @@ class plgAcymContactform7 extends acymPlugin
         $name = $tag->name;
         $is_required = $tag->is_required();
         $value = isset($_POST[$name]) ? (array)$_POST[$name] : [];
-        $hiddenValue = isset($_POST['acymhiddenlists_'.$name]) ? $_POST['acymhiddenlists_'.$name] : '';
+        $value = array_map('esc_attr', $value);
+        $hiddenValue = isset($_POST['acymhiddenlists_'.$name]) ? sanitize_text_field($_POST['acymhiddenlists_'.$name]) : '';
         if ($is_required && empty($value) && empty($hiddenValue)) {
             $result->invalidate($tag, wpcf7_get_message('invalid_required'));
         }

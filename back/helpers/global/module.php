@@ -10,11 +10,13 @@ function acym_getModuleFormName()
 
 function acym_initModule($params = null)
 {
-    static $loaded = false;
-    if ($loaded) {
-        return;
+    if(!file_exists(ACYM_ROOT.'plugins'.DS.'system'.DS.'modulesanywhere')){
+        static $loaded = false;
+        if ($loaded) {
+            return;
+        }
+        $loaded = true;
     }
-    $loaded = true;
 
     $loadJsInModule = false;
 
@@ -31,7 +33,9 @@ function acym_initModule($params = null)
         $emailCaption = acym_translation('ACYM_EMAIL');
     }
 
-    $js = " var acymModule = [];
+    $js = "
+        if(typeof acymModule === 'undefined'){
+            var acymModule = [];
 			acymModule['emailRegex'] = /^".acym_getEmailRegex(true)."$/i;
 			acymModule['NAMECAPTION'] = '".str_replace("'", "\'", $nameCaption)."';
 			acymModule['NAME_MISSING'] = '".str_replace("'", "\'", acym_translation('ACYM_MISSING_NAME'))."';
@@ -39,7 +43,8 @@ function acym_initModule($params = null)
 			acymModule['VALID_EMAIL'] = '".str_replace("'", "\'", acym_translation('ACYM_VALID_EMAIL'))."';
 			acymModule['CAPTCHA_MISSING'] = '".str_replace("'", "\'", acym_translation('ACYM_WRONG_CAPTCHA'))."';
 			acymModule['NO_LIST_SELECTED'] = '".str_replace("'", "\'", acym_translation('ACYM_SELECT_LIST'))."';
-			acymModule['ACCEPT_TERMS'] = '".str_replace("'", "\'", acym_translation('ACYM_ACCEPT_TERMS'))."';
+            acymModule['ACCEPT_TERMS'] = '".str_replace("'", "\'", acym_translation('ACYM_ACCEPT_TERMS'))."';
+        }
 		";
 
     $config = acym_config();

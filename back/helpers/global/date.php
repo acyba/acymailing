@@ -244,3 +244,82 @@ function acym_getTime($date)
 {
     return acym_getTimeFromCMSDate($date);
 }
+
+function acym_date($time = 'now', $format = null, $useTz = true, $translate = true)
+{
+    if ($time == 'now') {
+        $time = time();
+    }
+
+    if (is_numeric($time)) {
+        $time = date('Y-m-d H:i:s', (int)$time);
+    }
+
+    if (!$format || (strpos($format, 'ACYM_DATE_FORMAT') !== false && acym_translation($format) == $format)) {
+        $format = 'ACYM_DATE_FORMAT_LC1';
+    }
+    $format = acym_translation($format);
+
+    //Don't use timezone
+    if ($useTz === false) {
+        $date = new DateTime($time);
+
+        if ($translate) {
+            return acym_translateDate($date->format($format));
+        } else {
+            return $date->format($format);
+        }
+    } else {
+        //use timezone
+        $cmsOffset = acym_getCMSConfig('offset');
+
+        $timezone = new DateTimeZone($cmsOffset);
+
+        if (!is_numeric($cmsOffset)) {
+            $cmsOffset = $timezone->getOffset(new DateTime);
+        }
+
+        if ($translate) {
+            return acym_translateDate(date($format, strtotime($time) + $cmsOffset));
+        } else {
+            return date($format, strtotime($time) + $cmsOffset);
+        }
+    }
+}
+
+function acym_translateDate($date)
+{
+    $map = [
+        'January' => 'ACYM_JANUARY',
+        'February' => 'ACYM_FEBRUARY',
+        'March' => 'ACYM_MARCH',
+        'April' => 'ACYM_APRIL',
+        'May' => 'ACYM_MAY',
+        'June' => 'ACYM_JUNE',
+        'July' => 'ACYM_JULY',
+        'August' => 'ACYM_AUGUST',
+        'September' => 'ACYM_SEPTEMBER',
+        'October' => 'ACYM_OCTOBER',
+        'November' => 'ACYM_NOVEMBER',
+        'December' => 'ACYM_DECEMBER',
+        'Monday' => 'ACYM_MONDAY',
+        'Tuesday' => 'ACYM_TUESDAY',
+        'Wednesday' => 'ACYM_WEDNESDAY',
+        'Thursday' => 'ACYM_THURSDAY',
+        'Friday' => 'ACYM_FRIDAY',
+        'Saturday' => 'ACYM_SATURDAY',
+        'Sunday' => 'ACYM_SUNDAY',
+    ];
+
+    foreach ($map as $english => $translationKey) {
+        $translation = acym_translation($translationKey);
+        if ($translation == $translationKey) {
+            continue;
+        }
+
+        $date = preg_replace('#'.preg_quote($english).'( |,|$)#i', $translation.'$1', $date);
+        $date = preg_replace('#'.preg_quote(substr($english, 0, 3)).'( |,|$)#i', mb_substr($translation, 0, 3).'$1', $date);
+    }
+
+    return $date;
+}

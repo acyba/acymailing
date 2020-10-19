@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Helpers\CronHelper;
 use AcyMailing\Libraries\acymPlugin;
 
 class plgAcymManagetext extends acymPlugin

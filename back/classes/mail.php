@@ -160,7 +160,7 @@ class MailClass extends acymClass
     /**
      * @param int $id
      *
-     * @return array
+     * @return object
      */
     public function getOneById($id)
     {
@@ -848,7 +848,7 @@ class MailClass extends acymClass
      *
      * @param array $mails
      *
-     * @return array
+     * @return mixed
      */
     public function decode($mails = [])
     {
