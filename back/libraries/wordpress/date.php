@@ -14,3 +14,8 @@ function acym_getTimeOffsetCMS()
 
     return $timeoffset;
 }
+
+function acym_dateTimeCMS($time)
+{
+    return date('Y-m-d H:i:s', $time);
+}
