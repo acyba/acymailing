@@ -1,4 +1,12 @@
 module.exports = {
+    '6.17.1': {
+        'fix': [
+            {
+                cms: 'joomla',
+                message: 'Fixed date for scheduled campaign showing with the timezone'
+            }
+        ]
+    },
     '6.17.0': {
         'feature': [
             {

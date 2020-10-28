@@ -13,13 +13,8 @@
 				<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('lists&task=edit&step=settings'); ?>">
                     <?php echo acym_translation('ACYM_CREATE_LIST'); ?>
 				</a>
-				<a class="acym__dashboard__card__link" href="#">
-                    <?php
-                    echo acym_tooltip(
-                        acym_translation('ACYM_CREATE_SEGMENT'),
-                        '<span class="acy_coming_soon"><i class="acymicon-new_releases acy_coming_soon_icon"></i>'.acym_translation('ACYM_COMING_SOON').'</span>',
-                        'acym__dashboard__card__link__unclickable'
-                    ); ?>
+				<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('segments&task=edit'); ?>">
+                    <?php echo acym_translation('ACYM_CREATE_SEGMENT'); ?>
 				</a>
 			</div>
         <?php } ?>

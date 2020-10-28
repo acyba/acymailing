@@ -252,7 +252,7 @@ function acym_date($time = 'now', $format = null, $useTz = true, $translate = tr
     }
 
     if (is_numeric($time)) {
-        $time = date('Y-m-d H:i:s', (int)$time);
+        $time = acym_dateTimeCMS((int)$time);
     }
 
     if (!$format || (strpos($format, 'ACYM_DATE_FORMAT') !== false && acym_translation($format) == $format)) {

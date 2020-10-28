@@ -13,7 +13,7 @@ let multidest = require('gulp-multi-dest');
 let command = require('gulp-run-command').default;
 let babel = require('gulp-babel');
 
-let version = '6.17.0';
+let version = '6.17.1';
 
 let minifyJSOptions = {
     ext: {

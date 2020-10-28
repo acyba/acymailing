@@ -14,7 +14,7 @@
                         echo '<p>'.acym_translation('ACYM_YOU_DID_NOT_SELECT_LISTS').'</p>';
                     } else { ?>
 						<div class="cell grid-x grid-margin-x">
-							<p class="cell large-2 medium-4"><?php echo acym_translation('ACYM_PREVIOUSLY_SELECTED_LISTS'); ?></p>
+							<p class="cell large-3 medium-4"><?php echo acym_translation('ACYM_PREVIOUSLY_SELECTED_LISTS'); ?></p>
 							<div class="cell shrink">
                                 <?php
                                 foreach ($data['campaignLists'] as $list) {
@@ -24,7 +24,7 @@
 							</div>
 						</div>
 						<div class="cell grid-x grid-margin-x">
-							<p class="cell large-2 medium-4"><?php echo acym_translation('ACYM_PREVIOUSLY_SELECTED_USERS'); ?></p>
+							<p class="cell large-3 medium-4"><?php echo acym_translation('ACYM_PREVIOUSLY_SELECTED_USERS'); ?></p>
 							<p class="cell shrink"><b><?php echo $data['recipientsNumber']; ?></b></p>
 						</div>
                     <?php } ?>
