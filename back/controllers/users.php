@@ -22,7 +22,6 @@ class UsersController extends acymController
     {
         parent::__construct();
         $this->breadcrumb[acym_translation('ACYM_USERS')] = acym_completeLink('users');
-        $this->currentClass = new UserClass();
         $this->loadScripts = [
             'edit' => ['datepicker'],
             'all' => ['vue-applications' => ['entity_select']],
@@ -73,7 +72,7 @@ class UsersController extends acymController
         );
 
         $toolbarHelper->addButton(
-            acym_translation('ACYM_EXPORT').' (<span id="acym__users__listing__number_to_export" data-default="'.strtolower(acym_translation('ACYM_ALL')).'">'.strtolower(acym_translation('ACYM_ALL')).'</span>)',
+            acym_translation('ACYM_EXPORT').' (<span id="acym__users__listing__number_to_export" data-default="'.acym_strtolower(acym_translation('ACYM_ALL')).'">'.acym_strtolower(acym_translation('ACYM_ALL')).'</span>)',
             ['data-task' => 'export', 'type' => 'submit'],
             'upload'
         );

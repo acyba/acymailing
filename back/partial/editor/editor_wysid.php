@@ -64,7 +64,7 @@
 			<!--Warning area when generating thumbnail-->
 			<div id="acym__wysid__warning__thumbnail" class="grid-x align-center" style="display: none;">
 				<div class="cell align-center acym_vcenter">
-					<h3><?php echo acym_translation('ACYM_GENERATING_THUMBNAIL'); ?></h3>
+					<h3><?php echo acym_translation('ACYM_SAVING_EMAIL'); ?></h3>
 				</div>
                 <?php echo acym_loaderLogo(); ?>
 			</div>
@@ -162,6 +162,6 @@
 	<div id="acym__wysid__modal__dynamic-text__ui" class="float-center cell">
 		<i class="acymicon-close acym__wysid__modal__dynamic-text--close" id="acym__wysid__modal__dynamic-text__close__icon"></i>
         <?php $dynamicCtrl = acym_isAdmin() ? 'dynamics' : 'frontdynamics'; ?>
-		<iframe id="acym__wysid__modal__dynamic-text__ui__iframe" src="<?php echo acym_completeLink($dynamicCtrl.'&task=popup&automation='.$this->automation, true); ?>" frameborder="0"></iframe>
+		<iframe id="acym__wysid__modal__dynamic-text__ui__iframe" src="<?php echo acym_completeLink($dynamicCtrl.'&task=popup&automation='.$this->automation.'&mail_id='.$this->mailId, true); ?>" frameborder="0"></iframe>
 	</div>
 </div>

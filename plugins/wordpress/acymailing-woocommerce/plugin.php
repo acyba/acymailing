@@ -1,5 +1,6 @@
 <?php
 
+use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Controllers\CampaignsController;
 use AcyMailing\Libraries\acymPlugin;
 use AcyMailing\Helpers\TabHelper;
@@ -11,6 +12,9 @@ use AcyMailing\Classes\CampaignClass;
 class plgAcymWoocommerce extends acymPlugin
 {
     const MAILTYPE = 'woocommerce_cart';
+    const FOLLOWTRIGGER = 'woocommerce_purchase';
+    const MAIL_OVERRIDE_SOURCE_NAME = 'woocommerce';
+    const PLUGIN_DISPLAYED_NAME = 'WooCommerce';
 
     public function __construct()
     {
@@ -612,20 +616,22 @@ class plgAcymWoocommerce extends acymPlugin
 
     public function searchProduct()
     {
-        $id = acym_getVar('int', 'id');
-        if (!empty($id)) {
+        $ids = $this->getIdsSelectAjax();
+
+        if (!empty($ids)) {
             $args = [
-                'p' => $id,
+                'post__in' => $ids,
                 'post_type' => 'product',
             ];
             $posts = new WP_Query($args);
 
-            $value = '';
+            $value = [];
             if ($posts->have_posts()) {
-                $posts->the_post();
-                $value = $posts->post->post_title;
+                foreach ($posts->get_posts() as $post) {
+                    $value[] = ['text' => $post->post_title, 'value' => $post->ID];
+                }
             }
-            echo json_encode(['value' => $value]);
+            echo json_encode($value);
             exit;
         }
 
@@ -650,6 +656,34 @@ class plgAcymWoocommerce extends acymPlugin
         }
 
         echo json_encode($return);
+        exit;
+    }
+
+    public function searchCat()
+    {
+        $ids = $this->getIdsSelectAjax();
+
+        if (!empty($ids)) {
+            $cats = acym_loadObjectList('SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.term_id IN ("'.implode('","', $ids).'") ORDER BY term.`name`');
+
+            $value = [];
+            if (!empty($cats)) {
+                foreach ($cats as $cat) {
+                    $value[] = ['text' => $cat->name, 'value' => $cat->term_id];
+                }
+            }
+            echo json_encode($value);
+            exit;
+        }
+
+        $search = acym_getVar('string', 'search', '');
+        $cats = acym_loadObjectList('SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.name LIKE '.acym_escapeDB('%'.$search.'%').' ORDER BY term.`name`');
+        $categories = [];
+        foreach ($cats as $oneCat) {
+            $categories[] = [$oneCat->term_id, $oneCat->name];
+        }
+
+        echo json_encode($categories);
         exit;
     }
 
@@ -975,7 +1009,7 @@ class plgAcymWoocommerce extends acymPlugin
 			<div class="grid-x">
 				<div class="cell grid-x grid-margin-x">
                     <?php
-                    $subOptionTxt = acym_translation_sprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', 'WooCommerce').acym_info(acym_translation('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC'));
+                    $subOptionTxt = acym_translation_sprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', 'WooCommerce').acym_info('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC');
                     echo acym_switch(
                         'config[woocommerce_sub]',
                         $this->config->get('woocommerce_sub'),
@@ -991,7 +1025,7 @@ class plgAcymWoocommerce extends acymPlugin
 				<div class="cell grid-x" id="acym__config__woocommerce_sub">
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__woocommerce-text">
-                            <?php echo acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info(acym_translation('ACYM_SUBSCRIBE_CAPTION_OPT_DESC')); ?>
+                            <?php echo acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info('ACYM_SUBSCRIBE_CAPTION_OPT_DESC'); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -1000,7 +1034,7 @@ class plgAcymWoocommerce extends acymPlugin
 					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__woocommerce-autolists">
-                            <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info(acym_translation('ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC')); ?>
+                            <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC'); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -1268,6 +1302,27 @@ class plgAcymWoocommerce extends acymPlugin
             }
         }
         if (empty($acyUser)) return;
+
+        $items = $order->get_items();
+        $productIds = [];
+        $categoriesIds = [];
+        foreach ($items as $item) {
+            $productIds[] = $item->get_product_id();
+            $terms = get_the_terms($item->get_product_id(), 'product_cat');
+            foreach ($terms as $term) {
+                if (!in_array($term->term_id, $categoriesIds)) $categoriesIds[] = $term->term_id;
+            }
+        }
+
+        $params = [
+            'woo_order_status' => $statusTo,
+            'woo_order_product_ids' => $productIds,
+            'woo_order_cat_ids' => $categoriesIds,
+        ];
+
+        $followupClass = new FollowupClass();
+        $followupClass->addFollowupEmailsQueue(self::FOLLOWTRIGGER, $acyUser->id, $params);
+
         $automationClass = new AutomationClass();
         $automationClass->trigger(
             'woocommerce_order_change',
@@ -1410,8 +1465,181 @@ class plgAcymWoocommerce extends acymPlugin
         }
     }
 
+
     public function filterSpecificMailsToSend(&$specialMails, $time)
     {
         $this->filterSpecialMailsDailySend($specialMails, $time, self::MAILTYPE);
+    }
+
+    public function getFollowupTriggerBlock(&$blocks)
+    {
+        $blocks[] = [
+            'name' => acym_translation('ACYM_WOOCOMMERCE_PURCHASE'),
+            'description' => acym_translation('ACYM_WOOCOMMERCE_FOLLOW_UP_DESC'),
+            'icon' => 'acymicon-cart-arrow-down',
+            'link' => acym_completeLink('campaigns&task=edit&step=followupCondition&trigger='.self::FOLLOWTRIGGER),
+            'level' => 2,
+            'alias' => self::FOLLOWTRIGGER,
+        ];
+    }
+
+    public function getFollowupTriggers(&$triggers)
+    {
+        $triggers[self::FOLLOWTRIGGER] = acym_translation('ACYM_WOOCOMMERCE_PURCHASE');
+    }
+
+    public function getAcymAdditionalConditionFollowup(&$additionalCondition, $trigger, $followup, $statusArray)
+    {
+        if ($trigger == self::FOLLOWTRIGGER) {
+            $woocommerceOrderStatus = $this->getOrderStatuses();
+            $multiselectOrderStatus = acym_selectMultiple($woocommerceOrderStatus, 'followup[condition][order_status]', !empty($followup->condition) && $followup->condition['order_status'] ? $followup->condition['order_status'] : [], ['class' => 'acym__select']);
+            $multiselectOrderStatus = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectOrderStatus.'</span>';
+            $statusOrderStatus = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select($statusArray, 'followup[condition][order_status_status]', !empty($followup->condition) ? $followup->condition['order_status_status'] : '', 'class="acym__select"').'</span>';;
+            $additionalCondition['order_status'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
+
+
+            $ajaxParams = json_encode(
+                [
+                    'plugin' => 'plgAcymWoocommerce',
+                    'trigger' => 'searchProduct',
+                ]
+            );
+            $parametersProductSelect = [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-params' => acym_escape($ajaxParams),
+                'data-selected' => !empty($followup->condition) && !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : '',
+            ];
+            $woocommerceProducts = [];
+            $multiselectProducts = acym_selectMultiple($woocommerceProducts, 'followup[condition][products]', !empty($followup->condition) && !empty($followup->condition['products']) ? $followup->condition['products'] : [], $parametersProductSelect);
+            $multiselectProducts = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectProducts.'</span>';
+            $statusProducts = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select($statusArray, 'followup[condition][products_status]', !empty($followup->condition) ? $followup->condition['products_status'] : '', 'class="acym__select"').'</span>';;
+            $additionalCondition['products'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
+
+            $ajaxParams = json_encode(
+                [
+                    'plugin' => 'plgAcymWoocommerce',
+                    'trigger' => 'searchCat',
+                ]
+            );
+            $parametersCategoriesSelect = [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-params' => acym_escape($ajaxParams),
+                'data-selected' => !empty($followup->condition) && !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : '',
+            ];
+            $woocommerceCategories = [];
+            $multiselectCategories = acym_selectMultiple($woocommerceCategories, 'followup[condition][categories]', !empty($followup->condition) && !empty($followup->condition['categories']) ? $followup->condition['categories'] : [], $parametersCategoriesSelect);
+            $multiselectCategories = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectCategories.'</span>';
+            $statusCategories = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select($statusArray, 'followup[condition][categories_status]', !empty($followup->condition) ? $followup->condition['categories_status'] : '', 'class="acym__select"').'</span>';;
+            $additionalCondition['categories'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
+        }
+    }
+
+    public function matchFollowupsConditions(&$followups, $userId, $params)
+    {
+        foreach ($followups as $key => $followup) {
+            if ($followup->trigger != self::FOLLOWTRIGGER) continue;
+            //We check the order status
+            if (!empty($followup->condition['order_status_status']) && !empty($followup->condition['order_status'])) {
+                $status = $followup->condition['order_status_status'] == 'is';
+                $inArray = in_array('wc-'.$params['woo_order_status'], $followup->condition['order_status']);
+                if (($status && !$inArray) || (!$status && $inArray)) unset($followups[$key]);
+            }
+
+            //We check the products
+            if (!empty($followup->condition['products_status']) && !empty($followup->condition['products'])) {
+                $status = $followup->condition['products_status'] == 'is';
+                $inArray = false;
+                foreach ($params['woo_order_product_ids'] as $product_id) {
+                    if (in_array($product_id, $followup->condition['products'])) {
+                        $inArray = true;
+                        break;
+                    }
+                }
+                if (($status && !$inArray) || (!$status && $inArray)) unset($followups[$key]);
+            }
+
+            //We check the categories
+            if (!empty($followup->condition['categories_status']) && !empty($followup->condition['categories'])) {
+                $status = $followup->condition['categories_status'] == 'is';
+                $inArray = false;
+                foreach ($params['woo_order_cat_ids'] as $cat_id) {
+                    if (in_array($cat_id, $followup->condition['categories'])) {
+                        $inArray = true;
+                        break;
+                    }
+                }
+                if (($status && !$inArray) || (!$status && $inArray)) unset($followups[$key]);
+            }
+        }
+    }
+
+    public function getFollowupConditionSummary(&$return, $condition, $trigger, $statusArray)
+    {
+        if ($trigger == self::FOLLOWTRIGGER) {
+            if (empty($condition['order_status_status']) || empty($condition['order_status'])) {
+                $return[] = acym_translation('ACYM_EVERY_ORDER_STATUS');
+            } else {
+                $woocommerceOrderStatus = $this->getOrderStatuses();
+                $orderStatusToDisplay = [];
+                foreach ($woocommerceOrderStatus as $key => $orderStatus) {
+                    if (in_array($key, $condition['order_status'])) $orderStatusToDisplay[] = $orderStatus;
+                }
+                $return[] = acym_translation_sprintf('ACYM_ORDER_STATUS_X_IN_X', strtolower($statusArray[$condition['order_status_status']]), implode(', ', $orderStatusToDisplay));
+            }
+
+            if (empty($condition['products_status']) || empty($condition['products'])) {
+                $return[] = acym_translation('ACYM_EVERY_PRODUCTS');
+            } else {
+                $args = [
+                    'post__in' => $condition['products'],
+                    'post_type' => 'product',
+                ];
+                $posts = new WP_Query($args);
+
+                $productsToDisplay = [];
+                if ($posts->have_posts()) {
+                    foreach ($posts->get_posts() as $post) {
+                        $productsToDisplay[] = $post->post_title;
+                    }
+                }
+                $return[] = acym_translation_sprintf('ACYM_PRODUCTS_X_IN_X', strtolower($statusArray[$condition['products_status']]), implode(', ', $productsToDisplay));
+            }
+
+            if (empty($condition['categories_status']) || empty($condition['categories'])) {
+                $return[] = acym_translation('ACYM_EVERY_CATEGORIES');
+            } else {
+                $cats = acym_loadObjectList('SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.term_id IN ("'.implode('","', $condition['categories']).'") ORDER BY term.`name`');
+
+                $categoriesToDisplay = [];
+                if (!empty($cats)) {
+                    foreach ($cats as $cat) {
+                        $categoriesToDisplay[] = $cat->name;
+                    }
+                }
+                $return[] = acym_translation_sprintf('ACYM_CATEGORIES_X_IN_X', strtolower($statusArray[$condition['categories_status']]), implode(', ', $categoriesToDisplay));
+            }
+        }
+    }
+
+    public function onAcymGetEmailOverrides(&$emailsOverride)
+    {
+        //$emailsOverride[] = [
+        //    'name' => 'woo-uniqueIdentifier',
+        //    'base_subject' => [
+        //        '[%s] woo subject',
+        //    ],
+        //    'base_body' => [
+        //        'woo body',
+        //    ],
+        //    'new_subject' => 'Awesome new subject',
+        //    'new_body' => 'Awesome new body',
+        //    'description' => 'The super description',
+        //    'source' => self::MAIL_OVERRIDE_SOURCE_NAME,
+        //];
+    }
+
+    public function onAcymGetEmailOverrideSources(&$sources)
+    {
+        //$sources[self::MAIL_OVERRIDE_SOURCE_NAME] = self::PLUGIN_DISPLAYED_NAME;
     }
 }

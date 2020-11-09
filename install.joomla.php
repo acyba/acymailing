@@ -43,6 +43,7 @@ function installAcym()
     $updateHelper->installBounceRules();
     $updateHelper->installAdminNotif();
     $updateHelper->installAddons();
+    $updateHelper->installOverrideEmails();
 
     $newConfig = new stdClass();
     $newConfig->installcomplete = 1;
@@ -67,6 +68,11 @@ function uninstallAcym()
     <?php
 
     $tables = [
+        'mail_override',
+        'followup_has_mail',
+        'followup',
+        'segment',
+        'form',
         'plugin',
         'action',
         'condition',
@@ -89,8 +95,6 @@ function uninstallAcym()
         'mail',
         'configuration',
         'user',
-        'form',
-        'segment',
     ];
 
     $prefix = $db->getPrefix().'acym_';
@@ -142,6 +146,26 @@ class com_acymInstallerScript
 
     public function preflight($type, $parent)
     {
+        if ($type === 'update') {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)->select('*')->from('#__extensions');
+            $query->where(
+                'type = "component" AND element = "com_acym"'
+            );
+            $db->setQuery($query);
+
+            try {
+                $extension = $db->loadObject();
+            } catch (Exception $e) {
+                echo JText::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $e->getCode(), $e->getMessage()).'<br />';
+
+                return false;
+            }
+
+            $installer = new JInstaller();
+            $installer->refreshManifestCache($extension->extension_id);
+        }
+
         return true;
     }
 

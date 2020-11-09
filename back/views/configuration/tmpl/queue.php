@@ -32,7 +32,7 @@
                 $delayTypeAuto->display('config[queue_pause]', $this->config->get('queue_pause'), 0)
             ); ?>
 		</div>
-		<div class="cell medium-3 margin-top-1"><?php echo '<span>'.acym_translation('ACYM_MAX_NB_TRY').'</span>'.acym_info(acym_translation('ACYM_MAX_NB_TRY_DESC')); ?></div>
+		<div class="cell medium-3 margin-top-1"><?php echo '<span>'.acym_translation('ACYM_MAX_NB_TRY').'</span>'.acym_info('ACYM_MAX_NB_TRY_DESC'); ?></div>
 		<div class="cell medium-9 margin-top-1">
             <?php echo acym_translation_sprintf('ACYM_CONFIG_TRY', '<input class="intext_input" type="text" name="config[queue_try]" value="'.intval($this->config->get('queue_try')).'">');
 

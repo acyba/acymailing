@@ -44,6 +44,10 @@ if (empty($controller)) {
     return;
 }
 
+if ($ctrl === 'override' && !acym_isPluginActive('acymailoverride')) {
+    acym_enqueueMessage(acym_translation('ACYM_OVERRIDES_REQUIREMENT'), 'warning');
+}
+
 if (empty($task)) {
     $task = acym_getVar('cmd', 'defaulttask', $controller->defaulttask);
     acym_setVar('task', $task);

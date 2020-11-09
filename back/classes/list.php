@@ -11,6 +11,10 @@ class ListClass extends acymClass
     var $table = 'list';
     var $pkey = 'id';
 
+    const LIST_TYPE_STANDARD = 'standard';
+    const LIST_TYPE_FRONT = 'front';
+    const LIST_TYPE_FOLLOWUP = 'followup';
+
     public function getMatchingElements($settings = [])
     {
         $columns = 'list.*';
@@ -72,7 +76,7 @@ class ListClass extends acymClass
             $filters[] = 'list.cms_user_id = '.intval($settings['creator_id']).' OR '.$groupCondition.'';
         }
 
-        $filters[] = 'front_management IS NULL';
+        $filters[] = 'type = '.acym_escapeDB(self::LIST_TYPE_STANDARD);
 
         if (!empty($filters)) {
             $queryStatus .= ' WHERE ('.implode(') AND (', $filters).')';
@@ -225,6 +229,7 @@ class ListClass extends acymClass
             acym_arrayToInteger($settings['already']);
             $filters[] = 'list.id NOT IN('.implode(',', $settings['already']).')';
         }
+        $filters[] = 'list.type = '.acym_escapeDB(self::LIST_TYPE_STANDARD);
 
         if (!empty($filters)) {
             $query .= ' WHERE ('.implode(') AND (', $filters).')';
@@ -426,7 +431,7 @@ class ListClass extends acymClass
 
     public function synchDeleteCmsList($userId)
     {
-        $query = 'SELECT * FROM #__acym_list WHERE front_management = 1 AND cms_user_id = '.intval($userId);
+        $query = 'SELECT * FROM #__acym_list WHERE type = "'.self::LIST_TYPE_FRONT.'" AND cms_user_id = '.intval($userId);
         $listFrontManagement = acym_loadObject($query);
         if (!empty($listFrontManagement)) $this->delete([$listFrontManagement->id]);
     }
@@ -452,6 +457,8 @@ class ListClass extends acymClass
 
         if (empty($list->description)) $list->description = '';
 
+        if (!isset($list->access)) $list->access = '';
+
         $listID = parent::save($list);
 
         if (!empty($listID) && isset($tags)) {
@@ -473,7 +480,7 @@ class ListClass extends acymClass
 
             $endQuery = ' AND (cms_user_id = '.intval($creatorId).' OR '.$groupCondition.')';
         }
-        $lists = acym_loadObjectList('SELECT id, name FROM #__acym_list WHERE front_management IS NULL'.$endQuery, 'id');
+        $lists = acym_loadObjectList('SELECT id, name FROM #__acym_list WHERE type = '.acym_escapeDB(self::LIST_TYPE_STANDARD).$endQuery, 'id');
 
         $listsToReturn = [];
 
@@ -486,7 +493,7 @@ class ListClass extends acymClass
 
     public function getAllForSelect($emptyFirst = true)
     {
-        $lists = acym_loadObjectList('SELECT * FROM #__acym_list WHERE front_management IS NULL', 'id');
+        $lists = acym_loadObjectList('SELECT * FROM #__acym_list WHERE type = '.acym_escapeDB(self::LIST_TYPE_STANDARD), 'id');
 
         $return = [];
 
@@ -499,9 +506,9 @@ class ListClass extends acymClass
         return $return;
     }
 
-    public function getAllWIthoutManagement()
+    public function getAllWithoutManagement()
     {
-        return acym_loadObjectList('SELECT * FROM #__acym_list WHERE front_management IS NULL', 'id');
+        return acym_loadObjectList('SELECT * FROM #__acym_list WHERE type = '.acym_escapeDB(self::LIST_TYPE_STANDARD), 'id');
     }
 
     public function setVisible($elements, $status)
@@ -743,7 +750,7 @@ class ListClass extends acymClass
         $idCurrentUser = acym_currentUserId();
         if (empty($idCurrentUser)) return 0;
 
-        $frontListId = acym_loadResult('SELECT id FROM #__acym_list WHERE front_management = 1 AND cms_user_id = '.intval($idCurrentUser));
+        $frontListId = acym_loadResult('SELECT id FROM #__acym_list WHERE type = '.acym_escapeDB(self::LIST_TYPE_FRONT).' AND cms_user_id = '.intval($idCurrentUser));
 
         if (!empty($frontListId)) return $frontListId;
 
@@ -752,7 +759,7 @@ class ListClass extends acymClass
         $frontList->active = 1;
         $frontList->visible = 0;
         $frontList->cms_user_id = $idCurrentUser;
-        $frontList->front_management = 1;
+        $frontList->type = self::LIST_TYPE_FRONT;
 
         return $this->save($frontList);
     }

@@ -153,7 +153,7 @@ const acym_editorWysidJoomla = {
             let valueTitle = $modalUi.contents().find('#f_title').val();
             let imagesUrls = [];
             if (!acym_helper.empty(urlImg)) {
-                if (urlImg.match('^images/')) urlImg = ACYM_JOOMLA_MEDIA_IMAGE + urlImg;
+                if (urlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER)) urlImg = ACYM_JOOMLA_MEDIA_IMAGE + urlImg;
                 imagesUrls.push(urlImg);
             }
             acym_editorWysidJoomla.validateMediaSelection(rows, imagesUrls, altValue, valueTitle);

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.0" method="upgrade" type="plugin" group="system">
+	<name>AcyMailing - Override Joomla emails</name>
+	<creationDate>October 2020</creationDate>
+	<version>{__VERSION__}</version>
+	<author>Acyba</author>
+	<authorEmail>dev@acyba.com</authorEmail>
+	<authorUrl>https://www.acymailing.com</authorUrl>
+	<copyright>Copyright (C) 2009-{__YEAR__} ACYBA SAS - All rights reserved.</copyright>
+	<license>GNU/GPLv3 https://www.gnu.org/licenses/gpl-3.0.html</license>
+	<description>This plugin enables you to override emails normally sent by Joomla</description>
+	<files>
+		<filename plugin="acymailoverride">acymailoverride.php</filename>
+	</files>
+</extension>

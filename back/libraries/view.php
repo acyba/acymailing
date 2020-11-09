@@ -49,7 +49,7 @@ class acymView extends acymObject
 
         $viewFolder = acym_isAdmin() ? ACYM_VIEW : ACYM_VIEW_FRONT;
         if (!file_exists($viewFolder.$name.DS.'tmpl'.DS.$view.'.php')) $view = 'listing';
-        if (ACYM_CMS === 'wordpress') echo ob_get_clean();
+        if (ACYM_CMS === 'wordpress' && $name !== 'archive' && $view !== 'listing') echo ob_get_clean();
 
         // Load the needed scripts and styles
         if (ACYM_CMS !== 'wordpress' || ($name === 'frontusers' && ($view === 'unsubscribe' || $view === 'unsubscribepage')) || !defined('DOING_AJAX') || !DOING_AJAX || ($name === 'archive' && $view === 'view')) {

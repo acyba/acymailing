@@ -51,40 +51,4 @@ jQuery(document).ready(function ($) {
             });
         });
     };
-
-    $.setFieldValue = function ($field, value) {
-        if ($field.hasClass('acym_select2_ajax')) {
-            let ctrl = $field.attr('data-ctrl');
-            if (!ctrl) ctrl = 'dynamics';
-            let task = $field.attr('data-task');
-            if (!task) task = 'trigger';
-
-            let url = ACYM_AJAX_URL + '&ctrl=' + ctrl + '&task=' + task + '&id=' + encodeURIComponent(value);
-
-            let dataParams = $field.attr('data-params');
-            let decodedParams = acym_helper.parseJson(dataParams);
-            url += '&' + $.param(decodedParams);
-
-            $.get(url, function (response) {
-                response = acym_helper.parseJson(response);
-                let newOption = new Option(response.value, value, false, false);
-                $field.append(newOption).trigger('change');
-            });
-
-        } else if (!$field.is(':checkbox') && $field.attr('data-switch') === undefined) {
-            $field.val(value);
-        } else if ($field.is(':checkbox') && value == 1) {
-            $field.prop('checked', true);
-        } else if ($field.attr('data-switch') !== undefined && $field.val() != value) {
-            $field.closest('.medium-3').find('.cell.switch-label').click();
-        }
-
-        if ($field.attr('data-rs') !== undefined && value !== '') {
-            if (value.indexOf(']') !== -1) {
-                $('input[data-open="' + $field.attr('data-rs') + '"]').val(value);
-            } else {
-                $('input[data-open="' + $field.attr('data-rs') + '"]').val(moment.unix(value).format('DD MMM YYYY HH:mm'));
-            }
-        }
-    };
 });

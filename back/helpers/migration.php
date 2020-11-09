@@ -1025,17 +1025,17 @@ class MigrationHelper extends acymObject
         $idsToInsert = [];
 
         foreach ($ids as $oneId) {
-            if (empty($oneId->listid) || empty($oneId->welmailid) || empty($oneId->unsubmailid)) {
+            if (empty($oneId->listid) || (empty($oneId->welmailid) && empty($oneId->unsubmailid))) {
                 continue;
             }
 
-            $welId = empty($oneId->welmailid) ? 'NULL' : $oneId->welmailid;
-            $unsId = empty($oneId->unsubmailid) ? 'NULL' : $oneId->unsubmailid;
+            $welId = empty($oneId->welmailid) ? 'NULL' : intval($oneId->welmailid);
+            $unsId = empty($oneId->unsubmailid) ? 'NULL' : intval($oneId->unsubmailid);
 
             $id = [
                 'id' => intval($oneId->listid),
-                'welcome_id' => intval($welId),
-                'unsubscribe_id' => intval($unsId),
+                'welcome_id' => $welId,
+                'unsubscribe_id' => $unsId,
             ];
 
             $idsToInsert[] = '('.implode(', ', $id).')';
@@ -1121,7 +1121,9 @@ class MigrationHelper extends acymObject
         $queryClean = [
             'UPDATE #__acym_list SET `unsubscribe_id` = NULL',
             'UPDATE #__acym_list SET `welcome_id` = NULL',
+            'UPDATE #__acym_mail SET `parent_id` = NULL',
             'DELETE FROM #__acym_tag WHERE `type` = "mail"',
+            'DELETE FROM #__acym_mail_override',
             'DELETE FROM #__acym_campaign WHERE `mail_id` IS NOT NULL',
             'DELETE FROM #__acym_campaign',
             'DELETE FROM #__acym_queue',

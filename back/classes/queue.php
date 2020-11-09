@@ -51,6 +51,7 @@ class QueueClass extends acymClass
                 'paused' => 'campaign.active = 0',
                 'scheduled' => 'campaign.active = 1 AND queue.mail_id IS NULL',
                 'automation' => 'mail.type = '.acym_escapeDB('automation'),
+                'followup' => 'mail.type = '.acym_escapeDB('followup'),
             ];
 
             if (empty($allowedStatus[$settings['status']])) {
@@ -127,6 +128,7 @@ class QueueClass extends acymClass
         }
 
         $automationNumber = acym_loadResult('SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB('automation'));
+        $followupNumber = acym_loadResult('SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB('followup'));
 
         $elementsPerStatus = acym_loadObjectList($queryStatus.' GROUP BY score', 'score');
         for ($i = 0 ; $i < 4 ; $i++) {
@@ -134,11 +136,12 @@ class QueueClass extends acymClass
         }
 
         $results['status'] = [
-            'all' => array_sum($elementsPerStatus) + $automationNumber,
+            'all' => array_sum($elementsPerStatus) + $automationNumber + $followupNumber,
             'sending' => $elementsPerStatus[1],
             'paused' => $elementsPerStatus[0] + $elementsPerStatus[2],
             'scheduled' => $elementsPerStatus[3],
             'automation' => $automationNumber,
+            'followup' => $followupNumber,
         ];
 
         return $results;
@@ -232,14 +235,8 @@ class QueueClass extends acymClass
 
     public function delete($elements)
     {
-        if (!is_array($elements)) {
-            $elements = [$elements];
-        }
-
-        if (empty($elements)) {
-            return 0;
-        }
-
+        if (empty($elements)) return 0;
+        if (!is_array($elements)) $elements = [$elements];
         acym_arrayToInteger($elements);
 
         $query = 'DELETE FROM #__acym_queue WHERE mail_id IN ('.implode(',', $elements).')';
@@ -407,7 +404,6 @@ class QueueClass extends acymClass
         $priority = $this->config->get('priority_newsletter', 3);
 
         $where = $mail->id == $mail->parent_id ? ' OR user.language = "" OR (user.language != "" AND user.language != childmail.language)' : '';
-        $multilingualWhere = acym_isMultilingual() ? ' (user.language = '.acym_escapeDB($mail->language).' '.$where.')' : '';
 
         $automationHelper = new AutomationHelper();
         $automationHelper->join['userlist'] = ' #__acym_user_has_list AS userlist ON user.id = userlist.user_id';
@@ -415,8 +411,9 @@ class QueueClass extends acymClass
         $automationHelper->where = [
             'userlist.status = 1',
             'maillist.mail_id = '.intval($mail->parent_id),
-            $multilingualWhere,
         ];
+
+        if (acym_isMultilingual()) $automationHelper->where[] = ' (user.language = '.acym_escapeDB($mail->language).' '.$where.')';
 
         if ($this->config->get('require_confirmation', 1) == 1) $automationHelper->where[] = '`user`.`confirmed` = 1';
 

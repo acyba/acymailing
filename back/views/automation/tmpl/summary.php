@@ -61,7 +61,7 @@
 				<div class="cell acym__automation__summary__information__one grid-x">
                     <?php
                     if (!empty($data['action']->actions)) {
-                        echo '<span class="acym__automation__summary__information__one__title">'.acym_translation_sprintf('ACYM_ACTIONS_USER_WILL', strtolower(acym_translation(empty($data['id']) ? 'ACYM_MASS_ACTION' : 'ACYM_AUTOMATION'))).'</span></div><div class="acym__automation__summary__information__one">';
+                        echo '<span class="acym__automation__summary__information__one__title">'.acym_translation_sprintf('ACYM_ACTIONS_USER_WILL', acym_strtolower(acym_translation(empty($data['id']) ? 'ACYM_MASS_ACTION' : 'ACYM_AUTOMATION'))).'</span></div><div class="acym__automation__summary__information__one">';
                         $andNum = 0;
                         foreach ($data['action']->actions as $and => $andValue) {
                             if ($andNum > 0) echo '<span class="acym__automation__summary__information__one__title">'.acym_translation('ACYM_AND').'</span><br />';
@@ -81,7 +81,7 @@
                     if (!empty($data['action']->filters)) {
                         $orNum = 0;
                         $andNum = 0;
-                        echo '<span class="acym__automation__summary__information__one__title">'.acym_translation_sprintf('ACYM_FILTERS_APPLY_TO', strtolower(acym_translation(empty($data['id']) ? 'ACYM_MASS_ACTION' : 'ACYM_AUTOMATION')), acym_translation($data['action']->filters['type_filter'] == 'classic' ? 'ACYM_ALL_ACYMAILING_USERS' : 'ACYM_ONE_ACYMAILING_USER')).'</span></div><div class="acym__automation__summary__information__one">';
+                        echo '<span class="acym__automation__summary__information__one__title">'.acym_translation_sprintf('ACYM_FILTERS_APPLY_TO', acym_strtolower(acym_translation(empty($data['id']) ? 'ACYM_MASS_ACTION' : 'ACYM_AUTOMATION')), acym_translation($data['action']->filters['type_filter'] == 'classic' ? 'ACYM_ALL_ACYMAILING_USERS' : 'ACYM_ONE_ACYMAILING_USER')).'</span></div><div class="acym__automation__summary__information__one">';
                         foreach ($data['action']->filters as $or => $orValues) {
                             if ($or === 'type_filter') continue;
                             $andNum = 0;

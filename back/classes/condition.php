@@ -18,14 +18,10 @@ class ConditionClass extends acymClass
 
     public function delete($elements)
     {
-        if (!is_array($elements)) {
-            $elements = [$elements];
-        }
-        acym_arrayToInteger($elements);
+        if (empty($elements)) return 0;
 
-        if (empty($elements)) {
-            return 0;
-        }
+        if (!is_array($elements)) $elements = [$elements];
+        acym_arrayToInteger($elements);
 
         $actionClass = new ActionClass();
         $actionsIds = $actionClass->getAllActionsIdByConditionsId($elements);

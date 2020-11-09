@@ -101,9 +101,9 @@ const acym_helper = {
         jQuery('.acym__listing__block__delete__trash').off('click').on('click', function (e) {
             e.preventDefault();
             let $blockDelete = jQuery(this).closest(' .acym__listing__block__delete');
-            $blockDelete.css('width', 'auto');
-            $blockDelete.find('i').css('width', '0');
-            $blockDelete.animate({maxWidth: $blockDelete.parent().innerWidth()}, 'fast', function () {
+            $blockDelete.css('width', '80px');
+            $blockDelete.find('div>i').css('width', '0');
+            $blockDelete.animate({maxWidth: '80px'}, 'fast', function () {
                 jQuery('.acym__listing__block__delete__cancel', this).off('click').on('click', function () {
                     acym_helper.setHideDeleteOptionsGlobal(jQuery(this).closest('.acym__listing__block__delete'));
                 });

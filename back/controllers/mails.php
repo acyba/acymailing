@@ -3,6 +3,7 @@
 namespace AcyMailing\Controllers;
 
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\TagClass;
 use AcyMailing\Helpers\EditorHelper;
@@ -19,9 +20,34 @@ class MailsController extends acymController
     {
         parent::__construct();
         $type = acym_getVar('string', 'type');
-        $this->breadcrumb[acym_translation('automation' != $type ? 'ACYM_TEMPLATES' : 'ACYM_AUTOMATION')] = acym_completeLink('automation' != $type ? 'mails' : 'automation');
+        $this->setBreadcrumb($type);
         acym_header('X-XSS-Protection:0');
     }
+
+    /**
+     * Define the mails breadcrumb
+     *
+     * @param $type
+     */
+    protected function setBreadcrumb($type)
+    {
+        switch ($type) {
+            case 'automation':
+                $breadcrumbTitle = 'ACYM_AUTOMATION';
+                $breadcrumbUrl = acym_completeLink('automation');
+                break;
+            case 'followup':
+                $breadcrumbTitle = 'ACYM_EMAILS';
+                $breadcrumbUrl = acym_completeLink('mails');
+                break;
+            default:
+                $breadcrumbTitle = 'ACYM_TEMPLATES';
+                $breadcrumbUrl = acym_completeLink('mails');
+        }
+
+        $this->breadcrumb[acym_translation($breadcrumbTitle)] = $breadcrumbUrl;
+    }
+
 
     public function listing()
     {
@@ -109,8 +135,8 @@ class MailsController extends acymController
         $otherContent .= acym_modal(
             '<i class="acymicon-add"></i>'.acym_translation('ACYM_CREATE'),
             '<div class="cell grid-x grid-margin-x">
-								<button type="button" data-task="edit" data-editor="acyEditor" class="acym__create__template button cell medium-auto margin-top-1">'.acym_translation('ACYM_DD_EDITOR').'</button>
 								<button type="button" data-task="edit" data-editor="html" class="acym__create__template button cell large-auto small-6 margin-top-1 button-secondary">'.acym_translation('ACYM_HTML_EDITOR').'</button>
+								<button type="button" data-task="edit" data-editor="acyEditor" class="acym__create__template button cell medium-auto margin-top-1">'.acym_translation('ACYM_DD_EDITOR').'</button>
 							</div>',
             '',
             '',
@@ -177,6 +203,8 @@ class MailsController extends acymController
         $typeEditor = acym_getVar('string', 'type_editor');
         $notification = acym_getVar('cmd', 'notification');
         $return = acym_getVar('string', 'return', '');
+        $followupId = acym_getVar('int', 'followup_id', 0);
+        $followupClass = new FollowupClass();
 
         if (base64_decode($return, true) === false) {
             $return = empty($return) ? '' : $return;
@@ -198,6 +226,7 @@ class MailsController extends acymController
                 $listIds = [$listIds];
             }
         }
+
 
         if (!empty($notification)) {
             $mail = $mailClass->getOneByName($notification);
@@ -226,7 +255,7 @@ class MailsController extends acymController
                 $mail->tags = [];
                 $mail->type = '';
                 $mail->body = '';
-                $mail->editor = 'automation' == $type ? 'acyEditor' : $typeEditor;
+                $mail->editor = in_array($type, ['automation', 'followup']) ? 'acyEditor' : $typeEditor;
                 $mail->headers = '';
                 $mail->thumbnail = null;
                 $mail->links_language = '';
@@ -240,6 +269,8 @@ class MailsController extends acymController
                 }
             }
             $mail->access = [];
+            $mail->delay = 0;
+            $mail->delay_unit = $followupClass::DEFAULT_DELAY_UNIT;
 
             if (!empty($type)) $mail->type = $type;
 
@@ -254,6 +285,9 @@ class MailsController extends acymController
                     break;
                 case 'automation':
                     $breadcrumbTitle = 'ACYM_NEW_EMAIL';
+                    break;
+                case 'followup':
+                    $breadcrumbTitle = 'ACYM_NEW_FOLLOW_UP_EMAIL';
                     break;
                 default:
                     $breadcrumbTitle = 'ACYM_CREATE_TEMPLATE';
@@ -270,6 +304,9 @@ class MailsController extends acymController
                 $mail->stylesheet = $fromMail->stylesheet;
                 $mail->settings = $fromMail->settings;
             }
+
+            if (!empty($followupId)) $followupClass->getDelaySettingToMail($mail, $followupId);
+
             $mail->editor = $mail->drag_editor == 0 ? 'html' : 'acyEditor';
             if (!empty($typeEditor)) $mail->editor = $typeEditor;
 
@@ -279,7 +316,24 @@ class MailsController extends acymController
                     $this->breadcrumb[acym_translation('ACYM_LISTS')] = acym_completeLink('lists');
                 }
 
-                $breadcrumbTitle = $mail->name;
+                if ($mail->type === 'override') {
+                    array_pop($this->breadcrumb);
+                    $this->breadcrumb[acym_translation('ACYM_EMAILS_OVERRIDE')] = acym_completeLink('override');
+                    acym_loadLanguageFile('plg_user_joomla', ACYM_BASE);
+                    acym_loadLanguageFile('com_users');
+                    $breadcrumbTitle = acym_translation_sprintf(
+                        preg_replace(
+                            '#^{trans:([A-Z_]+)(|.+)*}$#',
+                            '$1',
+                            $mail->subject
+                        ),
+                        '{param1}',
+                        '{param2}'
+                    );
+                } else {
+                    $breadcrumbTitle = $mail->name;
+                }
+
                 $breadcrumbUrl = 'mails&task=edit&id='.$mail->id;
             } else {
                 if (empty($return)) {
@@ -322,6 +376,9 @@ class MailsController extends acymController
             'langChoice' => acym_languageOption($mail->links_language, 'mail[links_language]'),
             'list_id' => $listIds,
             'lists' => $lists,
+            'delay_unit' => $followupClass->getDelayUnits(),
+            'default_delay_unit' => $followupClass::DEFAULT_DELAY_UNIT,
+            'followup_id' => $followupId,
         ];
 
         $this->prepareEditorEdit($data);
@@ -342,6 +399,10 @@ class MailsController extends acymController
         if (!empty($data['mail']->type)) $data['editor']->automation = $data['isAutomationAdmin'];
         if (!empty($data['mail']->settings)) $data['editor']->settings = $data['mail']->settings;
         if (!empty($data['mail']->stylesheet)) $data['editor']->stylesheet = $data['mail']->stylesheet;
+
+        $data['editor']->data = [
+            'mail' => $data['mail'],
+        ];
 
         if ($data['editor']->isDragAndDrop()) {
             $this->loadScripts['edit'][] = 'editor-wysid';
@@ -410,6 +471,11 @@ class MailsController extends acymController
                 $listIds = acym_getVar('array', 'list_ids', []);
                 $listClass = new ListClass();
                 $listClass->setWelcomeUnsubEmail($listIds, $mailID, $mail->type);
+            } elseif (!empty($mail->type) && $mail->type == 'followup') {
+                $followupData = acym_getVar('array', 'followup', []);
+                $followupClass = new FollowupClass();
+                if (!$followupClass->saveDelaySettings($followupData, $mailID)) acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_SAVE_DELAY_SETTINGS'), 'error');
+                if (!empty($followupData['id'])) acym_setVar('followup_id', $followupData['id']);
             }
 
             if (!$ajax) acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');

@@ -10,7 +10,7 @@
             <?php if ($data['form']->type != 'shortcode') { ?>
 				<div class="cell medium-6 grid-x acym_vcenter">
 					<label for="acym__forms__information__page" class="cell medium-6 large-4">
-                        <?php echo acym_translation('ACYM_PAGE_SELECTION').acym_info(acym_translation('ACYM_PAGE_SELECTION_DESC')); ?>
+                        <?php echo acym_translation('ACYM_PAGE_SELECTION').acym_info('ACYM_PAGE_SELECTION_DESC'); ?>
 					</label>
 					<div class="cell medium-6">
 						<select2multiple v-model="form.pages" :name="'form[pages]'" :value="<?php echo acym_escape(json_encode($data['form']->pages)); ?>" :options="<?php echo acym_escape(json_encode($data['all_pages'])); ?>"></select2multiple>
@@ -36,7 +36,7 @@
             <?php if ($data['form']->type == 'popup') { ?>
 				<div class="cell medium-6 grid-x acym_vcenter">
 					<label for="acym__forms__information__delay" class="cell large-4 medium-6">
-                        <?php echo acym_translation('ACYM_DELAY').acym_info(acym_translation('ACYM_DELAY_DESC')); ?>
+                        <?php echo acym_translation('ACYM_DELAY').acym_info('ACYM_DELAY_DESC'); ?>
 					</label>
 					<input required type="number" name="form[delay]" id="acym__forms__information__delay" class="cell large-2 medium-4 small-auto" v-model="form.delay">
 					<span><?php echo acym_translation('ACYM_SECONDS'); ?></span>

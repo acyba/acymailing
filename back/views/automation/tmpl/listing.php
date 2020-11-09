@@ -49,7 +49,7 @@
 						<div class="cell acym_listing_sort-by auto">
                             <?php echo acym_sortBy(
                                 [
-                                    'id' => strtolower(acym_translation('ACYM_ID')),
+                                    'id' => acym_strtolower(acym_translation('ACYM_ID')),
                                     "name" => acym_translation('ACYM_NAME'),
                                     "active" => acym_translation('ACYM_ACTIVE'),
                                 ],

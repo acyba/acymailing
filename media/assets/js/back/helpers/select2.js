@@ -99,14 +99,25 @@ const acym_helperSelect2 = {
 
 
             let dataSelected = jQuery(this).attr('data-selected');
-            if (dataSelected && dataSelected > 0) {
+            if (dataSelected !== undefined) {
                 let url = ACYM_AJAX_URL + '&ctrl=' + ctrl + '&task=' + task + '&id=' + encodeURIComponent(dataSelected);
                 let $currentSelect2 = jQuery(this);
 
+                if (undefined !== searchParams.plugin && undefined !== searchParams.trigger) {
+                    url += `&plugin=${searchParams.plugin}&trigger=${searchParams.trigger}`;
+                }
+
                 jQuery.get(url, function (response) {
                     response = acym_helper.parseJson(response);
-                    let newOption = new Option(response.text, response.value, false, false);
-                    $currentSelect2.append(newOption);
+                    if (Array.isArray(response)) {
+                        response.map((option, index) => {
+                            let newOption = new Option(option.text, option.value, false, true);
+                            $currentSelect2.append(newOption);
+                        });
+                    } else {
+                        let newOption = new Option(response.text, response.value, false, false);
+                        $currentSelect2.append(newOption);
+                    }
                 });
             }
         });

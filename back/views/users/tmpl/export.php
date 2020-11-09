@@ -6,7 +6,7 @@
 		<div class="cell grid-x grid-margin-x">
 			<div class="cell acym_area medium-6 acym__content">
 				<div class="acym_area_title"><?php echo acym_translation('ACYM_FIELDS_TO_EXPORT'); ?></div>
-				<p><span id="acym__users__export__check_all_field"><?php echo strtolower(acym_translation('ACYM_ALL')); ?></span> | <span id="acym__users__export__check_default_field"><?php echo strtolower(acym_translation('ACYM_DEFAULT')); ?></span></p>
+				<p><span id="acym__users__export__check_all_field"><?php echo acym_strtolower(acym_translation('ACYM_ALL')); ?></span> | <span id="acym__users__export__check_default_field"><?php echo acym_strtolower(acym_translation('ACYM_DEFAULT')); ?></span></p>
 				<div class="margin-bottom-1">
                     <?php
                     $defaultFields = explode(',', $this->config->get('export_fields', 'name,email'));
@@ -53,7 +53,7 @@
 					<div class="cell medium-auto"></div>
 				</div>
 				<div class="grid-x" id="userField_excel">
-					<label class="cell"><?php echo acym_translation('ACYM_EXCEL_SECURITY').acym_info(acym_translation('ACYM_EXCEL_SECURITY_DESC')); ?></label>
+					<label class="cell"><?php echo acym_translation('ACYM_EXCEL_SECURITY').acym_info('ACYM_EXCEL_SECURITY_DESC'); ?></label>
                     <?php
                     echo acym_boolean(
                         'export_excelsecurity',

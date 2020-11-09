@@ -34,4 +34,10 @@
             display: inline-block;
         }
     }
+
+    #acyuserinfo {
+        input[type="radio"], input[type="checkbox"] {
+            margin-top: 0;
+        }
+    }
 }

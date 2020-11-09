@@ -277,8 +277,6 @@
     p {
         float: left;
         line-height: 40px;
-        padding-right: 10px;
-        padding-left: 10px;
     }
 }
 
@@ -372,3 +370,9 @@ i.acymicon-circle {
     }
 }
 
+
+@media screen and (max-width: 74.9375em) {
+    .show-for-xlarge {
+        display: none !important;
+    }
+}

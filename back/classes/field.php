@@ -317,14 +317,10 @@ class FieldClass extends acymClass
 
     public function delete($elements)
     {
-        if (!is_array($elements)) {
-            $elements = [$elements];
-        }
-        acym_arrayToInteger($elements);
+        if (empty($elements)) return 0;
 
-        if (empty($elements)) {
-            return 0;
-        }
+        if (!is_array($elements)) $elements = [$elements];
+        acym_arrayToInteger($elements);
 
         acym_trigger('specialActionOnDelete', ['field', $elements]);
 
@@ -426,7 +422,7 @@ class FieldClass extends acymClass
             if ($displayFront) {
                 foreach ($valuesArray as $key => $oneValue) {
                     $isCkecked = $defaultValue == $key ? 'checked' : '';
-                    $return .= '<label>'.$oneValue.'<input '.$nameAttribute.$required.' type="radio" value="'.acym_escape($key).'" '.$isCkecked.'></label>';
+                    $return .= '<label><input '.$nameAttribute.$required.' type="radio" value="'.acym_escape($key).'" '.$isCkecked.'> '.$oneValue.'</label>';
                 }
             } else {
                 $return .= acym_radio(
@@ -441,7 +437,7 @@ class FieldClass extends acymClass
                 $defaultValue = empty($defaultValue) ? null : (explode(',', $defaultValue));
                 foreach ($valuesArray as $key => $oneValue) {
                     $checked = !empty($defaultValue) && in_array($key, $defaultValue) ? 'checked' : '';
-                    $return .= '<label>'.$oneValue.'<input '.$required.' type="checkbox" name="'.$name.'['.acym_escape($key).']" value="'.acym_escape($key).'" '.$checked.'></label>';
+                    $return .= '<label><input '.$required.' type="checkbox" name="'.$name.'['.acym_escape($key).']" value="'.acym_escape($key).'" '.$checked.'> '.$oneValue.'</label>';
                 }
             } else {
                 if (!empty($defaultValue) && !is_object($defaultValue)) {

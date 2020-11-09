@@ -11,6 +11,11 @@
 			<i id="acym__wysid__view__smartphone" class="cell shrink acymicon-mobile text-center acym__wysid__top-toolbar__icon"></i>
 		</div>
 		<div class="cell grid-x small-4 align-right">
+            <?php if (!empty($data['mail']) && $data['mail']->type == 'override') { ?>
+				<a href="<?php echo ACYM_DOCUMENTATION.'main-pages/email-overrides/edition'; ?>" class="cell small-6 medium-shrink margin-bottom-0 acym_vcenter" target="_blank">
+					<i class="acymicon-book acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_DOCUMENTATION'); ?>"></i>
+				</a>
+            <?php } ?>
             <?php
             $ctrl = acym_getVar('cmd', 'ctrl', 'dashboard');
             if (acym_isAdmin() && 'campaigns' === $ctrl && acym_isAllowed('mails')) {
@@ -19,9 +24,11 @@
 					<i class="acymicon-file-picture acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_SAVE_AS_TMPL'); ?>"></i>
 				</button>
             <?php } ?>
-			<button id="acym__wysid__test__button" type="button" class="cell small-6 medium-shrink margin-bottom-0">
-				<i class="acymicon-paper-plane-o acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_SEND_TEST'); ?>"></i>
-			</button>
+            <?php if (acym_isAllowed('mails')) { ?>
+				<button id="acym__wysid__test__button" type="button" class="cell small-6 medium-shrink margin-bottom-0">
+					<i class="acymicon-paper-plane-o acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_SEND_TEST'); ?>"></i>
+				</button>
+            <?php } ?>
 			<p class="acym__color__white margin-bottom-0 margin-right-1" style="font-size: 26px">|</p>
 			<button id="acym__wysid__cancel__button" type="button" class="cell small-6 medium-shrink margin-bottom-0 margin-right-1">
 				<i class="acymicon-ban acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_CANCEL'); ?>"></i>

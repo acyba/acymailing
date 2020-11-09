@@ -50,11 +50,6 @@ class RuleClass extends acymClass
         return parent::save($rule);
     }
 
-    public function delete($ids)
-    {
-        return parent::delete($ids);
-    }
-
     public function getOrderingNumber()
     {
         $query = 'SELECT COUNT(id) FROM #__acym_rule';

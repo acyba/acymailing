@@ -408,17 +408,17 @@ class FormClass extends acymClass
             $name = 'form['.$optionName.']['.$key.']';
             $vModel = 'form.'.$optionName.'.'.$key;
             if ($key == 'automatic_subscribe') {
-                $return['render'][$key] = '<label class="cell medium-4 grid-x acym_vcenter"><span class="cell auto">'.acym_translation('ACYM_AUTO_SUBSCRIBE_TO').'</span><div class="cell shrink">'.acym_info(acym_translation('ACYM_AUTO_SUBSCRIBE_TO_DESC')).'</div></label>';
+                $return['render'][$key] = '<label class="cell medium-4 grid-x acym_vcenter"><span class="cell auto">'.acym_translation('ACYM_AUTO_SUBSCRIBE_TO').'</span><div class="cell shrink">'.acym_info('ACYM_AUTO_SUBSCRIBE_TO_DESC').'</div></label>';
                 $return['render'][$key] .= '<div class="cell auto">
                                                 <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape(json_encode($value)).'\'" :options="'.acym_escape(json_encode($lists)).'" v-model="'.$vModel.'"></select2multiple>
                                             </div>';
             } elseif ($key == 'displayed') {
-                $return['render'][$key] = '<label class="cell medium-4 grid-x acym_vcenter"><span class="cell auto">'.acym_translation('ACYM_DISPLAYED_LISTS').'</span><div class="cell shrink">'.acym_info(acym_translation('ACYM_DISPLAYED_LISTS_DESC')).'</div></label>';
+                $return['render'][$key] = '<label class="cell medium-4 grid-x acym_vcenter"><span class="cell auto">'.acym_translation('ACYM_DISPLAYED_LISTS').'</span><div class="cell shrink">'.acym_info('ACYM_DISPLAYED_LISTS_DESC').'</div></label>';
                 $return['render'][$key] .= '<div class="cell auto">
                                                 <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape(json_encode($value)).'\'" :options="'.acym_escape(json_encode($lists)).'" v-model="'.$vModel.'"></select2multiple>
                                             </div>';
             } elseif ($key == 'checked') {
-                $return['render'][$key] = '<label class="cell medium-4 grid-x acym_vcenter"><span class="cell auto">'.acym_translation('ACYM_LISTS_CHECKED_DEFAULT').'</span><div class="cell shrink">'.acym_info(acym_translation('ACYM_LISTS_CHECKED_DEFAULT_DESC')).'</div></label>';
+                $return['render'][$key] = '<label class="cell medium-4 grid-x acym_vcenter"><span class="cell auto">'.acym_translation('ACYM_LISTS_CHECKED_DEFAULT').'</span><div class="cell shrink">'.acym_info('ACYM_LISTS_CHECKED_DEFAULT_DESC').'</div></label>';
                 $return['render'][$key] .= '<div class="cell auto">
                                                 <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape(json_encode($value)).'\'" :options="'.acym_escape(json_encode($lists)).'" v-model="'.$vModel.'"></select2multiple>
                                             </div>';

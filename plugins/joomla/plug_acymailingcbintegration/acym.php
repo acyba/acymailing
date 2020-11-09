@@ -23,7 +23,7 @@ $_PLUGINS->registerFunction('onBeforeUserBlocking', 'onBeforeUserBlocking', 'get
 class getAcymTab extends cbTabHandler
 {
     var $installed = true;
-    var $errorMessage = 'This plugin can not work without the AcyMailing extension.<br/>Please download it from <a href="https://www.acyba.com">https://www.acyba.com</a> and install it first.';
+    var $errorMessage = 'This plugin can not work without the AcyMailing extension.<br/>Please download it from <a href="https://www.acymailing.com">https://www.acymailing.com</a> and install it first.';
 
     public function __construct()
     {
@@ -36,7 +36,7 @@ class getAcymTab extends cbTabHandler
         $return = [];
 
         $listsClass = new ListClass();
-        $allLists = $listsClass->getAllWIthoutManagement();
+        $allLists = $listsClass->getAllWithoutManagement();
 
         $visibleLists = $this->getParam('lists', '');
         $allvisiblelists = explode(',', $visibleLists);
@@ -152,7 +152,7 @@ class getAcymTab extends cbTabHandler
         $currentSubscription = $userClass->getSubscriptionStatus($acyUser->id);
 
         $listClass = new ListClass();
-        $allLists = $listClass->getAllWIthoutManagement();
+        $allLists = $listClass->getAllWithoutManagement();
 
         $addlists = [];
 
@@ -227,7 +227,7 @@ class getAcymTab extends cbTabHandler
     private function displayLists($mode, $acyUser, $lists)
     {
         $listClass = new ListClass();
-        $allLists = $listClass->getAllWIthoutManagement();
+        $allLists = $listClass->getAllWithoutManagement();
 
         $userClass = new UserClass();
         $userLists = $userClass->getSubscriptionStatus($acyUser->id);

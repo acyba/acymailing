@@ -485,6 +485,7 @@ class DashboardController extends acymController
         $updateHelper = new UpdateHelper();
         $updateHelper->installNotifications();
         $updateHelper->installTemplates(true);
+        $updateHelper->installOverrideEmails();
 
         $this->listing();
     }

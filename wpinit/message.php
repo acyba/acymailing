@@ -7,7 +7,7 @@ class acyMessage extends acyHook
     public function __construct()
     {
         if (!defined('WP_ADMIN') || !WP_ADMIN) {
-            add_action('wp', [$this, 'frontMessages']);
+            add_action('wp_footer', [$this, 'frontMessages']);
         }
     }
 

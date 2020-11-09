@@ -59,13 +59,30 @@ class SegmentClass extends acymClass
         return $segment;
     }
 
-    public function getAllForSelect()
+    public function getByIds($ids)
+    {
+        $segments = parent::getByIds($ids);
+
+        if (empty($segments)) return [];
+
+        foreach ($segments as $key => $segment) {
+            $segments[$key]->filters = empty($segment->filters) ? [] : json_decode($segment->filters, true);
+        }
+
+        return $segments;
+    }
+
+    public function getAllForSelect($firstEmpty = true)
     {
         $segments = acym_loadObjectList('SELECT * FROM #__acym_segment WHERE active = 1');
 
-        $return = [
-            '' => acym_translation('ACYM_SELECT_SEGMENT'),
-        ];
+        if ($firstEmpty) {
+            $return = [
+                '' => acym_translation('ACYM_SELECT_SEGMENT'),
+            ];
+        } else {
+            $return = [];
+        }
 
         foreach ($segments as $segment) {
             $return[$segment->id] = $segment->name;

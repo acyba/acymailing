@@ -141,7 +141,7 @@ class plgAcymContactform7 extends acymPlugin
         $args = wp_parse_args($args, []);
 
         $listClass = new ListClass();
-        $lists = $listClass->getAllWIthoutManagement();
+        $lists = $listClass->getAllWithoutManagement();
         foreach ($lists as $i => $oneList) {
             if ($oneList->active == 0) {
                 unset($lists[$i]);

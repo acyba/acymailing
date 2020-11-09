@@ -29,6 +29,7 @@ class plgAcymStatistics extends acymPlugin
 
         $return = [];
         $search = acym_getVar('string', 'search', '');
+        $search = utf8_encode($search);
 
         $mails = acym_loadObjectList(
             'SELECT mail.`id`, mail.`subject`, campaign.`id` AS campaignId 

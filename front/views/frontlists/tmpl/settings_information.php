@@ -21,7 +21,7 @@
 	<div class="cell grid-x small-6">
         <?php
         $label = acym_translation('ACYM_TRACK_THIS_LIST');
-        $label .= acym_info(acym_translation('ACYM_TRACK_THIS_LIST_DESC'));
+        $label .= acym_info('ACYM_TRACK_THIS_LIST_DESC');
         echo acym_switch('list[tracking]', $data['listInformation']->tracking, $label, [], 'small-6', 'shrink', 'tiny margin-0'); ?>
 	</div>
 	<div class="cell small-6">

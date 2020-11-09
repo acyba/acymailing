@@ -33,8 +33,9 @@ class ActionClass extends acymClass
     public function delete($elements)
     {
         acym_arrayToInteger($elements);
+        if (empty($elements)) return 0;
         $actions = acym_loadObjectList('SELECT * FROM #__acym_action WHERE id IN ('.implode(',', $elements).')');
-        if (empty($actions)) return;
+        if (empty($actions)) return 0;
 
         $mailClass = new MailClass();
 
@@ -47,7 +48,7 @@ class ActionClass extends acymClass
             }
         }
 
-        parent::delete($elements);
+        return parent::delete($elements);
     }
 
     public function save($element)

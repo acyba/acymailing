@@ -9,8 +9,9 @@ const acym_helperTab = {
                 return false;
             }
             if (jQuery(this).attr('data-dynamics')) {
+                let mailId = jQuery('[name="mail_id"]').val();
                 let ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlDynamics + '&task=trigger&trigger=textPopup&plugin=' + jQuery(this)
-                    .attr('data-dynamics');
+                    .attr('data-dynamics') + '&id=' + mailId;
 
                 jQuery.post(ajaxUrl, function (response) {
                     jQuery('.tabs-panel.is-active').html(response);

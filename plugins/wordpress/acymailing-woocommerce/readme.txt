@@ -3,7 +3,7 @@ Contributors: acyba
 Tags: newsletter, integration, acymailing, woocommerce
 Requires at least: 4.7
 Tested up to: 5.5.1
-Stable tag: 1.0
+Stable tag: 1.1
 Requires PHP: 5.6.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -60,14 +60,7 @@ You can find the complete documentation here: https://docs.acymailing.com/addons
 
 == Changelog ==
 
-= 1.0 - September 22th, 2020 =
-* Initial version
-* Add a new droppable button on the editor to add products from WooCommerce to your email
-* Display products in the email
-* Select the data you want to display (pictures, title, link etc)
-* Customize the html render in the plugin settings
-* Filter users based on products they have bought
-* Execute actions when a user buys a product
-* Track your incomes per campaign
+= 1.1 - October 21, 2020 =
+* Add new emails type: abandonned cart
 
 [See the whole changelog here.](https://www.acymailing.com/change-log)

@@ -141,7 +141,7 @@ class SegmentsController extends acymController
 
         $messages = $messages[0];
 
-        if (!empty($listsIds)) $messages .= acym_info(acym_translation('ACYM_CONDITION_WITH_LISTS_COUNT'), '', '', 'wysid_tooltip');
+        if (!empty($listsIds)) $messages .= acym_info('ACYM_CONDITION_WITH_LISTS_COUNT', '', '', 'wysid_tooltip');
 
         echo json_encode(['message' => $messages]);
         exit;

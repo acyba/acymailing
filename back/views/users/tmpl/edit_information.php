@@ -34,7 +34,7 @@
 	<div class="cell grid-x">
         <?php
         $label = acym_translation('ACYM_TRACK_THIS_USER');
-        $label .= acym_info(acym_translation('ACYM_TRACK_THIS_USER_DESC'));
+        $label .= acym_info('ACYM_TRACK_THIS_USER_DESC');
         echo acym_switch('user[tracking]', $data['user-information']->tracking, $label, []); ?>
 	</div>
     <?php if (!empty($data['user-information']->source)) { ?>

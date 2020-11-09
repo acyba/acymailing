@@ -1,0 +1,41 @@
+
+.acym__followup__emails__toggle {
+    cursor: pointer;
+}
+
+.acym__followup_listing_main_element {
+    height: 1.5rem;
+}
+
+[class^="acym__followup__emails__listing__"], [class*=" acym__followup__emails__listing__"] {
+    display: none;
+
+    & > div {
+        margin-top: .3rem;
+    }
+}
+
+.emails_listing_opened [class^="acym__followup__emails__listing__"], .emails_listing_opened [class*=" acym__followup__emails__listing__"] {
+    display: block;
+    border-top: 1px solid grey;
+    margin-top: 5px;
+    height: -webkit-fill-available;
+
+    & > div {
+        height: 24px;
+    }
+}
+
+.acym__followup__emails__count > * {
+    vertical-align: middle;
+}
+
+.acym__followup__title a {
+    max-width: 80%;
+}
+
+.acym__followup__listing .acym__followup__listing__unnamed__icon {
+    font-size: 1rem;
+    vertical-align: middle;
+}
+

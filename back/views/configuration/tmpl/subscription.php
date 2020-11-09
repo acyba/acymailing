@@ -164,7 +164,7 @@
 			<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 			<div class="cell xlarge-3 medium-5">
 				<label for="acym__config__regacy-lists">
-                    <?php echo acym_translation('ACYM_DISPLAYED_LISTS').acym_info(acym_translation('ACYM_DISPLAYED_LISTS_DESC')); ?>
+                    <?php echo acym_translation('ACYM_DISPLAYED_LISTS').acym_info('ACYM_DISPLAYED_LISTS_DESC'); ?>
 				</label>
 			</div>
 			<div class="cell xlarge-4 medium-7">
@@ -183,7 +183,7 @@
 
 			<div class="cell xlarge-3 medium-5">
 				<label for="acym__config__regacy-checkedlists">
-                    <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info(acym_translation('ACYM_LISTS_CHECKED_DEFAULT_DESC')); ?>
+                    <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info('ACYM_LISTS_CHECKED_DEFAULT_DESC'); ?>
 				</label>
 			</div>
 			<div class="cell xlarge-4 medium-7">
@@ -202,7 +202,7 @@
 
 			<div class="cell xlarge-3 medium-5">
 				<label for="acym__config__regacy-autolists">
-                    <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info(acym_translation('ACYM_AUTO_SUBSCRIBE_TO_DESC')); ?>
+                    <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_AUTO_SUBSCRIBE_TO_DESC'); ?>
 				</label>
 			</div>
 			<div class="cell xlarge-4 medium-7">

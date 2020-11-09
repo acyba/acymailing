@@ -1,9 +1,11 @@
 const acym_helperSelectionPage = {
     initSelectionPage: function () {
-        this.setSelectionElement();
-        this.setSelectionSelectCard();
-        this.setSelectionButton();
-        if (ACYM_IS_ADMIN) this.setSelectSelect2Theme();
+        if (jQuery('.acym__selection_disabled').length === 0) {
+            this.setSelectionElement();
+            this.setSelectionSelectCard();
+            this.setSelectionButton();
+            if (ACYM_IS_ADMIN) this.setSelectSelect2Theme();
+        }
     },
     setSelectionElement: function () {
         const $allCards = jQuery('.acym__selection__card:not(.acym__selection__card__disabled)');

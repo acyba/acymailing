@@ -34,6 +34,8 @@ class ToggleController extends acymController
         $this->toggleableColumns['form'] = ['active' => 'id'];
         $this->toggleableColumns['segment'] = ['active' => 'id'];
         $this->toggleableColumns['campaign'] = ['visible' => 'id'];
+        $this->toggleableColumns['followup'] = ['active' => 'id'];
+        $this->toggleableColumns['mail_override'] = ['active' => 'id'];
 
         // $this->icons[TABLE NAME WITHOUT PREFIX][COLUMN NAME][VALUE] = ICON CLASS;
         $this->icons['automation']['active'][1] = 'acymicon-check-circle acym__color__green';
@@ -66,6 +68,10 @@ class ToggleController extends acymController
         $this->icons['segment']['active'][0] = 'acymicon-times-circle acym__color__red';
         $this->icons['campaign']['visible'][1] = 'acymicon-eye';
         $this->icons['campaign']['visible'][0] = 'acymicon-eye-slash acym__color__dark-gray';
+        $this->icons['followup']['active'][1] = 'acymicon-check-circle acym__color__green';
+        $this->icons['followup']['active'][0] = 'acymicon-times-circle acym__color__red';
+        $this->icons['mail_override']['active'][1] = 'acymicon-check-circle acym__color__green';
+        $this->icons['mail_override']['active'][0] = 'acymicon-times-circle acym__color__red';
 
         $this->tooltips['user']['active'][1] = 'ACYM_ACTIVATED';
         $this->tooltips['user']['active'][0] = 'ACYM_DEACTIVATED';

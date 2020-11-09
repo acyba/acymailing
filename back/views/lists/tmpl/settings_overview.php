@@ -51,9 +51,11 @@
 						<div>
 							<i class='acymicon-trash-o acym__listing__block__delete__trash acym__color__white'></i>
 							<p class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
-                                <?php echo acym_translation('ACYM_CANCEL'); ?>
+								<i class="acymicon-keyboard_arrow_left acym__color__white"></i>
 							</p>
-							<p class="acym__listing__block__delete__submit acym__color__white acy_button_submit" data-task="unsetWelcome"><?php echo acym_translation('ACYM_DELETE'); ?></p>
+							<p class="acym__listing__block__delete__submit acym__color__white acy_button_submit" data-task="unsetWelcome">
+								<i class="acymicon-trash-o acym__color__white"></i>
+							</p>
 						</div>
 					</div>
 					<a href="<?php echo $data['tmpls']['welcomeTmplUrl']; ?>">

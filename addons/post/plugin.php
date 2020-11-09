@@ -22,6 +22,7 @@ class plgAcymPost extends acymPlugin
                 'intro' => ['ACYM_INTRO_ONLY', true],
                 'content' => ['ACYM_FULL_TEXT', false],
                 'cats' => ['ACYM_CATEGORIES', false],
+                'author' => ['ACYM_AUTHOR', false],
                 'readmore' => ['ACYM_READ_MORE', false],
             ];
 
@@ -272,8 +273,10 @@ class plgAcymPost extends acymPlugin
 
     public function replaceIndividualContent($tag)
     {
-        $query = 'SELECT post.*
-                    FROM #__posts AS post
+        $query = 'SELECT post.*, `user`.`user_nicename`, `user`.`display_name` 
+                    FROM #__posts AS post 
+                    LEFT JOIN #__users AS `user` 
+                        ON `user`.`ID` = `post`.`post_author` 
                     WHERE post.post_type = "post" 
                         AND post.post_status = "publish"
                         AND post.ID = '.intval($tag->id);
@@ -313,6 +316,14 @@ class plgAcymPost extends acymPlugin
         }
 
         $customFields = [];
+        $varFields['{author}'] = empty($element->user_nicename) ? $element->display_name : $element->user_nicename;
+        if (in_array('author', $tag->display) && !empty($varFields['{author}'])) {
+            $customFields[] = [
+                $varFields['{author}'],
+                acym_translation('ACYM_AUTHOR'),
+            ];
+        }
+
         $varFields['{cats}'] = get_the_term_list($tag->id, 'category', '', ', ');
         if (in_array('cats', $tag->display)) {
             $customFields[] = [

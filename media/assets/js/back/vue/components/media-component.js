@@ -55,7 +55,7 @@ jQuery(document).ready(function ($) {
                     });
                     $modalUi.contents().find('.pull-right .btn-success, .pull-right .btn-primary').attr('onclick', '').off('click').on('click', function () {
                         let inputUrlImg = $modalUi.contents().find('#f_url').val();
-                        inputUrlImg = inputUrlImg.match('^images/') ? ACYM_JOOMLA_MEDIA_IMAGE + inputUrlImg : inputUrlImg;
+                        if (inputUrlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER)) inputUrlImg = ACYM_JOOMLA_MEDIA_IMAGE + inputUrlImg;
                         vueComp.$emit('change', inputUrlImg);
                         jQuery('#acym__form__modal__joomla-image').hide();
                     });

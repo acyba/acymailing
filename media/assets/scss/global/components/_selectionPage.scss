@@ -11,6 +11,12 @@
         font-size: 1.3rem;
     }
 
+    &.acym__selection_disabled {
+        .acym__selection__card:hover {
+            border-color: $dark-gray !important;
+        }
+    }
+
     .acym__selection__card {
         padding: 20px;
         border: 2px solid $dark-gray;

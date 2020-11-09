@@ -15,7 +15,7 @@ class JFormFieldLists extends JFormField
         //__END__joomla_
 
         $listClass = new ListClass();
-        $lists = $listClass->getAllWIthoutManagement();
+        $lists = $listClass->getAllWithoutManagement();
         foreach ($lists as $i => $oneList) {
             if ($oneList->active == 0) {
                 unset($lists[$i]);

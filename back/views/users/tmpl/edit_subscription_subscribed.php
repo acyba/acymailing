@@ -7,7 +7,7 @@
 					<h6 class="cell auto"><?php echo acym_escape($oneSubscription->name); ?></h6>
 				</div>
 				<div id="<?php echo acym_escape($oneSubscription->id); ?>" class="medium-3 cell acym__users__display__list--action acym__user__action--unsubscribe">
-					<i class="acymicon-times-circle"></i><span><?php echo strtolower(acym_translation('ACYM_UNSUBSCRIBE')); ?></span>
+					<i class="acymicon-times-circle"></i><span><?php echo acym_strtolower(acym_translation('ACYM_UNSUBSCRIBE')); ?></span>
 				</div>
 			</div>
         <?php } ?>

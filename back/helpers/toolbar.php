@@ -15,7 +15,7 @@ class ToolbarHelper extends acymObject
     {
         $data = [];
         $data['icon'] = $icon;
-        $data['content'] = $textContent;
+        $data['content'] = acym_translation($textContent);
         $data['attributes'] = $attributes;
         $data['isPrimary'] = $isPrimary;
 
