@@ -88,7 +88,11 @@ class ConfigurationController extends acymController
     private function prepareLists(&$data)
     {
         $listClass = new ListClass();
-        $lists = $listClass->getAllWIthoutManagement();
+        try {
+            $lists = $listClass->getAllWithoutManagement();
+        } catch (\Exception $exception) {
+            $lists = [];
+        }
         foreach ($lists as $i => $oneList) {
             if ($oneList->active == 0) {
                 unset($lists[$i]);
@@ -142,6 +146,7 @@ class ConfigurationController extends acymController
             'bounces' => 'ACYM_BOUNCE_HANDLING',
             'plugins' => 'ACYM_ADD_ONS',
             'forms' => 'ACYM_SUBSCRIPTION_FORMS',
+            'override' => 'ACYM_EMAILS_OVERRIDE',
             'configuration' => 'ACYM_CONFIGURATION',
         ];
         $data['aclType'] = new AclType();
@@ -160,6 +165,7 @@ class ConfigurationController extends acymController
         $structure = [];
         $createTable = [];
         $indexes = [];
+        $constraints = [];
 
         // For each table, get its name, its column names and its indexes / pkey
         foreach ($tables as $oneTable) {
@@ -171,7 +177,7 @@ class ConfigurationController extends acymController
             $tableName = substr($oneTable, 1, strpos($oneTable, '`', 1) - 1);
 
             $fields = explode("\n", $oneTable);
-            foreach ($fields as $oneField) {
+            foreach ($fields as $key => $oneField) {
                 if (strpos($oneField, '#__') === 1) {
                     continue;
                 }
@@ -192,6 +198,18 @@ class ConfigurationController extends acymController
                     $indexName = substr($oneField, $firstBackquotePos + 1, strpos($oneField, '`', $firstBackquotePos + 1) - $firstBackquotePos - 1);
 
                     $indexes[$tableName][$indexName] = $oneField;
+                } elseif (strpos($oneField, 'FOREIGN KEY') !== false) {
+                    preg_match('/(fk.*)\`/Uis', $fields[$key - 1], $matchesConstraints);
+                    preg_match('/(#__.*)\`\(`(.*)`\)/Uis', $fields[$key + 1], $matchesTable);
+                    preg_match('/\`(.*)\`/Uis', $oneField, $matchesColumn);
+                    if (!empty($matchesConstraints) && !empty($matchesTable) && !empty($matchesColumn)) {
+                        if (empty($constraints[$tableName])) $constraints[$tableName] = [];
+                        $constraints[$tableName][$matchesConstraints[1]] = [
+                            'table' => $matchesTable[1],
+                            'column' => $matchesColumn[1],
+                            'table_column' => $matchesTable[2],
+                        ];
+                    }
                 }
             }
             $createTable[$tableName] = 'CREATE TABLE IF NOT EXISTS '.$oneTable;
@@ -309,6 +327,54 @@ class ConfigurationController extends acymController
                     $messages[] = '<span style="color:green">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_INDEX_SUCCESS', $keyName, $oneTableName).'</span>';
                 }
             }
+
+            if (empty($constraints[$oneTableName])) continue;
+            $tableNameQuery = str_replace('#__', acym_getPrefix(), $oneTableName);
+            $databaseName = acym_loadResult('SELECT DATABASE();');
+            $foreignKeys = acym_loadObjectList(
+                'SELECT i.TABLE_NAME, i.CONSTRAINT_TYPE, i.CONSTRAINT_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME, k.COLUMN_NAME
+                                                FROM information_schema.TABLE_CONSTRAINTS AS i 
+                                                LEFT JOIN information_schema.KEY_COLUMN_USAGE AS k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME 
+                                                WHERE i.TABLE_NAME = '.acym_escapeDB($tableNameQuery).' AND i.CONSTRAINT_TYPE = "FOREIGN KEY" AND i.TABLE_SCHEMA = '.acym_escapeDB($databaseName),
+                'CONSTRAINT_NAME'
+            );
+
+            acym_query('SET foreign_key_checks = 0');
+
+            foreach ($constraints[$oneTableName] as $constraintName => $constraintInfo) {
+                $constraintTableNamePrefix = str_replace('#__', acym_getPrefix(), $constraintInfo['table']);
+                $constraintName = str_replace('#__', acym_getPrefix(), $constraintName);
+                if (empty($foreignKeys[$constraintName]) || (!empty($foreignKeys[$constraintName]) && ($foreignKeys[$constraintName]->REFERENCED_TABLE_NAME != $constraintTableNamePrefix || $foreignKeys[$constraintName]->REFERENCED_COLUMN_NAME != $constraintInfo['table_column'] || $foreignKeys[$constraintName]->COLUMN_NAME != $constraintInfo['column']))) {
+                    $messages[] = '<span style="color:blue">'.acym_translation_sprintf('ACYM_CHECKDB_WRONG_FOREIGN_KEY', $constraintName, $oneTableName).'</span>';
+
+                    if (!empty($foreignKeys[$constraintName])) {
+                        try {
+                            $isError = acym_query('ALTER TABLE `'.$oneTableName.'` DROP FOREIGN KEY `'.$constraintName.'`');
+                        } catch (\Exception $e) {
+                            $isError = null;
+                        }
+                        if ($isError === null) {
+                            $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
+                            $messages[] = '<span style="color:red">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_FOREIGN_KEY_ERROR', $constraintName, $oneTableName, $errorMessage).'</span>';
+                            continue;
+                        }
+                    }
+
+                    try {
+                        $isError = acym_query('ALTER TABLE `'.$oneTableName.'` ADD CONSTRAINT `'.$constraintName.'` FOREIGN KEY (`'.$constraintInfo['column'].'`) REFERENCES `'.$constraintInfo['table'].'` (`'.$constraintInfo['table_column'].'`) ON DELETE NO ACTION ON UPDATE NO ACTION;');
+                    } catch (\Exception $e) {
+                        $isError = null;
+                    }
+
+                    if ($isError === null) {
+                        $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
+                        $messages[] = '<span style="color:red">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_FOREIGN_KEY_ERROR', $constraintName, $oneTableName, $errorMessage).'</span>';
+                    } else {
+                        $messages[] = '<span style="color:green">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_FOREIGN_KEY_SUCCESS', $constraintName, $oneTableName).'</span>';
+                    }
+                }
+            }
+            acym_query('SET foreign_key_checks = 1');
         }
 
         // Clean the duplicates in the acym_url table, caused by a bug before the 12/04/19

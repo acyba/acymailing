@@ -8,7 +8,7 @@
             echo $workflow->display($this->steps, $this->step);
             ?>
 			<div class="cell grid-x acym__campaigns__segment__summary margin-bottom-1">
-				<h4 class="cell"><?php echo acym_translation('ACYM_CHOSEN_LISTS').acym_info(acym_translation('ACYM_CHOSEN_LISTS_DESC')); ?></h4>
+				<h4 class="cell"><?php echo acym_translation('ACYM_CHOSEN_LISTS').acym_info('ACYM_CHOSEN_LISTS_DESC'); ?></h4>
 				<div class="cell grid-x padding-1">
                     <?php if (empty($data['campaignLists'])) {
                         echo '<p>'.acym_translation('ACYM_YOU_DID_NOT_SELECT_LISTS').'</p>';
@@ -31,7 +31,7 @@
 				</div>
 			</div>
 			<div class="cell grid-x acym__campaigns__segment__edit margin-top-1">
-				<h4 class="cell"><?php echo acym_translation('ACYM_SEGMENT').acym_info(acym_translation('ACYM_SEGMENT_CAMPAIGN_DESC')); ?></h4>
+				<h4 class="cell"><?php echo acym_translation('ACYM_SEGMENT').acym_info('ACYM_SEGMENT_CAMPAIGN_DESC'); ?></h4>
 				<div class="cell grid-x padding-1">
 					<div class="cell grid-x acym_vcenter">
 						<p class="cell shrink margin-right-1"><?php echo acym_translation('ACYM_SELECT_EXISTING_SEGMENT'); ?></p>
@@ -65,7 +65,7 @@
 						</div>
 						<div class="cell grid-x acym__content acym_vcenter acym__campaigns__segment__edit__count_container">
 							<p class="medium-6 cell"><?php echo acym_translation('ACYM_CAMPAIGN_SENT_TO'); ?></p>
-							<p class="medium-6 cell acym_vcenter align-right"><span id="acym__campaigns__segment__edit-user-count"></span><?php echo strtolower(acym_translation('ACYM_USERS')); ?></p>
+							<p class="medium-6 cell acym_vcenter align-right"><span id="acym__campaigns__segment__edit-user-count"></span><?php echo acym_strtolower(acym_translation('ACYM_USERS')); ?></p>
 						</div>
 					</div>
 				</div>

@@ -1,0 +1,47 @@
+#acym_wrapper {
+    #acym__followup__email {
+        #acym__followup__email__information {
+
+            & > .cell {
+                padding-left: 15px;
+            }
+
+            .switch, input {
+                margin-bottom: 0 !important;
+            }
+        }
+
+        #acym__followup__email__emails {
+            .acym__followup__email__listing {
+                box-shadow: 0 0 4px 2px $light-gray;
+
+                .acym__listing__title__container, .acym__listing__header__title__container {
+                    margin-left: 0;
+                }
+
+                .acym__followup__email__listing__action {
+                    i {
+                        font-size: 20px;
+                        cursor: pointer;
+                        transition: .2s;
+
+                        &.acym__followup__email__listing__action-delete:hover {
+                            color: map-get($foundation-palette, alert);
+                        }
+
+                        &.acym__followup__email__listing__action-duplicate:hover {
+                            color: $primary-toolbar-color;
+                        }
+                    }
+                }
+            }
+
+            .acym__followup__email__listing__add-button {
+                i {
+                    vertical-align: middle;
+                    font-size: 20px;
+                }
+            }
+        }
+    }
+}

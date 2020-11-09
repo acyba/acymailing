@@ -39,7 +39,7 @@ $acyWPLangCodes = [
 
 global $acymLanguages;
 
-function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true)
+function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $textdomain = 'acymailing')
 {
     $translation = JText::_($key, false, $interpretBackSlashes);
 

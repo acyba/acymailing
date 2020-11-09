@@ -43,10 +43,11 @@ global $acymLanguages;
  * @param string $key                  The translation key used in AcyMailing language files
  * @param bool   $jsSafe               Whether or not the result should be escaped
  * @param bool   $interpretBackSlashes Interpret or not the \ like \t \n etc...
+ * @param string $textdomain           Text domain of the key
  *
  * @return string
  */
-function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true)
+function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $textdomain = 'acymailing')
 {
     // Return the key passed by default as it may be a random text instead of a key
     $translation = $key;
@@ -70,7 +71,7 @@ function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true)
         $translation = $customTranslation[$key];
     } elseif (!empty($acymailingEnglishText)) {
         // If there is an english translation, get the wordpress translation. By default it returns the text passed, so the english translation
-        $translation = __($acymailingEnglishText, 'acymailing');
+        $translation = empty($textdomain) ? __($acymailingEnglishText) : __($acymailingEnglishText, $textdomain);
 
         // If there is no translation on the WordPress side, and we're not in english, take the AcyMailing community translation
         if ($translation === $acymailingEnglishText && $acymLanguages['currentLanguage'] != ACYM_DEFAULT_LANGUAGE) {
@@ -89,6 +90,10 @@ function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true)
         $translation = str_replace('"', '\"', $translation);
     } elseif ($interpretBackSlashes && strpos($translation, '\\') !== false) {
         $translation = str_replace(['\\\\', '\t', '\n'], ["\\", "\t", "\n"], $translation);
+    }
+
+    if ($translation == $key) {
+        $translation = empty($textdomain) ? __($translation) : __($translation, $textdomain);
     }
 
     return $translation;
@@ -272,7 +277,7 @@ function acym_getTranslationTools()
     ];
 
     $polylangOption = (object)['value' => 'polylang', 'text' => 'Polylang'];
-    if (!acym_isExtensionActive('polylang/polylang.php')) $polylangOption->disable = true;
+    if (!acym_isExtensionActive('polylang/polylang.php') && !acym_isExtensionActive('polylang-pro/polylang.php')) $polylangOption->disable = true;
     $options[] = $polylangOption;
 
     $wpmlOption = (object)['value' => 'wpml', 'text' => 'WPML'];

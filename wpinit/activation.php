@@ -108,6 +108,7 @@ class acyActivation extends acyHook
         $updateHelper->installFields();
         $updateHelper->installAdminNotif();
         $updateHelper->installAddons();
+        $updateHelper->installOverrideEmails();
 
         $newConfig = new \stdClass();
         $newConfig->installcomplete = 1;

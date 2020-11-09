@@ -7,6 +7,7 @@ use AcyMailing\Classes\AutomationClass;
 use AcyMailing\Classes\ConditionClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\OverrideClass;
 use AcyMailing\Classes\PluginClass;
 use AcyMailing\Classes\RuleClass;
 use AcyMailing\Classes\StepClass;
@@ -184,6 +185,7 @@ class UpdateHelper extends acymObject
             'ACYM_MENU_CAMPAIGNS',
             'ACYM_MENU_CAMPAIGNS_DESC',
             'ACYM_SUBSCRIPTION_FORMS',
+            'ACYM_EMAILS_OVERRIDE',
         ];
 
         $siteLanguages = empty($onlyCode) ? array_keys(acym_getLanguages()) : [$onlyCode];
@@ -391,7 +393,6 @@ class UpdateHelper extends acymObject
         ];
 
         $mailClass = new MailClass();
-        $userClass = new UserClass();
         $notifications = $mailClass->getMailsByType('notification', $searchSettings);
         $notifications = $notifications['mails'];
 
@@ -510,6 +511,7 @@ class UpdateHelper extends acymObject
         if (empty($firstEmail)) {
             $currentCMSId = acym_currentUserId();
             $currentCMSEmail = acym_currentUserEmail();
+            $userClass = new UserClass();
             $user = $userClass->getOneByCMSId($currentCMSId);
             if (empty($user)) $user = $userClass->getOneByEmail($currentCMSEmail);
             if (empty($user)) {
@@ -596,6 +598,7 @@ class UpdateHelper extends acymObject
         $extensionsToPublish = [
             'acymtriggers',
             'jceacym',
+            'acymailoverride',
         ];
         $existingExtensions = acym_loadResultArray(
             'SELECT `element` 
@@ -640,6 +643,44 @@ class UpdateHelper extends acymObject
             if (in_array($oneAddon->folder_name, $installedAddons)) continue;
 
             $pluginClass->save($oneAddon);
+        }
+    }
+
+    public function installOverrideEmails()
+    {
+        $overrideClass = new OverrideClass();
+        $mailClass = new MailClass();
+        $currentUserId = acym_currentUserId();
+
+        $emailOverrides = acym_getEmailOverrides();
+        $existingOverrides = $mailClass->getMailsByType('override', ['offset' => 0, 'mailsPerPage' => 9000, 'key' => 'name']);
+        $existingOverrides = $existingOverrides['mails'];
+
+        foreach ($emailOverrides as $oneOverride) {
+            if (!empty($existingOverrides[$oneOverride['name']])) continue;
+
+            $mail = new \stdClass();
+            $mail->name = $oneOverride['name'];
+            $mail->creation_date = date('Y-m-d H:i:s', time());
+            $mail->type = 'override';
+            $mail->subject = $oneOverride['new_subject'];
+            $mail->body = $this->getFormatedNotification($oneOverride['new_body']);
+            $mail->template = 0;
+            $mail->drag_editor = 1;
+            $mail->creator_id = $currentUserId;
+            $mailId = $mailClass->save($mail);
+
+            if (empty($mailId)) continue;
+
+            $override = new \stdClass();
+            $override->mail_id = $mailId;
+            $override->description = $oneOverride['description'];
+            $override->source = $oneOverride['source'];
+            $override->active = 0;
+            $override->base_subject = json_encode($oneOverride['base_subject']);
+            $override->base_body = json_encode($oneOverride['base_body']);
+
+            $overrideClass->save($override);
         }
     }
 }

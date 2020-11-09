@@ -10,7 +10,7 @@ class plgAcymOnline extends acymPlugin
         $this->pluginDescription->name = acym_translation('ACYM_WEBSITE_LINKS');
     }
 
-    public function dynamicText()
+    public function dynamicText($mailId)
     {
         return $this->pluginDescription;
     }
@@ -98,7 +98,7 @@ class plgAcymOnline extends acymPlugin
                 $link .= strpos($link, '?') ? '&' : '?';
                 $link .= 'id={subtag:id}&key={subtag:key}';
             } else {
-                $link = 'archive&task=view&id='.$email->id.'&userid={subtag:id}-{subtag:key}&'.acym_noTemplate();
+                $link = 'archive&task=view&id='.$email->id.'&userid={subtag:id}-{subtag:key}&'.acym_noTemplate(false);
                 $link .= $this->getLanguage($email->links_language);
                 if (!empty($email->key)) $link .= '&key='.$email->key;
                 $link = acym_frontendLink($link);

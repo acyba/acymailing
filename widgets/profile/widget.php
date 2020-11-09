@@ -25,7 +25,7 @@ class acym_profile_widget extends WP_Widget
         acym_addStyle(false, ACYM_CSS.'widget.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'widget.min.css'));
 
         $listClass = new ListClass();
-        $lists = $listClass->getAllWIthoutManagement();
+        $lists = $listClass->getAllWithoutManagement();
         foreach ($lists as $i => $oneList) {
             if ($oneList->active == 0) {
                 unset($lists[$i]);

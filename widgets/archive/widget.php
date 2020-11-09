@@ -29,7 +29,7 @@ class acym_archive_widget extends WP_Widget
         ];
 
         $listClass = new ListClass();
-        $lists = $listClass->getAllWIthoutManagement();
+        $lists = $listClass->getAllWithoutManagement();
         foreach ($lists as $i => $oneList) {
             if ($oneList->active == 0) {
                 unset($lists[$i]);

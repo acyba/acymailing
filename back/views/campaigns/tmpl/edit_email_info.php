@@ -31,6 +31,6 @@ if (empty($data['multilingual'])) {
 
 <div class="cell margin-top-1 grid-x">
     <?php
-    echo acym_switch('visible', $data['mailInformation']->visible, acym_translation('ACYM_VISIBLE').acym_info(acym_translation('ACYM_VISIBLE_CAMPAIGN_DESC')), [], 'shrink')
+    echo acym_switch('visible', $data['mailInformation']->visible, acym_translation('ACYM_VISIBLE').acym_info('ACYM_VISIBLE_CAMPAIGN_DESC'), [], 'shrink')
     ?>
 </div>

@@ -5,7 +5,7 @@
 	<version>{__VERSION__}</version>
 	<author>Acyba</author>
 	<authorEmail>dev@acyba.com</authorEmail>
-	<authorUrl>https://www.acyba.com</authorUrl>
+	<authorUrl>https://www.acymailing.com</authorUrl>
 	<copyright>Copyright (C) 2009-{__YEAR__} ACYBA SAS - All rights reserved.</copyright>
 	<license>GNU/GPLv3 https://www.gnu.org/licenses/gpl-3.0.html</license>
 	<description>This plugin enables you to use the JCE editor with AcyMailing v6+</description>

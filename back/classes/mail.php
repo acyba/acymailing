@@ -61,6 +61,7 @@ class MailClass extends acymClass
 
         if (!empty($settings['automation']) || empty($settings['onlyStandard'])) {
             $filters[] = 'mail.type != "notification"';
+            $filters[] = 'mail.type != "override"';
         } else {
             $filters[] = 'mail.type = "standard"';
         }
@@ -179,7 +180,7 @@ class MailClass extends acymClass
     /**
      * @param string $name
      *
-     * @return array
+     * @return object
      */
     public function getOneByName($name, $library = false)
     {
@@ -324,6 +325,9 @@ class MailClass extends acymClass
             if (empty($value) || in_array($oneAttribute, ['thumbnail', 'settings'])) {
                 continue;
             }
+
+            if (is_array($value)) $mail->$oneAttribute = json_encode($value);
+
             if ($oneAttribute === 'access' && is_array($mail->$oneAttribute)) {
                 $mail->$oneAttribute = ','.trim(implode(',', $mail->$oneAttribute), ',').',';
             }
@@ -374,9 +378,8 @@ class MailClass extends acymClass
 
     public function delete($elements)
     {
-        if (!is_array($elements)) $elements = [$elements];
-
         if (empty($elements)) return 0;
+        if (!is_array($elements)) $elements = [$elements];
 
         $this->deleteMediaFolder($elements);
         acym_arrayToInteger($elements);
@@ -399,6 +402,7 @@ class MailClass extends acymClass
         acym_query('DELETE FROM #__acym_user_stat WHERE mail_id IN ('.implode(',', $elements).')');
         acym_query('DELETE FROM #__acym_url_click WHERE mail_id IN ('.implode(',', $elements).')');
         acym_query('DELETE FROM #__acym_mail_stat WHERE mail_id IN ('.implode(',', $elements).')');
+        acym_query('DELETE FROM #__acym_followup_has_mail WHERE mail_id IN ('.implode(',', $elements).')');
 
         return parent::delete($elements);
     }

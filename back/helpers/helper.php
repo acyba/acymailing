@@ -9,7 +9,7 @@ define('ACYM_SPAMURL', ACYM_UPDATEMEURL.'spamsystem&task=');
 define('ACYM_HELPURL', ACYM_UPDATEMEURL.'doc&component='.ACYM_NAME.'&page=');
 define('ACYM_REDIRECT', ACYM_UPDATEMEURL.'redirect&page=');
 define('ACYM_UPDATEURL', ACYM_UPDATEMEURL.'update&task=');
-define('ACYM_DOCUMENTATION', ACYM_UPDATEMEURL.'doc&task=getLink');
+define('ACYM_DOCUMENTATION', 'https://docs.acymailing.com/');
 define('ACYM_COMPONENT_NAME_API', 'acymailing');
 if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 
@@ -37,6 +37,7 @@ include_once ACYM_HELPER_GLOBAL.'language.php';
 include_once ACYM_HELPER_GLOBAL.'mail.php';
 include_once ACYM_HELPER_GLOBAL.'modal.php';
 include_once ACYM_HELPER_GLOBAL.'module.php';
+include_once ACYM_HELPER_GLOBAL.'multibyte.php';
 include_once ACYM_HELPER_GLOBAL.'query.php';
 include_once ACYM_HELPER_GLOBAL.'security.php';
 include_once ACYM_HELPER_GLOBAL.'url.php';

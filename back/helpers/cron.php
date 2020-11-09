@@ -4,6 +4,7 @@ namespace AcyMailing\Helpers;
 
 use AcyMailing\Classes\AutomationClass;
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\QueueClass;
 use AcyMailing\Libraries\acymObject;
 
@@ -205,6 +206,29 @@ class CronHelper extends acymObject
             acym_trigger('filterSpecificMailsToSend', [&$specialMail, $time]);
             foreach ($specialMail as $onespecialMail) {
                 $campaignClass->send($onespecialMail->id);
+            }
+        }
+
+        //Step 10 followups with trigger like birthday (1 per call day)
+        if (!in_array('followup', $this->skip)) {
+            $followupClass = new FollowupClass();
+            $followups = $followupClass->getFollowupDailyBases();
+
+            // Only once a day
+            $dailyHour = $this->config->get('daily_hour', '12');
+            $dailyMinute = $this->config->get('daily_minute', '00');
+            // The day it is currently based on the timezone specified in the CMS configuration
+            $dayBasedOnCMSTimezone = acym_date('now', 'Y-m-d');
+            // The UTC timestamp of the current day based on the CMS timezone, at the specified hour
+            $dayBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$dailyHour.':'.$dailyMinute);
+            $time = time();
+
+            foreach ($followups as $followup) {
+                $lastTrigger = empty($followup->last_trigger) ? '' : acym_date($followup->last_trigger, 'Y-m-d');
+                if ($time >= $dayBasedOnCMSTimezoneAtSpecifiedHour && $lastTrigger != $dayBasedOnCMSTimezone) {
+                    if (!empty($followup->condition)) $followup->condition = json_decode($followup->condition, true);
+                    acym_trigger('onAcymFollowupDailyBasesNeedToBeTriggered', [$followup]);
+                }
             }
         }
 

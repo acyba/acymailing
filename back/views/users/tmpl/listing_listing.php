@@ -28,7 +28,7 @@
 			<div class="cell acym_listing_sort-by auto">
                 <?php echo acym_sortBy(
                     [
-                        'id' => strtolower(acym_translation('ACYM_ID')),
+                        'id' => acym_strtolower(acym_translation('ACYM_ID')),
                         'email' => acym_translation('ACYM_EMAIL'),
                         'name' => acym_translation('ACYM_NAME'),
                         'creation_date' => acym_translation('ACYM_DATE_CREATED'),
@@ -61,7 +61,7 @@
                     foreach ($data['fields'] as $field) {
                         ?>
 						<div class="cell medium-auto hide-for-small-only acym__listing__header__title text-center">
-                            <?php echo acym_escape($field); ?>
+                            <?php echo acym_escape(acym_translation($field)); ?>
 						</div>
                         <?php
                     }

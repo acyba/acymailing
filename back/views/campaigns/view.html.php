@@ -21,10 +21,19 @@ class CampaignsViewCampaigns extends acymView
             'tests' => 'ACYM_TEST',
             'summary' => 'ACYM_SUMMARY',
         ];
+
+        $this->followupSteps = [
+            'followupTrigger' => 'ACYM_TRIGGER',
+            'followupCondition' => 'ACYM_CONDITIONS',
+            'followupEmail' => 'ACYM_EMAILS',
+            'followupSummary' => 'ACYM_SUMMARY',
+        ];
+
         $this->tabs = [
             'campaigns' => 'ACYM_CAMPAIGNS',
         ];
 
+        $this->tabs['followup'] = 'ACYM_FOLLOW_UP';
 
         if (acym_isAllowed('mails')) {
             $this->tabs['welcome'] = 'ACYM_WELCOME_EMAILS';

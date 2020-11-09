@@ -74,14 +74,10 @@ class AutomationClass extends acymClass
 
     public function delete($elements)
     {
-        if (!is_array($elements)) {
-            $elements = [$elements];
-        }
-        acym_arrayToInteger($elements);
+        if (empty($elements)) return 0;
 
-        if (empty($elements)) {
-            return 0;
-        }
+        if (!is_array($elements)) $elements = [$elements];
+        acym_arrayToInteger($elements);
 
         $steps = acym_loadResultArray('SELECT id FROM #__acym_step WHERE automation_id IN ('.implode(',', $elements).')');
         $stepClass = new StepClass();

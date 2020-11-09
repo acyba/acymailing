@@ -12,6 +12,34 @@
     <?php } elseif (!empty($data['emptyDetailed']) && $data['emptyDetailed'] == 'stats') { ?>
 		<h1 class="acym__listing__empty__title text-center cell"><?php echo acym_translation('ACYM_DONT_HAVE_STATS_THIS_CAMPAIGN'); ?></h1>
     <?php } elseif (empty($data['detailed_stats'])) { ?>
+		<div class="cell grid-x">
+			<div class="cell grid-x auto">
+				<div class="cell grid-x auto">
+					<div class="medium-5 small-12 cell acym_stats_detailed_search">
+                        <?php echo acym_filterSearch($data['search'], 'detailed_stats_search', 'ACYM_SEARCH'); ?>
+					</div>
+					<div class="medium-4 small-12 cell acym__stats__campaign-choose">
+					</div>
+				</div>
+			</div>
+			<div class="grid-x cell align-right auto">
+				<div class="cell acym_listing_sort-by">
+                    <?php echo acym_sortBy(
+                        [
+                            'send_date' => acym_translation('ACYM_SEND_DATE'),
+                            'subject' => acym_translation('ACYM_EMAIL_SUBJECT'),
+                            'email' => acym_translation('ACYM_EMAIL'),
+                            'name' => acym_translation('ACYM_NAME'),
+                            'open' => acym_translation('ACYM_MAILS_OPEN'),
+                            'open_date' => acym_translation('ACYM_OPEN_DATE'),
+                            'sent' => acym_translation('ACYM_SENT'),
+                        ],
+                        "detailed_stats",
+                        $data['ordering']
+                    ); ?>
+				</div>
+			</div>
+		</div>
 		<h1 class="acym__listing__empty__title text-center cell"><?php echo acym_translation('ACYM_NO_DETAILED_STATS'); ?></h1>
     <?php } else { ?>
 		<div class="cell grid-x">

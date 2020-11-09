@@ -13,8 +13,10 @@
 
         if ($data['mail']->type == 'notification') {
             include acym_getView('mails', 'edit_info_notification');
-        } elseif ($data['mail']->type == 'automation') {
-            include acym_getView('mails', 'edit_info_automation');
+        } elseif (in_array($data['mail']->type, ['automation', 'override'])) {
+            include acym_getView('mails', 'edit_info_all');
+        } elseif ($data['mail']->type == 'followup') {
+            include acym_getView('mails', 'edit_info_followup');
         } else {
             include acym_getView('mails', 'edit_info_global');
         }

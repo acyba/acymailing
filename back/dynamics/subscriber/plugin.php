@@ -1,5 +1,8 @@
 <?php
 
+use AcyMailing\Classes\FollowupClass;
+use AcyMailing\Classes\SegmentClass;
+use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Libraries\acymPlugin;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\MailClass;
@@ -9,6 +12,8 @@ use AcyMailing\Types\OperatorType;
 
 class plgAcymSubscriber extends acymPlugin
 {
+    const FOLLOWTRIGGER = 'user_creation';
+
     /**
      * Array of fields loaded to have the right option value
      */
@@ -29,7 +34,7 @@ class plgAcymSubscriber extends acymPlugin
         $this->pluginDescription->name = acym_translation('ACYM_SUBSCRIBER');
     }
 
-    public function dynamicText()
+    public function dynamicText($mailId)
     {
         return $this->pluginDescription;
     }
@@ -411,7 +416,7 @@ class plgAcymSubscriber extends acymPlugin
         $actions['acy_add_queue']->option = '<button class="shrink grid-x cell acy_button_submit button " type="button" data-task="createMail" data-and="__and__">'.acym_translation('ACYM_CREATE_MAIL').'</button>';
         $actions['acy_add_queue']->option .= '<input type="hidden" name="acym_action[actions][__and__][acy_add_queue][mail_id]">';
         $actions['acy_add_queue']->option .= '<div class="shrink acym__automation__action__mail__name"></div>';
-        $actions['acy_add_queue']->option .= '<div class="shrink margin-left-1 margin-right-1">'.strtolower(acym_translation('ACYM_OR')).' </div>';
+        $actions['acy_add_queue']->option .= '<div class="shrink margin-left-1 margin-right-1">'.acym_strtolower(acym_translation('ACYM_OR')).' </div>';
         $actions['acy_add_queue']->option .= '<button type="button" data-modal-name="acym__template__choose__modal__and__" data-open="acym__template__choose__modal" aria-controls="acym__template__choose__modal" tabindex="0" aria-haspopup="true" class="cell medium-shrink button-secondary auto button ">'.acym_translation('ACYM_CHOOSE_EXISTING').'</button>';
         $actions['acy_add_queue']->option .= acym_info('ACYM_CHOOSE_EXISTING_DESC', '', 'margin-left-0');
         $actions['acy_add_queue']->option .= '<div class="medium-4 grid-x cell">';
@@ -595,6 +600,38 @@ class plgAcymSubscriber extends acymPlugin
     {
         $automationClass = new AutomationClass();
         $automationClass->trigger('user_creation', ['userId' => $user->id]);
+
+        $followupClass = new FollowupClass();
+        $followupClass->addFollowupEmailsQueue(self::FOLLOWTRIGGER, $user->id);
+    }
+
+    public function matchFollowupsConditions(&$followups, $userId, $params)
+    {
+        $segmentClass = new SegmentClass();
+        foreach ($followups as $key => $followup) {
+            if (!empty($followup->condition['segments_status']) && !empty($followup->condition['segments'])) {
+                $segments = $segmentClass->getByIds($followup->condition['segments']);
+                if (empty($segments)) continue;
+
+                $automationHelper = new AutomationHelper();
+
+                foreach ($segments as $segment) {
+                    foreach ($segment->filters as $and => $andValues) {
+                        $and = intval($and);
+                        foreach ($andValues as $filterName => $options) {
+                            acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelper, &$options, &$and]);
+                        }
+                    }
+                }
+
+                $automationHelper->where[] = 'user.id = '.intval($userId);
+
+                $user = acym_loadResult($automationHelper->getQuery(['user.id']));
+
+                $status = $followup->condition['segments_status'] == 'is';
+                if (($status && empty($user)) || (!$status && !empty($user))) unset($followups[$key]);
+            }
+        }
     }
 
     public function onAcymAfterUserModify(&$user)
@@ -737,5 +774,22 @@ class plgAcymSubscriber extends acymPlugin
         }
 
         $dataSources['acymailing'] = $data;
+    }
+
+    public function getFollowupTriggers(&$triggers)
+    {
+        $triggers[self::FOLLOWTRIGGER] = acym_translation('ACYM_USER_CREATION');
+    }
+
+    public function getFollowupTriggerBlock(&$blocks)
+    {
+        $blocks[] = [
+            'name' => acym_translation('ACYM_USER_CREATION'),
+            'description' => acym_translation('ACYM_USER_CREATION_DESC'),
+            'icon' => 'acymicon-user-plus',
+            'link' => acym_completeLink('campaigns&task=edit&step=followupCondition&trigger='.self::FOLLOWTRIGGER),
+            'level' => 2,
+            'alias' => self::FOLLOWTRIGGER,
+        ];
     }
 }

@@ -292,7 +292,9 @@ class UserClass extends acymClass
                 WHERE userlist.user_id = '.intval($userId);
 
         if (empty($includeManagement)) {
-            $query .= ' AND list.front_management IS NULL';
+            $listClass = new ListClass();
+            $types = [$listClass::LIST_TYPE_STANDARD, $listClass::LIST_TYPE_FOLLOWUP];
+            $query .= ' AND list.type in ("'.implode('","', $types).'")';
         }
 
         return acym_loadObjectList($query, $key);
@@ -326,13 +328,14 @@ class UserClass extends acymClass
      */
     public function getUsersSubscriptionsByIds($usersId, $creatorId = 0)
     {
+        $listClass = new ListClass();
         $query = 'SELECT id, user_id, l.color, l.name
                 FROM #__acym_list AS l
                 JOIN #__acym_user_has_list AS userlist 
                     ON l.id = userlist.list_id
                 WHERE user_id IN ('.implode(',', $usersId).')
                 AND userlist.status = 1
-                AND l.front_management is NULL';
+                AND l.type = '.acym_escapeDB($listClass::LIST_TYPE_STANDARD);
 
         if (!empty($creatorId)) {
             $userGroups = acym_getGroupsByUser($creatorId);
@@ -406,7 +409,7 @@ class UserClass extends acymClass
         return false;
     }
 
-    public function subscribe($userIds, $addLists)
+    public function subscribe($userIds, $addLists, $trigger = true)
     {
         if (empty($addLists)) return false;
 
@@ -428,7 +431,6 @@ class UserClass extends acymClass
         foreach ($userIds as $userId) {
             $user = $this->getOneById($userId);
             if (empty($user)) continue;
-
             $currentSubscription = $this->getUserSubscriptionById($userId, 'id', true);
 
             $currentlySubscribed = [];
@@ -467,7 +469,7 @@ class UserClass extends acymClass
 
             $historyClass->insert($userId, 'subscribed', [$historyData]);
 
-            acym_trigger('onAcymAfterUserSubscribe', [&$user, &$subscribedLists]);
+            if ($trigger) acym_trigger('onAcymAfterUserSubscribe', [&$user, &$subscribedLists]);
 
             if (($confirmationRequired == 0 || $user->confirmed == 1) && $user->active == 1) {
                 $listClass->sendWelcome($userId, $subscribedLists);
@@ -521,6 +523,13 @@ class UserClass extends acymClass
                 $unsubscribedLists[] = $oneListId;
                 $unsubscribedFromLists = true;
             }
+
+            acym_query(
+                'DELETE FROM #__acym_queue WHERE user_id = '.intval($userId).' AND mail_id IN (
+                    SELECT followup_mail.mail_id FROM #__acym_followup_has_mail AS followup_mail
+                    JOIN #__acym_followup AS followup ON followup.id = followup_mail.followup_id AND followup.list_id IN ('.implode(',', $lists).')
+                )'
+            );
 
             $historyClass = new HistoryClass();
             $historyData = acym_translation_sprintf('ACYM_LISTS_NUMBERS', implode(', ', $lists));

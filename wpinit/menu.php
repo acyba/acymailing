@@ -63,18 +63,19 @@ class acyMenu extends acyHook
         );
 
         $menus = [
+            'ACYM_SUBSCRIPTION_FORMS' => 'forms',
             'ACYM_USERS' => 'users',
             'ACYM_CUSTOM_FIELDS' => 'fields',
             'ACYM_LISTS' => 'lists',
             'ACYM_SEGMENTS' => 'segments',
             'ACYM_EMAILS' => 'campaigns',
             'ACYM_TEMPLATES' => 'mails',
+            'ACYM_EMAILS_OVERRIDE' => 'override',
             'ACYM_AUTOMATION' => 'automation',
             'ACYM_QUEUE' => 'queue',
             'ACYM_STATISTICS' => 'stats',
-            'ACYM_BOUNCE_HANDLING' => 'bounces',
             'ACYM_ADD_ONS' => 'plugins',
-            'ACYM_SUBSCRIPTION_FORMS' => 'forms',
+            'ACYM_BOUNCE_HANDLING' => 'bounces',
             'ACYM_CONFIGURATION' => 'configuration',
         ];
         foreach ($menus as $title => $ctrl) {

@@ -1,6 +1,8 @@
 <?php
 
+use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Controllers\CampaignsController;
+use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Libraries\acymPlugin;
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\FieldClass;
@@ -8,6 +10,7 @@ use AcyMailing\Classes\FieldClass;
 class plgAcymBirthday extends acymPlugin
 {
     const MAILTYPE = 'birthday';
+    const FOLLOWTRIGGER = 'birthday';
     protected $dataSources = [];
 
     public function onAcymDefineUserStatusCheckTriggers(&$triggers)
@@ -421,4 +424,95 @@ class plgAcymBirthday extends acymPlugin
     {
         $this->filterSpecialMailsDailySend($specialMails, $time, self::MAILTYPE);
     }
+
+    public function getFollowupTriggerBlock(&$blocks)
+    {
+        $blocks[] = [
+            'name' => acym_translation('ACYM_BIRTHDAY'),
+            'description' => acym_translation('ACYM_BIRTHDAY_MAIL_FOLLOW_DESC'),
+            'icon' => 'acymicon-calendar',
+            'link' => acym_completeLink('campaigns&task=edit&step=followupCondition&trigger='.self::FOLLOWTRIGGER),
+            'level' => 2,
+            'alias' => self::FOLLOWTRIGGER,
+        ];
+    }
+
+    public function getFollowupTriggers(&$triggers)
+    {
+        $triggers[self::FOLLOWTRIGGER] = acym_translation('ACYM_BIRTHDAY');
+    }
+
+    public function getAcymAdditionalConditionFollowup(&$additionalCondition, $trigger, $followup, $statusArray)
+    {
+        if ($trigger == self::FOLLOWTRIGGER) {
+            $fieldClass = new FieldClass();
+            $dateFields = $fieldClass->getFieldsByType(['date']);
+
+            $fields = [];
+            foreach ($dateFields as $oneField) {
+                $fields[$oneField->id] = acym_translation($oneField->name);
+            }
+            $fieldsSelect = acym_select(
+                $fields,
+                'followup[condition][birthday_field]',
+                !empty($followup->condition) ? $followup->condition['birthday_field'] : '',
+                'class="acym__select" required'
+            );
+            $fieldsSelect = '<span class="cell large-2 medium-4 margin-left-1">'.$fieldsSelect.'</span>';
+            $additionalCondition['birthday_field'] = acym_translation_sprintf('ACYM_BIRTHDAY_FIELD', acym_info('ACYM_BIRTHDAY_FIELD_CUSTOM_FIELD_TYPE_DATE').$fieldsSelect);
+        }
+    }
+
+    public function getFollowupConditionSummary(&$return, $condition, $trigger, $statusArray)
+    {
+        if ($trigger == self::FOLLOWTRIGGER && !empty($condition['birthday_field'])) {
+            $fieldClass = new FieldClass();
+            $field = $fieldClass->getOneById($condition['birthday_field']);
+            $return[] = acym_translation_sprintf('ACYM_BIRTHDAY_FIELD_IS', $field->name);
+        }
+    }
+
+    public function onAcymGetFollowupDailyBases(&$triggers)
+    {
+        $triggers[] = self::FOLLOWTRIGGER;
+    }
+
+    public function onAcymFollowupDailyBasesNeedToBeTriggered($followup)
+    {
+        if (self::FOLLOWTRIGGER == $followup->trigger) {
+            $automationHelper = new AutomationHelper();
+
+            $fieldClass = new FieldClass();
+            $birthdayField = $fieldClass->getOneFieldByID($followup->condition['birthday_field']);
+
+            if (empty($birthdayField)) return;
+
+            $fieldOptions = json_decode($birthdayField->option);
+            $tmp = explode('%', $fieldOptions->format);
+            $formatArray = [];
+            foreach ($tmp as $val) {
+                if (empty($val)) continue;
+                if ($val == 'y') $val = 'Y';
+                $formatArray[] = '%'.$val;
+            }
+            $format = implode('/', $formatArray);
+
+            $dateNowWithTimeZone = acym_date('now', 'Y-m-d h:i:s');
+            $dateToCheck = new DateTime($dateNowWithTimeZone);
+
+            $automationHelper->join['birthday_field'] = '#__acym_user_has_field AS uf ON uf.user_id = user.id';
+            $automationHelper->where[] = 'uf.field_id = '.$birthdayField->id;
+            $automationHelper->where[] = 'MONTH(STR_TO_DATE(uf.value, "'.$format.'")) = MONTH("'.date_format($dateToCheck, 'Y-m-d').'")';
+            $automationHelper->where[] = 'DAY(STR_TO_DATE(uf.value, "'.$format.'")) = DAY("'.date_format($dateToCheck, 'Y-m-d').'")';
+
+            $userIds = acym_loadResultArray($automationHelper->getQuery(['user.id']));
+
+            $followupClass = new FollowupClass();
+
+            foreach ($userIds as $userId) {
+                $followupClass->addFollowupEmailsQueue($followup->trigger, $userId);
+            }
+        }
+    }
+
 }

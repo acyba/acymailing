@@ -31,6 +31,7 @@
                             'paused' => ['ACYM_PAUSED', $data["numberPerStatus"]["paused"]],
                             'scheduled' => ['ACYM_SCHEDULED', $data["numberPerStatus"]["scheduled"]],
                             'automation' => ['ACYM_AUTOMATION', $data["numberPerStatus"]["automation"]],
+                            'followup' => ['ACYM_FOLLOW_UP', $data["numberPerStatus"]["followup"]],
                         ];
                         echo acym_filterStatus($options, $data["status"], 'cqueue_status');
                         ?>

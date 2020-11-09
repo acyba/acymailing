@@ -20,6 +20,7 @@ class plgAcymArticle extends acymPlugin
                 'intro' => ['ACYM_INTRO_TEXT', true],
                 'full' => ['ACYM_FULL_TEXT', false],
                 'cat' => ['ACYM_CATEGORY', false],
+                'author' => ['ACYM_AUTHOR', false],
                 'publishing' => ['ACYM_PUBLISHING_DATE', false],
                 'readmore' => ['ACYM_READ_MORE', false],
             ];
@@ -313,8 +314,10 @@ class plgAcymArticle extends acymPlugin
 
     public function replaceIndividualContent($tag)
     {
-        $query = 'SELECT element.*
-                    FROM #__content AS element
+        $query = 'SELECT element.*, `user`.`name` AS authorname
+                    FROM #__content AS element 
+                    LEFT JOIN #__users AS `user` 
+                        ON `user`.`id` = `element`.`created_by` 
                     WHERE element.state = 1
                         AND element.id = '.intval($tag->id);
 
@@ -361,6 +364,18 @@ class plgAcymArticle extends acymPlugin
 
         $varFields['{full}'] = $element->fulltext;
         if (in_array('full', $tag->display)) $contentText .= $varFields['{full}'];
+
+        if (empty($element->created_by_alias) && empty($element->authorname)) {
+            $varFields['{author}'] = '';
+        } else {
+            $varFields['{author}'] = empty($element->created_by_alias) ? $element->authorname : $element->created_by_alias;
+        }
+        if (in_array('author', $tag->display) && !empty($varFields['{author}'])) {
+            $customFields[] = [
+                $varFields['{author}'],
+                acym_translation('ACYM_AUTHOR'),
+            ];
+        }
 
         $varFields['{publishing}'] = acym_date($element->publish_up);
         if (in_array('publishing', $tag->display)) {

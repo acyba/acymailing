@@ -8,6 +8,7 @@ require_once ACYM_INC.'phpmailer'.DS.'phpmailer.php';
 require_once ACYM_INC.'emogrifier.php';
 
 use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\OverrideClass;
 use AcyMailing\Classes\UrlClass;
 use AcyMailing\Classes\UserClass;
 use acyPHPMailer\Exception;
@@ -717,7 +718,7 @@ class MailerHelper extends acyPHPMailer
 
     public function statClick($mailId, $userid, $fromStat = false)
     {
-        if (!$fromStat && !in_array($this->type, ['standard', 'automation', 'welcome', 'unsubscribe'])) return;
+        if (!$fromStat && !in_array($this->type, ['standard', 'automation', 'welcome', 'unsubscribe', 'followup'])) return;
 
         $urlClass = new UrlClass();
         if ($urlClass === null) return;
@@ -1044,6 +1045,50 @@ class MailerHelper extends acyPHPMailer
         $this->parameters[$tagName] = $value;
     }
 
+    public function overrideEmail($subject, $body, $to)
+    {
+        // 1 - Get the override
+        $overrideClass = new OverrideClass();
+        $override = $overrideClass->getMailByBaseContent($subject, $body);
+
+        // There is no override for this email, or the override is disabled, let Joomla send the email
+        if (empty($override)) {
+            return false;
+        }
+
+        // 2 - Prepare the email and params
+        $this->trackEmail = true;
+        $this->autoAddUser = true;
+
+        for ($i = 1 ; $i < count($override->parameters) ; $i++) {
+            $oneParam = $override->parameters[$i];
+
+            // Joomla emails have links as text, convert them
+            $unmodified = $oneParam;
+            $oneParam = preg_replace(
+                '/(http|https):\/\/(.*)/',
+                '<a href="$1://$2" target="_blank">$1://$2</a>',
+                $oneParam,
+                -1,
+                $count
+            );
+            if ($count > 0) $this->addParam('link'.$i, $unmodified);
+            $this->addParam('param'.$i, $oneParam);
+        }
+
+        $this->addParam('subject', $subject);
+
+        // 3 - Send the email
+        $statusSend = $this->sendOne($override->id, $to);
+        if (!$statusSend && !empty($this->reportMessage)) {
+            // Something went wrong when trying to send the override, log the information in the cron logs file
+            $cronHelper = new CronHelper();
+            $cronHelper->messages[] = $this->reportMessage;
+            $cronHelper->saveReport();
+        }
+
+        return $statusSend;
+    }
 
     /* * * * * * * * * * * * * * * * *
      *

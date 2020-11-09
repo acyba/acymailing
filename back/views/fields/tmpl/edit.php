@@ -90,7 +90,14 @@
 
 				<div class="cell margin-top-1 acym__fields__change" id="acym__fields__authorized-content"><?php echo acym_translation('ACYM_AUTHORIZED_CONTENT'); ?>
                     <?php
-                    $authorizedContent = ['all' => acym_translation('ACYM_ALL'), 'number' => acym_translation('ACYM_NUMBER_ONLY'), 'letters' => acym_translation('ACYM_LETTERS_ONLY'), 'numbers_letters' => acym_translation('ACYM_NUMBERS_LETTERS_ONLY'), 'regex' => ' <input type="text" name="field[option][authorized_content][regex]" placeholder="'.acym_translation('ACYM_REGULAR_EXPRESSION', true).'">'];
+                    $regex = empty($data['field']->option->authorized_content->regex) ? '' : acym_escape($data['field']->option->authorized_content->regex);
+                    $authorizedContent = [
+                        'all' => acym_translation('ACYM_ALL'),
+                        'number' => acym_translation('ACYM_NUMBER_ONLY'),
+                        'letters' => acym_translation('ACYM_LETTERS_ONLY'),
+                        'numbers_letters' => acym_translation('ACYM_NUMBERS_LETTERS_ONLY'),
+                        'regex' => ' <input type="text" value="'.$regex.'" name="field[option][authorized_content][regex]" placeholder="'.acym_translation('ACYM_REGULAR_EXPRESSION', true).'">',
+                    ];
                     echo acym_radio($authorizedContent, 'field[option][authorized_content][]', empty($data['field']->option->authorized_content->{'0'}) ? 'all' : $data['field']->option->authorized_content->{'0'});
                     ?>
 				</div>
@@ -132,7 +139,7 @@
 					<span class="cell">
                     <?php
                     echo acym_translation('ACYM_MAXIMUM_CHARACTERS');
-                    echo acym_info(acym_translation('ACYM_MAXIMUM_CHARACTERS_TOOLTIP'));
+                    echo acym_info('ACYM_MAXIMUM_CHARACTERS_TOOLTIP');
                     ?>
 					</span>
 					<input type="number" min="0" name="field[option][max_characters]" value="<?php echo empty($data['field']->option->max_characters) ? '' : $data['field']->option->max_characters; ?>" class="cell medium-2 small-3">

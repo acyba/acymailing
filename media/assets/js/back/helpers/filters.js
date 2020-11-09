@@ -14,8 +14,15 @@ const acym_helperFilter = {
 
             jQuery.get(url, function (response) {
                 response = acym_helper.parseJson(response);
-                let newOption = new Option(response.value, value, false, false);
-                $field.append(newOption).trigger('change');
+                if (Array.isArray(response)) {
+                    response.map((option, index) => {
+                        let newOption = new Option(option.text, option.value, false, true);
+                        $field.append(newOption).trigger('change');
+                    });
+                } else {
+                    let newOption = new Option(response.text, response.value, false, false);
+                    $field.append(newOption).trigger('change');
+                }
             });
 
         } else if (!$field.is(':checkbox') && $field.attr('data-switch') === undefined) {

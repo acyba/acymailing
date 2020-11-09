@@ -1,4 +1,5 @@
 <div id="acym_content" class="popup_size">
+	<input type="hidden" name="mail_id" value="<?php echo $data['mail_id']; ?>">
 	<div id="acym__dynamics__popup">
 		<div class="acym__dynamics__popup__menu grid-x">
 			<div id="acym__dynamics__popup__menu__insert__tag" class="cell grid-x">

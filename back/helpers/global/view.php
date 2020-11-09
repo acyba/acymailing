@@ -225,6 +225,9 @@ function acym_getJSMessages()
         'ACYM_IF_YOU_SELECT_SEGMENT_FILTERS_ERASE',
         'ACYM_PLEASE_FILL_A_NAME_FOR_YOUR_SEGMENT',
         'ACYM_COULD_NOT_SAVE_SEGMENT',
+        'ACYM_SENT',
+        'ACYM_RECIPIENTS',
+        'ACYM_RESET_OVERRIDES_CONFIRMATION',
     ];
 
     foreach ($keysToLoad as $oneKey) {

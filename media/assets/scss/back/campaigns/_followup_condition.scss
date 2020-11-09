@@ -1,0 +1,20 @@
+#acym_wrapper {
+    #acym__followup__condition {
+        .acym__followup__condition__desc {
+            margin: 0 .2rem;
+        }
+
+        .acym__title__primary__color {
+            font-size: .9rem;
+            font-weight: 500;
+        }
+
+        .acym__followup__condition__select__in-text {
+            margin: 0 .3rem;
+
+            .select2-selection__clear {
+                display: none;
+            }
+        }
+    }
+}

@@ -20,6 +20,12 @@
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_AUTOMATIC_CAMPAIGN_DESC'); ?></p>
                 <?php if (!acym_level(2)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION').'</div>'; ?>
 			</div>
+			<div class="acym__selection__card <?php echo !acym_level(2) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center" acym-data-link="<?php echo $data['followup_link']; ?>">
+				<i class="acymicon-follow acym__selection__card__icon"></i>
+				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_FOLLOW_UP'); ?></h1>
+				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_FOLLOW_UP_DESC'); ?></p>
+                <?php if (!acym_level(2)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION').'</div>'; ?>
+			</div>
 		</div>
 		<div class="cell grid-x grid-margin-x align-center">
 			<h2 class="cell small-12 margin-bottom-1 acym__selection__title text-center"><?php echo acym_translation('ACYM_ONE_TIME_EMAIL'); ?></h2>

@@ -61,10 +61,10 @@ class StepClass extends acymClass
 
     public function delete($elements)
     {
+        if (empty($elements)) return 0;
+
         if (!is_array($elements)) $elements = [$elements];
         acym_arrayToInteger($elements);
-
-        if (empty($elements)) return 0;
 
         $conditions = acym_loadResultArray('SELECT id FROM #__acym_condition WHERE step_id IN ('.implode(',', $elements).')');
         $conditionClass = new ConditionClass();

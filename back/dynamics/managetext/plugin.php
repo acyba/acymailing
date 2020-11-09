@@ -1,7 +1,5 @@
 <?php
 
-use AcyMailing\Classes\MailClass;
-use AcyMailing\Helpers\CronHelper;
 use AcyMailing\Libraries\acymPlugin;
 
 class plgAcymManagetext extends acymPlugin
@@ -11,6 +9,7 @@ class plgAcymManagetext extends acymPlugin
         $this->_replaceConstant($email);
         $this->_replaceRandom($email);
         $this->_handleAnchors($email);
+        $this->fixPicturesOutlook($email);
     }
 
     public function replaceUserInformation(&$email, &$user, $send = true)
@@ -66,7 +65,17 @@ class plgAcymManagetext extends acymPlugin
                     acym_loadLanguageFile('com_users');
                 }
                 if (!empty($arrayVal)) {
-                    $tagsReplaced[$i] = nl2br(vsprintf(acym_translation($val), $arrayVal));
+                    $translation = acym_translation($val);
+                    $paramsIncluded = vsprintf($translation, $arrayVal);
+                    if ($translation === $paramsIncluded) {
+                        $translation = preg_replace(
+                            '/\{[A-Z_]+\}/',
+                            '%s',
+                            $translation
+                        );
+                        $paramsIncluded = vsprintf($translation, $arrayVal);
+                    }
+                    $tagsReplaced[$i] = nl2br($paramsIncluded);
                 } else {
                     $tagsReplaced[$i] = acym_translation($val);
                 }
@@ -281,5 +290,126 @@ class plgAcymManagetext extends acymPlugin
         $newBody = preg_replace('/(<a +href="#[^"]*"[^>]*) target="_blank"([^>]*>)/Uis', '$1 $2', $email->body);
 
         if (!empty($newBody)) $email->body = $newBody;
+    }
+
+    /**
+     * Make sure each image has a width/height
+     * This function can be used by plugins as well
+     */
+    public function fixPicturesOutlook(&$email)
+    {
+        $this->addPictureDimensions($email->body);
+        $this->addPictureAlign($email->body);
+    }
+
+    public function addPictureDimensions(&$html)
+    {
+        if (!preg_match_all('#(<img)([^>]*>)#i', $html, $results)) {
+            return;
+        }
+
+        $replace = [];
+        $widthheight = ['width', 'height'];
+        foreach ($results[0] as $num => $oneResult) {
+            $add = [];
+            foreach ($widthheight as $whword) {
+                //We only add it if the picture does not already have the height/width and only if the height is specified as px
+                //About the second regex, we make sure to ignore all line-height or other similar CSS styles by making sure it does not start with a character or an underscore or an hyphen.
+                if (preg_match('#'.$whword.' *=#i', $oneResult) || !preg_match('#[^a-z_\-]'.$whword.' *:([0-9 ]{1,8})px#i', $oneResult, $resultWH)) continue;
+
+                //We don't have the width= ... but we have one width:...
+                //We make sure it's not an empty one...
+                if (empty($resultWH[1])) continue;
+                //Let's add the width as img parameter then
+                $add[] = $whword.'="'.trim($resultWH[1]).'" ';
+            }
+
+            if (!empty($add)) {
+                $replace[$oneResult] = '<img '.implode(' ', $add).$results[2][$num];
+            }
+        }
+
+        //Nothing to do
+        if (!empty($replace)) {
+            $html = str_replace(array_keys($replace), $replace, $html);
+            preg_match_all('#(<img)([^>]*>)#i', $html, $results);
+        }
+
+        static $replace = [];
+        foreach ($results[0] as $num => $oneResult) {
+            if (isset($replace[$oneResult])) continue;
+            if (strpos($oneResult, 'width=') || strpos($oneResult, 'height=')) continue;
+            if (preg_match('#[^a-z_\-]width *:([0-9 ]{1,8})#i', $oneResult, $res)) continue;
+            if (preg_match('#[^a-z_\-]height *:([0-9 ]{1,8})#i', $oneResult, $res)) continue;
+            if (!preg_match('#src="([^"]*)"#i', $oneResult, $url)) continue;
+
+            //Ok we have an url, it's $url[1]
+            $imageUrl = $url[1];
+
+            //If the getimagesize failed, we don't want to do it again and again and again...
+            $replace[$oneResult] = $oneResult;
+
+            //We are nice guys... sometimes users use www. or not... so we convert both, same thing for httpS or http
+            $base = str_replace(['http://www.', 'https://www.', 'http://', 'https://'], '', ACYM_LIVE);
+            $replacements = ['https://www.'.$base, 'http://www.'.$base, 'https://'.$base, 'http://'.$base];
+            $localpict = false;
+            foreach ($replacements as $oneReplacement) {
+                if (strpos($imageUrl, $oneReplacement) === false) continue;
+
+                $imageUrl = str_replace(
+                    [$oneReplacement, '/'],
+                    [ACYM_ROOT, DS],
+                    urldecode($imageUrl)
+                );
+                $localpict = true;
+                break;
+            }
+
+            //It's not a local picture... we skip it, we don't want to try to load it, it will take too much time
+            if (!$localpict) continue;
+
+            $dim = @getimagesize($imageUrl);
+            //could not load the picture...
+            if (!$dim) continue;
+            if (empty($dim[0]) || empty($dim[1])) continue;
+
+            $replace[$oneResult] = str_replace('<img', '<img width="'.$dim[0].'" height="'.$dim[1].'"', $oneResult);
+        }
+
+        if (!empty($replace)) {
+            $html = str_replace(array_keys($replace), $replace, $html);
+        }
+    }
+
+    public function addPictureAlign(&$html)
+    {
+        if (preg_match_all('#< *img([^>]*)>#Ui', $html, $allPictures)) ;
+
+        foreach ($allPictures[0] as $i => $onePict) {
+            // 1 - We add a align="right" or align="left" for the pictures in order to have good result on Outlook 2007
+            if (strpos($onePict, 'align=') !== false) continue;
+            if (!preg_match('#(style="[^"]*)(float *: *)(right|left|top|bottom|middle)#Ui', $onePict, $pictParams)) continue;
+
+            $newPict = str_replace('<img', '<img align="'.$pictParams[3].'" ', $onePict);
+            $html = str_replace($onePict, $newPict, $html);
+
+
+            // 2 - We also add a hspace based on the margin parameter
+            if (strpos($onePict, 'hspace=') !== false) continue;
+
+            $hspace = 5;
+            if (preg_match('#margin(-right|-left)? *:([^";]*)#i', $onePict, $margins)) {
+                //If we have spaces, it may be a margin:34px 24px 78px; format.
+                $currentMargins = explode(' ', trim($margins[2]));
+                //If we have more than one param then we always use the second one (which is "right")... if not we use the first one
+                $myMargin = (count($currentMargins) > 1) ? $currentMargins[1] : $currentMargins[0];
+                //We use it only if it's in px
+                if (strpos($myMargin, 'px') !== false) $hspace = preg_replace('#[^0-9]#i', '', $myMargin);
+            }
+
+            $lastPict = str_replace('<img', '<img hspace="'.$hspace.'" ', $newPict);
+
+            $html = str_replace($newPict, $lastPict, $html);
+        }
     }
 }

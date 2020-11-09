@@ -26,7 +26,7 @@ class RegacyHelper extends acymObject
         acym_arrayToInteger($visibleLists);
 
         $listsClass = new ListClass();
-        $allLists = $listsClass->getAllWIthoutManagement();
+        $allLists = $listsClass->getAllWithoutManagement();
 
         // Display only published and visible lists, except if we're on the back-end
         $isAdmin = acym_isAdmin();

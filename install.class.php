@@ -3,6 +3,7 @@
 use AcyMailing\Classes\ActionClass;
 use AcyMailing\Classes\ConditionClass;
 use AcyMailing\Classes\FieldClass;
+use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\PluginClass;
 use AcyMailing\Controllers\PluginsController;
@@ -815,6 +816,81 @@ class acymInstall
             $automationHelper->deleteUnusedEmails();
             $this->updateQuery('ALTER TABLE `#__acym_form` ADD cookie VARCHAR(30)');
             $this->updateQuery('UPDATE `#__acym_form` SET `cookie` = "{\"cookie_expiration\":1}" WHERE `cookie` IS NULL');
+        }
+
+        if (version_compare($this->fromVersion, '6.18.0', '<')) {
+            $this->updateQuery(
+                'CREATE TABLE IF NOT EXISTS `#__acym_followup` (
+                        `id` INT NOT NULL AUTO_INCREMENT,
+                        `name` VARCHAR(255) NOT NULL,
+                        `display_name` VARCHAR(255) NOT NULL,
+                        `creation_date` DATETIME NOT NULL,
+                        `trigger` VARCHAR(50),
+                        `condition` LONGTEXT,
+                        `active` TINYINT(1) NOT NULL DEFAULT 1,
+                        `send_once` TINYINT(1) NOT NULL DEFAULT 1,
+                        `list_id` INT NULL,
+	                    `last_trigger` INT NULL,
+                        PRIMARY KEY (`id`),
+                        INDEX `fk_#__acym_followup_has_list`(`list_id` ASC),
+                        CONSTRAINT `fk_#__acym_followup_has_list`
+                            FOREIGN KEY (`list_id`)
+                                REFERENCES `#__acym_list`(`id`)
+                                ON DELETE NO ACTION
+                                ON UPDATE NO ACTION
+                    )
+                        ENGINE = InnoDB
+                        /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;'
+            );
+            $this->updateQuery(
+                'CREATE TABLE IF NOT EXISTS `#__acym_followup_has_mail` (
+                        `mail_id` INT NOT NULL,
+                        `followup_id` INT NOT NULL,
+                        `delay` INT NOT NULL,
+                        `delay_unit` INT NOT NULL,
+                        PRIMARY KEY (`mail_id`, `followup_id`),
+                        INDEX `fk_#__acym_mail_has_followup1`(`followup_id` ASC),
+                        INDEX `fk_#__acym_mail_has_followup2`(`mail_id` ASC),
+                        CONSTRAINT `fk_#__acym_mail_has_followup1`
+                            FOREIGN KEY (`mail_id`)
+                                REFERENCES `#__acym_mail`(`id`)
+                                ON DELETE NO ACTION
+                                ON UPDATE NO ACTION,
+                        CONSTRAINT `fk_#__acym_mail_has_followup2`
+                            FOREIGN KEY (`followup_id`)
+                                REFERENCES `#__acym_followup`(`id`)
+                                ON DELETE NO ACTION
+                                ON UPDATE NO ACTION
+                    )
+                        ENGINE = InnoDB
+                        /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;'
+            );
+
+            $listClass = new ListClass();
+
+            $this->updateQuery('ALTER TABLE `#__acym_list` ADD `type` VARCHAR(20) NOT NULL DEFAULT '.acym_escapeDB($listClass::LIST_TYPE_STANDARD));
+            $this->updateQuery('UPDATE `#__acym_list` SET `type` = '.acym_escapeDB($listClass::LIST_TYPE_FRONT).' WHERE `front_management`  = 1');
+            $this->updateQuery('ALTER TABLE `#__acym_list` DROP COLUMN front_management');
+
+            $this->updateQuery(
+                'CREATE TABLE IF NOT EXISTS `#__acym_mail_override` (
+                        `id` INT NOT NULL AUTO_INCREMENT,
+                        `mail_id` INT NOT NULL,
+                        `description` VARCHAR(255) NOT NULL,
+                        `source` VARCHAR (20) NOT NULL,
+                        `active` TINYINT(1) NOT NULL DEFAULT 1,
+                        `base_subject` TEXT NOT NULL,
+                        `base_body` TEXT NOT NULL,
+                        PRIMARY KEY(`id`),
+                        CONSTRAINT `fk_#__acym_mail_override1`
+                            FOREIGN KEY (`mail_id`)
+                                REFERENCES `#__acym_mail`(`id`)
+                                ON DELETE NO ACTION
+                                ON UPDATE NO ACTION
+                    )
+                        ENGINE = InnoDB
+                        /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;'
+            );
         }
     }
 

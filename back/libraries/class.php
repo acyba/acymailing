@@ -51,13 +51,29 @@ class acymClass extends acymObject
     }
 
     /**
-     * @param $id Id of element
+     * @param $id  "id of element"
      *
      * @return mixed
      */
     public function getOneById($id)
     {
         return acym_loadObject('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE `'.acym_secureDBColumn($this->pkey).'` = '.intval($id));
+    }
+
+    /**
+     * @param $ids Ids of elements
+     *
+     * @return mixed
+     */
+    public function getByIds($ids)
+    {
+        if (empty($ids)) return [];
+
+        if (!is_array($ids)) $ids = [$ids];
+
+        acym_arrayToInteger($ids);
+
+        return acym_loadObjectList('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE `'.acym_secureDBColumn($this->pkey).'` IN ("'.implode('","', $ids).'")');
     }
 
     public function getAll($key = null)
@@ -105,8 +121,8 @@ class acymClass extends acymObject
 
     public function delete($elements)
     {
-        if (!is_array($elements)) $elements = [$elements];
         if (empty($elements)) return 0;
+        if (!is_array($elements)) $elements = [$elements];
 
         $column = is_numeric(reset($elements)) ? $this->pkey : $this->namekey;
 

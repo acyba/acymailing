@@ -18,8 +18,8 @@ class DynamicsController extends acymController
 
     public function popup()
     {
-        $plugins = acym_trigger('dynamicText');
         $isAutomation = acym_getVar('string', 'automation');
+        $mailId = acym_getVar('int', 'mail_id', 0);
 
         $js = 'function setTag(tagvalue, element){
                     var $allRows = jQuery(".acym__listing__row__popup");
@@ -33,11 +33,15 @@ class DynamicsController extends acymController
 
         $tab = new TabHelper();
 
+
+        $plugins = acym_trigger('dynamicText', [$mailId]);
+
         $data = [
             "type" => acym_getVar('string', 'type', 'news'),
             "plugins" => $plugins,
             "tab" => $tab,
             "automation" => $isAutomation,
+            'mail_id' => $mailId,
         ];
 
         parent::display($data);

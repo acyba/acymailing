@@ -10,7 +10,7 @@
 		<div class="cell medium-3 grid-x">
             <?php
             $orderingOptions = [
-                'id' => strtolower(acym_translation('ACYM_ID')),
+                'id' => acym_strtolower(acym_translation('ACYM_ID')),
                 'email' => acym_translation('ACYM_EMAIL'),
                 'name' => acym_translation('ACYM_NAME'),
                 'subscription_date' => acym_translation('ACYM_SUBSCRIPTION_DATE'),
@@ -54,7 +54,7 @@
 						<span><?php echo acym_translation('ACYM_CONFIRMED'); ?></span>
 					</div>
 					<div class="large-2 medium-5 small-2 cell acym__list__settings__subscribers__users--action acym__list__action--unsubscribe_one acym_word-break" v-on:click="unsubscribeUser(sub.id)">
-						<i class="acymicon-times-circle"></i><span class="hide-for-small-only"><?php echo strtolower(acym_translation('ACYM_UNSUBSCRIBE')); ?></span>
+						<i class="acymicon-times-circle"></i><span class="hide-for-small-only"><?php echo acym_strtolower(acym_translation('ACYM_UNSUBSCRIBE')); ?></span>
 					</div>
 				</div>
 			</div>

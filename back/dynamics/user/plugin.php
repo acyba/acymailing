@@ -20,7 +20,7 @@ class plgAcymUser extends acymPlugin
         $this->pluginDescription->name = acym_translation_sprintf('ACYM_CMS_USER', '{__CMS__}');
     }
 
-    public function dynamicText()
+    public function dynamicText($mailId)
     {
         return $this->pluginDescription;
     }

@@ -835,7 +835,7 @@ class acymPlugin extends acymObject
                 );
             } elseif ($field['type'] == 'custom_view') {
                 $idCustomView = 'acym__plugins__installed__custom-view__'.$this->name;
-                $text .= '<label class="cell">'.acym_translation('ACYM_CUSTOM_VIEW').acym_info(acym_translation('ACYM_CUSTOM_VIEW_DESC'), '', '', 'wysid_tooltip').'</label>';
+                $text .= '<label class="cell">'.acym_translation('ACYM_CUSTOM_VIEW').acym_info('ACYM_CUSTOM_VIEW_DESC', '', '', 'wysid_tooltip').'</label>';
                 if (empty($field['tags'])) $field['tags'] = [];
                 $modalContent = '<div id="'.$idCustomView.'" class="cell grid-x acym__plugins__installed__custom-view" acym-data-tags="'.acym_escape(json_encode($field['tags'])).'">
                                     <h2 class="cell text-center acym__title__primary__color">'.acym_translation_sprintf('ACYM_CUSTOM_VIEW_FOR_X', $this->pluginDescription->name).'</h2>
@@ -843,7 +843,7 @@ class acymPlugin extends acymObject
                                         <div class="acym__plugins__installed__custom-view__editor-loader grid-x cell align-center acym_vcenter" v-if="loading">'.acym_loaderLogo().'</div>
                                         <vue-prism-editor :emitEvents="true" class="cell acym__plugins__installed__custom-view__code cell auto" v-model="code" :language="language" lineNumbers="true"></vue-prism-editor>
                                         <div class="cell grid-x medium-3 margin-left-1 acym__plugins__installed__custom-view__tags">
-                                            <h3 class="acym__title__primary__color cell text-center">'.acym_translation('ACYM_DYNAMIC_CONTENT').acym_info(acym_translation('ACYM_DYNAMIC_CONTENT_DESC')).'</h3>
+                                            <h3 class="acym__title__primary__color cell text-center">'.acym_translation('ACYM_DYNAMIC_CONTENT').acym_info('ACYM_DYNAMIC_CONTENT_DESC').'</h3>
                                             <div class="cell acym__plugins__installed__custom-view__tag" v-for="(trad, tag) in tags" :key="tag" @click.prevent="insertTag(tag)">{{ trad }}</div>
                                         </div>
                                     </div>
@@ -972,5 +972,23 @@ class acymPlugin extends acymObject
             }
         }
         $specialMails = $tmpMails;
+    }
+
+    protected function getIdsSelectAjax()
+    {
+        $ids = acym_getVar('string', 'id');
+        if (strpos($ids, ',') !== false) {
+            $ids = explode(',', $ids);
+        } elseif (!empty($ids)) {
+            $ids = [$ids];
+        } elseif (!is_null($ids)) {
+            echo json_encode([]);
+            exit;
+        } else {
+            return false;
+        }
+        acym_arrayToInteger($ids);
+
+        return $ids;
     }
 }

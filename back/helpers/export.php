@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Helpers;
 
+use AcyMailing\Classes\MailClass;
 use AcyMailing\Libraries\acymObject;
 
 class ExportHelper extends acymObject
@@ -194,6 +195,8 @@ class ExportHelper extends acymObject
     public function exportStatsFullCSV($query, $columns, $type = 'global')
     {
         $mailsStats = acym_loadObjectList($query);
+        $mailClass = new MailClass();
+        $mailsStats = $mailClass->decode($mailsStats);
         $nbExport = $this->getExportLimit();
         acym_displayErrors();
 
@@ -210,8 +213,10 @@ class ExportHelper extends acymObject
             $oneLine = [];
             foreach ($columns as $key => $trad) {
                 $key = explode('.', $key);
-                $oneLine[] = in_array($key[1], $valueNeedNumber) && empty($mailStat->{$key[1]}) ? 0 : $mailStat->{$key[1]};
+                $line = in_array($key[1], $valueNeedNumber) && empty($mailStat->{$key[1]}) ? 0 : $mailStat->{$key[1]};
+                $oneLine[] = htmlspecialchars($line, ENT_QUOTES, 'UTF-8');
             }
+            //We delete the double quote so it won't break the CSV
             $csvLines[] = $this->before.implode($separator, $oneLine).$this->after;
             $i++;
         }

@@ -38,7 +38,7 @@
 			<div class="cell acym_listing_sort-by">
                 <?php echo acym_sortBy(
                     [
-                        'id' => strtolower(acym_translation('ACYM_ID')),
+                        'id' => acym_strtolower(acym_translation('ACYM_ID')),
                         'name' => acym_translation('ACYM_NAME'),
                         'sending_date' => acym_translation('ACYM_SENDING_DATE'),
                         'creation_date' => acym_translation('ACYM_DATE_CREATED'),
@@ -89,7 +89,7 @@
                 <?php } ?>
                 <?php if (acym_isAdmin()) { ?>
 					<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
-                        <?php echo acym_translation('ACYM_VISIBLE').acym_info(acym_translation('ACYM_VISIBLE_CAMPAIGN_DESC'), 'acym__tooltip__in__listing__header'); ?>
+                        <?php echo acym_translation('ACYM_VISIBLE').acym_info('ACYM_VISIBLE_CAMPAIGN_DESC', 'acym__tooltip__in__listing__header'); ?>
 					</div>
                 <?php } ?>
 				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">

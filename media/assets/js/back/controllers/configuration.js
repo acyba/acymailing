@@ -235,6 +235,8 @@ jQuery(document).ready(function ($) {
             let functionToCall = alreadyLinked ? 'unlinkLicense' : 'attachLicense';
             $('[name="task"]').val(functionToCall);
 
+            $.acymConfigSave();
+
             $('#acym_form').submit();
         });
     }

@@ -20,7 +20,7 @@
 				<div class="cell grid-x">
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__multilingual-default">
-                            <?php echo acym_translation('ACYM_DEFAULT_LANGUAGE').acym_info(acym_translation('ACYM_DEFAULT_LANGUAGE_DESC')); ?>
+                            <?php echo acym_translation('ACYM_DEFAULT_LANGUAGE').acym_info('ACYM_DEFAULT_LANGUAGE_DESC'); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -43,7 +43,7 @@
 				<div class="cell grid-x">
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__multilingual-languages">
-                            <?php echo acym_translation('ACYM_LANGUAGES_USED').acym_info(acym_translation('ACYM_LANGUAGES_USED_DESC')); ?>
+                            <?php echo acym_translation('ACYM_LANGUAGES_USED').acym_info('ACYM_LANGUAGES_USED_DESC'); ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
@@ -68,7 +68,7 @@
 					<div class="cell grid-x">
 						<div class="cell xlarge-3 medium-5">
 							<label for="acym__config__multilingual-languages">
-                                <?php echo acym_translation('ACYM_TRANSLATE_CONTENT').acym_info(acym_translation('ACYM_TRANSLATE_CONTENT_DESC')); ?>
+                                <?php echo acym_translation('ACYM_TRANSLATE_CONTENT').acym_info('ACYM_TRANSLATE_CONTENT_DESC'); ?>
 							</label>
 						</div>
 						<div class="cell xlarge-4 medium-7">

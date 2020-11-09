@@ -16,7 +16,7 @@ class plgAcymCbuilder extends acymPlugin
         $this->pluginDescription->name = 'Community Builder';
     }
 
-    public function dynamicText()
+    public function dynamicText($mailId)
     {
         return $this->pluginDescription;
     }

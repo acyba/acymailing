@@ -10,7 +10,7 @@ class plgAcymTime extends acymPlugin
         $this->pluginDescription->name = acym_translation('ACYM_TIME');
     }
 
-    public function dynamicText()
+    public function dynamicText($mailId)
     {
         return $this->pluginDescription;
     }

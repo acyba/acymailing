@@ -79,7 +79,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 					</div>
                     <?php foreach ($data['listsReceiver'] as $oneList) {
                         echo '<div class="cell grid-x acym__row__no-listing">
-							<span class="cell medium-6"><i class="acymicon-circle acym__campaign__summary__recipients__list__color" style="color: '.$oneList->color.'"></i> <b>'.$oneList->name.'</b></span> <span class="cell medium-6"><b>'.$oneList->subscribers.'</b> '.strtolower(acym_translation('ACYM_SUBSCRIBERS')).'</span>
+							<span class="cell medium-6"><i class="acymicon-circle acym__campaign__summary__recipients__list__color" style="color: '.$oneList->color.'"></i> <b>'.$oneList->name.'</b></span> <span class="cell medium-6"><b>'.$oneList->subscribers.'</b> '.acym_strtolower(acym_translation('ACYM_SUBSCRIBERS')).'</span>
 						</div>';
                     } ?>
 					<p class="cell">
@@ -88,7 +88,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                             $isSent ? 'ACYM_CAMPAIGN_HAS_BEEN_SENT_TO_A_TOTAL_OF' : 'ACYM_CAMPAIGN_WILL_BE_SENT_TO_A_TOTAL_OF',
                             acym_tooltip('<b>'.$data['nbSubscribers'].'</b>', acym_translation('ACYM_SUMMARY_NUMBER_RECEIVERS_EXPLICATION'))
                         );
-                        if (!$isSent) echo acym_info(acym_translation('ACYM_COUNT_USER_WITH_SEGMENT_CAMPAIGN_SUMMARY'));
+                        if (!$isSent) echo acym_info('ACYM_COUNT_USER_WITH_SEGMENT_CAMPAIGN_SUMMARY');
                         ?>
 					</p>
 				</div>
@@ -108,7 +108,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                             if ($data['automatic']['isAuto']) {
                                 $sendingTimeText = $data['automatic']['text'];
                             } elseif (!$isSent && $data['campaignClass']::SENDING_TYPE_SCHEDULED !== $data['campaignInformation']->sending_type) {
-                                $sendingTimeText .= acym_translation('ACYM_THIS_CAMPAIGN_WILL_BE_SENT').' '.strtolower(acym_translation('ACYM_NOW'));
+                                $sendingTimeText .= acym_translation('ACYM_THIS_CAMPAIGN_WILL_BE_SENT').' '.acym_strtolower(acym_translation('ACYM_NOW'));
                             } else {
                                 if ($isSent) {
                                     $text = 'ACYM_THIS_CAMPAIGN_HAS_BEEN_SENT_ON_AT';

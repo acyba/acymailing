@@ -107,6 +107,9 @@ class CampaignClass extends acymClass
             } elseif (!empty($settings['element_tab'])) {
                 acym_trigger('onAcymCampaignAddFiltersSpecificListing', [&$filters, $settings['element_tab']]);
             }
+        }
+
+        if (!empty($filters)) {
             $query .= ' WHERE ('.implode(') AND (', $filters).')';
             $queryCount .= ' WHERE ('.implode(') AND (', $filters).')';
         }
@@ -133,7 +136,6 @@ class CampaignClass extends acymClass
             $query .= ' ORDER BY '.$table.'.'.acym_secureDBColumn($settings['ordering']).' '.acym_secureDBColumn(strtoupper($settings['ordering_sort_order']));
         }
 
-
         if (empty($settings['offset']) || $settings['offset'] < 0) {
             $settings['offset'] = 0;
         }
@@ -142,7 +144,6 @@ class CampaignClass extends acymClass
             $pagination = new PaginationHelper();
             $settings['elementsPerPage'] = $pagination->getListLimit();
         }
-
 
         $results['elements'] = $this->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']));
 
@@ -198,7 +199,7 @@ class CampaignClass extends acymClass
         $element->open_unique += $stats->open_unique;
     }
 
-    private function getStatsCampaign(&$element, $urlClickClass)
+    public function getStatsCampaign(&$element, $urlClickClass)
     {
         $element->open = 0;
         if (!empty($element->subscribers)) {
@@ -209,6 +210,8 @@ class CampaignClass extends acymClass
         }
 
         //Tracking sales
+        $element->sale = 0;
+        $element->currency = '';
         if (!acym_isTrackingSalesActive()) return;
 
         if (acym_isMultilingual()) {

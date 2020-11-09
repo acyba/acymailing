@@ -275,7 +275,7 @@ class acymController extends acymObject
             }
         }
 
-        $this->listing();
+        if (!acym_getVar('bool', 'no_listing', false)) $this->listing();
     }
 
     public function setActive()
@@ -304,7 +304,7 @@ class acymController extends acymObject
 
     public function getMatchingElementsFromData($requestData, &$status, &$page, $class = '')
     {
-        $className = 'AcyMailing\\Classes\\'.$class.'Class';
+        $className = 'AcyMailing\\Classes\\'.ucfirst(strtolower($class)).'Class';
         $classElement = empty($class) ? $this->currentClass : new $className();
         $matchingElement = $classElement->getMatchingElements($requestData);
 
@@ -316,7 +316,10 @@ class acymController extends acymObject
             } elseif (!empty($requestData['offset'])) {
                 $page = 1;
                 $requestData['offset'] = 0;
+            } else {
+                return $matchingElement;
             }
+
             $matchingElement = $classElement->getMatchingElements($requestData);
         }
 
@@ -335,5 +338,27 @@ class acymController extends acymObject
             }
         }
         $this->$task();
+    }
+
+    public function endAjaxError($message = '', $data = [])
+    {
+        $result = new \stdClass();
+        $result->type = 'error';
+        $result->message = $message;
+        $result->data = $data;
+
+        echo json_encode($result);
+        exit;
+    }
+
+    public function endAjaxSuccess($message = '', $data = [])
+    {
+        $result = new \stdClass();
+        $result->type = 'success';
+        $result->message = $message;
+        $result->data = $data;
+
+        echo json_encode($result);
+        exit;
     }
 }

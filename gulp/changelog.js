@@ -1,4 +1,76 @@
 module.exports = {
+    '6.18.0': {
+        'feature': [
+            {
+                cms: 'all',
+                message: 'A new follow-up feature has been added to let you plan automated emails on user actions'
+            },
+            {
+                cms: 'all',
+                message: 'You can now override the core emails of your site and send them with AcyMailing'
+            }
+        ],
+        'improve': [
+            {
+                cms: 'all',
+                message: 'You can now mention the article author when inserting it in an email'
+            },
+            {
+                cms: 'joomla',
+                message: 'The front-end template\'s styles are not loaded on the online version of an email anymore'
+            },
+            {
+                cms: 'joomla',
+                message: 'Added handling of custom media folder for image insertion in the editor'
+            },
+            {
+                cms: 'all',
+                message: 'Added handling of foreign key in the database check script'
+            }
+        ],
+        'fix': [
+            {
+                cms: 'all',
+                message: 'Fixed blank regex option in custom field after saving'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed email search for special characters in segment select search'
+            },
+            {
+                cms: 'wordpress',
+                message: 'Fixed confirm redirection blank page on some WordPress websites'
+            },
+            {
+                cms: 'all',
+                message: 'Display search field on the detailed stats when no data found'
+            },
+            {
+                cms: 'all',
+                message: 'The image alignment now works correctly on old versions of Outlook'
+            },
+            {
+                cms: 'all',
+                message: 'The migration process from AcyMailing 5 might not import welcome or unsubscribe email'
+            },
+            {
+                cms: 'all',
+                message: 'The migration process from AcyMailing 5 might crash on newsletters migration'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed stats export for hebrew'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed licenses linking button for website with a lot of user groups'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed SQL error on the cron when multilingual option is deactivated'
+            }
+        ]
+    },
     '6.17.1': {
         'fix': [
             {

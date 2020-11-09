@@ -19,6 +19,11 @@ const acym_editorWysidFormAction = {
         }
     },
     saveTemplate: function (sendTest, saveAsTmpl) {
+        let $warning = jQuery('#acym__wysid__warning__thumbnail');
+        if (!$warning.is(':visible')) {
+            let heightOverlay = window.innerHeight - jQuery('#acym__wysid__top-toolbar').offset().top - jQuery('#acym__wysid__wrap').height();
+            jQuery('#acym__wysid__warning__thumbnail').css('bottom', '-' + heightOverlay + 'px').toggle();
+        }
         let $template = jQuery('#acym__wysid__template');
         $template.css({
             'overflow': 'hidden',
@@ -62,15 +67,8 @@ const acym_editorWysidFormAction = {
 
         jQuery('.acym__wysid__hidden__save__stylesheet').val(jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val());
         if (!sendTest && !saveAsTmpl) {
-
-            acym_helperEditorWysid.insertDTextInSubject = true;
-            jQuery('#acym_header').css('display', '');
-            jQuery('.acym__content').css('display', '');
-            jQuery('#acym__wysid').css('display', 'none');
-            jQuery('#acym__wysid__edit').css('display', '');
             jQuery('.mce-edit-focus').removeClass('mce-edit-focus');
             $template.find('[name^="mce_"]').remove();
-
             $template.find('#acym__wysid__default').remove();
         }
 
@@ -102,6 +100,12 @@ const acym_editorWysidFormAction = {
             } else {
                 if (!saveAsTmpl) {
                     jQuery('mail' === controller ? '[name="id"]' : '[name="id"], [name="mail[id]"]').val(res.data);
+                    acym_helperEditorWysid.insertDTextInSubject = true;
+                    jQuery('#acym_header').css('display', '');
+                    jQuery('.acym__content').css('display', '');
+                    jQuery('#acym__wysid').css('display', 'none');
+                    jQuery('#acym__wysid__edit').css('display', '');
+                    jQuery('#acym__wysid__warning__thumbnail').toggle();
                 } else {
                     acym_editorWysidNotifications.addEditorNotification({
                         'message': ACYM_JS_TXT.ACYM_TEMPLATE_CREATED,
@@ -117,7 +121,7 @@ const acym_editorWysidFormAction = {
     },
     setSaveButtonWYSID: function () {
         jQuery('#acym__wysid__save__button').off('click').on('click', function () {
-            if (jQuery('[name="ctrl"]').val().indexOf('campaigns') !== -1) {
+            if (jQuery('[name="ctrl"]').val().indexOf('campaigns') !== -1 || jQuery('#acym__mail__type').val() === 'followup') {
                 acym_editorWysidFormAction.saveTemplate(false, false);
                 return true;
             }
@@ -133,9 +137,8 @@ const acym_editorWysidFormAction = {
     },
     setSaveTmpl: function (saveAsTmpl) {
         let $editorArea = jQuery('#acym__wysid__wrap');
-        let $warningThumbnail = jQuery('#acym__wysid__warning__thumbnail');
         let heightOverlay = window.innerHeight - jQuery('#acym__wysid__top-toolbar').offset().top - $editorArea.height();
-        $warningThumbnail.css('bottom', '-' + heightOverlay + 'px').toggle();
+        jQuery('#acym__wysid__warning__thumbnail').css('bottom', '-' + heightOverlay + 'px').toggle();
 
         setTimeout(() => {
             acym_editorWysidFormAction.setThumbnailPreSave()
@@ -147,9 +150,6 @@ const acym_editorWysidFormAction = {
                                       .catch(function (err) {
                                           console.error('Error generating template thumbnail: ' + err);
                                           acym_editorWysidFormAction.saveTemplate(false, saveAsTmpl);
-                                      })
-                                      .finally(function () {
-                                          $warningThumbnail.toggle();
                                       });
         }, 10);
 

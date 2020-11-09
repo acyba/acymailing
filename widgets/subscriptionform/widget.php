@@ -37,7 +37,7 @@ class acym_subscriptionform_widget extends WP_Widget
             $fields[$field->id] = acym_translation($field->name);
         }
 
-        $lists = $listClass->getAllWIthoutManagement();
+        $lists = $listClass->getAllWithoutManagement();
         foreach ($lists as $i => $oneList) {
             if ($oneList->active == 0) {
                 unset($lists[$i]);
@@ -267,7 +267,7 @@ class acym_subscriptionform_widget extends WP_Widget
         $listClass = new ListClass();
         $fieldClass = new FieldClass();
 
-        $allLists = $listClass->getAllWIthoutManagement();
+        $allLists = $listClass->getAllWithoutManagement();
         $visibleLists = array_intersect($visibleLists, array_keys($allLists));
         $hiddenLists = array_intersect($hiddenLists, array_keys($allLists));
 

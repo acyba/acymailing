@@ -3,6 +3,7 @@
 namespace AcyMailing\Controllers;
 
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailStatClass;
@@ -56,6 +57,7 @@ class CampaignsController extends acymController
             'campaigns_auto',
             'welcome',
             'unsubscribe',
+            'followup',
             'specificListing',
         ];
         $currentTask = acym_getVar('string', 'task', '');
@@ -113,6 +115,56 @@ class CampaignsController extends acymController
         parent::display($data);
     }
 
+    public function followup()
+    {
+        acym_setVar('layout', 'followup');
+
+        $data = [
+            'campaign_type' => 'followup',
+            'element_to_display' => lcfirst(acym_translation('ACYM_FOLLOW_UP')),
+        ];
+        $this->getAllParamsRequest($data);
+        $this->prepareEmailsListing($data, $data['campaign_type'], 'followup');
+        $this->prepareToolbar($data);
+        $this->prepareListingClasses($data);
+        $this->prepareFollowupListing($data);
+
+        parent::display($data);
+    }
+
+    private function prepareFollowupListing(&$data)
+    {
+        $followupClass = new FollowupClass();
+        $triggers = [];
+        acym_trigger('getFollowupTriggers', [&$triggers]);
+        $data['allTriggers'] = $triggers;
+        foreach ($data['allCampaigns'] as $key => $oneFollowup) {
+            if (!empty($triggers[$oneFollowup->trigger])) {
+                $oneFollowup->condition = json_decode($oneFollowup->condition, true);
+                $data['allCampaigns'][$key]->condition = $followupClass->getConditionSummary($oneFollowup->condition, $oneFollowup->trigger);
+            }
+        }
+    }
+
+    public function deleteFollowup()
+    {
+        acym_checkToken();
+        $ids = acym_getVar('array', 'elements_checked', []);
+        $allChecked = acym_getVar('string', 'checkbox_all');
+        $currentPage = explode('_', acym_getVar('string', 'page'));
+        $pageNumber = acym_getVar('int', end($currentPage).'_pagination_page');
+
+        if (!empty($ids)) {
+            $followupClass = new FollowupClass();
+            $followupClass->delete($ids);
+            if ($allChecked == 'on') {
+                acym_setVar(end($currentPage).'_pagination_page', $pageNumber - 1);
+            }
+        }
+
+        $this->listing();
+    }
+
     public function campaigns()
     {
         acym_setVar('layout', 'campaigns');
@@ -133,7 +185,9 @@ class CampaignsController extends acymController
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'campaigns_search', 'ACYM_SEARCH');
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'newEmail'], 'add', true);
-        $toolbarHelper->addFilterByTag($data, 'campaigns_tag', 'acym__campaigns__filter__tags acym__select');
+        if (empty($data['campaign_type']) || $data['campaign_type'] !== 'followup') {
+            $toolbarHelper->addFilterByTag($data, 'campaigns_tag', 'acym__campaigns__filter__tags acym__select');
+        }
 
         $data['toolbar'] = $toolbarHelper;
     }
@@ -281,6 +335,237 @@ class CampaignsController extends acymController
         $data['generatedPending'] = !empty($campaingsGenerated);
     }
 
+    public function followupTrigger()
+    {
+        acym_setVar('layout', 'followup_trigger');
+
+        $id = acym_getVar('int', 'id', 0);
+
+        if (!empty($id)) {
+            $followupClass = new FollowupClass();
+            $followup = $followupClass->getOneById($id);
+        } else {
+            $followup = new \stdClass();
+        }
+
+        $data = [
+            'workflowHelper' => new WorkflowHelper(),
+            'followup' => $followup,
+        ];
+
+        $linkId = empty($id) ? '' : '&id='.$id;
+
+        $this->breadcrumb[empty($id) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink('campaigns&task=edit&step=followupTrigger'.$linkId);
+
+        parent::display($data);
+    }
+
+    public function followupCondition()
+    {
+        acym_setVar('layout', 'followup_condition');
+
+        $id = acym_getVar('int', 'id', 0);
+        $trigger = acym_getVar('string', 'trigger', '');
+
+        if (!empty($id)) {
+            $followupClass = new FollowupClass();
+            $followup = $followupClass->getOneById($id);
+        } else {
+            $followup = new \stdClass();
+        }
+
+        if (empty($trigger) && empty($followup->trigger)) {
+            acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_LOAD_DATA'), 'error');
+            $this->listing();
+
+            return false;
+        }
+
+        $listClass = new ListClass();
+        $lists = $listClass->getAllForSelect(false);
+
+        $segmentClass = new SegmentClass();
+        $segments = $segmentClass->getAllForSelect(false);
+
+        $statusArray = [
+            '' => '',
+            'is' => strtolower(acym_translation('ACYM_IS')),
+            'is_not' => strtolower(acym_translation('ACYM_IS_NOT')),
+        ];
+
+        $additionalCondition = [];
+        acym_trigger('getAcymAdditionalConditionFollowup', [&$additionalCondition, empty($trigger) ? $followup->trigger : $trigger, $followup, $statusArray]);
+
+        $actualTrigger = empty($trigger) ? $followup->trigger : $trigger;
+
+        $data = [
+            'workflowHelper' => new WorkflowHelper(),
+            'followup' => $followup,
+            'additionalCondition' => $additionalCondition,
+            'trigger' => $actualTrigger,
+            'lists_multiselect' => '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.acym_selectMultiple(
+                    $lists,
+                    'followup[condition][lists]',
+                    !empty($followup->condition) && !empty($followup->condition['lists']) ? $followup->condition['lists'] : [],
+                    ['class' => 'acym__select']
+                ).'</span>',
+            'segments_multiselect' => '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.acym_selectMultiple(
+                    $segments,
+                    'followup[condition][segments]',
+                    !empty($followup->condition) && !empty($followup->condition['segments']) ? $followup->condition['segments'] : [],
+                    ['class' => 'acym__select']
+                ).'</span>',
+            'select_status_lists' => '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
+                    $statusArray,
+                    'followup[condition][lists_status]',
+                    !empty($followup->condition) && !empty($followup->condition['lists_status']) ? $followup->condition['lists_status'] : '',
+                    'class="acym__select"'
+                ).'</span>',
+            'select_status_segments' => '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
+                    $statusArray,
+                    'followup[condition][segments_status]',
+                    !empty($followup->condition) && !empty($followup->condition['segments_status']) ? $followup->condition['segments_status'] : '',
+                    'class="acym__select"'
+                ).'</span>',
+            'lists_subscribe_trad' => $actualTrigger == 'user_subscribe' ? 'ACYM_FOLLOW_UP_CONDITION_USER_SUBSCRIBING' : 'ACYM_FOLLOW_UP_CONDITION_USER_SUBSCRIBE',
+        ];
+
+        $linkId = empty($id) ? '&trigger='.$trigger : '&id='.$id;
+
+        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink('campaigns&task=edit&step=followupCondition'.$linkId);
+
+        parent::display($data);
+    }
+
+    public function followupEmail()
+    {
+        acym_setVar('layout', 'followup_email');
+
+        $id = acym_getVar('int', 'id', 0);
+
+        if (empty($id)) {
+            acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_LOAD_DATA'), 'error');
+            $this->listing();
+
+            return false;
+        }
+
+        $followupClass = new FollowupClass();
+        $followup = $followupClass->getOneByIdWithMails($id);
+
+        if (empty($followup)) {
+            acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_LOAD_DATA'), 'error');
+            $this->listing();
+
+            return false;
+        }
+
+        $data = [
+            'workflowHelper' => new WorkflowHelper(),
+            'followup' => $followup,
+            'linkNewEmail' => acym_completeLink('mails&task=edit&step=editEmail&type=followup&followup_id='.$id.'&return='.urlencode(acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$id)), false, true),
+        ];
+
+        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$followup->id);
+
+        parent::display($data);
+    }
+
+    public function followupDuplicateMail()
+    {
+        $mailId = acym_getVar('int', 'action_mail_id', 0);
+        $id = acym_getVar('int', 'id', 0);
+        $followupClass = new FollowupClass();
+        if (!$followupClass->duplicateMail($mailId, $id)) acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_DUPLICATE_MAIL'), 'error');
+
+        $this->followupEmail();
+    }
+
+    public function followupDeleteMail()
+    {
+        $mailId = acym_getVar('int', 'action_mail_id', 0);
+        $followupClass = new FollowupClass();
+        if (!$followupClass->deleteMail($mailId)) acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_DELETE_MAIL'), 'error');
+
+        $step = acym_getVar('cmd', 'step', 'followupEmail');
+        $this->$step();
+    }
+
+    public function followupDraft()
+    {
+        $this->followupFinalize(0);
+    }
+
+    public function followupActivate()
+    {
+        $this->followupFinalize(1);
+    }
+
+    public function followupFinalize($status)
+    {
+        $followupId = acym_getVar('int', 'id', 0);
+        $followupClass = new FollowupClass();
+        $followup = $followupClass->getOneById($followupId);
+        $followup->active = $status;
+        $followupClass->save($followup);
+
+        $this->followup();
+    }
+
+    public function saveFollowupCondition()
+    {
+        $id = acym_getVar('int', 'id', 0);
+        $trigger = acym_getVar('string', 'trigger', '');
+        $followupData = acym_getVar('array', 'followup', []);
+
+        $followupClass = new FollowupClass();
+
+        if (!empty($id)) {
+            $followup = $followupClass->getOneById($id);
+            $followup->condition = json_encode($followupData['condition']);
+        } else {
+            $followup = new \stdClass();
+            $followup->name = '';
+            $followup->display_name = '';
+            $followup->creation_date = date('Y-m-d H:i:s', time());
+            $followup->trigger = $trigger;
+            $followup->condition = json_encode($followupData['condition']);
+            $followup->active = 0;
+            $followup->send_once = 1;
+        }
+
+        $followup->id = $followupClass->save($followup);
+        acym_setVar('id', $followup->id);
+
+        return $this->edit();
+    }
+
+    public function saveFollowupEmail($redirect = true)
+    {
+        $id = acym_getVar('int', 'id', 0);
+        $followupData = acym_getVar('array', 'followup', []);
+        if (empty($id) || empty($followupData)) return false;
+
+        $followupClass = new FollowupClass();
+        $followup = $followupClass->getOneById($id);
+
+        if (empty($followup)) return false;
+
+        foreach ($followupData as $key => $data) {
+            if (!isset($followup->$key)) continue;
+            $followup->$key = $data;
+        }
+
+        $followup->id = $followupClass->save($followup);
+        acym_setVar('id', $followup->id);
+
+        if ($redirect) {
+            return $this->edit();
+        }
+
+        return true;
+    }
+
     public function newEmail()
     {
         acym_setVar('layout', 'new_email');
@@ -292,6 +577,7 @@ class CampaignsController extends acymController
                 'lists' => $listClass->getAllForSelect(),
                 'campaign_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=now'),
                 'campaign_auto_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=auto'),
+                'followup_link' => acym_completeLink('campaigns&task=edit&step=followupTrigger'),
                 'campaign_scheduled_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'),
                 'welcome_email_link' => acym_completeLink('mails&task=edit&type=welcome&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
                 'unsubscribe_email_link' => acym_completeLink('mails&task=edit&type=unsubscribe&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
@@ -2105,5 +2391,44 @@ class CampaignsController extends acymController
         if (empty($mail->reply_to_email)) $mail->reply_to_email = $this->config->get('replyto_email');
 
         return ['campaign' => $campaign, 'mail' => $mail];
+    }
+
+    public function followupSummary()
+    {
+        acym_setVar('layout', 'followup_summary');
+
+        $id = acym_getVar('int', 'id', 0);
+
+        if (empty($id)) {
+            acym_enqueueMessage(acym_translation('ACYM_FOLLOWUP_NOT_FOUND'), 'error');
+            $this->listing();
+
+            return;
+        }
+
+        $followupClass = new FollowupClass();
+        $followup = $followupClass->getOneByIdWithMails($id);
+
+        $data = [
+            'workflowHelper' => new WorkflowHelper(),
+            'followup' => $followup,
+            'condition' => $followupClass->getConditionSummary($followup->condition, $followup->trigger),
+        ];
+
+        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink('campaigns&task=edit&step=followupCondition'.$followup->id);
+
+        parent::display($data);
+    }
+
+    public function createNewFollowupMail()
+    {
+        $this->saveFollowupEmail(false);
+        $linkNewEmail = acym_getVar('string', 'linkNewEmail', '');
+
+        if (empty($linkNewEmail)) {
+            $this->edit();
+        } else {
+            acym_redirect($linkNewEmail);
+        }
     }
 }

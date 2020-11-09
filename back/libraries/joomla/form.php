@@ -28,9 +28,9 @@ function acym_getFormToken()
     return JUtility::getToken().'=1';
 }
 
-function acym_noTemplate()
+function acym_noTemplate($component = true)
 {
-    return 'tmpl=component';
+    return 'tmpl='.($component || ACYM_J40 ? 'component' : 'none');
 }
 
 function acym_isNoTemplate()

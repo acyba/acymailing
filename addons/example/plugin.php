@@ -94,7 +94,7 @@ class plgAcymExample extends acymPlugin
     /**
      * This method is optional, it is used to declare a new dynamic text tab in the editor when editing a text
      */
-    public function dynamicText()
+    public function dynamicText($mailId)
     {
         return $this->pluginDescription;
     }
