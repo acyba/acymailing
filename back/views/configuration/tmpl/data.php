@@ -1,16 +1,7 @@
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
 	<div class="acym_area_title"><?php echo acym_translation('ACYM_CONFIDENTIALITY'); ?></div>
 	<div class="grid-x grid-margin-x">
-        <?php echo acym_switch(
-            'config[gdpr_export]',
-            $this->config->get('gdpr_export'),
-            acym_translation('ACYM_GDPR_EXPORT_BUTTON'),
-            [],
-            'xlarge-3 medium-5 small-9',
-            "auto",
-            "tiny",
-            'export_config'
-        ); ?>
+        <?php echo acym_switch('config[gdpr_export]', $this->config->get('gdpr_export'), acym_translation('ACYM_GDPR_EXPORT_BUTTON'), [], 'xlarge-3 medium-5 small-9', "auto", "tiny", 'export_config'); ?>
 	</div>
 </div>
 

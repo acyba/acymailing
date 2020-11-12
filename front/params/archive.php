@@ -7,10 +7,7 @@ class JFormFieldArchive extends JFormField
     public function getInput()
     {
         //__START__joomla_
-        if ('{__CMS__}' === 'Joomla' && !include_once(rtrim(
-                    JPATH_ADMINISTRATOR,
-                    DIRECTORY_SEPARATOR
-                ).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php')) {
+        if ('{__CMS__}' === 'Joomla' && !include_once(rtrim(JPATH_ADMINISTRATOR, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php')) {
             echo 'This extension cannot work without AcyMailing';
         }
         //__END__joomla_

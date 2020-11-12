@@ -102,20 +102,24 @@ class Net_Socket extends PEAR
      * Connect to the specified port. If called when the socket is
      * already connected, it disconnects and connects again.
      *
-     * @param string  $addr       IP address or host name.
-     * @param integer $port       TCP port number.
+     * @param string $addr IP address or host name.
+     * @param integer $port TCP port number.
      * @param boolean $persistent (optional) Whether the connection is
      *                            persistent (kept open between requests
      *                            by the web server).
-     * @param integer $timeout    (optional) How long to wait for data.
-     * @param array   $options    See options for stream_context_create.
+     * @param integer $timeout (optional) How long to wait for data.
+     * @param array $options See options for stream_context_create.
      *
      * @access public
      *
      * @return boolean | PEAR_Error  True on success or a PEAR_Error on failure.
      */
     function connect(
-        $addr, $port = 0, $persistent = null, $timeout = null, $options = null
+        $addr,
+        $port = 0,
+        $persistent = null,
+        $timeout = null,
+        $options = null
     ) {
         if (is_resource($this->fp)) {
             @fclose($this->fp);
@@ -233,7 +237,6 @@ class Net_Socket extends PEAR
      * Set the newline character/sequence to use.
      *
      * @param string $newline Newline character(s)
-     *
      * @return boolean True
      */
     function setNewline($newline)
@@ -281,7 +284,7 @@ class Net_Socket extends PEAR
      * Sets the timeout value on socket descriptor,
      * expressed in the sum of seconds and microseconds
      *
-     * @param integer $seconds      Seconds.
+     * @param integer $seconds Seconds.
      * @param integer $microseconds Microseconds.
      *
      * @access public
@@ -389,7 +392,7 @@ class Net_Socket extends PEAR
     /**
      * Write a specified amount of data.
      *
-     * @param string  $data      Data to write.
+     * @param string $data Data to write.
      * @param integer $blocksize Amount of data to write at once.
      *                           NULL means all at once.
      *
@@ -613,8 +616,8 @@ class Net_Socket extends PEAR
      * Runs the equivalent of the select() system call on the socket
      * with a timeout specified by tv_sec and tv_usec.
      *
-     * @param integer $state   Which of read/write/error to check for.
-     * @param integer $tv_sec  Number of seconds for timeout.
+     * @param integer $state Which of read/write/error to check for.
+     * @param integer $tv_sec Number of seconds for timeout.
      * @param integer $tv_usec Number of microseconds for timeout.
      *
      * @access public
@@ -627,9 +630,9 @@ class Net_Socket extends PEAR
             return $this->raiseError('not connected');
         }
 
-        $read = [];
-        $write = [];
-        $except = [];
+        $read = array();
+        $write = array();
+        $except = array();
         if ($state & NET_SOCKET_READ) {
             $read[] = $this->fp;
         }
@@ -645,7 +648,8 @@ class Net_Socket extends PEAR
                 $except,
                 $tv_sec,
                 $tv_usec
-            ))) {
+            ))
+        ) {
             return false;
         }
 
@@ -666,17 +670,17 @@ class Net_Socket extends PEAR
     /**
      * Turns encryption on/off on a connected socket.
      *
-     * @param bool    $enabled Set this parameter to true to enable encryption
+     * @param bool $enabled Set this parameter to true to enable encryption
      *                         and false to disable encryption.
-     * @param integer $type    Type of encryption. See stream_socket_enable_crypto()
+     * @param integer $type Type of encryption. See stream_socket_enable_crypto()
      *                         for values.
      *
+     * @see    http://se.php.net/manual/en/function.stream-socket-enable-crypto.php
+     * @access public
      * @return false on error, true on success and 0 if there isn't enough data
      *         and the user should try again (non-blocking sockets only).
      *         A PEAR_Error object is returned if the socket is not
      *         connected
-     * @see    http://se.php.net/manual/en/function.stream-socket-enable-crypto.php
-     * @access public
      */
     function enableCrypto($enabled, $type)
     {

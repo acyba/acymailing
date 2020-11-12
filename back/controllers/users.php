@@ -72,9 +72,7 @@ class UsersController extends acymController
         );
 
         $toolbarHelper->addButton(
-            acym_translation('ACYM_EXPORT').' (<span id="acym__users__listing__number_to_export" data-default="'.acym_strtolower(acym_translation('ACYM_ALL')).'">'.acym_strtolower(
-                acym_translation('ACYM_ALL')
-            ).'</span>)',
+            acym_translation('ACYM_EXPORT').' (<span id="acym__users__listing__number_to_export" data-default="'.acym_strtolower(acym_translation('ACYM_ALL')).'">'.acym_strtolower(acym_translation('ACYM_ALL')).'</span>)',
             ['data-task' => 'export', 'type' => 'submit'],
             'upload'
         );
@@ -503,9 +501,7 @@ class UsersController extends acymController
                 $defaultValue = empty($data['user-information']->id) ? '' : $data['user-information']->name;
             } elseif ($one->id == 2) {
                 $defaultValue = empty($data['user-information']->id) ? '' : $data['user-information']->email;
-            } elseif (isset($data['fieldsValues'][$one->id]) && (((is_array($data['fieldsValues'][$one->id]) || $data['fieldsValues'][$one->id] instanceof Countable) && count(
-                            $data['fieldsValues'][$one->id]
-                        ) > 0) || (is_string($data['fieldsValues'][$one->id]) && strlen($data['fieldsValues'][$one->id]) > 0))) {
+            } elseif (isset($data['fieldsValues'][$one->id]) && (((is_array($data['fieldsValues'][$one->id]) || $data['fieldsValues'][$one->id] instanceof Countable) && count($data['fieldsValues'][$one->id]) > 0) || (is_string($data['fieldsValues'][$one->id]) && strlen($data['fieldsValues'][$one->id]) > 0))) {
                 $decoded = json_decode($data['fieldsValues'][$one->id]);
                 $defaultValue = is_null($decoded) ? $data['fieldsValues'][$one->id] : $decoded;
             } else {
@@ -1007,9 +1003,7 @@ class UsersController extends acymController
         foreach ($users['elements'] as $user) {
             $return .= '<div class="grid-x modal__pagination__users__listing__in-form__user cell">';
 
-            $return .= '<div class="cell shrink"><input type="checkbox" id="modal__pagination__users__listing__user'.$user->id.'" value="'.intval(
-                    $user->id
-                ).'" class="modal__pagination__users__listing__user--checkbox" name="users_checked[]"';
+            $return .= '<div class="cell shrink"><input type="checkbox" id="modal__pagination__users__listing__user'.$user->id.'" value="'.intval($user->id).'" class="modal__pagination__users__listing__user--checkbox" name="users_checked[]"';
 
             if (!empty($matchingUsersData->idsSelected) && in_array($user->id, $matchingUsersData->idsSelected)) {
                 $return .= 'checked';

@@ -67,11 +67,7 @@ class FieldsController extends acymController
                 foreach ($tables as $one) {
                     $field->fieldDB->tables[$one] = $one;
                 }
-                $columns = empty($field->fieldDB->table)
-                    ? []
-                    : acym_loadResultArray(
-                        'SHOW COLUMNS FROM '.acym_secureDBColumn($field->fieldDB->table).' FROM '.acym_secureDBColumn($field->fieldDB->database)
-                    );
+                $columns = empty($field->fieldDB->table) ? [] : acym_loadResultArray('SHOW COLUMNS FROM '.acym_secureDBColumn($field->fieldDB->table).' FROM '.acym_secureDBColumn($field->fieldDB->database));
                 $field->fieldDB->columns = [];
                 foreach ($columns as $one) {
                     $field->fieldDB->columns[$one] = $one;

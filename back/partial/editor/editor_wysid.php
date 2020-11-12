@@ -1,10 +1,6 @@
 <input type="hidden" id="default_template" value="<?php echo acym_escape($this->defaultTemplate); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__content" id="editor_content" name="editor_content" value="" />
-<input type="hidden"
-	   class="acym__wysid__hidden__save__stylesheet"
-	   id="editor_stylesheet"
-	   name="editor_stylesheet"
-	   value="<?php echo acym_escape($this->getWYSIDStylesheet()); ?>" />
+<input type="hidden" class="acym__wysid__hidden__save__stylesheet" id="editor_stylesheet" name="editor_stylesheet" value="<?php echo acym_escape($this->getWYSIDStylesheet()); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__settings" id="editor_settings" name="editor_settings" value="<?php echo acym_escape($this->getWYSIDSettings()); ?>" />
 <input type="hidden" id="acym__wysid__session--lifetime" name="acym_session_lifetime" value="<?php echo acym_escape(ini_get('session.gc_maxlifetime')); ?>" />
 <input type="hidden" class="acym__wysid__hidden__mailId" id="editor_mailid" name="editor_autoSave" value="<?php echo intval($this->mailId); ?>" />
@@ -30,9 +26,7 @@
 				<i class="acymicon-edit" style="vertical-align: middle"></i>
                 <?php
                 $ctrl = acym_getVar('string', 'ctrl');
-                echo acym_translation(
-                    in_array(acym_getVar('string', 'ctrl'), ['campaigns', 'frontcampaigns']) ? 'ACYM_EDIT_MAIL' : ($this->walkThrough ? 'ACYM_EDIT' : 'ACYM_EDIT_TEMPLATE')
-                );
+                echo acym_translation(in_array(acym_getVar('string', 'ctrl'), ['campaigns', 'frontcampaigns']) ? 'ACYM_EDIT_MAIL' : ($this->walkThrough ? 'ACYM_EDIT' : 'ACYM_EDIT_TEMPLATE'));
                 ?>
 			</button>
 			<div class="cell medium-auto hide-for-small-only"></div>
@@ -93,19 +87,13 @@
 				<div id="acym__wysid__right-toolbar__overlay"></div>
 				<div class="acym__wysid__right-toolbar__content grid-y grid-padding-x small-12 cell" style="max-height: 829px;">
 					<div class="cell grid-x text-center">
-						<p data-attr-show="acym__wysid__right__toolbar__design"
-						   id="acym__wysid__right__toolbar__design__tab"
-						   class="large-4 small-4 cell acym__wysid__right__toolbar__selected acym__wysid__right__toolbar__tabs">
+						<p data-attr-show="acym__wysid__right__toolbar__design" id="acym__wysid__right__toolbar__design__tab" class="large-4 small-4 cell acym__wysid__right__toolbar__selected acym__wysid__right__toolbar__tabs">
 							<i class="acymicon-th"></i>
 						</p>
-						<p data-attr-show="acym__wysid__right__toolbar__current-block"
-						   id="acym__wysid__right__toolbar__block__tab"
-						   class="large-4 small-4 cell acym__wysid__right__toolbar__tabs">
+						<p data-attr-show="acym__wysid__right__toolbar__current-block" id="acym__wysid__right__toolbar__block__tab" class="large-4 small-4 cell acym__wysid__right__toolbar__tabs">
 							<i class="acymicon-edit"></i>
 						</p>
-						<p data-attr-show="acym__wysid__right__toolbar__settings"
-						   id="acym__wysid__right__toolbar__settings__tab"
-						   class="large-4 small-4 cell acym__wysid__right__toolbar__tabs">
+						<p data-attr-show="acym__wysid__right__toolbar__settings" id="acym__wysid__right__toolbar__settings__tab" class="large-4 small-4 cell acym__wysid__right__toolbar__tabs">
 							<i class="acymicon-cog"></i>
 						</p>
 					</div>
@@ -174,8 +162,6 @@
 	<div id="acym__wysid__modal__dynamic-text__ui" class="float-center cell">
 		<i class="acymicon-close acym__wysid__modal__dynamic-text--close" id="acym__wysid__modal__dynamic-text__close__icon"></i>
         <?php $dynamicCtrl = acym_isAdmin() ? 'dynamics' : 'frontdynamics'; ?>
-		<iframe id="acym__wysid__modal__dynamic-text__ui__iframe"
-				src="<?php echo acym_completeLink($dynamicCtrl.'&task=popup&automation='.$this->automation.'&mail_id='.$this->mailId, true); ?>"
-				frameborder="0"></iframe>
+		<iframe id="acym__wysid__modal__dynamic-text__ui__iframe" src="<?php echo acym_completeLink($dynamicCtrl.'&task=popup&automation='.$this->automation.'&mail_id='.$this->mailId, true); ?>" frameborder="0"></iframe>
 	</div>
 </div>

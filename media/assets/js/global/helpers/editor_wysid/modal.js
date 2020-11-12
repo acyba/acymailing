@@ -84,5 +84,5 @@ const acym_editorWysidModal = {
                 }
             });
         });
-    }
+    },
 };

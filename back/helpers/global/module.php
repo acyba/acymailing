@@ -10,7 +10,7 @@ function acym_getModuleFormName()
 
 function acym_initModule($params = null)
 {
-    if (!file_exists(ACYM_ROOT.'plugins'.DS.'system'.DS.'modulesanywhere')) {
+    if(!file_exists(ACYM_ROOT.'plugins'.DS.'system'.DS.'modulesanywhere')){
         static $loaded = false;
         if ($loaded) {
             return;

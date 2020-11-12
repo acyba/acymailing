@@ -52,9 +52,7 @@
 					</div>
 				</div>
 				<div class="cell auto align-right grid-x">
-					<button type="button" class="cell shrink button primary acy_button_submit acym__stats__export__button " data-task="exportDetailed"><?php echo acym_translation(
-                            'ACYM_EXPORT'
-                        ); ?></button>
+					<button type="button" class="cell shrink button primary acy_button_submit acym__stats__export__button " data-task="exportDetailed"><?php echo acym_translation('ACYM_EXPORT'); ?></button>
 				</div>
 			</div>
 			<div class="grid-x cell align-right">
@@ -143,16 +141,14 @@
 						</div>
 						<div class="large-2 medium-3 small-4 cell acym__listing__detailed__stats__content">
                             <?php if (acym_isAllowed('users')) { ?>
-								<a href="<?php echo acym_completeLink('users&task=edit&id='.$detailed_stat->user_id); ?>"
-								   class="acym__color__blue word-break"><?php echo $detailed_stat->email; ?></a>
+								<a href="<?php echo acym_completeLink('users&task=edit&id='.$detailed_stat->user_id); ?>" class="acym__color__blue word-break"><?php echo $detailed_stat->email; ?></a>
                             <?php } else { ?>
                                 <?php echo $detailed_stat->email; ?>
                             <?php } ?>
 						</div>
 						<div class="xlarge-1 hide-for-large-only hide-for-medium-only hide-for-small-only cell acym__listing__header__title">
                             <?php if (acym_isAllowed('users')) { ?>
-								<a href="<?php echo acym_completeLink('users&task=edit&id='.$detailed_stat->user_id); ?>"
-								   class="acym__color__blue word-break"><?php echo $detailed_stat->username; ?></a>
+								<a href="<?php echo acym_completeLink('users&task=edit&id='.$detailed_stat->user_id); ?>" class="acym__color__blue word-break"><?php echo $detailed_stat->username; ?></a>
                             <?php } else { ?>
                                 <?php echo $detailed_stat->username; ?>
                             <?php } ?>
@@ -194,10 +190,7 @@
                             <?php
                             $targetSuccess = '<i class="acymicon-check acym__listing__detailed_stats_sent__success" ></i>';
                             $targetFail = '<i class="acymicon-times acym__listing__detailed_stats_sent__fail" ></i>';
-                            echo acym_tooltip(
-                                empty($detailed_stat->fail) ? $targetSuccess : $targetFail,
-                                acym_translation('ACYM_SENT').' : '.$detailed_stat->sent.' '.acym_translation('ACYM_FAIL').' : '.$detailed_stat->fail
-                            );
+                            echo acym_tooltip(empty($detailed_stat->fail) ? $targetSuccess : $targetFail, acym_translation('ACYM_SENT').' : '.$detailed_stat->sent.' '.acym_translation('ACYM_FAIL').' : '.$detailed_stat->fail);
                             ?>
 						</div>
 					</div>

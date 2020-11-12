@@ -36,9 +36,7 @@ class plgAcymAutomationexport extends acymPlugin
             $checked = in_array($fieldValue, $defaultFields) ? 'checked="checked"' : '';
 
             $actions['export']->option .= '<div class="cell large-6 xlarge-3">';
-            $actions['export']->option .= '<input '.$checked.' id="checkbox__and___'.$fieldName.'" type="checkbox" name="acym_action[actions][__and__][export]['.$type.']['.$fieldValue.']" value="'.acym_escape(
-                    $fieldName
-                ).'">';
+            $actions['export']->option .= '<input '.$checked.' id="checkbox__and___'.$fieldName.'" type="checkbox" name="acym_action[actions][__and__][export]['.$type.']['.$fieldValue.']" value="'.acym_escape($fieldName).'">';
             $actions['export']->option .= '<label for="checkbox__and___'.$fieldName.'">'.$fieldName.'</label>';
             $actions['export']->option .= '</div>';
         }

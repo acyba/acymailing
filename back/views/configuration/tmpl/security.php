@@ -41,21 +41,13 @@
 			<label class="cell large-3" for="recaptcha_sitekey">
 				<a href="https://www.google.com/recaptcha/admin" target="_blank"><?php echo acym_translation('ACYM_SITE_KEY'); ?></a>
 			</label>
-			<input class="cell large-9"
-				   id="recaptcha_sitekey"
-				   type="text"
-				   name="config[recaptcha_sitekey]"
-				   value="<?php echo acym_escape($this->config->get('recaptcha_sitekey')); ?>" />
+			<input class="cell large-9" id="recaptcha_sitekey" type="text" name="config[recaptcha_sitekey]" value="<?php echo acym_escape($this->config->get('recaptcha_sitekey')); ?>" />
 		</div>
 		<div class="cell medium-6 grid-x">
 			<label class="cell large-3" for="recaptcha_secretkey">
 				<a href="https://www.google.com/recaptcha/admin" target="_blank"><?php echo acym_translation('ACYM_SECRET_KEY'); ?></a>
 			</label>
-			<input class="cell large-9"
-				   id="recaptcha_secretkey"
-				   type="text"
-				   name="config[recaptcha_secretkey]"
-				   value="<?php echo acym_escape($this->config->get('recaptcha_secretkey')); ?>" />
+			<input class="cell large-9" id="recaptcha_secretkey" type="text" name="config[recaptcha_secretkey]" value="<?php echo acym_escape($this->config->get('recaptcha_secretkey')); ?>" />
 		</div>
 	</div>
 </div>

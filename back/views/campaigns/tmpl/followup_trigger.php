@@ -1,6 +1,5 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm">
-	<div id="acym__followup__trigger"
-		 class="cell grid-x grid-margin-y align-center acym__content margin-top-2 acym__selection <?php echo !empty($data['followup']->id) ? 'acym__selection_disabled' : ''; ?>">
+	<div id="acym__followup__trigger" class="cell grid-x grid-margin-y align-center acym__content margin-top-2 acym__selection <?php echo !empty($data['followup']->id) ? 'acym__selection_disabled' : ''; ?>">
 		<div class="cell grid-x">
             <?php
             $workflow = $data['workflowHelper'];
@@ -17,8 +16,7 @@
                 if (!acym_level($block['level'])) continue;
                 $selected = !empty($data['followup']->trigger) && $data['followup']->trigger == $block['alias'] ? 'acym__selection__card-selected' : '';
                 ?>
-				<div class="acym__selection__card acym__selection__select-card cell large-2 medium-4 text-center <?php echo $selected; ?>"
-					 acym-data-link="<?php echo $block['link']; ?>">
+				<div class="acym__selection__card acym__selection__select-card cell large-2 medium-4 text-center <?php echo $selected; ?>" acym-data-link="<?php echo $block['link']; ?>">
 					<i class="<?php echo $block['icon']; ?> acym__selection__card__icon"></i>
 					<h1 class="acym__selection__card__title"><?php echo $block['name']; ?></h1>
 					<p class="acym__selection__card__description"><?php echo $block['description']; ?></p>

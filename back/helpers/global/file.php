@@ -226,9 +226,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
 
 function acym_inputFile($name, $value = '', $id = '', $class = '', $attributes = '')
 {
-    $return = '<div class="cell acym__input__file '.$class.' grid-x"><input '.$attributes.' style="display: none" id="'.$id.'" type="file" name="'.$name.'"><button type="button" class=" acym__button__file button button-secondary cell shrink">'.acym_translation(
-            'ACYM_CHOOSE_FILE'
-        ).'</button><span class="cell shrink margin-left-2">';
+    $return = '<div class="cell acym__input__file '.$class.' grid-x"><input '.$attributes.' style="display: none" id="'.$id.'" type="file" name="'.$name.'"><button type="button" class=" acym__button__file button button-secondary cell shrink">'.acym_translation('ACYM_CHOOSE_FILE').'</button><span class="cell shrink margin-left-2">';
     $return .= empty($value) ? acym_translation('ACYM_NO_FILE_CHOSEN') : $value;
     $return .= '</span></div>';
 
@@ -358,12 +356,8 @@ function acym_getFolders($path, $filter = '.', $recurse = false, $full = false, 
     return array_values($arr);
 }
 
-function acym_getFiles(
-    $path, $filter = '.', $recurse = false, $full = false, $exclude = ['.svn', 'CVS', '.DS_Store', '__MACOSX'], $excludefilter = [
-    '^\..*',
-    '.*~',
-], $naturalSort = false
-) {
+function acym_getFiles($path, $filter = '.', $recurse = false, $full = false, $exclude = ['.svn', 'CVS', '.DS_Store', '__MACOSX'], $excludefilter = ['^\..*', '.*~'], $naturalSort = false)
+{
     $path = acym_cleanPath($path);
 
     if (!is_dir($path)) {

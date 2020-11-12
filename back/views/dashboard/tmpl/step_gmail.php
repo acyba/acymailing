@@ -27,10 +27,7 @@
 	<div class="cell grid-x text-left margin-top-2">
 		<h3 class="cell medium-shrink acym__walkthrough__section"><?php echo acym_translation('ACYM_YOUR_GMAIL_ACCOUNT'); ?></h3>
 
-        <?php echo acym_tooltip(
-            '<p class="cell medium-auto acym__walkthrough__section__help">'.acym_translation('ACYM_WHY_DO_WE_NEED_THIS').'</p>',
-            acym_translation('ACYM_WALKTHROUGH_GMAIL_TEXT')
-        ); ?>
+        <?php echo acym_tooltip('<p class="cell medium-auto acym__walkthrough__section__help">'.acym_translation('ACYM_WHY_DO_WE_NEED_THIS').'</p>', acym_translation('ACYM_WALKTHROUGH_GMAIL_TEXT')); ?>
 
 		<div class="cell">
 			<label>

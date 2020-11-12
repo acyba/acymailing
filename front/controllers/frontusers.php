@@ -17,18 +17,7 @@ class FrontusersController extends UsersController
 {
     public function __construct()
     {
-        $this->authorizedFrontTasks = [
-            'subscribe',
-            'unsubscribe',
-            'unsubscribeAll',
-            'saveSubscriptions',
-            'unsubscribePage',
-            'confirm',
-            'profile',
-            'prepareParams',
-            'savechanges',
-            'exportdata',
-        ];
+        $this->authorizedFrontTasks = ['subscribe', 'unsubscribe', 'unsubscribeAll', 'saveSubscriptions', 'unsubscribePage', 'confirm', 'profile', 'prepareParams', 'savechanges', 'exportdata'];
         $this->urlFrontMenu = 'index.php?option=com_acym&view=frontusers&layout=listing';
         parent::__construct();
     }

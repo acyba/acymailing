@@ -82,11 +82,7 @@
                             }
                             echo '</div>';
                         } else {
-                            echo '<div class="cell medium-12">'.(empty($email->automation)
-                                    ? acym_translation('ACYM_NO_LIST_SELECTED')
-                                    : acym_translation(
-                                        'ACYM_SENT_WITH_AUTOMATION'
-                                    )).'</div>';
+                            echo '<div class="cell medium-12">'.(empty($email->automation) ? acym_translation('ACYM_NO_LIST_SELECTED') : acym_translation('ACYM_SENT_WITH_AUTOMATION')).'</div>';
                         }
                         ?>
 					</div>

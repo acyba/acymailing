@@ -18,8 +18,7 @@
 					<td><input type="text" name="name" class="tg-name oneline" id="<?php echo esc_attr($data['args']['content'].'-name'); ?>" /></td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="<?php echo esc_attr($data['args']['content'].'-acymmail'); ?>"><?php echo acym_translation('ACYM_MAIL_FIELD_CONTACT'); ?></label>
-					</th>
+					<th scope="row"><label for="<?php echo esc_attr($data['args']['content'].'-acymmail'); ?>"><?php echo acym_translation('ACYM_MAIL_FIELD_CONTACT'); ?></label></th>
 					<td><input type="text" name="acymmail" class="classvalue oneline option" id="<?php echo esc_attr($data['args']['content'].'-acymmail'); ?>" /></td>
 				</tr>
 
@@ -46,8 +45,7 @@
                 <?php } ?>
 
 				<tr>
-					<th scope="row"><label for="<?php echo esc_attr($data['args']['content'].'-class'); ?>"><?php echo esc_html(__('Class attribute', 'contact-form-7')); ?></label>
-					</th>
+					<th scope="row"><label for="<?php echo esc_attr($data['args']['content'].'-class'); ?>"><?php echo esc_html(__('Class attribute', 'contact-form-7')); ?></label></th>
 					<td><input type="text" name="class" class="classvalue oneline option" id="<?php echo esc_attr($data['args']['content'].'-class'); ?>" /></td>
 				</tr>
 			</tbody>
@@ -66,12 +64,7 @@
 		<label for="<?php echo esc_attr($data['args']['content'].'-mailtag'); ?>">
             <?php
             echo sprintf(
-                esc_html(
-                    __(
-                        "To use the value input through this field in a mail field, you need to insert the corresponding mail-tag (%s) into the field on the Mail tab.",
-                        'contact-form-7'
-                    )
-                ),
+                esc_html(__("To use the value input through this field in a mail field, you need to insert the corresponding mail-tag (%s) into the field on the Mail tab.", 'contact-form-7')),
                 ' <strong><span class="mail-tag" ></span ></strong > '
             ); ?>
 			<input type="text" class="mail-tag code hidden" readonly="readonly" id="<?php echo esc_attr($data['args']['content'].'-mailtag'); ?>" />

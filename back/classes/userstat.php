@@ -120,18 +120,11 @@ class UserStatClass extends acymClass
             foreach ($mails as $mail) {
                 if (!in_array($mail->mail_id, $mailIds)) $mailIds[] = $mail->mail_id;
             }
-            $userClick = acym_loadObjectList(
-                'SELECT user_id, mail_id, SUM(click) as total_click FROM #__acym_url_click WHERE mail_id IN ('.implode(',', $mailIds).') GROUP BY user_id, mail_id '
-            );
+            $userClick = acym_loadObjectList('SELECT user_id, mail_id, SUM(click) as total_click FROM #__acym_url_click WHERE mail_id IN ('.implode(',', $mailIds).') GROUP BY user_id, mail_id ');
 
             $trackingSales = [];
             if (acym_isTrackingSalesActive()) {
-                $trackingSalesDB = acym_loadObjectList(
-                    'SELECT SUM(tracking_sale) as sale, currency, mail_id, user_id FROM #__acym_user_stat WHERE mail_id IN ('.implode(
-                        ',',
-                        $mailIds
-                    ).')  AND currency IS NOT NULL GROUP BY user_id, mail_id'
-                );
+                $trackingSalesDB = acym_loadObjectList('SELECT SUM(tracking_sale) as sale, currency, mail_id, user_id FROM #__acym_user_stat WHERE mail_id IN ('.implode(',', $mailIds).')  AND currency IS NOT NULL GROUP BY user_id, mail_id');
                 foreach ($trackingSalesDB as $oneMailTrackSales) {
                     $trackingSales[$oneMailTrackSales->mail_id.'-'.$oneMailTrackSales->user_id] = $oneMailTrackSales;
                 }

@@ -26,12 +26,7 @@ class QueueController extends acymController
         $pagination = new PaginationHelper();
 
         if (acym_level(1) && $this->config->get('cron_last', 0) < (time() - 43200)) {
-            acym_enqueueMessage(
-                acym_translation('ACYM_CREATE_CRON_REMINDER').' <a id="acym__queue__configure-cron" href="'.acym_completeLink('configuration&tab=license').'">'.acym_translation(
-                    'ACYM_GOTO_CONFIG'
-                ).'</a>',
-                'warning'
-            );
+            acym_enqueueMessage(acym_translation('ACYM_CREATE_CRON_REMINDER').' <a id="acym__queue__configure-cron" href="'.acym_completeLink('configuration&tab=license').'">'.acym_translation('ACYM_GOTO_CONFIG').'</a>', 'warning');
         }
 
         // Get filters data
@@ -203,9 +198,7 @@ class QueueController extends acymController
 
         $totalSend = acym_getVar('int', 'totalsend', 0);
         if (empty($totalSend)) {
-            $query = 'SELECT COUNT(queue.user_id) FROM #__acym_queue AS queue LEFT JOIN #__acym_campaign AS campaign ON queue.mail_id = campaign.mail_id WHERE (campaign.id IS NULL OR campaign.active = 1) AND queue.sending_date < '.acym_escapeDB(
-                    acym_date('now', 'Y-m-d H:i:s', false)
-                );
+            $query = 'SELECT COUNT(queue.user_id) FROM #__acym_queue AS queue LEFT JOIN #__acym_campaign AS campaign ON queue.mail_id = campaign.mail_id WHERE (campaign.id IS NULL OR campaign.active = 1) AND queue.sending_date < '.acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false));
             if (!empty($mailid)) {
                 $query .= ' AND queue.mail_id = '.intval($mailid);
             }

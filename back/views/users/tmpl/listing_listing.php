@@ -127,15 +127,9 @@
                             $counter = 0;
                             foreach ($data['usersSubscriptions'][$user->id] as $oneSub) {
                                 if ($counter < 5) {
-                                    echo acym_tooltip(
-                                        '<i class="acym_subscription acymicon-circle" style="color:'.acym_escape($oneSub->color).'"></i>',
-                                        acym_escape($oneSub->name)
-                                    );
+                                    echo acym_tooltip('<i class="acym_subscription acymicon-circle" style="color:'.acym_escape($oneSub->color).'"></i>', acym_escape($oneSub->name));
                                 } else {
-                                    echo acym_tooltip(
-                                        '<i class="acym_subscription acym_subscription_more acymicon-circle" style="color:'.acym_escape($oneSub->color).'"></i>',
-                                        acym_escape($oneSub->name)
-                                    );
+                                    echo acym_tooltip('<i class="acym_subscription acym_subscription_more acymicon-circle" style="color:'.acym_escape($oneSub->color).'"></i>', acym_escape($oneSub->name));
                                 }
                                 $counter++;
                             }

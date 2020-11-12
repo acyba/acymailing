@@ -48,17 +48,12 @@
 						<p class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
 							<i class="acymicon-keyboard_arrow_left acym__color__white"></i>
 						</p>
-						<p class="acym__listing__block__delete__submit acym_toggle_delete acym__color__white"
-						   data-acy-table="mail"
-						   data-acy-elementid="<?php echo acym_escape($oneTemplate->id); ?>">
+						<p class="acym__listing__block__delete__submit acym_toggle_delete acym__color__white" data-acy-table="mail" data-acy-elementid="<?php echo acym_escape($oneTemplate->id); ?>">
 							<i class="acymicon-trash-o acym__color__white"></i>
 						</p>
 					</div>
 				</div>
-				<button type="button"
-						data-task="duplicate"
-						data-template="<?php echo intval($oneTemplate->id); ?>"
-						class="text-center cell acym__listing__block__duplicate acym__background-color__blue">
+				<button type="button" data-task="duplicate" data-template="<?php echo intval($oneTemplate->id); ?>" class="text-center cell acym__listing__block__duplicate acym__background-color__blue">
 					<i class="acym__color__white acymicon-content_copy"></i>
 				</button>
 			</div>

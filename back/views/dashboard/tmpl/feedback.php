@@ -8,13 +8,7 @@
 	<p class="cell"><?php echo acym_translation('ACYM_IF_YOU_LOVE_GO_FIVE_STARS'); ?></p>
 	<p class="cell margin-bottom-2"><?php echo acym_translation('ACYM_THIS_WILL_HELP_ON_WORDPRESS'); ?></p>
 	<div class="cell grid-x grid-margin-x align-center">
-		<a title="reviews"
-		   target="_blank"
-		   href="https://wordpress.org/support/plugin/acymailing/reviews/?rate=5#new-post"
-		   class="acym__do__not__remindme button cell medium-6 xlarge-3 large-4 acym_vcenter align-center"><i class="acymicon-wordpress"></i><?php echo acym_translation(
-                'ACYM_LEAVE_FIVE_STAR'
-            ); ?></a>
-		<button title="reviews" type="button" class="acym__do__not__remindme button button-secondary medium-6 xlarge-3 large-4 cell">
-			<i class="acymicon-close"></i><?php echo acym_translation('ACYM_YOU_DONT_DESERVE_IT'); ?></button>
+		<a title="reviews" target="_blank" href="https://wordpress.org/support/plugin/acymailing/reviews/?rate=5#new-post" class="acym__do__not__remindme button cell medium-6 xlarge-3 large-4 acym_vcenter align-center"><i class="acymicon-wordpress"></i><?php echo acym_translation('ACYM_LEAVE_FIVE_STAR'); ?></a>
+		<button title="reviews" type="button" class="acym__do__not__remindme button button-secondary medium-6 xlarge-3 large-4 cell"><i class="acymicon-close"></i><?php echo acym_translation('ACYM_YOU_DONT_DESERVE_IT'); ?></button>
 	</div>
 </div>

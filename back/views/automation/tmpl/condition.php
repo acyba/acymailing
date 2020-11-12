@@ -21,9 +21,7 @@
 					<i class="acymicon-close acym__color__red acym__automation__delete__group__condition shrink cell cursor-pointer"></i>
 				</div>
 				<div class="cell grid-x margin-top-2">
-					<button data-condition-type="" type="button" class="button-secondary button medium-shrink acym__automation__add-condition"><?php echo acym_translation(
-                            'ACYM_ADD_CONDITION'
-                        ); ?></button>
+					<button data-condition-type="" type="button" class="button-secondary button medium-shrink acym__automation__add-condition"><?php echo acym_translation('ACYM_ADD_CONDITION'); ?></button>
 				</div>
 			</div>
 		</div>
@@ -48,15 +46,13 @@
 			<p data-condition="user" class="acym__automation__choose__condition medium-shrink cell <?php echo $data['type_condition'] == 'classic' ? '' : 'selected-condition'; ?>">
                 <?php echo acym_translation('ACYM_EXECUTE_CONDITIONS_ON_ONE_USERS'); ?>
 			</p>
-			<p data-condition="classic"
-			   class="acym__automation__choose__condition medium-shrink cell <?php echo $data['type_condition'] == 'classic' ? 'selected-condition' : ''; ?>">
+			<p data-condition="classic" class="acym__automation__choose__condition medium-shrink cell <?php echo $data['type_condition'] == 'classic' ? 'selected-condition' : ''; ?>">
                 <?php echo acym_translation('ACYM_EXECUTE_CONDITIONS_ON_ALL_USERS'); ?>
 			</p>
 			<div class="cell auto"></div>
 		</div>
 
-		<div class="cell grid-x acym__automation__condition__container"
-			 id="acym__automation__conditions__type__classic" <?php echo $data['type_condition'] == 'classic' ? '' : 'style="display:none;"'; ?>>
+		<div class="cell grid-x acym__automation__condition__container" id="acym__automation__conditions__type__classic" <?php echo $data['type_condition'] == 'classic' ? '' : 'style="display:none;"'; ?>>
 			<input type="hidden" value="<?php echo acym_escape($data['classic_option']); ?>" id="acym__automation__condition__classic__options">
 			<div class="cell grid-x acym__content acym__automation__group__condition" data-condition-number="0">
 				<div class="cell grid-x acym__automation__one__condition acym__automation__one__condition__classic">
@@ -65,19 +61,13 @@
 					</div>
 				</div>
 				<div class="cell grid-x margin-top-2">
-					<button data-condition-type="classic"
-							data-block="0"
-							type="button"
-							class="button-secondary button medium-shrink acym__automation__add-condition"><?php echo acym_translation('ACYM_ADD_CONDITION'); ?></button>
+					<button data-condition-type="classic" data-block="0" type="button" class="button-secondary button medium-shrink acym__automation__add-condition"><?php echo acym_translation('ACYM_ADD_CONDITION'); ?></button>
 				</div>
 			</div>
-			<button data-condition-type="classic" type="button" class="acym__automation__conditions__or margin-top-1 button button-secondary"><?php echo acym_translation(
-                    'ACYM_OR'
-                ); ?></button>
+			<button data-condition-type="classic" type="button" class="acym__automation__conditions__or margin-top-1 button button-secondary"><?php echo acym_translation('ACYM_OR'); ?></button>
 		</div>
 
-		<div class="cell grid-x acym__automation__condition__container"
-			 id="acym__automation__conditions__type__user" <?php echo $data['type_condition'] == 'classic' ? 'style="display:none;"' : ''; ?>>
+		<div class="cell grid-x acym__automation__condition__container" id="acym__automation__conditions__type__user" <?php echo $data['type_condition'] == 'classic' ? 'style="display:none;"' : ''; ?>>
 			<input type="hidden" value="<?php echo acym_escape($data['user_option']); ?>" id="acym__automation__condition__user__options">
 			<div class="cell grid-x acym__content acym__automation__group__condition" data-condition-number="0">
 				<div class="cell grid-x acym__automation__one__condition acym__automation__one__condition__user">
@@ -86,38 +76,24 @@
 					</div>
 				</div>
 				<div class="cell grid-x margin-top-2">
-					<button data-condition-type="user"
-							data-block="0"
-							type="button"
-							class="button-secondary button medium-shrink acym__automation__add-condition"><?php echo acym_translation('ACYM_ADD_CONDITION'); ?></button>
+					<button data-condition-type="user" data-block="0" type="button" class="button-secondary button medium-shrink acym__automation__add-condition"><?php echo acym_translation('ACYM_ADD_CONDITION'); ?></button>
 				</div>
 			</div>
-			<button data-condition-type="user" type="button" class="acym__automation__conditions__or margin-top-1 button button-secondary"><?php echo acym_translation(
-                    'ACYM_OR'
-                ); ?></button>
+			<button data-condition-type="user" type="button" class="acym__automation__conditions__or margin-top-1 button button-secondary"><?php echo acym_translation('ACYM_OR'); ?></button>
 		</div>
 
 		<div class="cell grid-x grid-margin-x margin-top-2">
             <?php if (empty($data['id'])) { ?>
 				<div class="auto cell"></div>
-				<button type="button" class="button button-secondary acy_button_submit medium-shrink cell" data-task="listing"><?php echo acym_translation(
-                        'ACYM_CANCEL'
-                    ); ?></button>
-				<button type="button" class="button acy_button_submit medium-shrink cell" data-task="edit" data-step="setConditionMassAction"><?php echo acym_translation(
-                        'ACYM_SET_FILTERS'
-                    ); ?></button>
+				<button type="button" class="button button-secondary acy_button_submit medium-shrink cell" data-task="listing"><?php echo acym_translation('ACYM_CANCEL'); ?></button>
+				<button type="button" class="button acy_button_submit medium-shrink cell" data-task="edit" data-step="setConditionMassAction"><?php echo acym_translation('ACYM_SET_FILTERS'); ?></button>
             <?php } else { ?>
 				<div class="cell medium-shrink medium-margin-bottom-0 margin-bottom-1 text-left">
                     <?php echo acym_backToListing("automation"); ?>
 				</div>
 				<div class="auto cell"></div>
-				<button type="button"
-						class="button button-secondary acy_button_submit medium-shrink cell"
-						data-task="edit"
-						data-step="saveExitConditions"><?php echo acym_translation('ACYM_SAVE_EXIT'); ?></button>
-				<button type="button" class="button acy_button_submit medium-shrink cell" data-task="edit" data-step="saveConditions"><?php echo acym_translation(
-                        'ACYM_SAVE_CONTINUE'
-                    ); ?></button>
+				<button type="button" class="button button-secondary acy_button_submit medium-shrink cell" data-task="edit" data-step="saveExitConditions"><?php echo acym_translation('ACYM_SAVE_EXIT'); ?></button>
+				<button type="button" class="button acy_button_submit medium-shrink cell" data-task="edit" data-step="saveConditions"><?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?></button>
             <?php } ?>
 		</div>
 	</div>

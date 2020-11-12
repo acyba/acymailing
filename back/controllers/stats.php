@@ -221,46 +221,22 @@ class StatsController extends acymController
         //For the total opening, the doughnut chart
         $data['mail']->totalMail = $data['mail']->sent + $data['mail']->fail;
         $data['mail']->pourcentageSent = empty($data['mail']->totalMail) ? 0 : number_format(($data['mail']->sent * 100) / $data['mail']->totalMail, 2);
-        $data['mail']->allSent = empty($data['mail']->totalMail)
-            ? acym_translation_sprintf('ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X', 0, 0)
-            : acym_translation_sprintf(
-                'ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X',
-                $data['mail']->sent,
-                $data['mail']->totalMail
-            );
+        $data['mail']->allSent = empty($data['mail']->totalMail) ? acym_translation_sprintf('ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X', 0, 0) : acym_translation_sprintf('ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X', $data['mail']->sent, $data['mail']->totalMail);
 
         //open rate
         $openRateCampaign = empty($data['selectedMailid']) ? $campaignClass->getOpenRateAllCampaign() : $campaignClass->getOpenRateOneCampaign($data['selectedMailid']);
         $data['mail']->pourcentageOpen = empty($openRateCampaign->sent) ? 0 : number_format(($openRateCampaign->open_unique * 100) / $openRateCampaign->sent, 2);
-        $data['mail']->allOpen = empty($openRateCampaign->sent)
-            ? acym_translation_sprintf('ACYM_X_MAIL_OPENED_OF_X', 0, 0)
-            : acym_translation_sprintf(
-                'ACYM_X_MAIL_OPENED_OF_X',
-                $openRateCampaign->open_unique,
-                $openRateCampaign->sent
-            );
+        $data['mail']->allOpen = empty($openRateCampaign->sent) ? acym_translation_sprintf('ACYM_X_MAIL_OPENED_OF_X', 0, 0) : acym_translation_sprintf('ACYM_X_MAIL_OPENED_OF_X', $openRateCampaign->open_unique, $openRateCampaign->sent);
 
         //click rate
         $clickRateCampaign = $urlClickClass->getNumberUsersClicked($data['selectedMailid']);
         $data['mail']->pourcentageClick = empty($data['mail']->sent) ? 0 : number_format(($clickRateCampaign * 100) / $data['mail']->sent, 2);
-        $data['mail']->allClick = empty($data['mail']->sent)
-            ? acym_translation_sprintf('ACYM_X_MAIL_CLICKED_OF_X', 0, 0)
-            : acym_translation_sprintf(
-                'ACYM_X_MAIL_CLICKED_OF_X',
-                $clickRateCampaign,
-                $data['mail']->sent
-            );
+        $data['mail']->allClick = empty($data['mail']->sent) ? acym_translation_sprintf('ACYM_X_MAIL_CLICKED_OF_X', 0, 0) : acym_translation_sprintf('ACYM_X_MAIL_CLICKED_OF_X', $clickRateCampaign, $data['mail']->sent);
 
         //bounce rate
         $bounceRateCampaign = empty($data['selectedMailid']) ? $campaignClass->getBounceRateAllCampaign() : $campaignClass->getBounceRateOneCampaign($data['selectedMailid']);
         $data['mail']->pourcentageBounce = empty($data['mail']->sent) ? 0 : number_format(($bounceRateCampaign->bounce_unique * 100) / $data['mail']->sent, 2);
-        $data['mail']->allBounce = empty($data['mail']->sent)
-            ? acym_translation_sprintf('ACYM_X_BOUNCE_OF_X', 0, 0)
-            : acym_translation_sprintf(
-                'ACYM_X_BOUNCE_OF_X',
-                $bounceRateCampaign->bounce_unique,
-                $data['mail']->sent
-            );
+        $data['mail']->allBounce = empty($data['mail']->sent) ? acym_translation_sprintf('ACYM_X_BOUNCE_OF_X', 0, 0) : acym_translation_sprintf('ACYM_X_BOUNCE_OF_X', $bounceRateCampaign->bounce_unique, $data['mail']->sent);
 
         $this->prepareLineChart($data['mail'], $data['selectedMailid']);
     }

@@ -52,9 +52,7 @@ class acymView extends acymObject
         if (ACYM_CMS === 'wordpress' && $name !== 'archive' && $view !== 'listing') echo ob_get_clean();
 
         // Load the needed scripts and styles
-        if (ACYM_CMS !== 'wordpress' || ($name === 'frontusers' && ($view === 'unsubscribe' || $view === 'unsubscribepage')) || !defined(
-                'DOING_AJAX'
-            ) || !DOING_AJAX || ($name === 'archive' && $view === 'view')) {
+        if (ACYM_CMS !== 'wordpress' || ($name === 'frontusers' && ($view === 'unsubscribe' || $view === 'unsubscribepage')) || !defined('DOING_AJAX') || !DOING_AJAX || ($name === 'archive' && $view === 'view')) {
             acym_loadAssets($name, $view);
             $controller->loadScripts($view);
         }
@@ -67,9 +65,7 @@ class acymView extends acymObject
 
         // On pages with the editor, we need to put the wrapper inside the form
         $outsideForm = (strpos($name, 'mails') !== false && $view == 'edit') || (strpos($name, 'campaigns') !== false && $view == 'edit_email');
-        if ($outsideForm) echo '<form id="acym_form" action="'.acym_completeLink(
-                acym_getVar('cmd', 'ctrl')
-            ).'" class="acym__form__mail__edit" method="post" name="acyForm" data-abide novalidate>';
+        if ($outsideForm) echo '<form id="acym_form" action="'.acym_completeLink(acym_getVar('cmd', 'ctrl')).'" class="acym__form__mail__edit" method="post" name="acyForm" data-abide novalidate>';
 
         // Open wrapper and display the header
         if (acym_getVar('cmd', 'task') != 'ajaxEncoding') echo '<div id="acym_wrapper" class="'.$name.'_'.$view.'">';
@@ -80,10 +76,7 @@ class acymView extends acymObject
         if (!empty($data['header'])) echo $data['header'];
 
         $remindme = json_decode($this->config->get('remindme', '[]'), true);
-        if (acym_isAdmin() && !in_array('multilingual', $remindme) && acym_level(1) && $this->config->get('multilingual', '0') === '0' && $this->config->get(
-                'walk_through',
-                0
-            ) == 0) {
+        if (acym_isAdmin() && !in_array('multilingual', $remindme) && acym_level(1) && $this->config->get('multilingual', '0') === '0' && $this->config->get('walk_through', 0) == 0) {
             if (count(acym_getLanguages(true)) > 1) {
                 $message = acym_translation('ACYM_MULTILINGUAL_OPTIONS_PROMPT');
                 $message .= ' <a id="acym__multilingual__reminder" href="'.acym_completeLink('configuration&task=multilingual').'">'.acym_translation('ACYM_YES').'</a>';

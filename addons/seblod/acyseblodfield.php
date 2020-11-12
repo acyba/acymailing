@@ -74,30 +74,21 @@ class AcyplgContentCCK extends plgContentCCK
                 $fields = $this->loaded[$contentType.'_'.$client.'_fields'];
             } else {
                 $query = 'SELECT cc.*, c.label as label2, c.variation, c.link, c.link_options, c.markup_class, c.typo, c.typo_label, c.typo_options, c.access, c.position'.' FROM #__cck_core_type_field AS c'.' LEFT JOIN #__cck_core_types AS sc ON sc.id = c.typeid'.' LEFT JOIN #__cck_core_fields AS cc ON cc.id = c.fieldid'//we modify the code here, adding a condition at the end of the 'WHERE'
-                    .' WHERE sc.name = '.acym_escapeDB($contentType).' AND sc.published = 1 AND c.access IN ('.$access.') AND cc.name IN ('.implode(
-                        ',',
-                        $this->acyDisplays
-                    ).')'.' ORDER BY c.ordering ASC';
+                    .' WHERE sc.name = '.acym_escapeDB($contentType).' AND sc.published = 1 AND c.access IN ('.$access.') AND cc.name IN ('.implode(',', $this->acyDisplays).')'.' ORDER BY c.ordering ASC';
                 $fields = JCckDatabase::loadObjectList($query, 'name');    //#
                 if (!count($fields) && $client == 'intro') {
                     $client = 'content';
-                    $query = 'SELECT cc.*, c.label as label2, c.variation, c.link, c.link_options, c.markup_class, c.typo, c.typo_label, c.typo_options, c.access, c.position'.' FROM #__cck_core_type_field AS c'.' LEFT JOIN #__cck_core_types AS sc ON sc.id = c.typeid'.' LEFT JOIN #__cck_core_fields AS cc ON cc.id = c.fieldid'.' WHERE sc.name = '.acym_escapeDB(
-                            $contentType
-                        ).' AND sc.published = 1 AND c.access IN ('.$access.') AND cc.name IN ('.implode(',', $this->acyDisplays).')'.' ORDER BY c.ordering ASC';
+                    $query = 'SELECT cc.*, c.label as label2, c.variation, c.link, c.link_options, c.markup_class, c.typo, c.typo_label, c.typo_options, c.access, c.position'.' FROM #__cck_core_type_field AS c'.' LEFT JOIN #__cck_core_types AS sc ON sc.id = c.typeid'.' LEFT JOIN #__cck_core_fields AS cc ON cc.id = c.fieldid'.' WHERE sc.name = '.acym_escapeDB($contentType).' AND sc.published = 1 AND c.access IN ('.$access.') AND cc.name IN ('.implode(',', $this->acyDisplays).')'.' ORDER BY c.ordering ASC';
                     $fields = JCckDatabase::loadObjectList($query, 'name');    //#
                 }
                 $this->loaded[$contentType.'_'.$client.'_fields'] = $fields;
             }
         } else {
-            $query = 'SELECT cc.*, c.label as label2, c.variation, c.link, c.link_options, c.markup_class, c.typo, c.typo_label, c.typo_options, c.access, c.position'.' FROM #__cck_core_type_field AS c'.' LEFT JOIN #__cck_core_types AS sc ON sc.id = c.typeid'.' LEFT JOIN #__cck_core_fields AS cc ON cc.id = c.fieldid'.' WHERE sc.name = '.acym_escapeDB(
-                    $contentType
-                ).' AND sc.published = 1 AND c.access IN ('.$access.') AND cc.name IN ('.implode(',', $this->acyDisplays).')'.' ORDER BY c.ordering ASC';
+            $query = 'SELECT cc.*, c.label as label2, c.variation, c.link, c.link_options, c.markup_class, c.typo, c.typo_label, c.typo_options, c.access, c.position'.' FROM #__cck_core_type_field AS c'.' LEFT JOIN #__cck_core_types AS sc ON sc.id = c.typeid'.' LEFT JOIN #__cck_core_fields AS cc ON cc.id = c.fieldid'.' WHERE sc.name = '.acym_escapeDB($contentType).' AND sc.published = 1 AND c.access IN ('.$access.') AND cc.name IN ('.implode(',', $this->acyDisplays).')'.' ORDER BY c.ordering ASC';
             $fields = JCckDatabase::loadObjectList($query, 'name');    //#
             if (!count($fields) && $client == 'intro') {
                 $client = 'content';
-                $query = 'SELECT cc.*, c.label as label2, c.variation, c.link, c.link_options, c.markup_class, c.typo, c.typo_label, c.typo_options, c.access, c.position'.' FROM #__cck_core_type_field AS c'.' LEFT JOIN #__cck_core_types AS sc ON sc.id = c.typeid'.' LEFT JOIN #__cck_core_fields AS cc ON cc.id = c.fieldid'.' WHERE sc.name = '.acym_escapeDB(
-                        $contentType
-                    ).' AND sc.published = 1 AND c.access IN ('.$access.') AND cc.name IN ('.implode(',', $this->acyDisplays).')'.' ORDER BY c.ordering ASC';
+                $query = 'SELECT cc.*, c.label as label2, c.variation, c.link, c.link_options, c.markup_class, c.typo, c.typo_label, c.typo_options, c.access, c.position'.' FROM #__cck_core_type_field AS c'.' LEFT JOIN #__cck_core_types AS sc ON sc.id = c.typeid'.' LEFT JOIN #__cck_core_fields AS cc ON cc.id = c.fieldid'.' WHERE sc.name = '.acym_escapeDB($contentType).' AND sc.published = 1 AND c.access IN ('.$access.') AND cc.name IN ('.implode(',', $this->acyDisplays).')'.' ORDER BY c.ordering ASC';
                 $fields = JCckDatabase::loadObjectList($query, 'name');    //#
             }
         }
@@ -131,11 +122,7 @@ class AcyplgContentCCK extends plgContentCCK
         }
         $tpl['path'] = $tpl['root'].'/'.$tpl['folder'];
         if (!$tpl['folder'] || !file_exists($tpl['path'].'/index.php')) {
-            $article->$property = str_replace(
-                $article->$property,
-                'Template Style does not exist. Open the Content Type & save it again. (Intro + Content views)',
-                $article->$property
-            );
+            $article->$property = str_replace($article->$property, 'Template Style does not exist. Open the Content Type & save it again. (Intro + Content views)', $article->$property);
 
             return;
         }

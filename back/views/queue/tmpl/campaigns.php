@@ -73,10 +73,7 @@
                                         $class = 'acym_subscription acymicon-circle';
                                         foreach ($row->lists as $oneList) {
                                             if ($i == 6) {
-                                                echo acym_tooltip(
-                                                    '<i data-campaign="'.$row->id.'" class="acym_subscription acymicon-add"></i>',
-                                                    acym_translation('ACYM_SHOW_ALL_LISTS')
-                                                );
+                                                echo acym_tooltip('<i data-campaign="'.$row->id.'" class="acym_subscription acymicon-add"></i>', acym_translation('ACYM_SHOW_ALL_LISTS'));
                                                 $class .= ' is-hidden';
                                             }
                                             echo acym_tooltip('<i class="'.$class.'" style="color:'.$oneList->color.'"></i>', $oneList->name);

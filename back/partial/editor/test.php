@@ -17,11 +17,7 @@
     ); ?>
 	<label class="margin-top-1">
         <?php echo acym_translation('ACYM_TEST_NOTE'); ?>
-		<textarea class="acym__blue"
-				  id="acym__wysid__send__test__note"
-				  name="test_note"
-				  type="text"
-				  placeholder="<?php echo acym_translation('ACYM_TEST_NOTE_PLACEHOLDER'); ?>"></textarea>
+		<textarea class="acym__blue" id="acym__wysid__send__test__note" name="test_note" type="text" placeholder="<?php echo acym_translation('ACYM_TEST_NOTE_PLACEHOLDER'); ?>"></textarea>
 	</label>
 	<div class="cell grid-x align-center acym__wysid__send__test__container__button">
 		<button type="button" class="cell shrink button" id="acym__wysid__send__test__button"><?php echo acym_translation('ACYM_SAVE_AND_SEND_TEST'); ?></button>

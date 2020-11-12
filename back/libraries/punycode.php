@@ -188,11 +188,7 @@ class acympunycode
                     if ($conv) $arr[$k] = $conv;
                 }
                 $parsed['host'] = join('.', $arr);
-                $return = (empty($parsed['scheme'])
-                        ? ''
-                        : $parsed['scheme'].(strtolower(
-                            $parsed['scheme']
-                        ) == 'mailto' ? ':' : '://')).(empty($parsed['user']) ? '' : $parsed['user'].(empty($parsed['pass']) ? '' : ':'.$parsed['pass']).'@').$parsed['host'].(empty($parsed['port']) ? '' : ':'.$parsed['port']).(empty($parsed['path']) ? '' : $parsed['path']).(empty($parsed['query']) ? '' : '?'.$parsed['query']).(empty($parsed['fragment']) ? '' : '#'.$parsed['fragment']);
+                $return = (empty($parsed['scheme']) ? '' : $parsed['scheme'].(strtolower($parsed['scheme']) == 'mailto' ? ':' : '://')).(empty($parsed['user']) ? '' : $parsed['user'].(empty($parsed['pass']) ? '' : ':'.$parsed['pass']).'@').$parsed['host'].(empty($parsed['port']) ? '' : ':'.$parsed['port']).(empty($parsed['path']) ? '' : $parsed['path']).(empty($parsed['query']) ? '' : '?'.$parsed['query']).(empty($parsed['fragment']) ? '' : '#'.$parsed['fragment']);
             } else {
                 $arr = explode('.', $input);
                 foreach ($arr as $k => $v) {

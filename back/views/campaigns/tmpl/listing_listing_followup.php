@@ -72,9 +72,7 @@
 					<div class="cell auto grid-x acym__listing__title acym__followup__title">
 						<a class="cell shrink" href="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&step=followupEmail&id='.intval($followup->id)); ?>">
 							<h6 class="acym_text_ellipsis">
-                                <?php echo empty($followup->name) ? '<i class="acym__color__orange acym__followup__listing__unnamed__icon acymicon-exclamation-triangle"></i> '.acym_translation(
-                                        'ACYM_UNNAMED_FOLLOWUP'
-                                    ) : acym_escape($followup->name); ?>
+                                <?php echo empty($followup->name) ? '<i class="acym__color__orange acym__followup__listing__unnamed__icon acymicon-exclamation-triangle"></i> '.acym_translation('ACYM_UNNAMED_FOLLOWUP') : acym_escape($followup->name); ?>
 							</h6>
 						</a>
 						<div class="cell shrink">

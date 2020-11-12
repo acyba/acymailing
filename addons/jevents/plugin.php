@@ -589,9 +589,7 @@ class plgAcymJevents extends acymPlugin
                 $summary = preg_replace('/(\s|[^A-Za-z0-9\-])+/', '-', $summary);
                 $summary = trim($summary, '-');
                 $time = explode('-', substr($element->startrepeat, 0, strpos($element->startrepeat, ' ')));
-                $link = 'index.php?option=com_jevents&task=icalrepeat.detail&evid='.intval($element->rp_id).'&year='.intval($time[0]).'&month='.intval($time[1]).'&day='.intval(
-                        $time[2]
-                    ).'&title='.$summary.'&uid='.$element->uid;
+                $link = 'index.php?option=com_jevents&task=icalrepeat.detail&evid='.intval($element->rp_id).'&year='.intval($time[0]).'&month='.intval($time[1]).'&day='.intval($time[2]).'&title='.$summary.'&uid='.$element->uid;
             } else {
                 $link .= '&Itemid='.intval($menuId);
             }
@@ -701,10 +699,7 @@ class plgAcymJevents extends acymPlugin
                             $customValues[$oneCustom] = empty($customValues[$oneCustom]) ? acym_translation('ACYM_NO') : acym_translation('ACYM_YES');
                         }
 
-                        if (empty($customValues[$oneCustom]) && in_array(
-                                $jevCustomFields[$oneCustom]->type,
-                                ['jevcfuser', 'jevcfyoutube', 'jevcfupdatable', 'jevcfdblist', 'jevcftext', 'jevcfimage', 'jevcffile', 'jevcfhtml', 'jevcfeventflag', 'jevcfnotes']
-                            )) {
+                        if (empty($customValues[$oneCustom]) && in_array($jevCustomFields[$oneCustom]->type, ['jevcfuser', 'jevcfyoutube', 'jevcfupdatable', 'jevcfdblist', 'jevcftext', 'jevcfimage', 'jevcffile', 'jevcfhtml', 'jevcfeventflag', 'jevcfnotes'])) {
                             unset($customValues[$oneCustom]);
                         }
 
@@ -780,9 +775,7 @@ class plgAcymJevents extends acymPlugin
             }
         }
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_translation(
-                'ACYM_READ_MORE'
-            ).'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_translation('ACYM_READ_MORE').'</span></a>';
         if (!empty($tag->readmore)) {
             $afterArticle .= $varFields['{readmore}'];
         }
@@ -989,12 +982,7 @@ class plgAcymJevents extends acymPlugin
         $status[] = acym_selectOption('0', 'RSVP_PENDING');
 
         $conditions['user']['jeventsregistration']->option .= '<div class="intext_select_automation cell">';
-        $conditions['user']['jeventsregistration']->option .= acym_select(
-            $status,
-            'acym_condition[conditions][__numor__][__numand__][jeventsregistration][status]',
-            '-1',
-            'class="acym__select"'
-        );
+        $conditions['user']['jeventsregistration']->option .= acym_select($status, 'acym_condition[conditions][__numor__][__numand__][jeventsregistration][status]', '-1', 'class="acym__select"');
         $conditions['user']['jeventsregistration']->option .= '</div>';
 
         $conditions['user']['jeventsregistration']->option .= '</div>';

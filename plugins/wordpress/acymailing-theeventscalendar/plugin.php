@@ -476,9 +476,7 @@ class plgAcymTheeventscalendar extends acymPlugin
             ];
         }
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
-                acym_translation('ACYM_READ_MORE')
-            ).'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
 
         $format = new stdClass();

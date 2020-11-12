@@ -5,10 +5,7 @@
 			<div class="cell text-center acym__campaign__summary__generated__sub__title margin-bottom-2 margin-top-1">
                 <?php
                 if (!empty($data['parent_campaign']->id)) {
-                    echo acym_translation_sprintf(
-                        'ACYM_CAMPAIGN_GENERATED_BY',
-                        '<a href="'.acym_completeLink('campaigns&task=edit&step=editEmail&id='.$data['parent_campaign']->id).'">'.$data['parent_mail']->name.'</a>'
-                    );
+                    echo acym_translation_sprintf('ACYM_CAMPAIGN_GENERATED_BY', '<a href="'.acym_completeLink('campaigns&task=edit&step=editEmail&id='.$data['parent_campaign']->id).'">'.$data['parent_mail']->name.'</a>');
                 } else {
                     echo acym_translation('ACYM_AUTO_CAMPAIGN_DELETED');
                 }
@@ -23,8 +20,7 @@
 				<div class="cell shrink acym__campaign__summary__generated__list__title margin-right-1"><?php echo acym_translation('ACYM_LISTS_SUMMARY'); ?></div>
 				<div class="cell auto grid-x grid-margin-x grid-margin-y">
                     <?php foreach ($data['lists'] as $list) { ?>
-						<div class="cell shrink acym__campaign__summary__generated__list__tag"><i class="acymicon-circle"
-																								  style="color: <?php echo $list->color; ?>;"></i><?php echo $list->name; ?></div>
+						<div class="cell shrink acym__campaign__summary__generated__list__tag"><i class="acymicon-circle" style="color: <?php echo $list->color; ?>;"></i><?php echo $list->name; ?></div>
                     <?php } ?>
 				</div>
 			</div>
@@ -37,8 +33,7 @@
 				<div class="cell grid-x acym__campaign__summary__generated__mail__one">
 					<div class="cell grid-x acym_vcenter">
 						<div class="cell shrink acym__campaign__summary__generated__mail__one__subject">
-							<span class="acym__campaign__summary__generated__mail__one__bold"><?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?></span>
-							<span class="acym__campaign__summary__email__information-subject"><?php echo $data['mail']->subject; ?></span>
+							<span class="acym__campaign__summary__generated__mail__one__bold"><?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?></span> <span class="acym__campaign__summary__email__information-subject"><?php echo $data['mail']->subject; ?></span>
 						</div>
 						<div class="cell auto acym__campaign__summary__generated__mail__one__preview margin-left-1">
                             <?php echo empty($data['mail']->preheader) ? '' : $data['mail']->preheader; ?>
@@ -71,21 +66,13 @@
 				<div class="cell medium-auto align-right grid-margin-x acym_vcenter">
 					<div class="cell medium-auto"></div>
                     <?php if ($data['campaign']->sent) { ?>
-						<p class="cell text-center acym__campaign__summary__generated__action__text"><?php echo acym_translation_sprintf(
-                                'ACYM_CAMPAIGN_HAS_BEEN_SENT_ON_X',
-                                $data['campaign']->sending_date
-                            ); ?></p>
+						<p class="cell text-center acym__campaign__summary__generated__action__text"><?php echo acym_translation_sprintf('ACYM_CAMPAIGN_HAS_BEEN_SENT_ON_X', $data['campaign']->sending_date); ?></p>
                     <?php } elseif ($data['campaign']->waiting_confirmation) { ?>
-						<button type="button" class="cell shrink button button-cancel acy_button_submit" data-task="disableGeneratedCampaign"><?php echo acym_translation(
-                                'ACYM_DISABLE'
-                            ); ?> <i class="acymicon-lock"></i></button>
-						<button type="button" class="cell shrink button button-send acy_button_submit" data-task="addQueue"><?php echo acym_translation('ACYM_SEND'); ?>
-							<i class="acymicon-paper-plane"></i></button>
+						<button type="button" class="cell shrink button button-cancel acy_button_submit" data-task="disableGeneratedCampaign"><?php echo acym_translation('ACYM_DISABLE'); ?> <i class="acymicon-lock"></i></button>
+						<button type="button" class="cell shrink button button-send acy_button_submit" data-task="addQueue"><?php echo acym_translation('ACYM_SEND'); ?> <i class="acymicon-paper-plane"></i></button>
                     <?php } else { ?>
-						<button type="button" class="cell shrink button acy_button_submit" data-task="enableGeneratedCampaign"><?php echo acym_translation('ACYM_ENABLE'); ?> <i
-									class="acymicon-unlock"></i></button>
-						<button type="button" class="cell shrink disabled button button-send" disabled><?php echo acym_translation('ACYM_SEND'); ?>
-							<i class="acymicon-paper-plane"></i></button>
+						<button type="button" class="cell shrink button acy_button_submit" data-task="enableGeneratedCampaign"><?php echo acym_translation('ACYM_ENABLE'); ?> <i class="acymicon-unlock"></i></button>
+						<button type="button" class="cell shrink disabled button button-send" disabled><?php echo acym_translation('ACYM_SEND'); ?> <i class="acymicon-paper-plane"></i></button>
                     <?php } ?>
 				</div>
 			</div>

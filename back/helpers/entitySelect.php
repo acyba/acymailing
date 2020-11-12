@@ -26,17 +26,11 @@ class EntitySelectHelper extends acymObject
                             <div class="cell grid-x">
                                 <div class="cell"><input type="text" class="acym__light__input" v-model="'.$type.'Search" placeholder="'.acym_translation('ACYM_SEARCH').'"></div>
                                 <div class="cell align-right grid-x acym__entity_select__select__all">
-                                    <button type="button" v-show="!loading" v-if="displaySelectAll_'.$type.'" v-on:click="moveAll('.acym_escapeDB(
-                $type
-            ).')" class="cell shrink acym__entity_select__select__all__button acym__entity_select__select__all__button__'.$type.'">'.acym_translation(
-                'ACYM_'.strtoupper($allSelector).'_ALL'
-            ).'</button>
+                                    <button type="button" v-show="!loading" v-if="displaySelectAll_'.$type.'" v-on:click="moveAll('.acym_escapeDB($type).')" class="cell shrink acym__entity_select__select__all__button acym__entity_select__select__all__button__'.$type.'">'.acym_translation('ACYM_'.strtoupper($allSelector).'_ALL').'</button>
                                 </div>
                             </div>
                         </div>
-                        <div v-infinite-scroll="loadMoreEntity'.ucfirst(
-                $type
-            ).'" :infinite-scroll-disabled="busy" class="acym__listing cell acym__entity_select__'.$type.'__listing acym__content" infinite-scroll-distance="10">';
+                        <div v-infinite-scroll="loadMoreEntity'.ucfirst($type).'" :infinite-scroll-disabled="busy" class="acym__listing cell acym__entity_select__'.$type.'__listing acym__content" infinite-scroll-distance="10">';
         $emptyMessage = acym_translation($type === 'available' ? 'ACYM_NOTHING_TO_SHOW_HERE_RIGHT_PANEL' : 'ACYM_PLEASE_CLICK_ON_THE_LEFT_PANEL');
         $display .= '<div class="cell text-center acym__entity_select__title margin-top-2" v-show="Object.keys(entitiesToDisplay_'.$type.').length == 0 && !loading">'.$emptyMessage.'</div>
                     <div class="cell acym_vcenter acym__listing__row grid-x acym__listing__row__header" v-if="Object.keys(entitiesToDisplay_'.$type.').length != 0">';
@@ -88,9 +82,7 @@ class EntitySelectHelper extends acymObject
 
         //End of listing with message loading and loading logo
         $display .= '</div>
-                    <div class="cell grid-x align-center acym__entity_select__loading margin-top-1"  v-show="loading"><div class="cell text-center acym__entity_select__title">'.acym_translation(
-                'ACYM_WE_ARE_LOADING_YOUR_DATA'
-            ).'</div><div class="cell grid-x shrink margin-top-1">'.$this->svg.'</div></div>';
+                    <div class="cell grid-x align-center acym__entity_select__loading margin-top-1"  v-show="loading"><div class="cell text-center acym__entity_select__title">'.acym_translation('ACYM_WE_ARE_LOADING_YOUR_DATA').'</div><div class="cell grid-x shrink margin-top-1">'.$this->svg.'</div></div>';
         $display .= '</div>';
         $display .= '</div>
                     </div>';
@@ -98,13 +90,8 @@ class EntitySelectHelper extends acymObject
         return $display;
     }
 
-    public function entitySelect(
-        $entity, $entityParams = [], $columnsToDisplay = ['name'], $buttonSubmit = [
-        'text' => '',
-        'action' => '',
-        'class' => '',
-    ], $displaySelected = true, $additionalData = ''
-    ) {
+    public function entitySelect($entity, $entityParams = [], $columnsToDisplay = ['name'], $buttonSubmit = ['text' => '', 'action' => '', 'class' => ''], $displaySelected = true, $additionalData = '')
+    {
         $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($entity).'Class';
         $entityClass = new $namespaceClass;
         $entitySelectController = new EntitySelectController();
@@ -136,11 +123,7 @@ class EntitySelectHelper extends acymObject
         }
 
         if (!empty($columnJoin)) $columnJoin = 'data-column-join="'.$columnJoin[1].'" data-table-join="'.$columnJoin[0].'"';
-        $display = '<div style="display: none;" id="acym__entity_select" class="acym__entity_select cell grid-x" data-display-selected="'.($displaySelected ? 'true' : 'false').'" data data-entity="'.acym_escape(
-                $entity
-            ).'" data-type="select" data-columns="'.implode(',', array_keys($columnsToDisplay)).'" data-columns-class="'.acym_escape(
-                json_encode($columnsToDisplay)
-            ).'" data-join="'.$entityParams['join'].'" '.$columnJoin.'>';
+        $display = '<div style="display: none;" id="acym__entity_select" class="acym__entity_select cell grid-x" data-display-selected="'.($displaySelected ? 'true' : 'false').'" data data-entity="'.acym_escape($entity).'" data-type="select" data-columns="'.implode(',', array_keys($columnsToDisplay)).'" data-columns-class="'.acym_escape(json_encode($columnsToDisplay)).'" data-join="'.$entityParams['join'].'" '.$columnJoin.'>';
 
         $display .= $this->_getListing('available', 'select', $entity, $columnsToDisplay);
 

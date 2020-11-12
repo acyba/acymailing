@@ -63,9 +63,7 @@ class plgAcymBirthday extends acymPlugin
                         </div>';
 
         if (empty($this->dataSources[$defaultSource]['fields']) && !empty($this->dataSources[$defaultSource]['no_fields_error_message'])) {
-            $option .= '<div class="cell grid-x"><span class="cell small-1 vertical-align-middle"><i class="acymicon-exclamation-circle acym__color__orange"></i></span><span class="cell small-11"><b>'.acym_translation(
-                    $this->dataSources[$defaultSource]['no_fields_error_message']
-                ).'</b></span></div>';
+            $option .= '<div class="cell grid-x"><span class="cell small-1 vertical-align-middle"><i class="acymicon-exclamation-circle acym__color__orange"></i></span><span class="cell small-11"><b>'.acym_translation($this->dataSources[$defaultSource]['no_fields_error_message']).'</b></span></div>';
         } else {
             $option .= '<div class="cell grid-x">
                             <div class="cell medium-shrink">
@@ -208,12 +206,7 @@ class plgAcymBirthday extends acymPlugin
                 $fieldToDsiplay = $field;
             }
 
-            $date = empty($automation->triggers['on_birthday']['day_before'])
-                ? acym_translation('ACYM_ON_USER_BIRTHDAY')
-                : acym_translation_sprintf(
-                    'ACYM_X_DAYS_BEFORE_BIRTHDAY',
-                    $automation->triggers['on_birthday']['day_before']
-                );
+            $date = empty($automation->triggers['on_birthday']['day_before']) ? acym_translation('ACYM_ON_USER_BIRTHDAY') : acym_translation_sprintf('ACYM_X_DAYS_BEFORE_BIRTHDAY', $automation->triggers['on_birthday']['day_before']);
             $time = acym_translation_sprintf('ACYM_AT_DATE_TIME', $automation->triggers['on_birthday']['hour'], $automation->triggers['on_birthday']['minutes']);
             $end = acym_translation_sprintf('ACYM_FOR_THE_X_FIELD_X', $dataSources[$automation->triggers['on_birthday']['source']]['source_name'], $fieldToDsiplay['name']);
 

@@ -73,9 +73,7 @@ class acymPlugin extends acymObject
 
     protected function displaySelectionZone($zoneContent)
     {
-        $output = '<p class="acym__wysid__right__toolbar__p acym__wysid__right__toolbar__p__open">'.acym_translation(
-                'ACYM_CONTENT_TO_INSERT'
-            ).'<i class="acymicon-keyboard_arrow_up"></i></p>';
+        $output = '<p class="acym__wysid__right__toolbar__p acym__wysid__right__toolbar__p__open">'.acym_translation('ACYM_CONTENT_TO_INSERT').'<i class="acymicon-keyboard_arrow_up"></i></p>';
         $output .= '<div class="acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__context__modal__container">';
         $output .= $zoneContent;
         $output .= '</div>';
@@ -256,9 +254,7 @@ class acymPlugin extends acymObject
                 $class = 'cell grid-x acym__row__no-listing acym__listing__row__popup';
                 if (in_array($row->{$options['id']}, $selected)) $class .= ' selected_row';
 
-                $listing .= '<div class="'.$class.'" data-id="'.intval($row->{$options['id']}).'" onclick="applyContent'.acym_escape($this->name).'('.intval(
-                        $row->{$options['id']}
-                    ).', this);">';
+                $listing .= '<div class="'.$class.'" data-id="'.intval($row->{$options['id']}).'" onclick="applyContent'.acym_escape($this->name).'('.intval($row->{$options['id']}).', this);">';
 
                 foreach ($options['header'] as $column => $oneColumn) {
                     $value = $row->$column;
@@ -387,12 +383,7 @@ class acymPlugin extends acymObject
 
         if (!empty($parameter->min) && count($elements) < $parameter->min) {
             $this->generateCampaignResult->status = false;
-            $this->generateCampaignResult->message = acym_translation_sprintf(
-                'ACYM_GENERATE_CAMPAIGN_NOT_ENOUGH_CONTENT',
-                $this->pluginDescription->name,
-                count($elements),
-                $parameter->min
-            );
+            $this->generateCampaignResult->message = acym_translation_sprintf('ACYM_GENERATE_CAMPAIGN_NOT_ENOUGH_CONTENT', $this->pluginDescription->name, count($elements), $parameter->min);
         } elseif (!empty($elements)) {
             $this->generateCampaignResult->status = true;
             $this->generateCampaignResult->message = '';
@@ -852,9 +843,7 @@ class acymPlugin extends acymObject
                                         <div class="acym__plugins__installed__custom-view__editor-loader grid-x cell align-center acym_vcenter" v-if="loading">'.acym_loaderLogo().'</div>
                                         <vue-prism-editor :emitEvents="true" class="cell acym__plugins__installed__custom-view__code cell auto" v-model="code" :language="language" lineNumbers="true"></vue-prism-editor>
                                         <div class="cell grid-x medium-3 margin-left-1 acym__plugins__installed__custom-view__tags">
-                                            <h3 class="acym__title__primary__color cell text-center">'.acym_translation('ACYM_DYNAMIC_CONTENT').acym_info(
-                        'ACYM_DYNAMIC_CONTENT_DESC'
-                    ).'</h3>
+                                            <h3 class="acym__title__primary__color cell text-center">'.acym_translation('ACYM_DYNAMIC_CONTENT').acym_info('ACYM_DYNAMIC_CONTENT_DESC').'</h3>
                                             <div class="cell acym__plugins__installed__custom-view__tag" v-for="(trad, tag) in tags" :key="tag" @click.prevent="insertTag(tag)">{{ trad }}</div>
                                         </div>
                                     </div>
@@ -875,13 +864,7 @@ class acymPlugin extends acymObject
                                         </div>
                                     </div>
                                 </div>';
-                $text .= acym_modal(
-                    acym_translation('ACYM_EDIT_CUSTOM_VIEW'),
-                    $modalContent,
-                    null,
-                    'acym-data-plugins-id="'.$idCustomView.'" acym-data-plugin-class="'.get_class($this).'" acym-data-plugin-folder="'.$this->name.'"',
-                    'class="cell button"'
-                );
+                $text .= acym_modal(acym_translation('ACYM_EDIT_CUSTOM_VIEW'), $modalContent, null, 'acym-data-plugins-id="'.$idCustomView.'" acym-data-plugin-class="'.get_class($this).'" acym-data-plugin-folder="'.$this->name.'"', 'class="cell button"');
             } elseif ($field['type'] == 'custom') {
                 $text .= $field['content'];
             }
@@ -978,10 +961,7 @@ class acymPlugin extends acymObject
         $tmpMails = [];
         foreach ($specialMails as $i => $oneMail) {
             if ($oneMail->sending_type == $mailType) {
-                if ($time >= $dayBasedOnCMSTimezoneAtSpecifiedHour && (empty($oneMail->next_trigger) || date('m-d', $oneMail->next_trigger) == date(
-                            'm-d',
-                            $dayBasedOnCMSTimezoneAtSpecifiedHour
-                        ))) {
+                if ($time >= $dayBasedOnCMSTimezoneAtSpecifiedHour && (empty($oneMail->next_trigger) || date('m-d', $oneMail->next_trigger) == date('m-d', $dayBasedOnCMSTimezoneAtSpecifiedHour))) {
                     $oneMail->next_trigger = acym_getTime('tomorrow '.$dailyHour.':'.$dailyMinute);
                     $oneMail->last_generated = $time;
                     $campaignClass->save($oneMail);

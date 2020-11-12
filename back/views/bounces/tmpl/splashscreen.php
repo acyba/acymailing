@@ -3,9 +3,7 @@
 		<div class="cell grid-x acym__splashscreen__bloc margin-top-2">
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>
 			<div class="cell large-8 grid-x text-center">
-				<h3 class="cell acym__splashscreen__title"><i class="acymicon-transfer acym__color__green margin-right-1"></i><?php echo acym_translation(
-                        'ACYM_WHAT_IS_BOUNCE_HANDLING'
-                    ); ?></h3>
+				<h3 class="cell acym__splashscreen__title"><i class="acymicon-transfer acym__color__green margin-right-1"></i><?php echo acym_translation('ACYM_WHAT_IS_BOUNCE_HANDLING'); ?></h3>
 				<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_WHAT_IS_BOUNCE_HANDLING_TEXT'); ?></p>
 			</div>
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>
@@ -16,9 +14,7 @@
 		<div class="cell grid-x acym__splashscreen__bloc">
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>
 			<div class="cell large-8 grid-x text-center">
-				<h3 class="cell acym__splashscreen__title"><i class="acymicon-bell acym__color__orange margin-right-1"></i><?php echo acym_translation(
-                        'ACYM_WHAT_ARE_THE_RISKS_BOUNCES'
-                    ); ?></h3>
+				<h3 class="cell acym__splashscreen__title"><i class="acymicon-bell acym__color__orange margin-right-1"></i><?php echo acym_translation('ACYM_WHAT_ARE_THE_RISKS_BOUNCES'); ?></h3>
 				<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_WHAT_ARE_THE_RISKS_BOUNCES_TEXT'); ?></p>
 			</div>
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>
@@ -29,9 +25,7 @@
 		<div class="cell grid-x acym__splashscreen__bloc">
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>
 			<div class="cell large-8 grid-x text-center">
-				<h3 class="cell acym__splashscreen__title"><i class="acymicon-aid-kit acym__color__light-blue margin-right-1"></i><?php echo acym_translation(
-                        'ACYM_HOW_ACYMAILING_CAN_HELP'
-                    ); ?></h3>
+				<h3 class="cell acym__splashscreen__title"><i class="acymicon-aid-kit acym__color__light-blue margin-right-1"></i><?php echo acym_translation('ACYM_HOW_ACYMAILING_CAN_HELP'); ?></h3>
 				<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_HOW_ACYMAILING_CAN_HELP_TEXT'); ?></p>
 			</div>
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>

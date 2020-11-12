@@ -13,14 +13,10 @@
 				<div class="medium-4"></div>
 				<div class="medium-4 cell grid-x grid-margin-x align-center">
 					<div class="medium-shrink cell">
-						<button type="button" class="button button-secondary expanded acy_button_submit" data-task="edit" data-step="action"><?php echo acym_translation(
-                                'ACYM_NEW_MASS_ACTION'
-                            ); ?></button>
+						<button type="button" class="button button-secondary expanded acy_button_submit" data-task="edit" data-step="action"><?php echo acym_translation('ACYM_NEW_MASS_ACTION'); ?></button>
 					</div>
 					<div class="medium-shrink cell">
-						<button type="button" class="button expanded acy_button_submit" data-task="edit" data-step="info"><?php echo acym_translation(
-                                'ACYM_CREATE_AUTOMATION'
-                            ); ?></button>
+						<button type="button" class="button expanded acy_button_submit" data-task="edit" data-step="info"><?php echo acym_translation('ACYM_CREATE_AUTOMATION'); ?></button>
 					</div>
 				</div>
 			</div>
@@ -87,10 +83,7 @@
                     <?php foreach ($data['allAutomations'] as $automation) { ?>
 						<div data-acy-elementid="<?php echo acym_escape($automation->id); ?>" class="grid-x cell acym__listing__row">
 							<div class="medium-shrink small-1 cell">
-								<input id="checkbox_<?php echo acym_escape($automation->id); ?>"
-									   type="checkbox"
-									   name="elements_checked[]"
-									   value="<?php echo acym_escape($automation->id); ?>">
+								<input id="checkbox_<?php echo acym_escape($automation->id); ?>" type="checkbox" name="elements_checked[]" value="<?php echo acym_escape($automation->id); ?>">
 							</div>
 							<div class="grid-x medium-auto small-11 cell acym__listing__title__container">
 								<div class="grid-x medium-5 small-9 cell acym__listing__title">
@@ -114,9 +107,7 @@
 									<div class="text-center cell">
                                         <?php
                                         $class = $automation->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0' : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
-                                        echo '<i data-acy-table="automation" data-acy-field="active" data-acy-elementid="'.acym_escape(
-                                                $automation->id
-                                            ).'" class="acym_toggleable '.$class.'"></i>';
+                                        echo '<i data-acy-table="automation" data-acy-field="active" data-acy-elementid="'.acym_escape($automation->id).'" class="acym_toggleable '.$class.'"></i>';
                                         ?>
 									</div>
 								</div>

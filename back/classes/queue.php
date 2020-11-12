@@ -30,9 +30,7 @@ class QueueClass extends acymClass
                         LEFT JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id';
 
         $filters = [];
-        $filters[] = '(campaign.id IS NULL AND queue.mail_id IS NOT NULL) OR (campaign.id IS NOT NULL AND campaign.draft = 0 AND ((queue.mail_id IS NULL AND campaign.sending_type = '.acym_escapeDB(
-                $campaignClass->getConstScheduled()
-            ).' AND campaign.sent = 0) OR queue.mail_id IS NOT NULL))';
+        $filters[] = '(campaign.id IS NULL AND queue.mail_id IS NOT NULL) OR (campaign.id IS NOT NULL AND campaign.draft = 0 AND ((queue.mail_id IS NULL AND campaign.sending_type = '.acym_escapeDB($campaignClass->getConstScheduled()).' AND campaign.sent = 0) OR queue.mail_id IS NOT NULL))';
 
         if (!empty($settings['tag'])) {
             $query .= ' JOIN #__acym_tag AS tag ON mail.id = tag.id_element AND tag.type = "mail" AND tag.name = '.acym_escapeDB($settings['tag']);
@@ -109,10 +107,7 @@ class QueueClass extends acymClass
                         $listIds = array_keys($results['elements'][$i]->lists);
                         acym_arrayToInteger($listIds);
 
-                        $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
-                                ',',
-                                $listIds
-                            ).') and user_list.status = 1 ';
+                        $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(',', $listIds).') and user_list.status = 1 ';
                         $automationHelper->leftjoin['mail'] = '`#__acym_mail` AS mail ON `mail`.`language` = `user`.language AND `mail`.`parent_id` = '.intval($mailId);
                         $automationHelper->where[] = '`user_list`.`list_id` IN ('.implode(',', $listIds).') AND `user_list`.`status` = 1';
                         $filters = $campaignClass->getFilterCampaign(json_decode($oneMail->sending_params, true));
@@ -123,10 +118,7 @@ class QueueClass extends acymClass
                             }
                         }
                         $automationHelper->groupBy = 'mail_id';
-                        $campaignRecipientsMultilingual[$oneMail->campaign] = acym_loadObjectList(
-                            $automationHelper->getQuery(['COUNT(DISTINCT user_list.`user_id`) AS elements', 'IF(mail.id IS NULL, '.intval($mailId).', `mail`.`id`) as mail_id']),
-                            'mail_id'
-                        );
+                        $campaignRecipientsMultilingual[$oneMail->campaign] = acym_loadObjectList($automationHelper->getQuery(['COUNT(DISTINCT user_list.`user_id`) AS elements', 'IF(mail.id IS NULL, '.intval($mailId).', `mail`.`id`) as mail_id']), 'mail_id');
                     }
                     $results['elements'][$i]->recipients = intval($campaignRecipientsMultilingual[$oneMail->campaign][$oneMail->id]->elements);
                 } else {
@@ -135,12 +127,8 @@ class QueueClass extends acymClass
             }
         }
 
-        $automationNumber = acym_loadResult(
-            'SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB('automation')
-        );
-        $followupNumber = acym_loadResult(
-            'SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB('followup')
-        );
+        $automationNumber = acym_loadResult('SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB('automation'));
+        $followupNumber = acym_loadResult('SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB('followup'));
 
         $elementsPerStatus = acym_loadObjectList($queryStatus.' GROUP BY score', 'score');
         for ($i = 0 ; $i < 4 ; $i++) {
@@ -319,9 +307,7 @@ class QueueClass extends acymClass
         $query .= ' JOIN #__acym_user AS user ON queue.`user_id` = user.`id` ';
         $query .= ' JOIN #__acym_mail AS mail ON queue.`mail_id` = mail.`id` ';
         $query .= ' LEFT JOIN #__acym_campaign AS campaign ON campaign.`mail_id` = mail.`id` ';
-        $query .= ' WHERE queue.`sending_date` <= '.acym_escapeDB(
-                acym_date('now', 'Y-m-d H:i:s', false)
-            ).' AND (campaign.mail_id IS NULL OR (campaign.`active` = 1 AND campaign.`draft` = 0 AND user.active = 1))';
+        $query .= ' WHERE queue.`sending_date` <= '.acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false)).' AND (campaign.mail_id IS NULL OR (campaign.`active` = 1 AND campaign.`draft` = 0 AND user.active = 1))';
 
         if ($this->config->get('require_confirmation', 1) == 1) {
             $query .= ' AND (user.confirmed = 1 OR mail.type = "notification")';
@@ -360,11 +346,7 @@ class QueueClass extends acymClass
         //Also it will avoid the same user to receive messages again and again and again in case of there is a problem
         if (!empty($results)) {
             $firstElementQueued = reset($results);
-            acym_query(
-                'UPDATE #__acym_queue SET sending_date = DATE_ADD(sending_date, INTERVAL 1 SECOND) WHERE mail_id = '.intval($firstElementQueued->mail_id).' AND user_id = '.intval(
-                    $firstElementQueued->user_id
-                ).' LIMIT 1'
-            );
+            acym_query('UPDATE #__acym_queue SET sending_date = DATE_ADD(sending_date, INTERVAL 1 SECOND) WHERE mail_id = '.intval($firstElementQueued->mail_id).' AND user_id = '.intval($firstElementQueued->user_id).' LIMIT 1');
         }
 
         //We need to load users as well...

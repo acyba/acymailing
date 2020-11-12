@@ -113,10 +113,7 @@ class plgAcymHikashop extends acymPlugin
 
         acym_loadLanguageFile('com_hikashop', JPATH_SITE);
 
-        $this->categories = acym_loadObjectList(
-            "SELECT category_id AS id, category_parent_id AS parent_id, category_name AS title FROM `#__hikashop_category` WHERE category_type = 'product'",
-            'id'
-        );
+        $this->categories = acym_loadObjectList("SELECT category_id AS id, category_parent_id AS parent_id, category_name AS title FROM `#__hikashop_category` WHERE category_type = 'product'", 'id');
 
         $tabHelper = new TabHelper();
         $identifier = $this->name;
@@ -389,12 +386,7 @@ class plgAcymHikashop extends acymPlugin
 
     protected function loadLibraries($email)
     {
-        $this->readmore = empty($email->template->readmore)
-            ? acym_translation('ACYM_READ_MORE')
-            : '<img src="'.ACYM_LIVE.$email->template->readmore.'" alt="'.acym_translation(
-                'ACYM_READ_MORE',
-                true
-            ).'" />';
+        $this->readmore = empty($email->template->readmore) ? acym_translation('ACYM_READ_MORE') : '<img src="'.ACYM_LIVE.$email->template->readmore.'" alt="'.acym_translation('ACYM_READ_MORE', true).'" />';
 
         if (!include_once(rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) return;
 
@@ -792,9 +784,7 @@ class plgAcymHikashop extends acymPlugin
 
         $return = [];
         $search = acym_getVar('string', 'search', '');
-        $elements = acym_loadObjectList(
-            'SELECT `product_id`, `product_name` FROM `#__hikashop_product` WHERE `product_name` LIKE '.acym_escapeDB('%'.$search.'%').' ORDER BY `product_name`'
-        );
+        $elements = acym_loadObjectList('SELECT `product_id`, `product_name` FROM `#__hikashop_product` WHERE `product_name` LIKE '.acym_escapeDB('%'.$search.'%').' ORDER BY `product_name`');
 
         foreach ($elements as $oneElement) {
             $return[] = [$oneElement->product_id, $oneElement->product_name];
@@ -809,12 +799,7 @@ class plgAcymHikashop extends acymPlugin
         $ids = $this->getIdsSelectAjax();
 
         if (!empty($ids)) {
-            $cats = acym_loadObjectList(
-                'SELECT `category_id` AS id, `category_name` AS name FROM #__hikashop_category WHERE `category_type` = "product" AND `category_id` IN ("'.implode(
-                    '","',
-                    $ids
-                ).'") ORDER BY `category_name`'
-            );
+            $cats = acym_loadObjectList('SELECT `category_id` AS id, `category_name` AS name FROM #__hikashop_category WHERE `category_type` = "product" AND `category_id` IN ("'.implode('","', $ids).'") ORDER BY `category_name`');
 
             $value = [];
             if (!empty($cats)) {
@@ -827,11 +812,7 @@ class plgAcymHikashop extends acymPlugin
         }
 
         $search = acym_getVar('string', 'search', '');
-        $cats = acym_loadObjectList(
-            'SELECT `category_id` AS id, `category_name` AS name FROM #__hikashop_category WHERE `category_type` = "product" AND `category_name` LIKE '.acym_escapeDB(
-                '%'.$search.'%'
-            ).' ORDER BY `category_name`'
-        );
+        $cats = acym_loadObjectList('SELECT `category_id` AS id, `category_name` AS name FROM #__hikashop_category WHERE `category_type` = "product" AND `category_name` LIKE '.acym_escapeDB('%'.$search.'%').' ORDER BY `category_name`');
         $categories = [];
         foreach ($cats as $oneCat) {
             $categories[] = [$oneCat->id, $oneCat->name];
@@ -873,12 +854,7 @@ class plgAcymHikashop extends acymPlugin
         $conditions['user']['hikapurchased']->option .= '</div>';
 
         $conditions['user']['hikapurchased']->option .= '<div class="intext_select_automation cell">';
-        $conditions['user']['hikapurchased']->option .= acym_select(
-            $categories,
-            'acym_condition[conditions][__numor__][__numand__][hikapurchased][category]',
-            'any',
-            'class="acym__select"'
-        );
+        $conditions['user']['hikapurchased']->option .= acym_select($categories, 'acym_condition[conditions][__numor__][__numand__][hikapurchased][category]', 'any', 'class="acym__select"');
         $conditions['user']['hikapurchased']->option .= '</div>';
 
         $conditions['user']['hikapurchased']->option .= '</div>';
@@ -1014,9 +990,7 @@ class plgAcymHikashop extends acymPlugin
             }
 
             $cats = acym_loadObjectList('SELECT `category_id`, `category_name` FROM #__hikashop_category WHERE `category_type` = "product"', 'category_id');
-            $category = empty($cats[$automationCondition['hikapurchased']['category']]) ? acym_translation(
-                'ACYM_ANY_CATEGORY'
-            ) : $cats[$automationCondition['hikapurchased']['category']]->category_name;
+            $category = empty($cats[$automationCondition['hikapurchased']['category']]) ? acym_translation('ACYM_ANY_CATEGORY') : $cats[$automationCondition['hikapurchased']['category']]->category_name;
 
             $finalText = acym_translation_sprintf('ACYM_CONDITION_PURCHASED', $product, $category);
 

@@ -215,26 +215,16 @@ class CampaignClass extends acymClass
         if (!acym_isTrackingSalesActive()) return;
 
         if (acym_isMultilingual()) {
-            $trackingSales = acym_loadObject(
-                'SELECT SUM(tracking_sale) as sale, currency FROM #__acym_user_stat WHERE mail_id IN (SELECT id FROM #__acym_mail WHERE id = '.intval(
-                    $element->mail_id
-                ).' OR parent_id = '.intval($element->mail_id).') AND currency IS NOT NULL'
-            );
+            $trackingSales = acym_loadObject('SELECT SUM(tracking_sale) as sale, currency FROM #__acym_user_stat WHERE mail_id IN (SELECT id FROM #__acym_mail WHERE id = '.intval($element->mail_id).' OR parent_id = '.intval($element->mail_id).') AND currency IS NOT NULL');
         } else {
-            $trackingSales = acym_loadObject(
-                'SELECT SUM(tracking_sale) as sale, currency FROM #__acym_user_stat WHERE mail_id = '.intval($element->mail_id).' AND currency IS NOT NULL'
-            );
+            $trackingSales = acym_loadObject('SELECT SUM(tracking_sale) as sale, currency FROM #__acym_user_stat WHERE mail_id = '.intval($element->mail_id).' AND currency IS NOT NULL');
         }
         $this->formatSaleTracking($element, $trackingSales);
     }
 
     private function getStatsCampaignAuto(&$element, $urlClickClass)
     {
-        $generatedMailsStats = acym_loadObjectList(
-            'SELECT mail_stat.* FROM #__acym_mail AS mail JOIN #__acym_mail_stat AS mail_stat ON mail.id = mail_stat.mail_id WHERE mail.id IN (SELECT mail_id FROM #__acym_campaign WHERE parent_id = '.intval(
-                $element->id
-            ).')'
-        );
+        $generatedMailsStats = acym_loadObjectList('SELECT mail_stat.* FROM #__acym_mail AS mail JOIN #__acym_mail_stat AS mail_stat ON mail.id = mail_stat.mail_id WHERE mail.id IN (SELECT mail_id FROM #__acym_campaign WHERE parent_id = '.intval($element->id).')');
         $element->open = 0;
         $element->click = 0;
         $element->subscribers = 0;
@@ -423,10 +413,7 @@ class CampaignClass extends acymClass
 
         $automationHelper = new AutomationHelper();
         $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
-        $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
-                ',',
-                $listsIds
-            ).') and user_list.status = 1 '.$join;
+        $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(',', $listsIds).') and user_list.status = 1 '.$join;
         $filters = $this->getFilterCampaign($campaign->sending_params);
         foreach ($filters as $and => $andValues) {
             $and = intval($and);
@@ -552,9 +539,7 @@ class CampaignClass extends acymClass
 
     public function getCampaignForDashboard()
     {
-        $query = 'SELECT campaign.*, mail.name as name FROM #__acym_campaign as campaign LEFT JOIN #__acym_mail as mail ON campaign.mail_id = mail.id WHERE `active` = 1 AND `sending_type` = '.acym_escapeDB(
-                self::SENDING_TYPE_SCHEDULED
-            ).' AND `sent` = 0 LIMIT 3';
+        $query = 'SELECT campaign.*, mail.name as name FROM #__acym_campaign as campaign LEFT JOIN #__acym_mail as mail ON campaign.mail_id = mail.id WHERE `active` = 1 AND `sending_type` = '.acym_escapeDB(self::SENDING_TYPE_SCHEDULED).' AND `sent` = 0 LIMIT 3';
 
         return $this->decode(acym_loadObjectList($query));
     }
@@ -873,9 +858,7 @@ class CampaignClass extends acymClass
 
     public function getAllCampaignsGenerated()
     {
-        $query = 'SELECT id FROM #__acym_campaign WHERE parent_id IS NOT NULL AND sending_type = '.acym_escapeDB(
-                self::SENDING_TYPE_NOW
-            ).' AND draft = 1 AND active = 1 AND sent = 0';
+        $query = 'SELECT id FROM #__acym_campaign WHERE parent_id IS NOT NULL AND sending_type = '.acym_escapeDB(self::SENDING_TYPE_NOW).' AND draft = 1 AND active = 1 AND sent = 0';
 
         return acym_loadObjectList($query);
     }

@@ -20,9 +20,7 @@ function acym_cmsModal($isIframe, $content, $buttonText, $isButton, $modalTitle,
         $identifier = 'identifier_'.rand(1000, 9000);
     }
 
-    $html = '<a class="'.($isButton ? 'btn ' : '').'hasTooltip" data-toggle="modal" role="button" href="#'.$identifier.'" id="button_'.$identifier.'">'.acym_translation(
-            $buttonText
-        ).'</a>';
+    $html = '<a class="'.($isButton ? 'btn ' : '').'hasTooltip" data-toggle="modal" role="button" href="#'.$identifier.'" id="button_'.$identifier.'">'.acym_translation($buttonText).'</a>';
     $html .= JHtml::_(
         'bootstrap.renderModal',
         $identifier,

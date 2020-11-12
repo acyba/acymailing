@@ -1,9 +1,7 @@
 <div class="cell grid-x acym_vcenter padding-bottom-1 acym__segments__edit__filters__info__users">
 	<h3 class="cell shrink acym__title__primary__color margin-right-1"><?php echo acym_translation('ACYM_NUMBER_OF_ACYMAILING_USERS_MATCHING_CONDITIONS'); ?></h3>
 	<span class="cell shrink acym__segments__edit__filters__total"></span>
-	<span class="cell shrink acym__segments__edit__filters__no-users" style="display: none"><?php echo acym_translation(
-            'ACYM_NO_USERS_SELECTED_YET_PLEASE_SELECT_FILTER'
-        ); ?></span>
+	<span class="cell shrink acym__segments__edit__filters__no-users" style="display: none"><?php echo acym_translation('ACYM_NO_USERS_SELECTED_YET_PLEASE_SELECT_FILTER'); ?></span>
 </div>
 <div class="cell grid-x acym__segments__one__filter" id="acym__segments__and__example" style="display: none;">
 	<div class="acym__automation__and cell grid-x margin-top-2">
@@ -26,9 +24,7 @@
 			</div>
 		</div>
 		<div class="cell grid-x margin-top-2">
-			<button data-filter-type="classic" data-block="0" type="button" class="button-secondary button medium-shrink acym__segments__add-filter"><?php echo acym_translation(
-                    'ACYM_ADD_FILTER'
-                ); ?></button>
+			<button data-filter-type="classic" data-block="0" type="button" class="button-secondary button medium-shrink acym__segments__add-filter"><?php echo acym_translation('ACYM_ADD_FILTER'); ?></button>
 		</div>
 	</div>
 </div>

@@ -119,9 +119,7 @@ class FieldClass extends acymClass
     {
         $query = 'SELECT '.acym_secureDBColumn($fieldDB->value).' AS value, '.acym_secureDBColumn($fieldDB->title).' AS title
                     FROM '.acym_secureDBColumn($fieldDB->database).'.'.acym_secureDBColumn($fieldDB->table);
-        $query .= isset($fieldDB->where_value) && strlen($fieldDB->where_value) > 0 ? ' WHERE `'.acym_secureDBColumn($fieldDB->where).'` '.$fieldDB->where_sign.' '.acym_escapeDB(
-                $fieldDB->where_value
-            ) : '';
+        $query .= isset($fieldDB->where_value) && strlen($fieldDB->where_value) > 0 ? ' WHERE `'.acym_secureDBColumn($fieldDB->where).'` '.$fieldDB->where_sign.' '.acym_escapeDB($fieldDB->where_value) : '';
         if (!empty($fieldDB->order_by)) $query .= ' ORDER BY '.acym_secureDBColumn($fieldDB->order_by).' '.acym_secureDBColumn($fieldDB->sort_order);
 
         return acym_loadObjectList($query);
@@ -387,11 +385,7 @@ class FieldClass extends acymClass
         $field->name = acym_translation($field->name);
 
         $style = empty($size) ? '' : ' style="'.$size.'"';
-        $messageRequired = empty($field->option->error_message)
-            ? acym_translation_sprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', $field->name)
-            : acym_translation(
-                $field->option->error_message
-            );
+        $messageRequired = empty($field->option->error_message) ? acym_translation_sprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', $field->name) : acym_translation($field->option->error_message);
         $requiredJson = json_encode(['type' => $field->type, 'message' => $messageRequired]);
         $required = $field->required ? ' data-required="'.acym_escape($requiredJson).'"' : '';
         $placeholder = '';
@@ -422,9 +416,7 @@ class FieldClass extends acymClass
             $return .= '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.' type="text">';
         } elseif ($field->type == 'textarea') {
             $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
-            $return .= '<textarea '.$nameAttribute.$required.$maxCharacters.' rows="'.intval($field->option->rows).'" cols="'.intval(
-                    $field->option->columns
-                ).'">'.(empty($defaultValue) ? '' : $defaultValue).'</textarea>';
+            $return .= '<textarea '.$nameAttribute.$required.$maxCharacters.' rows="'.intval($field->option->rows).'" cols="'.intval($field->option->columns).'">'.(empty($defaultValue) ? '' : $defaultValue).'</textarea>';
         } elseif ($field->type == 'radio') {
             $defaultValue = strlen($defaultValue) === 0 ? null : $defaultValue;
             if ($displayFront) {
@@ -445,9 +437,7 @@ class FieldClass extends acymClass
                 $defaultValue = empty($defaultValue) ? null : (explode(',', $defaultValue));
                 foreach ($valuesArray as $key => $oneValue) {
                     $checked = !empty($defaultValue) && in_array($key, $defaultValue) ? 'checked' : '';
-                    $return .= '<label><input '.$required.' type="checkbox" name="'.$name.'['.acym_escape($key).']" value="'.acym_escape(
-                            $key
-                        ).'" '.$checked.'> '.$oneValue.'</label>';
+                    $return .= '<label><input '.$required.' type="checkbox" name="'.$name.'['.acym_escape($key).']" value="'.acym_escape($key).'" '.$checked.'> '.$oneValue.'</label>';
                 }
             } else {
                 if (!empty($defaultValue) && !is_object($defaultValue)) {

@@ -94,14 +94,7 @@ class ImportHelper extends acymObject
         if (!acym_uploadFile($importFile['tmp_name'], $uploadPath.$attachment->filename)) {
             if (!move_uploaded_file($importFile['tmp_name'], $uploadPath.$attachment->filename)) {
                 //If we can not do it with a simple method, let's do it with Joomla and FTP
-                acym_enqueueMessage(
-                    acym_translation_sprintf(
-                        'ACYM_FAIL_UPLOAD',
-                        '<b><i>'.acym_escape($importFile['tmp_name']).'</i></b>',
-                        '<b><i>'.acym_escape($uploadPath.$attachment->filename).'</i></b>'
-                    ),
-                    'error'
-                );
+                acym_enqueueMessage(acym_translation_sprintf('ACYM_FAIL_UPLOAD', '<b><i>'.acym_escape($importFile['tmp_name']).'</i></b>', '<b><i>'.acym_escape($uploadPath.$attachment->filename).'</i></b>'), 'error');
             }
         }
 
@@ -268,9 +261,7 @@ class ImportHelper extends acymObject
 
         $select['`source`'] = acym_escapeDB('Import on '.$formattedTime);
 
-        $query = 'INSERT IGNORE INTO #__acym_user ('.implode(' , ', array_keys($select)).') SELECT '.implode(' , ', $select).' FROM '.acym_secureDBColumn(
-                $table
-            ).' WHERE '.acym_secureDBColumn($select['`email`']).' LIKE "%@%"';
+        $query = 'INSERT IGNORE INTO #__acym_user ('.implode(' , ', array_keys($select)).') SELECT '.implode(' , ', $select).' FROM '.acym_secureDBColumn($table).' WHERE '.acym_secureDBColumn($select['`email`']).' LIKE "%@%"';
         if (!empty($this->dbwhere)) {
             $query .= ' AND ( '.implode(' ) AND (', $this->dbwhere).' )';
         }
@@ -297,10 +288,7 @@ class ImportHelper extends acymObject
         }
 
         $query = 'INSERT IGNORE INTO #__acym_user_has_list (`user_id`,`list_id`,`status`,`subscription_date`) ';
-        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time())).' FROM #__acym_list AS list, #__acym_user AS user WHERE list.`id` IN ('.implode(
-                ',',
-                $listsSubscribe
-            ).') AND user.`source` LIKE "%'.$formattedTime.'%"';
+        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time())).' FROM #__acym_list AS list, #__acym_user AS user WHERE list.`id` IN ('.implode(',', $listsSubscribe).') AND user.`source` LIKE "%'.$formattedTime.'%"';
         $nbsubscribed = acym_query($query);
         acym_enqueueMessage(acym_translation_sprintf('ACYM_IMPORT_SUBSCRIPTION', $nbsubscribed));
 
@@ -464,11 +452,7 @@ class ImportHelper extends acymObject
                     if ($quoteOpened) {
                         $nextQuotePosition = strpos($importLines[$i], '"', $position + 2);
                         // If quotes in the value encapsulated by quotes... find the real closing quote...
-                        while ($nextQuotePosition !== false && $nextQuotePosition + 1 != strlen($importLines[$i]) && substr(
-                                $importLines[$i],
-                                $nextQuotePosition + 1,
-                                1
-                            ) != $this->separator) {
+                        while ($nextQuotePosition !== false && $nextQuotePosition + 1 != strlen($importLines[$i]) && substr($importLines[$i], $nextQuotePosition + 1, 1) != $this->separator) {
                             $nextQuotePosition = strpos($importLines[$i], '"', $nextQuotePosition + 1);
                         }
                         // If we didn't find the whole value, then concatenate the current line with the next one
@@ -539,9 +523,7 @@ class ImportHelper extends acymObject
             if (count($data) > $numberColumns) {
                 $copy = $data;
                 foreach ($copy as $oneelem => $oneval) {
-                    if (!empty($oneval[0]) && $oneval[0] == '"' && $oneval[strlen($oneval) - 1] != '"' && isset($copy[$oneelem + 1]) && $copy[$oneelem + 1][strlen(
-                            $copy[$oneelem + 1]
-                        ) - 1] == '"') {
+                    if (!empty($oneval[0]) && $oneval[0] == '"' && $oneval[strlen($oneval) - 1] != '"' && isset($copy[$oneelem + 1]) && $copy[$oneelem + 1][strlen($copy[$oneelem + 1]) - 1] == '"') {
                         //We concat both with the separator
                         $data[$oneelem] = $copy[$oneelem].$this->separator.$copy[$oneelem + 1];
                         unset($data[$oneelem + 1]);
@@ -678,11 +660,7 @@ class ImportHelper extends acymObject
                 $errorFile = implode("\n", $errorLines);
                 acym_writeFile(ACYM_MEDIA.'import'.DS.'error_'.$filename, $errorFile);
                 acym_enqueueMessage(
-                    '<a target="_blank" href="'.acym_prepareAjaxURL((acym_isAdmin() ? '' : 'front').'users&task=downloadImport').'&filename=error_'.preg_replace(
-                        '#\.[^.]*$#',
-                        '',
-                        $filename
-                    ).'&'.acym_noTemplate().'" >'.acym_translation('ACYM_DOWNLOAD_IMPORT_ERRORS').'</a>',
+                    '<a target="_blank" href="'.acym_prepareAjaxURL((acym_isAdmin() ? '' : 'front').'users&task=downloadImport').'&filename=error_'.preg_replace('#\.[^.]*$#', '', $filename).'&'.acym_noTemplate().'" >'.acym_translation('ACYM_DOWNLOAD_IMPORT_ERRORS').'</a>',
                     'notice'
                 );
             }
@@ -801,10 +779,7 @@ class ImportHelper extends acymObject
             }
 
             if (!empty($insertValues)) {
-                $queryInsertCustomFields = 'INSERT'.($this->overwrite ? '' : ' IGNORE').' INTO #__acym_user_has_field (`user_id`, `field_id`, `value`) VALUES '.implode(
-                        ',',
-                        $insertValues
-                    );
+                $queryInsertCustomFields = 'INSERT'.($this->overwrite ? '' : ' IGNORE').' INTO #__acym_user_has_field (`user_id`, `field_id`, `value`) VALUES '.implode(',', $insertValues);
                 if ($this->overwrite) {
                     $queryInsertCustomFields .= ' ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)';
                 }
@@ -890,14 +865,7 @@ class ImportHelper extends acymObject
             if (strpos($this->columns[$i], 'cf_') === 0) continue;
 
             if (!in_array($this->columns[$i], $columns) && $this->columns[$i] != 1) {
-                acym_enqueueMessage(
-                    acym_translation_sprintf(
-                        'ACYM_IMPORT_ERROR_FIELD',
-                        '<b>'.acym_escape($this->columns[$i]).'</b>',
-                        '<b>'.implode('</b> | <b>', array_diff($columns, ['id', 'cms_id'])).'</b>'
-                    ),
-                    'error'
-                );
+                acym_enqueueMessage(acym_translation_sprintf('ACYM_IMPORT_ERROR_FIELD', '<b>'.acym_escape($this->columns[$i]).'</b>', '<b>'.implode('</b> | <b>', array_diff($columns, ['id', 'cms_id'])).'</b>'), 'error');
 
                 return false;
             }
@@ -1036,9 +1004,7 @@ class ImportHelper extends acymObject
                         $query = rtrim($query, ',');
                         if ($val == -1) {
                             $query .= ' ON DUPLICATE KEY UPDATE status = -1';
-                            $nbsubscribed = -acym_loadResult(
-                                'SELECT COUNT(*) FROM #__acym_listsub WHERE `list_id` = '.intval($listid).' AND status != -1 AND `user_id` IN ('.implode(',', $currentSubids).')'
-                            );
+                            $nbsubscribed = -acym_loadResult('SELECT COUNT(*) FROM #__acym_listsub WHERE `list_id` = '.intval($listid).' AND status != -1 AND `user_id` IN ('.implode(',', $currentSubids).')');
                         }
                         $affected = acym_query($query);
                         $nbsubscribed += intval($affected);
@@ -1054,9 +1020,7 @@ class ImportHelper extends acymObject
                     $query .= ' ON DUPLICATE KEY UPDATE status = -1';
                     // It could be empty if we imported exactly 200, 400, 600... users
                     if (!empty($currentSubids)) {
-                        $nbsubscribed = -acym_loadResult(
-                            'SELECT COUNT(*) FROM #__acym_listsub WHERE `list_id` = '.intval($listid).' AND status != -1 AND `user_id` IN ('.implode(',', $currentSubids).')'
-                        );
+                        $nbsubscribed = -acym_loadResult('SELECT COUNT(*) FROM #__acym_listsub WHERE `list_id` = '.intval($listid).' AND status != -1 AND `user_id` IN ('.implode(',', $currentSubids).')');
                     }
                 }
 
@@ -1091,16 +1055,12 @@ class ImportHelper extends acymObject
                             <input id="acym__users__import__create-list__field" type="text" class="acym__light__input">
                         </div>
                     </div>
-                    <button type="button" class="button button-secondary margin-left-1 acym_vcenter margin-right-2" id="'.$buttonAddListId.'">'.acym_translation(
-                'ACYM_CREATE_NEW_LIST'
-            ).'</button>
+                    <button type="button" class="button button-secondary margin-left-1 acym_vcenter margin-right-2" id="'.$buttonAddListId.'">'.acym_translation('ACYM_CREATE_NEW_LIST').'</button>
                     <i style="display: none;" class="acym_vcenter acymicon-circle-o-notch acymicon-spin" id="acym__users__import__create-list__loading-logo"></i>
                 </div>
                 <div class="cell align-right grid-x">
                     <button type="button" class="button-secondary button cell shrink margin-right-1" id="'.$buttonSkipId.'">'.acym_translation('ACYM_SKIP').'</button>
-                    <button type="button" class="button-primary button acy_button_submit cell shrink '.$buttonImportClass.'" id="acym__entity_select__button__submit" data-task="'.$buttonImportDataTask.'">'.acym_translation(
-                'ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS'
-            ).'</button>
+                    <button type="button" class="button-primary button acy_button_submit cell shrink '.$buttonImportClass.'" id="acym__entity_select__button__submit" data-task="'.$buttonImportDataTask.'">'.acym_translation('ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS').'</button>
                 </div>';
     }
 }

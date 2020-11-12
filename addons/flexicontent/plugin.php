@@ -348,9 +348,7 @@ class plgAcymFlexicontent extends acymPlugin
         $format->afterArticle = '';
 
         $readMoreText = acym_translation('ACYM_READ_MORE');
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
-                $readMoreText
-            ).'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape($readMoreText).'</span></a>';
         if (in_array('readmore', $tag->display)) {
             unset($tag->display[array_search('readmore', $tag->display)]);
             $format->afterArticle .= $varFields['{readmore}'];
@@ -375,11 +373,7 @@ class plgAcymFlexicontent extends acymPlugin
             $fieldsId[$field->id] = $field;
         }
 
-        $allCats = acym_loadObjectList(
-            'SELECT cat.title, cat.id FROM #__categories AS cat JOIN #__flexicontent_cats_item_relations AS catitem ON cat.id = catitem.catid WHERE catitem.itemid = '.intval(
-                $tag->id
-            ).' ORDER BY cat.title'
-        );
+        $allCats = acym_loadObjectList('SELECT cat.title, cat.id FROM #__categories AS cat JOIN #__flexicontent_cats_item_relations AS catitem ON cat.id = catitem.catid WHERE catitem.itemid = '.intval($tag->id).' ORDER BY cat.title');
         $cats = [];
         foreach ($allCats as $key => $cat) {
             $link = 'index.php?option=com_flexicontent&view=category&layout=mcats&cids[0]='.$cat->id;
@@ -405,9 +399,7 @@ class plgAcymFlexicontent extends acymPlugin
         $format->customFields = [];
 
         foreach ($tag->display as $key => $oneField) {
-            if ((is_numeric(
-                        $oneField
-                    ) && $fieldsId[$oneField]->iscore != 1) || ($fieldsId[$oneField]->field_type == 'title' || $fieldsId[$oneField]->field_type == 'text')) continue; // Not a core field
+            if ((is_numeric($oneField) && $fieldsId[$oneField]->iscore != 1) || ($fieldsId[$oneField]->field_type == 'title' || $fieldsId[$oneField]->field_type == 'text')) continue; // Not a core field
             $oneFieldObject = $fieldsId[$oneField];
             $oneField = $oneFieldObject->name;
             if (!isset($item->$oneField) && $oneFieldObject->field_type != 'categories' && $oneFieldObject->field_type != 'tags') continue;
@@ -441,12 +433,7 @@ class plgAcymFlexicontent extends acymPlugin
                 $displayedValue = acym_date($item->$oneField, acym_translation('DATE_FORMAT_LC'));
             } elseif ($oneField == 'voting') {
                 $votesdb = acym_loadObject('SELECT * FROM #__content_rating AS a WHERE content_id = '.intval($tag->id));
-                $displayedValue = empty($votesdb) || empty($votesdb->rating_count)
-                    ? acym_translation('ACYM_NONE')
-                    : number_format(
-                        $votesdb->rating_sum / $votesdb->rating_count,
-                        1
-                    ).'/5';
+                $displayedValue = empty($votesdb) || empty($votesdb->rating_count) ? acym_translation('ACYM_NONE') : number_format($votesdb->rating_sum / $votesdb->rating_count, 1).'/5';
             } else {
                 $displayedValue = $item->$oneField;
             }

@@ -7,8 +7,7 @@
 			</div>
 			<div class="medium-4 small-6 cell">
 			</div>
-			<div id="<?php echo acym_escape($oneUnsubscription->id); ?>"
-				 class="medium-3 cell acym__users__display__list--action acym__user__action--subscribe acym__color__dark-gray">
+			<div id="<?php echo acym_escape($oneUnsubscription->id); ?>" class="medium-3 cell acym__users__display__list--action acym__user__action--subscribe acym__color__dark-gray">
 				<i class="acymicon-add"></i><span><?php echo acym_strtolower(acym_translation('ACYM_RESUBSCRIBE')); ?></span>
 			</div>
 		</div>
