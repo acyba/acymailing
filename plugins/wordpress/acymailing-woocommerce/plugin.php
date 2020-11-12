@@ -664,7 +664,12 @@ class plgAcymWoocommerce extends acymPlugin
         $ids = $this->getIdsSelectAjax();
 
         if (!empty($ids)) {
-            $cats = acym_loadObjectList('SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.term_id IN ("'.implode('","', $ids).'") ORDER BY term.`name`');
+            $cats = acym_loadObjectList(
+                'SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.term_id IN ("'.implode(
+                    '","',
+                    $ids
+                ).'") ORDER BY term.`name`'
+            );
 
             $value = [];
             if (!empty($cats)) {
@@ -677,7 +682,11 @@ class plgAcymWoocommerce extends acymPlugin
         }
 
         $search = acym_getVar('string', 'search', '');
-        $cats = acym_loadObjectList('SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.name LIKE '.acym_escapeDB('%'.$search.'%').' ORDER BY term.`name`');
+        $cats = acym_loadObjectList(
+            'SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.name LIKE '.acym_escapeDB(
+                '%'.$search.'%'
+            ).' ORDER BY term.`name`'
+        );
         $categories = [];
         foreach ($cats as $oneCat) {
             $categories[] = [$oneCat->term_id, $oneCat->name];
@@ -692,7 +701,9 @@ class plgAcymWoocommerce extends acymPlugin
         $categories = [
             'any' => acym_translation('ACYM_ANY_CATEGORY'),
         ];
-        $cats = acym_loadObjectList('SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" ORDER BY term.`name`');
+        $cats = acym_loadObjectList(
+            'SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" ORDER BY term.`name`'
+        );
         foreach ($cats as $oneCat) {
             $categories[$oneCat->term_id] = $oneCat->name;
         }
@@ -719,7 +730,12 @@ class plgAcymWoocommerce extends acymPlugin
         $conditions['user']['woopurchased']->option .= '</div>';
 
         $conditions['user']['woopurchased']->option .= '<div class="intext_select_automation cell">';
-        $conditions['user']['woopurchased']->option .= acym_select($categories, 'acym_condition[conditions][__numor__][__numand__][woopurchased][category]', 'any', 'class="acym__select"');
+        $conditions['user']['woopurchased']->option .= acym_select(
+            $categories,
+            'acym_condition[conditions][__numor__][__numand__][woopurchased][category]',
+            'any',
+            'class="acym__select"'
+        );
         $conditions['user']['woopurchased']->option .= '</div>';
 
         $conditions['user']['woopurchased']->option .= '</div>';
@@ -770,7 +786,9 @@ class plgAcymWoocommerce extends acymPlugin
         $categories = [
             'any' => acym_translation('ACYM_ANY_CATEGORY'),
         ];
-        $cats = acym_loadObjectList('SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" ORDER BY term.`name`');
+        $cats = acym_loadObjectList(
+            'SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" ORDER BY term.`name`'
+        );
         foreach ($cats as $oneCat) {
             $categories[$oneCat->term_id] = $oneCat->name;
         }
@@ -878,12 +896,16 @@ class plgAcymWoocommerce extends acymPlugin
 
         if (!empty($options['product'])) {
             $query->join['woopurchased_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' ON post'.$num.'.ID = woooi'.$num.'.order_id AND woooi'.$num.'.order_item_type = "line_item"';
-            $query->join['woopurchased_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id AND woooim'.$num.'.meta_key = "_product_id" AND woooim'.$num.'.meta_value = '.intval($options['product']);
+            $query->join['woopurchased_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id AND woooim'.$num.'.meta_key = "_product_id" AND woooim'.$num.'.meta_value = '.intval(
+                    $options['product']
+                );
         } elseif (!empty($options['category']) && $options['category'] != 'any') {
             $query->join['woopurchased_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' ON post'.$num.'.ID = woooi'.$num.'.order_id AND woooi'.$num.'.order_item_type = "line_item"';
             $query->join['woopurchased_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id AND woooim'.$num.'.meta_key = "_product_id"';
             $query->join['woopurchased_cat_map'.$num] = '#__term_relationships AS termrel'.$num.' ON termrel'.$num.'.object_id = woooim'.$num.'.meta_value';
-            $query->join['woopurchased_cat'.$num] = '#__term_taxonomy AS termtax'.$num.' ON termtax'.$num.'.term_taxonomy_id = termrel'.$num.'.term_taxonomy_id AND termtax'.$num.'.term_id = '.intval($options['category']);
+            $query->join['woopurchased_cat'.$num] = '#__term_taxonomy AS termtax'.$num.' ON termtax'.$num.'.term_taxonomy_id = termrel'.$num.'.term_taxonomy_id AND termtax'.$num.'.term_id = '.intval(
+                    $options['category']
+                );
         }
     }
 
@@ -971,8 +993,13 @@ class plgAcymWoocommerce extends acymPlugin
                 $product = $product->post_title;
             }
 
-            $cats = acym_loadObjectList('SELECT term.`term_id`, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat"', 'term_id');
-            $category = empty($cats[$automationCondition['woopurchased']['category']]) ? acym_translation('ACYM_ANY_CATEGORY') : $cats[$automationCondition['woopurchased']['category']]->name;
+            $cats = acym_loadObjectList(
+                'SELECT term.`term_id`, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat"',
+                'term_id'
+            );
+            $category = empty($cats[$automationCondition['woopurchased']['category']]) ? acym_translation(
+                'ACYM_ANY_CATEGORY'
+            ) : $cats[$automationCondition['woopurchased']['category']]->name;
 
             $finalText = acym_translation_sprintf('ACYM_CONDITION_PURCHASED', $product, $category);
 
@@ -1029,7 +1056,10 @@ class plgAcymWoocommerce extends acymPlugin
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
-						<input type="text" name="config[woocommerce_text]" id="acym__config__woocommerce-text" value="<?php echo acym_escape($this->config->get('woocommerce_text')); ?>" />
+						<input type="text"
+							   name="config[woocommerce_text]"
+							   id="acym__config__woocommerce-text"
+							   value="<?php echo acym_escape($this->config->get('woocommerce_text')); ?>" />
 					</div>
 					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 					<div class="cell xlarge-3 medium-5">
@@ -1103,7 +1133,10 @@ class plgAcymWoocommerce extends acymPlugin
 
         $remindme = json_decode($this->config->get('remindme', '[]'), true);
 
-        if ($this->getParam('track', 0) != 1 && acym_isExtensionActive('woocommerce/woocommerce.php') && acym_isAdmin() && ACYM_CMS == 'wordpress' && !in_array('woocommerce_tracking', $remindme)) {
+        if ($this->getParam('track', 0) != 1 && acym_isExtensionActive('woocommerce/woocommerce.php') && acym_isAdmin() && ACYM_CMS == 'wordpress' && !in_array(
+                'woocommerce_tracking',
+                $remindme
+            )) {
             $message = acym_translation('ACYM_WOOCOMMERCE_TRACKING_INFO');
             $message .= ' <a target="_blank" href="https://docs.acymailing.com/addons/wordpress-add-ons/woocommerce#tracking">'.acym_translation('ACYM_READ_MORE').'</a>';
             $message .= ' <a href="#" class="acym__do__not__remindme acym__do__not__remindme__info" title="woocommerce_tracking">'.acym_translation('ACYM_DO_NOT_REMIND_ME').'</a>';
@@ -1163,9 +1196,9 @@ class plgAcymWoocommerce extends acymPlugin
     /**
      * Subscribe user when the WooCommerce checkout is processed
      *
-     * @param $order_id    : WooCommerce order ID
+     * @param $order_id : WooCommerce order ID
      * @param $posted_data : All data WooCommerce will get from form on checkout process
-     * @param $order       : WooCommerce order
+     * @param $order : WooCommerce order
      */
     public function subscribeUserOnCheckoutWC($order_id, $posted_data, $order)
     {
@@ -1492,9 +1525,19 @@ class plgAcymWoocommerce extends acymPlugin
     {
         if ($trigger == self::FOLLOWTRIGGER) {
             $woocommerceOrderStatus = $this->getOrderStatuses();
-            $multiselectOrderStatus = acym_selectMultiple($woocommerceOrderStatus, 'followup[condition][order_status]', !empty($followup->condition) && $followup->condition['order_status'] ? $followup->condition['order_status'] : [], ['class' => 'acym__select']);
+            $multiselectOrderStatus = acym_selectMultiple(
+                $woocommerceOrderStatus,
+                'followup[condition][order_status]',
+                !empty($followup->condition) && $followup->condition['order_status'] ? $followup->condition['order_status'] : [],
+                ['class' => 'acym__select']
+            );
             $multiselectOrderStatus = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectOrderStatus.'</span>';
-            $statusOrderStatus = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select($statusArray, 'followup[condition][order_status_status]', !empty($followup->condition) ? $followup->condition['order_status_status'] : '', 'class="acym__select"').'</span>';;
+            $statusOrderStatus = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
+                    $statusArray,
+                    'followup[condition][order_status_status]',
+                    !empty($followup->condition) ? $followup->condition['order_status_status'] : '',
+                    'class="acym__select"'
+                ).'</span>';;
             $additionalCondition['order_status'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
 
@@ -1510,9 +1553,19 @@ class plgAcymWoocommerce extends acymPlugin
                 'data-selected' => !empty($followup->condition) && !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : '',
             ];
             $woocommerceProducts = [];
-            $multiselectProducts = acym_selectMultiple($woocommerceProducts, 'followup[condition][products]', !empty($followup->condition) && !empty($followup->condition['products']) ? $followup->condition['products'] : [], $parametersProductSelect);
+            $multiselectProducts = acym_selectMultiple(
+                $woocommerceProducts,
+                'followup[condition][products]',
+                !empty($followup->condition) && !empty($followup->condition['products']) ? $followup->condition['products'] : [],
+                $parametersProductSelect
+            );
             $multiselectProducts = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectProducts.'</span>';
-            $statusProducts = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select($statusArray, 'followup[condition][products_status]', !empty($followup->condition) ? $followup->condition['products_status'] : '', 'class="acym__select"').'</span>';;
+            $statusProducts = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
+                    $statusArray,
+                    'followup[condition][products_status]',
+                    !empty($followup->condition) ? $followup->condition['products_status'] : '',
+                    'class="acym__select"'
+                ).'</span>';;
             $additionalCondition['products'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
             $ajaxParams = json_encode(
@@ -1527,9 +1580,19 @@ class plgAcymWoocommerce extends acymPlugin
                 'data-selected' => !empty($followup->condition) && !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : '',
             ];
             $woocommerceCategories = [];
-            $multiselectCategories = acym_selectMultiple($woocommerceCategories, 'followup[condition][categories]', !empty($followup->condition) && !empty($followup->condition['categories']) ? $followup->condition['categories'] : [], $parametersCategoriesSelect);
+            $multiselectCategories = acym_selectMultiple(
+                $woocommerceCategories,
+                'followup[condition][categories]',
+                !empty($followup->condition) && !empty($followup->condition['categories']) ? $followup->condition['categories'] : [],
+                $parametersCategoriesSelect
+            );
             $multiselectCategories = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectCategories.'</span>';
-            $statusCategories = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select($statusArray, 'followup[condition][categories_status]', !empty($followup->condition) ? $followup->condition['categories_status'] : '', 'class="acym__select"').'</span>';;
+            $statusCategories = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
+                    $statusArray,
+                    'followup[condition][categories_status]',
+                    !empty($followup->condition) ? $followup->condition['categories_status'] : '',
+                    'class="acym__select"'
+                ).'</span>';;
             $additionalCondition['categories'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
         }
     }
@@ -1608,7 +1671,12 @@ class plgAcymWoocommerce extends acymPlugin
             if (empty($condition['categories_status']) || empty($condition['categories'])) {
                 $return[] = acym_translation('ACYM_EVERY_CATEGORIES');
             } else {
-                $cats = acym_loadObjectList('SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.term_id IN ("'.implode('","', $condition['categories']).'") ORDER BY term.`name`');
+                $cats = acym_loadObjectList(
+                    'SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.term_id IN ("'.implode(
+                        '","',
+                        $condition['categories']
+                    ).'") ORDER BY term.`name`'
+                );
 
                 $categoriesToDisplay = [];
                 if (!empty($cats)) {

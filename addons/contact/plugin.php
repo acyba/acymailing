@@ -25,7 +25,11 @@ class plgAcymContact extends acymPlugin
         acym_loadLanguageFile('com_contact', JPATH_ADMINISTRATOR);
 
         $conditions['user']['contact'] = new stdClass();
-        $conditions['user']['contact']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', acym_translation('COM_CONTACT'), acym_translation('COM_CONTACT_SUBMENU_CATEGORIES'));
+        $conditions['user']['contact']->name = acym_translation_sprintf(
+            'ACYM_COMBINED_TRANSLATIONS',
+            acym_translation('COM_CONTACT'),
+            acym_translation('COM_CONTACT_SUBMENU_CATEGORIES')
+        );
 
         $operatorIn = new OperatorinType();
         $conditions['user']['contact']->option = '<div class="intext_select_automation cell">';

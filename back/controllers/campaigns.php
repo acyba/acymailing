@@ -389,8 +389,8 @@ class CampaignsController extends acymController
 
         $statusArray = [
             '' => '',
-            'is' => strtolower(acym_translation('ACYM_IS')),
-            'is_not' => strtolower(acym_translation('ACYM_IS_NOT')),
+            'is' => acym_strtolower(acym_translation('ACYM_IS')),
+            'is_not' => acym_strtolower(acym_translation('ACYM_IS_NOT')),
         ];
 
         $additionalCondition = [];
@@ -432,7 +432,9 @@ class CampaignsController extends acymController
 
         $linkId = empty($id) ? '&trigger='.$trigger : '&id='.$id;
 
-        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink('campaigns&task=edit&step=followupCondition'.$linkId);
+        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink(
+            'campaigns&task=edit&step=followupCondition'.$linkId
+        );
 
         parent::display($data);
     }
@@ -463,10 +465,16 @@ class CampaignsController extends acymController
         $data = [
             'workflowHelper' => new WorkflowHelper(),
             'followup' => $followup,
-            'linkNewEmail' => acym_completeLink('mails&task=edit&step=editEmail&type=followup&followup_id='.$id.'&return='.urlencode(acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$id)), false, true),
+            'linkNewEmail' => acym_completeLink(
+                'mails&task=edit&step=editEmail&type=followup&followup_id='.$id.'&return='.urlencode(acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$id)),
+                false,
+                true
+            ),
         ];
 
-        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$followup->id);
+        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink(
+            'campaigns&task=edit&step=followupEmail&id='.$followup->id
+        );
 
         parent::display($data);
     }
@@ -609,7 +617,7 @@ class CampaignsController extends acymController
         $pagination = new PaginationHelper();
 
         // Get filters data
-        $campaignId = $this->getVarFiltersListing('int', 'id', 0);
+        $campaignId = acym_getVar('int', 'id', 0);
         $campaignClass = new CampaignClass();
         $searchFilter = $this->getVarFiltersListing('string', 'mailchoose_search', '');
         $tagFilter = $this->getVarFiltersListing('string', 'mailchoose_tag', '');
@@ -715,6 +723,9 @@ class CampaignsController extends acymController
         } elseif (!empty($mailId)) {
             $mailClass = new MailClass();
             $mail = $mailClass->getOneById($mailId);
+            if (!acym_isAdmin() && ACYM_CMS == 'joomla' && acym_isPluginActive('sef', 'system')) {
+                $mail->body = str_replace(['url(&quot;', '&quot;)'], ["url('", "')"], $mail->body);
+            }
             $data['mailInformation']->tags = $mail->tags;
             $data['mailInformation']->subject = $mail->subject;
             $data['mailInformation']->preheader = $mail->preheader;
@@ -736,7 +747,9 @@ class CampaignsController extends acymController
         $pluginHelper->cleanHtml($data['mailInformation']->body);
 
         $editLink .= '&type_editor='.$data['typeEditor'];
-        $this->breadcrumb[acym_escape(empty($data['mailInformation']->name) ? acym_translation('ACYM_NEW_CAMPAIGN') : $data['mailInformation']->name)] = acym_completeLink($editLink);
+        $this->breadcrumb[acym_escape(empty($data['mailInformation']->name) ? acym_translation('ACYM_NEW_CAMPAIGN') : $data['mailInformation']->name)] = acym_completeLink(
+            $editLink
+        );
     }
 
     private function prepareEditor(&$data)
@@ -1743,9 +1756,15 @@ class CampaignsController extends acymController
 
             foreach ($campaigns as $campaign) {
                 $echo .= '<div class="cell grid-x acym__dashboard__active-campaigns__one-campaign">
-                        <a class="acym__dashboard__active-campaigns__one-campaign__title medium-4 small-12" href="'.acym_completeLink('campaigns&task=edit&step=editEmail&id=').$campaign->id.'">'.$campaign->name.'</a>
-                        <div class="acym__dashboard__active-campaigns__one-campaign__state medium-2 small-12 acym__background-color__blue text-center"><span>'.acym_translation('ACYM_SCHEDULED').' : '.acym_getDate($campaign->sending_date, 'M. j, Y').'</span></div>
-                        <div class="medium-6 small-12"><p id="'.$campaign->id.'" class="acym__dashboard__active-campaigns__one-campaign__action acym__color__dark-gray">'.acym_translation('ACYM_CANCEL_SCHEDULING').'</p></div>
+                        <a class="acym__dashboard__active-campaigns__one-campaign__title medium-4 small-12" href="'.acym_completeLink(
+                        'campaigns&task=edit&step=editEmail&id='
+                    ).$campaign->id.'">'.$campaign->name.'</a>
+                        <div class="acym__dashboard__active-campaigns__one-campaign__state medium-2 small-12 acym__background-color__blue text-center"><span>'.acym_translation(
+                        'ACYM_SCHEDULED'
+                    ).' : '.acym_getDate($campaign->sending_date, 'M. j, Y').'</span></div>
+                        <div class="medium-6 small-12"><p id="'.$campaign->id.'" class="acym__dashboard__active-campaigns__one-campaign__action acym__color__dark-gray">'.acym_translation(
+                        'ACYM_CANCEL_SCHEDULING'
+                    ).'</p></div>
                     </div>
                     <hr class="cell small-12">';
             }
@@ -2415,7 +2434,9 @@ class CampaignsController extends acymController
             'condition' => $followupClass->getConditionSummary($followup->condition, $followup->trigger),
         ];
 
-        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink('campaigns&task=edit&step=followupCondition'.$followup->id);
+        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink(
+            'campaigns&task=edit&step=followupCondition'.$followup->id
+        );
 
         parent::display($data);
     }

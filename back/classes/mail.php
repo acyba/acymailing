@@ -326,11 +326,12 @@ class MailClass extends acymClass
                 continue;
             }
 
-            if (is_array($value)) $mail->$oneAttribute = json_encode($value);
-
             if ($oneAttribute === 'access' && is_array($mail->$oneAttribute)) {
-                $mail->$oneAttribute = ','.trim(implode(',', $mail->$oneAttribute), ',').',';
+                $value = ','.trim(implode(',', $mail->$oneAttribute), ',').',';
+                $mail->$oneAttribute = $value;
             }
+
+            if (is_array($value)) $mail->$oneAttribute = json_encode($value);
 
             if (in_array($oneAttribute, ['body', 'headers'])) {
                 $mail->$oneAttribute = preg_replace('#<input[^>]*value="[^"]*"[^>]*>#Uis', '', $mail->$oneAttribute);
@@ -642,7 +643,9 @@ class MailClass extends acymClass
         if (preg_match('#< *meta *name="replyname" *content="([^"]*)"#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->replyname = $results[1];
         if (preg_match('#< *meta *name="replyemail" *content="([^"]*)"#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->replyemail = $results[1];
         if (preg_match('#< *meta *name="subject" *content="([^"]*)"#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->subject = $results[1];
-        if (preg_match('#< *meta *name="settings" *content="([^"]*)"#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->settings = htmlspecialchars_decode($results[1]);
+        if (preg_match('#< *meta *name="settings" *content="([^"]*)"#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->settings = htmlspecialchars_decode(
+            $results[1]
+        );
 
         $newFolder = preg_replace('#[^a-z0-9]#i', '_', strtolower($newTemplate->name));
         $newTemplateFolder = $newFolder;
@@ -708,7 +711,22 @@ class MailClass extends acymClass
                 $newTemplate->stylesheet = preg_replace('#(body *\{[^\}]*)background-color:[^;\}]*[;\}]#Uis', '$1', $newTemplate->stylesheet);
             }
 
-            $quickstyle = ['tag_h1' => 'h1', 'tag_h2' => 'h2', 'tag_h3' => 'h3', 'tag_h4' => 'h4', 'tag_h5' => 'h5', 'tag_h6' => 'h6', 'tag_a' => 'a', 'tag_ul' => 'ul', 'tag_li' => 'li', 'acym_unsub' => '\.acym_unsub', 'acym_online' => '\.acym_online', 'acym_title' => '\.acym_title', 'acym_content' => '\.acym_content', 'acym_readmore' => '\.acym_readmore'];
+            $quickstyle = [
+                'tag_h1' => 'h1',
+                'tag_h2' => 'h2',
+                'tag_h3' => 'h3',
+                'tag_h4' => 'h4',
+                'tag_h5' => 'h5',
+                'tag_h6' => 'h6',
+                'tag_a' => 'a',
+                'tag_ul' => 'ul',
+                'tag_li' => 'li',
+                'acym_unsub' => '\.acym_unsub',
+                'acym_online' => '\.acym_online',
+                'acym_title' => '\.acym_title',
+                'acym_content' => '\.acym_content',
+                'acym_readmore' => '\.acym_readmore',
+            ];
             foreach ($quickstyle as $styledb => $oneStyle) {
                 if (preg_match('#[^a-z\. ,] *'.$oneStyle.' *{([^}]*)}#Uis', $newTemplate->stylesheet, $quickstyleresults)) {
                     $newTemplate->stylesheet = str_replace($quickstyleresults[0], '', $newTemplate->stylesheet);

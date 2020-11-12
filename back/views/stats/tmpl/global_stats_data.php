@@ -17,7 +17,9 @@
                 );
                 ?>
 			</div>
-			<button type="button" class="cell shrink button primary acym__stats__export__button acym__stats__export__global__charts" data-task="exportGlobal"><?php echo acym_translation('ACYM_EXPORT'); ?></button>
+			<button type="button"
+					class="cell shrink button primary acym__stats__export__button acym__stats__export__global__charts"
+					data-task="exportGlobal"><?php echo acym_translation('ACYM_EXPORT'); ?></button>
         <?php } ?>
 	</div>
 

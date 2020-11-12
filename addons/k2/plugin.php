@@ -376,7 +376,9 @@ class plgAcymK2 extends acymPlugin
         }
 
         $readMoreText = acym_translation('ACYM_READ_MORE');
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape($readMoreText).'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
+                $readMoreText
+            ).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
 
         if (!empty(!empty($element->extra_fields))) {

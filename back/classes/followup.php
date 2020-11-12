@@ -234,8 +234,8 @@ class FollowupClass extends acymClass
     public function getConditionSummary($condition, $trigger)
     {
         $statusArray = [
-            'is' => strtolower(acym_translation('ACYM_IS')),
-            'is_not' => strtolower(acym_translation('ACYM_IS_NOT')),
+            'is' => acym_strtolower(acym_translation('ACYM_IS')),
+            'is_not' => acym_strtolower(acym_translation('ACYM_IS_NOT')),
         ];
         $listClass = new ListClass();
         $segmentClass = new SegmentClass();
@@ -336,7 +336,11 @@ class FollowupClass extends acymClass
 
         acym_arrayToInteger($followupData);
 
-        $affectedRow = acym_query('INSERT INTO #__acym_followup_has_mail (`mail_id`, `followup_id`, `delay`, `delay_unit`) VALUE ('.intval($mailId).', '.$followupData['id'].', '.$followupData['delay'].', '.$followupData['delay_unit'].') ON DUPLICATE KEY UPDATE delay = '.$followupData['delay'].', delay_unit = '.$followupData['delay_unit'].'');
+        $affectedRow = acym_query(
+            'INSERT INTO #__acym_followup_has_mail (`mail_id`, `followup_id`, `delay`, `delay_unit`) VALUE ('.intval(
+                $mailId
+            ).', '.$followupData['id'].', '.$followupData['delay'].', '.$followupData['delay_unit'].') ON DUPLICATE KEY UPDATE delay = '.$followupData['delay'].', delay_unit = '.$followupData['delay_unit'].''
+        );
 
         return $affectedRow !== false;
     }
@@ -359,7 +363,11 @@ class FollowupClass extends acymClass
         $mail->id = $mailClass->save($mail);
         if (empty($mail->id)) return false;
 
-        $affectedRow = acym_query('INSERT INTO #__acym_followup_has_mail (`mail_id`, `followup_id`, `delay`, `delay_unit`) VALUE ('.intval($mail->id).', '.$id.', '.intval($delaySettings->delay).', '.intval($delaySettings->delay_unit).')');
+        $affectedRow = acym_query(
+            'INSERT INTO #__acym_followup_has_mail (`mail_id`, `followup_id`, `delay`, `delay_unit`) VALUE ('.intval($mail->id).', '.$id.', '.intval(
+                $delaySettings->delay
+            ).', '.intval($delaySettings->delay_unit).')'
+        );
 
         return !empty($affectedRow);
     }

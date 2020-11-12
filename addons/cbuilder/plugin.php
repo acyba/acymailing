@@ -243,7 +243,13 @@ class plgAcymCbuilder extends acymPlugin
     public function summaryConditionFilters(&$automationCondition)
     {
         if (!empty($automationCondition['cbfield'])) {
-            $automationCondition = acym_translation_sprintf('ACYM_CONDITION_X_FIELD_SUMMARY', $this->pluginDescription->name, $automationCondition['cbfield']['field'], $automationCondition['cbfield']['operator'], $automationCondition['cbfield']['value']);
+            $automationCondition = acym_translation_sprintf(
+                'ACYM_CONDITION_X_FIELD_SUMMARY',
+                $this->pluginDescription->name,
+                $automationCondition['cbfield']['field'],
+                $automationCondition['cbfield']['operator'],
+                $automationCondition['cbfield']['value']
+            );
         }
     }
 

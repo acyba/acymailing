@@ -212,7 +212,9 @@ class acymInstall
         $this->fromVersion = $results['version']->value;
 
         //We update the version properly as it's a new one which is now used.
-        $query = "REPLACE INTO `#__acym_configuration` (`name`,`value`) VALUES ('level',".acym_escapeDB($this->level)."),('version',".acym_escapeDB($this->version)."),('installcomplete','0')";
+        $query = "REPLACE INTO `#__acym_configuration` (`name`,`value`) VALUES ('level',".acym_escapeDB($this->level)."),('version',".acym_escapeDB(
+                $this->version
+            )."),('installcomplete','0')";
         acym_query($query);
 
         return true;
@@ -459,7 +461,11 @@ class acymInstall
             $mails = $mailClass->encode($mails);
 
             foreach ($mails as $oneMail) {
-                $this->updateQuery('UPDATE #__acym_mail SET `body` = '.acym_escapeDB($oneMail->body).', `autosave` = '.acym_escapeDB($oneMail->autosave).', `name` = '.acym_escapeDB($oneMail->name).', `preheader` = '.acym_escapeDB($oneMail->preheader).' WHERE `id` = '.intval($oneMail->id));
+                $this->updateQuery(
+                    'UPDATE #__acym_mail SET `body` = '.acym_escapeDB($oneMail->body).', `autosave` = '.acym_escapeDB($oneMail->autosave).', `name` = '.acym_escapeDB(
+                        $oneMail->name
+                    ).', `preheader` = '.acym_escapeDB($oneMail->preheader).' WHERE `id` = '.intval($oneMail->id)
+                );
             }
         }
 
@@ -891,6 +897,27 @@ class acymInstall
                         ENGINE = InnoDB
                         /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;'
             );
+        }
+
+        if (version_compare($this->fromVersion, '6.18.1', '<')) {
+            $emails = acym_loadObjectList('SELECT * FROM `#__acym_mail` WHERE access LIKE "%,,%" OR access LIKE "%[\"%"');
+
+            $mailClass = new MailClass();
+            foreach ($emails as $email) {
+                if (strpos($email->access, ',,') !== false) {
+                    $access = explode(',', $email->access);
+                } else {
+                    $access = json_decode(trim($email->access, ','));
+                }
+                $finalAccess = [];
+                foreach ($access as $oneAccess) {
+                    if (!empty($oneAccess)) {
+                        $finalAccess[] = $oneAccess;
+                    }
+                }
+                $email->access = empty($finalAccess) ? '' : $finalAccess;
+                $mailClass->save($email);
+            }
         }
     }
 

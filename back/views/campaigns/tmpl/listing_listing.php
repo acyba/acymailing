@@ -133,7 +133,11 @@
                             }
                             echo '</div>';
                         } else {
-                            echo '<div class="cell medium-12">'.(empty($campaign->automation) ? acym_translation('ACYM_NO_LIST_SELECTED') : acym_translation('ACYM_SENT_WITH_AUTOMATION')).'</div>';
+                            echo '<div class="cell medium-12">'.(empty($campaign->automation)
+                                    ? acym_translation('ACYM_NO_LIST_SELECTED')
+                                    : acym_translation(
+                                        'ACYM_SENT_WITH_AUTOMATION'
+                                    )).'</div>';
                         }
                         ?>
 					</div>
@@ -148,9 +152,19 @@
                                 echo '</span></div>';
                                 // Is currently a valid scheduled but not sent yet
                             } elseif ($campaign->scheduled && !$campaign->draft) {
-                                echo '<div class="cell acym__campaign__status__status acym__background-color__orange"><span>'.acym_translation('ACYM_SCHEDULED').' : '.acym_date($campaign->sending_date, 'M. j, Y').'</span></div>';
-                                $target = '<div class="acym__campaign__listing__scheduled__stop grid-x cell xlarge-shrink acym_vcenter" data-campaignid="'.acym_escape($campaign->id).'"><i class="acymicon-times-circle cell shrink show-for-xlarge"></i><span class="cell xlarge-shrink">'.acym_translation('ACYM_CANCEL_SCHEDULING').'</span></div>';
-                                echo '<div class="cell acym__campaign__listing__status__controls"><div class="grid-x text-center"><div class="cell auto"></div>'.acym_tooltip($target, acym_translation('ACYM_STOP_THE_SCHEDULING_AND_SET_CAMPAIGN_AS_DRAFT')).'<div class="cell auto"></div></div></div>';
+                                echo '<div class="cell acym__campaign__status__status acym__background-color__orange"><span>'.acym_translation('ACYM_SCHEDULED').' : '.acym_date(
+                                        $campaign->sending_date,
+                                        'M. j, Y'
+                                    ).'</span></div>';
+                                $target = '<div class="acym__campaign__listing__scheduled__stop grid-x cell xlarge-shrink acym_vcenter" data-campaignid="'.acym_escape(
+                                        $campaign->id
+                                    ).'"><i class="acymicon-times-circle cell shrink show-for-xlarge"></i><span class="cell xlarge-shrink">'.acym_translation(
+                                        'ACYM_CANCEL_SCHEDULING'
+                                    ).'</span></div>';
+                                echo '<div class="cell acym__campaign__listing__status__controls"><div class="grid-x text-center"><div class="cell auto"></div>'.acym_tooltip(
+                                        $target,
+                                        acym_translation('ACYM_STOP_THE_SCHEDULING_AND_SET_CAMPAIGN_AS_DRAFT')
+                                    ).'<div class="cell auto"></div></div></div>';
                                 // Is an activated auto campaign
                             } elseif ($data['statusAuto'] === $campaign->sending_type && !$campaign->draft) {
                                 $numberCampaignsGenerated = empty($campaign->sending_params['number_generated']) ? '0' : $campaign->sending_params['number_generated'];
@@ -163,9 +177,15 @@
                                     $tooltip,
                                     'cell'
                                 );
-                                $target = '<div class="acym__campaign__listing__automatic__deactivate grid-x cell xlarge-shrink acym_vcenter" data-campaignid="'.acym_escape($campaign->id).'">
+                                $target = '<div class="acym__campaign__listing__automatic__deactivate grid-x cell xlarge-shrink acym_vcenter" data-campaignid="'.acym_escape(
+                                        $campaign->id
+                                    ).'">
 															<i class="'.($campaign->active ? 'acymicon-times-circle' : 'acymicon-power-off').' cell shrink show-for-xlarge"></i>
-															<span class="cell xlarge-shrink">'.($campaign->active ? acym_translation('ACYM_DEACTIVATE') : acym_translation('ACYM_ACTIVATE')).'</span>
+															<span class="cell xlarge-shrink">'.($campaign->active
+                                        ? acym_translation('ACYM_DEACTIVATE')
+                                        : acym_translation(
+                                            'ACYM_ACTIVATE'
+                                        )).'</span>
 														</div>';
                                 echo '<div class="cell acym__campaign__listing__status__controls">
 													<div class="grid-x text-center">
@@ -174,10 +194,14 @@
 												</div>';
                                 // Is a generated campaign that needs a confirmation
                             } elseif ('generated' == $data['status'] && $campaign->draft) {
-                                echo '<div class="cell acym__campaign__status__status acym__background-color__orange"><span>'.acym_translation('ACYM_WAITING_FOR_CONFIRMATION').'</span></div>';
+                                echo '<div class="cell acym__campaign__status__status acym__background-color__orange"><span>'.acym_translation(
+                                        'ACYM_WAITING_FOR_CONFIRMATION'
+                                    ).'</span></div>';
                                 // Is a generated campaign that has been disabled
                             } elseif ('generated' == $data['status'] && !$campaign->active) {
-                                echo '<div class="cell acym__campaign__status__status acym__background-color__red"><span class="acym__color__white">'.acym_translation('ACYM_DISABLED').'</span></div>';
+                                echo '<div class="cell acym__campaign__status__status acym__background-color__red"><span class="acym__color__white">'.acym_translation(
+                                        'ACYM_DISABLED'
+                                    ).'</span></div>';
                                 // Is a draft
                             } elseif ($campaign->draft) {
                                 echo '<div class="cell acym__campaign__status__status acym__campaign__status__draft"><span>'.acym_translation('ACYM_DRAFT').'</span></div>';

@@ -141,5 +141,5 @@ const acym_helperNotification = {
                         + '</div>';
 
         return structure;
-    },
+    }
 };

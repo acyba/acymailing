@@ -104,7 +104,10 @@ class BounceHelper extends acymObject
         }
 
         if ($this->report) {
-            acym_display('The extension "'.$EXTENSION.'" could not be loaded, please change your PHP configuration to enable it or use the pop3 method without imap extension', 'error');
+            acym_display(
+                'The extension "'.$EXTENSION.'" could not be loaded, please change your PHP configuration to enable it or use the pop3 method without imap extension',
+                'error'
+            );
             if (!empty($warnings)) {
                 acym_display($warnings, 'warning');
             }
@@ -646,7 +649,9 @@ class BounceHelper extends acymObject
 
             if (empty($this->_message->mailid) && !empty($this->_message->userid)) {
                 //We can check if we have a user and only one e-mail sent for this user, it's obviously the e-mail we just sent!!
-                $this->_message->mailid = acym_loadResult('SELECT `mail_id` FROM #__acym_user_stat WHERE `user_id` = '.intval($this->_message->userid).' ORDER BY `send_date` DESC');
+                $this->_message->mailid = acym_loadResult(
+                    'SELECT `mail_id` FROM #__acym_user_stat WHERE `user_id` = '.intval($this->_message->userid).' ORDER BY `send_date` DESC'
+                );
             }
 
 
@@ -724,14 +729,25 @@ class BounceHelper extends acymObject
                     foreach ($bouncedata['ruletriggered'] as $userid => $rulename) {
                         $valueInsert[] = '('.intval($mailid).','.intval($userid).',1,'.acym_escapeDB($rulename).')';
                     }
-                    acym_query('INSERT INTO #__acym_user_stat (mail_id,user_id,bounce,bounce_rule) VALUES '.implode(',', $valueInsert).' ON DUPLICATE KEY UPDATE `bounce` = `bounce` + 1, bounce_rule=VALUES(bounce_rule)');
+                    acym_query(
+                        'INSERT INTO #__acym_user_stat (mail_id,user_id,bounce,bounce_rule) VALUES '.implode(
+                            ',',
+                            $valueInsert
+                        ).' ON DUPLICATE KEY UPDATE `bounce` = `bounce` + 1, bounce_rule=VALUES(bounce_rule)'
+                    );
                     //We updated some profiles... let's make sure we really handle only unique bounces then and don't count it twice
                     acym_arrayToInteger($bouncedata['userids']);
-                    $realUniqueBounces = acym_loadResult('SELECT COUNT(*) FROM #__acym_user_stat WHERE `bounce` = 1 AND `user_id` IN ('.implode(',', $bouncedata['userids']).') AND `mail_id` = '.intval($mailid));
+                    $realUniqueBounces = acym_loadResult(
+                        'SELECT COUNT(*) FROM #__acym_user_stat WHERE `bounce` = 1 AND `user_id` IN ('.implode(',', $bouncedata['userids']).') AND `mail_id` = '.intval($mailid)
+                    );
                     $bouncedata['nbbounces'] = $bouncedata['nbbounces'] - count($bouncedata['userids']) + $realUniqueBounces;
                 }
 
-                acym_query('UPDATE #__acym_mail_stat SET `bounce_unique` = `bounce_unique` + '.intval($bouncedata['nbbounces']).$updateBounceDetails.' WHERE `mail_id` = '.intval($mailid).' LIMIT 1');
+                acym_query(
+                    'UPDATE #__acym_mail_stat SET `bounce_unique` = `bounce_unique` + '.intval($bouncedata['nbbounces']).$updateBounceDetails.' WHERE `mail_id` = '.intval(
+                        $mailid
+                    ).' LIMIT 1'
+                );
             }
             $this->bounceMessages = [];
         }
@@ -798,7 +814,10 @@ class BounceHelper extends acymObject
         }
 
         //To display nice error messages...
-        if (in_array('delete_user_subscription', $oneRule->action_user) || in_array('unsubscribe_user', $oneRule->action_user) || in_array('subscribe_user', $oneRule->action_user)) {
+        if (in_array('delete_user_subscription', $oneRule->action_user) || in_array('unsubscribe_user', $oneRule->action_user) || in_array(
+                'subscribe_user',
+                $oneRule->action_user
+            )) {
             $status = $this->userClass->getSubscriptionStatus($this->_message->userid);
             if (empty($this->_message->subemail)) {
                 $currentUser = $this->userClass->getOneById($this->_message->userid);
@@ -842,7 +861,9 @@ class BounceHelper extends acymObject
             if (!empty($this->_message->userid) && !in_array('delete_user', $oneRule->action_user) && !empty($user)) {
                 //Increment the bounce number in the user stat table but only if we don't delete the subscriber
                 $this->bounceMessages[$this->_message->mailid]['userids'][] = intval($this->_message->userid);
-                $this->bounceMessages[$this->_message->mailid]['ruletriggered'][intval($this->_message->userid)] = $oneRule->name.' ['.acym_translation('ACYM_ID').' '.$oneRule->id.']';
+                $this->bounceMessages[$this->_message->mailid]['ruletriggered'][intval($this->_message->userid)] = $oneRule->name.' ['.acym_translation(
+                        'ACYM_ID'
+                    ).' '.$oneRule->id.']';
             }
         }
 
@@ -852,10 +873,19 @@ class BounceHelper extends acymObject
             if (empty($this->_message->mailid)) {
                 $this->_message->mailid = 0;
             }
-            $nb = intval(acym_loadResult('SELECT COUNT(mail_id) FROM #__acym_user_stat WHERE bounce > 0 AND user_id = '.intval($this->_message->userid).' AND mail_id != '.intval($this->_message->mailid))) + 1;
+            $nb = intval(
+                    acym_loadResult(
+                        'SELECT COUNT(mail_id) FROM #__acym_user_stat WHERE bounce > 0 AND user_id = '.intval($this->_message->userid).' AND mail_id != '.intval(
+                            $this->_message->mailid
+                        )
+                    )
+                ) + 1;
 
             if ($nb < $oneRule->execute_action_after) {
-                $message .= ' | '.acym_translation_sprintf('ACYM_BOUNCE_RECEIVED', $nb, $this->_message->subemail).' | '.acym_translation_sprintf('ACYM_BOUNCE_MIN_EXEC', $oneRule->execute_action_after);
+                $message .= ' | '.acym_translation_sprintf('ACYM_BOUNCE_RECEIVED', $nb, $this->_message->subemail).' | '.acym_translation_sprintf(
+                        'ACYM_BOUNCE_MIN_EXEC',
+                        $oneRule->execute_action_after
+                    );
 
                 return $message;
             }
@@ -932,7 +962,11 @@ class BounceHelper extends acymObject
 
         if (in_array('empty_queue_user', $oneRule->action_user)) {
             $affected = acym_query('DELETE FROM #__acym_queue WHERE user_id = '.intval($this->_message->userid));
-            $message .= ' | '.acym_translation_sprintf('ACYM_USER_X_QUEUE', $this->_message->subemail.' ( '.acym_translation('ACYM_ID').' '.intval($this->_message->userid).' )', acym_translation_sprintf('ACYM_SUCC_DELETE_ELEMENTS', $affected));
+            $message .= ' | '.acym_translation_sprintf(
+                    'ACYM_USER_X_QUEUE',
+                    $this->_message->subemail.' ( '.acym_translation('ACYM_ID').' '.intval($this->_message->userid).' )',
+                    acym_translation_sprintf('ACYM_SUCC_DELETE_ELEMENTS', $affected)
+                );
         }
 
         return $message;
@@ -944,7 +978,9 @@ class BounceHelper extends acymObject
 
         //Fix the rule if needed... when the forwarded user is the same as the bounce e-mail address...
         if (!empty($oneRule->action_message['forward_to'])) {
-            if (strtolower($oneRule->action_message['forward_to']) == strtolower($this->config->get('bounce_username')) || strtolower($oneRule->action_message['forward_to']) == strtolower($this->config->get('bounce_email'))) {
+            if (strtolower($oneRule->action_message['forward_to']) == strtolower($this->config->get('bounce_username')) || strtolower(
+                    $oneRule->action_message['forward_to']
+                ) == strtolower($this->config->get('bounce_email'))) {
                 //We don't forward it
                 $oneRule->action_message['forward_to'] = '';
                 //We don't delete it

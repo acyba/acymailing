@@ -1,4 +1,42 @@
 module.exports = {
+    '6.19.0': {
+        'feature': [
+        ],
+        'improve': [
+        ],
+        'fix': [
+        ]
+    },
+    '6.18.1': {
+        'feature': [],
+        'improve': [],
+        'fix': [
+            {
+                cms: 'all',
+                message: 'Fixed dynamic text {list:names} displaying invisible lists'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed custom field not displaying if they had custom in the name'
+            },
+            {
+                cms: 'all',
+                message: 'The email names/subjects are now correctly displayed in the "Remove an email from the queue" action in the automation'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed mail save not working on some emails'
+            },
+            {
+                cms: 'all',
+                message: 'The image selection now works correctly in the popup form builder'
+            },
+            {
+                cms: 'joomla',
+                message: 'Fix background image display in the front campaign edition'
+            }
+        ]
+    },
     '6.18.0': {
         'feature': [
             {

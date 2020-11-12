@@ -2,7 +2,7 @@ jQuery(document).ready(function ($) {
 
     Vue.component('acym-media', {
         name: 'acym-media',
-        template: '<div class="cell shrink grid-x acym_vcenter"><div v-html="joomlaIframe"></div><button class="cell shrink button-secondary button margin-bottom-0 margin-right-1" @click="openMedia">{{ text }}</button><i @click="removeImage" class="cell shrink cursor-pointer acymicon-trash-o acym__color__red" v-if="value !== \'\'"></i></div>',
+        template: '<div class="cell shrink grid-x acym_vcenter"><div v-html="joomlaIframe"></div><button type="button" class="cell shrink button-secondary button margin-bottom-0 margin-right-1" @click="openMedia">{{ text }}</button><i @click="removeImage" class="cell shrink cursor-pointer acymicon-trash-o acym__color__red" v-if="value !== \'\'"></i></div>',
         props: {
             'value': String,
             'text': String

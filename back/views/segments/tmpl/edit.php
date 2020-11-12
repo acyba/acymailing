@@ -6,15 +6,24 @@
 	<div class="cell grid-x acym__segments__edit__info acym__content margin-bottom-1">
 		<div class="cell large-4 medium-6 grid-x margin-right-1 grid-margin-x acym_vcenter">
 			<label for="acym__segments__edit__info__name" class="cell shrink"><?php echo acym_translation('ACYM_SEGMENT_NAME'); ?></label>
-			<input required type="text" name="segment[name]" class="cell auto" id="acym__segments__edit__info__name" value="<?php echo empty($data['segment']->name) ? '' : $data['segment']->name; ?>">
+			<input required
+				   type="text"
+				   name="segment[name]"
+				   class="cell auto"
+				   id="acym__segments__edit__info__name"
+				   value="<?php echo empty($data['segment']->name) ? '' : $data['segment']->name; ?>">
 		</div>
 		<div class="cell large-4 medium-6 grid-x acym_vcenter">
             <?php echo acym_switch('segment[active]', $data['segment']->active, acym_translation('ACYM_ACTIVE'), [], 'shrink'); ?>
 		</div>
 		<div class="cell auto align-right grid-x grid-margin-x acym__segments__edit__info__actions">
             <?php echo acym_cancelButton(); ?>
-			<button acym-data-before="acym_helperSegments.beforeSave()" class="cell shrink button acy_button_submit button-secondary" data-task="apply"><?php echo acym_translation('ACYM_SAVE'); ?></button>
-			<button acym-data-before="acym_helperSegments.beforeSave()" class="cell shrink button acy_button_submit" data-task="save"><?php echo acym_translation('ACYM_SAVE_EXIT'); ?></button>
+			<button acym-data-before="acym_helperSegments.beforeSave()" class="cell shrink button acy_button_submit button-secondary" data-task="apply"><?php echo acym_translation(
+                    'ACYM_SAVE'
+                ); ?></button>
+			<button acym-data-before="acym_helperSegments.beforeSave()" class="cell shrink button acy_button_submit" data-task="save"><?php echo acym_translation(
+                    'ACYM_SAVE_EXIT'
+                ); ?></button>
 		</div>
 	</div>
 	<div class="cell grid-x acym__segments__edit__filters acym__content">

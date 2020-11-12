@@ -369,7 +369,9 @@ class plgAcymIcagenda extends acymPlugin
             // Not started events
             $where[] = 'event.`startdate` >= '.acym_escapeDB($parameter->from).' OR event.next >= '.acym_escapeDB($parameter->from);
 
-            if (!empty($parameter->to)) $where[] = '(event.startdate <= '.acym_escapeDB($parameter->to).' AND event.startdate != "0000-00-00 00:00:00") OR event.next <= '.acym_escapeDB($parameter->to);
+            if (!empty($parameter->to)) $where[] = '(event.startdate <= '.acym_escapeDB(
+                    $parameter->to
+                ).' AND event.startdate != "0000-00-00 00:00:00") OR event.next <= '.acym_escapeDB($parameter->to);
 
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);
@@ -553,7 +555,9 @@ class plgAcymIcagenda extends acymPlugin
         }
 
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_translation('ACYM_READ_MORE').'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_translation(
+                'ACYM_READ_MORE'
+            ).'</span></a>';
         if (!empty($tag->readmore)) {
             $afterArticle .= $varFields['{readmore}'];
         }
@@ -587,7 +591,9 @@ class plgAcymIcagenda extends acymPlugin
 
         $return = [];
         $search = acym_getVar('cmd', 'search', '');
-        $elements = acym_loadObjectList('SELECT `id`, `title` FROM `#__icagenda_events` WHERE state != -2 AND `title` LIKE '.acym_escapeDB('%'.$search.'%').' ORDER BY `title` ASC');
+        $elements = acym_loadObjectList(
+            'SELECT `id`, `title` FROM `#__icagenda_events` WHERE state != -2 AND `title` LIKE '.acym_escapeDB('%'.$search.'%').' ORDER BY `title` ASC'
+        );
 
         foreach ($elements as $oneElement) {
             $return[] = [$oneElement->id, $oneElement->id.' - '.$oneElement->title];

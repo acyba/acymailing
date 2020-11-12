@@ -11,7 +11,10 @@
 
 			<div class="acym__content cell text-center grid-x xlarge-6 medium-10 small-12 acym__walkthrough__content text-center align-center">
                 <?php if ('subscribe' !== $data['step']) { ?>
-					<span class="acy_button_submit acym__color__dark-gray" id="acym__walkthrough__skip" data-force-submit="true" data-task="passWalkThrough"><?php echo acym_translation('ACYM_SKIP'); ?></span>
+					<span class="acy_button_submit acym__color__dark-gray"
+						  id="acym__walkthrough__skip"
+						  data-force-submit="true"
+						  data-task="passWalkThrough"><?php echo acym_translation('ACYM_SKIP'); ?></span>
                 <?php } ?>
                 <?php include acym_getView('dashboard', 'step_'.$data['step']); ?>
 			</div>

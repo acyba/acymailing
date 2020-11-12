@@ -9,7 +9,10 @@
 <div class="cell medium-6 <?php echo $data['mail']->type == 'override' ? '' : 'medium-6'; ?>">
 	<label>
         <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
-		<input name="mail[subject]" type="text" value="<?php echo acym_escape($data['mail']->subject); ?>" <?php echo in_array($data['mail']->type, ['welcome', 'unsubscribe', 'automation']) ? 'required' : ''; ?>>
+		<input name="mail[subject]" type="text" value="<?php echo acym_escape($data['mail']->subject); ?>" <?php echo in_array(
+            $data['mail']->type,
+            ['welcome', 'unsubscribe', 'automation']
+        ) ? 'required' : ''; ?>>
 	</label>
 </div>
 <?php if ($data['mail']->type === 'override') { ?>

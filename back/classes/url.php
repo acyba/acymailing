@@ -82,7 +82,6 @@ class UrlClass extends acymClass
             WHERE click.url_id IS NULL
             LIMIT 500'
         );
-
         /*
         To clean the potential duplicated rows in the #__acym_url table, you can execute this query when no email is being sent:
         DELETE url.*

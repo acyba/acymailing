@@ -95,7 +95,8 @@
 								</div>
 								<div class="auto cell grid-x align-center acym__followup__summary__listing__action">
 									<a href="<?php echo $mail->edit_link; ?>" class="cell shrink acym__color__font"><i class="acymicon-pencil"></i></a>
-									<i class="cell shrink acymicon-trash-o acym__followup__summary__listing__action-delete margin-left-1" acym-data-id="<?php echo intval($mail->id); ?>"></i>
+									<i class="cell shrink acymicon-trash-o acym__followup__summary__listing__action-delete margin-left-1"
+									   acym-data-id="<?php echo intval($mail->id); ?>"></i>
 								</div>
 							</div>
 						</div>

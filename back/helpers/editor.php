@@ -127,7 +127,19 @@ class EditorHelper extends acymObject
         if (empty($this->editorContent)) {
             $this->content = acym_escape($this->content);
             ob_start();
-            echo $this->myEditor->display($this->name, $this->content, $this->width, $this->height, $this->cols, $this->rows, ['pagebreak', 'readmore'], null, 'com_content', null, $this->editorConfig);
+            echo $this->myEditor->display(
+                $this->name,
+                $this->content,
+                $this->width,
+                $this->height,
+                $this->cols,
+                $this->rows,
+                ['pagebreak', 'readmore'],
+                null,
+                'com_content',
+                null,
+                $this->editorConfig
+            );
 
             $this->editorContent = ob_get_clean();
         }

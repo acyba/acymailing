@@ -45,20 +45,30 @@
                     <?php echo acym_select($data['actionsOption'], 'action_name', null, 'class="acym__select acym__automation__actions__select"'); ?>
 				</div>
 			</div>
-			<button data-filter-type="" type="button" class="button-secondary button medium-shrink acym__automation__add-action margin-top-2"><?php echo acym_translation('ACYM_ADD_ACTION'); ?></button>
+			<button data-filter-type="" type="button" class="button-secondary button medium-shrink acym__automation__add-action margin-top-2"><?php echo acym_translation(
+                    'ACYM_ADD_ACTION'
+                ); ?></button>
 		</div>
 		<div class="cell grid-x grid-margin-x margin-top-2">
             <?php if (empty($data['id'])) { ?>
 				<div class="cell auto"></div>
-				<button type="button" class="button button-secondary acy_button_submit medium-shrink cell" data-task="listing"><?php echo acym_translation('ACYM_CANCEL'); ?></button>
-				<button type="button" class="button acy_button_submit medium-shrink cell" data-task="edit" data-step="setActionMassAction"><?php echo acym_translation('ACYM_SET_ACTIONS_TARGETS'); ?></button>
+				<button type="button" class="button button-secondary acy_button_submit medium-shrink cell" data-task="listing"><?php echo acym_translation(
+                        'ACYM_CANCEL'
+                    ); ?></button>
+				<button type="button" class="button acy_button_submit medium-shrink cell" data-task="edit" data-step="setActionMassAction"><?php echo acym_translation(
+                        'ACYM_SET_ACTIONS_TARGETS'
+                    ); ?></button>
             <?php } else { ?>
 				<div class="cell medium-shrink medium-margin-bottom-0 margin-bottom-1 text-left">
                     <?php echo acym_backToListing("automation"); ?>
 				</div>
 				<div class="cell auto"></div>
-				<button type="button" class="cell button button-secondary shrink acy_button_submit" data-task="edit" data-step="saveExitActions"><?php echo acym_translation('ACYM_SAVE_EXIT'); ?></button>
-				<button type="button" class="cell button shrink acy_button_submit" data-task="edit" data-step="saveActions"><?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?></button>
+				<button type="button" class="cell button button-secondary shrink acy_button_submit" data-task="edit" data-step="saveExitActions"><?php echo acym_translation(
+                        'ACYM_SAVE_EXIT'
+                    ); ?></button>
+				<button type="button" class="cell button shrink acy_button_submit" data-task="edit" data-step="saveActions"><?php echo acym_translation(
+                        'ACYM_SAVE_CONTINUE'
+                    ); ?></button>
             <?php } ?>
 		</div>
 	</div>

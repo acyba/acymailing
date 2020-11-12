@@ -54,11 +54,21 @@
 				</div>
                 <?php if ($this->config->get('require_confirmation', 1) == 1) { ?>
 					<div class="acym__listing__header__title cell hide-for-small-only medium-2 large-2 text-center">
-                        <?php echo acym_isAdmin() ? acym_translation('ACYM_NOT_CONFIRMED') : acym_tooltip('<i class="acymicon-hourglass-2"></i>', acym_translation('ACYM_NOT_CONFIRMED')); ?>
+                        <?php echo acym_isAdmin()
+                            ? acym_translation('ACYM_NOT_CONFIRMED')
+                            : acym_tooltip(
+                                '<i class="acymicon-hourglass-2"></i>',
+                                acym_translation('ACYM_NOT_CONFIRMED')
+                            ); ?>
 					</div>
                 <?php } ?>
 				<div class="acym__listing__header__title cell hide-for-small-only medium-2 large-2 text-center">
-                    <?php echo acym_isAdmin() ? acym_translation('ACYM_UNSUBSCRIBED') : acym_tooltip('<i class="acymicon-user-minus"></i>', acym_translation('ACYM_UNSUBSCRIBED')); ?>
+                    <?php echo acym_isAdmin()
+                        ? acym_translation('ACYM_UNSUBSCRIBED')
+                        : acym_tooltip(
+                            '<i class="acymicon-user-minus"></i>',
+                            acym_translation('ACYM_UNSUBSCRIBED')
+                        ); ?>
 				</div>
 				<div class="acym__listing__header__title cell hide-for-small-only medium-2 large-2 text-center">
                     <?php echo acym_isAdmin() ? acym_translation('ACYM_INACTIVE') : acym_tooltip('<i class="acymicon-remove"></i>', acym_translation('ACYM_INACTIVE')); ?>
