@@ -98,7 +98,10 @@ class SegmentsController extends acymController
             $listsIds = json_decode($listsIds);
             acym_arrayToInteger($listsIds);
             $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
-            $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(',', $listsIds).') and user_list.status = 1 '.$join;
+            $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
+                    ',',
+                    $listsIds
+                ).') and user_list.status = 1 '.$join;
         }
 
         if (!empty($stepAutomation) && !empty($stepAutomation['filters'][0])) {
@@ -131,7 +134,10 @@ class SegmentsController extends acymController
             $listsIds = json_decode($listsIds);
             acym_arrayToInteger($listsIds);
             $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
-            $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(',', $listsIds).') and user_list.status = 1 '.$join;
+            $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
+                    ',',
+                    $listsIds
+                ).') and user_list.status = 1 '.$join;
         }
 
         foreach ($stepAutomation['filters'][0][$and] as $filterName => $options) {
@@ -160,7 +166,10 @@ class SegmentsController extends acymController
         }
 
         $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
-        $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(',', $listsIds).') and user_list.status = 1 '.$join;
+        $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
+                ',',
+                $listsIds
+            ).') and user_list.status = 1 '.$join;
 
         if (!empty($id)) {
             $segmentClass = new SegmentClass();

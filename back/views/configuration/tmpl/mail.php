@@ -4,13 +4,19 @@
 		<div class="cell large-6 xlarge-4">
 			<label class="cell grid-x">
 				<span class="cell"><?php echo acym_translation('ACYM_FROM_NAME'); ?></span>
-				<input type="text" name="config[from_name]" placeholder="<?php echo acym_translation('ACYM_FROM_NAME_PLACEHOLDER'); ?>" value="<?php echo acym_escape($this->config->get('from_name')); ?>" />
+				<input type="text"
+					   name="config[from_name]"
+					   placeholder="<?php echo acym_translation('ACYM_FROM_NAME_PLACEHOLDER'); ?>"
+					   value="<?php echo acym_escape($this->config->get('from_name')); ?>" />
 			</label>
 		</div>
 		<div class="cell large-6 xlarge-4">
 			<label class="cell grid-x">
 				<span class="cell"><?php echo acym_translation('ACYM_FROM_EMAIL'); ?></span>
-				<input type="email" name="config[from_email]" placeholder="<?php echo acym_translation('ACYM_FROM_EMAIL_PLACEHOLDER'); ?>" value="<?php echo acym_escape($this->config->get('from_email')); ?>" />
+				<input type="email"
+					   name="config[from_email]"
+					   placeholder="<?php echo acym_translation('ACYM_FROM_EMAIL_PLACEHOLDER'); ?>"
+					   value="<?php echo acym_escape($this->config->get('from_email')); ?>" />
 			</label>
 		</div>
 
@@ -29,13 +35,19 @@
 		<div class="cell large-6 xlarge-4 acy_toggle_replyto">
 			<label class="cell grid-x">
 				<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_NAME'); ?></span>
-				<input type="text" name="config[replyto_name]" placeholder="<?php echo acym_translation('ACYM_REPLYTO_NAME_PLACEHOLDER'); ?>" value="<?php echo acym_escape($this->config->get('replyto_name')); ?>" />
+				<input type="text"
+					   name="config[replyto_name]"
+					   placeholder="<?php echo acym_translation('ACYM_REPLYTO_NAME_PLACEHOLDER'); ?>"
+					   value="<?php echo acym_escape($this->config->get('replyto_name')); ?>" />
 			</label>
 		</div>
 		<div class="cell large-6 xlarge-4 acy_toggle_replyto">
 			<label class="cell grid-x">
 				<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_EMAIL'); ?></span>
-				<input type="email" name="config[replyto_email]" placeholder="<?php echo acym_translation('ACYM_REPLYTO_EMAIL_PLACEHOLDER'); ?>" value="<?php echo acym_escape($this->config->get('replyto_email')); ?>" />
+				<input type="email"
+					   name="config[replyto_email]"
+					   placeholder="<?php echo acym_translation('ACYM_REPLYTO_EMAIL_PLACEHOLDER'); ?>"
+					   value="<?php echo acym_escape($this->config->get('replyto_email')); ?>" />
 			</label>
 		</div>
 
@@ -48,7 +60,10 @@
 		<div class="cell grid-x">
 			<label class="cell large-6 xlarge-4 grid-x">
 				<span class="cell"><?php echo acym_translation('ACYM_BOUNCE_EMAIL'); ?></span>
-				<input type="text" name="config[bounce_email]" placeholder="<?php echo acym_translation('ACYM_BOUNCE_EMAIL_PLACEHOLDER'); ?>" value="<?php echo acym_escape($this->config->get('bounce_email')); ?>" />
+				<input type="text"
+					   name="config[bounce_email]"
+					   placeholder="<?php echo acym_translation('ACYM_BOUNCE_EMAIL_PLACEHOLDER'); ?>"
+					   value="<?php echo acym_escape($this->config->get('bounce_email')); ?>" />
 			</label>
 		</div>
 	</div>
@@ -84,7 +99,11 @@
 				<label for="sendmail_path" class="cell large-2 medium-3">
                     <?php echo acym_translation('ACYM_SENDMAIL_PATH'); ?>
 				</label>
-				<input id="sendmail_path" class="cell medium-auto" type="text" name="config[sendmail_path]" value="<?php echo acym_escape($this->config->get('sendmail_path', '/usr/sbin/sendmail')); ?>">
+				<input id="sendmail_path"
+					   class="cell medium-auto"
+					   type="text"
+					   name="config[sendmail_path]"
+					   value="<?php echo acym_escape($this->config->get('sendmail_path', '/usr/sbin/sendmail')); ?>">
 			</div>
 			<div id="smtp_settings" class="send_settings grid-x">
 				<label for="smtp_host" class="cell grid-x">
@@ -134,12 +153,20 @@
 
 				<label for="smtp_username" class="cell grid-x">
 					<span class="large-2 medium-3"><?php echo acym_translation('ACYM_SMTP_USERNAME'); ?></span>
-					<input id="smtp_username" class="cell medium-4" type="text" name="config[smtp_username]" value="<?php echo acym_escape($this->config->get('smtp_username')); ?>">
+					<input id="smtp_username"
+						   class="cell medium-4"
+						   type="text"
+						   name="config[smtp_username]"
+						   value="<?php echo acym_escape($this->config->get('smtp_username')); ?>">
 				</label>
 
 				<label for="smtp_password" class="cell grid-x">
 					<span class="large-2 medium-3"><?php echo acym_translation('ACYM_SMTP_PASSWORD'); ?></span>
-					<input id="smtp_password" class="cell medium-4" type="text" name="config[smtp_password]" value="<?php echo str_repeat('*', strlen($this->config->get('smtp_password'))); ?>">
+					<input id="smtp_password"
+						   class="cell medium-4"
+						   type="text"
+						   name="config[smtp_password]"
+						   value="<?php echo str_repeat('*', strlen($this->config->get('smtp_password'))); ?>">
 				</label>
 
 				<div id="available_ports">
@@ -150,12 +177,20 @@
 				<label for="elasticemail_username" class="cell large-2 medium-3">
                     <?php echo acym_translation('ACYM_SMTP_USERNAME'); ?>
 				</label>
-				<input id="elasticemail_username" class="cell large-10 medium-9" type="text" name="config[elasticemail_username]" value="<?php echo acym_escape($this->config->get('elasticemail_username')); ?>">
+				<input id="elasticemail_username"
+					   class="cell large-10 medium-9"
+					   type="text"
+					   name="config[elasticemail_username]"
+					   value="<?php echo acym_escape($this->config->get('elasticemail_username')); ?>">
 
 				<label for="elasticemail_password" class="cell large-2 medium-3">
                     <?php echo acym_translation('ACYM_API_KEY'); ?>
 				</label>
-				<input id="elasticemail_password" class="cell large-10 medium-9" type="text" name="config[elasticemail_password]" value="<?php echo str_repeat('*', strlen($this->config->get('elasticemail_password'))); ?>">
+				<input id="elasticemail_password"
+					   class="cell large-10 medium-9"
+					   type="text"
+					   name="config[elasticemail_password]"
+					   value="<?php echo str_repeat('*', strlen($this->config->get('elasticemail_password'))); ?>">
 
 				<label for="elasticemail_password" class="cell large-2 medium-3">
                     <?php echo acym_translation('ACYM_SMTP_PORT'); ?>

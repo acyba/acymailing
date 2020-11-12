@@ -82,10 +82,18 @@ if ($listPosition == 'before') echo $listsContent;
                     <?php echo acym_translation('ACYM_NO_JAVASCRIPT'); ?>
 				</div>
 			</noscript>
-			<input type="button" class="btn btn-primary button subbutton" value="<?php echo acym_translation($subscribeText, true); ?>" name="Submit" onclick="try{ return submitAcymForm('subscribe','<?php echo $formName; ?>', 'acymSubmitSubForm'); }catch(err){alert('The form could not be submitted '+err);return false;}" />
+			<input type="button"
+				   class="btn btn-primary button subbutton"
+				   value="<?php echo acym_translation($subscribeText, true); ?>"
+				   name="Submit"
+				   onclick="try{ return submitAcymForm('subscribe','<?php echo $formName; ?>', 'acymSubmitSubForm'); }catch(err){alert('The form could not be submitted '+err);return false;}" />
             <?php if ($params->get('unsub', '0') == '1' && !empty($countUnsub)) { ?>
 				<span style="display: none;"></span>
-				<input type="button" class="btn button unsubbutton" value="<?php echo acym_translation($unsubscribeText, true); ?>" name="Submit" onclick="try{ return submitAcymForm('unsubscribe','<?php echo $formName; ?>', 'acymSubmitSubForm'); }catch(err){alert('The form could not be submitted '+err);return false;}" />
+				<input type="button"
+					   class="btn button unsubbutton"
+					   value="<?php echo acym_translation($unsubscribeText, true); ?>"
+					   name="Submit"
+					   onclick="try{ return submitAcymForm('unsubscribe','<?php echo $formName; ?>', 'acymSubmitSubForm'); }catch(err){alert('The form could not be submitted '+err);return false;}" />
             <?php } ?>
 		</td>
 	</tr>

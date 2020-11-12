@@ -1,10 +1,14 @@
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('string', 'task').'&id='.acym_getVar('string', 'id')); ?>" method="post" name="acyForm" class="acym__form__campaign__edit">
+<form id="acym_form"
+	  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('string', 'task').'&id='.acym_getVar('string', 'id')); ?>"
+	  method="post"
+	  name="acyForm"
+	  class="acym__form__campaign__edit">
 	<input type="hidden" name="id" value="<?php echo acym_escape($data['id']); ?>">
 	<div class="cell grid-x">
 		<div class="cell medium-auto"></div>
 		<div id="acym__campaigns__tests" class="cell xxlarge-9 grid-x acym__content">
             <?php
-        $this->addSegmentStep($data['displaySegmentTab']);
+            $this->addSegmentStep($data['displaySegmentTab']);
             $workflow = $data['workflowHelper'];
             echo $workflow->display($this->steps, $this->step);
             ?>
@@ -62,7 +66,9 @@
                             $getProBtn = acym_buttonGetProVersion('cell shrink', 'ACYM_GET_ENTERPRISE_VERSION');
                         }
                         echo '<div class="cell grid-x grid-margin-x margin-top-2 align-center acym__campaigns__test__pro" '.$blocDisplay.'>';
-                        echo '<a href="https://docs.acymailing.com/main-pages/campaigns/tests" target="_blank" class="button button-secondary cell shrink">'.acym_translation('ACYM_SEE_MORE').'</a>';
+                        echo '<a href="https://docs.acymailing.com/main-pages/campaigns/tests" target="_blank" class="button button-secondary cell shrink">'.acym_translation(
+                                'ACYM_SEE_MORE'
+                            ).'</a>';
                         echo $getProBtn;
                         echo '</div>';
                         ?>
@@ -86,7 +92,11 @@
                     ?>
 					<label class="margin-top-1">
                         <?php echo acym_translation('ACYM_TEST_NOTE'); ?>
-						<textarea class="acym__blue" id="acym__wysid__send__test__note" name="test_note" type="text" placeholder="<?php echo acym_translation('ACYM_TEST_NOTE_PLACEHOLDER', true); ?>"></textarea>
+						<textarea class="acym__blue"
+								  id="acym__wysid__send__test__note"
+								  name="test_note"
+								  type="text"
+								  placeholder="<?php echo acym_translation('ACYM_TEST_NOTE_PLACEHOLDER', true); ?>"></textarea>
 					</label>
 					<button id="acym__campaign__send-test" type="button" class="button hollow">
                         <?php echo acym_translation('ACYM_SEND_TEST'); ?>
@@ -101,7 +111,10 @@
 				</div>
 				<div class="cell medium-auto grid-x text-right">
 					<div class="cell medium-auto"></div>
-					<button data-task="save" data-step="listing" type="submit" class="cell button-secondary medium-shrink button medium-margin-bottom-0 margin-right-1 acy_button_submit">
+					<button data-task="save"
+							data-step="listing"
+							type="submit"
+							class="cell button-secondary medium-shrink button medium-margin-bottom-0 margin-right-1 acy_button_submit">
                         <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
 					</button>
 					<button data-task="save" data-step="summary" type="submit" class="cell medium-shrink button margin-bottom-0 acy_button_submit">

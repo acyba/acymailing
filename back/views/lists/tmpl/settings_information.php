@@ -11,7 +11,14 @@
 <div class="cell margin-bottom-1">
 	<label>
         <?php echo acym_translation('ACYM_TAGS'); ?>
-        <?php echo acym_selectMultiple($data['allTags'], "list_tags", $data['listTagsName'], ['id' => 'acym__tags__field', 'placeholder' => acym_translation('ACYM_ADD_TAGS')], "name", "name"); ?>
+        <?php echo acym_selectMultiple(
+            $data['allTags'],
+            "list_tags",
+            $data['listTagsName'],
+            ['id' => 'acym__tags__field', 'placeholder' => acym_translation('ACYM_ADD_TAGS')],
+            "name",
+            "name"
+        ); ?>
 	</label>
 </div>
 <div class="cell grid-x grid-margin-x margin-left-0 margin-right-0">
@@ -26,7 +33,8 @@
         <?php echo acym_switch('list[visible]', acym_escape($data['listInformation']->visible), acym_translation('ACYM_VISIBLE'), [], 'small-6', 'shrink', 'tiny margin-0'); ?>
 	</div>
     <?php if (!empty($data['listInformation']->id)) { ?>
-		<p class="cell margin-bottom-1 small-6" id="acym__list__settings__list-id"><?php echo acym_translation('ACYM_LIST_ID'); ?> : <b class="acym__color__blue"><?php echo acym_escape($data['listInformation']->id); ?></b></p>
+		<p class="cell margin-bottom-1 small-6" id="acym__list__settings__list-id"><?php echo acym_translation('ACYM_LIST_ID'); ?> :
+			<b class="acym__color__blue"><?php echo acym_escape($data['listInformation']->id); ?></b></p>
     <?php } ?>
 	<div class="cell grid-x small-6">
         <?php
@@ -35,7 +43,10 @@
         echo acym_switch('list[tracking]', $data['listInformation']->tracking, $label, [], 'small-6', 'shrink', 'tiny margin-0'); ?>
 	</div>
 	<div class="cell small-6">
-        <?php echo acym_translation('ACYM_DATE_CREATED'); ?> : <b><?php echo acym_date(empty($data['listInformation']->id) ? time() : $data['listInformation']->creation_date, 'M. j, Y'); ?></b>
+        <?php echo acym_translation('ACYM_DATE_CREATED'); ?> : <b><?php echo acym_date(
+                empty($data['listInformation']->id) ? time() : $data['listInformation']->creation_date,
+                'M. j, Y'
+            ); ?></b>
 	</div>
 </div>
 <?php if (acym_level(2) && ACYM_CMS === 'joomla') { ?>

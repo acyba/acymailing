@@ -5,7 +5,9 @@
 			<div class="grid-x align-right grid-margin-x">
 				<div class="cell grid-x acym__content align-right margin-bottom-1">
                     <?php echo acym_cancelButton('ACYM_CANCEL', '', 'margin-bottom-0 button cell medium-6 large-shrink'); ?>
-					<button class="cell shrink button margin-bottom-0 margin-left-1 button-secondary" type="button" @click="save(false)"><?php echo acym_translation('ACYM_SAVE'); ?></button>
+					<button class="cell shrink button margin-bottom-0 margin-left-1 button-secondary" type="button" @click="save(false)"><?php echo acym_translation(
+                            'ACYM_SAVE'
+                        ); ?></button>
 					<button class="cell shrink button margin-bottom-0 margin-left-1" type="button" @click="save(true)"><?php echo acym_translation('ACYM_SAVE_EXIT'); ?></button>
 				</div>
 			</div>

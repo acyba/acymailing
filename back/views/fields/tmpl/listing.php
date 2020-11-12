@@ -65,7 +65,9 @@
 							<div class="acym__listing__controls acym__field__controls medium-1 small-3 text-center cell">
                                 <?php
                                 $class = $field->required == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0' : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
-                                echo '<i data-acy-table="field" data-acy-field="required" data-acy-elementid="'.acym_escape($field->id).'" class="'.($field->id == 2 ? ' acym_opacity-5 ' : ' acym_toggleable cursor-pointer ').$class.'"></i>';
+                                echo '<i data-acy-table="field" data-acy-field="required" data-acy-elementid="'.acym_escape(
+                                        $field->id
+                                    ).'" class="'.($field->id == 2 ? ' acym_opacity-5 ' : ' acym_toggleable cursor-pointer ').$class.'"></i>';
                                 ?>
 							</div>
 							<div class="acym__listing__controls hide-for-small-only acym__field__controls medium-1 small-1 text-center cell">

@@ -126,7 +126,10 @@ class CronHelper extends acymObject
         }
 
         // Step 6: run automatic bounce handling!
-        if (!in_array('bounce', $this->skip) && acym_level(2) && $this->config->get('auto_bounce', 0) && $time > (int)$this->config->get('auto_bounce_next', 0) && (empty($queueHelper->stoptime) || time() < $queueHelper->stoptime - 5)) {
+        if (!in_array('bounce', $this->skip) && acym_level(2) && $this->config->get('auto_bounce', 0) && $time > (int)$this->config->get(
+                'auto_bounce_next',
+                0
+            ) && (empty($queueHelper->stoptime) || time() < $queueHelper->stoptime - 5)) {
 
             //First we update the config
             $newConfig = new \stdClass();

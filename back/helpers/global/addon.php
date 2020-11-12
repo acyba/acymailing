@@ -50,7 +50,11 @@ function acym_checkPluginsVersion()
 
     foreach ($pluginsInstalled as $key => $pluginInstalled) {
         foreach ($pluginsAvailable as $pluginAvailable) {
-            if (str_replace('.zip', '', $pluginAvailable['file_name']) == $pluginInstalled->folder_name && !version_compare($pluginInstalled->version, $pluginAvailable['version'], '>=')) {
+            if (str_replace('.zip', '', $pluginAvailable['file_name']) == $pluginInstalled->folder_name && !version_compare(
+                    $pluginInstalled->version,
+                    $pluginAvailable['version'],
+                    '>='
+                )) {
                 $pluginsInstalled[$key]->uptodate = 0;
                 $pluginsInstalled[$key]->latest_version = $pluginAvailable['version'];
                 $pluginClass->save($pluginsInstalled[$key]);

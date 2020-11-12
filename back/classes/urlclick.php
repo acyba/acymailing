@@ -50,7 +50,9 @@ class UrlClickClass extends acymClass
     {
         $query = 'SELECT COUNT(DISTINCT user_id) FROM #__acym_url_click AS url_click';
         $isMultilingual = acym_isMultilingual();
-        if ($isMultilingual && !empty($mailid)) $query .= ' LEFT JOIN #__acym_mail AS mail ON `mail`.`id` = `url_click`.`mail_id` WHERE `mail`.`id` = '.intval($mailid).' OR  `mail`.`parent_id` = '.intval($mailid);
+        if ($isMultilingual && !empty($mailid)) $query .= ' LEFT JOIN #__acym_mail AS mail ON `mail`.`id` = `url_click`.`mail_id` WHERE `mail`.`id` = '.intval(
+                $mailid
+            ).' OR  `mail`.`parent_id` = '.intval($mailid);
         if (!$isMultilingual && !empty($mailid)) $query .= ' WHERE `url_click`.`mail_id` = '.intval($mailid);
         $clickNb = acym_loadResult($query);
 

@@ -63,7 +63,11 @@
                                 <?php echo $row->try; ?>
 							</div>
 							<div class="cell medium-1 text-center">
-								<i class="acymicon-trash-o acym_toggle_delete acym_delete_queue" data-acy-table="queue" data-acy-method="deleteOne" data-acy-elementid="<?php echo acym_escape($row->id.'_'.$row->user_id); ?>" confirmation="1"></i>
+								<i class="acymicon-trash-o acym_toggle_delete acym_delete_queue"
+								   data-acy-table="queue"
+								   data-acy-method="deleteOne"
+								   data-acy-elementid="<?php echo acym_escape($row->id.'_'.$row->user_id); ?>"
+								   confirmation="1"></i>
 							</div>
 						</div>
                     <?php } ?>

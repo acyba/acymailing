@@ -135,8 +135,12 @@ class MailsController extends acymController
         $otherContent .= acym_modal(
             '<i class="acymicon-add"></i>'.acym_translation('ACYM_CREATE'),
             '<div class="cell grid-x grid-margin-x">
-								<button type="button" data-task="edit" data-editor="html" class="acym__create__template button cell large-auto small-6 margin-top-1 button-secondary">'.acym_translation('ACYM_HTML_EDITOR').'</button>
-								<button type="button" data-task="edit" data-editor="acyEditor" class="acym__create__template button cell medium-auto margin-top-1">'.acym_translation('ACYM_DD_EDITOR').'</button>
+								<button type="button" data-task="edit" data-editor="html" class="acym__create__template button cell large-auto small-6 margin-top-1 button-secondary">'.acym_translation(
+                'ACYM_HTML_EDITOR'
+            ).'</button>
+								<button type="button" data-task="edit" data-editor="acyEditor" class="acym__create__template button cell medium-auto margin-top-1">'.acym_translation(
+                'ACYM_DD_EDITOR'
+            ).'</button>
 							</div>',
             '',
             '',

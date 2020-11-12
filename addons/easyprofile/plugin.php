@@ -500,7 +500,13 @@ class plgAcymEasyprofile extends acymPlugin
     public function summaryConditionFilters(&$automationCondition)
     {
         if (!empty($automationCondition['epfield'])) {
-            $automationCondition = acym_translation_sprintf('ACYM_CONDITION_X_FIELD_SUMMARY', $this->pluginDescription->name, $automationCondition['epfield']['field'], $automationCondition['epfield']['operator'], $automationCondition['epfield']['value']);
+            $automationCondition = acym_translation_sprintf(
+                'ACYM_CONDITION_X_FIELD_SUMMARY',
+                $this->pluginDescription->name,
+                $automationCondition['epfield']['field'],
+                $automationCondition['epfield']['operator'],
+                $automationCondition['epfield']['value']
+            );
         }
     }
 }

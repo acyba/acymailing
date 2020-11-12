@@ -33,7 +33,10 @@ class LanguageController extends acymController
         if ($result) {
             acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
             //We update the picture from "add" to "edit"
-            acym_addScript(true, 'let langIcon = window.top.document.getElementById("image'.$code.'"); langIcon.className = langIcon.className.replace("acymicon-add", "") + " acymicon-edit"');
+            acym_addScript(
+                true,
+                'let langIcon = window.top.document.getElementById("image'.$code.'"); langIcon.className = langIcon.className.replace("acymicon-add", "") + " acymicon-edit"'
+            );
 
             //Now we will also create a menu language file and save it
             $updateHelper = new UpdateHelper();

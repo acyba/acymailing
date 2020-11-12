@@ -56,7 +56,10 @@
 				<span id="acym__migrate__result__users__check"></span>
 			</div>
 			<div class="cell grid-x text-center align-right grid-margin-x">
-				<button type="button" data-task="migrationDone" class="button button-secondary acy_button_submit margin-right-1 cell medium-shrink small-12" id="acym__migrate__no__button"><?php echo acym_translation('ACYM_NO_DONT_WANT_TO_MIGRATE_MY_DATA'); ?></button>
+				<button type="button"
+						data-task="migrationDone"
+						class="button button-secondary acy_button_submit margin-right-1 cell medium-shrink small-12"
+						id="acym__migrate__no__button"><?php echo acym_translation('ACYM_NO_DONT_WANT_TO_MIGRATE_MY_DATA'); ?></button>
 				<button type="button" class="button primary cell medium-shrink small-12" id="acym__migrate__button"><?php echo acym_translation('ACYM_MIGRATE'); ?></button>
 				<h1 class="acym__content__title__light-blue cell acym__migration__need__display" id="acym__migration__percentage" style="display: none">0%</h1>
 				<div class="success progress cell acym__migration__need__display" id="acym__migration__progress__bar" style="display: none">
@@ -73,8 +76,12 @@
 			</div>
 			<div class="cell acym__color__red grid-x" id="acym__migrate__result__error">
 				<p class="acym__color__red margin-bottom-1" id="acym__migrate__result__error__message"></p>
-				<button type="button" id="acym__migrate__restart_from_error__button" class="button cell margin-right-1 medium-shrink"><?php echo acym_translation('ACYM_RESTART_FROM_ERROR'); ?></button>
-				<button type="button" data-task="migrationDone" class="button button-secondary cell acy_button_submit medium-shrink"><?php echo acym_translation('ACYM_IGNORE_ERRORS_AND_CONTINUE'); ?></button>
+				<button type="button" id="acym__migrate__restart_from_error__button" class="button cell margin-right-1 medium-shrink"><?php echo acym_translation(
+                        'ACYM_RESTART_FROM_ERROR'
+                    ); ?></button>
+				<button type="button" data-task="migrationDone" class="button button-secondary cell acy_button_submit medium-shrink"><?php echo acym_translation(
+                        'ACYM_IGNORE_ERRORS_AND_CONTINUE'
+                    ); ?></button>
 			</div>
 		</div>
 		<div class="cell large-3"></div>

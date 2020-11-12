@@ -31,7 +31,8 @@
 				<input type="number" min="0" class="cell small-2 acym__wysid__context__block__padding" data-block-padding="bottom">
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p acym__wysid__context__modal__container--structure"><?php echo acym_translation('ACYM_STRUCTURE'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p acym__wysid__context__modal__container--structure"><?php echo acym_translation('ACYM_STRUCTURE'); ?>
+			<i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container acym__wysid__context__modal__container--structure acym__wysid__context__modal__container--structure--container">
 			<div class="cell grid-x grid-margin-x acym_vcenter">
 				<h6 class="cell shrink"><?php echo acym_translation('ACYM_RESIZE_COLUMNS_OF_ROW'); ?></h6>
@@ -61,7 +62,10 @@
 		<p class="cell acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_ADVANCED_OPTIONS'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<label class="cell small-5"><?php echo acym_translation('ACYM_HTML_ID').acym_info('ACYM_HTML_ID_DESC'); ?></label>
-			<input type="text" class="acym__light__input cell small-6" id="acym__wysid__context__block__custom_id" placeholder="<?php echo acym_escape(acym_translation('ACYM_HTML_ID')); ?>">
+			<input type="text"
+				   class="acym__light__input cell small-6"
+				   id="acym__wysid__context__block__custom_id"
+				   placeholder="<?php echo acym_escape(acym_translation('ACYM_HTML_ID')); ?>">
 			<div class="cell grid-x acym__wysid__context__block__code-source">
 				<label class="cell small-5"><?php echo acym_translation('ACYM_EDIT_BLOCK_HTML').acym_info('ACYM_BECAREFUL_EDITING_SOURCE_CODE'); ?></label>
 				<button type="button" class="button button-secondary " id="acym__wysid__context__block__edit-html"><?php echo acym_translation('ACYM_EDIT_HTML'); ?></button>
@@ -69,13 +73,29 @@
 		</div>
 	</div>
 	<div id="acym__wysid__context__button" class="grid-x padding-1 acym__wysid__context__modal" style="display: none">
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_BUTTON_TYPE'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_BUTTON_TYPE'); ?>
+			<i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="grid-x cell acym__wysid__context__modal__container grid-margin-x">
-			<button type="button" class="button-radio button-radio-disabled cell medium-4 acym__wysid__context__button--type" acym-data-type="call-action"><?php echo acym_translation('ACYM_CALL_TO_ACTION'); ?></button>
-            <?php echo acym_tooltip('<button type="button" class="button-radio button-radio-disabled cell acym__wysid__context__button--type" acym-data-type="unsubscribe">'.acym_translation('ACYM_UNSUBSCRIBE').'</button>', acym_translation('ACYM_UNSUBSCRIBE_BUTTON_DESC'), 'cell medium-4 grid-x'); ?>
-            <?php echo acym_tooltip('<button type="button" class="button-radio button-radio-disabled cell acym__wysid__context__button--type" acym-data-type="confirm">'.acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION').'</button>', acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION_BUTTON_DESC'), 'cell medium-4 grid-x'); ?>
+			<button type="button"
+					class="button-radio button-radio-disabled cell medium-4 acym__wysid__context__button--type"
+					acym-data-type="call-action"><?php echo acym_translation('ACYM_CALL_TO_ACTION'); ?></button>
+            <?php echo acym_tooltip(
+                '<button type="button" class="button-radio button-radio-disabled cell acym__wysid__context__button--type" acym-data-type="unsubscribe">'.acym_translation(
+                    'ACYM_UNSUBSCRIBE'
+                ).'</button>',
+                acym_translation('ACYM_UNSUBSCRIBE_BUTTON_DESC'),
+                'cell medium-4 grid-x'
+            ); ?>
+            <?php echo acym_tooltip(
+                '<button type="button" class="button-radio button-radio-disabled cell acym__wysid__context__button--type" acym-data-type="confirm">'.acym_translation(
+                    'ACYM_SUBSCRIPTION_CONFIRMATION'
+                ).'</button>',
+                acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION_BUTTON_DESC'),
+                'cell medium-4 grid-x'
+            ); ?>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_CONTENT'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_CONTENT'); ?>
+			<i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="grid-x cell acym__wysid__context__button__text__container">
 				<label class="cell small-5"><?php echo acym_translation('ACYM_TEXT'); ?></label>
@@ -88,7 +108,8 @@
 				</div>
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_FONT'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_FONT'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		</p>
 		<div class="grid-x cell acym__wysid__context__modal__container">
 			<div class="cell grid-x">
 				<label class="cell small-5"><?php echo acym_translation('ACYM_FORMATTING'); ?></label>
@@ -132,7 +153,8 @@
 				<input type="text" id="acym__wysid__context__button__color" class="small-2 cell">
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_BORDER'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_BORDER'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="grid-x cell">
 				<label class="cell small-5"><?php echo acym_translation('ACYM_WIDTH'); ?></label>
@@ -161,7 +183,8 @@
 				<input type="text" id="acym__wysid__context__button__border-color" class="small-5 cell">
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_OTHER'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_OTHER'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">
 				<label for="acym__wysid__context__button__background" class="cell small-5"><?php echo acym_translation('ACYM_BACKGROUND_COLOR'); ?></label>
@@ -171,7 +194,9 @@
 				<div class="cell grid-x">
 					<label class="cell small-5"><?php echo acym_translation('ACYM_ALIGNMENT'); ?></label>
 					<i class="acymicon-format_align_left cell shrink acym__wysid__context__button__align" id="acym__wysid__context__button__align__left" data-align="left"></i>
-					<i class="acymicon-format_align_center cell shrink acym__wysid__context__button__align" id="acym__wysid__context__button__align__center" data-align="center"></i>
+					<i class="acymicon-format_align_center cell shrink acym__wysid__context__button__align"
+					   id="acym__wysid__context__button__align__center"
+					   data-align="center"></i>
 					<i class="acymicon-format_align_right cell shrink acym__wysid__context__button__align" id="acym__wysid__context__button__align__right" data-align="right"></i>
 				</div>
 			</div>
@@ -185,7 +210,15 @@
 							<label class="cell small-3"><?php echo acym_translation('ACYM_PADDING'); ?></label>
 							<div class="small-6 padding-right-1 padding-left-1 cell acym__wysid__context__button__slider" data-output="slider__output__button__width">
 								<div class="slider" data-slider="" data-end="100" data-initial-start="25">
-									<span class="slider-handle" data-slider-handle="" role="slider" tabindex="0" aria-controls="slider__output__button__width" aria-valuemax="50" data-valuenow="25" aria-valuemin="10" style="left: 44%"></span>
+									<span class="slider-handle"
+										  data-slider-handle=""
+										  role="slider"
+										  tabindex="0"
+										  aria-controls="slider__output__button__width"
+										  aria-valuemax="50"
+										  data-valuenow="25"
+										  aria-valuemin="10"
+										  style="left: 44%"></span>
 									<span class="slider-fill" data-slider-fill="" style="width: 44%;"></span>
 								</div>
 							</div>
@@ -214,7 +247,16 @@
 		<label class="cell small-3"><?php echo acym_translation('ACYM_HEIGHT'); ?></label>
 		<div class="small-6 padding-right-1 cell" id="acym__wysid__context__space__slider">
 			<div class="slider" data-slider="" data-initial-start="50" data-start="10" data-e="2mf38c-e">
-				<span class="slider-handle" data-slider-handle="" role="slider" tabindex="0" aria-controls="sliderOutput1" aria-valuemax="100" aria-valuemin="10" aria-valuenow="50" aria-orientation="horizontal" style="left: 44%;"></span>
+				<span class="slider-handle"
+					  data-slider-handle=""
+					  role="slider"
+					  tabindex="0"
+					  aria-controls="sliderOutput1"
+					  aria-valuemax="100"
+					  aria-valuemin="10"
+					  aria-valuenow="50"
+					  aria-orientation="horizontal"
+					  style="left: 44%;"></span>
 				<span class="slider-fill" data-slider-fill="" style="width: 44%;"></span>
 			</div>
 		</div>
@@ -223,29 +265,42 @@
 		</div>
 	</div>
 	<div id="acym__wysid__context__image" style="display: none" class="grid-x padding-1 acym__wysid__context__modal">
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_POSITION'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_POSITION'); ?>
+			<i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">
 				<label class="cell small-3"><?php echo acym_translation('ACYM_ALIGNMENT'); ?></label>
 				<div class="cell auto grid-x">
-					<i class="acymicon-format_align_left cell shrink acym__wysid__context__image__align" id="acym__wysid__context__image__align__left" data-float="left" data-css='{"float": "left"}'></i>
-					<i class="acymicon-format_align_center cell shrink acym__wysid__context__image__align" id="acym__wysid__context__image__align__left" data-float="none" data-css='{"marginRight": "auto", "marginLeft": "auto", "float": "none"}'></i>
-					<i class="acymicon-format_align_right cell shrink acym__wysid__context__image__align" id="acym__wysid__context__image__align__left" data-float="right" data-css='{"float": "right"}'></i>
+					<i class="acymicon-format_align_left cell shrink acym__wysid__context__image__align"
+					   id="acym__wysid__context__image__align__left"
+					   data-float="left"
+					   data-css='{"float": "left"}'></i>
+					<i class="acymicon-format_align_center cell shrink acym__wysid__context__image__align"
+					   id="acym__wysid__context__image__align__left"
+					   data-float="none"
+					   data-css='{"marginRight": "auto", "marginLeft": "auto", "float": "none"}'></i>
+					<i class="acymicon-format_align_right cell shrink acym__wysid__context__image__align"
+					   id="acym__wysid__context__image__align__left"
+					   data-float="right"
+					   data-css='{"float": "right"}'></i>
 				</div>
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_LINK'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_LINK'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<label for="acym__wysid__context__image__link" class="cell small-3"><?php echo acym_translation('ACYM_LINK'); ?></label>
 			<input type="text" name="image_link" value="" id="acym__wysid__context__image__link" placeholder="https://www.example.com" class="cell auto acym__light__input">
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_OTHER'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_OTHER'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		</p>
 		<div class="cell grid-x align-center acym__wysid__context__modal__container">
 			<button type="button" class="cell shrink button button-secondary" id="acym__wysid__context__image__change"><?php echo acym_translation('ACYM_CHANGE_IMAGE'); ?></button>
 		</div>
 	</div>
 	<div id="acym__wysid__context__separator" class="grid-x padding-1 acym__wysid__context__modal" style="display: none">
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_STYLE'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_STYLE'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x grid-margin-x">
 				<div class="acym__wysid__context__separator__kind cell small-3 separator-selected">
@@ -266,13 +321,23 @@
 				<input type="text" id="acym__wysid__context__separator__color">
 			</label>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_SIZE'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_SIZE'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">
 				<label class="cell small-3 acym_vcenter acym__color__light-blue"><?php echo acym_translation('ACYM_HEIGHT'); ?></label>
 				<div class="small-6 padding-right-1 padding-left-1 cell" id="acym__wysid__context__separator__slide">
 					<div class="slider" data-slider data-initial-start="3" data-start="1" data-e="2mf38c-e">
-						<span class="slider-handle" data-slider-handle role="slider" tabindex="0" aria-controls="sliderOutput2" aria-valuemax="20" aria-valuemin="1" aria-valuenow="3" aria-orientation="horizontal" style="left: 44%;"></span>
+						<span class="slider-handle"
+							  data-slider-handle
+							  role="slider"
+							  tabindex="0"
+							  aria-controls="sliderOutput2"
+							  aria-valuemax="20"
+							  aria-valuemin="1"
+							  aria-valuenow="3"
+							  aria-orientation="horizontal"
+							  style="left: 44%;"></span>
 						<span class="slider-fill" data-slider-fill style="width: 44%;"></span>
 					</div>
 				</div>
@@ -307,7 +372,8 @@
 		</div>
 	</div>
 	<div id="acym__wysid__context__follow" class="grid-x padding-1 acym__wysid__context__modal" style="display: none">
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_LINKS'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_LINKS'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="grid-x cell margin-bottom-1">
 				<label class="cell small-3"><?php echo acym_translation('ACYM_ADD_NEW'); ?></label>
@@ -319,7 +385,8 @@
 			<div id="acym__wysid__context__follow__list" class="grid-x small-12 cell">
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_OTHER'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_OTHER'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">
 				<label class="small-3 cell"><?php echo acym_translation('ACYM_WIDTH'); ?></label>
@@ -338,8 +405,12 @@
 					<label class="cell small-3"><?php echo acym_translation('ACYM_ALIGNMENT'); ?></label>
 					<div class="cell auto grid-x">
 						<i class="acymicon-format_align_left cell shrink acym__wysid__context__follow__align" id="acym__wysid__context__follow__align__left" data-align="left"></i>
-						<i class="acymicon-format_align_center cell shrink acym__wysid__context__follow__align" id="acym__wysid__context__follow__align__center" data-align="center"></i>
-						<i class="acymicon-format_align_right cell shrink acym__wysid__context__follow__align" id="acym__wysid__context__follow__align__right" data-align="right"></i>
+						<i class="acymicon-format_align_center cell shrink acym__wysid__context__follow__align"
+						   id="acym__wysid__context__follow__align__center"
+						   data-align="center"></i>
+						<i class="acymicon-format_align_right cell shrink acym__wysid__context__follow__align"
+						   id="acym__wysid__context__follow__align__right"
+						   data-align="right"></i>
 					</div>
 				</div>
 			</div>

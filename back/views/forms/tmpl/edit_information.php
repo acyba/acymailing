@@ -13,7 +13,10 @@
                         <?php echo acym_translation('ACYM_PAGE_SELECTION').acym_info('ACYM_PAGE_SELECTION_DESC'); ?>
 					</label>
 					<div class="cell medium-6">
-						<select2multiple v-model="form.pages" :name="'form[pages]'" :value="<?php echo acym_escape(json_encode($data['form']->pages)); ?>" :options="<?php echo acym_escape(json_encode($data['all_pages'])); ?>"></select2multiple>
+						<select2multiple v-model="form.pages"
+										 :name="'form[pages]'"
+										 :value="<?php echo acym_escape(json_encode($data['form']->pages)); ?>"
+										 :options="<?php echo acym_escape(json_encode($data['all_pages'])); ?>"></select2multiple>
 					</div>
 				</div>
             <?php } ?>
@@ -45,7 +48,9 @@
             <?php
             if ($data['form']->type == 'shortcode') {
                 echo '<div class="cell grid-x acym_vcenter">';
-                echo '<p class="cell shrink" v-if="!form.id"><i class="acymicon-exclamation-triangle acym__color__orange acym__forms__information__shortcode__warning margin-right-1"></i>'.acym_translation('ACYM_PLEASE_SAVE_FORM_TO_GET_SHORTCODE').'</p>';
+                echo '<p class="cell shrink" v-if="!form.id"><i class="acymicon-exclamation-triangle acym__color__orange acym__forms__information__shortcode__warning margin-right-1"></i>'.acym_translation(
+                        'ACYM_PLEASE_SAVE_FORM_TO_GET_SHORTCODE'
+                    ).'</p>';
                 echo '<p class="cell shrink" v-if="form.id">'.acym_translation('ACYM_SHORTCODE_COPY_PASTE').'</p>';
                 echo '<code class="cell shrink acym__forms__information__shortcode margin-left-1" v-if="form.id">[acymailing_form_shortcode id="{{ form.id }}"]</code>';
                 echo '</div>';

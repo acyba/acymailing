@@ -8,7 +8,11 @@
 			<div class="medium-4"></div>
 			<div class="medium-4 small-12 cell">
 				<a
-						href="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&id='.acym_escape($data['campaignID']).'&campaign_type='.$campaignType); ?>"
+						href="<?php echo acym_completeLink(
+                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&id='.acym_escape(
+                                $data['campaignID']
+                            ).'&campaign_type='.$campaignType
+                        ); ?>"
 						class="button expanded"
 						id="acym__templates__choose__create__empty">
                     <?php echo acym_translation('ACYM_CREATE_EMPTY_TEMPLATE'); ?>
@@ -23,7 +27,9 @@
 			</div>
 			<div class="grid-x medium-shrink text-center cell acym__templates__choose__type-templates">
 				<a
-						href="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&id='.intval($data['campaignID']).'&campaign_type='.$campaignType); ?>"
+						href="<?php echo acym_completeLink(
+                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&id='.intval($data['campaignID']).'&campaign_type='.$campaignType
+                        ); ?>"
 						class="button"
 						id="acym__templates__choose__create__empty">
                     <?php echo acym_translation('ACYM_START_FROM_EMPTY_TEMPLATE'); ?>
@@ -38,7 +44,11 @@
                 foreach ($data['allMails'] as $oneTemplate) {
                     ?>
 					<div class="cell grid-x acym__templates__oneTpl acym__listing__block">
-						<input type="hidden" class="acym__templates__oneTpl__choose" value="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.$oneTemplate->id.'&id='.intval($data['campaignID']).'&campaign_type='.$campaignType); ?>" />
+						<input type="hidden"
+							   class="acym__templates__oneTpl__choose"
+							   value="<?php echo acym_completeLink(
+                                   acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.$oneTemplate->id.'&id='.intval($data['campaignID']).'&campaign_type='.$campaignType
+                               ); ?>" />
 						<div class="cell acym__templates__pic text-center">
 							<img src="<?php echo acym_getMailThumbnail($oneTemplate->thumbnail); ?>" alt="<?php echo acym_escape($oneTemplate->name); ?>" />
                             <?php

@@ -505,7 +505,9 @@ class plgAcymEventbooking extends acymPlugin
         $varFields['{indiv}'] = [];
         if (in_array('indiv', $tag->display)) {
             $reglink = acym_frontendLink('index.php?option=com_eventbooking&task=register.individual_registration&event_id='.$tag->id, false);
-            $varFields['{individualregbutton}'] = '<a class="event_registration eb_indivreg" href="'.$reglink.'" target="_blank" >'.acym_translation('EB_REGISTER_INDIVIDUAL').'</a> ';
+            $varFields['{individualregbutton}'] = '<a class="event_registration eb_indivreg" href="'.$reglink.'" target="_blank" >'.acym_translation(
+                    'EB_REGISTER_INDIVIDUAL'
+                ).'</a> ';
             $varFields['{indiv}'][] = $varFields['{individualregbutton}'];
         }
 
@@ -519,7 +521,9 @@ class plgAcymEventbooking extends acymPlugin
             $customFields[] = [implode(' ', $varFields['{indiv}'])];
         }
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_translation('ACYM_READ_MORE').'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_translation(
+                'ACYM_READ_MORE'
+            ).'</span></a>';
         if (!empty($tag->readmore)) {
             $afterArticle .= $varFields['{readmore}'];
         }
@@ -624,7 +628,12 @@ class plgAcymEventbooking extends acymPlugin
         $status[] = acym_selectOption('2', 'EB_CANCELLED');
 
         $conditions['user']['ebregistration']->option .= '<div class="intext_select_automation cell">';
-        $conditions['user']['ebregistration']->option .= acym_select($status, 'acym_condition[conditions][__numor__][__numand__][ebregistration][status]', '-1', 'class="acym__select"');
+        $conditions['user']['ebregistration']->option .= acym_select(
+            $status,
+            'acym_condition[conditions][__numor__][__numand__][ebregistration][status]',
+            '-1',
+            'class="acym__select"'
+        );
         $conditions['user']['ebregistration']->option .= '</div>';
 
         $conditions['user']['ebregistration']->option .= '</div>';

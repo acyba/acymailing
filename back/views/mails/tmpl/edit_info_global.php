@@ -7,7 +7,10 @@
 <div class="cell xlarge-3 medium-6">
 	<label>
         <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
-		<input name="mail[subject]" type="text" value="<?php echo acym_escape($data['mail']->subject); ?>" <?php echo in_array($data['mail']->type, ['welcome', 'unsubscribe', 'automation']) ? 'required' : ''; ?>>
+		<input name="mail[subject]" type="text" value="<?php echo acym_escape($data['mail']->subject); ?>" <?php echo in_array(
+            $data['mail']->type,
+            ['welcome', 'unsubscribe', 'automation']
+        ) ? 'required' : ''; ?>>
 	</label>
 </div>
 <div class="cell xlarge-3 medium-6">
@@ -105,7 +108,12 @@ if (!empty($data['langChoice'])) {
                             ?>
 						</label>
 					</div>
-					<textarea class="acym__blue" name="editor_stylesheet" id="acym__mail__edit__html__stylesheet" cols="30" rows="15" type="text"><?php echo $stylesheet; ?></textarea>
+					<textarea class="acym__blue"
+							  name="editor_stylesheet"
+							  id="acym__mail__edit__html__stylesheet"
+							  cols="30"
+							  rows="15"
+							  type="text"><?php echo $stylesheet; ?></textarea>
 				</div>
             <?php } ?>
 			<div class="cell medium-auto">
@@ -114,7 +122,9 @@ if (!empty($data['langChoice'])) {
                     echo acym_info('ACYM_EMAIL_CUSTOM_HEADERS_DESC');
                     ?>
 				</label>
-				<textarea class="acym__blue" id="acym__mail__edit__custom__header" name="editor_headers" cols="30" rows="15" type="text"><?php echo acym_escape($data['mail']->headers); ?></textarea>
+				<textarea class="acym__blue" id="acym__mail__edit__custom__header" name="editor_headers" cols="30" rows="15" type="text"><?php echo acym_escape(
+                        $data['mail']->headers
+                    ); ?></textarea>
 			</div>
 		</div>
 	</div>

@@ -115,22 +115,56 @@ class acym_subscriptionform_widget extends WP_Widget
         echo acym_Select($options, $this->get_field_name('mode'), $params['mode'], 'class="acym_simple_select2"', 'value', 'text', $this->get_field_id('mode')).'</p>';
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_AUTO_SUBSCRIBE_TO_DESC').'">'.acym_translation('ACYM_AUTO_SUBSCRIBE_TO').'</label>';
-        echo acym_selectMultiple($lists, $this->get_field_name('hiddenlists'), explode(',', $params['hiddenlists']), ['class' => 'acym_simple_select2', 'id' => $this->get_field_id('hiddenlists')], 'id', 'name');
+        echo acym_selectMultiple(
+            $lists,
+            $this->get_field_name('hiddenlists'),
+            explode(',', $params['hiddenlists']),
+            ['class' => 'acym_simple_select2', 'id' => $this->get_field_id('hiddenlists')],
+            'id',
+            'name'
+        );
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_DISPLAYED_LISTS_DESC').'">'.acym_translation('ACYM_DISPLAYED_LISTS').'</label>';
-        echo acym_selectMultiple($lists, $this->get_field_name('displists'), explode(',', $params['displists']), ['class' => 'acym_simple_select2', 'id' => $this->get_field_id('displists')], 'id', 'name');
+        echo acym_selectMultiple(
+            $lists,
+            $this->get_field_name('displists'),
+            explode(',', $params['displists']),
+            ['class' => 'acym_simple_select2', 'id' => $this->get_field_id('displists')],
+            'id',
+            'name'
+        );
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_LISTS_CHECKED_DEFAULT_DESC').'">'.acym_translation('ACYM_LISTS_CHECKED_DEFAULT').'</label>';
-        echo acym_selectMultiple($lists, $this->get_field_name('listschecked'), explode(',', $params['listschecked']), ['class' => 'acym_simple_select2', 'id' => $this->get_field_id('listschecked')], 'id', 'name');
+        echo acym_selectMultiple(
+            $lists,
+            $this->get_field_name('listschecked'),
+            explode(',', $params['listschecked']),
+            ['class' => 'acym_simple_select2', 'id' => $this->get_field_id('listschecked')],
+            'id',
+            'name'
+        );
 
         $options = [];
         $options[] = acym_selectOption('before', 'ACYM_BEFORE_FIELDS');
         $options[] = acym_selectOption('after', 'ACYM_AFTER_FIELDS');
         echo '<p><label class="acyWPconfig">'.acym_translation('ACYM_LIST_POSITION').'</label>';
-        echo acym_select($options, $this->get_field_name('listposition'), $params['listposition'], 'class="acym_simple_select2"', 'value', 'text', $this->get_field_id('listposition')).'</p>';
+        echo acym_select(
+                $options,
+                $this->get_field_name('listposition'),
+                $params['listposition'],
+                'class="acym_simple_select2"',
+                'value',
+                'text',
+                $this->get_field_id('listposition')
+            ).'</p>';
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_FIELDS_TO_DISPLAY_DESC').'">'.acym_translation('ACYM_FIELDS_TO_DISPLAY').'</label>';
-        echo acym_selectMultiple($fields, $this->get_field_name('fields'), explode(',', $params['fields']), ['class' => 'acym_simple_select2', 'id' => $this->get_field_id('fields')]);
+        echo acym_selectMultiple(
+            $fields,
+            $this->get_field_name('fields'),
+            explode(',', $params['fields']),
+            ['class' => 'acym_simple_select2', 'id' => $this->get_field_id('fields')]
+        );
 
         $options = [];
         $options[] = acym_selectOption('1', 'ACYM_TEXT_INSIDE');
@@ -138,25 +172,47 @@ class acym_subscriptionform_widget extends WP_Widget
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_TEXT_MODE_DESC').'">'.acym_translation('ACYM_TEXT_MODE').'</label>';
         echo acym_select($options, $this->get_field_name('textmode'), $params['textmode'], 'class="acym_simple_select2"', 'value', 'text', $this->get_field_id('textmode')).'</p>';
 
-        echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('subtext').'" title="'.acym_translation('ACYM_SUBSCRIBE_TEXT_DESC').'">'.acym_translation('ACYM_SUBSCRIBE_TEXT').'</label>
+        echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('subtext').'" title="'.acym_translation('ACYM_SUBSCRIBE_TEXT_DESC').'">'.acym_translation(
+                'ACYM_SUBSCRIBE_TEXT'
+            ).'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('subtext').'" name="'.$this->get_field_name('subtext').'" value="'.$params['subtext'].'" /></p>';
 
-        echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('subtextlogged').'" title="'.acym_translation('ACYM_SUBSCRIBE_TEXT_LOGGED_IN_DESC').'">'.acym_translation('ACYM_SUBSCRIBE_TEXT_LOGGED_IN').'</label>
-			<input type="text" class="widefat" id="'.$this->get_field_id('subtextlogged').'" name="'.$this->get_field_name('subtextlogged').'" value="'.$params['subtextlogged'].'" /></p>';
+        echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('subtextlogged').'" title="'.acym_translation('ACYM_SUBSCRIBE_TEXT_LOGGED_IN_DESC').'">'.acym_translation(
+                'ACYM_SUBSCRIBE_TEXT_LOGGED_IN'
+            ).'</label>
+			<input type="text" class="widefat" id="'.$this->get_field_id('subtextlogged').'" name="'.$this->get_field_name(
+                'subtextlogged'
+            ).'" value="'.$params['subtextlogged'].'" /></p>';
 
         $options = [];
         if (!empty($params['termscontent'])) {
             $options[] = acym_selectOption($params['termscontent'], get_the_title($params['termscontent']));
         }
         echo '<p><label class="acyWPconfig">'.acym_translation('ACYM_TERMS_CONDITIONS').'</label>';
-        echo acym_select($options, $this->get_field_name('termscontent'), $params['termscontent'], 'class="acym_post_select2" title="'.acym_translation('ACYM_PRIVACY_POLICY', true).'"', 'value', 'text', $this->get_field_id('termscontent')).'</p>';
+        echo acym_select(
+                $options,
+                $this->get_field_name('termscontent'),
+                $params['termscontent'],
+                'class="acym_post_select2" title="'.acym_translation('ACYM_PRIVACY_POLICY', true).'"',
+                'value',
+                'text',
+                $this->get_field_id('termscontent')
+            ).'</p>';
 
         $options = [];
         if (!empty($params['privacypolicy'])) {
             $options[] = acym_selectOption($params['privacypolicy'], get_the_title($params['privacypolicy']));
         }
         echo '<p><label class="acyWPconfig">'.acym_translation('ACYM_PRIVACY_POLICY').'</label>';
-        echo acym_select($options, $this->get_field_name('privacypolicy'), $params['privacypolicy'], 'class="acym_post_select2" title="'.acym_translation('ACYM_PRIVACY_POLICY', true).'"', 'value', 'text', $this->get_field_id('privacypolicy')).'</p>';
+        echo acym_select(
+                $options,
+                $this->get_field_name('privacypolicy'),
+                $params['privacypolicy'],
+                'class="acym_post_select2" title="'.acym_translation('ACYM_PRIVACY_POLICY', true).'"',
+                'value',
+                'text',
+                $this->get_field_id('privacypolicy')
+            ).'</p>';
 
         //echo '<p><label class="acyWPconfig">'.acym_translation('ACYM_DISPLAY_ARTICLE_POPUP').'</label>';
         //echo acym_boolean($this->get_field_name('articlepopup'), $params['articlepopup'], $this->get_field_id('articlepopup'), array()).'</p>';
@@ -182,12 +238,18 @@ class acym_subscriptionform_widget extends WP_Widget
         echo acym_boolean($this->get_field_name('unsub'), $params['unsub'], $this->get_field_id('unsub'), ['onclick' => $onclick]).'</p>';
 
         echo '<p class="'.$this->get_field_id('unsubtextrow').'" '.($params['unsub'] == '0' ? 'style="display:none;"' : '').'>
-        	<label class="acyWPconfig" for="'.$this->get_field_id('unsubtext').'" title="'.acym_translation('ACYM_UNSUBSCRIBE_TEXT_DESC').'">'.acym_translation('ACYM_UNSUBSCRIBE_TEXT').'</label>
+        	<label class="acyWPconfig" for="'.$this->get_field_id('unsubtext').'" title="'.acym_translation('ACYM_UNSUBSCRIBE_TEXT_DESC').'">'.acym_translation(
+                'ACYM_UNSUBSCRIBE_TEXT'
+            ).'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('unsubtext').'" name="'.$this->get_field_name('unsubtext').'" value="'.$params['unsubtext'].'" /></p>';
 
         echo '<p class="'.$this->get_field_id('unsubtextrow').'" '.($params['unsub'] == '0' ? 'style="display:none;"' : '').'>
-        	<label class="acyWPconfig" for="'.$this->get_field_id('unsubredirect').'" title="'.acym_translation('ACYM_REDIRECT_LINK_UNSUB_DESC').'">'.acym_translation('ACYM_REDIRECT_LINK_UNSUB').'</label>
-			<input type="text" class="widefat" id="'.$this->get_field_id('unsubredirect').'" name="'.$this->get_field_name('unsubredirect').'" value="'.$params['unsubredirect'].'" /></p>';
+        	<label class="acyWPconfig" for="'.$this->get_field_id('unsubredirect').'" title="'.acym_translation('ACYM_REDIRECT_LINK_UNSUB_DESC').'">'.acym_translation(
+                'ACYM_REDIRECT_LINK_UNSUB'
+            ).'</label>
+			<input type="text" class="widefat" id="'.$this->get_field_id('unsubredirect').'" name="'.$this->get_field_name(
+                'unsubredirect'
+            ).'" value="'.$params['unsubredirect'].'" /></p>';
 
         $optionsSuccess = [];
         $optionsSuccess[] = acym_selectOption('replace', 'ACYM_SUCCESS_REPLACE');
@@ -195,9 +257,19 @@ class acym_subscriptionform_widget extends WP_Widget
         $optionsSuccess[] = acym_selectOption('toptemp', 'ACYM_SUCCESS_TOP_TEMP');
         $optionsSuccess[] = acym_selectOption('standard', 'ACYM_SUCCESS_STANDARD');
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_SUCCESS_MODE_DESC').'">'.acym_translation('ACYM_SUCCESS_MODE').'</label>';
-        echo acym_select($optionsSuccess, $this->get_field_name('successmode'), $params['successmode'], 'class="acym_simple_select2"', 'value', 'text', $this->get_field_id('successmode')).'</p>';
+        echo acym_select(
+                $optionsSuccess,
+                $this->get_field_name('successmode'),
+                $params['successmode'],
+                'class="acym_simple_select2"',
+                'value',
+                'text',
+                $this->get_field_id('successmode')
+            ).'</p>';
 
-        echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('redirect').'" title="'.acym_translation('ACYM_REDIRECT_LINK_DESC').'">'.acym_translation('ACYM_REDIRECT_LINK').'</label>
+        echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('redirect').'" title="'.acym_translation('ACYM_REDIRECT_LINK_DESC').'">'.acym_translation(
+                'ACYM_REDIRECT_LINK'
+            ).'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('redirect').'" name="'.$this->get_field_name('redirect').'" value="'.$params['redirect'].'" /></p>';
 
         echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('introtext').'" title="'.acym_translation('ACYM_INTRO_TEXT_DESC').'">'.acym_translation('ACYM_INTRO_TEXT').'</label>
@@ -216,7 +288,15 @@ class acym_subscriptionform_widget extends WP_Widget
         $options[] = acym_selectOption('header', 'ACYM_IN_HEADER');
         $options[] = acym_selectOption('module', 'ACYM_ON_THE_MODULE');
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_MODULE_JS_DESC').'">'.acym_translation('ACYM_MODULE_JS').'</label>';
-        echo acym_Select($options, $this->get_field_name('includejs'), $params['includejs'], 'class="acym_simple_select2"', 'value', 'text', $this->get_field_id('includejs')).'</p>';
+        echo acym_Select(
+                $options,
+                $this->get_field_name('includejs'),
+                $params['includejs'],
+                'class="acym_simple_select2"',
+                'value',
+                'text',
+                $this->get_field_id('includejs')
+            ).'</p>';
 
         $options = [];
         $options[] = acym_selectOption('none', 'ACYM_DEFAULT');
@@ -224,7 +304,15 @@ class acym_subscriptionform_widget extends WP_Widget
         $options[] = acym_selectOption('center', 'ACYM_CENTER');
         $options[] = acym_selectOption('right', 'ACYM_RIGHT');
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_ALIGNMENT_DESC').'">'.acym_translation('ACYM_ALIGNMENT').'</label>';
-        echo acym_select($options, $this->get_field_name('alignment'), $params['alignment'], 'class="acym_simple_select2"', 'value', 'text', $this->get_field_id('alignment')).'</p>';
+        echo acym_select(
+                $options,
+                $this->get_field_name('alignment'),
+                $params['alignment'],
+                'class="acym_simple_select2"',
+                'value',
+                'text',
+                $this->get_field_id('alignment')
+            ).'</p>';
 
         echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('source').'" title="'.acym_translation('ACYM_SOURCE_DESC').'">'.acym_translation('ACYM_SOURCE').'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('source').'" name="'.$this->get_field_name('source').'" value="'.$params['source'].'" /></p>';
@@ -379,7 +467,12 @@ class acym_subscriptionform_widget extends WP_Widget
         ?>
 		<div class="acym_module <?php echo acym_escape($formClass); ?>" id="acym_module_<?php echo $formName; ?>">
 			<div class="acym_fulldiv" id="acym_fulldiv_<?php echo $formName; ?>" <?php echo $style; ?>>
-				<form enctype="multipart/form-data" id="<?php echo acym_escape($formName); ?>" name="<?php echo acym_escape($formName); ?>" method="POST" action="<?php echo acym_escape($formAction); ?>" onsubmit="return submitAcymForm('subscribe','<?php echo $formName; ?>', 'acymSubmitSubForm')">
+				<form enctype="multipart/form-data"
+					  id="<?php echo acym_escape($formName); ?>"
+					  name="<?php echo acym_escape($formName); ?>"
+					  method="POST"
+					  action="<?php echo acym_escape($formAction); ?>"
+					  onsubmit="return submitAcymForm('subscribe','<?php echo $formName; ?>', 'acymSubmitSubForm')">
 					<div class="acym_module_form">
                         <?php
                         $introText = $params->get('introtext', '');

@@ -100,9 +100,19 @@ class plgAcymTime extends acymPlugin
         $triggers['classic']['day'] = new stdClass();
         $triggers['classic']['day']->name = acym_translation('ACYM_EVERY_DAY_AT');
         $triggers['classic']['day']->option = '<div class="grid-x grid-margin-x" style="height: 40px;">';
-        $triggers['classic']['day']->option .= '<div class="cell medium-shrink">'.acym_select($hour, '[triggers][classic][day][hour]', empty($defaultValues['day']) ? date('H') : $defaultValues['day']['hour'], 'data-class="intext_select acym__select"').'</div>';
+        $triggers['classic']['day']->option .= '<div class="cell medium-shrink">'.acym_select(
+                $hour,
+                '[triggers][classic][day][hour]',
+                empty($defaultValues['day']) ? date('H') : $defaultValues['day']['hour'],
+                'data-class="intext_select acym__select"'
+            ).'</div>';
         $triggers['classic']['day']->option .= '<div class="cell medium-shrink acym_vcenter">:</div>';
-        $triggers['classic']['day']->option .= '<div class="cell medium-auto">'.acym_select($minutes, '[triggers][classic][day][minutes]', empty($defaultValues['day']) ? date('i') : $defaultValues['day']['minutes'], 'data-class="intext_select acym__select"').'</div>';
+        $triggers['classic']['day']->option .= '<div class="cell medium-auto">'.acym_select(
+                $minutes,
+                '[triggers][classic][day][minutes]',
+                empty($defaultValues['day']) ? date('i') : $defaultValues['day']['minutes'],
+                'data-class="intext_select acym__select"'
+            ).'</div>';
         $triggers['classic']['day']->option .= '</div>';
 
         $days = [
@@ -117,13 +127,33 @@ class plgAcymTime extends acymPlugin
 
         $triggers['classic']['weeks_on'] = new stdClass();
         $triggers['classic']['weeks_on']->name = acym_translation('ACYM_EVERY_WEEK_ON');
-        $triggers['classic']['weeks_on']->option = acym_selectMultiple($days, '[triggers][classic][weeks_on][day]', empty($defaultValues['weeks_on']) ? ['monday'] : $defaultValues['weeks_on']['day'], ['data-class' => 'acym__select']);
+        $triggers['classic']['weeks_on']->option = acym_selectMultiple(
+            $days,
+            '[triggers][classic][weeks_on][day]',
+            empty($defaultValues['weeks_on']) ? ['monday'] : $defaultValues['weeks_on']['day'],
+            ['data-class' => 'acym__select']
+        );
 
         $triggers['classic']['on_day_month'] = new stdClass();
         $triggers['classic']['on_day_month']->name = acym_translation('ACYM_ONTHE');
         $triggers['classic']['on_day_month']->option = '<div class="grid-x grid-margin-x" style="height: 40px;">';
-        $triggers['classic']['on_day_month']->option .= '<div class="cell medium-4">'.acym_select(['first' => acym_translation('ACYM_FIRST'), 'second' => acym_translation('ACYM_SECOND'), 'third' => acym_translation('ACYM_THIRD'), 'last' => acym_translation('ACYM_LAST')], '[triggers][classic][on_day_month][number]', empty($defaultValues['on_day_month']) ? null : $defaultValues['on_day_month']['number'], 'data-class="acym__select"').'</div>';
-        $triggers['classic']['on_day_month']->option .= '<div class="cell medium-4">'.acym_select($days, '[triggers][classic][on_day_month][day]', empty($defaultValues['on_day_month']) ? null : $defaultValues['on_day_month']['day'], 'data-class="acym__select" style="margin: 0 10px;"').'</div>';
+        $triggers['classic']['on_day_month']->option .= '<div class="cell medium-4">'.acym_select(
+                [
+                    'first' => acym_translation('ACYM_FIRST'),
+                    'second' => acym_translation('ACYM_SECOND'),
+                    'third' => acym_translation('ACYM_THIRD'),
+                    'last' => acym_translation('ACYM_LAST'),
+                ],
+                '[triggers][classic][on_day_month][number]',
+                empty($defaultValues['on_day_month']) ? null : $defaultValues['on_day_month']['number'],
+                'data-class="acym__select"'
+            ).'</div>';
+        $triggers['classic']['on_day_month']->option .= '<div class="cell medium-4">'.acym_select(
+                $days,
+                '[triggers][classic][on_day_month][day]',
+                empty($defaultValues['on_day_month']) ? null : $defaultValues['on_day_month']['day'],
+                'data-class="acym__select" style="margin: 0 10px;"'
+            ).'</div>';
         $triggers['classic']['on_day_month']->option .= '<div class="cell medium-4 acym_vcenter">'.acym_translation('ACYM_DAYOFMONTH').'</div>';
         $triggers['classic']['on_day_month']->option .= '</div>';
 
@@ -138,7 +168,12 @@ class plgAcymTime extends acymPlugin
         $triggers['classic']['every']->name = acym_translation('ACYM_EVERY');
         $triggers['classic']['every']->option = '<div class="grid-x grid-margin-x">';
         $triggers['classic']['every']->option .= '<div class="cell medium-shrink"><input type="number" name="[triggers][classic][every][number]" class="intext_input" value="'.(empty($defaultValues['every']) ? '1' : $defaultValues['every']['number']).'"></div>';
-        $triggers['classic']['every']->option .= '<div class="cell medium-auto">'.acym_select($every, '[triggers][classic][every][type]', empty($defaultValues['every']) ? '604800' : $defaultValues['every']['type'], 'data-class="intext_select acym__select"').'</div>';
+        $triggers['classic']['every']->option .= '<div class="cell medium-auto">'.acym_select(
+                $every,
+                '[triggers][classic][every][type]',
+                empty($defaultValues['every']) ? '604800' : $defaultValues['every']['type'],
+                'data-class="intext_select acym__select"'
+            ).'</div>';
         $triggers['classic']['every']->option .= '</div>';
     }
 
@@ -278,15 +313,30 @@ class plgAcymTime extends acymPlugin
     {
         if (!empty($automation->triggers['type_trigger'])) unset($automation->triggers['type_trigger']);
         if (!empty($automation->triggers['asap'])) $automation->triggers['asap'] = acym_translation('ACYM_EACH_TIME');
-        if (!empty($automation->triggers['day'])) $automation->triggers['day'] = acym_translation_sprintf('ACYM_TRIGGER_DAY_SUMMARY', $automation->triggers['day']['hour'], $automation->triggers['day']['minutes']);
-        if (!empty($automation->triggers['weeks_on'])) $automation->triggers['weeks_on'] = acym_translation_sprintf('ACYM_TRIGGER_WEEKS_ON_SUMMARY', implode(', ', $automation->triggers['weeks_on']['day']));
-        if (!empty($automation->triggers['on_day_month'])) $automation->triggers['on_day_month'] = acym_translation_sprintf('ACYM_TRIGGER_ON_DAY_MONTH_SUMMARY', $automation->triggers['on_day_month']['number'], $automation->triggers['on_day_month']['day']);
+        if (!empty($automation->triggers['day'])) $automation->triggers['day'] = acym_translation_sprintf(
+            'ACYM_TRIGGER_DAY_SUMMARY',
+            $automation->triggers['day']['hour'],
+            $automation->triggers['day']['minutes']
+        );
+        if (!empty($automation->triggers['weeks_on'])) $automation->triggers['weeks_on'] = acym_translation_sprintf(
+            'ACYM_TRIGGER_WEEKS_ON_SUMMARY',
+            implode(', ', $automation->triggers['weeks_on']['day'])
+        );
+        if (!empty($automation->triggers['on_day_month'])) $automation->triggers['on_day_month'] = acym_translation_sprintf(
+            'ACYM_TRIGGER_ON_DAY_MONTH_SUMMARY',
+            $automation->triggers['on_day_month']['number'],
+            $automation->triggers['on_day_month']['day']
+        );
         if (!empty($automation->triggers['every'])) {
             if ($automation->triggers['every']['type'] == 3600) $automation->triggers['every']['type'] = acym_translation('ACYM_HOURS');
             if ($automation->triggers['every']['type'] == 86400) $automation->triggers['every']['type'] = acym_translation('ACYM_DAYS');
             if ($automation->triggers['every']['type'] == 604800) $automation->triggers['every']['type'] = acym_translation('ACYM_WEEKS');
             if ($automation->triggers['every']['type'] == 2628000) $automation->triggers['every']['type'] = acym_translation('ACYM_MONTHS');
-            $automation->triggers['every'] = acym_translation_sprintf('ACYM_TRIGGER_EVERY_SUMMARY', $automation->triggers['every']['number'], $automation->triggers['every']['type']);
+            $automation->triggers['every'] = acym_translation_sprintf(
+                'ACYM_TRIGGER_EVERY_SUMMARY',
+                $automation->triggers['every']['number'],
+                $automation->triggers['every']['type']
+            );
         }
     }
 }

@@ -27,7 +27,14 @@ class ToggleController extends acymController
     {
         // $this->toggleableColumns[TABLE NAME WITHOUT PREFIX] = array(COLUMN NAME => PRIMARY KEY);
         $this->toggleableColumns['automation'] = ['active' => 'id'];
-        $this->toggleableColumns['field'] = ['active' => 'id', 'required' => 'id', 'backend_edition' => 'id', 'backend_listing' => 'id', 'frontend_edition' => 'id', 'frontend_listing' => 'id'];
+        $this->toggleableColumns['field'] = [
+            'active' => 'id',
+            'required' => 'id',
+            'backend_edition' => 'id',
+            'backend_listing' => 'id',
+            'frontend_edition' => 'id',
+            'frontend_listing' => 'id',
+        ];
         $this->toggleableColumns['list'] = ['active' => 'id', 'visible' => 'id'];
         $this->toggleableColumns['rule'] = ['active' => 'id'];
         $this->toggleableColumns['user'] = ['active' => 'id', 'confirmed' => 'id'];

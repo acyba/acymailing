@@ -9,7 +9,12 @@
     }
     ?>
 
-	<form enctype="multipart/form-data" action="<?php echo acym_frontendLink('frontusers'.(acym_isNoTemplate() ? '&'.acym_noTemplate() : '')); ?>" method="post" name="acyprofileform" id="acyprofileform" onsubmit="this.querySelector('input[type=submit]').click(); return false;">
+	<form enctype="multipart/form-data"
+		  action="<?php echo acym_frontendLink('frontusers'.(acym_isNoTemplate() ? '&'.acym_noTemplate() : '')); ?>"
+		  method="post"
+		  name="acyprofileform"
+		  id="acyprofileform"
+		  onsubmit="this.querySelector('input[type=submit]').click(); return false;">
 		<fieldset class="adminform acy_user_info">
 			<legend><span><?php echo acym_translation('ACYM_USER_INFORMATION'); ?></span></legend>
             <?php
@@ -90,7 +95,8 @@
                             if ($deleteButton == 1) {
                                 ?>
 								<td id="acybutton_subscriber_delete_data">
-									<button class="btn" onclick="if(confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE + '\n' + ACYM_JS_TXT.ACYM_DELETE_MY_DATA_CONFIRM)){ this.form.task.value = 'delete'; this.form.submit(); } return false;">
+									<button class="btn"
+											onclick="if(confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE + '\n' + ACYM_JS_TXT.ACYM_DELETE_MY_DATA_CONFIRM)){ this.form.task.value = 'delete'; this.form.submit(); } return false;">
                                         <?php echo acym_translation('ACYM_DELETE_MY_DATA'); ?>
 									</button>
 								</td>
@@ -196,7 +202,10 @@
 		<input type="hidden" name="ajax" value="1" />
 
 		<p class="acymodifybutton">
-			<input class="btn btn-primary" type="submit" onclick="return submitAcymForm('savechanges', 'acyprofileform', 'acym_checkChangeForm');" value="<?php echo acym_escape(acym_translation(empty($data['user']->id) ? 'ACYM_SUBSCRIBE' : 'ACYM_SAVE_CHANGES')); ?>" />
+			<input class="btn btn-primary"
+				   type="submit"
+				   onclick="return submitAcymForm('savechanges', 'acyprofileform', 'acym_checkChangeForm');"
+				   value="<?php echo acym_escape(acym_translation(empty($data['user']->id) ? 'ACYM_SUBSCRIBE' : 'ACYM_SAVE_CHANGES')); ?>" />
 		</p>
 	</form>
     <?php if (!empty($data['posttext'])) {

@@ -13,7 +13,10 @@
                     $class = $data['currentCampaign']->send_now ? '' : 'button-radio-unselected';
                     $class .= $data['currentCampaign']->draft ? '' : ' button-radio-disabled';
                     ?>
-					<button type="button" class="cell medium-9 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo $class; ?>" id="acym__campaign__sendsettings__now" data-sending-type="<?php echo $data['campaignClass']::SENDING_TYPE_NOW; ?>"><?php echo acym_translation('ACYM_NOW'); ?></button>
+					<button type="button"
+							class="cell medium-9 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo $class; ?>"
+							id="acym__campaign__sendsettings__now"
+							data-sending-type="<?php echo $data['campaignClass']::SENDING_TYPE_NOW; ?>"><?php echo acym_translation('ACYM_NOW'); ?></button>
 				</div>
                 <?php
                 $tooltip = acym_level(1) ? '' : 'data-acym-tooltip="'.acym_translation_sprintf('ACYM_USE_THIS_FEATURE', 'AcyMailing Essential').'"';
@@ -21,7 +24,10 @@
                 $class .= !acym_level(1) || !$data['currentCampaign']->draft ? ' button-radio-disabled' : '';
                 ?>
 				<div class="cell auto grid-x align-center">
-					<button type="button" <?php echo $tooltip; ?> class="cell medium-9 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo $class; ?>" id="acym__campaign__sendsettings__scheduled" data-sending-type="<?php echo $data['campaignClass']::SENDING_TYPE_SCHEDULED; ?>"><?php echo acym_translation('ACYM_SCHEDULED'); ?></button>
+					<button type="button" <?php echo $tooltip; ?>
+							class="cell medium-9 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo $class; ?>"
+							id="acym__campaign__sendsettings__scheduled"
+							data-sending-type="<?php echo $data['campaignClass']::SENDING_TYPE_SCHEDULED; ?>"><?php echo acym_translation('ACYM_SCHEDULED'); ?></button>
 				</div>
                 <?php
                 $tooltip = acym_level(2) ? '' : 'data-acym-tooltip="'.acym_translation_sprintf('ACYM_USE_THIS_FEATURE', 'AcyMailing Enterprise').'"';
@@ -29,7 +35,10 @@
                 $class .= !acym_level(2) || !$data['currentCampaign']->draft ? ' button-radio-disabled' : '';
                 ?>
 				<div class="cell auto grid-x align-center">
-					<button type="button" <?php echo $tooltip; ?> class="cell medium-9 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo $class; ?>" id="acym__campaign__sendsettings__auto" data-sending-type="<?php echo $data['campaignClass']::SENDING_TYPE_AUTO; ?>"><?php echo acym_translation('ACYM_AUTO'); ?></button>
+					<button type="button" <?php echo $tooltip; ?>
+							class="cell medium-9 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo $class; ?>"
+							id="acym__campaign__sendsettings__auto"
+							data-sending-type="<?php echo $data['campaignClass']::SENDING_TYPE_AUTO; ?>"><?php echo acym_translation('ACYM_AUTO'); ?></button>
 				</div>
 			</div>
         <?php } else { ?>
@@ -42,17 +51,21 @@
 
 <h5 class="cell margin-top-1 margin-bottom-1 acym__campaign__sendsettings__title-settings"><?php echo acym_translation('ACYM_ADDITIONAL_SETTINGS'); ?></h5>
 <div class="cell grid-x margin-left-1">
-	<div class="cell medium-11 grid-margin-x grid-x acym__campaign__sendsettings__params margin-left-3" data-show="acym__campaign__sendsettings__now" <?php echo $data['currentCampaign']->send_now ? '' : 'style="display: none"'; ?>>
+	<div class="cell medium-11 grid-margin-x grid-x acym__campaign__sendsettings__params margin-left-3"
+		 data-show="acym__campaign__sendsettings__now" <?php echo $data['currentCampaign']->send_now ? '' : 'style="display: none"'; ?>>
 		<p><?php echo acym_translation('ACYM_SENT_AS_SOON_CAMPAIGN_SAVE'); ?></p>
 	</div>
-	<div class="cell grid-x acym__campaign__sendsettings__params margin-left-3" data-show="acym__campaign__sendsettings__scheduled" <?php echo $data['currentCampaign']->send_scheduled ? '' : 'style="display: none"'; ?>>
+	<div class="cell grid-x acym__campaign__sendsettings__params margin-left-3"
+		 data-show="acym__campaign__sendsettings__scheduled" <?php echo $data['currentCampaign']->send_scheduled ? '' : 'style="display: none"'; ?>>
 		<div class="cell grid-x acym__campaign__sendsettings__display-send-type-scheduled">
 			<p id="acym__campaign__sendsettings__scheduled__send-date__label" class="cell shrink"><?php echo acym_translation('ACYM_CAMPAIGN_WILL_BE_SENT'); ?></p>
 			<label class="cell shrink" for="acym__campaign__sendsettings__send">
                 <?php
                 $value = empty($data['currentCampaign']->sending_date) ? '' : acym_date($data['currentCampaign']->sending_date, 'Y-m-d H:i');
                 echo acym_tooltip(
-                    '<input class="text-center acy_date_picker" data-acym-translate="0" type="text" name="sendingDate" id="acym__campaign__sendsettings__send-type-scheduled__date" value="'.acym_escape($value).'" readonly>',
+                    '<input class="text-center acy_date_picker" data-acym-translate="0" type="text" name="sendingDate" id="acym__campaign__sendsettings__send-type-scheduled__date" value="'.acym_escape(
+                        $value
+                    ).'" readonly>',
                     acym_translation('ACYM_CLICK_TO_EDIT')
                 );
                 ?>
@@ -60,7 +73,8 @@
 		</div>
 	</div>
 	<div class="cell grid-x align-center margin-left-3">
-		<div class="cell grid-x align-center acym__campaign__sendsettings__params" data-show="acym__campaign__sendsettings__auto" <?php echo $data['currentCampaign']->send_auto ? '' : 'style="display: none"'; ?>>
+		<div class="cell grid-x align-center acym__campaign__sendsettings__params"
+			 data-show="acym__campaign__sendsettings__auto" <?php echo $data['currentCampaign']->send_auto ? '' : 'style="display: none"'; ?>>
 			<div class="cell grid-x acym_vcenter">
 				<p class="cell shrink"><?php echo acym_translation('ACYM_THIS_WILL_GENERATE_CAMPAIGN_AUTOMATICALLY'); ?></p>
 				<div class="cell shrink grid-x margin-left-1">

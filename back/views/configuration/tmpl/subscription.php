@@ -2,7 +2,15 @@
 	<div class="acym_area_title"><?php echo acym_translation('ACYM_SUBSCRIPTION'); ?></div>
 	<div class="grid-x">
 		<div class="cell grid-x grid-margin-x">
-            <?php echo acym_switch('config[allow_visitor]', $this->config->get('allow_visitor'), acym_translation('ACYM_ALLOW_VISITOR'), [], 'xlarge-3 medium-5 small-9', "auto", "tiny"); ?>
+            <?php echo acym_switch(
+                'config[allow_visitor]',
+                $this->config->get('allow_visitor'),
+                acym_translation('ACYM_ALLOW_VISITOR'),
+                [],
+                'xlarge-3 medium-5 small-9',
+                "auto",
+                "tiny"
+            ); ?>
 		</div>
 		<div class="cell grid-x grid-margin-x">
             <?php
@@ -18,7 +26,16 @@
             ?>
 		</div>
 		<div class="cell grid-x grid-margin-x">
-            <?php echo acym_switch('config[require_confirmation]', $this->config->get('require_confirmation'), acym_translation('ACYM_REQUIRE_CONFIRMATION'), [], 'xlarge-3 medium-5 small-9', "auto", "tiny", 'confirm_config'); ?>
+            <?php echo acym_switch(
+                'config[require_confirmation]',
+                $this->config->get('require_confirmation'),
+                acym_translation('ACYM_REQUIRE_CONFIRMATION'),
+                [],
+                'xlarge-3 medium-5 small-9',
+                "auto",
+                "tiny",
+                'confirm_config'
+            ); ?>
 		</div>
 		<div class="cell grid-x" id="confirm_config">
 			<div class="cell grid-x">
@@ -33,7 +50,11 @@
 			</div>
 			<label for="confirm_redirect" class="cell grid-x margin-bottom-1">
 				<span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_CONFIRMATION_REDIRECTION'); ?></span>
-				<input id="confirm_redirect" class="cell xlarge-4 medium-auto margin-bottom-0" type="text" name="config[confirm_redirect]" value="<?php echo acym_escape($this->config->get('confirm_redirect')); ?>">
+				<input id="confirm_redirect"
+					   class="cell xlarge-4 medium-auto margin-bottom-0"
+					   type="text"
+					   name="config[confirm_redirect]"
+					   value="<?php echo acym_escape($this->config->get('confirm_redirect')); ?>">
 				<span class="cell large-auto hide-for-large-only hide-for-medium-only"></span>
 			</label>
 		</div>

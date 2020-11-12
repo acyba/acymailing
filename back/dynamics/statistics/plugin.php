@@ -65,7 +65,12 @@ class plgAcymStatistics extends acymPlugin
         $filters['statistics'] = new stdClass();
         $filters['statistics']->name = acym_translation('ACYM_STATISTICS');
         $filters['statistics']->option = '<div class="intext_select_automation cell">';
-        $filters['statistics']->option .= acym_select($status, 'acym_action[filters][__numor__][__numand__][statistics][status]', 'open', 'class="intext_select_automation acym__select"');
+        $filters['statistics']->option .= acym_select(
+            $status,
+            'acym_action[filters][__numor__][__numand__][statistics][status]',
+            'open',
+            'class="intext_select_automation acym__select"'
+        );
         $filters['statistics']->option .= '</div>';
         $filters['statistics']->option .= '<div class="intext_select_automation cell">';
         $ajaxParams = json_encode(['plugin' => __CLASS__, 'trigger' => 'searchMail',]);

@@ -34,7 +34,8 @@ jQuery(document).ready(function ($) {
                         $container.find('.acym__followup__emails__listing__status').html('');
 
                         stats.data.forEach(function (oneStat) {
-                            $container.find('.acym__followup__emails__listing__subject').append('<div class="cell acym_text_ellipsis">' + oneStat.subject + '</div>');
+                            $container.find('.acym__followup__emails__listing__subject')
+                                      .append('<div class="cell acym_text_ellipsis">' + oneStat.subject + '</div>');
                             $container.find('.acym__followup__emails__listing__status')
                                       .append('<div class="cell">'
                                               + '<div class="cell acym__campaign__status__status acym__background-color__green">'

@@ -529,7 +529,11 @@ class MailerHelper extends acyPHPMailer
         }
 
         //Lets try to do something even cooler and specify a messageID instead which will be kept by most mail clients and in the feedback loop...
-        $this->MessageID = "<".preg_replace("|[^a-z0-9+_]|i", '', base64_encode(rand(0, 9999999))."AC".$receiver->id."Y".$this->defaultMail[$mailId]->id."BA".base64_encode(time().rand(0, 99999)))."@".$this->serverHostname().">";
+        $this->MessageID = "<".preg_replace(
+                "|[^a-z0-9+_]|i",
+                '',
+                base64_encode(rand(0, 9999999))."AC".$receiver->id."Y".$this->defaultMail[$mailId]->id."BA".base64_encode(time().rand(0, 99999))
+            )."@".$this->serverHostname().">";
 
         // Set receiver name
         $addedName = '';
@@ -860,7 +864,21 @@ class MailerHelper extends acyPHPMailer
         $replaceByReturnChar = '#< */? *(br|p|h1|h2|legend|h3|li|ul|dd|dt|h4|h5|h6|tr|td|div)[^>]*>#Ui';
         $replaceLinks = '/< *a[^>]*href *= *"([^#][^"]*)"[^>]*>(.+)< *\/ *a *>/Uis';
 
-        $text = preg_replace([$removepictureslinks, $removeScript, $removeStyle, $removeStrikeTags, $replaceByTwoReturnChar, $replaceByStars, $replaceByReturnChar1, $replaceByReturnChar, $replaceLinks], ['', '', '', '', "\n\n", "\n* ", "\n", "\n", '${2} ( ${1} )'], $html);
+        $text = preg_replace(
+            [
+                $removepictureslinks,
+                $removeScript,
+                $removeStyle,
+                $removeStrikeTags,
+                $replaceByTwoReturnChar,
+                $replaceByStars,
+                $replaceByReturnChar1,
+                $replaceByReturnChar,
+                $replaceLinks,
+            ],
+            ['', '', '', '', "\n\n", "\n* ", "\n", "\n", '${2} ( ${1} )'],
+            $html
+        );
 
         //The striptags function may not do the job properly in some cases...
         $text = preg_replace('#(&lt;|&\#60;)([^ \n\r\t])#i', '&lt; ${2}', $text);
@@ -894,7 +912,16 @@ class MailerHelper extends acyPHPMailer
             return $result;
         }
 
-        $mimetypes = ['bmp' => 'image/bmp', 'gif' => 'image/gif', 'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg', 'jpe' => 'image/jpeg', 'png' => 'image/png', 'tiff' => 'image/tiff', 'tif' => 'image/tiff'];
+        $mimetypes = [
+            'bmp' => 'image/bmp',
+            'gif' => 'image/gif',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'jpe' => 'image/jpeg',
+            'png' => 'image/png',
+            'tiff' => 'image/tiff',
+            'tif' => 'image/tiff',
+        ];
 
         $allimages = [];
 
