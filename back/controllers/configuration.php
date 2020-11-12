@@ -335,9 +335,7 @@ class ConfigurationController extends acymController
                 'SELECT i.TABLE_NAME, i.CONSTRAINT_TYPE, i.CONSTRAINT_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME, k.COLUMN_NAME
                                                 FROM information_schema.TABLE_CONSTRAINTS AS i 
                                                 LEFT JOIN information_schema.KEY_COLUMN_USAGE AS k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME 
-                                                WHERE i.TABLE_NAME = '.acym_escapeDB($tableNameQuery).' AND i.CONSTRAINT_TYPE = "FOREIGN KEY" AND i.TABLE_SCHEMA = '.acym_escapeDB(
-                    $databaseName
-                ),
+                                                WHERE i.TABLE_NAME = '.acym_escapeDB($tableNameQuery).' AND i.CONSTRAINT_TYPE = "FOREIGN KEY" AND i.TABLE_SCHEMA = '.acym_escapeDB($databaseName),
                 'CONSTRAINT_NAME'
             );
 
@@ -357,32 +355,20 @@ class ConfigurationController extends acymController
                         }
                         if ($isError === null) {
                             $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
-                            $messages[] = '<span style="color:red">'.acym_translation_sprintf(
-                                    'ACYM_CHECKDB_ADD_FOREIGN_KEY_ERROR',
-                                    $constraintName,
-                                    $oneTableName,
-                                    $errorMessage
-                                ).'</span>';
+                            $messages[] = '<span style="color:red">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_FOREIGN_KEY_ERROR', $constraintName, $oneTableName, $errorMessage).'</span>';
                             continue;
                         }
                     }
 
                     try {
-                        $isError = acym_query(
-                            'ALTER TABLE `'.$oneTableName.'` ADD CONSTRAINT `'.$constraintName.'` FOREIGN KEY (`'.$constraintInfo['column'].'`) REFERENCES `'.$constraintInfo['table'].'` (`'.$constraintInfo['table_column'].'`) ON DELETE NO ACTION ON UPDATE NO ACTION;'
-                        );
+                        $isError = acym_query('ALTER TABLE `'.$oneTableName.'` ADD CONSTRAINT `'.$constraintName.'` FOREIGN KEY (`'.$constraintInfo['column'].'`) REFERENCES `'.$constraintInfo['table'].'` (`'.$constraintInfo['table_column'].'`) ON DELETE NO ACTION ON UPDATE NO ACTION;');
                     } catch (\Exception $e) {
                         $isError = null;
                     }
 
                     if ($isError === null) {
                         $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
-                        $messages[] = '<span style="color:red">'.acym_translation_sprintf(
-                                'ACYM_CHECKDB_ADD_FOREIGN_KEY_ERROR',
-                                $constraintName,
-                                $oneTableName,
-                                $errorMessage
-                            ).'</span>';
+                        $messages[] = '<span style="color:red">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_FOREIGN_KEY_ERROR', $constraintName, $oneTableName, $errorMessage).'</span>';
                     } else {
                         $messages[] = '<span style="color:green">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_FOREIGN_KEY_SUCCESS', $constraintName, $oneTableName).'</span>';
                     }

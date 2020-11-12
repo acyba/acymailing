@@ -17,26 +17,7 @@ class acyRouter extends acyHook
         add_action('wp_ajax_nopriv_acymailing_frontrouter', [$this, 'frontRouter']);
 
         // Make sure we can redirect / download / modify headers if needed after some checks
-        $pages = [
-            'automation',
-            'bounces',
-            'campaigns',
-            'configuration',
-            'dashboard',
-            'dynamics',
-            'fields',
-            'file',
-            'followups',
-            'forms',
-            'language',
-            'lists',
-            'mails',
-            'override',
-            'queue',
-            'segments',
-            'stats',
-            'users',
-        ];
+        $pages = ['automation', 'bounces', 'campaigns', 'configuration', 'dashboard', 'dynamics', 'fields', 'file', 'followups', 'forms', 'language', 'lists', 'mails', 'override', 'queue', 'segments', 'stats', 'users'];
         $headerPages = ['automation', 'bounces', 'campaigns', 'dashboard', 'fields', 'followups', 'forms', 'lists', 'mails', 'override', 'segments', 'stats', 'users'];
         foreach ($pages as $page) {
             if (in_array($page, $headerPages)) {

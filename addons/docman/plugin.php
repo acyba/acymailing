@@ -276,9 +276,7 @@ class plgAcymDocman extends acymPlugin
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);
                 if (!empty($lastGenerated)) {
-                    $where[] = '(document.publish_on > '.acym_escapeDB(
-                            acym_date($lastGenerated, 'Y-m-d H:i:s', false)
-                        ).' OR (document.publish_on > 0000-00-00 00:00:00 AND created_on > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false)).'))';
+                    $where[] = '(document.publish_on > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false)).' OR (document.publish_on > 0000-00-00 00:00:00 AND created_on > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false)).'))';
                 }
             }
             $query .= ' WHERE ('.implode(') AND (', $where).')';
@@ -368,9 +366,7 @@ class plgAcymDocman extends acymPlugin
         if (!in_array('image', $tag->display)) $imagePath = '';
 
         $afterArticle = '';
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
-                acym_translation('ACYM_READ_MORE')
-            ).'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle = $varFields['{readmore}'];
 
         $description = '';

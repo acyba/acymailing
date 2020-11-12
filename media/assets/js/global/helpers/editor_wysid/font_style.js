@@ -91,14 +91,16 @@ const acym_editorWysidFontStyle = {
         });
 
         jQuery('#acym__wysid__right__toolbar__settings__font-family').on('change', function () {
-            acym_editorWysidFontStyle.setSettingsElementStyle(jQuery('#acym__wysid__right__toolbar__settings__font--select').val(),
+            acym_editorWysidFontStyle.setSettingsElementStyle(
+                jQuery('#acym__wysid__right__toolbar__settings__font--select').val(),
                 'font-family',
                 jQuery(this).val()
             );
         });
 
         jQuery('#acym__wysid__right__toolbar__settings__font-size').on('change', function () {
-            acym_editorWysidFontStyle.setSettingsElementStyle(jQuery('#acym__wysid__right__toolbar__settings__font--select').val(),
+            acym_editorWysidFontStyle.setSettingsElementStyle(
+                jQuery('#acym__wysid__right__toolbar__settings__font--select').val(),
                 'font-size',
                 jQuery(this).val()
             );
@@ -106,20 +108,28 @@ const acym_editorWysidFontStyle = {
 
         $settingsBold.off('click').on('click', function () {
             $settingsBold.hasClass('acym__wysid__right__toolbar__settings__bold--selected') ? $settingsBold.removeClass(
-                'acym__wysid__right__toolbar__settings__bold--selected') && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(),
+                'acym__wysid__right__toolbar__settings__bold--selected') && acym_editorWysidFontStyle.setSettingsElementStyle(
+                $toolbarFont.val(),
                 'font-weight',
                 'normal'
-            ) : $settingsBold.addClass('acym__wysid__right__toolbar__settings__bold--selected')
-                && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(), 'font-weight', 'bold');
+            ) : $settingsBold.addClass('acym__wysid__right__toolbar__settings__bold--selected') && acym_editorWysidFontStyle.setSettingsElementStyle(
+                $toolbarFont.val(),
+                'font-weight',
+                'bold'
+            );
         });
 
         $settingsItalic.off('click').on('click', function () {
             $settingsItalic.hasClass('acym__wysid__right__toolbar__settings__italic--selected') ? $settingsItalic.removeClass(
-                'acym__wysid__right__toolbar__settings__italic--selected') && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(),
+                'acym__wysid__right__toolbar__settings__italic--selected') && acym_editorWysidFontStyle.setSettingsElementStyle(
+                $toolbarFont.val(),
                 'font-style',
                 'normal'
-            ) : $settingsItalic.addClass('acym__wysid__right__toolbar__settings__italic--selected')
-                && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(), 'font-style', 'italic');
+            ) : $settingsItalic.addClass('acym__wysid__right__toolbar__settings__italic--selected') && acym_editorWysidFontStyle.setSettingsElementStyle(
+                $toolbarFont.val(),
+                'font-style',
+                'italic'
+            );
         });
     },
     setApplyStylesheetSettings: function () {

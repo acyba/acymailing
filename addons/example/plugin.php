@@ -1,7 +1,6 @@
 <?php
 
 use AcyMailing\Libraries\acymPlugin;
-
 // The class name must be "plgAcym" followed by the add-on's folder name with an uppercase at the beginning
 // Any other uppercase character in the class name will prevent the good execution
 class plgAcymExample extends acymPlugin
@@ -101,8 +100,7 @@ class plgAcymExample extends acymPlugin
     }
 
     /**
-     * This method is mandatory if you declare a new dynamic text. It is used to display the options and interface of your dynamic text's tab, in the popup for dynamic text
-     * insertion
+     * This method is mandatory if you declare a new dynamic text. It is used to display the options and interface of your dynamic text's tab, in the popup for dynamic text insertion
      */
     public function textPopup()
     {

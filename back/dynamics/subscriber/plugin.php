@@ -220,9 +220,7 @@ class plgAcymSubscriber extends acymPlugin
             } elseif ('date' == $field->type) {
                 $field->option = json_decode($field->option, true);
                 $customFieldValues[$field->id] = acym_tooltip(
-                    '<input class="acym__automation__one-field acym__automation__conditions__fields__select intext_input_automation cell" type="text" name="[conditions][__numor__][__numand__][acy_field][value]" style="display: none" data-condition-field="'.intval(
-                        $field->id
-                    ).'">',
+                    '<input class="acym__automation__one-field acym__automation__conditions__fields__select intext_input_automation cell" type="text" name="[conditions][__numor__][__numand__][acy_field][value]" style="display: none" data-condition-field="'.intval($field->id).'">',
                     acym_translation_sprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
                     'intext_select_automation cell'
                 );
@@ -266,9 +264,7 @@ class plgAcymSubscriber extends acymPlugin
 
             $type = 'phone' == $field->type ? 'phone' : '';
 
-            $query->leftjoin['userfield'.$num] = ' #__acym_user_has_field as userfield'.$num.' ON userfield'.$num.'.user_id = user.id AND userfield'.$num.'.field_id = '.intval(
-                    $options['field']
-                );
+            $query->leftjoin['userfield'.$num] = ' #__acym_user_has_field as userfield'.$num.' ON userfield'.$num.'.user_id = user.id AND userfield'.$num.'.field_id = '.intval($options['field']);
             $query->where[] = $query->convertQuery('userfield'.$num, 'value', $options['operator'], $options['value'], $type);
         } else {
             if (in_array($options['field'], ['creation_date', 'confirmation_date'])) {
@@ -358,12 +354,7 @@ class plgAcymSubscriber extends acymPlugin
 
         $actions['acy_user'] = new stdClass();
         $actions['acy_user']->name = acym_translation('ACYM_ACTION_ON_USERS');
-        $actions['acy_user']->option = '<div class="intext_select_automation cell">'.acym_select(
-                $userActions,
-                'acym_action[actions][__and__][acy_user][action]',
-                null,
-                'class="acym__select"'
-            ).'</div>';
+        $actions['acy_user']->option = '<div class="intext_select_automation cell">'.acym_select($userActions, 'acym_action[actions][__and__][acy_user][action]', null, 'class="acym__select"').'</div>';
 
 
         $userClass = new UserClass();
@@ -400,49 +391,26 @@ class plgAcymSubscriber extends acymPlugin
                     $values[$value['value']] = $valueTmp;
                 }
                 $customFieldValues[$field->id] = '<div class="acym__automation__one-field intext_select_automation cell" style="display: none">';
-                $customFieldValues[$field->id] .= acym_select(
-                    $values,
-                    '[actions][__and__][acy_user_value][value]',
-                    null,
-                    'class="acym__select acym__automation__actions__fields__select" data-action-field="'.$field->id.'"'
-                );
+                $customFieldValues[$field->id] .= acym_select($values, '[actions][__and__][acy_user_value][value]', null, 'class="acym__select acym__automation__actions__fields__select" data-action-field="'.$field->id.'"');
                 $customFieldValues[$field->id] .= '</div>';
             } elseif ('date' == $field->type) {
                 $field->option = json_decode($field->option, true);
-                $customFieldValues[$field->id] = acym_tooltip(
-                    '<input class="acym__automation__one-field acym__automation__actions__fields__select intext_input_automation cell" type="text" name="[actions][__and__][acy_user_value][value]" style="display: none" data-action-field="'.$field->id.'">',
-                    acym_translation_sprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
-                    'intext_select_automation cell'
-                );
+                $customFieldValues[$field->id] = acym_tooltip('<input class="acym__automation__one-field acym__automation__actions__fields__select intext_input_automation cell" type="text" name="[actions][__and__][acy_user_value][value]" style="display: none" data-action-field="'.$field->id.'">', acym_translation_sprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']), 'intext_select_automation cell');
             }
         }
 
         $actions['acy_user_value'] = new stdClass();
         $actions['acy_user_value']->name = acym_translation('ACYM_SET_USER_VALUE');
-        $actions['acy_user_value']->option = '<div class="intext_select_automation">'.acym_select(
-                $userFields,
-                'acym_action[actions][__and__][acy_user_value][field]',
-                null,
-                'class="acym__select acym__automation__actions__fields__dropdown"'
-            ).'</div><div class="intext_select_automation cell">'.acym_select(
-                $userOperator,
-                'acym_action[actions][__and__][acy_user_value][operator]',
-                null,
-                'class="acym__select acym__automation__actions__operator__dropdown"'
-            ).'</div><input type="text" name="acym_action[actions][__and__][acy_user_value][value]" class="intext_input_automation cell acym__automation__one-field acym__automation__action__regular-field">';
+        $actions['acy_user_value']->option = '<div class="intext_select_automation">'.acym_select($userFields, 'acym_action[actions][__and__][acy_user_value][field]', null, 'class="acym__select acym__automation__actions__fields__dropdown"').'</div><div class="intext_select_automation cell">'.acym_select($userOperator, 'acym_action[actions][__and__][acy_user_value][operator]', null, 'class="acym__select acym__automation__actions__operator__dropdown"').'</div><input type="text" name="acym_action[actions][__and__][acy_user_value][value]" class="intext_input_automation cell acym__automation__one-field acym__automation__action__regular-field">';
         $actions['acy_user_value']->option .= implode(' ', $customFieldValues);
 
         $actions['acy_add_queue'] = new stdClass();
         $actions['acy_add_queue']->name = acym_translation('ACYM_ADD_EMAIL_QUEUE');
-        $actions['acy_add_queue']->option = '<button class="shrink grid-x cell acy_button_submit button " type="button" data-task="createMail" data-and="__and__">'.acym_translation(
-                'ACYM_CREATE_MAIL'
-            ).'</button>';
+        $actions['acy_add_queue']->option = '<button class="shrink grid-x cell acy_button_submit button " type="button" data-task="createMail" data-and="__and__">'.acym_translation('ACYM_CREATE_MAIL').'</button>';
         $actions['acy_add_queue']->option .= '<input type="hidden" name="acym_action[actions][__and__][acy_add_queue][mail_id]">';
         $actions['acy_add_queue']->option .= '<div class="shrink acym__automation__action__mail__name"></div>';
         $actions['acy_add_queue']->option .= '<div class="shrink margin-left-1 margin-right-1">'.acym_strtolower(acym_translation('ACYM_OR')).' </div>';
-        $actions['acy_add_queue']->option .= '<button type="button" data-modal-name="acym__template__choose__modal__and__" data-open="acym__template__choose__modal" aria-controls="acym__template__choose__modal" tabindex="0" aria-haspopup="true" class="cell medium-shrink button-secondary auto button ">'.acym_translation(
-                'ACYM_CHOOSE_EXISTING'
-            ).'</button>';
+        $actions['acy_add_queue']->option .= '<button type="button" data-modal-name="acym__template__choose__modal__and__" data-open="acym__template__choose__modal" aria-controls="acym__template__choose__modal" tabindex="0" aria-haspopup="true" class="cell medium-shrink button-secondary auto button ">'.acym_translation('ACYM_CHOOSE_EXISTING').'</button>';
         $actions['acy_add_queue']->option .= acym_info('ACYM_CHOOSE_EXISTING_DESC', '', 'margin-left-0');
         $actions['acy_add_queue']->option .= '<div class="medium-4 grid-x cell">';
         $actions['acy_add_queue']->option .= acym_dateField('acym_action[actions][__and__][acy_add_queue][time]', '[time]');
@@ -539,12 +507,7 @@ class plgAcymSubscriber extends acymPlugin
             if (!empty($query->where)) $execute .= ' WHERE ('.implode(') AND (', $query->where).')';
         } else {
             $customFieldAlreadyExists = acym_loadResult('SELECT COUNT(user_id) FROM #__acym_user_has_field WHERE field_id = '.intval($action['field']));
-            $execute = 'INSERT INTO #__acym_user_has_field ('.$allColumn.') SELECT id AS user_id, '.intval(
-                    $action['field']
-                ).' AS field_id, '.$newValue.' AS value FROM #__acym_user AS user WHERE ('.implode(
-                    ') AND (',
-                    $query->where
-                ).') ON DUPLICATE KEY UPDATE '.$column.' = VALUES('.$column.')';
+            $execute = 'INSERT INTO #__acym_user_has_field ('.$allColumn.') SELECT id AS user_id, '.intval($action['field']).' AS field_id, '.$newValue.' AS value FROM #__acym_user AS user WHERE ('.implode(') AND (', $query->where).') ON DUPLICATE KEY UPDATE '.$column.' = VALUES('.$column.')';
         }
 
         $nbAffected = acym_query($execute);
@@ -721,12 +684,7 @@ class plgAcymSubscriber extends acymPlugin
                 $field = $fieldClass->getOneFieldById($automationAction['acy_user_value']['field']);
                 $automationAction['acy_user_value']['field'] = $field->name;
             }
-            $automationAction = acym_translation_sprintf(
-                'ACYM_ACTION_USER_VALUE_SUMMARY',
-                $automationAction['acy_user_value']['field'],
-                $automationAction['acy_user_value']['operator'],
-                $automationAction['acy_user_value']['value']
-            );
+            $automationAction = acym_translation_sprintf('ACYM_ACTION_USER_VALUE_SUMMARY', $automationAction['acy_user_value']['field'], $automationAction['acy_user_value']['operator'], $automationAction['acy_user_value']['value']);
         }
 
         if (!empty($automationAction['acy_add_queue'])) {
@@ -735,11 +693,7 @@ class plgAcymSubscriber extends acymPlugin
             if (empty($mail)) {
                 $automationAction = '<span class="acym__color__red">'.acym_translation('ACYM_SELECT_AN_EMAIL').'</span>';
             } else {
-                $automationAction = acym_translation_sprintf(
-                    'ACYM_ACTION_ADD_QUEUE_SUMMARY',
-                    $mail->name,
-                    acym_date(acym_replaceDate($automationAction['acy_add_queue']['time']), 'd M Y H:i')
-                );
+                $automationAction = acym_translation_sprintf('ACYM_ACTION_ADD_QUEUE_SUMMARY', $mail->name, acym_date(acym_replaceDate($automationAction['acy_add_queue']['time']), 'd M Y H:i'));
             }
         }
 

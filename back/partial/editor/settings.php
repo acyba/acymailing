@@ -1,6 +1,5 @@
 <div id="acym__wysid__right__toolbar__settings" style="display: none;" class="cell grid-padding-x acym__wysid__right__toolbar--menu">
-	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_TEMPLATE_DESIGN'); ?><i class="acymicon-keyboard_arrow_up"></i>
-	</p>
+	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_TEMPLATE_DESIGN'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
 	<div class="grid-y acym__wysid__right__toolbar__design--show acym__wysid__context__modal__container">
 		<div class="grid-x margin-bottom-1 small-12 cell">
 			<label for="acym__wysid__background-colorpicker" class="cell large-6 small-9"><?php echo acym_translation('ACYM_BACKGROUND_COLOR'); ?></label>
@@ -90,29 +89,16 @@
 			<div class="cell hide-for-small-only medium-3"></div>
             <?php
             $dataStyleSheet = '<div class="grid-x acym__wysid__right__toolbar__settings__stylesheet">
-                                                    <h6 class="acym__wysid__right__toolbar__settings__stylesheet__title cell text-center margin-top-1">'.acym_translation(
-                    'ACYM_HERE_PASTE_YOUR_STYLESHEET'
-                ).'</h6>
+                                                    <h6 class="acym__wysid__right__toolbar__settings__stylesheet__title cell text-center margin-top-1">'.acym_translation('ACYM_HERE_PASTE_YOUR_STYLESHEET').'</h6>
                                                     <textarea id="acym__wysid__right__toolbar__settings__stylesheet__textarea" class="margin-top-1 acym__blue" rows="15"></textarea>
-                                                    <button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__cancel" class="button cell medium-4">'.acym_translation(
-                    'ACYM_CANCEL'
-                ).'</button>
+                                                    <button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__cancel" class="button cell medium-4">'.acym_translation('ACYM_CANCEL').'</button>
                                                     <div class="medium-4 cell"></div>
-                                                    <button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__apply" class="button cell medium-4">'.acym_translation(
-                    'ACYM_LOAD_STYLESHEET'
-                ).'</button>
+                                                    <button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__apply" class="button cell medium-4">'.acym_translation('ACYM_LOAD_STYLESHEET').'</button>
                                                </div>';
-            echo acym_modal(
-                acym_translation('ACYM_CUSTOM_ADD_STYLESHEET'),
-                $dataStyleSheet,
-                'acym__wysid__right__toolbar__settings__stylesheet__modal',
-                '',
-                'class="button cell medium-6 margin-top-2" id="acym__wysid__right__toolbar__settings__stylesheet__open"'
-            ); ?>
+            echo acym_modal(acym_translation('ACYM_CUSTOM_ADD_STYLESHEET'), $dataStyleSheet, 'acym__wysid__right__toolbar__settings__stylesheet__modal', '', 'class="button cell medium-6 margin-top-2" id="acym__wysid__right__toolbar__settings__stylesheet__open"'); ?>
 		</div>
 	</div>
-	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_CUSTOM_SOCIAL_ICONS'); ?>
-		<i class="acymicon-keyboard_arrow_up"></i></p>
+	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_CUSTOM_SOCIAL_ICONS'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
 	<div class="grid-y acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__right__toolbar__design__social__icons acym__wysid__context__modal__container">
         <?php
         $config = acym_config();
@@ -121,9 +107,7 @@
             echo '<div class="cell grid-x margin-bottom-2 acym_vcenter acym__wysid__right__toolbar__design__social__icons__one">
                         				<img class="cell shrink" src="'.acym_escape($iconUrl).'" alt="icon '.acym_escape($social).'">
                         				<input type="file" name="icon_'.acym_escape($social).'" class="auto cell" accept="image/png, image/jpeg">
-                        				<div class="auto cell grid-x text-center align-center acym_vcenter"><span class="shrink cell acym__wysid__social__icons__import__text">'.acym_translation(
-                    'ACYM_SELECT_NEW_ICON'
-                ).'</span></div>
+                        				<div class="auto cell grid-x text-center align-center acym_vcenter"><span class="shrink cell acym__wysid__social__icons__import__text">'.acym_translation('ACYM_SELECT_NEW_ICON').'</span></div>
                         				<button disabled type="button" class="button cell shrink acym__wysid__social__icons__import">'.acym_translation('ACYM_IMPORT').'</button>
                         			 </div>';
         }

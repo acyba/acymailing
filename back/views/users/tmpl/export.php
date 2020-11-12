@@ -6,8 +6,7 @@
 		<div class="cell grid-x grid-margin-x">
 			<div class="cell acym_area medium-6 acym__content">
 				<div class="acym_area_title"><?php echo acym_translation('ACYM_FIELDS_TO_EXPORT'); ?></div>
-				<p><span id="acym__users__export__check_all_field"><?php echo acym_strtolower(acym_translation('ACYM_ALL')); ?></span> |
-					<span id="acym__users__export__check_default_field"><?php echo acym_strtolower(acym_translation('ACYM_DEFAULT')); ?></span></p>
+				<p><span id="acym__users__export__check_all_field"><?php echo acym_strtolower(acym_translation('ACYM_ALL')); ?></span> | <span id="acym__users__export__check_default_field"><?php echo acym_strtolower(acym_translation('ACYM_DEFAULT')); ?></span></p>
 				<div class="margin-bottom-1">
                     <?php
                     $defaultFields = explode(',', $this->config->get('export_fields', 'name,email'));
@@ -68,11 +67,7 @@
 				<div class="acym_area_title"><?php echo acym_translation('ACYM_USERS_TO_EXPORT'); ?></div>
                 <?php if (empty($data['checkedElements']) || $data['isPreselectedList']) { ?>
 					<fieldset id="acym__users__export__users-to-export" class="margin-bottom-1">
-                        <?php echo acym_radio(
-                            ['all' => acym_translation('ACYM_ALL_USERS'), 'list' => acym_translation('ACYM_USERS_FROM_LISTS')],
-                            'export_users-to-export',
-                            $data['isPreselectedList'] ? 'list' : 'all'
-                        ); ?>
+                        <?php echo acym_radio(['all' => acym_translation('ACYM_ALL_USERS'), 'list' => acym_translation('ACYM_USERS_FROM_LISTS')], 'export_users-to-export', $data['isPreselectedList'] ? 'list' : 'all'); ?>
 					</fieldset>
 					<div id="acym__users__export__select_all" style="display: <?php echo $data['isPreselectedList'] ? 'none' : 'block'; ?>">
                         <?php echo acym_translation('ACYM_ALL_USER_WILL_BE_EXPORTED'); ?>

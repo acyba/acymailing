@@ -92,9 +92,7 @@ class RegacyHelper extends acymObject
             $checked = $oneList['checked'] ? 'checked="checked"' : '';
             $result .= '<tr style="border:0">
                             <td style="border:0">
-                                <input type="checkbox" id="acym__regacy__lists-'.intval(
-                    $id
-                ).'" class="acym_checkbox" name="regacy_visible_lists_checked[]" '.$checked.' value="'.intval($id).'"/>
+                                <input type="checkbox" id="acym__regacy__lists-'.intval($id).'" class="acym_checkbox" name="regacy_visible_lists_checked[]" '.$checked.' value="'.intval($id).'"/>
                             </td>
                             <td style="border:0; padding-left:10px;" nowrap="nowrap">
                                 <label for="acym__regacy__lists-'.intval($id).'" class="acym__regacy__lists__label">'.acym_escape($oneList['name']).'</label>

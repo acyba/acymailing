@@ -189,9 +189,7 @@ class plgAcymUser extends acymPlugin
                     $fieldValues = trim(implode(', ', $userFieldVals), ', ');
                     if (empty($fieldValues)) {
                         $defaultValue = acym_loadObject('SELECT default_value, type FROM #__fields WHERE id = '.intval($mytag->id));
-                        if (($defaultValue->type == 'user' && !empty($defaultValue->default_value)) || ($defaultValue->type != 'user' && strlen(
-                                    $defaultValue->default_value
-                                ) > 0)) {
+                        if (($defaultValue->type == 'user' && !empty($defaultValue->default_value)) || ($defaultValue->type != 'user' && strlen($defaultValue->default_value) > 0)) {
                             $userFieldVals = [$defaultValue->default_value];
                         }
                     }
@@ -287,11 +285,7 @@ class plgAcymUser extends acymPlugin
 
         if (ACYM_CMS == 'joomla') {
             $conditions['user']['acy_group']->option .= '<div class="cell grid-x medium-3">';
-            $conditions['user']['acy_group']->option .= acym_switch(
-                'acym_condition[conditions][__numor__][__numand__][acy_group][subgroup]',
-                1,
-                acym_translation('ACYM_INCLUDE_SUB_GROUPS')
-            );
+            $conditions['user']['acy_group']->option .= acym_switch('acym_condition[conditions][__numor__][__numand__][acy_group][subgroup]', 1, acym_translation('ACYM_INCLUDE_SUB_GROUPS'));
             $conditions['user']['acy_group']->option .= '</div>';
         }
 
@@ -324,12 +318,7 @@ class plgAcymUser extends acymPlugin
         $conditions['user']['acy_cmsfield'] = new stdClass();
         $conditions['user']['acy_cmsfield']->name = acym_translation('ACYM_ACCOUNT_USER_FIELD');
         $conditions['user']['acy_cmsfield']->option = '<div class="intext_select_automation cell">';
-        $conditions['user']['acy_cmsfield']->option .= acym_select(
-            $cmsFields,
-            'acym_condition[conditions][__numor__][__numand__][acy_cmsfield][field]',
-            null,
-            'class="acym__select"'
-        );
+        $conditions['user']['acy_cmsfield']->option .= acym_select($cmsFields, 'acym_condition[conditions][__numor__][__numand__][acy_cmsfield][field]', null, 'class="acym__select"');
         $conditions['user']['acy_cmsfield']->option .= '</div>';
         $conditions['user']['acy_cmsfield']->option .= '<div class="intext_select_automation cell">';
         $conditions['user']['acy_cmsfield']->option .= $operator->display('acym_condition[conditions][__numor__][__numand__][acy_cmsfield][operator]');
@@ -340,21 +329,14 @@ class plgAcymUser extends acymPlugin
         $conditions['classic']['acy_totaluser']->name = acym_translation('ACYM_NUMBER_OF_USERS');
         $conditions['classic']['acy_totaluser']->option = '<div class="cell shrink acym__automation__inner__text">'.acym_translation('ACYM_THERE_IS').'</div>';
         $conditions['classic']['acy_totaluser']->option .= '<div class="intext_select_automation cell">';
-        $conditions['classic']['acy_totaluser']->option .= acym_select(
-            ['=' => acym_translation('ACYM_EXACTLY'), '>' => acym_translation('ACYM_MORE_THAN'), '<' => acym_translation('ACYM_LESS_THAN')],
-            'acym_condition[conditions][__numor__][__numand__][acy_totaluser][operator]',
-            null,
-            'class="intext_select_automation acym__select"'
-        );
+        $conditions['classic']['acy_totaluser']->option .= acym_select(['=' => acym_translation('ACYM_EXACTLY'), '>' => acym_translation('ACYM_MORE_THAN'), '<' => acym_translation('ACYM_LESS_THAN')], 'acym_condition[conditions][__numor__][__numand__][acy_totaluser][operator]', null, 'class="intext_select_automation acym__select"');
         $conditions['classic']['acy_totaluser']->option .= '</div>';
         $conditions['classic']['acy_totaluser']->option .= '<input type="number" min="0" class="intext_input_automation cell" name="acym_condition[conditions][__numor__][__numand__][acy_totaluser][number]">';
         $conditions['classic']['acy_totaluser']->option .= '<div class="cell shrink acym__automation__inner__text">'.acym_translation('ACYM_ACYMAILING_USERS').'</div>';
 
         $conditions['both']['acy_toss'] = new stdClass();
         $conditions['both']['acy_toss']->name = acym_translation('ACYM_TOSS');
-        $conditions['both']['acy_toss']->option = '<input type="hidden" name="acym_condition[conditions][__numor__][__numand__][acy_toss][toss]" value="true"><div class="acym__automation__inner__text">'.acym_translation(
-                'ACYM_TOSS_DESC'
-            ).'</div>';
+        $conditions['both']['acy_toss']->option = '<input type="hidden" name="acym_condition[conditions][__numor__][__numand__][acy_toss][toss]" value="true"><div class="acym__automation__inner__text">'.acym_translation('ACYM_TOSS_DESC').'</div>';
     }
 
     public function onAcymDeclareFilters(&$filters)
@@ -462,9 +444,7 @@ class plgAcymUser extends acymPlugin
         } else {
             $operator = (empty($options['in']) || $options['in'] == 'in') ? 'IS NOT NULL AND cmsuser'.$num.'.user_id != 0' : "IS NULL";
 
-            $query->leftjoin['cmsuser'.$num] = '#__usermeta AS cmsuser'.$num.' ON cmsuser'.$num.'.user_id = user.cms_id AND cmsuser'.$num.'.meta_key = "#__capabilities" AND cmsuser'.$num.'.meta_value LIKE '.acym_escapeDB(
-                    '%'.strlen($options['group']).':"'.$options['group'].'"%'
-                );
+            $query->leftjoin['cmsuser'.$num] = '#__usermeta AS cmsuser'.$num.' ON cmsuser'.$num.'.user_id = user.cms_id AND cmsuser'.$num.'.meta_key = "#__capabilities" AND cmsuser'.$num.'.meta_value LIKE '.acym_escapeDB('%'.strlen($options['group']).':"'.$options['group'].'"%');
             $query->where[] = 'cmsuser'.$num.'.user_id '.$operator;
         }
 
@@ -498,9 +478,7 @@ class plgAcymUser extends acymPlugin
         // Handle custom fields
         if (strpos($options['field'], 'cf_') !== false) {
             $cfId = substr($options['field'], 3);
-            $query->leftjoin['cmsuserfields'.$num] = '#__fields_values AS cmsuserfields'.$num.' ON cmsuserfields'.$num.'.item_id = user.cms_id AND cmsuserfields'.$num.'.field_id = '.intval(
-                    $cfId
-                );
+            $query->leftjoin['cmsuserfields'.$num] = '#__fields_values AS cmsuserfields'.$num.' ON cmsuserfields'.$num.'.item_id = user.cms_id AND cmsuserfields'.$num.'.field_id = '.intval($cfId);
             $query->where[] = $query->convertQuery('cmsuserfields'.$num, 'value', $options['operator'], $options['value'], '');
         } else {
             // Handle normal fields
@@ -561,11 +539,7 @@ class plgAcymUser extends acymPlugin
             }
         }
 
-        $finalText = acym_translation_sprintf(
-            'ACYM_FILTER_ACY_GROUP_SUMMARY',
-            acym_translation($automation['acy_group']['in'] == 'in' ? 'ACYM_IN' : 'ACYM_NOT_IN'),
-            acym_translation($automation['acy_group']['group'])
-        );
+        $finalText = acym_translation_sprintf('ACYM_FILTER_ACY_GROUP_SUMMARY', acym_translation($automation['acy_group']['in'] == 'in' ? 'ACYM_IN' : 'ACYM_NOT_IN'), acym_translation($automation['acy_group']['group']));
         if ('joomla' === ACYM_CMS) {
             $finalText .= $automation['acy_group']['subgroup'] == 1 ? '' : ' '.acym_translation('ACYM_FILTER_ACY_GROUP_SUBGROUP_SUMMARY');
         }
@@ -578,19 +552,12 @@ class plgAcymUser extends acymPlugin
         $this->_summaryGroup($automation);
 
         if (!empty($automation['acy_cmsfield'])) {
-            $automation = acym_translation_sprintf(
-                'ACYM_CONDITION_ACY_CMS_FIELD_SUMMARY',
-                $automation['acy_cmsfield']['field'],
-                $automation['acy_cmsfield']['operator'],
-                $automation['acy_cmsfield']['value']
-            );
+            $automation = acym_translation_sprintf('ACYM_CONDITION_ACY_CMS_FIELD_SUMMARY', $automation['acy_cmsfield']['field'], $automation['acy_cmsfield']['operator'], $automation['acy_cmsfield']['value']);
         }
 
         if (!empty($automation['acy_totaluser'])) {
             $operators = ['=' => acym_translation('ACYM_EXACTLY'), '>' => acym_translation('ACYM_MORE_THAN'), '<' => acym_translation('ACYM_LESS_THAN')];
-            $automation = acym_translation('ACYM_THERE_IS').' '.strtolower(
-                    $operators[$automation['acy_totaluser']['operator']]
-                ).' '.$automation['acy_totaluser']['number'].' '.acym_translation('ACYM_ACYMAILING_USERS').' ';
+            $automation = acym_translation('ACYM_THERE_IS').' '.strtolower($operators[$automation['acy_totaluser']['operator']]).' '.$automation['acy_totaluser']['number'].' '.acym_translation('ACYM_ACYMAILING_USERS').' ';
         }
 
         if (!empty($automation['acy_toss'])) {
@@ -603,12 +570,7 @@ class plgAcymUser extends acymPlugin
         $this->_summaryGroup($automation);
 
         if (!empty($automation['acy_cmsfield'])) {
-            $automation = acym_translation_sprintf(
-                'ACYM_FILTER_ACY_CMS_FIELD_SUMMARY',
-                $automation['acy_cmsfield']['field'],
-                $automation['acy_cmsfield']['operator'],
-                $automation['acy_cmsfield']['value']
-            );
+            $automation = acym_translation_sprintf('ACYM_FILTER_ACY_CMS_FIELD_SUMMARY', $automation['acy_cmsfield']['field'], $automation['acy_cmsfield']['operator'], $automation['acy_cmsfield']['value']);
         }
     }
 

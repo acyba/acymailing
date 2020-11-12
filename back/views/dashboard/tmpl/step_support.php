@@ -8,10 +8,7 @@
 	<p class="acym__walkthrough__text">
         <?php echo acym_translation('ACYM_CONTACT_WELL_CONTACT_YOU'); ?><br />
         <?php echo acym_translation('ACYM_CONTACT_NEEDED_INFO'); ?><br /> <br />
-        <?php echo acym_translation_sprintf(
-            'ACYM_CONTACT_DIRECT',
-            '<a class="acym__color__blue" href="'.ACYM_ACYMAILLING_WEBSITE.'contact" target="_blank">'.acym_translation('ACYM_GET_IN_TOUCH').'</a>'
-        ); ?>
+        <?php echo acym_translation_sprintf('ACYM_CONTACT_DIRECT', '<a class="acym__color__blue" href="'.ACYM_ACYMAILLING_WEBSITE.'contact" target="_blank">'.acym_translation('ACYM_GET_IN_TOUCH').'</a>'); ?>
 	</p>
 </div>
 

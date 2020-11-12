@@ -13,11 +13,7 @@
 
             echo '<div class="acym__listing__row cell grid-x" id="acym__campaigns__attach__del'.$i.'">';
 
-            echo acym_tooltip(
-                '<span class="cell acym__campaigns__attachments__already">'.$onlyFilename.' ('.(round($oneAttach->size / 1000, 1)).' Ko)</span>',
-                $oneAttach->filename,
-                'medium-11 cell'
-            );
+            echo acym_tooltip('<span class="cell acym__campaigns__attachments__already">'.$onlyFilename.' ('.(round($oneAttach->size / 1000, 1)).' Ko)</span>', $oneAttach->filename, 'medium-11 cell');
             echo '<div class="cell medium-1 text-center"><a data-id="'.$i.'" data-mail="'.$data['mailInformation']->mail_id.'" class="acym__campaigns__attach__delete"><i class="acymicon-trash-o acym__color__red"></i></a></div>';
             echo '</div>';
         }

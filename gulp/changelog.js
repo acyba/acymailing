@@ -1,12 +1,4 @@
 module.exports = {
-    '6.19.0': {
-        'feature': [
-        ],
-        'improve': [
-        ],
-        'fix': [
-        ]
-    },
     '6.18.1': {
         'feature': [],
         'improve': [],

@@ -33,10 +33,7 @@
                 <?php foreach ($data['allRules'] as $oneRule) { ?>
 					<div class="grid-x cell acym__listing__row" data-id-element="<?php echo acym_escape($oneRule->id); ?>">
 						<div class="medium-shrink small-1 cell acym_vcenter">
-							<input id="checkbox_<?php echo acym_escape($oneRule->id); ?>"
-								   type="checkbox"
-								   name="elements_checked[]"
-								   value="<?php echo acym_escape($oneRule->id); ?>">
+							<input id="checkbox_<?php echo acym_escape($oneRule->id); ?>" type="checkbox" name="elements_checked[]" value="<?php echo acym_escape($oneRule->id); ?>">
 						</div>
 						<div class="medium-1 cell acym_vcenter align-center acym__bounce__listing__handle">
 							<div class="grabbable acym__sortable__listing__handle grid-x">
@@ -90,9 +87,7 @@
 							<div class="cell medium-1 text-center acym__listing__controls">
                                 <?php
                                 $class = $oneRule->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0' : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
-                                echo '<i data-acy-table="rule" data-acy-field="active" data-acy-elementid="'.acym_escape(
-                                        $oneRule->id
-                                    ).'" class="acym_toggleable cursor-pointer '.$class.'"></i>';
+                                echo '<i data-acy-table="rule" data-acy-field="active" data-acy-elementid="'.acym_escape($oneRule->id).'" class="acym_toggleable cursor-pointer '.$class.'"></i>';
                                 ?>
 							</div>
 						</div>

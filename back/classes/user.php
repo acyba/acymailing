@@ -80,9 +80,7 @@ class UserClass extends acymClass
         if (!empty($settings['creator_id'])) {
             $userGroups = acym_getGroupsByUser($settings['creator_id']);
             $groupCondition = 'list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%"';
-            $joinList = ' JOIN #__acym_user_has_list as user_list ON user_list.user_id = user.id JOIN #__acym_list AS list ON list.id = user_list.list_id AND (list.cms_user_id = '.intval(
-                    $settings['creator_id']
-                ).' OR '.$groupCondition.')';
+            $joinList = ' JOIN #__acym_user_has_list as user_list ON user_list.user_id = user.id JOIN #__acym_list AS list ON list.id = user_list.list_id AND (list.cms_user_id = '.intval($settings['creator_id']).' OR '.$groupCondition.')';
             $query .= $joinList;
             $queryCount .= $joinList;
             $queryStatus .= $joinList;
@@ -188,9 +186,7 @@ class UserClass extends acymClass
             } else {
                 switch ($settings['relation']['target']) {
                     case 'list':
-                        $join = ' LEFT JOIN #__acym_user_has_list AS userlist ON user.id = userlist.user_id AND userlist.list_id = '.acym_escapeDB(
-                                $settings['relation']['target_id']
-                            );
+                        $join = ' LEFT JOIN #__acym_user_has_list AS userlist ON user.id = userlist.user_id AND userlist.list_id = '.acym_escapeDB($settings['relation']['target_id']);
                         $filters[] = '(userlist.user_id IS NULL OR userlist.status = 0)';
                         break;
                     default:
@@ -667,9 +663,7 @@ class UserClass extends acymClass
 
             $currentUserid = acym_currentUserId();
             $currentEmail = acym_currentUserEmail();
-            if ($this->checkVisitor && !acym_isAdmin() && intval($this->config->get('allow_visitor', 1)) != 1 && (empty($currentUserid) || strtolower(
-                        $currentEmail
-                    ) != $user->email)) {
+            if ($this->checkVisitor && !acym_isAdmin() && intval($this->config->get('allow_visitor', 1)) != 1 && (empty($currentUserid) || strtolower($currentEmail) != $user->email)) {
                 //We don't accept the subscription as either the user is not logged in or it's not the good one
                 $this->errors[] = acym_translation('ACYM_ONLY_LOGGED');
 
@@ -712,21 +706,14 @@ class UserClass extends acymClass
                 if (mb_detect_encoding($user->$oneAttribute, 'UTF-8', true) != 'UTF-8') {
                     $user->$oneAttribute = utf8_encode($user->$oneAttribute);
                 }
-            } elseif (!preg_match(
-                '%^(?:[\x09\x0A\x0D\x20-\x7E]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})*$%xs',
-                $user->$oneAttribute
-            )) {
+            } elseif (!preg_match('%^(?:[\x09\x0A\x0D\x20-\x7E]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})*$%xs', $user->$oneAttribute)) {
                 $user->$oneAttribute = utf8_encode($user->$oneAttribute);
             }
         }
 
         if (empty($user->id)) {
             if (empty($user->cms_id) && !empty($user->email)) {
-                $userCmsID = acym_loadResult(
-                    'SELECT '.acym_secureDBColumn($this->cmsUserVars->id).' FROM '.$this->cmsUserVars->table.' WHERE '.acym_secureDBColumn(
-                        $this->cmsUserVars->email
-                    ).' = '.acym_escapeDB($user->email)
-                );
+                $userCmsID = acym_loadResult('SELECT '.acym_secureDBColumn($this->cmsUserVars->id).' FROM '.$this->cmsUserVars->table.' WHERE '.acym_secureDBColumn($this->cmsUserVars->email).' = '.acym_escapeDB($user->email));
                 if (!empty($userCmsID)) $user->cms_id = $userCmsID;
             }
             acym_trigger('onAcymBeforeUserCreate', [&$user]);
@@ -1114,10 +1101,7 @@ class UserClass extends acymClass
             if (!$oneList->active) continue;
             if (!empty($currentSubscription[$oneList->id]) && $currentSubscription[$oneList->id]->status == 1) continue;
 
-            if (in_array($oneList->id, $visibleListsChecked) || (in_array($oneList->id, $autoLists) && !in_array(
-                        $oneList->id,
-                        $visibleLists
-                    ) && empty($currentSubscription[$oneList->id]))) {
+            if (in_array($oneList->id, $visibleListsChecked) || (in_array($oneList->id, $autoLists) && !in_array($oneList->id, $visibleLists) && empty($currentSubscription[$oneList->id]))) {
                 $listsToSubscribe[] = $oneList->id;
             }
         }

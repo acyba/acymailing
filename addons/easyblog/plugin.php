@@ -402,9 +402,7 @@ class plgAcymEasyblog extends acymPlugin
         }
 
         $readMoreText = acym_translation('ACYM_READ_MORE');
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
-                $readMoreText
-            ).'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape($readMoreText).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
 
 
@@ -473,16 +471,8 @@ class plgAcymEasyblog extends acymPlugin
     {
         $text = str_replace('"//localhost', '"https://localhost', $text);
         $text = preg_replace('#(<img[^>]*src=")(//[^>]*>)#Uis', '$1https:$2', $text);
-        $text = preg_replace(
-            '#\[embed=videolink][^}]*video":"([^"]*)[^}]*}\[/embed]#i',
-            '<a target="_blank" href="$1"><img src="https://img.youtube.com/vi/0.jpg" alt="youtube video"/></a>',
-            $text
-        );
-        $text = preg_replace(
-            '#<video[^>]*src="([^"]*)"[^>]*>[^>]*</video>#i',
-            '<a target="_blank" href="$1"><img src="https://img.youtube.com/vi/0.jpg" alt="youtube video"/></a>',
-            $text
-        );
+        $text = preg_replace('#\[embed=videolink][^}]*video":"([^"]*)[^}]*}\[/embed]#i', '<a target="_blank" href="$1"><img src="https://img.youtube.com/vi/0.jpg" alt="youtube video"/></a>', $text);
+        $text = preg_replace('#<video[^>]*src="([^"]*)"[^>]*>[^>]*</video>#i', '<a target="_blank" href="$1"><img src="https://img.youtube.com/vi/0.jpg" alt="youtube video"/></a>', $text);
 
         return $text;
     }

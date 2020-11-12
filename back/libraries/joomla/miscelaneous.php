@@ -77,9 +77,7 @@ function acym_getLeftMenu($name)
         if (!acym_isAllowed($oneMenu)) continue;
 
         $class = $name == $oneMenu ? 'acym__joomla__left-menu--current' : '';
-        $leftMenu .= '<a href="'.acym_completeLink(
-                $oneMenu
-            ).'" class="'.$class.'"><i class="'.$menuOption['class-i'].'"></i><span class="'.$menuOption['span-class'].'">'.acym_translation($menuOption['title']).'</span></a>';
+        $leftMenu .= '<a href="'.acym_completeLink($oneMenu).'" class="'.$class.'"><i class="'.$menuOption['class-i'].'"></i><span class="'.$menuOption['span-class'].'">'.acym_translation($menuOption['title']).'</span></a>';
     }
 
     $leftMenu .= '<a href="#" id="acym__joomla__left-menu--toggle"><i class="acymicon-keyboard_arrow_left"></i><span>'.acym_translation('ACYM_COLLAPSE').'</span></a>';

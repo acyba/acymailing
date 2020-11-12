@@ -53,20 +53,10 @@ class acym_archive_widget extends WP_Widget
 			<input type="text" class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" value="'.$params['title'].'" /></p>';
 
         echo '<p><label class="acyWPconfig"> '.acym_translation('ACYM_WIDGET_ARCHIVE_CHOICE').'</label>
-           '.acym_translation_sprintf(
-                'ACYM_LAST_X_NEWSLETTERS',
-                '<input class="tiny-text" type="number" min="1"  max="20" name="'.$this->get_field_name('nbNewsletters').'" value="'.$params['nbNewsletters'].'">'
-            ).'</p>';
+           '.acym_translation_sprintf('ACYM_LAST_X_NEWSLETTERS', '<input class="tiny-text" type="number" min="1"  max="20" name="'.$this->get_field_name('nbNewsletters').'" value="'.$params['nbNewsletters'].'">').'</p>';
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_LISTS_ARCHIVE').'">'.acym_translation('ACYM_LISTS').'</label>';
-        echo acym_selectMultiple(
-            $lists,
-            $this->get_field_name('lists'),
-            explode(',', $params['lists']),
-            ['class' => 'acym_simple_select2', 'id' => $this->get_field_id('lists')],
-            'id',
-            'name'
-        );
+        echo acym_selectMultiple($lists, $this->get_field_name('lists'), explode(',', $params['lists']), ['class' => 'acym_simple_select2', 'id' => $this->get_field_id('lists')], 'id', 'name');
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_ARCHIVE_POPUP_DESC').'">'.acym_translation('ACYM_ARCHIVE_POPUP').'</label>';
         echo acym_boolean($this->get_field_name('popup'), $params['popup'], $this->get_field_id('popup')).'</p>';

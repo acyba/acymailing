@@ -1,11 +1,6 @@
 <div class="cell grid-x acym__content" id="acym__plugin__available">
 	<input type="hidden" id="acym__plugin__available__plugins" value="<?php echo acym_escape(ACYM_AVAILABLE_PLUGINS); ?>" />
-	<form id="acym_form"
-		  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>"
-		  method="post"
-		  name="acyForm"
-		  class="cell grid-x acym__form__campaign__edit"
-		  data-abide>
+	<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" class="cell grid-x acym__form__campaign__edit" data-abide>
         <?php
         $workflow = $data['workflowHelper'];
         echo $workflow->display($data['tabs'], $data['tab'], false, true);
@@ -42,15 +37,11 @@
 							<div class="cell grid-x acym__plugins__card__actions">
 								<div class="cell grid-x align-center" v-show="!rightLevel(plugin.level)">
 									<div class="cell grid-x">
-										<button :data-acym-tooltip="<?php echo acym_escapeDB(acym_translation('ACYM_YOU_DONT_HAVE_THE_RIGHT_LEVEL')); ?> + ucfirst(plugin.level)"
-												type="button"
-												class=" acym__plugins__button acym__plugins__button-disabled acym__plugins__button__purchase cell text-center cell small-5">
+										<button :data-acym-tooltip="<?php echo acym_escapeDB(acym_translation('ACYM_YOU_DONT_HAVE_THE_RIGHT_LEVEL')); ?> + ucfirst(plugin.level)" type="button" class=" acym__plugins__button acym__plugins__button-disabled acym__plugins__button__purchase cell text-center cell small-5">
                                             <?php echo acym_translation('ACYM_DOWNLOAD'); ?><i class="acymicon-file_download"></i>
 										</button>
 										<div class="cell auto"></div>
-										<a target="_blank"
-										   href="<?php echo ACYM_ACYMAILLING_WEBSITE; ?>pricing"
-										   class="acym__plugins__button cell small-5 acym__plugins__button__purchase text-center">
+										<a target="_blank" href="<?php echo ACYM_ACYMAILLING_WEBSITE; ?>pricing" class="acym__plugins__button cell small-5 acym__plugins__button__purchase text-center">
                                             <?php echo acym_translation('ACYM_PURCHASE'); ?>
 											<i class="acymicon-cart-arrow-down"></i>
 										</a>
@@ -64,10 +55,7 @@
 										</span>
 										<span v-show="downloading[plugin.image]"><?php echo acym_loaderLogo(); ?></span>
 									</button>
-									<a v-show="'{__CMS__}' == 'WordPress'"
-									   target="_blank"
-									   :href="plugin.downloadlink"
-									   class="acym__plugins__button cell acym__plugins__button__purchase text-center">
+									<a v-show="'{__CMS__}' == 'WordPress'" target="_blank" :href="plugin.downloadlink" class="acym__plugins__button cell acym__plugins__button__purchase text-center">
                                         <?php echo acym_translation('ACYM_DOWNLOAD'); ?>
 										<i class="acymicon-file_download"></i>
 									</a>

@@ -8,32 +8,23 @@
 				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_CLASSIC_CAMPAIGN'); ?></h1>
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_CLASSIC_CAMPAIGN_DESC'); ?></p>
 			</div>
-			<div class="acym__selection__card <?php echo !acym_level(1) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center"
-				 acym-data-link="<?php echo $data['campaign_scheduled_link']; ?>">
+			<div class="acym__selection__card <?php echo !acym_level(1) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center" acym-data-link="<?php echo $data['campaign_scheduled_link']; ?>">
 				<i class="acymicon-access_time acym__selection__card__icon"></i>
 				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_SCHEDULED_CAMPAIGN'); ?></h1>
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_SCHEDULED_CAMPAIGN_DESC'); ?></p>
-                <?php if (!acym_level(1)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
-                        'ACYM_ONLY_AVAILABLE_ESSENTIAL_VERSION'
-                    ).'</div>'; ?>
+                <?php if (!acym_level(1)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation('ACYM_ONLY_AVAILABLE_ESSENTIAL_VERSION').'</div>'; ?>
 			</div>
-			<div class="acym__selection__card <?php echo !acym_level(2) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center"
-				 acym-data-link="<?php echo $data['campaign_auto_link']; ?>">
+			<div class="acym__selection__card <?php echo !acym_level(2) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center" acym-data-link="<?php echo $data['campaign_auto_link']; ?>">
 				<i class="acymicon-cog acym__selection__card__icon"></i>
 				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_AUTOMATIC_CAMPAIGN'); ?></h1>
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_AUTOMATIC_CAMPAIGN_DESC'); ?></p>
-                <?php if (!acym_level(2)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
-                        'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION'
-                    ).'</div>'; ?>
+                <?php if (!acym_level(2)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION').'</div>'; ?>
 			</div>
-			<div class="acym__selection__card <?php echo !acym_level(2) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center"
-				 acym-data-link="<?php echo $data['followup_link']; ?>">
+			<div class="acym__selection__card <?php echo !acym_level(2) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center" acym-data-link="<?php echo $data['followup_link']; ?>">
 				<i class="acymicon-follow acym__selection__card__icon"></i>
 				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_FOLLOW_UP'); ?></h1>
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_FOLLOW_UP_DESC'); ?></p>
-                <?php if (!acym_level(2)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
-                        'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION'
-                    ).'</div>'; ?>
+                <?php if (!acym_level(2)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION').'</div>'; ?>
 			</div>
 		</div>
 		<div class="cell grid-x grid-margin-x align-center">
