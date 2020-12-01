@@ -1,6 +1,15 @@
 <?php if (empty($data['allMails'])) { ?>
 	<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_translation('ACYM_NO_RESULTS_FOUND'); ?></h1>
 <?php } else { ?>
+	<div class="cell margin-bottom-1 acym__listing__actions grid-x">
+        <?php
+        $actions = [
+            'delete' => acym_translation('ACYM_DELETE'),
+            'massDuplicate' => acym_translation('ACYM_DUPLICATE'),
+        ];
+        echo acym_listingActions($actions);
+        ?>
+	</div>
 	<div class="cell grid-x margin-top-1">
 		<div class="grid-x cell auto">
 			<div class="cell  acym_listing_sort-by">
@@ -42,20 +51,32 @@
 						<div class="cell"><?php echo acym_date($oneTemplate->creation_date, 'M. j, Y'); ?></div>
 					</div>
 				</a>
-				<div class="text-center cell acym__listing__block__delete acym__background-color__red">
-					<div>
-						<i class="acymicon-trash-o acym__listing__block__delete__trash acym__color__white"></i>
-						<p class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
-							<i class="acymicon-keyboard_arrow_left acym__color__white"></i>
-						</p>
-						<p class="acym__listing__block__delete__submit acym_toggle_delete acym__color__white" data-acy-table="mail" data-acy-elementid="<?php echo acym_escape($oneTemplate->id); ?>">
-							<i class="acymicon-trash-o acym__color__white"></i>
-						</p>
-					</div>
+				<div class="text-center cell acym__listing__block__icons acym__listing__block__select">
+					<input id="checkbox_<?php echo acym_escape($oneTemplate->id); ?>"
+						   type="checkbox"
+						   name="elements_checked[]"
+						   value="<?php echo acym_escape($oneTemplate->id); ?>">
 				</div>
-				<button type="button" data-task="duplicate" data-template="<?php echo intval($oneTemplate->id); ?>" class="text-center cell acym__listing__block__duplicate acym__background-color__blue">
+				<button type="button"
+						data-task="oneDuplicate"
+						data-template="<?php echo intval($oneTemplate->id); ?>"
+						class="text-center cell acym__listing__block__icons acym__listing__block__duplicate acym__background-color__blue">
 					<i class="acym__color__white acymicon-content_copy"></i>
 				</button>
+				<div class="text-center cell acym__listing__block__icons acym__listing__block__delete acym__background-color__red">
+					<div>
+						<i class="acymicon-trash-o acym__listing__block__delete__trash acym__color__white"></i>
+						<p class="acym__listing__block__delete__submit acym_toggle_delete acym__color__white"
+						   data-acy-table="mail"
+						   data-acy-elementid="<?php echo acym_escape($oneTemplate->id); ?>">
+							<i class="acymicon-trash-o acym__color__white"></i>
+						</p>
+						<p class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
+							<i class="acymicon-keyboard_arrow_right acym__color__white"></i>
+						</p>
+
+					</div>
+				</div>
 			</div>
         <?php } ?>
 		<input type="hidden" name="templateId" value="" />

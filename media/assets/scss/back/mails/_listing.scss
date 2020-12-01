@@ -9,18 +9,21 @@
             font-weight: bold;
         }
 
-        .acym__listing__block__duplicate {
-            display: none;
+        .acym__listing__block__icons {
             position: absolute;
             width: 40px;
             max-width: 40px;
             height: 40px;
-            right: 18px;
-            margin-top: 3px;
             cursor: pointer;
             overflow: hidden;
+            z-index: 1100;
+        }
+
+        .acym__listing__block__duplicate {
+            display: none;
+            right: 18px;
+            margin-top: 3px;
             border-radius: 5px;
-            z-index: 1000;
 
             i {
                 line-height: 40px !important;
@@ -31,6 +34,28 @@
             }
         }
 
+        .acym__listing__block__select {
+            margin-left: 0px;
+            margin-top: 0px;
+            border-radius: 5px 0 5px 0;
+            background-color: rgba(240, 240, 240, 0.5);
+
+            input[type='checkbox'] {
+                width: 22px;
+                z-index: 900;
+                margin: 0.5rem !important;
+
+                &:after {
+                    color: $font-primary;
+                    font-size: 19px;
+                }
+            }
+        }
+
+        .acym__listing__block__delete {
+            top: 55px;
+            right: 18px;
+        }
 
         .acym__listing__block__export {
             position: relative;

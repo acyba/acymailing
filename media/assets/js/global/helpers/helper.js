@@ -172,5 +172,35 @@ const acym_helper = {
         }
 
         document.cookie = newCookie;
+    },
+    get: function (url = ACYM_AJAX_URL, data = {}) {
+        return jQuery.get(url, data)
+                     .then(res => {
+                         if (typeof res !== 'object') res = this.parseJson(res);
+
+                         if (res.error && !this.empty(res.message)) console.error(res.message);
+
+                         return res;
+                     })
+                     .fail((xhr, status, error) => {
+                         console.error(`Error calling ${url}, responded with error ${status} ${error}`);
+
+                         return error;
+                     });
+    },
+    post: function (url = ACYM_AJAX_URL, data = {}) {
+        return jQuery.post(url, data)
+                     .then(res => {
+                         if (typeof res !== 'object') res = this.parseJson(res);
+
+                         if (res.error && !this.empty(res.message)) console.error(res.message);
+
+                         return res;
+                     })
+                     .fail((xhr, status, error) => {
+                         console.error(`Error calling ${url}, responded with error ${status} ${error}`);
+
+                         return error;
+                     });
     }
 };

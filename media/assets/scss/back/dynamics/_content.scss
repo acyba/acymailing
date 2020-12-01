@@ -65,6 +65,14 @@
         .acym__popup__listing {
             padding: 0 0.5rem;
 
+            .acymicon-exclamation-triangle {
+                color: $warning-color;
+                font-size: .8rem;
+                margin-right: .4rem;
+                vertical-align: middle;
+                line-height: inherit;
+            }
+
             &#plugin_listing {
                 max-height: 200px;
                 overflow-y: auto;

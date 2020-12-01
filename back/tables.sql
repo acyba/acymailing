@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail` (
 	`stylesheet` TEXT NULL,
 	`attachments` TEXT NULL,
 	`creator_id` INT NOT NULL,
-	`media_folder` VARCHAR(100) NULL,
+	`mail_settings` TEXT NULL,
 	`headers` TEXT NULL,
 	`autosave` LONGTEXT NULL,
 	`preheader` TEXT NULL,
@@ -299,6 +299,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail_stat` (
 	`open_total` INT NOT NULL DEFAULT 0,
 	`bounce_unique` MEDIUMINT(8) NOT NULL DEFAULT 0,
 	`bounce_details` LONGTEXT NULL,
+	`unsubscribe_total` INT NOT NULL DEFAULT 0,
 	PRIMARY KEY (`mail_id`),
 	CONSTRAINT `fk_#__acym_mail_stat1`
 		FOREIGN KEY (`mail_id`)
@@ -327,6 +328,9 @@ CREATE TABLE IF NOT EXISTS `#__acym_user_stat` (
 	`bounce_rule` VARCHAR(255) NULL,
 	`tracking_sale` FLOAT NULL,
 	`currency` VARCHAR(10) NULL,
+	`unsubscribe` INT NOT NULL DEFAULT 0,
+	`device` VARCHAR(50) NULL,
+	`opened_with` VARCHAR(50) NULL,
 	PRIMARY KEY (`user_id`, `mail_id`),
 	CONSTRAINT `fk_#__acym_user_stat1`
 		FOREIGN KEY (`mail_id`)

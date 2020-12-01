@@ -496,7 +496,9 @@ class plgAcymDpcalendar extends acymPlugin
 
         $this->handleCustomFields($tag, $customFields);
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_translation('ACYM_READ_MORE').'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_translation(
+                'ACYM_READ_MORE'
+            ).'</span></a>';
         if (!empty($tag->readmore)) {
             $afterArticle .= $varFields['{readmore}'];
         }

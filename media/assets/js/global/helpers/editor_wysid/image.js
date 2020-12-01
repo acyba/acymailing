@@ -9,7 +9,7 @@ const acym_editorWysidImage = {
         });
     },
     doubleClickImage: function ($element) {
-        acym_editorWysidNewContent.addMediaWysid($element.closest('.acym__wysid__column__element'));
+        this.openMediaManage($element.closest('.acym__wysid__column__element'));
     },
     addBackgroundImgToRows: function ($element) {
         let $deleteImage = jQuery('#acym__wysid__context__block__background-image__remove');
@@ -21,7 +21,7 @@ const acym_editorWysidImage = {
         }
 
         jQuery('#acym__wysid__context__block__background-image').off('click').on('click', function () {
-            acym_editorWysidNewContent.addMediaWysid($element, true);
+            acym_editorWysidImage.openMediaManage($element, true);
         });
 
         $deleteImage.off('click').on('click', function () {
@@ -35,6 +35,13 @@ const acym_editorWysidImage = {
                 let $insertedImg = jQuery('.acym__wysid__media__inserted');
                 $insertedImg.attr('height', $insertedImg.height()).attr('width', $insertedImg.width());
             }, 200);
+        }
+    },
+    openMediaManage: function (ui, rows) {
+        if (ACYM_CMS === 'wordpress') {
+            acym_editorWysidWordpress.addMediaWPWYSID(ui, rows);
+        } else {
+            acym_editorWysidJoomla.addMediaJoomlaWYSID(ui, rows);
         }
     }
 };

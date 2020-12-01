@@ -2,8 +2,26 @@
     #acym_stats {
         position: relative;
 
+        .acym__title__stats {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .acym__subtitle__stats {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
         #acym__stats__export__global__charts__scope, #acym__wysid__email__preview {
             background-color: $white;
+        }
+
+        .acym__listing__user_links_details__content__links, .acym__listing__links_details__content__links {
+            i {
+                font-size: 20px;
+                vertical-align: middle;
+                margin-left: 10px;
+            }
         }
 
         #acym_stats_overlay {
@@ -64,10 +82,12 @@
                 margin-bottom: 20px;
             }
 
-            .acym__stats__chart__line {
-                margin-top: 40px;
-                margin-bottom: 20px;
+            .acym__stats__empty__title__chart__pie {
+                font-size: 17px;
+                margin-bottom: 10px;
+            }
 
+            .acym__stats__chart__line {
                 .acym__stats__empty__title__chart__line {
                     font-size: 17px;
                     margin-bottom: 10px;
@@ -98,6 +118,26 @@
                 .acym__stats__campaign-choose {
                     padding-right: 20px;
                 }
+            }
+        }
+
+        #acym__stats__global__open-time {
+            height: 400px;
+            width: 100%;
+            padding: 60px 15px 30px 15px;
+            border: 1px solid $light-gray;
+            border-radius: 10px;
+        }
+
+        @media screen and (max-width: 850px) {
+            .acym__listing__user_links_details__click-date {
+                display: none;
+            }
+        }
+
+        .acym__stats__pie__chart {
+            h2 {
+                width: 100%;
             }
         }
     }

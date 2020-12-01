@@ -170,7 +170,11 @@ class plgAcymManagetext extends acymPlugin
                 }
                 //We explode each argument of the tag
                 $allresults[1][$i] = html_entity_decode($allresults[1][$i]);
-                if (!preg_match('#^(.+)(!=|<|>|&gt;|&lt;|!~)([^=!<>~]+)$#is', $allresults[1][$i], $operators) && !preg_match('#^(.+)(=|~)([^=!<>~]+)$#is', $allresults[1][$i], $operators)) {
+                if (!preg_match('#^(.+)(!=|<|>|&gt;|&lt;|!~)([^=!<>~]+)$#is', $allresults[1][$i], $operators) && !preg_match(
+                        '#^(.+)(=|~)([^=!<>~]+)$#is',
+                        $allresults[1][$i],
+                        $operators
+                    )) {
                     if ($isAdmin) {
                         acym_enqueueMessage(acym_translation_sprintf('ACYM_OPERATION_NOT_FOUND', $allresults[1][$i]), 'error');
                     }

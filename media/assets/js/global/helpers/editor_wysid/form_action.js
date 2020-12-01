@@ -1,13 +1,6 @@
 const acym_editorWysidFormAction = {
     saveAjaxMail: function (controller, sendTest, saveAsTmpl) {
-        let $name = jQuery('[name="mail[name]"]');
-        let $subject = jQuery('[name="mail[subject]"]');
-        if ('' === $subject.val()) $subject.val(ACYM_JS_TXT.ACYM_EMAIL_SUBJECT);
-        if ('' === $name.val()) $name.val(controller.indexOf('campaigns') !== -1 ? ACYM_JS_TXT.ACYM_CAMPAIGN_NAME : ACYM_JS_TXT.ACYM_TEMPLATE_NAME);
-
-
         if (controller.indexOf('mails') !== -1 || saveAsTmpl) {
-
             return jQuery.when(acym_helperThumbnail.setAjaxSaveThumbnail()).done(function () {
                 return acym_editorWysidFormAction._ajaxCall(controller, sendTest, saveAsTmpl);
             }).fail(function (err) {
@@ -101,10 +94,12 @@ const acym_editorWysidFormAction = {
                 if (!saveAsTmpl) {
                     jQuery('mail' === controller ? '[name="id"]' : '[name="id"], [name="mail[id]"]').val(res.data);
                     acym_helperEditorWysid.insertDTextInSubject = true;
-                    jQuery('#acym_header').css('display', '');
-                    jQuery('.acym__content').css('display', '');
-                    jQuery('#acym__wysid').css('display', 'none');
-                    jQuery('#acym__wysid__edit').css('display', '');
+                    if (!fromSendTest) {
+                        jQuery('#acym_header').css('display', '');
+                        jQuery('.acym__content').css('display', '');
+                        jQuery('#acym__wysid').css('display', 'none');
+                        jQuery('#acym__wysid__edit').css('display', '');
+                    }
                     jQuery('#acym__wysid__warning__thumbnail').toggle();
                 } else {
                     acym_editorWysidNotifications.addEditorNotification({

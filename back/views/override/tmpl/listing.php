@@ -83,7 +83,9 @@
                                 $tooltip = 'ACYM_INACTIVE';
                             }
                             echo acym_tooltip(
-                                '<i data-acy-table="mail_override" data-acy-field="active" data-acy-elementid="'.acym_escape($override->id).'" class="acym_toggleable '.$class.'"></i>',
+                                '<i data-acy-table="mail_override" data-acy-field="active" data-acy-elementid="'.acym_escape(
+                                    $override->id
+                                ).'" class="acym_toggleable '.$class.'"></i>',
                                 acym_translation($tooltip)
                             );
                             ?>

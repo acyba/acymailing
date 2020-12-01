@@ -45,9 +45,12 @@ class DashboardController extends acymController
         $data['campaignsScheduled'] = $campaignClass->getCampaignForDashboard();
         $data['sentMails'] = $mailStatClass->getAllMailsForStats();
 
+        $statsController->prepareOpenTimeChart($data);
         $statsController->preparecharts($data);
         $statsController->prepareDefaultRoundCharts($data);
         $statsController->prepareDefaultLineChart($data);
+        $statsController->prepareDefaultDevicesChart($data);
+        $statsController->prepareDefaultBrowsersChart($data);
 
         parent::display($data);
     }
@@ -79,7 +82,11 @@ class DashboardController extends acymController
         $mailClass = new MailClass();
         $updateHelper = new UpdateHelper();
 
-        $mail = empty($walkthroughParams['mail_id']) ? $mailClass->getOneByName(acym_translation($updateHelper::FIRST_EMAIL_NAME_KEY)) : $mailClass->getOneById($walkthroughParams['mail_id']);
+        $mail = empty($walkthroughParams['mail_id'])
+            ? $mailClass->getOneByName(acym_translation($updateHelper::FIRST_EMAIL_NAME_KEY))
+            : $mailClass->getOneById(
+                $walkthroughParams['mail_id']
+            );
 
         if (empty($mail)) {
             if (!$updateHelper->installNotifications()) {
@@ -664,8 +671,16 @@ class DashboardController extends acymController
         $updateHelper = new UpdateHelper();
         $mailerHelper = new MailerHelper();
 
-        $testingList = empty($walkthroughParams['list_id']) ? $listClass->getOneByName(acym_translation('ACYM_TESTING_LIST')) : $listClass->getOneById($walkthroughParams['list_id']);
-        $firstMail = empty($walkthroughParams['mail_id']) ? $mailClass->getOneByName(acym_translation($updateHelper::FIRST_EMAIL_NAME_KEY)) : $mailClass->getOneById($walkthroughParams['mail_id']);
+        $testingList = empty($walkthroughParams['list_id'])
+            ? $listClass->getOneByName(acym_translation('ACYM_TESTING_LIST'))
+            : $listClass->getOneById(
+                $walkthroughParams['list_id']
+            );
+        $firstMail = empty($walkthroughParams['mail_id'])
+            ? $mailClass->getOneByName(acym_translation($updateHelper::FIRST_EMAIL_NAME_KEY))
+            : $mailClass->getOneById(
+                $walkthroughParams['mail_id']
+            );
 
         if (empty($testingList)) {
             acym_enqueueMessage(acym_translation('ACYM_CANT_RETRIEVE_TESTING_LIST'), 'error');
@@ -704,8 +719,10 @@ class DashboardController extends acymController
             return;
         }
 
+        ob_start();
+        include ACYM_NEW_FEATURES_SPLASHSCREEN;
         $data = [
-            'content' => acym_fileGetContent(ACYM_NEW_FEATURES_SPLASHSCREEN),
+            'content' => ob_get_clean(),
         ];
 
         if (!@unlink(ACYM_NEW_FEATURES_SPLASHSCREEN)) {

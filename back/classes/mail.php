@@ -276,6 +276,10 @@ class MailClass extends acymClass
 
         if ('welcome' === $mail->type) {
             $query = 'SELECT * FROM #__acym_list WHERE welcome_id = '.intval($id);
+        } elseif ('followup' === $mail->type) {
+            $query = 'SELECT list.* FROM #__acym_followup_has_mail AS followup_mail
+                      JOIN #__acym_followup AS followup ON followup.id = followup_mail.followup_id AND followup_mail.mail_id = '.intval($id).'
+                      JOIN #__acym_list AS list ON list.id = followup.list_id';
         } else {
             $query = 'SELECT list.*
                     FROM #__acym_mail_has_list AS mailLists
@@ -283,7 +287,6 @@ class MailClass extends acymClass
                     WHERE mailLists.mail_id = '.intval($id).'
                     GROUP BY mailLists.list_id, mailLists.mail_id';
         }
-
 
         return acym_loadObjectList($query, 'id');
     }
@@ -385,12 +388,7 @@ class MailClass extends acymClass
         $this->deleteMediaFolder($elements);
         acym_arrayToInteger($elements);
 
-        $allThumbnailToDelete = acym_loadResultArray('SELECT thumbnail FROM #__acym_mail WHERE id IN ('.implode(',', $elements).')');
-        foreach ($allThumbnailToDelete as $one) {
-            if (!empty($one) && file_exists(ACYM_UPLOAD_FOLDER_THUMBNAIL.$one)) {
-                unlink(ACYM_UPLOAD_FOLDER_THUMBNAIL.$one);
-            }
-        }
+        $allThumbnailToDelete = acym_loadResultArray('SELECT DISTINCT thumbnail FROM #__acym_mail WHERE id IN ('.implode(',', $elements).')');
 
         $translations = acym_loadResultArray('SELECT id FROM #__acym_mail WHERE parent_id IN ('.implode(',', $elements).')');
         $elements = array_merge($elements, $translations);
@@ -405,7 +403,11 @@ class MailClass extends acymClass
         acym_query('DELETE FROM #__acym_mail_stat WHERE mail_id IN ('.implode(',', $elements).')');
         acym_query('DELETE FROM #__acym_followup_has_mail WHERE mail_id IN ('.implode(',', $elements).')');
 
-        return parent::delete($elements);
+        $return = parent::delete($elements);
+
+        $this->deleteUnusedThumbnails($allThumbnailToDelete);
+
+        return $return;
     }
 
     public function deleteMediaFolder($elements)
@@ -413,11 +415,26 @@ class MailClass extends acymClass
         if (empty($elements)) return;
 
         acym_arrayToInteger($elements);
-        $results = acym_loadResultArray('SELECT media_folder FROM #__acym_mail WHERE id IN ('.implode(',', $elements).')');
+        $results = acym_loadResultArray('SELECT mail_settings FROM #__acym_mail WHERE mail_settings IS NOT NULL AND id IN ('.implode(',', $elements).')');
 
         foreach ($results as $template) {
-            if (empty($template) || !file_exists(ACYM_TEMPLATE.$template)) continue;
-            acym_deleteFolder(ACYM_TEMPLATE.$template);
+            $settings = json_decode($template, true);
+
+            if (empty($settings['media_folder']) || !file_exists(ACYM_TEMPLATE.$settings['media_folder'])) continue;
+            acym_deleteFolder(ACYM_TEMPLATE.$settings['media_folder']);
+        }
+    }
+
+    public function deleteUnusedThumbnails($thumbnails)
+    {
+        if (empty($thumbnails)) return;
+        
+        $stillUsedThumbnails = acym_loadResultArray('SELECT thumbnail FROM #__acym_mail WHERE thumbnail IN ('.implode(',', acym_escapeDB($thumbnails)).')');
+        $thumbnailToDelete = array_diff($thumbnails, $stillUsedThumbnails);
+        foreach ($thumbnailToDelete as $one) {
+            if (!empty($one) && file_exists(ACYM_UPLOAD_FOLDER_THUMBNAIL.$one)) {
+                unlink(ACYM_UPLOAD_FOLDER_THUMBNAIL.$one);
+            }
         }
     }
 
@@ -643,7 +660,9 @@ class MailClass extends acymClass
         if (preg_match('#< *meta *name="replyname" *content="([^"]*)"#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->replyname = $results[1];
         if (preg_match('#< *meta *name="replyemail" *content="([^"]*)"#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->replyemail = $results[1];
         if (preg_match('#< *meta *name="subject" *content="([^"]*)"#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->subject = $results[1];
-        if (preg_match('#< *meta *name="settings" *content="([^"]*)"#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->settings = htmlspecialchars_decode($results[1]);
+        if (preg_match('#< *meta *name="settings" *content="([^"]*)"#Uis', $fileContent, $results) && !empty($results[1])) {
+            $newTemplate->settings = htmlspecialchars_decode($results[1]);
+        }
 
         $newFolder = preg_replace('#[^a-z0-9]#i', '_', strtolower($newTemplate->name));
         $newTemplateFolder = $newFolder;
@@ -652,7 +671,7 @@ class MailClass extends acymClass
             $newTemplateFolder = $newFolder.'_'.$i;
             $i++;
         }
-        $newTemplate->media_folder = $newTemplateFolder;
+        $newTemplate->mail_settings = ['media_folder' => $newTemplateFolder];
 
         $moveResult = acym_copyFolder(dirname($filepath), ACYM_TEMPLATE.$newTemplateFolder);
         if ($moveResult !== true) {
@@ -709,7 +728,22 @@ class MailClass extends acymClass
                 $newTemplate->stylesheet = preg_replace('#(body *\{[^\}]*)background-color:[^;\}]*[;\}]#Uis', '$1', $newTemplate->stylesheet);
             }
 
-            $quickstyle = ['tag_h1' => 'h1', 'tag_h2' => 'h2', 'tag_h3' => 'h3', 'tag_h4' => 'h4', 'tag_h5' => 'h5', 'tag_h6' => 'h6', 'tag_a' => 'a', 'tag_ul' => 'ul', 'tag_li' => 'li', 'acym_unsub' => '\.acym_unsub', 'acym_online' => '\.acym_online', 'acym_title' => '\.acym_title', 'acym_content' => '\.acym_content', 'acym_readmore' => '\.acym_readmore'];
+            $quickstyle = [
+                'tag_h1' => 'h1',
+                'tag_h2' => 'h2',
+                'tag_h3' => 'h3',
+                'tag_h4' => 'h4',
+                'tag_h5' => 'h5',
+                'tag_h6' => 'h6',
+                'tag_a' => 'a',
+                'tag_ul' => 'ul',
+                'tag_li' => 'li',
+                'acym_unsub' => '\.acym_unsub',
+                'acym_online' => '\.acym_online',
+                'acym_title' => '\.acym_title',
+                'acym_content' => '\.acym_content',
+                'acym_readmore' => '\.acym_readmore',
+            ];
             foreach ($quickstyle as $styledb => $oneStyle) {
                 if (preg_match('#[^a-z\. ,] *'.$oneStyle.' *{([^}]*)}#Uis', $newTemplate->stylesheet, $quickstyleresults)) {
                     $newTemplate->stylesheet = str_replace($quickstyleresults[0], '', $newTemplate->stylesheet);
@@ -748,7 +782,7 @@ class MailClass extends acymClass
         $this->config->save($newConfig);
 
         $newTemplate->drag_editor = 0;
-        $newTemplate->type = "standard";
+        $newTemplate->type = 'standard';
         $newTemplate->template = 1;
         $newTemplate->library = 0;
         $newTemplate->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
@@ -987,5 +1021,10 @@ class MailClass extends acymClass
     public function getMultilingualMails($parentId)
     {
         return $this->decode(acym_loadObjectList('SELECT * FROM #__acym_mail WHERE parent_id = '.intval($parentId).' OR id = '.intval($parentId), 'language'));
+    }
+
+    public function getMailAttachments($mailId)
+    {
+        return acym_loadResult('SELECT attachments FROM #__acym_mail WHERE id = '.intval($mailId));
     }
 }

@@ -610,7 +610,15 @@ class AutomationController extends acymController
         $actions = acym_getVar('array', 'acym_action');
         $mailId = $actions['actions'][$and]['acy_add_queue']['mail_id'];
         $mailId = empty($mailId) ? '' : '&id='.$mailId;
-        acym_redirect(acym_completeLink('mails&task=edit&step=editEmail&type='.$type.$mailId.'&return='.urlencode(acym_completeLink('automation&task=edit&step=action&id='.$id.'&fromMailEditor=1&mailid={mailid}&and='.$and)), false, true));
+        acym_redirect(
+            acym_completeLink(
+                'mails&task=edit&step=editEmail&type='.$type.$mailId.'&return='.urlencode(
+                    acym_completeLink('automation&task=edit&step=action&id='.$id.'&fromMailEditor=1&mailid={mailid}&and='.$and)
+                ),
+                false,
+                true
+            )
+        );
     }
 
     //Ajax calls

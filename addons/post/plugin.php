@@ -5,6 +5,9 @@ use AcyMailing\Helpers\TabHelper;
 
 class plgAcymPost extends acymPlugin
 {
+    private $groupedByCategory = false;
+    private $currentCategory = null;
+
     public function __construct()
     {
         parent::__construct();
@@ -158,6 +161,12 @@ class plgAcymPost extends acymPlugin
                 'name' => 'max',
                 'default' => 20,
             ],
+            [
+                'title' => 'ACYM_GROUP_BY_CATEGORY',
+                'type' => 'boolean',
+                'name' => 'groupbycat',
+                'default' => false,
+            ],
         ];
 
         $this->autoCampaignOptions($catOptions);
@@ -265,10 +274,39 @@ class plgAcymPost extends acymPlugin
 
             $query .= ' WHERE ('.implode(') AND (', $where).')';
 
+            $this->groupedByCategory = !empty($parameter->groupbycat);
             $this->tags[$oneTag] = $this->finalizeCategoryFormat($query, $parameter, 'post');
         }
 
         return $this->generateCampaignResult;
+    }
+
+    protected function groupByCategory($elements)
+    {
+        if (!$this->groupedByCategory || empty($elements)) return $elements;
+
+        acym_arrayToInteger($elements);
+        $idsWithCatids = acym_loadObjectList(
+            'SELECT map.`object_id`, taxonomy.`term_id` 
+            FROM #__term_relationships AS map 
+            JOIN #__term_taxonomy AS taxonomy 
+                ON map.`term_taxonomy_id` = taxonomy.`term_taxonomy_id`
+            WHERE taxonomy.`taxonomy` = "category" 
+                AND map.`object_id` IN ('.implode(', ', $elements).')'
+        );
+        usort(
+            $idsWithCatids,
+            function ($a, $b) {
+                return strtolower($a->term_id) > strtolower($b->term_id);
+            }
+        );
+        $elements = [];
+        foreach ($idsWithCatids as $oneArticle) {
+            if (in_array($oneArticle->object_id, $elements)) continue;
+            $elements[] = $oneArticle->object_id;
+        }
+
+        return $elements;
     }
 
     public function replaceIndividualContent($tag)
@@ -332,7 +370,9 @@ class plgAcymPost extends acymPlugin
             ];
         }
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
+                acym_translation('ACYM_READ_MORE')
+            ).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
 
         $format = new stdClass();
@@ -346,7 +386,26 @@ class plgAcymPost extends acymPlugin
         $format->customFields = $customFields;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 
-        return $this->finalizeElementFormat($result, $tag, $varFields);
+        $categoryTitle = '';
+        $postCategories = acym_loadObjectList(
+            'SELECT terms.`term_id`, terms.`name` 
+            FROM #__terms AS terms 
+            JOIN #__term_taxonomy AS taxonomy 
+                ON terms.`term_id` = taxonomy.`term_id` 
+            JOIN #__term_relationships AS map 
+                ON map.`term_taxonomy_id` = taxonomy.`term_taxonomy_id` 
+            WHERE map.`object_id` = '.intval($element->ID),
+            'term_id'
+        );
+        $catIds = array_keys($postCategories);
+        if (!empty($tag->groupbycat) && !in_array($this->currentCategory, $catIds)) {
+            $this->currentCategory = min($catIds);
+
+            $categoryTitle = '<h1 class="acymailing_category_title">'.$postCategories[$this->currentCategory]->name.'</h1>';
+            $categoryTitle = '<a target="_blank" href="'.get_category_link($this->currentCategory).'">'.$categoryTitle.'</a>';
+        }
+
+        return $categoryTitle.$this->finalizeElementFormat($result, $tag, $varFields);
     }
 
     public function getPosts()

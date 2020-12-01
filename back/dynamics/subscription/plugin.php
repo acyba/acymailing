@@ -213,7 +213,9 @@ class plgAcymSubscription extends acymPlugin
         if (empty($mailto)) {
             $mailto = $this->config->get('replyto_email');
         }
-        $email->addCustomHeader('List-Unsubscribe: <'.$myLink.'>, <mailto:'.$mailto.'?subject=unsubscribe_user_'.$user->id.'&body=Please%20unsubscribe%20user%20ID%20'.$user->id.'>');
+        $email->addCustomHeader(
+            'List-Unsubscribe: <'.$myLink.'>, <mailto:'.$mailto.'?subject=unsubscribe_user_'.$user->id.'&body=Please%20unsubscribe%20user%20ID%20'.$user->id.'>'
+        );
     }
 
     public function replaceContent(&$email, $send = true)
@@ -430,7 +432,11 @@ class plgAcymSubscription extends acymPlugin
         }
 
         if (!isset($this->listsowner[$listid])) {
-            $this->listsowner[$listid] = acym_loadObject('SELECT user.* FROM #__acym_list AS list JOIN '.$this->cmsUserVars->table.' AS user ON user.'.$this->cmsUserVars->id.' = list.cms_user_id WHERE list.id = '.intval($listid));
+            $this->listsowner[$listid] = acym_loadObject(
+                'SELECT user.* FROM #__acym_list AS list JOIN '.$this->cmsUserVars->table.' AS user ON user.'.$this->cmsUserVars->id.' = list.cms_user_id WHERE list.id = '.intval(
+                    $listid
+                )
+            );
         }
 
         if (!in_array($parameter->field, [$this->cmsUserVars->username, $this->cmsUserVars->name, $this->cmsUserVars->email])) {
@@ -606,16 +612,31 @@ class plgAcymSubscription extends acymPlugin
         $conditions['user']['acy_list'] = new stdClass();
         $conditions['user']['acy_list']->name = acym_translation('ACYM_ACYMAILING_LIST');
         $conditions['user']['acy_list']->option = '<div class="intext_select_automation cell">';
-        $conditions['user']['acy_list']->option .= acym_select($list['type'], 'acym_condition[conditions][__numor__][__numand__][acy_list][action]', null, 'class="intext_select_automation acym__select"');
+        $conditions['user']['acy_list']->option .= acym_select(
+            $list['type'],
+            'acym_condition[conditions][__numor__][__numand__][acy_list][action]',
+            null,
+            'class="intext_select_automation acym__select"'
+        );
         $conditions['user']['acy_list']->option .= '</div>';
         $conditions['user']['acy_list']->option .= '<div class="intext_select_automation cell">';
-        $conditions['user']['acy_list']->option .= acym_select($list['lists'], 'acym_condition[conditions][__numor__][__numand__][acy_list][list]', null, 'class="intext_select_automation acym__select"');
+        $conditions['user']['acy_list']->option .= acym_select(
+            $list['lists'],
+            'acym_condition[conditions][__numor__][__numand__][acy_list][list]',
+            null,
+            'class="intext_select_automation acym__select"'
+        );
         $conditions['user']['acy_list']->option .= '</div>';
         $conditions['user']['acy_list']->option .= '<br><div class="cell grid-x grid-margin-x">';
         $conditions['user']['acy_list']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][acy_list][date-min]');
         $conditions['user']['acy_list']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';
         $conditions['user']['acy_list']->option .= '<div class="intext_select_automation">';
-        $conditions['user']['acy_list']->option .= acym_select($list['date'], 'acym_condition[conditions][__numor__][__numand__][acy_list][date-type]', null, 'class="intext_select_automation acym__select cell"');
+        $conditions['user']['acy_list']->option .= acym_select(
+            $list['date'],
+            'acym_condition[conditions][__numor__][__numand__][acy_list][date-type]',
+            null,
+            'class="intext_select_automation acym__select cell"'
+        );
         $conditions['user']['acy_list']->option .= '</div>';
         $conditions['user']['acy_list']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';
         $conditions['user']['acy_list']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][acy_list][date-max]');
@@ -624,21 +645,41 @@ class plgAcymSubscription extends acymPlugin
         $conditions['classic']['acy_list_all']->name = acym_translation('ACYM_NUMBER_USERS_LIST');
         $conditions['classic']['acy_list_all']->option = '<div class="cell shrink acym__automation__inner__text">'.acym_translation('ACYM_THERE_IS').'</div>';
         $conditions['classic']['acy_list_all']->option .= '<div class="intext_select_automation cell">';
-        $conditions['classic']['acy_list_all']->option .= acym_select(['>' => acym_translation('ACYM_MORE_THAN'), '<' => acym_translation('ACYM_LESS_THAN'), '=' => acym_translation('ACYM_EXACTLY')], 'acym_condition[conditions][__numor__][__numand__][acy_list_all][operator]', null, 'class="intext_select_automation acym__select"');
+        $conditions['classic']['acy_list_all']->option .= acym_select(
+            ['>' => acym_translation('ACYM_MORE_THAN'), '<' => acym_translation('ACYM_LESS_THAN'), '=' => acym_translation('ACYM_EXACTLY')],
+            'acym_condition[conditions][__numor__][__numand__][acy_list_all][operator]',
+            null,
+            'class="intext_select_automation acym__select"'
+        );
         $conditions['classic']['acy_list_all']->option .= '</div>';
         $conditions['classic']['acy_list_all']->option .= '<input type="number" min="0" class="intext_input_automation cell" name="acym_condition[conditions][__numor__][__numand__][acy_list_all][number]">';
         $conditions['classic']['acy_list_all']->option .= '<div class="cell shrink acym__automation__inner__text">'.acym_translation('ACYM_ACYMAILING_USERS').'</div>';
         $conditions['classic']['acy_list_all']->option .= '<div class="cell grid-x grid-margin-x margin-left-0" style="margin-bottom: 0"><div class="intext_select_automation cell">';
-        $conditions['classic']['acy_list_all']->option .= acym_select($list['type'], 'acym_condition[conditions][__numor__][__numand__][acy_list_all][action]', null, 'class="intext_select_automation acym__select"');
+        $conditions['classic']['acy_list_all']->option .= acym_select(
+            $list['type'],
+            'acym_condition[conditions][__numor__][__numand__][acy_list_all][action]',
+            null,
+            'class="intext_select_automation acym__select"'
+        );
         $conditions['classic']['acy_list_all']->option .= '</div>';
         $conditions['classic']['acy_list_all']->option .= '<div class="intext_select_automation cell">';
-        $conditions['classic']['acy_list_all']->option .= acym_select($list['lists'], 'acym_condition[conditions][__numor__][__numand__][acy_list_all][list]', null, 'class="intext_select_automation acym__select"');
+        $conditions['classic']['acy_list_all']->option .= acym_select(
+            $list['lists'],
+            'acym_condition[conditions][__numor__][__numand__][acy_list_all][list]',
+            null,
+            'class="intext_select_automation acym__select"'
+        );
         $conditions['classic']['acy_list_all']->option .= '</div></div>';
         $conditions['classic']['acy_list_all']->option .= '<br><div class="cell grid-x grid-margin-x">';
         $conditions['classic']['acy_list_all']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][acy_list_all][date-min]');
         $conditions['classic']['acy_list_all']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';
         $conditions['classic']['acy_list_all']->option .= '<div class="intext_select_automation">';
-        $conditions['classic']['acy_list_all']->option .= acym_select($list['date'], 'acym_condition[conditions][__numor__][__numand__][acy_list_all][date-type]', null, 'class="intext_select_automation acym__select cell"');
+        $conditions['classic']['acy_list_all']->option .= acym_select(
+            $list['date'],
+            'acym_condition[conditions][__numor__][__numand__][acy_list_all][date-type]',
+            null,
+            'class="intext_select_automation acym__select cell"'
+        );
         $conditions['classic']['acy_list_all']->option .= '</div>';
         $conditions['classic']['acy_list_all']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';
         $conditions['classic']['acy_list_all']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][acy_list_all][date-max]');
@@ -663,16 +704,31 @@ class plgAcymSubscription extends acymPlugin
         $filters['acy_list'] = new stdClass();
         $filters['acy_list']->name = acym_translation('ACYM_ACYMAILING_LIST');
         $filters['acy_list']->option = '<div class="intext_select_automation cell">';
-        $filters['acy_list']->option .= acym_select($list['type'], 'acym_action[filters][__numor__][__numand__][acy_list][action]', null, 'class="intext_select_automation acym__select"');
+        $filters['acy_list']->option .= acym_select(
+            $list['type'],
+            'acym_action[filters][__numor__][__numand__][acy_list][action]',
+            null,
+            'class="intext_select_automation acym__select"'
+        );
         $filters['acy_list']->option .= '</div>';
         $filters['acy_list']->option .= '<div class="intext_select_automation cell">';
-        $filters['acy_list']->option .= acym_select($list['lists'], 'acym_action[filters][__numor__][__numand__][acy_list][list]', null, 'class="intext_select_automation acym__select"');
+        $filters['acy_list']->option .= acym_select(
+            $list['lists'],
+            'acym_action[filters][__numor__][__numand__][acy_list][list]',
+            null,
+            'class="intext_select_automation acym__select"'
+        );
         $filters['acy_list']->option .= '</div>';
         $filters['acy_list']->option .= '<br><div class="cell grid-x grid-margin-x">';
         $filters['acy_list']->option .= acym_dateField('acym_action[filters][__numor__][__numand__][acy_list][date-min]');
         $filters['acy_list']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';
         $filters['acy_list']->option .= '<div class="intext_select_automation">';
-        $filters['acy_list']->option .= acym_select($list['date'], 'acym_action[filters][__numor__][__numand__][acy_list][date-type]', null, 'class="intext_select_automation acym__select cell"');
+        $filters['acy_list']->option .= acym_select(
+            $list['date'],
+            'acym_action[filters][__numor__][__numand__][acy_list][date-type]',
+            null,
+            'class="intext_select_automation acym__select cell"'
+        );
         $filters['acy_list']->option .= '</div>';
         $filters['acy_list']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';
         $filters['acy_list']->option .= acym_dateField('acym_action[filters][__numor__][__numand__][acy_list][date-max]');
@@ -729,7 +785,9 @@ class plgAcymSubscription extends acymPlugin
             }
         }
 
-        $query->leftjoin['list'.$num] = '#__acym_user_has_list as userlist'.$num.' ON user.id = userlist'.$num.'.user_id AND userlist'.$num.'.list_id = '.intval($options['list']).$otherConditions;
+        $query->leftjoin['list'.$num] = '#__acym_user_has_list as userlist'.$num.' ON user.id = userlist'.$num.'.user_id AND userlist'.$num.'.list_id = '.intval(
+                $options['list']
+            ).$otherConditions;
         if ($options['action'] == 'notsub') {
             $query->where[] = 'userlist'.$num.'.user_id IS NULL';
         } else {
@@ -837,7 +895,9 @@ class plgAcymSubscription extends acymPlugin
     {
         if (!empty($automation['acy_list_all'])) {
             $operators = ['=' => acym_translation('ACYM_EXACTLY'), '>' => acym_translation('ACYM_MORE_THAN'), '<' => acym_translation('ACYM_LESS_THAN')];
-            $finalText = acym_translation('ACYM_THERE_IS').' '.strtolower($operators[$automation['acy_list_all']['operator']]).' '.$automation['acy_list_all']['number'].' '.acym_translation('ACYM_ACYMAILING_USERS').' ';
+            $finalText = acym_translation('ACYM_THERE_IS').' '.acym_strtolower(
+                    $operators[$automation['acy_list_all']['operator']]
+                ).' '.$automation['acy_list_all']['number'].' '.acym_translation('ACYM_ACYMAILING_USERS').' ';
             $listClass = new ListClass();
             $automation['acy_list_all']['list'] = $listClass->getOneById($automation['acy_list_all']['list']);
             if (empty($automation['acy_list_all']['list'])) {
@@ -848,7 +908,11 @@ class plgAcymSubscription extends acymPlugin
             if ($automation['acy_list_all']['action'] == 'sub') $automation['acy_list_all']['action'] = 'ACYM_SUBSCRIBED';
             if ($automation['acy_list_all']['action'] == 'unsub') $automation['acy_list_all']['action'] = 'ACYM_UNSUBSCRIBED';
             if ($automation['acy_list_all']['action'] == 'notsub') $automation['acy_list_all']['action'] = 'ACYM__NOT_SUBSCRIBED';
-            $finalText .= acym_translation_sprintf('ACYM_CONDITION_ACY_LIST_SUMMARY', acym_translation($automation['acy_list_all']['action']), $automation['acy_list_all']['list']->name).' ';
+            $finalText .= acym_translation_sprintf(
+                    'ACYM_CONDITION_ACY_LIST_SUMMARY',
+                    acym_translation($automation['acy_list_all']['action']),
+                    $automation['acy_list_all']['list']->name
+                ).' ';
 
             $automation = $this->_summaryDate($automation['acy_list_all'], $finalText);
         }

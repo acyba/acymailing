@@ -282,6 +282,9 @@ jQuery(document).ready(function ($) {
             .trigger('change');
 
         $.acymConfigSave = function () {
+            // Update delay fields (bounce and queue process)
+            $('input[id^="delayvar"]').trigger('change');
+
             // ACL handling
             $('input[id^="config_acl_"][id$="custom"]').each(function () {
                 let checked = jQuery('input[name="' + jQuery(this).attr('name') + '"]:checked').val();

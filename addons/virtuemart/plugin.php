@@ -515,10 +515,20 @@ class plgAcymVirtuemart extends acymPlugin
         // Add the tax:
         if ($this->getParam('vat', '1') === '1') {
             if (!empty($element->prices['basePriceWithTax'])) $price1 = $element->prices['basePriceWithTax'];
-            if (!empty($element->prices['salesPrice']) && number_format($price1, 2, ',', ' ') != number_format($element->prices['salesPrice'], 2, ',', ' ')) $price2 = $element->prices['salesPrice'];
+            if (!empty($element->prices['salesPrice']) && number_format($price1, 2, ',', ' ') != number_format(
+                    $element->prices['salesPrice'],
+                    2,
+                    ',',
+                    ' '
+                )) $price2 = $element->prices['salesPrice'];
         } else {
             if (!empty($element->prices['basePrice'])) $price1 = $element->prices['basePrice'];
-            if (!empty($element->prices['discountedPriceWithoutTax']) && number_format($price1, 2, ',', ' ') != number_format($element->prices['discountedPriceWithoutTax'], 2, ',', ' ')) $price2 = $element->prices['discountedPriceWithoutTax'];
+            if (!empty($element->prices['discountedPriceWithoutTax']) && number_format($price1, 2, ',', ' ') != number_format(
+                    $element->prices['discountedPriceWithoutTax'],
+                    2,
+                    ',',
+                    ' '
+                )) $price2 = $element->prices['discountedPriceWithoutTax'];
         }
 
         $currencyHelper = CurrencyDisplay::getInstance($element->product_currency);
@@ -665,7 +675,9 @@ class plgAcymVirtuemart extends acymPlugin
             }
         }
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
+                acym_translation('ACYM_READ_MORE')
+            ).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
 
         $format = new stdClass();
@@ -708,7 +720,10 @@ class plgAcymVirtuemart extends acymPlugin
 
     private function generateCoupon($tag, $user)
     {
-        if (empty($tag->code) || empty($tag->amount) || empty($tag->vendor) || empty($tag->type) || !in_array($tag->type, ['total', 'percent']) || empty($tag->ctype) || !in_array($tag->ctype, ['permanent', 'gift'])) return '';
+        if (empty($tag->code) || empty($tag->amount) || empty($tag->vendor) || empty($tag->type) || !in_array($tag->type, ['total', 'percent']) || empty($tag->ctype) || !in_array(
+                $tag->ctype,
+                ['permanent', 'gift']
+            )) return '';
 
         $intAttributes = ['amount', 'min', 'vendor'];
         foreach ($intAttributes as $oneAttribute) {
@@ -861,10 +876,19 @@ class plgAcymVirtuemart extends acymPlugin
             $conditions['user']['vmfield'] = new stdClass();
             $conditions['user']['vmfield']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_FIELDS'));
             $conditions['user']['vmfield']->option = '<div class="intext_select_automation cell">';
-            $conditions['user']['vmfield']->option .= acym_select($fields, 'acym_condition[conditions][__numor__][__numand__][vmfield][field]', null, 'class="acym__select acym__automation__conditions__fields__dropdown"');
+            $conditions['user']['vmfield']->option .= acym_select(
+                $fields,
+                'acym_condition[conditions][__numor__][__numand__][vmfield][field]',
+                null,
+                'class="acym__select acym__automation__conditions__fields__dropdown"'
+            );
             $conditions['user']['vmfield']->option .= '</div>';
             $conditions['user']['vmfield']->option .= '<div class="intext_select_automation cell">';
-            $conditions['user']['vmfield']->option .= $operator->display('acym_condition[conditions][__numor__][__numand__][vmfield][operator]', '', 'acym__automation__conditions__operator__dropdown');
+            $conditions['user']['vmfield']->option .= $operator->display(
+                'acym_condition[conditions][__numor__][__numand__][vmfield][operator]',
+                '',
+                'acym__automation__conditions__operator__dropdown'
+            );
             $conditions['user']['vmfield']->option .= '</div>';
             $conditions['user']['vmfield']->option .= '<input 
                                                             class="acym__automation__one-field intext_input_automation cell acym__automation__condition__regular-field" 
@@ -1076,21 +1100,39 @@ class plgAcymVirtuemart extends acymPlugin
         if (!empty($automationCondition['vmgroups'])) {
             acym_loadLanguageFile('com_virtuemart_shoppers', JPATH_SITE.'/components/com_virtuemart');
 
-            $groupName = acym_loadResult('SELECT `shopper_group_name` FROM `#__virtuemart_shoppergroups` WHERE `virtuemart_shoppergroup_id` = '.intval($automationCondition['vmgroups']['group']));
-            $automationCondition = acym_translation_sprintf('ACYM_FILTER_ACY_GROUP_SUMMARY', acym_translation($automationCondition['vmgroups']['type'] == 'in' ? 'ACYM_IN' : 'ACYM_NOT_IN'), acym_translation($groupName));
+            $groupName = acym_loadResult(
+                'SELECT `shopper_group_name` FROM `#__virtuemart_shoppergroups` WHERE `virtuemart_shoppergroup_id` = '.intval($automationCondition['vmgroups']['group'])
+            );
+            $automationCondition = acym_translation_sprintf(
+                'ACYM_FILTER_ACY_GROUP_SUMMARY',
+                acym_translation($automationCondition['vmgroups']['type'] == 'in' ? 'ACYM_IN' : 'ACYM_NOT_IN'),
+                acym_translation($groupName)
+            );
         }
 
         if (!empty($automationCondition['vmfield'])) {
-            $automationCondition = acym_translation_sprintf('ACYM_CONDITION_X_FIELD_SUMMARY', $this->pluginDescription->name, $automationCondition['vmfield']['field'], $automationCondition['vmfield']['operator'], $automationCondition['vmfield']['value']);
+            $automationCondition = acym_translation_sprintf(
+                'ACYM_CONDITION_X_FIELD_SUMMARY',
+                $this->pluginDescription->name,
+                $automationCondition['vmfield']['field'],
+                $automationCondition['vmfield']['operator'],
+                $automationCondition['vmfield']['value']
+            );
         }
 
         if (!empty($automationCondition['vmreminder'])) {
             acym_loadLanguageFile('com_virtuemart_orders', JPATH_SITE.'/components/com_virtuemart');
 
-            $status = acym_loadResult('SELECT `order_status_name` FROM `#__virtuemart_orderstates` WHERE `order_status_code` = '.acym_escapeDB($automationCondition['vmreminder']['status']));
+            $status = acym_loadResult(
+                'SELECT `order_status_name` FROM `#__virtuemart_orderstates` WHERE `order_status_code` = '.acym_escapeDB($automationCondition['vmreminder']['status'])
+            );
             if (empty($status)) $status = 'ACYM_ANY_STATUS';
 
-            $payment = acym_loadResult('SELECT `payment_name` FROM `#__virtuemart_paymentmethods_'.$this->lang.'` WHERE `virtuemart_paymentmethod_id` = '.intval($automationCondition['vmreminder']['payment']));
+            $payment = acym_loadResult(
+                'SELECT `payment_name` FROM `#__virtuemart_paymentmethods_'.$this->lang.'` WHERE `virtuemart_paymentmethod_id` = '.intval(
+                    $automationCondition['vmreminder']['payment']
+                )
+            );
             if (empty($payment)) $payment = 'ACYM_ANY_PAYMENT_METHOD';
 
             $automationCondition = acym_translation_sprintf(
@@ -1103,12 +1145,16 @@ class plgAcymVirtuemart extends acymPlugin
 
         if (!empty($automationCondition['vmpurchased'])) {
             if (!empty($automationCondition['vmpurchased']['product'])) {
-                $product = acym_loadResult('SELECT `product_name` FROM #__virtuemart_products_'.$this->lang.' WHERE `virtuemart_product_id` = '.intval($automationCondition['vmpurchased']['product']));
+                $product = acym_loadResult(
+                    'SELECT `product_name` FROM #__virtuemart_products_'.$this->lang.' WHERE `virtuemart_product_id` = '.intval($automationCondition['vmpurchased']['product'])
+                );
             }
             if (empty($product)) $product = acym_translation('ACYM_AT_LEAST_ONE_PRODUCT');
 
             if (!empty($automationCondition['vmpurchased']['category'])) {
-                $category = acym_loadResult('SELECT `category_name` FROM #__virtuemart_categories_'.$this->lang.' WHERE `virtuemart_category_id` = '.intval($automationCondition['vmpurchased']['category']));
+                $category = acym_loadResult(
+                    'SELECT `category_name` FROM #__virtuemart_categories_'.$this->lang.' WHERE `virtuemart_category_id` = '.intval($automationCondition['vmpurchased']['category'])
+                );
             }
             if (empty($category)) $category = acym_translation('ACYM_ANY_CATEGORY');
 

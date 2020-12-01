@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'acymicon';
-    src: url('fonts/acymicon.eot?kx5gvt');
-    src: url('fonts/acymicon.eot?kx5gvt#iefix') format('embedded-opentype'),
-    url('fonts/acymicon.ttf?kx5gvt') format('truetype'),
-    url('fonts/acymicon.woff?kx5gvt') format('woff'),
-    url('fonts/acymicon.svg?kx5gvt#acymicon') format('svg');
+    src: url('fonts/acymicon.eot?daars2');
+    src: url('fonts/acymicon.eot?daars2#iefix') format('embedded-opentype'),
+    url('fonts/acymicon.ttf?daars2') format('truetype'),
+    url('fonts/acymicon.woff?daars2') format('woff'),
+    url('fonts/acymicon.svg?daars2#acymicon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -23,6 +23,22 @@
     /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+.acymicon-external-link:before {
+    content: "\e939";
+}
+
+.acymicon-chevrons:before {
+    content: "\e935";
+}
+
+.acymicon-puzzle-piece:before {
+    content: "\e934";
+}
+
+.acymicon-filter:before {
+    content: "\f0b0";
 }
 
 .acymicon-follow:before {
@@ -463,18 +479,6 @@
 
 .acymicon-address-book-o:before {
     content: "\f2ba";
-}
-
-.acymicon-chevrons:before {
-    content: "\e935";
-}
-
-.acymicon-puzzle-piece:before {
-    content: "\e934";
-}
-
-.acymicon-filter:before {
-    content: "\f0b0";
 }
 
 .acymicon-vertical_align_bottom:before {

@@ -293,65 +293,6 @@ class MailerHelper extends acyPHPMailer
         // BE CAREFUL! This space is not a space, it's a ALT0160 chr(194) by char(32) which means almost &nbsp;
         $this->Body = str_replace(" ", ' ', $this->Body);
 
-        if ($this->ContentType != 'text/plain') {
-            static $foundationCSS = null;
-            $style = [];
-            if (empty($foundationCSS)) {
-                $foundationCSS = acym_fileGetContent(ACYM_MEDIA.'css'.DS.'libraries'.DS.'foundation_email.min.css');
-                // Remove the #acym__wysid__template prefix, not needed in sent emails
-                $foundationCSS = str_replace('#acym__wysid__template ', '', $foundationCSS);
-            }
-
-            // If this is a drag and drop mail we add foundation css for email
-            if (strpos($this->Body, 'acym__wysid__template') !== false) $style['foundation'] = $foundationCSS;
-
-            static $emailFixes = null;
-            if (empty($emailFixes)) $emailFixes = acym_getEmailCssFixes();
-            $style[] = $emailFixes;
-
-            if (!empty($this->stylesheet)) $style[] = $this->stylesheet;
-
-            $settingsStyles = $this->editorHelper->getSettingsStyle($this->settings);
-            if (!empty($settingsStyles)) $style[] = $settingsStyles;
-
-            preg_match('@<[^>"t]*body[^>]*>@', $this->Body, $matches);
-            if (empty($matches[0])) $this->Body = '<body>'.$this->Body.'</body>';
-
-            //We get all the content of the tag styles in the body
-            $styleFoundInBody = preg_match_all('/<\s*style[^>]*>(.*?)<\s*\/\s*style>/s', $this->Body, $matches);
-            if ($styleFoundInBody) {
-                foreach ($matches[1] as $match) {
-                    $style[] = $match;
-                }
-            }
-
-            //We inline all the style that we previously get
-            //Emogrifer delete all the tag <style> in the body
-            $emogrifier = new \acymEmogrifier\acymEmogrifier($this->Body, implode('', $style));
-            $this->Body = $emogrifier->emogrifyBodyContent();
-
-            //We get all the media queries from all the CSS
-            $style[] = $emogrifier->mediaCSS;
-
-            preg_match('@<[^>"t]*/body[^>]*>@', $this->Body, $matches);
-            if (empty($matches[0])) $this->Body = $this->Body.'</body>';
-
-            //We remove the foudation library because it's already inlined and we just need the media queries
-            //By the way there is more than 23 000 char in foundation library
-            unset($style['foundation']);
-
-            $finalContent = '<html><head>';
-            $finalContent .= '<meta http-equiv="Content-Type" content="text/html; charset='.strtolower($this->config->get('charset')).'" />'."\n";
-            $finalContent .= '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'."\n";
-            $finalContent .= '<title>'.$this->Subject.'</title>'."\n";
-            //We add the CSS like that for gmail because it delete the tag style over 8000 char
-            $finalContent .= '<style type="text/css">'.implode('</style><style type="text/css">', $style).'</style>';
-            if (!empty($this->mailHeader)) $finalContent .= $this->mailHeader;
-            $finalContent .= '</head>'.$this->Body.'</html>';
-
-            $this->Body = $finalContent;
-        }
-
         ob_start();
         $result = parent::send();
         $warnings = ob_get_clean();
@@ -452,7 +393,75 @@ class MailerHelper extends acyPHPMailer
         // Replace the urls into absolute urls
         $this->defaultMail[$mailId]->body = acym_absoluteURL($this->defaultMail[$mailId]->body);
 
+        $style = $this->getEmailStylesheet($this->defaultMail[$mailId]);
+        $this->prepareEmailContent($this->defaultMail[$mailId], $style);
+
         return $this->defaultMail[$mailId];
+    }
+
+    private function getEmailStylesheet(&$mail)
+    {
+        static $foundationCSS = null;
+        $style = [];
+        if (empty($foundationCSS)) {
+            $foundationCSS = acym_fileGetContent(ACYM_MEDIA.'css'.DS.'libraries'.DS.'foundation_email.min.css');
+            // Remove the #acym__wysid__template prefix, not needed in sent emails
+            $foundationCSS = str_replace('#acym__wysid__template ', '', $foundationCSS);
+        }
+
+        // If this is a drag and drop mail we add foundation css for email
+        if (strpos($mail->body, 'acym__wysid__template') !== false) $style['foundation'] = $foundationCSS;
+
+        static $emailFixes = null;
+        if (empty($emailFixes)) $emailFixes = acym_getEmailCssFixes();
+        $style[] = $emailFixes;
+
+        if (!empty($mail->stylesheet)) $style[] = $mail->stylesheet;
+
+        $settingsStyles = $this->editorHelper->getSettingsStyle($mail->settings);
+        if (!empty($settingsStyles)) $style[] = $settingsStyles;
+
+        preg_match('@<[^>"t]*body[^>]*>@', $mail->body, $matches);
+        if (empty($matches[0])) $mail->body = '<body yahoo="fix">'.$mail->body.'</body>';
+
+        //We get all the content of the tag styles in the body
+        $styleFoundInBody = preg_match_all('/<\s*style[^>]*>(.*?)<\s*\/\s*style>/s', $mail->body, $matches);
+        if ($styleFoundInBody) {
+            foreach ($matches[1] as $match) {
+                $style[] = $match;
+            }
+        }
+
+        return $style;
+    }
+
+    private function prepareEmailContent(&$mail, $style)
+    {
+        // We inline all the styles we previously get
+        // Emogrifer deletes all the <style> tags in the body
+        $emogrifier = new acymEmogrifier($mail->body, implode('', $style));
+        $mail->body = $emogrifier->emogrifyBodyContent();
+
+        //We get all the media queries from all the CSS
+        $style[] = $emogrifier->mediaCSS;
+
+        preg_match('@<[^>"t]*/body[^>]*>@', $mail->body, $matches);
+        if (empty($matches[0])) $mail->body = $mail->body.'</body>';
+
+        // We remove the foudation library because it's already inlined and we just need the media queries
+        //By the way there are more than 23 000 char in foundation library
+        unset($style['foundation']);
+
+        $finalContent = '<html><head>';
+        $finalContent .= '<meta http-equiv="Content-Type" content="text/html; charset='.strtolower($this->config->get('charset')).'" />'."\n";
+        $finalContent .= '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'."\n";
+        $finalContent .= '<title>'.$mail->subject.'</title>'."\n";
+        //We add the CSS like that for gmail because it delete the tag style over 8000 char
+        $finalContent .= '<style type="text/css">'.implode('</style><style type="text/css">', $style).'</style>';
+        if (!empty($mail->headers)) $finalContent .= $mail->headers;
+        $finalContent .= '</head>'.$mail->body.'</html>';
+
+        $mail->body = $finalContent;
     }
 
     private function canTrack($mailId, $user)
@@ -529,7 +538,11 @@ class MailerHelper extends acyPHPMailer
         }
 
         //Lets try to do something even cooler and specify a messageID instead which will be kept by most mail clients and in the feedback loop...
-        $this->MessageID = "<".preg_replace("|[^a-z0-9+_]|i", '', base64_encode(rand(0, 9999999))."AC".$receiver->id."Y".$this->defaultMail[$mailId]->id."BA".base64_encode(time().rand(0, 99999)))."@".$this->serverHostname().">";
+        $this->MessageID = "<".preg_replace(
+                "|[^a-z0-9+_]|i",
+                '',
+                base64_encode(rand(0, 9999999))."AC".$receiver->id."Y".$this->defaultMail[$mailId]->id."BA".base64_encode(time().rand(0, 99999))
+            )."@".$this->serverHostname().">";
 
         // Set receiver name
         $addedName = '';
@@ -640,10 +653,10 @@ class MailerHelper extends acyPHPMailer
         $this->links_language = $this->defaultMail[$mailId]->links_language;
 
         if (!$isTest && $this->canTrack($mailId, $receiver)) {
-            if (acym_isTrackingSalesActive()) $this->trackingSales($this->id, $receiver->id);
             $this->statPicture($this->id, $receiver->id);
             $this->body = acym_absoluteURL($this->body);
             $this->statClick($this->id, $receiver->id);
+            if (acym_isTrackingSalesActive()) $this->trackingSales($this->id, $receiver->id);
         }
 
         $this->replaceParams();
@@ -860,7 +873,21 @@ class MailerHelper extends acyPHPMailer
         $replaceByReturnChar = '#< */? *(br|p|h1|h2|legend|h3|li|ul|dd|dt|h4|h5|h6|tr|td|div)[^>]*>#Ui';
         $replaceLinks = '/< *a[^>]*href *= *"([^#][^"]*)"[^>]*>(.+)< *\/ *a *>/Uis';
 
-        $text = preg_replace([$removepictureslinks, $removeScript, $removeStyle, $removeStrikeTags, $replaceByTwoReturnChar, $replaceByStars, $replaceByReturnChar1, $replaceByReturnChar, $replaceLinks], ['', '', '', '', "\n\n", "\n* ", "\n", "\n", '${2} ( ${1} )'], $html);
+        $text = preg_replace(
+            [
+                $removepictureslinks,
+                $removeScript,
+                $removeStyle,
+                $removeStrikeTags,
+                $replaceByTwoReturnChar,
+                $replaceByStars,
+                $replaceByReturnChar1,
+                $replaceByReturnChar,
+                $replaceLinks,
+            ],
+            ['', '', '', '', "\n\n", "\n* ", "\n", "\n", '${2} ( ${1} )'],
+            $html
+        );
 
         //The striptags function may not do the job properly in some cases...
         $text = preg_replace('#(&lt;|&\#60;)([^ \n\r\t])#i', '&lt; ${2}', $text);
@@ -894,7 +921,16 @@ class MailerHelper extends acyPHPMailer
             return $result;
         }
 
-        $mimetypes = ['bmp' => 'image/bmp', 'gif' => 'image/gif', 'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg', 'jpe' => 'image/jpeg', 'png' => 'image/png', 'tiff' => 'image/tiff', 'tif' => 'image/tiff'];
+        $mimetypes = [
+            'bmp' => 'image/bmp',
+            'gif' => 'image/gif',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'jpe' => 'image/jpeg',
+            'png' => 'image/png',
+            'tiff' => 'image/tiff',
+            'tif' => 'image/tiff',
+        ];
 
         $allimages = [];
 

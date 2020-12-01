@@ -8,11 +8,36 @@ class UserStatClass extends acymClass
 {
     var $table = 'user_stat';
 
+    const DESKTOP_DEVICES = [
+        'windows' => 'Windows',
+        'macintosh' => 'Mac',
+        'linux' => 'Linux',
+    ];
+
+    const MOBILE_DEVICES = [
+        'bada' => 'Bada',
+        'ubuntu; mobile' => 'Ubuntu Mobile',
+        'ubuntu; tablet' => 'Ubuntu Tablet',
+        'tizen' => 'Tizen',
+        'palm os' => 'Palm',
+        'meego' => 'meeGo',
+        'symbian' => 'Symbian',
+        'symbos' => 'Symbian',
+        'blackberry' => 'BlackBerry',
+        'windows ce' => 'Windows Phone',
+        'windows mobile' => 'Windows Phone',
+        'windows phone' => 'Windows Phone',
+        'iphone' => 'iPhone',
+        'ipad' => 'iPad',
+        'ipod' => 'iPod',
+        'android' => 'Android',
+    ];
+
     public function save($userStat)
     {
         $column = [];
         $valueColumn = [];
-        $columnName = acym_getColumns("user_stat");
+        $columnName = acym_getColumns('user_stat');
         if (![$userStat] || !is_array($userStat)) {
             $userStat = (array)$userStat;
         }
@@ -24,15 +49,15 @@ class UserStatClass extends acymClass
             }
         }
 
-        $query = "INSERT INTO #__acym_user_stat (".implode(',', $column).") VALUE (".implode(',', $valueColumn).")";
+        $query = 'INSERT INTO #__acym_user_stat ('.implode(',', $column).') VALUE ('.implode(',', $valueColumn).')';
         $onDuplicate = [];
 
         if (!empty($userStat['statusSending'])) {
-            $onDuplicate[] = $userStat['statusSending'] == 0 ? "fail = fail + 1" : "sent = sent + 1";
+            $onDuplicate[] = $userStat['statusSending'] == 0 ? 'fail = fail + 1' : 'sent = sent + 1';
         }
 
         if (!empty($userStat['open'])) {
-            $onDuplicate[] = "open = open + 1";
+            $onDuplicate[] = 'open = open + 1';
             $automationClass = new AutomationClass();
             $automationClass->trigger('user_open', ['userId' => $userStat['user_id']]);
         }
@@ -49,8 +74,20 @@ class UserStatClass extends acymClass
             $onDuplicate[] = 'currency = '.acym_escapeDB($userStat['currency']);
         }
 
+        if (!empty($userStat['unsubscribe'])) {
+            $onDuplicate[] = 'unsubscribe = '.intval($userStat['unsubscribe']);
+        }
+
+        if (!empty($userStat['device'])) {
+            $onDuplicate[] = 'device = '.acym_escapeDB($userStat['device']);
+        }
+
+        if (!empty($userStat['opened_with'])) {
+            $onDuplicate[] = 'opened_with = '.acym_escapeDB($userStat['opened_with']);
+        }
+
         if (!empty($onDuplicate)) {
-            $query .= " ON DUPLICATE KEY UPDATE ";
+            $query .= ' ON DUPLICATE KEY UPDATE ';
             $query .= implode(',', $onDuplicate);
         }
 
@@ -120,11 +157,18 @@ class UserStatClass extends acymClass
             foreach ($mails as $mail) {
                 if (!in_array($mail->mail_id, $mailIds)) $mailIds[] = $mail->mail_id;
             }
-            $userClick = acym_loadObjectList('SELECT user_id, mail_id, SUM(click) as total_click FROM #__acym_url_click WHERE mail_id IN ('.implode(',', $mailIds).') GROUP BY user_id, mail_id ');
+            $userClick = acym_loadObjectList(
+                'SELECT user_id, mail_id, SUM(click) as total_click FROM #__acym_url_click WHERE mail_id IN ('.implode(',', $mailIds).') GROUP BY user_id, mail_id '
+            );
 
             $trackingSales = [];
             if (acym_isTrackingSalesActive()) {
-                $trackingSalesDB = acym_loadObjectList('SELECT SUM(tracking_sale) as sale, currency, mail_id, user_id FROM #__acym_user_stat WHERE mail_id IN ('.implode(',', $mailIds).')  AND currency IS NOT NULL GROUP BY user_id, mail_id');
+                $trackingSalesDB = acym_loadObjectList(
+                    'SELECT SUM(tracking_sale) as sale, currency, mail_id, user_id FROM #__acym_user_stat WHERE mail_id IN ('.implode(
+                        ',',
+                        $mailIds
+                    ).')  AND currency IS NOT NULL GROUP BY user_id, mail_id'
+                );
                 foreach ($trackingSalesDB as $oneMailTrackSales) {
                     $trackingSales[$oneMailTrackSales->mail_id.'-'.$oneMailTrackSales->user_id] = $oneMailTrackSales;
                 }
@@ -158,7 +202,7 @@ class UserStatClass extends acymClass
         acym_arrayToInteger($mailIds);
         if (empty($mailIds)) return [];
 
-        $query = "SELECT mail_id, SUM(fail) AS fail, SUM(sent) AS sent, SUM(open) AS open FROM #__acym_user_stat WHERE mail_id IN (".implode(',', $mailIds).") GROUP BY mail_id";
+        $query = 'SELECT mail_id, SUM(fail) AS fail, SUM(sent) AS sent, SUM(open) AS open FROM #__acym_user_stat WHERE mail_id IN ('.implode(',', $mailIds).') GROUP BY mail_id';
 
         return acym_loadObjectList($query, 'mail_id');
     }
@@ -168,5 +212,67 @@ class UserStatClass extends acymClass
         $query = 'SELECT user_id FROM #__acym_user_stat GROUP BY user_id HAVING MAX(open) = 0';
 
         return acym_loadResultArray($query);
+    }
+
+    public function getOpenTimeStats($mailId)
+    {
+        $where = empty($mailId) ? '' : ' AND mail_id = '.intval($mailId);
+
+        $query = 'SELECT SUM(`open`) AS open_total, DATE_FORMAT(open_date, "%w") AS day, FORMAT(CONVERT(DATE_FORMAT(open_date, "%H"), SIGNED INTEGER) / 3, 0) AS hour, CONCAT(DATE_FORMAT(open_date, "%w"), "_", FORMAT(CONVERT(DATE_FORMAT(open_date, "%H"), SIGNED INTEGER) / 3, 0)) AS date_id FROM `#__acym_user_stat` WHERE open_date IS NOT NULL '.$where.' GROUP BY date_id';
+
+        $return['total_open'] = acym_loadResult('SELECT SUM(`open`) FROM #__acym_user_stat WHERE open_date IS NOT NULL '.$where);
+        $return['stats'] = acym_loadObjectList($query, 'date_id');
+
+        return $return;
+    }
+
+    public function getDefaultStat()
+    {
+        $percentageRemaining = 100;
+        $stats = [];
+
+
+        for ($day = 0 ; $day < 7 ; $day++) {
+            $stats[$day] = [];
+            for ($hour = 0 ; $hour < 8 ; $hour++) {
+                $hourPercentage = $this->getRandomStatOpenTime($percentageRemaining, $hour);
+                $stats[$day][$hour] = $hourPercentage;
+            }
+        }
+
+        return $stats;
+    }
+
+    private function getRandomStatOpenTime(&$percentageRemaining, $hour)
+    {
+        if (empty($percentageRemaining)) return 0;
+        $randoms = [
+            0 => [0, 1],
+            1 => [0, 2],
+            2 => [1, 2],
+            3 => [1, 3],
+            4 => [3, 5],
+            5 => [1, 3],
+            6 => [1, 2],
+            7 => [0, 2],
+        ];
+
+        $percentage = rand($randoms[$hour][0], $randoms[$hour][1]);
+
+        if ($percentageRemaining - $percentage < 0) return 0;
+
+
+        $percentageRemaining -= $percentage;
+
+        return $percentage;
+    }
+
+    public function getOpenSourcesStats($mailId = '')
+    {
+        $query = 'SELECT opened_with, COUNT(*) AS number FROM #__acym_user_stat WHERE `open` > 0';
+        if (!empty($mailId)) $query .= ' AND mail_id = '.intval($mailId);
+        $query .= ' GROUP BY opened_with';
+
+        return acym_loadObjectList($query);
     }
 }

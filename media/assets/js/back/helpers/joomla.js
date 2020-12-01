@@ -68,6 +68,7 @@ const acym_helperJoomla = {
         });
 
         jQuery(window).on('resize', function () {
+            if (window.innerWidth < 950 && !$leftMenu.hasClass('collapsed')) $buttonToggleLeftMenu.click();
             acym_helperJoomla.setWidthJoomlaContent();
         });
     }

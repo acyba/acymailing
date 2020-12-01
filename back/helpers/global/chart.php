@@ -289,6 +289,11 @@ function acym_round_chart($id, $pourcentage, $type = '', $class = '', $topLabel 
             $valueLow = 10;
             $isInverted = true;
             break;
+        case 'unsubscribe':
+            $valueHigh = 10;
+            $valueLow = 1;
+            $isInverted = true;
+            break;
         default:
             $isFixColor = true;
     }
@@ -374,4 +379,105 @@ function acym_round_chart($id, $pourcentage, $type = '', $class = '', $topLabel 
 
 
     return $return;
+}
+
+
+/**
+ * @param        $id
+ * @param array  $data in format [label => numbers, label2 => numbers2]
+ * @param string $class
+ * @param string $topLabel
+ * @param string $bottomLabel
+ *
+ * @return string|void
+ */
+function acym_pieChart($id, $data = [], $class = '', $topLabel = '', $bottomLabel = '')
+{
+    if (empty($data)) return '';
+
+    acym_initializeChart();
+
+    if (empty($id)) {
+        $id = 'acy_pie_chart_rand_id'.rand(1000, 9000);
+    }
+
+    $idCanvas = 'acy_canvas_rand_id'.rand(1000, 9000);
+    $idLegend = 'acy_legend_rand_id'.rand(1000, 9000);
+
+    $allLabelsArray = [];
+    $colors = [];
+
+    foreach ($data as $label => $number) {
+        $data[$label] = (float)$number;
+        $allLabelsArray[] = $label;
+        $colors[] = acym_randomRgba();
+    }
+
+    $allNumbers = implode(',', $data);
+    $allLabels = "'".implode("', '", $allLabelsArray)."'";
+    $allColors = "'".implode("', '", $colors)."'";
+
+    $return = '<div class="'.$class.' acym__chart__pie grid-x">
+                        <p class="text-center acym__chart__pie__container__top-label cell medium-6">'.$topLabel.'</p>
+                        <div class="acym__chart__pie__container grid-x cell" id="'.$id.'">
+                            <div class="acym__chart__pie__canvas_container cell medium-6">                            
+                                <canvas id="'.$idCanvas.'" width="200" height="200"></canvas> 
+                            </div>
+                            <div class="acym__chart__pie__legend cell medium-6 padding-left-1" id="'.$idLegend.'"></div>
+                        </div>
+                </div>';
+
+    $return .= '<script>
+            var ctx = document.getElementById("'.$idCanvas.'").getContext("2d");
+            var config = {
+                type: "pie",
+                 data: {
+                    datasets: [{
+                        data: ['.$allNumbers.'], //Data of chart
+                        backgroundColor: ['.$allColors.'],
+                    }],
+                    labels: ['.$allLabels.']
+                }, options: {
+                    responsive: true,
+                    legend: {
+                        display: false,
+                     }, 
+                    tooltips: {
+                        backgroundColor: "#fff",
+                        borderWidth: 2,
+                        borderColor: "#303e46",
+                        titleFontSize: 16,
+                        titleFontColor: "#303e46",
+                        bodyFontColor: "#303e46",
+                        bodyFontSize: 14,
+                    },
+                    legendCallback: function(chart) {
+                        let dataSets = chart.data.datasets;
+                        let colors = dataSets[0].backgroundColor;
+                        let numbers = dataSets[0].data;
+                        let labels = chart.data.labels;
+                        let text = [];
+                        
+                        if (colors.length !== labels.length) {
+                            return "";
+                        }
+                        
+                        for (let i = 0; i < labels.length; i++) {
+                            text.push(\'<div class="acym_chart_pie_labels"><div class="acym_chart_pie_labels_circle" style="background-color: \' + colors[i] + \'"></div>\' + labels[i] + " (" + numbers[i] + ")" + \'</div>\');
+                        }
+                        
+                        return text.join("");
+                    },
+                }
+            };
+            var chart = new Chart(ctx, config);
+            document.getElementById("'.$idLegend.'").innerHTML = (chart.generateLegend());
+</script>';
+
+    return $return;
+}
+
+function acym_randomRgba()
+{
+    return 'rgba('.round(rand(0, 100) * 2.55).','.round(rand(0, 100) * 2.55).','.round(rand(0, 100) * 2.55).',.8)';
 }

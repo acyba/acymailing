@@ -43,9 +43,14 @@ class acyUsersynch extends acyHook
                     $checked = $oneList['checked'] ? 'checked="checked"' : '';
                     ?>
 					<tr>
-						<th scope="row"><label class="acym__regacy__lists__label" for="acym__regacy__lists-<?php echo intval($listId); ?>"><?php echo acym_escape($oneList['name']); ?></label></th>
+						<th scope="row"><label class="acym__regacy__lists__label" for="acym__regacy__lists-<?php echo intval($listId); ?>"><?php echo acym_escape(
+                                    $oneList['name']
+                                ); ?></label></th>
 						<td>
-							<input name="regacy_visible_lists_checked[]" type="checkbox" id="acym__regacy__lists-<?php echo intval($listId); ?>" value="<?php echo intval($listId); ?>" <?php echo $checked; ?>>
+							<input name="regacy_visible_lists_checked[]"
+								   type="checkbox"
+								   id="acym__regacy__lists-<?php echo intval($listId); ?>"
+								   value="<?php echo intval($listId); ?>" <?php echo $checked; ?>>
 						</td>
 					</tr>
                     <?php

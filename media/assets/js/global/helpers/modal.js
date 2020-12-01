@@ -51,6 +51,10 @@ const acym_helperModal = {
                          ? '1'
                          : '0';
         let mailId = jQuery('input[name="id"]').val();
+        let $followupinput = jQuery('input[name="followup[id]"]');  
+        if ($followupinput.length > 0) {
+            ajaxUrl += '&followup_id=' + $followupinput.val();
+        }
 
         ajaxUrl += '&search=' + jQuery('#acym_search_template_choose__ajax').val();
         ajaxUrl += '&tag=' + jQuery('#acym_tag_template_choose__ajax').val();

@@ -5,6 +5,7 @@ namespace AcyMailing\Controllers;
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\TagClass;
 use AcyMailing\Helpers\EditorHelper;
 use AcyMailing\Helpers\ExportHelper;
@@ -13,6 +14,7 @@ use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Helpers\ToolbarHelper;
 use AcyMailing\Helpers\UpdateHelper;
 use AcyMailing\Libraries\acymController;
+use AcyMailing\Types\UploadfileType;
 
 class MailsController extends acymController
 {
@@ -135,8 +137,12 @@ class MailsController extends acymController
         $otherContent .= acym_modal(
             '<i class="acymicon-add"></i>'.acym_translation('ACYM_CREATE'),
             '<div class="cell grid-x grid-margin-x">
-								<button type="button" data-task="edit" data-editor="html" class="acym__create__template button cell large-auto small-6 margin-top-1 button-secondary">'.acym_translation('ACYM_HTML_EDITOR').'</button>
-								<button type="button" data-task="edit" data-editor="acyEditor" class="acym__create__template button cell medium-auto margin-top-1">'.acym_translation('ACYM_DD_EDITOR').'</button>
+								<button type="button" data-task="edit" data-editor="html" class="acym__create__template button cell large-auto small-6 margin-top-1 button-secondary">'.acym_translation(
+                'ACYM_HTML_EDITOR'
+            ).'</button>
+								<button type="button" data-task="edit" data-editor="acyEditor" class="acym__create__template button cell medium-auto margin-top-1">'.acym_translation(
+                'ACYM_DD_EDITOR'
+            ).'</button>
 							</div>',
             '',
             '',
@@ -206,6 +212,8 @@ class MailsController extends acymController
         $followupId = acym_getVar('int', 'followup_id', 0);
         $followupClass = new FollowupClass();
 
+        $campaignController = new CampaignsController();
+
         if (base64_decode($return, true) === false) {
             $return = empty($return) ? '' : $return;
         } else {
@@ -221,7 +229,6 @@ class MailsController extends acymController
             $this->breadcrumb[acym_translation('ACYM_LISTS')] = acym_completeLink('lists');
 
             if (!empty($listIds)) {
-                $campaignController = new CampaignsController();
                 $campaignController->setTaskListing($type);
                 $listIds = [$listIds];
             }
@@ -253,7 +260,7 @@ class MailsController extends acymController
                 $mail->subject = '';
                 $mail->preheader = '';
                 $mail->tags = [];
-                $mail->type = '';
+                $mail->type = $type;
                 $mail->body = '';
                 $mail->editor = in_array($type, ['automation', 'followup']) ? 'acyEditor' : $typeEditor;
                 $mail->headers = '';
@@ -366,6 +373,12 @@ class MailsController extends acymController
             if (empty($listIds) && !empty($mail->id)) $listIds = $listClass->getListIdsByWelcomeUnsub($mail->id, $mail->type == 'welcome');
         }
 
+        if (!empty($mail->attachments) && !is_array($mail->attachments)) {
+            $mail->attachments = json_decode($mail->attachments);
+        } elseif (empty($mail->attachments)) {
+            $mail->attachments = [];
+        }
+
         $tagClass = new TagClass();
         $data = [
             'mail' => $mail,
@@ -379,9 +392,12 @@ class MailsController extends acymController
             'delay_unit' => $followupClass->getDelayUnits(),
             'default_delay_unit' => $followupClass::DEFAULT_DELAY_UNIT,
             'followup_id' => $followupId,
+            'uploadFileType' => new UploadfileType(),
         ];
 
         $this->prepareEditorEdit($data);
+
+        $campaignController->prepareMaxUpload($data);
 
         if (!empty($return)) $data['return'] = $return;
 
@@ -464,9 +480,14 @@ class MailsController extends acymController
             if (!empty($thumbname)) $mail->thumbnail = $thumbname;
         }
 
+        if (empty($mail->name) && !in_array($mail->type, ['notification', 'override'])) {
+            $mail->name = empty($mail->subject) ? acym_translation('ACYM_TEMPLATE_NAME') : $mail->subject;
+        }
+
+        $this->setAttachmentToMail($mail);
+
         $mailID = $mailClass->save($mail);
         if (!empty($mailID)) {
-
             if (!empty($mail->type) && in_array($mail->type, ['welcome', 'unsubscribe'])) {
                 $listIds = acym_getVar('array', 'list_ids', []);
                 $listClass = new ListClass();
@@ -494,6 +515,62 @@ class MailsController extends acymController
             }
 
             return false;
+        }
+    }
+
+    public function setAttachmentToMail(&$mail)
+    {
+        if (!empty($mail->id)) {
+            $mail->attachments = $this->currentClass->getMailAttachments($mail->id);
+        }
+
+        if (!empty($mail->attachments) && !is_array($mail->attachments)) {
+            $mail->attachments = json_decode($mail->attachments);
+        } else {
+            $mail->attachments = [];
+        }
+
+        // Attachments
+        $newAttachments = [];
+        $attachments = acym_getVar('array', 'attachments', []);
+        if (!empty($attachments)) {
+            foreach ($attachments as $id => $filepath) {
+                if (empty($filepath)) continue;
+
+                $attachment = new \stdClass();
+                $attachment->filename = $filepath;
+                $attachment->size = filesize(ACYM_ROOT.$filepath);
+
+                //We will never allow some files to be uploaded...
+                if (preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)#Ui', $attachment->filename)) {
+                    acym_enqueueMessage(
+                        acym_translation_sprintf(
+                            'ACYM_ACCEPTED_TYPE',
+                            substr($attachment->filename, strrpos($attachment->filename, '.') + 1),
+                            $this->config->get('allowed_files')
+                        ),
+                        'notice'
+                    );
+                    continue;
+                }
+
+                if (in_array((array)$attachment, $mail->attachments)) continue;
+
+                $newAttachments[] = $attachment;
+            }
+            // Add to previous attachments
+            if (!empty($mail->attachments) && is_array($mail->attachments)) {
+                $newAttachments = array_merge($mail->attachments, $newAttachments);
+            }
+            $mail->attachments = $newAttachments;
+        }
+
+        if (empty($mail->attachments)) {
+            unset($mail->attachments);
+        }
+
+        if (!empty($mail->attachments) && !is_string($mail->attachments)) {
+            $mail->attachments = json_encode($mail->attachments);
         }
     }
 
@@ -594,11 +671,18 @@ class MailsController extends acymController
 
         $return = '<div class="grid-x grid-padding-x grid-padding-y grid-margin-x grid-margin-y xxlarge-up-6 large-up-4 medium-up-3 small-up-1 cell acym__template__choose__list">';
 
+        $followup_id = '';
+        if ($type == 'followup') {
+            $followup_id = acym_getVar('int', 'followup_id', 0);
+        }
         foreach ($matchingMails['elements'] as $oneTemplate) {
             $return .= '<div class="cell grid-x acym__templates__oneTpl acym__listing__block" id="'.acym_escape($oneTemplate->id).'">
                 <div class="cell acym__templates__pic text-center">';
 
             $url = acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.intval($oneTemplate->id).$returnUrl.'&type='.$type.$id;
+            if (!empty($followup_id)) {
+                $url .= '&followup_id='.$followup_id;
+            }
             if (!empty($this->data['campaignInformation'])) $url .= '&id='.intval($this->data['campaignInformation']);
             if (!$automation || !empty($returnUrl)) $return .= '<a href="'.acym_completeLink($url, false, false, true).'">';
 
@@ -906,6 +990,7 @@ class MailsController extends acymController
         $newMail->stylesheet = $mail->stylesheet;
         $newMail->attachments = $mail->attachments;
         $newMail->headers = $mail->headers;
+        $newMail->preheader = $mail->preheader;
 
         $newMail->id = $mailClass->save($newMail);
 
@@ -951,7 +1036,14 @@ class MailsController extends acymController
         exit;
     }
 
-    public function duplicate()
+    public function massDuplicate()
+    {
+        $ids = acym_getVar('array', 'elements_checked', []);
+        if (!empty($ids)) $this->duplicate($ids);
+        $this->listing();
+    }
+
+    public function oneDuplicate()
     {
         $templateId = acym_getVar('int', 'templateId', 0);
 
@@ -962,23 +1054,31 @@ class MailsController extends acymController
             return;
         }
 
-        $mailClass = $this->currentClass;
-        $oldTemplate = $mailClass->getOneById($templateId);
-
-        if (empty($oldTemplate)) {
-            acym_enqueueMessage(acym_translation('ACYM_TEMPLATE_DUPLICATE_ERROR'), 'error');
-            $this->listing();
-
-            return;
-        }
-
-        $newTemplate = $oldTemplate;
-        $newTemplate->id = 0;
-        $newTemplate->name = $oldTemplate->name.'_copy';
-
-        $mailClass->save($newTemplate);
-
+        $this->duplicate([$templateId]);
         $this->listing();
+    }
+
+    public function duplicate($templates = [])
+    {
+        $mailClass = $this->currentClass;
+        $tmplError = [];
+        foreach ($templates as $templateId) {
+            $oldTemplate = $mailClass->getOneById($templateId);
+
+            if (empty($oldTemplate)) {
+                $tmplError[] = $templateId;
+                continue;
+            }
+
+            $newTemplate = $oldTemplate;
+            $newTemplate->id = 0;
+            $newTemplate->name = $oldTemplate->name.'_copy';
+
+            $mailClass->save($newTemplate);
+        }
+        if (!empty($tmplError)) {
+            acym_enqueueMessage(acym_translation_sprintf('ACYM_TEMPLATE_X_DUPLICATE_ERROR', implode(', ', $tmplError)), 'error');
+        }
     }
 
     public function delete()

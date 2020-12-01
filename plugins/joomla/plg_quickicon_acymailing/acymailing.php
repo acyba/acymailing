@@ -14,7 +14,10 @@ class plgQuickiconAcymailing extends JPlugin
     {
         if ($context != $this->params->get('context', 'mod_quickicon')) return [];
 
-        $acymailingHelper = rtrim(JPATH_ADMINISTRATOR, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
+        $acymailingHelper = rtrim(
+                JPATH_ADMINISTRATOR,
+                DIRECTORY_SEPARATOR
+            ).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
         if (!file_exists($acymailingHelper)) return [];
 
         return [

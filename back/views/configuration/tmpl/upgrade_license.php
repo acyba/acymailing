@@ -14,7 +14,9 @@
                 <?php echo acym_translation('ACYM_ASSIGN_ACY_WEBSITE_TO_LICENCE_AND_MAGIC'); ?></p>
 		</div>
 		<div class="cell grid-x medium-6 align-center">
-			<img class="cell acym__configuration__upgrade__license__images" src="<?php echo ACYM_IMAGES.'starter/tablet_smartphone.png'; ?>" alt="Screenshots of AcyMailing stats on tablet and smartphone">
+			<img class="cell acym__configuration__upgrade__license__images"
+				 src="<?php echo ACYM_IMAGES.'starter/tablet_smartphone.png'; ?>"
+				 alt="Screenshots of AcyMailing stats on tablet and smartphone">
 		</div>
 		<div class="cell grid-x align-center"><span class="cell medium-2 acym__configuration__upgrade__license__separator"></span></div>
 		<div class="cell grid-x medium-6 align-center">

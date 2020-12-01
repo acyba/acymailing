@@ -15,7 +15,7 @@
             }
             echo $workflow->display($this->steps, $this->step);
             include acym_getView('campaigns', 'edit_email_info');
-            include acym_getView('campaigns', 'edit_email_attachment', true);
+            include acym_getPartial('editor', 'attachments');
             include acym_getView('campaigns', 'edit_email_actions', true);
             ?>
 		</div>

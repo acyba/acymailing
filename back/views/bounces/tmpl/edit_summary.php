@@ -34,7 +34,9 @@ $texts = [
         $classStat = '';
         if (!$data['rule']->increment_stats) $classStat = ' style="display: none;"';
         ?>
-		<span class="cell acym__label" id="acym__bounces__sum__stats" <?php echo $classStat; ?>><?php echo acym_translation('ACYM_INCREMENT_BOUNCE_STATISTICS_IF_RULE_MATCHES'); ?></span>
+		<span class="cell acym__label" id="acym__bounces__sum__stats" <?php echo $classStat; ?>><?php echo acym_translation(
+                'ACYM_INCREMENT_BOUNCE_STATISTICS_IF_RULE_MATCHES'
+            ); ?></span>
 	</div>
 	<!-- USER -->
 	<div class="cell grid-x padding-left-1 padding-bottom-1">
@@ -42,7 +44,10 @@ $texts = [
 			<span class="cell medium-3 acym__label text-right"><?php echo acym_translation('ACYM_ACTION_ON_USER'); ?>:</span>
 			<div class="cell medium-9 acym__label grid-x">
                 <?php
-                echo '<div class="cell">'.acym_translation_sprintf('ACYM_EXECUTE_ACTIONS_AFTER', '<span id="acym__bounces__sum__exec">'.$data['rule']->execute_action_after.'</span>').'<br /></div>';
+                echo '<div class="cell">'.acym_translation_sprintf(
+                        'ACYM_EXECUTE_ACTIONS_AFTER',
+                        '<span id="acym__bounces__sum__exec">'.$data['rule']->execute_action_after.'</span>'
+                    ).'<br /></div>';
                 $actionsUsers = [
                     'delete_user_subscription' => ['id' => 'acym__bounces__sum__delsub', 'text' => 'ACYM_REMOVE_SUB'],
                     'unsubscribe_user' => ['id' => 'acym__bounces__sum__unsub', 'text' => 'ACYM_UNSUB_USER'],

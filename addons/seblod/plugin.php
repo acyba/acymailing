@@ -390,7 +390,7 @@ class plgAcymSeblod extends acymPlugin
         $result = str_replace('&nbsp;', ' ', $result);
         $result = preg_replace(
             '#<iframe[^>]*(http[^"]*embed/)([^"]*)[^<]*</iframe>#',
-            '<a href="$1$2" target="_blank"><img alt="" src="http://img.youtube.com/vi/$2/1.jpg"/></a>',
+            '<a href="$1$2" target="_blank"><img alt="" src="https://img.youtube.com/vi/$2/1.jpg"/></a>',
             $result
         );
         $result = str_replace('/embed/', '/watch?v=', $result);

@@ -36,7 +36,10 @@
                 } else {
                     echo '<p class="acym__front__archive__newsletter_name"><a href="'.$archiveURL.'" target="_blank">'.$oneNewsletter->subject.'</a></p>';
                 }
-                echo '<p class="acym__front__archive__newsletter_sending-date">'.acym_translation('ACYM_SENDING_DATE').' : '.acym_date($oneNewsletter->sending_date, 'd M Y').'</p>';
+                echo '<p class="acym__front__archive__newsletter_sending-date">'.acym_translation('ACYM_SENDING_DATE').' : '.acym_date(
+                        $oneNewsletter->sending_date,
+                        'd M Y'
+                    ).'</p>';
             }
 
             //__START__joomla_

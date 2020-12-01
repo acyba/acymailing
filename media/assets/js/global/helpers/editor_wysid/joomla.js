@@ -73,6 +73,7 @@ const acym_editorWysidJoomla = {
             // We're selecting an image to insert in the email
 
             let content = '';
+            let $link = acym_helperEditorWysid.$focusElement.find('.acym__wysid__link__image');
             for (let i in imagesUrls) {
                 if (!imagesUrls.hasOwnProperty(i)) continue;
                 let linkImage = imagesUrls[i];
@@ -84,18 +85,23 @@ const acym_editorWysidJoomla = {
                 let title = '';
                 if (altValue !== undefined) alt = altValue;
                 if (valueTitle !== undefined) title = valueTitle;
+                let classImage = parseInt(i) === 0 ? 'acym__wysid__media__inserted--selected' : '';
 
                 content += '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
                 content += '<td class="large-12 acym__wysid__column__element__td">';
                 content += '<div class="acym__wysid__tinymce--image">';
                 content += '<p style="text-align: center" data-mce-style="text-align: center">';
-                content += '<img class="acym__wysid__media__inserted" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;" src="'
+                if ($link.length > 0 && parseInt(i) === 0) content += '<a href="' + $link.attr('href') + '" class="acym__wysid__link__image" target="_blank">';
+                content += '<img class="acym__wysid__media__inserted '
+                           + classImage
+                           + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;" src="'
                            + linkImage
                            + '" alt="'
                            + acym_helper.escape(alt)
                            + '" title="'
                            + acym_helper.escape(title)
                            + '"/>';
+                if ($link.length > 0) content += '</a>';
                 content += '</p>';
                 content += '</div>';
                 content += '</td>';

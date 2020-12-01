@@ -16,7 +16,21 @@ class FrontcampaignsController extends CampaignsController
             'edit' => ['vue-applications' => ['entity_select'], 'editor-wysid'],
             'all' => ['introjs'],
         ];
-        $this->authorizedFrontTasks = ['saveAsDraftCampaign', 'addQueue', 'save', 'edit', 'newEmail', 'campaigns', 'welcome', 'unsubscribe', 'countNumberOfRecipients', 'editEmail', 'saveAjax', 'confirmCampaign', 'stopScheduled'];
+        $this->authorizedFrontTasks = [
+            'saveAsDraftCampaign',
+            'addQueue',
+            'save',
+            'edit',
+            'newEmail',
+            'campaigns',
+            'welcome',
+            'unsubscribe',
+            'countNumberOfRecipients',
+            'editEmail',
+            'saveAjax',
+            'confirmCampaign',
+            'stopScheduled',
+        ];
         $this->urlFrontMenu = 'index.php?option=com_acym&view=frontcampaigns&layout=listing';
         parent::__construct();
     }

@@ -11,17 +11,55 @@ use AcyMailing\Helpers\ExportHelper;
 use AcyMailing\Helpers\MailerHelper;
 use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Helpers\WorkflowHelper;
 use AcyMailing\Libraries\acymController;
 
 class StatsController extends acymController
 {
     public function __construct()
     {
+        $this->defaulttask = 'globalStats';
         parent::__construct();
         $this->breadcrumb[acym_translation('ACYM_STATISTICS')] = acym_completeLink('stats');
         $this->loadScripts = [
             'all' => ['datepicker', 'thumbnail'],
         ];
+        if (acym_getVar('string', 'ctrl', 'dashboard') != 'dashboard') $this->storeAndGetTask();
+    }
+
+    private function storeAndGetTask()
+    {
+        $tasksToStore = [
+            'globalStats',
+            'detailedStats',
+            'clickMap',
+            'linksDetails',
+            'userClickDetails',
+        ];
+
+        if ((empty($this->taskCalled) || $this->taskCalled == 'listing') && !empty($_SESSION['stats_task']) && in_array($_SESSION['stats_task'], $tasksToStore)) {
+            $this->{$_SESSION['stats_task']}();
+            $this->preventCallTask = true;
+
+            return true;
+        }
+
+        if (!empty($this->taskCalled) && !in_array($this->taskCalled, $tasksToStore) && method_exists($this, $this->taskCalled)) {
+            $this->{$this->taskCalled}();
+            $this->preventCallTask = true;
+        } elseif (!empty($this->taskCalled) && $this->taskCalled != 'listing' && in_array($this->taskCalled, $tasksToStore)) {
+            $_SESSION['stats_task'] = $this->taskCalled;
+        } elseif (!empty($_SESSION['stats_task']) && method_exists($this, $_SESSION['stats_task'])) {
+            $this->{$_SESSION['stats_task']}();
+            $this->preventCallTask = true;
+
+            return true;
+        } else {
+            $this->{$this->defaulttask}();
+            $this->preventCallTask = true;
+
+            return true;
+        }
     }
 
     public function saveSendingStatUser($userId, $mailId, $sendDate = null)
@@ -40,13 +78,17 @@ class StatsController extends acymController
         $userStatClass->save($userStat);
     }
 
-    public function listing()
+    public function prepareDefaultPageInfo(&$data, $needMailId = false)
     {
-        acym_setVar('layout', 'listing');
-
-        $data = [];
-        $data['tab'] = new TabHelper();
+        $data['workflowHelper'] = new WorkflowHelper();
         $data['selectedMailid'] = $this->getVarFiltersListing('int', 'mail_id', '');
+
+        if ($needMailId && empty($data['selectedMailid'])) {
+            $this->globalStats();
+
+            return;
+        }
+
         $mailStatClass = new MailStatClass();
         $data['sentMails'] = $mailStatClass->getAllMailsForStats();
         $data['show_date_filters'] = true;
@@ -57,18 +99,239 @@ class StatsController extends acymController
             if (!empty($multilingualMailSelected)) $data['selectedMailid'] = $multilingualMailSelected;
         }
 
-        $this->prepareDetailedListing($data);
-        $this->prepareClickStats($data);
+        $mailClass = new MailClass();
+        $data['mailInformation'] = $mailClass->getOneById($data['selectedMailid']);
+        if (acym_isMultilingual()) $this->prepareMultilingualMails($data);
+    }
+
+    public function globalStats()
+    {
+        acym_setVar('layout', 'global_stats');
+
+        $data = [];
+
+        $this->prepareDefaultPageInfo($data);
+
+        $this->prepareOpenTimeChart($data);
         $this->preparecharts($data);
+        $this->prepareListReceivers($data);
         $this->prepareDefaultRoundCharts($data);
         $this->prepareDefaultLineChart($data);
+        $this->prepareDefaultDevicesChart($data);
+        $this->prepareDefaultBrowsersChart($data);
         if (acym_isMultilingual()) $this->prepareMultilingualMails($data);
         $this->prepareMailFilter($data);
 
-        $data['url_foundation_email'] = ACYM_CSS.'libraries/foundation_email.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'foundation_email.min.css');
-        $data['url_click_map_email'] = ACYM_CSS.'click_map.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'click_map.min.css');
+        parent::display($data);
+    }
+
+    public function detailedStats()
+    {
+        acym_setVar('layout', 'detailed_stats');
+
+        $data = [];
+
+        $this->prepareDefaultPageInfo($data);
+
+        $this->prepareDetailedListing($data);
+        $this->prepareMailFilter($data);
 
         parent::display($data);
+    }
+
+    public function clickMap()
+    {
+        acym_setVar('layout', 'click_map');
+
+        $data = [];
+
+        $this->prepareDefaultPageInfo($data, true);
+
+        $this->prepareClickStats($data);
+        $this->prepareMailFilter($data);
+
+        parent::display($data);
+    }
+
+    public function linksDetails()
+    {
+        acym_setVar('layout', 'links_details');
+
+        $data = [];
+
+        $this->prepareDefaultPageInfo($data, true);
+
+        $this->prepareLinksDetailsListing($data);
+        $this->prepareMailFilter($data);
+
+        parent::display($data);
+    }
+
+    public function userClickDetails()
+    {
+        acym_setVar('layout', 'user_links_details');
+
+        $data = [];
+
+        $this->prepareDefaultPageInfo($data, true);
+
+        $this->prepareUserLinksDetailsListing($data);
+        $this->prepareMailFilter($data);
+
+        parent::display($data);
+    }
+
+    private function prepareUserLinksDetailsListing(&$data)
+    {
+        $data['search'] = $this->getVarFiltersListing('string', 'user_links_details_search', '');
+        $data['ordering'] = $this->getVarFiltersListing('string', 'user_links_details_ordering', 'user_id');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'user_links_details_ordering_sort_order', 'desc');
+
+        if (base64_encode(base64_decode($data['search'])) === $data['search']) {
+            $data['search'] = base64_decode($data['search']);
+        }
+
+        if (empty($data['selectedMailid'])) return;
+
+        $pagination = new PaginationHelper();
+        $urlClickClass = new UrlClickClass();
+
+        $detailedStatsPerPage = $pagination->getListLimit();
+        $page = acym_getVar('int', 'user_links_details_pagination_page', 1);
+
+        $userClicks = $urlClickClass->getUserUrlClicksStats(
+            [
+                'ordering' => $data['ordering'],
+                'search' => $data['search'],
+                'detailedStatsPerPage' => $detailedStatsPerPage,
+                'offset' => ($page - 1) * $detailedStatsPerPage,
+                'ordering_sort_order' => $data['orderingSortOrder'],
+                'mail_id' => $data['selectedMailid'],
+            ]
+        );
+
+        // Prepare the pagination
+        $pagination->setStatus($userClicks['total'], $page, $detailedStatsPerPage);
+
+        $data['pagination'] = $pagination;
+        $data['user_links_details'] = $userClicks['user_links_details'];
+        $data['query'] = $userClicks['query'];
+    }
+
+    public function exportUserLinksDetails()
+    {
+        $this->prepareDefaultPageInfo($data, true);
+
+        $this->prepareUserLinksDetailsListing($data);
+        $exportHelper = new ExportHelper();
+
+        $columnsToExport['user.email'] = acym_translation('ACYM_USER');
+        $columnsToExport['user_name'] = acym_translation('ACYM_USER_NAME');
+        $columnsToExport['url_name'] = acym_translation('ACYM_URL');
+        $columnsToExport['date_click'] = acym_translation('ACYM_CLICK_DATE');
+        $columnsToExport['click'] = acym_translation('ACYM_TOTAL_CLICKS');
+
+        $exportHelper->exportStatsFullCSV($data['query'], $columnsToExport, 'user_links_details');
+        exit;
+    }
+
+    private function prepareLinksDetailsListing(&$data)
+    {
+        $data['search'] = $this->getVarFiltersListing('string', 'links_details_search', '');
+        $data['ordering'] = $this->getVarFiltersListing('string', 'links_details_ordering', 'id');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'links_details_ordering_sort_order', 'desc');
+
+        if (empty($data['selectedMailid'])) return;
+
+        $pagination = new PaginationHelper();
+        $urlClickClass = new UrlClickClass();
+
+        $detailedStatsPerPage = $pagination->getListLimit();
+        $page = acym_getVar('int', 'links_details_pagination_page', 1);
+
+        $urlClicks = $urlClickClass->getUrlsFromMailsWithDetails(
+            [
+                'ordering' => $data['ordering'],
+                'search' => $data['search'],
+                'detailedStatsPerPage' => $detailedStatsPerPage,
+                'offset' => ($page - 1) * $detailedStatsPerPage,
+                'ordering_sort_order' => $data['orderingSortOrder'],
+                'mail_id' => $data['selectedMailid'],
+            ]
+        );
+
+        // Prepare the pagination
+        $pagination->setStatus($urlClicks['total'], $page, $detailedStatsPerPage);
+
+        $data['pagination'] = $pagination;
+        $data['links_details'] = $urlClicks['links_details'];
+        $data['query'] = $urlClicks['query'];
+    }
+
+    public function exportLinksDetails()
+    {
+        $this->prepareDefaultPageInfo($data, true);
+
+        $this->prepareLinksDetailsListing($data);
+        $exportHelper = new ExportHelper();
+
+        $columnsToExport['url.name'] = acym_translation('ACYM_URL');
+        $columnsToExport['total_click'] = acym_translation('ACYM_TOTAL_CLICKS');
+        $columnsToExport['unique_click'] = acym_translation('ACYM_UNIQUE_CLICKS');
+
+        $exportHelper->exportStatsFullCSV($data['query'], $columnsToExport, 'links_details');
+        exit;
+    }
+
+    private function prepareListReceivers(&$data)
+    {
+        if (empty($data['selectedMailid'])) return;
+
+        $mailStatClass = new MailStatClass();
+        $mailClass = new MailClass();
+
+        $data['mailStat'] = $mailStatClass->getOneById($data['selectedMailid']);
+        $data['lists'] = $mailClass->getAllListsByMailId($data['selectedMailid']);
+    }
+
+    private function prepareDevicesStats(&$data)
+    {
+        $campaignClass = new CampaignClass();
+
+        $devicesCampaign = $campaignClass->getDevicesWithCountByMailId($data['selectedMailid']);
+
+        $formattedDevices = [];
+        foreach ($devicesCampaign as $oneDevice) {
+            if (empty($oneDevice->number)) continue;
+
+            if (in_array($oneDevice->device, array_keys(UserStatClass::MOBILE_DEVICES))) {
+                $deviceName = UserStatClass::MOBILE_DEVICES[$oneDevice->device];
+            } elseif (in_array($oneDevice->device, array_keys(UserStatClass::DESKTOP_DEVICES))) {
+                $deviceName = UserStatClass::DESKTOP_DEVICES[$oneDevice->device];
+            } else {
+                $deviceName = acym_translation('ACYM_UNKNOWN');
+            }
+
+            $formattedDevices[$deviceName] = $oneDevice->number;
+        }
+
+        $data['devices'] = $formattedDevices;
+    }
+
+    private function prepareOpenSourcesStats(&$data)
+    {
+        $userStatClass = new UserStatClass();
+        $openedFromStats = $userStatClass->getOpenSourcesStats($data['selectedMailid']);
+
+        $formattedSources = [];
+        foreach ($openedFromStats as $oneSource) {
+            if (empty($oneSource->number)) continue;
+
+            if (empty($oneSource->opened_with)) $oneSource->opened_with = acym_translation('ACYM_UNKNOWN');
+            $formattedSources[$oneSource->opened_with] = $oneSource->number;
+        }
+
+        $data['openedWith'] = $formattedSources;
     }
 
     private function prepareMultilingualMails(&$data)
@@ -180,13 +443,12 @@ class StatsController extends acymController
             $allPercentage[] = $percentage;
         }
 
-        $mailClass = new MailClass();
-        $data['mailInformation'] = $mailClass->getOneById($data['selectedMailid']);
-
         $helperMailer = new MailerHelper();
-        $helperMailer->body = $data['mailInformation']->body;
-        $helperMailer->statClick($data['mailInformation']->id, 0, true);
-        $data['mailInformation']->body = $helperMailer->body;
+        if (!empty($data['mailInformation'])) {
+            $helperMailer->body = $data['mailInformation']->body;
+            $helperMailer->statClick($data['mailInformation']->id, 0, true);
+            $data['mailInformation']->body = $helperMailer->body;
+        }
 
 
         if (!empty($allPercentage)) {
@@ -206,6 +468,9 @@ class StatsController extends acymController
         }
 
         $data['url_click'] = json_encode($data['url_click']);
+
+        $data['url_foundation_email'] = ACYM_CSS.'libraries/foundation_email.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'foundation_email.min.css');
+        $data['url_click_map_email'] = ACYM_CSS.'click_map.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'click_map.min.css');
     }
 
     public function preparecharts(&$data)
@@ -221,23 +486,63 @@ class StatsController extends acymController
         //For the total opening, the doughnut chart
         $data['mail']->totalMail = $data['mail']->sent + $data['mail']->fail;
         $data['mail']->pourcentageSent = empty($data['mail']->totalMail) ? 0 : number_format(($data['mail']->sent * 100) / $data['mail']->totalMail, 2);
-        $data['mail']->allSent = empty($data['mail']->totalMail) ? acym_translation_sprintf('ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X', 0, 0) : acym_translation_sprintf('ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X', $data['mail']->sent, $data['mail']->totalMail);
+        $data['mail']->allSent = empty($data['mail']->totalMail)
+            ? acym_translation_sprintf('ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X', 0, 0)
+            : acym_translation_sprintf(
+                'ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X',
+                $data['mail']->sent,
+                $data['mail']->totalMail
+            );
 
         //open rate
         $openRateCampaign = empty($data['selectedMailid']) ? $campaignClass->getOpenRateAllCampaign() : $campaignClass->getOpenRateOneCampaign($data['selectedMailid']);
         $data['mail']->pourcentageOpen = empty($openRateCampaign->sent) ? 0 : number_format(($openRateCampaign->open_unique * 100) / $openRateCampaign->sent, 2);
-        $data['mail']->allOpen = empty($openRateCampaign->sent) ? acym_translation_sprintf('ACYM_X_MAIL_OPENED_OF_X', 0, 0) : acym_translation_sprintf('ACYM_X_MAIL_OPENED_OF_X', $openRateCampaign->open_unique, $openRateCampaign->sent);
+        $data['mail']->allOpen = empty($openRateCampaign->sent)
+            ? acym_translation_sprintf('ACYM_X_MAIL_OPENED_OF_X', 0, 0)
+            : acym_translation_sprintf(
+                'ACYM_X_MAIL_OPENED_OF_X',
+                $openRateCampaign->open_unique,
+                $openRateCampaign->sent
+            );
 
         //click rate
         $clickRateCampaign = $urlClickClass->getNumberUsersClicked($data['selectedMailid']);
         $data['mail']->pourcentageClick = empty($data['mail']->sent) ? 0 : number_format(($clickRateCampaign * 100) / $data['mail']->sent, 2);
-        $data['mail']->allClick = empty($data['mail']->sent) ? acym_translation_sprintf('ACYM_X_MAIL_CLICKED_OF_X', 0, 0) : acym_translation_sprintf('ACYM_X_MAIL_CLICKED_OF_X', $clickRateCampaign, $data['mail']->sent);
+        $data['mail']->allClick = empty($data['mail']->sent)
+            ? acym_translation_sprintf('ACYM_X_MAIL_CLICKED_OF_X', 0, 0)
+            : acym_translation_sprintf(
+                'ACYM_X_MAIL_CLICKED_OF_X',
+                $clickRateCampaign,
+                $data['mail']->sent
+            );
 
         //bounce rate
         $bounceRateCampaign = empty($data['selectedMailid']) ? $campaignClass->getBounceRateAllCampaign() : $campaignClass->getBounceRateOneCampaign($data['selectedMailid']);
         $data['mail']->pourcentageBounce = empty($data['mail']->sent) ? 0 : number_format(($bounceRateCampaign->bounce_unique * 100) / $data['mail']->sent, 2);
-        $data['mail']->allBounce = empty($data['mail']->sent) ? acym_translation_sprintf('ACYM_X_BOUNCE_OF_X', 0, 0) : acym_translation_sprintf('ACYM_X_BOUNCE_OF_X', $bounceRateCampaign->bounce_unique, $data['mail']->sent);
+        $data['mail']->allBounce = empty($data['mail']->sent)
+            ? acym_translation_sprintf('ACYM_X_BOUNCE_OF_X', 0, 0)
+            : acym_translation_sprintf(
+                'ACYM_X_BOUNCE_OF_X',
+                $bounceRateCampaign->bounce_unique,
+                $data['mail']->sent
+            );
 
+        if (!empty($data['selectedMailid'])) {
+            //unsubscribe rate
+            $mailStatClass = new MailStatClass();
+            $mailStat = $mailStatClass->getOneById($data['selectedMailid']);
+            $data['mail']->pourcentageUnsub = empty($data['mail']->sent) ? 0 : number_format(($mailStat->unsubscribe_total * 100) / $data['mail']->sent, 2);
+            $data['mail']->allUnsub = empty($data['mail']->sent)
+                ? acym_translation_sprintf('ACYM_X_USERS_UNSUBSCRIBED_OF_X', 0, 0)
+                : acym_translation_sprintf(
+                    'ACYM_X_USERS_UNSUBSCRIBED_OF_X',
+                    $mailStat->unsubscribe_total,
+                    $data['mail']->sent
+                );
+        }
+
+        $this->prepareDevicesStats($data);
+        $this->prepareOpenSourcesStats($data);
         $this->prepareLineChart($data['mail'], $data['selectedMailid']);
     }
 
@@ -257,14 +562,19 @@ class StatsController extends acymController
                 'text' => 'ACYM_CLICK_RATE',
             ],
             'fail' => [
-                'percentage' => 5,
-                'text' => 'ACYM_FAIL',
+                'percentage' => 2,
+                'text' => 'ACYM_BOUNCE_RATE',
+            ],
+            'unsub' => [
+                'percentage' => 3,
+                'text' => 'ACYM_UNSUBSCRIBE',
             ],
         ];
 
         $data['example_round_chart'] = '';
         foreach ($charts as $type => $oneChart) {
-            $data['example_round_chart'] .= '<div class="acym__stats__donut__one-chart medium-3 small-12">';
+            if ($type == 'unsub' && empty($data['selectedMailid'])) continue;
+            $data['example_round_chart'] .= '<div class="cell acym__stats__donut__one-chart">';
             $data['example_round_chart'] .= acym_round_chart(
                 '',
                 $oneChart['percentage'],
@@ -288,6 +598,34 @@ class StatsController extends acymController
         $dataHour['23 Jan 10:00'] = ['open' => '16', 'click' => '10'];
         $dataHour['23 Jan 11:00'] = ['open' => '59', 'click' => '10'];
         $data['example_line_chart'] = acym_line_chart('', $dataMonth, $dataDay, $dataHour);
+    }
+
+    public function prepareDefaultDevicesChart(&$data)
+    {
+        $allDevices = array_merge(UserStatClass::DESKTOP_DEVICES, UserStatClass::MOBILE_DEVICES);
+        $defaultData = [];
+
+        for ($i = 0 ; $i < 10 ; $i++) {
+            $oneDevice = array_rand($allDevices);
+            $defaultData[$allDevices[$oneDevice]] = rand(20, 10000);
+        }
+
+        $data['example_devices_chart'] = acym_pieChart('', $defaultData, '', acym_translation('ACYM_DEVICES'));
+    }
+
+    public function prepareDefaultBrowsersChart(&$data)
+    {
+        $exampleData = [
+            'Google Chrome' => rand(20, 10000),
+            'Firefox' => rand(20, 10000),
+            'Safari' => rand(20, 10000),
+            'Microsoft Edge' => rand(20, 10000),
+            'Outlook' => rand(20, 10000),
+            'Apple Mail' => rand(20, 10000),
+            'Thunderbird' => rand(20, 10000),
+        ];
+
+        $data['example_source_chart'] = acym_pieChart('', $exampleData, '', acym_translation('ACYM_OPENED_WITH'));
     }
 
     public function setDataForChartLine()
@@ -426,8 +764,16 @@ class StatsController extends acymController
         $this->preparecharts($data);
         $this->prepareDefaultRoundCharts($data);
         $this->prepareDefaultLineChart($data);
+        $this->prepareDefaultDevicesChart($data);
+        $this->prepareDefaultBrowsersChart($data);
 
-        $globalDonut = [$data['mail']->pourcentageSent, $data['mail']->pourcentageOpen, $data['mail']->pourcentageClick, $data['mail']->pourcentageBounce];
+        $globalDonut = [
+            $data['mail']->pourcentageSent,
+            $data['mail']->pourcentageOpen,
+            $data['mail']->pourcentageClick,
+            $data['mail']->pourcentageBounce,
+            $data['mail']->pourcentageUnsub,
+        ];
         $mailName = empty($data['selectedMailid']) ? acym_translation('ACYM_ALL_MAILS') : $data['mailInformation']->name;
         $globalLine = $data['mail']->$timeLinechart;
 
@@ -469,7 +815,6 @@ class StatsController extends acymController
         $exportHelper = new ExportHelper();
         $selectedMailid = acym_getVar('int', 'mail_id', '');
 
-
         if (acym_isMultilingual()) {
             $multilingualMailSelected = acym_getVar('int', 'mail_id_language', 0);
             if (!empty($multilingualMailSelected)) $data['selectedMailid'] = $multilingualMailSelected;
@@ -495,7 +840,7 @@ class StatsController extends acymController
             $columnsToExport['userstat.'.$column] = $trad;
         }
 
-        $query = 'SELECT '.implode(', ', array_keys($columnsToExport)).', SUM(urlclick.click) as click FROM #__acym_user_stat AS userstat 
+        $query = 'SELECT '.implode(', ', array_keys($columnsToExport)).', SUM(urlclick.click) AS click FROM #__acym_user_stat AS userstat 
                   LEFT JOIN #__acym_user AS user ON user.id = userstat.user_id 
                   LEFT JOIN #__acym_mail AS mail ON mail.id = userstat.mail_id 
                   LEFT JOIN #__acym_url_click AS urlclick ON urlclick.user_id = userstat.user_id AND userstat.mail_id = urlclick.mail_id  '.$where.$groupBy;
@@ -518,5 +863,37 @@ class StatsController extends acymController
         }
 
         $this->$functionName();
+    }
+
+    public function prepareOpenTimeChart(&$data)
+    {
+        $userStatClass = new UserStatClass();
+        $statsDB = $userStatClass->getOpenTimeStats($data['selectedMailid']);
+
+        if (empty($statsDB['total_open'])) {
+            $data['openTime'] = $userStatClass->getDefaultStat();
+            $data['empty_open'] = true;
+
+            return true;
+        }
+        $data['empty_open'] = false;
+
+        $stats = [];
+
+        for ($day = 0 ; $day < 7 ; $day++) {
+            $stats[$day] = [];
+            for ($hour = 0 ; $hour < 8 ; $hour++) {
+                if (empty($statsDB['stats'][$day.'_'.$hour]) || empty($statsDB['total_open'])) {
+                    $percentage = 0;
+                } else {
+                    $percentage = ($statsDB['stats'][$day.'_'.$hour]->open_total * 100) / $statsDB['total_open'];
+                }
+                $stats[$day][$hour] = round($percentage);
+            }
+        }
+
+        $data['openTime'] = $stats;
+
+        return true;
     }
 }

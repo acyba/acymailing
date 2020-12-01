@@ -101,31 +101,32 @@ class AutomationClass extends acymClass
 
         $data['time'] = time();
         foreach ($steps as $step) {
+            $newData = $data;
             $execute = false;
 
             // If we reached the next execution time we execute
             // next_execution is only set if one of the time triggers like "asap" or "day" is selected in the automation
-            if (!empty($step->next_execution) && $step->next_execution <= $data['time']) {
+            if (!empty($step->next_execution) && $step->next_execution <= $newData['time']) {
                 $execute = true;
             }
 
             // Call the triggers to set the next execution time
-            acym_trigger('onAcymExecuteTrigger', [&$step, &$execute, &$data]);
+            acym_trigger('onAcymExecuteTrigger', [&$step, &$execute, &$newData]);
 
-            $data['automation'] = $this->getOneById($step->automation_id);
+            $newData['automation'] = $this->getOneById($step->automation_id);
 
             if ($execute) {
-                $step->last_execution = $data['time'];
+                $step->last_execution = $newData['time'];
                 $conditions = $conditionClass->getConditionsByStepId($step->id);
                 if (!empty($conditions)) {
                     foreach ($conditions as $condition) {
-                        if (!$this->_verifyCondition($condition->conditions, $data)) continue;
+                        if (!$this->_verifyCondition($condition->conditions, $newData)) continue;
 
                         $actions = $actionClass->getActionsByStepId($step->id);
                         if (empty($actions)) continue;
 
                         foreach ($actions as $action) {
-                            $this->execute($action, $data);
+                            $this->execute($action, $newData);
                         }
                     }
                 }

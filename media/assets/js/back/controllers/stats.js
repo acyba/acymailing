@@ -37,6 +37,7 @@ jQuery(document).ready(function ($) {
         setSelect2();
         setChartExport();
         setSelect2Language();
+        acym_helperStats.setLineChartOpenTimeWeek();
     }
 
     stats();
