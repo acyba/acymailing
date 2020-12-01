@@ -5,6 +5,7 @@ const acym_editorWysidTinymce = {
         tinymce.baseURL = ACYM_MEDIA_URL + 'js/tinymce';
 
         tinymce.init({
+            convert_urls: false,
             relative_urls: false,
             selector: '.acym__wysid__tinymce--text',
             inline: true,

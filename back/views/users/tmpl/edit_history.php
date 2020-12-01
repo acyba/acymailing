@@ -1,8 +1,12 @@
 <?php if (!empty($data['user-information']->id)) { ?>
 	<div class="cell grid-x acym__users__display__history acym__content">
 		<div class="cell grid-x acym__users__history__toggle">
-			<button type="button" class="cell small-6 acym__users__history__toggle-button acym__users__history__toggle-button-selected" data-acym-toggle-history="mail"><?php echo acym_translation('ACYM_EMAIL_HISTORY'); ?></button>
-			<button type="button" class="cell small-6 acym__users__history__toggle-button" data-acym-toggle-history="user"><?php echo acym_translation('ACYM_USER_HISTORY'); ?></button>
+			<button type="button"
+					class="cell small-6 acym__users__history__toggle-button acym__users__history__toggle-button-selected"
+					data-acym-toggle-history="mail"><?php echo acym_translation('ACYM_EMAIL_HISTORY'); ?></button>
+			<button type="button" class="cell small-6 acym__users__history__toggle-button" data-acym-toggle-history="user"><?php echo acym_translation(
+                    'ACYM_USER_HISTORY'
+                ); ?></button>
 		</div>
 		<div class="cell grid-x align-middle" data-acym-type="mail">
             <?php if (empty($data['userMailHistory'])) {
@@ -35,13 +39,23 @@
                                 <?php echo $oneMailHistory->subject; ?>
 							</div>
 							<div class="medium-2 cell">
-                                <?php echo empty($oneMailHistory->send_date) || '0000-00-00 00:00:00' == $oneMailHistory->send_date ? '-' : acym_tooltip(acym_date(acym_getTime($oneMailHistory->send_date), 'd F H:i'), acym_date(acym_getTime($oneMailHistory->send_date), 'd F Y H:i:s')); ?>
+                                <?php echo empty($oneMailHistory->send_date) || '0000-00-00 00:00:00' == $oneMailHistory->send_date
+                                    ? '-'
+                                    : acym_tooltip(
+                                        acym_date(acym_getTime($oneMailHistory->send_date), 'd F H:i'),
+                                        acym_date(acym_getTime($oneMailHistory->send_date), 'd F Y H:i:s')
+                                    ); ?>
 							</div>
 							<div class="medium-1 cell text-center">
                                 <?php echo $oneMailHistory->open; ?>
 							</div>
 							<div class="medium-2 cell text-center">
-                                <?php echo empty($oneMailHistory->open_date) ? '-' : acym_tooltip(acym_date(acym_getTime($oneMailHistory->open_date), 'd F H:i'), acym_date(acym_getTime($oneMailHistory->open_date), 'd F Y H:i:s')); ?>
+                                <?php echo empty($oneMailHistory->open_date)
+                                    ? '-'
+                                    : acym_tooltip(
+                                        acym_date(acym_getTime($oneMailHistory->open_date), 'd F H:i'),
+                                        acym_date(acym_getTime($oneMailHistory->open_date), 'd F Y H:i:s')
+                                    ); ?>
 							</div>
 							<div class="medium-1 cell text-center">
                                 <?php echo $oneMailHistory->click; ?>

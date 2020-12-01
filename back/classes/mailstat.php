@@ -50,6 +50,10 @@ class MailStatClass extends acymClass
             $onDuplicate[] = 'total_subscribers = '.intval($mailStat['total_subscribers']);
         }
 
+        if (!empty($mailStat['unsubscribe_total'])) {
+            $onDuplicate[] = ' unsubscribe_total = unsubscribe_total + '.intval($mailStat['unsubscribe_total']);
+        }
+
         if (!empty($onDuplicate)) {
             $query .= ' ON DUPLICATE KEY UPDATE ';
             $query .= implode(',', $onDuplicate);

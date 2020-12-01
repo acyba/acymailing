@@ -15,7 +15,10 @@ class plgSystemAcymtriggers extends JPlugin
     public function initAcy()
     {
         if (function_exists('acym_get')) return true;
-        $helperFile = rtrim(JPATH_ADMINISTRATOR, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
+        $helperFile = rtrim(
+                JPATH_ADMINISTRATOR,
+                DIRECTORY_SEPARATOR
+            ).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
         if (!file_exists($helperFile) || !include_once $helperFile) return false;
 
         return true;

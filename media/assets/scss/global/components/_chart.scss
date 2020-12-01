@@ -81,3 +81,30 @@
     }
 }
 
+.acym__chart__pie {
+    height: 100%;
+    .acym__chart__pie__container {
+        .acym__chart__pie__legend {
+            vertical-align: middle;
+
+            .acym_chart_pie_labels_circle {
+                width: 10px;
+                height: 10px;
+                display: inline-block;
+                margin-right: 5px;
+                border-radius: 50%;
+            }
+
+            i {
+                font-size: 12px;
+                margin-right: 5px;
+                vertical-align: middle;
+            }
+
+            span {
+                margin-right: 10px;
+                user-select: none;
+            }
+        }
+    }
+}

@@ -209,6 +209,7 @@
             background-color: map-get($editor-wysid-palette, secondary);
             padding: 10px 5px;
             border-radius: $primary-radius;
+            line-height: 1;
 
             &:hover {
                 cursor: move;

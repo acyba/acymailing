@@ -55,7 +55,7 @@ class acyElasticemail
     /* Function which permit to send an email based on the object's values.
      * First, we do the test if we have enough credit to send emails.
      */
-    function sendMail(& $object)
+    function sendMail(&$object)
     {
         if (!$this->connect()) {
             return false;

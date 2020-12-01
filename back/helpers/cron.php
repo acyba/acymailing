@@ -126,30 +126,34 @@ class CronHelper extends acymObject
         }
 
         // Step 6: run automatic bounce handling!
-        if (!in_array('bounce', $this->skip) && acym_level(2) && $this->config->get('auto_bounce', 0) && $time > (int)$this->config->get('auto_bounce_next', 0) && (empty($queueHelper->stoptime) || time() < $queueHelper->stoptime - 5)) {
+        if (!in_array('bounce', $this->skip) && acym_level(2) && $this->config->get('auto_bounce', 0) && $time > (int)$this->config->get(
+                'auto_bounce_next',
+                0
+            ) && (empty($queueHelper->stoptime) || time() < $queueHelper->stoptime - 5)) {
 
             //First we update the config
             $newConfig = new \stdClass();
             $newConfig->auto_bounce_next = $time + (int)$this->config->get('auto_bounce_frequency', 0);
             $newConfig->auto_bounce_last = $time;
             $this->config->save($newConfig);
-            $bounceClass = new BounceHelper();
-            $bounceClass->report = false;
-            $bounceClass->stoptime = $queueHelper->stoptime;
+            $bounceHelper = new BounceHelper();
+            $bounceHelper->report = false;
+            $queueHelper = new QueueHelper();
+            $bounceHelper->stoptime = $queueHelper->stoptime;
             $newConfig = new \stdClass();
-            if ($bounceClass->init() && $bounceClass->connect()) {
-                $nbMessages = $bounceClass->getNBMessages();
-                $this->messages[] = acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
-                $newConfig->auto_bounce_report = acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
-                $this->detailMessages[] = acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
+            if ($bounceHelper->init() && $bounceHelper->connect()) {
+                $nbMessages = $bounceHelper->getNBMessages();
+                $nbMessagesReport = acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
+                $this->messages[] = $nbMessagesReport;
+                $newConfig->auto_bounce_report = $nbMessagesReport;
+                $this->detailMessages[] = $nbMessagesReport;
                 if (!empty($nbMessages)) {
-                    $bounceClass->handleMessages();
-                    $bounceClass->close();
+                    $bounceHelper->handleMessages();
                     $this->processed = true;
                 }
-                $this->detailMessages = array_merge($this->detailMessages, $bounceClass->messages);
+                $this->detailMessages = array_merge($this->detailMessages, $bounceHelper->messages);
             } else {
-                $bounceErrors = $bounceClass->getErrors();
+                $bounceErrors = $bounceHelper->getErrors();
                 $newConfig->auto_bounce_report = implode('<br />', $bounceErrors);
                 //We add "bounce handling" just before the error so the user knows where it comes from...
                 if (!empty($bounceErrors[0])) {

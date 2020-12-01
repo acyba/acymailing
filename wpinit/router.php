@@ -17,7 +17,26 @@ class acyRouter extends acyHook
         add_action('wp_ajax_nopriv_acymailing_frontrouter', [$this, 'frontRouter']);
 
         // Make sure we can redirect / download / modify headers if needed after some checks
-        $pages = ['automation', 'bounces', 'campaigns', 'configuration', 'dashboard', 'dynamics', 'fields', 'file', 'followups', 'forms', 'language', 'lists', 'mails', 'override', 'queue', 'segments', 'stats', 'users'];
+        $pages = [
+            'automation',
+            'bounces',
+            'campaigns',
+            'configuration',
+            'dashboard',
+            'dynamics',
+            'fields',
+            'file',
+            'followups',
+            'forms',
+            'language',
+            'lists',
+            'mails',
+            'override',
+            'queue',
+            'segments',
+            'stats',
+            'users',
+        ];
         $headerPages = ['automation', 'bounces', 'campaigns', 'dashboard', 'fields', 'followups', 'forms', 'lists', 'mails', 'override', 'segments', 'stats', 'users'];
         foreach ($pages as $page) {
             if (in_array($page, $headerPages)) {
@@ -30,6 +49,7 @@ class acyRouter extends acyHook
         }
         add_action('admin_print_scripts-toplevel_page_acymailing_dashboard', [$this, 'disableJsBreakingPages']);
         add_action('admin_print_styles-toplevel_page_acymailing_dashboard', [$this, 'removeCssBreakingPages']);
+        add_action('plugins_loaded', [$this, 'protectMotherland'], 5);
     }
 
     public function waitHeaders()
@@ -61,6 +81,17 @@ class acyRouter extends acyHook
         wp_dequeue_style('saswp-main-css');
         wp_dequeue_style('WP REST API Controller');
         wp_dequeue_style('wpml-select-2');
+    }
+
+    public function protectMotherland()
+    {
+        // Make sure we're on an AcyMailing page
+        $page = acym_getVar('cmd', 'page', '');
+        if (empty($page) || strpos($page, 'acymailing_') !== 0) return;
+
+        // Prevent plugins from breaking AcyMailing pages
+        remove_action('plugins_loaded', 'mailchimp_on_all_plugins_loaded', 12);
+        remove_action('plugins_loaded', '_imagify_init');
     }
 
     public function frontRouter()

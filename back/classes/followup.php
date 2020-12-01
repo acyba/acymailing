@@ -251,7 +251,7 @@ class FollowupClass extends acymClass
             }
 
             $translationKey = $trigger === 'user_subscribe' ? 'ACYM_X_SUBSCRIBING_X_LIST' : 'ACYM_X_SUBSCRIBED_X_LIST';
-            $return[] = acym_translation_sprintf($translationKey, strtolower($statusArray[$condition['lists_status']]), implode(',', $listsToDisplay));
+            $return[] = acym_translation_sprintf($translationKey, acym_strtolower($statusArray[$condition['lists_status']]), implode(',', $listsToDisplay));
         }
 
 
@@ -263,7 +263,7 @@ class FollowupClass extends acymClass
             foreach ($segments as $segment) {
                 $segmentsToDisplay[] = $segment->name;
             }
-            $return[] = acym_translation_sprintf('ACYM_X_PART_X_SEGMENT', strtolower($statusArray[$condition['segments_status']]), implode(',', $segmentsToDisplay));
+            $return[] = acym_translation_sprintf('ACYM_X_PART_X_SEGMENT', acym_strtolower($statusArray[$condition['segments_status']]), implode(',', $segmentsToDisplay));
         }
 
         acym_trigger('getFollowupConditionSummary', [&$return, $condition, $trigger, $statusArray]);
@@ -336,7 +336,11 @@ class FollowupClass extends acymClass
 
         acym_arrayToInteger($followupData);
 
-        $affectedRow = acym_query('INSERT INTO #__acym_followup_has_mail (`mail_id`, `followup_id`, `delay`, `delay_unit`) VALUE ('.intval($mailId).', '.$followupData['id'].', '.$followupData['delay'].', '.$followupData['delay_unit'].') ON DUPLICATE KEY UPDATE delay = '.$followupData['delay'].', delay_unit = '.$followupData['delay_unit'].'');
+        $affectedRow = acym_query(
+            'INSERT INTO #__acym_followup_has_mail (`mail_id`, `followup_id`, `delay`, `delay_unit`) VALUE ('.intval(
+                $mailId
+            ).', '.$followupData['id'].', '.$followupData['delay'].', '.$followupData['delay_unit'].') ON DUPLICATE KEY UPDATE delay = '.$followupData['delay'].', delay_unit = '.$followupData['delay_unit'].''
+        );
 
         return $affectedRow !== false;
     }
@@ -359,7 +363,11 @@ class FollowupClass extends acymClass
         $mail->id = $mailClass->save($mail);
         if (empty($mail->id)) return false;
 
-        $affectedRow = acym_query('INSERT INTO #__acym_followup_has_mail (`mail_id`, `followup_id`, `delay`, `delay_unit`) VALUE ('.intval($mail->id).', '.$id.', '.intval($delaySettings->delay).', '.intval($delaySettings->delay_unit).')');
+        $affectedRow = acym_query(
+            'INSERT INTO #__acym_followup_has_mail (`mail_id`, `followup_id`, `delay`, `delay_unit`) VALUE ('.intval($mail->id).', '.$id.', '.intval(
+                $delaySettings->delay
+            ).', '.intval($delaySettings->delay_unit).')'
+        );
 
         return !empty($affectedRow);
     }

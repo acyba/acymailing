@@ -1,4 +1,112 @@
 module.exports = {
+    '6.19.0': {
+        'feature': [
+            {
+                cms: 'all',
+                message: 'You now have the information on which device your users are opening your newsletters'
+            },
+            {
+                cms: 'all',
+                message: 'New chart of the open time over the week'
+            },
+            {
+                cms: 'all',
+                message: 'New tab in the statistics menu: Links details'
+            },
+            {
+                cms: 'all',
+                message: 'New tab in the statistics menu: User clicks details'
+            },
+            {
+                cms: 'all',
+                message: 'A new add-on lets you automatically generate a table of contents for your emails'
+            },
+            {
+                cms: 'wordpress',
+                message: 'New integration with MemberPress'
+            }
+        ],
+        'improve': [
+            {
+                cms: 'all',
+                message: 'The email sending speed has been increased'
+            },
+            {
+                cms: 'all',
+                message: 'Add a counter for new subscribers/unsubscribers per list during the last month'
+            },
+            {
+                cms: 'all',
+                message: 'New option to group articles by category when inserted in an email'
+            },
+            {
+                cms: 'all',
+                message: 'The dynamic texts are now handled in the links inserted in your emails'
+            },
+            {
+                cms: 'all',
+                message: 'You can now apply actions on several templates at the same time (delete and duplicate)'
+            },
+            {
+                cms: 'all',
+                message: 'The loading of the statistics is faster'
+            },
+            {
+                cms: 'all',
+                message: 'You can now add images from an external source'
+            },
+            {
+                cms: 'all',
+                message: 'Add an evolution of subscribers graph in list edition'
+            },
+            {
+                cms: 'all',
+                message: 'New option to add attachments to welcome email, unsubscribe email, followup, automation emails'
+            }
+        ],
+        'fix': [
+            {
+                cms: 'all',
+                message: 'The bounce handling frequency can now be modified in the configuration'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed automation triggered not the right users when multiple automation to run'
+            },
+            {
+                cms: 'all',
+                message: 'The dynamic date insertion in emails now takes the site\'s timezone into account'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed button border radius on outlook desktop'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed filter list by tag'
+            },
+            {
+                cms: 'wordpress',
+                message: 'Fixed automation with trigger once a day triggered at every cron'
+            },
+            {
+                cms: 'wordpress',
+                message: 'Fixed PHP warning on shortcode form edition'
+            },
+            {
+                cms: 'wordpress',
+                message: 'Compatibility with imagify and MailChimp for WooCommerce plugins on editor page'
+            },
+            {
+                cms: 'joomla',
+                message: 'The email override system doesn\'t prevent Akeeba Ticket System\'s emails from being sent anymore'
+            },
+            {
+                cms: 'joomla',
+                message: 'Fixed list access in welcome or unsubscribe email creation'
+            }
+        ]
+    },
     '6.18.1': {
         'feature': [],
         'improve': [],

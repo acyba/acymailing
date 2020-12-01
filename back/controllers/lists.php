@@ -81,6 +81,7 @@ class ListsController extends acymController
         $this->prepareSubscribersSettings($data, $listId);
         $this->prepareSubscribersEntitySelect($data, $listId);
         $this->prepareListStat($data, $listId);
+        $this->prepareListStatEvolution($data, $listId);
         $this->prepareWelcomeUnsubData($data);
 
         parent::display($data);
@@ -122,7 +123,10 @@ class ListsController extends acymController
             $listInformation->active = 1;
             $listInformation->visible = 1;
             $randColor = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
-            $listInformation->color = '#'.$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)];
+            $listInformation->color = '#'.$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(
+                    0,
+                    15
+                )];
             $listInformation->welcome_id = '';
             $listInformation->unsubscribe_id = '';
             $listInformation->access = [];
@@ -258,6 +262,40 @@ class ListsController extends acymController
         $data['listStats']['clickRate'] = number_format($nbClicks / $totalSent * 100, 2);
     }
 
+    private function prepareListStatEvolution(&$data, $listId)
+    {
+        $data['evol'] = [];
+        $listClass = new ListClass();
+        $subEvolStat = $listClass->getYearSubEvolutionPerList($listId);
+        if (empty($subEvolStat['subscribers']) && empty($subEvolStat['unsubscribers'])) return;
+
+        // Init tables ordered by month number starting on month from one year ago
+        $firstMonth = date('n') + 1;
+        $zeroReached = false;
+        $evolSub = [];
+        $evolUnsub = [];
+        for ($i = 0 ; $i < 12 ; $i++) {
+            $month = ($firstMonth + $i) % 13;
+            if ($month == 0) $zeroReached = true;
+            if ($zeroReached) $month += 1;
+            $evolSub[$month] = $month.'_0';
+            $evolUnsub[$month] = $month.'_0';
+        }
+
+        foreach ($subEvolStat['subscribers'] as $unit => $monthData) {
+            $evolSub[$monthData->monthSub] = $monthData->monthSub.'_'.$monthData->nbUser;
+        }
+
+        foreach ($subEvolStat['unsubscribers'] as $unit => $monthData) {
+            $evolUnsub[$monthData->monthUnsub] = $monthData->monthUnsub.'_'.$monthData->nbUser;
+        }
+
+        foreach ($evolSub as $month => $oneEvol) {
+            $data['evol'][0][] = $oneEvol;
+            $data['evol'][1][] = $evolUnsub[$month];
+        }
+    }
+
     protected function prepareWelcomeUnsubData(&$data)
     {
         $data['tmpls'] = [];
@@ -276,9 +314,15 @@ class ListsController extends acymController
 
             $returnLink = acym_completeLink('lists&task=settings&id='.$data['listInformation']->id.'&edition=1&'.$short.'mailid={mailid}');
             if (empty($data['listInformation']->{$full.'_id'})) {
-                $data['tmpls'][$short.'TmplUrl'] = acym_completeLink('mails&task=edit&step=editEmail&type='.$full.'&type_editor=acyEditor&list_id='.$data['listInformation']->id.'&return='.urlencode(base64_encode($returnLink)));
+                $data['tmpls'][$short.'TmplUrl'] = acym_completeLink(
+                    'mails&task=edit&step=editEmail&type='.$full.'&type_editor=acyEditor&list_id='.$data['listInformation']->id.'&return='.urlencode(base64_encode($returnLink))
+                );
             } else {
-                $data['tmpls'][$short.'TmplUrl'] = acym_completeLink('mails&task=edit&id='.$data['listInformation']->{$full.'_id'}.'&type='.$full.'&list_id='.$data['listInformation']->id.'&return='.urlencode(base64_encode($returnLink)));
+                $data['tmpls'][$short.'TmplUrl'] = acym_completeLink(
+                    'mails&task=edit&id='.$data['listInformation']->{$full.'_id'}.'&type='.$full.'&list_id='.$data['listInformation']->id.'&return='.urlencode(
+                        base64_encode($returnLink)
+                    )
+                );
             }
 
             $data['tmpls'][$full] = !empty($data['listInformation']->{$full.'_id'}) ? $mailClass->getOneById($data['listInformation']->{$full.'_id'}) : '';
@@ -378,12 +422,20 @@ class ListsController extends acymController
 
         acym_arrayToInteger($usersIdsUnselected);
         if (!empty($usersIdsUnselected)) {
-            acym_query('UPDATE #__acym_user_has_list SET status = 0, unsubscribe_date = '.acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s')).' WHERE list_id = '.intval($listId).' AND user_id IN ('.implode(', ', $usersIdsUnselected).')');
+            acym_query(
+                'UPDATE #__acym_user_has_list SET status = 0, unsubscribe_date = '.acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s')).' WHERE list_id = '.intval(
+                    $listId
+                ).' AND user_id IN ('.implode(', ', $usersIdsUnselected).')'
+            );
         }
 
         acym_arrayToInteger($usersIds);
         if (!empty($usersIds)) {
-            acym_query('INSERT IGNORE #__acym_user_has_list (`user_id`, `list_id`, `status`, `subscription_date`) (SELECT id, '.intval($listId).', 1, '.acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s')).' FROM #__acym_user AS user WHERE user.id IN ('.implode(', ', $usersIds).')) ON DUPLICATE KEY UPDATE status = 1');
+            acym_query(
+                'INSERT IGNORE #__acym_user_has_list (`user_id`, `list_id`, `status`, `subscription_date`) (SELECT id, '.intval($listId).', 1, '.acym_escapeDB(
+                    acym_date(time(), 'Y-m-d H:i:s')
+                ).' FROM #__acym_user AS user WHERE user.id IN ('.implode(', ', $usersIds).')) ON DUPLICATE KEY UPDATE status = 1'
+            );
         }
 
         return true;
@@ -482,13 +534,17 @@ class ListsController extends acymController
 
             $return .= '<div class="grid-x modal__pagination__listing__lists__in-form__list cell">';
 
-            $return .= '<div class="cell shrink"><input type="checkbox" id="modal__pagination__listing__lists__list'.acym_escape($list->id).'" value="'.acym_escape($list->id).'" class="modal__pagination__listing__lists__list--checkbox" name="lists_checked[]"';
+            $return .= '<div class="cell shrink"><input type="checkbox" id="modal__pagination__listing__lists__list'.acym_escape($list->id).'" value="'.acym_escape(
+                    $list->id
+                ).'" class="modal__pagination__listing__lists__list--checkbox" name="lists_checked[]"';
 
             if (!empty($matchingListsData->idsSelected) && in_array($list->id, $matchingListsData->idsSelected)) {
                 $return .= 'checked';
             }
 
-            $return .= '></div><i class="cell shrink acymicon-circle" style="color:'.acym_escape($list->color).'"></i><label class="cell auto" for="modal__pagination__listing__lists__list'.acym_escape($list->id).'"> ';
+            $return .= '></div><i class="cell shrink acymicon-circle" style="color:'.acym_escape(
+                    $list->color
+                ).'"></i><label class="cell auto" for="modal__pagination__listing__lists__list'.acym_escape($list->id).'"> ';
 
             $return .= '<span class="modal__pagination__listing__lists__list-name">'.acym_escape($list->name).'</span>';
 

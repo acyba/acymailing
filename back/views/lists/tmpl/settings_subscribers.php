@@ -53,7 +53,8 @@
 					<div class="cell large-1 hide-for-medium-only hide-for-small-only acym_word-break" v-show="requireConfirmation==1 && sub.confirmed==1">
 						<span><?php echo acym_translation('ACYM_CONFIRMED'); ?></span>
 					</div>
-					<div class="large-2 medium-5 small-2 cell acym__list__settings__subscribers__users--action acym__list__action--unsubscribe_one acym_word-break" v-on:click="unsubscribeUser(sub.id)">
+					<div class="large-2 medium-5 small-2 cell acym__list__settings__subscribers__users--action acym__list__action--unsubscribe_one acym_word-break"
+						 v-on:click="unsubscribeUser(sub.id)">
 						<i class="acymicon-times-circle"></i><span class="hide-for-small-only"><?php echo acym_strtolower(acym_translation('ACYM_UNSUBSCRIBE')); ?></span>
 					</div>
 				</div>

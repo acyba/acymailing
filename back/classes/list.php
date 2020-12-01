@@ -76,7 +76,7 @@ class ListClass extends acymClass
             $filters[] = 'list.cms_user_id = '.intval($settings['creator_id']).' OR '.$groupCondition.'';
         }
 
-        $filters[] = 'type = '.acym_escapeDB(self::LIST_TYPE_STANDARD);
+        $filters[] = 'list.type = '.acym_escapeDB(self::LIST_TYPE_STANDARD);
 
         if (!empty($filters)) {
             $queryStatus .= ' WHERE ('.implode(') AND (', $filters).')';
@@ -129,12 +129,15 @@ class ListClass extends acymClass
             $results['elements'][$i]->unconfirmed_users = 0;
             $results['elements'][$i]->unsubscribed_users = 0;
             $results['elements'][$i]->inactive_users = 0;
+            $results['elements'][$i]->newSub = 0;
+            $results['elements'][$i]->newUnsub = 0;
         }
 
-        if (empty($listsId)) {
-            $countUserByList = [];
-        } else {
+        $countUserByList = [];
+        $countEvolByList = [];
+        if (!empty($listsId)) {
             $countUserByList = $this->getSubscribersCountPerStatusByListId($listsId);
+            $countEvolByList = $this->getSubscribersEvolutionByList($listsId);
         }
 
         foreach ($results['elements'] as $i => $list) {
@@ -147,6 +150,8 @@ class ListClass extends acymClass
                     $results['elements'][$i]->inactive_users = $userList->inactive_users;
                 }
             }
+            if (isset($countEvolByList[$list->id]->newSub)) $results['elements'][$i]->newSub = $countEvolByList[$list->id]->newSub;
+            if (isset($countEvolByList[$list->id]->newUnsub)) $results['elements'][$i]->newUnsub = $countEvolByList[$list->id]->newUnsub;
         }
 
         $results['total'] = acym_loadResult($queryCount);
@@ -491,9 +496,15 @@ class ListClass extends acymClass
         return $listsToReturn;
     }
 
-    public function getAllForSelect($emptyFirst = true)
+    public function getAllForSelect($emptyFirst = true, $userFrontID = 0)
     {
-        $lists = acym_loadObjectList('SELECT * FROM #__acym_list WHERE type = '.acym_escapeDB(self::LIST_TYPE_STANDARD), 'id');
+        $groupCondition = '';
+        if (!empty($userFrontID)) {
+            $userGroups = acym_getGroupsByUser($userFrontID);
+            $groupCondition = ' AND (access LIKE "%,'.implode(',%" OR access LIKE "%,', $userGroups).',%")';
+        }
+
+        $lists = acym_loadObjectList('SELECT * FROM #__acym_list WHERE type = '.acym_escapeDB(self::LIST_TYPE_STANDARD).$groupCondition, 'id');
 
         $return = [];
 
@@ -715,6 +726,63 @@ class ListClass extends acymClass
         }
 
         return $listsUserStats;
+    }
+
+    public function getSubscribersEvolutionByList($listIds)
+    {
+        $condList = '';
+        if (!empty($listIds)) {
+            if (!is_array($listIds)) $listIds = [$listIds];
+            acym_arrayToInteger($listIds);
+            $condList = ' AND list_id IN ('.implode(',', $listIds).')';
+        }
+        $queryEvolSub = 'SELECT list_id,  COUNT(*) AS newSub FROM #__acym_user_has_list';
+        $queryEvolSub .= ' WHERE DATE(subscription_date) > DATE_SUB(NOW(), INTERVAL 1 MONTH) '.$condList;
+        $queryEvolSub .= ' GROUP BY list_id';
+        $evolSubscibers = acym_loadObjectList($queryEvolSub, 'list_id');
+
+        $queryEvolUnsub = 'SELECT list_id,  COUNT(*) AS newUnsub FROM #__acym_user_has_list';
+        $queryEvolUnsub .= ' WHERE DATE(unsubscribe_date) > DATE_SUB(NOW(), INTERVAL 1 MONTH) '.$condList;
+        $queryEvolUnsub .= ' GROUP BY list_id';
+        $newUnsubscribers = acym_loadObjectList($queryEvolUnsub, 'list_id');
+
+        foreach ($newUnsubscribers as $listId => $oneUnsub) {
+            if (empty($evolSubscibers[$listId])) $evolSubscibers[$listId] = new \stdClass();
+            $evolSubscibers[$listId]->newUnsub = $oneUnsub->newUnsub;
+        }
+
+        return $evolSubscibers;
+    }
+
+    public function getYearSubEvolutionPerList($listId)
+    {
+        $listId = intval($listId);
+        // Get next month from 1 year ago
+        $month = date('n') + 1;
+        $year = date('Y') - 1;
+        $initDate = $year.'-'.$month.'-01';
+        if ($month == 13) {
+            $initDate = date('Y').'-01-01';
+        }
+
+        // Get new subscribers per month
+        $queryEvolSub = 'SELECT MONTH(subscription_date) as monthSub, DATE_FORMAT(subscription_date,"%Y_%m") AS unit, COUNT(user_id) AS nbUser';
+        $queryEvolSub .= ' FROM `#__acym_user_has_list`';
+        $queryEvolSub .= ' WHERE subscription_date >= "'.$initDate.'" AND list_id = '.$listId;
+        $queryEvolSub .= ' GROUP BY unit';
+        $evolSubscibers = acym_loadObjectList($queryEvolSub, 'unit');
+
+        // Get unsubscribers per month
+        $queryEvolUnsub = 'SELECT MONTH(unsubscribe_date) as monthUnsub, DATE_FORMAT(unsubscribe_date,"%Y_%m") AS unit, COUNT(user_id) AS nbUser';
+        $queryEvolUnsub .= ' FROM `#__acym_user_has_list`';
+        $queryEvolUnsub .= ' WHERE unsubscribe_date >= "'.$initDate.'" AND list_id = '.$listId;
+        $queryEvolUnsub .= ' GROUP BY unit';
+        $evolUnsubscibers = acym_loadObjectList($queryEvolUnsub, 'unit');
+
+        return [
+            'subscribers' => $evolSubscibers,
+            'unsubscribers' => $evolUnsubscibers,
+        ];
     }
 
     private function initList($listId)

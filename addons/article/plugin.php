@@ -5,6 +5,9 @@ use AcyMailing\Helpers\TabHelper;
 
 class plgAcymArticle extends acymPlugin
 {
+    private $groupedByCategory = false;
+    private $currentCategory = null;
+
     public function __construct()
     {
         parent::__construct();
@@ -199,6 +202,12 @@ class plgAcymArticle extends acymPlugin
                 'name' => 'max',
                 'default' => 20,
             ],
+            [
+                'title' => 'ACYM_GROUP_BY_CATEGORY',
+                'type' => 'boolean',
+                'name' => 'groupbycat',
+                'default' => false,
+            ],
         ];
 
         $this->autoCampaignOptions($catOptions);
@@ -306,16 +315,39 @@ class plgAcymArticle extends acymPlugin
 
             $query .= ' WHERE ('.implode(') AND (', $where).')';
 
+            $this->groupedByCategory = !empty($parameter->groupbycat);
             $this->tags[$oneTag] = $this->finalizeCategoryFormat($query, $parameter, 'element');
         }
 
         return $this->generateCampaignResult;
     }
 
+    protected function groupByCategory($elements)
+    {
+        if (!$this->groupedByCategory || empty($elements)) return $elements;
+
+        acym_arrayToInteger($elements);
+        $idsWithCatids = acym_loadObjectList('SELECT `id`, `catid` FROM #__content WHERE `id` IN ('.implode(', ', $elements).')');
+        usort(
+            $idsWithCatids,
+            function ($a, $b) {
+                return strtolower($a->catid) > strtolower($b->catid);
+            }
+        );
+        $elements = [];
+        foreach ($idsWithCatids as $oneArticle) {
+            $elements[] = $oneArticle->id;
+        }
+
+        return $elements;
+    }
+
     public function replaceIndividualContent($tag)
     {
-        $query = 'SELECT element.*, `user`.`name` AS authorname
+        $query = 'SELECT element.*, `user`.`name` AS authorname, cat.`title` AS category_title
                     FROM #__content AS element 
+                    JOIN #__categories AS cat 
+                        ON element.`catid` = cat.`id`
                     LEFT JOIN #__users AS `user` 
                         ON `user`.`id` = `element`.`created_by` 
                     WHERE element.state = 1
@@ -397,7 +429,9 @@ class plgAcymArticle extends acymPlugin
         $this->handleCustomFields($tag, $customFields);
 
         $readMoreText = empty($tag->readmore) ? acym_translation('ACYM_READ_MORE') : $tag->readmore;
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape($readMoreText).'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
+                $readMoreText
+            ).'</span></a>';
         if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
 
         $format = new stdClass();
@@ -411,6 +445,15 @@ class plgAcymArticle extends acymPlugin
         $format->customFields = $customFields;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 
-        return $this->finalizeElementFormat($result, $tag, $varFields);
+        $categoryTitle = '';
+        if (!empty($tag->groupbycat) && $this->currentCategory !== $element->catid) {
+            $this->currentCategory = $element->catid;
+
+            $categoryTitle = '<h1 class="acymailing_category_title">'.$element->category_title.'</h1>';
+            $categoryLink = $this->finalizeLink('index.php?option=com_content&view=category&id='.$element->catid);
+            $categoryTitle = '<a target="_blank" href="'.$categoryLink.'">'.$categoryTitle.'</a>';
+        }
+
+        return $categoryTitle.$this->finalizeElementFormat($result, $tag, $varFields);
     }
 }

@@ -364,6 +364,14 @@ i.acymicon-circle {
     font-weight: 500;
 }
 
+.acym__listing__evol-green {
+    color: #0dba61;
+}
+
+.acym__listing__evol-red {
+    color: map-get($foundation-palette, alert);
+}
+
 @media screen and (max-width: 639px) {
     .acym__listing {
         margin: 0;

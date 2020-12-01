@@ -823,7 +823,10 @@ function acym_checkbox($values, $name, $selected = [], $label = '', $parentClass
     foreach ($values as $key => $value) {
         $dtAttr = '';
         if (!empty($dataAttr[$key])) $dtAttr = 'data-attr="'.$dataAttr[$key].'"';
-        echo '<label class="cell grid-x margin-top-1"><input type="checkbox" name="'.$name.'" value="'.$key.'" '.(in_array($key, $selected) ? 'checked' : '').' '.$dtAttr.'>'.$value.'</label>';
+        echo '<label class="cell grid-x margin-top-1"><input type="checkbox" name="'.$name.'" value="'.$key.'" '.(in_array(
+                $key,
+                $selected
+            ) ? 'checked' : '').' '.$dtAttr.'>'.$value.'</label>';
     }
     echo '</div></div>';
 }
@@ -857,7 +860,9 @@ function acym_filterStatus($options, $selected, $name)
         if (!empty($text[2]) && 'pending' == $text[2]) {
             $extraIcon = ' <i class="acymicon-exclamation-triangle acym__color__orange" style="font-size: 15px;"></i>';
         }
-        $filterStatus .= '<button type="button" status="'.acym_escape($value).'" class="'.acym_escape($class).'"'.$disabled.'>'.acym_translation($text[0]).$extraIcon.' ('.$text[1].')</button>';
+        $filterStatus .= '<button type="button" status="'.acym_escape($value).'" class="'.acym_escape($class).'"'.$disabled.'>'.acym_translation(
+                $text[0]
+            ).$extraIcon.' ('.$text[1].')</button>';
     }
 
     return $filterStatus;
@@ -866,7 +871,9 @@ function acym_filterStatus($options, $selected, $name)
 function acym_filterSearch($search, $name, $placeholder = 'ACYM_SEARCH', $showClearBtn = true, $additionnalClasses = '')
 {
     $searchField = '<div class="input-group acym__search-area '.$additionnalClasses.'">
-        <input class="input-group-field acym__search-field" type="text" name="'.acym_escape($name).'" placeholder="'.acym_escape(acym_translation($placeholder)).'" value="'.acym_escape($search).'">
+        <input class="input-group-field acym__search-field" type="text" name="'.acym_escape($name).'" placeholder="'.acym_escape(
+            acym_translation($placeholder)
+        ).'" value="'.acym_escape($search).'">
         <div class="input-group-button">
             <button class="button acym__search__button hide-for-small-only"><i class="acymicon-search"></i></button>
         </div>';

@@ -258,7 +258,7 @@ function acym_date($time = 'now', $format = null, $useTz = true, $translate = tr
     if (!$format || (strpos($format, 'ACYM_DATE_FORMAT') !== false && acym_translation($format) == $format)) {
         $format = 'ACYM_DATE_FORMAT_LC1';
     }
-    $format = acym_translation($format);
+    if (strpos($format, 'ACYM_DATE') !== false) $format = acym_translation($format);
 
     //Don't use timezone
     if ($useTz === false) {

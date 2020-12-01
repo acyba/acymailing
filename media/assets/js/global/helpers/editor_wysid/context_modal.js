@@ -99,11 +99,11 @@ const acym_editorWysidContextModal = {
                 jQuery(this).off('change').on('change', function (event) {
                     $table.css('padding-' + jQuery(this).attr('data-block-padding'), jQuery(this).val() + 'px');
                     if (jQuery(this).attr('data-block-padding') === 'top' || jQuery(this).attr('data-block-padding') === 'bottom') {
-                        $selector.css('height', $table.height()
-                                                + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, ''))
-                                                + parseInt($table.css('padding-bottom')
-                                                                 .replace(/[^-\d\.]/g, ''))
-                                                + 'px');
+                        $selector.css(
+                            'height',
+                            $table.height() + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, '')) + parseInt($table.css('padding-bottom')
+                                                                                                                            .replace(/[^-\d\.]/g, '')) + 'px'
+                        );
                     }
                 });
             });
@@ -169,10 +169,12 @@ const acym_editorWysidContextModal = {
         });
     },
     setImageContextModal: function ($img) {
+        jQuery('.acym__wysid__media__inserted--selected').removeClass('acym__wysid__media__inserted--selected');
         $img.addClass('acym__wysid__media__inserted--selected');
         let $contextImage = jQuery('#acym__wysid__context__image');
         let $alignments = jQuery('.acym__wysid__context__image__align');
         let $linkInput = jQuery('#acym__wysid__context__image__link');
+        let $urlInput = jQuery('#acym__wysid__context__image__url');
 
         $alignments.css('background-color', 'inherit');
         jQuery('[data-float="' + jQuery('.acym__wysid__media__inserted--selected').css('float') + '"]').css('background-color', '');
@@ -192,14 +194,19 @@ const acym_editorWysidContextModal = {
         let $aTag = jQuery('.acym__wysid__media__inserted--selected').closest('.acym__wysid__link__image');
 
         $linkInput.val($aTag.length > 0 ? $aTag.attr('href') : '');
+        $urlInput.val(jQuery('.acym__wysid__media__inserted--selected').attr('src'));
 
         jQuery('#acym__wysid__context__image__change').off('click').on('click', function () {
             let $selectedImg = jQuery('.acym__wysid__media__inserted--selected');
             if ($selectedImg.hasClass('acym__wysid__media__giphy')) {
                 acym_editorWysidNewContent.addGiphyWYSID($selectedImg.closest('.acym__wysid__column__element'));
             } else {
-                acym_editorWysidNewContent.addMediaWysid($selectedImg.closest('.acym__wysid__column__element'));
+                acym_editorWysidImage.openMediaManage($selectedImg.closest('.acym__wysid__column__element'));
             }
+        });
+
+        $urlInput.off('keyup').on('keyup', function () {
+            jQuery('.acym__wysid__media__inserted--selected').attr('src', this.value);
         });
 
         $linkInput.off('keyup').on('keyup', function () {
@@ -333,10 +340,7 @@ const acym_editorWysidContextModal = {
                 .on('click', function () {
                     $button.css('font-weight') == 700 ? jQuery('#acym__wysid__context__button__bold').css('background-color', 'inherit') && $button.css('font-weight',
                         'inherit'
-                    ) : jQuery('#acym__wysid__context__button__bold').css('background-color', '') && $button.css(
-                        'font-weight',
-                        700
-                    );
+                    ) : jQuery('#acym__wysid__context__button__bold').css('background-color', '') && $button.css('font-weight', 700);
 
                 });
 
@@ -346,10 +350,7 @@ const acym_editorWysidContextModal = {
                 .on('click', function () {
                     $button.css('font-style') == 'italic' ? jQuery('#acym__wysid__context__button__italic').css('background-color', 'inherit') && $button.css('font-style',
                         'inherit'
-                    ) : jQuery('#acym__wysid__context__button__italic').css('background-color', '') && $button.css(
-                        'font-style',
-                        'italic'
-                    );
+                    ) : jQuery('#acym__wysid__context__button__italic').css('background-color', '') && $button.css('font-style', 'italic');
                 });
 
             jQuery('.acym__wysid__context__button__align').each(function () {

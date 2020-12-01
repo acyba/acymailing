@@ -1,201 +1,234 @@
 #acym_wrapper {
-    #acym__splashscreen__update {
-        width: 100%;
-
-        h1 {
-            font-family: Overpass, sans-serif;
-            font-size: 35px;
-            font-weight: bold;
-            letter-spacing: -1.5px;
-            line-height: 1.3em;
-            padding-top: 2%;
-            padding-bottom: 2%;
-            text-align: center;
+    .acym__splashcreen__container {
+        box-shadow: -20px 32px 44px rgba(0, 0, 0, 0.03);
+        border-radius: 23px;
+        @media screen and (min-width: 1900px) {
+            max-width: 50% !important;
         }
 
-        .acym__splashscreen__fill_parent {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
+        @media screen and (max-width: 1899px) and (min-width: 1400px) {
+            max-width: 60% !important;
         }
 
-        #acym__splashcreen__update__banner {
+        @media screen and (max-width: 1399px) and (min-width: 800px) {
+            max-width: 80% !important;
+        }
+
+        .button {
+            margin-bottom: 0 !important;
+        }
+
+        .acym__splashcreen__header {
+            background-repeat: no-repeat;
             position: relative;
+            min-height: 350px;
+            border-radius: 23px;
+            align-content: center;
 
-            #acym__splashcreen__update__banner__image {
-                background-image: url('https://www.acymailing.com/wp-content/uploads/2020/06/header-condensed-news.png');
-                background-position: 50% 44%;
-                background-repeat: no-repeat;
-                background-size: cover;
+            @media screen and (max-width: 800px) {
+                padding: 20px;
             }
 
-            #acym__splashcreen__update__banner__mist {
-                background-color: rgba(255, 255, 255, 0.75);
-                z-index: 1;
+            img {
+                position: absolute;
+            }
 
-                display: flex;
-                justify-content: center;
-                align-items: center;
+            .acym__splashcreen__header__astronaute {
+                max-width: 399px;
+                top: 0;
+                left: -16%;
 
-                #acym__splashcreen__update__banner__title {
-                    font-weight: 700;
-                    font-size: 25px;
+                @media screen and (max-width: 950px) {
+                    display: none;
                 }
             }
 
-            #acym__splashcreen__update__banner__content {
-                z-index: 2;
-                padding: 159px 0 137px 0;
+            .acym__splashcreen__header__planes {
+                max-width: 129px;
+                bottom: -13%;
+                left: 12%;
+            }
+
+            h1 {
+                font-weight: 800;
+                font-size: 37px;
+                line-height: 39px;
+                color: $white;
+            }
+
+            p {
+                font-size: 12px;
+                line-height: 20px;
+                color: $white;
+            }
+
+            .button {
+                background: #00C7FF;
+                border-radius: 3px;
             }
         }
 
-        .acym__splashcreen__update__content {
-            padding: 2rem 0;
-            background-color: #edf0f2;
+        .acym__splashcreen__body {
+            padding: 0 50px;
+            @media screen and (max-width: 449px) {
+                padding: 0 15px;
+            }
 
-            .acym__splashcreen__update__content__feature {
-                max-width: 1170px;
-                margin: auto;
+            .acym__splashcreen__body__subtitle {
+                font-weight: 800;
+                font-size: 11px;
+                line-height: 39px;
+                color: #01095E;
+            }
 
-                .acym__splashcreen__update__content__feature__description {
-                    padding: 5px 80px 5px 80px;
+            .acym__splashcreen__body__title {
+                font-weight: 800;
+                font-size: 25px;
+                line-height: 39px;
+                color: $black;
+            }
 
-                    .acym__splashcreen__update__content__feature__description__title {
-                        font-size: 1.4rem;
-                        font-family: Lato, sans-serif;
-                        font-weight: bold;
-                        margin-bottom: 1.5rem;
+            .acym__splashcreen__body__card__container {
+                .acym__splashcreen__body__card {
+                    box-shadow: -20px 32px 44px rgba(0, 0, 0, 0.03);
+                    border-radius: 23px;
+                    min-height: 100px;
+                    padding: 20px;
+
+                    &:first-of-type {
+                        margin-left: 0 !important;
                     }
 
-                    .acym__splashcreen__update__content__feature__description__text {
-                        font-family: Overpass, sans-serif;
-                        font-size: 1rem;
-                        font-weight: 400;
-                        letter-spacing: 0;
-                        line-height: 1.9em;
-                        color: #666666;
-                    }
-                }
-
-                .acym__splashcreen__update__content__feature__gif {
-                    img {
-                        width: 50%;
-                        margin: auto;
-                        display: block;
+                    &:last-of-type {
+                        margin-right: 0 !important;
                     }
 
-                    &.multiple_images {
+                    .acym__splashcreen__body__card__icon {
+                        width: 67px;
+                        height: 67px;
+                        border-radius: 50%;
+                        background-color: #F0FAFF;
+
                         img {
-                            width: fit-content;
-                            padding: 0 1rem;
-                            margin: auto;
-                            display: inline-block;
+                            width: 30px;
+                            height: 30px;
                         }
                     }
-                }
-            }
 
-            .acym__splashcreen__update__content__separator {
-                width: 50%;
-                margin: 5% 25% 5% 25%;
-                border-top: 1px black solid;
-            }
-        }
+                    .acym__splashcreen__body__card__title {
+                        font-weight: 800;
+                        font-size: 16px;
+                        line-height: 39px;
+                    }
 
-        #acym__splashcreen__update__others {
-            padding: 2rem 0;
-            background-color: white;
-            max-width: 1170px;
-            margin: auto;
-
-            .cell {
-                * {
-                    vertical-align: middle;
-                }
-
-                svg {
-                    display: inline-block;
-                    width: 4rem;
-                    height: 4rem;
-                    stroke: none;
-                    max-width: none;
-                    position: relative;
-                    fill: currentColor;
-                    color: #000080;
-                    stroke-width: 2.3;
-
-                    & + div {
-                        display: inline-block;
-                        color: #666666;
-                        font-family: Overpass, sans-serif;
+                    .acym__splashcreen__body__card__text {
                         font-size: 12px;
-                        padding-left: 12px;
-                    }
-                }
-            }
-        }
-
-        @media (max-width: 991px) and (min-width: 768px) {
-            #acym__splashcreen__update__banner {
-                #acym__splashcreen__update__banner__content {
-                    padding: 50px 15px 50px 15px;
-                }
-
-                #acym__splashcreen__update__banner__mist {
-                    #acym__splashcreen__update__banner__title {
-                        font-size: 19px;
+                        line-height: 19px;
+                        color: #6D6D6D;
                     }
                 }
             }
 
-            #acym__splashcreen__update__content {
-                h1 {
-                    font-size: 25px;
-                    letter-spacing: -1px;
+            .acym__splashcreen__body__middle {
+                padding: 20px;
+
+                .acym__splashcreen__body__middle__left {
+                    align-content: center;
+
+                    .acym__splashcreen__body__middle__left__title {
+                        font-weight: 800;
+                        font-size: 35px;
+                        line-height: 39px;
+                    }
                 }
 
-                .acym__splashcreen__update__content__feature {
-                    .acym__splashcreen__update__content__feature__description {
-                        padding: 5px 15px 5px 15px;
+                .acym__splashcreen__body__middle__right {
+                    padding-left: 50px;
+                    position: relative;
 
-                        .acym__splashcreen__update__content__feature__description__text {
-                            line-height: 1.6em;
+                    &:after {
+                        content: "";
+                        position: absolute;
+                        left: 20px;
+                        width: 1px;
+                        height: 70%;
+                        top: 15%;
+                        background-color: rgba(2, 10, 94, 0.34);
+                    }
+
+                    .acym__splashcreen__body__middle__right__icon {
+                        width: 37px;
+                        height: 37px;
+                        border-radius: 50%;
+                        background-color: #F0FAFF;
+
+                        i {
+                            font-size: 23px;
+                        }
+                    }
+
+                    .acym__splashcreen__body__middle__right__title {
+                        font-weight: 800;
+                        font-size: 16px;
+                        line-height: 39px;
+                    }
+
+                    .acym__splashcreen__body__middle__right__text {
+                        font-size: 12px;
+                        line-height: 20px;
+                        color: #6D6D6D;
+                    }
+                }
+            }
+
+            .acym__splashcreen__body__end {
+                .acym__splashcreen__body__end__card {
+                    background: rgba(0, 164, 255, 0.06);
+                    border-radius: 12px;
+                    padding: 50px;
+
+                    img {
+                        max-height: 183px;
+                    }
+
+                    .acym__splashcreen__body__end__card__title {
+                        font-weight: 800;
+                        font-size: 16px;
+                        line-height: 39px;
+                    }
+
+                    .acym__splashcreen__body__end__card__text {
+                        font-size: 12px;
+                        line-height: 19px;
+                        text-align: center;
+                        color: #6D6D6D;
+                    }
+
+                    .acym__splashcreen__body__end__card__minicard {
+                        border: 0.5px solid rgba(1, 8, 74, 0.08);
+                        border-radius: 8px;
+                        padding: 5px;
+                        background-color: $white;
+
+                        .acym__splashcreen__body__end__card__minicard__title__text {
+                            font-size: 10px;
+                            line-height: 12px;
+                            color: #6D6D6D;
                         }
                     }
                 }
             }
         }
 
-        @media (max-width: 767px) {
-            #acym__splashcreen__update__banner {
-                #acym__splashcreen__update__banner__content {
-                    padding: 60px 15px 60px 15px;
-                }
+        .acym__splashcreen__footer {
+            padding: 50px 10px;
+            background-color: #010748;
+            border-bottom-left-radius: 23px;
+            border-bottom-right-radius: 23px;
+            margin: 0 !important;
 
-                #acym__splashcreen__update__banner__mist {
-                    #acym__splashcreen__update__banner__title {
-                        font-size: 17px;
-                    }
-                }
-            }
-
-            #acym__splashcreen__update__content {
-                h1 {
-                    font-size: 24px;
-                    letter-spacing: -1px;
-                }
-
-                .acym__splashcreen__update__content__feature {
-                    .acym__splashcreen__update__content__feature__description {
-                        padding: 0;
-
-                        .acym__splashcreen__update__content__feature__description__text {
-                            line-height: 1.6em;
-                        }
-                    }
-                }
+            img {
+                max-width: 37px;
             }
         }
     }

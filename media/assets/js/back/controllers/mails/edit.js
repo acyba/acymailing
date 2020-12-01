@@ -6,6 +6,7 @@ jQuery(document).ready(function ($) {
         acym_helperDynamic.setModalDynamics();
         acym_helperEditorHtml.initEditorHtml();
         acym_helperEditorWysid.initEditor();
+        acym_helperCampaigns.initAttachmentCampaigns();
     }
 
     Init();

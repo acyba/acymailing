@@ -50,7 +50,9 @@ class HeaderHelper extends acymObject
             if (!empty($latestNews) && strtotime($latestNews->date) > strtotime($oneNews->date)) break;
 
             // If the news isn't published or that the language isn't correct, leave
-            if (empty($oneNews->published) || (strtolower($oneNews->language) != strtolower($currentLanguage) && (strtolower($oneNews->language) != 'default' || !empty($latestNews)))) continue;
+            if (empty($oneNews->published) || (strtolower($oneNews->language) != strtolower($currentLanguage) && (strtolower(
+                            $oneNews->language
+                        ) != 'default' || !empty($latestNews)))) continue;
 
             // If the extension isn't correct, leave
             if (!empty($oneNews->extension) && strtolower($oneNews->extension) != 'acymailing') continue;
@@ -145,7 +147,9 @@ class HeaderHelper extends acymObject
         $version .= '<div id="acym_expiration" class="text-right cell">';
         if ($expirationDate == -2) {
             $version .= '<div class="acylicence_expired">
-                            <a class="acy_attachlicence acymbuttons acym__color__red" href="'.ACYM_REDIRECT.'acymailing-assign" target="_blank">'.acym_translation('ACYM_ATTACH_LICENCE').'</a>
+                            <a class="acy_attachlicence acymbuttons acym__color__red" href="'.ACYM_REDIRECT.'acymailing-assign" target="_blank">'.acym_translation(
+                    'ACYM_ATTACH_LICENCE'
+                ).'</a>
                         </div>';
         } elseif ($expirationDate < time()) {
             $version .= acym_tooltip(
@@ -157,7 +161,10 @@ class HeaderHelper extends acymObject
             );
         } else {
             $version .= '<div class="acylicence_valid">
-                            <span class="acy_subscriptionok acym__color__green">'.acym_translation_sprintf('ACYM_VALID_UNTIL', acym_getDate($expirationDate, acym_translation('ACYM_DATE_FORMAT_LC4'))).'</span>
+                            <span class="acy_subscriptionok acym__color__green">'.acym_translation_sprintf(
+                    'ACYM_VALID_UNTIL',
+                    acym_getDate($expirationDate, acym_translation('ACYM_DATE_FORMAT_LC4'))
+                ).'</span>
                         </div>';
         }
         $version .= '</div>';
@@ -174,7 +181,9 @@ class HeaderHelper extends acymObject
         if (empty($lastLicenseCheck)) $lastLicenseCheck = $time;
 
         return acym_tooltip(
-            '<a id="checkVersionButton" type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" data-check="'.acym_escape($checking).'"><i class="cell shrink acymicon-autorenew"></i></a>',
+            '<a id="checkVersionButton" type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" data-check="'.acym_escape(
+                $checking
+            ).'"><i class="cell shrink acymicon-autorenew"></i></a>',
             acym_translation('ACYM_LAST_CHECK').' <span id="acym__check__version__last__check">'.acym_date($lastLicenseCheck, 'Y/m/d H:i').'</span>'
         );
     }
@@ -258,7 +267,9 @@ class HeaderHelper extends acymObject
             $notificationCenter .= '<h2 class="cell text-center">'.acym_translation('ACYM_YOU_DONT_HAVE_NOTIFICATIONS').'</h2>';
             $notificationCenter .= '</div>';
         } else {
-            $notificationCenter .= '<div class="cell grid-x acym__header__notification__toolbox"><p class="cell auto">'.acym_translation('ACYM_NOTIFICATIONS').'</p><div class="cell shrink cursor-pointer acym__header__notification__toolbox__remove text-right">'.acym_translation('ACYM_DELETE_ALL').'</div></div>';
+            $notificationCenter .= '<div class="cell grid-x acym__header__notification__toolbox"><p class="cell auto">'.acym_translation(
+                    'ACYM_NOTIFICATIONS'
+                ).'</p><div class="cell shrink cursor-pointer acym__header__notification__toolbox__remove text-right">'.acym_translation('ACYM_DELETE_ALL').'</div></div>';
             foreach ($notifications as $key => $notif) {
                 if (strlen($notif['message']) > 150) $notif['message'] = substr($notif['message'], 0, 150).'...';
                 $logo = $notif['level'] == 'info' ? 'acymicon-bell' : ($notif['level'] == 'warning' ? 'acymicon-exclamation-triangle' : 'acymicon-exclamation-circle');

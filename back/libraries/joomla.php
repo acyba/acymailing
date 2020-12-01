@@ -17,3 +17,4 @@ include __DIR__.DS.'joomla'.DS.'extension.php';
 include __DIR__.DS.'joomla'.DS.'router.php';
 include __DIR__.DS.'joomla'.DS.'miscelaneous.php';
 include __DIR__.DS.'joomla'.DS.'override.php';
+include __DIR__.DS.'joomla'.DS.'ajax.php';

@@ -17,6 +17,7 @@ class acymController extends acymObject
     var $urlFrontMenu = '';
     var $sessionName = '';
     var $taskCalled = '';
+    var $preventCallTask = false;
 
     public function __construct()
     {
@@ -63,6 +64,8 @@ class acymController extends acymObject
 
     public function call($task, $allowedTasks = [])
     {
+        if ($this->preventCallTask) return;
+
         // If not authorized, display message and redirect to dashboard
         if (!in_array($task, $allowedTasks) && !acym_isAllowed($this->name, $task)) {
             acym_enqueueMessage(acym_translation('ACYM_ACCESS_DENIED'), 'warning');
@@ -338,27 +341,5 @@ class acymController extends acymObject
             }
         }
         $this->$task();
-    }
-
-    public function endAjaxError($message = '', $data = [])
-    {
-        $result = new \stdClass();
-        $result->type = 'error';
-        $result->message = $message;
-        $result->data = $data;
-
-        echo json_encode($result);
-        exit;
-    }
-
-    public function endAjaxSuccess($message = '', $data = [])
-    {
-        $result = new \stdClass();
-        $result->type = 'success';
-        $result->message = $message;
-        $result->data = $data;
-
-        echo json_encode($result);
-        exit;
     }
 }

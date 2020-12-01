@@ -4486,43 +4486,35 @@ S2.define('select2/i18n/en',[],function () {
   // English
   return {
     errorLoading: function () {
-      return 'The results could not be loaded.';
+      return ACYM_JS_TXT.ACYM_SELECT2_RESULTS_NOT_LOADED;
     },
     inputTooLong: function (args) {
       var overChars = args.input.length - args.maximum;
 
-      var message = 'Please delete ' + overChars + ' character';
-
-      if (overChars != 1) {
-        message += 's';
-      }
+      var message = acym_helper.sprintf(ACYM_JS_TXT.ACYM_SELECT2_DELETE_X_CHARACTERS, overChars);
 
       return message;
     },
     inputTooShort: function (args) {
       var remainingChars = args.minimum - args.input.length;
 
-      var message = 'Please enter ' + remainingChars + ' or more characters';
+      var message = acym_helper.sprintf(ACYM_JS_TXT.ACYM_SELECT2_ENTER_X_CHARACTERS, remainingChars);
 
       return message;
     },
     loadingMore: function () {
-      return 'Loading more results…';
+      return ACYM_JS_TXT.ACYM_SELECT2_LOADING_MORE_RESULTS;
     },
     maximumSelected: function (args) {
-      var message = 'You can only select ' + args.maximum + ' item';
-
-      if (args.maximum != 1) {
-        message += 's';
-      }
+      var message = acym_helper.sprintf(ACYM_JS_TXT.ACYM_SELECT2_LIMIT_X_ITEMS, args.maximum);
 
       return message;
     },
     noResults: function () {
-      return 'No results found';
+      return ACYM_JS_TXT.ACYM_NO_RESULTS_FOUND;
     },
     searching: function () {
-      return 'Searching…';
+      return ACYM_JS_TXT.ACYM_SELECT2_SEARCHING;
     }
   };
 });

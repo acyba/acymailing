@@ -64,6 +64,7 @@ function acym_isTrackingSalesActive()
 
 function acym_loadPlugins()
 {
+    $dynamicsLoadedLast = ['managetext'];
     $dynamics = acym_getFolders(ACYM_BACK.'dynamics');
 
     $pluginClass = new PluginClass();
@@ -74,48 +75,54 @@ function acym_loadPlugins()
         if ('managetext' === $oneDynamic) unset($dynamics[$key]);
     }
 
+    $pluginsLoadedLast = ['tableofcontents'];
     foreach ($plugins as $pluginFolder => $onePlugin) {
         if (in_array($pluginFolder, $dynamics) || '0' === $onePlugin->active) continue;
-        $dynamics[] = $pluginFolder;
+        if (in_array($pluginFolder, $pluginsLoadedLast)) {
+            array_unshift($dynamicsLoadedLast, $pluginFolder);
+        } else {
+            $dynamics[] = $pluginFolder;
+        }
     }
 
-    // Make sure the Manage text plugin is called last, we'll clean the inserted content in it
-    $dynamics[] = 'managetext';
+    // Some plugins need to be called last
+    $dynamics = array_merge($dynamics, $dynamicsLoadedLast);
 
     global $acymPlugins;
     global $acymAddonsForSettings;
 
     // Load the installed integrations
+    $integrationsRaw = [];
+    do_action_ref_array('acym_load_installed_integrations', [&$integrationsRaw]);
+
     $integrations = [];
-    do_action_ref_array('acym_load_installed_integrations', [&$integrations]);
-    foreach ($integrations as $oneIntegration) {
-        $dynamicFile = $oneIntegration['path'].DS.'plugin.php';
-        $className = $oneIntegration['className'];
+    foreach ($integrationsRaw as $oneIntegration) {
+        $addonName = strtolower(substr($oneIntegration['className'], 7));
+        $integrations[$addonName] = $oneIntegration;
 
-        // Load the plugin
-        if (isset($acymPlugins[$className]) || !file_exists($dynamicFile) || (!class_exists($className) && !include_once $dynamicFile)) continue;
-        if (!class_exists($className)) continue;
-
-        // If it's for another CMS or if the related extension isn't installed, skip it
-        $plugin = new $className();
-        $pluginClass->addIntegrationIfMissing($plugin);
-
-        if (in_array($plugin->cms, ['all', '{__CMS__}'])) $acymAddonsForSettings[$className] = $plugin;
-        if (!in_array($plugin->cms, ['all', '{__CMS__}']) || !$plugin->installed) continue;
-
-        $acymPlugins[$className] = $plugin;
+        if (!in_array($addonName, $dynamics)) $dynamics[] = $addonName;
     }
+    $integrationsClasses = array_keys($integrations);
 
     foreach ($dynamics as $oneDynamic) {
-        $dynamicFile = acym_getPluginPath($oneDynamic);
+        if (in_array($oneDynamic, $integrationsClasses)) {
+            $dynamicFile = $integrations[$oneDynamic]['path'].DS.'plugin.php';
+        } else {
+            $dynamicFile = acym_getPluginPath($oneDynamic);
+        }
         $className = 'plgAcym'.ucfirst($oneDynamic);
 
         // Load the plugin
         if (isset($acymPlugins[$className]) || !file_exists($dynamicFile) || (!class_exists($className) && !include_once $dynamicFile)) continue;
         if (!class_exists($className)) continue;
 
-        // If it's for another CMS or if the related extension isn't installed, skip it
         $plugin = new $className();
+
+        if (in_array($oneDynamic, $integrationsClasses)) {
+            $pluginClass->addIntegrationIfMissing($plugin);
+        }
+
+        // If it's for another CMS or if the related extension isn't installed, skip it
         if (in_array($plugin->cms, ['all', '{__CMS__}'])) $acymAddonsForSettings[$className] = $plugin;
         if (!in_array($plugin->cms, ['all', '{__CMS__}']) || !$plugin->installed) continue;
 

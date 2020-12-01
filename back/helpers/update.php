@@ -265,7 +265,9 @@ class UpdateHelper extends acymObject
             $template = $mailClass->encode($template);
 
             $query = 'INSERT INTO `#__acym_mail` (`name`, `creation_date`, `thumbnail`, `drag_editor`, `library`, `type`, `body`, `subject`, `template`, `from_name`, `from_email`, `reply_to_name`, `reply_to_email`, `bcc`, `settings`, `stylesheet`, `attachments`, `creator_id`) VALUES
-                     ('.$tmplName.', '.$creationDate.', '.$thumbnail.', 1, 1, "standard", '.acym_escapeDB($template->body).', "", 1, NULL, NULL, NULL, NULL, NULL, '.$settings.', '.$stylesheet.', NULL, '.$currentUserId.');';
+                     ('.$tmplName.', '.$creationDate.', '.$thumbnail.', 1, 1, "standard", '.acym_escapeDB(
+                    $template->body
+                ).', "", 1, NULL, NULL, NULL, NULL, NULL, '.$settings.', '.$stylesheet.', NULL, '.$currentUserId.');';
             acym_query($query);
             $installedTemplates++;
         }
@@ -544,9 +546,18 @@ class UpdateHelper extends acymObject
             acym_createFolder(ACYM_ROOT.ACYM_UPLOAD_FOLDER);
             acym_createFolder(ACYM_UPLOAD_FOLDER_THUMBNAIL);
 
-            if (!file_exists(ACYM_ROOT.ACYM_UPLOAD_FOLDER.$mailingImage)) copy(ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.$mailingImage, ACYM_ROOT.ACYM_UPLOAD_FOLDER.$mailingImage);
-            if (!file_exists(ACYM_ROOT.ACYM_UPLOAD_FOLDER.$logoAcymailing)) copy(ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.$logoAcymailing, ACYM_ROOT.ACYM_UPLOAD_FOLDER.$logoAcymailing);
-            if (!file_exists(ACYM_UPLOAD_FOLDER_THUMBNAIL.$thumbnailFirstStep)) copy(ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.$thumbnailFirstStep, ACYM_UPLOAD_FOLDER_THUMBNAIL.$thumbnailFirstStep);
+            if (!file_exists(ACYM_ROOT.ACYM_UPLOAD_FOLDER.$mailingImage)) copy(
+                ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.$mailingImage,
+                ACYM_ROOT.ACYM_UPLOAD_FOLDER.$mailingImage
+            );
+            if (!file_exists(ACYM_ROOT.ACYM_UPLOAD_FOLDER.$logoAcymailing)) copy(
+                ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.$logoAcymailing,
+                ACYM_ROOT.ACYM_UPLOAD_FOLDER.$logoAcymailing
+            );
+            if (!file_exists(ACYM_UPLOAD_FOLDER_THUMBNAIL.$thumbnailFirstStep)) copy(
+                ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.$thumbnailFirstStep,
+                ACYM_UPLOAD_FOLDER_THUMBNAIL.$thumbnailFirstStep
+            );
         }
 
         if (!empty($addNotif)) {
@@ -598,7 +609,6 @@ class UpdateHelper extends acymObject
         $extensionsToPublish = [
             'acymtriggers',
             'jceacym',
-            'acymailoverride',
         ];
         $existingExtensions = acym_loadResultArray(
             'SELECT `element` 

@@ -18,6 +18,10 @@
         .acym__list__settings__subscriber__nb__display {
             font-size: 1rem;
         }
+
+        .acym__list__settings__subscriber__nb__line {
+            margin-bottom: 0.5rem;
+        }
     }
 
     .acym__list__button__add__mail {
@@ -105,6 +109,14 @@
         }
     }
 
+    #acym__list__settings__stats__evol {
+        height: 400px;
+        width: 100%;
+        padding: 60px 15px 30px 15px;
+        border: 1px solid $light-gray;
+        border-radius: 10px;
+    }
+
     @media screen and (max-width: 639px) {
         .acym__list__settings__subscriber__nb__display {
             margin-top: 0.5rem;
@@ -117,5 +129,10 @@
         .acym__list__settings__tmpls .acym__list__settings__tmpls__title {
             border-bottom: none;
         }
+    }
+
+    .acym__listing__block__delete {
+        top: 3px;
+        right: 16px;
     }
 }

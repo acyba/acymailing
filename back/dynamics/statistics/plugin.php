@@ -10,20 +10,20 @@ class plgAcymStatistics extends acymPlugin
         $id = acym_getVar('int', 'id');
         if (!empty($id)) {
             $mail = acym_loadObject(
-                'SELECT mail.`subject`, campaign.`id` AS campaignId 
+                'SELECT mail.`name`, campaign.`id` AS campaignId 
                 FROM #__acym_mail AS mail 
                 LEFT JOIN #__acym_campaign AS campaign ON mail.`id` = campaign.`mail_id` 
                 WHERE mail.`id` = '.intval($id)
             );
             if (empty($mail)) {
-                $subject = '';
+                $name = '';
             } else {
-                $subject = $mail->subject;
+                $name = $mail->name;
                 if (!empty($mail->campaignId)) {
-                    $subject .= ' ['.acym_translation('ACYM_ID').' '.$mail->campaignId.']';
+                    $name .= ' ['.acym_translation('ACYM_ID').' '.$mail->campaignId.']';
                 }
             }
-            echo json_encode(['value' => $subject]);
+            echo json_encode(['value' => $name]);
             exit;
         }
 
@@ -32,19 +32,20 @@ class plgAcymStatistics extends acymPlugin
         $search = utf8_encode($search);
 
         $mails = acym_loadObjectList(
-            'SELECT mail.`id`, mail.`subject`, campaign.`id` AS campaignId 
+            'SELECT mail.`id`, mail.`name`, mail.`subject`, mail.`type`, campaign.`id` AS campaignId 
             FROM #__acym_mail AS mail 
             LEFT JOIN #__acym_campaign AS campaign ON mail.`id` = campaign.`mail_id` 
-            WHERE mail.`subject` LIKE '.acym_escapeDB('%'.$search.'%').' OR mail.`name` LIKE '.acym_escapeDB('%'.$search.'%').' 
-            ORDER BY mail.`subject` ASC'
+            WHERE mail.`subject` LIKE '.acym_escapeDB('%'.$search.'%').' OR mail.`name` LIKE '.acym_escapeDB('%'.$search.'%').'
+            ORDER BY mail.`name` ASC'
         );
 
         $mailClass = new MailClass();
         $mails = $mailClass->decode($mails);
 
         foreach ($mails as $oneMail) {
+            $name = in_array($oneMail->type, ['notification', 'override']) ? $oneMail->subject : $oneMail->name;
             $campaignId = empty($oneMail->campaignId) ? '' : ' ['.acym_translation('ACYM_ID').' '.$oneMail->campaignId.']';
-            $return[] = [$oneMail->id, $oneMail->subject.$campaignId];
+            $return[] = [$oneMail->id, $name.$campaignId];
         }
 
         echo json_encode($return);
@@ -65,7 +66,12 @@ class plgAcymStatistics extends acymPlugin
         $filters['statistics'] = new stdClass();
         $filters['statistics']->name = acym_translation('ACYM_STATISTICS');
         $filters['statistics']->option = '<div class="intext_select_automation cell">';
-        $filters['statistics']->option .= acym_select($status, 'acym_action[filters][__numor__][__numand__][statistics][status]', 'open', 'class="intext_select_automation acym__select"');
+        $filters['statistics']->option .= acym_select(
+            $status,
+            'acym_action[filters][__numor__][__numand__][statistics][status]',
+            'open',
+            'class="intext_select_automation acym__select"'
+        );
         $filters['statistics']->option .= '</div>';
         $filters['statistics']->option .= '<div class="intext_select_automation cell">';
         $ajaxParams = json_encode(['plugin' => __CLASS__, 'trigger' => 'searchMail',]);

@@ -204,7 +204,7 @@
             }
 
             .separator_left, .separator_right {
-                z-index: 1000;
+                z-index: 1012;
                 cursor: col-resize;
                 display: flex;
                 align-items: center;
@@ -340,7 +340,7 @@
     position: absolute;
     width: 350px;
     padding: 2px;
-    z-index: 1000;
+    z-index: 1012;
     box-shadow: $primary-box-shadow;
     border-radius: $primary-radius;
     color: map-get($editor-wysid-palette, primary-ui);

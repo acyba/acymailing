@@ -102,7 +102,9 @@ class QueueHelper extends acymObject
             $disp = '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />';
             $disp .= '<title>'.acym_translation('ACYM_SEND_PROCESS').'</title>';
             $disp .= '<style>body{font-size:12px;font-family: Arial,Helvetica,sans-serif;}</style></head><body>';
-            $disp .= '<div style="margin-bottom: 18px;padding: 8px !important; background-color: #fcf8e3; border: 1px solid #fbeed5; border-radius: 4px;"><p style="margin:0;">'.acym_translation('ACYM_DONT_CLOSE').'</p></div>';
+            $disp .= '<div style="margin-bottom: 18px;padding: 8px !important; background-color: #fcf8e3; border: 1px solid #fbeed5; border-radius: 4px;"><p style="margin:0;">'.acym_translation(
+                    'ACYM_DONT_CLOSE'
+                ).'</p></div>';
             $disp .= "<div style='display: inline;background-color : white;border : 1px solid grey; padding : 3px;font-size:14px'>";
             $disp .= "<span id='divpauseinfo' style='padding:10px;margin:5px;font-size:16px;font-weight:bold;display:none;background-color:black;color:white;'> </span>";
             $disp .= acym_translation('ACYM_SEND_PROCESS').': <span id="counter" >'.$this->start.'</span> / '.$this->total;
@@ -328,7 +330,9 @@ class QueueHelper extends acymObject
                 $nbdeleted = $res;
                 if ($nbdeleted != $nbsub) {
                     $status = false;
-                    $this->_display($nbdeleted < $nbsub ? acym_translation('ACYM_QUEUE_DOUBLE') : $nbdeleted.' emails deleted from the queue whereas we only have '.$nbsub.' subscribers');
+                    $this->_display(
+                        $nbdeleted < $nbsub ? acym_translation('ACYM_QUEUE_DOUBLE') : $nbdeleted.' emails deleted from the queue whereas we only have '.$nbsub.' subscribers'
+                    );
                 }
             }
         }

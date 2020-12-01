@@ -36,11 +36,31 @@ class FrontstatsController extends acymController
                 $mailStatClass = new MailStatClass();
                 $mailStatClass->save($mailStat);
 
+                $device = '';
+                $openedWith = '';
+                if (isset($_SERVER['HTTP_USER_AGENT'])) {
+                    $userAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
+                    $allDevices = array_merge($userStatClass::DESKTOP_DEVICES, $userStatClass::MOBILE_DEVICES);
+
+                    foreach ($allDevices as $oneDeviceKey => $oneDevice) {
+                        if (preg_match('/'.$oneDeviceKey.'/', $userAgent)) {
+                            $device = $oneDeviceKey;
+                            break;
+                        }
+                    }
+
+                    require_once ACYM_INC.'browser'.DS.'browser.php';
+                    $browser = new \Browser($userAgent);
+                    $openedWith = $browser->getBrowser();
+                }
+
                 $userStatToInsert = [];
                 $userStatToInsert['user_id'] = $userId;
                 $userStatToInsert['mail_id'] = $mailId;
                 $userStatToInsert['open'] = 1;
                 $userStatToInsert['open_date'] = acym_date('now', 'Y-m-d H:i:s');
+                $userStatToInsert['device'] = $device;
+                $userStatToInsert['opened_with'] = $openedWith;
 
                 $userStatClass->save($userStatToInsert);
             }

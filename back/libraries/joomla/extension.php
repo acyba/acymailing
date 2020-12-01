@@ -43,6 +43,7 @@ function acym_isTrackingSalesActive()
 
 function acym_loadPlugins()
 {
+    $dynamicsLoadedLast = ['managetext'];
     $dynamics = acym_getFolders(ACYM_BACK.'dynamics');
 
     $pluginClass = new PluginClass();
@@ -53,13 +54,18 @@ function acym_loadPlugins()
         if ('managetext' === $oneDynamic) unset($dynamics[$key]);
     }
 
+    $pluginsLoadedLast = ['tableofcontents'];
     foreach ($plugins as $pluginFolder => $onePlugin) {
         if (in_array($pluginFolder, $dynamics) || '0' === $onePlugin->active) continue;
-        $dynamics[] = $pluginFolder;
+        if (in_array($pluginFolder, $pluginsLoadedLast)) {
+            array_unshift($dynamicsLoadedLast, $pluginFolder);
+        } else {
+            $dynamics[] = $pluginFolder;
+        }
     }
 
-    // Make sure the Manage text plugin is called last, we'll clean the inserted content in it
-    $dynamics[] = 'managetext';
+    // Some plugins need to be called last
+    $dynamics = array_merge($dynamics, $dynamicsLoadedLast);
 
     global $acymPlugins;
     global $acymAddonsForSettings;

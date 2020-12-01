@@ -3,7 +3,10 @@
 <div class="cell grid-x margin-top-2">
 	<label class="cell small-9 margin-auto grid-x cell text-center"><?php echo acym_translation('ACYM_CONTACT_EMAIL'); ?></label>
 </div>
-<input type="email" value="<?php echo acym_escape($data['email']); ?>" class="cell small-9 margin-auto" placeholder="<?php echo acym_escape(acym_translation('ACYM_YOUR_EMAIL')); ?>">
+<input type="email"
+	   value="<?php echo acym_escape($data['email']); ?>"
+	   class="cell small-9 margin-auto"
+	   placeholder="<?php echo acym_escape(acym_translation('ACYM_YOUR_EMAIL')); ?>">
 
 <div class="cell text-center margin-bottom-1">
 	<button class="button acym__walk-through__content__save large-shrink" id="acym__subscribe__news"><?php echo acym_translation('ACYM_SURE_LETS_DO_IT'); ?></button>

@@ -163,18 +163,15 @@ class BouncesController extends acymController
     //__START__enterprise_
     public function process()
     {
-        //    if (!$this->isAllowed('configuration', 'manage')) {
-        //        return;
-        //    }
         acym_increasePerf();
 
-        $bounceClass = new BounceHelper();
-        $bounceClass->report = true;
-        if (!$bounceClass->init()) {
+        $bounceHelper = new BounceHelper();
+        $bounceHelper->report = true;
+        if (!$bounceHelper->init()) {
             return;
         }
-        if (!$bounceClass->connect()) {
-            acym_display($bounceClass->getErrors(), 'error');
+        if (!$bounceHelper->connect()) {
+            acym_display($bounceHelper->getErrors(), 'error');
 
             return;
         }
@@ -184,21 +181,21 @@ class BouncesController extends acymController
         echo $disp;
 
         acym_display(acym_translation_sprintf('ACYM_BOUNCE_CONNECT_SUCC', $this->config->get('bounce_username')), 'success');
-        $nbMessages = $bounceClass->getNBMessages();
-        acym_display(acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages), 'info');
+        $nbMessages = $bounceHelper->getNBMessages();
+        $nbMessagesReport = acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
+        acym_display($nbMessagesReport, 'info');
 
         //that should not happen as we check it before anyway...
         if (empty($nbMessages)) {
             exit;
         }
 
-        $bounceClass->handleMessages();
-        $bounceClass->close();
+        $bounceHelper->handleMessages();
 
         //Load the cron class to save the report if there is one
         $cronHelper = new CronHelper();
-        $cronHelper->messages[] = acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
-        $cronHelper->detailMessages = $bounceClass->messages;
+        $cronHelper->messages[] = $nbMessagesReport;
+        $cronHelper->detailMessages = $bounceHelper->messages;
         $cronHelper->saveReport();
 
         if ($this->config->get('bounce_max', 0) != 0 && $nbMessages > $this->config->get('bounce_max', 0)) {
@@ -214,8 +211,8 @@ class BouncesController extends acymController
         }
 
         //We need to finish the current page properly
-        echo "</body></html>";
-        while ($bounceClass->obend-- > 0) {
+        echo '</body></html>';
+        while ($bounceHelper->obend-- > 0) {
             ob_start();
         }
         exit;
@@ -230,9 +227,6 @@ class BouncesController extends acymController
 
     public function _saveconfig()
     {
-        //if (!$this->isAllowed('configuration', 'manage')) {
-        //    return;
-        //}
         acym_checkToken();
 
         $newConfig = acym_getVar('array', 'config', [], 'POST');
@@ -264,9 +258,6 @@ class BouncesController extends acymController
 
     public function test()
     {
-        //Store the infos
-        //$this->_saveconfig();
-
         $ruleClass = new RuleClass();
 
         if ($ruleClass->getOrderingNumber() < 1) {
@@ -278,31 +269,31 @@ class BouncesController extends acymController
         }
 
         acym_increasePerf();
-        $bounceClass = new BounceHelper();
-        $bounceClass->report = true;
+        $bounceHelper = new BounceHelper();
+        $bounceHelper->report = true;
 
-        if ($bounceClass->init()) {
-            if ($bounceClass->connect()) {
-                $nbMessages = $bounceClass->getNBMessages();
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_BOUNCE_CONNECT_SUCC', $this->config->get('bounce_username')), "success");
-                $bounceClass->close();
+        if ($bounceHelper->init()) {
+            if ($bounceHelper->connect()) {
+                $nbMessages = $bounceHelper->getNBMessages();
+                $bounceHelper->close();
+                $messages = [
+                    acym_translation_sprintf('ACYM_BOUNCE_CONNECT_SUCC', $this->config->get('bounce_username')),
+                    acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages),
+                ];
+
                 if (!empty($nbMessages)) {
-                    acym_enqueueMessage(
-                        [
-                            acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages),
-                            acym_modal(
-                                acym_translation('ACYM_CLICK_BOUNCE'),
-                                '',
-                                null,
-                                'data-reveal-larger',
-                                'data-ajax="true" data-iframe="&ctrl=bounces&task=process" class="acym__color__light-blue cursor-pointer" style="margin: 0"'
-                            ),
-                        ],
-                        'info'
+                    $messages[] = acym_modal(
+                        acym_translation('ACYM_CLICK_BOUNCE'),
+                        '',
+                        null,
+                        'data-reveal-larger',
+                        'data-ajax="true" data-iframe="&ctrl=bounces&task=process" class="acym__color__light-blue cursor-pointer" style="margin: 0"'
                     );
                 }
+
+                acym_enqueueMessage($messages, 'info');
             } else {
-                $errors = $bounceClass->getErrors();
+                $errors = $bounceHelper->getErrors();
                 if (!empty($errors)) {
                     acym_enqueueMessage($errors, 'error');
                     $errorString = implode(' ', $errors);
@@ -318,7 +309,7 @@ class BouncesController extends acymController
             }
         }
 
-        return $this->listing();
+        $this->listing();
     }
 
     public function reinstall()

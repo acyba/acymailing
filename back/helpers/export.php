@@ -173,6 +173,7 @@ class ExportHelper extends acymObject
             acym_translation('ACYM_OPEN_RATE'),
             acym_translation('ACYM_CLICK_RATE'),
             acym_translation('ACYM_BOUNCE_RATE'),
+            acym_translation('ACYM_UNSUBSCRIBE_RATE'),
         ];
 
         $csvLines[] = $this->before.implode($separator, $globalDonutsTitle).$this->after;
@@ -212,8 +213,9 @@ class ExportHelper extends acymObject
             if ($i > $nbExport) break;
             $oneLine = [];
             foreach ($columns as $key => $trad) {
-                $key = explode('.', $key);
-                $line = in_array($key[1], $valueNeedNumber) && empty($mailStat->{$key[1]}) ? 0 : $mailStat->{$key[1]};
+                $key = strpos($key, '.') !== false ? explode('.', $key) : $key;
+                if (is_array($key)) $key = $key[1];
+                $line = in_array($key, $valueNeedNumber) && empty($mailStat->{$key}) ? 0 : $mailStat->{$key};
                 $oneLine[] = htmlspecialchars($line, ENT_QUOTES, 'UTF-8');
             }
             //We delete the double quote so it won't break the CSV

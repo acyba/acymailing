@@ -11,7 +11,10 @@ if (version_compare(PHP_VERSION, '5.6.0', '<')) {
 function installAcym()
 {
     try {
-        include_once(rtrim(JPATH_ADMINISTRATOR, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php');
+        include_once(rtrim(
+                JPATH_ADMINISTRATOR,
+                DIRECTORY_SEPARATOR
+            ).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php');
     } catch (Exception $e) {
         echo 'Initialization error, please re-install';
 
@@ -64,7 +67,8 @@ function uninstallAcym()
     ?>
 	AcyMailing successfully uninstalled.<br />
 	Its modules have been disabled.<br /><br />
-	If you want to completely uninstall AcyMailing and remove its data, please uninstall all the AcyMailing modules and plugins from the Joomla Extensions Manager then run the following query on your database manager:<br /><br />
+	If you want to completely uninstall AcyMailing and remove its data, please uninstall all the AcyMailing modules and plugins from the Joomla Extensions Manager then run the following query on your database manager:
+	<br /><br />
     <?php
 
     $tables = [

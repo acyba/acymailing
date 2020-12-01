@@ -27,12 +27,29 @@ const acym_editorWysidNewContent = {
         acym_helperEditorWysid.setColumnRefreshUiWYSID();
         acym_editorWysidVersioning.setUndoAndAutoSave();
     },
-    addMediaWysid: function (ui, rows) {
-        if (ACYM_CMS === 'wordpress') {
-            acym_editorWysidWordpress.addMediaWPWYSID(ui, rows);
-        } else {
-            acym_editorWysidJoomla.addMediaJoomlaWYSID(ui, rows);
-        }
+    addMediaWysid: function (ui) {
+        let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
+        content += '<td class="large-12 acym__wysid__column__element__td">';
+        content += '<div class="acym__wysid__tinymce--image acym__wysid__media__inserted--focus">';
+        content += '<p style="text-align: center" data-mce-style="text-align: center">';
+        content += '<img class="acym__wysid__media__inserted" src="'
+                   + ACYM_MEDIA_URL
+                   + 'images/default_image.png" title="image" alt="" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;"/>';
+        content += '</div>';
+        content += '</p>';
+        content += '</td>';
+        content += '</tr>';
+        jQuery(ui).replaceWith(content);
+        jQuery('.acym__wysid__media__inserted--focus img').off('load').on('load', function () {
+            let $editor = jQuery(this).closest('.acym__wysid__media__inserted--focus');
+            $editor.removeClass('acym__wysid__media__inserted--focus');
+            acym_helperEditorWysid.setColumnRefreshUiWYSID();
+            acym_editorWysidVersioning.setUndoAndAutoSave();
+            setTimeout(() => {
+                $editor.find('p').click();
+                jQuery('#acym__wysid__right__toolbar__block__tab').click();
+            }, 200);
+        });
     },
     addButtonWYSID: function (ui) {
         let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';

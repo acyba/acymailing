@@ -18,3 +18,4 @@ include __DIR__.DS.'wordpress'.DS.'extension.php';
 include __DIR__.DS.'wordpress'.DS.'router.php';
 include __DIR__.DS.'wordpress'.DS.'miscelaneous.php';
 include __DIR__.DS.'wordpress'.DS.'override.php';
+include __DIR__.DS.'wordpress'.DS.'ajax.php';

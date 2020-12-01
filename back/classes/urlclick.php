@@ -50,7 +50,11 @@ class UrlClickClass extends acymClass
     {
         $query = 'SELECT COUNT(DISTINCT user_id) FROM #__acym_url_click AS url_click';
         $isMultilingual = acym_isMultilingual();
-        if ($isMultilingual && !empty($mailid)) $query .= ' LEFT JOIN #__acym_mail AS mail ON `mail`.`id` = `url_click`.`mail_id` WHERE `mail`.`id` = '.intval($mailid).' OR  `mail`.`parent_id` = '.intval($mailid);
+        if ($isMultilingual && !empty($mailid)) {
+            $query .= ' LEFT JOIN #__acym_mail AS mail ON `mail`.`id` = `url_click`.`mail_id` WHERE `mail`.`id` = '.intval(
+                    $mailid
+                ).' OR  `mail`.`parent_id` = '.intval($mailid);
+        }
         if (!$isMultilingual && !empty($mailid)) $query .= ' WHERE `url_click`.`mail_id` = '.intval($mailid);
         $clickNb = acym_loadResult($query);
 
@@ -125,5 +129,77 @@ class UrlClickClass extends acymClass
         $query = 'SELECT COUNT(groupStat.user_id) AS nbClick FROM (SELECT user_id FROM #__acym_url_click '.$conditionMailId.' GROUP BY mail_id, user_id) AS groupStat';
 
         return acym_loadResult($query);
+    }
+
+    public function getUrlsFromMailsWithDetails($params)
+    {
+        if (empty($params['mail_id'])) return [];
+
+        $query = 'SELECT url.id, url.name, SUM(click) AS total_click, COUNT(DISTINCT user_id) AS unique_click FROM #__acym_url AS url
+                  JOIN #__acym_url_click AS url_click ON url.id = url_click.url_id AND url_click.mail_id = '.intval($params['mail_id']);
+
+        $queryCount = 'SELECT COUNT(DISTINCT url.id) FROM #__acym_url AS url
+                  JOIN #__acym_url_click AS url_click ON url.id = url_click.url_id AND url_click.mail_id = '.intval($params['mail_id']);
+
+        if (!empty($params['search'])) {
+            $searchTerms = acym_escapeDB('%'.$params['search'].'%');
+            $where[] = 'url.name LIKE '.$searchTerms;
+        }
+
+        if (!empty($where)) {
+            $query .= ' WHERE ('.implode(') AND (', $where).')';
+            $queryCount .= ' WHERE ('.implode(') AND (', $where).')';
+        }
+
+        $query .= ' GROUP BY name';
+
+        if (!empty($params['ordering']) && !empty($params['ordering_sort_order'])) {
+            $query .= ' ORDER BY '.acym_secureDBColumn($params['ordering']).' '.acym_secureDBColumn(strtoupper($params['ordering_sort_order']));
+        } else {
+            $query .= ' ORDER BY id DESC';
+        }
+
+        $return = [];
+        $return['links_details'] = acym_loadObjectList($query, '', $params['offset'], $params['detailedStatsPerPage']);
+        $return['total'] = acym_loadResult($queryCount);
+        $return['query'] = $query;
+
+        return $return;
+    }
+
+    public function getUserUrlClicksStats($params)
+    {
+        if (empty($params['mail_id'])) return [];
+
+        $query = 'SELECT url.id AS url_id, user.id AS user_id, user.email, user.name AS user_name, url.name AS url_name, url_click.date_click, url_click.click FROM #__acym_user AS user 
+                  JOIN #__acym_url_click AS url_click ON url_click.user_id = user.id AND url_click.mail_id = '.intval($params['mail_id']).'
+                  JOIN #__acym_url AS url ON url.id = url_click.url_id';
+
+        $queryCount = 'SELECT COUNT(DISTINCT user.id) FROM #__acym_user AS user 
+                  JOIN #__acym_url_click AS url_click ON url_click.user_id = user.id AND url_click.mail_id = '.intval($params['mail_id']).'
+                  JOIN #__acym_url AS url ON url.id = url_click.url_id';
+
+        if (!empty($params['search'])) {
+            $searchTerms = acym_escapeDB('%'.$params['search'].'%');
+            $where[] = 'url.name LIKE '.$searchTerms.' or user.name LIKE '.$searchTerms.' or user.email LIKE '.$searchTerms;
+        }
+
+        if (!empty($where)) {
+            $query .= ' WHERE('.implode(') and (', $where).')';
+            $queryCount .= ' WHERE('.implode(') and (', $where).')';
+        }
+
+        if (!empty($params['ordering']) && !empty($params['ordering_sort_order'])) {
+            $query .= ' ORDER BY '.acym_secureDBColumn($params['ordering']).' '.acym_secureDBColumn(strtoupper($params['ordering_sort_order']));
+        } else {
+            $query .= ' ORDER BY user_id DESC';
+        }
+
+        $return = [];
+        $return['user_links_details'] = acym_loadObjectList($query, '', $params['offset'], $params['detailedStatsPerPage']);
+        $return['total'] = acym_loadResult($queryCount);
+        $return['query'] = $query;
+
+        return $return;
     }
 }

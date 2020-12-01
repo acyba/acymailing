@@ -1,6 +1,16 @@
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('string', 'task').'&id='.acym_getVar('string', 'id')); ?>" method="post" name="acyForm" class="acym__form__campaign__edit">
-	<input type="hidden" value="<?php echo !empty($data['campaignInformation']) ? acym_escape($data['campaignInformation']) : ''; ?>" name="id" id="acym__campaign__recipients__form__campaign">
-	<input type="hidden" value="<?php echo !empty($data['showSelected']) ? $data['showSelected'] : ''; ?>" name="showSelected" id="acym__campaign__recipients__show-all-or-selected">
+<form id="acym_form"
+	  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('string', 'task').'&id='.acym_getVar('string', 'id')); ?>"
+	  method="post"
+	  name="acyForm"
+	  class="acym__form__campaign__edit">
+	<input type="hidden"
+		   value="<?php echo !empty($data['campaignInformation']) ? acym_escape($data['campaignInformation']) : ''; ?>"
+		   name="id"
+		   id="acym__campaign__recipients__form__campaign">
+	<input type="hidden"
+		   value="<?php echo !empty($data['showSelected']) ? $data['showSelected'] : ''; ?>"
+		   name="showSelected"
+		   id="acym__campaign__recipients__show-all-or-selected">
 	<div id="acym__campaigns__recipients" class="grid-x">
 		<div class="cell <?php echo $data['containerClass']; ?> float-center grid-x acym__content">
             <?php
@@ -22,7 +32,10 @@
 					<p class="cell shrink"><?php echo acym_translation('ACYM_CAMPAIGN_SENT_TO'); ?>&nbsp;</p>
 					<div class="cell auto acym__campaign__recipients__number-display grid-x align-left acym_vcenter">
                         <?php echo acym_loaderLogo(); ?>
-						<div class="cell shrink"><span class="acym__campaign__recipients__number-recipients">0</span>&nbsp;<span id="acym__campaign__recipients__span"><?php echo acym_strtolower(acym_translation('ACYM_RECIPIENTS')); ?></span></div>
+						<div class="cell shrink">
+							<span class="acym__campaign__recipients__number-recipients">0</span>&nbsp;<span id="acym__campaign__recipients__span"><?php echo acym_strtolower(
+                                    acym_translation('ACYM_RECIPIENTS')
+                                ); ?></span></div>
 					</div>
 				</div>
 			</div>
@@ -37,10 +50,17 @@
                             <?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?><i class="acymicon-chevron-right"></i>
 						</button>
                     <?php } else { ?>
-						<button data-task="save" data-step="listing" type="submit" class="cell button-secondary medium-shrink button medium-margin-bottom-0 margin-right-1 acy_button_submit">
+						<button data-task="save"
+								data-step="listing"
+								type="submit"
+								class="cell button-secondary medium-shrink button medium-margin-bottom-0 margin-right-1 acy_button_submit">
                             <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
 						</button>
-						<button data-task="save" data-step="sendSettings" type="submit" class="cell medium-shrink button margin-bottom-0 acy_button_submit" id="acym__campaign__recipients__save-continue">
+						<button data-task="save"
+								data-step="sendSettings"
+								type="submit"
+								class="cell medium-shrink button margin-bottom-0 acy_button_submit"
+								id="acym__campaign__recipients__save-continue">
                             <?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?><i class="acymicon-chevron-right"></i>
 						</button>
                     <?php } ?>

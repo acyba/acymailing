@@ -30,7 +30,7 @@ function acym_getFormToken()
 
 function acym_noTemplate($component = true)
 {
-    return 'tmpl='.($component || ACYM_J40 ? 'component' : 'none');
+    return 'tmpl='.($component || ACYM_J40 ? 'component' : 'raw');
 }
 
 function acym_isNoTemplate()

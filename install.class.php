@@ -212,7 +212,9 @@ class acymInstall
         $this->fromVersion = $results['version']->value;
 
         //We update the version properly as it's a new one which is now used.
-        $query = "REPLACE INTO `#__acym_configuration` (`name`,`value`) VALUES ('level',".acym_escapeDB($this->level)."),('version',".acym_escapeDB($this->version)."),('installcomplete','0')";
+        $query = "REPLACE INTO `#__acym_configuration` (`name`,`value`) VALUES ('level',".acym_escapeDB($this->level)."),('version',".acym_escapeDB(
+                $this->version
+            )."),('installcomplete','0')";
         acym_query($query);
 
         return true;
@@ -459,7 +461,11 @@ class acymInstall
             $mails = $mailClass->encode($mails);
 
             foreach ($mails as $oneMail) {
-                $this->updateQuery('UPDATE #__acym_mail SET `body` = '.acym_escapeDB($oneMail->body).', `autosave` = '.acym_escapeDB($oneMail->autosave).', `name` = '.acym_escapeDB($oneMail->name).', `preheader` = '.acym_escapeDB($oneMail->preheader).' WHERE `id` = '.intval($oneMail->id));
+                $this->updateQuery(
+                    'UPDATE #__acym_mail SET `body` = '.acym_escapeDB($oneMail->body).', `autosave` = '.acym_escapeDB($oneMail->autosave).', `name` = '.acym_escapeDB(
+                        $oneMail->name
+                    ).', `preheader` = '.acym_escapeDB($oneMail->preheader).' WHERE `id` = '.intval($oneMail->id)
+                );
             }
         }
 
@@ -869,7 +875,7 @@ class acymInstall
             $listClass = new ListClass();
 
             $this->updateQuery('ALTER TABLE `#__acym_list` ADD `type` VARCHAR(20) NOT NULL DEFAULT '.acym_escapeDB($listClass::LIST_TYPE_STANDARD));
-            $this->updateQuery('UPDATE `#__acym_list` SET `type` = '.acym_escapeDB($listClass::LIST_TYPE_FRONT).' WHERE `front_management`  = 1');
+            $this->updateQuery('UPDATE `#__acym_list` SET `type` = '.acym_escapeDB($listClass::LIST_TYPE_FRONT).' WHERE `front_management` = 1');
             $this->updateQuery('ALTER TABLE `#__acym_list` DROP COLUMN front_management');
 
             $this->updateQuery(
@@ -911,6 +917,24 @@ class acymInstall
                 }
                 $email->access = empty($finalAccess) ? '' : $finalAccess;
                 $mailClass->save($email);
+            }
+        }
+
+        if (version_compare($this->fromVersion, '6.19.0', '<')) {
+            $this->updateQuery('ALTER TABLE `#__acym_mail_stat` ADD `unsubscribe_total` INT NOT NULL DEFAULT 0');
+            $this->updateQuery('ALTER TABLE `#__acym_user_stat` ADD `unsubscribe` INT NOT NULL DEFAULT 0');
+            $this->updateQuery('ALTER TABLE `#__acym_user_stat` ADD `device` VARCHAR(50) NULL');
+            $this->updateQuery('ALTER TABLE `#__acym_user_stat` ADD `opened_with` VARCHAR(50) NULL');
+
+            $this->updateQuery('ALTER TABLE `#__acym_mail` CHANGE `media_folder` `mail_settings` TEXT NULL');
+            $templatesMediaFolders = acym_loadObjectList('SELECT `id`, `mail_settings` FROM `#__acym_mail` WHERE `mail_settings` IS NOT NULL');
+            if (!empty($templatesMediaFolders)) {
+                foreach ($templatesMediaFolders as $oneTemplate) {
+                    $settings = [
+                        'media_folder' => $oneTemplate->mail_settings,
+                    ];
+                    $this->updateQuery('UPDATE `#__acym_mail` SET `mail_settings` = '.acym_escapeDB(json_encode($settings)).' WHERE `id` = '.intval($oneTemplate->id));
+                }
             }
         }
     }

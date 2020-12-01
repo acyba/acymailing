@@ -432,7 +432,9 @@ class CampaignsController extends acymController
 
         $linkId = empty($id) ? '&trigger='.$trigger : '&id='.$id;
 
-        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink('campaigns&task=edit&step=followupCondition'.$linkId);
+        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink(
+            'campaigns&task=edit&step=followupCondition'.$linkId
+        );
 
         parent::display($data);
     }
@@ -463,10 +465,16 @@ class CampaignsController extends acymController
         $data = [
             'workflowHelper' => new WorkflowHelper(),
             'followup' => $followup,
-            'linkNewEmail' => acym_completeLink('mails&task=edit&step=editEmail&type=followup&followup_id='.$id.'&return='.urlencode(acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$id)), false, true),
+            'linkNewEmail' => acym_completeLink(
+                'mails&task=edit&step=editEmail&type=followup&followup_id='.$id.'&return='.urlencode(acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$id)),
+                false,
+                true
+            ),
         ];
 
-        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$followup->id);
+        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink(
+            'campaigns&task=edit&step=followupEmail&id='.$followup->id
+        );
 
         parent::display($data);
     }
@@ -585,7 +593,7 @@ class CampaignsController extends acymController
         } else {
             $returnUrl = urlencode(base64_encode(acym_frontendLink('frontcampaigns')));
             $data = [
-                'lists' => $listClass->getAllForSelect(),
+                'lists' => $listClass->getAllForSelect(true, acym_currentUserId()),
                 'campaign_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=now'),
                 'campaign_auto_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=auto'),
                 'campaign_scheduled_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'),
@@ -739,7 +747,9 @@ class CampaignsController extends acymController
         $pluginHelper->cleanHtml($data['mailInformation']->body);
 
         $editLink .= '&type_editor='.$data['typeEditor'];
-        $this->breadcrumb[acym_escape(empty($data['mailInformation']->name) ? acym_translation('ACYM_NEW_CAMPAIGN') : $data['mailInformation']->name)] = acym_completeLink($editLink);
+        $this->breadcrumb[acym_escape(empty($data['mailInformation']->name) ? acym_translation('ACYM_NEW_CAMPAIGN') : $data['mailInformation']->name)] = acym_completeLink(
+            $editLink
+        );
     }
 
     private function prepareEditor(&$data)
@@ -774,7 +784,7 @@ class CampaignsController extends acymController
         }
     }
 
-    private function prepareMaxUpload(&$data)
+    public function prepareMaxUpload(&$data)
     {
         $maxupload = ini_get('upload_max_filesize');
         $maxpost = ini_get('post_max_size');
@@ -1007,7 +1017,9 @@ class CampaignsController extends acymController
         }
 
         // Name is mandatory. If empty copy subject (can't be an empty field)
-        if (empty($mail->name)) $mail->name = $mail->subject;
+        if (empty($mail->name)) $mail->name = empty($mail->subject) ? acym_translation('ACYM_CAMPAIGN_NAME') : $mail->subject;
+
+        if (empty($mail->subject)) $mail->subject = acym_translation('ACYM_EMAIL_SUBJECT');
 
         $mail->body = acym_getVar('string', 'editor_content', '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->settings = acym_getVar('string', 'editor_settings', '', 'REQUEST', ACYM_ALLOWRAW);
@@ -1018,53 +1030,13 @@ class CampaignsController extends acymController
 
         $mail->tags = acym_getVar('array', 'template_tags', []);
 
-        // Attachments
-        $newAttachments = [];
-        $attachments = acym_getVar('array', 'attachments', []);
-        if (!empty($attachments)) {
-            foreach ($attachments as $id => $filepath) {
-                if (empty($filepath)) continue;
-
-                $attachment = new \stdClass();
-                $attachment->filename = $filepath;
-                $attachment->size = filesize(ACYM_ROOT.$filepath);
-
-                //We will never allow some files to be uploaded...
-                if (preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)#Ui', $attachment->filename)) {
-                    acym_enqueueMessage(
-                        acym_translation_sprintf(
-                            'ACYM_ACCEPTED_TYPE',
-                            substr($attachment->filename, strrpos($attachment->filename, '.') + 1),
-                            $this->config->get('allowed_files')
-                        ),
-                        'notice'
-                    );
-                    continue;
-                }
-
-                if (in_array((array)$attachment, $mail->attachments)) continue;
-
-                $newAttachments[] = $attachment;
-            }
-            // Add to previous attachments
-            if (!empty($mail->attachments) && is_array($mail->attachments)) {
-                $newAttachments = array_merge($mail->attachments, $newAttachments);
-            }
-            $mail->attachments = $newAttachments;
-        }
-
-        if (empty($mail->attachments)) {
-            unset($mail->attachments);
-        }
-
-        if (!empty($mail->attachments) && !is_string($mail->attachments)) {
-            $mail->attachments = json_encode($mail->attachments);
-        }
+        $mailController = new MailsController();
+        $mailController->setAttachmentToMail($mail);
 
         if (!empty($multilingual)) {
-            $mail->subject = $multilingual['main']['subject'];
-            $mail->preheader = $multilingual['main']['preview'];
-            $mail->body = $multilingual['main']['content'];
+            if (!empty($multilingual['main']['subject'])) $mail->subject = $multilingual['main']['subject'];
+            if (!empty($multilingual['main']['preview'])) $mail->preheader = $multilingual['main']['preview'];
+            if (!empty($multilingual['main']['content'])) $mail->body = $multilingual['main']['content'];
             $mail->links_language = $this->config->get('multilingual_default');
             unset($multilingual['main']);
         }
@@ -1419,7 +1391,7 @@ class CampaignsController extends acymController
 
         $data['automatic'] = [
             'isAuto' => $campaign->isAuto,
-            'text' => empty($textToDisplay) ? '' : acym_translation('ACYM_THIS_WILL_GENERATE_CAMPAIGN_AUTOMATICALLY').' '.strtolower($textToDisplay[key($textToDisplay)]),
+            'text' => empty($textToDisplay) ? '' : acym_translation('ACYM_THIS_WILL_GENERATE_CAMPAIGN_AUTOMATICALLY').' '.acym_strtolower($textToDisplay[key($textToDisplay)]),
         ];
         $data['campaignInformation'] = $campaign;
         $data['mailId'] = $campaign->mail_id;
@@ -1746,9 +1718,15 @@ class CampaignsController extends acymController
 
             foreach ($campaigns as $campaign) {
                 $echo .= '<div class="cell grid-x acym__dashboard__active-campaigns__one-campaign">
-                        <a class="acym__dashboard__active-campaigns__one-campaign__title medium-4 small-12" href="'.acym_completeLink('campaigns&task=edit&step=editEmail&id=').$campaign->id.'">'.$campaign->name.'</a>
-                        <div class="acym__dashboard__active-campaigns__one-campaign__state medium-2 small-12 acym__background-color__blue text-center"><span>'.acym_translation('ACYM_SCHEDULED').' : '.acym_getDate($campaign->sending_date, 'M. j, Y').'</span></div>
-                        <div class="medium-6 small-12"><p id="'.$campaign->id.'" class="acym__dashboard__active-campaigns__one-campaign__action acym__color__dark-gray">'.acym_translation('ACYM_CANCEL_SCHEDULING').'</p></div>
+                        <a class="acym__dashboard__active-campaigns__one-campaign__title medium-4 small-12" href="'.acym_completeLink(
+                        'campaigns&task=edit&step=editEmail&id='
+                    ).$campaign->id.'">'.$campaign->name.'</a>
+                        <div class="acym__dashboard__active-campaigns__one-campaign__state medium-2 small-12 acym__background-color__blue text-center"><span>'.acym_translation(
+                        'ACYM_SCHEDULED'
+                    ).' : '.acym_getDate($campaign->sending_date, 'M. j, Y').'</span></div>
+                        <div class="medium-6 small-12"><p id="'.$campaign->id.'" class="acym__dashboard__active-campaigns__one-campaign__action acym__color__dark-gray">'.acym_translation(
+                        'ACYM_CANCEL_SCHEDULING'
+                    ).'</p></div>
                     </div>
                     <hr class="cell small-12">';
             }
@@ -2149,7 +2127,7 @@ class CampaignsController extends acymController
         foreach ($URLs[2] as $oneURL) {
             if (in_array($oneURL, $processed)) continue;
             if (0 === strpos($oneURL, 'mailto:')) continue;
-            if (strlen($oneURL) > 1 && 0 === strpos($oneURL, '#')) continue;
+            if (strlen($oneURL) > 1 && (0 === strpos($oneURL, '#') || false !== strpos($oneURL, 'unsubscribeauto'))) continue;
 
             $processed[] = $oneURL;
 
@@ -2418,7 +2396,9 @@ class CampaignsController extends acymController
             'condition' => $followupClass->getConditionSummary($followup->condition, $followup->trigger),
         ];
 
-        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink('campaigns&task=edit&step=followupCondition'.$followup->id);
+        $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink(
+            'campaigns&task=edit&step=followupCondition'.$followup->id
+        );
 
         parent::display($data);
     }
