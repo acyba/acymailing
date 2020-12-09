@@ -937,6 +937,19 @@ class acymInstall
                 }
             }
         }
+
+        if (version_compare($this->fromVersion, '7.0.0', '<')) {
+            $socialIcons = json_decode($config->get('social_icons', '{}'), true);
+            foreach ($socialIcons as $oneSocial => $imagePath){
+                if(!in_array($oneSocial, ACYM_SOCIAL_MEDIA)){
+                    unset($socialIcons[$oneSocial]);
+                }
+            }
+
+            $newConfig = new stdClass();
+            $newConfig->social_icons = json_encode($socialIcons);
+            $config->save($newConfig);
+        }
     }
 
     public function updateQuery($query)

@@ -13,7 +13,7 @@ let multidest = require('gulp-multi-dest');
 let command = require('gulp-run-command').default;
 let babel = require('gulp-babel');
 
-let version = '6.19.0';
+let version = '6.19.1';
 
 let minifyJSOptions = {
     ext: {
@@ -262,7 +262,9 @@ gulp.task('synch_copy-media', gulp.series(function () {
         '!media/assets/**',
         '!media/assets',
         '!media/images/plugins/**',
-        '!media/images/plugins'
+        '!media/images/plugins',
+        '!media/css/libraries/select2-original.min.css',
+        '!media/js/libraries/select2-full.min.js'
     ])
                .pipe(cache('media'))
                .pipe(multidest(getPaths('/media/com_acym')));
@@ -270,7 +272,8 @@ gulp.task('synch_copy-media', gulp.series(function () {
     return gulp.src([
         'media/**/*',
         '!media/assets/**',
-        '!media/assets'
+        '!media/assets',
+        '!media/js/libraries/jquery-ui.min.js'
     ])
                .pipe(cache('wpmedia'))
                .pipe(multidest(getPaths('/wp-content/plugins/acymailing/media', settings.wordpress)));

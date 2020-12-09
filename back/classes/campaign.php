@@ -649,6 +649,8 @@ class CampaignClass extends acymClass
 
     public function getLastNewsletters($params)
     {
+        $mailClass = new MailClass();
+
         // Init select elements
         $querySelect = 'SELECT mail.*, campaign.sending_date ';
         $queryCountSelect = 'SELECT COUNT(*) FROM (SELECT DISTINCT mail.id ';
@@ -664,7 +666,7 @@ class CampaignClass extends acymClass
         }
 
         // Make sure we display only active campaigns
-        $where = 'WHERE campaign.active = 1 AND campaign.sent = 1 AND mail.type = "standard" AND campaign.visible = 1 ';
+        $where = 'WHERE campaign.active = 1 AND campaign.sent = 1 AND mail.type = '.acym_escapeDB($mailClass::TYPE_STANDARD).' AND campaign.visible = 1 ';
 
         // If we want an archive of some specific lists
         if (isset($params['lists'])) {
@@ -745,6 +747,9 @@ class CampaignClass extends acymClass
         $time = time();
 
         foreach ($activeAutoCampaigns as $campaign) {
+            // Check the start date
+            if (!empty($campaign->sending_params['start_date']) && (int)acym_getTime(acym_date($campaign->sending_params['start_date'], 'Y-m-d H:i')) > $time) continue;
+
             //check if we trigger the campaign
             $step = new \stdClass();
             $step->triggers = $campaign->sending_params;

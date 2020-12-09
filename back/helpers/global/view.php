@@ -35,10 +35,18 @@ function acym_loadAssets($ctrl, $task)
         var ACYM_JS_TXT = '.acym_getJSMessages().';
         var ACYM_CORE_DYNAMICS_URL = "'.ACYM_CORE_DYNAMICS_URL.'";
         var ACYM_PLUGINS_URL = "'.addslashes(ACYM_PLUGINS_URL).'";
-        var ACYM_ROOT_URI = "'.acym_rootURI().'";'
+        var ACYM_ROOT_URI = "'.acym_rootURI().'";
+        var ACYM_SOCIAL_MEDIA = "'.addslashes(json_encode(ACYM_SOCIAL_MEDIA)).'";'
     );
-
-    acym_addScript(false, ACYM_JS.'libraries/foundation.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'foundation.min.js'), 'text/javascript', true);
+    
+    if ($ctrl !== 'archive') {
+        acym_addScript(
+            false,
+            ACYM_JS.'libraries/foundation.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'foundation.min.js'),
+            'text/javascript',
+            true
+        );
+    }
 
     if ('back' === $scope) {
         acym_addScript(false, ACYM_JS.'libraries/select2.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'select2.min.js'), 'text/javascript', true);

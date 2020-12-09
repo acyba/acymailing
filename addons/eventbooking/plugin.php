@@ -434,13 +434,13 @@ class plgAcymEventbooking extends acymPlugin
         if (in_array('image', $tag->display) && !empty($element->image)) $imagePath = $varFields['{image}'];
 
         $varFields['{sdate}'] = '';
-        if ($element->event_date > '0001-00-00') $varFields['{sdate}'] = acym_date($element->event_date, $this->eventbookingconfig->event_date_format, null);
+        if ($element->event_date > '0001-00-00') $varFields['{sdate}'] = acym_date($element->event_date, $this->eventbookingconfig->event_date_format, false);
         if (in_array('sdate', $tag->display) && $element->event_date > '0001-00-00') {
             $customFields[] = [$varFields['{sdate}'], acym_translation('EB_EVENT_DATE')];
         }
 
         $varFields['edate'] = '';
-        if ($element->event_end_date > '0001-00-00') $varFields['edate'] = acym_date($element->event_end_date, $this->eventbookingconfig->event_date_format, null);
+        if ($element->event_end_date > '0001-00-00') $varFields['edate'] = acym_date($element->event_end_date, $this->eventbookingconfig->event_date_format, false);
         if (in_array('edate', $tag->display) && $element->event_end_date > '0001-00-00') {
             $customFields[] = [$varFields['edate'], acym_translation('EB_EVENT_END_DATE')];
         }
@@ -491,13 +491,19 @@ class plgAcymEventbooking extends acymPlugin
         }
 
         $varFields['{regstart}'] = '';
-        if ($element->registration_start_date > '0001-00-00') $varFields['{regstart}'] = acym_date($element->registration_start_date, $this->eventbookingconfig->date_format, null);
+        if ($element->registration_start_date > '0001-00-00') {
+            $varFields['{regstart}'] = acym_date(
+                $element->registration_start_date,
+                $this->eventbookingconfig->date_format,
+                false
+            );
+        }
         if (in_array('regstart', $tag->display) && $element->registration_start_date > '0001-00-00') {
             $customFields[] = [$varFields['{regstart}'], acym_translation('EB_REGISTRATION_START_DATE')];
         }
 
         $varFields['{cut}'] = '';
-        if ($element->cut_off_date > '0001-00-00') $varFields['{cut}'] = acym_date($element->cut_off_date, $this->eventbookingconfig->date_format, null);
+        if ($element->cut_off_date > '0001-00-00') $varFields['{cut}'] = acym_date($element->cut_off_date, $this->eventbookingconfig->date_format, false);
         if (in_array('cut', $tag->display) && $element->cut_off_date > '0001-00-00') {
             $customFields[] = [$varFields['{cut}'], acym_translation('EB_CUT_OFF_DATE')];
         }

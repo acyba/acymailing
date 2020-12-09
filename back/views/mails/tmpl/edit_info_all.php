@@ -1,4 +1,4 @@
-<?php if ($data['mail']->type != 'override') { ?>
+<?php if ($data['mail']->type != $data['mailClass']::TYPE_OVERRIDE) { ?>
 	<div class="cell medium-6">
 		<label>
             <?php echo acym_translation('ACYM_NAME'); ?>
@@ -6,16 +6,16 @@
 		</label>
 	</div>
 <?php } ?>
-<div class="cell medium-6 <?php echo $data['mail']->type == 'override' ? '' : 'medium-6'; ?>">
+<div class="cell medium-6 <?php echo $data['mail']->type == $data['mailClass']::TYPE_OVERRIDE ? '' : 'medium-6'; ?>">
 	<label>
         <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
 		<input name="mail[subject]" type="text" value="<?php echo acym_escape($data['mail']->subject); ?>" <?php echo in_array(
             $data['mail']->type,
-            ['welcome', 'unsubscribe', 'automation']
+            [$data['mailClass']::TYPE_WELCOME, $data['mailClass']::TYPE_UNSUBSCRIBE, $data['mailClass']::TYPE_AUTOMATION]
         ) ? 'required' : ''; ?>>
 	</label>
 </div>
-<?php if ($data['mail']->type === 'override') { ?>
+<?php if ($data['mail']->type === $data['mailClass']::TYPE_OVERRIDE) { ?>
 	<div class="cell medium-6">
 		<label>
             <?php

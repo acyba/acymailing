@@ -789,7 +789,7 @@ class UserClass extends acymClass
         return $userID;
     }
 
-    public function saveForm()
+    public function saveForm($ajax = false)
     {
         $allowUserModifications = (bool)($this->config->get('allow_modif', 'data') == 'all') || $this->allowModif;
         $allowSubscriptionModifications = (bool)($this->config->get('allow_modif', 'data') != 'none') || $this->allowModif;
@@ -859,7 +859,7 @@ class UserClass extends acymClass
             }
             // Get custom fields to save them if exist
             $customFieldData = acym_getVar('array', 'customField', []);
-            $id = $this->save($user, $customFieldData);
+            $id = $this->save($user, $customFieldData, $ajax);
             $allowSubscriptionModifications = true;
         } else {
             $id = $user->id;

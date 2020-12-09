@@ -64,7 +64,7 @@ class FrontlistsController extends ListsController
 
         $mailClass = new MailClass();
 
-        foreach (['welcome' => 'welcome', 'unsubscribe' => 'unsub'] as $full => $short) {
+        foreach ([$mailClass::TYPE_WELCOME => 'welcome', $mailClass::TYPE_UNSUBSCRIBE => 'unsub'] as $full => $short) {
             $mailId = acym_getVar('int', $short.'mailid', 0);
             if (empty($data['listInformation']->{$full.'_id'}) && !empty($mailId)) {
                 $data['listInformation']->{$full.'_id'} = $mailId;

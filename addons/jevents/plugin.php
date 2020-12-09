@@ -527,8 +527,8 @@ class plgAcymJevents extends acymPlugin
 
         $varFields = $this->getCustomLayoutVars($element);
 
-        $startdate = acym_date($element->startrepeat, acym_translation('ACYM_DATE_FORMAT_LC1'), null);
-        $enddate = acym_date($element->endrepeat, acym_translation('ACYM_DATE_FORMAT_LC1'), null);
+        $startdate = acym_date($element->startrepeat, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
+        $enddate = acym_date($element->endrepeat, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
         $starttime = substr($element->startrepeat, 11, 5);
         $endtime = substr($element->endrepeat, 11, 5);
 

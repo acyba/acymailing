@@ -357,7 +357,7 @@ class MigrationHelper extends acymObject
                         acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false)),
                         '0',
                         '0',
-                        acym_escapeDB('standard'),
+                        acym_escapeDB($mailClass::TYPE_STANDARD),
                         acym_escapeDB(empty($oneTemplate->body) ? '' : $oneTemplate->body),
                         acym_escapeDB($oneTemplate->subject),
                         '1',
@@ -407,9 +407,12 @@ class MigrationHelper extends acymObject
 
         $fieldsKeyV5 = array_keys($fieldsV5);
 
-        $usersFieldsValuesV5 = acym_loadObjectList(
-            'SELECT `subid`, `'.implode('`, `', $fieldsKeyV5).'` FROM #__acymailing_subscriber LIMIT '.intval($params['currentElement']).', '.intval($params['insertPerCalls'])
-        );
+        $whereUserField = '`'.implode('` IS NOT NULL OR `', $fieldsKeyV5);
+        if (!empty($fieldsKeyV5)) $whereUserField .= '` IS NOT NULL';
+        $query = 'SELECT `subid`, `'.implode('`, `', $fieldsKeyV5).'` FROM #__acymailing_subscriber WHERE '.$whereUserField.' LIMIT '.intval($params['currentElement']).', '.intval(
+                $params['insertPerCalls']
+            );
+        $usersFieldsValuesV5 = acym_loadObjectList($query);
 
         $fieldImported = acym_loadObjectList('SELECT `id`, `namekey`, `option`, `type` FROM #__acym_field WHERE `namekey` IN ("'.implode('", "', $fieldsKeyV5).'")', 'namekey');
 
@@ -643,14 +646,14 @@ class MigrationHelper extends acymObject
 
             switch ($oneMail->type) {
                 case 'welcome':
-                    $mailType = 'welcome';
+                    $mailType = $mailClass::TYPE_WELCOME;
                     break;
                 case 'unsub':
-                    $mailType = 'unsubscribe';
+                    $mailType = $mailClass::TYPE_UNSUBSCRIBE;
                     break;
                 case 'news':
                 case 'followup':
-                    $mailType = 'standard';
+                    $mailType = $mailClass::TYPE_STANDARD;
                     break;
                 default:
                     $mailType = 'invalid';
@@ -688,7 +691,7 @@ class MigrationHelper extends acymObject
                 'type' => acym_escapeDB($mailType),
                 'body' => acym_escapeDB($oneMail->body),
                 'subject' => acym_escapeDB($oneMail->subject),
-                'template' => $mailType == 'welcome' || $mailType == 'unsubscribe' ? 1 : 0,
+                'template' => in_array($mailType, [$mailClass::TYPE_WELCOME, $mailClass::TYPE_UNSUBSCRIBE]) ? 1 : 0,
                 'from_name' => acym_escapeDB($oneMail->fromname),
                 'from_email' => acym_escapeDB($oneMail->fromemail),
                 'reply_to_name' => acym_escapeDB($oneMail->replyname),
@@ -701,7 +704,7 @@ class MigrationHelper extends acymObject
             $mail = $mailClass->encode([$mail])[0];
 
             //TODO: handle the smart-nl migration
-            if ($mailType == 'standard') {
+            if ($mailType == $mailClass::TYPE_STANDARD) {
                 $stats = acym_loadResult('SELECT COUNT(mailid) FROM #__acymailing_stats WHERE mailid = '.intval($oneMail->mailid));
                 $isSent = !empty($stats);
 

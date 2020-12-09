@@ -15,6 +15,37 @@ class MailClass extends acymClass
 
     const FIELDS_ENCODING = ['name', 'subject', 'body', 'autosave', 'preheader'];
 
+    const TYPE_STANDARD = 'standard';
+    const TYPE_NOTIFICATION = 'notification';
+    const TYPE_OVERRIDE = 'override';
+    const TYPE_WELCOME = 'welcome';
+    const TYPE_UNSUBSCRIBE = 'unsubscribe';
+    const TYPE_AUTOMATION = 'automation';
+    const TYPE_FOLLOWUP = 'followup';
+
+    // Used by some sending methods to know the priority of a sent email (transactional => reset password / account confirmation...)
+    const TYPES_TRANSACTIONAL = [
+        self::TYPE_NOTIFICATION,
+        self::TYPE_OVERRIDE,
+        self::TYPE_WELCOME,
+        self::TYPE_UNSUBSCRIBE,
+    ];
+
+    // Types on which the click statistics are active
+    const TYPES_WITH_STATS = [
+        self::TYPE_STANDARD,
+        self::TYPE_AUTOMATION,
+        self::TYPE_WELCOME,
+        self::TYPE_UNSUBSCRIBE,
+        self::TYPE_FOLLOWUP,
+    ];
+
+    // Types that don't let the user modify the name
+    const TYPES_NO_NAME = [
+        self::TYPE_NOTIFICATION,
+        self::TYPE_OVERRIDE,
+    ];
+
     /**
      * Get mails depending on filters (search, ordering, pagination)
      *
@@ -60,10 +91,10 @@ class MailClass extends acymClass
         }
 
         if (!empty($settings['automation']) || empty($settings['onlyStandard'])) {
-            $filters[] = 'mail.type != "notification"';
-            $filters[] = 'mail.type != "override"';
+            $filters[] = 'mail.type != '.acym_escapeDB($this::TYPE_NOTIFICATION);
+            $filters[] = 'mail.type != '.acym_escapeDB($this::TYPE_OVERRIDE);
         } else {
-            $filters[] = 'mail.type = "standard"';
+            $filters[] = 'mail.type = '.acym_escapeDB($this::TYPE_STANDARD);
         }
 
         $filters[] = 'mail.parent_id IS NULL';
@@ -139,7 +170,7 @@ class MailClass extends acymClass
     private function getAllListIdsForWelcomeUnsub(&$elements, $type)
     {
         if (empty($elements)) return true;
-        $column = $type == 'welcome' ? 'welcome_id' : 'unsubscribe_id';
+        $column = $type == $this::TYPE_WELCOME ? 'welcome_id' : 'unsubscribe_id';
 
         foreach ($elements as $key => $element) {
             $elements[$key]->lists = acym_loadObjectList('SELECT color, name FROM #__acym_list WHERE '.$column.' = '.intval($element->id));
@@ -184,7 +215,7 @@ class MailClass extends acymClass
      */
     public function getOneByName($name, $library = false)
     {
-        $query = 'SELECT * FROM #__acym_mail WHERE `parent_id` IS NULL AND `name` = '.acym_escapeDB($name);
+        $query = 'SELECT * FROM #__acym_mail WHERE `parent_id` IS NULL AND `name` = '.acym_escapeDB(utf8_encode($name));
         if ($library) $query .= ' AND `library` = 1';
 
         $mail = $this->decode(acym_loadObject($query));
@@ -274,9 +305,9 @@ class MailClass extends acymClass
         $mail = $this->getOneById($id);
         if (empty($mail)) return [];
 
-        if ('welcome' === $mail->type) {
+        if ($this::TYPE_WELCOME === $mail->type) {
             $query = 'SELECT * FROM #__acym_list WHERE welcome_id = '.intval($id);
-        } elseif ('followup' === $mail->type) {
+        } elseif ($this::TYPE_FOLLOWUP === $mail->type) {
             $query = 'SELECT list.* FROM #__acym_followup_has_mail AS followup_mail
                       JOIN #__acym_followup AS followup ON followup.id = followup_mail.followup_id AND followup_mail.mail_id = '.intval($id).'
                       JOIN #__acym_list AS list ON list.id = followup.list_id';
@@ -428,7 +459,7 @@ class MailClass extends acymClass
     public function deleteUnusedThumbnails($thumbnails)
     {
         if (empty($thumbnails)) return;
-        
+
         $stillUsedThumbnails = acym_loadResultArray('SELECT thumbnail FROM #__acym_mail WHERE thumbnail IN ('.implode(',', acym_escapeDB($thumbnails)).')');
         $thumbnailToDelete = array_diff($thumbnails, $stillUsedThumbnails);
         foreach ($thumbnailToDelete as $one) {
@@ -782,7 +813,7 @@ class MailClass extends acymClass
         $this->config->save($newConfig);
 
         $newTemplate->drag_editor = 0;
-        $newTemplate->type = 'standard';
+        $newTemplate->type = $this::TYPE_STANDARD;
         $newTemplate->template = 1;
         $newTemplate->library = 0;
         $newTemplate->creation_date = acym_date('now', 'Y-m-d H:i:s', false);

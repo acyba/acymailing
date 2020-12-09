@@ -111,6 +111,9 @@ function readyFunction($) {
                 $(window).off('refreshEntitySelect').on('refreshEntitySelect', function () {
                     readyFunction($);
                 });
+                setTimeout(() => {
+                    acym_helperTooltip.setTooltip();
+                }, 400);
             },
             methods: {
                 getClass(column) {

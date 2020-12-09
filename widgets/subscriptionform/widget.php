@@ -23,8 +23,8 @@ class acym_subscriptionform_widget extends WP_Widget
     {
         require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
 
-        wp_enqueue_style('select2lib', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css');
-        wp_enqueue_script('select2lib', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js', ['jquery']);
+        wp_enqueue_style('select2lib', ACYM_CSS.'libraries/select2-original.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'select2-original.min.css'));
+        wp_enqueue_script('select2lib', ACYM_JS.'libraries/select2-full.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'select2-full.min.js'), ['jquery']);
         wp_enqueue_script('acym_widget_article', ACYM_JS.'widget.min.js', ['select2lib']);
         acym_addStyle(false, ACYM_CSS.'widget.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'widget.min.css'));
 

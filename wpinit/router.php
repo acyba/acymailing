@@ -131,7 +131,7 @@ class acyRouter extends acyHook
         $ctrl = acym_getVar('cmd', 'ctrl', '');
         $task = acym_getVar('cmd', 'task', '');
 
-        if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN) && $task != 'deleteFeatures') {
+        if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN) && is_writable(ACYM_NEW_FEATURES_SPLASHSCREEN)) {
             $ctrl = 'dashboard';
             $task = 'features';
             acym_setVar('ctrl', $ctrl);

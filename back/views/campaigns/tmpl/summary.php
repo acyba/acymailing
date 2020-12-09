@@ -148,6 +148,12 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                             ?>
 						</p>
 					</div>
+                    <?php if ($data['automatic']['isAuto'] && !empty($data['automatic']['startDate'])) { ?>
+						<div class="cell grid-x grid-margin-x">
+							<p class="cell large-2 medium-3"><b><?php echo acym_translation('ACYM_START_DATE'); ?>:</b></p>
+							<p class="cell auto"><?php echo acym_date($data['automatic']['startDate'], 'F j, Y, H:i'); ?></p>
+						</div>
+                    <?php } ?>
 					<div class="cell grid-x grid-margin-x">
 						<p class="cell large-2 medium-3"><b><?php echo acym_translation('ACYM_TRACKING'); ?>:</b></p>
 						<p class="cell auto"><?php echo acym_translation(

@@ -10,7 +10,6 @@ use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Classes\TagClass;
 use AcyMailing\Classes\UserClass;
-use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Helpers\EditorHelper;
 use AcyMailing\Helpers\EntitySelectHelper;
 use AcyMailing\Helpers\MailerHelper;
@@ -119,8 +118,9 @@ class CampaignsController extends acymController
     {
         acym_setVar('layout', 'followup');
 
+        $mailClass = new MailClass();
         $data = [
-            'campaign_type' => 'followup',
+            'campaign_type' => $mailClass::TYPE_FOLLOWUP,
             'element_to_display' => lcfirst(acym_translation('ACYM_FOLLOW_UP')),
         ];
         $this->getAllParamsRequest($data);
@@ -185,7 +185,8 @@ class CampaignsController extends acymController
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'campaigns_search', 'ACYM_SEARCH');
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'newEmail'], 'add', true);
-        if (empty($data['campaign_type']) || $data['campaign_type'] !== 'followup') {
+        $mailClass = new MailClass();
+        if (empty($data['campaign_type']) || $data['campaign_type'] !== $mailClass::TYPE_FOLLOWUP) {
             $toolbarHelper->addFilterByTag($data, 'campaigns_tag', 'acym__campaigns__filter__tags acym__select');
         }
 
@@ -202,9 +203,10 @@ class CampaignsController extends acymController
     public function welcome()
     {
         acym_setVar('layout', 'welcome');
+        $mailClass = new MailClass();
         $data = [
             'cleartask' => 'welcome',
-            'email_type' => 'welcome',
+            'email_type' => $mailClass::TYPE_WELCOME,
             'element_to_display' => lcfirst(acym_translation('ACYM_WELCOME_EMAILS')),
         ];
 
@@ -218,9 +220,10 @@ class CampaignsController extends acymController
     public function unsubscribe()
     {
         acym_setVar('layout', 'unsubscribe');
+        $mailClass = new MailClass();
         $data = [
             'cleartask' => 'unsubscribe',
-            'email_type' => 'unsubscribe',
+            'email_type' => $mailClass::TYPE_UNSUBSCRIBE,
             'element_to_display' => lcfirst(acym_translation('ACYM_UNSUBSCRIBE_EMAILS')),
         ];
 
@@ -579,6 +582,7 @@ class CampaignsController extends acymController
         acym_setVar('layout', 'new_email');
 
         $listClass = new ListClass();
+        $mailClass = new MailClass();
         if (acym_isAdmin()) {
             $returnUrl = urlencode(base64_encode(acym_completeLink('campaigns')));
             $data = [
@@ -587,8 +591,8 @@ class CampaignsController extends acymController
                 'campaign_auto_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=auto'),
                 'followup_link' => acym_completeLink('campaigns&task=edit&step=followupTrigger'),
                 'campaign_scheduled_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'),
-                'welcome_email_link' => acym_completeLink('mails&task=edit&type=welcome&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
-                'unsubscribe_email_link' => acym_completeLink('mails&task=edit&type=unsubscribe&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
+                'welcome_email_link' => acym_completeLink('mails&task=edit&type='.$mailClass::TYPE_WELCOME.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
+                'unsubscribe_email_link' => acym_completeLink('mails&task=edit&type='.$mailClass::TYPE_UNSUBSCRIBE.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
             ];
         } else {
             $returnUrl = urlencode(base64_encode(acym_frontendLink('frontcampaigns')));
@@ -597,8 +601,10 @@ class CampaignsController extends acymController
                 'campaign_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=now'),
                 'campaign_auto_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=auto'),
                 'campaign_scheduled_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'),
-                'welcome_email_link' => acym_frontendLink('frontmails&task=edit&type=welcome&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
-                'unsubscribe_email_link' => acym_frontendLink('frontmails&task=edit&type=unsubscribe&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
+                'welcome_email_link' => acym_frontendLink('frontmails&task=edit&type='.$mailClass::TYPE_WELCOME.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
+                'unsubscribe_email_link' => acym_frontendLink(
+                    'frontmails&task=edit&type='.$mailClass::TYPE_UNSUBSCRIBE.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl
+                ),
             ];
         }
 
@@ -683,6 +689,8 @@ class CampaignsController extends acymController
     {
         $campaignId = acym_getVar('int', 'id', 0);
         $mailId = acym_getVar('int', 'from', 0);
+        $mailClass = new MailClass();
+        $data['mailClass'] = $mailClass;
         // Check autosave only if mail already saved in campaign and not just selected template (from parameteer)
         $checkAutosave = empty($mailId);
         $editLink = 'campaigns&task=edit&step=editEmail';
@@ -721,7 +729,6 @@ class CampaignsController extends acymController
             $data['mailInformation']->headers = '';
             $data['typeEditor'] = 'acyEditor';
         } elseif (!empty($mailId)) {
-            $mailClass = new MailClass();
             $mail = $mailClass->getOneById($mailId);
             if (!acym_isAdmin() && ACYM_CMS == 'joomla' && acym_isPluginActive('sef', 'system')) {
                 $mail->body = str_replace(['url(&quot;', '&quot;)'], ["url('", "')"], $mail->body);
@@ -992,7 +999,7 @@ class CampaignsController extends acymController
         if (empty($campaignId)) {
             $mail = new \stdClass();
             $mail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
-            $mail->type = 'standard';
+            $mail->type = $mailClass::TYPE_STANDARD;
             $mail->template = 0;
             $mail->library = 0;
 
@@ -1209,6 +1216,9 @@ class CampaignsController extends acymController
             $sendingParams = acym_getVar('array', $triggerType, '');
             $sendingParams = [$triggerType => $sendingParams, 'need_confirm_to_send' => $needConfirmToSend];
 
+            $startDate = acym_getVar('string', 'start_date', 0);
+            if (!empty($startDate)) $sendingParams['start_date'] = acym_date(acym_getTime($startDate), 'Y-m-d H:i:s', false);
+
             if (!empty($currentCampaign->sending_params['number_generated'])) $sendingParams['number_generated'] = $currentCampaign->sending_params['number_generated'];
         }
 
@@ -1382,16 +1392,21 @@ class CampaignsController extends acymController
 
         $campaign->isAuto = $campaign->sending_type == $this->currentClass->getConstAuto();
 
+        $startDate = '';
         if ($campaign->isAuto) {
             $textToDisplay = new \stdClass();
             $textToDisplay->triggers = $campaign->sending_params;
             acym_trigger('onAcymDeclareSummary_triggers', [&$textToDisplay], 'plgAcymTime');
             $textToDisplay = $textToDisplay->triggers;
+            if (!empty($campaign->sending_params['start_date'])) {
+                $startDate = $campaign->sending_params['start_date'];
+            }
         }
 
         $data['automatic'] = [
             'isAuto' => $campaign->isAuto,
             'text' => empty($textToDisplay) ? '' : acym_translation('ACYM_THIS_WILL_GENERATE_CAMPAIGN_AUTOMATICALLY').' '.acym_strtolower($textToDisplay[key($textToDisplay)]),
+            'startDate' => $startDate,
         ];
         $data['campaignInformation'] = $campaign;
         $data['mailId'] = $campaign->mail_id;

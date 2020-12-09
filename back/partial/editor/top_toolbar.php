@@ -11,7 +11,7 @@
 			<i id="acym__wysid__view__smartphone" class="cell shrink acymicon-mobile text-center acym__wysid__top-toolbar__icon"></i>
 		</div>
 		<div class="cell grid-x small-4 align-right">
-            <?php if (!empty($data['mail']) && $data['mail']->type == 'override') { ?>
+            <?php if (!empty($data['mail']) && $data['mail']->type == $data['mailClass']::TYPE_OVERRIDE) { ?>
 				<a href="<?php echo ACYM_DOCUMENTATION.'main-pages/email-overrides/edition'; ?>" class="cell small-6 medium-shrink margin-bottom-0 acym_vcenter" target="_blank">
 					<i class="acymicon-book acym__wysid__top-toolbar__button__icon" data-acym-tooltip="<?php echo acym_translation('ACYM_DOCUMENTATION'); ?>"></i>
 				</a>

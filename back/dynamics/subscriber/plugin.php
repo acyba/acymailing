@@ -323,6 +323,8 @@ class plgAcymSubscriber extends acymPlugin
             exit;
         }
 
+        $mailClass = new MailClass();
+
         $return = [];
         $return[] = [-1, acym_translation('ACYM_ALL_MAILS')];
         $search = utf8_encode(acym_getVar('string', 'search', ''));
@@ -331,7 +333,7 @@ class plgAcymSubscriber extends acymPlugin
 				FROM #__acym_mail 
 				WHERE (`subject` LIKE '.acym_escapeDB('%'.$search.'%').' 
 					OR `name` LIKE '.acym_escapeDB('%'.$search.'%').') 
-					AND type != '.acym_escapeDB('notification').'
+					AND `type` != '.acym_escapeDB($mailClass::TYPE_NOTIFICATION).'
 				ORDER BY `subject` ASC 
 				LIMIT 20'
         );
@@ -565,9 +567,9 @@ class plgAcymSubscriber extends acymPlugin
         //We generate the new mail if it's a template
         $mail = $mailClass->getOneById($action['mail_id']);
 
-        if ('automation' != $mail->type) {
+        if ($mailClass::TYPE_AUTOMATION != $mail->type) {
             unset($mail->id);
-            $mail->type = 'automation';
+            $mail->type = $mailClass::TYPE_AUTOMATION;
             $mail->template = 2;
             $mail->id = $mailClass->save($mail);
         }

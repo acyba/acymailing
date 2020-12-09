@@ -601,9 +601,10 @@ class AutomationController extends acymController
 
     public function createMail()
     {
+        $mailClass = new MailClass();
         $id = acym_getVar('int', 'id');
         $idAdmin = acym_getVar('boolean', 'automation_admin');
-        $type = 'automation';
+        $type = $mailClass::TYPE_AUTOMATION;
         if ($idAdmin) $type = 'automation_admin';
         $and = acym_getVar('string', 'and_action');
         $this->_saveActions(empty($id));
