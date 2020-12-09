@@ -25,7 +25,7 @@ $task = acym_getVar('cmd', 'task');
 
 $config = acym_config();
 
-if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN) && $task != 'deleteFeatures') {
+if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN) && is_writable(ACYM_NEW_FEATURES_SPLASHSCREEN)) {
     $ctrl = 'dashboard';
     $task = 'features';
     acym_setVar('ctrl', $ctrl);

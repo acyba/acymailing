@@ -1,5 +1,8 @@
 const acym_helperStats = {
     setLineChartOpenTimeWeek: function () {
+        let dataOpenTime = document.getElementById('acym__stats__global__open-time__data');
+        if (dataOpenTime === null) return;
+        
         let data = document.getElementById('acym__stats__global__open-time__data').value;
 
         if (data === undefined) return;

@@ -135,18 +135,19 @@ class ConfigurationController extends acymController
     {
         $data['acl'] = acym_cmsPermission();
         $data['acl_advanced'] = [
+            'forms' => 'ACYM_SUBSCRIPTION_FORMS',
             'users' => 'ACYM_USERS',
             'fields' => 'ACYM_CUSTOM_FIELDS',
             'lists' => 'ACYM_LISTS',
+            'segments' => 'ACYM_SEGMENTS',
             'campaigns' => 'ACYM_EMAILS',
             'mails' => 'ACYM_TEMPLATES',
+            'override' => 'ACYM_EMAILS_OVERRIDE',
             'automation' => 'ACYM_AUTOAMTION',
             'queue' => 'ACYM_QUEUE',
-            'stats' => 'ACYM_STATISTICS',
-            'bounces' => 'ACYM_BOUNCE_HANDLING',
             'plugins' => 'ACYM_ADD_ONS',
-            'forms' => 'ACYM_SUBSCRIPTION_FORMS',
-            'override' => 'ACYM_EMAILS_OVERRIDE',
+            'bounces' => 'ACYM_BOUNCE_HANDLING',
+            'stats' => 'ACYM_STATISTICS',
             'configuration' => 'ACYM_CONFIGURATION',
         ];
         $data['aclType'] = new AclType();

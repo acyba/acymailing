@@ -43,7 +43,7 @@ class plgAcymStatistics extends acymPlugin
         $mails = $mailClass->decode($mails);
 
         foreach ($mails as $oneMail) {
-            $name = in_array($oneMail->type, ['notification', 'override']) ? $oneMail->subject : $oneMail->name;
+            $name = in_array($oneMail->type, $mailClass::TYPES_NO_NAME) ? $oneMail->subject : $oneMail->name;
             $campaignId = empty($oneMail->campaignId) ? '' : ' ['.acym_translation('ACYM_ID').' '.$oneMail->campaignId.']';
             $return[] = [$oneMail->id, $name.$campaignId];
         }

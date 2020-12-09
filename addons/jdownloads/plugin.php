@@ -397,7 +397,7 @@ class plgAcymJdownloads extends acymPlugin
         }
 
 
-        $varFields['{creation}'] = !empty($element->created) ? acym_date($element->created, acym_translation('ACYM_DATE_FORMAT_LC1'), null) : '';
+        $varFields['{creation}'] = !empty($element->created) ? acym_date($element->created, acym_translation('ACYM_DATE_FORMAT_LC1'), false) : '';
         if (in_array('creation', $tag->display) && !empty($element->created)) {
             $customFields[] = [
                 $varFields['{creation}'],

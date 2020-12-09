@@ -43,7 +43,9 @@
 	<div class="cell grid-x grid-margin-y" id="acym__stats__export__global__charts__scope">
 		<div class="cell grid-x acym__content acym__stats__donut__chart">
 			<h2 class="cell acym__title__primary__color acym__title__stats"><?php echo acym_translation('ACYM_EMAIL_STATISTICS'); ?></h2>
-			<h4 class="cell acym__subtitle__stats text-center"><b><?php echo acym_translation('ACYM_LOOK_AT_THESE_AMAZING_DONUTS'); ?></b></h4>
+            <?php if (empty($data['sentMails'])) { ?>
+				<h4 class="cell acym__subtitle__stats text-center"><b><?php echo acym_translation('ACYM_LOOK_AT_THESE_AMAZING_DONUTS'); ?></b></h4>
+            <?php } ?>
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                 <?php
                 echo acym_round_chart(

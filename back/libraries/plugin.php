@@ -264,7 +264,7 @@ class acymPlugin extends acymObject
                     $value = $row->$column;
 
                     if (!empty($oneColumn['type']) && $oneColumn['type'] == 'date') {
-                        if (!is_numeric($value)) $value = strtotime($value);
+                        if (!is_numeric($value) && $value != '0000-00-00 00:00:00') $value = strtotime($value);
                         $tooltip = acym_date($value, acym_translation('ACYM_DATE_FORMAT_LC2'));
                         $value = acym_tooltip(acym_date($value, acym_translation('ACYM_DATE_FORMAT_LC5')), $tooltip);
                     }

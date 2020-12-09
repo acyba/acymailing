@@ -1,4 +1,49 @@
 module.exports = {
+    '7.0.0': {
+        'improve': [
+            {
+                cms: 'all',
+                message: 'A new access level entry has been added for the segments'
+            },
+            {
+                cms: 'all',
+                message: 'Add a start date for the automatic campaigns'
+            },
+            {
+                cms: 'all',
+                message: 'Add list description in list selection popup'
+            }
+        ]
+    },
+    '6.19.1': {
+        'fix': [
+            {
+                cms: 'all',
+                message: 'Fixed v5 data migration for the custom fields'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed date display with timezone when not needed'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed mail not found on the walk through for mails with non latin letter'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed front archive breaking pages on some specific html structure'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed dashboard every time when user do not have the rights to delete files'
+            },
+            {
+                cms: 'all',
+                message: 'Fixed migration'
+            }
+
+        ]
+    },
     '6.19.0': {
         'feature': [
             {

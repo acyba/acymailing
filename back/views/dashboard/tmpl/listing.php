@@ -1,21 +1,25 @@
 <div id="acym__dashboard">
 	<div class="acym__dashboard__card cell grid-x large-up-3 grid-margin-x grid-margin-y medium-up-2 small-up-1 margin-right-0 margin-bottom-2 align-center">
-        <?php if (acym_isAllowed('lists')) { ?>
+        <?php if (acym_isAllowed('lists') || acym_isAllowed('segments')) { ?>
 			<div class="cell acym__content acym__dashboard__one-card text-center grid-x">
 				<div class="cell acym__dashboard__card__picto__audience acym__dashboard__card__picto">
 					<i class="acymicon-insert_chart acym__dashboard__card__icon__audience"></i>
 				</div>
 				<h1 class="cell acym__dashboard__card__title"><?php echo acym_translation('ACYM_AUDIENCE'); ?></h1>
 				<hr class="cell small-10">
-				<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('lists'); ?>">
-                    <?php echo acym_translation('ACYM_VIEW_ALL_LISTS'); ?>
-				</a>
-				<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('lists&task=edit&step=settings'); ?>">
-                    <?php echo acym_translation('ACYM_CREATE_LIST'); ?>
-				</a>
-				<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('segments&task=edit'); ?>">
-                    <?php echo acym_translation('ACYM_CREATE_SEGMENT'); ?>
-				</a>
+                <?php if (acym_isAllowed('lists')) { ?>
+					<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('lists'); ?>">
+                        <?php echo acym_translation('ACYM_VIEW_ALL_LISTS'); ?>
+					</a>
+					<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('lists&task=edit&step=settings'); ?>">
+                        <?php echo acym_translation('ACYM_CREATE_LIST'); ?>
+					</a>
+                <?php } ?>
+                <?php if (acym_isAllowed('segments')) { ?>
+					<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('segments&task=edit'); ?>">
+                        <?php echo acym_translation('ACYM_CREATE_SEGMENT'); ?>
+					</a>
+                <?php } ?>
 			</div>
         <?php } ?>
         <?php if (acym_isAllowed('campaigns') || acym_isAllowed('mails')) { ?>
@@ -63,7 +67,7 @@
     <?php if (acym_isAllowed('stats')) { ?>
 		<div id="acym_stats">
             <?php
-                include acym_getView('stats', 'global_stats_data', true);
+            include acym_getView('stats', 'global_stats_data', true);
             ?>
 		</div>
     <?php } ?>

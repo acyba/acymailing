@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Classes\MailClass;
+
 acym_cmsLoaded();
 
 
@@ -31,10 +33,10 @@ class acyElasticemail
         }
 
         $data = file_get_contents($filepath);
-        $header = "PUT /attachments/upload?username=".urlencode($this->Username)."&api_key=".urlencode($this->Password)."&file=".urlencode($filename)." HTTP/1.0\r\n";
+        $header = 'PUT /attachments/upload?username='.urlencode($this->Username).'&api_key='.urlencode($this->Password).'&file='.urlencode($filename)." HTTP/1.0\r\n";
         $header .= "Host: api.elasticemail.com\r\n";
         $header .= "Connection: Keep-alive\r\n";
-        $header .= "Content-Length: ".strlen($data)."\r\n\r\n";
+        $header .= 'Content-Length: '.strlen($data)."\r\n\r\n";
         $info = $header.$data;
         $result = $this->sendinfo($info);
         //We take the last value of the server's response which correspond of the file's ID.
@@ -42,7 +44,7 @@ class acyElasticemail
         $res = end($explodedResult);
         //If the ID is correct and we have no Errors
         if (preg_match('#[^a-z0-9\-]#i', $res) || strpos($result, '200 OK') === false) {
-            $this->error = "Error while uploading file : ".$res;
+            $this->error = 'Error while uploading file : '.$res;
 
             return false;
         } else {
@@ -61,37 +63,37 @@ class acyElasticemail
             return false;
         }
 
-        $data = "username=".urlencode($this->Username);
-        $data .= "&api_key=".urlencode($this->Password);
-        $data .= "&referral=".urlencode('2f0447bb-173a-459d-ab1a-ab8cbebb9aab');
+        $data = 'username='.urlencode($this->Username);
+        $data .= '&api_key='.urlencode($this->Password);
+        $data .= '&referral='.urlencode('2f0447bb-173a-459d-ab1a-ab8cbebb9aab');
         if (!empty($object->From)) {
-            $data .= "&from=".urlencode($object->From);
+            $data .= '&from='.urlencode($object->From);
         }
         if (!empty($object->FromName)) {
-            $data .= "&from_name=".urlencode($object->FromName);
+            $data .= '&from_name='.urlencode($object->FromName);
         }
 
         $to = array_merge($object->to, $object->cc, $object->bcc);
-        $data .= "&to=";
+        $data .= '&to=';
         foreach ($to as $oneRecipient) {
-            $data .= urlencode($object->addrFormat($oneRecipient).";");
+            $data .= urlencode($object->addrFormat($oneRecipient).';');
         }
         $data = trim($data, ';');
 
         if (!empty($object->Subject)) {
-            $data .= "&subject=".urlencode($object->Subject);
+            $data .= '&subject='.urlencode($object->Subject);
         }
 
         if (!empty($object->ReplyTo)) {
             $replyToTmp = reset($object->ReplyTo);
-            $data .= "&reply_to=".urlencode($replyToTmp[0]);
+            $data .= '&reply_to='.urlencode($replyToTmp[0]);
             if (!empty($replyToTmp[1])) {
-                $data .= "&reply_to_name=".urlencode($replyToTmp[1]);
+                $data .= '&reply_to_name='.urlencode($replyToTmp[1]);
             }
         }
 
         if (!empty($object->Sender)) {
-            $data .= "&sender=".urlencode($object->Sender);
+            $data .= '&sender='.urlencode($object->Sender);
         }
 
 
@@ -99,19 +101,19 @@ class acyElasticemail
         if (!empty($object->CustomHeader)) {
             $i = 1;
             foreach ($object->CustomHeader as $oneHeader) {
-                $data .= "&header".$i."=".urlencode($oneHeader[0]).': '.urlencode($oneHeader[1]);
+                $data .= '&header'.$i.'='.urlencode($oneHeader[0]).': '.urlencode($oneHeader[1]);
                 $i++;
             }
         }
 
         //We set only quoted printable as others may not work with DKIM
         if ($object->Encoding == 'quoted-printable') {
-            $data .= "&encodingtype=3";
+            $data .= '&encodingtype=3';
         }
 
-        $data .= "&body_html=".urlencode($object->Body);
+        $data .= '&body_html='.urlencode($object->Body);
         if (!empty($object->AltBody)) {
-            $data .= "&body_text=".urlencode($object->AltBody);
+            $data .= '&body_text='.urlencode($object->AltBody);
         }
 
         if ($object->attachment) {
@@ -123,13 +125,14 @@ class acyElasticemail
                 }
                 $ArrayID[] = $oneID;
             }
-            $data .= "&attachments=".urlencode(implode(";", $ArrayID));
+            $data .= '&attachments='.urlencode(implode(';', $ArrayID));
         }
 
         if (!empty($object->id)) {
-            $data .= "&channel=".urlencode($object->id);
+            $data .= '&channel='.urlencode($object->id);
         }
-        if (!empty($object->type) && strpos($object->type, 'notification') !== false) {
+        $mailClass = new MailClass();
+        if (!empty($object->type) && in_array($object->type, $mailClass::TYPES_TRANSACTIONAL)) {
             $data .= '&isTransactional=true';
         }
 
@@ -137,7 +140,7 @@ class acyElasticemail
         $header .= "Host: api.elasticemail.com\r\n";
         $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
         $header .= "Connection: Keep-Alive\r\n";
-        $header .= "Content-Length: ".strlen($data)."\r\n\r\n";
+        $header .= 'Content-Length: '.strlen($data)."\r\n\r\n";
         $info = $header.$data;
         $result = $this->sendinfo($info);
 
@@ -157,7 +160,7 @@ class acyElasticemail
 
     function getCredits($object)
     {
-        $header = "GET /mailer/account-details?username=".urlencode($this->Username)."&api_key=".urlencode($this->Password)." HTTP/1.0\r\n";
+        $header = 'GET /mailer/account-details?username='.urlencode($this->Username).'&api_key='.urlencode($this->Password)." HTTP/1.0\r\n";
         $header .= "Host: api.elasticemail.com\r\n";
         $header .= "Connection: Close\r\n\r\n";
         $result = $this->sendinfo($header);
@@ -182,7 +185,7 @@ class acyElasticemail
 
         $this->conn = fsockopen('ssl://api.elasticemail.com', 443, $errno, $errstr, 20);
         if (!$this->conn) {
-            $this->error = "Could not open connection ".$errstr;
+            $this->error = 'Could not open connection '.$errstr;
 
             return false;
         }
@@ -208,7 +211,7 @@ class acyElasticemail
 
         while (!feof($this->conn)) {
             $res .= fread($this->conn, 1024);
-            if (substr($res, 0, 4) == "HTTP") {
+            if (substr($res, 0, 4) == 'HTTP') {
                 $length = 0;
             }
             if ($length == 0) {

@@ -9,7 +9,7 @@
         <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
 		<input name="mail[subject]" type="text" value="<?php echo acym_escape($data['mail']->subject); ?>" <?php echo in_array(
             $data['mail']->type,
-            ['welcome', 'unsubscribe', 'automation']
+            [$data['mailClass']::TYPE_WELCOME, $data['mailClass']::TYPE_UNSUBSCRIBE, $data['mailClass']::TYPE_AUTOMATION]
         ) ? 'required' : ''; ?>>
 	</label>
 </div>
@@ -34,7 +34,7 @@
 <div class="cell shrink"></div>
 
 <?php
-if ($data['mail']->type === 'standard') {
+if ($data['mail']->type === $data['mailClass']::TYPE_STANDARD) {
     if (acym_level(2) && ACYM_CMS === 'joomla') {
         ?>
 		<div class="cell xlarge-3 medium-6">
