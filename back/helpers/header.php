@@ -21,6 +21,7 @@ class HeaderHelper extends acymObject
 
         $header .= '<div class="cell shrink grid-x align-right">';
         $header .= $this->getCheckVersionButton();
+        $header .= $this->getHelpWedButton();
         $header .= $this->getDocumentationButton();
         $header .= $this->getNotificationCenter();
         $header .= '</div>';
@@ -52,7 +53,9 @@ class HeaderHelper extends acymObject
             // If the news isn't published or that the language isn't correct, leave
             if (empty($oneNews->published) || (strtolower($oneNews->language) != strtolower($currentLanguage) && (strtolower(
                             $oneNews->language
-                        ) != 'default' || !empty($latestNews)))) continue;
+                        ) != 'default' || !empty($latestNews)))) {
+                continue;
+            }
 
             // If the extension isn't correct, leave
             if (!empty($oneNews->extension) && strtolower($oneNews->extension) != 'acymailing') continue;
@@ -194,6 +197,15 @@ class HeaderHelper extends acymObject
             '<a type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" target="_blank" href="'.ACYM_DOCUMENTATION.'"><i class="cell shrink acymicon-book"></i></a>',
             acym_translation('ACYM_DOCUMENTATION')
         );
+    }
+
+    private function getHelpWedButton()
+    {
+        if (ACYM_CMS != 'wordpress' || acym_level(1)) return '';
+
+        return '<a type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" target="_blank" href="https://wordpress.org/support/plugin/acymailing/">
+                    <i class="cell shrink acymicon-life-bouy"></i>
+                </a>';
     }
 
     public function getNotificationCenter()

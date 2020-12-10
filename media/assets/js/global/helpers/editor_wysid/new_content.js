@@ -278,7 +278,7 @@ const acym_editorWysidNewContent = {
                              + youtubeId[1]
                              + '"><img alt="" src="https://img.youtube.com/vi/'
                              + youtubeId[1]
-                             + '/0.jpg" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block;margin-left: auto; margin-right: auto;"/></a>');
+                             + '/0.jpg" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block;margin-left: auto; margin-right: auto; float: none;"/></a>');
                 $insertBtn.removeClass('disabled');
             } else if (dailymotionId != null) {
                 if (dailymotionId !== null) {
@@ -287,13 +287,14 @@ const acym_editorWysidNewContent = {
                                      + dailymotionId[4]
                                      + '"><img alt="" src="https://www.dailymotion.com/thumbnail/video/'
                                      + dailymotionId[4]
-                                     + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;"/></a>');
+                                     + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/></a>');
+                    } else {
+                        $result.html('<a href="https://www.dailymotion.com/video/'
+                                     + dailymotionId[2]
+                                     + '"><img alt="" src="https://www.dailymotion.com/thumbnail/video/'
+                                     + dailymotionId[2]
+                                     + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/></a>');
                     }
-                    $result.html('<a href="https://www.dailymotion.com/video/'
-                                 + dailymotionId[2]
-                                 + '"><img alt="" src="https://www.dailymotion.com/thumbnail/video/'
-                                 + dailymotionId[2]
-                                 + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;"/></a>');
                 }
                 $insertBtn.removeClass('disabled');
             } else if (vimeoId != null) {
@@ -305,7 +306,7 @@ const acym_editorWysidNewContent = {
                                      + vimeoId[5]
                                      + '"><img alt="" src="'
                                      + data[0].thumbnail_large
-                                     + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;"/></a>');
+                                     + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/></a>');
                         $insertBtn.removeClass('disabled');
                     }
                 });

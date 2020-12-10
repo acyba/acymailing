@@ -19,7 +19,7 @@ input[type="checkbox"] {
         }
         font-weight: 100;
         display: block;
-        content: "\e926";
+        content: "\e912";
         position: absolute;
         visibility: visible;
         font-size: 23px;
@@ -31,7 +31,7 @@ input[type="checkbox"] {
     }
 
     &:checked:after {
-        content: "\e925";
+        content: "\e926";
     }
 
     &:disabled {
