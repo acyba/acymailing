@@ -1,9 +1,19 @@
 module.exports = {
     '7.0.0': {
+        'feature': [
+            {
+                cms: 'joomla',
+                message: 'The EasyProfile fields can now be inserted individually for the user receiving the email'
+            }
+        ],
         'improve': [
             {
                 cms: 'all',
                 message: 'A new access level entry has been added for the segments'
+            },
+            {
+                cms: 'all',
+                message: 'A new option lets you specify a redirection URL after submitting the subscription forms'
             },
             {
                 cms: 'all',
@@ -13,6 +23,21 @@ module.exports = {
                 cms: 'all',
                 message: 'Add list description in list selection popup'
             }
+        ]
+    },
+    '6.19.2': {
+        'improve': [
+            {
+                cms: 'wordpress',
+                message: 'New button to be redirected on the wordpress support of AcyMailing'
+            }
+        ],
+        'fix': [
+            {
+                cms: 'all',
+                message: 'Fixed outlook button wrapped text and video image not centered'
+            }
+
         ]
     },
     '6.19.1': {

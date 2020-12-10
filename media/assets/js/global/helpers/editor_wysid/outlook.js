@@ -11,15 +11,7 @@ const acym_editorWysidOutlook = {
         let href = $element.attr('href');
         let widthButton = $element.outerWidth();
         let cssRoundrect = 'style = "width: ' + widthButton + '; height:' + $element.css('height').replace(/[^-\d\.]/g, '') + '"';
-        let css = 'color :'
-                  + $element.css('color')
-                  + '; word-break:'
-                  + $element.css('word-break')
-                  + '; font-family:'
-                  + $element.css('font-family')
-                  + '; font-size:'
-                  + $element.css('font-size')
-                  + ';';
+        let css = 'color :' + $element.css('color') + '; font-family:' + $element.css('font-family') + '; font-size:' + $element.css('font-size') + ';';
         let text = $element.html();
         //We can also call it shitty button
         let outlookButton = '<!--[if mso]><v:roundrect '

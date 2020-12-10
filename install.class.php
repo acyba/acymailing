@@ -3,6 +3,7 @@
 use AcyMailing\Classes\ActionClass;
 use AcyMailing\Classes\ConditionClass;
 use AcyMailing\Classes\FieldClass;
+use AcyMailing\Classes\FormClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\PluginClass;
@@ -949,6 +950,16 @@ class acymInstall
             $newConfig = new stdClass();
             $newConfig->social_icons = json_encode($socialIcons);
             $config->save($newConfig);
+
+            $this->updateQuery('ALTER TABLE `#__acym_form` ADD `redirection_options` TEXT');
+            $formClass = new FormClass();
+            $forms = $formClass->getAll();
+            if (!empty($forms)) {
+                foreach ($forms as $oneForm) {
+                    $oneForm->redirection_options = json_encode(['after_subscription' => '']);
+                    $formClass->save($oneForm);
+                }
+            }
         }
     }
 

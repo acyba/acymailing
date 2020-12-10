@@ -198,6 +198,9 @@ class FormClass extends acymClass
         }
         $newForm->delay = 0;
         $newForm->pages = [];
+        $newForm->redirection_options = [
+            'after_subscription' => '',
+        ];
         $newForm->id = 0;
 
         return $newForm;
@@ -534,6 +537,24 @@ class FormClass extends acymClass
                                                 <input min="1" type="number" class="cell medium-3 margin-right-1" v-model="'.$vModel.'">
                                                 <span class="cell shrink">'.acym_translation('ACYM_DAYS').'</span>
                                             </div>';
+            }
+        }
+
+        return $return;
+    }
+
+    private function prepareMenuHtmlSettings_redirection_options($optionName, $options)
+    {
+        $return = [
+            'title' => acym_translation('ACYM_REDIRECTIONS'),
+        ];
+
+        foreach ($options as $key => $value) {
+            $id = 'form_'.$optionName.'_'.$key;
+            $vModel = 'form.'.$optionName.'.'.$key;
+            if ($key == 'after_subscription') {
+                $return['render'][$key] = '<label class="cell" for="'.$id.'">'.acym_translation('ACYM_AFTER_SUBSCRIPTION').acym_info('ACYM_REDIRECT_LINK_DESC').'</label>';
+                $return['render'][$key] .= '<input type="text" class="cell" id="'.$id.'" v-model="'.$vModel.'">';
             }
         }
 
