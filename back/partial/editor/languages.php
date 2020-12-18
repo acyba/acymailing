@@ -7,7 +7,7 @@
         echo acym_tooltip(
             '<i class="acymicon-pencil acym__wysid__edit__languages__selection__edition"></i>
 						<i class="acymicon-check acym__wysid__edit__languages__selection__check"></i>
-						<img acym-data-lang="main" src="'.acym_getFlagByCode($code).'" alt="'.$code.' flag">',
+						<img acym-data-lang="main" src="https://www.countryflags.io/'.$code.'/flat/48.png" alt="'.$code.' flag">',
             $data['main_language']->name
         );
         ?>
@@ -34,7 +34,7 @@
             <?php echo acym_tooltip(
                 '<i class="acymicon-pencil acym__wysid__edit__languages__selection__edition"></i>
 							<i class="acymicon-check acym__wysid__edit__languages__selection__check"></i>
-							<img acym-data-lang="'.$oneLanguage->code.'" src="'.acym_getFlagByCode($code).'" alt="'.$code.' flag">',
+							<img acym-data-lang="'.$oneLanguage->code.'" src="https://www.countryflags.io/'.$code.'/flat/48.png" alt="'.$code.' flag">',
                 $oneLanguage->name
             ); ?>
 

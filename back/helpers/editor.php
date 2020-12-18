@@ -225,11 +225,10 @@ class EditorHelper extends acymObject
 
             return empty($stylesheet) ? '' : $stylesheet;
         } elseif (!empty($notification)) {
-            $mailClass = new MailClass();
             $stylesheet = acym_loadResult(
                 'SELECT stylesheet 
                 FROM #__acym_mail 
-                WHERE `type` = '.acym_escapeDB($mailClass::TYPE_NOTIFICATION).' 
+                WHERE `type` = "notification" 
                     AND `name` = '.acym_escapeDB($notification)
             );
 

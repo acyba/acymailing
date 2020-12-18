@@ -111,7 +111,6 @@ class DashboardController extends acymController
             'editor' => $editor,
             'social_icons' => $this->config->get('social_icons', '{}'),
             'mail' => $mail,
-            'mailClass' => $mailClass,
         ];
 
         parent::display($data);

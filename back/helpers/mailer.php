@@ -731,8 +731,7 @@ class MailerHelper extends acyPHPMailer
 
     public function statClick($mailId, $userid, $fromStat = false)
     {
-        $mailClass = new MailClass();
-        if (!$fromStat && !in_array($this->type, $mailClass::TYPES_WITH_STATS)) return;
+        if (!$fromStat && !in_array($this->type, ['standard', 'automation', 'welcome', 'unsubscribe', 'followup'])) return;
 
         $urlClass = new UrlClass();
         if ($urlClass === null) return;

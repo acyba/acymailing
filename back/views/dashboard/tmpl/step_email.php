@@ -7,7 +7,7 @@
 	<input type="hidden" name="mail[id]" value="<?php echo acym_escape($data['mail']->id); ?>" />
 	<input type="hidden" name="id" value="<?php echo acym_escape($data['mail']->id); ?>" />
 	<input type="hidden" id="acym__mail__edit__editor__social__icons" value="<?php echo empty($data['social_icons']) ? '{}' : acym_escape($data['social_icons']); ?>">
-	<input type="hidden" id="acym__mail__type" name="mail[type]" value="<?php echo $data['mailClass']::TYPE_STANDARD; ?>">
+	<input type="hidden" id="acym__mail__type" name="mail[type]" value="standard">
 	<input type="hidden" name="task">
     <?php echo $data['editor']->display(); ?>
 </div>

@@ -46,7 +46,7 @@ function acym_loadCmsScripts()
     );
 
     JHtml::_('jquery.framework');
-    acym_addScript(false, ACYM_JS.'libraries/jquery-ui.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'jquery-ui.min.js'), 'text/javascript', true);
+    acym_addScript(false, 'https://code.jquery.com/ui/1.12.1/jquery-ui.min.js');
 }
 
 function acym_redirect($url, $msg = '', $msgType = 'message')

@@ -357,7 +357,7 @@ class MigrationHelper extends acymObject
                         acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false)),
                         '0',
                         '0',
-                        acym_escapeDB($mailClass::TYPE_STANDARD),
+                        acym_escapeDB('standard'),
                         acym_escapeDB(empty($oneTemplate->body) ? '' : $oneTemplate->body),
                         acym_escapeDB($oneTemplate->subject),
                         '1',
@@ -646,14 +646,14 @@ class MigrationHelper extends acymObject
 
             switch ($oneMail->type) {
                 case 'welcome':
-                    $mailType = $mailClass::TYPE_WELCOME;
+                    $mailType = 'welcome';
                     break;
                 case 'unsub':
-                    $mailType = $mailClass::TYPE_UNSUBSCRIBE;
+                    $mailType = 'unsubscribe';
                     break;
                 case 'news':
                 case 'followup':
-                    $mailType = $mailClass::TYPE_STANDARD;
+                    $mailType = 'standard';
                     break;
                 default:
                     $mailType = 'invalid';
@@ -691,7 +691,7 @@ class MigrationHelper extends acymObject
                 'type' => acym_escapeDB($mailType),
                 'body' => acym_escapeDB($oneMail->body),
                 'subject' => acym_escapeDB($oneMail->subject),
-                'template' => in_array($mailType, [$mailClass::TYPE_WELCOME, $mailClass::TYPE_UNSUBSCRIBE]) ? 1 : 0,
+                'template' => $mailType == 'welcome' || $mailType == 'unsubscribe' ? 1 : 0,
                 'from_name' => acym_escapeDB($oneMail->fromname),
                 'from_email' => acym_escapeDB($oneMail->fromemail),
                 'reply_to_name' => acym_escapeDB($oneMail->replyname),
@@ -704,7 +704,7 @@ class MigrationHelper extends acymObject
             $mail = $mailClass->encode([$mail])[0];
 
             //TODO: handle the smart-nl migration
-            if ($mailType == $mailClass::TYPE_STANDARD) {
+            if ($mailType == 'standard') {
                 $stats = acym_loadResult('SELECT COUNT(mailid) FROM #__acymailing_stats WHERE mailid = '.intval($oneMail->mailid));
                 $isSent = !empty($stats);
 

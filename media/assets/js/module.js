@@ -292,9 +292,7 @@ if (typeof submitAcymForm !== 'function') {
         taskField.value = acytask;
 
         // If no ajax, submit the form
-        if (!varform.elements['ajax'] || !varform.elements['ajax'].value || varform.elements['ajax'].value === '0' || varform.elements['ajax'].value === 0) {
-            acymApplyCookie(acyformName);
-
+        if (!varform.elements['ajax'] || !varform.elements['ajax'].value || varform.elements['ajax'].value == '0') {
             varform.submit();
             return false;
         }
@@ -342,6 +340,7 @@ if (typeof submitAcymForm !== 'function') {
         //create a new div class=responseContainer as we didn't have one already to display the answer
         let responseContainer = document.createElement('div');
         let fulldiv = document.getElementById('acym_fulldiv_' + formName);
+        let classErase = 'acym__subscription__form-erase';
 
         if (fulldiv.firstChild && !fulldiv.classList.contains('acym__subscription__form__popup__overlay')) {
             fulldiv.insertBefore(responseContainer, fulldiv.firstChild);
@@ -373,37 +372,31 @@ if (typeof submitAcymForm !== 'function') {
         responseContainer.innerHTML = message;
 
         //We set the container class
-        if (type === 'success') {
+        if (type == 'success') {
             responseContainer.className += ' acym_module_success';
         } else {
             responseContainer.className += ' acym_module_error';
             form.style.opacity = '1';
         }
 
-        if (replace || (type === 'success' && successMode !== 'toptemp')) {
+        if (replace || (type == 'success' && successMode != 'toptemp')) {
             form.style.display = 'none';
         }
         responseContainer.className += ' message_' + formName;
         responseContainer.className += ' slide_open';
 
-        if (successMode === 'replacetemp' || successMode === 'toptemp') {
+        if (successMode == 'replacetemp' || successMode == 'toptemp') {
             setTimeout(() => {
                 responseContainer.remove();
                 form.style.filter = 'alpha(opacity=100)';
                 form.style.opacity = '1';
-                if (successMode === 'replacetemp') {
+                if (successMode == 'replacetemp') {
                     form.style.display = '';
                 }
             }, 3000);
         }
 
-        acymApplyCookie(formName);
-    }
-
-    function acymApplyCookie(formName) {
-        let fulldiv = document.getElementById('acym_fulldiv_' + formName);
-
-        if (fulldiv.classList.contains('acym__subscription__form-erase')) {
+        if (fulldiv.classList.contains(classErase)) {
             let form = document.getElementById(formName);
             let cookieExpiration = form.getAttribute('acym-data-cookie');
             if (undefined === cookieExpiration) cookieExpiration = 1;

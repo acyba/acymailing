@@ -33,13 +33,12 @@ class MailsController extends acymController
      */
     protected function setBreadcrumb($type)
     {
-        $mailClass = $this->currentClass;
         switch ($type) {
-            case $mailClass::TYPE_AUTOMATION:
+            case 'automation':
                 $breadcrumbTitle = 'ACYM_AUTOMATION';
                 $breadcrumbUrl = acym_completeLink('automation');
                 break;
-            case $mailClass::TYPE_FOLLOWUP:
+            case 'followup':
                 $breadcrumbTitle = 'ACYM_EMAILS';
                 $breadcrumbUrl = acym_completeLink('mails');
                 break;
@@ -60,14 +59,13 @@ class MailsController extends acymController
         $searchFilter = $this->getVarFiltersListing('string', 'mails_search', '');
         $tagFilter = $this->getVarFiltersListing('string', 'mails_tag', '');
         $ordering = $this->getVarFiltersListing('string', 'mails_ordering', 'creation_date');
+        $status = 'standard';
         $orderingSortOrder = $this->getVarFiltersListing('cmd', 'mails_ordering_sort_order', 'desc');
 
         $pagination = new PaginationHelper();
         // Get pagination data
         $mailsPerPage = $pagination->getListLimit();
         $page = acym_getVar('int', 'mails_pagination_page', 1);
-        $mailClass = $this->currentClass;
-        $status = $mailClass::TYPE_STANDARD;
 
         $requestData = [
             'ordering' => $ordering,
@@ -110,7 +108,6 @@ class MailsController extends acymController
             'mailNumberPerStatus' => $matchingMails['status'],
             'orderingSortOrder' => $orderingSortOrder,
             'templateImportView' => $templateImportView,
-            'mailClass' => $mailClass,
         ];
 
         if (!empty($mailsData['tag'])) {
@@ -227,7 +224,7 @@ class MailsController extends acymController
         $fromId = acym_getVar('int', 'from');
         $listIds = acym_getVar('int', 'list_id', []);
 
-        if (in_array($type, [$mailClass::TYPE_WELCOME, $mailClass::TYPE_UNSUBSCRIBE])) {
+        if (in_array($type, ['welcome', 'unsubscribe'])) {
             array_pop($this->breadcrumb);
             $this->breadcrumb[acym_translation('ACYM_LISTS')] = acym_completeLink('lists');
 
@@ -251,7 +248,7 @@ class MailsController extends acymController
         if (!empty($fromId)) $fromMail = $mailClass->getOneById($fromId);
 
         if ($type == 'automation_admin') {
-            $type = $mailClass::TYPE_AUTOMATION;
+            $type = 'automation';
             $isAutomationAdmin = true;
         }
 
@@ -265,7 +262,7 @@ class MailsController extends acymController
                 $mail->tags = [];
                 $mail->type = $type;
                 $mail->body = '';
-                $mail->editor = in_array($type, [$mailClass::TYPE_AUTOMATION, $mailClass::TYPE_FOLLOWUP]) ? 'acyEditor' : $typeEditor;
+                $mail->editor = in_array($type, ['automation', 'followup']) ? 'acyEditor' : $typeEditor;
                 $mail->headers = '';
                 $mail->thumbnail = null;
                 $mail->links_language = '';
@@ -284,19 +281,19 @@ class MailsController extends acymController
 
             if (!empty($type)) $mail->type = $type;
 
-            if ($mailClass::TYPE_AUTOMATION != $type || empty($fromId)) $mail->id = 0;
+            if ('automation' != $type || empty($fromId)) $mail->id = 0;
 
             switch ($type) {
-                case $mailClass::TYPE_WELCOME:
+                case 'welcome':
                     $breadcrumbTitle = 'ACYM_CREATE_WELCOME_MAIL';
                     break;
-                case $mailClass::TYPE_UNSUBSCRIBE:
+                case 'unsubscribe':
                     $breadcrumbTitle = 'ACYM_CREATE_UNSUBSCRIBE_MAIL';
                     break;
-                case $mailClass::TYPE_AUTOMATION:
+                case 'automation':
                     $breadcrumbTitle = 'ACYM_NEW_EMAIL';
                     break;
-                case $mailClass::TYPE_FOLLOWUP:
+                case 'followup':
                     $breadcrumbTitle = 'ACYM_NEW_FOLLOW_UP_EMAIL';
                     break;
                 default:
@@ -321,12 +318,12 @@ class MailsController extends acymController
             if (!empty($typeEditor)) $mail->editor = $typeEditor;
 
             if (empty($notification)) {
-                if (in_array($mail->type, [$mailClass::TYPE_WELCOME, $mailClass::TYPE_UNSUBSCRIBE])) {
+                if (in_array($mail->type, ['welcome', 'unsubscribe'])) {
                     array_pop($this->breadcrumb);
                     $this->breadcrumb[acym_translation('ACYM_LISTS')] = acym_completeLink('lists');
                 }
 
-                if ($mail->type === $mailClass::TYPE_OVERRIDE) {
+                if ($mail->type === 'override') {
                     array_pop($this->breadcrumb);
                     $this->breadcrumb[acym_translation('ACYM_EMAILS_OVERRIDE')] = acym_completeLink('override');
                     acym_loadLanguageFile('plg_user_joomla', ACYM_BASE);
@@ -369,11 +366,11 @@ class MailsController extends acymController
 
         $lists = [];
 
-        if (in_array($mail->type, [$mailClass::TYPE_WELCOME, $mailClass::TYPE_UNSUBSCRIBE])) {
+        if (in_array($mail->type, ['welcome', 'unsubscribe'])) {
             $listClass = new ListClass();
             $lists = $listClass->getAllWithIdName();
 
-            if (empty($listIds) && !empty($mail->id)) $listIds = $listClass->getListIdsByWelcomeUnsub($mail->id, $mail->type == $mailClass::TYPE_WELCOME);
+            if (empty($listIds) && !empty($mail->id)) $listIds = $listClass->getListIdsByWelcomeUnsub($mail->id, $mail->type == 'welcome');
         }
 
         if (!empty($mail->attachments) && !is_array($mail->attachments)) {
@@ -396,7 +393,6 @@ class MailsController extends acymController
             'default_delay_unit' => $followupClass::DEFAULT_DELAY_UNIT,
             'followup_id' => $followupId,
             'uploadFileType' => new UploadfileType(),
-            'mailClass' => $this->currentClass,
         ];
 
         $this->prepareEditorEdit($data);
@@ -422,7 +418,6 @@ class MailsController extends acymController
 
         $data['editor']->data = [
             'mail' => $data['mail'],
-            'mailClass' => $this->currentClass,
         ];
 
         if ($data['editor']->isDragAndDrop()) {
@@ -452,16 +447,16 @@ class MailsController extends acymController
         $saveAsTmpl = acym_getVar('int', 'saveAsTmpl', 0);
         if ($saveAsTmpl === 1) {
             unset($mail->id);
-            $mail->type = $mailClass::TYPE_STANDARD;
+            $mail->type = 'standard';
         }
 
         if ($fromAutomation) {
             acym_setVar('from', $mail->id);
-            acym_setVar('type', $mailClass::TYPE_AUTOMATION);
+            acym_setVar('type', 'automation');
             acym_setVar('type_editor', 'acyEditor');
         }
 
-        if (empty($mail->subject) && !empty($mail->type) && $mail->type != $mailClass::TYPE_STANDARD) {
+        if (empty($mail->subject) && !empty($mail->type) && $mail->type != 'standard') {
             return false;
         }
 
@@ -474,7 +469,7 @@ class MailsController extends acymController
         $mail->template = $fromAutomation ? 2 : 1;
         $mail->library = 0;
         $mail->drag_editor = strpos($mail->body, 'acym__wysid__template') === false ? 0 : 1;
-        if ($fromAutomation) $mail->type = $mailClass::TYPE_AUTOMATION;
+        if ($fromAutomation) $mail->type = 'automation';
         if (empty($mail->id)) {
             $mail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
         }
@@ -485,7 +480,7 @@ class MailsController extends acymController
             if (!empty($thumbname)) $mail->thumbnail = $thumbname;
         }
 
-        if (empty($mail->name) && !in_array($mail->type, $mailClass::TYPES_NO_NAME)) {
+        if (empty($mail->name) && !in_array($mail->type, ['notification', 'override']) && empty($mail->id)) {
             $mail->name = empty($mail->subject) ? acym_translation('ACYM_TEMPLATE_NAME') : $mail->subject;
         }
 
@@ -493,11 +488,11 @@ class MailsController extends acymController
 
         $mailID = $mailClass->save($mail);
         if (!empty($mailID)) {
-            if (!empty($mail->type) && in_array($mail->type, [$mailClass::TYPE_WELCOME, $mailClass::TYPE_UNSUBSCRIBE])) {
+            if (!empty($mail->type) && in_array($mail->type, ['welcome', 'unsubscribe'])) {
                 $listIds = acym_getVar('array', 'list_ids', []);
                 $listClass = new ListClass();
                 $listClass->setWelcomeUnsubEmail($listIds, $mailID, $mail->type);
-            } elseif (!empty($mail->type) && $mail->type == $mailClass::TYPE_FOLLOWUP) {
+            } elseif (!empty($mail->type) && $mail->type == 'followup') {
                 $followupData = acym_getVar('array', 'followup', []);
                 $followupClass = new FollowupClass();
                 if (!$followupClass->saveDelaySettings($followupData, $mailID)) acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_SAVE_DELAY_SETTINGS'), 'error');
@@ -506,7 +501,7 @@ class MailsController extends acymController
 
             if (!$ajax) acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
             if ($fromAutomation) {
-                acym_setVar('type', $mailClass::TYPE_AUTOMATION);
+                acym_setVar('type', 'automation');
                 acym_setVar('type_editor', 'acyEditor');
             } else {
                 acym_setVar('mailID', $mailID);
@@ -677,7 +672,7 @@ class MailsController extends acymController
         $return = '<div class="grid-x grid-padding-x grid-padding-y grid-margin-x grid-margin-y xxlarge-up-6 large-up-4 medium-up-3 small-up-1 cell acym__template__choose__list">';
 
         $followup_id = '';
-        if ($type == $mailClass::TYPE_FOLLOWUP) {
+        if ($type == 'followup') {
             $followup_id = acym_getVar('int', 'followup_id', 0);
         }
         foreach ($matchingMails['elements'] as $oneTemplate) {
@@ -894,9 +889,8 @@ class MailsController extends acymController
 
     public function setNewIconShare()
     {
-        acym_checkToken();
         $socialName = acym_getVar('string', 'social', '');
-        if (!in_array($socialName, ACYM_SOCIAL_MEDIA)) {
+        if (!in_array($socialName, ['facebook', 'twitter', 'instagram', 'linkedin', 'pinterest', 'vimeo', 'wordpress', 'youtube'])) {
             echo json_encode(
                 [
                     'type' => 'error',
@@ -981,7 +975,7 @@ class MailsController extends acymController
         $newMail = new \stdClass();
         $newMail->name = $mail->name.'_copy';
         $newMail->thumbnail = '';
-        $newMail->type = $mailClass::TYPE_AUTOMATION;
+        $newMail->type = 'automation';
         $newMail->drag_editor = $mail->drag_editor;
         $newMail->library = 0;
         $newMail->body = $mail->body;
@@ -1079,7 +1073,6 @@ class MailsController extends acymController
             $newTemplate = $oldTemplate;
             $newTemplate->id = 0;
             $newTemplate->name = $oldTemplate->name.'_copy';
-            unset($newTemplate->thumbnail);
 
             $mailClass->save($newTemplate);
         }

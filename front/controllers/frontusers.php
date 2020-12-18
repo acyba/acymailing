@@ -200,7 +200,18 @@ class FrontusersController extends UsersController
 
         $formData = acym_getVar('array', 'user', [], '');
         $user = new \stdClass();
-        if(!empty($formData['email'])) $user->email = $formData['email'];
+
+        // Clean data
+        foreach ($formData as $column => $value) {
+            $user->$column = trim(strip_tags($value));
+
+            if (!is_numeric($user->$column)) {
+                $matchNonUTF8 = '%^(?:[\x09\x0A\x0D\x20-\x7E]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})*$%xs';
+                if ((function_exists('mb_detect_encoding') && mb_detect_encoding($user->$column, 'UTF-8', true) != 'UTF-8') || !preg_match($matchNonUTF8, $user->$column)) {
+                    $user->$column = utf8_encode($user->$column);
+                }
+            }
+        }
 
         $userClass = new UserClass();
         if (empty($user->email)) {
@@ -219,17 +230,22 @@ class FrontusersController extends UsersController
         // E-mail is valid now...
         // Check if this user already exists or not...
         $alreadyExists = $userClass->getOneByEmail($user->email);
+
         if (!empty($alreadyExists->id)) {
+            //We don't overwrite the name if it's a registered user
+            if (!empty($alreadyExists->cms_id)) {
+                unset($user->name);
+            }
             $user->id = $alreadyExists->id;
+        } else {
+            $user->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
         }
 
+        //We save the user and the custom fields values
+        $customFields = acym_getVar('array', 'customField');
         $isNew = empty($user->id);
-        $result = $userClass->saveForm($ajax);
-        $user->id = acym_getVar('int', 'id');
+        $user->id = $userClass->save($user, $customFields, $ajax);
         if (!empty($userClass->errors)) $this->displayMessage(implode('<br /><br />', $userClass->errors), $ajax);
-        if($result === false || empty($user->id)){
-            $this->displayMessage('ACYM_ERROR_SAVE_USER', $ajax);
-        }
 
         //We will now load back the user from the one we saved so that we will have all its infos
         $myuser = $userClass->getOneById($user->id);
@@ -297,6 +313,8 @@ class FrontusersController extends UsersController
         }
 
         acym_redirect($redirectUrl);
+
+        return true;
     }
 
     private function unsubscribeDirectly($alreadyExists, $ajax)

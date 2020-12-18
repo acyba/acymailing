@@ -9,7 +9,7 @@
         <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
 		<input name="mail[subject]" type="text" value="<?php echo acym_escape($data['mail']->subject); ?>" <?php echo in_array(
             $data['mail']->type,
-            [$data['mailClass']::TYPE_WELCOME, $data['mailClass']::TYPE_UNSUBSCRIBE, $data['mailClass']::TYPE_AUTOMATION]
+            ['welcome', 'unsubscribe', 'automation']
         ) ? 'required' : ''; ?>>
 	</label>
 </div>

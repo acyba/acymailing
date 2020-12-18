@@ -185,10 +185,6 @@ class FieldClass extends acymClass
         foreach ($fields as $id => $value) {
             $query = 'INSERT INTO #__acym_user_has_field (`user_id`, `field_id`, `value`) VALUES ';
             $field = $this->getOneFieldByID($id);
-            if(empty($field)) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_WRONG_FIELD_ID', $id), 'error');
-                continue;
-            }
             $fieldOptions = json_decode($field->option);
 
             if (is_array($value)) {
