@@ -100,23 +100,6 @@
 				</div>
 			</div>
 			<div class="cell grid-x margin-top-1">
-				<label class="cell medium-5 large-2">
-                    <?php
-                    echo acym_translation('ACYM_START_DATE');
-                    echo acym_info('ACYM_START_DATE_AUTO_CAMPAIGN_DESC');
-                    ?>
-				</label>
-				<div class="cell medium-5 large-3 small-6">
-                    <?php
-                    $startDateValue = '';
-                    if (!empty($data['currentCampaign']->sending_params['start_date'])) {
-                        $startDateValue = acym_date($data['currentCampaign']->sending_params['start_date'], 'Y-m-d H:i');
-                    }
-                    ?>
-					<input type="text" name="start_date" class="acy_date_picker" readonly value="<?php echo $startDateValue; ?>">
-				</div>
-			</div>
-			<div class="cell grid-x margin-top-1">
                 <?php
                 echo acym_switch(
                     'need_confirm',

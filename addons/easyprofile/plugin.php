@@ -62,69 +62,6 @@ class plgAcymEasyprofile extends acymPlugin
         }
     }
 
-    public function dynamicText($mailId)
-    {
-        return $this->pluginDescription;
-    }
-
-    public function textPopup()
-    {
-        acym_loadLanguageFile('com_jsn', JPATH_ADMINISTRATOR);
-
-        $text = '<div class="grid-x acym__popup__listing">';
-
-        foreach ($this->epfields as $field) {
-            if (in_array($field->alias, $this->bannedFields)) continue;
-            $text .= '<div 
-                        class="cell acym__row__no-listing acym__listing__row__popup" 
-                        onclick="setTag(\'{'.$this->name.'field:'.$field->alias.'}\', jQuery(this));">'.acym_translation($field->title).'</div>';
-        }
-
-        $text .= '</div>';
-
-        echo $text;
-    }
-
-    public function replaceUserInformation(&$email, &$user, $send = true)
-    {
-        $extractedTags = $this->pluginHelper->extractTags($email, $this->name.'field');
-        if (empty($extractedTags)) return;
-
-        // Get the current user
-        $fieldsToSelect = [];
-        foreach ($this->epfields as $field) {
-            if ($field->type == '' || in_array($field->alias, $this->bannedFields)) continue;
-            if ($field->table == '#__jsn_users') {
-                $fieldsToSelect[] = 'jsnuser.`'.$field->alias.'`';
-            } else {
-                $fieldsToSelect[] = 'juser.'.$field->alias;
-            }
-        }
-
-        $query = 'SELECT '.implode(', ', $fieldsToSelect).' 
-                FROM #__users AS juser
-                JOIN #__jsn_users AS jsnuser ON juser.id = jsnuser.id 
-                JOIN #__acym_user AS acyuser ON juser.id = acyuser.cms_id 
-                WHERE acyuser.id = '.intval($user->id);
-        $userFields = acym_loadObject($query);
-
-        $tags = [];
-        foreach ($extractedTags as $i => $oneTag) {
-            if (isset($tags[$i])) continue;
-            $value = empty($userFields->{$oneTag->id}) ? '' : $userFields->{$oneTag->id};
-            $field = null;
-            foreach ($this->epfields as $oneField) {
-                if ($oneField->alias === $oneTag->id) {
-                    $field = $oneField;
-                    break;
-                }
-            }
-            $tags[$i] = empty($user->id) || empty($field) ? $oneTag->default : $this->formatFieldDisplay($value, $field);
-        }
-
-        $this->pluginHelper->replaceTags($email, $tags);
-    }
-
     public function getStandardStructure(&$customView)
     {
         $tag = new stdClass();
@@ -164,7 +101,7 @@ class plgAcymEasyprofile extends acymPlugin
         }
         $fieldsToSelect[] = 'jsnuser.avatar ';
 
-        $query .= implode(', ', $fieldsToSelect).' FROM #__users AS juser
+        $query .= implode(', ', $fieldsToSelect).'FROM #__users AS juser
                 JOIN #__jsn_users AS jsnuser ON juser.id=jsnuser.id';
         $element = acym_loadObject($query);
         if (empty($element)) return;
@@ -322,7 +259,7 @@ class plgAcymEasyprofile extends acymPlugin
         }
         $fieldsToSelect[] = 'jsnuser.avatar ';
 
-        $query .= implode(', ', $fieldsToSelect).' FROM #__users AS juser
+        $query .= implode(', ', $fieldsToSelect).'FROM #__users AS juser
                 JOIN #__jsn_users AS jsnuser ON juser.id = jsnuser.id
                 WHERE jsnuser.id = '.intval($tag->id);
 

@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'acymicon';
-    src: url('fonts/acymicon.eot?ri96ed');
-    src: url('fonts/acymicon.eot?ri96ed#iefix') format('embedded-opentype'),
-    url('fonts/acymicon.ttf?ri96ed') format('truetype'),
-    url('fonts/acymicon.woff?ri96ed') format('woff'),
-    url('fonts/acymicon.svg?ri96ed#acymicon') format('svg');
+    src: url('fonts/acymicon.eot?gnny1l');
+    src: url('fonts/acymicon.eot?gnny1l#iefix') format('embedded-opentype'),
+    url('fonts/acymicon.ttf?gnny1l') format('truetype'),
+    url('fonts/acymicon.woff?gnny1l') format('woff'),
+    url('fonts/acymicon.svg?gnny1l#acymicon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -25,26 +25,6 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.acymicon-checkbox_empty:before {
-    content: "\e912";
-}
-
-.acymicon-radio_button_checked:before {
-    content: "\e917";
-}
-
-.acymicon-radio_button_unchecked:before {
-    content: "\e925";
-}
-
-.acymicon-checkbox_checked:before {
-    content: "\e926";
-}
-
-.acymicon-follow:before {
-    content: "\e90e";
-}
-
 .acymicon-life-bouy:before {
     content: "\e93a";
 }
@@ -63,6 +43,10 @@
 
 .acymicon-filter:before {
     content: "\f0b0";
+}
+
+.acymicon-follow:before {
+    content: "\e90e";
 }
 
 .acymicon-user-plus:before {
@@ -153,6 +137,10 @@
     content: "\e911";
 }
 
+.acymicon-radio_button_unchecked:before {
+    content: "\e912";
+}
+
 .acymicon-keyboard_arrow_down:before {
     content: "\e913";
 }
@@ -167,6 +155,10 @@
 
 .acymicon-share:before {
     content: "\e916";
+}
+
+.acymicon-radio_button_checked:before {
+    content: "\e917";
 }
 
 .acymicon-autorenew:before {
@@ -219,6 +211,14 @@
 
 .acymicon-format_align_right:before {
     content: "\e924";
+}
+
+.acymicon-check_box:before {
+    content: "\e925";
+}
+
+.acymicon-check_box_outline_blank:before {
+    content: "\e926";
 }
 
 .acymicon-keyboard_arrow_right:before {

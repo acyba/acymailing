@@ -355,7 +355,7 @@ class plgAcymSubscription extends acymPlugin
             return $this->lists[$mailid][$subid];
         }
 
-        if ($type == $mailClass::TYPE_WELCOME && !empty($subid)) {
+        if ($type == 'welcome' && !empty($subid)) {
             //Last list the user subscribed to...
             $listid = acym_loadResult(
                 'SELECT list.id 
@@ -371,7 +371,7 @@ class plgAcymSubscription extends acymPlugin
             }
         }
 
-        if ($type == $mailClass::TYPE_UNSUBSCRIBE && !empty($subid)) {
+        if ($type == 'unsubscribe' && !empty($subid)) {
             //Last list the user unsubscribed from...
             $listid = acym_loadResult(
                 'SELECT list.id 

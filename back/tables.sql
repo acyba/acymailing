@@ -567,7 +567,6 @@ CREATE TABLE IF NOT EXISTS `#__acym_form` (
 	`cookie` VARCHAR(30),
 	`delay` SMALLINT(10),
 	`pages` TEXT,
-	`redirection_options` TEXT,
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB

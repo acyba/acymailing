@@ -297,12 +297,12 @@ const acym_editorWysidContextModal = {
 
                 let linkType = $self.attr('acym-data-type');
                 if (linkType.indexOf('call-action') !== -1) {
-                    $inputLink.find('#acym__wysid__context__button__link, .acym__wysid__context__button__link').val('#').trigger('change');
+                    $inputLink.find('#acym__wysid__context__button__link').val('#').trigger('change');
                     $inputText.find('#acym__wysid__context__button__text').val(ACYM_JS_TXT.ACYM_BUTTON).trigger('change');
                     $inputLink.show();
                 } else {
                     let dynamicLink = `{${linkType}}{/${linkType}}`;
-                    $inputLink.find('#acym__wysid__context__button__link, .acym__wysid__context__button__link').val(dynamicLink).trigger('change');
+                    $inputLink.find('#acym__wysid__context__button__link').val(dynamicLink).trigger('change');
                     $inputText.find('#acym__wysid__context__button__text').val(ACYM_JS_TXT[`ACYM_${linkType.toUpperCase()}`]).trigger('change');
                     $inputLink.hide();
                 }
@@ -331,7 +331,7 @@ const acym_editorWysidContextModal = {
             jQuery('#acym__wysid__context__button__text').val($button.text()).off('change paste keyup').on('change paste keyup', function () {
                 $button.text(jQuery(this).val());
             });
-            jQuery('#acym__wysid__context__button__link, .acym__wysid__context__button__link').val($button.attr('href')).off('change paste keyup').on('change paste keyup', function () {
+            jQuery('#acym__wysid__context__button__link').val($button.attr('href')).off('change paste keyup').on('change paste keyup', function () {
                 $button.attr('href', jQuery(this).val());
             });
             jQuery('#acym__wysid__context__button__bold')
@@ -549,7 +549,16 @@ const acym_editorWysidContextModal = {
 
             jQuery('#acym__wysid__context__social__width').val(contextWidth);
 
-            let socialNetworks = acym_helper.parseJson(ACYM_SOCIAL_MEDIA);
+            let socialNetworks = [
+                'facebook',
+                'twitter',
+                'instagram',
+                'linkedin',
+                'pinterest',
+                'vimeo',
+                'wordpress',
+                'youtube'
+            ];
             let $selectSocialSelect = jQuery('#acym__wysid__context__follow__select');
 
             for (let i = 0, l = socialNetworks.length ; i < l ; i++) {
@@ -571,7 +580,7 @@ const acym_editorWysidContextModal = {
                         content += '<div class="small-7 cell">';
                         content += '<div class="input-group small-12 cell">';
 
-                        content += '<input class="input-group-field acym__wysid__context__button__link acym__wysid__context__button__link--'
+                        content += '<input id="acym__wysid__context__button__link" class="input-group-field acym__wysid__context__button__link--'
                                    + currentSocialNetwork
                                    + '" type="text" placeholder="https://" value="'
                                    + jQuery(this).attr('href')

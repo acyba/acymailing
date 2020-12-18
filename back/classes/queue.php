@@ -19,7 +19,6 @@ class QueueClass extends acymClass
     {
         $campaignClass = new CampaignClass();
         $mailStatClass = new MailStatClass();
-        $mailClass = new MailClass();
         $query = 'FROM #__acym_mail AS mail
                     LEFT JOIN #__acym_queue AS queue ON mail.id = queue.mail_id 
                     LEFT JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id OR mail.parent_id = campaign.mail_id';
@@ -53,8 +52,8 @@ class QueueClass extends acymClass
                 'sending' => 'campaign.active = 1 AND queue.mail_id IS NOT NULL',
                 'paused' => 'campaign.active = 0',
                 'scheduled' => 'campaign.active = 1 AND queue.mail_id IS NULL',
-                'automation' => 'mail.type = '.acym_escapeDB($mailClass::TYPE_AUTOMATION),
-                'followup' => 'mail.type = '.acym_escapeDB($mailClass::TYPE_FOLLOWUP),
+                'automation' => 'mail.type = '.acym_escapeDB('automation'),
+                'followup' => 'mail.type = '.acym_escapeDB('followup'),
             ];
 
             if (empty($allowedStatus[$settings['status']])) {
@@ -73,6 +72,7 @@ class QueueClass extends acymClass
 
         $query = 'SELECT mail.name, mail.subject, mail.id, campaign.id AS campaign, IF(campaign.sending_date IS NULL, queue.sending_date, campaign.sending_date) AS sending_date, campaign.sending_type, campaign.active, campaign.sending_params AS sending_params, COUNT(queue.mail_id) AS nbqueued, mail.language, mail.parent_id '.$query.' ORDER BY queue.sending_date ASC';
 
+        $mailClass = new MailClass();
         acym_query('SET SQL_BIG_SELECTS=1;');
         $results['elements'] = $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['campaignsPerPage']));
         $results['total'] = acym_loadResult($queryCount);
@@ -136,10 +136,10 @@ class QueueClass extends acymClass
         }
 
         $automationNumber = acym_loadResult(
-            'SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB($mailClass::TYPE_AUTOMATION)
+            'SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB('automation')
         );
         $followupNumber = acym_loadResult(
-            'SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB($mailClass::TYPE_FOLLOWUP)
+            'SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB('followup')
         );
 
         $elementsPerStatus = acym_loadObjectList($queryStatus.' GROUP BY score', 'score');
@@ -299,7 +299,9 @@ class QueueClass extends acymClass
 
     public function getReady($limit, $mailid = 0)
     {
-        if (empty($limit)) return [];
+        if (empty($limit)) {
+            return [];
+        }
 
         $order = $this->config->get('sendorder');
         if (empty($order)) {
@@ -322,8 +324,7 @@ class QueueClass extends acymClass
             ).' AND (campaign.mail_id IS NULL OR (campaign.`active` = 1 AND campaign.`draft` = 0 AND user.active = 1))';
 
         if ($this->config->get('require_confirmation', 1) == 1) {
-            $mailClass = new MailClass();
-            $query .= ' AND (user.confirmed = 1 OR mail.type = '.acym_escapeDB($mailClass::TYPE_NOTIFICATION).')';
+            $query .= ' AND (user.confirmed = 1 OR mail.type = "notification")';
         }
 
         if (!empty($this->emailtypes)) {

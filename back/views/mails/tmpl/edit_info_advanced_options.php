@@ -44,7 +44,7 @@
                         $data['mail']->headers
                     ); ?></textarea>
 			</div>
-            <?php if ((!empty($data['mail']->type) && $data['mail']->type != $data['mailClass']::TYPE_STANDARD) || (!empty($data['mail']->template) && $data['mail']->template != 1)) { ?>
+            <?php if ((!empty($data['mail']->type) && $data['mail']->type != 'standard') || (!empty($data['mail']->template) && $data['mail']->template != 1)) { ?>
 				<div class="cell grid-x">
 					<div class="cell grid-x medium-6">
                         <?php include acym_getPartial('editor', 'attachments'); ?>

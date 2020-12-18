@@ -1,27 +1,9 @@
 module.exports = {
-    '7.0.0': {
-        'feature': [
-            {
-                cms: 'joomla',
-                message: 'The EasyProfile fields can now be inserted individually for the user receiving the email'
-            }
-        ],
-        'improve': [
+    '6.19.3': {
+        'fix': [
             {
                 cms: 'all',
-                message: 'A new access level entry has been added for the segments'
-            },
-            {
-                cms: 'all',
-                message: 'A new option lets you specify a redirection URL after submitting the subscription forms'
-            },
-            {
-                cms: 'all',
-                message: 'Add a start date for the automatic campaigns'
-            },
-            {
-                cms: 'all',
-                message: 'Add list description in list selection popup'
+                message: 'Fixed the sending step on the walkthrough after installing AcyMailing'
             }
         ]
     },

@@ -62,7 +62,7 @@ function acym_formOptions($token = true, $task = '', $currentStep = null, $curre
     echo '<input type="hidden" name="task" value="'.$task.'"/>';
     echo '<input type="hidden" name="nextstep" value=""/>';
     echo '<input type="hidden" name="page" value="'.acym_getVar('cmd', 'page', '').'"/>';
-    echo '<input type="hidden" name="ctrl" value="'.(empty($currentCtrl) ? acym_getVar('cmd', 'ctrl', '') : $currentCtrl).'"/>';
+    echo empty($currentCtrl) ? '<input type="hidden" name="ctrl" value="'.acym_getVar('cmd', 'ctrl', '').'"/>' : '<input type="hidden" name="ctrl" value="'.$currentCtrl.'"/>';
     if ($token) {
         echo acym_formToken();
     }

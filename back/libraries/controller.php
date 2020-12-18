@@ -62,12 +62,12 @@ class acymController extends acymObject
         $this->call($taskToCall);
     }
 
-    public function call($task)
+    public function call($task, $allowedTasks = [])
     {
         if ($this->preventCallTask) return;
 
         // If not authorized, display message and redirect to dashboard
-        if (!in_array($task, ['countResultsTotal', 'countGlobalBySegmentId', 'countResults']) && !acym_isAllowed($this->name, $task)) {
+        if (!in_array($task, $allowedTasks) && !acym_isAllowed($this->name, $task)) {
             acym_enqueueMessage(acym_translation('ACYM_ACCESS_DENIED'), 'warning');
             acym_redirect(acym_completeLink('dashboard'));
 
@@ -163,8 +163,8 @@ class acymController extends acymObject
         if (in_array('vue-prism-editor', $scripts)) {
             acym_addScript(false, ACYM_JS.'libraries/prism-editor.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'prism-editor.min.js'));
             acym_addScript(false, ACYM_JS.'libraries/prism.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'prism.min.js'));
+            acym_addScript(false, 'https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.10.2/beautify-html.js');
             acym_addStyle(false, ACYM_CSS.'libraries/prism.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'prism.min.css'));
-            acym_addScript(false, ACYM_JS.'libraries/beautify-html.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'beautify-html.min.js'));
         }
     }
 
