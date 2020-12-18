@@ -491,9 +491,11 @@ class MailerHelper extends acyPHPMailer
      * @return bool
      * @throws Exception
      */
-    public function sendOne($mailId, $user, $isTest = false, $testNote = '')
+    public function sendOne($mailId, $user, $isTest = false, $testNote = '', $clear = true)
     {
-        $this->clearAll();
+        if ($clear) {
+            $this->clearAll();
+        }
 
         //Load the mail if it's not already loaded
         if (!isset($this->defaultMail[$mailId]) && !$this->load($mailId)) {
