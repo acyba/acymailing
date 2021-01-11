@@ -38,7 +38,7 @@ class plgAcymTableofcontents extends acymPlugin
 
         $displayOptions = [
             [
-                'title' => acym_translation_sprintf('ACYM_LEVEL_X', '1'),
+                'title' => acym_translationSprintf('ACYM_LEVEL_X', '1'),
                 'type' => 'select',
                 'name' => 'level1',
                 'options' => $anchorOptions,
@@ -46,7 +46,7 @@ class plgAcymTableofcontents extends acymPlugin
                 'default' => 'existing',
             ],
             [
-                'title' => acym_translation_sprintf('ACYM_LEVEL_X', '2'),
+                'title' => acym_translationSprintf('ACYM_LEVEL_X', '2'),
                 'type' => 'select',
                 'name' => 'level2',
                 'options' => $anchorOptions,

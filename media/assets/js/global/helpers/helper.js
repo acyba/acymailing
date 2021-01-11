@@ -44,7 +44,7 @@ const acym_helper = {
         jQuery('.acy_button_submit').off('click').on('click', function (e) {
             if (jQuery(this).attr('data-force-submit') !== undefined) jQuery('[required]').removeAttr('required');
 
-            if (jQuery(this).hasClass('disabled-button')) {
+            if (jQuery(this).hasClass('disabled')) {
                 return false;
             }
 
@@ -202,5 +202,8 @@ const acym_helper = {
 
                          return error;
                      });
+    },
+    sameArrays: function(array1, array2){
+        return array1.length === array2.length && array1.every(function(value, index) { return value === array2[index]; });
     }
 };

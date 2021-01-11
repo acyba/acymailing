@@ -10,8 +10,10 @@ const acym_helperTab = {
             }
             if (jQuery(this).attr('data-dynamics')) {
                 let mailId = jQuery('[name="mail_id"]').val();
+                let mailType = jQuery('[name="mail_type"]').val();
+                let typeNotif = jQuery('[name="type_notif"]').val();
                 let ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlDynamics + '&task=trigger&trigger=textPopup&plugin=' + jQuery(this)
-                    .attr('data-dynamics') + '&id=' + mailId;
+                    .attr('data-dynamics') + '&id=' + mailId + '&mail_type=' + mailType + '&type_notif=' + typeNotif;
 
                 jQuery.post(ajaxUrl, function (response) {
                     jQuery('.tabs-panel.is-active').html(response);

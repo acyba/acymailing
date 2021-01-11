@@ -18,6 +18,12 @@
             border: 1px solid #888;
             width: 60%;
             height: 80%;
+
+            @media screen and (max-width: 450px) {
+                margin: 0;
+                width: 100%;
+                height: 100%;
+            }
         }
 
         .acym__front__archive__modal__close {

@@ -52,7 +52,7 @@ class plgAcymBirthday extends acymPlugin
             $i++;
         }
 
-        $option = '<div class="grid-x grid-margin-x">
+        $option = '<div class="grid-x grid-margin-x margin-y">
                         <div class="cell grid-x">
                             <div class="cell medium-shrink" style="display: none">
                                 '.acym_translation('ACYM_SOURCE').' : ';
@@ -97,7 +97,7 @@ class plgAcymBirthday extends acymPlugin
                         </div>
                         <div class="cell grid-x">
                             <div class="cell auto word-break acym__automation__trigger__action__birthday">
-                            '.acym_translation_sprintf(
+                            '.acym_translationSprintf(
                     'ACYM_TRIGGER_EVENT_BEFORE_BIRTHDAY',
                     '<input type="number" name="[triggers][user][on_birthday][day_before]" class="intext_input" min="0" value="'.acym_escape($defaultDayBefore).'">',
                     $hourSelector,
@@ -210,12 +210,12 @@ class plgAcymBirthday extends acymPlugin
 
             $date = empty($automation->triggers['on_birthday']['day_before'])
                 ? acym_translation('ACYM_ON_USER_BIRTHDAY')
-                : acym_translation_sprintf(
+                : acym_translationSprintf(
                     'ACYM_X_DAYS_BEFORE_BIRTHDAY',
                     $automation->triggers['on_birthday']['day_before']
                 );
-            $time = acym_translation_sprintf('ACYM_AT_DATE_TIME', $automation->triggers['on_birthday']['hour'], $automation->triggers['on_birthday']['minutes']);
-            $end = acym_translation_sprintf('ACYM_FOR_THE_X_FIELD_X', $dataSources[$automation->triggers['on_birthday']['source']]['source_name'], $fieldToDsiplay['name']);
+            $time = acym_translationSprintf('ACYM_AT_DATE_TIME', $automation->triggers['on_birthday']['hour'], $automation->triggers['on_birthday']['minutes']);
+            $end = acym_translationSprintf('ACYM_FOR_THE_X_FIELD_X', $dataSources[$automation->triggers['on_birthday']['source']]['source_name'], $fieldToDsiplay['name']);
 
             $automation->triggers['on_birthday'] = $date.' '.$time.' '.$end;
         }
@@ -281,7 +281,7 @@ class plgAcymBirthday extends acymPlugin
         $inputRelative .= '</div>';
 
         $whenSettings = '<div class="cell grid-x acym_vcenter">';
-        $whenSettings .= acym_translation_sprintf('ACYM_SEND_IT_BEFORE_USER_BIRTHDAY', $inputTime, $timeSelect, $inputRelative);
+        $whenSettings .= acym_translationSprintf('ACYM_SEND_IT_BEFORE_USER_BIRTHDAY', $inputTime, $timeSelect, $inputRelative);
         $whenSettings .= '</div>';
 
         // Birthday field choice
@@ -301,7 +301,7 @@ class plgAcymBirthday extends acymPlugin
         $inputField .= '</div><div class="cell medium-8"></div>';
 
         $additionalSettings = '<div class="cell grid-x acym_vcenter margin-left-3 margin-bottom-1">';
-        $additionalSettings .= acym_translation_sprintf('ACYM_BIRTHDAY_FIELD', $inputField);
+        $additionalSettings .= acym_translationSprintf('ACYM_BIRTHDAY_FIELD', $inputField);
         $additionalSettings .= '</div>';
 
         $specificSettings[] = [
@@ -466,7 +466,7 @@ class plgAcymBirthday extends acymPlugin
                 'class="acym__select" required'
             );
             $fieldsSelect = '<span class="cell large-2 medium-4 margin-left-1">'.$fieldsSelect.'</span>';
-            $additionalCondition['birthday_field'] = acym_translation_sprintf('ACYM_BIRTHDAY_FIELD', acym_info('ACYM_BIRTHDAY_FIELD_CUSTOM_FIELD_TYPE_DATE').$fieldsSelect);
+            $additionalCondition['birthday_field'] = acym_translationSprintf('ACYM_BIRTHDAY_FIELD', acym_info('ACYM_BIRTHDAY_FIELD_CUSTOM_FIELD_TYPE_DATE').$fieldsSelect);
         }
     }
 
@@ -475,7 +475,7 @@ class plgAcymBirthday extends acymPlugin
         if ($trigger == self::FOLLOWTRIGGER && !empty($condition['birthday_field'])) {
             $fieldClass = new FieldClass();
             $field = $fieldClass->getOneById($condition['birthday_field']);
-            $return[] = acym_translation_sprintf('ACYM_BIRTHDAY_FIELD_IS', $field->name);
+            $return[] = acym_translationSprintf('ACYM_BIRTHDAY_FIELD_IS', $field->name);
         }
     }
 

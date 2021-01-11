@@ -13,11 +13,11 @@ $privacyURL = acym_getArticleURL(
 if (empty($termsURL) && empty($privacyURL)) {
     $termslink = '';
 } elseif (empty($privacyURL)) {
-    $termslink = acym_translation_sprintf('ACYM_I_AGREE_TERMS', $termsURL);
+    $termslink = acym_translationSprintf('ACYM_I_AGREE_TERMS', $termsURL);
 } elseif (empty($termsURL)) {
-    $termslink = acym_translation_sprintf('ACYM_I_AGREE_PRIVACY', $privacyURL);
+    $termslink = acym_translationSprintf('ACYM_I_AGREE_PRIVACY', $privacyURL);
 } else {
-    $termslink = acym_translation_sprintf('ACYM_I_AGREE_BOTH', $termsURL, $privacyURL);
+    $termslink = acym_translationSprintf('ACYM_I_AGREE_BOTH', $termsURL, $privacyURL);
 }
 
 if (!empty($termslink)) {

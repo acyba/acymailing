@@ -119,7 +119,7 @@ class jMail_acym extends PHPMailer
             $result = $this->SetFrom(JMailHelper::cleanLine($from));
         } else {
             // If it is neither, we throw a warning
-            acym_raiseError(E_WARNING, 0, acym_translation_sprintf('JLIB_MAIL_INVALID_EMAIL_SENDER', $from));
+            acym_raiseError(E_WARNING, 0, acym_translationSprintf('JLIB_MAIL_INVALID_EMAIL_SENDER', $from));
         }
 
         // Check for boolean false return if exception handling is disabled
@@ -407,7 +407,7 @@ class jMail_acym extends PHPMailer
 
     public function sendAdminMail($adminName, $adminEmail, $email, $type, $title, $author, $url = null)
     {
-        $subject = acym_translation_sprintf('JLIB_MAIL_USER_SUBMITTED', $type);
+        $subject = acym_translationSprintf('JLIB_MAIL_USER_SUBMITTED', $type);
 
         $message = sprintf(acym_translation('JLIB_MAIL_MSG_ADMIN'), $adminName, $type, $title, $author, $url, $url, 'administrator', $type);
         $message .= acym_translation('JLIB_MAIL_MSG')."\n";

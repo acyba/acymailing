@@ -11,18 +11,21 @@ jQuery(document).ready(function ($) {
                     'name',
                     'pages',
                     'active',
-                    'delay'
+                    'delay',
+                    'redirection_options.after_subscription',
+                    'redirection_options.confirmation_message'
                 ],
                 oldForm: {}
             };
         },
         mounted() {
-            this.oldForm = Object.assign({}, this.form);
+            this.oldForm = JSON.parse(JSON.stringify(this.form));
             $('#acym__forms__preview__content').on('load', () => {
                 this.getFormRender();
                 this.disableClickIframe();
             });
             acym_helperSwitch.setSwitchFieldsGlobal();
+            acym_helperTooltip.setTooltip();
         },
         computed: {
             isMenuSettingsActive() {
@@ -108,14 +111,28 @@ jQuery(document).ready(function ($) {
                 handler() {
                     $('.acym__forms__menu__container').off('scroll');
                     clearTimeout(timeout);
+                    let stopReloading = false;
                     for (let i = 0 ; i < this.noReloading.length ; i++) {
-                        if (this.form[this.noReloading[i]] !== this.oldForm[this.noReloading[i]]) {
-                            this.oldForm = Object.assign({}, this.form);
-                            return;
+                        if (this.noReloading[i].indexOf('.') === -1) {
+                            if (this.noReloading[i] === 'pages') {
+                                if (!acym_helper.sameArrays(this.form[this.noReloading[i]], this.oldForm[this.noReloading[i]])) {
+                                    stopReloading = true;
+                                }
+                            } else if (this.form[this.noReloading[i]] !== this.oldForm[this.noReloading[i]]) {
+                                stopReloading = true;
+                            }
+                        } else {
+                            let noReloadingSplit = this.noReloading[i].split('.');
+                            if (this.form[noReloadingSplit[0]][noReloadingSplit[1]] !== this.oldForm[noReloadingSplit[0]][noReloadingSplit[1]]) {
+                                stopReloading = true;
+                            }
                         }
                     }
+                    this.oldForm = JSON.parse(JSON.stringify(this.form));
+
+                    if (stopReloading) return;
+
                     this.loading = true;
-                    this.oldForm = Object.assign({}, this.form);
                     timeout = setTimeout(() => {
                         this.getFormRender();
                     }, 1000);

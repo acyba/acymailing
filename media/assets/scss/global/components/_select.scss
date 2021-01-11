@@ -4,13 +4,6 @@
     padding-right: 40px;
 }
 
-.select2-container--sortBy .selection .select2-selection--single {
-    text-align: left;
-    height: 30px;
-    border-radius: 5px;
-    border: 1px solid map-get($foundation-palette, secondary) !important;
-}
-
 .select2-container {
     margin-bottom: 0 !important;
 
@@ -21,4 +14,66 @@
 
 .acym_listing_sort-by > span:first-child {
     padding-right: 10px;
+}
+
+.select2-container--foundation {
+    color: $color-palette-dark-blue;
+
+    span {
+        color: $color-palette-dark-blue;
+    }
+
+    .select2-selection.select2-selection--single, .selection .select2-selection.select2-selection--single, .select2-selection--multiple {
+        background-color: $white;
+        border-color: $dark-gray;
+
+        &:focus, &:hover {
+            background-color: $white;
+            border-color: $color-palette-dark-blue;
+        }
+    }
+
+    .select2-search.select2-search--inline {
+        border-radius: 3px;
+
+        [type=search].select2-search__field {
+            background-color: $white;
+            border-color: $white;
+            border-radius: 3px;
+
+            &:hover, &:focus {
+                background-color: $white;
+                border-color: $white;
+            }
+        }
+    }
+
+    .select2-selection--single .select2-selection__arrow b {
+        background-image: none;
+        font-family: 'acymicon';
+        border: none;
+
+        &:before {
+            content: "\e93b";
+            font-size: .4rem;
+            position: absolute;
+            right: -5px;
+        }
+    }
+
+    &.select2-container--open .select2-selection--single .select2-selection__arrow b::before {
+        top: -7px;
+    }
+
+    .select2-selection__rendered {
+        text-align: left;
+
+        .select2-selection__choice {
+            background-color: $color-palette-dark-blue;
+        }
+    }
+}
+
+.acym__select__sort, .acym__select__sort + .select2 {
+    width: 140px !important;
 }

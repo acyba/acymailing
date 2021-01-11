@@ -3,9 +3,12 @@
 use AcyMailing\Classes\ActionClass;
 use AcyMailing\Classes\ConditionClass;
 use AcyMailing\Classes\FieldClass;
+use AcyMailing\Classes\FormClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\PluginClass;
+use AcyMailing\Classes\SegmentClass;
+use AcyMailing\Controllers\ConfigurationController;
 use AcyMailing\Controllers\PluginsController;
 use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Helpers\SplashscreenHelper;
@@ -936,6 +939,41 @@ class acymInstall
                     $this->updateQuery('UPDATE `#__acym_mail` SET `mail_settings` = '.acym_escapeDB(json_encode($settings)).' WHERE `id` = '.intval($oneTemplate->id));
                 }
             }
+        }
+
+        if (version_compare($this->fromVersion, '7.0.0', '<')) {
+            $socialIcons = json_decode($config->get('social_icons', '{}'), true);
+            foreach ($socialIcons as $oneSocial => $imagePath) {
+                if (!in_array($oneSocial, ACYM_SOCIAL_MEDIA)) {
+                    unset($socialIcons[$oneSocial]);
+                }
+            }
+
+            $newConfig = new stdClass();
+            $newConfig->social_icons = json_encode($socialIcons);
+            $config->save($newConfig);
+
+            $this->updateQuery('ALTER TABLE `#__acym_form` ADD `redirection_options` TEXT');
+            $formClass = new FormClass();
+            $forms = $formClass->getAll();
+            if (!empty($forms)) {
+                foreach ($forms as $oneForm) {
+                    $oneForm->redirection_options = json_encode(['after_subscription' => '', 'confirmation_message' => '']);
+                    $formClass->save($oneForm);
+                }
+            }
+
+            if (!empty($config->get('active_cron', 0))) {
+                $licenseKey = $config->get('license_key', '');
+                if (!empty($licenseKey)) {
+                    $frequency = $config->get('cron_updateme_frequency', 900);
+                    $configurationController = new ConfigurationController();
+                    $configurationController->modifyCron('activateCron', $licenseKey, $frequency);
+                }
+            }
+
+            $segmentClass = new SegmentClass();
+            $segmentClass->updateSegments();
         }
     }
 

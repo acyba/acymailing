@@ -180,9 +180,9 @@ class BouncesController extends acymController
         $disp .= "<style>body{font-size:12px;font-family: Arial,Helvetica,sans-serif;padding-top:30px;}</style>\n</head>\n<body>";
         echo $disp;
 
-        acym_display(acym_translation_sprintf('ACYM_BOUNCE_CONNECT_SUCC', $this->config->get('bounce_username')), 'success');
+        acym_display(acym_translationSprintf('ACYM_BOUNCE_CONNECT_SUCC', $this->config->get('bounce_username')), 'success');
         $nbMessages = $bounceHelper->getNBMessages();
-        $nbMessagesReport = acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
+        $nbMessagesReport = acym_translationSprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
         acym_display($nbMessagesReport, 'info');
 
         //that should not happen as we check it before anyway...
@@ -277,8 +277,8 @@ class BouncesController extends acymController
                 $nbMessages = $bounceHelper->getNBMessages();
                 $bounceHelper->close();
                 $messages = [
-                    acym_translation_sprintf('ACYM_BOUNCE_CONNECT_SUCC', $this->config->get('bounce_username')),
-                    acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages),
+                    acym_translationSprintf('ACYM_BOUNCE_CONNECT_SUCC', $this->config->get('bounce_username')),
+                    acym_translationSprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages),
                 ];
 
                 if (!empty($nbMessages)) {
@@ -300,7 +300,7 @@ class BouncesController extends acymController
                     $port = $this->config->get('bounce_port', '');
                     if (preg_match('#certificate#i', $errorString) && !$this->config->get('bounce_certif', false)) {
                         //Self signed certificate issue
-                        acym_enqueueMessage(acym_translation_sprintf('ACYM_YOU_MAY_TURN_ON_OPTION', '<i>'.acym_translation('ACYM_SELF_SIGNED_CERTIFICATE').'</i>'), 'warning');
+                        acym_enqueueMessage(acym_translationSprintf('ACYM_YOU_MAY_TURN_ON_OPTION', '<i>'.acym_translation('ACYM_SELF_SIGNED_CERTIFICATE').'</i>'), 'warning');
                     } elseif (!empty($port) && !in_array($port, ['993', '143', '110'])) {
                         //Not the right port... ?
                         acym_enqueueMessage(acym_translation('ACYM_BOUNCE_WRONG_PORT'), 'warning');

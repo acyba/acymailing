@@ -363,8 +363,8 @@ class plgAcymTheeventscalendar extends acymPlugin
         $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
         if (!in_array('image', $tag->display)) $imagePath = '';
 
-        $varFields['{full}'] = $element->post_content;
-        $varFields['{intro}'] = $this->getIntro($element->post_content);
+        $varFields['{full}'] = $this->cleanExtensionContent($element->post_content);
+        $varFields['{intro}'] = $this->cleanExtensionContent($this->getIntro($element->post_content));
         if (in_array('full', $tag->display)) {
             $contentText .= $varFields['{full}'];
         } elseif (in_array('intro', $tag->display)) {
@@ -615,9 +615,9 @@ class plgAcymTheeventscalendar extends acymPlugin
 
         $conditions['user']['eventscalendar']->option .= '<div class="cell grid-x grid-margin-x">';
         $conditions['user']['eventscalendar']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][eventscalendar][datemin]', '', 'cell shrink');
-        $conditions['user']['eventscalendar']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['eventscalendar']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['eventscalendar']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_REGISTRATION_DATE').'</span>';
-        $conditions['user']['eventscalendar']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['eventscalendar']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['eventscalendar']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][eventscalendar][datemax]', '', 'cell shrink');
         $conditions['user']['eventscalendar']->option .= '</div>';
     }
@@ -633,7 +633,7 @@ class plgAcymTheeventscalendar extends acymPlugin
     {
         $this->onAcymProcessFilter_eventscalendar($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_eventscalendar(&$query, $options, $num)
@@ -734,7 +734,7 @@ class plgAcymTheeventscalendar extends acymPlugin
             $event .= ' - '.$ticket;
         }
 
-        $finalText = acym_translation_sprintf('ACYM_REGISTERED_TO', $event);
+        $finalText = acym_translationSprintf('ACYM_REGISTERED_TO', $event);
 
         $dates = [];
         if (!empty($automation['eventscalendar']['datemin'])) {

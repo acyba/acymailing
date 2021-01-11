@@ -1,26 +1,8 @@
 const acym_helperToolbar = {
 
     initToolbar: function () {
-        this.setSearchBar();
         this.setMoreOptionsButtons();
         this.setStatusOnload();
-    },
-    setSearchBar: function () {
-        let $searchButton = jQuery('.acym__toolbar__search-button');
-        let $searchBar = jQuery('#acym__toolbar__search-bar');
-        let $searchField = jQuery('.acym__toolbar__search-field');
-
-        $searchButton.off('click').on('click', function () {
-            $searchBar.toggle('fast', function () {
-                $searchField.focus();
-            });
-        });
-
-        $searchBar.off('keydown').on('keydown', function (e) {
-            if (e.which === 13) {
-                $searchButton.attr('type', 'submit');
-            }
-        });
     },
     setMoreOptionsButtons: function () {
         let $moreOptionsButton = jQuery('#acym__toolbar__button-more-filters');

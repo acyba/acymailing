@@ -164,7 +164,7 @@ class BounceHelper extends acymObject
         if (!$this->mailbox->connect($serverName, $port)) {
             $warnings = ob_get_clean();
             if ($this->report) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_ERROR_CONNECTING', $this->server.' : '.$port), 'error');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_ERROR_CONNECTING', $this->server.' : '.$port), 'error');
             }
             if (!empty($warnings) && $this->report) {
                 acym_display($warnings, 'warning');
@@ -177,7 +177,7 @@ class BounceHelper extends acymObject
         if (empty($login) || isset($login->code)) {
             $warnings = ob_get_clean();
             if ($this->report) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_ERROR_LOGIN', $this->username.':'.$this->password), 'error');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_ERROR_LOGIN', $this->username.':'.$this->password), 'error');
             }
             if (!empty($warnings) && $this->report) {
                 acym_display($warnings, 'warning');
@@ -256,7 +256,7 @@ class BounceHelper extends acymObject
 
         if ($this->report) {
             if (!$this->mailbox) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_ERROR_CONNECTING', $serverName), 'error');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_ERROR_CONNECTING', $serverName), 'error');
             }
             if (!empty($warnings)) {
                 acym_enqueueMessage($warnings, 'warning');
@@ -415,7 +415,7 @@ class BounceHelper extends acymObject
                                 $inlineImages['cid:'.$contentID] = acym_rootURI().$uploadFolder.'/'.$filename.'.'.$extension;
                             }
                         } catch (\Exception $e) {
-                            $this->display(acym_translation_sprintf('ACYM_ERROR_UPLOAD_ATTACHMENT', $filename.'.'.$extension, $e->getMessage()), false);
+                            $this->display(acym_translationSprintf('ACYM_ERROR_UPLOAD_ATTACHMENT', $filename.'.'.$extension, $e->getMessage()), false);
                         }
                     }
                 }
@@ -894,7 +894,7 @@ class BounceHelper extends acymObject
                 ) + 1;
 
             if ($nb < $oneRule->execute_action_after) {
-                $message .= ' | '.acym_translation_sprintf('ACYM_BOUNCE_RECEIVED', $nb, $this->_message->subemail).' | '.acym_translation_sprintf(
+                $message .= ' | '.acym_translationSprintf('ACYM_BOUNCE_RECEIVED', $nb, $this->_message->subemail).' | '.acym_translationSprintf(
                         'ACYM_BOUNCE_MIN_EXEC',
                         $oneRule->execute_action_after
                     );
@@ -905,7 +905,7 @@ class BounceHelper extends acymObject
 
         //If we delete the subscriber, it's the last action we execute
         if (in_array('delete_user', $oneRule->action_user)) {
-            $message .= ' | '.acym_translation_sprintf('ACYM_USER_X_DELETED', $this->_message->subemail);
+            $message .= ' | '.acym_translationSprintf('ACYM_USER_X_DELETED', $this->_message->subemail);
             $this->deletedUsers[] = intval($this->_message->userid);
 
             return $message;
@@ -919,7 +919,7 @@ class BounceHelper extends acymObject
             $listName = empty($this->allLists[$listId]->name) ? $listId : $this->allLists[$listId]->name;
             $message .= ' | ';
             if (isset($status[$listId])) {
-                $message .= acym_translation_sprintf('ACYM_USER_X_NOT_SUBSCRIBED_TO', $this->_message->subemail, $listName);
+                $message .= acym_translationSprintf('ACYM_USER_X_NOT_SUBSCRIBED_TO', $this->_message->subemail, $listName);
                 if ($status[$listId]->status == 1) {
                     $message .= acym_translation('ACYM_USER_ALREADY_SUBSCRIBED');
                 } elseif ($status[$listId]->status == 0) {
@@ -927,7 +927,7 @@ class BounceHelper extends acymObject
                 }
             } else {
                 $this->userClass->subscribe($this->_message->userid, $listId);
-                $message .= acym_translation_sprintf('ACYM_USER_X_SUBSCRIBED_TO', $this->_message->subemail, $listName);
+                $message .= acym_translationSprintf('ACYM_USER_X_SUBSCRIBED_TO', $this->_message->subemail, $listName);
             }
         }
 
@@ -942,10 +942,10 @@ class BounceHelper extends acymObject
                         $listnames[] = $oneListId;
                     }
                 }
-                $message .= ' | '.acym_translation_sprintf('ACYM_USER_X_REMOVED_FROM', $this->_message->subemail, implode(', ', $listnames));
+                $message .= ' | '.acym_translationSprintf('ACYM_USER_X_REMOVED_FROM', $this->_message->subemail, implode(', ', $listnames));
                 $this->userClass->removeSubscription($this->_message->userid, $unsubLists);
             } else {
-                $message .= ' | '.acym_translation_sprintf('ACYM_USER_X_NOT_SUBSCRIBED', $this->_message->subemail);
+                $message .= ' | '.acym_translationSprintf('ACYM_USER_X_NOT_SUBSCRIBED', $this->_message->subemail);
             }
         }
 
@@ -961,23 +961,23 @@ class BounceHelper extends acymObject
                     }
                 }
                 $this->userClass->unsubscribe($this->_message->userid, $unsubLists);
-                $message .= ' | '.acym_translation_sprintf('ACYM_USER_X_UNSUBSCRIBED_FROM', $this->_message->subemail, implode(', ', $listnames));
+                $message .= ' | '.acym_translationSprintf('ACYM_USER_X_UNSUBSCRIBED_FROM', $this->_message->subemail, implode(', ', $listnames));
             } else {
-                $message .= ' | '.acym_translation_sprintf('ACYM_USER_X_NOT_SUBSCRIBED', $this->_message->subemail);
+                $message .= ' | '.acym_translationSprintf('ACYM_USER_X_NOT_SUBSCRIBED', $this->_message->subemail);
             }
         }
 
         if (in_array('block_user', $oneRule->action_user)) {
-            $message .= ' | '.acym_translation_sprintf('ACYM_USER_X_BLOCKED', $this->_message->subemail.' ( '.acym_translation('ACYM_ID').' '.intval($this->_message->userid).' )');
+            $message .= ' | '.acym_translationSprintf('ACYM_USER_X_BLOCKED', $this->_message->subemail.' ( '.acym_translation('ACYM_ID').' '.intval($this->_message->userid).' )');
             $this->blockedUsers[] = intval($this->_message->userid);
         }
 
         if (in_array('empty_queue_user', $oneRule->action_user)) {
             $affected = acym_query('DELETE FROM #__acym_queue WHERE user_id = '.intval($this->_message->userid));
-            $message .= ' | '.acym_translation_sprintf(
+            $message .= ' | '.acym_translationSprintf(
                     'ACYM_USER_X_QUEUE',
                     $this->_message->subemail.' ( '.acym_translation('ACYM_ID').' '.intval($this->_message->userid).' )',
-                    acym_translation_sprintf('ACYM_SUCC_DELETE_ELEMENTS', $affected)
+                    acym_translationSprintf('ACYM_SUCC_DELETE_ELEMENTS', $affected)
                 );
         }
 
@@ -1021,7 +1021,7 @@ class BounceHelper extends acymObject
                 $this->_message->mailid = 0;
             }
             $this->historyClass->insert($this->_message->userid, 'bounce', $data, $this->_message->mailid);
-            $message .= ' | '.acym_translation_sprintf('ACYM_BOUNCE_MESSAGE_SAVED', $this->_message->userid);
+            $message .= ' | '.acym_translationSprintf('ACYM_BOUNCE_MESSAGE_SAVED', $this->_message->userid);
         }
 
         //we only delete the message if the forward didn't fail
@@ -1065,9 +1065,9 @@ class BounceHelper extends acymObject
             }
 
             if ($this->mailer->send()) {
-                $message .= ' | '.acym_translation_sprintf('ACYM_FORWARDED_TO_X', $oneRule->action_message['forward_to']);
+                $message .= ' | '.acym_translationSprintf('ACYM_FORWARDED_TO_X', $oneRule->action_message['forward_to']);
             } else {
-                $message .= ' | '.acym_translation_sprintf('ACYM_NOT_FORWARDED_TO_X', $oneRule->action_message['forward_to'], $this->mailer->reportMessage);
+                $message .= ' | '.acym_translationSprintf('ACYM_NOT_FORWARDED_TO_X', $oneRule->action_message['forward_to'], $this->mailer->reportMessage);
                 $donotdelete = true;
             }
         }

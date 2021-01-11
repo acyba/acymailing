@@ -830,7 +830,7 @@ class plgAcymJevents extends acymPlugin
         $params = $this->getTriggerParams();
 
         $triggers['classic']['jevents_reminder'] = new stdClass();
-        $triggers['classic']['jevents_reminder']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'JEvents', acym_translation('ACYM_REMINDER'));
+        $triggers['classic']['jevents_reminder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'JEvents', acym_translation('ACYM_REMINDER'));
         $triggers['classic']['jevents_reminder']->option = '<div class="grid-x cell acym_vcenter"><div class="grid-x cell grid-margin-x acym_vcenter margin-bottom-1">';
         $triggers['classic']['jevents_reminder']->option .= '<div class="cell medium-shrink">
                                                                 <input 
@@ -965,7 +965,7 @@ class plgAcymJevents extends acymPlugin
         acym_loadLanguageFile('com_rsvppro', JPATH_ADMINISTRATOR);
 
         $conditions['user']['jeventsregistration'] = new stdClass();
-        $conditions['user']['jeventsregistration']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'JEvents', 'RSVP');
+        $conditions['user']['jeventsregistration']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'JEvents', 'RSVP');
         $conditions['user']['jeventsregistration']->option = '<div class="cell grid-x grid-margin-x">';
 
         $conditions['user']['jeventsregistration']->option .= '<div class="intext_select_automation cell">';
@@ -1001,9 +1001,9 @@ class plgAcymJevents extends acymPlugin
 
         $conditions['user']['jeventsregistration']->option .= '<div class="cell grid-x grid-margin-x">';
         $conditions['user']['jeventsregistration']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][jeventsregistration][datemin]', '', 'cell shrink');
-        $conditions['user']['jeventsregistration']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['jeventsregistration']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['jeventsregistration']->option .= '<span class="acym_vcenter">'.acym_translation('RSVP_EVENT_REGISTRATION_DATE').'</span>';
-        $conditions['user']['jeventsregistration']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['jeventsregistration']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['jeventsregistration']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][jeventsregistration][datemax]', '', 'cell shrink');
         $conditions['user']['jeventsregistration']->option .= '</div>';
     }
@@ -1019,7 +1019,7 @@ class plgAcymJevents extends acymPlugin
     {
         $this->onAcymProcessFilter_jeventsregistration($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_jeventsregistration(&$query, $options, $num)
@@ -1089,7 +1089,7 @@ class plgAcymJevents extends acymPlugin
 
             $status = acym_translation($status[$automation['jeventsregistration']['status']]);
 
-            $finalText = acym_translation_sprintf('ACYM_REGISTERED', $event, $status);
+            $finalText = acym_translationSprintf('ACYM_REGISTERED', $event, $status);
 
             $dates = [];
             if (!empty($automation['jeventsregistration']['datemin'])) {

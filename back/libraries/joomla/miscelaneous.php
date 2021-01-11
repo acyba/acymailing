@@ -31,9 +31,9 @@ function acym_setPageTitle($title)
     if (empty($title)) {
         $title = acym_getCMSConfig('sitename');
     } elseif (acym_getCMSConfig('sitename_pagetitles', 0) == 1) {
-        $title = acym_translation_sprintf('ACYM_JPAGETITLE', acym_getCMSConfig('sitename'), $title);
+        $title = acym_translationSprintf('ACYM_JPAGETITLE', acym_getCMSConfig('sitename'), $title);
     } elseif (acym_getCMSConfig('sitename_pagetitles', 0) == 2) {
-        $title = acym_translation_sprintf('ACYM_JPAGETITLE', $title, acym_getCMSConfig('sitename'));
+        $title = acym_translationSprintf('ACYM_JPAGETITLE', $title, acym_getCMSConfig('sitename'));
     }
     $document = JFactory::getDocument();
     $document->setTitle($title);
@@ -49,7 +49,7 @@ function acym_getLeftMenu($name)
     $pluginClass = new PluginClass();
     $nbPluginNotUptodate = $pluginClass->getNotUptoDatePlugins();
 
-    $addOnsTitle = empty($nbPluginNotUptodate) ? 'ACYM_ADD_ONS' : acym_translation_sprintf('ACYM_ADD_ONS_X', $nbPluginNotUptodate);
+    $addOnsTitle = empty($nbPluginNotUptodate) ? 'ACYM_ADD_ONS' : acym_translationSprintf('ACYM_ADD_ONS_X', $nbPluginNotUptodate);
     $isCollapsed = empty($_COOKIE['menuJoomla']) ? '' : $_COOKIE['menuJoomla'];
 
     $menus = [

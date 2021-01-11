@@ -1,4 +1,4 @@
-<div class="cell acym__content acym__user__edit__custom__fields">
+<div class="cell acym__content acym__user__edit__custom__fields margin-y">
     <?php
     if (!empty($data['allFields'])) {
         foreach ($data['allFields'] as $field) {
@@ -46,7 +46,7 @@
                     ) : acym_date(time(), 'M. j, Y'); ?></b>
 			</div>
 			<div class="cell medium-6 small-12">
-                <?php echo acym_translation('ACYM_SOURCE'); ?> : <b><?php echo $data['user-information']->source; ?></b>
+                <?php echo acym_translation('ACYM_SOURCE'); ?> : <b><?php echo acym_escape($data['user-information']->source); ?></b>
 			</div>
 		</div>
     <?php } else { ?>

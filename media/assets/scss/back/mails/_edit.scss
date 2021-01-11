@@ -1,15 +1,8 @@
 #acym_wrapper {
-
-    .acym__mail__edit__followup {
-        input {
-            margin-bottom: 0 !important;
-        }
-    }
-
     .acym__toggle__arrow {
         .acym__toggle__arrow__trigger {
             font-size: 16px;
-            color: $primary-light-color;
+            color: $color-palette-cyan;
             font-weight: 500;
             cursor: pointer;
             -webkit-user-select: none;
@@ -21,18 +14,6 @@
 
         .acym__toggle__arrow__contain {
             display: none;
-        }
-    }
-
-    #acym__template__choose__modal {
-        width: 75%;
-        padding-top: 1rem !important;
-
-        @media screen and (min-width: 1024px) {
-            .acym__template__choose__list {
-                max-height: 600px;
-                overflow-y: auto;
-            }
         }
     }
 

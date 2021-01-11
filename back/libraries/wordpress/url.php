@@ -10,17 +10,12 @@ function acym_addPageParam($url, $ajax = false, $front = false)
     preg_match('#^([a-z]+)(?:[^a-z]|$)#Uis', $url, $ctrl);
 
     if ($front) {
-        if ($ajax) {
-            $link = 'admin-ajax.php?page='.ACYM_COMPONENT.'_front&ctrl='.$url.'&action='.ACYM_COMPONENT.'_frontrouter&'.acym_noTemplate();
-        } else {
-            $link = 'admin.php?page='.ACYM_COMPONENT.'_front&ctrl='.$url;
-        }
-        $link = 'wp-admin/'.$link;
+        $link = 'index.php?page='.ACYM_COMPONENT.'_front&ctrl='.$url;
+        if ($ajax) $link .= '&'.acym_noTemplate();
     } else {
+        $link = 'admin.php?page='.ACYM_COMPONENT.'_'.$ctrl[1].'&ctrl='.$url;
         if ($ajax) {
-            $link = 'admin-ajax.php?page='.ACYM_COMPONENT.'_'.$ctrl[1].'&ctrl='.$url.'&action='.ACYM_COMPONENT.'_router&'.acym_noTemplate();
-        } else {
-            $link = 'admin.php?page='.ACYM_COMPONENT.'_'.$ctrl[1].'&ctrl='.$url;
+            $link .= '&action='.ACYM_COMPONENT.'_router&'.acym_noTemplate();
         }
     }
 

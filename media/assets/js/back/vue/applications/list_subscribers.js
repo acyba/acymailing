@@ -27,7 +27,7 @@ jQuery(document).ready(function ($) {
                 users_ordering_sort_order: 'desc'
             },
             mounted: function () {
-                document.querySelector('.acym__list__settings__subscribers__search input.acym__light__input').addEventListener('keydown', function (event) {
+                document.querySelector('.acym__list__settings__subscribers__search input[type="text"]').addEventListener('keydown', function (event) {
                     if (event.keyCode == 13) {
                         event.preventDefault();
                         return false;

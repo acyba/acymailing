@@ -59,21 +59,12 @@
 
         .acym__listing__block__export {
             position: relative;
-            padding: .3rem;
-            cursor: pointer;
-            overflow: hidden;
-            border-radius: $primary-radius;
-            border: 2px solid $light-gray;
             margin-bottom: .3rem;
 
             i {
-                width: 40px;
                 overflow: hidden;
-                font-size: 26px;
-            }
-
-            &:hover {
-                border: 2px solid $dark-blue;
+                font-size: 18px;
+                margin-right: 0;
             }
         }
     }

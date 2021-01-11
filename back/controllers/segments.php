@@ -11,6 +11,8 @@ use AcyMailing\Libraries\acymController;
 class SegmentsController extends acymController
 {
 
+    const FLAG_USERS = -1;
+
     public function __construct()
     {
         parent::__construct();
@@ -80,7 +82,7 @@ class SegmentsController extends acymController
 
         $segment->name = $segmentRequest['name'];
         $segment->active = $segmentRequest['active'];
-        $segment->filters = json_encode($filters['filters'][0]);
+        $segment->filters = json_encode($filters['filters'], JSON_FORCE_OBJECT);
 
         return $segmentClass->save($segment);
     }
@@ -92,40 +94,69 @@ class SegmentsController extends acymController
         //if we are in the campaign edition
         $listsIds = acym_getVar('string', 'list_selected', '');
 
-        $automationHelper = new AutomationHelper();
+        $automationHelpers = [];
+
+        if (!empty($stepAutomation) && !empty($stepAutomation['filters'])) {
+            foreach ($stepAutomation['filters'] as $or => $orValues) {
+                $automationHelpers[$or] = new AutomationHelper();
+                if (empty($orValues)) continue;
+                foreach ($orValues as $and => $andValues) {
+                    $and = intval($and);
+                    foreach ($andValues as $filterName => $options) {
+                        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelpers[$or], &$options, $and.'_'.$or]);
+                    }
+                }
+            }
+        }
+
+        $join = '';
 
         if (!empty($listsIds)) {
             $listsIds = json_decode($listsIds);
             acym_arrayToInteger($listsIds);
             $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
-            $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
-                    ',',
-                    $listsIds
-                ).') and user_list.status = 1 '.$join;
         }
 
-        if (!empty($stepAutomation) && !empty($stepAutomation['filters'][0])) {
-            foreach ($stepAutomation['filters'][0] as $and => $andValues) {
-                $and = intval($and);
-                foreach ($andValues as $filterName => $options) {
-                    acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelper, &$options, &$and]);
+        $userIds = [];
+
+        if (empty($automationHelpers)) {
+            $automationHelperBase = new AutomationHelper();
+            if (!empty($join)) {
+                $automationHelperBase->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
+                        ',',
+                        $listsIds
+                    ).') and user_list.status = 1 '.$join;
+            }
+            $userIds = acym_loadResultArray($automationHelperBase->getQuery(['user.id']));
+        } else {
+            foreach ($automationHelpers as $key => $automationHelper) {
+                if (!empty($join)) {
+                    $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
+                            ',',
+                            $listsIds
+                        ).') and user_list.status = 1 '.$join;
                 }
+                $userIds = array_merge($userIds, acym_loadResultArray($automationHelper->getQuery(['user.id'])));
             }
         }
 
-        echo json_encode(['count' => $automationHelper->count()]);
+        $userIds = array_unique($userIds);
+
+        echo json_encode(['count' => count($userIds)]);
+
         exit;
     }
 
     public function countResults()
     {
         $and = acym_getVar('int', 'and');
+        $or = acym_getVar('int', 'or');
         $stepAutomation = acym_getVar('array', 'acym_action');
 
         //if we are in the campaign edition
         $listsIds = acym_getVar('string', 'list_selected', '');
 
-        if (empty($stepAutomation['filters'][0][$and])) die(acym_translation('ACYM_AUTOMATION_NOT_FOUND'));
+        if (empty($stepAutomation['filters'][$or][$and])) die(acym_translation('ACYM_AUTOMATION_NOT_FOUND'));
 
         $automationHelper = new AutomationHelper();
         $messages = '';
@@ -140,7 +171,7 @@ class SegmentsController extends acymController
                 ).') and user_list.status = 1 '.$join;
         }
 
-        foreach ($stepAutomation['filters'][0][$and] as $filterName => $options) {
+        foreach ($stepAutomation['filters'][$or][$and] as $filterName => $options) {
             $messages = acym_trigger('onAcymProcessFilterCount_'.$filterName, [&$automationHelper, &$options, &$and]);
             break;
         }
@@ -158,18 +189,14 @@ class SegmentsController extends acymController
         $id = acym_getVar('int', 'id');
         $listsIds = json_decode(acym_getVar('string', 'lists', '[]'));
         acym_arrayToInteger($listsIds);
-        $automationHelper = new AutomationHelper();
+        $automationHelperBase = new AutomationHelper();
 
         if (empty($listsIds)) {
             echo json_encode(['count' => 0]);
             exit;
         }
 
-        $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
-        $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
-                ',',
-                $listsIds
-            ).') and user_list.status = 1 '.$join;
+        $automationHelpers = [];
 
         if (!empty($id)) {
             $segmentClass = new SegmentClass();
@@ -178,15 +205,39 @@ class SegmentsController extends acymController
                 echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_COUNT_USER')]);
                 exit;
             }
-            foreach ($segment->filters as $and => $andValues) {
-                $and = intval($and);
-                foreach ($andValues as $filterName => $options) {
-                    acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelper, &$options, &$and]);
+            foreach ($segment->filters as $or => $orValues) {
+                $automationHelpers[$or] = new AutomationHelper();
+                if (empty($orValues)) continue;
+                foreach ($orValues as $and => $andValues) {
+                    $and = intval($and);
+                    foreach ($andValues as $filterName => $options) {
+                        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelpers[$or], &$options, $and.'_'.$or]);
+                    }
                 }
             }
         }
 
-        echo json_encode(['count' => $automationHelper->count()]);
+        $userIds = [];
+
+        $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
+        if (empty($automationHelpers)) {
+            $automationHelperBase->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
+                    ',',
+                    $listsIds
+                ).') and user_list.status = 1 '.$join;
+            $userIds = acym_loadResultArray($automationHelperBase->getQuery(['user.id']));
+        } else {
+            foreach ($automationHelpers as $key => $automationHelper) {
+                $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
+                        ',',
+                        $listsIds
+                    ).') and user_list.status = 1 '.$join;
+                $userIds = array_merge($userIds, acym_loadResultArray($automationHelper->getQuery(['user.id'])));
+            }
+            $userIds = array_unique($userIds);
+        }
+
+        echo json_encode(['count' => count($userIds)]);
         exit;
     }
 
@@ -202,7 +253,7 @@ class SegmentsController extends acymController
         $segment->name = $name;
         $segment->creation_date = acym_date('now', 'Y-m-d H:i:s');
         $segment->active = 1;
-        $segment->filters = json_encode($filters['filters'][0]);
+        $segment->filters = json_encode($filters['filters']);
 
         $return = [];
         $segmentId = $segmentClass->save($segment);

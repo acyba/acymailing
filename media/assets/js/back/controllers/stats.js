@@ -32,7 +32,6 @@ jQuery(document).ready(function ($) {
     function stats() {
         setDropdownChooseCampaign();
         setStartEndDate();
-        fixSelect2DetailedStatsSortBy();
         resetExportButton();
         setSelect2();
         setChartExport();
@@ -85,10 +84,6 @@ jQuery(document).ready(function ($) {
 
     function setSelect2() {
         $('[name="export_type"]')
-            .select2({
-                theme: 'sortBy',
-                minimumResultsForSearch: Infinity
-            })
             .on('change', function () {
                 let $exportButton = $('[data-task="exportGlobal"]');
                 $exportButton.off('click');
@@ -142,14 +137,6 @@ jQuery(document).ready(function ($) {
                 $('#acym__stats__chart__line__canvas').html(response);
             }
         });
-    }
-
-    function fixSelect2DetailedStatsSortBy() {
-        $('.select2-container--sortBy')
-            .css({
-                'width': 'auto',
-                'min-width': '140px'
-            });
     }
 
     function setSelect2Language() {

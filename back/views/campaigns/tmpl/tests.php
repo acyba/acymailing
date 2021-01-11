@@ -14,7 +14,7 @@
             ?>
 			<div class="cell grid-x grid-margin-x" id="campaigns_tests_step">
 				<div id="spam_test_zone" class="cell large-5">
-					<h6 class="acym_zone_title"><?php echo acym_translation('ACYM_SAFE_CHECK'); ?></h6>
+					<h6 class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SAFE_CHECK'); ?></h6>
 					<p class="margin-bottom-1"><?php echo acym_translation('ACYM_SAFE_CHECK_DESC'); ?></p>
 					<div class="grid-x align-center">
 						<div class="cell">
@@ -39,7 +39,7 @@
 							<div class="cell acym_check_results"></div>
 
                             <?php
-                            $spamtestRow = '<div class="cell grid-x acym_vcenter" id="check_spam" data-iframe="spamtestpopup">
+                            $spamtestRow = '<div class="cell grid-x acym_vcenter" id="check_spam" data-iframe="spamtestpopup" data-iframe-class="acym__iframe_spamtest">
 													<div class="cell small-10">'.acym_translation('ACYM_TESTS_SPAM').'</div>
 													<div class="cell small-2 text-center acym_icon_container">'.$iconSpamTest.'</div>
 												</div>';
@@ -76,7 +76,7 @@
 				</div>
 				<div class="cell large-1 margin-top-2 acym_zone_separator"></div>
 				<div id="send_test_zone" class="cell large-6">
-					<h6 class="acym_zone_title"><?php echo acym_translation('ACYM_SEND_TEST_TO'); ?></h6>
+					<h6 class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SEND_TEST_TO'); ?></h6>
                     <?php
 
                     echo acym_selectMultiple(
@@ -92,16 +92,20 @@
                     ?>
 					<label class="margin-top-1">
                         <?php echo acym_translation('ACYM_TEST_NOTE'); ?>
-						<textarea class="acym__blue"
-								  id="acym__wysid__send__test__note"
-								  name="test_note"
-								  type="text"
-								  placeholder="<?php echo acym_translation('ACYM_TEST_NOTE_PLACEHOLDER', true); ?>"></textarea>
+						<textarea
+								id="acym__wysid__send__test__note"
+								name="test_note"
+								type="text"
+								placeholder="<?php echo acym_translation('ACYM_TEST_NOTE_PLACEHOLDER', true); ?>"></textarea>
 					</label>
-					<button id="acym__campaign__send-test" type="button" class="button hollow">
-                        <?php echo acym_translation('ACYM_SEND_TEST'); ?>
-					</button>
-					<i class="acymicon-circle-o-notch acymicon-spin" id="acym__campaigns__send-test__spinner" style="display: none"></i>
+					<div class="grid-x">
+						<button id="acym__campaign__send-test" type="button" class="button button-secondary margin-top-1">
+                            <?php echo acym_translation('ACYM_SEND_TEST'); ?>
+						</button>
+						<div class="cell shrink margin-top-1 margin-left-1" id="acym__campaigns__send-test__spinner" style="display: none">
+							<i class="acymicon-circle-o-notch acymicon-spin"></i>
+						</div>
+					</div>
 				</div>
 			</div>
 

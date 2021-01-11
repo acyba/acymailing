@@ -1,4 +1,4 @@
-<h2 class="cell acym__walkthrough__title"><?php echo acym_translation('ACYM_WHATS_NEXT'); ?></h2>
+<h2 class="cell acym__title text-center"><?php echo acym_translation('ACYM_WHATS_NEXT'); ?></h2>
 <div class="cell grid-x margin-top-2">
 	<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_SEEMS_SOMETHING_WENT_WRONG'); ?></p>
 	<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_DONT_WORRY_OUR_SUPPORT_WILL_TAKE_A_LOOK'); ?></p>
@@ -11,7 +11,7 @@
 		<input required
 			   type="email"
 			   name="email"
-			   class="cell medium-8 margin-top-1 acym__light__input text-center"
+			   class="cell medium-8 margin-top-1 text-center"
 			   placeholder="<?php echo acym_translation('ACYM_YOUR_EMAIL'); ?>"
 			   value="<?php echo acym_escape(empty($data['email']) ? '' : $data['email']); ?>">
 	</div>

@@ -34,13 +34,23 @@
 
             a {
                 text-decoration: none;
-                color: $font-primary;
+                color: $color-palette-dark-blue;
+            }
+
+            &::after {
+                content: '';
+                margin: 0;
+            }
+
+            &.breadcrumbs__separator i {
+                line-height: 30px;
             }
 
             &.last_link, &.last_link a {
-                color: map-get($foundation-palette, primary-light);
                 font-size: 18px;
                 vertical-align: initial;
+                color: $color-palette-dark-blue;
+                font-weight: 500;
             }
 
             &.last_link a {
@@ -75,30 +85,6 @@
 
         &:hover {
             box-shadow: $box-shadow-button-hover;
-        }
-    }
-
-    #acym_global_search {
-        margin-bottom: 0;
-        border: none;
-        border-bottom: 3px solid $very-dark-gray;
-        background-color: transparent;
-        box-shadow: none;
-        height: 35px;
-        min-height: 35px;
-        width: 200px;
-        float: right;
-        display: none;
-    }
-
-    #acym_global_search_button {
-        display: none;
-        cursor: pointer;
-        color: $font-primary;
-        margin-left: 10px;
-
-        &:focus {
-            outline: none;
         }
     }
 

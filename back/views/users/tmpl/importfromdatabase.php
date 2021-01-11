@@ -1,8 +1,9 @@
 <div id="acym__users__import__from_database" class="grid-x padding-vertical-2 padding-horizontal-2">
 	<div class="cell large-3"></div>
-	<div class="cell large-6 grid-x">
-		<label for="acym__users__import__from_database__field--tablename">Table Name</label>
+	<div class="cell large-6 grid-x margin-y">
+		<label class="cell medium-4" for="acym__users__import__from_database__field--tablename"><?php echo acym_translation('ACYM_TABLE_NAME'); ?></label>
         <?php
+		echo '<div class="cell medium-8">';
         array_unshift($data['tables'], acym_translation('ACYM_SELECT_TABLE'));
         echo acym_select(
             $data['tables'],
@@ -15,13 +16,16 @@
             'name',
             'acym__users__import__from_database__field--tablename'
         );
+        echo '</div>';
 
         $userFields = acym_getColumns('user');
         if (!empty($userFields)) {
             foreach ($userFields as $oneUserField) {
                 if (!in_array($oneUserField, ['id', 'key', 'automation'])) {
-                    echo '<label class="cell" for="acym__users__import__from_database__field--'.$oneUserField.'">'.$oneUserField.'</label>';
-                    echo '<select acym-data-infinite class="cell acym__users__import__from_database__fields acym__select" name="fields['.$oneUserField.']" id="acym__users__import__from_database__field--'.$oneUserField.'"></select>';
+                    echo '<label class="cell medium-4" for="acym__users__import__from_database__field--'.$oneUserField.'">'.$oneUserField.'</label>';
+                    echo '<div class="cell medium-8">';
+                    echo '<select acym-data-infinite class="acym__users__import__from_database__fields acym__select" name="fields['.$oneUserField.']" id="acym__users__import__from_database__field--'.$oneUserField.'"></select>';
+                    echo '</div>';
                 }
             }
         }

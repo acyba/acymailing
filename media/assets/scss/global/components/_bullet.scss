@@ -1,0 +1,17 @@
+ul.acym__ul {
+    li {
+        position: relative;
+        list-style-type: none;
+
+        &:before {
+            position: absolute;
+            left: -12px;
+            top: 1px;
+            font-family: acymicon;
+            content: '\f111';
+            font-size: 6px;
+            color: $color-palette-cyan;
+        }
+    }
+}
+

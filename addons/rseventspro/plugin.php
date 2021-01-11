@@ -617,9 +617,9 @@ class plgAcymRseventspro extends acymPlugin
 
         $conditions['user']['rseventspro']->option .= '<div class="cell grid-x grid-margin-x">';
         $conditions['user']['rseventspro']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][rseventspro][datemin]', '', 'cell shrink');
-        $conditions['user']['rseventspro']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['rseventspro']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['rseventspro']->option .= '<span class="acym_vcenter">'.acym_translation('COM_RSEVENTSPRO_MY_SUBSCRIPTION_DATE').'</span>';
-        $conditions['user']['rseventspro']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['rseventspro']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['rseventspro']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][rseventspro][datemax]', '', 'cell shrink');
         $conditions['user']['rseventspro']->option .= '</div>';
     }
@@ -684,7 +684,7 @@ class plgAcymRseventspro extends acymPlugin
 
             $status = acym_translation($status[$automationCondition['rseventspro']['status']]);
 
-            $finalText = acym_translation_sprintf('ACYM_REGISTERED', $event, $status);
+            $finalText = acym_translationSprintf('ACYM_REGISTERED', $event, $status);
 
             $dates = [];
             if (!empty($automationCondition['rseventspro']['datemin'])) {
@@ -712,7 +712,7 @@ class plgAcymRseventspro extends acymPlugin
     {
         $this->onAcymProcessFilter_rseventspro($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_rseventspro(&$query, $options, $num)

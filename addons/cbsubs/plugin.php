@@ -19,7 +19,7 @@ class plgAcymCbsubs extends acymPlugin
 
 
         $conditions['user']['cbsubs'] = new stdClass();
-        $conditions['user']['cbsubs']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'Community Builder', 'Subscriptions');
+        $conditions['user']['cbsubs']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'Community Builder', 'Subscriptions');
         $conditions['user']['cbsubs']->option = '<div class="cell grid-x grid-margin-x">';
 
         $operatorIn = new OperatorinType();
@@ -77,17 +77,17 @@ class plgAcymCbsubs extends acymPlugin
 
         $conditions['user']['cbsubs']->option .= '<div class="cell grid-x margin-top-1 margin-bottom-1">';
         $conditions['user']['cbsubs']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][cbsubs][signup_date_inf]', '', 'cell shrink');
-        $conditions['user']['cbsubs']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['cbsubs']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['cbsubs']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_SUBSCRIPTION_DATE').'</span>';
-        $conditions['user']['cbsubs']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['cbsubs']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['cbsubs']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][cbsubs][signup_date_sup]', '', 'cell shrink');
         $conditions['user']['cbsubs']->option .= '</div>';
 
         $conditions['user']['cbsubs']->option .= '<div class="cell grid-x">';
         $conditions['user']['cbsubs']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][cbsubs][expiration_date_inf]', '', 'cell shrink');
-        $conditions['user']['cbsubs']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['cbsubs']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['cbsubs']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_END_DATE').'</span>';
-        $conditions['user']['cbsubs']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['cbsubs']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['cbsubs']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][cbsubs][expiration_date_sup]', '', 'cell shrink');
         $conditions['user']['cbsubs']->option .= '</div>';
 
@@ -165,7 +165,7 @@ class plgAcymCbsubs extends acymPlugin
 
         $status = acym_translation($status[$automationCondition['cbsubs']['status']]);
 
-        $finalText = acym_translation_sprintf('ACYM_REGISTERED', $element, $status);
+        $finalText = acym_translationSprintf('ACYM_REGISTERED', $element, $status);
 
         $dates = [];
         if (!empty($automationCondition['cbsubs']['signup_date_inf'])) {
@@ -205,7 +205,7 @@ class plgAcymCbsubs extends acymPlugin
     {
         $this->onAcymProcessFilter_cbsubs($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_cbsubs(&$query, $options, $num)

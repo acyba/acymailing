@@ -9,10 +9,8 @@
         ];
         echo acym_listingActions($actions);
         ?>
-	</div>
-	<div class="cell grid-x margin-top-1">
 		<div class="grid-x cell auto">
-			<div class="cell  acym_listing_sort-by">
+			<div class="cell acym_listing_sort-by">
                 <?php
                 echo acym_sortBy(
                     [
@@ -35,18 +33,13 @@
                         <?php echo '<img src="'.acym_escape(acym_getMailThumbnail($oneTemplate->thumbnail)).'" alt="'.acym_escape($oneTemplate->name).'"/>'; ?>
 					</div>
 				</a>
-				<button type="button" data-task="export" data-template="<?php echo intval($oneTemplate->id); ?>" class="text-center cell acym__listing__block__export">
-					<span class="acym__color__blue cell"><?php echo acym_translation('ACYM_DOWNLOAD'); ?> <i class="acymicon-file_download"></i></span>
+				<button type="button" data-task="export" data-template="<?php echo intval($oneTemplate->id); ?>" class="text-center cell button acym__listing__block__export">
+                    <?php echo acym_translation('ACYM_DOWNLOAD'); ?> <i class="acymicon-file_download"></i>
 				</button>
 				<a href="<?php echo acym_completeLink('mails&task=edit&id='.acym_escape($oneTemplate->id)); ?>" class="cell grid-x text-center">
 					<div class="cell grid-x acym__templates__footer text-center">
-						<div class="cell acym__templates__footer__title" title="<?php echo acym_escape($oneTemplate->name); ?>">
-                            <?php
-                            if (strlen($oneTemplate->name) > 55) {
-                                $oneTemplate->name = substr($oneTemplate->name, 0, 50).'...';
-                            }
-                            echo acym_escape($oneTemplate->name);
-                            ?>
+						<div class="cell acym__templates__footer__title acym_text_ellipsis" title="<?php echo acym_escape($oneTemplate->name); ?>">
+                            <?php echo acym_escape($oneTemplate->name); ?>
 						</div>
 						<div class="cell"><?php echo acym_date($oneTemplate->creation_date, 'M. j, Y'); ?></div>
 					</div>

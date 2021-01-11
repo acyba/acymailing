@@ -1,5 +1,7 @@
 <div id="acym__wysid__right__toolbar__design" class="cell grid-y acym__wysid__right__toolbar--menu">
-	<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_BLOCKS'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+	<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+		<?php echo acym_translation('ACYM_BLOCKS'); ?><i class="acymicon-keyboard_arrow_up"></i>
+	</p>
 	<div class="acym__wysid__context__modal__container grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__blocks">
 		<div class="cell acym__wysid__row__element--new acym__wysid__row__element--new--1 ui-draggable ui-draggable-handle">
 			<svg version="1.1" x="0px" y="0px" viewBox="0 0 80.8 81" style="enable-background:new 0 0 80.8 81;" xml:space="preserve">
@@ -41,7 +43,8 @@
 		</div>
 	</div>
 
-	<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_CONTENTS'); ?><i class="acymicon-keyboard_arrow_up"></i>
+	<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+		<?php echo acym_translation('ACYM_CONTENTS'); ?><i class="acymicon-keyboard_arrow_up"></i>
 	</p>
 	<div class="grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__contents acym__wysid__context__modal__container">
 		<div class="grid-x cell acym__wysid__column__element--new acym__wysid__column__element--new--title ui-draggable ui-draggable-handle">
@@ -99,15 +102,5 @@
 			<i class="cell acymicon-more_horiz"></i>
 			<div class="cell"><?php echo acym_translation('ACYM_SEPARATOR'); ?></div>
 		</div>
-
-		<!--<div class="grid-x cell acym__wysid__column__element--coming-soon">
-			<i class="cell acymicon-share"></i>
-			<div class="cell"><?php echo acym_translation('ACYM_SHARE'); ?></div>
-		</div>-->
 	</div>
-
-	<!--Todo custom zones created by users-->
-	<!--<p class="cell acym__wysid__right__toolbar__last--text">My elements<i class="acymicon-keyboard_arrow_up"></i></p>-->
-	<!--<div class="cell grid-x grid-margin-x grid-margin-y grid-padding-y large-up-2 medium-up-1 acym__wysid__right__toolbar__design--show" style="display: none;">-->
-	<!--</div>-->
 </div>

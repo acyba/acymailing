@@ -13,12 +13,12 @@
 				<div class="medium-4"></div>
 				<div class="medium-4 cell grid-x grid-margin-x align-center">
 					<div class="medium-shrink cell">
-						<button type="button" class="button button-secondary expanded acy_button_submit" data-task="edit" data-step="action"><?php echo acym_translation(
+						<button type="button" class="button button-secondary acy_button_submit" data-task="edit" data-step="action"><?php echo acym_translation(
                                 'ACYM_NEW_MASS_ACTION'
                             ); ?></button>
 					</div>
 					<div class="medium-shrink cell">
-						<button type="button" class="button expanded acy_button_submit" data-task="edit" data-step="info"><?php echo acym_translation(
+						<button type="button" class="button acy_button_submit" data-task="edit" data-step="info"><?php echo acym_translation(
                                 'ACYM_CREATE_AUTOMATION'
                             ); ?></button>
 					</div>
@@ -40,7 +40,7 @@
                         ?>
 					</div>
 					<div class="grid-x cell">
-						<div class="auto cell">
+						<div class="auto cell acym_vcenter">
                             <?php
                             $options = [
                                 '' => ['ACYM_ALL', $data["automationNumberPerStatus"]["all"]],
@@ -54,8 +54,8 @@
                             <?php echo acym_sortBy(
                                 [
                                     'id' => acym_strtolower(acym_translation('ACYM_ID')),
-                                    "name" => acym_translation('ACYM_NAME'),
-                                    "active" => acym_translation('ACYM_ACTIVE'),
+                                    'name' => acym_translation('ACYM_NAME'),
+                                    'active' => acym_translation('ACYM_ACTIVE'),
                                 ],
                                 "automation",
                                 $data['ordering'],

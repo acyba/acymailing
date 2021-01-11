@@ -7,7 +7,6 @@ $texts = [
 ?>
 
 <div class="acym__bounces__summary acym__content cell grid-x large-8 margin-bottom-1">
-	<div class="acym_area_title cell small-3"><?php echo acym_translation('ACYM_SUMMARY'); ?></div>
 	<div id="acym__bounces__summary__changes" class="cell small-9 acym__color__orange" style="display:none;"><?php echo acym_translation('ACYM_CHANGES_PLEASE_SAVE'); ?></div>
 
 	<!-- GLOBAL -->
@@ -41,10 +40,10 @@ $texts = [
 	<!-- USER -->
 	<div class="cell grid-x padding-left-1 padding-bottom-1">
 		<label class="cell grid-x grid-margin-x">
-			<span class="cell medium-3 acym__label text-right"><?php echo acym_translation('ACYM_ACTION_ON_USER'); ?>:</span>
+			<span class="cell medium-3 text-right acym__title acym__title__secondary"><?php echo acym_translation('ACYM_ACTION_ON_USER'); ?>:</span>
 			<div class="cell medium-9 acym__label grid-x">
                 <?php
-                echo '<div class="cell">'.acym_translation_sprintf(
+                echo '<div class="cell">'.acym_translationSprintf(
                         'ACYM_EXECUTE_ACTIONS_AFTER',
                         '<span id="acym__bounces__sum__exec">'.$data['rule']->execute_action_after.'</span>'
                     ).'<br /></div>';
@@ -56,7 +55,7 @@ $texts = [
                     'empty_queue_user' => ['id' => 'acym__bounces__sum__emptyqueue', 'text' => 'ACYM_EMPTY_QUEUE_USER'],
                     'subscribe_user' => ['id' => 'acym__bounces__sum__sub', 'text' => 'ACYM_SUBSCRIBE_USER'],
                 ];
-                echo '<ul>';
+                echo '<ul class="acym__ul">';
                 foreach ($actionsUsers as $keyAction => $oneAction) {
                     if (empty($data['rule']->action_user) || !in_array($keyAction, $data['rule']->action_user)) continue;
                     echo '<li id="'.$oneAction['id'].'" class="cell">'.acym_translation($oneAction['text']);
@@ -75,7 +74,7 @@ $texts = [
 	<!-- EMAIL -->
 	<div class="cell grid-x padding-left-1 margin-bottom-1">
 		<label class="cell grid-x grid-margin-x">
-			<span class="cell medium-3 acym__label text-right"><?php echo acym_translation('ACYM_ACTION_ON_EMAIL'); ?>:</span>
+			<span class="cell medium-3 text-right acym__title acym__title__secondary"><?php echo acym_translation('ACYM_ACTION_ON_EMAIL'); ?>:</span>
 			<span class="cell medium-9 acym__label grid-x">
 					<?php
                     $actionsMsg = [
@@ -83,7 +82,7 @@ $texts = [
                         'delete_message' => ['id' => 'acym__bounces__sum__deletemsg', 'text' => 'ACYM_DELETE_MESSAGE_FROM_MAILBOX'],
                         'forward_message' => ['id' => 'acym__bounces__sum__forward', 'text' => 'ACYM_FORWARD_EMAIL'],
                     ];
-                    echo '<ul>';
+                    echo '<ul class="acym__ul">';
                     foreach ($actionsMsg as $keyMsg => $oneMsg) {
                         if (empty($data['rule']->action_message) || !in_array($keyMsg, $data['rule']->action_message)) continue;
                         echo '<li id="'.$oneMsg['id'].'" class="cell">'.acym_translation($oneMsg['text']);

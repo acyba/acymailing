@@ -1,6 +1,6 @@
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
-	<div class="acym_area_title"><?php echo acym_translation('ACYM_CONFIGURATION_QUEUE'); ?></div>
-	<div class="grid-x grid-margin-x">
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_QUEUE'); ?></div>
+	<div class="grid-x grid-margin-x margin-y">
 		<div class="cell medium-3"><?php echo acym_translation('ACYM_CONFIGURATION_QUEUE_PROCESSING'); ?></div>
 		<div class="cell medium-9">
             <?php
@@ -12,21 +12,38 @@
             echo acym_radio($queueModes, 'config[queue_type]', $this->config->get('queue_type', 'automan'));
             ?>
 		</div>
-		<div class="cell medium-3 margin-top-1"><?php echo acym_translation('ACYM_AUTO_SEND_PROCESS'); ?></div>
-		<div class="cell medium-9 margin-top-1">
+		<div class="cell medium-3"><?php echo acym_translation('ACYM_AUTO_SEND_PROCESS'); ?></div>
+		<div class="cell medium-9">
             <?php
+            $disabledBatch = acym_level(2) ? '' : 'disabled';
+            $valueBatch = acym_level(2) ? intval($this->config->get('queue_batch_auto', 1)) : 1;
             $delayTypeAuto = $data['typeDelay'];
-            echo acym_translation_sprintf(
-                'ACYM_SEND_X_EVERY_Y',
+            $delayHtml = '<span data-acym-tooltip="'.acym_translation('ACYM_CRON_TRIGGERED_DESC').'">'.$delayTypeAuto->display(
+                    'config[cron_frequency]',
+                    $this->config->get('cron_frequency'),
+                    2
+                ).'</span>';
+            echo acym_translationSprintf(
+                'ACYM_SEND_X_BATCH_OF_X_EMAILS_EVERY_Y',
+                '<input '.$disabledBatch.' class="intext_input" type="text" name="config[queue_batch_auto]" value="'.$valueBatch.'" />',
                 '<input class="intext_input" type="text" name="config[queue_nbmail_auto]" value="'.intval($this->config->get('queue_nbmail_auto')).'" />',
-                $delayTypeAuto->display('config[cron_frequency]', $this->config->get('cron_frequency'), 2)
+                $delayHtml
             ); ?>
 		</div>
-		<div class="cell medium-3 margin-top-1"><?php echo acym_translation('ACYM_MANUAL_SEND_PROCESS'); ?></div>
-		<div class="cell medium-9 margin-top-1">
+		<div class="cell medium-3"></div>
+		<div class="cell medium-9">
             <?php
             $delayTypeAuto = $data['typeDelay'];
-            echo acym_translation_sprintf(
+            echo acym_translationSprintf(
+                'ACYM_WAIT_X_TIME_BETWEEN_MAILS',
+                $delayTypeAuto->display('config[email_frequency]', $this->config->get('email_frequency', 0), 0)
+            ); ?>
+		</div>
+		<div class="cell medium-3"><?php echo acym_translation('ACYM_MANUAL_SEND_PROCESS'); ?></div>
+		<div class="cell medium-9">
+            <?php
+            $delayTypeAuto = $data['typeDelay'];
+            echo acym_translationSprintf(
                 'ACYM_SEND_X_WAIT_Y',
                 '<input class="intext_input" type="text" name="config[queue_nbmail]" value="'.intval($this->config->get('queue_nbmail')).'" />',
                 $delayTypeAuto->display('config[queue_pause]', $this->config->get('queue_pause'), 0)
@@ -34,31 +51,31 @@
 		</div>
 		<div class="cell medium-3 margin-top-1"><?php echo '<span>'.acym_translation('ACYM_MAX_NB_TRY').'</span>'.acym_info('ACYM_MAX_NB_TRY_DESC'); ?></div>
 		<div class="cell medium-9 margin-top-1">
-            <?php echo acym_translation_sprintf(
+            <?php echo acym_translationSprintf(
                 'ACYM_CONFIG_TRY',
                 '<input class="intext_input" type="text" name="config[queue_try]" value="'.intval($this->config->get('queue_try')).'">'
             );
 
             $failaction = $data['failaction'];
-            echo ' '.acym_translation_sprintf('ACYM_CONFIG_TRY_ACTION', $failaction->display('maxtry', $this->config->get('bounce_action_maxtry'))); ?>
+            echo ' '.acym_translationSprintf('ACYM_CONFIG_TRY_ACTION', $failaction->display('maxtry', $this->config->get('bounce_action_maxtry'))); ?>
 		</div>
-		<div class="cell medium-3 margin-top-1"><?php echo acym_translation('ACYM_MAX_EXECUTION_TIME'); ?></div>
-		<div class="cell medium-9 margin-top-1">
+		<div class="cell medium-3"><?php echo acym_translation('ACYM_MAX_EXECUTION_TIME'); ?></div>
+		<div class="cell medium-9">
             <?php
-            echo acym_translation_sprintf('ACYM_TIMEOUT_SERVER', ini_get('max_execution_time')).'<br />';
+            echo acym_translationSprintf('ACYM_TIMEOUT_SERVER', ini_get('max_execution_time')).'<br />';
             $maxexecutiontime = intval($this->config->get('max_execution_time'));
             if (intval($this->config->get('last_maxexec_check')) > (time() - 20)) {
-                echo acym_translation_sprintf('ACYM_TIMEOUT_CURRENT', $maxexecutiontime);
+                echo acym_translationSprintf('ACYM_TIMEOUT_CURRENT', $maxexecutiontime);
             } else {
                 if (!empty($maxexecutiontime)) {
-                    echo acym_translation_sprintf('ACYM_MAX_RUN', $maxexecutiontime).'<br />';
+                    echo acym_translationSprintf('ACYM_MAX_RUN', $maxexecutiontime).'<br />';
                 }
                 echo '<span id="timeoutcheck"><a id="timeoutcheck_action" class="acym__color__blue">'.acym_translation('ACYM_TIMEOUT_AGAIN').'</a></span>';
             }
             ?>
 		</div>
-		<div class="cell medium-3 margin-top-1"><?php echo acym_translation('ACYM_ORDER_SEND_QUEUE'); ?></div>
-		<div class="cell medium-9 margin-top-1">
+		<div class="cell medium-3"><?php echo acym_translation('ACYM_ORDER_SEND_QUEUE'); ?></div>
+		<div class="cell medium-9">
             <?php
             $ordering = [];
             $ordering[] = acym_selectOption("user_id, ASC", 'user_id ASC');
@@ -83,7 +100,7 @@
 if (!acym_level(1)) {
     $data['version'] = 'essential';
     echo '<div class="acym_area">
-            <div class="acym_area_title">'.acym_translation('ACYM_CRON').'</div>';
+            <div class="acym__title acym__title__secondary">'.acym_translation('ACYM_CRON').'</div>';
     include acym_getView('dashboard', 'upgrade');
     echo '</div>';
 }

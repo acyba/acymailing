@@ -76,7 +76,11 @@ class EditorHelper extends acymObject
     {
         $this->editor = acym_getCMSConfig('editor', 'tinymce');
 
-        $this->myEditor = Editor::getInstance($this->editor);
+        if (!class_exists('Joomla\CMS\Editor\Editor')) {
+            $this->myEditor = \JFactory::getEditor($this->editor);
+        } else {
+            $this->myEditor = Editor::getInstance($this->editor);
+        }
         $this->myEditor->initialise();
 
         // We allow the background parameter on tr,table and td.
@@ -122,7 +126,6 @@ class EditorHelper extends acymObject
                 acym_setVar('acycssfile', $fileurl);
             }
         }
-
 
         if (empty($this->editorContent)) {
             $this->content = acym_escape($this->content);
@@ -225,10 +228,11 @@ class EditorHelper extends acymObject
 
             return empty($stylesheet) ? '' : $stylesheet;
         } elseif (!empty($notification)) {
+            $mailClass = new MailClass();
             $stylesheet = acym_loadResult(
                 'SELECT stylesheet 
                 FROM #__acym_mail 
-                WHERE `type` = "notification" 
+                WHERE `type` = '.acym_escapeDB($mailClass::TYPE_NOTIFICATION).' 
                     AND `name` = '.acym_escapeDB($notification)
             );
 

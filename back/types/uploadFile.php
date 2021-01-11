@@ -17,7 +17,7 @@ class UploadfileType extends acymObject
             '',
             'acym__campaign__email__'.$map.$value,
             'width="800" style="width:800px;" data-reveal-larger',
-            'class="hollow button acym__campaign__attach__button margin-top-0 margin-bottom-0 cell medium-shrink" data-iframe="'.acym_completeLink(
+            'class="button-secondary button acym__campaign__attach__button margin-top-0 margin-bottom-0 cell medium-shrink" data-iframe="'.acym_completeLink(
                 $ctrlFile.'&task=select&id='.$map.$value,
                 true
             ).'" data-ajax="false"'

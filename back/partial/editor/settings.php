@@ -1,5 +1,6 @@
 <div id="acym__wysid__right__toolbar__settings" style="display: none;" class="cell grid-padding-x acym__wysid__right__toolbar--menu">
-	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_TEMPLATE_DESIGN'); ?><i class="acymicon-keyboard_arrow_up"></i>
+	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+		<?php echo acym_translation('ACYM_TEMPLATE_DESIGN'); ?><i class="acymicon-keyboard_arrow_up"></i>
 	</p>
 	<div class="grid-y acym__wysid__right__toolbar__design--show acym__wysid__context__modal__container">
 		<div class="grid-x margin-bottom-1 small-12 cell">
@@ -23,21 +24,23 @@
 			</label>
 		</div>
 	</div>
-	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_DESIGN'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+		<?php echo acym_translation('ACYM_DESIGN'); ?><i class="acymicon-keyboard_arrow_up"></i>
+	</p>
 	<div class="grid-y acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__context__modal__container">
 		<div class="grid-x margin-bottom-1 small-12 cell">
 			<label class="middle large-6 cell" for="acym__wysid__right__toolbar__settings__font--select"><?php echo acym_translation('ACYM_HTML_TAG'); ?></label>
 			<div class="cell large-6">
 				<select id="acym__wysid__right__toolbar__settings__font--select" class="small-8 large-4 cell acym__select">
-					<option>p</option>
-					<option>a</option>
-					<option>li</option>
-					<option>h1</option>
-					<option>h2</option>
-					<option>h3</option>
-					<option>h4</option>
-					<option>h5</option>
-					<option>h6</option>
+					<option value="p">p - <?php echo acym_translation('ACYM_PARAGRAPH'); ?></option>
+					<option value="a">a - <?php echo acym_translation('ACYM_LINKS'); ?></option>
+					<option value="li">li - <?php echo acym_translation('ACYM_BULLET_LIST'); ?></option>
+					<option value="h1">h1</option>
+					<option value="h2">h2</option>
+					<option value="h3">h3</option>
+					<option value="h4">h4</option>
+					<option value="h5">h5</option>
+					<option value="h6">h6</option>
 				</select>
 			</div>
 		</div>
@@ -90,18 +93,18 @@
 			<div class="cell hide-for-small-only medium-3"></div>
             <?php
             $dataStyleSheet = '<div class="grid-x acym__wysid__right__toolbar__settings__stylesheet">
-                                                    <h6 class="acym__wysid__right__toolbar__settings__stylesheet__title cell text-center margin-top-1">'.acym_translation(
+									<h6 class="acym__title acym__title__secondary cell text-center margin-top-1">'.acym_translation(
                     'ACYM_HERE_PASTE_YOUR_STYLESHEET'
                 ).'</h6>
-                                                    <textarea id="acym__wysid__right__toolbar__settings__stylesheet__textarea" class="margin-top-1 acym__blue" rows="15"></textarea>
-                                                    <button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__cancel" class="button cell medium-4">'.acym_translation(
+									<textarea id="acym__wysid__right__toolbar__settings__stylesheet__textarea" class="margin-top-1 margin-bottom-1" rows="15"></textarea>
+									<button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__cancel" class="button cell medium-4">'.acym_translation(
                     'ACYM_CANCEL'
                 ).'</button>
-                                                    <div class="medium-4 cell"></div>
-                                                    <button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__apply" class="button cell medium-4">'.acym_translation(
+									<div class="medium-4 cell"></div>
+									<button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__apply" class="button cell medium-4">'.acym_translation(
                     'ACYM_LOAD_STYLESHEET'
                 ).'</button>
-                                               </div>';
+							   </div>';
             echo acym_modal(
                 acym_translation('ACYM_CUSTOM_ADD_STYLESHEET'),
                 $dataStyleSheet,
@@ -111,8 +114,8 @@
             ); ?>
 		</div>
 	</div>
-	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_CUSTOM_SOCIAL_ICONS'); ?>
-		<i class="acymicon-keyboard_arrow_up"></i></p>
+	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+		<?php echo acym_translation('ACYM_CUSTOM_SOCIAL_ICONS'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
 	<div class="grid-y acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__right__toolbar__design__social__icons acym__wysid__context__modal__container">
         <?php
         $config = acym_config();

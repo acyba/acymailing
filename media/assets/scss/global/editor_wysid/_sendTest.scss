@@ -14,10 +14,6 @@
     transform-origin: top;
     transition: transform .5s ease-in-out;
 
-    .select2-selection__choice {
-        margin: 5px;
-    }
-
     &.acym__wysid__show {
         visibility: visible;
         transform: rotateX(0deg);
@@ -41,7 +37,6 @@
     }
 
     .acym__wysid__send__test__title {
-        font-size: 1.3rem;
         padding: 0 0 1rem 0;
         border-bottom: 2px solid $font-primary;
     }

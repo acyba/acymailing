@@ -1,14 +1,14 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" class="acym__form__migrate">
 	<div id="acym_migrate" class="cell grid-x">
 		<div class="text-center cell acym__migrate__titles">
-			<h1 class="acym__migrate__title"><?php echo acym_translation('ACYM_THANKS_FOR_INSTALLING_ACYM'); ?></h1>
+			<h1 class="acym__title text-center"><?php echo acym_translation('ACYM_THANKS_FOR_INSTALLING_ACYM'); ?></h1>
 			<h2 class="acym__migrate__subtitle"><?php echo acym_translation('ACYM_DO_YOU_WANT_TO_MIGRATE'); ?></h2>
 		</div>
 		<div class="cell large-3"></div>
 
 		<div class="acym__content acym__content__reduced cell large-6 grid-x">
 			<div class="text-center cell acym__migrate__content__titles">
-				<h1 class="acym__migrate__content__title"><?php echo acym_translation('ACYM_WHICH_DATA_TO_MIGRATE'); ?></h1>
+				<h1 class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_WHICH_DATA_TO_MIGRATE'); ?></h1>
 				<p class="acym__color__red"><b><?php echo acym_translation('ACYM_MIGRATE_WARNING_DATA_OVERWRITE_MESSAGE'); ?></b></p>
 			</div>
 			<div class="cell acym__migrate__input__element">
@@ -61,12 +61,12 @@
 						class="button button-secondary acy_button_submit margin-right-1 cell medium-shrink small-12"
 						id="acym__migrate__no__button"><?php echo acym_translation('ACYM_NO_DONT_WANT_TO_MIGRATE_MY_DATA'); ?></button>
 				<button type="button" class="button primary cell medium-shrink small-12" id="acym__migrate__button"><?php echo acym_translation('ACYM_MIGRATE'); ?></button>
-				<h1 class="acym__content__title__light-blue cell acym__migration__need__display" id="acym__migration__percentage" style="display: none">0%</h1>
+				<h1 class="acym__title acym__title__secondary cell acym__migration__need__display" id="acym__migration__percentage" style="display: none">0%</h1>
 				<div class="success progress cell acym__migration__need__display" id="acym__migration__progress__bar" style="display: none">
 					<div class="progress-meter" id="acym__migration__progress__bar__inner" style="width: 0"></div>
 				</div>
 				<div class="cell grid-x" style="display: none">
-					<h1 class="acym__content__title__light-blue cell"><?php echo acym_translation('ACYM_DISPLAY_GIF'); ?></h1>
+					<h1 class="acym__title acym__title__secondary cell"><?php echo acym_translation('ACYM_DISPLAY_GIF'); ?></h1>
 					<img src="" alt="gif to wait" id="acym__migration__gif" class="cell">
 				</div>
 			</div>

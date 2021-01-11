@@ -25,6 +25,7 @@ class acyMenu extends acyHook
         $capability = 'read';
 
         // For the front ajax
+        //TODO: remove this in September 2021
         add_submenu_page(
             null,
             'front',

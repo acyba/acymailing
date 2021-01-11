@@ -30,3 +30,12 @@ function acym_getMailThumbnail($thumbnail)
 
     return ACYM_IMAGES.'default_template_thumbnail.png';
 }
+
+function acym_getFlagByCode($code)
+{
+    if (!file_exists(ACYM_MEDIA.'images'.DS.'flags'.DS.$code.'.png')) {
+        $code = 'unknown';
+    }
+
+    return ACYM_IMAGES.'flags/'.$code.'.png';
+}

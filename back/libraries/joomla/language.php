@@ -50,6 +50,16 @@ function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $
     return $translation;
 }
 
+function acym_translationSprintf()
+{
+    $args = func_get_args();
+
+    return call_user_func_array(['JText', 'sprintf'], $args);
+}
+
+/**
+ * Deprecated see acym_translationSprintf()
+ */
 function acym_translation_sprintf()
 {
     $args = func_get_args();

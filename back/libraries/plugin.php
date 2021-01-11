@@ -73,9 +73,9 @@ class acymPlugin extends acymObject
 
     protected function displaySelectionZone($zoneContent)
     {
-        $output = '<p class="acym__wysid__right__toolbar__p acym__wysid__right__toolbar__p__open">'.acym_translation(
-                'ACYM_CONTENT_TO_INSERT'
-            ).'<i class="acymicon-keyboard_arrow_up"></i></p>';
+        $output = '<p class="acym__wysid__right__toolbar__p acym__wysid__right__toolbar__p__open acym__title">';
+        $output .= acym_translation('ACYM_CONTENT_TO_INSERT').'<i class="acymicon-keyboard_arrow_up"></i>';
+        $output .= '</p>';
         $output .= '<div class="acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__context__modal__container">';
         $output .= $zoneContent;
         $output .= '</div>';
@@ -387,7 +387,7 @@ class acymPlugin extends acymObject
 
         if (!empty($parameter->min) && count($elements) < $parameter->min) {
             $this->generateCampaignResult->status = false;
-            $this->generateCampaignResult->message = acym_translation_sprintf(
+            $this->generateCampaignResult->message = acym_translationSprintf(
                 'ACYM_GENERATE_CAMPAIGN_NOT_ENOUGH_CONTENT',
                 $this->pluginDescription->name,
                 count($elements),
@@ -485,7 +485,7 @@ class acymPlugin extends acymObject
 
         if (empty($element)) {
             if (acym_isAdmin()) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_CONTENT_NOT_FOUND', $tag->id), 'notice');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_CONTENT_NOT_FOUND', $tag->id), 'notice');
             }
 
             return false;
@@ -773,6 +773,21 @@ class acymPlugin extends acymObject
         return array_shift($split);
     }
 
+    public function displayCustomViewEditor(&$output)
+    {
+        $plugin = new \stdClass();
+        $plugin->folder_name = $this->name;
+        $plugin->settings = $this->settings;
+        $this->generateSettings($plugin);
+
+        $output .= '<p class="acym__wysid__right__toolbar__p acym__wysid__right__toolbar__p__open acym__title">';
+        $output .= acym_translation('ACYM_ADDON_SETTINGS');
+        $output .= '<i class="acymicon-keyboard_arrow_up"></i></p>';
+        $output .= '<div class="acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__context__modal__container">';
+        $output .= $plugin->settings['custom_view'];
+        $output .= '</div>';
+    }
+
     public function generateSettings(&$plugin)
     {
         if (empty($plugin->settings)) return false;
@@ -858,31 +873,33 @@ class acymPlugin extends acymObject
                 );
             } elseif ($field['type'] == 'custom_view') {
                 $idCustomView = 'acym__plugins__installed__custom-view__'.$this->name;
-                $text .= '<label class="cell">'.acym_translation('ACYM_CUSTOM_VIEW').acym_info('ACYM_CUSTOM_VIEW_DESC', '', '', 'wysid_tooltip').'</label>';
+                $ctrl = acym_getVar('string', 'ctrl', '');
+                $classTooltip = $ctrl == 'dynamics' ? '' : 'wysid_tooltip';
+                $text .= '<label class="cell">'.acym_translation('ACYM_CUSTOM_VIEW').acym_info('ACYM_CUSTOM_VIEW_DESC', '', '', $classTooltip).'</label>';
                 if (empty($field['tags'])) $field['tags'] = [];
                 $modalContent = '<div id="'.$idCustomView.'" class="cell grid-x acym__plugins__installed__custom-view" acym-data-tags="'.acym_escape(json_encode($field['tags'])).'">
-                                    <h2 class="cell text-center acym__title__primary__color">'.acym_translation_sprintf('ACYM_CUSTOM_VIEW_FOR_X', $this->pluginDescription->name).'</h2>
+                                    <h2 class="cell text-center acym__title__primary__color">'.acym_translationSprintf('ACYM_CUSTOM_VIEW_FOR_X', $this->pluginDescription->name).'</h2>
                                     <div class="cell grid-x acym__plugins__installed__custom-view__edit-container">
                                         <div class="acym__plugins__installed__custom-view__editor-loader grid-x cell align-center acym_vcenter" v-if="loading">'.acym_loaderLogo().'</div>
                                         <vue-prism-editor :emitEvents="true" class="cell acym__plugins__installed__custom-view__code cell auto" v-model="code" :language="language" lineNumbers="true"></vue-prism-editor>
                                         <div class="cell grid-x medium-3 margin-left-1 acym__plugins__installed__custom-view__tags">
-                                            <h3 class="acym__title__primary__color cell text-center">'.acym_translation('ACYM_DYNAMIC_CONTENT').acym_info(
+                                            <h3 class="acym__title acym__title__secondary cell text-center">'.acym_translation('ACYM_DYNAMIC_CONTENT').acym_info(
                         'ACYM_DYNAMIC_CONTENT_DESC'
                     ).'</h3>
                                             <div class="cell acym__plugins__installed__custom-view__tag" v-for="(trad, tag) in tags" :key="tag" @click.prevent="insertTag(tag)">{{ trad }}</div>
                                         </div>
                                     </div>
-                                    <div class="cell grid-x acym__plugins__installed__custom-view__actions acym_vcenter">
+                                    <div class="cell grid-x acym__plugins__installed__custom-view__actions acym_vcenter margin-top-1 padding-bottom-1">
                                         <div class="cell auto grid-x">
                                             <button type="button" class="cell shrink button-secondary button" @click="resetView">'.acym_translation('ACYM_RESET_VIEW').'</button>
                                             <div class="cell shrink margin-right-2 acym_vcenter margin-left-1">
-                                                <i v-if="deleting" class="acymicon-spin acymicon-circle-o-notch"></i>
+                                                <i v-if="deleting" class="acymicon-spin acymicon-circle-o-notch" style="margin-bottom: 0; line-height: 26px;"></i>
                                                 <span v-if="deleted">{{ messageDeleted }}</span>
                                             </div>
                                         </div>
                                         <div class="cell auto align-right grid-x">
                                             <div class="cell shrink margin-right-2 acym_vcenter">
-                                                <i v-if="saving" class="acymicon-spin acymicon-circle-o-notch"></i>
+                                                <i v-if="saving" class="acymicon-spin acymicon-circle-o-notch" style="margin-bottom: 0; line-height: 26px;"></i>
                                                 <span v-if="saved">{{ messageSaved }}</span>
                                             </div>
                                             <button @click="save()" class="cell shrink button" type="button">'.acym_translation('ACYM_SAVE').'</button>
@@ -1024,5 +1041,71 @@ class acymPlugin extends acymObject
         acym_arrayToInteger($ids);
 
         return $ids;
+    }
+
+    protected function cleanExtensionContent($text)
+    {
+        if (!acym_isExtensionActive('classic-editor/classic-editor.php') || strpos($text, '<!-- wp:') !== false) return $text;
+
+        return nl2br($text);
+    }
+
+    protected function callApiSendingMethod($url, $data = [], $headers = [], $type = 'GET', $authentication = [], $dataDecoded = false)
+    {
+        $curl = curl_init();
+
+        $optionsArray = [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => $type,
+            CURLOPT_HTTPHEADER => $headers,
+        ];
+
+        if (empty($dataDecoded) || $dataDecoded === false) {
+            $optionsArray[CURLOPT_POSTFIELDS] = json_encode($data);
+        } elseif ($dataDecoded === true) {
+            $optionsArray[CURLOPT_POSTFIELDS] = $data;
+        }
+
+        if (!empty($authentication)) {
+            $optionsArray[CURLOPT_USERPWD] = $authentication['name'].':'.$authentication['pwd'];
+        }
+
+        curl_setopt_array(
+            $curl,
+            $optionsArray
+        );
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return ['error_curl' => $error];
+        } else {
+            return json_decode($response, true);
+        }
+    }
+
+    protected function getTestCredentialsSendingMethodButton($sendingMethodId)
+    {
+        return '<button type="button" sending-method-id="'.$sendingMethodId.'" class="acym__configuration__sending__method-test cell shrink button button-secondary">
+                '.acym_translation('ACYM_TEST_CREDENTIALS').'
+			</button>
+			<span class="acym__configuration__sending__method-test__icon cell shrink margin-left-1"></span>
+			<span class="acym__configuration__sending__method-test__message cell shrink margin-left-1"></span>';
+    }
+
+    public function onAcymGetSendingMethodsSelected(&$data)
+    {
+        $mailerMethod = $this->config->get('mailer_method', 'phpmail');
+        foreach ($data['sendingMethods'] as $key => $sendingMethod) {
+            $data['sendingMethods'][$key]['selected'] = $key == $mailerMethod;
+        }
     }
 }

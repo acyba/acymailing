@@ -53,7 +53,7 @@ class ImportHelper extends acymObject
         $extension = strtolower(acym_fileGetExt($importFile['name']));
 
         if (!preg_match('#^(csv)$#Ui', $extension) || preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)$#Ui', $importFile['name'])) {
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_ACCEPTED_TYPE', acym_escape($extension), $this->config->get('allowed_files')), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_ACCEPTED_TYPE', acym_escape($extension), $this->config->get('allowed_files')), 'error');
 
             return false;
         }
@@ -76,7 +76,7 @@ class ImportHelper extends acymObject
 
                     return false;
                 default:
-                    acym_enqueueMessage(acym_translation_sprintf('ACYM_UNKNOWN_ERROR_UPLOADING_FILE', $fileError), 'error');
+                    acym_enqueueMessage(acym_translationSprintf('ACYM_UNKNOWN_ERROR_UPLOADING_FILE', $fileError), 'error');
 
                     return false;
             }
@@ -95,7 +95,7 @@ class ImportHelper extends acymObject
             if (!move_uploaded_file($importFile['tmp_name'], $uploadPath.$attachment->filename)) {
                 //If we can not do it with a simple method, let's do it with Joomla and FTP
                 acym_enqueueMessage(
-                    acym_translation_sprintf(
+                    acym_translationSprintf(
                         'ACYM_FAIL_UPLOAD',
                         '<b><i>'.acym_escape($importFile['tmp_name']).'</i></b>',
                         '<b><i>'.acym_escape($uploadPath.$attachment->filename).'</i></b>'
@@ -132,7 +132,7 @@ class ImportHelper extends acymObject
         $affected = acym_query($query);
         $nbUpdated += intval($affected);
 
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_IMPORT_UPDATE', $nbUpdated), 'success');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_UPDATE', $nbUpdated), 'success');
 
         //Step 2 : delete the ones which don't exist any more
         $query = 'SELECT a.id FROM #__acym_user as a LEFT JOIN '.$this->cmsUserVars->table.' as b on a.cms_id = b.'.$this->cmsUserVars->id.' WHERE b.'.$this->cmsUserVars->id.' IS NULL AND a.cms_id > 0';
@@ -144,7 +144,7 @@ class ImportHelper extends acymObject
         if (!empty($deletedSubid)) {
             $userClass = new UserClass();
             $deletedUsers = $userClass->delete($deletedSubid);
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_IMPORT_DELETE', $deletedUsers), 'success');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_DELETE', $deletedUsers), 'success');
         }
 
         //Step 3 : insert the new ones
@@ -170,7 +170,7 @@ class ImportHelper extends acymObject
 
         acym_query('UPDATE #__acym_configuration SET `value` = '.intval($time).' WHERE `name` = \'last_import\'');
 
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_IMPORT_NEW', $insertedUsers), 'info');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_NEW', $insertedUsers), 'info');
 
         //Step 4 : subscribe all the registered users to one or several lists
         $lists = $this->getImportedLists();
@@ -206,7 +206,7 @@ class ImportHelper extends acymObject
 
         $query .= ' WHERE '.implode(' AND ', $conditions);
         $nbsubscribed = acym_query($query);
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_IMPORT_SUBSCRIPTION', $nbsubscribed));
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_SUBSCRIPTION', $nbsubscribed));
 
         return true;
     }
@@ -251,7 +251,7 @@ class ImportHelper extends acymObject
                 continue;
             }
             if (!in_array($tableField, $fields)) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_SPECIFYFIELD', $tableField, implode(' <br> ', $fields)), 'warning');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_SPECIFYFIELD', $tableField, implode(' <br> ', $fields)), 'warning');
 
                 return false;
             }
@@ -279,7 +279,7 @@ class ImportHelper extends acymObject
 
         acym_query('UPDATE #__acym_configuration SET `value` = '.intval($time).' WHERE `name` = "last_import"');
 
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_IMPORT_NEW', $affectedRows), 'info');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_NEW', $affectedRows), 'info');
 
         //Step 4 : subscribe all the registered users to one or several lists
         $lists = $this->getImportedLists();
@@ -302,7 +302,7 @@ class ImportHelper extends acymObject
                 $listsSubscribe
             ).') AND user.`source` LIKE "%'.$formattedTime.'%"';
         $nbsubscribed = acym_query($query);
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_IMPORT_SUBSCRIPTION', $nbsubscribed));
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_SUBSCRIPTION', $nbsubscribed));
 
         return true;
     }
@@ -317,7 +317,7 @@ class ImportHelper extends acymObject
         if (!is_writable($folderPath)) {
             @chmod($folderPath, '0755');
             if (!is_writable($folderPath)) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_WRITABLE_FOLDER', $folderPath), 'warning');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_WRITABLE_FOLDER', $folderPath), 'warning');
             }
         }
 
@@ -422,7 +422,7 @@ class ImportHelper extends acymObject
 
         //Step 3 : we make sure the header of the file is correct (so it does correspond to columns from the database)
         if (!$this->_autoDetectHeader()) {
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_IMPORT_HEADER', acym_escape($this->header)), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_HEADER', acym_escape($this->header)), 'error');
             acym_enqueueMessage(acym_translation('ACYM_IMPORT_EMAIL'), 'error');
 
             return false;
@@ -562,7 +562,7 @@ class ImportHelper extends acymObject
                 $success = false;
                 static $errorcount = 0;
                 if (empty($errorcount)) {
-                    acym_enqueueMessage(acym_translation_sprintf('ACYM_IMPORT_ARGUMENTS', $numberColumns), 'warning');
+                    acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_ARGUMENTS', $numberColumns), 'warning');
                 }
                 $errorcount++;
 
@@ -696,7 +696,7 @@ class ImportHelper extends acymObject
         if ($this->dispresults) {
             //All users have been added properly into the database... we will now subscribe the users
             acym_enqueueMessage(
-                acym_translation_sprintf(
+                acym_translationSprintf(
                     'ACYM_IMPORT_REPORT',
                     $this->totalTry,
                     $this->totalInserted,
@@ -891,7 +891,7 @@ class ImportHelper extends acymObject
 
             if (!in_array($this->columns[$i], $columns) && $this->columns[$i] != 1) {
                 acym_enqueueMessage(
-                    acym_translation_sprintf(
+                    acym_translationSprintf(
                         'ACYM_IMPORT_ERROR_FIELD',
                         '<b>'.acym_escape($this->columns[$i]).'</b>',
                         '<b>'.implode('</b> | <b>', array_diff($columns, ['id', 'cms_id'])).'</b>'
@@ -1088,7 +1088,7 @@ class ImportHelper extends acymObject
                     <div id="acym__users__import__create-list" class="grid-x" style="display: none;">
                         <label for="acym__users__import__create-list__field" class="margin-right-1 acym_vcenter">'.acym_translation('ACYM_LIST_NAME').' : </label>
                         <div>
-                            <input id="acym__users__import__create-list__field" type="text" class="acym__light__input">
+                            <input id="acym__users__import__create-list__field" type="text">
                         </div>
                     </div>
                     <button type="button" class="button button-secondary margin-left-1 acym_vcenter margin-right-2" id="'.$buttonAddListId.'">'.acym_translation(
@@ -1098,9 +1098,10 @@ class ImportHelper extends acymObject
                 </div>
                 <div class="cell align-right grid-x">
                     <button type="button" class="button-secondary button cell shrink margin-right-1" id="'.$buttonSkipId.'">'.acym_translation('ACYM_SKIP').'</button>
-                    <button type="button" class="button-primary button acy_button_submit cell shrink '.$buttonImportClass.'" id="acym__entity_select__button__submit" data-task="'.$buttonImportDataTask.'">'.acym_translation(
-                'ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS'
-            ).'</button>
+                    <button 
+                        type="button" 
+                        class="button-primary button acy_button_submit cell shrink margin-right-2 '.$buttonImportClass.'" 
+                        id="acym__entity_select__button__submit" data-task="'.$buttonImportDataTask.'">'.acym_translation('ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS').'</button>
                 </div>';
     }
 }

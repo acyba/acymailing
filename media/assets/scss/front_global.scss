@@ -2,6 +2,11 @@
 @import "compass/css3";
 @import "compass/support";
 @import "vendor/foundation";
+
+#acym_wrapper {
+    @include foundation-everything-acyba;
+}
+
 //include our style
 @import "front/components";
 @import "global/components";
@@ -17,8 +22,4 @@
             }
         }
     }
-}
-
-#acym_wrapper {
-    @include foundation-everything-acyba;
 }

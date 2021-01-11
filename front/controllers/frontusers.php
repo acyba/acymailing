@@ -141,7 +141,7 @@ class FrontusersController extends UsersController
             ),
             null,
             '',
-            'class="acym__toolbar__button acym__toolbar__button-secondary disabled cell medium-6 large-shrink" id="acym__users__listing__button--add-to-list"'
+            'class="button button-secondary disabled cell medium-6 large-shrink" id="acym__users__listing__button--add-to-list"'
         );
         $toolbarHelper->addOtherContent($otherContent);
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit'], 'user-plus', true);
@@ -164,7 +164,7 @@ class FrontusersController extends UsersController
     {
         acym_checkRobots();
 
-        if (!acym_getVar('cmd', 'acy_source') && !empty($_GET['user'])) {
+        if (!acym_getVar('string', 'acy_source') && !empty($_GET['user'])) {
             // Coming from a subscription via url...
             acym_setVar('acy_source', 'url');
         }
@@ -190,7 +190,6 @@ class FrontusersController extends UsersController
             }
         }
 
-        $currentUserid = acym_currentUserId();
         if (empty($currentUserid) && $this->config->get('captcha', '') == 1) {
             $captchaHelper = new CaptchaHelper();
             if (!$captchaHelper->check()) {
@@ -200,18 +199,7 @@ class FrontusersController extends UsersController
 
         $formData = acym_getVar('array', 'user', [], '');
         $user = new \stdClass();
-
-        // Clean data
-        foreach ($formData as $column => $value) {
-            $user->$column = trim(strip_tags($value));
-
-            if (!is_numeric($user->$column)) {
-                $matchNonUTF8 = '%^(?:[\x09\x0A\x0D\x20-\x7E]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})*$%xs';
-                if ((function_exists('mb_detect_encoding') && mb_detect_encoding($user->$column, 'UTF-8', true) != 'UTF-8') || !preg_match($matchNonUTF8, $user->$column)) {
-                    $user->$column = utf8_encode($user->$column);
-                }
-            }
-        }
+        if (!empty($formData['email'])) $user->email = $formData['email'];
 
         $userClass = new UserClass();
         if (empty($user->email)) {
@@ -230,38 +218,23 @@ class FrontusersController extends UsersController
         // E-mail is valid now...
         // Check if this user already exists or not...
         $alreadyExists = $userClass->getOneByEmail($user->email);
-
         if (!empty($alreadyExists->id)) {
-            //We don't overwrite the name if it's a registered user
-            if (!empty($alreadyExists->cms_id)) {
-                unset($user->name);
-            }
             $user->id = $alreadyExists->id;
-        } else {
-            $user->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
         }
 
-        //We save the user and the custom fields values
-        $customFields = acym_getVar('array', 'customField');
         $isNew = empty($user->id);
-        $user->id = $userClass->save($user, $customFields, $ajax);
+        $result = $userClass->saveForm($ajax);
+        $user->id = acym_getVar('int', 'id');
         if (!empty($userClass->errors)) $this->displayMessage(implode('<br /><br />', $userClass->errors), $ajax);
+        if ($result === false || empty($user->id)) {
+            $this->displayMessage('ACYM_ERROR_SAVE_USER', $ajax);
+        }
 
         //We will now load back the user from the one we saved so that we will have all its infos
         $myuser = $userClass->getOneById($user->id);
         if (empty($myuser->id)) {
             $this->displayMessage('ACYM_ERROR_SAVE_USER', $ajax);
         }
-
-        $hiddenlistsstring = acym_getVar('string', 'hiddenlists', '');
-        $hiddenlists = explode(',', $hiddenlistsstring);
-        acym_arrayToInteger($hiddenlists);
-        $visibleSubscription = acym_getVar('array', 'subscription', []);
-
-        $addLists = array_merge($hiddenlists, $visibleSubscription);
-
-        // Subscribe the user
-        $subscribed = $userClass->subscribe($myuser->id, $addLists);
 
         $msgtype = 'success';
         if (empty($myuser->confirmed) && $this->config->get('require_confirmation', 1) == 1) {
@@ -274,8 +247,9 @@ class FrontusersController extends UsersController
                 $msgtype = 'error';
             }
         } else {
-            if ($subscribed) {
-                $msg = 'ACYM_SUBSCRIPTION_OK';
+            if ($userClass->subscribed) {
+                $msg = acym_getVar('string', 'confirmation_message');
+                if (empty($msg)) $msg = 'ACYM_SUBSCRIPTION_OK';
                 $code = 3;
             } else {
                 $msg = 'ACYM_ALREADY_SUBSCRIBED';
@@ -283,11 +257,6 @@ class FrontusersController extends UsersController
                 $enqueueMsgType = 'info';
             }
         }
-
-        $userClass->sendNotification(
-            $myuser->id,
-            $isNew ? 'acy_notification_create' : 'acy_notification_subform'
-        );
 
         // Replace tags inside the $msg and redirect link
         $replace = [];
@@ -313,8 +282,6 @@ class FrontusersController extends UsersController
         }
 
         acym_redirect($redirectUrl);
-
-        return true;
     }
 
     private function unsubscribeDirectly($alreadyExists, $ajax)

@@ -4,7 +4,6 @@ const acym_helperSelect2 = {
         this.setAjaxSelect2();
         this.setSelect2Email();
         this.setSelect2ChooseTagsGlobal();
-        this.setSelect2SortBy();
     },
     setSelect2: function () {
         jQuery('.acym__select:not([acym-data-infinite])')
@@ -23,13 +22,6 @@ const acym_helperSelect2 = {
         jQuery('.intext_select')
             .select2({
                 theme: 'foundation',
-                minimumResultsForSearch: Infinity
-            });
-    },
-    setSelect2SortBy: function () {
-        jQuery('#acym__listing__ordering')
-            .select2({
-                theme: 'sortBy',
                 minimumResultsForSearch: Infinity
             });
     },
@@ -133,6 +125,7 @@ const acym_helperSelect2 = {
             width: '100%',
             placeholder: $emailsField.attr('placeholder'),
             tags: true,
+            theme: 'foundation',
             tokenSeparators: [
                 ' ',
                 ',',
@@ -187,6 +180,7 @@ const acym_helperSelect2 = {
             width: '100%',
             placeholder: $placeholderSelect,
             tags: true,
+            theme: 'foundation',
             tokenSeparators: [' '],
             createTag: function (params) {
                 let term = jQuery.trim(params.term);

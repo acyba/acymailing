@@ -5,14 +5,6 @@
             align-content: baseline;
 
             #acym__forms__information {
-                input {
-                    margin-bottom: 0 !important;
-                }
-
-                .switch {
-                    margin-bottom: 0;
-                }
-
                 .acym__forms__information__shortcode {
                     border: none;
                     border-radius: 5px;
@@ -139,7 +131,6 @@
 
                 .acym__forms__menu__title {
                     padding: .5rem;
-                    font-size: 1rem;
                     border-bottom: 1px solid $font-primary;
                 }
 
@@ -148,10 +139,6 @@
 
                     .acym__forms__menu__options__style__size__default {
                         font-size: 1rem;
-                    }
-
-                    input {
-                        margin-bottom: 0 !important;
                     }
 
                     .acym__forms__menu__options__input-color-disabled {
@@ -187,7 +174,7 @@
 
                     &.position_selected {
                         background-color: $light-blue;
-                        border-color: $primary-toolbar-color;
+                        border-color: $color-palette-cyan;
                     }
 
                     i {

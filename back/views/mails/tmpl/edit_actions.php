@@ -9,7 +9,7 @@ if (acym_isAdmin() && $data['mail']->editor != 'acyEditor') {
 	</button>
     <?php
 }
-echo acym_modal_include(
+echo acym_modalInclude(
     '<button type="button" id="acym__template__start-from" class="cell button-secondary button">'.acym_translation('ACYM_START_FROM').'</button>',
     dirname(__FILE__).DS.'choose_template_ajax.php',
     'acym__template__choose__modal',

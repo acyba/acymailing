@@ -8,8 +8,10 @@
             echo $workflow->display($this->followupSteps, 'followupTrigger');
             ?>
 		</div>
-		<h1 class="margin-top-1 margin-bottom-2 acym__selection__title"><?php echo acym_translation('ACYM_WHAT_TRIGGERS_FOLLOW_UP_SHOULD_START'); ?></h1>
-		<div class="cell grid-x grid-margin-x align-center">
+		<h1 class="margin-top-1 margin-bottom-2 acym__title">
+			<?php echo acym_translation('ACYM_WHAT_TRIGGERS_FOLLOW_UP_SHOULD_START'); ?>
+		</h1>
+		<div class="cell grid-x grid-margin-x align-center margin-y">
             <?php
             $blocks = [];
             acym_trigger('getFollowupTriggerBlock', [&$blocks]);
@@ -17,14 +19,14 @@
                 if (!acym_level($block['level'])) continue;
                 $selected = !empty($data['followup']->trigger) && $data['followup']->trigger == $block['alias'] ? 'acym__selection__card-selected' : '';
                 ?>
-				<div class="acym__selection__card acym__selection__select-card cell large-2 medium-4 text-center <?php echo $selected; ?>"
+				<div class="acym__selection__card acym__selection__select-card cell xxlarge-2 xlarge-3 medium-4 text-center <?php echo $selected; ?>"
 					 acym-data-link="<?php echo $block['link']; ?>">
 					<i class="<?php echo $block['icon']; ?> acym__selection__card__icon"></i>
 					<h1 class="acym__selection__card__title"><?php echo $block['name']; ?></h1>
 					<p class="acym__selection__card__description"><?php echo $block['description']; ?></p>
 				</div>
             <?php } ?>
-			<div class="acym__selection__card acym__selection__card__disabled cell large-2 medium-4 text-center">
+			<div class="acym__selection__card acym__selection__card__disabled cell xxlarge-2 xlarge-3 medium-4 text-center">
 				<i class="acymicon-idea acym__selection__card__icon"></i>
 				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_HAVE_SUGGESTION'); ?></h1>
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_HAVE_SUGGESTION_DESC'); ?></p>

@@ -205,7 +205,7 @@ class plgAcymCbuilder extends acymPlugin
         $operator = new OperatorType();
 
         $conditions['user']['cbfield'] = new stdClass();
-        $conditions['user']['cbfield']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'Community Builder', acym_translation('ACYM_FIELDS'));
+        $conditions['user']['cbfield']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'Community Builder', acym_translation('ACYM_FIELDS'));
         $conditions['user']['cbfield']->option = '<div class="intext_select_automation cell">';
         $conditions['user']['cbfield']->option .= acym_select($cbfields, 'acym_condition[conditions][__numor__][__numand__][cbfield][field]', null, 'class="acym__select"');
         $conditions['user']['cbfield']->option .= '</div>';
@@ -243,7 +243,7 @@ class plgAcymCbuilder extends acymPlugin
     public function summaryConditionFilters(&$automationCondition)
     {
         if (!empty($automationCondition['cbfield'])) {
-            $automationCondition = acym_translation_sprintf(
+            $automationCondition = acym_translationSprintf(
                 'ACYM_CONDITION_X_FIELD_SUMMARY',
                 $this->pluginDescription->name,
                 $automationCondition['cbfield']['field'],
@@ -262,7 +262,7 @@ class plgAcymCbuilder extends acymPlugin
     {
         $this->onAcymProcessFilter_cbfield($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_cbfield(&$query, $options, $num)

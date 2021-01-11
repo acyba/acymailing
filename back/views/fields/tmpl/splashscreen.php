@@ -6,7 +6,7 @@
 		<div class="cell grid-x acym__splashscreen__bloc margin-top-2">
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>
 			<div class="cell large-8 grid-x text-center">
-				<h3 class="cell acym__splashscreen__title"><?php echo acym_translation('ACYM_WHAT_ARE_CUSTOM_FIELDS'); ?></h3>
+				<h3 class="cell acym__title text-center"><?php echo acym_translation('ACYM_WHAT_ARE_CUSTOM_FIELDS'); ?></h3>
 				<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_WHAT_ARE_CUSTOM_FIELDS_DESC'); ?></p>
 			</div>
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>
@@ -17,7 +17,7 @@
 		<div class="cell grid-x acym__splashscreen__bloc">
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>
 			<div class="cell large-8 grid-x text-center">
-				<h3 class="cell acym__splashscreen__title"><?php echo acym_translation('ACYM_WHY_USING_CUSTOM_FIELDS'); ?></h3>
+				<h3 class="cell acym__title text-center"><?php echo acym_translation('ACYM_WHY_USING_CUSTOM_FIELDS'); ?></h3>
 				<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_WHY_USING_CUSTOM_FIELDS_DESC'); ?></p>
 			</div>
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>

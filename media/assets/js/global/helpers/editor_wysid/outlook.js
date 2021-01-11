@@ -1,35 +1,42 @@
 const acym_editorWysidOutlook = {
     setButtonOutlook: function ($element) {
-        let borderRadius = 0;
+        let borderRadius;
         if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-            borderRadius = parseInt($element.css('borderBottomLeftRadius').replace(/[^-\d\.]/g, ''));
+            borderRadius = $element.css('borderBottomLeftRadius');
         } else {
-            borderRadius = parseInt($element.css('borderRadius').replace(/[^-\d\.]/g, ''));
+            borderRadius = $element.css('borderRadius');
         }
-        let borderColor = $element.css('border-color');
-        let backgroundColor = $element.css('background-color');
-        let href = $element.attr('href');
+        borderRadius = ' arcsize="' + (parseInt(borderRadius.replace(/[^-\d\.]/g, '')) * 2) + '%"';
+
+        let borderColor;
+        let borderWidth = $element.css('border-top-width');
+        if (borderWidth.indexOf('0') === 0) {
+            borderColor = ' strokecolor="' + $element.css('background-color') + '"';
+            borderWidth = '0';
+        } else {
+            borderColor = ' strokecolor="' + $element.css('border-top-color') + '"';
+        }
+        borderWidth = ' strokeweight="' + borderWidth + '"';
+
+        let backgroundColor = ' fillcolor="' + $element.css('background-color') + '"';
+        let href = ' href="' + $element.attr('href') + '"';
         let widthButton = $element.outerWidth();
-        let cssRoundrect = 'style = "width: ' + widthButton + '; height:' + $element.css('height').replace(/[^-\d\.]/g, '') + '"';
+        let cssRoundrect = 'style="width: ' + widthButton + '; height:' + $element.css('height').replace(/[^-\d\.]/g, '') + ';v-text-anchor:middle;"';
         let css = 'color :' + $element.css('color') + '; font-family:' + $element.css('font-family') + '; font-size:' + $element.css('font-size') + ';';
         let text = $element.html();
-        //We can also call it shitty button
-        let outlookButton = '<!--[if mso]><v:roundrect '
-                            + cssRoundrect
-                            + ' xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="'
-                            + href
-                            + '" style="v-text-anchor:middle;" arcsize="'
-                            + borderRadius
-                            + '%" strokecolor="'
-                            + borderColor
-                            + '" fillcolor="'
-                            + backgroundColor
-                            + '"><w:anchorlock/><center style="'
-                            + css
-                            + '">'
-                            + text
-                            + '</center></v:roundrect><![endif]--><!--[if !mso]> -->';
-        return outlookButton;
+
+        return '<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"'
+               + cssRoundrect
+               + href
+               + borderRadius
+               + borderColor
+               + borderWidth
+               + backgroundColor
+               + '><w:anchorlock/><center style="'
+               + css
+               + '">'
+               + text
+               + '</center></v:roundrect><![endif]--><!--[if !mso]> -->';
     },
     setBackgroundOutlook: function ($table) {
         let start = '<!--[if gte mso 9]><v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width: '

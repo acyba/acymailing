@@ -14,6 +14,9 @@ jQuery(document).ready(function ($) {
         setModifyCron();
         setMultilingualOptions();
         setAcl();
+        acym_helperMailer.setTestCredentialsSendingMethods();
+        acym_helperSelectionPage.setSelectionElement(true, true, setEmbedImageToggle);
+        setEmbedImageToggle();
     }
 
     Configuration();
@@ -94,6 +97,8 @@ jQuery(document).ready(function ($) {
             if ($selected === 'server') {
                 $('i[data-radio="config_mailer_methodelasticemail"], label[for="config_mailer_methodelasticemail"]').addClass('is-hidden');
                 $('i[data-radio="config_mailer_methodsmtp"], label[for="config_mailer_methodsmtp"]').addClass('is-hidden');
+                $('i[data-radio="config_mailer_methodsendgrid"], label[for="config_mailer_methodsendgrid"]').addClass('is-hidden');
+                $('i[data-radio="config_mailer_methodsendinblue"], label[for="config_mailer_methodsendinblue"]').addClass('is-hidden');
 
                 $('i[data-radio="config_mailer_methodqmail"], label[for="config_mailer_methodqmail"]').removeClass('is-hidden').show();
                 $('i[data-radio="config_mailer_methodsendmail"], label[for="config_mailer_methodsendmail"]').removeClass('is-hidden').show();
@@ -103,6 +108,8 @@ jQuery(document).ready(function ($) {
                 $('i[data-radio="config_mailer_methodsendmail"], label[for="config_mailer_methodsendmail"]').addClass('is-hidden');
                 $('i[data-radio="config_mailer_methodphpmail"], label[for="config_mailer_methodphpmail"]').addClass('is-hidden');
 
+                $('i[data-radio="config_mailer_methodsendinblue"], label[for="config_mailer_methodsendinblue"]').removeClass('is-hidden').show();
+                $('i[data-radio="config_mailer_methodsendgrid"], label[for="config_mailer_methodsendgrid"]').removeClass('is-hidden').show();
                 $('i[data-radio="config_mailer_methodelasticemail"], label[for="config_mailer_methodelasticemail"]').removeClass('is-hidden').show();
                 $('i[data-radio="config_mailer_methodsmtp"], label[for="config_mailer_methodsmtp"]').removeClass('is-hidden').show().click();
             }
@@ -123,16 +130,10 @@ jQuery(document).ready(function ($) {
         let $method = $('input[name="config[mailer_method]"]');
         $method.on('change', function () {
             $('.send_settings').hide();
-            let $selected = $('input[name="config[mailer_method]"]:checked').val();
-
-            if ($selected === 'sendmail') {
-                $('#sendmail_settings').show();
-            }
-            if ($selected === 'smtp') {
-                $('#smtp_settings').show();
-            }
-            if ($selected === 'elasticemail') {
-                $('#elastic_settings').show();
+            let selected = $('input[name="config[mailer_method]"]:checked').val();
+            const $settings = $(`#${selected}_settings`);
+            if ($settings.length > 0) {
+                $settings.show();
             }
         });
 
@@ -327,5 +328,35 @@ jQuery(document).ready(function ($) {
                 $choicesContainer.removeClass('is-hidden');
             }
         });
+    }
+
+    function setOptionDisabled(paramsId, optionName) {
+        let params = $(`#${paramsId}`).val();
+        params = acym_helper.parseJson(params);
+
+        let $selectedCard = $('.acym__sending__methods__choose .acym__selection__card-selected');
+        if ($selectedCard.length === 0) return;
+
+        let $embedImageToggle = $(`[name="config[${optionName}]"]`);
+        let $info = $embedImageToggle.closest('.acym__configuration__mail__option').find('.acym__configuration__mail__info__disabled');
+        let $switchLabel = $embedImageToggle.closest('.acym__configuration__mail__option').find('> .switch-label');
+        let $switchPaddle = $embedImageToggle.closest('.acym__configuration__mail__option').find('.switch-paddle');
+
+        if (undefined !== params[$selectedCard.attr('id')] && !params[$selectedCard.attr('id')]) {
+            if (parseInt($embedImageToggle.val()) === 1) $switchLabel.click();
+            $switchPaddle.addClass('disabled').attr('data-acym-tooltip', $info.find('.acym__tooltip__text ').html());
+            $embedImageToggle.next().attr('disabled', 'true');
+            $info.show();
+        } else {
+            $embedImageToggle.next().removeAttr('disabled');
+            $switchPaddle.removeClass('disabled').removeAttr('data-acym-tooltip');
+            $info.hide();
+        }
+        acym_helperTooltip.setTooltip();
+    }
+
+    function setEmbedImageToggle() {
+        setOptionDisabled('acym__config__mail__embed__image__blocked', 'embed_images');
+        setOptionDisabled('acym__config__mail__embed__attachment__blocked', 'embed_files');
     }
 });

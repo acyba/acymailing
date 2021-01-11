@@ -34,4 +34,35 @@
             }
         }
     }
+
+    .input-group-button {
+        .acym__search__button {
+            background-color: $white;
+            border-radius: 0 6px 6px 0 !important;
+            border: 1px solid map-get($foundation-palette, secondary);
+            border-left: 0 !important;
+
+            i {
+                vertical-align: middle;
+                color: $font-color-toolbar;
+            }
+
+            &:hover, &:focus {
+                border-color: map-get($foundation-palette, secondary);
+                background-color: $more-options-toggled-toolbar-light !important;
+            }
+        }
+    }
+
+    .input-group-field {
+        background-color: $white;
+        border-radius: 6px 0 0 6px !important;
+        border: 1px solid map-get($foundation-palette, secondary);
+        border-right: 0 !important;
+
+        &:hover, &:focus {
+            border-color: map-get($foundation-palette, secondary);
+            background-color: $white !important;
+        }
+    }
 }

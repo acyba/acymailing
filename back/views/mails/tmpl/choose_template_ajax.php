@@ -1,3 +1,6 @@
+<div class="acym__template__choose__modal__loader cell grid-x acym_vcenter align-center">
+    <?php echo acym_loaderLogo(); ?>
+</div>
 <div class="grid-x grid-margin-x acym__template__edit__choose-template__ajax">
 	<input type="hidden" name="tag_template_choose" id="acym_tag_template_choose__ajax" value="">
 	<input type="hidden" name="search_template_choose" id="acym_search_template_choose__ajax" value="">

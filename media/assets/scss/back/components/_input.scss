@@ -1,28 +1,3 @@
-input[type="number"] {
-    height: 1.8rem;;
-    line-height: 1.5;
-    color: $font-primary;
-    appearance: none;
-    border: none;
-    border-bottom: 2px solid $light-gray;
-    background-color: transparent;
-    border-radius: 0;
-    text-align: center;
-    box-shadow: none;
-
-    &:hover, &:focus {
-        border: none;
-        border-bottom: 2px solid $primary-light-color;
-        background-color: transparent;
-        box-shadow: none;
-        color: $primary-light-color;
-    }
-}
-
-.input-group {
-    margin-bottom: 0;
-}
-
 input[type=search].select2-search__field {
     border-radius: 0;
 
@@ -43,14 +18,17 @@ select[multiple] {
 
     i.acym_radio_checked, i.acym_radio_unchecked {
         cursor: pointer;
-        color: $primary-color;
-        height: 27px;
-        width: 27px;
+        color: $color-palette-dark-blue;
         vertical-align: middle;
+        font-size: 1rem;
     }
 
     &.dcontent_pictures {
         display: inline-block;
+    }
+
+    label {
+        vertical-align: middle;
     }
 }
 
@@ -62,32 +40,27 @@ select[multiple] {
     margin: 0 !important;
 }
 
-input[type='text'], input[type='email'], input[type='tel'], textarea, input[type='password'] {
-    background-color: $light-blue;
-    border-color: $light-blue;
+input[type='text'], input[type='email'], input[type='tel'], textarea, input[type='password'], input[type="number"] {
+    background-color: $white;
+    border-color: $dark-gray;
     border-radius: $primary-radius;
     box-shadow: none;
     font-size: 0.8rem;
+    color: $color-palette-dark-blue;
 
-
-    &.acym__light__input, &.acym__light__input {
-        background-color: transparent;
-        border: none;
-        border-radius: 0;
-        border-bottom: 2px solid $light-gray;
-        color: $font-primary;
-
-        &:hover, &:focus {
-            background-color: transparent;
-            border-bottom-color: $primary-color;
-        }
-    }
-
-    &:focus {
-        background-color: $light-blue;
-        border-color: map-get($foundation-palette, primary);
+    &:focus, &:hover {
+        background-color: $white;
+        border-color: $color-palette-dark-blue;
         box-shadow: none;
     }
+
+    &.is-invalid-input:not(:focus) {
+        background-color: $white;
+    }
+}
+
+input[type="number"] {
+    padding-left: 5px;
 }
 
 .input-group {
@@ -105,7 +78,6 @@ input[type='text'], input[type='email'], input[type='tel'], textarea, input[type
     background-color: $white;
 
     select {
-        margin-bottom: 0;
         color: map-get($editor-wysid-palette, primary-ui);
         border-color: $white;
         background-color: $white;

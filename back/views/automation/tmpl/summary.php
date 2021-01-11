@@ -8,7 +8,7 @@
             if (!empty($data['id'])) {
                 ?>
 				<div class="acym__automation__summary__info cell grid-x acym__content margin-top-2">
-					<h6 class="cell acym__content__title__light-blue"><?php echo acym_translation('ACYM_INFORMATION'); ?></h6>
+					<h6 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_INFORMATION'); ?></h6>
                     <?php if (!empty($data['automation']->admin)) {
                         $data['automation']->name = acym_translation($data['automation']->name);
                         $data['automation']->description = acym_translation($data['automation']->description);
@@ -21,7 +21,7 @@
                             ); ?></span> : <?php echo acym_escape($data['automation']->description); ?></div>
 				</div>
 				<div class="acym__automation__summary__filters cell grid-x margin-top-2 acym__content">
-					<h6 class="cell acym__content__title__light-blue"><?php echo acym_translation('ACYM_TRIGGERS'); ?></h6>
+					<h6 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_TRIGGERS'); ?></h6>
 					<div class="cell acym__automation__summary__information__one"><span class="acym__automation__summary__information__one__title"><?php echo acym_translation(
                                 'ACYM_AUTOMATION_TRIGGER'
                             ); ?></span></div>
@@ -34,7 +34,7 @@
 					</div>
 				</div>
 				<div class="acym__automation__summary__actions cell grid-x margin-top-2 acym__content">
-					<h6 class="cell acym__content__title__light-blue"><?php echo acym_translation('ACYM_CONDITIONS'); ?></h6>
+					<h6 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONDITIONS'); ?></h6>
 					<div class="cell acym__automation__summary__information__one grid-x">
                         <?php
                         if (!empty($data['condition']->conditions)) {
@@ -47,7 +47,7 @@
                                         'ACYM_YOU_DID_NOT_SET_CONDITION'
                                     ).'</span></div><div class="acym__automation__summary__information__one">';
                             } else {
-                                echo '<span class="acym__automation__summary__information__one__title">'.acym_translation_sprintf(
+                                echo '<span class="acym__automation__summary__information__one__title">'.acym_translationSprintf(
                                         'ACYM_CONDITIONS_APPLY_TO',
                                         acym_translation($typeTrigger == 'classic' ? '' : 'ACYM_ONE_ACYMAILING_USER_CONDITION')
                                     ).'</span></div><div class="acym__automation__summary__information__one">';
@@ -71,11 +71,11 @@
 				</div>
             <?php } ?>
 			<div class="acym__automation__summary__actions cell grid-x margin-top-2 margin-bottom-2 acym__content">
-				<h6 class="cell acym__content__title__light-blue"><?php echo acym_translation('ACYM_ACTIONS'); ?></h6>
+				<h6 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_ACTIONS'); ?></h6>
 				<div class="cell acym__automation__summary__information__one grid-x">
                     <?php
                     if (!empty($data['action']->actions)) {
-                        echo '<span class="acym__automation__summary__information__one__title">'.acym_translation_sprintf(
+                        echo '<span class="acym__automation__summary__information__one__title">'.acym_translationSprintf(
                                 'ACYM_ACTIONS_USER_WILL',
                                 acym_strtolower(acym_translation(empty($data['id']) ? 'ACYM_MASS_ACTION' : 'ACYM_AUTOMATION'))
                             ).'</span></div><div class="acym__automation__summary__information__one">';
@@ -92,13 +92,13 @@
 				</div>
 			</div>
 			<div class="acym__automation__summary__actions cell grid-x margin-top-1  margin-bottom-2 acym__content">
-				<h6 class="cell acym__content__title__light-blue"><?php echo acym_translation('ACYM_ACTIONS_TARGETS'); ?></h6>
+				<h6 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_ACTIONS_TARGETS'); ?></h6>
 				<div class="cell acym__automation__summary__information__one grid-x">
                     <?php
                     if (!empty($data['action']->filters)) {
                         $orNum = 0;
                         $andNum = 0;
-                        echo '<span class="acym__automation__summary__information__one__title">'.acym_translation_sprintf(
+                        echo '<span class="acym__automation__summary__information__one__title">'.acym_translationSprintf(
                                 'ACYM_FILTERS_APPLY_TO',
                                 acym_strtolower(acym_translation(empty($data['id']) ? 'ACYM_MASS_ACTION' : 'ACYM_AUTOMATION')),
                                 acym_translation($data['action']->filters['type_filter'] == 'classic' ? 'ACYM_ALL_ACYMAILING_USERS' : 'ACYM_ONE_ACYMAILING_USER')

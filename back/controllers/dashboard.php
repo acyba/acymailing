@@ -15,6 +15,8 @@ use AcyMailing\Classes\CampaignClass;
 
 class DashboardController extends acymController
 {
+    var $errorMailer;
+
     public function __construct()
     {
         parent::__construct();
@@ -111,6 +113,7 @@ class DashboardController extends acymController
             'editor' => $editor,
             'social_icons' => $this->config->get('social_icons', '{}'),
             'mail' => $mail,
+            'mailClass' => $mailClass,
         ];
 
         parent::display($data);
@@ -212,7 +215,7 @@ class DashboardController extends acymController
             $userClass->subscribe($userId, $listId);
         }
 
-        if (!empty($wrongAddresses)) acym_enqueueMessage(acym_translation_sprintf('ACYM_WRONG_ADDRESSES', implode(', ', $wrongAddresses)), 'warning');
+        if (!empty($wrongAddresses)) acym_enqueueMessage(acym_translationSprintf('ACYM_WRONG_ADDRESSES', implode(', ', $wrongAddresses)), 'warning');
 
         $nextStep = acym_isLocalWebsite() ? 'stepGmail' : 'stepPhpmail';
 
@@ -229,6 +232,16 @@ class DashboardController extends acymController
             'userEmail' => acym_currentUserEmail(),
         ];
 
+        $data['sendingMethods'] = [];
+
+        acym_trigger('onAcymGetSendingMethods', [&$data]);
+
+        $data['sendingMethodsHtmlSettings'] = [];
+
+        acym_trigger('onAcymGetSendingMethodsHtmlSetting', [&$data]);
+
+        if (!empty($this->errorMailer)) $data['error'] = $this->errorMailer;
+
         parent::display($data);
     }
 
@@ -239,9 +252,11 @@ class DashboardController extends acymController
 
             return;
         }
+        $config = acym_getVar('array', 'config', []);
 
-        $mailerMethod = ['mailer_method' => 'phpmail'];
-        if (false === $this->config->save($mailerMethod)) {
+        if (empty($config)) $config = ['mailer_method' => 'phpmail'];
+
+        if (false === $this->config->save($config)) {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING', 'error'));
             $this->stepPhpmail();
 
@@ -376,11 +391,11 @@ class DashboardController extends acymController
         }
 
         if ($fromFunction == 'stepFaillocal' && acym_isLocalWebsite()) {
-            $fromMessage = 'ACYM_GMAIL_TRY';
+            $fromMessage = 'GMAIL_TRY';
         } elseif ($fromFunction == 'stepFaillocal') {
-            $fromMessage = 'ACYM_GMAIL_PHP_TRY';
+            $fromMessage = 'GMAIL_PHP_TRY';
         } else {
-            $fromMessage = 'ACYM_PHP_TRY';
+            $fromMessage = $this->config->get('mailer_method', 'phpmail');
         }
 
         $handle = curl_init();
@@ -698,6 +713,8 @@ class DashboardController extends acymController
         foreach ($subscribersTestingListIds as $subscriberId) {
             if ($mailerHelper->sendOne($firstMail->id, $subscriberId, true)) $nbSent++;
         }
+
+        if (!empty($mailerHelper->ErrorInfo)) $this->errorMailer = $mailerHelper->ErrorInfo;
 
         return $nbSent !== 0;
     }

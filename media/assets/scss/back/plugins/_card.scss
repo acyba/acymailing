@@ -7,13 +7,31 @@ $perspective: 600;
     #acym__plugin__available__application, #acym__plugin__installed__application {
         .acym__plugins__card {
             border-radius: 5px;
-            box-shadow: 0 0 8px 3px rgba(100, 100, 100, 0.1);
             transition: .3s ease-in-out;
             transition-property: box-shadow, transform;
             border: 0;
             align-content: baseline;
             position: relative;
-            height: 435px;
+            height: 410px;
+            padding: 1rem;
+
+            &:hover {
+                box-shadow: 0 2px 4px rgba(40, 41, 61, 0.04), 0 8px 16px rgba(96, 97, 112, 0.16);
+
+                .acym__plugins__button__delete {
+                    visibility: visible;
+
+                    &:hover {
+                        opacity: .8;
+                    }
+                }
+
+                .acym__plugins__card__image {
+                    img {
+                        transform: scale(1.07);
+                    }
+                }
+            }
 
             .acym__plugins__button__delete {
                 position: absolute;
@@ -31,85 +49,70 @@ $perspective: 600;
                 }
             }
 
-            &:hover {
-                .acym__plugins__button__delete {
-                    visibility: visible;
+            .acym__plugins__card__params_type {
+                color: $color-palette-dark-blue;
+                font-family: Inter, sans-serif;
+                font-size: 12px;
+                font-weight: 500;
+                line-height: 18px;
+                letter-spacing: 0.20000000298023224px;
 
-                    &:hover {
-                        opacity: .8;
-                    }
-                }
-
-                .acym__plugins__card__image {
-                    img {
-                        transform: scale(1.07);
-                    }
-                }
+                height: 26px;
+                border-radius: 8px;
+                padding: 4px 8px 4px 8px;
+                background-color: $very-light-gray;
+                margin-bottom: 1rem;
+                display: inline-block;
+                width: auto;
             }
 
             .acym__plugins__card__image {
                 overflow: hidden;
-                height: 180px;
+                height: 150px;
                 position: relative;
 
                 img {
                     transition: transform .3s ease-in-out;
                     background: linear-gradient(115deg, #dcefff, transparent);;
                 }
-
-                .acym__plugins__card__params_type {
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    border-radius: 0 4px 0 0;
-                    padding: .2rem;
-                    opacity: .9;
-                    font-weight: 500;
-                }
             }
 
             .acym__plugins__card__params {
-                padding: .5rem 1rem;
                 height: 100%;
                 max-height: 175px;
 
-                .acym__plugins__card__params__first {
+                .acym__plugins__card__params__title-line {
                     align-items: start;
 
                     .acym__plugins__card__params__title {
-                        font-size: 1rem;
-                        font-weight: 600;
-                        margin: 0;
-                        height: 35px;
-                    }
-
-                    .acym__plugins__card__params_type {
-                        padding: .2rem;
-                        background-color: #ffab15;
-                        border-radius: 5px;
-                        font-weight: 600;
-                    }
-
-                    .acym__plugins__card__params_features {
-                        margin: 0 .4rem;
-                        font-size: 1.4rem;
+                        font-family: Roboto, sans-serif;
+                        font-size: 1.1rem;
+                        font-weight: 700;
+                        line-height: 28px;
+                        color: $color-palette-black;
                     }
                 }
 
                 .acym__plugins__card__params_desc {
-                    color: #8a8a8a;
+                    font-size: .8rem;
+                    font-weight: 500;
+                    line-height: 20px;
                     height: 100%;
                     margin: .5rem 0;
-                    max-height: 130px;
+                    max-height: 65px;
                     overflow: auto;
+                    color: $color-palette-dark-text;
 
                     &.acym__plugins__card__params_desc__overflown {
-                        background: linear-gradient($white 76%, $light-gray);
+                        background: linear-gradient($white 85%, $light-gray);
                     }
                 }
 
-                .acym__plugins__link {
-                    color: $primary-color;
+                .acym__plugins__documentation {
+                    color: $color-palette-cyan;
+                    line-height: 28px;
+                    padding-left: 3px;
+                    font-size: 24px;
 
                     i {
                         font-size: 1.1rem;
@@ -124,6 +127,7 @@ $perspective: 600;
                 .acym__plugins__settings__toggle {
                     font-size: 1.1rem;
                     transition: .2s;
+                    line-height: 28px;
 
                     &:hover {
                         transform: rotate(15deg);
@@ -133,6 +137,7 @@ $perspective: 600;
                 .acym__plugins__settings__toggle__blocked {
                     font-size: 1.1rem;
                     cursor: not-allowed;
+                    line-height: 28px;
                 }
 
                 .acym__plugins__card__actions {
@@ -165,9 +170,6 @@ $perspective: 600;
                         text-overflow: ellipsis;
                         cursor: pointer;
                         font-size: .8rem;
-                        background: white;
-                        border: 2px solid $primary-light-color;
-                        color: $primary-light-color;
                         border-radius: 4px;
                         padding: 0;
                         transition: .2s ease-in-out;
@@ -179,7 +181,7 @@ $perspective: 600;
                         }
 
                         &.acym__plugins__button-disabled {
-                            opacity: .3;
+                            opacity: .5;
                             cursor: not-allowed;
 
                             .acym__tooltip__text {
@@ -211,7 +213,6 @@ $perspective: 600;
                         }
 
                         span {
-                            color: $primary-light-color;
                             transition: .2s ease-in-out;
                         }
 
@@ -283,20 +284,12 @@ $perspective: 600;
                 }
 
                 .acym__plugins__settings__options__container {
-                    height: 320px;
+                    height: 295px;
                     margin: 10px 0;
                     overflow-y: auto;
 
                     .acym__plugins__settings-one {
                         margin: .7rem 0;
-
-                        input[type="number"] {
-                            margin-bottom: 0 !important;
-                        }
-
-                        .switch {
-                            margin-bottom: 0;
-                        }
                     }
                 }
             }

@@ -13,7 +13,7 @@
             ?>
 		</div>
 		<div class="cell grid-x">
-			<div class="auto cell">
+			<div class="auto cell acym_vcenter">
                 <?php
                 $options = [
                     '' => ['ACYM_ALL', $data['userNumberPerStatus']['all']],
@@ -72,7 +72,7 @@
 				</div>
                 <?php if (acym_isAdmin()) { ?>
 					<div class="cell medium-1 hide-for-small-only acym__listing__header__title">
-                        <?php echo acym_translation_sprintf('ACYM_CMS_USER', ACYM_CMS_TITLE); ?>
+                        <?php echo acym_translationSprintf('ACYM_CMS_USER', ACYM_CMS_TITLE); ?>
 					</div>
                 <?php } ?>
 				<div class="cell medium-1 small-5 text-right medium-text-center acym__listing__header__title">

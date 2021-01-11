@@ -34,7 +34,7 @@
                             'open_date' => acym_translation('ACYM_OPEN_DATE'),
                             'sent' => acym_translation('ACYM_SENT'),
                         ],
-                        "detailed_stats",
+                        'detailed_stats',
                         $data['ordering']
                     ); ?>
 				</div>
@@ -69,7 +69,7 @@
                             'open_date' => acym_translation('ACYM_OPEN_DATE'),
                             'sent' => acym_translation('ACYM_SENT'),
                         ],
-                        "detailed_stats",
+                        'detailed_stats',
                         $data['ordering']
                     ); ?>
 				</div>

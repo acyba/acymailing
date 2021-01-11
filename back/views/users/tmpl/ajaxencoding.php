@@ -12,7 +12,7 @@ $extension = '.'.acym_fileGetExt($filename);
 $uploadPath = ACYM_MEDIA.'import'.DS.str_replace(['.', ' '], '_', substr($filename, 0, strpos($filename, $extension))).$extension;
 
 if (!file_exists($uploadPath)) {
-    acym_display(acym_translation_sprintf('ACYM_FAIL_OPEN', '<b><i>'.acym_escape($uploadPath).'</i></b>'), 'error');
+    acym_display(acym_translationSprintf('ACYM_FAIL_OPEN', '<b><i>'.acym_escape($uploadPath).'</i></b>'), 'error');
 
     return;
 }

@@ -2,10 +2,10 @@
 	<a name="subscribers"></a>
 	<input type="hidden" id="subscribers_subscribed" value="<?php echo acym_escape(json_encode($data['subscribers'])); ?>" />
 	<input type="hidden" id="requireConfirmation" value="<?php echo acym_escape($this->config->get('require_confirmation', 0)); ?>" />
-	<h5 class="cell font-bold"><?php echo acym_translation('ACYM_SUBSCRIBERS'); ?></h5>
+	<h5 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SUBSCRIBERS'); ?></h5>
 
 	<div class="cell grid-x acym__list__settings__subscribers__search">
-		<div class="cell medium-3"><input type="text" class="acym__light__input" v-model="searchSubscribers" placeholder="<?php echo acym_translation('ACYM_SEARCH'); ?>"></div>
+		<div class="cell medium-3"><input type="text" v-model="searchSubscribers" placeholder="<?php echo acym_translation('ACYM_SEARCH'); ?>"></div>
 		<div class="cell medium-auto"></div>
 		<div class="cell medium-3 grid-x">
             <?php

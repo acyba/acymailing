@@ -147,14 +147,14 @@ class FieldClass extends acymClass
                 if (!preg_match('#\.('.implode('|', $allowedExtensions).')$#Ui', $fileName)) {
                     $ext = substr($fileName, strrpos($fileName, '.') + 1);
                     if ($ajax) {
-                        $this->errors[] = acym_translation_sprintf(
+                        $this->errors[] = acym_translationSprintf(
                             'ACYM_ACCEPTED_TYPE',
                             acym_escape($ext),
                             implode(', ', $allowedExtensions)
                         );
                     } else {
                         acym_enqueueMessage(
-                            acym_translation_sprintf(
+                            acym_translationSprintf(
                                 'ACYM_ACCEPTED_TYPE',
                                 acym_escape($ext),
                                 implode(', ', $allowedExtensions)
@@ -185,6 +185,10 @@ class FieldClass extends acymClass
         foreach ($fields as $id => $value) {
             $query = 'INSERT INTO #__acym_user_has_field (`user_id`, `field_id`, `value`) VALUES ';
             $field = $this->getOneFieldByID($id);
+            if(empty($field)) {
+                acym_enqueueMessage(acym_translationSprintf('ACYM_WRONG_FIELD_ID', $id), 'error');
+                continue;
+            }
             $fieldOptions = json_decode($field->option);
 
             if (is_array($value)) {
@@ -388,7 +392,7 @@ class FieldClass extends acymClass
 
         $style = empty($size) ? '' : ' style="'.$size.'"';
         $messageRequired = empty($field->option->error_message)
-            ? acym_translation_sprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', $field->name)
+            ? acym_translationSprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', $field->name)
             : acym_translation(
                 $field->option->error_message
             );

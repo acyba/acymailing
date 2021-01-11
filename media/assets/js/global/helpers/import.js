@@ -11,7 +11,6 @@ const acym_helperImport = {
     setImportCMSLists: function () {
         let $submitButton = jQuery('#acym__users__import__from_database').is(':visible') ? jQuery('#submit_import_database') : jQuery('#submit_import_cms');
         jQuery('.acym__users__import__button').off('click').on('click', function () {
-            jQuery('#acym__import__new-list').attr('value', jQuery('#modal__pagination__create__list').val());
             $submitButton.click();
         });
 
@@ -36,12 +35,6 @@ const acym_helperImport = {
         });
     },
     verifyGenericImport: function () {
-        let $newList = jQuery('#modal__pagination__create__list').val();
-
-        if ($newList !== '') {
-            jQuery('#acym__import__new-list').attr('value', $newList);
-        }
-
         if (jQuery(this).attr('id') === 'no-list') {
             jQuery('#acym__modal__lists-selected').attr('value', '');
             jQuery('#acym__import__new-list').attr('value', '');

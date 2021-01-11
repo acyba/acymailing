@@ -1,5 +1,5 @@
 <div class="acym__content cell grid-x" id="acy_bounces_details" style="<?php echo !empty($data['id']) ? 'display: none;' : ''; ?>">
-	<div class="acym_area_title cell"><?php echo acym_translation('ACYM_BOUNCE_RULE_CONDITION'); ?></div>
+	<div class="acym__title acym__title__secondary cell"><?php echo acym_translation('ACYM_BOUNCE_RULE_CONDITION'); ?></div>
 
 	<div class="cell grid-x large-6 padding-left-1">
 		<label class="cell grid-x">
@@ -41,12 +41,12 @@
 	</div>
 
 	<div class="cell">
-		<div class="acym_area_title margin-top-1">
+		<div class="acym__title acym__title__secondary margin-top-1">
             <?php echo acym_translation('ACYM_ACTION_ON_USER');
             echo acym_info('ACYM_BOUNCES_ACTION_USER_DESC'); ?></div>
 		<div class="cell grid-x padding-left-1">
 			<p class="acym__label">
-                <?php echo acym_translation_sprintf(
+                <?php echo acym_translationSprintf(
                     'ACYM_EXECUTE_ACTIONS_AFTER',
                     '<input type="number" min="0" name="bounce[execute_action_after]" value="'.acym_escape(
                         !empty($data['rule']) ? $data['rule']->execute_action_after : '0'
@@ -94,7 +94,7 @@
 	</div>
 
 	<div class="cell">
-		<div class="acym_area_title margin-top-1">
+		<div class="acym__title acym__title__secondary margin-top-1">
             <?php echo acym_translation('ACYM_ACTION_ON_EMAIL');
             echo acym_info('ACYM_BOUNCES_ACTION_MSG_DESC'); ?></div>
 		<div class="cell grid-x padding-left-1">

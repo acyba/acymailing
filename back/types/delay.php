@@ -34,6 +34,8 @@ class DelayType extends acymObject
         }';
         acym_addScript(true, $js);
 
+        $this->values = [];
+
         if ($type == 0) {
             $this->values[] = acym_selectOption('second', 'ACYM_SECONDS');
             $this->values[] = acym_selectOption('minute', 'ACYM_MINUTES');

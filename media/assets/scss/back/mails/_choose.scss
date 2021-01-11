@@ -27,7 +27,7 @@
             transition: transform .3s ease-in-out;
 
             &.acyeditor {
-                background-color: $primary-light-color;
+                background-color: $color-palette-cyan;
             }
 
             &.htmleditor {
@@ -43,11 +43,4 @@
     .acym__templates__footer__title {
         font-weight: bold;
     }
-
-    .acym__templates__choose__type-templates .hollow.is-active {
-        color: white;
-        background-color: $primary-color;
-        background-color: map-get($foundation-palette, primary);
-    }
-
 }

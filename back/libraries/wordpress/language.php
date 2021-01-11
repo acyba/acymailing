@@ -99,8 +99,21 @@ function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $
     return $translation;
 }
 
+
 /**
  * Display the according translation
+ */
+function acym_translationSprintf()
+{
+    $args = func_get_args();
+    $args[0] = acym_translation($args[0]);
+
+    return call_user_func_array('sprintf', $args);
+}
+
+/**
+ * Display the according translation
+ * Deprecated see acym_translationSprintf()
  */
 function acym_translation_sprintf()
 {

@@ -6,7 +6,7 @@
 	<author>Acyba</author>
 	<authorEmail>dev@acyba.com</authorEmail>
 	<authorUrl>https://www.acymailing.com</authorUrl>
-	<copyright>Copyright (C) 2009-2020 ACYBA SAS - All rights reserved.</copyright>
+	<copyright>Copyright (C) 2009-2021 ACYBA SAS - All rights reserved.</copyright>
 	<license>GNU/GPLv3 https://www.gnu.org/licenses/gpl-3.0.html</license>
 	<description>CB plugin for AcyMailing: manage the Mailing List subscription via CB</description>
 	<files>

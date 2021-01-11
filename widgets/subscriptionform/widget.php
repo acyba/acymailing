@@ -13,7 +13,7 @@ class acym_subscriptionform_widget extends WP_Widget
 
         parent::__construct(
             'acym_subscriptionform_widget',
-            acym_translation_sprintf('ACYM_MENU', acym_translation('ACYM_MENU_FORM')),
+            acym_translationSprintf('ACYM_MENU', acym_translation('ACYM_MENU_FORM')),
             ['description' => acym_translation('ACYM_MENU_FORM_DESC')]
         );
     }
@@ -23,8 +23,8 @@ class acym_subscriptionform_widget extends WP_Widget
     {
         require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
 
-        wp_enqueue_style('select2lib', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css');
-        wp_enqueue_script('select2lib', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js', ['jquery']);
+        wp_enqueue_style('select2lib', ACYM_CSS.'libraries/select2-original.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'select2-original.min.css'));
+        wp_enqueue_script('select2lib', ACYM_JS.'libraries/select2-full.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'select2-full.min.js'), ['jquery']);
         wp_enqueue_script('acym_widget_article', ACYM_JS.'widget.min.js', ['select2lib']);
         acym_addStyle(false, ACYM_CSS.'widget.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'widget.min.css'));
 
@@ -64,6 +64,7 @@ class acym_subscriptionform_widget extends WP_Widget
             'unsubtext' => '',
             'unsubredirect' => '',
             'successmode' => 'replace',
+            'confirmation_message' => '',
             'redirect' => '',
             'introtext' => '',
             'posttext' => '',
@@ -267,6 +268,18 @@ class acym_subscriptionform_widget extends WP_Widget
                 $this->get_field_id('successmode')
             ).'</p>';
 
+        echo '<p>
+				<label 
+					class="acyWPconfig" 
+					for="'.$this->get_field_id('confirmation_message').'" 
+					title="'.acym_translation('ACYM_CONFIRMATION_MESSAGE_DESC').'">'.acym_translation('ACYM_CONFIRMATION_MESSAGE').'</label>
+				<input 
+					type="text" class="widefat" 
+					id="'.$this->get_field_id('confirmation_message').'" 
+					name="'.$this->get_field_name('confirmation_message').'" 
+					value="'.acym_escape($params['confirmation_message']).'" />
+			</p>';
+
         echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('redirect').'" title="'.acym_translation('ACYM_REDIRECT_LINK_DESC').'">'.acym_translation(
                 'ACYM_REDIRECT_LINK'
             ).'</label>
@@ -439,15 +452,15 @@ class acym_subscriptionform_widget extends WP_Widget
         if (empty($termsURL) && empty($privacyURL)) {
             $termslink = '';
         } elseif (empty($privacyURL)) {
-            $termslink = acym_translation_sprintf('ACYM_I_AGREE_TERMS', $termsURL);
+            $termslink = acym_translationSprintf('ACYM_I_AGREE_TERMS', $termsURL);
         } elseif (empty($termsURL)) {
-            $termslink = acym_translation_sprintf('ACYM_I_AGREE_PRIVACY', $privacyURL);
+            $termslink = acym_translationSprintf('ACYM_I_AGREE_PRIVACY', $privacyURL);
         } else {
-            $termslink = acym_translation_sprintf('ACYM_I_AGREE_BOTH', $termsURL, $privacyURL);
+            $termslink = acym_translationSprintf('ACYM_I_AGREE_BOTH', $termsURL, $privacyURL);
         }
 
         $formName = acym_getModuleFormName();
-        $formAction = htmlspecialchars_decode(acym_rootURI().acym_addPageParam('frontusers', true, true));
+        $formAction = htmlspecialchars_decode(acym_frontendLink('frontusers'));
 
         $js = "window.addEventListener('DOMContentLoaded', (event) => {";
         $js .= "\n"."acymModule['excludeValues".$formName."'] = [];";
@@ -488,7 +501,6 @@ class acym_subscriptionform_widget extends WP_Widget
                         ?>
 					</div>
 
-					<input type="hidden" name="page" value="front" />
 					<input type="hidden" name="ctrl" value="frontusers" />
 					<input type="hidden" name="task" value="notask" />
 					<input type="hidden" name="option" value="<?php echo acym_escape(ACYM_COMPONENT); ?>" />
@@ -503,6 +515,7 @@ class acym_subscriptionform_widget extends WP_Widget
 					<input type="hidden" name="hiddenlists" value="<?php echo implode(',', $hiddenLists); ?>" />
 					<input type="hidden" name="acyformname" value="<?php echo acym_escape($formName); ?>" />
 					<input type="hidden" name="acysubmode" value="widget_acym" />
+					<input type="hidden" name="confirmation_message" value="<?php echo acym_escape($params->get('confirmation_message', '')); ?>" />
 
                     <?php
                     $postText = $params->get('posttext', '');

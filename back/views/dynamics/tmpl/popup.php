@@ -1,5 +1,7 @@
 <div id="acym_content" class="popup_size">
 	<input type="hidden" name="mail_id" value="<?php echo $data['mail_id']; ?>">
+	<input type="hidden" name="mail_type" value="<?php echo $data['mailType']; ?>">
+	<input type="hidden" name="type_notif" value="<?php echo $data['typeNotif']; ?>">
 	<div id="acym__dynamics__popup">
 		<div class="acym__dynamics__popup__menu grid-x">
 			<div id="acym__dynamics__popup__menu__insert__tag" class="cell grid-x">
@@ -12,7 +14,7 @@
 					   value=""
 					   onclick="this.select();">
 				<div class="medium-2 small-12">
-					<button class="button expanded " id="insertButton"><?php echo acym_translation('ACYM_INSERT'); ?></button>
+					<button class="button " id="insertButton"><?php echo acym_translation('ACYM_INSERT'); ?></button>
 				</div>
 				<div class="medium-auto hide-for-small-only"></div>
 			</div>

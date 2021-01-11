@@ -1,6 +1,6 @@
 <div class="cell grid-x acym__content margin-bottom-1" id="acym__forms__information">
 	<div class="cell">
-		<div class="grid-x grid-margin-x grid-margin-y">
+		<div class="grid-x grid-margin-x margin-y">
 			<div class="cell medium-6 grid-x acym_vcenter">
 				<label for="acym__forms__information__name" class="cell medium-6 large-4">
                     <?php echo acym_translation('ACYM_FORM_NAME'); ?>
@@ -29,7 +29,7 @@
                     [],
                     'large-4 medium-6 small-9',
                     'auto',
-                    'tiny',
+                    '',
                     null,
                     true,
                     'v-model="form.active"'
@@ -42,7 +42,7 @@
                         <?php echo acym_translation('ACYM_DELAY').acym_info('ACYM_DELAY_DESC'); ?>
 					</label>
 					<input required type="number" name="form[delay]" id="acym__forms__information__delay" class="cell large-2 medium-4 small-auto" v-model="form.delay">
-					<span><?php echo acym_translation('ACYM_SECONDS'); ?></span>
+					<span class="margin-left-1"><?php echo acym_translation('ACYM_SECONDS'); ?></span>
 				</div>
             <?php } ?>
             <?php

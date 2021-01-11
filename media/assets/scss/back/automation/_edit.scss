@@ -11,10 +11,6 @@
 
         .acym__automation__info__first {
             max-height: 370px;
-
-            .switch {
-                margin-bottom: 0;
-            }
         }
 
         #acym__automation__info__choose__trigger__type {
@@ -27,7 +23,7 @@
                 border-radius: $primary-radius;
 
                 &.selected-trigger {
-                    background-color: $primary-light-color;
+                    background-color: $color-palette-cyan;
                     color: $white;
                 }
             }
@@ -117,7 +113,6 @@
     }
 
     #acym__automation__filters, #acym__automation__conditions {
-
         .acym__automation__inner__text {
             margin-bottom: 0;
             margin-top: 0;
@@ -131,7 +126,6 @@
 
         .intext_select_automation, .intext_input_automation {
             width: 200px;
-            margin-bottom: 0;
             margin-top: 0;
             display: inline-flex;
 
@@ -149,7 +143,7 @@
             border-radius: $primary-radius;
 
             &.selected-condition, &.selected-filter {
-                background-color: $primary-light-color;
+                background-color: $color-palette-cyan;
                 color: $white;
             }
         }
@@ -183,14 +177,7 @@
         .intext_select_automation, .intext_input_automation {
             min-width: 200px;
             width: auto;
-            margin-bottom: 0;
             display: inline-block;
-        }
-
-        .acym__automation__inserted__action {
-            .button {
-                margin-bottom: 0 !important;
-            }
         }
     }
 

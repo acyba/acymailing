@@ -1,5 +1,5 @@
-<h2 class="acym__walkthrough__title cell text-center"><?php echo acym_translation('ACYM_EMAIL_SENT'); ?></h2>
-<h2 class="acym__walkthrough__title cell text-center"><?php echo acym_translation('ACYM_DID_YOU_RECEIVE_IT'); ?></h2>
+<h2 class="acym__title cell text-center"><?php echo acym_translation('ACYM_EMAIL_SENT'); ?></h2>
+<h2 class="acym__title cell text-center"><?php echo acym_translation('ACYM_DID_YOU_RECEIVE_IT'); ?></h2>
 <div class="cell grid-x margin-top-2">
 	<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_RESULT_TEXT'); ?></p>
 </div>

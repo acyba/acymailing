@@ -82,6 +82,12 @@ class plgAcymContactform7 extends acymPlugin
 
     public function displayAcymsub($tag)
     {
+        if (empty($tag->name)) return '';
+
+        $submitted = acym_getVar('string', 'acymaction_'.$tag->name, '');
+
+        if (!empty($submitted)) return '';
+        
         $this->loadCSS('acymcontactform', false, ACYM_PLUGINS_URL.'/'.basename(__DIR__));
         $this->loadJavascript('acymcontactform', false, ACYM_PLUGINS_URL.'/'.basename(__DIR__));
 
@@ -101,7 +107,7 @@ class plgAcymContactform7 extends acymPlugin
         $listNames = $listClass->getAllForSelect();
 
         $detailsLists = $this->prepareLists($tag->values);
-        $acymSubmitUrl = htmlspecialchars_decode(acym_rootURI().acym_addPageParam('frontusers&task=subscribe', true, true));
+        $acymSubmitUrl = htmlspecialchars_decode(acym_frontendLink('frontusers&task=subscribe'));
 
         $data = [
             'tag' => $tag,

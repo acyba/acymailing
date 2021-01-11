@@ -32,12 +32,22 @@ class CronHelper extends acymObject
     // Type of emails we should send... news, followup
     var $emailtypes = [];
 
+    // If we call the cron just to send a batch of emails
+    var $startQueue = 0;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->startQueue = acym_getVar('int', 'startqueue', 0);
+        if (!empty($this->startQueue)) $this->skip = ['schedule', 'cleanqueue', 'bounce', 'automation', 'campaign', 'specific', 'followup'];
+    }
+
     public function cron()
     {
         // Step 1: Check the last cron launched...
         $time = time();
 
-        $firstMessage = acym_translation_sprintf('ACYM_CRON_TRIGGERED', acym_date('now', 'd F Y H:i'));
+        $firstMessage = acym_translationSprintf('ACYM_CRON_TRIGGERED', acym_date('now', 'd F Y H:i'));
         $this->messages[] = $firstMessage;
         if ($this->report) {
             acym_display($firstMessage, 'info');
@@ -51,7 +61,7 @@ class CronHelper extends acymObject
                 $this->config->save($newConfig);
             }
 
-            $nottime = acym_translation_sprintf('ACYM_CRON_NEXT', acym_date($this->config->get('cron_next'), 'd F Y H:i'));
+            $nottime = acym_translationSprintf('ACYM_CRON_NEXT', acym_date($this->config->get('cron_next'), 'd F Y H:i'));
             $this->messages[] = $nottime;
             if ($this->report) {
                 //We dont need to trigger anything, it's not time to do it.
@@ -84,7 +94,7 @@ class CronHelper extends acymObject
             $queueClass = new QueueClass();
             $nbScheduled = $queueClass->scheduleReady();
             if ($nbScheduled) {
-                $this->messages[] = acym_translation_sprintf('ACYM_NB_SCHEDULED', $nbScheduled);
+                $this->messages[] = acym_translationSprintf('ACYM_NB_SCHEDULED', $nbScheduled);
                 $this->detailMessages = array_merge($this->detailMessages, $queueClass->messages);
                 $this->processed = true;
             }
@@ -95,13 +105,14 @@ class CronHelper extends acymObject
             $deletedNb = $queueClass->cleanQueue();
 
             if (!empty($deletedNb)) {
-                $this->messages[] = acym_translation_sprintf('ACYM_EMAILS_REMOVED_QUEUE_CLEAN', $deletedNb);
+                $this->messages[] = acym_translationSprintf('ACYM_EMAILS_REMOVED_QUEUE_CLEAN', $deletedNb);
                 $this->processed = true;
             }
         }
 
         // Step 5: We send the queued emails that are ready
         if ($this->config->get('queue_type') != 'manual' && !in_array('send', $this->skip)) {
+            $this->multiCron();
             $queueHelper = new QueueHelper();
             $queueHelper->send_limit = (int)$this->config->get('queue_nbmail_auto');
             $queueHelper->report = false;
@@ -113,7 +124,7 @@ class CronHelper extends acymObject
             if (!empty($queueHelper->nbprocess)) {
                 $this->processed = true;
             }
-            $this->mainmessage = acym_translation_sprintf('ACYM_CRON_PROCESS', $queueHelper->nbprocess, $queueHelper->successSend, $queueHelper->errorSend);
+            $this->mainmessage = acym_translationSprintf('ACYM_CRON_PROCESS', $queueHelper->nbprocess, $queueHelper->successSend, $queueHelper->errorSend);
             $this->messages[] = $this->mainmessage;
 
             if (!empty($queueHelper->errorSend)) {
@@ -143,7 +154,7 @@ class CronHelper extends acymObject
             $newConfig = new \stdClass();
             if ($bounceHelper->init() && $bounceHelper->connect()) {
                 $nbMessages = $bounceHelper->getNBMessages();
-                $nbMessagesReport = acym_translation_sprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
+                $nbMessagesReport = acym_translationSprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages);
                 $this->messages[] = $nbMessagesReport;
                 $newConfig->auto_bounce_report = $nbMessagesReport;
                 $this->detailMessages[] = $nbMessagesReport;
@@ -316,5 +327,21 @@ class CronHelper extends acymObject
         if (!empty($potentialWarnings)) {
             $this->messages[] = $potentialWarnings;
         }
+    }
+
+    private function multiCron()
+    {
+        if (!empty($this->startQueue) || !acym_level(2)) return;
+        $emailsBatches = $this->config->get('queue_batch_auto', 1);
+        $emailsPerBatches = $this->config->get('queue_nbmail_auto', 70);
+        if (empty($emailsBatches) || $emailsBatches == 1 || empty($emailsPerBatches)) return;
+
+        $urls = [];
+
+        for ($i = 1 ; $i <= $emailsBatches - 1 ; $i++) {
+            $urls[] = acym_frontendLink('cron&startqueue='.($emailsPerBatches * $i));
+        }
+
+        acym_asyncCurlCall($urls);
     }
 }

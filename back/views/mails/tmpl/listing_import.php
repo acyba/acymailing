@@ -2,7 +2,7 @@
 
 $postMaxSize = ini_get('post_max_size');
 $uploadMaxSize = ini_get('upload_max_filesize');
-$maxSize = acym_translation_sprintf(
+$maxSize = acym_translationSprintf(
     'ACYM_MAX_UPLOAD',
     acym_bytes($uploadMaxSize) > acym_bytes($postMaxSize) ? $postMaxSize : $uploadMaxSize
 );
@@ -12,9 +12,9 @@ $templateTips = '<div class="text-center padding-0 cell grid-x text-center align
 </div>
 <div class="cell margin-top-2 margin-bottom-2">
     '.acym_translation('ACYM_IMPORT_INFO').'
-    <ul>
+    <ul class="acym__ul">
         <li>'.acym_translation('ACYM_TEMLPATE_ZIP_IMPORT').'</li>
-        <ul>
+        <ul class="acym__ul">
             <li>/template.html -> '.acym_translation('ACYM_TEMPLATE_HTML_IMPORT').'</li>
             <li>/css -> '.acym_translation('ACYM_TEMPLATE_CSS_IMPORT').'</li>
             <li>/images -> '.acym_translation('ACYM_TEMPLATE_IMAGES_IMPORT').'</li>

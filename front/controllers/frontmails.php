@@ -8,7 +8,18 @@ class FrontmailsController extends MailsController
 {
     public function __construct()
     {
-        $this->authorizedFrontTasks = ['autoSave', 'setNewIconShare', 'edit', 'setNewThumbnail', 'getTemplateAjax', 'apply', 'saveAjax', 'save', 'sendTest'];
+        $this->authorizedFrontTasks = [
+            'autoSave',
+            'setNewIconShare',
+            'edit',
+            'setNewThumbnail',
+            'getTemplateAjax',
+            'apply',
+            'saveAjax',
+            'save',
+            'sendTest',
+            'getMailByIdAjax',
+        ];
         $this->loadScripts = [
             'edit' => ['editor-wysid'],
         ];

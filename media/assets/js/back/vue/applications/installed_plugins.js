@@ -31,7 +31,7 @@ jQuery(document).ready(function ($) {
                 });
             }
         },
-        template: '<div class="cell shrink grid-x"><div class="switch tiny cell shrink"> '
+        template: '<div class="cell shrink grid-x"><div class="switch cell shrink"> '
                   + '<input class="switch-input" :id="id" type="checkbox" name="exampleSwitch" :checked="ischecked"> '
                   + '<label class="switch-paddle" @click="toggleActive(plugin.id)" :for="id"> '
                   + '</label> '
@@ -52,15 +52,6 @@ jQuery(document).ready(function ($) {
                 type: acym_helper.getCookie('acym_installed_plugins_type'),
                 level: acym_helper.getCookie('acym_installed_plugins_level'),
                 loading: true,
-                typesColors: {
-                    'Files management': 'background-color: #C5EAFF;',
-                    'E-commerce solutions': 'background-color: #E7CEFF;',
-                    'Content management': 'background-color: #FFC1E9;',
-                    'Subscription system': 'background-color: #FFC7C7;',
-                    'Others': 'background-color: #FFF1BC;',
-                    'User management': 'background-color: #CAFFBA;',
-                    'Events management': 'background-color: #C2FFF9;'
-                },
                 noPluginTodisplay: false,
                 typingTimer: '',
                 doneTypingInterval: 1000,

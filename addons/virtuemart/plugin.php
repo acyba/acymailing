@@ -857,7 +857,7 @@ class plgAcymVirtuemart extends acymPlugin
             $operatorIn = new OperatorinType();
 
             $conditions['user']['vmgroups'] = new stdClass();
-            $conditions['user']['vmgroups']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_GROUP'));
+            $conditions['user']['vmgroups']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_GROUP'));
             $conditions['user']['vmgroups']->option = '<div class="intext_select_automation cell">';
             $conditions['user']['vmgroups']->option .= $operatorIn->display('acym_condition[conditions][__numor__][__numand__][vmgroups][type]');
             $conditions['user']['vmgroups']->option .= '</div>';
@@ -874,7 +874,7 @@ class plgAcymVirtuemart extends acymPlugin
             $operator = new OperatorType();
 
             $conditions['user']['vmfield'] = new stdClass();
-            $conditions['user']['vmfield']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_FIELDS'));
+            $conditions['user']['vmfield']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_FIELDS'));
             $conditions['user']['vmfield']->option = '<div class="intext_select_automation cell">';
             $conditions['user']['vmfield']->option .= acym_select(
                 $fields,
@@ -916,9 +916,9 @@ class plgAcymVirtuemart extends acymPlugin
         }
 
         $conditions['user']['vmreminder'] = new stdClass();
-        $conditions['user']['vmreminder']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_REMINDER'));
+        $conditions['user']['vmreminder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_REMINDER'));
         $conditions['user']['vmreminder']->option = '<div class="cell">';
-        $conditions['user']['vmreminder']->option .= acym_translation_sprintf(
+        $conditions['user']['vmreminder']->option .= acym_translationSprintf(
             'ACYM_ORDER_WITH_STATUS',
             '<input type="number" name="acym_condition[conditions][__numor__][__numand__][vmreminder][days]" value="1" min="1" class="intext_input"/>',
             '<div class="intext_select_automation cell margin-right-1">'.acym_select(
@@ -941,7 +941,7 @@ class plgAcymVirtuemart extends acymPlugin
 
         // Placed orders
         $conditions['user']['vmpurchased'] = new stdClass();
-        $conditions['user']['vmpurchased']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_PURCHASED'));
+        $conditions['user']['vmpurchased']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_PURCHASED'));
         $conditions['user']['vmpurchased']->option = '<div class="cell grid-x grid-margin-x">';
 
         $conditions['user']['vmpurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_BOUGHT').'</div>';
@@ -968,9 +968,9 @@ class plgAcymVirtuemart extends acymPlugin
 
         $conditions['user']['vmpurchased']->option .= '<div class="cell grid-x grid-margin-x margin-top-1 margin-left-0">';
         $conditions['user']['vmpurchased']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][vmpurchased][datemin]', '', 'cell shrink');
-        $conditions['user']['vmpurchased']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['vmpurchased']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['vmpurchased']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_DATE_CREATED').'</span>';
-        $conditions['user']['vmpurchased']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['vmpurchased']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['vmpurchased']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][vmpurchased][datemax]', '', 'cell shrink');
         $conditions['user']['vmpurchased']->option .= '</div>';
 
@@ -1103,7 +1103,7 @@ class plgAcymVirtuemart extends acymPlugin
             $groupName = acym_loadResult(
                 'SELECT `shopper_group_name` FROM `#__virtuemart_shoppergroups` WHERE `virtuemart_shoppergroup_id` = '.intval($automationCondition['vmgroups']['group'])
             );
-            $automationCondition = acym_translation_sprintf(
+            $automationCondition = acym_translationSprintf(
                 'ACYM_FILTER_ACY_GROUP_SUMMARY',
                 acym_translation($automationCondition['vmgroups']['type'] == 'in' ? 'ACYM_IN' : 'ACYM_NOT_IN'),
                 acym_translation($groupName)
@@ -1111,7 +1111,7 @@ class plgAcymVirtuemart extends acymPlugin
         }
 
         if (!empty($automationCondition['vmfield'])) {
-            $automationCondition = acym_translation_sprintf(
+            $automationCondition = acym_translationSprintf(
                 'ACYM_CONDITION_X_FIELD_SUMMARY',
                 $this->pluginDescription->name,
                 $automationCondition['vmfield']['field'],
@@ -1135,7 +1135,7 @@ class plgAcymVirtuemart extends acymPlugin
             );
             if (empty($payment)) $payment = 'ACYM_ANY_PAYMENT_METHOD';
 
-            $automationCondition = acym_translation_sprintf(
+            $automationCondition = acym_translationSprintf(
                 'ACYM_CONDITION_ECOMMERCE_REMINDER',
                 acym_translation($payment),
                 intval($automationCondition['vmreminder']['days']),
@@ -1158,7 +1158,7 @@ class plgAcymVirtuemart extends acymPlugin
             }
             if (empty($category)) $category = acym_translation('ACYM_ANY_CATEGORY');
 
-            $finalText = acym_translation_sprintf('ACYM_CONDITION_PURCHASED', $product, $category);
+            $finalText = acym_translationSprintf('ACYM_CONDITION_PURCHASED', $product, $category);
 
             $dates = [];
             if (!empty($automationCondition['vmpurchased']['datemin'])) {
@@ -1186,28 +1186,28 @@ class plgAcymVirtuemart extends acymPlugin
     {
         $this->processConditionFilter_vmgroups($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilterCount_vmfield(&$query, $options, $num)
     {
         $this->processConditionFilter_vmfield($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilterCount_vmreminder(&$query, $options, $num)
     {
         $this->processConditionFilter_vmreminder($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilterCount_vmpurchased(&$query, $options, $num)
     {
         $this->processConditionFilter_vmpurchased($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymDeclareSummary_filters(&$automationFilter)
@@ -1218,7 +1218,7 @@ class plgAcymVirtuemart extends acymPlugin
     public function onAcymDeclareTriggers(&$triggers)
     {
         $triggers['user']['vmorder'] = new stdClass();
-        $triggers['user']['vmorder']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_WHEN_ORDER'));
+        $triggers['user']['vmorder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_WHEN_ORDER'));
         $triggers['user']['vmorder']->option = '<input type="hidden" name="[triggers][user][vmorder][]" value="">';
     }
 

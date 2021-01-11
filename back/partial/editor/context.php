@@ -1,7 +1,7 @@
 <div id="acym__wysid__right__toolbar__current-block" style="display: none;" class="grid-padding-x cell acym__wysid__right__toolbar--menu">
-	<p class="acym__wysid__right__toolbar__current-block__empty cell text-center margin-top-1">No block selected</p>
+	<p class="acym__wysid__right__toolbar__current-block__empty cell text-center margin-top-1"><?php echo acym_translation('ACYM_NO_BLOCK_SELECTED'); ?></p>
 	<div id="acym__wysid__context__block" class="grid-x cell padding-1 acym__wysid__context__modal" style="display: none">
-		<p class="cell acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_BACKGROUND'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p acym__title"><?php echo acym_translation('ACYM_BACKGROUND'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x acym_vcenter">
 				<label class="cell small-6"><?php echo acym_translation('ACYM_BACKGROUND_COLOR'); ?></label>
@@ -17,9 +17,9 @@
                 ?>
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_PADDING'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p acym__title"><?php echo acym_translation('ACYM_PADDING'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
-			<div class="cell grid-x align-center">
+			<div class="cell grid-x align-center margin-bottom-1">
 				<input type="number" min="0" class="cell small-2 acym__wysid__context__block__padding" data-block-padding="top">
 			</div>
 			<div class="cell grid-x align-center acym_vcenter margin-bottom-1">
@@ -31,7 +31,7 @@
 				<input type="number" min="0" class="cell small-2 acym__wysid__context__block__padding" data-block-padding="bottom">
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p acym__wysid__context__modal__container--structure"><?php echo acym_translation('ACYM_STRUCTURE'); ?>
+		<p class="cell acym__wysid__right__toolbar__p acym__wysid__context__modal__container--structure acym__title"><?php echo acym_translation('ACYM_STRUCTURE'); ?>
 			<i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container acym__wysid__context__modal__container--structure acym__wysid__context__modal__container--structure--container">
 			<div class="cell grid-x grid-margin-x acym_vcenter">
@@ -44,7 +44,7 @@
 			<div class="cell grid-x acym__wysid__context__modal__block-padding">
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_BORDER'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p acym__title"><?php echo acym_translation('ACYM_BORDER'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">
 				<label class="cell small-5"><?php echo acym_translation('ACYM_RADIUS'); ?></label>
@@ -59,43 +59,48 @@
 				<input type="number" max="20" min="0" class="cell small-2" id="acym__wysid__context__block__border__color">
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_ADVANCED_OPTIONS'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p acym__title"><?php echo acym_translation('ACYM_ADVANCED_OPTIONS'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<label class="cell small-5"><?php echo acym_translation('ACYM_HTML_ID').acym_info('ACYM_HTML_ID_DESC'); ?></label>
 			<input type="text"
-				   class="acym__light__input cell small-6"
+				   class="cell small-6"
 				   id="acym__wysid__context__block__custom_id"
 				   placeholder="<?php echo acym_escape(acym_translation('ACYM_HTML_ID')); ?>">
 			<div class="cell grid-x acym__wysid__context__block__code-source">
-				<label class="cell small-5"><?php echo acym_translation('ACYM_EDIT_BLOCK_HTML').acym_info('ACYM_BECAREFUL_EDITING_SOURCE_CODE'); ?></label>
-				<button type="button" class="button button-secondary " id="acym__wysid__context__block__edit-html"><?php echo acym_translation('ACYM_EDIT_HTML'); ?></button>
+				<label class="cell small-5 acym_vcenter">
+                    <?php echo acym_translation('ACYM_EDIT_BLOCK_HTML').acym_info('ACYM_BECAREFUL_EDITING_SOURCE_CODE'); ?>
+				</label>
+				<div class="cell shrink acym_vcenter">
+					<button type="button" class="button button-secondary" id="acym__wysid__context__block__edit-html"><?php echo acym_translation('ACYM_EDIT_HTML'); ?></button>
+				</div>
 			</div>
 		</div>
 	</div>
 	<div id="acym__wysid__context__button" class="grid-x padding-1 acym__wysid__context__modal" style="display: none">
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_BUTTON_TYPE'); ?>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title"><?php echo acym_translation('ACYM_BUTTON_TYPE'); ?>
 			<i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="grid-x cell acym__wysid__context__modal__container grid-margin-x">
 			<button type="button"
-					class="button-radio button-radio-disabled cell medium-4 acym__wysid__context__button--type"
+					class="button-radio disabled cell medium-4 acym__wysid__context__button--type"
 					acym-data-type="call-action"><?php echo acym_translation('ACYM_CALL_TO_ACTION'); ?></button>
             <?php echo acym_tooltip(
-                '<button type="button" class="button-radio button-radio-disabled cell acym__wysid__context__button--type" acym-data-type="unsubscribe">'.acym_translation(
+                '<button type="button" class="button-radio disabled cell acym__wysid__context__button--type" acym-data-type="unsubscribe">'.acym_translation(
                     'ACYM_UNSUBSCRIBE'
                 ).'</button>',
                 acym_translation('ACYM_UNSUBSCRIBE_BUTTON_DESC'),
                 'cell medium-4 grid-x'
             ); ?>
             <?php echo acym_tooltip(
-                '<button type="button" class="button-radio button-radio-disabled cell acym__wysid__context__button--type" acym-data-type="confirm">'.acym_translation(
+                '<button type="button" class="button-radio disabled cell acym__wysid__context__button--type" acym-data-type="confirm">'.acym_translation(
                     'ACYM_SUBSCRIPTION_CONFIRMATION'
                 ).'</button>',
                 acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION_BUTTON_DESC'),
                 'cell medium-4 grid-x'
             ); ?>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_CONTENT'); ?>
-			<i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_CONTENT'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="grid-x cell acym__wysid__context__button__text__container">
 				<label class="cell small-5"><?php echo acym_translation('ACYM_TEXT'); ?></label>
@@ -108,7 +113,8 @@
 				</div>
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_FONT'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_FONT'); ?><i class="acymicon-keyboard_arrow_up"></i>
 		</p>
 		<div class="grid-x cell acym__wysid__context__modal__container">
 			<div class="cell grid-x">
@@ -153,7 +159,8 @@
 				<input type="text" id="acym__wysid__context__button__color" class="small-2 cell">
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_BORDER'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_BORDER'); ?><i class="acymicon-keyboard_arrow_up"></i>
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="grid-x cell">
@@ -183,7 +190,8 @@
 				<input type="text" id="acym__wysid__context__button__border-color" class="small-5 cell">
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_OTHER'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_OTHER'); ?><i class="acymicon-keyboard_arrow_up"></i>
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">
@@ -265,8 +273,8 @@
 		</div>
 	</div>
 	<div id="acym__wysid__context__image" style="display: none" class="grid-x padding-1 acym__wysid__context__modal">
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_POSITION'); ?>
-			<i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_POSITION'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">
 				<label class="cell small-3"><?php echo acym_translation('ACYM_ALIGNMENT'); ?></label>
@@ -286,8 +294,8 @@
 				</div>
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_IMAGE_URL'); ?>
-			<i class="acymicon-keyboard_arrow_up"></i>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_IMAGE_URL'); ?><i class="acymicon-keyboard_arrow_up"></i>
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container align-center">
 			<label for="acym__wysid__context__image__url" class="cell small-3"><?php echo acym_translation('ACYM_URL'); ?></label>
@@ -296,20 +304,22 @@
 				   value=""
 				   id="acym__wysid__context__image__url"
 				   placeholder="https://www.example.com/image.png"
-				   class="cell small-9 acym__light__input">
+				   class="cell small-9">
 			<button type="button" class="cell shrink button button-secondary margin-top-1" id="acym__wysid__context__image__change"><?php echo acym_translation(
                     'ACYM_MEDIA_MANAGE'
                 ); ?></button>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_LINK'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_LINK'); ?><i class="acymicon-keyboard_arrow_up"></i>
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<label for="acym__wysid__context__image__link" class="cell small-3"><?php echo acym_translation('ACYM_LINK'); ?></label>
-			<input type="text" name="image_link" value="" id="acym__wysid__context__image__link" placeholder="https://www.example.com" class="cell auto acym__light__input">
+			<input type="text" name="image_link" value="" id="acym__wysid__context__image__link" placeholder="https://www.example.com" class="cell auto">
 		</div>
 	</div>
 	<div id="acym__wysid__context__separator" class="grid-x padding-1 acym__wysid__context__modal" style="display: none">
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_STYLE'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_STYLE'); ?><i class="acymicon-keyboard_arrow_up"></i>
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x grid-margin-x">
@@ -331,7 +341,8 @@
 				<input type="text" id="acym__wysid__context__separator__color">
 			</label>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_SIZE'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_SIZE'); ?><i class="acymicon-keyboard_arrow_up"></i>
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">
@@ -382,7 +393,8 @@
 		</div>
 	</div>
 	<div id="acym__wysid__context__follow" class="grid-x padding-1 acym__wysid__context__modal" style="display: none">
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_LINKS'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_LINKS'); ?><i class="acymicon-keyboard_arrow_up"></i>
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="grid-x cell margin-bottom-1">
@@ -395,7 +407,8 @@
 			<div id="acym__wysid__context__follow__list" class="grid-x small-12 cell">
 			</div>
 		</div>
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p"><?php echo acym_translation('ACYM_OTHER'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_OTHER'); ?><i class="acymicon-keyboard_arrow_up"></i>
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">

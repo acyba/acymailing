@@ -29,8 +29,7 @@ class plgAcymUltimatemember extends acymPlugin
                 acym_translation('ACYM_DISPLAY_FORM_ON_ULTIMATE_MEMBER'),
                 [],
                 'xlarge-3 medium-5 small-9',
-                'auto',
-                'tiny'
+                'auto'
             );
             ?>
 		</div>

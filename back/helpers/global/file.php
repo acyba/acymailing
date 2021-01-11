@@ -104,7 +104,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
             8 => 'A PHP extension stopped the file upload',
         ];
 
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_ERROR_UPLOADING_FILE_X', $phpFileUploadErrors[$file['error']]), 'error');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_ERROR_UPLOADING_FILE_X', $phpFileUploadErrors[$file['error']]), 'error');
 
         return false;
     }
@@ -114,7 +114,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
     if (!is_writable($uploadPath)) {
         @chmod($uploadPath, '0755');
         if (!is_writable($uploadPath)) {
-            acym_display(acym_translation_sprintf('ACYM_WRITABLE_FOLDER', $uploadPath), 'error');
+            acym_display(acym_translationSprintf('ACYM_WRITABLE_FOLDER', $uploadPath), 'error');
 
             return false;
         }
@@ -130,7 +130,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
     if (!preg_match('#\.('.implode('|', $allowedExtensions).')$#Ui', $file['name'], $extension)) {
         $ext = substr($file['name'], strrpos($file['name'], '.') + 1);
         acym_display(
-            acym_translation_sprintf(
+            acym_translationSprintf(
                 'ACYM_ACCEPTED_TYPE',
                 acym_escape($ext),
                 implode(', ', $allowedExtensions)
@@ -178,7 +178,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
         }
 
         $file['name'] = $nameFile.'_'.$i.'.'.$ext;
-        $additionalMsg = '<br />'.acym_translation_sprintf('ACYM_FILE_RENAMED', $file['name']);
+        $additionalMsg = '<br />'.acym_translationSprintf('ACYM_FILE_RENAMED', $file['name']);
         if ($onlyPict) {
             $additionalMsg .= '<br /><a style="color: blue; cursor: pointer;" onclick="confirmBox(\'rename\', \''.$file['name'].'\', \''.$nameFile.'.'.$ext.'\')">'.acym_translation(
                     'ACYM_RENAME_OR_REPLACE'
@@ -189,7 +189,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
     if (!acym_uploadFile($file['tmp_name'], rtrim($uploadPath, DS).DS.$file['name'])) {
         if (!move_uploaded_file($file['tmp_name'], rtrim($uploadPath, DS).DS.$file['name'])) {
             acym_display(
-                acym_translation_sprintf(
+                acym_translationSprintf(
                     'ACYM_FAIL_UPLOAD',
                     '<b><i>'.acym_escape($file['tmp_name']).'</i></b>',
                     '<b><i>'.acym_escape(rtrim($uploadPath, DS).DS.$file['name']).'</i></b>'
@@ -226,7 +226,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
 
 function acym_inputFile($name, $value = '', $id = '', $class = '', $attributes = '')
 {
-    $return = '<div class="cell acym__input__file '.$class.' grid-x"><input '.$attributes.' style="display: none" id="'.$id.'" type="file" name="'.$name.'"><button type="button" class=" acym__button__file button button-secondary cell shrink">'.acym_translation(
+    $return = '<div class="cell '.$class.' grid-x"><input '.$attributes.' style="display: none" id="'.$id.'" type="file" name="'.$name.'"><button type="button" class=" acym__button__file button button-secondary cell shrink">'.acym_translation(
             'ACYM_CHOOSE_FILE'
         ).'</button><span class="cell shrink margin-left-2">';
     $return .= empty($value) ? acym_translation('ACYM_NO_FILE_CHOSEN') : $value;
@@ -289,7 +289,7 @@ function acym_deleteFolder($path, $report = true)
 {
     $path = acym_cleanPath($path);
     if (!is_dir($path)) {
-        if ($report) acym_enqueueMessage(acym_translation_sprintf('ACYM_IS_NOT_A_FOLDER', $path), 'error');
+        if ($report) acym_enqueueMessage(acym_translationSprintf('ACYM_IS_NOT_A_FOLDER', $path), 'error');
 
         return false;
     }
@@ -315,7 +315,7 @@ function acym_deleteFolder($path, $report = true)
     if (@rmdir($path)) {
         $ret = true;
     } else {
-        if ($report) acym_enqueueMessage(acym_translation_sprintf('ACYM_COULD_NOT_DELETE_FOLDER', $path), 'error');
+        if ($report) acym_enqueueMessage(acym_translationSprintf('ACYM_COULD_NOT_DELETE_FOLDER', $path), 'error');
         $ret = false;
     }
 
@@ -341,7 +341,7 @@ function acym_getFolders($path, $filter = '.', $recurse = false, $full = false, 
     $path = acym_cleanPath($path);
 
     if (!is_dir($path)) {
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_IS_NOT_A_FOLDER', $path), 'error');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IS_NOT_A_FOLDER', $path), 'error');
 
         return [];
     }
@@ -367,7 +367,7 @@ function acym_getFiles(
     $path = acym_cleanPath($path);
 
     if (!is_dir($path)) {
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_IS_NOT_A_FOLDER', $path), 'error');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IS_NOT_A_FOLDER', $path), 'error');
 
         return false;
     }
@@ -464,13 +464,13 @@ function acym_copyFolder($src, $dest, $path = '', $force = false, $use_streams =
     $dest = rtrim($dest, DIRECTORY_SEPARATOR);
 
     if (!file_exists($src)) {
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_FOLDER_DOES_NOT_EXIST', $src), 'error');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_FOLDER_DOES_NOT_EXIST', $src), 'error');
 
         return false;
     }
 
     if (file_exists($dest) && !$force) {
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_FOLDER_ALREADY_EXIST', $dest), 'error');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_FOLDER_ALREADY_EXIST', $dest), 'error');
 
         return true;
     }
@@ -504,7 +504,7 @@ function acym_copyFolder($src, $dest, $path = '', $force = false, $use_streams =
 
             case 'file':
                 if (!@copy($sfid, $dfid)) {
-                    acym_enqueueMessage(acym_translation_sprintf('ACYM_COPY_FILE_FAILED_PERMISSION', $sfid), 'error');
+                    acym_enqueueMessage(acym_translationSprintf('ACYM_COPY_FILE_FAILED_PERMISSION', $sfid), 'error');
 
                     return false;
                 }
@@ -548,7 +548,7 @@ function acym_deleteFile($file, $report = true)
 {
     $file = acym_cleanPath($file);
     if (!is_file($file)) {
-        if ($report) acym_enqueueMessage(acym_translation_sprintf('ACYM_IS_NOT_A_FILE', $file), 'error');
+        if ($report) acym_enqueueMessage(acym_translationSprintf('ACYM_IS_NOT_A_FILE', $file), 'error');
 
         return false;
     }
@@ -557,7 +557,7 @@ function acym_deleteFile($file, $report = true)
 
     if (!@unlink($file)) {
         $filename = basename($file);
-        if ($report) acym_enqueueMessage(acym_translation_sprintf('ACYM_FAILED_DELETE', $filename), 'error');
+        if ($report) acym_enqueueMessage(acym_translationSprintf('ACYM_FAILED_DELETE', $filename), 'error');
 
         return false;
     }
@@ -583,7 +583,7 @@ function acym_moveFile($src, $dest, $path = '', $use_streams = false)
     }
 
     if (!is_readable($src)) {
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_COULD_NOT_FIND_FILE_SOURCE_PERMISSION', $src), 'error');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_COULD_NOT_FIND_FILE_SOURCE_PERMISSION', $src), 'error');
 
         return false;
     }
@@ -614,7 +614,7 @@ function acym_uploadFile($src, $dest)
             acym_enqueueMessage(acym_translation('ACYM_FILE_REJECTED_SAFETY_REASON'), 'error');
         }
     } else {
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_COULD_NOT_UPLOAD_FILE_PERMISSION', $baseDir), 'error');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_COULD_NOT_UPLOAD_FILE_PERMISSION', $baseDir), 'error');
     }
 
     return false;
@@ -628,13 +628,13 @@ function acym_copyFile($src, $dest, $path = null, $use_streams = false)
     }
 
     if (!is_readable($src)) {
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_COULD_NOT_FIND_FILE_SOURCE_PERMISSION', $src), 'error');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_COULD_NOT_FIND_FILE_SOURCE_PERMISSION', $src), 'error');
 
         return false;
     }
 
     if (!@copy($src, $dest)) {
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_COULD_NOT_COPY_FILE_X_TO_X', $src, $dest), 'error');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_COULD_NOT_COPY_FILE_X_TO_X', $src, $dest), 'error');
 
         return false;
     }

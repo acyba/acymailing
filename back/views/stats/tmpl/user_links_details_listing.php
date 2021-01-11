@@ -18,7 +18,7 @@
                             'user_id' => acym_translation('ACYM_USER_ID'),
                             'url_id' => acym_translation('ACYM_URL_ID'),
                         ],
-                        "user_links_details",
+                        'user_links_details',
                         $data['ordering']
                     ); ?>
 				</div>
@@ -55,7 +55,7 @@
                             'date_click' => acym_translation('ACYM_CLICK_DATE'),
                             'click' => acym_translation('ACYM_TOTAL_CLICKS'),
                         ],
-                        "user_links_details",
+                        'user_links_details',
                         $data['ordering']
                     ); ?>
 				</div>

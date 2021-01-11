@@ -9,6 +9,7 @@ use AcyMailing\Helpers\EncodingHelper;
 use AcyMailing\Helpers\HeaderHelper;
 use AcyMailing\Helpers\MailerHelper;
 use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Helpers\ToolbarHelper;
 use AcyMailing\Libraries\acymController;
 use AcyMailing\Types\AclType;
 use AcyMailing\Types\DelayType;
@@ -36,8 +37,63 @@ class ConfigurationController extends acymController
         $this->prepareNotifications($data);
         $this->prepareAcl($data);
         $this->prepareClass($data);
+        $this->checkConfigMail();
+        $this->prepareToolbar($data);
+        $this->prepareMailSettings($data);
 
         parent::display($data);
+    }
+
+    private function checkConfigMail()
+    {
+        $batchesNumber = $this->config->get('queue_batch_auto', 1);
+        $emailsPerBatch = $this->config->get('queue_nbmail_auto', 70);
+        $cronFrequency = $this->config->get('cron_frequency', 900);
+        if ($batchesNumber > 4 || $emailsPerBatch > 300 || $cronFrequency < 300) acym_enqueueMessage(acym_translation('ACYM_SEND_CONFIGURATION_WARNING'), 'warning');
+    }
+
+    private function prepareMailSettings(&$data)
+    {
+        $data['sendingMethodsType'] = [
+            'server' => acym_translation('ACYM_USING_YOUR_SERVER'),
+            'external' => acym_translation('ACYM_USING_AN_EXTERNAL_SERVER'),
+        ];
+
+        $data['sendingMethods'] = [];
+        acym_trigger('onAcymGetSendingMethods', [&$data]);
+        acym_trigger('onAcymGetSendingMethodsSelected', [&$data]);
+
+        $data['sendingMethodsHtmlSettings'] = [];
+        acym_trigger('onAcymGetSendingMethodsHtmlSetting', [&$data]);
+
+        $data['embedImage'] = [];
+        acym_trigger('onAcymSendingMethodEmbedImage', [&$data]);
+
+        $data['embedAttachment'] = [];
+        acym_trigger('onAcymSendingMethodEmbedAttachment', [&$data]);
+    }
+
+    public function prepareToolbar(&$data)
+    {
+        $toolbarHelper = new ToolbarHelper();
+        $toolbarHelper->addButton(
+            acym_translation('ACYM_SEND_TEST'),
+            [
+                'acym-data-before' => 'jQuery.acymConfigSave();',
+                'data-task' => 'test',
+            ]
+        );
+        $toolbarHelper->addButton(
+            acym_translation('ACYM_SAVE'),
+            [
+                'acym-data-before' => 'jQuery.acymConfigSave();',
+                'data-task' => 'save',
+            ],
+            '',
+            true
+        );
+
+        $data['toolbar'] = $toolbarHelper;
     }
 
     private function prepareClass(&$data)
@@ -135,18 +191,19 @@ class ConfigurationController extends acymController
     {
         $data['acl'] = acym_cmsPermission();
         $data['acl_advanced'] = [
+            'forms' => 'ACYM_SUBSCRIPTION_FORMS',
             'users' => 'ACYM_USERS',
             'fields' => 'ACYM_CUSTOM_FIELDS',
             'lists' => 'ACYM_LISTS',
+            'segments' => 'ACYM_SEGMENTS',
             'campaigns' => 'ACYM_EMAILS',
             'mails' => 'ACYM_TEMPLATES',
+            'override' => 'ACYM_EMAILS_OVERRIDE',
             'automation' => 'ACYM_AUTOAMTION',
             'queue' => 'ACYM_QUEUE',
-            'stats' => 'ACYM_STATISTICS',
-            'bounces' => 'ACYM_BOUNCE_HANDLING',
             'plugins' => 'ACYM_ADD_ONS',
-            'forms' => 'ACYM_SUBSCRIPTION_FORMS',
-            'override' => 'ACYM_EMAILS_OVERRIDE',
+            'bounces' => 'ACYM_BOUNCE_HANDLING',
+            'stats' => 'ACYM_STATISTICS',
             'configuration' => 'ACYM_CONFIGURATION',
         ];
         $data['aclType'] = new AclType();
@@ -237,7 +294,7 @@ class ConfigurationController extends acymController
             // We didn't get the columns, the table crashed or doesn't exist
 
             $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
-            $messages[] = '<span style="color:blue">'.acym_translation_sprintf('ACYM_CHECKDB_LOAD_COLUMNS_ERROR', $oneTableName, $errorMessage).'</span>';
+            $messages[] = '<span style="color:blue">'.acym_translationSprintf('ACYM_CHECKDB_LOAD_COLUMNS_ERROR', $oneTableName, $errorMessage).'</span>';
 
             if (strpos($errorMessage, 'marked as crashed')) {
                 //The table is apparently crashed, let's repair it!
@@ -251,9 +308,9 @@ class ConfigurationController extends acymController
 
                 if ($isError === null) {
                     $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
-                    $messages[] = '<span style="color:red">'.acym_translation_sprintf('ACYM_CHECKDB_REPAIR_TABLE_ERROR', $oneTableName, $errorMessage).'</span>';
+                    $messages[] = '<span style="color:red">'.acym_translationSprintf('ACYM_CHECKDB_REPAIR_TABLE_ERROR', $oneTableName, $errorMessage).'</span>';
                 } else {
-                    $messages[] = '<span style="color:green">'.acym_translation_sprintf('ACYM_CHECKDB_REPAIR_TABLE_SUCCESS', $oneTableName).'</span>';
+                    $messages[] = '<span style="color:green">'.acym_translationSprintf('ACYM_CHECKDB_REPAIR_TABLE_SUCCESS', $oneTableName).'</span>';
                 }
                 continue;
             }
@@ -267,9 +324,9 @@ class ConfigurationController extends acymController
 
             if ($isError === null) {
                 $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
-                $messages[] = '<span style="color:red">'.acym_translation_sprintf('ACYM_CHECKDB_CREATE_TABLE_ERROR', $oneTableName, $errorMessage).'</span>';
+                $messages[] = '<span style="color:red">'.acym_translationSprintf('ACYM_CHECKDB_CREATE_TABLE_ERROR', $oneTableName, $errorMessage).'</span>';
             } else {
-                $messages[] = '<span style="color:green">'.acym_translation_sprintf('ACYM_CHECKDB_CREATE_TABLE_SUCCESS', $oneTableName).'</span>';
+                $messages[] = '<span style="color:green">'.acym_translationSprintf('ACYM_CHECKDB_CREATE_TABLE_SUCCESS', $oneTableName).'</span>';
             }
         }
 
@@ -283,7 +340,7 @@ class ConfigurationController extends acymController
             if (!empty($missingColumns)) {
                 // Some columns are missing, add them
                 foreach ($missingColumns as $oneColumn) {
-                    $messages[] = '<span style="color:blue">'.acym_translation_sprintf('ACYM_CHECKDB_MISSING_COLUMN', $oneColumn, $oneTableName).'</span>';
+                    $messages[] = '<span style="color:blue">'.acym_translationSprintf('ACYM_CHECKDB_MISSING_COLUMN', $oneColumn, $oneTableName).'</span>';
                     try {
                         $isError = acym_query('ALTER TABLE '.$oneTableName.' ADD '.$structure[$oneTableName][$oneColumn]);
                     } catch (\Exception $e) {
@@ -291,9 +348,9 @@ class ConfigurationController extends acymController
                     }
                     if ($isError === null) {
                         $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
-                        $messages[] = '<span style="color:red">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_COLUMN_ERROR', $oneColumn, $oneTableName, $errorMessage).'</span>';
+                        $messages[] = '<span style="color:red">'.acym_translationSprintf('ACYM_CHECKDB_ADD_COLUMN_ERROR', $oneColumn, $oneTableName, $errorMessage).'</span>';
                     } else {
-                        $messages[] = '<span style="color:green">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_COLUMN_SUCCESS', $oneColumn, $oneTableName).'</span>';
+                        $messages[] = '<span style="color:green">'.acym_translationSprintf('ACYM_CHECKDB_ADD_COLUMN_SUCCESS', $oneColumn, $oneTableName).'</span>';
                     }
                 }
             }
@@ -313,7 +370,7 @@ class ConfigurationController extends acymController
 
                 $keyName = $name == 'PRIMARY' ? 'primary key' : 'index '.$name;
 
-                $messages[] = '<span style="color:blue">'.acym_translation_sprintf('ACYM_CHECKDB_MISSING_INDEX', $keyName, $oneTableName).'</span>';
+                $messages[] = '<span style="color:blue">'.acym_translationSprintf('ACYM_CHECKDB_MISSING_INDEX', $keyName, $oneTableName).'</span>';
                 try {
                     $isError = acym_query('ALTER TABLE '.$oneTableName.' ADD '.$query);
                 } catch (\Exception $e) {
@@ -322,9 +379,9 @@ class ConfigurationController extends acymController
 
                 if ($isError === null) {
                     $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
-                    $messages[] = '<span style="color:red">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_INDEX_ERROR', $keyName, $oneTableName, $errorMessage).'</span>';
+                    $messages[] = '<span style="color:red">'.acym_translationSprintf('ACYM_CHECKDB_ADD_INDEX_ERROR', $keyName, $oneTableName, $errorMessage).'</span>';
                 } else {
-                    $messages[] = '<span style="color:green">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_INDEX_SUCCESS', $keyName, $oneTableName).'</span>';
+                    $messages[] = '<span style="color:green">'.acym_translationSprintf('ACYM_CHECKDB_ADD_INDEX_SUCCESS', $keyName, $oneTableName).'</span>';
                 }
             }
 
@@ -347,7 +404,7 @@ class ConfigurationController extends acymController
                 $constraintTableNamePrefix = str_replace('#__', acym_getPrefix(), $constraintInfo['table']);
                 $constraintName = str_replace('#__', acym_getPrefix(), $constraintName);
                 if (empty($foreignKeys[$constraintName]) || (!empty($foreignKeys[$constraintName]) && ($foreignKeys[$constraintName]->REFERENCED_TABLE_NAME != $constraintTableNamePrefix || $foreignKeys[$constraintName]->REFERENCED_COLUMN_NAME != $constraintInfo['table_column'] || $foreignKeys[$constraintName]->COLUMN_NAME != $constraintInfo['column']))) {
-                    $messages[] = '<span style="color:blue">'.acym_translation_sprintf('ACYM_CHECKDB_WRONG_FOREIGN_KEY', $constraintName, $oneTableName).'</span>';
+                    $messages[] = '<span style="color:blue">'.acym_translationSprintf('ACYM_CHECKDB_WRONG_FOREIGN_KEY', $constraintName, $oneTableName).'</span>';
 
                     if (!empty($foreignKeys[$constraintName])) {
                         try {
@@ -357,7 +414,7 @@ class ConfigurationController extends acymController
                         }
                         if ($isError === null) {
                             $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
-                            $messages[] = '<span style="color:red">'.acym_translation_sprintf(
+                            $messages[] = '<span style="color:red">'.acym_translationSprintf(
                                     'ACYM_CHECKDB_ADD_FOREIGN_KEY_ERROR',
                                     $constraintName,
                                     $oneTableName,
@@ -377,14 +434,14 @@ class ConfigurationController extends acymController
 
                     if ($isError === null) {
                         $errorMessage = (isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200));
-                        $messages[] = '<span style="color:red">'.acym_translation_sprintf(
+                        $messages[] = '<span style="color:red">'.acym_translationSprintf(
                                 'ACYM_CHECKDB_ADD_FOREIGN_KEY_ERROR',
                                 $constraintName,
                                 $oneTableName,
                                 $errorMessage
                             ).'</span>';
                     } else {
-                        $messages[] = '<span style="color:green">'.acym_translation_sprintf('ACYM_CHECKDB_ADD_FOREIGN_KEY_SUCCESS', $constraintName, $oneTableName).'</span>';
+                        $messages[] = '<span style="color:green">'.acym_translationSprintf('ACYM_CHECKDB_ADD_FOREIGN_KEY_SUCCESS', $constraintName, $oneTableName).'</span>';
                     }
                 }
             }
@@ -548,7 +605,7 @@ class ConfigurationController extends acymController
                 }
 
                 if ($this->config->get('smtp_port') && !in_array($this->config->get('smtp_port'), [25, 2525, 465, 587])) {
-                    acym_enqueueMessage(acym_translation_sprintf('ACYM_ADVICE_PORT', $this->config->get('smtp_port')), 'notice');
+                    acym_enqueueMessage(acym_translationSprintf('ACYM_ADVICE_PORT', $this->config->get('smtp_port')), 'notice');
                 }
             }
 
@@ -558,7 +615,7 @@ class ConfigurationController extends acymController
 
             $bounce = $this->config->get('bounce_email');
             if (!empty($bounce) && !in_array($sendingMethod, ['smtp', 'elasticemail'])) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_ADVICE_BOUNCE', '<b>'.$bounce.'</b>'), 'notice');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_ADVICE_BOUNCE', '<b>'.$bounce.'</b>'), 'notice');
             }
         }
 
@@ -582,11 +639,11 @@ class ConfigurationController extends acymController
         foreach ($tests as $port => $server) {
             $fp = @fsockopen($server, $port, $errno, $errstr, 5);
             if ($fp) {
-                echo '<br /><span style="color:#3dea91" >'.acym_translation_sprintf('ACYM_SMTP_AVAILABLE_PORT', $port).'</span>';
+                echo '<br /><span style="color:#3dea91" >'.acym_translationSprintf('ACYM_SMTP_AVAILABLE_PORT', $port).'</span>';
                 fclose($fp);
                 $total++;
             } else {
-                echo '<br /><span style="color:#ff5259" >'.acym_translation_sprintf('ACYM_SMTP_NOT_AVAILABLE_PORT', $port, $errno.' - '.utf8_encode($errstr)).'</span>';
+                echo '<br /><span style="color:#ff5259" >'.acym_translationSprintf('ACYM_SMTP_NOT_AVAILABLE_PORT', $port, $errno.' - '.utf8_encode($errstr)).'</span>';
             }
         }
 
@@ -971,7 +1028,7 @@ class ConfigurationController extends acymController
     }
 
     //The listing parameter allows us to know if we need to display the listing or not
-    private function modifyCron($functionToCall, $licenseKey = null)
+    public function modifyCron($functionToCall, $licenseKey = null, $frequency = null)
     {
         if (is_null($licenseKey)) {
             $config = acym_getVar('array', 'config', []);
@@ -985,7 +1042,9 @@ class ConfigurationController extends acymController
             return false;
         }
 
-        $frequency = empty($config['cron_updateme_frequency']) ? 900 : $config['cron_updateme_frequency'];
+        if (empty($frequency)) {
+            $frequency = empty($config['cron_updateme_frequency']) ? 900 : $config['cron_updateme_frequency'];
+        }
 
         $url = ACYM_UPDATEMEURL.'launcher&task='.$functionToCall;
 
@@ -995,6 +1054,7 @@ class ConfigurationController extends acymController
             'cms' => ACYM_CMS,
             'frequency' => $frequency,
             'level' => $this->config->get('level', ''),
+            'url_version' => 'secured'
         ];
 
         //We call updateme to activate/deactivate the cron
@@ -1041,7 +1101,7 @@ class ConfigurationController extends acymController
         if (empty($message) || empty($correspondences[$message])) {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_ON_CALL_ACYBA_WEBSITE'), 'error');
 
-            if (!empty($message)) acym_enqueueMessage(acym_translation_sprintf('ACYM_CURL_ERROR_MESSAGE', $message), 'error');
+            if (!empty($message)) acym_enqueueMessage(acym_translationSprintf('ACYM_CURL_ERROR_MESSAGE', $message), 'error');
 
             return false;
         }
@@ -1068,5 +1128,14 @@ class ConfigurationController extends acymController
         $allowedTasks[] = 'addNotification';
 
         parent::call($task, $allowedTasks);
+    }
+
+    public function testCredentialsSendingMethod()
+    {
+        $sendingMethod = acym_getVar('string', 'sendingMethod', '');
+        $config = acym_getVar('array', 'config', []);
+
+        if (empty($sendingMethod) || empty($config)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_FIND_SENDING_METHOD'), [], false);
+        acym_trigger('onAcymTestCredentialSendingMethod', [$sendingMethod, $config]);
     }
 }

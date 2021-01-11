@@ -29,14 +29,14 @@
 				</div>
 				<div class="cell grid-x grid-margin-x grid-margin-y" v-show="!loading" style="display: none;" v-infinite-scroll="loadMorePlugins" :infinite-scroll-disabled="busy">
 					<div class="acym__plugins__card cell grid-x xlarge-3 large-4 medium-6" v-for="(plugin, index) in displayedPlugins">
+						<div class="acym__plugins__card__params_type shrink cell">{{ plugin.category }}</div>
 						<div class="acym__plugins__card__image margin-bottom-1 cell grid-x align-center">
 							<img :src="imageUrl(plugin.image)" alt="plugin image" class="cell">
-							<div class="acym__plugins__card__params_type shrink cell" :style="typesColors[plugin.category]">{{ plugin.category }}</div>
 						</div>
 						<div class="acym__plugins__card__params cell grid-x">
-							<div class="cell grid-x acym_vcenter acym__plugins__card__params__first">
-								<h2 class="cell medium-10 acym__plugins__card__params__title">{{ plugin.name }}</h2>
-								<a target="_blank" :href="plugin.documentation" class="acym__plugins__link cell medium-2"><i class="acymicon-book"></i></a>
+							<div class="cell grid-x acym_vcenter acym__plugins__card__params__title-line">
+								<h2 class="cell medium-10 acym__plugins__card__params__title acym_text_ellipsis" :title="plugin.name">{{ plugin.name }}</h2>
+								<a target="_blank" :href="plugin.documentation" class="acym__plugins__documentation cell medium-2"><i class="acymicon-book"></i></a>
 							</div>
 							<div ref="plugins" :class="isOverflown(index)" class="acym__plugins__card__params_desc cell" v-html="plugin.description"></div>
 							<div class="cell grid-x acym__plugins__card__actions">
@@ -44,20 +44,20 @@
 									<div class="cell grid-x">
 										<button :data-acym-tooltip="<?php echo acym_escapeDB(acym_translation('ACYM_YOU_DONT_HAVE_THE_RIGHT_LEVEL')); ?> + ucfirst(plugin.level)"
 												type="button"
-												class=" acym__plugins__button acym__plugins__button-disabled acym__plugins__button__purchase cell text-center cell small-5">
+												class="acym__plugins__button acym__plugins__button-disabled button button-secondary acym__plugins__button__purchase cell text-center cell small-5">
                                             <?php echo acym_translation('ACYM_DOWNLOAD'); ?><i class="acymicon-file_download"></i>
 										</button>
 										<div class="cell auto"></div>
 										<a target="_blank"
 										   href="<?php echo ACYM_ACYMAILLING_WEBSITE; ?>pricing"
-										   class="acym__plugins__button cell small-5 acym__plugins__button__purchase text-center">
+										   class="acym__plugins__button cell small-5 acym__plugins__button__purchase text-center button button-secondary">
                                             <?php echo acym_translation('ACYM_PURCHASE'); ?>
 											<i class="acymicon-cart-arrow-down"></i>
 										</a>
 									</div>
 								</div>
 								<div v-if="!installed[plugin.image]" v-show="rightLevel(plugin.level)" class="cell grid-x acym__plugins__card__actions">
-									<button v-show="'{__CMS__}' == 'Joomla'" type="button" class="acym__plugins__button cell text-center" @click="download(plugin)">
+									<button v-show="'{__CMS__}' == 'Joomla'" type="button" class="acym__plugins__button cell text-center button button-secondary" @click="download(plugin)">
 										<span v-show="!downloading[plugin.image]">
 											<?php echo acym_translation('ACYM_DOWNLOAD'); ?>
 											<i class="acymicon-file_download"></i>
@@ -67,13 +67,13 @@
 									<a v-show="'{__CMS__}' == 'WordPress'"
 									   target="_blank"
 									   :href="plugin.downloadlink"
-									   class="acym__plugins__button cell acym__plugins__button__purchase text-center">
+									   class="acym__plugins__button cell acym__plugins__button__purchase text-center button button-secondary">
                                         <?php echo acym_translation('ACYM_DOWNLOAD'); ?>
 										<i class="acymicon-file_download"></i>
 									</a>
 								</div>
 								<div v-if="installed[plugin.image]" class="cell grid-x acym__plugins__card__actions">
-									<button type="button" class="acym__plugins__button cell text-center acym__plugins__button-disabled">
+									<button type="button" class="acym__plugins__button cell text-center acym__plugins__button-disabled button button-secondary">
                                         <?php echo acym_translation('ACYM_ADD_ON_SUCCESSFULLY_INSTALLED'); ?>
 										<i class="acymicon-check"></i>
 									</button>

@@ -17,7 +17,7 @@
                 ?>
 			</div>
 			<div class="cell grid-x">
-				<div class="auto cell">
+				<div class="auto cell acym_vcenter">
                     <?php
                     $options = [
                         '' => ['ACYM_ALL', $data['overrideNumberPerStatus']['all']],
@@ -65,7 +65,7 @@
 							<a href="<?php echo acym_completeLink('mails&task=edit&type=override&id='.intval($override->mail_id).'&return='.urlencode(acym_currentURL())); ?>">
 								<p><?php
                                     $subject = preg_replace('#^{trans:([A-Z_]+)(|.+)*}$#', '$1', $override->subject);
-                                    echo acym_translation_sprintf($subject, '{param1}', '{param2}');
+                                    echo acym_translationSprintf($subject, '{param1}', '{param2}');
                                     ?></p>
 							</a>
 						</div>

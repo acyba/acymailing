@@ -1,4 +1,5 @@
 const acym_helperModal = {
+    isCampaignEdition: jQuery('#acym__campaign__recipients__form__campaign').length > 0,
     initModal: function () {
         //global
         acym_helperModal.setPopupIframeToggleGlobal();
@@ -11,11 +12,9 @@ const acym_helperModal = {
 
         //Users
         acym_helperModal.setButtonModalPaginationUsers();
-        acym_helperModal.getContentAjaxModalPaginationUsers();
         acym_helperModal.setShowSelectedOrShowAllUsersModalPaginationUsers();
         acym_helperModal.setSearchUserModalPaginationUsers();
         acym_helperModal.setButtonConfirmModalPaginationUsers();
-        acym_helperModal.setClearButtonImportLists();
         acym_helperModal.initOverlay();
     },
     initOverlay: function () {
@@ -51,9 +50,14 @@ const acym_helperModal = {
                          ? '1'
                          : '0';
         let mailId = jQuery('input[name="id"]').val();
-        let $followupinput = jQuery('input[name="followup[id]"]');  
+        let $followupinput = jQuery('input[name="followup[id]"]');
         if ($followupinput.length > 0) {
             ajaxUrl += '&followup_id=' + $followupinput.val();
+        }
+
+        let $campaignInput = jQuery('#acym__campaign__recipients__form__campaign');
+        if ($campaignInput.length > 0) {
+            ajaxUrl += '&campaign_id=' + $campaignInput.val();
         }
 
         ajaxUrl += '&search=' + jQuery('#acym_search_template_choose__ajax').val();
@@ -72,6 +76,7 @@ const acym_helperModal = {
             acym_helperModal.setSearchAjaxModalChooseTemplateStartFrom();
             acym_helperModal.setPaginationAjaxStartFrom();
             acym_helperModal.setStartFromHtmlEditor();
+            if (acym_helperModal.isCampaignEdition) acym_editorWysidMultilingual.setClickStartFromTemplate();
             if (jQuery('#acym__automation__actions').length > 0) acym_helperModal.chooseOneTemplate();
         });
     },
@@ -191,6 +196,7 @@ const acym_helperModal = {
         inAutomation = inAutomation !== undefined;
         acym_helperModal.setAjaxAndResetPaginationStartFrom();
         acym_helperModal.setPaginationAjaxStartFrom();
+        if (acym_helperModal.isCampaignEdition) acym_editorWysidMultilingual.setClickStartFromTemplate();
         acym_helperModal.setClearButtonStartFrom();
         if (inAutomation) {
             jQuery('[data-open="acym__template__choose__modal"]').on('click', function () {
@@ -295,7 +301,6 @@ const acym_helperModal = {
         jQuery('.acym__pagination__page__ajax').off('click').on('click', function () {
             jQuery('#acym_pagination__ajax').val(jQuery(this).attr('page'));
             acym_helperModal.getContentAjaxModalPaginationLists();
-            acym_helperModal.getContentAjaxModalPaginationUsers();
         });
     },
     setListingAjaxUserModalPaginationLists: function () {
@@ -382,59 +387,6 @@ const acym_helperModal = {
             acym_helperModal.getContentAjaxModalPaginationLists();
         });
     },
-    getContentAjaxModalPaginationUsers: function () {
-        let ajaxURL = ACYM_AJAX_URL
-                      + '&page=acymailing_users&ctrl='
-                      + acym_helper.ctrlUsers
-                      + '&action=acymailing_router&noheader=1&task=setAjaxListing&usersPerPage=10';
-
-        ajaxURL += '&pagination_page_ajax=' + jQuery('#acym_pagination__ajax').val();
-        ajaxURL += '&selectedUsers=' + jQuery('#acym__modal__users-selected').val();
-        ajaxURL += '&hiddenUsers=' + jQuery('#acym__modal__users-hidden').val();
-        ajaxURL += '&showSelected=' + jQuery('#modal__pagination__users__show-information').val();
-        ajaxURL += '&searchUsers=' + jQuery('#modal__pagination__users__search__input').val();
-
-        let container = jQuery('.modal__pagination__users__listing__in-form');
-
-        if (container.length) {
-            jQuery.get(ajaxURL, function (response) {
-                jQuery('#modal__pagination__users__search__spinner').hide();
-                container.html(response);
-                acym_helperModal.setAjaxPaginationModalPagination();
-                acym_helperModal.setListingAjaxUserModalPaginationUsers();
-                acym_helperModal.setShowSelectedOrShowAllUsersModalPaginationUsers();
-                acym_helperModal.setSearchUserModalPaginationUsers();
-            });
-        }
-    },
-    setListingAjaxUserModalPaginationUsers: function () {
-        jQuery('.modal__pagination__users__listing__user--checkbox').off('change').on('change', function () {
-            let spanName = jQuery(this).next().children('label .modal__pagination__users__listing__user-name ');
-            let inputUsersSelected = jQuery('#acym__modal__users-selected');
-            let usersSelectedToInject = inputUsersSelected.val();
-            let usersSelected = [];
-
-            usersSelectedToInject == '' ? usersSelectedToInject = [] : usersSelectedToInject = JSON.parse(usersSelectedToInject);
-
-
-            if (jQuery(this).is(':checked')) {
-                spanName.addClass('acym__color__blue');
-            } else {
-                spanName.removeClass('acym__color__blue');
-                usersSelectedToInject.splice(usersSelectedToInject.indexOf(jQuery(this).val()), 1);
-            }
-
-            jQuery('.modal__pagination__users__listing__user--checkbox:checked').each(function () {
-                usersSelected.push(jQuery(this).val());
-            });
-
-            jQuery.each(usersSelected, function (index) {
-                jQuery.inArray(usersSelected[index], usersSelectedToInject) == -1 ? usersSelectedToInject.push(usersSelected[index]) : true;
-            });
-
-            inputUsersSelected.val(JSON.stringify(usersSelectedToInject));
-        });
-    },
     setShowSelectedOrShowAllUsersModalPaginationUsers: function () {
         let buttonShowSelected = jQuery('.modal__pagination__users__show-selected');
         let buttonShowAll = jQuery('.modal__pagination__users__show-all');
@@ -460,8 +412,6 @@ const acym_helperModal = {
                 jQuery('#modal__pagination__users__show-information').attr('value', 'false');
                 jQuery('#acym_pagination__ajax').attr('value', 1);
             }
-
-            acym_helperModal.getContentAjaxModalPaginationUsers();
         });
     },
     setSearchUserModalPaginationUsers: function () {
@@ -486,7 +436,6 @@ const acym_helperModal = {
                 typingTimer = setTimeout(function () {
                     $userSearchInput.attr('value', searchValue);
                     jQuery('#acym_pagination__ajax').attr('value', 1);
-                    acym_helperModal.getContentAjaxModalPaginationUsers();
                 }, 1000);
 
             } else {
@@ -498,7 +447,6 @@ const acym_helperModal = {
                 $modalShowSelected.show();
                 $userSearchInput.attr('value', '');
                 jQuery('#acym_pagination__ajax').attr('value', 1);
-                acym_helperModal.getContentAjaxModalPaginationUsers();
             }
         });
 
@@ -513,7 +461,6 @@ const acym_helperModal = {
             $userSearchInput.attr('value', '');
             $inputSearch.attr('value', '');
             $modalShowSelected.show();
-            acym_helperModal.getContentAjaxModalPaginationUsers();
         });
     },
     setSearchUsers: function (typingTimer) {
@@ -521,7 +468,6 @@ const acym_helperModal = {
         jQuery('.modal__pagination__show').hide();
         jQuery('#acym_pagination__ajax').attr('value', 1);
         jQuery('#modal__pagination__users__search__input').attr('value', jQuery('input[name="modal_search_users"]').attr('value'));
-        acym_helperModal.getContentAjaxModalPaginationUsers();
     },
     setSearchLists: function (typingTimer) {
         clearTimeout(typingTimer);
@@ -538,7 +484,6 @@ const acym_helperModal = {
     setButtonModalPaginationUsers: function () {
         jQuery('.modal__pagination__users__button-open').off('click').on('click', function () {
             jQuery('#acym__modal__users-selected').val('');
-            acym_helperModal.getContentAjaxModalPaginationUsers();
         });
     },
     setButtonConfirmModalPaginationUsers: function () {
@@ -546,11 +491,6 @@ const acym_helperModal = {
             let $task = jQuery('#acym__modal__users__form-task').val();
             jQuery('input[name="task"]').val($task);
             jQuery('#acym_form').submit();
-        });
-    },
-    setClearButtonImportLists: function () {
-        jQuery('#acym__modal__lists_import__clear').off('click').on('click', function () {
-            jQuery('#modal__pagination__create__list').val('');
         });
     }
 };

@@ -4,6 +4,15 @@
             font-size: 1rem;
         }
 
+        #acym__users__export__select_lists {
+            .acym_area {
+                margin-left: 0;
+                margin-right: 0;
+                padding-left: .5rem;
+                padding-right: .5rem;
+            }
+        }
+
         #acym__users__export__check_default_field,
         #acym__users__export__check_all_field,
         #acym__users__export__check_all_list,

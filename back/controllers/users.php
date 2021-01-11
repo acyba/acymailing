@@ -90,7 +90,7 @@ class UsersController extends acymController
             ),
             null,
             '',
-            'class="acym__toolbar__button acym__toolbar__button-secondary disabled cell medium-6 large-shrink" id="acym__users__listing__button--add-to-list"'
+            'class="button button-secondary disabled cell medium-6 large-shrink" id="acym__users__listing__button--add-to-list"'
         );
         $toolbarHelper->addOtherContent($otherContent);
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit'], 'user-plus', true);
@@ -724,7 +724,7 @@ class UsersController extends acymController
         $notAllowedFields = array_diff($fieldsToExport, $tableFields);
         if (in_array('id', $fieldsToExport)) $notAllowedFields[] = 'id';
         if (!empty($notAllowedFields)) {
-            return $this->exportError(acym_translation_sprintf('ACYM_NOT_ALLOWED_FIELDS', implode(', ', $notAllowedFields), implode(', ', $tableFields)));
+            return $this->exportError(acym_translationSprintf('ACYM_NOT_ALLOWED_FIELDS', implode(', ', $notAllowedFields), implode(', ', $tableFields)));
         }
 
         $charset = acym_getVar('string', 'export_charset', 'UTF-8');
@@ -901,7 +901,7 @@ class UsersController extends acymController
 
         if (empty($matches)) {
             $this->edit();
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_VALID_EMAIL', $user->email), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_VALID_EMAIL', $user->email), 'error');
 
             return;
         }
@@ -909,7 +909,7 @@ class UsersController extends acymController
         if (empty($userId)) {
             $existingUser = $this->currentClass->getOneByEmail($user->email);
             if (!empty($existingUser) && acym_isAdmin()) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_X_ALREADY_EXIST', $user->email), 'error');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_X_ALREADY_EXIST', $user->email), 'error');
 
                 $this->edit();
 
@@ -924,7 +924,7 @@ class UsersController extends acymController
         } else {
             $existingUser = $this->currentClass->getOneByEmail($user->email);
             if (!empty($existingUser) && $existingUser->id != $userId) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_X_ALREADY_EXIST', $user->email), 'error');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_X_ALREADY_EXIST', $user->email), 'error');
                 $this->edit();
 
                 return;
@@ -967,65 +967,5 @@ class UsersController extends acymController
             $this->currentClass->subscribe($user, $listsSelected);
         }
         $this->listing();
-    }
-
-    public function setAjaxListing()
-    {
-        $showSelected = acym_getVar('string', 'showSelected');
-        $matchingUsersData = new \stdClass();
-        $matchingUsersData->ordering = 'name';
-        $matchingUsersData->searchFilter = acym_getVar('string', 'searchUsers');
-        $matchingUsersData->usersPerPage = acym_getVar('string', 'usersPerPage');
-        $matchingUsersData->idsSelected = json_decode(acym_getVar('string', 'selectedUsers'));
-        $matchingUsersData->idsHidden = json_decode(acym_getVar('string', 'hiddenUsers'));
-        $matchingUsersData->page = acym_getVar('int', 'pagination_page_ajax');
-        if (empty($matchingUsersData->page)) {
-            $matchingUsersData->page = 1;
-        }
-
-        $options = [
-            'ordering' => $matchingUsersData->ordering,
-            'search' => $matchingUsersData->searchFilter,
-            'elementsPerPage' => $matchingUsersData->usersPerPage,
-            'offset' => ($matchingUsersData->page - 1) * $matchingUsersData->usersPerPage,
-            'hiddenElements' => $matchingUsersData->idsHidden,
-        ];
-
-        if ($showSelected == 'true') {
-            $options['selectedUsers'] = $matchingUsersData->idsSelected;
-            $options['showOnlySelected'] = true;
-        }
-
-        $users = $this->currentClass->getMatchingElements($options);
-
-        $return = '';
-
-        if (empty($users['elements'])) {
-            $return .= '<h1 class="cell acym__listing__empty__search__modal text-center">'.acym_translation('ACYM_NO_RESULTS_FOUND').'</h1>';
-        }
-
-        foreach ($users['elements'] as $user) {
-            $return .= '<div class="grid-x modal__pagination__users__listing__in-form__user cell">';
-
-            $return .= '<div class="cell shrink"><input type="checkbox" id="modal__pagination__users__listing__user'.$user->id.'" value="'.intval(
-                    $user->id
-                ).'" class="modal__pagination__users__listing__user--checkbox" name="users_checked[]"';
-
-            if (!empty($matchingUsersData->idsSelected) && in_array($user->id, $matchingUsersData->idsSelected)) {
-                $return .= 'checked';
-            }
-
-            $return .= '></div><label class="cell auto" for="modal__pagination__users__listing__user'.$user->id.'"';
-
-            $return .= '> <span class="modal__pagination__users__listing__user-name ">'.$user->email.'</span></label></div>';
-        }
-
-        $pagination = new PaginationHelper();
-        $pagination->setStatus($users['total'], $matchingUsersData->page, $matchingUsersData->usersPerPage);
-
-        $return .= $pagination->displayAjax();
-
-        echo $return;
-        exit;
     }
 }

@@ -12,7 +12,7 @@ class acym_profile_widget extends WP_Widget
 
         parent::__construct(
             'acym_profile_widget',
-            acym_translation_sprintf('ACYM_MENU', acym_translation('ACYM_MENU_PROFILE')),
+            acym_translationSprintf('ACYM_MENU', acym_translation('ACYM_MENU_PROFILE')),
             ['description' => acym_translation('ACYM_MENU_PROFILE_DESC')]
         );
     }
@@ -133,7 +133,7 @@ class acym_profile_widget extends WP_Widget
         }
 
         acym_displayMessages();
-        acym_setVar('page', 'front');
+        acym_setVar('page', ACYM_COMPONENT.'_front');
         $params = new acymParameter($instance);
         acym_initModule($params);
 

@@ -190,7 +190,7 @@ class plgAcymRss extends acymPlugin
             if (!empty($parameter->min) && count($resultfeeds) < $parameter->min) {
                 //We won't generate the Newsletter
                 $this->generateCampaignResult->status = false;
-                $this->generateCampaignResult->message = acym_translation_sprintf(
+                $this->generateCampaignResult->message = acym_translationSprintf(
                     'ACYM_GENERATE_CAMPAIGN_NOT_ENOUGH_CONTENT',
                     $this->pluginDescription->name,
                     count($resultfeeds),

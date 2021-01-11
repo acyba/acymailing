@@ -2,7 +2,10 @@
 	<input type="hidden" name="id" value="<?php echo empty($data['field']->id) ? '' : intval($data['field']->id); ?>">
 	<input type="hidden" name="namekey" value="<?php echo empty($data['field']->namekey) ? '' : acym_escape($data['field']->namekey); ?>">
 	<div id="acym__fields__edit" class="acym__content grid-x cell">
-		<div class="cell grid-x text-right grid-margin-x margin-left-0 margin-right-0">
+		<div class="cell grid-x text-right grid-margin-x margin-left-0 margin-right-0 margin-y margin-bottom-0">
+			<h5 class="cell medium-auto medium-text-left text-center hide-for-small-only hide-for-medium-only acym__title">
+                <?php echo acym_translation('ACYM_CUSTOM_FIELD'); ?>
+			</h5>
 			<div class="cell auto hide-for-small-only hide-for-medium-only"></div>
             <?php echo acym_cancelButton(); ?>
 			<button data-task="apply" class="cell button button-secondary medium-6 large-shrink acy_button_submit"><?php echo acym_translation('ACYM_SAVE'); ?></button>
@@ -10,8 +13,7 @@
 		</div>
 		<div class="cell grid-x grid-margin-x">
 			<div class="xlarge-4 cell grid-x acym__fields__edit__field__general acym__content grid-margin-x margin-bottom-1 acym_center_baseline">
-				<h1 class="acym__title__listing cell"><?php echo acym_translation('ACYM_CUSTOM_FIELDS'); ?></h1>
-
+				<h2 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_INFORMATION'); ?></h2>
 				<label class="cell xlarge-12 large-6 margin-top-1">
                     <?php echo acym_translation('ACYM_NAME'); ?>
 					<input required type="text" name="field[name]" value="<?php echo empty($data['field']->name) ? '' : acym_escape($data['field']->name); ?>">
@@ -34,7 +36,7 @@
 				</label>
 
 				<div class="cell large-12 grid-x margin-top-1">
-                    <?php echo acym_switch('field[active]', $data['field']->active, acym_translation('ACYM_ACTIVE'), [], 'auto', 'shrink', 'tiny margin-0'); ?>
+                    <?php echo acym_switch('field[active]', $data['field']->active, acym_translation('ACYM_ACTIVE'), [], 'auto', 'shrink', 'margin-0'); ?>
 				</div>
 
                 <?php if (empty($data['field']->id) || $data['field']->id != 2) { ?>
@@ -46,23 +48,23 @@
                             [],
                             'auto',
                             'shrink',
-                            'tiny margin-0',
+                            'margin-0',
                             'required_error_message'
                         ); ?>
 					</div>
                 <?php } ?>
 
-				<h1 class="cell acym__title__listing margin-top-2"><?php echo acym_translation('ACYM_DISPLAY'); ?></h1>
+				<h2 class="cell acym__title acym__title__secondary margin-top-2"><?php echo acym_translation('ACYM_DISPLAY'); ?></h2>
 
 				<div class="cell grid-x large-12 margin-top-1">
                     <?php echo acym_switch(
                         'field[backend_edition]',
                         $data['field']->backend_edition,
-                        acym_translation_sprintf('ACYM_BACKEND_X', acym_translation('ACYM_EDITION')),
+                        acym_translationSprintf('ACYM_BACKEND_X', acym_translation('ACYM_EDITION')),
                         [],
                         'auto',
                         'shrink',
-                        'tiny margin-0'
+                        'margin-0'
                     ); ?>
 				</div>
 
@@ -70,11 +72,11 @@
                     <?php echo acym_switch(
                         'field[backend_listing]',
                         $data['field']->backend_listing,
-                        acym_translation_sprintf('ACYM_BACKEND_X', acym_translation('ACYM_LISTING')),
+                        acym_translationSprintf('ACYM_BACKEND_X', acym_translation('ACYM_LISTING')),
                         [],
                         'auto',
                         'shrink',
-                        'tiny margin-0'
+                        'margin-0'
                     ); ?>
 				</div>
 
@@ -83,22 +85,22 @@
                         <?php echo acym_switch(
                             'field[frontend_edition]',
                             $data['field']->frontend_edition,
-                            acym_translation_sprintf('ACYM_FRONTEND_X', acym_translation('ACYM_EDITION')),
+                            acym_translationSprintf('ACYM_FRONTEND_X', acym_translation('ACYM_EDITION')),
                             [],
                             'auto',
                             'shrink',
-                            'tiny margin-0'
+                            'margin-0'
                         ); ?>
 					</div>
 					<div class="cell grid-x large-12 margin-top-1">
                         <?php echo acym_switch(
                             'field[frontend_listing]',
                             $data['field']->frontend_listing,
-                            acym_translation_sprintf('ACYM_FRONTEND_X', acym_translation('ACYM_LISTING')),
+                            acym_translationSprintf('ACYM_FRONTEND_X', acym_translation('ACYM_LISTING')),
                             [],
                             'auto',
                             'shrink',
-                            'tiny margin-0'
+                            'margin-0'
                         ); ?>
 					</div>
                 <?php } ?>
@@ -108,10 +110,9 @@
                 $data['field']->id,
                 [1, 2]
             ) ? ' is-hidden' : ''; ?> acym_center_baseline">
-				<!--Properties-->
-				<h1 class="acym__title__listing acym__fields__edit__section__title cell" id="acym__fields__edit__section__title--properties"><?php echo acym_translation(
-                        'ACYM_FIELD_PROPERTIES'
-                    ); ?></h1>
+				<h2 class="cell acym__title acym__title__secondary acym__fields__edit__section__title" id="acym__fields__edit__section__title--properties">
+                    <?php echo acym_translation('ACYM_FIELD_PROPERTIES'); ?>
+				</h2>
 
 				<!--It's in general like the user didn't fill the field we display that message-->
 				<div class="cell xlarge-6 grid-x acym__fields__change margin-top-1" id="acym__fields__editable-user-creation">
@@ -122,7 +123,7 @@
                         [],
                         'auto',
                         'shrink',
-                        'tiny margin-0'
+                        'margin-0'
                     ); ?>
 				</div>
 
@@ -136,7 +137,7 @@
                         [],
                         'auto',
                         'shrink',
-                        'tiny margin-0'
+                        'margin-0'
                     ); ?>
 				</div>
 
@@ -148,15 +149,14 @@
 							<input type="text"
 								   name="field[option][error_message]"
 								   value="<?php echo empty($data['field']->option->error_message) ? '' : acym_escape($data['field']->option->error_message); ?>"
-								   placeholder="<?php echo acym_escape(acym_translation_sprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', 'xxx')); ?>">
+								   placeholder="<?php echo acym_escape(acym_translationSprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', 'xxx')); ?>">
 						</label>
 					</div>
                 <?php } ?>
 
-				<!--Content-->
-				<h1 class="acym__title__listing acym__fields__edit__section__title cell" id="acym__fields__edit__section__title--content"><?php echo acym_translation(
-                        'ACYM_FIELD_CONTENT'
-                    ); ?></h1>
+				<h2 class="cell acym__title acym__title__secondary margin-top-2 acym__fields__edit__section__title" id="acym__fields__edit__section__title--content">
+                    <?php echo acym_translation('ACYM_FIELD_CONTENT'); ?>
+				</h2>
 
 				<div class="cell margin-top-1 acym__fields__change" id="acym__fields__authorized-content"><?php echo acym_translation('ACYM_AUTHORIZED_CONTENT'); ?>
                     <?php
@@ -197,15 +197,15 @@
                     echo '<h6>';
                     echo acym_translation('ACYM_FORMAT');
                     echo acym_info(
-                        acym_translation_sprintf(
+                        acym_translationSprintf(
                             'ACYM_X_TO_ENTER_X',
                             '%d',
                             acym_translation('ACYM_DAY')
-                        ).'<br>'.acym_translation_sprintf(
+                        ).'<br>'.acym_translationSprintf(
                             'ACYM_X_TO_ENTER_X',
                             '%m',
                             acym_translation('ACYM_MONTH')
-                        ).'<br>'.acym_translation_sprintf(
+                        ).'<br>'.acym_translationSprintf(
                             'ACYM_X_TO_ENTER_X',
                             '%y',
                             acym_translation('ACYM_YEAR')
@@ -230,10 +230,9 @@
 						   class="cell medium-2 small-3">
 				</label>
 
-				<!--Style-->
-				<h1 class="acym__title__listing acym__fields__edit__section__title cell" id="acym__fields__edit__section__title--style"><?php echo acym_translation(
-                        'ACYM_FIELD_STYLE'
-                    ); ?></h1>
+				<h2 class="cell acym__title acym__title__secondary margin-top-2 acym__fields__edit__section__title" id="acym__fields__edit__section__title--style">
+                    <?php echo acym_translation('ACYM_FIELD_STYLE'); ?>
+				</h2>
 
 				<label class="cell margin-top-1 large-6 acym__fields__change" id="acym__fields__rows"><?php echo acym_translation('ACYM_ROWS'); ?>
 					<input type="text" name="field[option][rows]" value="<?php echo empty($data['field']->option->rows) ? '' : $data['field']->option->rows; ?>">
@@ -251,16 +250,15 @@
 						   class="cell medium-4">
 				</label>
 
-				<!--Values-->
-				<h1 class="acym__title__listing acym__fields__edit__section__title cell" id="acym__fields__edit__section__title--values"><?php echo acym_translation(
-                        'ACYM_FIELD_VALUES'
-                    ); ?></h1>
+				<h2 class="cell acym__title acym__title__secondary margin-top-2 acym__fields__edit__section__title" id="acym__fields__edit__section__title--values">
+                    <?php echo acym_translation('ACYM_FIELD_VALUES'); ?>
+				</h2>
 
 				<label class="cell margin-top-1 large-11 acym__fields__change" id="acym__fields__custom-text"><?php echo acym_translation('ACYM_CUSTOM_TEXT'); ?>
-					<textarea class="acym__blue"
-							  name="field[option][custom_text]"
-							  cols="30"
-							  rows="10"><?php echo empty($data['field']->option->custom_text) ? '' : $data['field']->option->custom_text; ?></textarea>
+					<textarea
+							name="field[option][custom_text]"
+							cols="30"
+							rows="10"><?php echo empty($data['field']->option->custom_text) ? '' : $data['field']->option->custom_text; ?></textarea>
 				</label>
 
 				<div class="cell grid-x acym__fields__change margin-bottom-2" id="acym__fields__value">

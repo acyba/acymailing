@@ -9,13 +9,32 @@
     font-style: normal
 }
 
-@import url('https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i');
+@font-face {
+    font-family: 'Lato';
+    src: url('./fonts/Lato.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('./fonts/Inter.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal
+}
 
 #acym_wrapper {
     .acym__title__light__blue {
         font-size: 20px;
         font-weight: bold;
-        color: map-get($foundation-palette, primary-light);
+        color: $color-palette-cyan;
     }
 
     .acym_word-break {
@@ -34,17 +53,12 @@
         margin-bottom: 1rem;
     }
 
+    // Keep this class, it's used in old versions of addons/plugins
     .acym__content__title__light-blue {
-        color: $primary-light-color;
+        color: $color-palette-cyan;
         font-weight: 700;
         font-size: 18px;
         margin-bottom: 1rem;
-    }
-
-    .acym__title__listing {
-        font-size: 20px;
-        font-weight: bold;
-        color: map-get($foundation-palette, primary-light);
     }
 
     h1, h2, h3, h4, h5, h6, p {
@@ -76,4 +90,37 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+    .acym__title {
+        color: $color-palette-dark-blue;
+        font-size: 1.6rem;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 34px;
+        letter-spacing: 0;
+        text-align: left;
+        margin-bottom: 1rem;
+
+        &.acym__title__secondary {
+            font-size: 1.1rem;
+            font-weight: 400;
+            line-height: 28px;
+        }
+
+        &.acym__title__tertiary {
+            font-size: .9rem;
+            font-weight: 900;
+            line-height: 20px;
+        }
+
+        &.text-center {
+            text-align: center;
+        }
+    }
+
+    .acym_not_bold {
+        font-weight: normal !important;
+    }
 }
+
+

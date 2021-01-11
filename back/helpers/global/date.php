@@ -21,10 +21,10 @@ function acym_replaceDateTags($value)
 function acym_dateField($name, $value = '', $class = '', $attributes = '', $relativeDefault = '-')
 {
     // Open container
-    $result = '<div class="date_rs_selection_popup">';
+    $result = '<div class="grid-x margin-y date_rs_selection_popup">';
 
     // Choice of relative / specific date
-    $result .= '<div class="grid-x">';
+    $result .= '<div class="cell grid-x">';
     $result .= acym_switchFilter(
         [
             'relative' => acym_translation('ACYM_RELATIVE_DATE'),
@@ -37,11 +37,11 @@ function acym_dateField($name, $value = '', $class = '', $attributes = '', $rela
     $result .= '</div>';
 
     // Relative date options
-    $result .= '<div class="date_rs_selection_choice date_rs_selection_relative grid-x grid-margin-x">
-                    <div class="cell small-2">
+    $result .= '<div class="cell date_rs_selection_choice date_rs_selection_relative grid-x grid-margin-x align-center">
+                    <div class="cell shrink">
                         <input type="number" class="relativenumber" value="0">
                     </div>
-                    <div class="cell small-5">';
+                    <div class="cell shrink">';
     $result .= acym_select(
         [
             '60' => acym_translation('ACYM_MINUTES'),
@@ -54,7 +54,7 @@ function acym_dateField($name, $value = '', $class = '', $attributes = '', $rela
     );
 
     $result .= '</div>
-                <div class="cell small-5">';
+                <div class="cell shrink">';
 
     $result .= acym_select(
         [
@@ -87,7 +87,7 @@ function acym_dateField($name, $value = '', $class = '', $attributes = '', $rela
     $result .= '</div>';
 
     // Input in which the value is
-    $id = preg_replace('#[^a-z0-9_]#i', '', $name);
+    $id = 'acym_'.preg_replace('#[^a-z0-9_]#i', '', $name);
     if (is_numeric($value)) {
         $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -156,13 +156,13 @@ function acym_replaceDate($mydate, $display = false)
         $dateArray = explode($oneOperator, $mydate);
         if ($oneOperator == '+') {
             if ($display) {
-                $mydate = acym_translation_sprintf('ACYM_AFTER_DATE', acym_secondsToTime(intval($dateArray[1])));
+                $mydate = acym_translationSprintf('ACYM_AFTER_DATE', acym_secondsToTime(intval($dateArray[1])));
             } else {
                 $mydate = intval($dateArray[0]) + intval($dateArray[1]);
             }
         } elseif ($oneOperator == '-') {
             if ($display) {
-                $mydate = acym_translation_sprintf('ACYM_BEFORE_DATE', acym_secondsToTime(intval($dateArray[1])));
+                $mydate = acym_translationSprintf('ACYM_BEFORE_DATE', acym_secondsToTime(intval($dateArray[1])));
             } else {
                 $mydate = intval($dateArray[0]) - intval($dateArray[1]);
             }
@@ -214,13 +214,13 @@ function acym_displayDateFormat($format, $name = 'date', $default = '', $attribu
     unset($formatToDisplay[0]);
     foreach ($formatToDisplay as $one) {
         if ($one == 'd') {
-            $return .= '<div class="medium-3 cell">'.acym_select($days, $name, empty($default) ? '' : $defaultDate[$i], $attributes, 'value', 'text', $name.'-'.$one).'</div>';
+            $return .= '<div class="medium-3 margin-left-0 cell">'.acym_select($days, $name, empty($default) ? '' : $defaultDate[$i], $attributes, 'value', 'text', $name.'-'.$one).'</div>';
         }
         if ($one == 'm') {
             $return .= '<div class="medium-5 cell">'.acym_select($month, $name, empty($default) ? '' : $defaultDate[$i], $attributes, 'value', 'text', $name.'-'.$one).'</div>';
         }
         if ($one == 'y') {
-            $return .= '<div class="medium-4 cell">'.acym_select($year, $name, empty($default) ? '' : $defaultDate[$i], $attributes, 'value', 'text', $name.'-'.$one).'</div>';
+            $return .= '<div class="medium-4 margin-right-0 cell">'.acym_select($year, $name, empty($default) ? '' : $defaultDate[$i], $attributes, 'value', 'text', $name.'-'.$one).'</div>';
         }
         $i++;
     }

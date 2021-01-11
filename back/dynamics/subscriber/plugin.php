@@ -47,13 +47,20 @@ class plgAcymSubscriber extends acymPlugin
             <!--
             var selectedTag;
 
-            function changeUserTag(tagname, element) {
+            function changeSubscriberTag(tagname, element) {
                 if (!tagname) return;
 
-                var finalTag = '{<?php echo $this->name; ?>:' + tagname;
+                selectedTag = tagname;
 
-                if (jQuery('input[name="typeinfo"]:checked').length > 0) {
-                    finalTag += '|info:' + jQuery('input[name="typeinfo"]:checked').val() + '';
+                var baseTag = '<?php echo $this->name; ?>';
+                var $inputType = jQuery('input[name="typeinfo"]:checked');
+                if ($inputType.length > 0 && $inputType.val() == 'current') {
+                    baseTag = 'user';
+                }
+                var finalTag = '{' + baseTag + ':' + tagname;
+
+                if ($inputType.length > 0 && $inputType.val() != 'current') {
+                    finalTag += '|info:' + $inputType.val() + '';
                 }
                 finalTag += '}';
 
@@ -72,12 +79,13 @@ class plgAcymSubscriber extends acymPlugin
         $customFields = $fieldClass->getAllFieldsForUser();
         $descriptions = [];
         $isAutomationAdmin = acym_getVar('string', 'automation');
+        $mailType = acym_getVar('string', 'mail_type', MailClass::TYPE_STANDARD);
+        $typeNotif = acym_getVar('string', 'type_notif', '');
 
         foreach ($customFields as $one) {
             $descriptions[$one->namekey] = acym_translation('ACYM_CUSTOM_FIELD');
             $fields[] = $one->namekey;
         }
-
 
         $descriptions['id'] = acym_translation('ACYM_USER_ID');
         $descriptions['email'] = acym_translation('ACYM_USER_EMAIL');
@@ -92,11 +100,12 @@ class plgAcymSubscriber extends acymPlugin
         $descriptions['send_date'] = acym_translation('ACYM_USER_SEND_DATE');
 
         $text = '<div class="acym__popup__listing text-center grid-x">';
-        if (!empty($isAutomationAdmin)) {
+        if (!empty($isAutomationAdmin) || ($mailType == 'notification' && $typeNotif != 'acy_confirm')) {
+            $textTrigger = $mailType == 'notification' ? 'ACYM_USER_TRIGGERING_NOTIFICATION' : 'ACYM_USER_TRIGGERING_AUTOMATION';
             $typeinfo = [];
             $typeinfo[] = acym_selectOption('receiver', 'ACYM_RECEIVER_INFORMATION');
-            $typeinfo[] = acym_selectOption('current', 'ACYM_USER_TRIGGERING_AUTOMATION');
-            $text .= acym_radio($typeinfo, 'typeinfo', 'receiver', ['onclick' => 'changeUserTag(selectedTag)']);
+            $typeinfo[] = acym_selectOption('current', $textTrigger);
+            $text .= acym_radio($typeinfo, 'typeinfo', 'receiver', ['onclick' => 'changeSubscriberTag(selectedTag, jQuery(this))']);
         }
         $text .= '<h1 class="acym__popup__plugin__title cell">'.acym_translation('ACYM_RECEIVER_INFORMATION').'</h1>
 					';
@@ -106,7 +115,7 @@ class plgAcymSubscriber extends acymPlugin
         $others['name|part:last|ucfirst'] = ['name' => acym_translation('ACYM_USER_LASTPART'), 'desc' => acym_translation('ACYM_USER_LASTPART_DESC')];
 
         foreach ($others as $tagname => $tag) {
-            $text .= '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeUserTag(\''.$tagname.'\', jQuery(this));" ><div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['name'].'</div><div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['desc'].'</div></div>';
+            $text .= '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeSubscriberTag(\''.$tagname.'\', jQuery(this));" ><div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['name'].'</div><div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['desc'].'</div></div>';
         }
 
         foreach ($fields as $fieldname) {
@@ -119,7 +128,7 @@ class plgAcymSubscriber extends acymPlugin
                 $type = '|type:time';
             }
 
-            $text .= '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeUserTag(\''.$fieldname.$type.'\', jQuery(this));" >
+            $text .= '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeSubscriberTag(\''.$fieldname.$type.'\', jQuery(this));" >
                         <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$fieldname.'</div>
                         <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$descriptions[$fieldname].'</div>
                      </div>';
@@ -223,7 +232,7 @@ class plgAcymSubscriber extends acymPlugin
                     '<input class="acym__automation__one-field acym__automation__conditions__fields__select intext_input_automation cell" type="text" name="[conditions][__numor__][__numand__][acy_field][value]" style="display: none" data-condition-field="'.intval(
                         $field->id
                     ).'">',
-                    acym_translation_sprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
+                    acym_translationSprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
                     'intext_select_automation cell'
                 );
             }
@@ -299,7 +308,7 @@ class plgAcymSubscriber extends acymPlugin
     {
         $this->onAcymProcessFilter_acy_field($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     /**
@@ -323,6 +332,8 @@ class plgAcymSubscriber extends acymPlugin
             exit;
         }
 
+        $mailClass = new MailClass();
+
         $return = [];
         $return[] = [-1, acym_translation('ACYM_ALL_MAILS')];
         $search = utf8_encode(acym_getVar('string', 'search', ''));
@@ -331,7 +342,7 @@ class plgAcymSubscriber extends acymPlugin
 				FROM #__acym_mail 
 				WHERE (`subject` LIKE '.acym_escapeDB('%'.$search.'%').' 
 					OR `name` LIKE '.acym_escapeDB('%'.$search.'%').') 
-					AND type != '.acym_escapeDB('notification').'
+					AND `type` != '.acym_escapeDB($mailClass::TYPE_NOTIFICATION).'
 				ORDER BY `subject` ASC 
 				LIMIT 20'
         );
@@ -409,7 +420,7 @@ class plgAcymSubscriber extends acymPlugin
                 $field->option = json_decode($field->option, true);
                 $customFieldValues[$field->id] = acym_tooltip(
                     '<input class="acym__automation__one-field acym__automation__actions__fields__select intext_input_automation cell" type="text" name="[actions][__and__][acy_user_value][value]" style="display: none" data-action-field="'.$field->id.'">',
-                    acym_translation_sprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
+                    acym_translationSprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
                     'intext_select_automation cell'
                 );
             }
@@ -487,7 +498,7 @@ class plgAcymSubscriber extends acymPlugin
             $queryToProcess = 'UPDATE #__acym_user AS `user` SET '.$fieldToUpdate.' WHERE ('.implode(') AND (', $query->where).')';
             $nbRows = acym_query($queryToProcess);
 
-            return acym_translation_sprintf('ACYM_X_USERS_X', $nbRows, acym_translation('ACYM_ACTION_'.strtoupper($action['action'])));
+            return acym_translationSprintf('ACYM_X_USERS_X', $nbRows, acym_translation('ACYM_ACTION_'.strtoupper($action['action'])));
         }
     }
 
@@ -551,7 +562,7 @@ class plgAcymSubscriber extends acymPlugin
             $nbAffected -= $customFieldAlreadyExists;
         }
 
-        return acym_translation_sprintf('ACYM_UPDATED_USERS', $nbAffected);
+        return acym_translationSprintf('ACYM_UPDATED_USERS', $nbAffected);
     }
 
     public function onAcymProcessAction_acy_add_queue(&$query, &$action, $automationAdmin)
@@ -565,9 +576,9 @@ class plgAcymSubscriber extends acymPlugin
         //We generate the new mail if it's a template
         $mail = $mailClass->getOneById($action['mail_id']);
 
-        if ('automation' != $mail->type) {
+        if ($mailClass::TYPE_AUTOMATION != $mail->type) {
             unset($mail->id);
-            $mail->type = 'automation';
+            $mail->type = $mailClass::TYPE_AUTOMATION;
             $mail->template = 2;
             $mail->id = $mailClass->save($mail);
         }
@@ -580,7 +591,7 @@ class plgAcymSubscriber extends acymPlugin
         }
 
         if (is_numeric($result)) {
-            return acym_translation_sprintf('ACYM_EMAILS_ADDED_QUEUE', $result);
+            return acym_translationSprintf('ACYM_EMAILS_ADDED_QUEUE', $result);
         } else {
             return $result;
         }
@@ -596,7 +607,7 @@ class plgAcymSubscriber extends acymPlugin
         }
         $nbRows = acym_query('DELETE FROM #__acym_queue WHERE `user_id` IN ('.$query->getQuery(['user.id']).')'.$mailCondition);
 
-        return acym_translation_sprintf('ACYM_EMAILS_REMOVED_QUEUE', $nbRows);
+        return acym_translationSprintf('ACYM_EMAILS_REMOVED_QUEUE', $nbRows);
     }
 
     public function onAcymProcessAction_resend_confirmation(&$query, &$action, $automationAdmin)
@@ -618,7 +629,7 @@ class plgAcymSubscriber extends acymPlugin
         $nbInserted = acym_query($queryInsert);
 
         if (is_numeric($nbInserted)) {
-            return acym_translation_sprintf('ACYM_EMAILS_ADDED_QUEUE', $nbInserted);
+            return acym_translationSprintf('ACYM_EMAILS_ADDED_QUEUE', $nbInserted);
         } else {
             return $nbInserted;
         }
@@ -689,7 +700,7 @@ class plgAcymSubscriber extends acymPlugin
                 $field = $fieldClass->getOneFieldById($automation['acy_field']['field']);
                 $automation['acy_field']['field'] = $field->name;
             }
-            $automation = acym_translation_sprintf(
+            $automation = acym_translationSprintf(
                 $key,
                 $automation['acy_field']['field'],
                 $automation['acy_field']['operator'],
@@ -719,7 +730,7 @@ class plgAcymSubscriber extends acymPlugin
                 $field = $fieldClass->getOneFieldById($automationAction['acy_user_value']['field']);
                 $automationAction['acy_user_value']['field'] = $field->name;
             }
-            $automationAction = acym_translation_sprintf(
+            $automationAction = acym_translationSprintf(
                 'ACYM_ACTION_USER_VALUE_SUMMARY',
                 $automationAction['acy_user_value']['field'],
                 $automationAction['acy_user_value']['operator'],
@@ -733,7 +744,7 @@ class plgAcymSubscriber extends acymPlugin
             if (empty($mail)) {
                 $automationAction = '<span class="acym__color__red">'.acym_translation('ACYM_SELECT_AN_EMAIL').'</span>';
             } else {
-                $automationAction = acym_translation_sprintf(
+                $automationAction = acym_translationSprintf(
                     'ACYM_ACTION_ADD_QUEUE_SUMMARY',
                     $mail->name,
                     acym_date(acym_replaceDate($automationAction['acy_add_queue']['time']), 'd M Y H:i')
@@ -751,7 +762,7 @@ class plgAcymSubscriber extends acymPlugin
                     $automationAction = '<span class="acym__color__red">'.acym_translation('ACYM_SELECT_AN_EMAIL').'</span>';
                 }
             } else {
-                $automationAction = acym_translation_sprintf('ACYM_ACTION_REMOVE_QUEUE_SUMMARY', $mail->name);
+                $automationAction = acym_translationSprintf('ACYM_ACTION_REMOVE_QUEUE_SUMMARY', $mail->name);
             }
         }
 

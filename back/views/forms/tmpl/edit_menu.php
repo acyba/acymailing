@@ -11,7 +11,7 @@
         <?php foreach ($data['menu_render_settings'] as $options) {
             if (empty($options)) continue;
             ?>
-			<h3 class="cell acym__forms__menu__title acym__title__primary__color"><?php echo $options['title']; ?></h3>
+			<h3 class="cell acym__forms__menu__title acym__title acym__title__tertiary"><?php echo $options['title']; ?></h3>
             <?php foreach ($options['render'] as $html) { ?>
 				<div class="cell grid-x acym__forms__menu__options grid-margin-x acym_vcenter"><?php echo $html; ?></div>
             <?php } ?>
@@ -21,7 +21,7 @@
         <?php foreach ($data['menu_render_style'] as $options) {
             if (empty($options)) continue;
             ?>
-			<h3 class="cell acym__forms__menu__title acym__title__primary__color"><?php echo $options['title']; ?></h3>
+			<h3 class="cell acym__forms__menu__title acym__title acym__title__tertiary"><?php echo $options['title']; ?></h3>
             <?php foreach ($options['render'] as $html) { ?>
 				<div class="cell grid-x acym__forms__menu__options grid-margin-x acym_vcenter"><?php echo $html; ?></div>
             <?php } ?>

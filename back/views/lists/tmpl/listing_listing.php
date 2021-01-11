@@ -13,7 +13,7 @@
             ?>
 		</div>
 		<div class="cell grid-x">
-			<div class="auto cell">
+			<div class="auto cell acym_vcenter">
                 <?php
                 $options = [
                     '' => ['ACYM_ALL', $data['listNumberPerStatus']['all']],

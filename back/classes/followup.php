@@ -251,7 +251,7 @@ class FollowupClass extends acymClass
             }
 
             $translationKey = $trigger === 'user_subscribe' ? 'ACYM_X_SUBSCRIBING_X_LIST' : 'ACYM_X_SUBSCRIBED_X_LIST';
-            $return[] = acym_translation_sprintf($translationKey, acym_strtolower($statusArray[$condition['lists_status']]), implode(',', $listsToDisplay));
+            $return[] = acym_translationSprintf($translationKey, acym_strtolower($statusArray[$condition['lists_status']]), implode(',', $listsToDisplay));
         }
 
 
@@ -263,7 +263,7 @@ class FollowupClass extends acymClass
             foreach ($segments as $segment) {
                 $segmentsToDisplay[] = $segment->name;
             }
-            $return[] = acym_translation_sprintf('ACYM_X_PART_X_SEGMENT', acym_strtolower($statusArray[$condition['segments_status']]), implode(',', $segmentsToDisplay));
+            $return[] = acym_translationSprintf('ACYM_X_PART_X_SEGMENT', acym_strtolower($statusArray[$condition['segments_status']]), implode(',', $segmentsToDisplay));
         }
 
         acym_trigger('getFollowupConditionSummary', [&$return, $condition, $trigger, $statusArray]);
@@ -315,7 +315,7 @@ class FollowupClass extends acymClass
     {
         $delayUnits = $this->getDelayUnits();
 
-        return acym_translation_sprintf('ACYM_X_PLUS_X_FOLLOW_UP', $delayUnits[$delayUnit], $delay);
+        return acym_translationSprintf('ACYM_X_PLUS_X_FOLLOW_UP', $delayUnits[$delayUnit], $delay);
     }
 
     public function getDelaySettingToMail(&$mail, $followupId)

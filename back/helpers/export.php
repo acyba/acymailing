@@ -262,10 +262,10 @@ class ExportHelper extends acymObject
             if (!empty($folder[1]) && !file_exists($folder[1])) acym_createDir($folder[1]);
 
             $fp = fopen($exportFile, 'w');
-            if (false === $fp) return acym_translation_sprintf('ACYM_FAIL_SAVE_FILE', $exportFile);
+            if (false === $fp) return acym_translationSprintf('ACYM_FAIL_SAVE_FILE', $exportFile);
 
             $error = fwrite($fp, $firstLine);
-            if (false === $error) return acym_translation_sprintf('ACYM_UNWRITABLE_FILE', $exportFile);
+            if (false === $error) return acym_translationSprintf('ACYM_UNWRITABLE_FILE', $exportFile);
         }
 
         $start = 0;
@@ -280,7 +280,7 @@ class ExportHelper extends acymObject
                     echo $errorLine;
                 } else {
                     $error = fwrite($fp, $errorLine);
-                    if (false === $error) return acym_translation_sprintf('ACYM_UNWRITABLE_FILE', $exportFile);
+                    if (false === $error) return acym_translationSprintf('ACYM_UNWRITABLE_FILE', $exportFile);
                 }
             }
 
@@ -328,7 +328,7 @@ class ExportHelper extends acymObject
                     echo $oneLine;
                 } else {
                     $error = fwrite($fp, $oneLine);
-                    if (false === $error) return acym_translation_sprintf('ACYM_UNWRITABLE_FILE', $exportFile);
+                    if (false === $error) return acym_translationSprintf('ACYM_UNWRITABLE_FILE', $exportFile);
                 }
             }
 

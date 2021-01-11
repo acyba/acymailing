@@ -73,14 +73,6 @@
     }
 
     .acym__listing__controls i {
-        margin-top: -5px;
-        margin-bottom: -7px;
-        line-height: 1;
-
-        &.acymicon-circle-o-notch {
-            font-size: 25px;
-        }
-
         &:hover {
             opacity: 0.7;
         }
@@ -345,7 +337,7 @@ i.acymicon-circle {
         color: $primary-color;
 
         &:hover {
-            color: $primary-light-color;
+            color: $color-palette-cyan;
         }
     }
 }

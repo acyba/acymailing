@@ -15,13 +15,12 @@
 }
 
 .pagination_input {
-    margin: 0 0 .2rem 0 !important;
+    margin: .2rem 0 .2rem 0 !important;
 }
 
 .pagination {
     margin-top: 10px;
     user-select: none;
-    height: 38px;
 
     .pagination_container {
         background-color: inherit;
@@ -97,11 +96,11 @@
         }
 
         .pagination-turbo-left, .pagination-turbo-right i {
-            color: $primary-color;
+            color: $color-palette-dark-blue;
         }
 
         .pagination-previous, .pagination-next {
-            color: $primary-color;
+            color: $color-palette-dark-blue;
 
             &:before {
                 display: none;
@@ -113,7 +112,7 @@
 
             .acym__pagination__page {
                 padding: 0;
-                color: $primary-color;
+                color: $color-palette-dark-blue;
 
                 &:before {
                     display: none;

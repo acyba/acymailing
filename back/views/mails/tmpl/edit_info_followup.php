@@ -9,7 +9,7 @@
         <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
 		<input name="mail[subject]" type="text" value="<?php echo acym_escape($data['mail']->subject); ?>" <?php echo in_array(
             $data['mail']->type,
-            ['welcome', 'unsubscribe', 'automation']
+            [$data['mailClass']::TYPE_WELCOME, $data['mailClass']::TYPE_UNSUBSCRIBE, $data['mailClass']::TYPE_AUTOMATION]
         ) ? 'required' : ''; ?>>
 	</label>
 </div>
@@ -59,7 +59,7 @@
             empty($data['mail']->delay_unit) ? $data['default_delay_unit'] : $data['mail']->delay_unit,
             'class="acym__select"'
         ).'</span>';
-    echo acym_translation_sprintf('ACYM_SEND_IT_X_X_AFTER_TRIGGER', $inputDelay, $selectDelayUnit);
+    echo acym_translationSprintf('ACYM_SEND_IT_X_X_AFTER_TRIGGER', $inputDelay, $selectDelayUnit);
     ?>
 	<input type="hidden" name="followup[id]" value="<?php echo empty($data['followup_id']) ? 0 : $data['followup_id']; ?>">
 </div>

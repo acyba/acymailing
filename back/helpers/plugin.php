@@ -368,7 +368,23 @@ class PluginHelper extends acymObject
         if (empty($tags)) return;
 
         $htmlVars = ['body'];
-        $textVars = ['subject', 'AltBody', 'From', 'FromName', 'ReplyTo', 'ReplyName', 'bcc', 'cc', 'fromname', 'fromemail', 'replyname', 'replyemail', 'params', 'preheader', 'Preheader'];
+        $textVars = [
+            'subject',
+            'AltBody',
+            'From',
+            'FromName',
+            'ReplyTo',
+            'ReplyName',
+            'bcc',
+            'cc',
+            'fromname',
+            'fromemail',
+            'replyname',
+            'replyemail',
+            'params',
+            'preheader',
+            'Preheader',
+        ];
 
         $variables = array_merge($htmlVars, $textVars);
 
@@ -413,7 +429,7 @@ class PluginHelper extends acymObject
                 // Dcontent specific syntax
                 $text = preg_replace(
                     '#(<tr[^>]+)data-dynamic="'.preg_quote($code, '#').'"([^>]+>[^<]*<td[^>]*>).+</i>[^<]*</td>[^<]*</tr>#Uis',
-                    '$1$2&zwj;'.$safePregValue.'</td></tr>',
+                    '$1$2'.$safePregValue.'</td></tr>',
                     $text
                 );
 
@@ -436,7 +452,24 @@ class PluginHelper extends acymObject
 
         $match = '#(?:{|%7B)'.$tagfamily.'(?:%3A|\\:)(.*)(?:}|%7D)#Ui';
         //If you add a variable there, don't forget to add it in the replaceTags function as well!
-        $variables = ['subject', 'AltBody', 'body', 'From', 'FromName', 'ReplyTo', 'ReplyName', 'bcc', 'cc', 'fromname', 'fromemail', 'replyname', 'replyemail', 'params', 'preheader', 'Preheader'];
+        $variables = [
+            'subject',
+            'AltBody',
+            'body',
+            'From',
+            'FromName',
+            'ReplyTo',
+            'ReplyName',
+            'bcc',
+            'cc',
+            'fromname',
+            'fromemail',
+            'replyname',
+            'replyemail',
+            'params',
+            'preheader',
+            'Preheader',
+        ];
         $found = false;
         foreach ($variables as $var) {
             if (empty($email->$var)) continue;
@@ -1140,7 +1173,7 @@ class PluginHelper extends acymObject
             } elseif ($option['type'] == 'intextfield') {
                 $inputType = 'text';
                 if (!empty($option['isNumber']) && $option['isNumber'] === 1) $inputType = 'number';
-                $currentOption .= acym_translation_sprintf(
+                $currentOption .= acym_translationSprintf(
                     $option['text'],
                     '<input type="'.$inputType.'" name="'.$option['name'].$suffix.'" id="'.$option['name'].$suffix.'" class="intext_input" value="'.acym_escape(
                         $option['default']
@@ -1190,9 +1223,9 @@ class PluginHelper extends acymObject
         $output = '';
         if (!empty($outputStructure['topOptions'])) {
             foreach ($outputStructure['topOptions'] as $label => $oneOption) {
-                $output .= '<p class="acym__wysid__right__toolbar__p acym__wysid__right__toolbar__p__open">'.acym_translation(
-                        $label
-                    ).'<i class="acymicon-keyboard_arrow_up"></i></p>';
+                $output .= '<p class="acym__wysid__right__toolbar__p acym__wysid__right__toolbar__p__open acym__title">';
+                $output .= acym_translation($label).'<i class="acymicon-keyboard_arrow_up"></i>';
+                $output .= '</p>';
                 $output .= '<div class="acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__context__modal__container grid-x">';
                 $output .= $oneOption;
                 $output .= '</div>';
@@ -1204,6 +1237,7 @@ class PluginHelper extends acymObject
                 <!--
                 var _selectedRows'.$suffix.' = [];
                 var _selectedRows = [];
+                var _additionalInfo'.$suffix.' = {};
                 ';
         if (!empty($defaultValues->id) && (empty($defaultValues->defaultPluginTab) || $dynamicIdentifier === $defaultValues->defaultPluginTab)) {
             $delimiter = strpos($defaultValues->id, '-') ? '-' : ',';
@@ -1252,6 +1286,9 @@ class PluginHelper extends acymObject
     
                     '.implode("\r\n\r\n", $jsOptionsMerge).'
     
+    				for (let [index, info] of Object.entries(_additionalInfo'.$suffix.')){
+    					otherinfo += "| "+index+":"+info;
+    				}
                     ';
 
         if ($type == 'individual') {
@@ -1277,8 +1314,18 @@ class PluginHelper extends acymObject
         $output .= '
                     acym_editorWysidDynammic.insertDContent(tag);
                 }
+               
+                function addAdditionalInfo'.$suffix.'(index, value){
+                	_additionalInfo'.$suffix.'[index] = value;
+                	'.$updateFunction.'();
+                }
                 //-->
             </script>';
+
+        if ($type == 'individual') {
+            acym_trigger('displayCustomViewEditor', [&$output], 'plgAcym'.ucfirst($dynamicIdentifier));
+            $output .= '<input type="hidden" id="acym__dynamic__update__function" value="'.$updateFunction.'">';
+        }
 
         return $output;
     }

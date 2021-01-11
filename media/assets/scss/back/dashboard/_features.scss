@@ -14,10 +14,6 @@
             max-width: 80% !important;
         }
 
-        .button {
-            margin-bottom: 0 !important;
-        }
-
         .acym__splashcreen__header {
             background-repeat: no-repeat;
             position: relative;
@@ -78,7 +74,7 @@
                 font-weight: 800;
                 font-size: 11px;
                 line-height: 39px;
-                color: #01095E;
+                color: $color-palette-dark-blue;
             }
 
             .acym__splashcreen__body__title {
@@ -109,16 +105,17 @@
                         border-radius: 50%;
                         background-color: #F0FAFF;
 
-                        img {
-                            width: 30px;
-                            height: 30px;
-                        }
+                        //Do not erase that
+                        //img {
+                        //    width: 30px;
+                        //    height: 30px;
+                        //}
                     }
 
                     .acym__splashcreen__body__card__title {
                         font-weight: 800;
                         font-size: 16px;
-                        line-height: 39px;
+                        line-height: 25px;
                     }
 
                     .acym__splashcreen__body__card__text {
@@ -170,7 +167,7 @@
                     .acym__splashcreen__body__middle__right__title {
                         font-weight: 800;
                         font-size: 16px;
-                        line-height: 39px;
+                        line-height: 25px;
                     }
 
                     .acym__splashcreen__body__middle__right__text {
@@ -183,7 +180,6 @@
 
             .acym__splashcreen__body__end {
                 .acym__splashcreen__body__end__card {
-                    background: rgba(0, 164, 255, 0.06);
                     border-radius: 12px;
                     padding: 50px;
 

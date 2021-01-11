@@ -1,4 +1,4 @@
-<h2 class="cell acym__walkthrough__title margin-bottom-2"><?php echo acym_translation('ACYM_WALKTHROUGH_HOUSTON'); ?></h2>
+<h2 class="cell acym__title text-center margin-bottom-2"><?php echo acym_translation('ACYM_WALKTHROUGH_HOUSTON'); ?></h2>
 
 <div class="cell margin-top-2 margin-bottom-2">
 	<i class="acymicon-ambulance" style="font-size: 8rem;"></i>
@@ -8,7 +8,7 @@
 	<p class="acym__walkthrough__text">
         <?php echo acym_translation('ACYM_CONTACT_WELL_CONTACT_YOU'); ?><br />
         <?php echo acym_translation('ACYM_CONTACT_NEEDED_INFO'); ?><br /> <br />
-        <?php echo acym_translation_sprintf(
+        <?php echo acym_translationSprintf(
             'ACYM_CONTACT_DIRECT',
             '<a class="acym__color__blue" href="'.ACYM_ACYMAILLING_WEBSITE.'contact" target="_blank">'.acym_translation('ACYM_GET_IN_TOUCH').'</a>'
         ); ?>

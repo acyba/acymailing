@@ -1,9 +1,37 @@
-.switch.tiny .switch-paddle {
-    margin-left: 15px;
-}
+.switch {
+    height: 1.5rem;
+    font-size: .625rem;
+    margin-bottom: 0;
 
-input:checked ~ .switch-paddle {
-    background: $primary-light-color;
+    .switch-paddle {
+        margin-left: 15px;
+        width: 50px;
+        height: 24px;
+        font-size: .625rem;
+        background: $color-palette-light-blue;
+        border: 1px solid $color-palette-dark-blue;
+
+        &.disabled {
+            opacity: .5;
+        }
+
+        &:after {
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: $color-palette-dark-blue;
+        }
+    }
+
+    input:checked ~ .switch-paddle {
+        background: $color-palette-dark-blue;
+
+        &:after {
+            background: $white;
+            left: 28px;
+        }
+    }
 }
 
 .switch-active, .switch-inactive, input[type="checkbox"].switch-input {

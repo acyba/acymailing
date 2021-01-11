@@ -158,7 +158,7 @@ class acymClass extends acymObject
             $element = $this->getOneById($oneElementId);
             if (empty($element) || empty($element->{$this->nameColumn})) continue;
 
-            $report[] = acym_translation_sprintf(
+            $report[] = acym_translationSprintf(
                 'ACYM_ELEMENT_DELETED_LOG',
                 $this->table,
                 $element->{$this->nameColumn},
