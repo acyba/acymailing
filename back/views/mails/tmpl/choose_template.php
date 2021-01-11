@@ -75,13 +75,8 @@
                             ?>
 						</div>
 						<div class="cell grid-x acym__templates__footer text-center">
-							<div class="cell acym__templates__footer__title" title="<?php echo acym_escape($oneTemplate->name); ?>">
-                                <?php
-                                if (strlen($oneTemplate->name) > 55) {
-                                    $oneTemplate->name = substr($oneTemplate->name, 0, 50).'...';
-                                }
-                                echo acym_escape($oneTemplate->name);
-                                ?>
+							<div class="cell acym__templates__footer__title acym_text_ellipsis" title="<?php echo acym_escape($oneTemplate->name); ?>">
+                                <?php echo acym_escape($oneTemplate->name); ?>
 							</div>
 							<div class="cell"><?php echo acym_date($oneTemplate->creation_date, 'M. j, Y'); ?></div>
 						</div>

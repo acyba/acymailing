@@ -20,7 +20,7 @@
                             'total_click' => acym_translation('ACYM_TOTAL_CLICKS'),
                             'unique_click' => acym_translation('ACYM_UNIQUE_CLICKS'),
                         ],
-                        "links_details",
+                        'links_details',
                         $data['ordering']
                     ); ?>
 				</div>
@@ -54,7 +54,7 @@
                             'total_click' => acym_translation('ACYM_TOTAL_CLICKS'),
                             'unique_click' => acym_translation('ACYM_UNIQUE_CLICKS'),
                         ],
-                        "links_details",
+                        'links_details',
                         $data['ordering']
                     ); ?>
 				</div>

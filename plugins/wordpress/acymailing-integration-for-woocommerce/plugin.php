@@ -15,6 +15,8 @@ class plgAcymWoocommerce extends acymPlugin
     const FOLLOWTRIGGER = 'woocommerce_purchase';
     const MAIL_OVERRIDE_SOURCE_NAME = 'woocommerce';
     const PLUGIN_DISPLAYED_NAME = 'WooCommerce';
+    const MIN_PRODUCT_DISPLAY_LAST_PURCHASED = 1;
+    const MAX_PRODUCT_DISPLAY_LAST_PURCHASED = 3;
 
     public function __construct()
     {
@@ -318,7 +320,110 @@ class plgAcymWoocommerce extends acymPlugin
 
         $tabHelper->endTab();
 
+        $identifier = 'last'.$this->name;
+
+        $tabHelper->startTab(
+            acym_translation('ACYM_LAST_PURCHASED_PRODUCT'),
+            !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab
+        );
+
+        $lastPurchasedOptions = [
+            [
+                'title' => 'ACYM_DISPLAY',
+                'type' => 'checkbox',
+                'name' => 'display',
+                'options' => $this->displayOptions,
+            ],
+            [
+                'title' => 'ACYM_CLICKABLE_TITLE',
+                'type' => 'boolean',
+                'name' => 'clickable',
+                'default' => true,
+            ],
+            [
+                'title' => 'ACYM_TRUNCATE',
+                'type' => 'intextfield',
+                'isNumber' => 1,
+                'name' => 'wrap',
+                'text' => 'ACYM_TRUNCATE_AFTER',
+                'default' => 0,
+            ],
+            [
+                'title' => 'ACYM_DISPLAY_PICTURES',
+                'type' => 'pictures',
+                'name' => 'pictures',
+            ],
+        ];
+
+        echo $this->displaySelectionZone($this->lastPurchasedContentInsert());
+        echo $this->pluginHelper->displayOptions($lastPurchasedOptions, $identifier, 'grouped', $this->defaultValues);
+
+        $tabHelper->endTab();
+
         $tabHelper->display('plugin');
+    }
+
+    private function lastPurchasedContentInsert()
+    {
+        $identifier = 'last'.$this->name;
+        $selectedArea = empty($this->defaultValues->id) ? [] : $this->getSelectedArea($this->defaultValues);
+        ob_start();
+        ?>
+		<div class="cell grid-x">
+			<label for="acym__woocommerce__last__purchased__product__number" class="cell medium-6">
+                <?php echo acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info(acym_translation('ACYM_MIN_NUMBER_OF_PRODUCTS_DESC')); ?>
+			</label>
+			<input type="number"
+				   id="acym__woocommerce__last__purchased__product__number"
+				   class="cell medium-6"
+				   value="<?php echo empty($this->defaultValues->min) ? self::MIN_PRODUCT_DISPLAY_LAST_PURCHASED : $this->defaultValues->min; ?>"
+				   name="min"
+				   onchange="addAdditionalInfo<?php echo $identifier; ?>('min', this.value)">
+		</div>
+		<div class="cell grid-x">
+			<label for="acym__woocommerce__last__purchased__product__number" class="cell medium-6">
+                <?php echo acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info(acym_translation('ACYM_MAX_NUMBER_OF_PRODUCTS_DESC')); ?>
+			</label>
+			<input type="number"
+				   id="acym__woocommerce__last__purchased__product__number"
+				   class="cell medium-6"
+				   value="<?php echo empty($this->defaultValues->max) ? self::MAX_PRODUCT_DISPLAY_LAST_PURCHASED : $this->defaultValues->max; ?>"
+				   name="max"
+				   onchange="addAdditionalInfo<?php echo $identifier; ?>('max', this.value)">
+		</div>
+		<div class="cell grid-x">
+			<label for="acym__woocommerce__last__purchased__cat" class="cell medium-6">
+                <?php echo acym_translation('ACYM_CATEGORY_FILTER').acym_info(acym_translation('ACYM_CATEGORY_FILTER_DESC')); ?>
+			</label>
+			<div class="cell medium-6 acym__woocommerce__last__purchased__cat__container">
+                <?php echo acym_selectMultiple(
+                    $this->catvalues,
+                    'cat',
+                    $selectedArea,
+                    [
+                        'id' => 'acym__woocommerce__last__purchased__cat',
+                        'onchange' => '_selectedRows'.$identifier.' = {}
+                        				for(let option of this.options){
+                        					if(option.selected) _selectedRows'.$identifier.'[option.value] = true;
+                        				} 	
+                        				updateDynamic'.$identifier.'();',
+                    ]
+                ); ?>
+			</div>
+		</div>
+		<div class="cell grid-x">
+			<label class="cell medium-6">
+                <?php echo acym_translation('ACYM_START_DATE').acym_info(acym_translation('ACYM_START_DATE_PURCHASED_PRODUCT_DESC')); ?>
+			</label>
+            <?php echo acym_dateField(
+                'min_date',
+                empty($this->defaultValues->min_date) ? '' : $this->defaultValues->min_date,
+                'cell medium-6',
+                'onchange="addAdditionalInfo'.$identifier.'(\'min_date\', this.value)"'
+            ); ?>
+		</div>
+        <?php
+        return ob_get_clean();
     }
 
     public function prepareListing()
@@ -364,10 +469,24 @@ class plgAcymWoocommerce extends acymPlugin
         return $this->getElementsListing($listingOptions);
     }
 
-    public function replaceContent(&$email)
+    public function replaceContent(&$email, $send)
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
+        if ($send) $this->removeLastGeneratedPreview($email);
+    }
+
+    public function removeLastGeneratedPreview(&$email)
+    {
+        $tags = $this->pluginHelper->extractTags($email, 'last'.$this->name);
+
+        if (empty($tags)) return;
+
+        foreach ($tags as $tag => $parameter) {
+            $this->tags[$tag] = $tag;
+        }
+
+        $this->pluginHelper->replaceTags($email, $this->tags, true);
     }
 
     public function generateByCategory(&$email)
@@ -448,7 +567,7 @@ class plgAcymWoocommerce extends acymPlugin
 
         $contentText = '';
         $varFields['{shortdesc}'] = $element->post_excerpt;
-        $varFields['{desc}'] = $element->post_content;
+        $varFields['{desc}'] = $this->cleanExtensionContent($element->post_content);
         if (in_array('shortdesc', $tag->display)) $contentText .= $varFields['{shortdesc}'];
         if (in_array('desc', $tag->display)) $contentText .= $varFields['{desc}'];
 
@@ -500,6 +619,108 @@ class plgAcymWoocommerce extends acymPlugin
     public function replaceUserInformation(&$email, &$user, $send = true)
     {
         $this->_replaceCoupons($email, $user, $send);
+        $generated = $this->replaceLastPurchased($email, $user, $send);
+        if ($generated === '') {
+            return [
+                'send' => false,
+                'emogrifier' => false,
+                'message' => acym_translationSprintf('ACYM_EMAIL_X_NOT_SENT_USER_X_NOT_BOUGHT_ENOUGH_PRODUCTS', $email->subject, $user->email),
+            ];
+        }
+
+        if ($generated == 1) return ['send' => true, 'emogrifier' => true];
+    }
+
+    private function replaceLastPurchased(&$email, $user, $send)
+    {
+        $tags = $this->pluginHelper->extractTags($email, 'last'.$this->name);
+        $tags = array_merge($tags, $this->pluginHelper->extractTags($email, $this->name.'_tags'));
+
+        if (empty($tags)) return 0;
+
+        $this->tags = [];
+        foreach ($tags as $oneTag => $parameter) {
+            $minAtO = isset($parameter->min) && $parameter->min == 0;
+            if (empty($user->cms_id) && !$minAtO) {
+                $this->tags[$oneTag] = '';
+                continue;
+            }
+            //We get the lastest orders
+            $dataQuery = [
+                'numberposts' => -1,
+                'meta_key' => '_customer_user',
+                'meta_value' => $user->cms_id,
+                'post_type' => wc_get_order_types(),
+                'post_status' => array_keys(wc_get_is_paid_statuses()),
+                'meta_query' => [
+                    [
+                        'key' => '_customer_user',
+                        'value' => intval($user->cms_id),
+                        'compare' => '=',
+                    ],
+                ],
+            ];
+            if (!empty($parameter->min_date)) {
+                $minDate = acym_replaceDate($parameter->min_date);
+                $dataQuery['date_query'] = [
+                    'after' => date('Y-m-d', $minDate),
+                ];
+            }
+            $customer_orders = get_posts($dataQuery);
+
+            if (empty($customer_orders)) {
+                $this->tags[$oneTag] = '';
+                continue;
+            }
+            //We get the products from the orders
+            $product_ids = [];
+            foreach ($customer_orders as $customer_order) {
+                $order = wc_get_order($customer_order->ID);
+                $items = $order->get_items();
+                foreach ($items as $item) {
+                    $product_id = $item->get_product_id();
+                    $product_ids[] = $product_id;
+                }
+            }
+
+            $query = 'SELECT DISTINCT product.`ID` FROM #__posts AS product ';
+            //We filters the products if we selected categories
+            if (!empty($parameter->id)) {
+                $selectedArea = $this->getSelectedArea($parameter);
+                if (!empty($selectedArea)) {
+                    $product_ids = array_unique($product_ids);
+                    $query .= ' JOIN #__term_relationships AS cat ON product.ID = cat.object_id 
+                    AND cat.term_taxonomy_id = '.implode(' OR cat.term_taxonomy_id = ', $selectedArea).'';
+                }
+            }
+
+            $query .= ' WHERE product.ID IN ('.implode(',', $product_ids).')';
+
+            if ($send) {
+                $parameter->min = empty($parameter->min) && !$minAtO ? self::MIN_PRODUCT_DISPLAY_LAST_PURCHASED : $parameter->min;
+            } else {
+                $parameter->min = 0;
+            }
+            $parameter->max = empty($parameter->max) ? self::MAX_PRODUCT_DISPLAY_LAST_PURCHASED : $parameter->max;
+
+            $this->tags[$oneTag] = $this->finalizeCategoryFormat($query, $parameter, 'product');
+        }
+
+        $emptyTags = true;
+        foreach ($this->tags as $tag) {
+            if (!empty($tag)) {
+                $emptyTags = false;
+                break;
+            }
+        }
+
+        $this->pluginHelper->replaceTags($email, $this->tags, true);
+
+        if ($emptyTags) return '';
+
+        $this->replaceOne($email);
+
+        return 1;
     }
 
     private function _replaceCoupons(&$email, &$user, $send = true)
@@ -709,7 +930,7 @@ class plgAcymWoocommerce extends acymPlugin
         }
 
         $conditions['user']['woopurchased'] = new stdClass();
-        $conditions['user']['woopurchased']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', acym_translation('ACYM_PURCHASED'));
+        $conditions['user']['woopurchased']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', acym_translation('ACYM_PURCHASED'));
         $conditions['user']['woopurchased']->option = '<div class="cell grid-x grid-margin-x">';
 
         $conditions['user']['woopurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_BOUGHT').'</div>';
@@ -742,9 +963,9 @@ class plgAcymWoocommerce extends acymPlugin
 
         $conditions['user']['woopurchased']->option .= '<div class="cell grid-x grid-margin-x">';
         $conditions['user']['woopurchased']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][woopurchased][datemin]', '', 'cell shrink');
-        $conditions['user']['woopurchased']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['woopurchased']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['woopurchased']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_DATE_CREATED').'</span>';
-        $conditions['user']['woopurchased']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['woopurchased']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['woopurchased']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][woopurchased][datemax]', '', 'cell shrink');
         $conditions['user']['woopurchased']->option .= '</div>';
 
@@ -758,9 +979,9 @@ class plgAcymWoocommerce extends acymPlugin
         }
 
         $conditions['user']['wooreminder'] = new stdClass();
-        $conditions['user']['wooreminder']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', acym_translation('ACYM_REMINDER'));
+        $conditions['user']['wooreminder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', acym_translation('ACYM_REMINDER'));
         $conditions['user']['wooreminder']->option = '<div class="cell">';
-        $conditions['user']['wooreminder']->option .= acym_translation_sprintf(
+        $conditions['user']['wooreminder']->option .= acym_translationSprintf(
             'ACYM_ORDER_WITH_STATUS',
             '<input type="number" name="acym_condition[conditions][__numor__][__numand__][wooreminder][days]" value="1" min="1" class="intext_input"/>',
             '<div class="intext_select_automation cell margin-right-1">'.acym_select(
@@ -794,7 +1015,7 @@ class plgAcymWoocommerce extends acymPlugin
         }
 
         $filters['woopurchased'] = new stdClass();
-        $filters['woopurchased']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', acym_translation('ACYM_PURCHASED'));
+        $filters['woopurchased']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', acym_translation('ACYM_PURCHASED'));
         $filters['woopurchased']->option = '<div class="cell grid-x grid-margin-x">';
 
         $filters['woopurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_BOUGHT').'</div>';
@@ -822,9 +1043,9 @@ class plgAcymWoocommerce extends acymPlugin
 
         $filters['woopurchased']->option .= '<div class="cell grid-x grid-margin-x">';
         $filters['woopurchased']->option .= acym_dateField('acym_action[filters][__numor__][__numand__][woopurchased][datemin]', '', 'cell shrink');
-        $filters['woopurchased']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $filters['woopurchased']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $filters['woopurchased']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_DATE_CREATED').'</span>';
-        $filters['woopurchased']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $filters['woopurchased']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $filters['woopurchased']->option .= acym_dateField('acym_action[filters][__numor__][__numand__][woopurchased][datemax]', '', 'cell shrink');
         $filters['woopurchased']->option .= '</div>';
 
@@ -838,9 +1059,9 @@ class plgAcymWoocommerce extends acymPlugin
         }
 
         $filters['wooreminder'] = new stdClass();
-        $filters['wooreminder']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', acym_translation('ACYM_REMINDER'));
+        $filters['wooreminder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', acym_translation('ACYM_REMINDER'));
         $filters['wooreminder']->option = '<div class="cell">';
-        $filters['wooreminder']->option .= acym_translation_sprintf(
+        $filters['wooreminder']->option .= acym_translationSprintf(
             'ACYM_ORDER_WITH_STATUS',
             '<input type="number" name="acym_action[filters][__numor__][__numand__][wooreminder][days]" value="1" min="1" class="intext_input"/>',
             '<div class="intext_select_automation cell margin-right-1">'.acym_select(
@@ -865,7 +1086,7 @@ class plgAcymWoocommerce extends acymPlugin
     {
         $this->onAcymProcessFilter_woopurchased($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     private function processConditionFilter_woopurchased(&$query, $options, $num)
@@ -925,7 +1146,7 @@ class plgAcymWoocommerce extends acymPlugin
     {
         $this->onAcymProcessFilter_wooreminder($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     private function processConditionFilter_wooreminder(&$query, $options, $num)
@@ -976,7 +1197,7 @@ class plgAcymWoocommerce extends acymPlugin
 
             $orderStatus = $this->getOrderStatuses();
 
-            $automationCondition = acym_translation_sprintf(
+            $automationCondition = acym_translationSprintf(
                 'ACYM_CONDITION_ECOMMERCE_REMINDER',
                 $paymentMethods[$automationCondition['wooreminder']['payment']],
                 intval($automationCondition['wooreminder']['days']),
@@ -1001,7 +1222,7 @@ class plgAcymWoocommerce extends acymPlugin
                 'ACYM_ANY_CATEGORY'
             ) : $cats[$automationCondition['woopurchased']['category']]->name;
 
-            $finalText = acym_translation_sprintf('ACYM_CONDITION_PURCHASED', $product, $category);
+            $finalText = acym_translationSprintf('ACYM_CONDITION_PURCHASED', $product, $category);
 
             $dates = [];
             if (!empty($automationCondition['woopurchased']['datemin'])) {
@@ -1031,12 +1252,12 @@ class plgAcymWoocommerce extends acymPlugin
 
         ?>
 		<div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
-			<div class="acym_area_title"><?php echo acym_escape(acym_translation_sprintf('ACYM_XX_INTEGRATION', 'WooCommerce')); ?></div>
+			<div class="acym_area_title"><?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', 'WooCommerce')); ?></div>
 
-			<div class="grid-x">
+			<div class="grid-x margin-y">
 				<div class="cell grid-x grid-margin-x">
                     <?php
-                    $subOptionTxt = acym_translation_sprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', 'WooCommerce').acym_info('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC');
+                    $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', 'WooCommerce').acym_info('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC');
                     echo acym_switch(
                         'config[woocommerce_sub]',
                         $this->config->get('woocommerce_sub'),
@@ -1044,12 +1265,12 @@ class plgAcymWoocommerce extends acymPlugin
                         [],
                         'xlarge-3 medium-5 small-9',
                         'auto',
-                        'tiny',
+                        '',
                         'acym__config__woocommerce_sub'
                     );
                     ?>
 				</div>
-				<div class="cell grid-x" id="acym__config__woocommerce_sub">
+				<div class="cell grid-x margin-y" id="acym__config__woocommerce_sub">
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__woocommerce-text">
                             <?php echo acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info('ACYM_SUBSCRIBE_CAPTION_OPT_DESC'); ?>
@@ -1266,14 +1487,14 @@ class plgAcymWoocommerce extends acymPlugin
         $triggers['user']['woocommerce_order_change']->name = acym_translation('ACYM_ON_WOOCOMMERCE_ORDER_CHANGE');
         $triggers['user']['woocommerce_order_change']->option = '<div class="grid-x grid-margin-x" style="height: 40px;">';
         $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-shrink acym_vcenter">'.acym_translation('ACYM_FROM').'</div>';
-        $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-5">'.acym_select(
+        $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-4">'.acym_select(
                 $orderStatuses,
                 '[triggers][user][woocommerce_order_change][from]',
                 empty($defaultValues['woocommerce_order_change']['from']) ? 0 : $defaultValues['woocommerce_order_change']['from'],
                 'data-class="acym__select"'
             ).'</div>';
         $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-shrink acym_vcenter">'.acym_translation('ACYM_TO').'</div>';
-        $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-5">'.acym_select(
+        $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-4">'.acym_select(
                 $orderStatuses,
                 '[triggers][user][woocommerce_order_change][to]',
                 empty($defaultValues['woocommerce_order_change']['to']) ? 'wc-completed' : $defaultValues['woocommerce_order_change']['to'],
@@ -1304,7 +1525,7 @@ class plgAcymWoocommerce extends acymPlugin
 
         $orderStatuses = $this->getOrderStatuses(true);
 
-        $automation->triggers['woocommerce_order_change'] = acym_translation_sprintf(
+        $automation->triggers['woocommerce_order_change'] = acym_translationSprintf(
             'ACYM_TRIGGER_WOOCOMMERCE_ORDER_CHANGE_SUMMARY',
             $orderStatuses[$automation->triggers['woocommerce_order_change']['from']],
             $orderStatuses[$automation->triggers['woocommerce_order_change']['to']]
@@ -1313,10 +1534,12 @@ class plgAcymWoocommerce extends acymPlugin
 
     private function getOrderStatuses($withDefaultStatus = false)
     {
+        if (!function_exists('wc_get_order_statuses')) return [];
+
         $orderStatuses = [];
         if ($withDefaultStatus) $orderStatuses[0] = acym_translation('ACYM_ANY_STATUS');
 
-        // Get all order statuses from WooCOmmerce (natives and from other plugins)
+        // Get all order statuses from WooCommerce (natives and from other plugins)
         $allWooCoommerceOrderStatuses = wc_get_order_statuses();
         $orderStatuses = array_merge($orderStatuses, $allWooCoommerceOrderStatuses);
 
@@ -1423,7 +1646,7 @@ class plgAcymWoocommerce extends acymPlugin
         $inputStatus .= '</div>';
 
         $whenSettings = '<div class="cell grid-x acym_vcenter">';
-        $whenSettings .= acym_translation_sprintf('ACYM_SEND_ORDER_PLACED_STATUS_CURRENTLY', $inputTime, $timeSelect, $inputStatus);
+        $whenSettings .= acym_translationSprintf('ACYM_SEND_ORDER_PLACED_STATUS_CURRENTLY', $inputTime, $timeSelect, $inputStatus);
         $whenSettings .= '</div>';
 
         $specificSettings[] = [
@@ -1538,7 +1761,7 @@ class plgAcymWoocommerce extends acymPlugin
                     !empty($followup->condition) ? $followup->condition['order_status_status'] : '',
                     'class="acym__select"'
                 ).'</span>';;
-            $additionalCondition['order_status'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
+            $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
 
             $ajaxParams = json_encode(
@@ -1566,7 +1789,7 @@ class plgAcymWoocommerce extends acymPlugin
                     !empty($followup->condition) ? $followup->condition['products_status'] : '',
                     'class="acym__select"'
                 ).'</span>';;
-            $additionalCondition['products'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
+            $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
             $ajaxParams = json_encode(
                 [
@@ -1593,7 +1816,7 @@ class plgAcymWoocommerce extends acymPlugin
                     !empty($followup->condition) ? $followup->condition['categories_status'] : '',
                     'class="acym__select"'
                 ).'</span>';;
-            $additionalCondition['categories'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
+            $additionalCondition['categories'] = acym_translationSprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
         }
     }
 
@@ -1647,7 +1870,7 @@ class plgAcymWoocommerce extends acymPlugin
                 foreach ($woocommerceOrderStatus as $key => $orderStatus) {
                     if (in_array($key, $condition['order_status'])) $orderStatusToDisplay[] = $orderStatus;
                 }
-                $return[] = acym_translation_sprintf('ACYM_ORDER_STATUS_X_IN_X', strtolower($statusArray[$condition['order_status_status']]), implode(', ', $orderStatusToDisplay));
+                $return[] = acym_translationSprintf('ACYM_ORDER_STATUS_X_IN_X', strtolower($statusArray[$condition['order_status_status']]), implode(', ', $orderStatusToDisplay));
             }
 
             if (empty($condition['products_status']) || empty($condition['products'])) {
@@ -1665,7 +1888,7 @@ class plgAcymWoocommerce extends acymPlugin
                         $productsToDisplay[] = $post->post_title;
                     }
                 }
-                $return[] = acym_translation_sprintf('ACYM_PRODUCTS_X_IN_X', strtolower($statusArray[$condition['products_status']]), implode(', ', $productsToDisplay));
+                $return[] = acym_translationSprintf('ACYM_PRODUCTS_X_IN_X', strtolower($statusArray[$condition['products_status']]), implode(', ', $productsToDisplay));
             }
 
             if (empty($condition['categories_status']) || empty($condition['categories'])) {
@@ -1684,7 +1907,7 @@ class plgAcymWoocommerce extends acymPlugin
                         $categoriesToDisplay[] = $cat->name;
                     }
                 }
-                $return[] = acym_translation_sprintf('ACYM_CATEGORIES_X_IN_X', strtolower($statusArray[$condition['categories_status']]), implode(', ', $categoriesToDisplay));
+                $return[] = acym_translationSprintf('ACYM_CATEGORIES_X_IN_X', strtolower($statusArray[$condition['categories_status']]), implode(', ', $categoriesToDisplay));
             }
         }
     }

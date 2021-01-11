@@ -834,7 +834,8 @@ class ListClass extends acymClass
 
     public function setWelcomeUnsubEmail($listIds, $mailId, $type)
     {
-        if (!in_array($type, ['welcome', 'unsubscribe']) || empty($mailId)) return false;
+        $mailClass = new MailClass();
+        if (!in_array($type, [$mailClass::TYPE_WELCOME, $mailClass::TYPE_UNSUBSCRIBE]) || empty($mailId)) return false;
 
         $column = acym_escape($type).'_id';
         $columnsList = acym_getColumns('list');

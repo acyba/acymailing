@@ -1,9 +1,5 @@
 #acym_wrapper {
     #acym__fields__edit {
-        .acym__fields__value__sortable {
-            padding: 20px 10px 0 20px;
-        }
-
         .acym__fields__edit__section__title {
             position: relative;
 
@@ -55,9 +51,12 @@
             margin-top: 6px;
         }
 
-        .acym__fields__change {
-            .acym__fields__values__listing__sortable .acym__fields__value__sortable {
+        .acym__fields__values__listing__sortable {
+            margin-top: 1rem;
+
+            .acym__fields__value__sortable {
                 margin-left: 0;
+                padding: 20px 10px;
             }
         }
     }

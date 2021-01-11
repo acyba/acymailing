@@ -164,8 +164,11 @@ class plgSystemAcymtriggers extends JPlugin
                 'containerClass' => 'control-group',
                 'labelClass' => 'control-label',
                 'valueClass' => 'controls',
+                'baseOption' => 'regacy',
             ],
         ];
+
+        acym_trigger('onRegacyAddComponent', [&$components]);
         if (!isset($components[$option])) return;
 
 
@@ -269,5 +272,26 @@ class plgSystemAcymtriggers extends JPlugin
             $session = JFactory::getSession();
             $session->set('com_media.return_url', 'index.php?option=com_media&view=images&tmpl=component');
         }
+    }
+
+    // Trigger for hikashop user creation
+    function onAfterUserCreate(&$element)
+    {
+        if (!$this->initAcy()) return true;
+
+        $formData = acym_getVar('array', 'data', []);
+        $listData = acym_getVar('array', 'hikashop_visible_lists_checked', []);
+
+        acym_trigger('onAfterHikashopUserCreate', [$formData, $listData, $element]);
+    }
+
+
+    public function onAfterInitialise()
+    {
+        $ctrl = empty($_REQUEST['ctrl']) ? '' : filter_var($_REQUEST['ctrl'], FILTER_SANITIZE_STRING);
+
+        if ($ctrl == 'cron') return;
+        $this->initAcy();
+        acym_asyncCurlCall([acym_frontendLink('cron')]);
     }
 }

@@ -1,5 +1,4 @@
 <div class="acym__content acym_center_baseline cell grid-x large-4 margin-bottom-1">
-	<div class="acym_area_title cell"><?php echo acym_translation('ACYM_GLOBAL_INFORMATION'); ?></div>
 	<label class="cell grid-x">
 		<span class="cell medium-4 acym__label"><?php echo acym_translation('ACYM_NAME'); ?></span>
 		<input required class="cell medium-7" type="text" name="bounce[name]" value="<?php echo empty($data['rule']) ? '' : $data['rule']->name; ?>">

@@ -98,7 +98,7 @@ class plgAcymAutomationexport extends acymPlugin
         $error = $exportHelper->exportCSV($query, $action['core'], $action['custom'], $realSeparators[$action['separator']], $action['charset'], $pathtolog);
 
         if (empty($error)) {
-            return acym_translation_sprintf('ACYM_USERS_EXPORTED', $pathtolog);
+            return acym_translationSprintf('ACYM_USERS_EXPORTED', $pathtolog);
         } else {
             return '['.acym_translation('ACYM_EXPORT_USERS').'] '.$error;
         }

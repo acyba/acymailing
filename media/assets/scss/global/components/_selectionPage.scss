@@ -1,16 +1,4 @@
 .acym__selection {
-    .acym__selection__title {
-        font-weight: 500;
-    }
-
-    h1.acym__selection__title {
-        font-size: 1.6rem;
-    }
-
-    h2.acym__selection__title {
-        font-size: 1.3rem;
-    }
-
     &.acym__selection_disabled {
         .acym__selection__card:hover {
             border-color: $dark-gray !important;
@@ -44,12 +32,12 @@
         }
 
         &:not(.acym__selection__card__disabled):hover {
-            border-color: map-get($foundation-palette, primary-light);
+            border-color: $color-palette-cyan;
         }
 
         &.acym__selection__card-selected {
             background-color: $light-blue;
-            border-color: map-get($foundation-palette, primary-light);
+            border-color: $color-palette-cyan;
         }
 
         .acym__selection__card__title {
@@ -62,6 +50,63 @@
 
         .acym__selection__card__description {
             margin-bottom: 10px;
+        }
+    }
+
+    .acym__sending__methods__choose__selection {
+        padding: 1rem;
+        margin: 0 !important;
+    }
+
+    .acym__sending__methods__name {
+        margin-top: .2rem;
+    }
+
+    .acym__sending__methods__one {
+        width: 165px !important;
+
+        &.acym__sending__methods__one__config {
+            width: 135px !important;
+
+            .acym__selection__card {
+                height: 70px;
+            }
+        }
+
+        .acym__selection__card {
+            height: 90px;
+            padding: 10px;
+
+            .acym__selection__card__image__smaller {
+                width: 80px;
+            }
+
+            .acym__selection__card__image__mailgun {
+                width: 115px;
+                height: 32px;
+            }
+
+            img {
+                width: 100px;
+                height: 55px;
+            }
+
+            i {
+                font-size: 60px;
+                color: $font-primary;
+            }
+        }
+    }
+
+    .send_settings {
+        display: none;
+
+        .acym__sending__methods__one__settings {
+            margin-bottom: 1rem;
+
+            button, input {
+                margin-bottom: 0;
+            }
         }
     }
 }

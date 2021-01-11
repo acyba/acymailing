@@ -14,8 +14,8 @@ class plgAcymManagetext extends acymPlugin
 
     public function replaceUserInformation(&$email, &$user, $send = true)
     {
-        $this->pluginHelper->cleanHtml($email->body);
         $this->pluginHelper->replaceVideos($email->body);
+        $this->pluginHelper->cleanHtml($email->body);
 
         $this->_removetext($email);
         $this->_ifstatement($email, $user);
@@ -176,7 +176,7 @@ class plgAcymManagetext extends acymPlugin
                         $operators
                     )) {
                     if ($isAdmin) {
-                        acym_enqueueMessage(acym_translation_sprintf('ACYM_OPERATION_NOT_FOUND', $allresults[1][$i]), 'error');
+                        acym_enqueueMessage(acym_translationSprintf('ACYM_OPERATION_NOT_FOUND', $allresults[1][$i]), 'error');
                     }
                     $tags[$oneTag] = $allresults[3][$i];
                     continue;

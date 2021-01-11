@@ -11,7 +11,7 @@ class acym_archive_widget extends WP_Widget
 
         parent::__construct(
             'acym_archive_widget',
-            acym_translation_sprintf('ACYM_MENU', acym_translation('ACYM_MENU_ARCHIVE')),
+            acym_translationSprintf('ACYM_MENU', acym_translation('ACYM_MENU_ARCHIVE')),
             ['description' => acym_translation('ACYM_MENU_ARCHIVE_DESC')]
         );
     }
@@ -53,7 +53,7 @@ class acym_archive_widget extends WP_Widget
 			<input type="text" class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" value="'.$params['title'].'" /></p>';
 
         echo '<p><label class="acyWPconfig"> '.acym_translation('ACYM_WIDGET_ARCHIVE_CHOICE').'</label>
-           '.acym_translation_sprintf(
+           '.acym_translationSprintf(
                 'ACYM_LAST_X_NEWSLETTERS',
                 '<input class="tiny-text" type="number" min="1"  max="20" name="'.$this->get_field_name('nbNewsletters').'" value="'.$params['nbNewsletters'].'">'
             ).'</p>';

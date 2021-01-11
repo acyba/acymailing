@@ -48,12 +48,6 @@
                     color: $font-primary;
                 }
 
-                .button-cancel {
-                    i {
-                        transition: transform .5s ease-in-out;
-                    }
-                }
-
                 @keyframes fly {
                     10% {
                         transform: translateY(3px) translateX(-3px);

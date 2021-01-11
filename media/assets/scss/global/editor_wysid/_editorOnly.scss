@@ -22,10 +22,6 @@
         & > div {
             display: inline-block;
 
-            &#acym__wysid__edit__languages__legend {
-                font-size: 1.5rem;
-            }
-
             &.acym__wysid__edit__languages__separator {
                 width: 1px;
                 height: 1.5rem;
@@ -45,7 +41,7 @@
                 i {
                     display: none;
                     position: absolute;
-                    font-size: 1.4rem;
+                    font-size: 1.2rem;
                     cursor: default;
                 }
 
@@ -54,7 +50,7 @@
                     left: 1.6rem;
                     background-color: white;
                     border-radius: 20px;
-                    padding: 5px;
+                    padding: 4px 5px;
                     opacity: 0.8;
                 }
 
@@ -83,11 +79,6 @@
                 }
             }
         }
-    }
-
-    #acym__wysid__edit__separator div {
-        border-bottom: 1px solid black;
-        margin-bottom: 1rem;
     }
 
     #acym__wysid__edit__preview {

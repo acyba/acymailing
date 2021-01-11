@@ -487,8 +487,8 @@ class StatsController extends acymController
         $data['mail']->totalMail = $data['mail']->sent + $data['mail']->fail;
         $data['mail']->pourcentageSent = empty($data['mail']->totalMail) ? 0 : number_format(($data['mail']->sent * 100) / $data['mail']->totalMail, 2);
         $data['mail']->allSent = empty($data['mail']->totalMail)
-            ? acym_translation_sprintf('ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X', 0, 0)
-            : acym_translation_sprintf(
+            ? acym_translationSprintf('ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X', 0, 0)
+            : acym_translationSprintf(
                 'ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X',
                 $data['mail']->sent,
                 $data['mail']->totalMail
@@ -498,8 +498,8 @@ class StatsController extends acymController
         $openRateCampaign = empty($data['selectedMailid']) ? $campaignClass->getOpenRateAllCampaign() : $campaignClass->getOpenRateOneCampaign($data['selectedMailid']);
         $data['mail']->pourcentageOpen = empty($openRateCampaign->sent) ? 0 : number_format(($openRateCampaign->open_unique * 100) / $openRateCampaign->sent, 2);
         $data['mail']->allOpen = empty($openRateCampaign->sent)
-            ? acym_translation_sprintf('ACYM_X_MAIL_OPENED_OF_X', 0, 0)
-            : acym_translation_sprintf(
+            ? acym_translationSprintf('ACYM_X_MAIL_OPENED_OF_X', 0, 0)
+            : acym_translationSprintf(
                 'ACYM_X_MAIL_OPENED_OF_X',
                 $openRateCampaign->open_unique,
                 $openRateCampaign->sent
@@ -509,8 +509,8 @@ class StatsController extends acymController
         $clickRateCampaign = $urlClickClass->getNumberUsersClicked($data['selectedMailid']);
         $data['mail']->pourcentageClick = empty($data['mail']->sent) ? 0 : number_format(($clickRateCampaign * 100) / $data['mail']->sent, 2);
         $data['mail']->allClick = empty($data['mail']->sent)
-            ? acym_translation_sprintf('ACYM_X_MAIL_CLICKED_OF_X', 0, 0)
-            : acym_translation_sprintf(
+            ? acym_translationSprintf('ACYM_X_MAIL_CLICKED_OF_X', 0, 0)
+            : acym_translationSprintf(
                 'ACYM_X_MAIL_CLICKED_OF_X',
                 $clickRateCampaign,
                 $data['mail']->sent
@@ -520,8 +520,8 @@ class StatsController extends acymController
         $bounceRateCampaign = empty($data['selectedMailid']) ? $campaignClass->getBounceRateAllCampaign() : $campaignClass->getBounceRateOneCampaign($data['selectedMailid']);
         $data['mail']->pourcentageBounce = empty($data['mail']->sent) ? 0 : number_format(($bounceRateCampaign->bounce_unique * 100) / $data['mail']->sent, 2);
         $data['mail']->allBounce = empty($data['mail']->sent)
-            ? acym_translation_sprintf('ACYM_X_BOUNCE_OF_X', 0, 0)
-            : acym_translation_sprintf(
+            ? acym_translationSprintf('ACYM_X_BOUNCE_OF_X', 0, 0)
+            : acym_translationSprintf(
                 'ACYM_X_BOUNCE_OF_X',
                 $bounceRateCampaign->bounce_unique,
                 $data['mail']->sent
@@ -533,8 +533,8 @@ class StatsController extends acymController
             $mailStat = $mailStatClass->getOneById($data['selectedMailid']);
             $data['mail']->pourcentageUnsub = empty($data['mail']->sent) ? 0 : number_format(($mailStat->unsubscribe_total * 100) / $data['mail']->sent, 2);
             $data['mail']->allUnsub = empty($data['mail']->sent)
-                ? acym_translation_sprintf('ACYM_X_USERS_UNSUBSCRIBED_OF_X', 0, 0)
-                : acym_translation_sprintf(
+                ? acym_translationSprintf('ACYM_X_USERS_UNSUBSCRIBED_OF_X', 0, 0)
+                : acym_translationSprintf(
                     'ACYM_X_USERS_UNSUBSCRIBED_OF_X',
                     $mailStat->unsubscribe_total,
                     $data['mail']->sent
@@ -575,7 +575,7 @@ class StatsController extends acymController
         foreach ($charts as $type => $oneChart) {
             if ($type == 'unsub' && empty($data['selectedMailid'])) continue;
             $data['example_round_chart'] .= '<div class="cell acym__stats__donut__one-chart">';
-            $data['example_round_chart'] .= acym_round_chart(
+            $data['example_round_chart'] .= acym_roundChart(
                 '',
                 $oneChart['percentage'],
                 $type,
@@ -597,7 +597,7 @@ class StatsController extends acymController
         $dataHour['23 Jan 09:00'] = ['open' => '50', 'click' => '10'];
         $dataHour['23 Jan 10:00'] = ['open' => '16', 'click' => '10'];
         $dataHour['23 Jan 11:00'] = ['open' => '59', 'click' => '10'];
-        $data['example_line_chart'] = acym_line_chart('', $dataMonth, $dataDay, $dataHour);
+        $data['example_line_chart'] = acym_lineChart('', $dataMonth, $dataDay, $dataHour);
     }
 
     public function prepareDefaultDevicesChart(&$data)
@@ -643,7 +643,7 @@ class StatsController extends acymController
 
         $this->prepareLineChart($statsCampaignSelected, $mailIdOfCampaign, $newStart, $newEnd);
 
-        echo @acym_line_chart('', $statsCampaignSelected->month, $statsCampaignSelected->day, $statsCampaignSelected->hour);
+        echo @acym_lineChart('', $statsCampaignSelected->month, $statsCampaignSelected->day, $statsCampaignSelected->hour);
         exit;
     }
 

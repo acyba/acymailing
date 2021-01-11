@@ -1,4 +1,4 @@
-<h5 class="cell auto margin-bottom-1 medium-text-left text-center font-bold hide-for-small-only hide-for-medium-only"><?php echo acym_translation('ACYM_LIST'); ?></h5>
+<h5 class="cell auto medium-text-left text-center hide-for-small-only hide-for-medium-only acym__title"><?php echo acym_translation('ACYM_LIST'); ?></h5>
 <?php echo acym_cancelButton();
 if (!empty($data['listInformation']->id) && !empty($data['subscribersEntitySelect'])) {
     echo $data['subscribersEntitySelect'];

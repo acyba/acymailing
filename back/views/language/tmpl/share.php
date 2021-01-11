@@ -7,8 +7,8 @@
 				<h6><?php echo acym_translation('ACYM_SHARE_CONFIRMATION_2'); ?></h6>
 				<h6><?php echo acym_translation('ACYM_SHARE_CONFIRMATION_3'); ?></h6>
 			</div>
-			<h3 class="acym__language__modal__title margin-top-1"><?php echo acym_translation('ACYM_EMAIL_BODY'); ?></h3>
-			<textarea rows="8" name="mailbody" class="acym__language__modal__body margin-top-1 acym__blue">Hi Acyba team,
+			<h3 class="acym__title acym__title__secondary margin-top-1"><?php echo acym_translation('ACYM_EMAIL_BODY'); ?></h3>
+			<textarea rows="8" name="mailbody" class="acym__language__modal__body margin-top-1">Hi Acyba team,
 Here is a new version of the language file, I translated few more strings...</textarea>
 		</div>
 		<input type="hidden" name="code" value="<?php echo acym_escape($data['file']->name); ?>" />

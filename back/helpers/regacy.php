@@ -17,10 +17,11 @@ class RegacyHelper extends acymObject
 
     public function prepareLists($options)
     {
+        if (empty($options['baseOption'])) $options['baseOption'] = 'regacy';
         $this->options = $options;
 
         // 1 - Make sure we need to display some lists
-        $visibleLists = $this->config->get('regacy_lists');
+        $visibleLists = $this->config->get($options['baseOption'].'_lists');
         if (empty($visibleLists)) return false;
         $visibleLists = explode(',', $visibleLists);
         acym_arrayToInteger($visibleLists);
@@ -38,7 +39,7 @@ class RegacyHelper extends acymObject
 
 
         // 2 - Get the lists we should check by default
-        $checkedLists = explode(',', $this->config->get('regacy_checkedlists'));
+        $checkedLists = explode(',', $this->config->get($options['baseOption'].'_checkedlists'));
         acym_arrayToInteger($checkedLists);
         $userClass = new UserClass();
 
@@ -68,9 +69,16 @@ class RegacyHelper extends acymObject
             }
         }
 
+        // 3 - remove autolists from display
+        $autolist = explode(',', $this->config->get($options['baseOption'].'_autolists'));
+        acym_arrayToInteger($autolist);
+        if (!empty($autolist)) {
+            $visibleLists = array_diff($visibleLists, $autolist);
+        }
 
-        // 3 - Prepare the HTML block we'll insert in the form
-        $this->label = $this->config->get('regacy_text');
+
+        // 4 - Prepare the HTML block we'll insert in the form
+        $this->label = $this->config->get($options['baseOption'].'_text');
         if (empty($this->label)) $this->label = 'ACYM_SUBSCRIPTION';
         $this->label = acym_translation($this->label);
 
@@ -87,23 +95,25 @@ class RegacyHelper extends acymObject
 
     private function _formatResults()
     {
-        $result = '<table class="acym__regacy__lists" style="border:0">';
+        $base = $this->options['baseOption'];
+        $result = '<table class="acym__'.$base.'__lists" style="border:0">';
         foreach ($this->lists as $id => $oneList) {
             $checked = $oneList['checked'] ? 'checked="checked"' : '';
             $result .= '<tr style="border:0">
                             <td style="border:0">
-                                <input type="checkbox" id="acym__regacy__lists-'.intval(
+                                <input type="checkbox" id="acym__'.$base.'__lists-'.intval(
                     $id
-                ).'" class="acym_checkbox" name="regacy_visible_lists_checked[]" '.$checked.' value="'.intval($id).'"/>
+                ).'" class="acym_checkbox" name="'.$base.'_visible_lists_checked[]" '.$checked.' value="'.intval($id).'"/>
                             </td>
                             <td style="border:0; padding-left:10px;" nowrap="nowrap">
-                                <label for="acym__regacy__lists-'.intval($id).'" class="acym__regacy__lists__label">'.acym_escape($oneList['name']).'</label>
+                                <label for="acym__'.$base.'__lists-'.intval($id).'" class="acym__'.$base.'__lists__label">'.acym_escape($oneList['name']).'</label>
                             </td>
                         </tr>';
         }
         $result .= '</table>';
-        $result .= '<input type="hidden" value="'.implode(',', array_keys($this->lists)).'" name="regacy_visible_lists" />';
-        $result .= '<input type="hidden" value="'.ACYM_CMS.' registration form" name="acy_source" />';
+        $result .= '<input type="hidden" value="'.implode(',', array_keys($this->lists)).'" name="'.$base.'_visible_lists" />';
+        $source = !empty($base) && $base != 'regacy' ? $base : ACYM_CMS;
+        $result .= '<input type="hidden" value="'.$source.' registration form" name="acy_source" />';
         $this->lists = $result;
     }
 }

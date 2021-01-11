@@ -106,4 +106,7 @@ jQuery(document).on('acym_plugins_installed_loaded', function () {
             }
         });
     });
+    $modals.on('closed.zf.reveal', function (){
+        jQuery(document).trigger('acym_custom_view_modal_closed');
+    })
 });

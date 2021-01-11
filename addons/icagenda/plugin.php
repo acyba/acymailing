@@ -634,9 +634,9 @@ class plgAcymIcagenda extends acymPlugin
             '',
             'cell shrink'
         );
-        $conditions['user']['icagenda']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['icagenda']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['icagenda']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_SUBSCRIPTION_DATE').'</span>';
-        $conditions['user']['icagenda']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['icagenda']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['icagenda']->option .= acym_dateField(
             'acym_condition[conditions][__numor__][__numand__][icagenda][datemax]',
             '',
@@ -691,7 +691,7 @@ class plgAcymIcagenda extends acymPlugin
                 $event = acym_loadResult('SELECT `title` FROM #__icagenda_events WHERE `id` = '.intval($automationCondition['icagenda']['event']));
             }
 
-            $finalText = acym_translation_sprintf('ACYM_REGISTERED_TO', $event);
+            $finalText = acym_translationSprintf('ACYM_REGISTERED_TO', $event);
 
             $dates = [];
             if (!empty($automationCondition['icagenda']['datemin'])) {
@@ -719,7 +719,7 @@ class plgAcymIcagenda extends acymPlugin
     {
         $this->onAcymProcessFilter_icagenda($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_icagenda(&$query, $options, $num)

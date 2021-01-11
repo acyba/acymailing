@@ -1,5 +1,5 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" class="cell grid-x align-center">
-	<div id="acym__followup__summary" class="cell grid-x grid-margin-y acym__content margin-top-2 large-9">
+	<div id="acym__followup__summary" class="cell grid-x margin-y acym__content margin-top-2 large-9">
 		<input type="hidden" name="action_mail_id" value="">
 		<input type="hidden" name="id" value="<?php echo empty($data['followup']->id) ? '' : $data['followup']->id; ?>">
 		<input type="hidden" name="trigger" value="<?php echo !empty($data['trigger']) ? $data['trigger'] : ''; ?>">
@@ -8,7 +8,7 @@
 		</div>
 
 		<div class="cell grid-x acym__followup__summary__section margin-right-2">
-			<h5 class="cell shrink margin-right-2">
+			<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary">
 				<b><?php echo acym_translation('ACYM_TRIGGER'); ?></b>
 			</h5>
             <?php
@@ -30,7 +30,7 @@
 		</div>
 
 		<div class="cell grid-x acym__followup__summary__section margin-right-2">
-			<h5 class="cell shrink margin-right-2">
+			<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary">
 				<b><?php echo acym_translation('ACYM_CONDITIONS'); ?></b>
 			</h5>
 			<div class="cell auto acym__followup__summary__modify">
@@ -43,7 +43,7 @@
                 if (empty($data['condition'])) {
                     echo acym_translation('ACYM_NO_CONDITION');
                 } else {
-                    echo '<ul>';
+                    echo '<ul class="acym__ul">';
                     foreach ($data['condition'] as $oneCondition) {
                         echo '<li class="cell">'.ucfirst($oneCondition).'</li>';
                     }
@@ -54,7 +54,7 @@
 		</div>
 
 		<div class="cell grid-x acym__followup__summary__section margin-right-2 margin-bottom-2">
-			<h5 class="cell shrink margin-right-2">
+			<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary">
 				<b><?php echo acym_translation('ACYM_EMAILS'); ?></b>
 			</h5>
 			<div class="cell auto acym__followup__summary__modify">
@@ -113,7 +113,7 @@
 			</div>
 			<div class="cell medium-auto grid-x text-right">
 				<div class="cell medium-auto"></div>
-				<button data-task="followupDraft" type="submit" class="cell button-secondary medium-shrink button medium-margin-bottom-0 margin-right-1 acy_button_submit">
+				<button data-task="followupDraft" type="submit" class="cell button-secondary medium-shrink button margin-bottom-1 medium-margin-bottom-0 margin-right-1 acy_button_submit">
                     <?php echo acym_translation('ACYM_SAVE_AS_DRAFT'); ?>
 				</button>
 				<button data-task="followupActivate" type="submit" class="cell medium-shrink button margin-bottom-0 acy_button_submit">

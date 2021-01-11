@@ -1,6 +1,6 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm">
-	<div id="acym__subform__new" class="cell grid-x grid-margin-y align-center acym__content margin-top-2 acym__selection">
-		<h1 class="margin-top-1 margin-bottom-2 acym__selection__title"><?php echo acym_translation('ACYM_WHICH_KIND_OF_SUB_FORM_CREATE'); ?></h1>
+	<div id="acym__subform__new" class="cell grid-x margin-y align-center acym__content margin-top-2 acym__selection">
+		<h1 class="margin-top-1 margin-bottom-2 acym__title"><?php echo acym_translation('ACYM_WHICH_KIND_OF_SUB_FORM_CREATE'); ?></h1>
 		<div class="cell grid-x grid-margin-x align-center">
 			<div class="acym__selection__card cell large-2 medium-4 text-center" acym-data-link="<?php echo $data['widget_link']; ?>">
 				<i class="acymicon-puzzle-piece acym__selection__card__icon"></i>

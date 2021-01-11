@@ -1,4 +1,4 @@
-<h5 class="cell margin-top-1 acym__campaign__sendsettings__title-settings"><?php echo acym_translation('ACYM_WHEN_EMAIL_WILL_BE_SENT'); ?></h5>
+<h5 class="cell margin-top-1 acym__title acym__title__secondary"><?php echo acym_translation('ACYM_WHEN_EMAIL_WILL_BE_SENT'); ?></h5>
 <div class="cell grid-x align-center margin-top-1">
 	<div class="cell grid-x medium-11 acym__campaign__sendsettings__send-type grid-margin-x">
         <?php if (!empty($data['currentCampaign']->sent) && empty($data['currentCampaign']->active)) { ?>
@@ -9,7 +9,7 @@
 			<div class="cell auto grid-x align-center">
                 <?php
                 $class = $data['currentCampaign']->send_now ? '' : 'button-radio-unselected';
-                $class .= $data['currentCampaign']->draft ? '' : ' button-radio-disabled';
+                $class .= $data['currentCampaign']->draft ? '' : ' disabled';
                 ?>
 				<button type="button"
 						class="cell medium-6 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo $class; ?>"
@@ -17,9 +17,9 @@
 						data-sending-type="<?php echo $data['campaignClass']::SENDING_TYPE_NOW; ?>"><?php echo acym_translation('ACYM_NOW'); ?></button>
 			</div>
             <?php
-            $tooltip = acym_level(1) ? '' : 'data-acym-tooltip="'.acym_translation_sprintf('ACYM_USE_THIS_FEATURE', 'AcyMailing Essential').'"';
+            $tooltip = acym_level(1) ? '' : 'data-acym-tooltip="'.acym_translationSprintf('ACYM_USE_THIS_FEATURE', 'AcyMailing Essential').'"';
             $class = $data['currentCampaign']->send_scheduled ? '' : 'button-radio-unselected';
-            $class .= $data['currentCampaign']->draft ? '' : ' button-radio-disabled';
+            $class .= $data['currentCampaign']->draft ? '' : ' disabled';
             ?>
 			<div class="cell auto grid-x align-center">
 				<button type="button" <?php echo $tooltip; ?>
@@ -31,8 +31,8 @@
 	</div>
 </div>
 
-<h5 class="cell margin-top-1 margin-bottom-1 acym__campaign__sendsettings__title-settings"><?php echo acym_translation('ACYM_ADDITIONAL_SETTINGS'); ?></h5>
-<div class="cell grid-x margin-top-1">
+<h5 class="cell margin-top-1 margin-bottom-1 acym__title acym__title__secondary"><?php echo acym_translation('ACYM_ADDITIONAL_SETTINGS'); ?></h5>
+<div class="cell grid-x margin-top-1 margin-y">
 	<div class="cell medium-11 grid-margin-x grid-x acym__campaign__sendsettings__params"
 		 data-show="acym__campaign__sendsettings__now" <?php echo $data['currentCampaign']->send_now ? '' : 'style="display: none"'; ?>>
 		<p class="cell"><?php echo acym_translation('ACYM_SENT_AS_SOON_CAMPAIGN_SAVE'); ?></p>
@@ -55,7 +55,7 @@
 		</div>
 	</div>
     <?php if (!empty($data['langChoice'])) { ?>
-		<div class="cell grid-x margin-top-1">
+		<div class="cell grid-x">
 			<label class="cell medium-7 large-4">
                 <?php
                 echo acym_translation('ACYM_EMAIL_LANGUAGE');
@@ -67,7 +67,7 @@
 			</div>
 		</div>
     <?php } ?>
-	<div class="cell grid-x margin-top-1 medium-10 large-7 xlarge-5">
+	<div class="cell grid-x medium-10 large-7 xlarge-5">
         <?php
         $label = acym_translation('ACYM_TRACK_THIS_CAMPAIGN');
         $label .= acym_info('ACYM_TRACK_THIS_CAMPAIGN_DESC');

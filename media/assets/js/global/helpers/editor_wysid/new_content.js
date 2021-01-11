@@ -276,7 +276,7 @@ const acym_editorWysidNewContent = {
             if (youtubeId != null) {
                 $result.html('<a href="https://www.youtube.com/watch?v='
                              + youtubeId[1]
-                             + '"><img alt="" src="https://img.youtube.com/vi/'
+                             + '" target="_blank"><img alt="" src="https://img.youtube.com/vi/'
                              + youtubeId[1]
                              + '/0.jpg" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block;margin-left: auto; margin-right: auto; float: none;"/></a>');
                 $insertBtn.removeClass('disabled');

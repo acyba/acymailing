@@ -29,14 +29,6 @@
             color: $font-primary;
         }
 
-        #acym__configuration__license-key, #acym__configuration__button__license, #acym__configuration__button__cron {
-            margin-bottom: 0;
-        }
-
-        .select2-container {
-            margin-bottom: 1rem !important;
-        }
-
         #acym__configuration__languages {
             .acym__configuration__languages__listing {
                 .acym__listing__header__title:first-child {
@@ -47,6 +39,16 @@
 
         #sending_method_options {
             margin-top: 30px;
+
+            .acym__configuration__mail__settings__text, .acym__configuration__sending__method-test {
+                margin-bottom: 0;
+            }
+        }
+
+        .acym__configuration__advanced {
+            .acym__configuration__mail__info__disabled {
+                display: none;
+            }
         }
 
         #available_ports {
@@ -67,7 +69,7 @@
                     height: 32px;
 
                     &#dkim_domain {
-                        width: 100px;
+                        width: 200px;
                     }
 
                     &#dkim_key {
@@ -130,6 +132,12 @@
                 left: 25%;
                 background-color: lightgrey;
             }
+        }
+
+        .acym__configuration__edit-email {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     }
 }

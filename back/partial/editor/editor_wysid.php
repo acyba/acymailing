@@ -20,14 +20,12 @@
             include acym_getPartial('editor', 'languages');
             $preheaderSize = 'large-6';
             include acym_getView('campaigns', 'edit_email_info_content', true);
-            echo '<div id="acym__wysid__edit__separator" class="cell grid-x align-center"><div class="cell small-9"></div></div>';
         }
         ?>
 
 		<div class="cell grid-x padding-1 padding-bottom-0">
 			<div class="cell medium-auto hide-for-small-only"></div>
-			<button id="acym__wysid__edit__button" type="button" class="cell button xlarge-4 medium-5 margin-bottom-0">
-				<i class="acymicon-edit" style="vertical-align: middle"></i>
+			<button id="acym__wysid__edit__button" type="button" class="cell button xlarge-3 large-4 medium-5 margin-bottom-0">
                 <?php
                 $ctrl = acym_getVar('string', 'ctrl');
                 echo acym_translation(
@@ -125,7 +123,7 @@
 			<div class="acym__wysid__modal__ui float-center cell">
 				<div id="acym__wysid__modal__ui__fields"></div>
 				<div id="acym__wysid__modal__ui__display"></div>
-				<div id="acym__wysid__modal__ui__search"></div>
+				<div id="acym__wysid__modal__ui__search" class="margin-bottom-1"></div>
 				<button class="close-button acym__wysid__modal--close" aria-label="Dismiss alert" type="button" data-close="">
 					<span aria-hidden="true">×</span>
 				</button>
@@ -173,9 +171,16 @@
 	<div id="acym__wysid__modal__dynamic-text__bg" class="acym__wysid__modal__dynamic-text--close"></div>
 	<div id="acym__wysid__modal__dynamic-text__ui" class="float-center cell">
 		<i class="acymicon-close acym__wysid__modal__dynamic-text--close" id="acym__wysid__modal__dynamic-text__close__icon"></i>
-        <?php $dynamicCtrl = acym_isAdmin() ? 'dynamics' : 'frontdynamics'; ?>
+        <?php
+        $dynamicCtrl = acym_isAdmin() ? 'dynamics' : 'frontdynamics';
+        $mailType = !empty($data['mail']->type) ? $data['mail']->type : '';
+        $typeNotif = acym_getVar('string', 'notification', '');
+        ?>
 		<iframe id="acym__wysid__modal__dynamic-text__ui__iframe"
-				src="<?php echo acym_completeLink($dynamicCtrl.'&task=popup&automation='.$this->automation.'&mail_id='.$this->mailId, true); ?>"
+				src="<?php echo acym_completeLink(
+                    $dynamicCtrl.'&task=popup&automation='.$this->automation.'&mail_id='.$this->mailId.'&mail_type='.$mailType.'&type_notif='.$typeNotif,
+                    true
+                ); ?>"
 				frameborder="0"></iframe>
 	</div>
 </div>

@@ -161,6 +161,8 @@ const acym_editorWysidDynammic = {
                 acym_helperDatePicker.setRSDateChoice();
                 acym_editorWysidToolbar.setRightToolbarWYSID();
                 if (0 === shortcode.length) acym_editorWysidDynammic.insertDContent('');
+                jQuery(document).trigger('acym_plugins_installed_loaded');
+                acym_editorWysidDynammic.setRefreshCustomViewChanged();
             }
         });
     },
@@ -317,5 +319,11 @@ const acym_editorWysidDynammic = {
             jQuery('pre').css('white-space', '-o-pre-wrap');
             jQuery('code').css('white-space', '-o-pre-wrap');
         }
+    },
+    setRefreshCustomViewChanged: function () {
+        jQuery(document).off('acym_custom_view_modal_closed').on('acym_custom_view_modal_closed', function () {
+            let functionName = document.getElementById('acym__dynamic__update__function').value;
+            if (typeof window[functionName] === 'function') window[functionName]();
+        });
     }
 };

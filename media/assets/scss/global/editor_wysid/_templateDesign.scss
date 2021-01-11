@@ -131,7 +131,7 @@
                 outline: 1px dashed $light-gray;
 
                 &:hover {
-                    outline: 1px dashed $primary-light-color;
+                    outline: 1px dashed $color-palette-cyan;
 
                     > .acym__wysid__element__toolbox {
                         visibility: visible;
@@ -159,7 +159,7 @@
             position: relative;
 
             &:hover {
-                outline: 1px dashed $primary-light-color;
+                outline: 1px dashed $color-palette-cyan;
             }
 
             .acym__wysid__element__toolbox {

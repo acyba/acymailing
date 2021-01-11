@@ -167,7 +167,9 @@ class QueueHelper extends acymObject
             $this->finish = true;
         }
 
+        $emailFrequency = $this->config->get('email_frequency', 0);
         foreach ($queueElements as $oneQueue) {
+            if (!empty($emailFrequency) && intval($emailFrequency) > 0) sleep(intval($emailFrequency));
             $currentMail++;
             $this->nbprocess++;
             if ($this->report) {
@@ -185,7 +187,7 @@ class QueueHelper extends acymObject
             $queueDeleteOk = true;
             $otherMessage = '';
 
-            if ($result) {
+            if ($result === true) {
                 $this->successSend++;
                 $this->consecutiveError = 0;
                 $queueDelete[$oneQueue->mail_id][] = $oneQueue->user_id;
@@ -202,14 +204,21 @@ class QueueHelper extends acymObject
                     $statsAdd = [];
                     $queueUpdate = [];
                 }
+            } elseif ($result === -1) {
+                $this->consecutiveError = 0;
+                $queueDelete[$oneQueue->mail_id][] = $oneQueue->user_id;
+                //In case of the e-mail has been sent now, we immediately process the update/delete and stats
+                $queueDeleteOk = $this->_deleteQueue($queueDelete);
+                $queueDelete = [];
             } else {
+
                 $this->errorSend++;
 
                 $newtry = false;
                 if (in_array($mailHelper->errorNumber, $mailHelper->errorNewTry)) {
                     if (empty($maxTry) || $oneQueue->try < $maxTry - 1) {
                         $newtry = true;
-                        $otherMessage = acym_translation_sprintf('ACYM_QUEUE_NEXT_TRY', 60);
+                        $otherMessage = acym_translationSprintf('ACYM_QUEUE_NEXT_TRY', 60);
                     }
                     if ($mailHelper->errorNumber == 1) {
                         $this->consecutiveError++;
@@ -452,7 +461,7 @@ class QueueHelper extends acymObject
             return;
         }
 
-        $color = $status ? 'green' : 'red';
+        $color = $status === true ? 'green' : ($status === -1 ? 'orange' : 'red');
         foreach ($messages as $message) {
             if (!empty($num)) {
                 echo '<br />'.$num.' : <span style="color:'.$color.';">'.$message.'</span>';

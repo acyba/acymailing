@@ -1,13 +1,13 @@
 [type="checkbox"] {
     margin: 0;
-    border: 2px solid map-get($foundation-palette, primary);
+    border: 2px solid $color-palette-dark-blue;
     border-radius: 2px;
     background: $white;
     @include appearance('none');
     line-height: 36px;
 
     &:checked {
-        background-color: map-get($foundation-palette, primary);
+        background-color: $color-palette-dark-blue;
 
         &:before {
             margin: -3px 0 0 -6px;

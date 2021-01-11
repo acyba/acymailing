@@ -199,8 +199,8 @@ class plgAcymPage extends acymPlugin
         if (!in_array('image', $tag->display)) $imagePath = '';
 
         $contentText = '';
-        $varFields['{content}'] = $element->post_content;
-        $varFields['{intro}'] = $this->getIntro($element->post_content);
+        $varFields['{content}'] = $this->cleanExtensionContent($element->post_content);
+        $varFields['{intro}'] = $this->cleanExtensionContent($this->getIntro($element->post_content));
         if (in_array('content', $tag->display)) {
             $contentText .= $varFields['{content}'];
         } elseif (in_array('intro', $tag->display)) {

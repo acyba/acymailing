@@ -303,7 +303,7 @@ class ListsController extends acymController
 
         $mailClass = new MailClass();
 
-        foreach (['welcome' => 'welcome', 'unsubscribe' => 'unsub'] as $full => $short) {
+        foreach ([$mailClass::TYPE_WELCOME => 'welcome', $mailClass::TYPE_UNSUBSCRIBE => 'unsub'] as $full => $short) {
             $mailId = acym_getVar('int', $short.'mailid', 0);
             if (empty($data['listInformation']->{$full.'_id'}) && !empty($mailId)) {
                 $data['listInformation']->{$full.'_id'} = $mailId;
@@ -397,7 +397,7 @@ class ListsController extends acymController
 
         if (!empty($listId)) {
             acym_setVar('id', $listId);
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_LIST_IS_SAVED', $listInformation->name), 'success');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_LIST_IS_SAVED', $listInformation->name), 'success');
             $this->_saveSubscribersTolist();
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
@@ -589,7 +589,7 @@ class ListsController extends acymController
         }
         $return = [];
         $return['html'] = $echo;
-        $return['notif'] = acym_translation_sprintf('ACYM_X_CONFIRMATION_SUBSCRIPTION_ADDED_AND_CLICK_TO_SAVE', count($allLists));
+        $return['notif'] = acym_translationSprintf('ACYM_X_CONFIRMATION_SUBSCRIPTION_ADDED_AND_CLICK_TO_SAVE', count($allLists));
         $return = json_encode($return);
         echo $return;
         exit;

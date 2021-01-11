@@ -3,7 +3,7 @@
 	<h1 class="cell acym__listing__empty__subtitle"><?php echo acym_translation('ACYM_CREATE_FIRST_FORM'); ?></h1>
 	<div class="medium-5"></div>
 	<div class="medium-2 small-12 cell">
-		<button data-task="newForm" class="button expanded cell acy_button_submit">
+		<button data-task="newForm" class="button cell acy_button_submit">
             <?php echo acym_translation('ACYM_CREATE'); ?>
 		</button>
 	</div>

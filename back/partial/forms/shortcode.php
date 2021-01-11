@@ -1,19 +1,14 @@
 <div id="acym_fulldiv_<?php echo $form->form_tag_name; ?>" class="acym__subscription__form__shortcode acym__subscription__form-erase">
-    <?php if ($edition) {
+    <?php
+    if ($edition) {
         echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';
     } else {
         echo '<form action="'.$form->form_tag_action.'" id="'.$form->form_tag_name.'" name="'.$form->form_tag_name.'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acymSubmitSubForm\')">';
     }
     include acym_getPartial('forms', 'fields');
     include acym_getPartial('forms', 'button');
+    include acym_getPartial('forms', 'hidden_params');
     ?>
-	<input type="hidden" name="ctrl" value="frontusers" />
-	<input type="hidden" name="task" value="notask" />
-	<input type="hidden" name="option" value="<?php echo acym_escape(ACYM_COMPONENT); ?>" />
-	<input type="hidden" name="ajax" value="1">
-	<input type="hidden" name="acy_source" value="<?php echo 'Form ID '.$form->id; ?>">
-	<input type="hidden" name="acyformname" value="<?php echo $form->form_tag_name; ?>">
-	<input type="hidden" name="acysubmode" value="form_acym">
 	</form>
 </div>
 <style>

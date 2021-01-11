@@ -1,17 +1,8 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" novalidate data-abide>
+    <?php $data['toolbar']->displayToolbar($data); ?>
 	<div class="grid-x acym__content acym__content__tab">
 
         <?php
-        $data['tab']->content[] = '
-        <div class="cell grid-x align-right">
-            <button acym-data-before="jQuery.acymConfigSave();" type="submit" data-task="test" class="cell medium-shrink button margin-1 acy_button_submit button-secondary">
-                '.acym_translation('ACYM_SEND_TEST').'
-            </button>
-            <button acym-data-before="jQuery.acymConfigSave();" type="submit" data-task="save" class="cell medium-shrink button margin-1 acy_button_submit">
-                '.acym_translation('ACYM_SAVE').'
-            </button>
-        </div>';
-
         $tabs = [
             'mail' => 'ACYM_CONFIGURATION_MAIL',
             'queue' => 'ACYM_CONFIGURATION_QUEUE',
@@ -34,12 +25,6 @@
 
         $data['tab']->display('configuration');
         ?>
-
-		<div class="cell grid-x align-right">
-			<button type="submit" data-task="save" class="cell margin-1 shrink button acy_button_submit">
-                <?php echo acym_translation('ACYM_SAVE'); ?>
-			</button>
-		</div>
 	</div>
 
     <?php acym_formOptions(); ?>

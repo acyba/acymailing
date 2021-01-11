@@ -101,7 +101,7 @@ function acym_cmsPermission()
     $url = 'index.php?option=com_config&view=component&component='.ACYM_COMPONENT.'&return='.urlencode(base64_encode((string)JUri::getInstance()));
 
     return '
-		<div class="cell medium-7 grid-x">
+		<div class="cell medium-7 grid-x margin-bottom-1">
 			<label class="cell medium-6 small-9">'.acym_translation('ACYM_JOOMLA_PERMISSIONS').'</label>
 			<div class="cell auto">
 				<a class="button button-secondary" href="'.$url.'">'.acym_translation('JTOOLBAR_OPTIONS').'</a>

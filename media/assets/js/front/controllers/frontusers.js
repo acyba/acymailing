@@ -150,7 +150,7 @@ function acym_checkChangeForm() {
     if (message) message.parentNode.removeChild(message);
 
     let xhr = new XMLHttpRequest();
-    xhr.open('POST', varform.action);
+    xhr.open('POST', varform.getAttribute('action'));
     xhr.onload = function () {
         let message = 'Ajax Request Failure';
         let type = 'error';

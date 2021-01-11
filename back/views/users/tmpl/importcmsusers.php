@@ -2,17 +2,17 @@
 	<div class="cell large-2"></div>
 	<div class="cell large-8">
 		<div class="text-center">
-			<h6><?php echo acym_translation_sprintf('ACYM_IMPORT_NB_WEBSITE_USERS', $data['nbUsersCMS']); ?></h6>
-			<h6><?php echo acym_translation_sprintf('ACYM_IMPORT_NB_ACYM_USERS', $data['nbUsersAcymailing']); ?></h6>
+			<h6><?php echo acym_translationSprintf('ACYM_IMPORT_NB_WEBSITE_USERS', $data['nbUsersCMS']); ?></h6>
+			<h6><?php echo acym_translationSprintf('ACYM_IMPORT_NB_ACYM_USERS', $data['nbUsersAcymailing']); ?></h6>
 		</div>
 		<br>
 		<div class="text-left">
             <?php echo acym_translation('ACYM_IMPORT_CMS_1'); ?>
 			<ol>
-				<li><?php echo acym_translation_sprintf('ACYM_IMPORT_CMS_2', ACYM_CMS_TITLE); ?></li>
-				<li><?php echo acym_translation_sprintf('ACYM_IMPORT_CMS_3', ACYM_CMS_TITLE); ?></li>
-				<li><?php echo acym_translation_sprintf('ACYM_IMPORT_CMS_4', ACYM_CMS_TITLE); ?></li>
-				<li><?php echo acym_translation_sprintf('ACYM_IMPORT_CMS_5', ACYM_CMS_TITLE); ?></li>
+				<li><?php echo acym_translationSprintf('ACYM_IMPORT_CMS_2', ACYM_CMS_TITLE); ?></li>
+				<li><?php echo acym_translationSprintf('ACYM_IMPORT_CMS_3', ACYM_CMS_TITLE); ?></li>
+				<li><?php echo acym_translationSprintf('ACYM_IMPORT_CMS_4', ACYM_CMS_TITLE); ?></li>
+				<li><?php echo acym_translationSprintf('ACYM_IMPORT_CMS_5', ACYM_CMS_TITLE); ?></li>
 			</ol>
 		</div>
 
@@ -32,7 +32,7 @@
 			</div>
 		</div>
 
-		<div class="cell grid-x grid-margin-x margin-top-1">
+		<div class="cell grid-x grid-margin-x margin-top-2">
 			<div class="cell hide-for-small-only medium-auto"></div>
             <?php echo acym_cancelButton('ACYM_CANCEL', '', 'button medium-6 large-shrink margin-bottom-0'); ?>
 			<button data-open="acym__user__import__add-subscription__modal" type="button" class="button cell medium-shrink margin-bottom-0">

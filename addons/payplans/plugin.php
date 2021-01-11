@@ -51,17 +51,17 @@ class plgAcymPayplans extends acymPlugin
 
         $conditions['user']['payplans']->option .= '<div class="cell grid-x margin-top-1 margin-bottom-1">';
         $conditions['user']['payplans']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][payplans][signup_date_inf]', '', 'cell shrink');
-        $conditions['user']['payplans']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['payplans']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['payplans']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_SUBSCRIPTION_DATE').'</span>';
-        $conditions['user']['payplans']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['payplans']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['payplans']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][payplans][signup_date_sup]', '', 'cell shrink');
         $conditions['user']['payplans']->option .= '</div>';
 
         $conditions['user']['payplans']->option .= '<div class="cell grid-x">';
         $conditions['user']['payplans']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][payplans][expiration_date_inf]', '', 'cell shrink');
-        $conditions['user']['payplans']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['payplans']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['payplans']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_END_DATE').'</span>';
-        $conditions['user']['payplans']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['payplans']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['payplans']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][payplans][expiration_date_sup]', '', 'cell shrink');
         $conditions['user']['payplans']->option .= '</div>';
 
@@ -138,7 +138,7 @@ class plgAcymPayplans extends acymPlugin
 
             $status = acym_translation($status[$automationCondition['payplans']['status']]);
 
-            $finalText = acym_translation_sprintf('ACYM_REGISTERED', $element, $status);
+            $finalText = acym_translationSprintf('ACYM_REGISTERED', $element, $status);
 
             $dates = [];
             if (!empty($automationCondition['payplans']['signup_date_inf'])) {
@@ -179,7 +179,7 @@ class plgAcymPayplans extends acymPlugin
     {
         $this->onAcymProcessFilter_payplans($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_payplans(&$query, $options, $num)

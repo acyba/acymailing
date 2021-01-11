@@ -303,7 +303,7 @@ class plgAcymFlexicontent extends acymPlugin
 
         if (empty($itemsParts)) {
             if (acym_isAdmin()) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_CONTENT_NOT_FOUND', $tag->id), 'notice');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_CONTENT_NOT_FOUND', $tag->id), 'notice');
             }
 
             return false;

@@ -20,11 +20,11 @@ class EntitySelectHelper extends acymObject
     private function _getListing($type, $allSelector, $entity, $columnsToDisplay = [])
     {
         $display = '<div class="cell medium-auto grid-x acym_area acym__entity_select__'.$type.'">
-                        <h5 class="cell font-bold acym_area_title text-center">'.acym_translation('ACYM_'.strtoupper($type).'_'.strtoupper($entity)).'</h5>
+                        <h5 class="cell font-bold acym__title acym__title__secondary text-center">'.acym_translation('ACYM_'.strtoupper($type).'_'.strtoupper($entity)).'</h5>
                         <div class="cell grid-x">
                         <div class="cell grid-x acym__entity_select__header">
                             <div class="cell grid-x">
-                                <div class="cell"><input type="text" class="acym__light__input" v-model="'.$type.'Search" placeholder="'.acym_translation('ACYM_SEARCH').'"></div>
+                                <div class="cell margin-bottom-1"><input type="text" v-model="'.$type.'Search" placeholder="'.acym_translation('ACYM_SEARCH').'"></div>
                                 <div class="cell align-right grid-x acym__entity_select__select__all">
                                     <button type="button" v-show="!loading" v-if="displaySelectAll_'.$type.'" v-on:click="moveAll('.acym_escapeDB(
                 $type

@@ -43,7 +43,7 @@ class plgAcymStatistics extends acymPlugin
         $mails = $mailClass->decode($mails);
 
         foreach ($mails as $oneMail) {
-            $name = in_array($oneMail->type, ['notification', 'override']) ? $oneMail->subject : $oneMail->name;
+            $name = in_array($oneMail->type, $mailClass::TYPES_NO_NAME) ? $oneMail->subject : $oneMail->name;
             $campaignId = empty($oneMail->campaignId) ? '' : ' ['.acym_translation('ACYM_ID').' '.$oneMail->campaignId.']';
             $return[] = [$oneMail->id, $name.$campaignId];
         }
@@ -88,7 +88,7 @@ class plgAcymStatistics extends acymPlugin
     {
         $this->onAcymProcessFilter_statistics($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_statistics(&$query, $options, $num)
@@ -100,7 +100,7 @@ class plgAcymStatistics extends acymPlugin
         }
 
         if (empty($options['status']) || !in_array($options['status'], ['opened', 'notopen', 'failed', 'bounced', 'notsent', 'sent'])) {
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_UNKNOWN_OPERATOR', $options['status']), 'warning');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_UNKNOWN_OPERATOR', $options['status']), 'warning');
 
             return;
         }
@@ -136,9 +136,9 @@ class plgAcymStatistics extends acymPlugin
             $mail = $mailClass->getOneById(empty($automationFilter['statistics']['mail']) ? 0 : $automationFilter['statistics']['mail']);
 
             if (empty($mail)) {
-                $automationFilter = acym_translation_sprintf('ACYM_NOT_FOUND', acym_translation('ACYM_MAIL'));
+                $automationFilter = acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_MAIL'));
             } else {
-                $automationFilter = acym_translation_sprintf('ACYM_FILTER_STATISTICS_SUMMARY', $status, $mail->subject, $mail->id);
+                $automationFilter = acym_translationSprintf('ACYM_FILTER_STATISTICS_SUMMARY', $status, $mail->subject, $mail->id);
             }
         }
     }

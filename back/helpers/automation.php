@@ -39,9 +39,10 @@ class AutomationHelper extends acymObject
      * The main point is to simplify the queries executed on automation actions.
      * It also avoids issues when an action modifies the matching users and they don't match anymore (so following actions won't be executed)
      *
-     * @param Int $id automation id
+     * @param Int     $id    automation id
+     * @param boolean $reset if we reset the where for the segment count
      */
-    public function addFlag($id)
+    public function addFlag($id, $reset = false)
     {
         // In MySQL, the ORDER BY and LIMIT are not supported with "IN" or in UPDATE queries... If you know how to optimize it, feel free to do so
         if (!empty($this->orderBy) || !empty($this->limit)) {
@@ -66,7 +67,7 @@ class AutomationHelper extends acymObject
 
         $this->join = [];
         $this->leftjoin = [];
-        $this->where = ['user.automation LIKE "%a'.intval($id).'a%"'];
+        $this->where = $reset ? [] : ['user.automation LIKE "%a'.intval($id).'a%"'];
         $this->orderBy = '';
         $this->limit = '';
     }
@@ -99,7 +100,7 @@ class AutomationHelper extends acymObject
         } elseif ($operator == 'NOT REGEXP') {
             if ($value === '') return '0 = 1';
         } elseif (!in_array($operator, ['IS NULL', 'IS NOT NULL', 'NOT LIKE', 'LIKE', '=', '!=', '>', '<', '>=', '<='])) {
-            die(acym_translation_sprintf('ACYM_UNKNOWN_OPERATOR', $operator));
+            die(acym_translationSprintf('ACYM_UNKNOWN_OPERATOR', $operator));
         }
 
         //Is the value a time field?

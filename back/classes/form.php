@@ -198,6 +198,10 @@ class FormClass extends acymClass
         }
         $newForm->delay = 0;
         $newForm->pages = [];
+        $newForm->redirection_options = [
+            'after_subscription' => '',
+            'confirmation_message' => '',
+        ];
         $newForm->id = 0;
 
         return $newForm;
@@ -409,28 +413,24 @@ class FormClass extends acymClass
             $name = 'form['.$optionName.']['.$key.']';
             $vModel = 'form.'.$optionName.'.'.$key;
             if ($key == 'automatic_subscribe') {
-                $return['render'][$key] = '<label class="cell medium-4 grid-x acym_vcenter"><span class="cell auto">'.acym_translation(
-                        'ACYM_AUTO_SUBSCRIBE_TO'
-                    ).'</span><div class="cell shrink">'.acym_info('ACYM_AUTO_SUBSCRIBE_TO_DESC').'</div></label>';
-                $return['render'][$key] .= '<div class="cell auto">
+                $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_AUTO_SUBSCRIBE_TO_DESC').'</label>';
+                $return['render'][$key] .= '<div class="cell">
                                                 <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape(json_encode($value)).'\'" :options="'.acym_escape(
                         json_encode($lists)
                     ).'" v-model="'.$vModel.'"></select2multiple>
                                             </div>';
             } elseif ($key == 'displayed') {
-                $return['render'][$key] = '<label class="cell medium-4 grid-x acym_vcenter"><span class="cell auto">'.acym_translation(
-                        'ACYM_DISPLAYED_LISTS'
-                    ).'</span><div class="cell shrink">'.acym_info('ACYM_DISPLAYED_LISTS_DESC').'</div></label>';
-                $return['render'][$key] .= '<div class="cell auto">
+                $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_DISPLAYED_LISTS').acym_info('ACYM_DISPLAYED_LISTS_DESC').'</label>';
+                $return['render'][$key] .= '<div class="cell">
                                                 <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape(json_encode($value)).'\'" :options="'.acym_escape(
                         json_encode($lists)
                     ).'" v-model="'.$vModel.'"></select2multiple>
                                             </div>';
             } elseif ($key == 'checked') {
-                $return['render'][$key] = '<label class="cell medium-4 grid-x acym_vcenter"><span class="cell auto">'.acym_translation(
-                        'ACYM_LISTS_CHECKED_DEFAULT'
-                    ).'</span><div class="cell shrink">'.acym_info('ACYM_LISTS_CHECKED_DEFAULT_DESC').'</div></label>';
-                $return['render'][$key] .= '<div class="cell auto">
+                $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info(
+                        'ACYM_LISTS_CHECKED_DEFAULT_DESC'
+                    ).'</label>';
+                $return['render'][$key] .= '<div class="cell">
                                                 <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape(json_encode($value)).'\'" :options="'.acym_escape(
                         json_encode($lists)
                     ).'" v-model="'.$vModel.'"></select2multiple>
@@ -440,8 +440,8 @@ class FormClass extends acymClass
                     'after' => acym_translation('ACYM_AFTER_FIELDS'),
                     'before' => acym_translation('ACYM_BEFORE_FIELDS'),
                 ];
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_DISPLAY_LISTS').'</label>';
-                $return['render'][$key] .= '<div class="cell auto">
+                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_DISPLAY_LISTS').'</label>';
+                $return['render'][$key] .= '<div class="cell">
                                                 <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape(
                         json_encode($displayPositions)
                     ).'" v-model="'.$vModel.'"></select2>
@@ -469,8 +469,8 @@ class FormClass extends acymClass
             $name = 'form['.$optionName.']['.$key.']';
             $vModel = 'form.'.$optionName.'.'.$key;
             if ($key == 'displayed') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_FIELDS_TO_DISPLAY').'</label>';
-                $return['render'][$key] .= '<div class="cell auto">
+                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_FIELDS_TO_DISPLAY').'</label>';
+                $return['render'][$key] .= '<div class="cell">
                                                 <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape(json_encode($value)).'\'" :options="'.acym_escape(
                         json_encode($fields)
                     ).'" v-model="'.$vModel.'"></select2multiple>
@@ -480,8 +480,8 @@ class FormClass extends acymClass
                     'inside' => acym_translation('ACYM_TEXT_INSIDE'),
                     'outside' => acym_translation('ACYM_TEXT_OUTSIDE'),
                 ];
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_DISPLAY_FIELDS_LABEL').'</label>';
-                $return['render'][$key] .= '<div class="cell auto">
+                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_DISPLAY_FIELDS_LABEL').'</label>';
+                $return['render'][$key] .= '<div class="cell">
                                                 <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape(json_encode($displayModes)).'" v-model="'.$vModel.'"></select2>
                                             </div>';
             }
@@ -501,13 +501,13 @@ class FormClass extends acymClass
             $vModel = 'form.'.$optionName.'.'.$key;
 
             if ($key == 'termscond') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_TERMS_CONDITIONS').'</label>';
-                $return['render'][$key] .= '<div class="cell auto">
+                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_TERMS_CONDITIONS').'</label>';
+                $return['render'][$key] .= '<div class="cell">
                                                 <select2ajax :name="\''.$name.'\'" :value="\''.$value.'\'" v-model="'.$vModel.'" :urlselected="\'&ctrl=forms&task=getArticlesById&article_id=\'" :ctrl="\'forms\'" :task="\'getArticles\'"></select2ajax>
                                             </div>';
             } elseif ($key == 'privacy') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_PRIVACY_POLICY').'</label>';
-                $return['render'][$key] .= '<div class="cell auto">
+                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_PRIVACY_POLICY').'</label>';
+                $return['render'][$key] .= '<div class="cell">
                                                 <select2ajax :name="\''.$name.'\'" :value="\''.$value.'\'" v-model="'.$vModel.'" :urlselected="\'&ctrl=forms&task=getArticlesById&article_id=\'" :ctrl="\'forms\'" :task="\'getArticles\'"></select2ajax>
                                             </div>';
             }
@@ -529,13 +529,39 @@ class FormClass extends acymClass
             $vModel = 'form.'.$optionName.'.'.$key;
 
             if ($key == 'cookie_expiration') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_COOKIE_EXPIRATION').'</label>';
-                $return['render'][$key] .= '<div class="cell auto grid-x acym_vcenter">
+                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_COOKIE_EXPIRATION').'</label>';
+                $return['render'][$key] .= '<div class="cell grid-x acym_vcenter">
                                                 <input min="1" type="number" class="cell medium-3 margin-right-1" v-model="'.$vModel.'">
                                                 <span class="cell shrink">'.acym_translation('ACYM_DAYS').'</span>
                                             </div>';
             }
         }
+
+        return $return;
+    }
+
+    private function prepareMenuHtmlSettings_redirection_options($optionName, $options)
+    {
+        $return = [
+            'title' => acym_translation('ACYM_REDIRECTIONS'),
+        ];
+
+        foreach ($options as $key => $value) {
+            $id = 'form_'.$optionName.'_'.$key;
+            $vModel = 'form.'.$optionName.'.'.$key;
+
+            $return['render'][$key] = '<label class="cell" for="'.$id.'">';
+            if ($key === 'after_subscription') {
+                $return['render'][$key] .= acym_translation('ACYM_AFTER_SUBSCRIPTION');
+                $return['render'][$key] .= acym_info('ACYM_REDIRECT_LINK_DESC');
+            } elseif ($key === 'confirmation_message') {
+                $return['render'][$key] .= acym_translation('ACYM_CONFIRMATION_MESSAGE');
+                $return['render'][$key] .= acym_info('ACYM_CONFIRMATION_MESSAGE_DESC');
+            }
+            $return['render'][$key] .= '</label>';
+            $return['render'][$key] .= '<input type="text" class="cell" id="'.$id.'" v-model="'.$vModel.'">';
+        }
+
 
         return $return;
     }
@@ -574,11 +600,7 @@ class FormClass extends acymClass
         $form->lists = $listClass->getAllForSelect(false);
 
         $form->form_tag_name = acym_getModuleFormName();
-        $form->form_tag_action = ACYM_CMS == 'wordpress'
-            ? htmlspecialchars_decode(acym_rootURI().acym_addPageParam('frontusers', true, true))
-            : htmlspecialchars_decode(
-                acym_completeLink('frontusers', true, true)
-            );
+        $form->form_tag_action = htmlspecialchars_decode(ACYM_CMS == 'wordpress' ? acym_frontendLink('frontusers') : acym_completeLink('frontusers', true, true));
         $form->formClass = $this;
 
         $formFieldRender = ACYM_PARTIAL.'forms'.DS.$form->type.'.php';

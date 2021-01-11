@@ -73,12 +73,12 @@
 						class="cell acym__templates__oneTpl acym__listing__block acym_template_option">
 					<div class="text-center cell acym__listing__block__delete acym__background-color__red">
 						<div>
-							<i class='acymicon-trash-o acym__listing__block__delete__trash acym__color__white'></i>
-							<p class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
-								<i class="acymicon-keyboard_arrow_left acym__color__white"></i>
-							</p>
+							<i class="acymicon-trash-o acym__listing__block__delete__trash acym__color__white"></i>
 							<p class="acym__listing__block__delete__submit acym__color__white acy_button_submit" data-task="unsetWelcome">
 								<i class="acymicon-trash-o acym__color__white"></i>
+							</p>
+							<p class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
+								<i class="acymicon-keyboard_arrow_right acym__color__white"></i>
 							</p>
 						</div>
 					</div>
@@ -128,13 +128,13 @@
 						class="cell acym__templates__oneTpl acym__listing__block acym_template_option">
 					<div class="text-center cell acym__listing__block__delete acym__background-color__red">
 						<div>
-							<i class='acymicon-trash-o acym__listing__block__delete__trash acym__color__white'></i>
-							<p class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
-                                <?php echo acym_translation('ACYM_CANCEL'); ?>
+							<i class="acymicon-trash-o acym__listing__block__delete__trash acym__color__white"></i>
+							<p class="acym__listing__block__delete__submit acym__color__white acy_button_submit" data-task="unsetUnsubscribe">
+								<i class="acymicon-trash-o acym__color__white"></i>
 							</p>
-							<p class="acym__listing__block__delete__submit acym__color__white acy_button_submit" data-task="unsetUnsubscribe"><?php echo acym_translation(
-                                    'ACYM_DELETE'
-                                ); ?></p>
+							<p class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
+								<i class="acymicon-keyboard_arrow_right acym__color__white"></i>
+							</p>
 						</div>
 					</div>
 					<a href="<?php echo $data['tmpls']['unsubTmplUrl']; ?>">

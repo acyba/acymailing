@@ -53,7 +53,6 @@
 				<div class="cell medium-auto hide-for-small-only"></div>
 				<button type="button"
 						class="cell medium-shrink button button-secondary acy_button_submit"
-						id="acym__file__select__area__import"
 						type="submit"
 						data-task="select"> <?php echo acym_translation('ACYM_IMPORT'); ?> </button>
 			</div>

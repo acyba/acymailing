@@ -1,11 +1,11 @@
-<h5 class="cell acym__campaign__sendsettings__title-settings"><?php echo acym_translation('ACYM_SENDER_INFORMATION'); ?></h5>
+<h5 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SENDER_INFORMATION'); ?></h5>
 <div class="cell grid-x align-center">
-	<div class="cell grid-x medium-11 grid-margin-x">
+	<div class="cell grid-x medium-11 grid-margin-x margin-y">
 		<div class="cell medium-5">
 			<label for="acym__campaign__sendsettings__from-name" class="cell acym__campaign__sendsettings__label-settings"><?php echo acym_translation('ACYM_FROM_NAME'); ?></label>
 			<input type="text"
 				   id="acym__campaign__sendsettings__from-name"
-				   class="cell acym__light__input"
+				   class="cell"
 				   value="<?php echo acym_escape($data['senderInformations']->from_name); ?>"
 				   name="senderInformation[from_name]"
 				   placeholder="<?php echo acym_escape(
@@ -19,7 +19,7 @@
                 ); ?></label>
 			<input type="email"
 				   id="acym__campaign__sendsettings__from-email"
-				   class="cell acym__light__input"
+				   class="cell"
 				   value="<?php echo acym_escape($data['senderInformations']->from_email); ?>"
 				   name="senderInformation[from_email]"
 				   placeholder="<?php echo acym_escape(
@@ -37,7 +37,7 @@
                 ); ?></label>
 			<input type="text"
 				   id="acym__campaign__sendsettings__reply-name"
-				   class="cell acym__light__input"
+				   class="cell"
 				   value="<?php echo acym_escape($data['senderInformations']->reply_to_name); ?>"
 				   name="senderInformation[reply_to_name]"
 				   placeholder="<?php echo acym_escape(
@@ -55,7 +55,7 @@
                 ); ?></label>
 			<input type="email"
 				   id="acym__campaign__sendsettings__reply-email"
-				   class="cell acym__light__input"
+				   class="cell"
 				   value="<?php echo acym_escape($data['senderInformations']->reply_to_email); ?>"
 				   name="senderInformation[reply_to_email]"
 				   placeholder="<?php echo acym_escape(
@@ -72,7 +72,7 @@
                         'ACYM_BCC_DESC'
                     ); ?></label>
 			<input type="text"
-				   class="cell acym__light__input"
+				   class="cell"
 				   id="acym__campaign__sendsettings__bcc--input"
 				   name="senderInformation[bcc]"
 				   placeholder="<?php echo acym_translation('ACYM_TEST_ADDRESS'); ?>"

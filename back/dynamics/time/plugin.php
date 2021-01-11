@@ -317,16 +317,16 @@ class plgAcymTime extends acymPlugin
     {
         if (!empty($automation->triggers['type_trigger'])) unset($automation->triggers['type_trigger']);
         if (!empty($automation->triggers['asap'])) $automation->triggers['asap'] = acym_translation('ACYM_EACH_TIME');
-        if (!empty($automation->triggers['day'])) $automation->triggers['day'] = acym_translation_sprintf(
+        if (!empty($automation->triggers['day'])) $automation->triggers['day'] = acym_translationSprintf(
             'ACYM_TRIGGER_DAY_SUMMARY',
             $automation->triggers['day']['hour'],
             $automation->triggers['day']['minutes']
         );
-        if (!empty($automation->triggers['weeks_on'])) $automation->triggers['weeks_on'] = acym_translation_sprintf(
+        if (!empty($automation->triggers['weeks_on'])) $automation->triggers['weeks_on'] = acym_translationSprintf(
             'ACYM_TRIGGER_WEEKS_ON_SUMMARY',
             implode(', ', $automation->triggers['weeks_on']['day'])
         );
-        if (!empty($automation->triggers['on_day_month'])) $automation->triggers['on_day_month'] = acym_translation_sprintf(
+        if (!empty($automation->triggers['on_day_month'])) $automation->triggers['on_day_month'] = acym_translationSprintf(
             'ACYM_TRIGGER_ON_DAY_MONTH_SUMMARY',
             $automation->triggers['on_day_month']['number'],
             $automation->triggers['on_day_month']['day']
@@ -336,7 +336,7 @@ class plgAcymTime extends acymPlugin
             if ($automation->triggers['every']['type'] == 86400) $automation->triggers['every']['type'] = acym_translation('ACYM_DAYS');
             if ($automation->triggers['every']['type'] == 604800) $automation->triggers['every']['type'] = acym_translation('ACYM_WEEKS');
             if ($automation->triggers['every']['type'] == 2628000) $automation->triggers['every']['type'] = acym_translation('ACYM_MONTHS');
-            $automation->triggers['every'] = acym_translation_sprintf(
+            $automation->triggers['every'] = acym_translationSprintf(
                 'ACYM_TRIGGER_EVERY_SUMMARY',
                 $automation->triggers['every']['number'],
                 $automation->triggers['every']['type']

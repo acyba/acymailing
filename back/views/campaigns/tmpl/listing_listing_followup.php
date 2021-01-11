@@ -101,7 +101,7 @@
 					<div class="cell small-3 xlarge-2 grid-x">
 						<div class="cell align-center acym__followup__emails__count acym__followup_listing_main_element">
                             <?php
-                            echo '<span>'.acym_escape(acym_translation_sprintf('ACYM_X_EMAILS', $followup->nbEmails)).'</span>';
+                            echo '<span>'.acym_escape(acym_translationSprintf('ACYM_X_EMAILS', $followup->nbEmails)).'</span>';
                             if (!empty($followup->nbEmails)) {
                                 ?>
 								<i class="acym__followup__emails__toggle acymicon-keyboard_arrow_down" acym-data-id="<?php echo intval($followup->id); ?>"></i>
@@ -116,7 +116,7 @@
 					<div class="cell show-for-large large-3 xxlarge-2 acym__campaign__status text-center grid-x">
 						<div class="cell acym__campaign__status__status acym__background-color__green acym__followup_listing_main_element">
                             <?php
-                            echo acym_translation_sprintf(
+                            echo acym_translationSprintf(
                                 'ACYM_TRIGGERED_FOR_X',
                                 empty($followup->subscribers) ? '0' : $followup->subscribers
                             );

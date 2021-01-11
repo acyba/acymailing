@@ -90,4 +90,41 @@ class SegmentClass extends acymClass
 
         return $return;
     }
+
+    public function updateSegments()
+    {
+        $segments = $this->getAll();
+
+        if (empty($segments)) return;
+
+        foreach ($segments as $segment) {
+            $segment->filters = json_decode($segment->filters, true);
+            $keysOr = array_keys($segment->filters);
+            $keysAnd = array_keys($segment->filters[$keysOr[0]]);
+            if (is_numeric($keysAnd[0])) continue;
+            $segment->filters = json_encode([0 => $segment->filters], JSON_FORCE_OBJECT);
+            $this->save($segment);
+        }
+
+        $campaigns = acym_loadObjectList('SELECT * FROM #__acym_campaign WHERE sending_params LIKE "%filters%"');
+
+        if (empty($campaigns)) return;
+
+        $campaignClass = new CampaignClass();
+
+        foreach ($campaigns as $campaign) {
+            $campaign->sending_params = json_decode($campaign->sending_params, true);
+            if (empty($campaign->sending_params['segment'])) continue;
+
+            $keysOr = array_keys($campaign->sending_params['segment']['filters']);
+            $keysAnd = array_keys($campaign->sending_params['segment']['filters'][$keysOr[0]]);
+
+            if (is_numeric($keysAnd[0])) continue;
+
+            $campaign->sending_params['segment']['filters'] = (object)[0 => $campaign->sending_params['segment']['filters']];
+            $campaign->sending_params = json_encode($campaign->sending_params);
+
+            $campaignClass->save($campaign);
+        }
+    }
 }

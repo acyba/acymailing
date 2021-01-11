@@ -9,7 +9,7 @@
         include acym_getView('users', 'importfromtext', true);
         $data['tab']->endTab();
 
-        $data['tab']->startTab(acym_translation_sprintf('ACYM_IMPORT_CMS_USERS', ACYM_CMS_TITLE));
+        $data['tab']->startTab(acym_translationSprintf('ACYM_IMPORT_CMS_USERS', ACYM_CMS_TITLE));
         include acym_getView('users', 'importcmsusers', true);
         $data['tab']->endTab();
 

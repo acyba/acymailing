@@ -45,6 +45,8 @@ class EntitySelectController extends acymController
         if (!empty($join)) $entityParams['join'] = $join;
         if (!empty($columnsToDisplay)) $entityParams['columns'] = $columnsToDisplay;
 
+        if ('list' == $entity) $entityParams['columns'][] = 'description';
+
         if (!acym_isAdmin()) $entityParams['creator_id'] = acym_currentUserId();
 
         $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($entity).'Class';
@@ -62,6 +64,7 @@ class EntitySelectController extends acymController
         if ($entity == 'list') {
             foreach ($availableEntity['elements'] as $key => $element) {
                 $availableEntity['elements'][$key]->color = '<i style="color: '.$element->color.'" class="acym_subscription acymicon-circle">';
+                if (!empty($element->description)) $availableEntity['elements'][$key]->name = $element->name.acym_info($element->description);
             }
         }
     }

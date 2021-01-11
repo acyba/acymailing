@@ -1,6 +1,14 @@
+$color-palette-dark-blue: #01095e;
+$color-palette-cyan: #00A4FF;
+$color-palette-light-blue: #ECF8FF;
+$color-palette-black: #202020;
+$color-palette-dark-text: #454545;
+
+$blue-green: #0F7DBA;
+
 $foundation-palette: (
         primary: #0079d3,
-        primary-light: #00a4ff,
+        primary-light: $color-palette-cyan,
         primary-hot: #5d77ff,
         secondary: #767676,
         success: #3dea91,
@@ -16,7 +24,9 @@ $editor-wysid-palette: (
 );
 
 $dark-red: #69282e;
+$red: #e83243;
 $light-blue: #daf0fe;
+$blue: #60C6FF;
 $dark-blue: #0ca0e4;
 $green: #4dd64d;
 $black: #0a0a0a;
@@ -29,7 +39,6 @@ $dark-gray: #8a8a8a;
 $very-dark-gray: #444444;
 
 $primary-color: map-get($foundation-palette, primary);
-$primary-light-color: map-get($foundation-palette, primary-light);
 $tabs-background: #f6f6f6;
 $primary-color-unselected: #beddf7;
 
@@ -43,15 +52,11 @@ $blue-opacity: rgba(0, 121, 210, 0.4);
 $red-opacity: rgba(255, 82, 89, 0.4);
 $orange-opacity: rgba(255, 171, 21, 0.4);
 
-$body-background: $white;
+$white: $white;
 $body-font-color: $black;
 $global-color-pick-contrast-tolerance: 0;
 $print-transparent-backgrounds: true;
-$primary-toolbar-color: #00a4ff;
 $secondary-toolbar-color: #eaeaf2;
 $font-color-toolbar: #303030;
-$more-options-background-toolbar: #ecf8ff;
-$more-options-toggled-toolbar: #01095e;
 $more-options-toggled-toolbar-light: rgba(1, 9, 94, .05);
 $light-blue-border: rgba(0, 164, 255, 0.16);
-$font-color-filters: #01095e;

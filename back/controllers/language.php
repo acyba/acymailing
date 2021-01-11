@@ -42,14 +42,14 @@ class LanguageController extends acymController
             $updateHelper = new UpdateHelper();
             $updateHelper->installBackLanguages($code);
         } else {
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_FAIL_SAVE_FILE', $path), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_FAIL_SAVE_FILE', $path), 'error');
         }
 
         // Let's save the custom language file now...
         $custompath = acym_getLanguagePath(ACYM_ROOT, $code).DS.$code.'.com_acym_custom.ini';
         $customresult = acym_writeFile($custompath, $customcontent);
         if (!$customresult) {
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_FAIL_SAVE_FILE', $custompath), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_FAIL_SAVE_FILE', $custompath), 'error');
         }
 
         if ($code == acym_getLanguageTag()) {
@@ -190,7 +190,7 @@ class LanguageController extends acymController
         if (file_exists($path)) {
             $file->content = acym_fileGetContent($path);
             if (empty($file->content)) {
-                acym_display(acym_translation_sprintf('ACYM_FILE_NOT_FOUND', $path), 'error');
+                acym_display(acym_translationSprintf('ACYM_FILE_NOT_FOUND', $path), 'error');
             }
         } else {
             $loadLatest = true;
@@ -217,7 +217,7 @@ class LanguageController extends acymController
                 }
                 //__END__joomla_
             } else {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_LANGUAGE_NOT_INSTALLED', $code), 'warning');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_LANGUAGE_NOT_INSTALLED', $code), 'warning');
             }
             $showLatest = false;
         } elseif (acym_getVar('cmd', 'task') == 'save') {

@@ -136,3 +136,24 @@
         right: 16px;
     }
 }
+
+.acym__list__button__add__mail__welcome__unsub {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    background-color: $light-gray;
+    box-shadow: 0 0 15px 2px #ebebeb;
+
+    &:hover, &:focus {
+        color: $white;
+
+        i {
+            font-size: 90px;
+        }
+    }
+
+    i {
+        transition: all .2s ease;
+        font-size: 70px;
+    }
+}

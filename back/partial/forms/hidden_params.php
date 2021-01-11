@@ -13,3 +13,4 @@ $ajax = empty($redirection) ? '1' : '0';
 ?>
 <input type="hidden" name="redirect" value="<?php echo $redirection; ?>">
 <input type="hidden" name="ajax" value="<?php echo $ajax; ?>">
+<input type="hidden" name="confirmation_message" value="<?php echo acym_escape($form->redirection_options['confirmation_message']); ?>">

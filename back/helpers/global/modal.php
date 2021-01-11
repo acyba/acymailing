@@ -28,6 +28,14 @@ function acym_modal($button, $data, $id = null, $attributesModal = '', $attribut
 }
 
 /**
+ * Deprecated see acym_modalInclude
+ */
+function acym_modal_include($button, $file, $id, $data, $attributes = '', $classModal = '', $containerAttributes = '')
+{
+    return acym_modalInclude($button, $file, $id, $data, $attributes = '', $classModal = '', $containerAttributes = '');
+}
+
+/**
  * @param string $button
  * @param string $file
  * @param string $id
@@ -38,7 +46,7 @@ function acym_modal($button, $data, $id = null, $attributesModal = '', $attribut
  *
  * @return string
  */
-function acym_modal_include($button, $file, $id, $data, $attributes = '', $classModal = '', $containerAttributes = '')
+function acym_modalInclude($button, $file, $id, $data, $attributes = '', $classModal = '', $containerAttributes = '')
 {
     if (empty($id)) {
         $id = 'acymodal_'.rand(1000, 9000);
@@ -57,6 +65,24 @@ function acym_modal_include($button, $file, $id, $data, $attributes = '', $class
 }
 
 /**
+ * Deprecated see acym_modalPaginationLists
+ */
+function acym_modal_pagination_lists($button, $class, $textButton = null, $id = null, $attributes = '', $inputEventId = "", $checkedLists = "[]", $needDisplaySubscribers = false, $attributesModal = '')
+{
+    return acym_modalPaginationLists(
+        $button,
+        $class,
+        $textButton = null,
+        $id = null,
+        $attributes = '',
+        $inputEventId = "",
+        $checkedLists = "[]",
+        $needDisplaySubscribers = false,
+        $attributesModal = ''
+    );
+}
+
+/**
  * @param string  $button     The Way to open the modal (Button, link ...). Add the attribute data-open (should be the ID of the modal) to any element.
  * @param         $class
  * @param         $textButton
@@ -69,7 +95,7 @@ function acym_modal_include($button, $file, $id, $data, $attributes = '', $class
  *
  * @return string The modal
  */
-function acym_modal_pagination_lists($button, $class, $textButton = null, $id = null, $attributes = '', $inputEventId = "", $checkedLists = "[]", $needDisplaySubscribers = false, $attributesModal = '')
+function acym_modalPaginationLists($button, $class, $textButton = null, $id = null, $attributes = '', $inputEventId = "", $checkedLists = "[]", $needDisplaySubscribers = false, $attributesModal = '')
 {
     $searchField = acym_filterSearch('', 'modal_search_lists', 'ACYM_SEARCH');
 

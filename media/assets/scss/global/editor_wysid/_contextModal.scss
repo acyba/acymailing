@@ -2,7 +2,6 @@
     label, .switch-label .acym__tooltip {
         cursor: default;
         padding: 7px 0 7px 5px;
-        margin-bottom: 0;
         box-shadow: none;
         user-select: none;
         color: $font-primary;
@@ -101,10 +100,6 @@
 
         .acym__wysid__context__block__padding__title {
             font-weight: 500;
-        }
-
-        .acym__wysid__context__block__padding--input {
-            padding: 0;
         }
 
         .acym__wysid__context__modal__block-padding--overflow {
@@ -252,10 +247,6 @@
     }
 
     .acym__button__padding {
-        input {
-            margin-bottom: 0;
-        }
-
         .acym__button__padding__shape {
             height: 60px;
             background-color: $light-gray;
@@ -265,7 +256,6 @@
     }
 
     .input-group {
-        margin-bottom: 0;
         box-shadow: none;
         color: map-get($editor-wysid-palette, primary-ui);
         border-color: $white;
@@ -327,7 +317,7 @@
         border-radius: $primary-radius;
 
         &.separator-selected {
-            background-color: map-get($foundation-palette, primary-light);
+            background-color: $color-palette-cyan;
 
             hr {
                 border-bottom-color: $white !important;
@@ -356,7 +346,6 @@
     }
 
     select {
-        margin-bottom: 0;
         color: map-get($editor-wysid-palette, primary-ui);
         border-color: map-get($editor-wysid-palette, primary);
         background-color: map-get($editor-wysid-palette, primary);
@@ -364,7 +353,6 @@
     }
 
     input {
-        margin-bottom: 0;
         border-radius: $primary-radius;
         color: map-get($editor-wysid-palette, primary-ui);
         border-color: map-get($editor-wysid-palette, primary);

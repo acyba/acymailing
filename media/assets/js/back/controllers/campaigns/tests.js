@@ -42,9 +42,9 @@ jQuery(document).ready(function ($) {
 
     function setSpamTest() {
         $('#launch_spamtest').off('click').on('click', function () {
-            if ($(this).hasClass('acym_icon_disabled')) return false;
+            if ($(this).hasClass('disabled')) return false;
 
-            $(this).addClass('acym_icon_disabled');
+            $(this).addClass('disabled');
 
             $('.acym_icon_container').find('i:not(".acymicon-question-circle-o")').removeClass().html('').addClass('acymicon-circle-o-notch acymicon-spin');
             $('.acym_check_results').hide().html('');
@@ -135,7 +135,7 @@ jQuery(document).ready(function ($) {
                 _spamtestStep++;
                 if (_spamtestStep === 3) {
                     _spamtestStep = 0;
-                    $('#launch_spamtest').removeClass('acym_icon_disabled');
+                    $('#launch_spamtest').removeClass('disabled');
                 }
             }
         });

@@ -357,7 +357,7 @@ class MigrationHelper extends acymObject
                         acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false)),
                         '0',
                         '0',
-                        acym_escapeDB('standard'),
+                        acym_escapeDB($mailClass::TYPE_STANDARD),
                         acym_escapeDB(empty($oneTemplate->body) ? '' : $oneTemplate->body),
                         acym_escapeDB($oneTemplate->subject),
                         '1',
@@ -646,14 +646,14 @@ class MigrationHelper extends acymObject
 
             switch ($oneMail->type) {
                 case 'welcome':
-                    $mailType = 'welcome';
+                    $mailType = $mailClass::TYPE_WELCOME;
                     break;
                 case 'unsub':
-                    $mailType = 'unsubscribe';
+                    $mailType = $mailClass::TYPE_UNSUBSCRIBE;
                     break;
                 case 'news':
                 case 'followup':
-                    $mailType = 'standard';
+                    $mailType = $mailClass::TYPE_STANDARD;
                     break;
                 default:
                     $mailType = 'invalid';
@@ -691,7 +691,7 @@ class MigrationHelper extends acymObject
                 'type' => acym_escapeDB($mailType),
                 'body' => acym_escapeDB($oneMail->body),
                 'subject' => acym_escapeDB($oneMail->subject),
-                'template' => $mailType == 'welcome' || $mailType == 'unsubscribe' ? 1 : 0,
+                'template' => in_array($mailType, [$mailClass::TYPE_WELCOME, $mailClass::TYPE_UNSUBSCRIBE]) ? 1 : 0,
                 'from_name' => acym_escapeDB($oneMail->fromname),
                 'from_email' => acym_escapeDB($oneMail->fromemail),
                 'reply_to_name' => acym_escapeDB($oneMail->replyname),
@@ -704,7 +704,7 @@ class MigrationHelper extends acymObject
             $mail = $mailClass->encode([$mail])[0];
 
             //TODO: handle the smart-nl migration
-            if ($mailType == 'standard') {
+            if ($mailType == $mailClass::TYPE_STANDARD) {
                 $stats = acym_loadResult('SELECT COUNT(mailid) FROM #__acymailing_stats WHERE mailid = '.intval($oneMail->mailid));
                 $isSent = !empty($stats);
 
@@ -1176,6 +1176,8 @@ class MigrationHelper extends acymObject
             'UPDATE #__acym_list SET `unsubscribe_id` = NULL',
             'UPDATE #__acym_list SET `welcome_id` = NULL',
             'UPDATE #__acym_mail SET `parent_id` = NULL',
+            'DELETE FROM #__acym_followup_has_mail',
+            'DELETE FROM #__acym_followup',
             'DELETE FROM #__acym_tag WHERE `type` = "mail"',
             'DELETE FROM #__acym_mail_override',
             'DELETE FROM #__acym_campaign WHERE `mail_id` IS NOT NULL',
@@ -1194,6 +1196,7 @@ class MigrationHelper extends acymObject
     private function cleanListsTable()
     {
         $queryClean = [
+            'UPDATE #__acym_followup SET `list_id` = NULL',
             'DELETE FROM #__acym_tag WHERE `type` = "list"',
             'DELETE FROM #__acym_mail_has_list',
             'DELETE FROM #__acym_user_has_list',

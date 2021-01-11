@@ -47,9 +47,9 @@ class EncodingHelper extends acymObject
             'ISO-8859-16',
         ];
         if (!in_array($inputCharset, $supportedEncodings)) {
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_ENCODING_NOT_SUPPORTED_X', $inputCharset), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_ENCODING_NOT_SUPPORTED_X', $inputCharset), 'error');
         } elseif (!in_array($outputCharset, $supportedEncodings)) {
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_ENCODING_NOT_SUPPORTED_X', $outputCharset), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_ENCODING_NOT_SUPPORTED_X', $outputCharset), 'error');
         }
 
         if ($inputCharset == $outputCharset) {
@@ -65,7 +65,7 @@ class EncodingHelper extends acymObject
             $encodedData = iconv($inputCharset, $outputCharset.'//IGNORE', $data);
             restore_error_handler();
             //Sometimes the function does not return error but remove the whole content...
-            if (!empty($encodedData) && !acym_error_handler_encoding('result')) {
+            if (!empty($encodedData) && !acym_errorHandlerEncoding('result')) {
                 return $encodedData;
             }
         }
@@ -158,7 +158,7 @@ class EncodingHelper extends acymObject
  *
  * @return boolean true: an error occured, false, no error occured
  */
-function acym_error_handler_encoding($errno, $errstr = '')
+function acym_errorHandlerEncoding($errno, $errstr = '')
 {
     static $error = false;
     if (is_string($errno) && $errno == 'result') {
@@ -173,4 +173,12 @@ function acym_error_handler_encoding($errno, $errstr = '')
 
     //no need to display the notice
     return true;
+}
+
+/**
+ * Deprecated see acym_errorHandlerEncoding
+ */
+function acym_error_handler_encoding($errno, $errstr = '')
+{
+    return acym_errorHandlerEncoding($errno, $errstr = '');
 }

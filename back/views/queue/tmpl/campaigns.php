@@ -26,14 +26,14 @@
                         $sendingText = $this->config->get('cron_last', 0) < (time() - 43200) ? 'ACYM_QUEUE_READY' : 'ACYM_SENDING';
 
                         $options = [
-                            '' => ['ACYM_ALL', $data["numberPerStatus"]["all"]],
-                            'sending' => [$sendingText, $data["numberPerStatus"]["sending"]],
-                            'paused' => ['ACYM_PAUSED', $data["numberPerStatus"]["paused"]],
-                            'scheduled' => ['ACYM_SCHEDULED', $data["numberPerStatus"]["scheduled"]],
-                            'automation' => ['ACYM_AUTOMATION', $data["numberPerStatus"]["automation"]],
-                            'followup' => ['ACYM_FOLLOW_UP', $data["numberPerStatus"]["followup"]],
+                            '' => ['ACYM_ALL', $data['numberPerStatus']['all']],
+                            'sending' => [$sendingText, $data['numberPerStatus']['sending']],
+                            'paused' => ['ACYM_PAUSED', $data['numberPerStatus']['paused']],
+                            'scheduled' => ['ACYM_SCHEDULED', $data['numberPerStatus']['scheduled']],
+                            'automation' => ['ACYM_AUTOMATION', $data['numberPerStatus']['automation']],
+                            'followup' => ['ACYM_FOLLOW_UP', $data['numberPerStatus']['followup']],
                         ];
-                        echo acym_filterStatus($options, $data["status"], 'cqueue_status');
+                        echo acym_filterStatus($options, $data['status'], 'cqueue_status');
                         ?>
 					</div>
 				</div>
@@ -87,7 +87,7 @@
 								</div>
                                 <?php
                                 if (!empty($row->recipients)) {
-                                    echo acym_translation_sprintf('ACYM_X_RECIPIENTS', '<strong>'.number_format($row->recipients, 0, '.', ' ').'</strong>');
+                                    echo acym_translationSprintf('ACYM_X_RECIPIENTS', '<strong>'.number_format($row->recipients, 0, '.', ' ').'</strong>');
                                 }
                                 ?>
 							</div>

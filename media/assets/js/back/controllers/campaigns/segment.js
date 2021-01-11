@@ -64,7 +64,7 @@ jQuery(document).ready(function ($) {
 
             let ajaxUrl = ACYM_AJAX_URL + '&ctrl=segments&task=saveFromCampaign';
 
-            $.get(ajaxUrl, jQuery('#acym_form').serialize() + '&ctrl=segments&task=saveFromCampaign').done(function (result) {
+            $.post(ajaxUrl, jQuery('#acym_form').serialize() + '&ctrl=segments&task=saveFromCampaign').done(function (result) {
                 result = acym_helper.parseJson(result);
                 if (result.error !== undefined) {
                     acym_helperNotification.addNotification(result.error, 'error', true);

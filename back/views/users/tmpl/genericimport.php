@@ -5,7 +5,7 @@
 	<div id="acym__users__import__generic" class="acym__content">
 		<div class="grid-x grid-margin-y acym_area">
 			<div class="">
-				<div class="acym_area_title"><?php echo acym_translation('ACYM_FIELD_MATCHING'); ?></div>
+				<div class="acym__title"><?php echo acym_translation('ACYM_FIELD_MATCHING'); ?></div>
 				<p class="acym__users__import__generic__instructions"><?php echo acym_translation('ACYM_ASSIGN_COLUMNS'); ?></p>
 			</div>
 			<div class="cell">
@@ -19,8 +19,8 @@
 		</div>
 
 		<div class="grid-x acym_area">
-			<div class="acym_area_title"><?php echo acym_translation('ACYM_PARAMETERS'); ?></div>
-			<div class="cell grid-x">
+			<div class="acym__title"><?php echo acym_translation('ACYM_PARAMETERS'); ?></div>
+			<div class="cell grid-x grid-margin-x margin-y">
 				<div class="cell large-6 grid-x">
 					<label for="acyencoding" class="cell medium-6">File charset</label>
 					<div class="cell medium-6">
@@ -36,8 +36,6 @@
                         ?>
 					</div>
 				</div>
-			</div>
-			<div class="cell grid-x">
                 <?php if ($this->config->get('require_confirmation')) { ?>
 					<div class="cell large-6 grid-x">
                         <?php

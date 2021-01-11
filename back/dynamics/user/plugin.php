@@ -17,7 +17,7 @@ class plgAcymUser extends acymPlugin
         global $acymCmsUserVars;
         $this->cmsUserVars = $acymCmsUserVars;
 
-        $this->pluginDescription->name = acym_translation_sprintf('ACYM_CMS_USER', '{__CMS__}');
+        $this->pluginDescription->name = acym_translationSprintf('ACYM_CMS_USER', '{__CMS__}');
     }
 
     public function dynamicText($mailId)
@@ -486,7 +486,7 @@ class plgAcymUser extends acymPlugin
     {
         $this->onAcymProcessFilter_acy_group($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     private function _processAcyCMSField(&$query, $options, $num)
@@ -540,7 +540,7 @@ class plgAcymUser extends acymPlugin
     {
         $this->onAcymProcessFilter_acy_cmsfield($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     private function _summaryGroup(&$automation)
@@ -561,7 +561,7 @@ class plgAcymUser extends acymPlugin
             }
         }
 
-        $finalText = acym_translation_sprintf(
+        $finalText = acym_translationSprintf(
             'ACYM_FILTER_ACY_GROUP_SUMMARY',
             acym_translation($automation['acy_group']['in'] == 'in' ? 'ACYM_IN' : 'ACYM_NOT_IN'),
             acym_translation($automation['acy_group']['group'])
@@ -578,7 +578,7 @@ class plgAcymUser extends acymPlugin
         $this->_summaryGroup($automation);
 
         if (!empty($automation['acy_cmsfield'])) {
-            $automation = acym_translation_sprintf(
+            $automation = acym_translationSprintf(
                 'ACYM_CONDITION_ACY_CMS_FIELD_SUMMARY',
                 $automation['acy_cmsfield']['field'],
                 $automation['acy_cmsfield']['operator'],
@@ -603,7 +603,7 @@ class plgAcymUser extends acymPlugin
         $this->_summaryGroup($automation);
 
         if (!empty($automation['acy_cmsfield'])) {
-            $automation = acym_translation_sprintf(
+            $automation = acym_translationSprintf(
                 'ACYM_FILTER_ACY_CMS_FIELD_SUMMARY',
                 $automation['acy_cmsfield']['field'],
                 $automation['acy_cmsfield']['operator'],

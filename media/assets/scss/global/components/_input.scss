@@ -1,3 +1,20 @@
+.input-group {
+    margin-bottom: 0;
+}
+
+.margin-y {
+    margin-bottom: -1rem;
+
+    & > .cell {
+        margin-bottom: 1rem;
+    }
+}
+
+[type="text"], [type="password"], [type="date"], [type="datetime"], [type="datetime-local"], [type="month"], [type="week"], [type="email"], [type="number"], [type="search"], [type="tel"], [type="time"], [type="url"], [type="color"],
+textarea, select {
+    margin-bottom: 0;
+}
+
 input[type="checkbox"] {
     @supports (-ms-ime-align:auto) {
         visibility: visible;
@@ -19,19 +36,19 @@ input[type="checkbox"] {
         }
         font-weight: 100;
         display: block;
-        content: "\e926";
+        content: "\e912";
         position: absolute;
         visibility: visible;
-        font-size: 23px;
+        font-size: 1rem;
         padding-left: 10px;
-        color: map-get($foundation-palette, primary);
+        color: $color-palette-dark-blue;
         cursor: pointer;
         top: -9px;
-        left: -10px;
+        left: -9px;
     }
 
     &:checked:after {
-        content: "\e925";
+        content: "\e926";
     }
 
     &:disabled {
@@ -45,11 +62,6 @@ input[type="checkbox"] {
     font-weight: 400;
     line-height: 1.8;
     color: $black;
-}
-
-.smaller-checkbox:after {
-    font-size: 25px !important;
-    top: -5px !important;
 }
 
 .acym__input-error {
@@ -75,40 +87,45 @@ input[type="checkbox"] {
     }
 }
 
-[type="checkbox"] + .acym__input-error, [type="radio"] + .acym__input-error {
-    margin-top: 0;
+[type="checkbox"], [type="radio"] {
+
+    & + .acym__input-error {
+        margin-top: 0;
+
+        & + label {
+            display: inline-block;
+            vertical-align: baseline;
+            margin-left: .3rem;
+            margin-right: 1rem;
+            margin-bottom: 0;
+        }
+    }
 
     & + label {
-        display: inline-block;
-        vertical-align: baseline;
-        margin-left: 0.5rem;
-        margin-right: 1rem;
-        margin-bottom: 0;
+        margin-left: .3rem;
     }
 }
 
 input[type="text"].intext_input, input[type="number"].intext_input {
     width: 60px;
     display: inline-block;
-    margin-bottom: 0;
 }
 
 input[type="text"].intext_input_large, input[type="email"].intext_input_large {
     width: 80%;
     display: inline-block;
-    margin-bottom: 0;
 }
 
-textarea.acym__blue {
-    background-color: $light-blue;
-    border-color: $light-blue;
+textarea {
+    background-color: $white;
+    border-color: $dark-gray;
     border-radius: 4px;
     box-shadow: none;
     font-size: .8rem;
 
-    &:focus {
-        background-color: $light-blue;
-        border-color: map-get($foundation-palette, primary);
+    &:focus, &:hover {
+        background-color: $white;
+        border-color: $color-palette-dark-blue;
         box-shadow: none;
     }
 }

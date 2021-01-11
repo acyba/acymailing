@@ -2,11 +2,6 @@
     #acym_stats {
         position: relative;
 
-        .acym__title__stats {
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
         .acym__subtitle__stats {
             font-size: 1rem;
             margin-bottom: 2rem;
@@ -60,14 +55,8 @@
         }
 
         #acym_stats_global {
-
             .acym__stats__export {
                 text-align: right;
-            }
-
-            .acym__stats__all__campaigns__dashboard {
-                font-weight: bold;
-                font-size: 1.5rem;
             }
 
             .acym__stats__campaign__label {

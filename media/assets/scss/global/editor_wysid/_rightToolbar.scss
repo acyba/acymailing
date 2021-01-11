@@ -84,7 +84,7 @@
             }
 
             .acym__wysid__social__icons__import__text {
-                color: $primary-light-color;
+                color: $color-palette-cyan;
                 font-size: 16px;
                 cursor: pointer;
             }
@@ -101,7 +101,6 @@
         }
 
         #acym__wysid__right__toolbar__settings {
-
             label {
                 cursor: default;
                 padding: 7px 0 7px 9px;
@@ -314,5 +313,11 @@
 
     .acym__wysid__right__toolbar__p, .acym__wysid__context__modal__container {
         width: 100%;
+    }
+
+    .acym__woocommerce__last__purchased__cat__container {
+        .select2-container {
+            width: 100% !important;
+        }
     }
 }

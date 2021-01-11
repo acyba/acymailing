@@ -2,28 +2,19 @@
     #campaigns_tests_step {
         margin-bottom: 4rem;
 
-        .acym_zone_title {
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-
         .acym_zone_separator {
             border-right: 1px solid $light-gray;
         }
     }
 
+    .acym__iframe_spamtest {
+        width: 98%;
+        height: 100%;
+    }
+
     #spam_test_zone {
         i {
             font-size: 24px;
-        }
-
-        #launch_spamtest {
-            margin: .5rem 0 1rem 0;
-
-            &.acym_icon_disabled {
-                opacity: 0.5;
-                cursor: default;
-            }
         }
 
         .acym_icon_green {

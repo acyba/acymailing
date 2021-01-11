@@ -5,7 +5,7 @@
 		<!--</div>-->
 		<div class="cell grid-x grid-margin-x">
 			<div class="cell acym_area medium-6 acym__content">
-				<div class="acym_area_title"><?php echo acym_translation('ACYM_FIELDS_TO_EXPORT'); ?></div>
+				<div class="acym__title"><?php echo acym_translation('ACYM_FIELDS_TO_EXPORT'); ?></div>
 				<p><span id="acym__users__export__check_all_field"><?php echo acym_strtolower(acym_translation('ACYM_ALL')); ?></span> |
 					<span id="acym__users__export__check_default_field"><?php echo acym_strtolower(acym_translation('ACYM_DEFAULT')); ?></span></p>
 				<div class="margin-bottom-1">
@@ -15,7 +15,7 @@
                         if (in_array($fieldName, ['id', 'automation'])) continue;
 
                         $checked = in_array($fieldName, $defaultFields) ? 'checked="checked"' : '';
-                        echo '<input '.$checked.' id="checkbox_'.$fieldName.'" class="acym__users__export__export_fields smaller-checkbox" type="checkbox" name="export_fields[]" value="'.$fieldName.'">
+                        echo '<input '.$checked.' id="checkbox_'.$fieldName.'" class="acym__users__export__export_fields" type="checkbox" name="export_fields[]" value="'.$fieldName.'">
                         	<label for="checkbox_'.$fieldName.'">'.$fieldName.'</label><br/>';
                     }
 
@@ -25,7 +25,7 @@
                         $checked = in_array($field->id, $defaultFields) ? 'checked="checked"' : '';
                         $fieldName = $field->name;
 
-                        echo '<input '.$checked.' id="checkbox_'.$fieldName.'" class="acym__users__export__export_fields smaller-checkbox" type="checkbox" name="export_fields[]" value="'.$field->id.'">
+                        echo '<input '.$checked.' id="checkbox_'.$fieldName.'" class="acym__users__export__export_fields" type="checkbox" name="export_fields[]" value="'.$field->id.'">
                         	<label for="checkbox_'.$fieldName.'">'.$fieldName.'</label><br/>';
                     }
                     ?>
@@ -41,7 +41,7 @@
                     ?>
 					<div class="cell medium-auto"></div>
 				</div>
-				<div class="grid-x">
+				<div class="grid-x margin-bottom-1">
 					<label class="cell medium-6 xxlarge-3"><?php echo acym_translation('ACYM_ENCODING'); ?>
                         <?php
                         echo $data['encodingHelper']->charsetField(
@@ -65,7 +65,7 @@
 				</div>
 			</div>
 			<div class="cell acym_area medium-6 acym__content">
-				<div class="acym_area_title"><?php echo acym_translation('ACYM_USERS_TO_EXPORT'); ?></div>
+				<div class="acym__title"><?php echo acym_translation('ACYM_USERS_TO_EXPORT'); ?></div>
                 <?php if (empty($data['checkedElements']) || $data['isPreselectedList']) { ?>
 					<fieldset id="acym__users__export__users-to-export" class="margin-bottom-1">
                         <?php echo acym_radio(
@@ -112,7 +112,7 @@
                 <?php } ?>
 			</div>
 		</div>
-		<div class="cell grid-x grid-margin-x margin-top-2">
+		<div class="cell grid-x grid-margin-x margin-top-1">
 			<div class="cell hide-for-small-only medium-auto"></div>
             <?php
             echo acym_cancelButton();

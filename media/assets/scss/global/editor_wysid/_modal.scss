@@ -4,6 +4,19 @@
     }
 }
 
+#acym__wysid__modal {
+    .close-button.acym__wysid__modal--close span {
+        color: $color-palette-dark-blue;
+        background-color: $color-palette-light-blue;
+        width: 27px;
+        display: block;
+        border-radius: 4px;
+        position: absolute;
+        right: -10px;
+        top: -3px;
+    }
+}
+
 #acym__wysid__modal__dynamic-text {
     z-index: 660000;
     top: 0;
@@ -27,14 +40,22 @@
     #acym__wysid__modal__dynamic-text__ui {
         z-index: 160200;
         position: absolute;
+        border-radius: 8px;
 
         #acym__wysid__modal__dynamic-text__close__icon {
             position: absolute;
-            top: 6px;
-            right: 22px;
+            top: 3px;
+            right: 6px;
             z-index: 99999999;
-            color: $font-primary;
+            color: $color-palette-dark-blue;
             cursor: pointer;
+
+            &:before {
+                background-color: $color-palette-light-blue;
+                font-size: 19px;
+                padding: 4px;
+                border-radius: 4px;
+            }
         }
 
         @media screen and (min-width: 649px) {

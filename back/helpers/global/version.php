@@ -24,7 +24,7 @@ function acym_upgradeTo($version)
     $link = ACYM_ACYMAILLING_WEBSITE.'pricing';
     $text = $version == 'essential' ? 'AcyMailing Essential' : 'AcyMailing Enterprise';
     echo '<div class="acym__upgrade cell grid-x text-center align-center">
-            <h2 class="acym__listing__empty__title cell">'.acym_translation_sprintf('ACYM_USE_THIS_FEATURE', '<span class="acym__color__blue">'.$text.'</span>').'</h2>
+            <h2 class="acym__listing__empty__title cell">'.acym_translationSprintf('ACYM_USE_THIS_FEATURE', '<span class="acym__color__blue">'.$text.'</span>').'</h2>
             <a target="_blank" href="'.$link.'" class="button  cell shrink">'.acym_translation('ACYM_UPGRADE_NOW').'</a>
           </div>';
 }

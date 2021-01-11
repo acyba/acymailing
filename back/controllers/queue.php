@@ -96,7 +96,7 @@ class QueueController extends acymController
             '',
             null,
             'data-reveal-larger',
-            'class="cell medium-6 large-shrink acym__toolbar__button acym__toolbar__button-primary" data-reload="true" data-ajax="true" data-iframe="&ctrl=queue&task=continuesend&id=0&totalsend=0"'
+            'class="cell medium-6 large-shrink button" data-reload="true" data-ajax="true" data-iframe="&ctrl=queue&task=continuesend&id=0&totalsend=0"'
         );
         $toolbarHelper->addOtherContent($otherContent);
         $toolbarHelper->addFilterByTag($data, 'cqueue_tag', 'acym__queue__filter__tags acym__select');
@@ -160,7 +160,7 @@ class QueueController extends acymController
             '',
             null,
             'data-reveal-larger',
-            'class="cell medium-shrink acym__toolbar__button acym__toolbar__button-primary" data-reload="true" data-ajax="true" data-iframe="&ctrl=queue&task=continuesend&id=0&totalsend=0"'
+            'class="cell medium-shrink button" data-reload="true" data-ajax="true" data-iframe="&ctrl=queue&task=continuesend&id=0&totalsend=0"'
         );
         $toolbarHelper->addOtherContent($otherContent);
         $toolbarHelper->addFilterByTag($data, 'dqueue_tag', 'acym__queue__filter__tags acym__select');
@@ -275,7 +275,7 @@ class QueueController extends acymController
 
         $queueClass = new QueueClass();
         $deleted = $queueClass->emptyQueue();
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_EMAILS_REMOVED_QUEUE', $deleted));
+        acym_enqueueMessage(acym_translationSprintf('ACYM_EMAILS_REMOVED_QUEUE', $deleted));
 
         $this->campaigns();
     }

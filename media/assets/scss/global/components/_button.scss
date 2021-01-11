@@ -1,59 +1,72 @@
 .button {
-    border: 0;
+    background-color: $color-palette-cyan;
+    border: 1px solid $color-palette-cyan;
+    color: $white;
+    border-radius: 4px;
+    transition: .2s ease-in-out;
+    cursor: pointer;
     min-height: 0;
-    padding: 0.85em 1em;
+    padding: .5rem .8rem;
     font-weight: 500;
     font-size: 0.8rem;
     height: auto;
+    margin-bottom: 0;
+    box-shadow: none;
 
-    &.disabled {
-        opacity: 0.4;
-    }
+    &:hover {
+        background-color: $blue-green;
+        border: 1px solid $blue-green;
 
-    &.acym__search__button {
-        padding: 0 1rem;
+        &:active {
+            background-color: $color-palette-dark-blue;
+            border: 1px solid $color-palette-dark-blue;
+        }
     }
 
     &.button-secondary {
-        border: none;
-        background-color: $light-blue !important;
-        color: $primary-color !important;
-        transition: .2s;
-        font-weight: 500;
+        background-color: $white;
+        color: $color-palette-cyan;
 
         &:hover {
-            opacity: 0.7;
-            border: none !important;
-            background-color: $light-blue;
-            color: $primary-color;
+            background-color: $blue-green;
+            border: 1px solid $blue-green;
+            color: $white;
+
+            span {
+                color: $white;
+            }
+
+            &:active {
+                background-color: $color-palette-dark-blue;
+                border: 1px solid $color-palette-dark-blue;
+                color: $white;
+
+                span {
+                    color: $white;
+                }
+            }
         }
 
         &:disabled {
-            opacity: 0.4;
+            background-color: $white;
+            border: 1px solid $dark-gray;
+            color: $dark-gray;
+
+            span {
+                color: $dark-gray;
+            }
+        }
+
+        span {
+            color: $color-palette-cyan;
         }
     }
 
-    &.hollow.is-active {
-        color: white !important;
-        background-color: $primary-color !important;
-
-        &:focus {
-            color: white;
-            background-color: $primary-color;
-        }
-    }
-
-    &.light_button {
-        padding: .6rem .8rem;
-        font-size: 0.7rem;
-        min-height: 0;
-        margin-bottom: 0;
-    }
-
-    &.button-cancel {
-        border: 2px solid $alert-color;
-        color: $alert-color;
-        background-color: transparent;
+    // The !important markers are there because of WordPress
+    &.disabled:not(.clear), &[disabled]:not(.clear) {
+        background-color: $dark-gray !important;
+        border: 1px solid $dark-gray !important;
+        color: $white !important;
     }
 
     &.clear.secondary,
@@ -80,60 +93,39 @@
         transition: .2s;
         position: relative;
 
-        &:hover, &:focus {
-            background-color: $white;
+        &:hover {
+            background-color: $alert-color;
+            color: $white;
+
+            &:active {
+                background-color: $red;
+                border: 1px solid $red;
+                color: $white;
+
+                span {
+                    color: $white;
+                }
+            }
+        }
+
+        span {
             color: $alert-color;
-            opacity: .7;
         }
     }
-}
 
-.acym__list__button__add__mail__welcome__unsub {
-    height: 100px;
-    width: 100px;
-    border-radius: 50%;
-    background-color: $light-gray;
-    box-shadow: 0 0 15px 2px #ebebeb;
+    i {
+        font-size: 15px;
+        vertical-align: middle;
+        margin-right: 6px;
+    }
 
-    &:hover, &:focus {
+    span {
         color: $white;
-
-        i {
-            font-size: 90px;
-        }
-    }
-
-    i {
-        transition: all .2s ease;
-        font-size: 70px;
     }
 }
 
-#dtext_subject_button {
-    padding: 5px;
-    min-height: inherit;
-
-    i {
-        color: white !important;
-        width: 40px;
-        height: 20px;
-        font-size: 20px;
-    }
-}
-
+// Relative / Specific date selection field
 .acym__type__choosen {
-    height: 39px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    padding: .85em 1em !important;
-
-    &:hover {
-        background-color: $primary-color !important;
-        color: $white !important;
-        opacity: 0.8 !important;
-    }
-
     &:first-of-type {
         border-radius: $primary-radius 0 0 $primary-radius;
     }
@@ -143,42 +135,24 @@
     }
 }
 
-.acym__input__file {
-    span {
-        line-height: 35px;
-        font-weight: 500;
-    }
-}
-
 .button-radio {
-    border: 2px solid map-get($foundation-palette, primary-light);
-    padding: 1rem;
-    color: map-get($foundation-palette, primary-light);
+    border: 1px solid $color-palette-cyan;
+    padding: .5rem;
+    color: $color-palette-cyan;
     cursor: pointer;
     transition: .2s;
     transition-property: color, border;
     box-shadow: 0 0 4px 2px rgba(100, 100, 100, .1);
-
-    &:hover {
-        border-color: map-get($foundation-palette, primary);
-        color: map-get($foundation-palette, primary);
-    }
 }
 
 .button-radio-unselected {
     border-color: $light-gray !important;
     color: $light-gray !important;
-
     box-shadow: none !important;
 }
 
 .acym__status__select {
-    color: map-get($foundation-palette, primary-light) !important;
-}
-
-.disabled-button {
-    opacity: 0.4;
-    cursor: not-allowed;
+    color: $color-palette-cyan !important;
 }
 
 button {
@@ -186,14 +160,6 @@ button {
     word-break: break-word;
     white-space: normal;
     border: 0;
-
-    &[data-task], &[data-step], &.acym__toolbar__button {
-        i {
-            font-size: 15px;
-            vertical-align: middle;
-            margin-right: 6px;
-        }
-    }
 }
 
 .unselected {

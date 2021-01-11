@@ -4,7 +4,7 @@
 		<input name="mail[name]" type="text" value="<?php echo acym_escape($data['mailInformation']->name); ?>">
 	</label>
 </div>
-<div class="cell large-6 margin-bottom-1">
+<div class="cell large-6">
 	<label>
         <?php
         echo acym_translation('ACYM_TAGS');

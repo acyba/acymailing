@@ -34,7 +34,7 @@
                         <?php echo acym_translation('ACYM_ACTIVE'); ?>
 					</div>
 					<div class="medium-1 small-2 text-center cell acym__listing__header__title">
-                        <?php echo acym_translation_sprintf('ACYM_ID'); ?>
+                        <?php echo acym_translationSprintf('ACYM_ID'); ?>
 					</div>
 				</div>
 			</div>

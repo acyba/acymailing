@@ -1,4 +1,4 @@
-<h2 class="cell acym__walkthrough__title"><?php echo acym_translation('ACYM_WHATS_NEXT'); ?></h2>
+<h2 class="cell acym__title text-center"><?php echo acym_translation('ACYM_WHATS_NEXT'); ?></h2>
 <div class="cell grid-x margin-top-2">
 	<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_SEEMS_SOMETHING_WENT_WRONG'); ?></p>
 </div>
@@ -17,7 +17,7 @@
 		</div>
 		<input type="email"
 			   name="email"
-			   class="cell small-8 margin-top-1 acym__light__input text-center"
+			   class="cell small-8 margin-top-1 text-center"
 			   placeholder="<?php echo acym_translation('ACYM_YOUR_EMAIL'); ?>"
 			   value="<?php echo acym_escape(empty($data['email']) ? '' : $data['email']); ?>">
 	</div>
@@ -28,8 +28,8 @@
 	<div class="cell grid-x medium-9 align-center margin-top-1">
 		<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_THESE_INFO_ARE_ONLY_ASK_TO_SEND_TEST'); ?></p>
 		<div class="cell grid-x grid-margin-x margin-top-2">
-			<input type="email" name="gmail_address" class="cell medium-6 acym__light__input" placeholder="<?php echo acym_translation('ACYM_GMAIL_EMAIL'); ?>">
-			<input type="password" name="gmail_password" class="cell medium-6 acym__light__input" placeholder="<?php echo acym_translation('ACYM_GMAIL_PASSWORD'); ?>">
+			<input type="email" name="gmail_address" class="cell medium-6" placeholder="<?php echo acym_translation('ACYM_GMAIL_EMAIL'); ?>">
+			<input type="password" name="gmail_password" class="cell medium-6" placeholder="<?php echo acym_translation('ACYM_GMAIL_PASSWORD'); ?>">
 		</div>
 	</div>
 	<div class="cell auto hide-for-small-only"></div>

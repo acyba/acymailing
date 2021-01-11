@@ -1,12 +1,4 @@
 #acym_wrapper {
-    .button.acym__users__import__from_file__button-valid {
-        background-color: $primary-color;
-
-        &[disabled] {
-            background-color: $primary-color !important;
-        }
-    }
-
     .acym__users__import__from_file__file {
         font-size: 17px;
         display: none;
@@ -27,7 +19,6 @@
     }
 
     #acym__users__import__generic {
-
         .fieldAssignment {
             border-radius: $primary-radius;
             background-color: $light-blue;

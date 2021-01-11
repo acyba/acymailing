@@ -8,7 +8,7 @@ class HeaderHelper extends acymObject
 {
     public function display($breadcrumb)
     {
-        $header = '<div class="cell large-6 xlarge-7 xxlarge-8 grid-x">';
+        $header = '<div class="cell large-6 xlarge-7 xxlarge-8 grid-x acym_vcenter">';
         $header .= $this->getBreadcrumb($breadcrumb);
         $header .= '</div>';
 
@@ -19,7 +19,7 @@ class HeaderHelper extends acymObject
         $header .= $this->checkVersionArea();
         $header .= '</div>';
 
-        $header .= '<div class="cell shrink grid-x align-right">';
+        $header .= '<div class="cell shrink grid-x align-right acym_vcenter">';
         $header .= $this->getCheckVersionButton();
         $header .= $this->getHelpWedButton();
         $header .= $this->getDocumentationButton();
@@ -51,9 +51,8 @@ class HeaderHelper extends acymObject
             if (!empty($latestNews) && strtotime($latestNews->date) > strtotime($oneNews->date)) break;
 
             // If the news isn't published or that the language isn't correct, leave
-            if (empty($oneNews->published) || (strtolower($oneNews->language) != strtolower($currentLanguage) && (strtolower(
-                            $oneNews->language
-                        ) != 'default' || !empty($latestNews)))) {
+            $language = strtolower($oneNews->language);
+            if (empty($oneNews->published) || ($language != strtolower($currentLanguage) && ($language != 'default' || !empty($latestNews)))) {
                 continue;
             }
 
@@ -107,7 +106,7 @@ class HeaderHelper extends acymObject
         $header = '<i class="cell shrink acym-logo"></i>';
         $header .= '<div id="acym_global_navigation" class="cell auto">
                         <nav aria-label="You are here:" role="navigation">
-                            <ul class="breadcrumbs grid-x">'.implode('', $links).'</ul>
+                            <ul class="breadcrumbs grid-x">'.implode('<li class="breadcrumbs__separator"><i class="acymicon-keyboard_arrow_right"></i></li>', $links).'</ul>
                         </nav>
                     </div>';
 
@@ -133,7 +132,7 @@ class HeaderHelper extends acymObject
             }
             $version .= acym_tooltip(
                 '<span class="acy_updateversion acym__color__red">'.$currentVersion.'</span>',
-                acym_translation_sprintf('ACYM_CLICK_UPDATE', $latestVersion),
+                acym_translationSprintf('ACYM_CLICK_UPDATE', $latestVersion),
                 '',
                 acym_translation('ACYM_OLD_VERSION'),
                 $downloadLink
@@ -164,12 +163,21 @@ class HeaderHelper extends acymObject
             );
         } else {
             $version .= '<div class="acylicence_valid">
-                            <span class="acy_subscriptionok acym__color__green">'.acym_translation_sprintf(
+                            <span class="acy_subscriptionok acym__color__green">'.acym_translationSprintf(
                     'ACYM_VALID_UNTIL',
                     acym_getDate($expirationDate, acym_translation('ACYM_DATE_FORMAT_LC4'))
                 ).'</span>
                         </div>';
         }
+
+        $creditRemainingSendingMethod = '';
+        acym_trigger('onAcymGetCreditRemainingSendingMethod', [&$creditRemainingSendingMethod]);
+        if (!empty($creditRemainingSendingMethod)) {
+            $version .= '<div class="acy_sending_method_credits">
+                            <span>'.$creditRemainingSendingMethod.'</span>
+                        </div>';
+        }
+
         $version .= '</div>';
 
         return $version;

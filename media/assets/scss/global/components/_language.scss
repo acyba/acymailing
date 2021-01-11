@@ -6,24 +6,10 @@
     line-height: 50px;
 }
 
-.acym__language__modal__title {
-    font-weight: 600;
-    font-size: 16px;
-}
-
-.acym__language__modal__header {
-    .acym__language__modal__header__share {
-        i {
-            vertical-align: middle;
-            margin-left: 7px;
-        }
-    }
-}
-
 .acym__modal__language__share__title {
     font-size: 20px;
     font-weight: 800;
-    color: map-get($foundation-palette, primary-light);
+    color: $color-palette-cyan;
 }
 
 .acym__modal__language__share__information {
@@ -43,17 +29,5 @@
 
     &:focus {
         border: none;
-    }
-}
-
-.acym__language__modal__body {
-    border-radius: 4px;
-}
-
-#acym__button__load__latest__language {
-    padding: 14px 30px;
-
-    i {
-        vertical-align: inherit;
     }
 }

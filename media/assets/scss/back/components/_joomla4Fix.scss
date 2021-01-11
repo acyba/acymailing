@@ -9,10 +9,6 @@ body {
                 text-align: left !important;
             }
         }
-
-        a[target="_blank"]::before {
-            content: '';
-        }
     }
 
     &.com_acym {

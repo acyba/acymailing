@@ -10,6 +10,10 @@
     // CSS applied on the DText popup
     #acym_content {
         .acym__dynamics__popup__menu {
+            #acym__dynamics__popup__menu__insert__tag {
+                z-index: 1;
+            }
+
             #acym__dynamics__popup__menu__insert__tag, .acym__popup__listing {
                 padding: 1rem;
                 position: sticky;

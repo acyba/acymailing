@@ -7,7 +7,7 @@
 			   name="editor_thumbnail"
 			   value="<?php echo acym_escape($data['mail']->thumbnail); ?>" />
 		<input type="hidden" id="acym__mail__edit__editor__social__icons" value="<?php echo empty($data['social_icons']) ? '{}' : acym_escape($data['social_icons']); ?>">
-		<input type="hidden" id="acym__mail__type" name="mail[type]" value="<?php echo empty($data['mail']->type) ? 'standard' : $data['mail']->type; ?>">
+		<input type="hidden" id="acym__mail__type" name="mail[type]" value="<?php echo empty($data['mail']->type) ? $data['mailClass']::TYPE_STANDARD : $data['mail']->type; ?>">
 		<input type="hidden" name="list_ids" value="<?php echo empty($data['list_id'][0]) ? 0 : $data['list_id'][0]; ?>">
         <?php
         include acym_getView('mails', 'edit_actions', true);
@@ -20,7 +20,7 @@
         ?>
 		<div class="cell medium-auto">
 			<label>
-                <?php echo acym_translation($data['mail']->type == 'automation' ? 'ACYM_NAME' : 'ACYM_TEMPLATE_NAME'); ?>
+                <?php echo acym_translation($data['mail']->type == $data['mailClass']::TYPE_AUTOMATION ? 'ACYM_NAME' : 'ACYM_TEMPLATE_NAME'); ?>
 				<input name="mail[name]" type="text" class="acy_required_field" value="<?php echo acym_escape($data['mail']->name); ?>" required>
 			</label>
 		</div>
@@ -29,7 +29,7 @@
                 <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
 				<input name="mail[subject]" type="text" value="<?php echo acym_escape($data['mail']->subject); ?>" <?php echo in_array(
                     $data['mail']->type,
-                    ['welcome', 'unsubscribe', 'automation']
+                    [$data['mailClass']::TYPE_WELCOME, $data['mailClass']::TYPE_UNSUBSCRIBE, $data['mailClass']::TYPE_AUTOMATION]
                 ) ? 'required' : ''; ?>>
 			</label>
 		</div>
@@ -59,7 +59,7 @@
                                 ?>
 							</label>
 						</div>
-						<textarea class="acym__blue"
+						<textarea
 								  name="editor_stylesheet"
 								  id="acym__mail__edit__html__stylesheet"
 								  cols="30"
@@ -68,7 +68,7 @@
 					</div>
 					<div class="cell medium-auto">
 						<label for="acym__mail__edit__custom__header"><?php echo acym_translation('ACYM_CUSTOM_HEADERS'); ?></label>
-						<textarea class="acym__blue" id="acym__mail__edit__custom__header" name="editor_headers" cols="30" rows="15" type="text"><?php echo acym_escape(
+						<textarea id="acym__mail__edit__custom__header" name="editor_headers" cols="30" rows="15" type="text"><?php echo acym_escape(
                                 $data['mail']->headers
                             ); ?></textarea>
 					</div>

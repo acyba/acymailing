@@ -856,7 +856,7 @@ class plgAcymHikashop extends acymPlugin
         }
 
         $conditions['user']['hikapurchased'] = new stdClass();
-        $conditions['user']['hikapurchased']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'HikaShop', acym_translation('ACYM_PURCHASED'));
+        $conditions['user']['hikapurchased']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'HikaShop', acym_translation('ACYM_PURCHASED'));
         $conditions['user']['hikapurchased']->option = '<div class="cell grid-x grid-margin-x">';
 
         $conditions['user']['hikapurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_BOUGHT').'</div>';
@@ -889,9 +889,9 @@ class plgAcymHikashop extends acymPlugin
 
         $conditions['user']['hikapurchased']->option .= '<div class="cell grid-x grid-margin-x">';
         $conditions['user']['hikapurchased']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][hikapurchased][datemin]', '', 'cell shrink');
-        $conditions['user']['hikapurchased']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['hikapurchased']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['hikapurchased']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_DATE_CREATED').'</span>';
-        $conditions['user']['hikapurchased']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['hikapurchased']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['hikapurchased']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][hikapurchased][datemax]', '', 'cell shrink');
         $conditions['user']['hikapurchased']->option .= '</div>';
 
@@ -905,9 +905,9 @@ class plgAcymHikashop extends acymPlugin
         }
 
         $conditions['user']['hikareminder'] = new stdClass();
-        $conditions['user']['hikareminder']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'HikaShop', acym_translation('ACYM_REMINDER'));
+        $conditions['user']['hikareminder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'HikaShop', acym_translation('ACYM_REMINDER'));
         $conditions['user']['hikareminder']->option = '<div class="cell">';
-        $conditions['user']['hikareminder']->option .= acym_translation_sprintf(
+        $conditions['user']['hikareminder']->option .= acym_translationSprintf(
             'ACYM_ORDER_WITH_STATUS',
             '<input type="number" name="acym_condition[conditions][__numor__][__numand__][hikareminder][days]" value="1" min="1" class="intext_input"/>',
             '<div class="intext_select_automation cell margin-right-1">'.acym_select(
@@ -1022,7 +1022,7 @@ class plgAcymHikashop extends acymPlugin
                 'ACYM_ANY_CATEGORY'
             ) : $cats[$automationCondition['hikapurchased']['category']]->category_name;
 
-            $finalText = acym_translation_sprintf('ACYM_CONDITION_PURCHASED', $product, $category);
+            $finalText = acym_translationSprintf('ACYM_CONDITION_PURCHASED', $product, $category);
 
             $dates = [];
             if (!empty($automationCondition['hikapurchased']['datemin'])) {
@@ -1047,7 +1047,7 @@ class plgAcymHikashop extends acymPlugin
 
             $paymentName = @$paymentMethods[$automationCondition['hikareminder']['payment']]->payment_name;
             if (empty($paymentName)) $paymentName = 'ACYM_ANY_PAYMENT_METHOD';
-            $automationCondition = acym_translation_sprintf(
+            $automationCondition = acym_translationSprintf(
                 'ACYM_CONDITION_ECOMMERCE_REMINDER',
                 acym_translation($paymentName),
                 intval($automationCondition['hikareminder']['days']),
@@ -1065,7 +1065,7 @@ class plgAcymHikashop extends acymPlugin
     {
         $this->onAcymProcessFilter_hikapurchased($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_hikapurchased(&$query, $options, $num)
@@ -1077,7 +1077,7 @@ class plgAcymHikashop extends acymPlugin
     {
         $this->onAcymProcessFilter_hikareminder($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_hikareminder(&$query, $options, $num)
@@ -1102,7 +1102,7 @@ class plgAcymHikashop extends acymPlugin
         if (empty($statusClass->categories)) return;
 
         $triggers['user']['hikashoporder'] = new stdClass();
-        $triggers['user']['hikashoporder']->name = acym_translation_sprintf('ACYM_ORDER_STATUS_CHANGED', 'HikaShop', '');
+        $triggers['user']['hikashoporder']->name = acym_translationSprintf('ACYM_ORDER_STATUS_CHANGED', 'HikaShop', '');
 
         $cats = [];
         foreach ($statusClass->categories as $category) {
@@ -1195,7 +1195,7 @@ class plgAcymHikashop extends acymPlugin
         if (!empty($automation->triggers['hikashoporder']['status'])) {
             //$return = acym_translation('ACYM_HIKASHOP_ORDER_STATUS_TO').' ';
             $status = implode(', ', $automation->triggers['hikashoporder']['status']);
-            $automation->triggers['hikashoporder'] = acym_translation_sprintf('ACYM_ORDER_STATUS_CHANGED', 'HikaShop', $status);
+            $automation->triggers['hikashoporder'] = acym_translationSprintf('ACYM_ORDER_STATUS_CHANGED', 'HikaShop', $status);
         }
     }
 
@@ -1233,7 +1233,7 @@ class plgAcymHikashop extends acymPlugin
                     !empty($followup->condition) ? $followup->condition['order_status_status'] : '',
                     'class="acym__select"'
                 ).'</span>';
-            $additionalCondition['order_status'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
+            $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
 
             $ajaxParams = json_encode(
@@ -1260,7 +1260,7 @@ class plgAcymHikashop extends acymPlugin
                     !empty($followup->condition) ? $followup->condition['products_status'] : '',
                     'class="acym__select"'
                 ).'</span>';
-            $additionalCondition['products'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
+            $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
             $ajaxParams = json_encode(
                 [
@@ -1286,7 +1286,7 @@ class plgAcymHikashop extends acymPlugin
                     !empty($followup->condition) ? $followup->condition['categories_status'] : '',
                     'class="acym__select"'
                 ).'</span>';
-            $additionalCondition['categories'] = acym_translation_sprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
+            $additionalCondition['categories'] = acym_translationSprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
         }
     }
 
@@ -1304,7 +1304,7 @@ class plgAcymHikashop extends acymPlugin
                 WHERE `orderstatus_id` IN ('.implode(', ', $condition['order_status']).') 
                 ORDER BY `orderstatus_name`'
             );
-            $return[] = acym_translation_sprintf('ACYM_ORDER_STATUS_X_IN_X', strtolower($statusArray[$condition['order_status_status']]), implode(', ', $orderStatusToDisplay));
+            $return[] = acym_translationSprintf('ACYM_ORDER_STATUS_X_IN_X', strtolower($statusArray[$condition['order_status_status']]), implode(', ', $orderStatusToDisplay));
         }
 
         if (empty($condition['products_status']) || empty($condition['products'])) {
@@ -1317,7 +1317,7 @@ class plgAcymHikashop extends acymPlugin
                 WHERE `product_id` IN ('.implode(', ', $condition['products']).') 
                 ORDER BY `product_name`'
             );
-            $return[] = acym_translation_sprintf('ACYM_PRODUCTS_X_IN_X', strtolower($statusArray[$condition['products_status']]), implode(', ', $productsToDisplay));
+            $return[] = acym_translationSprintf('ACYM_PRODUCTS_X_IN_X', strtolower($statusArray[$condition['products_status']]), implode(', ', $productsToDisplay));
         }
 
         if (empty($condition['categories_status']) || empty($condition['categories'])) {
@@ -1330,7 +1330,7 @@ class plgAcymHikashop extends acymPlugin
                 WHERE `category_type` = "product" AND `category_id` IN ('.implode(', ', $condition['categories']).') 
                 ORDER BY `category_name`'
             );
-            $return[] = acym_translation_sprintf('ACYM_CATEGORIES_X_IN_X', strtolower($statusArray[$condition['categories_status']]), implode(', ', $categoriesToDisplay));
+            $return[] = acym_translationSprintf('ACYM_CATEGORIES_X_IN_X', strtolower($statusArray[$condition['categories_status']]), implode(', ', $categoriesToDisplay));
         }
     }
 
@@ -1361,5 +1361,161 @@ class plgAcymHikashop extends acymPlugin
                 if (($status && !$inArray) || (!$status && $inArray)) unset($followups[$key]);
             }
         }
+    }
+
+    public function onRegacyOptionsDisplay($lists)
+    {
+        if (!$this->installed) return;
+
+        ?>
+		<div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
+			<div class="acym_area_title"><?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', $this->pluginDescription->name)); ?></div>
+
+			<div class="grid-x">
+				<div class="cell grid-x grid-margin-x">
+                    <?php
+                    $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', $this->pluginDescription->name).acym_info(
+                            'ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC'
+                        );
+                    echo acym_switch(
+                        'config[hikashop_sub]',
+                        $this->config->get('hikashop_sub'),
+                        $subOptionTxt,
+                        [],
+                        'xlarge-3 medium-5 small-9',
+                        'auto',
+                        '',
+                        'acym__config__hikashop_sub'
+                    );
+                    ?>
+				</div>
+				<div class="cell grid-x margin-y" id="acym__config__hikashop_sub">
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__hikashop-text">
+                            <?php echo acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info('ACYM_SUBSCRIBE_CAPTION_OPT_DESC'); ?>
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
+						<input type="text"
+							   name="config[hikashop_text]"
+							   id="acym__config__hikashop-text"
+							   value="<?php echo acym_escape($this->config->get('hikashop_text')); ?>" />
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__hikashop-lists">
+                            <?php echo acym_translation('ACYM_DISPLAYED_LISTS').acym_info('ACYM_DISPLAYED_LISTS_DESC'); ?>
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
+                        <?php
+                        echo acym_selectMultiple(
+                            $lists,
+                            'config[hikashop_lists]',
+                            explode(',', $this->config->get('hikashop_lists')),
+                            ['class' => 'acym__select', 'id' => 'acym__config__hikashop-lists'],
+                            'id',
+                            'name'
+                        );
+                        ?>
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__hikashop-checkedlists">
+                            <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info('ACYM_LISTS_CHECKED_DEFAULT_DESC'); ?>
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
+                        <?php
+                        echo acym_selectMultiple(
+                            $lists,
+                            'config[hikashop_checkedlists]',
+                            explode(',', $this->config->get('hikashop_checkedlists')),
+                            ['class' => 'acym__select', 'id' => 'acym__config__hikashop-checkedlists'],
+                            'id',
+                            'name'
+                        );
+                        ?>
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__hikashop-autolists">
+                            <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC'); ?>
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
+                        <?php
+                        echo acym_selectMultiple(
+                            $lists,
+                            'config[hikashop_autolists]',
+                            explode(',', $this->config->get('hikashop_autolists')),
+                            ['class' => 'acym__select', 'id' => 'acym__config__hikashop-autolists'],
+                            'id',
+                            'name'
+                        );
+                        ?>
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+
+				</div>
+			</div>
+		</div>
+        <?php
+    }
+
+    public function onBeforeSaveConfigFields(&$formData)
+    {
+        if (empty($formData['hikashop_lists'])) $formData['hikashop_lists'] = [];
+        if (empty($formData['hikashop_checkedlists'])) $formData['hikashop_checkedlists'] = [];
+        if (empty($formData['hikashop_autolists'])) $formData['hikashop_autolists'] = [];
+    }
+
+    public function onRegacyAddComponent(&$components)
+    {
+        $config = acym_config();
+        if (!$config->get('hikashop_sub', 0) || acym_isAdmin()) return;
+
+        $components['com_hikashop'] = [
+            'view' => ['checkout', 'user'],
+            'email' => ['data[register][email]'],
+            'password' => ['data[register][password2]'],
+            'lengthafter' => 500,
+            'containerClass' => 'hkform-group control-group',
+            'labelClass' => 'hkc-sm-4 hkcontrol-label',
+            'valueClass' => 'controls',
+            'baseOption' => 'hikashop',
+        ];
+    }
+
+    public function onAfterHikashopUserCreate($formData, $listData, $element)
+    {
+        $config = acym_config();
+        if (!$config->get('hikashop_sub', 0) || acym_isAdmin()) return;
+        if (empty($element->user_email) || empty($listData)) return;
+
+        // Get existing AcyMailing user or create one
+        $userClass = new UserClass();
+
+        $user = $userClass->getOneByEmail($element->user_email);
+        if (empty($user)) {
+            $user = new stdClass();
+            $user->email = $element->user_email;
+            $userName = [];
+            if (!empty($formData['address']['address_firstname'])) $userName[] = $formData['address']['address_firstname'];
+            if (!empty($formData['address']['address_middle_name'])) $userName[] = $formData['address']['address_middle_name'];
+            if (!empty($formData['address']['address_lastname'])) $userName[] = $formData['address']['address_lastname'];
+            if (!empty($userName)) $user->name = implode(' ', $userName);
+            $user->source = 'hikashop';
+            $user->id = $userClass->save($user);
+        }
+
+        if (empty($user->id)) return;
+
+        // Subscribe the user
+        $autoLists = explode(',', $config->get('hikashop_autolists', ''));
+        $listsToSubscribe = array_merge($listData, $autoLists);
+        if (empty($listsToSubscribe)) return;
+        $userClass->subscribe($user->id, $listsToSubscribe);
     }
 }

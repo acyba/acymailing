@@ -609,7 +609,7 @@ class plgAcymEventbooking extends acymPlugin
         acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
 
         $conditions['user']['ebregistration'] = new stdClass();
-        $conditions['user']['ebregistration']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'Event Booking', acym_translation('EB_REGISTRANTS'));
+        $conditions['user']['ebregistration']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'Event Booking', acym_translation('EB_REGISTRANTS'));
         $conditions['user']['ebregistration']->option = '<div class="cell grid-x grid-margin-x">';
 
         $conditions['user']['ebregistration']->option .= '<div class="intext_select_automation cell">';
@@ -646,9 +646,9 @@ class plgAcymEventbooking extends acymPlugin
 
         $conditions['user']['ebregistration']->option .= '<div class="cell grid-x grid-margin-x">';
         $conditions['user']['ebregistration']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][ebregistration][datemin]', '', 'cell shrink');
-        $conditions['user']['ebregistration']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['ebregistration']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['ebregistration']->option .= '<span class="acym_vcenter">'.acym_translation('EB_REGISTRATION_DATE').'</span>';
-        $conditions['user']['ebregistration']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        $conditions['user']['ebregistration']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['ebregistration']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][ebregistration][datemax]', '', 'cell shrink');
         $conditions['user']['ebregistration']->option .= '</div>';
     }
@@ -715,7 +715,7 @@ class plgAcymEventbooking extends acymPlugin
 
             $status = acym_translation($status[$automationCondition['ebregistration']['status']]);
 
-            $finalText = acym_translation_sprintf('ACYM_REGISTERED', $event, $status);
+            $finalText = acym_translationSprintf('ACYM_REGISTERED', $event, $status);
 
             $dates = [];
             if (!empty($automationCondition['ebregistration']['datemin'])) {
@@ -743,7 +743,7 @@ class plgAcymEventbooking extends acymPlugin
     {
         $this->onAcymProcessFilter_ebregistration($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_ebregistration(&$query, $options, $num)
@@ -785,7 +785,7 @@ class plgAcymEventbooking extends acymPlugin
         $params = $this->getTriggerParams();
 
         $triggers['classic']['eventbooking_reminder'] = new stdClass();
-        $triggers['classic']['eventbooking_reminder']->name = acym_translation_sprintf('ACYM_COMBINED_TRANSLATIONS', 'EventBooking', acym_translation('ACYM_REMINDER'));
+        $triggers['classic']['eventbooking_reminder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'EventBooking', acym_translation('ACYM_REMINDER'));
         $triggers['classic']['eventbooking_reminder']->option = '<div class="grid-x cell acym_vcenter"><div class="grid-x cell grid-margin-x acym_vcenter margin-bottom-1">';
         $triggers['classic']['eventbooking_reminder']->option .= '<div class="cell medium-shrink">
                                                                 <input 

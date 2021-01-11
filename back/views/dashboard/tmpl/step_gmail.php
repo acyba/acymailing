@@ -1,4 +1,4 @@
-<h2 class="acym__walkthrough__title cell"><?php echo acym_translation('ACYM_YOUR_EMAIL_CONFIGURATION'); ?></h2>
+<h2 class="acym__title text-center cell"><?php echo acym_translation('ACYM_YOUR_EMAIL_CONFIGURATION'); ?></h2>
 
 <div class="cell grid-x">
 	<p class="cell text-center acym__walkthrough__text">
@@ -12,14 +12,14 @@
 		<div class="cell">
 			<label>
                 <?php echo acym_translation('ACYM_FROM_NAME').acym_info('ACYM_FROM_NAME_INFO'); ?>
-				<input type="text" name="from_name" class="acym__light__input" required>
+				<input type="text" name="from_name" required>
 			</label>
 		</div>
 
 		<div class="cell">
 			<label>
                 <?php echo acym_translation('ACYM_FROM_MAIL_ADDRESS').acym_info('ACYM_FROM_ADDRESS_INFO'); ?>
-				<input type="email" name="from_address" class="acym__light__input" value="<?php echo empty($data['userEmail']) ? '' : acym_escape($data['userEmail']); ?>" required>
+				<input type="email" name="from_address" value="<?php echo empty($data['userEmail']) ? '' : acym_escape($data['userEmail']); ?>" required>
 			</label>
 		</div>
 	</div>
@@ -35,14 +35,14 @@
 		<div class="cell">
 			<label>
                 <?php echo acym_translation('ACYM_GMAIL_EMAIL'); ?>
-				<input type="email" name="gmail_address" class="acym__light__input" required>
+				<input type="email" name="gmail_address" required>
 			</label>
 		</div>
 
 		<div class="cell">
 			<label>
                 <?php echo acym_translation('ACYM_GMAIL_PASSWORD'); ?>
-				<input type="password" name="gmail_password" class="acym__light__input" required>
+				<input type="password" name="gmail_password" required>
 			</label>
 		</div>
 	</div>

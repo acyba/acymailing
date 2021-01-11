@@ -119,7 +119,7 @@
                                 echo acym_translation('ACYM_SENDING_DATE').' : '.acym_date($campaign->sending_date, 'M. j, Y');
                             } elseif ($data['statusAuto'] === $campaign->sending_type) {
                                 $numberCampaignsGenerated = empty($campaign->sending_params['number_generated']) ? '0' : $campaign->sending_params['number_generated'];
-                                echo acym_translation_sprintf('ACYM_X_CAMPAIGN_GENERATED', $numberCampaignsGenerated);
+                                echo acym_translationSprintf('ACYM_X_CAMPAIGN_GENERATED', $numberCampaignsGenerated);
                             }
                             ?>
 						</p>
@@ -168,7 +168,7 @@
                                 // Is an activated auto campaign
                             } elseif ($data['statusAuto'] === $campaign->sending_type && !$campaign->draft) {
                                 $numberCampaignsGenerated = empty($campaign->sending_params['number_generated']) ? '0' : $campaign->sending_params['number_generated'];
-                                $tooltip = acym_translation_sprintf('ACYM_X_CAMPAIGN_GENERATED', $numberCampaignsGenerated);
+                                $tooltip = acym_translationSprintf('ACYM_X_CAMPAIGN_GENERATED', $numberCampaignsGenerated);
 
                                 echo acym_tooltip(
                                     '<div class="cell acym__campaign__status__status acym__background-color__purple">

@@ -39,5 +39,5 @@ if (!empty($data['mailInformation'])) $data['mail'] = $data['mailInformation'];
 </div>
 <div class="cell margin-bottom-1 margin-top-1">
 	<a href="javascript:void(0);" id="acym__campaigns__attach__add"><?php echo acym_translation('ACYM_ADD_ATTACHMENT'); ?></a>
-    <?php echo acym_translation_sprintf('ACYM_MAX_UPLOAD', $data['maxupload']); ?>
+    <?php echo acym_translationSprintf('ACYM_MAX_UPLOAD', $data['maxupload']); ?>
 </div>

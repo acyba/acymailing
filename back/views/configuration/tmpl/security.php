@@ -1,7 +1,7 @@
 <?php if (!empty($data['acl'])) { ?>
 	<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
-		<div class="acym_area_title"><?php echo acym_translation('ACYM_PERMISSIONS'); ?></div>
-		<div class="grid-x grid-margin-x">
+		<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_PERMISSIONS'); ?></div>
+		<div class="grid-x grid-margin-x margin-y">
             <?php echo $data['acl']; ?>
 			<div class="cell medium-7 grid-x">
 				<label class="cell medium-6 small-9"><?php echo acym_translation('ACYM_ADVANCED_ACL').acym_info('ACYM_ADVANCED_ACL_DESC'); ?></label>
@@ -26,8 +26,8 @@
 <?php } ?>
 
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
-	<div class="acym_area_title"><?php echo acym_translation('ACYM_CONFIGURATION_CAPTCHA'); ?></div>
-	<div class="grid-x grid-margin-x">
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_CAPTCHA'); ?></div>
+	<div class="grid-x grid-margin-x margin-y">
 		<div class="cell medium-6 grid-x">
             <?php echo acym_switch('config[captcha]', $this->config->get('captcha', 0), acym_translation('ACYM_CAPTCHA_INVISIBLE')); ?>
 		</div>
@@ -61,8 +61,8 @@
 </div>
 
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
-	<div class="acym_area_title"><?php echo acym_translation('ACYM_EMAIL_VERIFICATION'); ?></div>
-	<div class="grid-x grid-margin-x">
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_EMAIL_VERIFICATION'); ?></div>
+	<div class="grid-x grid-margin-x margin-y">
 		<div class="cell medium-6 grid-x">
             <?php echo acym_switch('config[email_checkdomain]', $this->config->get('email_checkdomain'), acym_translation('ACYM_CHECK_DOMAIN_EXISTS')); ?>
 		</div>
@@ -70,16 +70,14 @@
 </div>
 
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
-	<div class="acym_area_title"><?php echo acym_translation('ACYM_FILES'); ?></div>
-	<div class="grid-x grid-margin-x">
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_FILES'); ?></div>
+	<div class="grid-x grid-margin-x margin-y">
 		<div class="cell medium-6 grid-x">
 			<label class="cell large-3" for="allowed_files">
                 <?php echo acym_translation('ACYM_ALLOWED_FILES'); ?>
 			</label>
 			<input class="cell large-9" id="allowed_files" type="text" name="config[allowed_files]" value="<?php echo acym_escape($this->config->get('allowed_files')); ?>" />
 		</div>
-	</div>
-	<div class="grid-x grid-margin-x">
 		<div class="cell medium-6 grid-x">
 			<label class="cell large-3" for="uploadfolder">
                 <?php echo acym_translation('ACYM_UPLOAD_FOLDER'); ?>
@@ -90,18 +88,18 @@
 </div>
 
 <div class="acym__configuration__check-database acym__content acym_area padding-vertical-1 padding-horizontal-2">
-	<div class="acym_area_title"><?php echo acym_translation('ACYM_CONFIGURATION_DB_MAINTENANCE'); ?></div>
-	<div class="grid-x grid-margin-x">
-		<div class="cell medium-shrink">
-			<button type="button" class="button button-secondary" id="checkdb_button"><?php echo acym_translation('ACYM_CHECK_DB'); ?></button>
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_DB_MAINTENANCE'); ?></div>
+	<div class="grid-x grid-margin-x margin-y">
+		<div class="cell grid-x">
+			<button type="button" class="cell medium-shrink button button-secondary" id="checkdb_button"><?php echo acym_translation('ACYM_CHECK_DB'); ?></button>
+			<div class="cell auto padding-left-1" id="checkdb_report"></div>
 		</div>
-		<div class="cell medium-auto" id="checkdb_report"></div>
-	</div>
-    <?php if (acym_existsAcyMailing59()) { ?>
-		<div class="grid-x grid-margin-x">
-			<div class="cell medium-shrink">
-				<button type="submit" data-task="redomigration" class="button button-secondary acy_button_submit"><?php echo acym_translation('ACYM_REDO_MIGRATION'); ?></button>
+        <?php if (acym_existsAcyMailing59()) { ?>
+			<div class="cell grid-x">
+				<button type="submit" data-task="redomigration" class="cell medium-shrink button button-secondary acy_button_submit">
+					<?php echo acym_translation('ACYM_REDO_MIGRATION'); ?>
+				</button>
 			</div>
-		</div>
-    <?php } ?>
+        <?php } ?>
+	</div>
 </div>

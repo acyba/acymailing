@@ -3,15 +3,15 @@
 	<input type="hidden" name="bounce[ordering]" value="<?php echo empty($data['rule']) || empty($data['rule']->ordering) ? '' : intval($data['rule']->ordering); ?>">
 
 	<div id="acym__bounces__listing" class="acym__content acym__bounce_rule__edit acym_area grid-x cell grid-margin-x margin-left-0">
-		<div class="cell grid-x text-right grid-margin-x margin-left-0 margin-right-0">
+		<div class="cell grid-x text-right grid-margin-x margin-bottom-1 margin-y">
 			<div class="cell auto hide-for-small-only hide-for-medium-only"></div>
             <?php echo acym_cancelButton(); ?>
-			<button type="button" data-task="apply" class="button button-secondary acy_button_submit cell medium-6 large-shrink"><?php echo acym_translation(
-                    'ACYM_SAVE'
-                ); ?></button>
-			<button type="button" data-task="save" class="button margin-right-0 acy_button_submit cell medium-6 large-shrink"><?php echo acym_translation(
-                    'ACYM_SAVE_EXIT'
-                ); ?></button>
+			<button type="button" data-task="apply" class="button button-secondary acy_button_submit cell medium-6 large-shrink">
+                <?php echo acym_translation('ACYM_SAVE'); ?>
+			</button>
+			<button type="button" data-task="save" class="button margin-right-0 acy_button_submit cell medium-6 large-shrink">
+                <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
+			</button>
 		</div>
 
         <?php

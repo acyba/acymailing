@@ -3,7 +3,8 @@ const acym_helperSegment = {
     globalAjaxCall: '',
     reloadCounters: function (element) {
         let and = jQuery(element).closest('.acym__segments__inserted__filter').attr('data-and');
-        let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_segments&ctrl=segments&task=countResults&and=' + and;
+        let or = jQuery(element).closest('[data-filter-number]').attr('data-filter-number');
+        let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_segments&ctrl=segments&task=countResults&and=' + and + '&or=' + or;
 
         if (undefined !== this.ajaxCalls[and]) this.ajaxCalls[and].abort();
 
@@ -12,7 +13,7 @@ const acym_helperSegment = {
             .html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
         this.ajaxCalls[and] = jQuery.post(ajaxUrl,
-            jQuery(element).closest('#acym_form').serialize() + '&page=acymailing_segments&ctrl=segments&task=countResults&and=' + and
+            jQuery(element).closest('#acym_form').serialize() + '&page=acymailing_segments&ctrl=segments&task=countResults&and=' + and + '&or=' + or
         )
                                     .done(function (result) {
                                         result = acym_helper.parseJson(result);
@@ -71,6 +72,7 @@ const acym_helperSegment = {
         acym_helperDatePicker.setDatePickerGlobal();
         acym_helperDatePicker.setRSDateChoice();
         acym_helperSelect2.setAjaxSelect2();
+        this.setAddFilterOr();
     },
     setSelectFilters: function (type) {
         let inCampaignStep = jQuery('#acym__campaigns__segment').length > 0;
@@ -199,50 +201,77 @@ const acym_helperSegment = {
             jQuery(this).closest('.acym__segments__one__filter').remove();
             acym_helperSegment.reloadGlobalCounter();
         });
+        jQuery('.acym__segments__delete__one__or').off('click').on('click', function () {
+            jQuery(this).closest('.acym__segments__or__container').remove();
+            acym_helperSegment.reloadGlobalCounter();
+        });
+
     },
     rebuildFilters: function () {
         let $filterElement = jQuery('#acym__segments__filters');
         if ($filterElement.val() === '') return;
 
         let filters = JSON.parse($filterElement.val());
+        let or = 0;
+        // Foreach OR block
+        jQuery.each(filters, function (numOR, oneORBlock) {
 
-        let and = 0;
-        jQuery.each(filters, function (numAND, oneFilter) {
-            // Create a new AND block if needed
-            if (and !== 0) {
-                jQuery('.acym__segments__group__filter[data-filter-number="0"]')
-                    .find('.acym__segments__add-filter[data-filter-type="classic"]')
-                    .click();
-            }
+            // Create a new OR block if needed
+            if (or !== 0) jQuery('.acym__automation__filters__or').click();
 
-            jQuery.each(oneFilter, function (filterName, filterOptions) {
-                // Select the filter type in the correct dropdown
-                let $filterSelect = jQuery('.acym__segments__group__filter[data-filter-number="0"]')
-                    .find('.acym__segments__select__classic__filter')
-                    .last();
-                $filterSelect.val(filterName);
-                $filterSelect.trigger('change');
+            let and = 0;
+            jQuery.each(oneORBlock, function (numAND, oneFilter) {
+                // Create a new AND block if needed
+                if (and !== 0) {
+                    jQuery('.acym__segments__group__filter[data-filter-number="' + or + '"]')
+                        .find('.acym__segments__add-filter[data-filter-type]')
+                        .click();
+                }
 
-                let keys = Object.keys(filterOptions);
-                jQuery.each(keys, function (key) {
-                    let optionName = keys[key];
-                    let optionValue = filterOptions[keys[key]];
+                jQuery.each(oneFilter, function (filterName, filterOptions) {
+                    // Select the filter type in the correct dropdown
+                    let $filterSelect = jQuery('.acym__segments__group__filter[data-filter-number="' + or + '"]')
+                        .find('.acym__segments__select__classic__filter')
+                        .last();
+                    $filterSelect.val(filterName);
+                    $filterSelect.trigger('change');
 
-                    // Set the option values
-                    let $optionField = jQuery('[name="acym_action[filters][0]['
-                                              + jQuery('#acym__segments__filters__count__and').val()
-                                              + ']['
-                                              + filterName
-                                              + ']['
-                                              + optionName
-                                              + ']"]');
-                    acym_helperFilter.setFieldValue($optionField, optionValue);
+                    let keys = Object.keys(filterOptions);
+                    jQuery.each(keys, function (key) {
+                        let optionName = keys[key];
+                        let optionValue = filterOptions[keys[key]];
 
-                    $optionField.trigger('change');
+                        // Set the option values
+                        let $optionField = jQuery('[name="acym_action[filters]['
+                                                  + or
+                                                  + ']['
+                                                  + jQuery('#acym__segments__filters__count__and').val()
+                                                  + ']['
+                                                  + filterName
+                                                  + ']['
+                                                  + optionName
+                                                  + ']"]');
+                        acym_helperFilter.setFieldValue($optionField, optionValue);
+
+                        $optionField.trigger('change');
+                    });
                 });
+                and++;
             });
-            and++;
+            or++;
         });
         this.refreshFilterProcess();
+    },
+    setAddFilterOr: function () {
+        jQuery('.acym__automation__filters__or').off('click').on('click', function () {
+            let $inputOr = jQuery('#acym__automation__filters__count__or');
+            $inputOr.val(parseInt($inputOr.val()) + 1);
+            jQuery(this).before(jQuery('#acym__automation__or__example').html());
+            let $newElement = jQuery(this).prev();
+            $newElement.find('.acym__segments__group__filter').attr('data-filter-number', $inputOr.val());
+            acym_helperSegment.refreshFilterProcess();
+            $newElement.find('button[data-filter-type]').click();
+            if ('classic' === jQuery(this).attr('data-filter-type')) acym_helperSegment.reloadGlobalCounter($newElement);
+        });
     }
 };

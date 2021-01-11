@@ -15,6 +15,37 @@ class MailClass extends acymClass
 
     const FIELDS_ENCODING = ['name', 'subject', 'body', 'autosave', 'preheader'];
 
+    const TYPE_STANDARD = 'standard';
+    const TYPE_NOTIFICATION = 'notification';
+    const TYPE_OVERRIDE = 'override';
+    const TYPE_WELCOME = 'welcome';
+    const TYPE_UNSUBSCRIBE = 'unsubscribe';
+    const TYPE_AUTOMATION = 'automation';
+    const TYPE_FOLLOWUP = 'followup';
+
+    // Used by some sending methods to know the priority of a sent email (transactional => reset password / account confirmation...)
+    const TYPES_TRANSACTIONAL = [
+        self::TYPE_NOTIFICATION,
+        self::TYPE_OVERRIDE,
+        self::TYPE_WELCOME,
+        self::TYPE_UNSUBSCRIBE,
+    ];
+
+    // Types on which the click statistics are active
+    const TYPES_WITH_STATS = [
+        self::TYPE_STANDARD,
+        self::TYPE_AUTOMATION,
+        self::TYPE_WELCOME,
+        self::TYPE_UNSUBSCRIBE,
+        self::TYPE_FOLLOWUP,
+    ];
+
+    // Types that don't let the user modify the name
+    const TYPES_NO_NAME = [
+        self::TYPE_NOTIFICATION,
+        self::TYPE_OVERRIDE,
+    ];
+
     /**
      * Get mails depending on filters (search, ordering, pagination)
      *
@@ -60,16 +91,20 @@ class MailClass extends acymClass
         }
 
         if (!empty($settings['automation']) || empty($settings['onlyStandard'])) {
-            $filters[] = 'mail.type != "notification"';
-            $filters[] = 'mail.type != "override"';
+            $filters[] = 'mail.type != '.acym_escapeDB($this::TYPE_NOTIFICATION);
+            $filters[] = 'mail.type != '.acym_escapeDB($this::TYPE_OVERRIDE);
         } else {
-            $filters[] = 'mail.type = "standard"';
+            $filters[] = 'mail.type = '.acym_escapeDB($this::TYPE_STANDARD);
         }
 
         $filters[] = 'mail.parent_id IS NULL';
 
         if (empty($settings['automation'])) {
             $filters[] = 'mail.template = 1';
+        }
+
+        if (!empty($settings['drag_editor'])) {
+            $filters[] = 'mail.drag_editor = 1';
         }
 
         if (!empty($settings['creator_id'])) {
@@ -139,7 +174,7 @@ class MailClass extends acymClass
     private function getAllListIdsForWelcomeUnsub(&$elements, $type)
     {
         if (empty($elements)) return true;
-        $column = $type == 'welcome' ? 'welcome_id' : 'unsubscribe_id';
+        $column = $type == $this::TYPE_WELCOME ? 'welcome_id' : 'unsubscribe_id';
 
         foreach ($elements as $key => $element) {
             $elements[$key]->lists = acym_loadObjectList('SELECT color, name FROM #__acym_list WHERE '.$column.' = '.intval($element->id));
@@ -274,9 +309,9 @@ class MailClass extends acymClass
         $mail = $this->getOneById($id);
         if (empty($mail)) return [];
 
-        if ('welcome' === $mail->type) {
+        if ($this::TYPE_WELCOME === $mail->type) {
             $query = 'SELECT * FROM #__acym_list WHERE welcome_id = '.intval($id);
-        } elseif ('followup' === $mail->type) {
+        } elseif ($this::TYPE_FOLLOWUP === $mail->type) {
             $query = 'SELECT list.* FROM #__acym_followup_has_mail AS followup_mail
                       JOIN #__acym_followup AS followup ON followup.id = followup_mail.followup_id AND followup_mail.mail_id = '.intval($id).'
                       JOIN #__acym_list AS list ON list.id = followup.list_id';
@@ -534,7 +569,7 @@ class MailClass extends acymClass
 
                     return false;
                 default:
-                    acym_enqueueMessage(acym_translation_sprintf('ACYM_FILE_UPLOAD_ERROR_5', $fileError), 'error');
+                    acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_5', $fileError), 'error');
 
                     return false;
             }
@@ -550,12 +585,12 @@ class MailClass extends acymClass
         if (!is_writable($uploadPath)) {
             @chmod($uploadPath, '0755');
             if (!is_writable($uploadPath)) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_WRITABLE_FOLDER', $uploadPath), 'warning');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_WRITABLE_FOLDER', $uploadPath), 'warning');
             }
         }
 
         if (!(bool)ini_get('file_uploads')) {
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_FILE_UPLOAD_ERROR_6'), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_6'), 'error');
 
             return false;
         }
@@ -570,7 +605,7 @@ class MailClass extends acymClass
         $extension = strtolower(substr($filename, strrpos($filename, '.') + 1));
 
         if (!in_array($extension, ['zip', 'tar.gz'])) {
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_ACCEPTED_TYPE', $extension, 'zip,tar.gz'), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_ACCEPTED_TYPE', $extension, 'zip,tar.gz'), 'error');
 
             return false;
         }
@@ -581,7 +616,7 @@ class MailClass extends acymClass
 
         $uploaded = acym_uploadFile($tmp_src, $tmp_dest);
         if (!$uploaded) {
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_FILE_UPLOAD_ERROR_7', $tmp_src, $tmp_dest), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_7', $tmp_src, $tmp_dest), 'error');
 
             return false;
         }
@@ -599,12 +634,12 @@ class MailClass extends acymClass
                 continue;
             }
             if (acym_deleteFile($oneFile)) {
-                acym_enqueueMessage(acym_translation_sprintf('ACYM_FILE_UPLOAD_ERROR_8', $oneFile), 'warning');
+                acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_8', $oneFile), 'warning');
             }
         }
 
         if (!$result) {
-            acym_enqueueMessage(acym_translation_sprintf('ACYM_FILE_UPLOAD_ERROR_9', $tmp_dest, $extractdir), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_9', $tmp_dest, $extractdir), 'error');
 
             return false;
         }
@@ -612,14 +647,14 @@ class MailClass extends acymClass
         if ($this->detecttemplates($extractdir)) {
 
             $messages = $this->templateNames;
-            array_unshift($messages, acym_translation_sprintf('ACYM_TEMPLATES_INSTALL', count($this->templateNames)));
+            array_unshift($messages, acym_translationSprintf('ACYM_TEMPLATES_INSTALL', count($this->templateNames)));
             acym_enqueueMessage($messages, 'success');
             if (is_dir($extractdir)) acym_deleteFolder($extractdir);
 
             return true;
         }
 
-        acym_enqueueMessage(acym_translation_sprintf('ACYM_FILE_UPLOAD_ERROR_10'), 'error');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_10'), 'error');
         if (is_dir($extractdir)) acym_deleteFolder($extractdir);
 
         return false;
@@ -675,7 +710,7 @@ class MailClass extends acymClass
 
         $moveResult = acym_copyFolder(dirname($filepath), ACYM_TEMPLATE.$newTemplateFolder);
         if ($moveResult !== true) {
-            acym_display([acym_translation_sprintf('ACYM_ERROR_COPYING_FOLDER_TO', dirname($filepath), ACYM_TEMPLATE.$newTemplateFolder), $moveResult], 'error');
+            acym_display([acym_translationSprintf('ACYM_ERROR_COPYING_FOLDER_TO', dirname($filepath), ACYM_TEMPLATE.$newTemplateFolder), $moveResult], 'error');
 
             return false;
         }
@@ -782,7 +817,7 @@ class MailClass extends acymClass
         $this->config->save($newConfig);
 
         $newTemplate->drag_editor = 0;
-        $newTemplate->type = 'standard';
+        $newTemplate->type = $this::TYPE_STANDARD;
         $newTemplate->template = 1;
         $newTemplate->library = 0;
         $newTemplate->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
@@ -797,7 +832,7 @@ class MailClass extends acymClass
 
     public function sendAutomation($mailId, $userIds, $sendingDate, $automationAdmin = [])
     {
-        if (empty($mailId)) return acym_translation_sprintf('ACYM_EMAILS_ADDED_QUEUE', 0);
+        if (empty($mailId)) return acym_translationSprintf('ACYM_EMAILS_ADDED_QUEUE', 0);
         if (empty($sendingDate)) return acym_translation('ACYM_WRONG_DATE');
         if (empty($userIds)) return acym_translation('ACYM_USER_NOT_FOUND');
         acym_arrayToInteger($userIds);
@@ -812,8 +847,8 @@ class MailClass extends acymClass
             if (empty($mail) || empty($user)) return false;
 
             // Get the current user values
-            $PluginHelper = new PluginHelper();
-            $extractedTags = $PluginHelper->extractTags($mail, 'subtag');
+            $pluginHelper = new PluginHelper();
+            $extractedTags = $pluginHelper->extractTags($mail, 'subtag');
             if (!empty($extractedTags)) {
                 foreach ($extractedTags as $dtext => $oneTag) {
                     if (empty($oneTag->info) || $oneTag->info != 'current' || empty($user->{$oneTag->id})) continue;

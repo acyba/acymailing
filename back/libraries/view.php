@@ -110,7 +110,7 @@ class acymView extends acymObject
         $remind = json_decode($this->config->get('remindme', '[]'));
         if (ACYM_CMS == 'wordpress' && !in_array('reviews', $remind) && acym_isAdmin() && $controller->name != 'language') {
             echo '<div id="acym__reviews__footer" style="margin: 0 0 30px 30px;">';
-            echo acym_translation_sprintf(
+            echo acym_translationSprintf(
                 'ACYM_REVIEW_FOOTER',
                 '<a title="reviews" id="acym__reviews__footer__link" target="_blank" href="https://wordpress.org/support/plugin/acymailing/reviews/?rate=5#new-post"><i class="acymicon-star acym__color__light-blue"></i><i class="acymicon-star acym__color__light-blue"></i><i class="acymicon-star acym__color__light-blue"></i><i class="acymicon-star acym__color__light-blue"></i><i class="acymicon-star acym__color__light-blue"></i></a>'
             );

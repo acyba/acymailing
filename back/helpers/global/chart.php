@@ -1,6 +1,14 @@
 <?php
 
+/**
+ * Deprecated see acym_lineChart
+ */
 function acym_line_chart($id, $dataMonth, $dataDay, $dataHour)
+{
+    return acym_lineChart($id, $dataMonth, $dataDay, $dataHour);
+}
+
+function acym_lineChart($id, $dataMonth, $dataDay, $dataHour)
 {
     acym_initializeChart();
 
@@ -242,7 +250,7 @@ function acym_initializeChart()
 
 /**
  * @param        $id
- * @param        $pourcentage
+ * @param        $percentage
  * @param string $type       Define the values for green, red and orange. Can be click | open | delivery | day
  * @param string $class
  * @param string $topLabel
@@ -251,10 +259,10 @@ function acym_initializeChart()
  *
  * @return string|void
  */
-function acym_round_chart($id, $pourcentage, $type = '', $class = '', $topLabel = '', $bottomLabel = '', $colorChart = '')
+function acym_roundChart($id, $percentage, $type = '', $class = '', $topLabel = '', $bottomLabel = '', $colorChart = '')
 {
-    if ($pourcentage != 0 && empty($pourcentage)) {
-        return;
+    if ($percentage !== 0 && empty($percentage)) {
+        return '';
     }
 
     acym_initializeChart();
@@ -301,11 +309,11 @@ function acym_round_chart($id, $pourcentage, $type = '', $class = '', $topLabel 
     if ($isFixColor) {
         $color = !empty($colorChart) ? $colorChart : $defaultColor;
     } else {
-        if ($pourcentage >= $valueHigh) {
+        if ($percentage >= $valueHigh) {
             $color = $isInverted ? $red : $green;
-        } elseif ($pourcentage < $valueHigh && $pourcentage >= $valueLow) {
+        } elseif ($percentage < $valueHigh && $percentage >= $valueLow) {
             $color = $orange;
-        } elseif ($pourcentage < $valueLow) {
+        } elseif ($percentage < $valueLow) {
             $color = $isInverted ? $green : $red;
         } else {
             $color = $defaultColor;
@@ -351,7 +359,7 @@ function acym_round_chart($id, $pourcentage, $type = '', $class = '', $topLabel 
             var config = {
                 type: "doughnut", data: {
                     datasets: [{
-                        data: ['.$pourcentage.', (100 - '.$pourcentage.')], //Data of chart
+                        data: ['.$percentage.', (100 - '.$percentage.')], //Data of chart
                          backgroundColor: ["'.$color.'", "#f1f1f1"], //Two color of chart
                          borderWidth: 0 //no border
                     }]
@@ -363,7 +371,7 @@ function acym_round_chart($id, $pourcentage, $type = '', $class = '', $topLabel 
                     elements: {
                         //This is for the text
                         center: {
-                            text: "'.$pourcentage.'%", color: "#363636", 
+                            text: "'.$percentage.'%", color: "#363636", 
                             fontStyle: "Poppins", 
                             sidePadding: 70 
                         }
@@ -407,6 +415,8 @@ function acym_pieChart($id, $data = [], $class = '', $topLabel = '', $bottomLabe
     $allLabelsArray = [];
     $colors = [];
 
+    asort($data);
+    $data = array_reverse($data, true);
     foreach ($data as $label => $number) {
         $data[$label] = (float)$number;
         $allLabelsArray[] = $label;

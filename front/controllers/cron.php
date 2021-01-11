@@ -21,7 +21,7 @@ class CronController extends acymController
         //We block the cron if there is no domain specified... it can happen if you created your own cron with a wrong command.
         //Why 10? Because it should be at least http://1.1
         if (strlen(ACYM_LIVE) < 10) {
-            die(acym_translation_sprintf('ACYM_CRON_WRONG_DOMAIN', ACYM_LIVE));
+            die(acym_translationSprintf('ACYM_CRON_WRONG_DOMAIN', ACYM_LIVE));
         }
 
         $expirationDate = $this->config->get('expirationdate', 0);

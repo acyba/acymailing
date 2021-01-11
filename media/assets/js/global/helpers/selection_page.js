@@ -1,35 +1,32 @@
 const acym_helperSelectionPage = {
     initSelectionPage: function () {
         if (jQuery('.acym__selection_disabled').length === 0) {
-            this.setSelectionElement();
-            this.setSelectionSelectCard();
+            this.setSelectionElement(false, false, undefined, '#acym__selection__button-select');
             this.setSelectionButton();
-            if (ACYM_IS_ADMIN) this.setSelectSelect2Theme();
         }
     },
-    setSelectionElement: function () {
+    setSelectionElement: function (haveSettings = false, configuration = false, callback = undefined, scrollElementSelector = undefined) {
         const $allCards = jQuery('.acym__selection__card:not(.acym__selection__card__disabled)');
         $allCards.off('click').on('click', function () {
             if (jQuery(this).hasClass('acym__selection__card-selected')) return;
             $allCards.removeClass('acym__selection__card-selected');
             jQuery(this).addClass('acym__selection__card-selected');
 
+            if (haveSettings) acym_helperSelectionPage.setDisplaySettings(this);
+            if (undefined !== callback) callback();
+
+            if (undefined !== scrollElementSelector) {
+                console.log(document.querySelector(scrollElementSelector));
+                document.querySelector(scrollElementSelector).scrollIntoView();
+            }
+
+            if (configuration) return;
+
             if ((jQuery(this).hasClass('acym__selection__select-card') && jQuery(this).find('.acym__selection__select-card__select').val() !== '') || !jQuery(
                 this).hasClass('acym__selection__select-card')) {
                 jQuery('#acym__selection__button-select').removeAttr('disabled');
             } else {
                 jQuery('#acym__selection__button-select').attr('disabled', 'true');
-            }
-        });
-    },
-    setSelectionSelectCard: function () {
-        jQuery('.acym__selection__select-card__select').on('change', function () {
-            if (jQuery(this).closest('.acym__selection__card').hasClass('acym__selection__card-selected')) {
-                if (jQuery(this).val() !== '') {
-                    jQuery('#acym__selection__button-select').removeAttr('disabled');
-                } else {
-                    jQuery('#acym__selection__button-select').attr('disabled', 'true');
-                }
             }
         });
     },
@@ -49,5 +46,15 @@ const acym_helperSelectionPage = {
             theme: 'sortBy',
             minimumResultsForSearch: Infinity
         });
+    },
+    setDisplaySettings: function (element) {
+        let settings = document.getElementsByClassName('send_settings');
+        let selectedSetting;
+        for (let setting of settings) {
+            if (setting.id === `${element.id}_settings`) selectedSetting = setting;
+            setting.style.display = 'none';
+        }
+
+        if (undefined !== selectedSetting) selectedSetting.style.display = 'flex';
     }
 };

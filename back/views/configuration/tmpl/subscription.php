@@ -1,6 +1,6 @@
 <div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
-	<div class="acym_area_title"><?php echo acym_translation('ACYM_SUBSCRIPTION'); ?></div>
-	<div class="grid-x">
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SUBSCRIPTION'); ?></div>
+	<div class="grid-x margin-y">
 		<div class="cell grid-x grid-margin-x">
             <?php echo acym_switch(
                 'config[allow_visitor]',
@@ -8,8 +8,7 @@
                 acym_translation('ACYM_ALLOW_VISITOR'),
                 [],
                 'xlarge-3 medium-5 small-9',
-                "auto",
-                "tiny"
+                'auto'
             ); ?>
 		</div>
 		<div class="cell grid-x grid-margin-x">
@@ -20,8 +19,7 @@
                 acym_translation('ACYM_GENERATE_NAME').acym_info('ACYM_GENERATE_NAME_DESC'),
                 [],
                 'xlarge-3 medium-5 small-9',
-                'auto',
-                'tiny'
+                'auto'
             );
             ?>
 		</div>
@@ -32,8 +30,8 @@
                 acym_translation('ACYM_REQUIRE_CONFIRMATION'),
                 [],
                 'xlarge-3 medium-5 small-9',
-                "auto",
-                "tiny",
+                'auto',
+                '',
                 'confirm_config'
             ); ?>
 		</div>
@@ -42,7 +40,8 @@
 				<div class="cell xlarge-3 medium-5"></div>
 				<div class="cell medium-auto">
                     <?php if (acym_isAllowed('mails')) { ?>
-						<a class=" button" href="<?php echo acym_completeLink('mails&task=edit&notification=acy_confirm&type_editor=acyEditor'); ?>">
+						<a class="button button-secondary margin-bottom-1"
+						   href="<?php echo acym_completeLink('mails&task=edit&notification=acy_confirm&type_editor=acyEditor'); ?>">
                             <?php echo acym_translation('ACYM_EDIT_EMAIL'); ?>
 						</a>
                     <?php } ?>
@@ -73,8 +72,8 @@
 </div>
 
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
-	<div class="acym_area_title"><?php echo acym_translation('ACYM_NOTIFICATIONS'); ?></div>
-	<div class="grid-x grid-margin-x">
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_NOTIFICATIONS'); ?></div>
+	<div class="grid-x grid-margin-x margin-y">
         <?php
         foreach ($data['notifications'] as $identifier => $notification) {
             ?>
@@ -104,9 +103,10 @@
                 );
                 ?>
 			</div>
-			<div class="cell large-2 medium-4 shrink">
+			<div class="cell large-2 medium-4 shrink grid-x">
                 <?php if (acym_isAllowed('mails')) { ?>
-					<a class="button" href="<?php echo acym_completeLink('mails&task=edit&notification='.$identifier.'&type_editor=acyEditor'); ?>">
+					<a class="cell shrink button button-secondary acym__configuration__edit-email"
+					   href="<?php echo acym_completeLink('mails&task=edit&notification='.$identifier.'&type_editor=acyEditor'); ?>">
                         <?php echo acym_translation('ACYM_EDIT_EMAIL'); ?>
 					</a>
                 <?php } ?>
@@ -119,15 +119,15 @@
 </div>
 
 <div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
-	<div class="acym_area_title"><?php echo acym_translation_sprintf('ACYM_XX_INTEGRATION', ACYM_CMS_TITLE); ?></div>
+	<div class="acym_area_title"><?php echo acym_translationSprintf('ACYM_XX_INTEGRATION', ACYM_CMS_TITLE); ?></div>
 
     <?php
     if (!acym_isPluginActive('acymtriggers')) {
-        acym_display(acym_translation_sprintf('ACYM_NEEDS_SYSTEM_PLUGIN', 'AcyMailing - Joomla integration'), 'error', false);
+        acym_display(acym_translationSprintf('ACYM_NEEDS_SYSTEM_PLUGIN', 'AcyMailing - Joomla integration'), 'error', false);
     }
     ?>
 
-	<div class="grid-x">
+	<div class="grid-x margin-y">
 		<div class="cell grid-x grid-margin-x">
             <?php
             echo acym_switch(
@@ -137,12 +137,12 @@
                 [],
                 'xlarge-3 medium-5 small-9',
                 'auto',
-                'tiny',
+                '',
                 'acym__config__regacy'
             );
             ?>
 		</div>
-		<div class="cell grid-x" id="acym__config__regacy">
+		<div class="cell grid-x margin-y" id="acym__config__regacy">
 			<div class="cell grid-x grid-margin-x">
                 <?php
                 echo acym_switch(
@@ -152,7 +152,7 @@
                     [],
                     'xlarge-3 medium-5 small-9',
                     'auto',
-                    'tiny',
+                    '',
                     'regforceconf_config'
                 );
                 ?>
@@ -166,7 +166,7 @@
                     [],
                     'xlarge-3 medium-5 small-9',
                     'auto',
-                    'tiny',
+                    '',
                     'regdelete_config'
                 );
                 ?>

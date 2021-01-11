@@ -27,10 +27,11 @@ class PaginationHelper extends acymObject
         // There's only one page, don't display the pagination
         $nbPages = ceil($this->total / $this->nbPerPage);
 
-        $class = $dynamics ? 'margin-bottom-1' : '';
+        $class = $dynamics ? ' margin-bottom-1' : '';
 
-        $pagination = '<div class="pagination text-center cell grid-x '.$class.'" role="navigation" aria-label="Pagination">
-                            <div class="small-auto medium-shrink pagination_container cell margin-auto grid-x acym_vcenter">';
+        $pagination = '<div class="pagination text-center cell grid-x'.$class.'" role="navigation" aria-label="Pagination">
+                        <div class="cell shrink margin-auto grid-x grid-margin-x align-center">
+                            <div class="small-auto medium-shrink pagination_container cell grid-x acym_vcenter align-center">';
 
         // Turbo first button
         if (!$dynamics) {
@@ -70,7 +71,7 @@ class PaginationHelper extends acymObject
                                 </div>';
         }
 
-        $pagination .= '</div></div>';
+        $pagination .= '</div>';
 
         if (!$dynamics) {
             $nbPagesOptions = [
@@ -83,7 +84,7 @@ class PaginationHelper extends acymObject
                 '100' => '100',
                 '200' => '200',
             ];
-            $pagination .= '<div class="cell grid-x align-center acym_vcenter margin-top-1">';
+            $pagination .= '<div class="cell shrink grid-x acym_vcenter">';
 
             $paginationNumberEntries = '<div class="acym__select__pagination">'.acym_select(
                     $nbPagesOptions,
@@ -92,9 +93,12 @@ class PaginationHelper extends acymObject
                     ['class' => 'acym__select__pagination__dropdown']
                 ).'</div>';
 
-            $pagination .= '<p class="cell shrink">'.acym_translation_sprintf('ACYM_DISPLAY_NUMBER_ENTRIES', $paginationNumberEntries).'</p>';
+            $pagination .= '<p class="cell shrink">'.acym_translationSprintf('ACYM_DISPLAY_NUMBER_ENTRIES', $paginationNumberEntries).'</p>';
             $pagination .= '</div>';
         }
+
+        $pagination .= '</div>';
+        $pagination .= '</div>';
 
         return $pagination;
     }

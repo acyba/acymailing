@@ -91,7 +91,7 @@ const acym_helperCampaigns = {
     },
     setSendSettingsButtons: function () {
         jQuery('.acym__campaign__sendsettings__buttons-type').off('click').on('click', function () {
-            if (jQuery(this).hasClass('button-radio-disabled')) return true;
+            if (jQuery(this).hasClass('disabled')) return true;
             jQuery('.acym__campaign__sendsettings__buttons-type').addClass('button-radio-unselected');
             jQuery(this).removeClass('button-radio-unselected');
             jQuery('.acym__campaign__sendsettings__params').hide();
@@ -166,12 +166,6 @@ const acym_helperCampaigns = {
                 link = link.replace('{listid}', listId);
             }
             window.location.href = link;
-        });
-    },
-    setSelectSelect2Theme: function () {
-        jQuery('.acym__email__new__card__select').select2({
-            theme: 'sortBy',
-            minimumResultsForSearch: Infinity
         });
     },
     setClickFlagsSummary: function () {

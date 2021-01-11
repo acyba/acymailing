@@ -19,8 +19,8 @@
 					   class="cell shrink button  text-center margin-top-1 margin-bottom-2"><?php echo acym_translation('ACYM_DOWNLOAD_MY_FIRST_ONE'); ?></a>
 				</div>
             <?php } else { ?>
-				<div class="cell grid-x grid-margin-x">
-					<input type="text" class="cell medium-3" v-model="search" placeholder="<?php echo acym_translation('ACYM_SEARCH'); ?>">
+				<div class="cell grid-x grid-margin-x margin-bottom-1">
+					<input type="text" class="cell medium-3 margin-bottom-0" v-model="search" placeholder="<?php echo acym_translation('ACYM_SEARCH'); ?>">
 					<div class="cell medium-4 large-2">
 						<select2 :name="'acym__plugins__type'" :options="<?php echo acym_escape(json_encode($data['types'])); ?>" v-model="type"></select2>
 					</div>
@@ -53,14 +53,14 @@
 								<button v-if="plugin.type == 'ADDON'" @click="deletePlugin(plugin.id)" type="button" class="acym__plugins__button__delete">
 									<i class="acymicon-trash-o"></i>
 								</button>
+								<div class="acym__plugins__card__params_type shrink cell">{{ plugin.category }}</div>
 								<div class="acym__plugins__card__image margin-bottom-1 cell grid-x align-center">
 									<img :src="imageUrl(plugin.folder_name, plugin.type)" alt="plugin image" class="cell">
-									<div class="acym__plugins__card__params_type shrink cell" :style="typesColors[plugin.category]">{{ plugin.category }}</div>
 								</div>
 								<div class="acym__plugins__card__params cell grid-x">
-									<div class="cell grid-x acym_vcenter acym__plugins__card__params__first">
-										<h2 class="cell medium-10 acym__plugins__card__params__title">{{ plugin.title }}</h2>
-										<a target="_blank" :href="documentationUrl(plugin.folder_name)" class="acym__plugins__link cell medium-1"><i class="acymicon-book"></i></a>
+									<div class="cell grid-x acym_vcenter acym__plugins__card__params__title-line">
+										<h2 class="cell medium-10 acym__plugins__card__params__title acym_text_ellipsis" :title="plugin.title">{{ plugin.title }}</h2>
+										<a target="_blank" :href="documentationUrl(plugin.folder_name)" class="acym__plugins__documentation cell medium-1"><i class="acymicon-book"></i></a>
 										<i v-if="plugin.settings && plugin.settings!='not_installed'"
 										   @click="toggleSettings(plugin.folder_name)"
 										   class="acymicon-cog cell shrink acym__plugins__settings__toggle cursor-pointer"></i>
@@ -70,6 +70,7 @@
 										</i>
 									</div>
 									<div ref="plugins" :class="isOverflown(index)" class="acym__plugins__card__params_desc cell" v-html="plugin.description"></div>
+
 									<div v-if="plugin.type == 'ADDON'" class="acym__plugins__card__actions cell grid-x acym_vcenter" v-show="rightLevel(plugin.level)">
 										<div class="cell grid-x acym_vcenter medium-8">
 											<span class="cell shrink"><?php echo acym_translation('ACYM_ENABLED'); ?>:</span>
@@ -96,11 +97,11 @@
 								<div class="cell grid-x align-center">
 									<button type="button"
 											@click="toggleSettings(plugin.folder_name)"
-											class="cell medium-5 button acym__button__cancel light_button"><?php echo acym_translation('ACYM_CANCEL'); ?></button>
+											class="cell medium-5 button acym__button__cancel"><?php echo acym_translation('ACYM_CANCEL'); ?></button>
 									<div class="cell medium-1 hide-for-small-only"></div>
-									<button type="button" class="cell medium-5 button acy_button_submit light_button" data-task="saveSettings"><?php echo acym_translation(
-                                            'ACYM_SAVE'
-                                        ); ?></button>
+									<button type="button" class="cell medium-5 button acy_button_submit" data-task="saveSettings">
+                                        <?php echo acym_translation('ACYM_SAVE'); ?>
+									</button>
 								</div>
 							</div>
 						</div>
@@ -109,6 +110,6 @@
                 <?php
             } ?>
 		</div>
-        <?php echo acym_formOptions(); ?>
+        <?php acym_formOptions(); ?>
 	</form>
 </div>

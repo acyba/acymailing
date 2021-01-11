@@ -87,7 +87,7 @@ class plgAcymMemberpress extends acymPlugin
             $membershipName = $this->getMemberPressMembershipNameById($automation->triggers['member_transaction_complete']['membership']);
         }
 
-        $automation->triggers['member_transaction_complete'] = acym_translation_sprintf(
+        $automation->triggers['member_transaction_complete'] = acym_translationSprintf(
             'ACYM_TRIGGER_PLUGIN_NEW_SUBSCRIPTION_CREATED_FOR',
             'MemberPress',
             $membershipName
@@ -113,7 +113,7 @@ class plgAcymMemberpress extends acymPlugin
         if (empty($allGroups)) return;
 
         $conditions['user']['memberpress'] = new stdClass();
-        $conditions['user']['memberpress']->name = acym_translation_sprintf('ACYM_INTEGRATION_PLUGIN_MEMBERSHIP', 'MemberPress');
+        $conditions['user']['memberpress']->name = acym_translationSprintf('ACYM_INTEGRATION_PLUGIN_MEMBERSHIP', 'MemberPress');
         $conditions['user']['memberpress']->option = '<div class="cell grid-x grid-margin-x">';
 
         $operatorIn = new OperatorinType();
@@ -169,17 +169,17 @@ class plgAcymMemberpress extends acymPlugin
 
         $conditions['user']['memberpress']->option .= '<div class="cell grid-x margin-top-1 margin-bottom-1">';
         $conditions['user']['memberpress']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][memberpress][signup_date_inf]', '', 'cell shrink');
-        $conditions['user']['memberpress']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['memberpress']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['memberpress']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_SUBSCRIPTION_DATE').'</span>';
-        $conditions['user']['memberpress']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['memberpress']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['memberpress']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][memberpress][signup_date_sup]', '', 'cell shrink');
         $conditions['user']['memberpress']->option .= '</div>';
 
         $conditions['user']['memberpress']->option .= '<div class="cell grid-x">';
         $conditions['user']['memberpress']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][memberpress][expiration_date_inf]', '', 'cell shrink');
-        $conditions['user']['memberpress']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['memberpress']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['memberpress']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_END_DATE').'</span>';
-        $conditions['user']['memberpress']->option .= '<span class="acym__content__title__light-blue acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
+        $conditions['user']['memberpress']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink margin-left-1 margin-right-1"><</span>';
         $conditions['user']['memberpress']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][memberpress][expiration_date_sup]', '', 'cell shrink');
         $conditions['user']['memberpress']->option .= '</div>';
 
@@ -247,7 +247,7 @@ class plgAcymMemberpress extends acymPlugin
     {
         $this->onAcymProcessFilter_memberpress($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_memberpress(&$query, $options, $num)
@@ -299,7 +299,7 @@ class plgAcymMemberpress extends acymPlugin
         $status = $statusMemberPress[$automationCondition['memberpress']['status']];
         $statusActive = $activeMemberPress[$automationCondition['memberpress']['active']];
 
-        $finalText = acym_translation_sprintf('ACYM_SUBSCRIBED_INTEGRATION_PLUGIN', $element, $statusActive, $status);
+        $finalText = acym_translationSprintf('ACYM_SUBSCRIBED_INTEGRATION_PLUGIN', $element, $statusActive, $status);
 
         $dates = [];
         if (!empty($automationCondition['memberpress']['signup_date_inf'])) {
@@ -355,7 +355,7 @@ class plgAcymMemberpress extends acymPlugin
         $fields = $this->getMeprCustomFields();
 
         if (empty($fields)) {
-            echo '<h2 class="cell text-center acym__title__primary__color margin-top-2">'.acym_translation_sprintf('ACYM_YOU_DONT_HAVE_PLUGIN_CUSTOM_FIELD', 'MemberPress').'</h2>';
+            echo '<h2 class="cell text-center acym__title__primary__color margin-top-2">'.acym_translationSprintf('ACYM_YOU_DONT_HAVE_PLUGIN_CUSTOM_FIELD', 'MemberPress').'</h2>';
 
             return;
         }

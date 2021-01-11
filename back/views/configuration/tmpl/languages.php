@@ -1,7 +1,7 @@
 <?php if (count($data['languages']) > 1 && acym_level(1)) { ?>
 	<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2">
-		<div class="acym_area_title"><?php echo acym_translation('ACYM_MULTILINGUAL'); ?></div>
-		<div class="grid-x">
+		<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_MULTILINGUAL'); ?></div>
+		<div class="grid-x margin-y">
 			<div class="cell grid-x grid-margin-x">
                 <?php
                 echo acym_switch(
@@ -11,12 +11,12 @@
                     [],
                     'xlarge-3 medium-5 small-9',
                     'auto',
-                    'tiny',
+                    '',
                     'multilingual_config'
                 );
                 ?>
 			</div>
-			<div class="cell grid-x" id="multilingual_config">
+			<div class="cell grid-x margin-y" id="multilingual_config">
 				<div class="cell grid-x">
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__multilingual-default">
@@ -95,7 +95,7 @@
 <?php } ?>
 
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2" id="acym__configuration__languages">
-	<div class="acym_area_title"><?php echo acym_translation('ACYM_TRANSLATIONS'); ?></div>
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_TRANSLATIONS'); ?></div>
 	<div class="acym__listing margin-top-2">
 		<div class="grid-x cell acym__configuration__languages__listing acym__listing__header">
 			<div class="grid-x medium-auto small-11 cell">

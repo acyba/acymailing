@@ -25,7 +25,7 @@ class plgAcymContact extends acymPlugin
         acym_loadLanguageFile('com_contact', JPATH_ADMINISTRATOR);
 
         $conditions['user']['contact'] = new stdClass();
-        $conditions['user']['contact']->name = acym_translation_sprintf(
+        $conditions['user']['contact']->name = acym_translationSprintf(
             'ACYM_COMBINED_TRANSLATIONS',
             acym_translation('COM_CONTACT'),
             acym_translation('COM_CONTACT_SUBMENU_CATEGORIES')
@@ -57,7 +57,7 @@ class plgAcymContact extends acymPlugin
     {
         $this->onAcymProcessFilter_contact($query, $options, $num);
 
-        return acym_translation_sprintf('ACYM_SELECTED_USERS', $query->count());
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_contact(&$query, $options, $num)
@@ -96,7 +96,7 @@ class plgAcymContact extends acymPlugin
             $category = acym_loadResult('SELECT title FROM #__categories WHERE id = '.intval($automation['contact']['category']));
             $category = empty($category) ? '' : acym_translation($category);
 
-            $finalText = acym_translation_sprintf(
+            $finalText = acym_translationSprintf(
                 'ACYM_SUMMARY_IN_CATEGORY',
                 acym_translation($automation['contact']['type'] == 'in' ? 'ACYM_IN' : 'ACYM_NOT_IN'),
                 $category

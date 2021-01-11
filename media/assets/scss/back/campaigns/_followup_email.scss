@@ -5,10 +5,6 @@
             & > .cell {
                 padding-left: 15px;
             }
-
-            .switch, input {
-                margin-bottom: 0 !important;
-            }
         }
 
         #acym__followup__email__emails {
@@ -30,7 +26,7 @@
                         }
 
                         &.acym__followup__email__listing__action-duplicate:hover {
-                            color: $primary-toolbar-color;
+                            color: $color-palette-cyan;
                         }
                     }
                 }

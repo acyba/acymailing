@@ -12,7 +12,12 @@ class acyRouter extends acyHook
     {
         $this->activation = $activation;
 
+        // Back router
         add_action('wp_ajax_acymailing_router', [$this, 'router']);
+        // Front router
+        if (!acym_isAdmin()) add_action('wp_loaded', [$this, 'frontRouter']);
+
+        //TODO: Legacy front router, remove in September 2021 to minimize the issues in sent mails for users updating
         add_action('wp_ajax_acymailing_frontrouter', [$this, 'frontRouter']);
         add_action('wp_ajax_nopriv_acymailing_frontrouter', [$this, 'frontRouter']);
 
@@ -92,10 +97,14 @@ class acyRouter extends acyHook
         // Prevent plugins from breaking AcyMailing pages
         remove_action('plugins_loaded', 'mailchimp_on_all_plugins_loaded', 12);
         remove_action('plugins_loaded', '_imagify_init');
+        remove_action('plugins_loaded', 'plugins_loaded_wps_hide_login_plugin');
     }
 
     public function frontRouter()
     {
+        $page = acym_getVar('string', 'page');
+        if (empty($page) || $page !== ACYM_COMPONENT.'_front') return;
+
         $this->router(true);
     }
 
@@ -176,7 +185,7 @@ class acyRouter extends acyHook
                 if ($installedPlugins[$onePlugin->name]->type !== 'ADDON') continue;
 
                 acym_enqueueMessage(
-                    acym_translation_sprintf(
+                    acym_translationSprintf(
                         'ACYM_NEW_PLUGIN_FORMAT',
                         $onePlugin->name,
                         '<a target="_blank" href="'.$onePlugin->downloadlink.'">wordpress.org</a>'

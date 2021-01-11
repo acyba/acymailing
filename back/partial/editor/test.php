@@ -4,7 +4,9 @@
 		<div class="acym__wysid__send__test__icon__loader"><?php echo acym_loaderLogo(); ?></div>
 	</div>
 	<i class="acymicon-close acym__wysid__send__test-close"></i>
-	<div class="cell acym__wysid__send__test__title margin-bottom-2"><?php echo acym_translation('ACYM_SEE_HOW_AMAZING_YOUR_EMAIL'); ?></div>
+	<div class="cell acym__wysid__send__test__title margin-bottom-2 acym__title acym__title__secondary">
+        <?php echo acym_translation('ACYM_SEE_HOW_AMAZING_YOUR_EMAIL'); ?>
+	</div>
 	<label for="acym__wysid__send__test__select"><?php echo acym_translation('ACYM_SEND_TEST_TO'); ?></label>
     <?php echo acym_selectMultiple(
         $this->emailsTest,
@@ -17,11 +19,11 @@
     ); ?>
 	<label class="margin-top-1">
         <?php echo acym_translation('ACYM_TEST_NOTE'); ?>
-		<textarea class="acym__blue"
-				  id="acym__wysid__send__test__note"
-				  name="test_note"
-				  type="text"
-				  placeholder="<?php echo acym_translation('ACYM_TEST_NOTE_PLACEHOLDER'); ?>"></textarea>
+		<textarea
+				id="acym__wysid__send__test__note"
+				name="test_note"
+				type="text"
+				placeholder="<?php echo acym_translation('ACYM_TEST_NOTE_PLACEHOLDER'); ?>"></textarea>
 	</label>
 	<div class="cell grid-x align-center acym__wysid__send__test__container__button">
 		<button type="button" class="cell shrink button" id="acym__wysid__send__test__button"><?php echo acym_translation('ACYM_SAVE_AND_SEND_TEST'); ?></button>

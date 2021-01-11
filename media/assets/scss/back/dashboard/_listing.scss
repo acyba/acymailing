@@ -51,6 +51,7 @@
                 .acym__dashboard__card__title {
                     font-size: 30px;
                     margin-top: 20px;
+                    color: $color-palette-dark-blue;
                 }
 
                 hr {
@@ -59,8 +60,8 @@
 
                 .acym__dashboard__card__link {
                     display: block;
-                    font-size: 20px;
-                    margin-top: 30px;
+                    font-size: 1rem;
+                    margin-top: 1rem;
                     transition: 0.2s;
 
                     .acym__dashboard__card__link__unclickable {
@@ -75,26 +76,10 @@
             }
         }
 
-        .acym__stats {
-            .acym__stats__all__campaigns__dashboard {
-                font-weight: bold;
-                font-size: 1.5rem;
-                display: block;
-                text-align: left;
-            }
-        }
-
         .acym__dashboard__active-campaigns {
             position: relative;
             margin-top: 30px;
             margin-bottom: 30px;
-
-            .acym__dashboard__active-campaigns__title {
-                font-size: 1.5rem;
-                font-weight: bold;
-                display: block;
-                text-align: left;
-            }
 
             .acym__dashboard__active-campaigns__none {
                 text-align: center;

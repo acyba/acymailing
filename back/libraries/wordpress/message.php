@@ -25,7 +25,11 @@ function acym_enqueueMessage($message, $type = 'success')
     if (in_array($type, $handledTypes)) {
         acym_session();
         if (empty($_SESSION['acymessage'.$type]) || !in_array($message, $_SESSION['acymessage'.$type])) {
-            $_SESSION['acymessage'.$type][$notification->id] = $message;
+            if (empty($notification->id)) {
+                $_SESSION['acymessage'.$type][] = $message;
+            } else {
+                $_SESSION['acymessage'.$type][$notification->id] = $message;
+            }
         }
     }
 

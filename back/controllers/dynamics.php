@@ -42,6 +42,8 @@ class DynamicsController extends acymController
             "tab" => $tab,
             "automation" => $isAutomation,
             'mail_id' => $mailId,
+            'mailType' => acym_getVar('string', 'mail_type', ''),
+            'typeNotif' => acym_getVar('string', 'type_notif', ''),
         ];
 
         parent::display($data);
@@ -49,9 +51,9 @@ class DynamicsController extends acymController
 
     public function replaceDummy()
     {
+        $mailClass = new MailClass();
         $mailId = acym_getVar('int', 'mailId', 0);
         if (!empty($mailId)) {
-            $mailClass = new MailClass();
             $email = $mailClass->getOneById($mailId);
         }
 
@@ -82,7 +84,7 @@ class DynamicsController extends acymController
         $email->thumbnail = '';
         $email->drag_editor = '1';
         $email->library = '0';
-        $email->type = 'standard';
+        $email->type = $mailClass::TYPE_STANDARD;
         $email->template = '0';
         $email->settings = '';
         $email->stylesheet = '';
@@ -93,7 +95,7 @@ class DynamicsController extends acymController
         // This is the whole editor current content
         $email->previewBody = acym_getVar('string', 'previewBody', '', '', ACYM_ALLOWHTML);
 
-        @acym_trigger('replaceContent', [&$email]);
+        @acym_trigger('replaceContent', [&$email, false]);
 
         $userClass = new UserClass();
         $userEmail = acym_currentUserEmail();
