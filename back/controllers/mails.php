@@ -899,7 +899,8 @@ class MailsController extends acymController
     {
         acym_checkToken();
         $socialName = acym_getVar('string', 'social', '');
-        if (!in_array($socialName, ACYM_SOCIAL_MEDIA)) {
+        $socialMedias = acym_getSocialMedias();
+        if (!in_array($socialName, $socialMedias)) {
             echo json_encode(
                 [
                     'type' => 'error',

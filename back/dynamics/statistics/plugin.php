@@ -10,20 +10,23 @@ class plgAcymStatistics extends acymPlugin
         $id = acym_getVar('int', 'id');
         if (!empty($id)) {
             $mail = acym_loadObject(
-                'SELECT mail.`name`, campaign.`id` AS campaignId 
+                'SELECT mail.`name`, campaign.`id` AS campaignId, mail.`id`
                 FROM #__acym_mail AS mail 
                 LEFT JOIN #__acym_campaign AS campaign ON mail.`id` = campaign.`mail_id` 
                 WHERE mail.`id` = '.intval($id)
             );
             if (empty($mail)) {
                 $name = '';
+                $id = 0;
             } else {
                 $name = $mail->name;
                 if (!empty($mail->campaignId)) {
                     $name .= ' ['.acym_translation('ACYM_ID').' '.$mail->campaignId.']';
                 }
+                $id = $mail->id;
             }
-            echo json_encode(['value' => $name]);
+
+            echo json_encode(['text' => $name, 'value' => $id]);
             exit;
         }
 

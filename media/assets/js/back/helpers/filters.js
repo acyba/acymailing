@@ -20,7 +20,7 @@ const acym_helperFilter = {
                         $field.append(newOption).trigger('change');
                     });
                 } else {
-                    let newOption = new Option(response.text, response.value, false, false);
+                    let newOption = new Option(response.text, response.value, true, true);
                     $field.append(newOption).trigger('change');
                 }
             });

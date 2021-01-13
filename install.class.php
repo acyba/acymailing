@@ -943,8 +943,9 @@ class acymInstall
 
         if (version_compare($this->fromVersion, '7.0.0', '<')) {
             $socialIcons = json_decode($config->get('social_icons', '{}'), true);
+            $socialMedias = acym_getSocialMedias();
             foreach ($socialIcons as $oneSocial => $imagePath) {
-                if (!in_array($oneSocial, ACYM_SOCIAL_MEDIA)) {
+                if (!in_array($oneSocial, $socialMedias)) {
                     unset($socialIcons[$oneSocial]);
                 }
             }
