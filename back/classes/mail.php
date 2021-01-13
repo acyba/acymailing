@@ -464,7 +464,12 @@ class MailClass extends acymClass
     {
         if (empty($thumbnails)) return;
 
-        $stillUsedThumbnails = acym_loadResultArray('SELECT thumbnail FROM #__acym_mail WHERE thumbnail IN ('.implode(',', acym_escapeDB($thumbnails)).')');
+        if (!is_array($thumbnails)) $thumbnails = [$thumbnails];
+        foreach ($thumbnails as $key => $oneThumb) {
+            $thumbnails[$key] = acym_escapeDB($oneThumb);
+        }
+
+        $stillUsedThumbnails = acym_loadResultArray('SELECT thumbnail FROM #__acym_mail WHERE thumbnail IN ('.implode(',', $thumbnails).')');
         $thumbnailToDelete = array_diff($thumbnails, $stillUsedThumbnails);
         foreach ($thumbnailToDelete as $one) {
             if (!empty($one) && file_exists(ACYM_UPLOAD_FOLDER_THUMBNAIL.$one)) {

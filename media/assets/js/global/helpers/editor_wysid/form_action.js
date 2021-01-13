@@ -100,7 +100,6 @@ const acym_editorWysidFormAction = {
                         jQuery('#acym__wysid').css('display', 'none');
                         jQuery('#acym__wysid__edit').css('display', '');
                     }
-                    jQuery('#acym__wysid__warning__thumbnail').toggle();
                 } else {
                     acym_editorWysidNotifications.addEditorNotification({
                         'message': ACYM_JS_TXT.ACYM_TEMPLATE_CREATED,
@@ -108,6 +107,7 @@ const acym_editorWysidFormAction = {
                     }, 3000, false);
                 }
                 if (fromSendTest) acym_editorWysidTest.sendTest(res.data);
+                jQuery('#acym__wysid__warning__thumbnail').toggle();
             }
             jQuery('#acym__wysid__save__button').removeAttr('disabled');
         }).fail(function (jqXHR, textStatus) {

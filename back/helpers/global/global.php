@@ -142,3 +142,7 @@ function acym_header($header, $replace = true)
     if (headers_sent()) return;
     header($header, $replace);
 }
+
+function acym_getSocialMedias(){
+    return json_decode(ACYM_SOCIAL_MEDIA, true);
+}

@@ -49,7 +49,8 @@ class acymView extends acymObject
 
         $viewFolder = acym_isAdmin() ? ACYM_VIEW : ACYM_VIEW_FRONT;
         if (!file_exists($viewFolder.$name.DS.'tmpl'.DS.$view.'.php')) $view = 'listing';
-        if (ACYM_CMS === 'wordpress' && $name !== 'archive' && $view !== 'listing') echo ob_get_clean();
+        $getCleanView = ($name !== 'archive' && $view !== 'listing') && ($name !== 'frontusers' || $view !== 'profile');
+        if (ACYM_CMS === 'wordpress' && $getCleanView) echo ob_get_clean();
 
         // Load the needed scripts and styles
         if (ACYM_CMS !== 'wordpress' || ($name === 'frontusers' && ($view === 'unsubscribe' || $view === 'unsubscribepage')) || !defined(
@@ -67,9 +68,11 @@ class acymView extends acymObject
 
         // On pages with the editor, we need to put the wrapper inside the form
         $outsideForm = (strpos($name, 'mails') !== false && $view == 'edit') || (strpos($name, 'campaigns') !== false && $view == 'edit_email');
-        if ($outsideForm) echo '<form id="acym_form" action="'.acym_completeLink(
-                acym_getVar('cmd', 'ctrl')
-            ).'" class="acym__form__mail__edit" method="post" name="acyForm" data-abide novalidate>';
+        if ($outsideForm) {
+            echo '<form id="acym_form" action="'.acym_completeLink(
+                    acym_getVar('cmd', 'ctrl')
+                ).'" class="acym__form__mail__edit" method="post" name="acyForm" data-abide novalidate>';
+        }
 
         // Open wrapper and display the header
         if (acym_getVar('cmd', 'task') != 'ajaxEncoding') echo '<div id="acym_wrapper" class="'.$name.'_'.$view.'">';

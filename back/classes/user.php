@@ -797,19 +797,7 @@ class UserClass extends acymClass
         $allowSubscriptionModifications = (bool)($this->config->get('allow_modif', 'data') != 'none') || $this->allowModif;
 
         $user = new \stdClass();
-        $user->id = acym_getCID('id');
-
-        if (!$this->allowModif && !empty($user->id)) {
-            $currentUser = $this->identify();
-            if ($currentUser->id != $user->id) {
-                $this->errors[] = acym_translation('ACYM_NOT_ALLOWED_MODIFY_USER');
-
-                return false;
-            }
-
-            $allowUserModifications = true;
-            $allowSubscriptionModifications = true;
-        }
+        $connectedUser = $this->identify(true);
 
         $userData = acym_getVar('array', 'user', []);
         if (!empty($userData)) {
@@ -819,16 +807,26 @@ class UserClass extends acymClass
         }
 
         if (empty($user->email)) {
-            $connectedUser = $this->identify(true);
             if (!empty($connectedUser->email)) {
                 $user->email = $connectedUser->email;
             }
         }
 
-        if (empty($user->id) && empty($user->email)) {
+        if (empty($user->email)) {
             $this->errors[] = acym_translation('ACYM_VALID_EMAIL');
 
             return false;
+        }
+
+        if (!$this->allowModif && !empty($connectedUser)) {
+            if ($connectedUser->email != $user->email) {
+                $this->errors[] = acym_translation('ACYM_NOT_ALLOWED_MODIFY_USER');
+
+                return false;
+            }
+
+            $allowUserModifications = true;
+            $allowSubscriptionModifications = true;
         }
 
         // Check if it already exists...
