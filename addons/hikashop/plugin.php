@@ -89,6 +89,7 @@ class plgAcymHikashop extends acymPlugin
 
     public function initElementOptionsCustomView()
     {
+    	$this->elementOptions = [];
         $query = 'SELECT b.*, a.*
                     FROM #__hikashop_product AS a
                     LEFT JOIN #__hikashop_file AS b ON a.product_id = b.file_ref_id AND file_type = "product"
@@ -114,7 +115,9 @@ class plgAcymHikashop extends acymPlugin
         acym_loadLanguageFile('com_hikashop', JPATH_SITE);
 
         $this->categories = acym_loadObjectList(
-            "SELECT category_id AS id, category_parent_id AS parent_id, category_name AS title FROM `#__hikashop_category` WHERE category_type = 'product'",
+            "SELECT category_id AS id, category_parent_id AS parent_id, category_name AS title 
+			FROM `#__hikashop_category` 
+			WHERE category_type = 'product'",
             'id'
         );
 
@@ -354,7 +357,19 @@ class plgAcymHikashop extends acymPlugin
         //if a category is selected
         if (!empty($this->pageInfo->filter_cat)) {
             $this->query .= 'JOIN #__hikashop_product_category AS b ON a.product_id = b.product_id';
-            $this->filters[] = 'b.category_id = '.intval($this->pageInfo->filter_cat);
+
+
+            $this->categories = acym_loadObjectList(
+                "SELECT category_id AS id, category_parent_id AS parent_id, category_name AS title 
+				FROM `#__hikashop_category` 
+				WHERE category_type = 'product'",
+                'id'
+            );
+            $category = intval($this->pageInfo->filter_cat);
+            $categories = $this->getSubCategories($category);
+            acym_arrayToInteger($categories);
+
+            $this->filters[] = 'b.category_id IN ('.implode(', ', $categories).')';
         }
 
         $listingOptions = [
@@ -422,7 +437,19 @@ class plgAcymHikashop extends acymPlugin
 
             $selectedArea = $this->getSelectedArea($parameter);
             if (!empty($selectedArea)) {
-                $where[] = 'a.category_id IN ('.implode(',', $selectedArea).')';
+                $this->categories = acym_loadObjectList(
+                    'SELECT category_id AS id, category_parent_id AS parent_id, category_name AS title 
+					FROM `#__hikashop_category` 
+					WHERE category_type = "product"',
+                    'id'
+                );
+                $categories = [];
+                foreach ($selectedArea as $oneSelectedCat) {
+                    $categories = array_merge($categories, $this->getSubCategories($oneSelectedCat));
+                }
+                acym_arrayToInteger($categories);
+
+                $where[] = 'a.category_id IN ('.implode(',', $categories).')';
             }
 
             $where[] = 'b.`product_published` = 1';
@@ -814,10 +841,11 @@ class plgAcymHikashop extends acymPlugin
 
         if (!empty($ids)) {
             $cats = acym_loadObjectList(
-                'SELECT `category_id` AS id, `category_name` AS name FROM #__hikashop_category WHERE `category_type` = "product" AND `category_id` IN ("'.implode(
-                    '","',
-                    $ids
-                ).'") ORDER BY `category_name`'
+                'SELECT `category_id` AS id, `category_name` AS name 
+				FROM #__hikashop_category 
+				WHERE `category_type` = "product" 
+					AND `category_id` IN ("'.implode('","', $ids).'") 
+				ORDER BY `category_name`'
             );
 
             $value = [];
@@ -832,9 +860,11 @@ class plgAcymHikashop extends acymPlugin
 
         $search = acym_getVar('string', 'search', '');
         $cats = acym_loadObjectList(
-            'SELECT `category_id` AS id, `category_name` AS name FROM #__hikashop_category WHERE `category_type` = "product" AND `category_name` LIKE '.acym_escapeDB(
-                '%'.$search.'%'
-            ).' ORDER BY `category_name`'
+            'SELECT `category_id` AS id, `category_name` AS name 
+			FROM #__hikashop_category 
+			WHERE `category_type` = "product" 
+				AND `category_name` LIKE '.acym_escapeDB('%'.$search.'%').' 
+			ORDER BY `category_name`'
         );
         $categories = [];
         foreach ($cats as $oneCat) {
@@ -1369,7 +1399,7 @@ class plgAcymHikashop extends acymPlugin
 
         ?>
 		<div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
-			<div class="acym_area_title"><?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', $this->pluginDescription->name)); ?></div>
+			<div class="acym__title acym__title__secondary"><?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', $this->pluginDescription->name)); ?></div>
 
 			<div class="grid-x">
 				<div class="cell grid-x grid-margin-x">

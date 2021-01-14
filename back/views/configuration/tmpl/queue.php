@@ -9,18 +9,34 @@
                 'automan' => acym_translation('ACYM_CONFIGURATION_QUEUE_AUTOMAN'),
                 'manual' => acym_translation('ACYM_CONFIGURATION_QUEUE_MANUAL'),
             ];
-            echo acym_radio($queueModes, 'config[queue_type]', $this->config->get('queue_type', 'automan'));
+            echo acym_radio(
+                $queueModes,
+                'config[queue_type]',
+                $this->config->get('queue_type', 'automan'),
+                [
+                    'related' => [
+                        'auto' => 'automatic_only',
+                        'automan' => 'automatic_manual',
+                        'manual' => 'manual_only',
+                    ],
+                ]
+            );
             ?>
 		</div>
-		<div class="cell medium-3"><?php echo acym_translation('ACYM_AUTO_SEND_PROCESS'); ?></div>
-		<div class="cell medium-9">
+		<div class="cell medium-3 automatic_only automatic_manual"><?php echo acym_translation('ACYM_AUTO_SEND_PROCESS'); ?></div>
+		<div class="cell medium-9 automatic_only automatic_manual">
             <?php
-            $disabledBatch = acym_level(2) ? '' : 'disabled';
+            $cronFrequency = $this->config->get('cron_frequency');
             $valueBatch = acym_level(2) ? intval($this->config->get('queue_batch_auto', 1)) : 1;
+            if (!function_exists('curl_multi_exec') && (intval($cronFrequency) < 900 || intval($valueBatch) > 1)) {
+                acym_display(acym_translation('ACYM_MULTI_CURL_DISABLED'), 'error');
+            }
+
+            $disabledBatch = acym_level(2) ? '' : 'disabled';
             $delayTypeAuto = $data['typeDelay'];
             $delayHtml = '<span data-acym-tooltip="'.acym_translation('ACYM_CRON_TRIGGERED_DESC').'">'.$delayTypeAuto->display(
                     'config[cron_frequency]',
-                    $this->config->get('cron_frequency'),
+                    $cronFrequency,
                     2
                 ).'</span>';
             echo acym_translationSprintf(
@@ -30,8 +46,8 @@
                 $delayHtml
             ); ?>
 		</div>
-		<div class="cell medium-3"></div>
-		<div class="cell medium-9">
+		<div class="cell medium-3 automatic_only automatic_manual"></div>
+		<div class="cell medium-9 automatic_only automatic_manual">
             <?php
             $delayTypeAuto = $data['typeDelay'];
             echo acym_translationSprintf(
@@ -39,8 +55,8 @@
                 $delayTypeAuto->display('config[email_frequency]', $this->config->get('email_frequency', 0), 0)
             ); ?>
 		</div>
-		<div class="cell medium-3"><?php echo acym_translation('ACYM_MANUAL_SEND_PROCESS'); ?></div>
-		<div class="cell medium-9">
+		<div class="cell medium-3 manual_only automatic_manual"><?php echo acym_translation('ACYM_MANUAL_SEND_PROCESS'); ?></div>
+		<div class="cell medium-9 manual_only automatic_manual">
             <?php
             $delayTypeAuto = $data['typeDelay'];
             echo acym_translationSprintf(
@@ -49,8 +65,8 @@
                 $delayTypeAuto->display('config[queue_pause]', $this->config->get('queue_pause'), 0)
             ); ?>
 		</div>
-		<div class="cell medium-3 margin-top-1"><?php echo '<span>'.acym_translation('ACYM_MAX_NB_TRY').'</span>'.acym_info('ACYM_MAX_NB_TRY_DESC'); ?></div>
-		<div class="cell medium-9 margin-top-1">
+		<div class="cell medium-3"><?php echo '<span>'.acym_translation('ACYM_MAX_NB_TRY').'</span>'.acym_info('ACYM_MAX_NB_TRY_DESC'); ?></div>
+		<div class="cell medium-9">
             <?php echo acym_translationSprintf(
                 'ACYM_CONFIG_TRY',
                 '<input class="intext_input" type="text" name="config[queue_try]" value="'.intval($this->config->get('queue_try')).'">'

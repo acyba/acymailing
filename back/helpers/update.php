@@ -264,10 +264,10 @@ class UpdateHelper extends acymObject
             );
             $template = $mailClass->encode($template);
 
-            $query = 'INSERT INTO `#__acym_mail` (`name`, `creation_date`, `thumbnail`, `drag_editor`, `library`, `type`, `body`, `subject`, `template`, `from_name`, `from_email`, `reply_to_name`, `reply_to_email`, `bcc`, `settings`, `stylesheet`, `attachments`, `creator_id`) VALUES
-                     ('.$tmplName.', '.$creationDate.', '.$thumbnail.', 1, 1, '.acym_escapeDB($mailClass::TYPE_STANDARD).', '.acym_escapeDB(
+            $query = 'INSERT INTO `#__acym_mail` (`name`, `creation_date`, `thumbnail`, `drag_editor`, `library`, `type`, `body`, `subject`, `from_name`, `from_email`, `reply_to_name`, `reply_to_email`, `bcc`, `settings`, `stylesheet`, `attachments`, `creator_id`) VALUES
+                     ('.$tmplName.', '.$creationDate.', '.$thumbnail.', 1, 1, '.acym_escapeDB($mailClass::TYPE_TEMPLATE).', '.acym_escapeDB(
                     $template->body
-                ).', "", 1, NULL, NULL, NULL, NULL, NULL, '.$settings.', '.$stylesheet.', NULL, '.$currentUserId.');';
+                ).', "", NULL, NULL, NULL, NULL, NULL, '.$settings.', '.$stylesheet.', NULL, '.$currentUserId.');';
             acym_query($query);
             $installedTemplates++;
         }
@@ -346,7 +346,6 @@ class UpdateHelper extends acymObject
         $mailAutomation = new \stdClass();
         $mailAutomation->type = $mailClass::TYPE_AUTOMATION;
         $mailAutomation->library = 1;
-        $mailAutomation->template = 0;
         $mailAutomation->drag_editor = 1;
         $mailAutomation->creator_id = acym_currentUserId();
         $mailAutomation->creation_date = date('Y-m-d H:i:s', time());
@@ -534,9 +533,8 @@ class UpdateHelper extends acymObject
                 'name' => acym_translation(self::FIRST_EMAIL_NAME_KEY),
                 'subject' => acym_translation('ACYM_YOUR_FIRST_EMAIL'),
                 'content' => $body,
-                'template' => 1,
                 'settings' => '{"p":{"font-family":"Helvetica","font-size":"16px"},"#acym__wysid__background-colorpicker":{"background-color":"#f5f5f5"}}',
-                'type' => $mailClass::TYPE_STANDARD,
+                'type' => $mailClass::TYPE_TEMPLATE,
                 'thumbnail' => 'thumbnail_first_email.png',
             ];
             $mailingImage = 'image_mailing_step_email.jpg';
@@ -571,7 +569,6 @@ class UpdateHelper extends acymObject
                 $notif = new \stdClass();
                 $notif->type = empty($oneNotif['type']) ? $mailClass::TYPE_NOTIFICATION : $oneNotif['type'];
                 $notif->library = 1;
-                $notif->template = empty($oneNotif['template']) ? 0 : $oneNotif['template'];
                 $notif->settings = empty($oneNotif['settings']) ? '' : $oneNotif['settings'];
                 $notif->drag_editor = 1;
                 $notif->creator_id = acym_currentUserId();
@@ -681,7 +678,6 @@ class UpdateHelper extends acymObject
             $mail->type = $mailClass::TYPE_OVERRIDE;
             $mail->subject = $oneOverride['new_subject'];
             $mail->body = $this->getFormatedNotification($oneOverride['new_body']);
-            $mail->template = 0;
             $mail->drag_editor = 1;
             $mail->creator_id = $currentUserId;
             $mailId = $mailClass->save($mail);

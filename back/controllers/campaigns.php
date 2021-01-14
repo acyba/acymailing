@@ -32,7 +32,6 @@ class CampaignsController extends acymController
         $this->loadScripts = [
             'recipients' => ['vue-applications' => ['entity_select']],
             'send_settings' => ['datepicker'],
-            'all' => ['introjs'],
         ];
         acym_setVar('edition', '1');
         if (acym_isAdmin()) $this->stepContainerClass = 'xxlarge-9';
@@ -1007,7 +1006,6 @@ class CampaignsController extends acymController
             $mail = new \stdClass();
             $mail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
             $mail->type = $mailClass::TYPE_STANDARD;
-            $mail->template = 0;
             $mail->library = 0;
 
             $campaign = new \stdClass();
@@ -1473,8 +1471,8 @@ class CampaignsController extends acymController
         $campaignLists = $data['mailClass']->getAllListsWithCountSubscribersByMailIds([$data['campaignInformation']->mail_id]);
 
         if ($data['campaignInformation']->sent) {
-            $mailstatClass = new MailStatClass();
-            $nbSubscribers = $mailstatClass->getTotalSubscribersByMailId($data['campaignInformation']->mail_id);
+            $mailStatClass = new MailStatClass();
+            $nbSubscribers = $mailStatClass->getTotalSubscribersByMailId($data['campaignInformation']->mail_id);
         } else {
             if (!empty($campaignLists)) {
                 $listsIds = [];

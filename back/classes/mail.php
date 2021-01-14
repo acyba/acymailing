@@ -22,6 +22,7 @@ class MailClass extends acymClass
     const TYPE_UNSUBSCRIBE = 'unsubscribe';
     const TYPE_AUTOMATION = 'automation';
     const TYPE_FOLLOWUP = 'followup';
+    const TYPE_TEMPLATE = 'template';
 
     // Used by some sending methods to know the priority of a sent email (transactional => reset password / account confirmation...)
     const TYPES_TRANSACTIONAL = [
@@ -94,13 +95,13 @@ class MailClass extends acymClass
             $filters[] = 'mail.type != '.acym_escapeDB($this::TYPE_NOTIFICATION);
             $filters[] = 'mail.type != '.acym_escapeDB($this::TYPE_OVERRIDE);
         } else {
-            $filters[] = 'mail.type = '.acym_escapeDB($this::TYPE_STANDARD);
+            $filters[] = 'mail.type IN ('.acym_escapeDB($this::TYPE_STANDARD).', '.acym_escapeDB($this::TYPE_TEMPLATE).')';
         }
 
         $filters[] = 'mail.parent_id IS NULL';
 
         if (empty($settings['automation'])) {
-            $filters[] = 'mail.template = 1';
+            $filters[] = 'mail.type IN ('.acym_escapeDB($this::TYPE_TEMPLATE).', '.acym_escapeDB($this::TYPE_WELCOME).', '.acym_escapeDB($this::TYPE_UNSUBSCRIBE).')';
         }
 
         if (!empty($settings['drag_editor'])) {
@@ -108,13 +109,15 @@ class MailClass extends acymClass
         }
 
         if (!empty($settings['creator_id'])) {
+            $mailTypeCondition = 'mail.type IN ('.acym_escapeDB($this::TYPE_TEMPLATE).', '.acym_escapeDB($this::TYPE_WELCOME).', '.acym_escapeDB($this::TYPE_UNSUBSCRIBE).')';
             $userGroups = acym_getGroupsByUser($settings['creator_id']);
             $groupCondition = '(mail.access LIKE "%,'.implode(',%" OR mail.access LIKE "%,', $userGroups).',%")';
-            $filter = 'mail.creator_id = '.intval($settings['creator_id']).' OR (mail.template = 1 AND '.$groupCondition.')';
+            $filter = 'mail.creator_id = '.intval($settings['creator_id']).' OR ('.$mailTypeCondition.' AND '.$groupCondition.')';
+
             if (!acym_isAdmin() && !empty($settings['element_tab'])) {
-                $listGroup = $groupCondition = '(list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%")';
-                $listFilter = 'list.cms_user_id = '.intval($settings['creator_id']).' OR '.$listGroup;
-                $filter = '(mail.creator_id = '.intval($settings['creator_id']).' OR (mail.template = 1 AND '.$groupCondition.')) OR '.$listFilter;
+                $filter = '('.$filter.') 
+                            OR list.cms_user_id = '.intval($settings['creator_id']).' 
+                            OR (list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%")';
             }
 
             $filters['list'] = '('.$filter.')';
@@ -822,8 +825,7 @@ class MailClass extends acymClass
         $this->config->save($newConfig);
 
         $newTemplate->drag_editor = 0;
-        $newTemplate->type = $this::TYPE_STANDARD;
-        $newTemplate->template = 1;
+        $newTemplate->type = $this::TYPE_TEMPLATE;
         $newTemplate->library = 0;
         $newTemplate->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
 

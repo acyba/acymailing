@@ -453,7 +453,7 @@ class MailsController extends acymController
         $saveAsTmpl = acym_getVar('int', 'saveAsTmpl', 0);
         if ($saveAsTmpl === 1) {
             unset($mail->id);
-            $mail->type = $mailClass::TYPE_STANDARD;
+            $mail->type = $mailClass::TYPE_TEMPLATE;
         }
 
         if ($fromAutomation) {
@@ -462,7 +462,7 @@ class MailsController extends acymController
             acym_setVar('type_editor', 'acyEditor');
         }
 
-        if (empty($mail->subject) && !empty($mail->type) && $mail->type != $mailClass::TYPE_STANDARD) {
+        if (empty($mail->subject) && !empty($mail->type) && $mail->type != $mailClass::TYPE_TEMPLATE) {
             $mail->subject = acym_translation('ACYM_EMAIL_SUBJECT');
         }
 
@@ -472,7 +472,6 @@ class MailsController extends acymController
         $mail->stylesheet = acym_getVar('string', 'editor_stylesheet', '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->headers = acym_getVar('string', 'editor_headers', '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->thumbnail = $fromAutomation ? '' : acym_getVar('string', 'editor_thumbnail', '', 'REQUEST', ACYM_ALLOWRAW);
-        $mail->template = $fromAutomation ? 2 : 1;
         $mail->library = 0;
         $mail->drag_editor = strpos($mail->body, 'acym__wysid__template') === false ? 0 : 1;
         if ($fromAutomation) $mail->type = $mailClass::TYPE_AUTOMATION;
@@ -990,7 +989,6 @@ class MailsController extends acymController
         $newMail->library = 0;
         $newMail->body = $mail->body;
         $newMail->subject = $mail->subject;
-        $newMail->template = 2;
         $newMail->from_name = $mail->from_name;
         $newMail->from_email = $mail->from_email;
         $newMail->reply_to_name = $mail->reply_to_name;

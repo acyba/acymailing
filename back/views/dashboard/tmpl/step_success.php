@@ -12,5 +12,6 @@
 </div>
 
 <div class="cell margin-top-3">
-	<button type="button" class="acy_button_submit button" data-task="saveStepSupport"><?php echo acym_translation('ACYM_FINISH'); ?></button>
+	<button type="button" class="acy_button_submit button" data-task="saveStepSupportSubForm"><?php echo acym_translation('ACYM_CREATE_FORM'); ?></button>
+	<button type="button" class="acy_button_submit button" data-task="saveStepSupportImport"><?php echo acym_translation('ACYM_IMPORT_USERS'); ?></button>
 </div>

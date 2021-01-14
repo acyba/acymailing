@@ -14,9 +14,11 @@
 		<h5 class="cell padding-left-1 acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SEND_FOLLOW_UP_EMAIL_IF'); ?></h5>
 		<div class="cell grid-x padding-left-1">
             <?php
-            if (!empty($data['additionalCondition']) || $data['trigger'] == 'user_subscribe') echo '<h5 class="cell acym__title__primary__color padding-left-1">'.acym_translation(
-                    'ACYM_SPECIFIC_CONDITIONS_TRIGGER'
-                ).'</h5>';
+            if (!empty($data['additionalCondition']) || $data['trigger'] == 'user_subscribe') {
+                echo '<h5 class="cell acym__title__primary__color padding-left-1">'.acym_translation(
+                        'ACYM_SPECIFIC_CONDITIONS_TRIGGER'
+                    ).'</h5>';
+            }
             foreach ($data['additionalCondition'] as $condition) {
                 ?>
 				<span class="cell grid-x acym_vcenter margin-top-1 padding-left-2"><?php echo $condition; ?></span>
@@ -26,7 +28,7 @@
             ?>
             <?php if ($data['trigger'] == 'user_subscribe') { ?>
 				<span class="cell grid-x acym_vcenter margin-bottom-1 margin-top-1 padding-left-2"><?php echo acym_translationSprintf(
-                        $data['lists_subscribe_trad'],
+                        $data['lists_subscribe_translation'],
                         $data['select_status_lists'],
                         $data['lists_multiselect']
                     ); ?></span>
@@ -34,7 +36,7 @@
 			<h5 class="cell acym__title__primary__color margin-top-2 padding-left-1"><?php echo acym_translation('ACYM_CLASSIC_CONDITIONS'); ?></h5>
             <?php if ($data['trigger'] != 'user_subscribe') { ?>
 				<span class="cell grid-x acym_vcenter margin-bottom-1 margin-top-1 padding-left-2"><?php echo acym_translationSprintf(
-                        $data['lists_subscribe_trad'],
+                        $data['lists_subscribe_translation'],
                         $data['select_status_lists'],
                         $data['lists_multiselect']
                     ); ?></span>

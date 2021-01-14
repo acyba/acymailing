@@ -1,5 +1,7 @@
 <?php
 
+defined('_JEXEC') or die('Restricted access');
+
 class plgSystemAcymailoverride extends JPlugin
 {
     public function __construct(&$subject, $config = [])

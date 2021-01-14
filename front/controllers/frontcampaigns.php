@@ -14,7 +14,6 @@ class FrontcampaignsController extends CampaignsController
 
         $this->loadScripts = [
             'edit' => ['vue-applications' => ['entity_select'], 'editor-wysid'],
-            'all' => ['introjs'],
         ];
         $this->authorizedFrontTasks = [
             'saveAsDraftCampaign',

@@ -579,7 +579,6 @@ class plgAcymSubscriber extends acymPlugin
         if ($mailClass::TYPE_AUTOMATION != $mail->type) {
             unset($mail->id);
             $mail->type = $mailClass::TYPE_AUTOMATION;
-            $mail->template = 2;
             $mail->id = $mailClass->save($mail);
         }
 

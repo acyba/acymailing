@@ -35,7 +35,9 @@ function acym_noTemplate($component = true)
 
 function acym_isNoTemplate()
 {
-    return acym_getVar('cmd', 'tmpl') == 'component';
+    $tmpl = acym_getVar('cmd', 'tmpl');
+
+    return in_array($tmpl, ['component', 'raw']);
 }
 
 function acym_setNoTemplate($status = true)

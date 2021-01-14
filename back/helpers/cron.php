@@ -53,40 +53,41 @@ class CronHelper extends acymObject
             acym_display($firstMessage, 'info');
         }
 
-        if ($this->config->get('cron_next') > $time) {
-            if ($this->config->get('cron_next') > ($time + $this->config->get('cron_frequency'))) {
-                //There is something wrong here... so we put back the normal time
-                $newConfig = new \stdClass();
+        if (empty($this->startQueue)) {
+            if ($this->config->get('cron_next') > $time) {
+                if ($this->config->get('cron_next') > ($time + $this->config->get('cron_frequency'))) {
+                    //There is something wrong here... so we put back the normal time
+                    $newConfig = new \stdClass();
+                    $newConfig->cron_next = $time + $this->config->get('cron_frequency');
+                    $this->config->save($newConfig);
+                }
+
+                $nottime = acym_translationSprintf('ACYM_CRON_NEXT', acym_date($this->config->get('cron_next'), 'd F Y H:i'));
+                $this->messages[] = $nottime;
+                if ($this->report) {
+                    //We dont need to trigger anything, it's not time to do it.
+                    acym_display($nottime, 'info');
+                }
+
+                return false;
+            }
+
+            // Step 2: we update the next cron and the last cron dates
+            $newConfig = new \stdClass();
+            $newConfig->cron_last = $time;
+            $newConfig->cron_fromip = acym_getIP();
+            $newConfig->cron_next = $this->config->get('cron_next') + $this->config->get('cron_frequency');
+
+            //We update the next cron properly
+            if ($newConfig->cron_next <= $time || $newConfig->cron_next > $time + $this->config->get('cron_frequency')) {
                 $newConfig->cron_next = $time + $this->config->get('cron_frequency');
-                $this->config->save($newConfig);
             }
 
-            $nottime = acym_translationSprintf('ACYM_CRON_NEXT', acym_date($this->config->get('cron_next'), 'd F Y H:i'));
-            $this->messages[] = $nottime;
-            if ($this->report) {
-                //We dont need to trigger anything, it's not time to do it.
-                acym_display($nottime, 'info');
-            }
-
-            return false;
+            $this->config->save($newConfig);
         }
 
         // We should trigger the cron now...
         $this->executed = true;
-
-
-        // Step 2: we update the next cron and the last cron dates
-        $newConfig = new \stdClass();
-        $newConfig->cron_last = $time;
-        $newConfig->cron_fromip = acym_getIP();
-        $newConfig->cron_next = $this->config->get('cron_next') + $this->config->get('cron_frequency');
-
-        //We update the next cron properly
-        if ($newConfig->cron_next <= $time || $newConfig->cron_next > $time + $this->config->get('cron_frequency')) {
-            $newConfig->cron_next = $time + $this->config->get('cron_frequency');
-        }
-
-        $this->config->save($newConfig);
 
 
         // Step 3: Enqueue the scheduled campaigns
@@ -333,8 +334,9 @@ class CronHelper extends acymObject
     {
         if (!empty($this->startQueue) || !acym_level(2)) return;
         $emailsBatches = $this->config->get('queue_batch_auto', 1);
+        $emailsBatches = intval($emailsBatches);
         $emailsPerBatches = $this->config->get('queue_nbmail_auto', 70);
-        if (empty($emailsBatches) || $emailsBatches == 1 || empty($emailsPerBatches)) return;
+        if ($emailsBatches < 2 || empty($emailsPerBatches)) return;
 
         $urls = [];
 

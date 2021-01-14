@@ -21,9 +21,6 @@ class ConfigurationController extends acymController
     {
         parent::__construct();
         $this->breadcrumb[acym_translation('ACYM_CONFIGURATION')] = acym_completeLink('configuration');
-        $this->loadScripts = [
-            'all' => ['introjs'],
-        ];
     }
 
     public function listing()
@@ -1054,7 +1051,7 @@ class ConfigurationController extends acymController
             'cms' => ACYM_CMS,
             'frequency' => $frequency,
             'level' => $this->config->get('level', ''),
-            'url_version' => 'secured'
+            'url_version' => 'secured',
         ];
 
         //We call updateme to activate/deactivate the cron

@@ -46,10 +46,15 @@ function acym_radio($options, $name, $selected = null, $attributes = [], $params
         $attributes['value'] = $value;
         $attributes['id'] = $currentId;
 
+        if (isset($attributes['related'][$value])) {
+            $attributes['acym-data-related'] = $attributes['related'][$value];
+        }
+
         $checked = (string)$value == (string)$selected ? ' checked="checked"' : '';
 
         $formattedAttributes = '';
         foreach ($attributes as $attribute => $val) {
+            if ($attribute === 'related') continue;
             $formattedAttributes .= ' '.$attribute.'="'.acym_escape($val).'"';
         }
         if (!empty($params['required'])) {
@@ -803,7 +808,7 @@ function acym_sortBy($options, $listing, $default = '', $defaultSortOrdering = '
         $selected,
         [
             'id' => 'acym__listing__ordering',
-            'class' => 'acym__select acym__select__sort'
+            'class' => 'acym__select acym__select__sort',
         ]
     );
 

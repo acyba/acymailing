@@ -6,6 +6,8 @@ use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\RegacyHelper;
 
+defined('_JEXEC') or die('Restricted access');
+
 class plgSystemAcymtriggers extends JPlugin
 {
     var $oldUser = null;
@@ -285,13 +287,4 @@ class plgSystemAcymtriggers extends JPlugin
         acym_trigger('onAfterHikashopUserCreate', [$formData, $listData, $element]);
     }
 
-
-    public function onAfterInitialise()
-    {
-        $ctrl = empty($_REQUEST['ctrl']) ? '' : filter_var($_REQUEST['ctrl'], FILTER_SANITIZE_STRING);
-
-        if ($ctrl == 'cron') return;
-        $this->initAcy();
-        acym_asyncCurlCall([acym_frontendLink('cron')]);
-    }
 }

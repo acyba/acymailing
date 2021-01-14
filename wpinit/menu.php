@@ -50,7 +50,7 @@ class acyMenu extends acyHook
         if (!$allowed) return;
 
         // Add the Acy menu items to the WP menu
-        $svg = acym_fileGetContent(ACYM_IMAGES.'loader.svg');
+        $svg = acym_loaderLogo(false);
         add_menu_page(
             acym_translation('ACYM_DASHBOARD'),
             'AcyMailing',
