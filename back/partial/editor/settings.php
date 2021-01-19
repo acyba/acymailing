@@ -25,7 +25,9 @@
 		</div>
 	</div>
 	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
-		<?php echo acym_translation('ACYM_DESIGN'); ?><i class="acymicon-keyboard_arrow_up"></i>
+		<?php echo acym_translation('ACYM_DESIGN'); ?>
+		<i class="acymicon-keyboard_arrow_up"></i>
+		<?php echo acym_info('ACYM_DESIGN'); ?>
 	</p>
 	<div class="grid-y acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__context__modal__container">
 		<div class="grid-x margin-bottom-1 small-12 cell">

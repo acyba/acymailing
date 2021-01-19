@@ -1,7 +1,6 @@
 jQuery(document).ready(function ($) {
 
     function Init() {
-        setIntroJSCampaign();
         setSpamTest();
         sendTestAjax();
     }
@@ -27,17 +26,6 @@ jQuery(document).ready(function ($) {
                 acym_helperNotification.addNotification(res.message, res.type);
             });
         });
-    }
-
-    function setIntroJSCampaign() {
-        acym_helperIntroJS.introContent = [
-            {
-                element: '#spam_test_zone',
-                text: ACYM_JS_TXT.ACYM_INTRO_SAFE_CHECK,
-                position: 'right'
-            }
-        ];
-        acym_helperIntroJS.setIntrojs('campaigns_tests');
     }
 
     function setSpamTest() {

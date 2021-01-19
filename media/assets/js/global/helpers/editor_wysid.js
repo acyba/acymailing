@@ -61,7 +61,6 @@ jQuery(document).ready(function ($) {
             acym_editorWysidDynammic.setDynamicsActions();
             acym_editorWysidDynammic.setTagPWordBreak();
             acym_editorWysidDynammic.setTagPreInserted();
-            acym_helperEditorWysid.setIntroForDynamics();
             acym_helperEditorWysid.removeBlankCharacters();
             if (reloadTinyMCE) acym_editorWysidTinymce.addTinyMceWYSID();
             acym_editorWysidTinymce.checkForEmptyText();
@@ -136,21 +135,6 @@ jQuery(document).ready(function ($) {
             let $linkImages = jQuery('.acym__wysid__link__image');
             jQuery.each($linkImages, function () {
                 jQuery(this).html(jQuery(this).html().replace(/\uFEFF/g, ''));
-            });
-        },
-        setIntroForDynamics: function () {
-            if (!ACYM_IS_ADMIN) return;
-            jQuery('.acym__wysid__tinymce--text').on('click', function () {
-                setTimeout(function () {
-                    acym_helperIntroJS.introContent = [
-                        {
-                            element: '.mce-widget .mce-i-codesample',
-                            text: ACYM_JS_TXT.ACYM_INTRO_ADD_DTEXT,
-                            position: 'right'
-                        }
-                    ];
-                    acym_helperIntroJS.setIntrojs('mail_editor_dtext');
-                }, 200);
             });
         },
         setSizeEditorWYSID: function () {

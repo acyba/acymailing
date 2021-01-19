@@ -1369,7 +1369,7 @@ class plgAcymHikashop extends acymPlugin
 
         ?>
 		<div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
-			<div class="acym_area_title"><?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', $this->pluginDescription->name)); ?></div>
+			<div class="acym__title acym__title__secondary"><?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', $this->pluginDescription->name)); ?></div>
 
 			<div class="grid-x">
 				<div class="cell grid-x grid-margin-x">

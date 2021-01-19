@@ -15,12 +15,17 @@
 		<div class="cell medium-3"><?php echo acym_translation('ACYM_AUTO_SEND_PROCESS'); ?></div>
 		<div class="cell medium-9">
             <?php
-            $disabledBatch = acym_level(2) ? '' : 'disabled';
+            $cronFrequency = $this->config->get('cron_frequency');
             $valueBatch = acym_level(2) ? intval($this->config->get('queue_batch_auto', 1)) : 1;
+            if (!function_exists('curl_multi_exec') && (intval($cronFrequency) < 900 || intval($valueBatch) > 1)) {
+                acym_display(acym_translation('ACYM_MULTI_CURL_DISABLED'), 'error');
+            }
+
+            $disabledBatch = acym_level(2) ? '' : 'disabled';
             $delayTypeAuto = $data['typeDelay'];
             $delayHtml = '<span data-acym-tooltip="'.acym_translation('ACYM_CRON_TRIGGERED_DESC').'">'.$delayTypeAuto->display(
                     'config[cron_frequency]',
-                    $this->config->get('cron_frequency'),
+                    $cronFrequency,
                     2
                 ).'</span>';
             echo acym_translationSprintf(

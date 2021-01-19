@@ -105,7 +105,7 @@ class acymController extends acymObject
             acym_addScript(false, ACYM_JS.'editor_wysid_utils.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'editor_wysid_utils.min.js'));
 
             // Automatically add editor dependencies
-            $scripts = array_merge($scripts, ['colorpicker', 'datepicker', 'thumbnail', 'foundation-email', 'introjs', 'parse-css', 'vue-prism-editor', 'masonry']);
+            $scripts = array_merge($scripts, ['colorpicker', 'datepicker', 'thumbnail', 'foundation-email', 'parse-css', 'vue-prism-editor', 'masonry']);
 
             if (empty($scripts['vue-applications'])) {
                 $scripts['vue-applications'] = ['code_editor'];
@@ -134,11 +134,6 @@ class acymController extends acymObject
         if (in_array('foundation-email', $scripts)) {
             acym_addStyle(false, ACYM_CSS.'libraries/foundation_email.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'foundation_email.min.css'));
             acym_addStyle(true, acym_getEmailCssFixes());
-        }
-
-        if (in_array('introjs', $scripts)) {
-            acym_addStyle(false, ACYM_CSS.'libraries/introjs.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'introjs.min.css'));
-            acym_addScript(false, ACYM_JS.'libraries/intro.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'intro.min.js'));
         }
 
         if (in_array('parse-css', $scripts)) {
