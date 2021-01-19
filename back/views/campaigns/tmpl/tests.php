@@ -14,7 +14,7 @@
             ?>
 			<div class="cell grid-x grid-margin-x" id="campaigns_tests_step">
 				<div id="spam_test_zone" class="cell large-5">
-					<h6 class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SAFE_CHECK'); ?></h6>
+					<h6 class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SAFE_CHECK').acym_info('ACYM_INTRO_SAFE_CHECK'); ?></h6>
 					<p class="margin-bottom-1"><?php echo acym_translation('ACYM_SAFE_CHECK_DESC'); ?></p>
 					<div class="grid-x align-center">
 						<div class="cell">

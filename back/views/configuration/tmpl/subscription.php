@@ -119,7 +119,7 @@
 </div>
 
 <div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
-	<div class="acym_area_title"><?php echo acym_translationSprintf('ACYM_XX_INTEGRATION', ACYM_CMS_TITLE); ?></div>
+	<div class="acym__title acym__title__secondary"><?php echo acym_translationSprintf('ACYM_XX_INTEGRATION', ACYM_CMS_TITLE); ?></div>
 
     <?php
     if (!acym_isPluginActive('acymtriggers')) {

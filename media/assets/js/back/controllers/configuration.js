@@ -7,7 +7,6 @@ jQuery(document).ready(function ($) {
         setTimeoutCheckConfiguration();
         setCheckDBConfiguration();
         setOnChangeAutomaticBounce();
-        setIntroJSConfig();
         setOrderWarning();
         setSelect2ChooseEmails();
         setAttachLicenseKey();
@@ -26,66 +25,6 @@ jQuery(document).ready(function ($) {
             if (this.value == 'rand') {
                 alert(ACYM_JS_TXT.ACYM_NO_RAND_FOR_MULTQUEUE);
             }
-        });
-    }
-
-    function setIntroJSConfig() {
-        if ($('.acym__configuration__mail-settings').is(':visible')) {
-            acym_helperIntroJS.introContent = [
-                {
-                    element: '.acym__configuration__mail-settings',
-                    text: ACYM_JS_TXT.ACYM_INTRO_MAIL_SETTINGS,
-                    position: 'top'
-                },
-                {
-                    element: '.acym__configuration__advanced',
-                    text: ACYM_JS_TXT.ACYM_INTRO_ADVANCED,
-                    position: 'top'
-                }
-            ];
-            acym_helperIntroJS.setIntrojs('configuration__mail-settings');
-        }
-        $('[name="config[dkim]"]').on('change', function () {
-            acym_helperIntroJS.introContent = [
-                {
-                    element: '.acym__configuration__dkim',
-                    text: ACYM_JS_TXT.ACYM_INTRO_DKIM,
-                    position: 'top'
-                }
-            ];
-            acym_helperIntroJS.setIntrojs('configuration__dkim');
-        });
-        if ($('.acym__configuration__cron').is(':visible')) {
-            acym_helperIntroJS.introContent = [
-                {
-                    element: '.acym__configuration__cron',
-                    text: ACYM_JS_TXT.ACYM_INTRO_CRON
-                }
-            ];
-            acym_helperIntroJS.setIntrojs('configuration__cron');
-        }
-        if ($('.acym__configuration__subscription').is(':visible')) {
-            acym_helperIntroJS.introContent = [
-                {
-                    element: '.acym__configuration__subscription',
-                    text: ACYM_JS_TXT.ACYM_INTRO_SUBSCRIPTION
-                }
-            ];
-            acym_helperIntroJS.setIntrojs('configuration__subscription');
-        }
-        if ($('.acym__configuration__check-database').is(':visible')) {
-            acym_helperIntroJS.introContent = [
-                {
-                    element: '.acym__configuration__check-database',
-                    text: ACYM_JS_TXT.ACYM_INTRO_CHECK_DATABASE
-                }
-            ];
-            acym_helperIntroJS.setIntrojs('configuration__check-database');
-        }
-        $('.acym_tab').on('click', function () {
-            setTimeout(function () {
-                setIntroJSConfig();
-            }, 500);
         });
     }
 

@@ -72,7 +72,7 @@
 </div>
 
 <div class="acym__configuration__mail-settings acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
-	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_MAIL'); ?></div>
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_MAIL').acym_info('ACYM_INTRO_MAIL_SETTINGS'); ?></div>
     <?php include acym_getPartial('configuration', 'sending_methods'); ?>
 </div>
 
@@ -157,7 +157,7 @@
             <?php echo acym_switch(
                 'config[dkim]',
                 $this->config->get('dkim'),
-                acym_translation('ACYM_CONFIGURATION_DKIM'),
+                acym_translation('ACYM_CONFIGURATION_DKIM').acym_info('ACYM_INTRO_DKIM'),
                 [],
                 'medium-6 small-9',
                 'auto',

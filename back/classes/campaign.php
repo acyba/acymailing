@@ -466,7 +466,7 @@ class CampaignClass extends acymClass
 
     public function getFilterCampaign($sendingParams)
     {
-        $filters = [];
+        $filters = [0 => []];
         if (!empty($sendingParams['segment'])) {
             if (!empty($sendingParams['segment']['filters'])) {
                 $filters = $sendingParams['segment']['filters'];
@@ -493,7 +493,9 @@ class CampaignClass extends acymClass
 
         $filters = $this->getFilterCampaign($campaign->sending_params);
 
-        acym_trigger('onAcymSendCampaignSpecial', [$campaign, &$filters]);
+        foreach ($filters as $key => $filter) {
+            acym_trigger('onAcymSendCampaignSpecial', [$campaign, &$filters[$key]]);
+        }
 
         // Make sure some receivers have been selected
         $lists = acym_loadResultArray('SELECT list_id FROM #__acym_mail_has_list WHERE mail_id = '.intval($campaign->mail_id));

@@ -91,13 +91,18 @@
 	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_DB_MAINTENANCE'); ?></div>
 	<div class="grid-x grid-margin-x margin-y">
 		<div class="cell grid-x">
-			<button type="button" class="cell medium-shrink button button-secondary" id="checkdb_button"><?php echo acym_translation('ACYM_CHECK_DB'); ?></button>
+            <?php
+            echo acym_tooltip(
+                '<button type="button" class="cell medium-shrink button button-secondary" id="checkdb_button">'.acym_translation('ACYM_CHECK_DB').'</button>',
+                acym_translation('ACYM_INTRO_CHECK_DATABASE')
+            );
+            ?>
 			<div class="cell auto padding-left-1" id="checkdb_report"></div>
 		</div>
         <?php if (acym_existsAcyMailing59()) { ?>
 			<div class="cell grid-x">
 				<button type="submit" data-task="redomigration" class="cell medium-shrink button button-secondary acy_button_submit">
-					<?php echo acym_translation('ACYM_REDO_MIGRATION'); ?>
+                    <?php echo acym_translation('ACYM_REDO_MIGRATION'); ?>
 				</button>
 			</div>
         <?php } ?>

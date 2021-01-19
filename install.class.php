@@ -139,8 +139,6 @@ class acymInstall
         $allPref['from_as_replyto'] = '1';
         $allPref['templates_installed'] = '0';
 
-        $allPref['introjs'] = '[]';
-
         $allPref['bounceVersion'] = 1;
 
         $allPref['numberThumbnail'] = 2;

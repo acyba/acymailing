@@ -167,23 +167,6 @@ class ToggleController extends acymController
         exit;
     }
 
-    public function getIntroJSConfig()
-    {
-        echo $this->config->get('introjs', '[]');
-        exit;
-    }
-
-    public function toggleIntroJS()
-    {
-        $toggleElement = acym_getVar('string', 'where');
-        $intro = json_decode($this->config->get('introjs', '[]'), true);
-        $intro[$toggleElement] = 1;
-        $newConfig = new \stdClass();
-        $newConfig->introjs = json_encode($intro);
-        $this->config->save($newConfig);
-        exit;
-    }
-
     public function setDoNotRemindMe()
     {
         $newValue = acym_getVar('string', 'value');

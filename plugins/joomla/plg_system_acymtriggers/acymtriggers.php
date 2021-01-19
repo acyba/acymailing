@@ -285,13 +285,4 @@ class plgSystemAcymtriggers extends JPlugin
         acym_trigger('onAfterHikashopUserCreate', [$formData, $listData, $element]);
     }
 
-
-    public function onAfterInitialise()
-    {
-        $ctrl = empty($_REQUEST['ctrl']) ? '' : filter_var($_REQUEST['ctrl'], FILTER_SANITIZE_STRING);
-
-        if ($ctrl == 'cron') return;
-        $this->initAcy();
-        acym_asyncCurlCall([acym_frontendLink('cron')]);
-    }
 }

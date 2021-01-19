@@ -32,7 +32,6 @@ class CampaignsController extends acymController
         $this->loadScripts = [
             'recipients' => ['vue-applications' => ['entity_select']],
             'send_settings' => ['datepicker'],
-            'all' => ['introjs'],
         ];
         acym_setVar('edition', '1');
         if (acym_isAdmin()) $this->stepContainerClass = 'xxlarge-9';

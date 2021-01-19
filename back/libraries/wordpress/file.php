@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @param $url
- *
- * @return string returns the url content or false if couldn't get it
- */
 function acym_fileGetContent($url, $timeout = 10)
 {
     if (strpos($url, '_custom.ini') !== false && !file_exists($url)) {
