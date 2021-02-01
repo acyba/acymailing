@@ -1,6 +1,6 @@
 <?php
 
-function acym_getVar($type, $name, $default = null, $hash = 'default', $mask = 0)
+function acym_getVar($type, $name, $default = null, $source = 'default', $mask = 0)
 {
     if (ACYM_J40) {
         if ($mask & ACYM_ALLOWRAW) {
@@ -9,9 +9,17 @@ function acym_getVar($type, $name, $default = null, $hash = 'default', $mask = 0
             $type = 'HTML';
         }
 
-        $result = JFactory::getApplication()->input->get($name, $default, $type);
+        if (empty($source) || $source === 'default') $source = 'REQUEST';
+        $input = JFactory::getApplication()->input;
+        $sourceInput = $input->__get($source);
+        if (acym_isAdmin()) {
+            $result = $sourceInput->get($name, $default, $type);
+        } else {
+            // When the SEF is active, $_REQUEST is empty as Joomla doesn't populate it anymore
+            $result = $sourceInput->get($name, $input->get($name, $default, $type), $type);
+        }
     } else {
-        $result = JRequest::getVar($name, $default, $hash, $type, $mask);
+        $result = JRequest::getVar($name, $default, $source, $type, $mask);
     }
 
     if (is_string($result) && !($mask & ACYM_ALLOWRAW)) {
@@ -24,7 +32,12 @@ function acym_getVar($type, $name, $default = null, $hash = 'default', $mask = 0
 function acym_setVar($name, $value = null, $hash = 'method', $overwrite = true)
 {
     if (ACYM_J40) {
-        return JFactory::getApplication()->input->set($name, $value);
+        if (empty($hash) || $hash === 'method') $hash = 'REQUEST';
+        $input = JFactory::getApplication()->input;
+        $hashInput = $input->__get($hash);
+        $hashInput->set($name, $value);
+
+        return $input->set($name, $value);
     }
 
     return JRequest::setVar($name, $value, $hash, $overwrite);

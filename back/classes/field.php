@@ -9,6 +9,8 @@ class FieldClass extends acymClass
     var $table = 'field';
     var $pkey = 'id';
 
+    const LANGUAGE_FIELD_ID_KEY = 'language_field_id';
+
     public function getMatchingElements($settings = [])
     {
         $query = 'SELECT * FROM #__acym_field';
@@ -33,13 +35,6 @@ class FieldClass extends acymClass
             'elements' => acym_loadObjectList($query, 'id'),
             'total' => acym_loadResult($queryCount),
         ];
-    }
-
-    public function getOneFieldByID($id)
-    {
-        $query = 'SELECT * FROM #__acym_field WHERE `id` = '.intval($id);
-
-        return acym_loadObject($query);
     }
 
     public function getFieldsByID($ids)
@@ -183,9 +178,8 @@ class FieldClass extends acymClass
         if (empty($fields)) return;
 
         foreach ($fields as $id => $value) {
-            $query = 'INSERT INTO #__acym_user_has_field (`user_id`, `field_id`, `value`) VALUES ';
-            $field = $this->getOneFieldByID($id);
-            if(empty($field)) {
+            $field = $this->getOneById($id);
+            if (empty($field)) {
                 acym_enqueueMessage(acym_translationSprintf('ACYM_WRONG_FIELD_ID', $id), 'error');
                 continue;
             }
@@ -218,7 +212,7 @@ class FieldClass extends acymClass
                           WHERE `user_id` = '.intval($userID).' 
                             AND `field_id` = '.intval($id);
             } else {
-                $query .= '('.intval($userID).', '.intval($id).', '.acym_escapeDB($value).')';
+                $query = 'INSERT INTO #__acym_user_has_field (`user_id`, `field_id`, `value`) VALUES ('.intval($userID).', '.intval($id).', '.acym_escapeDB($value).')';
                 $query .= ' ON DUPLICATE KEY UPDATE `value`= VALUES(`value`)';
             }
 
@@ -406,7 +400,10 @@ class FieldClass extends acymClass
         if ($field->type == 'text') $value = ' value="'.acym_escape($defaultValue).'"';
 
 
-        if (($displayOutside && (in_array($field->id, [1, 2]) || in_array($field->type, ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file'])))) {
+        if (($displayOutside && (in_array($field->id, [1, 2]) || in_array(
+                    $field->type,
+                    ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file', 'language']
+                )))) {
             $return .= '<label '.$displayIf.' class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.$field->name.'</div>';
         }
         if ($displayOutside && in_array($field->type, ['date', 'radio', 'checkbox'])) {
@@ -418,7 +415,18 @@ class FieldClass extends acymClass
             $return .= '<input '.$nameAttribute.$placeholder.$required.$value.' type="text" class="cell">';
         } elseif ($field->id == 2) {
             $nameAttribute = ' name="user[email]"';
-            $return .= '<input '.$nameAttribute.$placeholder.$value.' required type="email" class="cell" id="acym__user__edit__email" '.($displayFront && $cmsUser ? 'disabled' : '').'>';
+            $return .= '<input '.$nameAttribute.$placeholder.$value.' required type="email" class="cell acym__user__edit__email" '.($displayFront && $cmsUser ? 'disabled' : '').'>';
+        } elseif ($field->type == 'language') {
+            if(empty($defaultValue) && !empty($user->language)){
+                $defaultValue = $user->language;
+            }
+
+            $return .= acym_select(
+                $this->getLanguagesForDropdown(),
+                'user[language]',
+                empty($defaultValue) ? acym_getLanguageTag() : $defaultValue,
+                'class="acym__select"'.$style.$required
+            );
         } elseif ($field->type == 'text') {
             $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
             $field->option->authorized_content->message = $field->option->error_message_invalid;
@@ -517,7 +525,10 @@ class FieldClass extends acymClass
         }
 
 
-        if (($displayOutside && (in_array($field->id, [1, 2]) || in_array($field->type, ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file'])))) {
+        if (($displayOutside && (in_array($field->id, [1, 2]) || in_array(
+                    $field->type,
+                    ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file', 'language']
+                )))) {
             $return .= '</label>';
         }
         if ($displayOutside && in_array($field->type, ['date', 'radio', 'checkbox'])) {
@@ -532,5 +543,80 @@ class FieldClass extends acymClass
         $query = 'SELECT type FROM #__acym_field WHERE id = '.intval($id);
 
         return acym_loadResult($query);
+    }
+
+    public function setInactive($elements)
+    {
+        if (!is_array($elements)) $elements = [$elements];
+        if (empty($elements)) return 0;
+        acym_arrayToInteger($elements);
+
+        // Core fields can't be disabled
+        $excludedFields = acym_loadResultArray('SELECT `id` FROM #__acym_field WHERE `core` = 1');
+        acym_arrayToInteger($excludedFields);
+
+        $elements = array_diff($elements, $excludedFields);
+
+        parent::setInactive($elements);
+    }
+
+    public function insertLanguageField()
+    {
+        if ($this->getLanguageFieldId() !== false) {
+            return false;
+        }
+
+        $field = new \stdClass();
+        $field->name = 'ACYM_LANGUAGE';
+        $field->type = 'language';
+        $field->active = 1;
+        $field->required = 1;
+        $field->ordering = $this->getOrdering() + 1;
+        $field->option = '{"editable_user_creation":"1","editable_user_modification":"1"}';
+        $field->core = 1;
+        $field->backend_edition = 1;
+        $field->backend_listing = 0;
+        $field->frontend_edition = 1;
+        $field->frontend_listing = 0;
+        $field->access = 'all';
+        $field->namekey = 'acym_language';
+
+        $rowId = acym_insertObject('#__acym_field', $field);
+
+        if (empty($rowId)) return false;
+
+        return $this->config->save([self::LANGUAGE_FIELD_ID_KEY => $rowId]);
+    }
+
+    public function getLanguageFieldId()
+    {
+        $languageFieldId = $this->config->get(self::LANGUAGE_FIELD_ID_KEY, 0);
+
+        return $languageFieldId !== 0 ? $languageFieldId : false;
+    }
+
+    public function getLanguagesForDropdown()
+    {
+        $languages = acym_getLanguages();
+        $dataLanguages = [];
+
+        foreach ($languages as $langCode => $language) {
+            if (strlen($langCode) != 5 || $langCode == "xx-XX") continue;
+
+            $oneLanguage = new \stdClass();
+            $oneLanguage->value = $langCode;
+            $oneLanguage->text = $language->name;
+
+            $dataLanguages[] = $oneLanguage;
+        }
+
+        usort(
+            $dataLanguages,
+            function ($a, $b) {
+                return strtolower($a->text) > strtolower($b->text);
+            }
+        );
+
+        return $dataLanguages;
     }
 }

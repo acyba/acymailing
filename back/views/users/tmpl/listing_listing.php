@@ -60,7 +60,7 @@
                 if (!empty($data['fields'])) {
                     foreach ($data['fields'] as $field) {
                         ?>
-						<div class="cell medium-auto hide-for-small-only acym__listing__header__title text-center">
+						<div class="cell medium-auto hide-for-small-only acym__listing__header__title">
                             <?php echo acym_escape(acym_translation($field)); ?>
 						</div>
                         <?php
@@ -75,7 +75,7 @@
                         <?php echo acym_translationSprintf('ACYM_CMS_USER', ACYM_CMS_TITLE); ?>
 					</div>
                 <?php } ?>
-				<div class="cell medium-1 small-5 text-right medium-text-center acym__listing__header__title">
+				<div class="cell medium-1 small-5 small-text-right medium-text-center acym__listing__header__title">
                     <?php echo acym_translation('ACYM_STATUS'); ?>
 				</div>
 				<div class="cell medium-shrink hide-for-small-only text-center acym__listing__header__title acym__listing__id">

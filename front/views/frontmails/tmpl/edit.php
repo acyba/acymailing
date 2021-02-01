@@ -60,11 +60,11 @@
 							</label>
 						</div>
 						<textarea
-								  name="editor_stylesheet"
-								  id="acym__mail__edit__html__stylesheet"
-								  cols="30"
-								  rows="15"
-								  type="text"><?php echo $stylesheet; ?></textarea>
+								name="editor_stylesheet"
+								id="acym__mail__edit__html__stylesheet"
+								cols="30"
+								rows="15"
+								type="text"><?php echo $stylesheet; ?></textarea>
 					</div>
 					<div class="cell medium-auto">
 						<label for="acym__mail__edit__custom__header"><?php echo acym_translation('ACYM_CUSTOM_HEADERS'); ?></label>
@@ -73,17 +73,19 @@
                             ); ?></textarea>
 					</div>
 
-					<div class="cell grid-x">
-						<div class="cell medium-shrink">
-							<label for="acym__mail__edit__preheader">
-                                <?php
-                                echo acym_translation('ACYM_EMAIL_PREHEADER');
-                                echo acym_info('ACYM_EMAIL_PREHEADER_DESC');
-                                ?>
-							</label>
+                    <?php if (!$data['multilingual']) { ?>
+						<div class="cell grid-x">
+							<div class="cell medium-shrink">
+								<label for="acym__mail__edit__preheader">
+                                    <?php
+                                    echo acym_translation('ACYM_EMAIL_PREHEADER');
+                                    echo acym_info('ACYM_EMAIL_PREHEADER_DESC');
+                                    ?>
+								</label>
+							</div>
+							<input id="acym__mail__edit__preheader" name="mail[preheader]" type="text" maxlength="255" value="<?php echo acym_escape($data['mail']->preheader); ?>">
 						</div>
-						<input id="acym__mail__edit__preheader" name="mail[preheader]" type="text" maxlength="255" value="<?php echo acym_escape($data['mail']->preheader); ?>">
-					</div>
+                    <?php } ?>
 				</div>
 			</div>
 		</div>

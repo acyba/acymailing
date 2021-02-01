@@ -13,7 +13,11 @@ class FrontlistsController extends ListsController
         if (!acym_level(2)) {
             acym_redirect(acym_rootURI(), 'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', 'warning');
         }
-        $this->authorizedFrontTasks = ['countNumberOfRecipients', 'ajaxCreateNewList'];
+        $this->authorizedFrontTasks = [
+            'countNumberOfRecipients',
+            'ajaxCreateNewList',
+            'loadMoreSubscribers',
+        ];
         $this->urlFrontMenu = 'index.php?option=com_acym&view=frontlists&layout=listing';
         parent::__construct();
     }

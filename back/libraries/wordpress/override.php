@@ -632,6 +632,8 @@ function acym_getOverrideParamsByName($name)
         ],
     ];
 
+    acym_trigger('onAcymGetEmailOverridesParams', [&$overridesParamsAll]);
+
     if (empty($overridesParamsAll[$name])) return [];
 
     return $overridesParamsAll[$name];

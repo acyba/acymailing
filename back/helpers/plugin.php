@@ -10,6 +10,7 @@ class PluginHelper extends acymObject
     public $wraped = false;
     public $name = 'content';
     public $mailerHelper;
+    public $wrappedText = '';
 
     /*
      * Convert an array of elements into a table with multiple columns based on the $parameter variable
@@ -672,6 +673,11 @@ class PluginHelper extends acymObject
      * TOP_IMG : image on top, then title and description
      * COL_LEFT : image on left column, title and description on right column
      * COL_RIGHT : image on right column, title and description on left column
+     *
+     * @param object $format
+     * @param array  $varFields
+     *
+     * @return string
      */
     public function getStandardDisplay($format)
     {
@@ -776,6 +782,7 @@ class PluginHelper extends acymObject
         if (!empty($format->description)) {
             $format->description = $this->wrapText($format->description, $format->tag);
         }
+        $this->wrappedText = $format->description;
 
 
         $rowText = '<div class="acydescription">';
@@ -1237,7 +1244,9 @@ class PluginHelper extends acymObject
                 <!--
                 var _selectedRows'.$suffix.' = [];
                 var _selectedRows = [];
-                var _additionalInfo'.$suffix.' = {};
+                if("undefined" === typeof _additionalInfo'.$suffix.') {
+                	var _additionalInfo'.$suffix.' = {};
+                 }
                 ';
         if (!empty($defaultValues->id) && (empty($defaultValues->defaultPluginTab) || $dynamicIdentifier === $defaultValues->defaultPluginTab)) {
             $delimiter = strpos($defaultValues->id, '-') ? '-' : ',';

@@ -12,6 +12,10 @@
 }
 
 .acym_front_page {
+    fieldset {
+        margin-bottom: 1rem;
+    }
+
     .acym_list {
         display: block;
 
@@ -36,6 +40,11 @@
     }
 
     #acyuserinfo {
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
         input[type="radio"], input[type="checkbox"] {
             margin-top: 0;
         }

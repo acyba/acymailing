@@ -52,16 +52,18 @@ function acym_setNoTemplate($status = true)
  * @param string $task
  * @param string $currentStep
  * @param string $currentCtrl
+ * @param bool   $addPage
  */
-function acym_formOptions($token = true, $task = '', $currentStep = null, $currentCtrl = '')
+function acym_formOptions($token = true, $task = '', $currentStep = null, $currentCtrl = '', $addPage = true)
 {
     if (!empty($currentStep)) {
         echo '<input type="hidden" name="step" value="'.$currentStep.'"/>';
-        echo '<input type="hidden" name="nextstep" value=""/>';
     }
-    echo '<input type="hidden" name="task" value="'.$task.'"/>';
     echo '<input type="hidden" name="nextstep" value=""/>';
-    echo '<input type="hidden" name="page" value="'.acym_getVar('cmd', 'page', '').'"/>';
+    echo '<input type="hidden" name="task" value="'.$task.'"/>';
+    if ($addPage) {
+        echo '<input type="hidden" name="page" value="'.acym_getVar('cmd', 'page', '').'"/>';
+    }
     echo '<input type="hidden" name="ctrl" value="'.(empty($currentCtrl) ? acym_getVar('cmd', 'ctrl', '') : $currentCtrl).'"/>';
     if ($token) {
         echo acym_formToken();

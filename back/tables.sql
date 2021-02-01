@@ -49,7 +49,6 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail` (
 	`type` VARCHAR(30) NOT NULL,
 	`body` LONGTEXT NOT NULL,
 	`subject` VARCHAR(255) NULL,
-	`template` TINYINT(1) NOT NULL,
 	`from_name` VARCHAR(255) NULL,
 	`from_email` VARCHAR(255) NULL,
 	`reply_to_name` VARCHAR(255) NULL,

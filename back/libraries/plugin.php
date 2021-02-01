@@ -46,10 +46,13 @@ class acymPlugin extends acymObject
     var $replaceOptions = [];
     var $elementOptions = [];
     var $customOptions = [];
+    private $subCategories;
 
     public function __construct()
     {
         parent::__construct();
+
+        $this->elementOptions = ['wrappedText' => [acym_translation('ACYM_WRAPPED_TEXT')]];
 
         $this->pluginHelper = new PluginHelper();
         $this->pluginsPath = acym_getPluginsPath(__FILE__, __DIR__);
@@ -156,6 +159,7 @@ class acymPlugin extends acymObject
         $filter_cat = acym_getVar('int', 'plugin_category', 0);
 
         $this->cats = [];
+        $this->subCategories = [];
         if (!empty($this->categories)) {
             foreach ($this->categories as $oneCat) {
                 $this->cats[$oneCat->parent_id][] = $oneCat;
@@ -164,8 +168,23 @@ class acymPlugin extends acymObject
         $this->catvalues = [];
         $this->catvalues[] = acym_selectOption(0, 'ACYM_ALL');
         $this->handleChildrenCategories($this->rootCategoryId);
+        foreach ($this->categories as $oneCat) {
+            $this->subCategories[$oneCat->id] = $this->getSubCats($oneCat->id);
+        }
 
         return acym_select($this->catvalues, 'plugin_category', intval($filter_cat), 'class="plugin_category_select"', 'value', 'text');
+    }
+
+    private function getSubCats($categoryId)
+    {
+        $result = [$categoryId];
+        if (empty($this->cats[$categoryId])) return $result;
+
+        foreach ($this->cats[$categoryId] as $oneSubCategory) {
+            $result = array_merge($result, $this->getSubCats($oneSubCategory->id));
+        }
+
+        return $result;
     }
 
     protected function handleChildrenCategories($parent_id, $level = 0)
@@ -176,6 +195,13 @@ class acymPlugin extends acymObject
             $this->catvalues[] = acym_selectOption($cat->id, str_repeat(' - - ', $level).$cat->title);
             $this->handleChildrenCategories($cat->id, $level + 1);
         }
+    }
+
+    protected function getSubCategories($categoryId)
+    {
+        $this->getCategoryFilter();
+
+        return $this->subCategories[$categoryId];
     }
 
     protected function autoCampaignOptions(&$options)
@@ -393,9 +419,6 @@ class acymPlugin extends acymObject
                 count($elements),
                 $parameter->min
             );
-        } elseif (!empty($elements)) {
-            $this->generateCampaignResult->status = true;
-            $this->generateCampaignResult->message = '';
         }
 
         if (empty($elements)) return '';
@@ -526,6 +549,7 @@ class acymPlugin extends acymObject
         $customLayoutPath = ACYM_CUSTOM_PLUGIN_LAYOUT.$this->name.'.html';
         //Check if the template exists...
         if (file_exists($customLayoutPath)) {
+            $data['{wrappedText}'] = $this->pluginHelper->wrappedText;
             $viewContent = acym_fileGetContent($customLayoutPath);
             $viewContentReplace = str_replace(array_keys($data), $data, $viewContent);
             if ($viewContent !== $viewContentReplace) $result = $viewContentReplace;
@@ -1099,6 +1123,19 @@ class acymPlugin extends acymObject
 			</button>
 			<span class="acym__configuration__sending__method-test__icon cell shrink margin-left-1"></span>
 			<span class="acym__configuration__sending__method-test__message cell shrink margin-left-1"></span>';
+    }
+
+    protected function getLinks($account = '', $pricing = '')
+    {
+        if (empty($account) && empty($pricing)) return '';
+
+        $html = '<div class="cell grid-x acym-grid-margin-x shrink"><p class="cell shrink">'.acym_translation('ACYM_DONT_HAVE_ACCOUNT').'</p>';
+        if (!empty($account)) $html .= '<a target="_blank" class="cell shrink" href="'.$account.'">'.acym_translation('ACYM_CREATE_ONE').'</a>';
+        if (!empty($account) && !empty($pricing)) $html .= '<p class="cell shrink">'.strtolower(acym_translation('ACYM_OR')).'</p>';
+        if (!empty($pricing)) $html .= '<a target="_blank" class="cell shrink" href="'.$pricing.'">'.acym_translation('ACYM_CHECK_THEIR_PRICING').'</a>';
+        $html .= '</div>';
+
+        return $html;
     }
 
     public function onAcymGetSendingMethodsSelected(&$data)

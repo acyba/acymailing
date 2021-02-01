@@ -1,5 +1,5 @@
 <form id="acym_form"
-	  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('string', 'task').'&id='.acym_getVar('string', 'id')); ?>"
+	  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>"
 	  method="post"
 	  name="acyForm"
 	  class="acym__form__campaign__edit">

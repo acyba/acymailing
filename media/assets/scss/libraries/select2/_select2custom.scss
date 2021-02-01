@@ -65,6 +65,11 @@
         margin-bottom: 1rem;
         border-radius: $primary-radius;
         background-color: $light-blue;
+
+    }
+
+    .select2-container--disabled {
+        opacity: 0.5;
     }
 }
 

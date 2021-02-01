@@ -19,7 +19,16 @@
             $orderingOptionsClean = acym_escape(json_encode($orderingOptions));
             ?>
 			<div class="cell small-11 acym__list__settings__subscribers__order">
-				<select2 name="users_ordering" value="<?php echo $data['ordering']; ?>" :options="<?php echo $orderingOptionsClean; ?>" v-model="users_ordering"></select2>
+				<select2
+						name="users_ordering"
+						v-if="<?php echo acym_isAdmin() ? 'true' : 'false'; ?>"
+						value="<?php echo $data['ordering']; ?>"
+						:options="<?php echo $orderingOptionsClean; ?>"
+						v-model="users_ordering"></select2>
+				<select name="users_ordering" v-model="users_ordering" v-if="<?php echo acym_isAdmin() ? 'false' : 'true'; ?>">
+					<option v-for="(option, index) in <?php echo $orderingOptionsClean; ?>" :selected="index === '<?php echo $data['ordering']; ?>'" :value="index">{{ option }}
+					</option>
+				</select>
 			</div>
 			<div class="cell small-1 acym__list__settings__subscribers__order">
 				<i class="acym__listing__ordering__sort-order <?php echo $data['classSortOrder']; ?>" aria-hidden="true" @click="sortOrdering"></i>

@@ -7,12 +7,16 @@
     ?>
 
 	<div class="acym__front__archive">
-		<form method="post" action="<?php echo acym_completeLink(ACYM_CMS == 'wordpress' ? 'archive' : ''); ?>" id="acym_form">
+		<form method="post" action="<?php echo $data['actionUrl']; ?>" id="acym_form" class="acym__archive__form">
 			<h1 class="acym__front__archive__title"><?php echo acym_translation('ACYM_NEWSLETTERS'); ?></h1>
+			<div id="acym__front__archive__search">
+				<input type="text" name="acym_search" value="<?php echo acym_escape($data['search']); ?>">
+				<button class="button btn btn-primary subbutton"><?php echo acym_translation('ACYM_SEARCH'); ?></button>
+			</div>
 
             <?php
             foreach ($data['newsletters'] as $oneNewsletter) {
-                $archiveURL = acym_frontendLink('archive&task=view&id='.$oneNewsletter->id.'&'.acym_noTemplate());
+                $archiveURL = acym_frontendLink('archive&task=view&id='.$oneNewsletter->id.'&'.acym_noTemplate(false));
 
                 if ($data['popup']) {
                     ?>
@@ -42,15 +46,11 @@
                     ).'</p>';
             }
 
-            //__START__joomla_
-            if ('{__CMS__}' === 'Joomla') {
-                echo $data['pagination']->displayFront();
-                acym_formOptions(true, 'listing');
-            }
-            //__END__joomla_
+            echo $data['pagination']->displayFront();
+            acym_formOptions(true, 'listing', null, '', false);
             ?>
 
-			<input type="hidden" name="page" id="acym__front__archive__next-page">
+			<input type="hidden" name="acym_front_page" id="acym__front__archive__next-page" value="1">
 		</form>
 	</div>
 </div>

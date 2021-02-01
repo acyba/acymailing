@@ -185,8 +185,6 @@ class acymController extends acymObject
             $viewNamespace = 'AcyMailing\\FrontViews\\';
         }
 
-        acym_prepareFrontViewDisplay($this->name);
-
         $viewName = ucfirst($this->getName());
         $viewNamespace .= $viewName.'View'.$viewName;
         $view = new $viewNamespace;

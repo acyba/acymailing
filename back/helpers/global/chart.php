@@ -81,6 +81,7 @@ function acym_lineChart($id, $dataMonth, $dataDay, $dataHour)
                 </div>';
 
     $return .= '<script>
+                document.addEventListener("DOMContentLoaded", function () {
                     var ctx = document.getElementById("'.$idCanvas.'").getContext("2d");
                     
                     //Background color under the line
@@ -233,6 +234,7 @@ function acym_lineChart($id, $dataMonth, $dataDay, $dataHour)
                         elem.classList.add("selected__choose_by");
                     }
                     document.querySelector(".selected__choose_by").click();
+                });
                 </script>';
 
     return $return;
@@ -331,6 +333,7 @@ function acym_roundChart($id, $percentage, $type = '', $class = '', $topLabel = 
                 </div>';
     $return .= '<script>
             //Override to add text in the middle of chart
+            document.addEventListener("DOMContentLoaded", function () {
             Chart.pluginService.register({
                 beforeDraw: function(chart){
                     if(chart.config.options.elements.center){
@@ -383,6 +386,7 @@ function acym_roundChart($id, $percentage, $type = '', $class = '', $topLabel = 
                 }
             };
             var chart = new Chart(ctx, config);
+            });
         </script>';
 
 
@@ -438,6 +442,7 @@ function acym_pieChart($id, $data = [], $class = '', $topLabel = '', $bottomLabe
                 </div>';
 
     $return .= '<script>
+        document.addEventListener("DOMContentLoaded", function () {
             var ctx = document.getElementById("'.$idCanvas.'").getContext("2d");
             var config = {
                 type: "pie",
@@ -482,6 +487,7 @@ function acym_pieChart($id, $data = [], $class = '', $topLabel = '', $bottomLabe
             };
             var chart = new Chart(ctx, config);
             document.getElementById("'.$idLegend.'").innerHTML = (chart.generateLegend());
+        });
 </script>';
 
     return $return;

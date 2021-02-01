@@ -63,7 +63,7 @@ const acym_helperTab = {
         jQuery('input[type="radio"]').on('change', function () {
             let $checked = jQuery('input[name="' + jQuery(this).attr('name') + '"]:checked').val();
             jQuery('input[name="' + jQuery(this).attr('name') + '"]').each(function () {
-                if (jQuery(this).val() == $checked) {
+                if (jQuery(this).val() === $checked) {
                     jQuery('i[data-radio="' + jQuery(this).attr('id') + '"].acym_radio_unchecked').hide();
                     jQuery('i[data-radio="' + jQuery(this).attr('id') + '"].acym_radio_checked').show();
                 } else {

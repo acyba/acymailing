@@ -6,7 +6,6 @@ class plgAcymManagetext extends acymPlugin
 {
     public function replaceContent(&$email, $send = true)
     {
-        $this->_replaceConstant($email);
         $this->_replaceRandom($email);
         $this->_handleAnchors($email);
         $this->fixPicturesOutlook($email);
@@ -19,10 +18,11 @@ class plgAcymManagetext extends acymPlugin
 
         $this->_removetext($email);
         $this->_ifstatement($email, $user);
+        $this->_replaceConstant($email, $user);
     }
 
     //Replace tags such as {const:CONTANT_NAME} or {trans:MY_TRANSLATION}
-    private function _replaceConstant(&$email)
+    private function _replaceConstant(&$email, $user)
     {
         //load the tags
         $tags = $this->pluginHelper->extractTags($email, '(?:const|trans|config)');
@@ -57,6 +57,17 @@ class plgAcymManagetext extends acymPlugin
                     $tagsReplaced[$i] = acym_getCMSConfig($val);
                 }
             } else {
+                if (!empty($user->language)) {
+                    $language = $user->language;
+                } elseif (!empty($email->language)) {
+                    $language = $email->language;
+                } else {
+                    $language = acym_getLanguageTag();
+                }
+
+                $previousLanguage = acym_setLanguage($language);
+                acym_loadLanguage($language);
+
                 static $done = false;
                 if (!$done && strpos($val, 'COM_USERS') !== false) {
                     $done = true;
@@ -79,6 +90,10 @@ class plgAcymManagetext extends acymPlugin
                 } else {
                     $tagsReplaced[$i] = acym_translation($val);
                 }
+
+                if (empty($previousLanguage)) $previousLanguage = acym_getLanguageTag();
+                acym_setLanguage($previousLanguage);
+                acym_loadLanguage($previousLanguage);
             }
         }
 

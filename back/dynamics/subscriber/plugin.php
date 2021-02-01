@@ -271,7 +271,7 @@ class plgAcymSubscriber extends acymPlugin
 
         if (!in_array($options['field'], $usersColumns)) {
             $fieldClass = new FieldClass();
-            $field = $fieldClass->getOneFieldByID($options['field']);
+            $field = $fieldClass->getOneById($options['field']);
 
             $type = 'phone' == $field->type ? 'phone' : '';
 
@@ -523,7 +523,7 @@ class plgAcymSubscriber extends acymPlugin
             $column = "user.`".acym_secureDBColumn($action['field'])."`";
         } else {
             $fieldClass = new FieldClass();
-            $field = $fieldClass->getOneFieldById($action['field']);
+            $field = $fieldClass->getOneById($action['field']);
             if (empty($field)) return 'Unknown field: '.$action['field'];
             if ('date' == $field->type) $value = acym_escapeDB(json_encode(explode('/', trim($value, '"\''))));
 
@@ -579,7 +579,6 @@ class plgAcymSubscriber extends acymPlugin
         if ($mailClass::TYPE_AUTOMATION != $mail->type) {
             unset($mail->id);
             $mail->type = $mailClass::TYPE_AUTOMATION;
-            $mail->template = 2;
             $mail->id = $mailClass->save($mail);
         }
 
@@ -697,7 +696,7 @@ class plgAcymSubscriber extends acymPlugin
 
             if (!in_array($automation['acy_field']['field'], $usersColumns)) {
                 $fieldClass = new FieldClass();
-                $field = $fieldClass->getOneFieldById($automation['acy_field']['field']);
+                $field = $fieldClass->getOneById($automation['acy_field']['field']);
                 $automation['acy_field']['field'] = $field->name;
             }
             $automation = acym_translationSprintf(
@@ -727,7 +726,7 @@ class plgAcymSubscriber extends acymPlugin
 
             if (!in_array($automationAction['acy_user_value']['field'], $usersColumns)) {
                 $fieldClass = new FieldClass();
-                $field = $fieldClass->getOneFieldById($automationAction['acy_user_value']['field']);
+                $field = $fieldClass->getOneById($automationAction['acy_user_value']['field']);
                 $automationAction['acy_user_value']['field'] = $field->name;
             }
             $automationAction = acym_translationSprintf(

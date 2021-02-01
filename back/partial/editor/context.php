@@ -81,22 +81,25 @@
 			<i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="grid-x cell acym__wysid__context__modal__container grid-margin-x">
 			<button type="button"
-					class="button-radio disabled cell medium-4 acym__wysid__context__button--type"
+					class="button-radio cell medium-4 acym__wysid__context__button--type"
 					acym-data-type="call-action"><?php echo acym_translation('ACYM_CALL_TO_ACTION'); ?></button>
-            <?php echo acym_tooltip(
-                '<button type="button" class="button-radio disabled cell acym__wysid__context__button--type" acym-data-type="unsubscribe">'.acym_translation(
+            <?php
+            echo acym_tooltip(
+                '<button type="button" class="button-radio cell acym__wysid__context__button--type" acym-data-type="unsubscribe">'.acym_translation(
                     'ACYM_UNSUBSCRIBE'
                 ).'</button>',
                 acym_translation('ACYM_UNSUBSCRIBE_BUTTON_DESC'),
                 'cell medium-4 grid-x'
-            ); ?>
-            <?php echo acym_tooltip(
-                '<button type="button" class="button-radio disabled cell acym__wysid__context__button--type" acym-data-type="confirm">'.acym_translation(
+            );
+
+            echo acym_tooltip(
+                '<button type="button" class="button-radio cell acym__wysid__context__button--type" acym-data-type="confirm">'.acym_translation(
                     'ACYM_SUBSCRIPTION_CONFIRMATION'
                 ).'</button>',
                 acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION_BUTTON_DESC'),
                 'cell medium-4 grid-x'
-            ); ?>
+            );
+            ?>
 		</div>
 		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
             <?php echo acym_translation('ACYM_CONTENT'); ?><i class="acymicon-keyboard_arrow_up"></i>

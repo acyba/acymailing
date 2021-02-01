@@ -55,7 +55,7 @@ function readyFunction($) {
             $('.acym__campaign__recipients__number-recipients').html(result).show();
             $('#acym__campaign__recipients__span').show();
             $('.acym_loader_logo').hide();
-        }).error(function () {
+        }).fail(function () {
             $('.acym__campaign__recipients__number-recipients').html(0);
         });
     }

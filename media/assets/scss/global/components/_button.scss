@@ -133,6 +133,12 @@
     &:last-of-type {
         border-radius: 0 $primary-radius $primary-radius 0;
     }
+
+    &.is-active{
+        background-color: $blue-green;
+        border: 1px solid $blue-green;
+        color: $white;
+    }
 }
 
 .button-radio {

@@ -5,10 +5,10 @@ function acym_translationExists($key)
     return $key !== acym_translation($key);
 }
 
-function acym_loadLanguage()
+function acym_loadLanguage($lang = null)
 {
-    acym_loadLanguageFile(ACYM_LANGUAGE_FILE, ACYM_ROOT, null, true);
-    acym_loadLanguageFile(ACYM_LANGUAGE_FILE.'_custom', ACYM_ROOT, null, true);
+    acym_loadLanguageFile(ACYM_LANGUAGE_FILE, ACYM_ROOT, $lang, true);
+    acym_loadLanguageFile(ACYM_LANGUAGE_FILE.'_custom', ACYM_ROOT, $lang, true);
 }
 
 function acym_isMultilingual()

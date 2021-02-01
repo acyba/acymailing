@@ -1,4 +1,4 @@
-<div class="xlarge-4 medium-auto cell text-center cell grid-x grid-margin-x text-right">
+<div class="xlarge-4 medium-auto cell text-center cell grid-x grid-margin-x">
     <?php
     echo acym_modal(
         acym_translation('ACYM_IMPORT'),

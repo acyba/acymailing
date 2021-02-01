@@ -1,5 +1,5 @@
 const acym_helperModal = {
-    isCampaignEdition: jQuery('#acym__campaign__recipients__form__campaign').length > 0,
+    isMultilingualEdition: jQuery('#acym__wysid__edit__languages').length > 0,
     initModal: function () {
         //global
         acym_helperModal.setPopupIframeToggleGlobal();
@@ -55,9 +55,8 @@ const acym_helperModal = {
             ajaxUrl += '&followup_id=' + $followupinput.val();
         }
 
-        let $campaignInput = jQuery('#acym__campaign__recipients__form__campaign');
-        if ($campaignInput.length > 0) {
-            ajaxUrl += '&campaign_id=' + $campaignInput.val();
+        if (this.isMultilingualEdition) {
+            ajaxUrl += '&is_multilingual_edition=1';
         }
 
         ajaxUrl += '&search=' + jQuery('#acym_search_template_choose__ajax').val();
@@ -76,7 +75,7 @@ const acym_helperModal = {
             acym_helperModal.setSearchAjaxModalChooseTemplateStartFrom();
             acym_helperModal.setPaginationAjaxStartFrom();
             acym_helperModal.setStartFromHtmlEditor();
-            if (acym_helperModal.isCampaignEdition) acym_editorWysidMultilingual.setClickStartFromTemplate();
+            if (acym_helperModal.isMultilingualEdition) acym_editorWysidMultilingual.setClickStartFromTemplate();
             if (jQuery('#acym__automation__actions').length > 0) acym_helperModal.chooseOneTemplate();
         });
     },
@@ -196,7 +195,7 @@ const acym_helperModal = {
         inAutomation = inAutomation !== undefined;
         acym_helperModal.setAjaxAndResetPaginationStartFrom();
         acym_helperModal.setPaginationAjaxStartFrom();
-        if (acym_helperModal.isCampaignEdition) acym_editorWysidMultilingual.setClickStartFromTemplate();
+        if (acym_helperModal.isMultilingualEdition) acym_editorWysidMultilingual.setClickStartFromTemplate();
         acym_helperModal.setClearButtonStartFrom();
         if (inAutomation) {
             jQuery('[data-open="acym__template__choose__modal"]').on('click', function () {

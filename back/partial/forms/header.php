@@ -1,4 +1,4 @@
-<div id="acym_fulldiv_<?php echo $form->form_tag_name; ?>" class="acym__subscription__form__header acym__subscription__form-erase">
+<div id="acym_fulldiv_<?php echo $form->form_tag_name; ?>" class="acym__subscription__form__header acym__subscription__form-erase full-width">
     <?php
     if ($edition) {
         echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';

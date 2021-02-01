@@ -1,43 +1,49 @@
 <div class="cell grid-x acym__list__settings__tmpls acym__content">
 	<div class="cell grid-y medium-4 medium-margin-right-1 text-center acym__list__settings__subscriber__nb">
-		<div class="cell small-2 acym__list__settings__tmpls__title grid-x align-center acym_vcenter"><label><?php echo acym_translation(
-                    'ACYM_SUBSCRIBERS'
-                ); ?></label><i class="acymicon-group margin-left-1"></i></div>
+		<div class="cell small-2 acym__list__settings__tmpls__title grid-x align-center acym_vcenter">
+			<label>
+                <?php echo acym_translation('ACYM_SUBSCRIBERS'); ?>
+			</label>
+			<i class="acymicon-group margin-left-1"></i>
+		</div>
 		<div class="cell small-10 align-center acym_vcenter acym__list__settings__subscriber__nb__display grid-x">
 			<div class="cell grid-x">
-                <?php $url = acym_completeLink('users&users_list='.intval($data['listInformation']->id).'&list_status=sub'); ?>
+                <?php
+                $linkType = acym_isAdmin() ? 'a' : 'span';
+                $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=sub');
+                ?>
 				<div class="cell small-4 text-right acym__list__settings__subscriber__nb__line">
-					<a href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['sendable_users']; ?>&nbsp;</a>
+					<<?php echo $linkType; ?> href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['sendable_users']; ?>&nbsp;</<?php echo $linkType; ?>>
 				</div>
 				<div class="cell small-8 text-left acym__list__settings__subscriber__nb__line">
-					<a href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_SUBSCRIBED'); ?></a>
+					<<?php echo $linkType; ?> href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_SUBSCRIBED'); ?></<?php echo $linkType; ?>>
 				</div>
                 <?php
                 if ($this->config->get('require_confirmation', 1) == 1) {
-                    $url = acym_completeLink('users&users_list='.intval($data['listInformation']->id).'&list_status=sub&users_status=unconfirmed');
+                    $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=sub&users_status=unconfirmed');
                     ?>
 					<div class="cell small-4 text-right acym__list__settings__subscriber__nb__line">
-						<a href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['unconfirmed_users']; ?>&nbsp;</a>
+						<<?php echo $linkType; ?> href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['unconfirmed_users']; ?>&nbsp;</<?php echo $linkType; ?>>
 					</div>
 					<div class="cell small-8 text-left acym__list__settings__subscriber__nb__line">
-						<a href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_NOT_CONFIRMED'); ?></a>
+						<<?php echo $linkType; ?> href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_NOT_CONFIRMED'); ?></<?php echo $linkType; ?>>
 					</div>
                     <?php
                 }
-                $url = acym_completeLink('users&users_list='.intval($data['listInformation']->id).'&list_status=sub&users_status=inactive');
+                $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=sub&users_status=inactive');
                 ?>
 				<div class="cell small-4 text-right acym__list__settings__subscriber__nb__line">
-					<a href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['inactive_users']; ?>&nbsp;</a>
+					<<?php echo $linkType; ?> href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['inactive_users']; ?>&nbsp;</<?php echo $linkType; ?>>
 				</div>
 				<div class="cell small-8 text-left acym__list__settings__subscriber__nb__line">
-					<a href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_INACTIVE'); ?></a>
+					<<?php echo $linkType; ?> href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_INACTIVE'); ?></<?php echo $linkType; ?>>
 				</div>
-                <?php $url = acym_completeLink('users&users_list='.intval($data['listInformation']->id).'&list_status=unsub'); ?>
+                <?php $url = acym_completeLink((acym_isAdmin() ? '' : 'front').'users&users_list='.intval($data['listInformation']->id).'&list_status=unsub'); ?>
 				<div class="cell small-4 text-right">
-					<a href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['unsubscribed_users']; ?>&nbsp;</a>
+					<<?php echo $linkType; ?> href="<?php echo $url; ?>" class="acym__color__blue"><?php echo $data['listInformation']->subscribers['unsubscribed_users']; ?>&nbsp;</<?php echo $linkType; ?>>
 				</div>
 				<div class="cell small-8 text-left">
-					<a href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_UNSUBSCRIBED'); ?></a>
+					<<?php echo $linkType; ?> href="<?php echo $url; ?>"><?php echo acym_translation('ACYM_UNSUBSCRIBED'); ?></<?php echo $linkType; ?>>
 				</div>
 			</div>
 		</div>

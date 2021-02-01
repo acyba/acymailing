@@ -154,7 +154,7 @@ class EntitySelectHelper extends acymObject
             $class = !empty($buttonSubmit['action']) ? 'acy_button_submit' : 'acym__entity_select__button__close';
             if (!empty($buttonSubmit['class'])) $class .= ' '.$buttonSubmit['class'];
             $buttonSubmit['action'] = !empty($buttonSubmit['action']) ? 'data-task="'.$buttonSubmit['action'].'"' : '';
-            $display .= '<div class="cell grid-x align-center"><button type="button" id="acym__entity_select__button__submit" class="cell shrink grid-x '.$class.' button" '.$buttonSubmit['action'].'>'.$buttonSubmit['text'].'</button></div>';
+            $display .= '<div class="cell grid-x align-center margin-top-1"><button type="button" id="acym__entity_select__button__submit" class="cell shrink grid-x '.$class.' button" '.$buttonSubmit['action'].'>'.$buttonSubmit['text'].'</button></div>';
         }
 
         $display .= '<input type="hidden" class="acym__entity_select__selected" name="acym__entity_select__selected" value="">';

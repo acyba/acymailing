@@ -58,15 +58,21 @@ const acym_editorWysidFormAction = {
             }
         });
 
-        jQuery('.acym__wysid__hidden__save__stylesheet').val(jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val());
         if (!sendTest && !saveAsTmpl) {
             jQuery('.mce-edit-focus').removeClass('mce-edit-focus');
             $template.find('[name^="mce_"]').remove();
             $template.find('#acym__wysid__default').remove();
         }
 
-        jQuery('.acym__wysid__hidden__save__content').val('<div id="acym__wysid__template" class="cell">' + $template.html() + '</div>').trigger('change');
-        jQuery('.acym__wysid__hidden__save__settings').val(JSON.stringify(acym_helperEditorWysid.mailsSettings));
+        if (saveAsTmpl) {
+            jQuery('.acym__wysid__hidden__save__content__template').val('<div id="acym__wysid__template" class="cell">' + $template.html() + '</div>');
+            jQuery('.acym__wysid__hidden__save__settings__template').val(JSON.stringify(acym_helperEditorWysid.mailsSettings));
+            jQuery('.acym__wysid__hidden__save__stylesheet__template').val(jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val());
+        } else {
+            jQuery('.acym__wysid__hidden__save__content').val('<div id="acym__wysid__template" class="cell">' + $template.html() + '</div>').trigger('change');
+            jQuery('.acym__wysid__hidden__save__settings').val(JSON.stringify(acym_helperEditorWysid.mailsSettings));
+            jQuery('.acym__wysid__hidden__save__stylesheet').val(jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val());
+        }
 
         return acym_editorWysidFormAction.saveAjaxMail(jQuery('[name="ctrl"]').val(), sendTest, saveAsTmpl);
     },
@@ -82,14 +88,9 @@ const acym_editorWysidFormAction = {
             jQuery('input[name="task"]').val('saveAjax');
         }
 
-        return jQuery.ajax({
-            type: 'POST',
-            url: ajaxUrl,
-            data: jQuery('#acym_form').serialize()
-        }).done(function (res) {
-            res = acym_helper.parseJson(res);
-            if ('' !== res.error) {
-                acym_helperNotification.addNotification(res.error, 'error');
+        return acym_helper.post(ajaxUrl, jQuery('#acym_form').serialize()).done(function (res) {
+            if (res['error'] === true && '' !== res['message']) {
+                acym_helperNotification.addNotification(res['message'], 'error');
             } else {
                 if (!saveAsTmpl) {
                     jQuery('mail' === controller ? '[name="id"]' : '[name="id"], [name="mail[id]"]').val(res.data);

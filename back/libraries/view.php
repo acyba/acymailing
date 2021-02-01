@@ -45,6 +45,9 @@ class acymView extends acymObject
     {
         $name = $this->getName();
         $view = $this->getLayout();
+
+        acym_prepareFrontViewDisplay($name, $view);
+
         if (method_exists($this, $view)) $this->$view();
 
         $viewFolder = acym_isAdmin() ? ACYM_VIEW : ACYM_VIEW_FRONT;
@@ -67,7 +70,7 @@ class acymView extends acymObject
         }
 
         // On pages with the editor, we need to put the wrapper inside the form
-        $outsideForm = (strpos($name, 'mails') !== false && $view == 'edit') || (strpos($name, 'campaigns') !== false && $view == 'edit_email');
+        $outsideForm = (strpos($name, 'mails') !== false && $view === 'edit') || (strpos($name, 'campaigns') !== false && $view === 'edit_email');
         if ($outsideForm) {
             echo '<form id="acym_form" action="'.acym_completeLink(
                     acym_getVar('cmd', 'ctrl')

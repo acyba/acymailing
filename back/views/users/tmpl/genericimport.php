@@ -8,7 +8,7 @@
 				<div class="acym__title"><?php echo acym_translation('ACYM_FIELD_MATCHING'); ?></div>
 				<p class="acym__users__import__generic__instructions"><?php echo acym_translation('ACYM_ASSIGN_COLUMNS'); ?></p>
 			</div>
-			<div class="cell">
+			<div class="cell acym_vcenter">
 				<input type="checkbox" id="acym__users__import__from_file__ignore__checkbox" name="acym__users__import__from_file__ignore__checkbox">
 				<label for="acym__users__import__from_file__ignore__checkbox"><?php echo acym_translation('ACYM_IGNORE_UNASSIGNED'); ?></label>
 			</div>

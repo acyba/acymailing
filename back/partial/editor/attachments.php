@@ -1,7 +1,7 @@
 <?php
 if (!empty($data['mailInformation'])) $data['mail'] = $data['mailInformation'];
 ?>
-<div class="cell grid-x margin-top-1" id="acym__campaigns__edit_email__attachments">
+<div class="cell grid-x" id="acym__campaigns__edit_email__attachments">
 	<label class="cell"><?php echo acym_translation('ACYM_ATTACHMENTS'); ?></label>
     <?php if (!empty($data['mail']->attachments)) { ?>
         <?php
@@ -37,7 +37,7 @@ if (!empty($data['mailInformation'])) $data['mail'] = $data['mailInformation'];
     }
     ?>
 </div>
-<div class="cell margin-bottom-1 margin-top-1">
+<div class="cell">
 	<a href="javascript:void(0);" id="acym__campaigns__attach__add"><?php echo acym_translation('ACYM_ADD_ATTACHMENT'); ?></a>
     <?php echo acym_translationSprintf('ACYM_MAX_UPLOAD', $data['maxupload']); ?>
 </div>

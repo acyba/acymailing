@@ -2,7 +2,9 @@
 #acym__wysid__text__tinymce__editor {
     z-index: 999;
     height: 31px;
+    margin-right: 1px;
     background-color: $font-primary;
+
     @media screen and (max-width: 1699px) {
         & {
             height: 62px !important;
@@ -81,6 +83,7 @@
     border-top-right-radius: $primary-radius;
     background-color: $font-primary;
     padding: 0.6rem;
+    margin-right: 1px;
 
     #acym__wysid__top-toolbar__notification {
         display: none;

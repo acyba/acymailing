@@ -277,7 +277,9 @@ class plgAcymArticle extends acymPlugin
 
     protected function loadLibraries($email)
     {
-        require_once JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
+        if (!ACYM_J40) {
+            require_once JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
+        }
 
         return true;
     }
@@ -389,7 +391,7 @@ class plgAcymArticle extends acymPlugin
         if (empty($tag->pict)) $imagePath = '';
 
         $varFields['{content}'] = $element->introtext.$element->fulltext;
-        if (in_array('content', $tag->display)) $contentText .= $$varFields['{content}'];
+        if (in_array('content', $tag->display)) $contentText .= $varFields['{content}'];
 
         $varFields['{intro}'] = $element->introtext;
         if (in_array('intro', $tag->display)) $contentText .= $varFields['{intro}'];

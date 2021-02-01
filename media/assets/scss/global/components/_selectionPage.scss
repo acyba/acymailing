@@ -56,6 +56,7 @@
     .acym__sending__methods__choose__selection {
         padding: 1rem;
         margin: 0 !important;
+        align-items: end;
     }
 
     .acym__sending__methods__name {
@@ -65,11 +66,31 @@
     .acym__sending__methods__one {
         width: 165px !important;
 
+        &.acym__sending__methods__one__premium {
+
+            .acym__selection__card {
+                border-color: $gold;
+                position: relative;
+
+                .acym__selection__card__recommended {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    padding: .1rem;
+                    line-height: 1.1;
+                    font-size: .7rem;
+                    color: $white;
+                    background-color: $gold;
+                    border-bottom-left-radius: 4px;
+                }
+            }
+        }
+
         &.acym__sending__methods__one__config {
             width: 135px !important;
 
             .acym__selection__card {
-                height: 70px;
+                height: 90px;
             }
         }
 
@@ -103,6 +124,10 @@
 
         .acym__sending__methods__one__settings {
             margin-bottom: 1rem;
+
+            a {
+                text-decoration: underline;
+            }
 
             button, input {
                 margin-bottom: 0;

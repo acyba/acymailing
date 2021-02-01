@@ -109,6 +109,7 @@ input[type="checkbox"] {
 input[type="text"].intext_input, input[type="number"].intext_input {
     width: 60px;
     display: inline-block;
+    vertical-align: middle;
 }
 
 input[type="text"].intext_input_large, input[type="email"].intext_input_large {

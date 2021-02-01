@@ -29,7 +29,7 @@ if (empty($data['multilingual'])) {
     include acym_getView('campaigns', 'edit_email_info_content');
 } ?>
 
-<div class="cell margin-top-1 grid-x">
+<div class="cell grid-x">
     <?php
     echo acym_switch('visible', $data['mailInformation']->visible, acym_translation('ACYM_VISIBLE').acym_info('ACYM_VISIBLE_CAMPAIGN_DESC'), [], 'shrink')
     ?>

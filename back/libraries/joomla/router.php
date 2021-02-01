@@ -8,7 +8,11 @@ function acym_addScript($raw, $script, $type = 'text/javascript', $defer = true,
         $acyDocument->addScriptDeclaration($script, $type);
     } else {
         if (ACYM_J40) {
-            $acyDocument->addScript($script, [], ['defer' => $defer, 'async' => $async, 'type' => $type]);
+            $attributes = [];
+            $attributes['type'] = $type;
+            if($defer) $attributes['defer'] = 'defer';
+            if($async) $attributes['async'] = 'async';
+            $acyDocument->addScript($script, [], $attributes);
         } else {
             $acyDocument->addScript($script, $type, $defer, $async);
         }
@@ -28,7 +32,7 @@ function acym_addStyle($raw, $style, $type = 'text/css', $media = null, $attribs
     }
 }
 
-function acym_prepareFrontViewDisplay($ctrl)
+function acym_prepareFrontViewDisplay($ctrl, $task)
 {
 }
 

@@ -1,11 +1,22 @@
 <input type="hidden" id="default_template" value="<?php echo acym_escape($this->defaultTemplate); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__content" id="editor_content" name="editor_content" value="" />
+<input type="hidden" class="acym__wysid__hidden__save__content__template" id="editor_content_template" name="editor_content_template" value="" />
 <input type="hidden"
 	   class="acym__wysid__hidden__save__stylesheet"
 	   id="editor_stylesheet"
 	   name="editor_stylesheet"
 	   value="<?php echo acym_escape($this->getWYSIDStylesheet()); ?>" />
+<input type="hidden"
+	   class="acym__wysid__hidden__save__stylesheet__template"
+	   id="editor_stylesheet_template"
+	   name="editor_stylesheet_template"
+	   value="<?php echo acym_escape($this->getWYSIDStylesheet()); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__settings" id="editor_settings" name="editor_settings" value="<?php echo acym_escape($this->getWYSIDSettings()); ?>" />
+<input type="hidden"
+	   class="acym__wysid__hidden__save__settings__template"
+	   id="editor_settings_template"
+	   name="editor_settings_template"
+	   value="<?php echo acym_escape($this->getWYSIDSettings()); ?>" />
 <input type="hidden" id="acym__wysid__session--lifetime" name="acym_session_lifetime" value="<?php echo acym_escape(ini_get('session.gc_maxlifetime')); ?>" />
 <input type="hidden" class="acym__wysid__hidden__mailId" id="editor_mailid" name="editor_autoSave" value="<?php echo intval($this->mailId); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__auto" id="editor_autoSave" value="<?php echo acym_escape($this->autoSave); ?>">
@@ -26,6 +37,7 @@
 		<div class="cell grid-x padding-1 padding-bottom-0">
 			<div class="cell medium-auto hide-for-small-only"></div>
 			<button id="acym__wysid__edit__button" type="button" class="cell button xlarge-3 large-4 medium-5 margin-bottom-0">
+				<i class="acymicon-edit"></i>
                 <?php
                 $ctrl = acym_getVar('string', 'ctrl');
                 echo acym_translation(
@@ -136,7 +148,11 @@
 				<div id="acym__wysid__modal__joomla-image__ui" class="float-center cell">
                     <?php
                     $mediaURL = 'index.php?option=com_media&asset=com_content&author=acymailing&tmpl=component';
-                    if (!ACYM_J40) $mediaURL .= '&view=images';
+                    if (!ACYM_J40){
+                    	$mediaURL .= '&view=images';
+                    }elseif (!acym_isAdmin()){
+                    	$mediaURL .= '&view=media';
+                    }
                     ?>
 					<iframe id="acym__wysid__modal__joomla-image__ui__iframe" src="<?php echo $mediaURL; ?>" frameborder="0"></iframe>
                     <?php if (ACYM_J40) { ?>

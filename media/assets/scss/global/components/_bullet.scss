@@ -2,11 +2,12 @@ ul.acym__ul {
     li {
         position: relative;
         list-style-type: none;
+        line-height: 1.6;
 
         &:before {
             position: absolute;
             left: -12px;
-            top: 1px;
+            top: 8px;
             font-family: acymicon;
             content: '\f111';
             font-size: 6px;

@@ -85,7 +85,6 @@ class DynamicsController extends acymController
         $email->drag_editor = '1';
         $email->library = '0';
         $email->type = $mailClass::TYPE_STANDARD;
-        $email->template = '0';
         $email->settings = '';
         $email->stylesheet = '';
         $email->attachments = '';

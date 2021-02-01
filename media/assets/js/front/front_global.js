@@ -1,6 +1,8 @@
 jQuery(document).ready(function ($) {
     function acym_front() {
-        $(document).foundation();
+        if (ACYM_CONTROLLER !== 'archive') {
+            jQuery(document).foundation();
+        }
         acym_helper.setSubmitButtonGlobal();
         acym_helperDatePicker.setDatePickerGlobal();
         acym_helperToggle.initJsToggle();

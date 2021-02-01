@@ -29,6 +29,7 @@ function acym_loadAssets($ctrl, $task)
         'var AJAX_URL_UPDATEME = "'.ACYM_UPDATEMEURL.'";
         var ACYM_MEDIA_URL = "'.ACYM_MEDIA_URL.'";
         var ACYM_CMS = "'.ACYM_CMS.'";
+        var ACYM_J40 = '.(defined('ACYM_J40') && ACYM_J40 ? 'true' : 'false').';
         var FOUNDATION_FOR_EMAIL = "'.ACYM_CSS.'libraries/foundation_email.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'foundation_email.min.css').'";
         var ACYM_FIXES_FOR_EMAIL = "'.str_replace('"', '\"', acym_getEmailCssFixes()).'";
         var ACYM_REGEX_EMAIL = /^'.acym_getEmailRegex(true).'$/i;
@@ -36,9 +37,10 @@ function acym_loadAssets($ctrl, $task)
         var ACYM_CORE_DYNAMICS_URL = "'.ACYM_CORE_DYNAMICS_URL.'";
         var ACYM_PLUGINS_URL = "'.addslashes(ACYM_PLUGINS_URL).'";
         var ACYM_ROOT_URI = "'.acym_rootURI().'";
+        var ACYM_CONTROLLER = "'.$ctrl.'";
         var ACYM_SOCIAL_MEDIA = "'.addslashes(ACYM_SOCIAL_MEDIA).'";'
     );
-    
+
     if ($ctrl !== 'archive') {
         acym_addScript(
             false,

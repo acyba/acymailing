@@ -9,7 +9,7 @@ $helperFile = rtrim(
         DIRECTORY_SEPARATOR
     ).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
 if (!include_once $helperFile) {
-    echo 'Could not load AcyMailing helper file';
+    echo 'Could not load AcyMailing library';
 
     return;
 }
@@ -27,6 +27,10 @@ if (empty($Itemid)) {
 }
 
 $ctrl = acym_getVar('cmd', 'ctrl', acym_getVar('cmd', 'view', ''));
+if (empty($ctrl)) {
+    return acym_raiseError(E_ERROR, 404, acym_translation('ACYM_PAGE_NOT_FOUND'));
+}
+
 $controllerNamespace = 'AcyMailing\\FrontControllers\\'.ucfirst($ctrl).'Controller';
 $controller = new $controllerNamespace;
 if (empty($controller)) {
@@ -42,5 +46,6 @@ if (empty($task)) {
     $task = acym_getVar('cmd', 'defaulttask', $controller->defaulttask);
 }
 acym_setVar('task', $task);
+acym_setVar('layout', $task);
 
 $controller->checkTaskFront($task);

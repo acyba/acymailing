@@ -54,7 +54,11 @@ const acym_editorWysidTest = {
         url += '&id=' + id;
         url += '&controller=' + jQuery('[name="ctrl"]').val();
         url += '&test_note=' + encodeURIComponent(jQuery('#acym__wysid__send__test__note').val());
-        url += '&test_emails=' + encodeURIComponent(jQuery('.acym__multiselect__email').val().join(','));
+        if (ACYM_IS_ADMIN) {
+            url += '&test_emails=' + encodeURIComponent(jQuery('.acym__multiselect__email').val().join(','));
+        } else {
+            url += '&test_emails=' + encodeURIComponent(jQuery('input[name="emails_test"]').val());
+        }
         url += '&lang_version=' + acym_editorWysidMultilingual.currentLanguage;
 
         jQuery.post(url, function (res) {

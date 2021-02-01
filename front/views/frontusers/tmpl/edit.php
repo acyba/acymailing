@@ -1,9 +1,9 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate enctype="multipart/form-data">
 	<div class="grid-x">
-		<div id="acym__user__edit" class="cell grid-x acym__content ">
+		<div id="acym__user__edit" class="cell grid-x acym__content">
             <?php include acym_getView('users', 'edit_actions'); ?>
 
-			<div class="cell grid-x grid-margin-x grid-margin-y">
+			<div class="cell grid-x grid-margin-x grid-margin-y margin-top-1">
 				<div class="cell grid-x">
                     <?php include acym_getView('users', 'edit_information', true); ?>
 				</div>

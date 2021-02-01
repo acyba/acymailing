@@ -46,10 +46,15 @@ function acym_radio($options, $name, $selected = null, $attributes = [], $params
         $attributes['value'] = $value;
         $attributes['id'] = $currentId;
 
+        if (isset($attributes['related'][$value])) {
+            $attributes['acym-data-related'] = $attributes['related'][$value];
+        }
+
         $checked = (string)$value == (string)$selected ? ' checked="checked"' : '';
 
         $formattedAttributes = '';
         foreach ($attributes as $attribute => $val) {
+            if ($attribute === 'related') continue;
             $formattedAttributes .= ' '.$attribute.'="'.acym_escape($val).'"';
         }
         if (!empty($params['required'])) {
@@ -227,10 +232,12 @@ function acym_selectOption($value, $text = '', $optKey = 'value', $optText = 'te
  * @param string  $toggle               show / hide the element with this ID depending on the switch
  * @param boolean $toggleOpen           show on switch or hide
  * @param string  $vModel               to add v-model for vue apps
+ * @param bool    $disabled             to disable or not the switch
+ * @param string  $disabledMessage      message showed in tooltip if disabled
  *
  * @return string
  */
-function acym_switch($name, $value, $label = null, $attrInput = [], $labelClass = 'medium-6 small-9', $switchContainerClass = 'auto', $switchClass = '', $toggle = null, $toggleOpen = true, $vModel = '')
+function acym_switch($name, $value, $label = null, $attrInput = [], $labelClass = 'medium-6 small-9', $switchContainerClass = 'auto', $switchClass = '', $toggle = null, $toggleOpen = true, $vModel = '', $disabled = false, $disabledMessage = '')
 {
     static $occurrence = 100;
     $occurrence++;
@@ -250,9 +257,12 @@ function acym_switch($name, $value, $label = null, $attrInput = [], $labelClass 
         $switch .= ' '.$oneAttributeName.'="'.acym_escape($oneAttributeValue).'"';
     }
     $switch .= '>';
+    $labelSwitchDisabled = !$disabled ? '' : ' disabled';
+    $inputSwitchDisabled = !$disabled ? '' : ' disabled="disabled"';
+    $disabledTooltip = !$disabled || empty($disabledMessage) ? '' : ' data-acym-tooltip="'.$disabledMessage.'"';
     $switch .= '
-        <input class="switch-input" type="checkbox" id="'.$id.'" value="1" '.$checked.'>
-        <label class="switch-paddle switch-label" for="'.$id.'">
+        <input class="switch-input" type="checkbox" id="'.$id.'" value="1" '.$checked.$inputSwitchDisabled.'>
+        <label class="switch-paddle switch-label'.$labelSwitchDisabled.'" '.$disabledTooltip.' for="'.$id.'">
             <span class="switch-active" aria-hidden="true">1</span>
             <span class="switch-inactive" aria-hidden="true">0</span>
         </label>
@@ -803,7 +813,7 @@ function acym_sortBy($options, $listing, $default = '', $defaultSortOrdering = '
         $selected,
         [
             'id' => 'acym__listing__ordering',
-            'class' => 'acym__select acym__select__sort'
+            'class' => 'acym__select acym__select__sort',
         ]
     );
 

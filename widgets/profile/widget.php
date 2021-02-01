@@ -127,6 +127,7 @@ class acym_profile_widget extends WP_Widget
 
         echo $args['before_widget'];
 
+        if(!isset($instance['title'])) $instance['title'] = '';
         $title = apply_filters('widget_title', $instance['title']);
         if (!empty($title)) {
             echo $args['before_title'].$title.$args['after_title'];
@@ -144,8 +145,6 @@ class acym_profile_widget extends WP_Widget
             $cmsUserLanguage = acym_getCmsUserLanguage();
             $data['user']->language = empty($cmsUserLanguage) ? acym_getLanguageTag() : $cmsUserLanguage;
         }
-
-        $userController->prepareLanguageEdit($data);
 
         acym_setVar('layout', 'profile');
         $userController->display($data);

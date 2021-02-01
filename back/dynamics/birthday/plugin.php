@@ -351,7 +351,7 @@ class plgAcymBirthday extends acymPlugin
     public function onAcymProcessFilter_birthday(&$query, $options, $num)
     {
         $fieldClass = new FieldClass();
-        $birthdayField = $fieldClass->getOneFieldByID($options['field']);
+        $birthdayField = $fieldClass->getOneById($options['field']);
 
         if (empty($birthdayField)) return;
 
@@ -490,7 +490,7 @@ class plgAcymBirthday extends acymPlugin
             $automationHelper = new AutomationHelper();
 
             $fieldClass = new FieldClass();
-            $birthdayField = $fieldClass->getOneFieldByID($followup->condition['birthday_field']);
+            $birthdayField = $fieldClass->getOneById($followup->condition['birthday_field']);
 
             if (empty($birthdayField)) return;
 

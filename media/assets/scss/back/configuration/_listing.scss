@@ -140,4 +140,10 @@
             align-items: center;
         }
     }
+
+    #delete_stats_enabled, #delete_user_history_enabled {
+        .intext_input {
+            margin-right: .5rem;
+        }
+    }
 }

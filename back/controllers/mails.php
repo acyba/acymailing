@@ -308,6 +308,7 @@ class MailsController extends acymController
         } else {
             // Existing mails and notifications
             $mail = $mailClass->getOneById($tempId);
+
             if (!empty($fromMail)) {
                 $mail->drag_editor = $fromMail->drag_editor;
                 $mail->body = $fromMail->body;
@@ -353,6 +354,11 @@ class MailsController extends acymController
                 $notifName = acym_translation('ACYM_NOTIFICATIION_'.strtoupper(substr($mail->name, 4)));
                 if (strpos($notifName, 'ACYM_NOTIFICATIION_') !== false) {
                     $notifName = $mail->name;
+
+                    if ($notifName === 'acy_confirm') {
+                        $notifName = acym_translation('ACYM_CONFIRMATION_EMAIL');
+                    }
+                    //TODO: Also translate the other core mails names
                 }
 
                 $breadcrumbTitle = $notifName;
@@ -374,6 +380,9 @@ class MailsController extends acymController
             $lists = $listClass->getAllWithIdName();
 
             if (empty($listIds) && !empty($mail->id)) $listIds = $listClass->getListIdsByWelcomeUnsub($mail->id, $mail->type == $mailClass::TYPE_WELCOME);
+            if (!is_array($listIds)) {
+                $listIds = [$listIds];
+            }
         }
 
         if (!empty($mail->attachments) && !is_array($mail->attachments)) {
@@ -399,6 +408,7 @@ class MailsController extends acymController
             'mailClass' => $this->currentClass,
         ];
 
+        $this->prepareMailMultilingual($data);
         $this->prepareEditorEdit($data);
 
         $campaignController->prepareMaxUpload($data);
@@ -409,12 +419,20 @@ class MailsController extends acymController
         parent::display($data);
     }
 
+    private function prepareMailMultilingual(&$data)
+    {
+        $mail = $data['mail'];
+        if (in_array($mail->type, [$data['mailClass']::TYPE_WELCOME, $data['mailClass']::TYPE_UNSUBSCRIBE, $data['mailClass']::TYPE_NOTIFICATION]) && acym_isMultilingual()) {
+            $data['multilingual'] = true;
+        }
+    }
+
     private function prepareEditorEdit(&$data)
     {
         $data['editor'] = new EditorHelper();
         $data['editor']->content = $data['mail']->body;
         $data['editor']->autoSave = empty($data['mail']->autosave) ? '' : $data['mail']->autosave;
-        if (!empty($data['mail']->editor)) $data['editor']->editor = $data['mail']->editor;
+        $data['editor']->editor = empty($data['mail']->editor) ? '' : $data['mail']->editor;
         if (!empty($data['mail']->id)) $data['editor']->mailId = $data['mail']->id;
         if (!empty($data['mail']->type)) $data['editor']->automation = $data['isAutomationAdmin'];
         if (!empty($data['mail']->settings)) $data['editor']->settings = $data['mail']->settings;
@@ -424,6 +442,36 @@ class MailsController extends acymController
             'mail' => $data['mail'],
             'mailClass' => $this->currentClass,
         ];
+
+        if (!empty($data['multilingual'])) {
+            $data['editor']->data['tagClass'] = new TagClass();
+            $data['editor']->data['main_language'] = $this->config->get('multilingual_default');
+            $data['editor']->data['languages'] = explode(',', $this->config->get('multilingual_languages'));
+            $data['editor']->data['multilingual'] = true;
+
+            $allLanguages = acym_getLanguages();
+
+            $mainLang = new \stdClass();
+            $mainLang->code = $data['editor']->data['main_language'];
+            $mainLang->name = empty($allLanguages[$data['editor']->data['main_language']]) ? $data['editor']->data['main_language'] : $allLanguages[$data['editor']->data['main_language']]->name;
+            $data['editor']->data['main_language'] = $mainLang;
+            $mailClass = new MailClass();
+            $mailId = empty($data['mail']->id) ? -1 : $data['mail']->id;
+            $translations = $mailClass->getTranslationsById($mailId, true);
+            foreach ($data['editor']->data['languages'] as $i => $oneLangCode) {
+                $data['editor']->data['languages'][$i] = new \stdClass();
+                $data['editor']->data['languages'][$i]->code = $oneLangCode;
+                $data['editor']->data['languages'][$i]->name = empty($allLanguages[$oneLangCode]) ? $oneLangCode : $allLanguages[$oneLangCode]->name;
+                $data['editor']->data['languages'][$i]->subject = empty($translations[$oneLangCode]->subject) ? '' : $translations[$oneLangCode]->subject;
+                $data['editor']->data['languages'][$i]->preview = empty($translations[$oneLangCode]->preheader) ? '' : $translations[$oneLangCode]->preheader;
+                $data['editor']->data['languages'][$i]->content = empty($translations[$oneLangCode]->body) ? '' : $translations[$oneLangCode]->body;
+                $data['editor']->data['languages'][$i]->autosave = empty($translations[$oneLangCode]->autosave) ? '' : $translations[$oneLangCode]->autosave;
+                $data['editor']->data['languages'][$i]->settings = empty($translations[$oneLangCode]->settings) ? '' : $translations[$oneLangCode]->settings;
+                $data['editor']->data['languages'][$i]->stylesheet = empty($translations[$oneLangCode]->stylesheet) ? '' : $translations[$oneLangCode]->stylesheet;
+            }
+            $data['editor']->data['editor'] = new \stdClass();
+            $data['editor']->data['editor']->editor = 'acyEditor';
+        }
 
         if ($data['editor']->isDragAndDrop()) {
             $this->loadScripts['edit'][] = 'editor-wysid';
@@ -437,6 +485,7 @@ class MailsController extends acymController
 
         $mailClass = $this->currentClass;
         $formData = acym_getVar('array', 'mail', []);
+        $multilingual = acym_getVar('array', 'multilingual', [], 'REQUEST', ACYM_ALLOWRAW);
         $mail = new \stdClass();
         $allowedFields = acym_getColumns('mail');
         $fromId = acym_getVar('int', 'fromId', '');
@@ -450,10 +499,20 @@ class MailsController extends acymController
             $mail->{$name} = $data;
         }
 
+        if (!empty($multilingual)) {
+            if (!empty($multilingual['main']['subject'])) $mail->subject = $multilingual['main']['subject'];
+            if (!empty($multilingual['main']['preview'])) $mail->preheader = $multilingual['main']['preview'];
+            if (!empty($multilingual['main']['content'])) $mail->body = $multilingual['main']['content'];
+            if (!empty($multilingual['main']['settings'])) $mail->settings = $multilingual['main']['settings'];
+            if (!empty($multilingual['main']['stylesheet'])) $mail->stylesheet = $multilingual['main']['stylesheet'];
+            $mail->links_language = $this->config->get('multilingual_default');
+            unset($multilingual['main']);
+        }
+
         $saveAsTmpl = acym_getVar('int', 'saveAsTmpl', 0);
         if ($saveAsTmpl === 1) {
             unset($mail->id);
-            $mail->type = $mailClass::TYPE_STANDARD;
+            $mail->type = $mailClass::TYPE_TEMPLATE;
         }
 
         if ($fromAutomation) {
@@ -462,17 +521,20 @@ class MailsController extends acymController
             acym_setVar('type_editor', 'acyEditor');
         }
 
-        if (empty($mail->subject) && !empty($mail->type) && $mail->type != $mailClass::TYPE_STANDARD) {
+        if (empty($mail->subject) && !empty($mail->type) && $mail->type != $mailClass::TYPE_TEMPLATE) {
             $mail->subject = acym_translation('ACYM_EMAIL_SUBJECT');
         }
 
+        $inputNameBody = $saveAsTmpl ? 'editor_content_template' : 'editor_content';
+        $inputNameSettings = $saveAsTmpl ? 'editor_settings_template' : 'editor_settings';
+        $inputNameStylesheet = $saveAsTmpl ? 'editor_stylesheet_template' : 'editor_stylesheet';
+
         $mail->tags = acym_getVar('array', 'template_tags', []);
-        $mail->body = acym_getVar('string', 'editor_content', '', 'REQUEST', ACYM_ALLOWRAW);
-        $mail->settings = acym_getVar('string', 'editor_settings', '', 'REQUEST', ACYM_ALLOWRAW);
-        $mail->stylesheet = acym_getVar('string', 'editor_stylesheet', '', 'REQUEST', ACYM_ALLOWRAW);
+        $mail->body = acym_getVar('string', $inputNameBody, '', 'REQUEST', ACYM_ALLOWRAW);
+        $mail->settings = acym_getVar('string', $inputNameSettings, '', 'REQUEST', ACYM_ALLOWRAW);
+        $mail->stylesheet = acym_getVar('string', $inputNameStylesheet, '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->headers = acym_getVar('string', 'editor_headers', '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->thumbnail = $fromAutomation ? '' : acym_getVar('string', 'editor_thumbnail', '', 'REQUEST', ACYM_ALLOWRAW);
-        $mail->template = $fromAutomation ? 2 : 1;
         $mail->library = 0;
         $mail->drag_editor = strpos($mail->body, 'acym__wysid__template') === false ? 0 : 1;
         if ($fromAutomation) $mail->type = $mailClass::TYPE_AUTOMATION;
@@ -511,6 +573,30 @@ class MailsController extends acymController
                 acym_setVar('type_editor', 'acyEditor');
             } else {
                 acym_setVar('mailID', $mailID);
+            }
+
+            if (!empty($multilingual)) {
+                foreach ($multilingual as $langCode => $translation) {
+                    if (empty($translation['subject'])) {
+                        $mailClass->delete($mailClass->getTranslationId($mailID, $langCode));
+                        continue;
+                    }
+
+                    unset($mail->id);
+                    $translationId = $mailClass->getTranslationId($mailID, $langCode);
+                    if (!empty($translationId)) $mail->id = $translationId;
+
+                    $mail->subject = $translation['subject'];
+                    $mail->preheader = $translation['preview'];
+                    $mail->body = $translation['content'];
+                    $mail->links_language = $langCode;
+                    $mail->language = $langCode;
+                    $mail->parent_id = $mailID;
+                    $mail->settings = $translation['settings'];
+                    $mail->stylesheet = $translation['stylesheet'];
+
+                    $mailClass->save($mail);
+                }
             }
 
             return $mailID;
@@ -655,7 +741,7 @@ class MailsController extends acymController
         $automation = acym_getVar('boolean', 'automation', false);
         $returnUrl = acym_getVar('string', 'return');
         $returnUrl = empty($returnUrl) || 'undefined' == $returnUrl ? '' : '&return='.urlencode(base64_encode($returnUrl));
-        $fromMultilingual = acym_getVar('int', 'campaign_id', 0);
+        $fromMultilingual = acym_getVar('int', 'is_multilingual_edition', 0);
 
         $mailsPerPage = $pagination->getListLimit();
         $page = acym_getVar('int', 'pagination_page_ajax', 1);
@@ -990,7 +1076,6 @@ class MailsController extends acymController
         $newMail->library = 0;
         $newMail->body = $mail->body;
         $newMail->subject = $mail->subject;
-        $newMail->template = 2;
         $newMail->from_name = $mail->from_name;
         $newMail->from_email = $mail->from_email;
         $newMail->reply_to_name = $mail->reply_to_name;
@@ -1111,6 +1196,12 @@ class MailsController extends acymController
         if (empty($mail)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_FIND_MAIL'), [], false);
 
         acym_sendAjaxResponse('', $mail, true);
+    }
+
+    public function saveAsTmplAjax()
+    {
+        $isWellSaved = $this->store(true);
+        acym_sendAjaxResponse($isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), $isWellSaved, $isWellSaved);
     }
 }
 

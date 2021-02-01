@@ -142,6 +142,7 @@ jQuery(document).ready(function ($) {
             width: '100%',
             placeholder: $placeholderSelect,
             tags: true,
+            theme: 'foundation',
             tokenSeparators: [
                 ',',
                 ' '

@@ -27,7 +27,7 @@
                         $data['field']->type,
                         'acym-data-infinite class="acym__fields__edit__select acym__select"'.((!empty($data['field']->id) && in_array(
                                 $data['field']->id,
-                                [1, 2]
+                                [1, 2, $data['languageFieldId']]
                             )) ? 'disabled' : ''),
                         'value',
                         'name'
@@ -36,10 +36,14 @@
 				</label>
 
 				<div class="cell large-12 grid-x margin-top-1">
-                    <?php echo acym_switch('field[active]', $data['field']->active, acym_translation('ACYM_ACTIVE'), [], 'auto', 'shrink', 'margin-0'); ?>
+                    <?php
+
+                    $disableActiveSwitch = in_array($data['field']->id, [2, $data['languageFieldId']]);
+
+                    echo acym_switch('field[active]', $data['field']->active, acym_translation('ACYM_ACTIVE'), [], 'auto', 'shrink', 'margin-0', null, true, '', $disableActiveSwitch); ?>
 				</div>
 
-                <?php if (empty($data['field']->id) || $data['field']->id != 2) { ?>
+                <?php if (empty($data['field']->id) || !in_array($data['field']->id, [2, $data['languageFieldId']])) { ?>
 					<div class="cell large-12 grid-x acym__fields__change margin-top-1" id="acym__fields__required">
                         <?php echo acym_switch(
                             'field[required]',

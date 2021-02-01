@@ -8,15 +8,21 @@
         <?php echo acym_translation('ACYM_SEE_HOW_AMAZING_YOUR_EMAIL'); ?>
 	</div>
 	<label for="acym__wysid__send__test__select"><?php echo acym_translation('ACYM_SEND_TEST_TO'); ?></label>
-    <?php echo acym_selectMultiple(
-        $this->emailsTest,
-        'emails_test',
-        $this->emailsTest,
-        [
-            'class' => 'acym__multiselect__email',
-            'placeholder' => acym_translation('ACYM_TEST_ADDRESS'),
-        ]
-    ); ?>
+    <?php
+    if (acym_isAdmin()) {
+        echo acym_selectMultiple(
+            $this->emailsTest,
+            'emails_test',
+            $this->emailsTest,
+            [
+                'class' => 'acym__multiselect__email',
+                'placeholder' => acym_translation('ACYM_TEST_ADDRESS'),
+            ]
+        );
+    } else {
+        echo '<input type="text" name="emails_test" value="'.acym_escape(implode(',', $this->emailsTest)).'">';
+    }
+    ?>
 	<label class="margin-top-1">
         <?php echo acym_translation('ACYM_TEST_NOTE'); ?>
 		<textarea

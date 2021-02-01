@@ -19,6 +19,7 @@ class AcymRouter extends AcymRouterBase
             'cron',
             'fronturl',
             'frontmails',
+            'frontdynamics',
         ];
 
         $this->paramsNotSef = [
@@ -41,6 +42,11 @@ class AcymRouter extends AcymRouterBase
             'userid',
             'val',
             'from',
+            'campaign_type',
+            'edition',
+            'welcomemailid',
+            'unsubmailid',
+            'type_editor',
         ];
     }
 
@@ -170,7 +176,7 @@ class AcymRouter extends AcymRouterBase
             $vars['mail_id'] = $id;
         }
 
-        if ($vars['ctrl'] === 'frontcampaigns' && $vars['task'] === 'edit') {
+        if ($vars['ctrl'] === 'frontcampaigns' && $vars['task'] === 'edit' && !empty($segments)) {
             $campaign = array_shift($segments);
             list($id, $alias) = explode($this->separator, $campaign, 2);
             $vars['id'] = $id;

@@ -6,7 +6,7 @@
 	<input type="hidden" name="editor_headers" value="<?php echo acym_escape($data['mailInformation']->headers); ?>">
 	<div class="grid-x">
 		<div class="cell medium-auto"></div>
-		<div class="cell <?php echo $data['containerClass']; ?> grid-x grid-margin-x acym__content acym__editor__area">
+		<div class="cell <?php echo $data['containerClass']; ?> grid-x grid-margin-x acym__content acym__editor__area margin-y margin-bottom-1">
             <?php
             $this->addSegmentStep($data['displaySegmentTab']);
             $workflow = $data['workflowHelper'];
