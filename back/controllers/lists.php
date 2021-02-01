@@ -242,8 +242,8 @@ class ListsController extends acymController
         $mails = $this->currentClass->getMailsByListId($listId);
         if (empty($mails)) return;
 
-        $mailListClass = new MailStatClass();
-        $mailsStat = $mailListClass->getCumulatedStatsByMailIds($mails);
+        $mailStatClass = new MailStatClass();
+        $mailsStat = $mailStatClass->getCumulatedStatsByMailIds($mails);
 
         if (intval($mailsStat->sent) + intval($mailsStat->fails) === 0) return;
 

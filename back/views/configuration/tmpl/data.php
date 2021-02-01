@@ -62,3 +62,44 @@
 		</div>
 	</div>
 </div>
+<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2 grid-margin-y">
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_DATA_MANAGEMENT'); ?></div>
+	<div class="grid-x grid-margin-x margin-y">
+        <?php
+        echo acym_switch(
+            'config[delete_stats_enabled]',
+            $this->config->get('delete_stats_enabled', 0),
+            acym_translation('ACYM_DELETE_DETAILED_STATS_AFTER'),
+            [],
+            'xlarge-3 medium-5 small-9',
+            'auto',
+            '',
+            'delete_stats_enabled'
+        ); ?>
+		<div class="cell grid-x" id="delete_stats_enabled">
+            <?php
+            $delayTypeAuto = $data['typeDelay'];
+            echo $delayTypeAuto->display('config[delete_stats]', $this->config->get('delete_stats', 31104000), 4);
+            ?>
+		</div>
+	</div>
+	<div class="grid-x grid-margin-x margin-y margin-top-1">
+        <?php
+        echo acym_switch(
+            'config[delete_user_history_enabled]',
+            $this->config->get('delete_user_history_enabled', 0),
+            acym_translation('ACYM_DELETE_USER_HISTORY_AFTER'),
+            [],
+            'xlarge-3 medium-5 small-9',
+            'auto',
+            '',
+            'delete_user_history_enabled'
+        ); ?>
+		<div class="cell grid-x" id="delete_user_history_enabled">
+            <?php
+            $delayTypeAuto = $data['typeDelay'];
+            echo $delayTypeAuto->display('config[delete_user_history]', $this->config->get('delete_user_history', 0), 4);
+            ?>
+		</div>
+	</div>
+</div>

@@ -31,4 +31,8 @@
             margin-left: 5px;
         }
     }
+
+    .button-secondary.disabled #acym__users__listing__number_to_add_to_list {
+        color: $white;
+    }
 }

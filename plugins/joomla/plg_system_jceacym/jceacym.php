@@ -1,5 +1,7 @@
 <?php
 
+defined('_JEXEC') or die('Restricted access');
+
 class plgSystemJceacym extends JPlugin
 {
     public function onBeforeWfEditorRender(&$settings)

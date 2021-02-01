@@ -5,7 +5,6 @@ namespace AcyMailing\Classes;
 use AcyMailing\Helpers\MailerHelper;
 use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Libraries\acymClass;
-use AcyMailing\Classes\MailClass;
 
 class UserClass extends acymClass
 {
@@ -1279,5 +1278,25 @@ class UserClass extends acymClass
         $mailClass = new MailClass();
 
         return $mailClass->decode($mailHistory);
+    }
+
+    public function deleteHistoryPeriod()
+    {
+        if (empty($this->config->get('delete_user_history_enabled', 0))) return;
+        $deleteOverSecond = $this->config->get('delete_user_history', 0);
+        if (empty($deleteOverSecond)) return;
+        $date = time() - $deleteOverSecond;
+
+        $query = 'DELETE FROM #__acym_history WHERE date < '.intval($date);
+
+        try {
+            $status = acym_query($query);
+            $message = empty($status) ? '' : acym_translationSprintf('ACYM_DELETE_X_ROWS_TABLE_X', $status, strtolower(acym_translation('ACYM_USER_HISTORY')));
+        } catch (\Exception $e) {
+            $status = false;
+            $message = $e->getMessage();
+        }
+
+        return ['status' => $status !== false, 'message' => $message];
     }
 }

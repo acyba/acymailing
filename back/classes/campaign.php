@@ -721,6 +721,12 @@ class CampaignClass extends acymClass
             $where .= 'AND userlist.user_id = '.intval($params['userId']).' ';
         }
 
+        // If the user search for a newsletter
+        if (isset($params['search'])) {
+            $search = acym_escapeDB('%'.utf8_encode($params['search']).'%');
+            $where .= 'AND (mail.subject LIKE '.$search.' OR mail.name LIKE '.$search.')';
+        }
+
         $query .= $where;
 
         // Make sure we display campaigns only once

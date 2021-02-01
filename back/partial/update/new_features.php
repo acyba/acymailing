@@ -5,8 +5,8 @@
 			<img src="<?php echo ACYM_IMAGES.'splashscreen/header_airplane.png'; ?>" alt="planes" class="acym__splashcreen__header__planes">
 			<div class="cell auto"></div>
 			<div class="cell medium-6 grid-x grid-margin-y">
-				<h1 class="cell">AcyMailing 7 has arrived 🎉</h1>
-				<p class="cell">2021 starts with a powerful new release for you!</p>
+				<h1 class="cell">AcyMailing 7.1 has arrived 🎉</h1>
+				<p class="cell">To get February off to a good start, here are some new features for you!</p>
 				<a href="<?php echo ACYM_ACYMAILLING_WEBSITE.'pricing/'; ?>" class="cell shrink button">Upgrade now!</a>
 			</div>
 		</div>
@@ -22,41 +22,41 @@
 			<h2 class="cell acym__splashcreen__body__title text-center">What are the new features?</h2>
 			<div class="cell grid-x grid-margin-x align-center acym__splashcreen__body__card__container">
 				<div class="cell medium-4 acym__splashcreen__body__card grid-x">
-					<div class="cell grid-x">
+					<div class="cell grid-x align-center">
 						<div class="acym__splashcreen__body__card__icon acym_vcenter align-center">
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_1.png'; ?>" alt="card_1_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">Faster sending process</h4>
-					<p class="cell acym__splashcreen__body__card__text">Your emails will be sent much more faster than before. See more below.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Override WooCommerce emails</h4>
+					<p class="cell acym__splashcreen__body__card__text">Customize default emails sent from WooCommerce such as new order, completed order, refund....</p>
 				</div>
                 <?php
                 ?>
 				<div class="cell medium-4 acym__splashcreen__body__card grid-x">
-					<div class="cell grid-x">
+					<div class="cell grid-x align-center">
 						<div class="acym__splashcreen__body__card__icon acym_vcenter align-center">
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_2.png'; ?>" alt="card_2_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">Integration with external sending services</h4>
-					<p class="cell acym__splashcreen__body__card__text">New external mailing services are now available: SendGrd, SendInblue, Postmark and Mailgun.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">WooCommerce abandoned cart</h4>
+					<p class="cell acym__splashcreen__body__card__text">Send emails to your customer who left without purchasing their products</p>
 				</div>
                 <?php
                 ?>
 				<div class="cell medium-4 acym__splashcreen__body__card grid-x">
-					<div class="cell grid-x">
+					<div class="cell grid-x align-center">
 						<div class="acym__splashcreen__body__card__icon acym_vcenter align-center">
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_3.png'; ?>" alt="card_3_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">New design</h4>
-					<p class="cell acym__splashcreen__body__card__text">The whole design has been improved to make it even more beautiful.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Joomla 4 compatibility</h4>
+					<p class="cell acym__splashcreen__body__card__text">AcyMailing is now compatible with Joomla 4, the last Joomla version.</p>
 				</div>
 			</div>
 			<div class="cell grid-x acym__splashcreen__body__middle margin-top-2">
 				<div class="cell medium-6 grid-x grid-margin-x acym__splashcreen__body__middle__left">
 					<h4 class="cell acym__splashcreen__body__subtitle">New main feature</h4>
-					<h2 class="cell acym__splashcreen__body__middle__left__title">Faster sending process</h2>
+					<h2 class="cell acym__splashcreen__body__middle__left__title">WooCommerce abandoned cart</h2>
 				</div>
 				<div class="cell medium-6 acym__splashcreen__body__middle__right grid-x grid-margin-y">
 					<div class="cell grid-x">
@@ -66,8 +66,8 @@
 							</div>
 						</div>
 						<div class="cell auto grid-x">
-							<h2 class="cell acym__splashcreen__body__middle__right__title">Multiple batches at the same time</h2>
-							<p class="cell acym__splashcreen__body__middle__right__text">Your newsletters sent in a few minutes </p>
+							<h2 class="cell acym__splashcreen__body__middle__right__title">Create customer experience</h2>
+							<p class="cell acym__splashcreen__body__middle__right__text">Send reminder email to your customers in a personalised way.</p>
 						</div>
 					</div>
 					<div class="cell grid-x">
@@ -77,9 +77,9 @@
 							</div>
 						</div>
 						<div class="cell auto grid-x">
-							<h2 class="cell acym__splashcreen__body__middle__right__title">Queue triggered every minutes</h2>
-							<p class="cell acym__splashcreen__body__middle__right__text">Queue will be automatically triggered everytime someone visits your website. No need to
-								wait for 15 minutes anymore</p>
+							<h2 class="cell acym__splashcreen__body__middle__right__title">Improve your sales rate</h2>
+							<p class="cell acym__splashcreen__body__middle__right__text">Push customers purchase by reminding them that their purchase calmly waits in their
+								cart.</p>
 						</div>
 					</div>
 				</div>
@@ -87,16 +87,20 @@
 			<h2 class="cell acym__splashcreen__body__title text-center">Please remind me the features you included into the previous release?</h2>
 			<div class="cell grid-x acym__splashcreen__body__end grid-margin-x">
 				<div class="cell medium-6 acym__splashcreen__body__end__card">
-					<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_1.png'; ?>" alt="" class="cell margin-bottom-1">
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Statistics</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">Analyse your emails campaigns. You have now access to the list subscription graph, the open
-						time and the click details of your campaigns.</p>
+					<div class="cell margin-bottom-1 text-center">
+						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_1.png'; ?>" alt="">
+					</div>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Faster sending process</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">Trigger multiple batches at the same time and choose how many and how often batches will be
+						sent.</p>
 				</div>
 				<div class="cell medium-6 acym__splashcreen__body__end__card">
-					<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_2.png'; ?>" alt="" class="cell margin-bottom-1">
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Default emails override</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">Customize default emails sent from your website such as the subscription
-						confirmation email, password reset email etc...</p>
+					<div class="cell margin-bottom-1 text-center">
+						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_2.png'; ?>" alt="">
+					</div>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Integration with external sending services</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">Send your email with an external sending service. AcyMailing has now 4 new services:
+						SendGrid, Sendinblue, Postmark and Mailgun.</p>
 				</div>
 			</div>
 		</div>

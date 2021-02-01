@@ -13,7 +13,6 @@
         ) ? 'required' : ''; ?>>
 	</label>
 </div>
-<div class="cell"></div>
 <div class="cell xlarge-3 medium-6">
 	<label>
         <?php

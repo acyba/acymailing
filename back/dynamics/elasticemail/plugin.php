@@ -28,9 +28,10 @@ class plgAcymElasticemail extends acymPlugin
         ?>
 		<div id="<?php echo self::SENDING_METHOD_ID; ?>_settings" class="send_settings grid-x cell">
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-				<label for="elasticemail_username" class="cell">
+				<label for="elasticemail_username" class="cell shrink margin-right-1">
                     <?php echo acym_translation('ACYM_SMTP_USERNAME'); ?>
 				</label>
+                <?php echo $this->getLinks('https://elasticemail.com/account#/joomla-acymailing', 'https://elasticemail.com/email-api-pricing'); ?>
 				<input id="elasticemail_username"
 					   class="cell"
 					   type="text"

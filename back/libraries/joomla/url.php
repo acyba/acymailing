@@ -2,6 +2,16 @@
 
 function acym_route($url, $xhtml = true, $ssl = null)
 {
+    if (ACYM_J40) {
+        global $Itemid;
+        if (!acym_isAdmin() && !empty($Itemid) && strpos($url, 'Itemid') === false) {
+            $url .= (strpos($url, '?') ? '&' : '?').'Itemid='.$Itemid;
+        }
+        $result = JRoute::_($url, $xhtml, $ssl === null ? 0 : $ssl);
+
+        return $result;
+    }
+
     return JRoute::_($url, $xhtml, $ssl);
 }
 

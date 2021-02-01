@@ -164,6 +164,8 @@ class acymInstall
         $allPref['use_https'] = 1;
         $allPref['multilingual'] = 0;
 
+        $allPref['delete_stats'] = 31104000;
+
         $query = "INSERT IGNORE INTO `#__acym_configuration` (`name`,`value`) VALUES ";
         foreach ($allPref as $namekey => $value) {
             $query .= '('.acym_escapeDB($namekey).','.acym_escapeDB($value).'),';
@@ -234,6 +236,7 @@ class acymInstall
         if (!$this->update) return;
 
         $config = acym_config();
+        $mailClass = new MailClass();
 
         if (version_compare($this->fromVersion, '6.0.3', '<')) {
             $this->updateQuery('ALTER TABLE #__acym_mail_stat ADD COLUMN `bounce_details` LONGTEXT NULL');
@@ -444,7 +447,6 @@ class acymInstall
             $this->updateQuery('ALTER TABLE #__acym_user ADD `confirmation_ip` VARCHAR(16) DEFAULT NULL');
 
             //Handle Emoji support
-            $mailClass = new MailClass();
             $query = 'SELECT subject, id FROM #__acym_mail';
 
             $mails = acym_loadObjectList($query);
@@ -457,7 +459,6 @@ class acymInstall
 
         if (version_compare($this->fromVersion, '6.1.6', '<')) {
             // Handle emojis in body, name, preheader and autosave
-            $mailClass = new MailClass();
             $mails = acym_loadObjectList('SELECT `id`, `name`, `body`, `autosave`, `preheader` FROM #__acym_mail');
             $mails = $mailClass->encode($mails);
 
@@ -585,7 +586,6 @@ class acymInstall
 
         if (version_compare($this->fromVersion, '6.6.0', '<')) {
             $updateHelper = new UpdateHelper();
-            $mailClass = new MailClass();
             $firstEmail = $mailClass->getOneByName(acym_translation($updateHelper::FIRST_EMAIL_NAME_KEY));
             if (!empty($firstEmail)) {
                 // If the user installed AcyMailing but didn't save the first template, we just complete the <em>
@@ -672,7 +672,6 @@ class acymInstall
             if (in_array('backend_filter', $fieldColumns)) $this->updateQuery('ALTER TABLE #__acym_field DROP COLUMN backend_filter');
             if (in_array('frontend_filter', $fieldColumns)) $this->updateQuery('ALTER TABLE #__acym_field DROP COLUMN frontend_filter');
             $mails = acym_loadObjectList('SELECT * FROM #__acym_mail WHERE thumbnail LIKE "%data:image/png;base64%"');
-            $mailClass = new MailClass();
             foreach ($mails as $mail) {
                 unset($mail->thumbnail);
                 $mailClass->save($mail);
@@ -903,7 +902,6 @@ class acymInstall
         if (version_compare($this->fromVersion, '6.18.1', '<')) {
             $emails = acym_loadObjectList('SELECT id, access FROM `#__acym_mail` WHERE access LIKE "%,,%" OR access LIKE "%[\"%"');
 
-            $mailClass = new MailClass();
             foreach ($emails as $email) {
                 if (strpos($email->access, ',,') !== false) {
                     $access = explode(',', $email->access);
@@ -973,6 +971,21 @@ class acymInstall
 
             $segmentClass = new SegmentClass();
             $segmentClass->updateSegments();
+        }
+
+        if (version_compare($this->fromVersion, '7.1.0', '<')) {
+            // Welcome and unsubscribe emails have template = 1 for some reason
+            $this->updateQuery(
+                'UPDATE #__acym_mail 
+                SET `type` = '.acym_escapeDB($mailClass::TYPE_TEMPLATE).' 
+                WHERE `template` = 1 
+                    AND `type` = '.acym_escapeDB($mailClass::TYPE_STANDARD)
+            );
+
+            $this->updateQuery('ALTER TABLE #__acym_mail DROP `template`');
+
+            $fieldClass = new FieldClass();
+            $fieldClass->insertLanguageField();
         }
     }
 

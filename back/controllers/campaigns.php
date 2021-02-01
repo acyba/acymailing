@@ -1006,7 +1006,6 @@ class CampaignsController extends acymController
             $mail = new \stdClass();
             $mail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
             $mail->type = $mailClass::TYPE_STANDARD;
-            $mail->template = 0;
             $mail->library = 0;
 
             $campaign = new \stdClass();
@@ -1472,8 +1471,8 @@ class CampaignsController extends acymController
         $campaignLists = $data['mailClass']->getAllListsWithCountSubscribersByMailIds([$data['campaignInformation']->mail_id]);
 
         if ($data['campaignInformation']->sent) {
-            $mailstatClass = new MailStatClass();
-            $nbSubscribers = $mailstatClass->getTotalSubscribersByMailId($data['campaignInformation']->mail_id);
+            $mailStatClass = new MailStatClass();
+            $nbSubscribers = $mailStatClass->getTotalSubscribersByMailId($data['campaignInformation']->mail_id);
         } else {
             if (!empty($campaignLists)) {
                 $listsIds = [];
@@ -2251,8 +2250,7 @@ class CampaignsController extends acymController
     {
         $mailController = new MailsController();
         $isWellSaved = $mailController->store(true);
-        echo json_encode(['error' => $isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), 'data' => $isWellSaved]);
-        exit;
+        acym_sendAjaxResponse($isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), $isWellSaved, $isWellSaved);
     }
 
     /**

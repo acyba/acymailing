@@ -300,7 +300,8 @@ class ImportHelper extends acymObject
         $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time())).' FROM #__acym_list AS list, #__acym_user AS user WHERE list.`id` IN ('.implode(
                 ',',
                 $listsSubscribe
-            ).') AND user.`source` LIKE "%'.$formattedTime.'%"';
+            ).') AND user.`email` IN (SELECT '.acym_secureDBColumn($select['`email`']).' FROM '.acym_secureDBColumn($table).')';
+
         $nbsubscribed = acym_query($query);
         acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_SUBSCRIPTION', $nbsubscribed));
 

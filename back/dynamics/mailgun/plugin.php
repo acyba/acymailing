@@ -63,12 +63,13 @@ class plgAcymMailgun extends acymPlugin
 					   class="cell acym__configuration__mail__settings__text">
 			</div>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-				<label class="cell" for="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-key">
+				<label class="cell shrink margin-right-1" for="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-key">
                     <?php echo acym_translationSprintf(
                         'ACYM_SENDING_METHOD_API_KEY',
                         self::SENDING_METHOD_NAME
                     ); ?>
 				</label>
+                <?php echo $this->getLinks('https://signup.mailgun.com/new/signup', 'https://www.mailgun.com/pricing/'); ?>
 				<input type="text"
 					   id="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-key"
 					   value="<?php echo empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value; ?>"

@@ -39,6 +39,7 @@ class FieldsController extends acymController
         acym_setVar('layout', 'edit');
         $id = acym_getVar('int', 'id');
         $fieldClass = new FieldClass();
+        $languageFieldId = $fieldClass->getLanguageFieldId();
 
         if (empty($id)) {
             $field = new \stdClass();
@@ -57,11 +58,11 @@ class FieldsController extends acymController
             $field->access = 1;
             $field->fieldDB = new \stdClass();
         } else {
-            $field = $fieldClass->getOneFieldByID($id);
+            $field = $fieldClass->getOneById($id);
             $field->option = json_decode($field->option);
             $field->value = json_decode($field->value);
             $field->fieldDB = empty($field->option->fieldDB) ? new \stdClass() : json_decode($field->option->fieldDB);
-            if (!in_array($id, [1, 2]) && !empty($field->fieldDB->table)) {
+            if (!in_array($id, [1, 2, $languageFieldId]) && !empty($field->fieldDB->table)) {
                 $tables = acym_loadResultArray('SHOW TABLES FROM `'.acym_secureDBColumn($field->fieldDB->database).'`');
                 $field->fieldDB->tables = [];
                 foreach ($tables as $one) {
@@ -100,6 +101,7 @@ class FieldsController extends acymController
             'database' => acym_getDatabases(),
             'allFields' => $allFieldsName,
             'operatorType' => new OperatorType(),
+            'languageFieldId' => $languageFieldId,
         ];
 
         $data['fieldType'] = [
@@ -113,6 +115,7 @@ class FieldsController extends acymController
             'file' => acym_translation('ACYM_FILE'),
             'phone' => acym_translation('ACYM_PHONE'),
             'custom_text' => acym_translation('ACYM_CUSTOM_TEXT'),
+            'language' => acym_translation('ACYM_LANGUAGE'),
         ];
 
         return parent::display($data);
@@ -165,10 +168,11 @@ class FieldsController extends acymController
     private function setFieldToSave()
     {
         $fieldClass = new FieldClass();
+        $languageFieldId = $fieldClass->getLanguageFieldId();
         $field = acym_getVar('array', 'field');
         $fieldDB = json_encode(acym_getVar('array', 'fieldDB'));
         $id = acym_getVar('int', 'id');
-        if ($id == 2) {
+        if (in_array($id, [2, $languageFieldId])) {
             $field['required'] = 1;
         }
         if (empty($field['name'])) {
@@ -200,7 +204,12 @@ class FieldsController extends acymController
         $value = [];
 
         $fieldValues = $field['value'];
-        $field['type'] = in_array($id, [1, 2]) ? 'text' : $field['type'];
+
+        if (in_array($id, [1, 2])) {
+            $field['type']= 'text';
+        } elseif ($id == $languageFieldId) {
+            $field['type'] = 'language';
+        }
 
         $i = 0;
         foreach ($fieldValues['value'] as $one) {
@@ -230,7 +239,7 @@ class FieldsController extends acymController
         $newField->name = $field['name'];
         $newField->active = $field['active'];
         $newField->namekey = $field['namekey'];
-        $newField->type = in_array($id, [1, 2]) ? 'text' : $field['type'];
+        $newField->type = $field['type'];
         $newField->required = $field['required'];
         $newField->option = json_encode($field['option']);
         $newField->value = $field['value'];
@@ -271,14 +280,13 @@ class FieldsController extends acymController
 
     public function delete()
     {
+        $fieldClass = new FieldClass();
         $ids = acym_getVar('cmd', 'elements_checked');
-        if (in_array('1', $ids) || in_array('2', $ids)) {
+        if (in_array('1', $ids) || in_array('2', $ids) || in_array($fieldClass->getLanguageFieldId(), $ids)) {
             acym_enqueueMessage(acym_translation('ACYM_CANT_DELETE'), 'error');
             $this->listing();
-
-            return;
         } else {
-            return parent::delete();
+            parent::delete();
         }
     }
 }

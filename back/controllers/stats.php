@@ -24,6 +24,7 @@ class StatsController extends acymController
         $this->loadScripts = [
             'all' => ['datepicker', 'thumbnail'],
         ];
+        acym_session();
         if (acym_getVar('string', 'ctrl', 'dashboard') != 'dashboard') $this->storeAndGetTask();
     }
 

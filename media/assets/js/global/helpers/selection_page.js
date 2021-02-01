@@ -16,7 +16,6 @@ const acym_helperSelectionPage = {
             if (undefined !== callback) callback();
 
             if (undefined !== scrollElementSelector) {
-                console.log(document.querySelector(scrollElementSelector));
                 document.querySelector(scrollElementSelector).scrollIntoView();
             }
 
@@ -39,12 +38,6 @@ const acym_helperSelectionPage = {
                 link = link.replace('{dataid}', listId);
             }
             window.location.href = link;
-        });
-    },
-    setSelectSelect2Theme: function () {
-        jQuery('.acym__selection__select-card__select').select2({
-            theme: 'sortBy',
-            minimumResultsForSearch: Infinity
         });
     },
     setDisplaySettings: function (element) {

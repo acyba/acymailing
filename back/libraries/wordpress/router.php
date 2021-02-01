@@ -28,12 +28,12 @@ function acym_addStyle($raw, $style, $type = 'text/css', $media = null, $attribs
     }
 }
 
-function acym_prepareFrontViewDisplay($ctrl)
+function acym_prepareFrontViewDisplay($ctrl, $task)
 {
     if (acym_isAdmin()) return;
 
     $config = acym_config();
-    if ('archive' !== $ctrl && $config->get('unsubpage_header', 0) == 1) get_header();
+    if ($ctrl === 'frontusers' && $task === 'unsubscribepage' && $config->get('unsubpage_header', 0) == 1) get_header();
 }
 
 function acym_loadCmsScripts()

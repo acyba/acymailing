@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Controllers;
 
+use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\UrlClass;
@@ -1051,7 +1052,7 @@ class ConfigurationController extends acymController
             'cms' => ACYM_CMS,
             'frequency' => $frequency,
             'level' => $this->config->get('level', ''),
-            'url_version' => 'secured'
+            'url_version' => 'secured',
         ];
 
         //We call updateme to activate/deactivate the cron

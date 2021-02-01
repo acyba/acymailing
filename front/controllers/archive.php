@@ -16,7 +16,7 @@ class ArchiveController extends acymController
     {
         parent::__construct();
         $this->setDefaultTask('view');
-        $this->authorizedFrontTasks = ['view', 'listing', 'showArchive'];
+        $this->authorizedFrontTasks = ['view', 'listing', 'showArchive', 'search'];
     }
 
     public function view()
@@ -126,6 +126,8 @@ class ArchiveController extends acymController
     {
         acym_setVar('layout', 'listing');
 
+        $search = acym_getVar('string', 'acym_search', '');
+
         // Get the Joomla menu parameters
         $menu = acym_getMenu();
         if (!is_object($menu)) {
@@ -155,15 +157,16 @@ class ArchiveController extends acymController
         }
 
         // Initialize our own params then call the generic view
-        $nbNewsletters = $menuParams->get('archiveNbNewsletters', '0');
+        $nbNewslettersPerPage = $menuParams->get('archiveNbNewslettersPerPage', 10);
         $listsSent = $menuParams->get('lists', '');
         $popup = $menuParams->get('popup', '1');
 
         $viewParams = [
-            'nbNewsletters' => $nbNewsletters,
+            'nbNewslettersPerPage' => $nbNewslettersPerPage,
             'listsSent' => $listsSent,
             'popup' => $popup,
             'paramsCMS' => $paramsJoomla,
+            'search' => $search,
         ];
 
         $this->showArchive($viewParams);
@@ -173,6 +176,15 @@ class ArchiveController extends acymController
     {
         acym_setVar('layout', 'listing');
 
+        $data = $this->getDataForArchive($viewParams);
+
+        acym_addScript(false, ACYM_JS.'front/frontarchive.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'front'.DS.'frontarchive.min.js'));
+
+        parent::display($data);
+    }
+
+    private function getDataForArchive($viewParams)
+    {
         $params = [];
 
         $userId = false;
@@ -183,32 +195,33 @@ class ArchiveController extends acymController
             $userId = $currentUser->id;
         }
 
-        if (!empty($viewParams['nbNewsletters'])) {
-            $params['limit'] = $viewParams['nbNewsletters'];
+        if (!empty($viewParams['nbNewslettersPerPage'])) {
+            $params['numberPerPage'] = $viewParams['nbNewslettersPerPage'];
         }
 
         if (!empty($viewParams['listsSent'])) {
             $params['lists'] = $viewParams['listsSent'];
         }
 
-        $params['page'] = acym_getVar('int', 'page', 1);
-        $params['numberPerPage'] = acym_getCMSConfig('list_limit', 10);
+        if (!empty($viewParams['search'])) {
+            $params['search'] = $viewParams['search'];
+        }
+
+        $params['page'] = acym_getVar('int', 'acym_front_page', 1);
 
         $campaignClass = new CampaignClass();
         $returnLastNewsletters = $campaignClass->getLastNewsletters($params);
         $pagination = new PaginationHelper();
         $pagination->setStatus($returnLastNewsletters['count'], $params['page'], $params['numberPerPage']);
 
-        $data = [
+        return [
             'newsletters' => $returnLastNewsletters['matchingNewsletters'],
             'paramsJoomla' => $viewParams['paramsCMS'],
             'pagination' => $pagination,
             'userId' => $userId,
             'popup' => '1' === $viewParams['popup'],
+            'search' => $viewParams['search'],
+            'actionUrl' => acym_currentURL(),
         ];
-
-        acym_addScript(false, ACYM_JS.'front/frontarchive.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'front'.DS.'frontarchive.min.js'));
-
-        parent::display($data);
     }
 }

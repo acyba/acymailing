@@ -1,5 +1,22 @@
 #acym_wrapper {
     .acym__front__archive {
+
+        #acym__front__archive__search {
+            input {
+                width: 80%;
+                min-width: 200px;
+                display: inline-block;
+                margin-right: 1rem;
+                margin-bottom: .5rem;
+            }
+
+            button {
+                width: 15%;
+                min-width: 120px;
+                display: inline-block;
+            }
+        }
+
         .acym__front__archive__modal {
             position: fixed;
             z-index: 10000;

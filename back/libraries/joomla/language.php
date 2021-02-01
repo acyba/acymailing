@@ -1,6 +1,7 @@
 <?php
 
 use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Language;
 
 global $acyWPLangCodes;
 $acyWPLangCodes = [
@@ -48,6 +49,20 @@ function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $
     }
 
     return $translation;
+}
+
+function acym_setLanguage($lang)
+{
+    if (ACYM_J40) {
+        $previousLanguage = acym_getLanguageTag();
+        new Language($lang);
+
+        return $previousLanguage;
+    }
+
+    $acylanguage = JFactory::getLanguage();
+
+    return $acylanguage->setLanguage($lang);
 }
 
 function acym_translationSprintf()

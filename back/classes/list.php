@@ -698,6 +698,9 @@ class ListClass extends acymClass
                 $listsUserStats[$oneResult->list_id] = $this->initList($oneResult->list_id);
             }
 
+            // Joomla 4 casts the result into an int
+            $oneResult->score = (string)$oneResult->score;
+
             if (in_array($oneResult->score, ['0', '1'])) {
                 $listsUserStats[$oneResult->list_id]->inactive_users += $oneResult->users;
             }

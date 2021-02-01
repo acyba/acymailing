@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.0" method="upgrade" type="plugin" group="search">
+	<name>AcyMailing - Search emails in Joomla search bar</name>
+	<creationDate>January 2021</creationDate>
+	<version>{__VERSION__}</version>
+	<author>Acyba</author>
+	<authorEmail>dev@acyba.com</authorEmail>
+	<authorUrl>https://www.acymailing.com</authorUrl>
+	<copyright>Copyright (C) 2009-{__YEAR__} ACYBA SAS - All rights reserved.</copyright>
+	<license>GNU/GPLv3 https://www.gnu.org/licenses/gpl-3.0.html</license>
+	<description>This plugin lets your users search in AcyMailing emails in addition to the site articles</description>
+	<files>
+		<filename plugin="acymailing">acymailing.php</filename>
+	</files>
+</extension>

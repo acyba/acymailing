@@ -138,7 +138,7 @@ const acym_editorWysidMultilingual = {
         acym_helperPreview.loadIframe('acym__wysid__preview__iframe__acym__wysid__email__preview', false);
     },
     setClickStartFromTemplate: function () {
-        if (jQuery('#acym__campaign__recipients__form__campaign').length === 0) return;
+        if (!acym_helperModal.isMultilingualEdition) return;
         jQuery('.acym__templates__oneTpl a').off('click').on('click', function (event) {
             event.preventDefault();
         });

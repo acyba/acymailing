@@ -22,6 +22,7 @@ class MailClass extends acymClass
     const TYPE_UNSUBSCRIBE = 'unsubscribe';
     const TYPE_AUTOMATION = 'automation';
     const TYPE_FOLLOWUP = 'followup';
+    const TYPE_TEMPLATE = 'template';
 
     // Used by some sending methods to know the priority of a sent email (transactional => reset password / account confirmation...)
     const TYPES_TRANSACTIONAL = [
@@ -94,13 +95,13 @@ class MailClass extends acymClass
             $filters[] = 'mail.type != '.acym_escapeDB($this::TYPE_NOTIFICATION);
             $filters[] = 'mail.type != '.acym_escapeDB($this::TYPE_OVERRIDE);
         } else {
-            $filters[] = 'mail.type = '.acym_escapeDB($this::TYPE_STANDARD);
+            $filters[] = 'mail.type IN ('.acym_escapeDB($this::TYPE_STANDARD).', '.acym_escapeDB($this::TYPE_TEMPLATE).')';
         }
 
         $filters[] = 'mail.parent_id IS NULL';
 
         if (empty($settings['automation'])) {
-            $filters[] = 'mail.template = 1';
+            $filters[] = 'mail.type IN ('.acym_escapeDB($this::TYPE_TEMPLATE).', '.acym_escapeDB($this::TYPE_WELCOME).', '.acym_escapeDB($this::TYPE_UNSUBSCRIBE).')';
         }
 
         if (!empty($settings['drag_editor'])) {
@@ -108,13 +109,15 @@ class MailClass extends acymClass
         }
 
         if (!empty($settings['creator_id'])) {
+            $mailTypeCondition = 'mail.type IN ('.acym_escapeDB($this::TYPE_TEMPLATE).', '.acym_escapeDB($this::TYPE_WELCOME).', '.acym_escapeDB($this::TYPE_UNSUBSCRIBE).')';
             $userGroups = acym_getGroupsByUser($settings['creator_id']);
             $groupCondition = '(mail.access LIKE "%,'.implode(',%" OR mail.access LIKE "%,', $userGroups).',%")';
-            $filter = 'mail.creator_id = '.intval($settings['creator_id']).' OR (mail.template = 1 AND '.$groupCondition.')';
+            $filter = 'mail.creator_id = '.intval($settings['creator_id']).' OR ('.$mailTypeCondition.' AND '.$groupCondition.')';
+
             if (!acym_isAdmin() && !empty($settings['element_tab'])) {
-                $listGroup = $groupCondition = '(list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%")';
-                $listFilter = 'list.cms_user_id = '.intval($settings['creator_id']).' OR '.$listGroup;
-                $filter = '(mail.creator_id = '.intval($settings['creator_id']).' OR (mail.template = 1 AND '.$groupCondition.')) OR '.$listFilter;
+                $filter = '('.$filter.') 
+                            OR list.cms_user_id = '.intval($settings['creator_id']).' 
+                            OR (list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%")';
             }
 
             $filters['list'] = '('.$filter.')';
@@ -427,6 +430,9 @@ class MailClass extends acymClass
 
         $translations = acym_loadResultArray('SELECT id FROM #__acym_mail WHERE parent_id IN ('.implode(',', $elements).')');
         $elements = array_merge($elements, $translations);
+        if (!empty($translations)) {
+            acym_query('UPDATE #__acym_mail SET `parent_id` = null WHERE `id` IN ('.implode(',', $translations).')');
+        }
 
         acym_query('UPDATE #__acym_list SET welcome_id = null WHERE welcome_id IN ('.implode(',', $elements).')');
         acym_query('UPDATE #__acym_list SET unsubscribe_id = null WHERE unsubscribe_id IN ('.implode(',', $elements).')');
@@ -822,8 +828,7 @@ class MailClass extends acymClass
         $this->config->save($newConfig);
 
         $newTemplate->drag_editor = 0;
-        $newTemplate->type = $this::TYPE_STANDARD;
-        $newTemplate->template = 1;
+        $newTemplate->type = $this::TYPE_TEMPLATE;
         $newTemplate->library = 0;
         $newTemplate->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
 
@@ -970,11 +975,6 @@ class MailClass extends acymClass
 
                 $value = utf8_decode($value);
             }
-
-            if (!empty($mail->name) && $mail->name === 'acy_confirm') {
-                $mail->name = acym_translation('ACYM_CONFIRMATION_EMAIL');
-            }
-            //TODO: Also translate the other core mails names
         }
 
         return $mail;
@@ -1060,7 +1060,29 @@ class MailClass extends acymClass
      */
     public function getMultilingualMails($parentId)
     {
-        return $this->decode(acym_loadObjectList('SELECT * FROM #__acym_mail WHERE parent_id = '.intval($parentId).' OR id = '.intval($parentId), 'language'));
+        return $this->decode(
+            acym_loadObjectList(
+                'SELECT * FROM #__acym_mail WHERE parent_id = '.intval($parentId).' OR id = '.intval($parentId),
+                'language'
+            )
+        );
+    }
+
+    /**
+     * Get all multilingual mails linked to a parent mail, also get the parent mail by name
+     *
+     * @param $parentName
+     *
+     * @return array
+     */
+    public function getMultilingualMailsByName($parentName)
+    {
+        $parentName = utf8_encode($parentName);
+        $query = 'SELECT mail2.* FROM #__acym_mail AS mail LEFT JOIN #__acym_mail AS mail2 ON mail.id = mail2.parent_id OR mail2.id = mail.id WHERE mail.name = '.acym_escapeDB(
+                $parentName
+            );
+
+        return $this->decode(acym_loadObjectList($query, 'language'));
     }
 
     public function getMailAttachments($mailId)

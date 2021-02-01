@@ -1,10 +1,10 @@
 <?php
 
-function acym_getVar($type, $name, $default = null, $hash = 'REQUEST', $mask = 0)
+function acym_getVar($type, $name, $default = null, $source = 'REQUEST', $mask = 0)
 {
-    $hash = strtoupper($hash);
+    $source = strtoupper($source);
 
-    switch ($hash) {
+    switch ($source) {
         case 'GET':
             $input = &$_GET;
             break;
@@ -24,7 +24,7 @@ function acym_getVar($type, $name, $default = null, $hash = 'REQUEST', $mask = 0
             $input = &$_SERVER;
             break;
         default:
-            $hash = 'REQUEST';
+            $source = 'REQUEST';
             $input = &$_REQUEST;
             break;
     }
@@ -40,7 +40,7 @@ function acym_getVar($type, $name, $default = null, $hash = 'REQUEST', $mask = 0
     }
 
     // WP alters every variable in $_REQUEST... Seriously...
-    if (in_array($hash, ['POST', 'REQUEST', 'GET', 'COOKIE'])) {
+    if (in_array($source, ['POST', 'REQUEST', 'GET', 'COOKIE'])) {
         $result = acym_stripslashes($result);
     }
 

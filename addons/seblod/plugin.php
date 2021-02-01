@@ -104,6 +104,7 @@ class plgAcymSeblod extends acymPlugin
 
     public function initElementOptionsCustomView()
     {
+        $this->elementOptions = [];
         $query = 'SELECT a.*,b.alias AS catalias,c.name AS username FROM #__content AS a ';
         $query .= 'JOIN #__categories AS b ON a.catid = b.id ';
         $query .= 'LEFT JOIN #__users AS c ON a.created_by = c.id ';

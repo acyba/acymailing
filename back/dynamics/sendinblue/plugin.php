@@ -19,6 +19,7 @@ class plgAcymSendinblue extends acymPlugin
         $data['sendingMethods'][self::SENDING_METHOD_ID] = [
             'name' => $this->pluginDescription->name,
             'image' => ACYM_IMAGES.'mailers/sendinblue.png',
+            'premium' => true,
         ];
     }
 
@@ -28,12 +29,16 @@ class plgAcymSendinblue extends acymPlugin
         ?>
 		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-				<label class="cell" for="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-key">
+				<label class="cell shrink margin-right-1" for="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-key">
                     <?php echo acym_translationSprintf(
                         'ACYM_SENDING_METHOD_API_KEY',
                         self::SENDING_METHOD_NAME
                     ); ?>
 				</label>
+                <?php echo $this->getLinks(
+                    'https://www.sendinblue.com/?tap_a=30591-fb13f0&tap_s=1371199-cf94c5',
+                    'https://www.sendinblue.com/pricing/?tap_a=30591-fb13f0&tap_s=1371199-cf94c5'
+                ); ?>
 				<input type="text"
 					   id="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-key"
 					   value="<?php echo empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value; ?>"

@@ -23,7 +23,7 @@ class acym_archive_widget extends WP_Widget
 
         $params = [
             'title' => 'See all newsletters',
-            'nbNewsletters' => '5',
+            'nbNewslettersPerPage' => '10',
             'lists' => '',
             'popup' => '1',
         ];
@@ -52,10 +52,10 @@ class acym_archive_widget extends WP_Widget
         echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('title').'">'.acym_translation('ACYM_TITLE').'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" value="'.$params['title'].'" /></p>';
 
-        echo '<p><label class="acyWPconfig"> '.acym_translation('ACYM_WIDGET_ARCHIVE_CHOICE').'</label>
+        echo '<p><label class="acyWPconfig"> '.acym_translation('ACYM_WIDGET_ARCHIVE_NUMBER_PER_PAGE').'</label>
            '.acym_translationSprintf(
-                'ACYM_LAST_X_NEWSLETTERS',
-                '<input class="tiny-text" type="number" min="1"  max="20" name="'.$this->get_field_name('nbNewsletters').'" value="'.$params['nbNewsletters'].'">'
+                'ACYM_X_NEWSLETTERS_PER_PAGE',
+                '<input class="tiny-text" type="number" min="1"  max="20" name="'.$this->get_field_name('nbNewslettersPerPage').'" value="'.$params['nbNewslettersPerPage'].'">'
             ).'</p>';
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_LISTS_ARCHIVE').'">'.acym_translation('ACYM_LISTS').'</label>';
@@ -82,6 +82,7 @@ class acym_archive_widget extends WP_Widget
 
         echo $args['before_widget'];
 
+        if(!isset($instance['title'])) $instance['title'] = '';
         $title = apply_filters('widget_title', $instance['title']);
         if (!empty($title)) {
             echo $args['before_title'].$title.$args['after_title'];
@@ -89,12 +90,14 @@ class acym_archive_widget extends WP_Widget
 
         acym_displayMessages();
         acym_setVar('page', 'front');
+        $search = acym_getVar('string', 'acym_search', '');
 
         $viewParams = [
-            'nbNewsletters' => isset($instance['nbNewsletters']) ? $instance['nbNewsletters'] : '',
             'listsSent' => isset($instance['lists']) ? $instance['lists'] : [],
             'popup' => isset($instance['popup']) ? $instance['popup'] : '1',
+            'nbNewslettersPerPage' => isset($instance['nbNewslettersPerPage']) ? $instance['nbNewslettersPerPage'] : '10',
             'paramsCMS' => [],
+            'search' => $search,
         ];
 
         $archiveController = new ArchiveController();

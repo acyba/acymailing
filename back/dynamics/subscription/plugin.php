@@ -22,7 +22,7 @@ class plgAcymSubscription extends acymPlugin
     var $listsinfo = [];
     //Campaigns list
     var $campaigns = [];
-    //Used to know if we should add a List-Unsusbcribe header
+    //Used to know if we should add a List-Unsubscribe header
     var $unsubscribeLink = false;
 
     public function __construct()

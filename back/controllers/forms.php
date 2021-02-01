@@ -88,10 +88,10 @@ class FormsController extends acymController
 
             $moduleId = acym_loadResult('SELECT extension_id FROM #__extensions WHERE element = "mod_acym"');
 
-            if (is_string($moduleId)) {
-                $widgetUrl = 'index.php?option=com_modules&task=module.add&eid='.$moduleId;
-            } else {
+            if (empty($moduleId)) {
                 $widgetUrl = 'index.php?option=com_modules&view=select';
+            } else {
+                $widgetUrl = 'index.php?option=com_modules&task=module.add&eid='.intval($moduleId);
             }
         } else {
             $widgetUrl = 'widgets.php';

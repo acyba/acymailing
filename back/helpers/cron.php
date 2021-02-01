@@ -6,6 +6,8 @@ use AcyMailing\Classes\AutomationClass;
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\QueueClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Libraries\acymObject;
 
 class CronHelper extends acymObject
@@ -35,17 +37,23 @@ class CronHelper extends acymObject
     // If we call the cron just to send a batch of emails
     var $startQueue = 0;
 
+    // If we call the cron just to send a batch of emails
+    var $cronLastOnCron = 0;
+
     public function __construct()
     {
         parent::__construct();
         $this->startQueue = acym_getVar('int', 'startqueue', 0);
-        if (!empty($this->startQueue)) $this->skip = ['schedule', 'cleanqueue', 'bounce', 'automation', 'campaign', 'specific', 'followup'];
+        if (!empty($this->startQueue)) $this->skip = ['schedule', 'cleanqueue', 'bounce', 'automation', 'campaign', 'specific', 'followup', 'delete_history'];
     }
 
     public function cron()
     {
         // Step 1: Check the last cron launched...
         $time = time();
+
+        //If we do not have run the cron we set it to yesterday so it will be trigger
+        $this->cronLastOnCron = $this->config->get('cron_last', $time - 86400);
 
         $firstMessage = acym_translationSprintf('ACYM_CRON_TRIGGERED', acym_date('now', 'd F Y H:i'));
         $this->messages[] = $firstMessage;
@@ -248,6 +256,23 @@ class CronHelper extends acymObject
             }
         }
 
+        // Step 11: Delete data
+        if (!in_array('delete_history', $this->skip) && $this->isDailyCron()) {
+            $userStatsClass = new UserStatClass();
+            $userClass = new UserClass();
+
+            $userDetailedStatsDeleted = $userStatsClass->deleteDetailedStatsPeriod();
+            $userHistoryDeleted = $userClass->deleteHistoryPeriod();
+            if (!empty($userDetailedStatsDeleted['message'])) {
+                $this->messages[] = $userDetailedStatsDeleted['message'];
+                $this->processed = true;
+            }
+            if (!empty($userHistoryDeleted['message'])) {
+                $this->messages[] = $userHistoryDeleted['message'];
+                $this->processed = true;
+            }
+        }
+
         return true;
     }
 
@@ -345,5 +370,24 @@ class CronHelper extends acymObject
         }
 
         acym_asyncCurlCall($urls);
+    }
+
+    private function isDailyCron()
+    {
+
+        // Only once a day
+        $dailyHour = $this->config->get('daily_hour', '12');
+        $dailyMinute = $this->config->get('daily_minute', '00');
+        // The day it is currently based on the timezone specified in the CMS configuration
+        $dayBasedOnCMSTimezone = acym_date('now', 'Y-m-d');
+        // The UTC timestamp of the current day based on the CMS timezone, at the specified hour
+        $dayBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$dailyHour.':'.$dailyMinute);
+
+        $time = time();
+
+        //If we do not have run the cron we set it to yesterday so it will be trigger
+        $lastCronDayBasedOnCMSTimezone = acym_date($this->cronLastOnCron, 'Y-m-d');
+
+        return $time >= $dayBasedOnCMSTimezoneAtSpecifiedHour && $lastCronDayBasedOnCMSTimezone != $dayBasedOnCMSTimezone;
     }
 }

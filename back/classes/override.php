@@ -87,7 +87,7 @@ class OverrideClass extends acymClass
 
     public function getActiveOverrides($key = '')
     {
-        $query = 'SELECT * FROM #__acym_mail_override WHERE `active` = 1';
+        $query = 'SELECT override.*, mail.name FROM #__acym_mail_override AS override JOIN #__acym_mail AS mail ON mail.id = override.mail_id WHERE `active` = 1';
 
         return acym_loadObjectList($query, $key);
     }
@@ -103,7 +103,8 @@ class OverrideClass extends acymClass
      */
     public function getMailByBaseContent($subject, $body)
     {
-        $activeOverrides = $this->getActiveOverrides();
+        $activeOverrides = $this->getActiveOverrides('name');
+
         foreach ($activeOverrides as $oneOverride) {
             $parameters = [];
             $matches = true;
@@ -126,8 +127,8 @@ class OverrideClass extends acymClass
                 $oneOverride->$identifier = preg_replace(
                     [
                         '/%([0-9].?\$)?s/',
-                        '/\\\{[A-Z_]+\\\}/',
-                        '/###[A-Z_-]+###/',
+                        '/\\\{[A-Z_]+\\\}/i',
+                        '/###[A-Z_-]+###/i',
                     ],
                     '(.*)',
                     preg_quote($oneOverride->$identifier, '/')
@@ -135,7 +136,7 @@ class OverrideClass extends acymClass
 
                 $oneOverride->$identifier = str_replace('&amp;', '&', $oneOverride->$identifier);
 
-                $matches = preg_match('#'.trim($oneOverride->$identifier).'#', $$part, $params) === 1 && $matches;
+                $matches = preg_match('/'.trim($oneOverride->$identifier).'/', $$part, $params) === 1 && $matches;
 
                 if (empty($parameters)) {
                     $parameters = $params;
@@ -155,6 +156,8 @@ class OverrideClass extends acymClass
 
             // Include the found parameters
             $mail->parameters = $parameters;
+
+            if (empty($oneOverride->base_body)) $mail->body = $body;
 
             return $mail;
         }

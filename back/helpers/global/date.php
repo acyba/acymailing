@@ -69,7 +69,7 @@ function acym_dateField($name, $value = '', $class = '', $attributes = '', $rela
             </div>';
 
     // Specific date option
-    $result .= '<div class="date_rs_selection_choice date_rs_selection_specific grid-x" style="display: none;">
+    $result .= '<div class="cell date_rs_selection_choice date_rs_selection_specific grid-x" style="display: none;">
                     <div class="cell auto"></div>
                     <div class="cell shrink">
                         <input type="text" name="specific_'.acym_escape($name).'" class="acy_date_picker" readonly>

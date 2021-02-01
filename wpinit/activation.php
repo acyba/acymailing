@@ -104,6 +104,15 @@ class acyActivation extends acyHook
         if (!$installClass->update) {
             $installClass->deleteNewSplashScreenInstall();
             $updateHelper->installTemplates(true);
+        }else{
+            if (!empty($installClass->fromVersion)) {
+                $fromVersion = substr($installClass->fromVersion, 0, strrpos($installClass->fromVersion, '.'));
+                $toVersion = substr($installClass->version, 0, strrpos($installClass->version, '.'));
+
+                if (version_compare($fromVersion, $toVersion, '=')) {
+                    $installClass->deleteNewSplashScreenInstall();
+                }
+            }
         }
         $updateHelper->installFields();
         $updateHelper->installAdminNotif();

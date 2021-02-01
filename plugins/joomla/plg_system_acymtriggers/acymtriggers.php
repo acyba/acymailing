@@ -6,6 +6,8 @@ use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\RegacyHelper;
 
+defined('_JEXEC') or die('Restricted access');
+
 class plgSystemAcymtriggers extends JPlugin
 {
     var $oldUser = null;
@@ -105,20 +107,21 @@ class plgSystemAcymtriggers extends JPlugin
 
     public function onBeforeCompileHead()
     {
+        // Don't show forms in popup iframes
+        if(!empty($_REQUEST['tmpl']) && in_array($_REQUEST['tmpl'], ['component', 'raw'])) return;
+        if(!empty($_REQUEST['acym_preview'])) return;
+
         $app = JFactory::getApplication();
         if ($app->getName() != 'site') return;
 
         if (!$this->initAcy()) return;
 
-        $isPreview = acym_getVar('bool', 'acym_preview', false);
-        if ($isPreview) return;
+        $menu = acym_getMenu();
+        if (empty($menu)) return;
 
         $formClass = new FormClass();
         $forms = $formClass->getAllFormsToDisplay();
         if (empty($forms)) return;
-
-        $menu = acym_getMenu();
-        if (empty($menu)) return;
 
         foreach ($forms as $form) {
             if (!empty($form->pages) && (in_array($menu->id, $form->pages) || in_array('all', $form->pages))) {
@@ -142,6 +145,7 @@ class plgSystemAcymtriggers extends JPlugin
 
     public function onAfterRender()
     {
+        if (empty($this->formToDisplay)) return;
         if (!$this->initAcy()) return;
 
         $this->displayForms();

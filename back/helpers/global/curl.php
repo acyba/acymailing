@@ -58,9 +58,15 @@ function acym_asyncCurlCall($urls)
         }
 
         $running = null;
+        $time = 1;
         do {
             curl_multi_exec($mh, $running);
             usleep(100);
+            // if we are over 5s => we go out
+            if ($time > 50000) {
+                break;
+            }
+            $time++;
         } while ($running);
 
         foreach ($handles as $handle) {

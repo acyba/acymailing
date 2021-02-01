@@ -99,6 +99,15 @@ function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $
     return $translation;
 }
 
+function acym_setLanguage($lang)
+{
+    global $acymLanguages;
+    $previousLanguage = $acymLanguages['currentLanguage'];
+    $acymLanguages['currentLanguage'] = $lang;
+
+    return $previousLanguage;
+}
+
 
 /**
  * Display the according translation
@@ -172,7 +181,7 @@ function acym_getLanguageTag($simple = false)
     $currentLocale = convertWPLocaleToAcyLocale($currentLocale);
 
     global $acymLanguages;
-    if (!isset($acymLanguages['currentLanguage']) || $acymLanguages['currentLanguage'] !== $currentLocale) {
+    if (!isset($acymLanguages['currentLanguage'])) {
         $acymLanguages['currentLanguage'] = $currentLocale;
     }
 

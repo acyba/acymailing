@@ -11,11 +11,19 @@ class FormClass extends acymClass
     var $table = 'form';
     var $pkey = 'id';
     var $positionHelper;
+    public $emptyModel;
 
     const SUB_FORM_TYPE_SHORTCODE = 'shortcode';
     const SUB_FORM_TYPE_POPUP = 'popup';
     const SUB_FORM_TYPE_HEADER = 'header';
     const SUB_FORM_TYPE_FOOTER = 'footer';
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->positionHelper = new FormPositionHelper();
+        $this->emptyModel = $this->initEmptyForm(self::SUB_FORM_TYPE_FOOTER);
+    }
 
     public function getConstPopup()
     {
@@ -35,12 +43,6 @@ class FormClass extends acymClass
     public function getConstHeader()
     {
         return self::SUB_FORM_TYPE_HEADER;
-    }
-
-    public function __construct()
-    {
-        $this->positionHelper = new FormPositionHelper();
-        parent::__construct();
     }
 
     public function getMatchingElements($settings = [])
@@ -212,6 +214,11 @@ class FormClass extends acymClass
         $htmlMenu = [];
         foreach ($form as $key => $value) {
             $functionName = 'prepareMenuHtmlSettings_'.$key;
+            if (!empty($this->emptyModel->$key) && is_array($this->emptyModel->$key)) {
+                foreach ($this->emptyModel->$key as $oneOption => $defaultValue) {
+                    if (!isset($value[$oneOption])) $value[$oneOption] = $defaultValue;
+                }
+            }
             if (method_exists($this, $functionName)) $htmlMenu[$key] = $this->$functionName($key, $value);
         }
 
@@ -540,15 +547,15 @@ class FormClass extends acymClass
         return $return;
     }
 
-    private function prepareMenuHtmlSettings_redirection_options($optionName, $options)
+    private function prepareMenuHtmlSettings_redirection_options($categoryName, $options)
     {
         $return = [
             'title' => acym_translation('ACYM_REDIRECTIONS'),
         ];
 
         foreach ($options as $key => $value) {
-            $id = 'form_'.$optionName.'_'.$key;
-            $vModel = 'form.'.$optionName.'.'.$key;
+            $id = 'form_'.$categoryName.'_'.$key;
+            $vModel = 'form.'.$categoryName.'.'.$key;
 
             $return['render'][$key] = '<label class="cell" for="'.$id.'">';
             if ($key === 'after_subscription') {
@@ -599,7 +606,7 @@ class FormClass extends acymClass
         $form->fieldClass = $fieldClass;
         $form->lists = $listClass->getAllForSelect(false);
 
-        $form->form_tag_name = acym_getModuleFormName();
+        $form->form_tag_name = 'formAcym'.$form->id;
         $form->form_tag_action = htmlspecialchars_decode(ACYM_CMS == 'wordpress' ? acym_frontendLink('frontusers') : acym_completeLink('frontusers', true, true));
         $form->formClass = $this;
 

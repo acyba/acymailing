@@ -592,8 +592,6 @@ class FrontusersController extends UsersController
 
         $data['captchaHelper'] = new CaptchaHelper();
 
-        $this->prepareLanguageEdit($data);
-
         acym_setVar('layout', 'profile');
         parent::display($data);
     }

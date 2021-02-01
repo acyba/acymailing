@@ -8,7 +8,7 @@
     #acym__wysid__warning__thumbnail {
         background-color: $medium-gray;
         position: absolute;
-        z-index: 1012;
+        z-index: 1022;
         @include acym_set_position();
 
         .acym_loader_logo svg {

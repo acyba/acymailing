@@ -1,6 +1,9 @@
+<?php
+if (empty($data['mailInformation'])) $data['mailInformation'] = $data['mail'];
+?>
 <div class="cell" id="acym__wysid__edit__languages">
 	<div class="acym__title acym__title__secondary">
-		<?php echo acym_translation('ACYM_CONFIGURATION_LANGUAGES').acym_info('ACYM_MULTILINGUAL_DESC'); ?>
+        <?php echo acym_translation('ACYM_CONFIGURATION_LANGUAGES').acym_info('ACYM_MULTILINGUAL_DESC'); ?>
 	</div>
 
     <?php $code = strtolower(substr($data['main_language']->code, 3)); ?>

@@ -53,7 +53,7 @@ const acym_helperListing = {
             let inputSortOrder = jQuery('#acym__listing__ordering__sort-order--input');
             let form = jQuery(this).closest('#acym_form');
 
-            if (inputSortOrder.val() == 'asc') {
+            if (inputSortOrder.val() === 'asc') {
                 inputSortOrder.val('desc');
             } else {
                 inputSortOrder.val('asc');
@@ -62,6 +62,10 @@ const acym_helperListing = {
                 form.find('[name="task"]').val('listing');
             }
             form.submit();
+        });
+
+        jQuery('.acym__select__sort').on('change', function(){
+            jQuery(this).closest('#acym_form').submit();
         });
     },
     setSelectActions: function () {

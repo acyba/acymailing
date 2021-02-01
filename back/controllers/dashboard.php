@@ -425,18 +425,25 @@ class DashboardController extends acymController
         parent::display($data);
     }
 
-    public function saveStepSupport()
+    public function saveStepSupportImport()
     {
         $this->passWalkThrough();
     }
 
-    public function passWalkThrough()
+    public function saveStepSupportSubForm()
     {
+        $this->passWalkThrough('forms&task=newForm');
+    }
+
+    public function passWalkThrough($page = '')
+    {
+        if (empty($page)) $page = 'users&task=import';
+        
         $newConfig = new \stdClass();
         $newConfig->walk_through = 0;
         $this->config->save($newConfig);
 
-        acym_redirect(acym_completeLink('users&task=import', false, true));
+        acym_redirect(acym_completeLink($page, false, true));
     }
 
     public function preMigration()

@@ -213,7 +213,7 @@
         position: relative;
         border: 17px solid $black;
         border-radius: 25px;
-        z-index: 1012;
+        z-index: 1022;
         background: transparent;
         max-width: 425px;
         min-height: 660px;
@@ -229,7 +229,7 @@
             left: 25%;
             top: -10px;
             border-bottom-right-radius: 13px;
-            z-index: 1017;
+            z-index: 1027;
         }
 
         &:after {
@@ -249,7 +249,7 @@
             height: 101.8%;
             width: 102.7%;
             border-radius: 18px;
-            z-index: 1013;
+            z-index: 1023;
             position: absolute;
             margin-top: -7px;
             margin-left: -5px;

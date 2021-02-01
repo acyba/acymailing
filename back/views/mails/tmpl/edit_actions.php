@@ -19,12 +19,14 @@ echo acym_modalInclude(
     'class="cell large-shrink medium-6"'
 );
 
+$attributeSave = empty($data['multilingual']) || $data['editor']->editor == 'html' ? '' : 'acym-data-before="acym_editorWysidMultilingual.storeCurrentValues(true);"';
+
 ?>
-<button id="apply" type="button" data-task="apply" class="cell large-shrink button-secondary medium-6 button acym__template__save acy_button_submit">
+<button id="apply" <?php echo $attributeSave; ?> type="button" data-task="apply" class="cell large-shrink button-secondary medium-6 button acym__template__save acy_button_submit">
     <?php echo acym_translation('ACYM_SAVE'); ?>
 </button>
 <button style="display: none;" data-task="apply" class="acy_button_submit" id="data_apply"></button>
-<button id="save" type="button" data-task="save" class="cell large-shrink medium-6 button acy_button_submit">
+<button id="save" <?php echo $attributeSave; ?> type="button" data-task="save" class="cell large-shrink medium-6 button acy_button_submit">
     <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
 </button>
 <button style="display: none;" data-task="save" class="acy_button_submit" id="data_save"></button>

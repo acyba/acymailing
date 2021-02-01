@@ -30,7 +30,7 @@ function acym_getFormToken()
 
 function acym_noTemplate($component = true)
 {
-    return 'tmpl='.($component || ACYM_J40 ? 'component' : 'raw');
+    return 'tmpl='.($component ? 'component' : 'raw');
 }
 
 function acym_isNoTemplate()
@@ -55,14 +55,13 @@ function acym_setNoTemplate($status = true)
  * @param string $currentStep
  * @param string $currentCtrl
  */
-function acym_formOptions($token = true, $task = '', $currentStep = null, $currentCtrl = '')
+function acym_formOptions($token = true, $task = '', $currentStep = null, $currentCtrl = '', $addPage = true)
 {
     if (!empty($currentStep)) {
         echo '<input type="hidden" name="step" value="'.$currentStep.'"/>';
-        echo '<input type="hidden" name="nextstep" value=""/>';
     }
-    echo '<input type="hidden" name="option" value="'.ACYM_COMPONENT.'"/>';
     echo '<input type="hidden" name="nextstep" value=""/>';
+    echo '<input type="hidden" name="option" value="'.ACYM_COMPONENT.'"/>';
     echo '<input type="hidden" name="task" value="'.$task.'"/>';
     echo '<input type="hidden" name="ctrl" value="'.(empty($currentCtrl) ? acym_getVar('cmd', 'ctrl', '') : $currentCtrl).'"/>';
     if ($token) {

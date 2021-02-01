@@ -99,11 +99,11 @@ const acym_editorWysidContextModal = {
                 jQuery(this).off('change').on('change', function (event) {
                     $table.css('padding-' + jQuery(this).attr('data-block-padding'), jQuery(this).val() + 'px');
                     if (jQuery(this).attr('data-block-padding') === 'top' || jQuery(this).attr('data-block-padding') === 'bottom') {
-                        $selector.css(
-                            'height',
-                            $table.height() + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, '')) + parseInt($table.css('padding-bottom')
-                                                                                                                            .replace(/[^-\d\.]/g, '')) + 'px'
-                        );
+                        $selector.css('height', $table.height()
+                                                + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, ''))
+                                                + parseInt($table.css('padding-bottom')
+                                                                 .replace(/[^-\d\.]/g, ''))
+                                                + 'px');
                     }
                 });
             });
@@ -331,16 +331,23 @@ const acym_editorWysidContextModal = {
             jQuery('#acym__wysid__context__button__text').val($button.text()).off('change paste keyup').on('change paste keyup', function () {
                 $button.text(jQuery(this).val());
             });
-            jQuery('#acym__wysid__context__button__link, .acym__wysid__context__button__link').val($button.attr('href')).off('change paste keyup').on('change paste keyup', function () {
-                $button.attr('href', jQuery(this).val());
-            });
+            jQuery('#acym__wysid__context__button__link, .acym__wysid__context__button__link')
+                .val($button.attr('href'))
+                .off('change paste keyup')
+                .on('change paste keyup', function () {
+                    jQuery(this).val(jQuery(this).val().trim());
+                    $button.attr('href', jQuery(this).val());
+                });
             jQuery('#acym__wysid__context__button__bold')
                 .css('background-color', $button.css('font-weight') == 700 ? '' : 'inherit')
                 .off('click')
                 .on('click', function () {
                     $button.css('font-weight') == 700 ? jQuery('#acym__wysid__context__button__bold').css('background-color', 'inherit') && $button.css('font-weight',
                         'inherit'
-                    ) : jQuery('#acym__wysid__context__button__bold').css('background-color', '') && $button.css('font-weight', 700);
+                    ) : jQuery('#acym__wysid__context__button__bold').css('background-color', '') && $button.css(
+                        'font-weight',
+                        700
+                    );
 
                 });
 
@@ -350,7 +357,10 @@ const acym_editorWysidContextModal = {
                 .on('click', function () {
                     $button.css('font-style') == 'italic' ? jQuery('#acym__wysid__context__button__italic').css('background-color', 'inherit') && $button.css('font-style',
                         'inherit'
-                    ) : jQuery('#acym__wysid__context__button__italic').css('background-color', '') && $button.css('font-style', 'italic');
+                    ) : jQuery('#acym__wysid__context__button__italic').css('background-color', '') && $button.css(
+                        'font-style',
+                        'italic'
+                    );
                 });
 
             jQuery('.acym__wysid__context__button__align').each(function () {
@@ -633,6 +643,7 @@ const acym_editorWysidContextModal = {
 
             if (ACYM_IS_ADMIN) {
                 $selectSocialSelect.select2({
+                    theme: 'foundation',
                     minimumResultsForSearch: -1,
                     placeholder: '+',
                     selectOnClose: false,
@@ -694,7 +705,9 @@ const acym_editorWysidContextModal = {
                    + acym_helperEditorWysid.socialMedia[selectedNetwork].src
                    + '" width="'
                    + width
-                   + '" alt="">';
+                   + '" alt="'
+                   + selectedNetwork
+                   + '">';
         content += '</a>';
         $followContainer.append(content);
         acym_editorWysidContextModal.setFollowContextModalWYSID();

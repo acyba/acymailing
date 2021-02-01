@@ -8,7 +8,7 @@ jQuery(document).ready(function ($) {
         template: `<div class="cell">
                     <select multiple :name="name">
                         <option v-if="allOptionExist" :value="'all'">{{ options.all }}</option>
-                        <option v-if="allOptionExist" disabled>------------------------------</option>
+                        <option v-if="allOptionExist" disabled>-----------------------------</option>
                         <option v-for="(option, key) in options" :value="key" v-if="key !== 'all'">{{ option }}</option>
                     </select>
                    </div>`,
