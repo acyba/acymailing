@@ -36,7 +36,7 @@
 <div class="cell shrink"></div>
 
 <?php
-if ($data['mail']->type === $data['mailClass']::TYPE_STANDARD) {
+if ($data['mail']->type === $data['mailClass']::TYPE_TEMPLATE) {
     if (acym_level(2) && ACYM_CMS === 'joomla') {
         ?>
 		<div class="cell xlarge-3 medium-6">

@@ -89,7 +89,7 @@ class plgAcymHikashop extends acymPlugin
 
     public function initElementOptionsCustomView()
     {
-    	$this->elementOptions = [];
+        $this->elementOptions = [];
         $query = 'SELECT b.*, a.*
                     FROM #__hikashop_product AS a
                     LEFT JOIN #__hikashop_file AS b ON a.product_id = b.file_ref_id AND file_type = "product"
@@ -726,9 +726,12 @@ class plgAcymHikashop extends acymPlugin
         $value = str_replace(',', '.', $value);
 
         if ($start) {
+            $start = acym_replaceDate($start);
             $start = hikashop_getTime($start);
         }
+        
         if ($end) {
+            $end = acym_replaceDate($end);
             $end = hikashop_getTime($end);
         }
 
