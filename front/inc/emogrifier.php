@@ -1112,6 +1112,9 @@ class acymEmogrifier
      */
     private function existsMatchForCssSelector(\DOMXPath $xPath, $cssSelector)
     {
+        // Added by Acyba to skip non-well formatted css in custom stylesheet
+        if (empty($cssSelector)) return false;
+
         try {
             $nodesMatchingSelector = $xPath->query($this->translateCssToXpath($cssSelector));
         } catch (\InvalidArgumentException $e) {
