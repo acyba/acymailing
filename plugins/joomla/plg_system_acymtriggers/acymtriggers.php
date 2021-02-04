@@ -108,8 +108,8 @@ class plgSystemAcymtriggers extends JPlugin
     public function onBeforeCompileHead()
     {
         // Don't show forms in popup iframes
-        if(!empty($_REQUEST['tmpl']) && in_array($_REQUEST['tmpl'], ['component', 'raw'])) return;
-        if(!empty($_REQUEST['acym_preview'])) return;
+        if (!empty($_REQUEST['tmpl']) && in_array($_REQUEST['tmpl'], ['component', 'raw'])) return;
+        if (!empty($_REQUEST['acym_preview'])) return;
 
         $app = JFactory::getApplication();
         if ($app->getName() != 'site') return;
@@ -145,32 +145,51 @@ class plgSystemAcymtriggers extends JPlugin
 
     public function onAfterRender()
     {
-        if (empty($this->formToDisplay)) return;
-        if (!$this->initAcy()) return;
-
         $this->displayForms();
+        $this->applyRegacy();
+    }
 
-        $config = acym_config();
-        if (!$config->get('regacy', 0)) return;
+    private function applyRegacy()
+    {
+        $db = JFactory::getDBO();
+        $db->setQuery('SELECT `value` FROM #__acym_configuration WHERE `name` LIKE "%regacy" OR `name` LIKE "%\_sub"');
+        $regacyOptions = $db->loadColumn();
+
+        $regacyNeeded = false;
+        foreach ($regacyOptions as $oneOption) {
+            if (!empty($oneOption)) {
+                $regacyNeeded = true;
+                break;
+            }
+        }
+        if (!$regacyNeeded) return;
 
         // Get the current extension
-        $option = acym_getVar('cmd', 'option');
-        if (empty($option)) return;
+        if (empty($_REQUEST['option'])) return;
+        $option = $_REQUEST['option'];
 
-        $components = [
-            'com_users' => [
-                'view' => ['registration', 'profile', 'user'],
-                'edittasks' => ['profile', 'user'],
-                'email' => ['jform[email2]', 'jform[email1]'],
-                'password' => ['jform[password2]', 'jform[password1]'],
-                'checkLayout' => ['profile' => 'edit'],
-                'lengthafter' => 200,
-                'containerClass' => 'control-group',
-                'labelClass' => 'control-label',
-                'valueClass' => 'controls',
-                'baseOption' => 'regacy',
-            ],
-        ];
+        if (!$this->initAcy()) return;
+
+
+        $config = acym_config();
+        if ($config->get('regacy', 0)) {
+            $components = [
+                'com_users' => [
+                    'view' => ['registration', 'profile', 'user'],
+                    'edittasks' => ['profile', 'user'],
+                    'email' => ['jform[email2]', 'jform[email1]'],
+                    'password' => ['jform[password2]', 'jform[password1]'],
+                    'checkLayout' => ['profile' => 'edit'],
+                    'lengthafter' => 200,
+                    'containerClass' => 'control-group',
+                    'labelClass' => 'control-label',
+                    'valueClass' => 'controls',
+                    'baseOption' => 'regacy',
+                ],
+            ];
+        } else {
+            $components = [];
+        }
 
         acym_trigger('onRegacyAddComponent', [&$components]);
         if (!isset($components[$option])) return;

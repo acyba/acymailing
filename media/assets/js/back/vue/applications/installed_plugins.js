@@ -226,7 +226,7 @@ jQuery(document).ready(function ($) {
                     if (type === 'CORE') {
                         return ACYM_CORE_DYNAMICS_URL + pluginName + '/banner.png';
                     } else if (type === 'PLUGIN') {
-                        return ACYM_PLUGINS_URL + '/acymailing-' + pluginName + '/banner.png';
+                        return ACYM_MEDIA_URL + 'images/plugins/' + pluginName + '.png';
                     } else {
                         return AJAX_URL_UPDATEME + 'integrationv6&task=getImage&plugin=' + pluginName;
                     }

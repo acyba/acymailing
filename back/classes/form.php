@@ -213,6 +213,7 @@ class FormClass extends acymClass
     {
         $htmlMenu = [];
         foreach ($form as $key => $value) {
+            if (!$this->shouldHaveOption($form->type, $key)) continue;
             $functionName = 'prepareMenuHtmlSettings_'.$key;
             if (!empty($this->emptyModel->$key) && is_array($this->emptyModel->$key)) {
                 foreach ($this->emptyModel->$key as $oneOption => $defaultValue) {
@@ -223,6 +224,13 @@ class FormClass extends acymClass
         }
 
         return $htmlMenu;
+    }
+
+    private function shouldHaveOption($formType, $option)
+    {
+        if ($formType == self::SUB_FORM_TYPE_SHORTCODE && $option == 'cookie') return false;
+
+        return true;
     }
 
     public function prepareMenuHtmlStyle($form)
