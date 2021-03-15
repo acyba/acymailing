@@ -41,48 +41,52 @@ const acym_editorWysidModal = {
         });
     },
     setDynamicsModal: function () {
-        let $iframe = jQuery('#acym__wysid__modal__dynamic-text__ui__iframe');
-        $iframe.on('load', function () {
-            jQuery(this).contents().find('#wpadminbar').remove();
-            $iframe.contents().find('#insertButton').off('click').on('click', function () {
-                let $toInsert = $iframe.contents().find('#dtextcode').val();
-                if ($toInsert) {
-                    if (acym_helperEditorWysid.insertDTextInSubject) {
-                        let subject = jQuery('#acym_subject_field');
-                        subject.val(subject.val() + $toInsert);
-                    } else {
-                        let mailId = jQuery('input[name="editor_autoSave"]').val();
-                        let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_dynamics&ctrl=' + acym_helper.ctrlDynamics + '&task=replaceDummy';
-                        jQuery.ajax({
-                            url: ajaxUrl,
-                            type: 'POST',
-                            data: {
-                                'mailId': mailId,
-                                'code': $toInsert
-                            }
-                        }).then(function (response) {
-                            if (response) {
-                                response = acym_helper.parseJson(response);
-                            } else {
-                                response = {'content': $toInsert};
-                            }
-                            $toInsert = '<span class="acym_dynamic mceNonEditable" data-dynamic="'
-                                        + $toInsert
-                                        + '">'
-                                        + response.content
-                                        + '<i class="acym_remove_dynamic acymicon-close">&zwj;</i></span> ';
+        let lastKnownRangeInEditor = null;
 
-                            // Magic line, I don't know why but without it the previous dtext isn't replaced by the new one
-                            window.getSelection().getRangeAt(0).extractContents();
+        jQuery('#insertButton').off('click').on('click', function () {
+            let $toInsert = jQuery('#dtextcode').val();
+            if (!$toInsert) return;
 
-                            tinymce.activeEditor.execCommand('mceInsertContent', false, $toInsert);
-                            acym_helperEditorWysid.setColumnRefreshUiWYSID();
-                            acym_editorWysidVersioning.setUndoAndAutoSave();
-                        });
-                    }
-                    jQuery('#acym__wysid__modal__dynamic-text').hide();
+            let mailId = jQuery('input[name="editor_autoSave"]').val();
+            let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_dynamics&ctrl=' + acym_helper.ctrlDynamics + '&task=replaceDummy';
+
+            acym_helper.get(ajaxUrl, {
+                'mailId': mailId,
+                'code': $toInsert
+            }).then(response => {
+                if (!response) {
+                    response = {'content': $toInsert};
                 }
+
+                let toInsert = '<span id="acymRangeId" class="acym_dynamic mceNonEditable" data-dynamic="' + $toInsert + '">';
+                toInsert += response.content;
+                toInsert += '<em class="acym_remove_dynamic acymicon-close">&zwj;</em></span> &zwj;';
+
+                if (!acym_helper.empty(lastKnownRangeInEditor) && !acym_editorWysidModal.isSelectionInEditor()) {
+                    let selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(lastKnownRangeInEditor);
+                }
+                tinyMCE.activeEditor.selection.setContent(toInsert);
+
+                acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
+                acym_editorWysidVersioning.setUndoAndAutoSave();
+
+                let dtext = document.getElementById('acymRangeId');
+                jQuery(dtext).attr('contenteditable', 'false');
+                dtext.removeAttribute('id');
             });
         });
+
+        jQuery(document).on('selectionchange', function () {
+            if (acym_editorWysidModal.isSelectionInEditor()) {
+                lastKnownRangeInEditor = window.getSelection().getRangeAt(0);
+            }
+        });
+    },
+    isSelectionInEditor: function () {
+        let $selectedNode = jQuery(document.getSelection().anchorNode);
+
+        return $selectedNode.hasClass('acym__wysid__tinymce--text') || $selectedNode.closest('.acym__wysid__tinymce--text').length > 0;
     }
 };

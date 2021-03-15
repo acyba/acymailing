@@ -44,7 +44,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                     $data['mailInformation']->reply_to_email
                                 ); ?></span>
 						</p>
-						<p class="cell medium-6 margin-top-1 acym__campaign__summary__email__information">
+						<p class="cell medium-6 margin-bottom-1 margin-top-1 acym__campaign__summary__email__information">
                             <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>:
 							<span class="acym__color__blue acym__campaign__summary__email__information-subject"><?php echo acym_escape($data['mailInformation']->subject); ?></span>
 						</p>
@@ -79,7 +79,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                 $onlyFilename = substr($onlyFilename, 0, 15)."...".substr($onlyFilename, strlen($onlyFilename) - 15);
                             }
                             echo acym_tooltip(
-                                '<div class="acym__row__no-listing cell" data-toggle="path_attachment_'.$key.'">'.$onlyFilename.'</div>',
+                                '<div class="cell" data-toggle="path_attachment_'.$key.'">'.$onlyFilename.'</div>',
                                 $oneAttachment->filename,
                                 'cell'
                             );
@@ -88,29 +88,57 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                 <?php } ?>
 				<div class="cell grid-x acym__campaign__summary__section">
 					<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary">
-						<b><?php echo acym_translation('ACYM_RECIPIENTS'); ?></b>
+						<b><?php echo acym_translation('ACYM_RECIPIENTS').' ('.$data['nbSubscribers'].' '.acym_translation('ACYM_SUBSCRIBERS').acym_info(
+                                    'ACYM_SUMMARY_NUMBER_RECEIVERS_DESC'
+                                ).')'; ?></b>
 					</h5>
 					<div class="cell auto acym__campaign__summary__modify">
 						<a href="<?php echo acym_completeLink(
                             $campaignController.'&task=edit&step=recipients&edition=1&id='.intval($data['campaignInformation']->id)
                         ); ?>"><i class="acymicon-pencil"></i><span> <?php echo acym_translation('ACYM_EDIT'); ?></span></a>
 					</div>
-                    <?php foreach ($data['listsReceiver'] as $oneList) {
-                        echo '<div class="cell grid-x acym__row__no-listing">
-							<span class="cell medium-6"><i class="acymicon-circle acym__campaign__summary__recipients__list__color" style="color: '.$oneList->color.'"></i> <b>'.$oneList->name.'</b></span> <span class="cell medium-6"><b>'.$oneList->subscribers.'</b> '.acym_strtolower(
-                                acym_translation('ACYM_SUBSCRIBERS')
-                            ).'</span>
+					<div class="cell acym__listing">
+                        <?php foreach ($data['listsReceiver'] as $oneList) {
+                            $subscribers = acym_modalInclude(
+                                '<span class="text-underline cursor-pointer">
+											<b>'.$oneList->subscribers.'
+											</b> '.acym_strtolower(acym_translation('ACYM_SUBSCRIBERS')).'
+											</span>',
+                                acym_getPartial('modal', 'users'),
+                                'acym__campaign__summary__users_summary__'.$oneList->list_id,
+                                [
+                                    'ctrl' => 'lists',
+                                    'task' => 'usersSummary',
+                                    'list_id' => $oneList->list_id,
+                                ],
+                                '',
+                                'acym__modal__users__summary__container'
+                            );
+                            echo '<div class="cell grid-x acym__listing__row">
+							<span class="cell medium-6">
+							<i class="acymicon-circle acym__campaign__summary__recipients__list__color margin-right-1" 
+							style="color: '.$oneList->color.'">
+							</i>
+							<b>'.$oneList->name.'</b>
+							</span>
+							<span class="cell medium-6">'.$subscribers.'</span>
 						</div>';
-                    } ?>
-					<p class="cell">
-                        <?php
-                        echo acym_translationSprintf(
-                            $isSent ? 'ACYM_CAMPAIGN_HAS_BEEN_SENT_TO_A_TOTAL_OF' : 'ACYM_CAMPAIGN_WILL_BE_SENT_TO_A_TOTAL_OF',
-                            acym_tooltip('<b>'.$data['nbSubscribers'].'</b>', acym_translation('ACYM_SUMMARY_NUMBER_RECEIVERS_EXPLICATION'))
-                        );
-                        if (!$isSent) echo acym_info('ACYM_COUNT_USER_WITH_SEGMENT_CAMPAIGN_SUMMARY');
-                        ?>
-					</p>
+                        } ?>
+					</div>
+                    <?php if (!empty($data['segment'])) { ?>
+						<div class="cell grid-x acym__campaign__summary__section margin-top-1">
+							<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SEGMENT') ?></h5>
+							<div class="cell auto acym__campaign__summary__modify">
+								<a href="<?php echo acym_completeLink(
+                                    $campaignController.'&task=edit&step=segment&edition=1&id='.intval($data['campaignInformation']->id)
+                                ); ?>"><i class="acymicon-pencil"></i><span> <?php echo acym_translation('ACYM_EDIT'); ?></span></a>
+							</div>
+							<div class="cell grid-x acym__campaign__summary__segment">
+								<span class="cell medium-6"><b><?php echo $data['segment']['name']; ?></b></span>
+								<span class="cell medium-6"><b><?php echo $data['segment']['count'].'</b> '.strtolower(acym_translation('ACYM_SUBSCRIBERS')); ?></span>
+							</div>
+						</div>
+                    <?php } ?>
 				</div>
 				<div class="cell grid-x acym__campaign__summary__section">
 					<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary">
@@ -248,7 +276,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                 echo acym_tooltip(
                                     $button,
                                     acym_translation('ACYM_ADD_RECIPIENTS_TO_SEND_THIS_CAMPAIGN'),
-									'cell medium-shrink'
+                                    'cell medium-shrink'
                                 );
                             }
                         }

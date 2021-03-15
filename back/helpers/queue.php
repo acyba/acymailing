@@ -167,8 +167,18 @@ class QueueHelper extends acymObject
             $this->finish = true;
         }
 
+        $externalSending = false;
+        acym_trigger('onAcymProcessQueueExternalSendingCampaign', [&$externalSending]);
+
+        if ($externalSending) {
+            $listExternalSending = [];
+            acym_trigger('onAcymInitExternalSendingMethodBeforeSend', [&$listExternalSending, $this->id]);
+        }
+
+        $mailIds = [];
         $emailFrequency = $this->config->get('email_frequency', 0);
         foreach ($queueElements as $oneQueue) {
+            if (!in_array($oneQueue->mail_id, $mailIds)) $mailIds[] = $oneQueue->mail_id;
             if (!empty($emailFrequency) && intval($emailFrequency) > 0) sleep(intval($emailFrequency));
             $currentMail++;
             $this->nbprocess++;
@@ -276,6 +286,13 @@ class QueueHelper extends acymObject
             if ($this->consecutiveError > 5 || connection_aborted()) {
                 $this->finish = true;
                 break;
+            }
+        }
+
+        if ($externalSending) {
+            foreach ($mailIds as $key => $mailId) {
+                if (!$queueClass->isSendingFinished($mailId)) continue;
+                acym_trigger('onAcymSendCampaignOnExternalSendingMethod', [$mailId]);
             }
         }
 

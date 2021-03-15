@@ -32,7 +32,7 @@
 					value="acymailing"
                 <?php echo stripos($trackingMode, 'acymailing') !== false ? 'checked="checked"' : ''; ?>
 			/>
-			<label for="trackingsystem[0]">AcyMailing</label>
+			<label for="trackingsystem[0]">AcyMailing<?php echo acym_info('ACYM_TRACKINGSYSTEM_ACY_DESC'); ?></label>
 
 			<input
 					type="checkbox"
@@ -41,7 +41,7 @@
 					value="google"
                 <?php echo stripos($trackingMode, 'google') !== false ? 'checked="checked"' : ''; ?>
 			/>
-			<label for="trackingsystem[1]">Google Analytics</label>
+			<label for="trackingsystem[1]">Google Analytics<?php echo acym_info('ACYM_TRACKINGSYSTEM_GA_DESC'); ?></label>
 
 			<input type="hidden" name="config[trackingsystem][]" value="1" />
 		</div>
@@ -51,7 +51,7 @@
             echo acym_switch(
                 'config[trackingsystemexternalwebsite]',
                 $this->config->get('trackingsystemexternalwebsite'),
-                acym_translation('ACYM_TRACKINGSYSTEM_EXTERNAL_LINKS'),
+                acym_translation('ACYM_TRACKINGSYSTEM_EXTERNAL_LINKS').acym_info('ACYM_TRACKINGSYSTEM_EXTERNAL_LINKS_DESC'),
                 [],
                 'xlarge-3 medium-5 small-9',
                 'auto',
@@ -69,7 +69,7 @@
         echo acym_switch(
             'config[delete_stats_enabled]',
             $this->config->get('delete_stats_enabled', 0),
-            acym_translation('ACYM_DELETE_DETAILED_STATS_AFTER'),
+            acym_translation('ACYM_DELETE_DETAILED_STATS_AFTER').acym_info('ACYM_DELETE_DETAILED_STATS_AFTER_DESC'),
             [],
             'xlarge-3 medium-5 small-9',
             'auto',

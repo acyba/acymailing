@@ -372,7 +372,7 @@ class FrontusersController extends UsersController
 
         // User not found
         if (empty($alreadyExists->id)) {
-            $this->displayMessage('ACYM_NOT_IN_LIST', $ajax);
+            $this->displayMessage('ACYM_SUB_NOT_IN_LIST', $ajax);
         }
 
         $fromModuleOrWidget = acym_getVar('string', 'acysubmode', '');
@@ -475,13 +475,27 @@ class FrontusersController extends UsersController
     public function unsubscribePage($alreadyExists)
     {
         $userClass = new UserClass();
-        $userSubscriptions = $userClass->getUserSubscriptionById($alreadyExists->id);
+        $lang = acym_getVar('string', 'language', acym_getLanguageTag());
+        if (ACYM_CMS === 'joomla' && !empty($_GET['language'])) $lang = $_GET['language'];
+        acym_setLanguage($lang);
+        acym_loadLanguage($lang);
+        
+        $userSubscriptions = $userClass->getUserSubscriptionById($alreadyExists->id, 'id', false, false, true);
 
         $data = [
             'user' => $alreadyExists,
             'mail_id' => acym_getVar('int', 'mail_id', 0),
             'subscriptions' => $userSubscriptions,
+            'lang' => $lang,
         ];
+
+        if (acym_isMultilingual()) {
+            $allLanguages = acym_getLanguages();
+            $data['languages'] = [];
+            foreach ($allLanguages as $key => $language) {
+                $data['languages'][$key] = $language->name;
+            }
+        }
 
         acym_setVar('layout', 'unsubscribepage');
         parent::display($data);
@@ -638,7 +652,7 @@ class FrontusersController extends UsersController
         $user = $userClass->identify(true);
         if (empty($user)) {
             $listClass = new ListClass();
-            $subscription = $listClass->getAll('id');
+            $subscription = $listClass->getAll('id', true);
             $user = new \stdClass();
             $user->id = 0;
             $user->key = 0;
@@ -657,13 +671,14 @@ class FrontusersController extends UsersController
                 acym_setPageTitle(acym_translation('ACYM_SUBSCRIPTION'));
             }
         } else {
-            $subscription = $userClass->getAllListsUserSubscriptionById($user->id);
+            $subscription = $userClass->getAllListsUserSubscriptionById($user->id, 'id', true);
 
             acym_addBreadcrumb(acym_translation('ACYM_MODIFY_SUBSCRIPTION'));
             if (empty($menu)) {
                 acym_setPageTitle(acym_translation('ACYM_MODIFY_SUBSCRIPTION'));
             }
         }
+
         if (!empty($values->page_title)) {
             acym_addBreadcrumb($values->page_title);
             if (empty($menu)) {

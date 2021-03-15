@@ -119,7 +119,7 @@
 		</div>
 		<div class="cell acym__content grid-x">
 			<h2 class="cell shrink acym__title acym__title__secondary">
-                <?php echo acym_translation('ACYM_OPEN_TIME_CHART').acym_info(acym_translation('ACYM_OPEN_TIME_CHART_DESC')); ?>
+                <?php echo acym_translation('ACYM_OPEN_TIME_CHART').acym_info('ACYM_OPEN_TIME_CHART_DESC'); ?>
 			</h2>
             <?php if ($data['empty_open']) { ?>
 				<h4 class="cell acym__subtitle__stats text-center"><b><?php echo acym_translation('ACYM_EMAIL_NOT_OPEN_EXAMPLE_STATS') ?></b></h4>

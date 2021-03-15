@@ -5,9 +5,8 @@
  * Return FALSE if the level is not enough
  * 0 : Starter
  * 1 : Essential
- * 2 : Business
- * 3 : Enterprise
- * 4 : Sidekick
+ * 2 : Enterprise
+ * 3 : Sidekick
  */
 function acym_level($level)
 {
@@ -19,9 +18,9 @@ function acym_level($level)
     return false;
 }
 
-function acym_upgradeTo($version)
+function acym_upgradeTo($version, $utmSource)
 {
-    $link = ACYM_ACYMAILLING_WEBSITE.'pricing';
+    $link = ACYM_ACYMAILLING_WEBSITE.'pricing?utm_source='.$utmSource.'&utm_medium=acymailing_plugin&utm_campaign=purchase';
     $text = $version == 'essential' ? 'AcyMailing Essential' : 'AcyMailing Enterprise';
     echo '<div class="acym__upgrade cell grid-x text-center align-center">
             <h2 class="acym__listing__empty__title cell">'.acym_translationSprintf('ACYM_USE_THIS_FEATURE', '<span class="acym__color__blue">'.$text.'</span>').'</h2>

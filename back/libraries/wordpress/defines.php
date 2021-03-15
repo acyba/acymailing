@@ -45,6 +45,8 @@ define('ACYM_INC', ACYM_FRONT.'inc'.DS);
 define('ACYM_UPLOAD_FOLDER', ACYM_WP_UPLOADS.'upload'.DS);
 define('ACYM_TEMPLATE', ACYM_UPLOADS_PATH.'templates'.DS);
 define('ACYM_TEMPLATE_URL', ACYM_UPLOADS_URL.'templates/');
+define('ACYM_TMP_FOLDER', ACYM_UPLOADS_PATH.'tmp'.DS);
+define('ACYM_TMP_URL', ACYM_UPLOADS_URL.'tmp/');
 
 define('ACYM_PLUGINS_URL', plugins_url());
 define('ACYM_MEDIA_RELATIVE', str_replace(ACYM_ROOT, '', ACYM_MEDIA));
@@ -142,6 +144,15 @@ define(
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/ultimate-member',
                 'category' => 'Subscription system',
                 'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-ultimate-member/',
+            ],
+            (object)[
+                'name' => 'Universal filter',
+                'description' => '- Filter AcyMailing subscribers based on any data from your database<br />- Filter users based on email addresses in a specified text',
+                'image' => 'universalfilter.png',
+                'level' => 'starter',
+                'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/universal-filter',
+                'category' => 'User management',
+                'downloadlink' => 'https://wordpress.org/plugins/acymailing-universal-filter/',
             ],
             (object)[
                 'name' => 'WooCommerce',

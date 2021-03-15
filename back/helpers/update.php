@@ -163,7 +163,7 @@ class UpdateHelper extends acymObject
 
         $menuStrings = [
             'ACYM_DASHBOARD',
-            'ACYM_USERS',
+            'ACYM_SUBSCRIBERS',
             'ACYM_CUSTOM_FIELDS',
             'ACYM_LISTS',
             'ACYM_SEGMENTS',
@@ -181,8 +181,8 @@ class UpdateHelper extends acymObject
             'ACYM_MENU_ARCHIVE_DESC',
             'ACYM_MENU_LISTS',
             'ACYM_MENU_LISTS_DESC',
-            'ACYM_MENU_USERS',
-            'ACYM_MENU_USERS_DESC',
+            'ACYM_MENU_SUBSCRIBERS',
+            'ACYM_MENU_SUBSCRIBERS_DESC',
             'ACYM_MENU_CAMPAIGNS',
             'ACYM_MENU_CAMPAIGNS_DESC',
             'ACYM_SUBSCRIPTION_FORMS',
@@ -303,8 +303,8 @@ class UpdateHelper extends acymObject
         $adminCreate->desc = 'ACYM_ADMIN_USER_CREATE_DESC';
         $adminCreate->triggers = '{"user_creation":[""],"type_trigger":"user"}';
         $adminCreate->conditions = '{"type_condition":"user"}';
-        $adminCreate->emailTitle = acym_translation('ACYM_USER_CREATION');
-        $adminCreate->emailSubject = acym_translation('ACYM_USER_CREATION');
+        $adminCreate->emailTitle = acym_translation('ACYM_SUBSCRIBER_CREATION');
+        $adminCreate->emailSubject = acym_translation('ACYM_SUBSCRIBER_CREATION');
         $adminCreate->emailContent = '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subtag:name|ucfirst}', 'Marc').',</h1>
                     <p>'.acym_translation('ACYM_NEW_USER_ACYMAILING').':</p>
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{subtag:name|info:current}', 'Roger').'</p>
@@ -314,8 +314,8 @@ class UpdateHelper extends acymObject
         $adminModif->desc = 'ACYM_ADMIN_USER_MODIFICATION_DESC';
         $adminModif->triggers = '{"user_modification":[""],"type_trigger":"user"}';
         $adminModif->conditions = '{"type_condition":"user"}';
-        $adminModif->emailTitle = acym_translation('ACYM_USER_MODIFICATION');
-        $adminModif->emailSubject = acym_translation('ACYM_USER_MODIFICATION');
+        $adminModif->emailTitle = acym_translation('ACYM_SUBSCRIBER_MODIFICATION');
+        $adminModif->emailSubject = acym_translation('ACYM_SUBSCRIBER_MODIFICATION');
         $adminModif->emailContent = '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subtag:name|ucfirst}', 'Marc').',</h1>
                     <p>'.acym_translation('ACYM_USER_MODIFY_ACYMAILING').':</p>
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{subtag:name|info:current}', 'Roger').'</p>
@@ -602,7 +602,7 @@ class UpdateHelper extends acymObject
 
     private function getFormatedNotification($content)
     {
-        $begining = '<div id="acym__wysid__template" class="cell"><table class="body"><tbody><tr><td align="center" class="center acym__wysid__template__content" valign="top" style="background-color: rgb(239, 239, 239); padding: 40px 0 120px 0;"><center><table align="center" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="acym__wysid__row ui-droppable ui-sortable" style="min-height: 0px; display: table-cell;"><table class="row acym__wysid__row__element" bgcolor="#dadada" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: rgb(218,218,218);" bgcolor="#ffffff"><tr><th class="small-12 medium-12 large-12 columns acym__wysid__row__element__th"><table class="acym__wysid__column" style="min-height: 0px; display: table;" border="0" cellpadding="0" cellspacing="0"><tbody class="ui-sortable" style="min-height: 0px; display: table-row-group;"><tr class="acym__wysid__column__element ui-draggable" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;"><td class="large-12 acym__wysid__column__element__td" style="outline: rgb(0,163,254) dashed 0px; outline-offset: -1px;"><span class="acy-editor__space acy-editor__space--focus" style="display: block; padding: 0px; margin: 0px; height: 10px;"></span></td></tr></tbody></table></th></tr></tbody></table><table class="row acym__wysid__row__element" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: rgb(255, 255, 255);" bgcolor="#ffffff"><tr><th class="small-12 medium-12 large-12 columns"><table class="acym__wysid__column" style="min-height: 0px; display: table;" border="0" cellpadding="0" cellspacing="0"><tbody class="ui-sortable" style="min-height: 0px; display: table-row-group;"><tr class="acym__wysid__column__element ui-draggable" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;"><td class="large-12 acym__wysid__column__element__td" style="outline: rgb(0, 163, 254) dashed 0px; outline-offset: -1px;"><div class="acym__wysid__tinymce--text mce-content-body" style="position: relative;" spellcheck="false">';
+        $begining = '<div id="acym__wysid__template" class="cell"><table class="body"><tbody><tr><td align="center" class="center acym__wysid__template__content" valign="top" style="background-color: rgb(239, 239, 239); padding: 40px 0 120px 0;"><center><table align="center" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="acym__wysid__row ui-droppable ui-sortable" style="min-height: 0px; display: table-cell;"><table class="row acym__wysid__row__element" bgcolor="#dadada" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: rgb(218,218,218);" bgcolor="#ffffff"><tr><th class="small-12 medium-12 large-12 columns acym__wysid__row__element__th"><table class="acym__wysid__column" style="min-height: 0px; display: table;" border="0" cellpadding="0" cellspacing="0"><tbody class="ui-sortable" style="min-height: 0px; display: table-row-group;"><tr class="acym__wysid__column__element ui-draggable" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;"><td class="large-12 acym__wysid__column__element__td" style="outline: rgb(0,163,254) dashed 0px; outline-offset: -1px;"><span class="acy-editor__space acy-editor__space--focus" style="display: block; padding: 0px; margin: 0px; height: 10px;"></span></td></tr></tbody></table></th></tr></tbody></table><table class="row acym__wysid__row__element" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: transparent;" bgcolor="#ffffff"><tr><th class="small-12 medium-12 large-12 columns"><table class="acym__wysid__column" style="min-height: 0px; display: table;" border="0" cellpadding="0" cellspacing="0"><tbody class="ui-sortable" style="min-height: 0px; display: table-row-group;"><tr class="acym__wysid__column__element ui-draggable" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;"><td class="large-12 acym__wysid__column__element__td" style="outline: rgb(0, 163, 254) dashed 0px; outline-offset: -1px;"><div class="acym__wysid__tinymce--text mce-content-body" style="position: relative;" spellcheck="false">';
         $ending = '</div></td></tr></tbody></table></th></tr></tbody></table><table class="row acym__wysid__row__element" bgcolor="#dadada" style="position: relative; z-index: 100; top: 0; left: 0;" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: rgb(218, 218, 218);" bgcolor="#ffffff"><tr><th class="small-12 medium-12 large-12 columns acym__wysid__row__element__th"><table class="acym__wysid__column" style="min-height: 0px; display: table;" border="0" cellpadding="0" cellspacing="0"><tbody class="ui-sortable" style="min-height: 0px; display: table-row-group;"><tr class="acym__wysid__column__element ui-draggable" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;"><td class="large-12 acym__wysid__column__element__td" style="outline: rgb(0, 163, 254) dashed 0px; outline-offset: -1px;"><span class="acy-editor__space acy-editor__space--focus" style="display: block; padding: 0px; margin: 0px; height: 10px;"></span></td></tr></tbody></table></th></tr></tbody></table></td></tr></tbody></table></center></td></tr></tbody></table></div>';
 
         return $begining.$content.$ending;

@@ -1,3 +1,9 @@
+<?php
+$beforeSave = '';
+if (!empty($data['translation_languages'])) {
+    $beforeSave = 'acym-data-before="acym_helperSelectionMultilingual.changeLanguage_field(acym_helperSelectionMultilingual.mainLanguage)"';
+}
+?>
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate>
 	<input type="hidden" name="id" value="<?php echo empty($data['field']->id) ? '' : intval($data['field']->id); ?>">
 	<input type="hidden" name="namekey" value="<?php echo empty($data['field']->namekey) ? '' : acym_escape($data['field']->namekey); ?>">
@@ -8,12 +14,20 @@
 			</h5>
 			<div class="cell auto hide-for-small-only hide-for-medium-only"></div>
             <?php echo acym_cancelButton(); ?>
-			<button data-task="apply" class="cell button button-secondary medium-6 large-shrink acy_button_submit"><?php echo acym_translation('ACYM_SAVE'); ?></button>
-			<button data-task="save" class="cell button medium-6 large-shrink margin-right-0 acy_button_submit"><?php echo acym_translation('ACYM_SAVE_EXIT'); ?></button>
+			<button data-task="apply" <?php echo $beforeSave; ?> class="cell button button-secondary medium-6 large-shrink acy_button_submit"><?php echo acym_translation(
+                    'ACYM_SAVE'
+                ); ?></button>
+			<button data-task="save" <?php echo $beforeSave; ?> class="cell button medium-6 large-shrink margin-right-0 acy_button_submit"><?php echo acym_translation(
+                    'ACYM_SAVE_EXIT'
+                ); ?></button>
 		</div>
 		<div class="cell grid-x grid-margin-x">
 			<div class="xlarge-4 cell grid-x acym__fields__edit__field__general acym__content grid-margin-x margin-bottom-1 acym_center_baseline">
 				<h2 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_INFORMATION'); ?></h2>
+                <?php
+                if (!empty($data['translation_languages'])) {
+                    echo acym_displayLanguageRadio($data['translation_languages'], 'field[translation]', empty($data['field']->translation) ? '' : $data['field']->translation, acym_translation('ACYM_LANGUAGE_CUSTOM_FIELD_DESC'));
+                } ?>
 				<label class="cell xlarge-12 large-6 margin-top-1">
                     <?php echo acym_translation('ACYM_NAME'); ?>
 					<input required type="text" name="field[name]" value="<?php echo empty($data['field']->name) ? '' : acym_escape($data['field']->name); ?>">
@@ -40,7 +54,19 @@
 
                     $disableActiveSwitch = in_array($data['field']->id, [2, $data['languageFieldId']]);
 
-                    echo acym_switch('field[active]', $data['field']->active, acym_translation('ACYM_ACTIVE'), [], 'auto', 'shrink', 'margin-0', null, true, '', $disableActiveSwitch); ?>
+                    echo acym_switch(
+                        'field[active]',
+                        $data['field']->active,
+                        acym_translation('ACYM_ACTIVE'),
+                        [],
+                        'auto',
+                        'shrink',
+                        'margin-0',
+                        null,
+                        true,
+                        '',
+                        $disableActiveSwitch
+                    ); ?>
 				</div>
 
                 <?php if (empty($data['field']->id) || !in_array($data['field']->id, [2, $data['languageFieldId']])) { ?>
@@ -48,7 +74,7 @@
                         <?php echo acym_switch(
                             'field[required]',
                             $data['field']->required,
-                            acym_translation('ACYM_REQUIRED'),
+                            acym_translation('ACYM_REQUIRED').acym_info('ACYM_REQUIRED_DESC'),
                             [],
                             'auto',
                             'shrink',
@@ -123,7 +149,7 @@
                     <?php echo acym_switch(
                         'field[option][editable_user_creation]',
                         empty($data['field']->option) ? 1 : $data['field']->option->editable_user_creation,
-                        acym_translation('ACYM_EDITABLE_USER_CREATION'),
+                        acym_translation('ACYM_EDITABLE_SUBSCRIBER_CREATION'),
                         [],
                         'auto',
                         'shrink',
@@ -137,7 +163,7 @@
                     <?php echo acym_switch(
                         'field[option][editable_user_modification]',
                         empty($data['field']->option) ? 1 : $data['field']->option->editable_user_modification,
-                        acym_translation('ACYM_EDITABLE_USER_MODIFICATION'),
+                        acym_translation('ACYM_EDITABLE_SUBSCRIBER_MODIFICATION'),
                         [],
                         'auto',
                         'shrink',
@@ -412,8 +438,11 @@
 					<label class="cell margin-top-1 medium-3 margin-right-1"><?php echo acym_translation('ACYM_WHERE_OPERATION'); ?>
                         <?php
                         $operator = $data['operatorType'];
-                        $operator->class = 'acym__fields__edit__select acym__select';
-                        echo $operator->display('fieldDB[where_sign]', empty($data['field']->fieldDB->where_sign) ? '' : $data['field']->fieldDB->where_sign);
+                        echo $operator->display(
+                            'fieldDB[where_sign]',
+                            empty($data['field']->fieldDB->where_sign) ? '' : $data['field']->fieldDB->where_sign,
+                            'acym__fields__edit__select acym__select'
+                        );
                         ?>
 					</label>
 					<label class="cell margin-top-1 medium-4"><?php echo acym_translation('ACYM_WHERE_VALUE'); ?>

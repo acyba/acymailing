@@ -734,3 +734,12 @@ function acym_loaderLogo($wrap = true)
 
     return $loader;
 }
+
+function acym_fileNameValid($filename)
+{
+    if (empty($filename)) return false;
+
+    if (strpos($filename, '..') !== false || strpos($filename, '/') !== false || strpos($filename, '\\') !== false) return false;
+
+    return true;
+}

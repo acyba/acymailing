@@ -65,20 +65,19 @@ class acyMenu extends acyHook
 
         $menus = [
             'ACYM_SUBSCRIPTION_FORMS' => 'forms',
-            'ACYM_USERS' => 'users',
+            'ACYM_SUBSCRIBERS' => 'users',
             'ACYM_CUSTOM_FIELDS' => 'fields',
             'ACYM_LISTS' => 'lists',
-            'ACYM_SEGMENTS' => 'segments',
-            'ACYM_EMAILS' => 'campaigns',
-            'ACYM_TEMPLATES' => 'mails',
-            'ACYM_EMAILS_OVERRIDE' => 'override',
-            'ACYM_AUTOMATION' => 'automation',
-            'ACYM_QUEUE' => 'queue',
-            'ACYM_STATISTICS' => 'stats',
-            'ACYM_ADD_ONS' => 'plugins',
-            'ACYM_BOUNCE_HANDLING' => 'bounces',
-            'ACYM_CONFIGURATION' => 'configuration',
         ];
+        $menus['ACYM_EMAILS'] = 'campaigns';
+        $menus['ACYM_TEMPLATES'] = 'mails';
+        $menus['ACYM_EMAILS_OVERRIDE'] = 'override';
+        $menus['ACYM_QUEUE'] = 'queue';
+        $menus['ACYM_STATISTICS'] = 'stats';
+        $menus['ACYM_ADD_ONS'] = 'plugins';
+        $menus['ACYM_BOUNCE_HANDLING'] = 'bounces';
+        $menus['ACYM_CONFIGURATION'] = 'configuration';
+
         foreach ($menus as $title => $ctrl) {
             if (!acym_isAllowed($ctrl)) continue;
 

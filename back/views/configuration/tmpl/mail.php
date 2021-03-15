@@ -2,10 +2,19 @@
 <input type="hidden" id="acym__config__mail__embed__attachment__blocked" value="<?php echo acym_escape($data['embedAttachment']); ?>">
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
 	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_DEFAULT_SENDER'); ?></div>
+    <?php
+    if (!empty($data['translation_languages'])) {
+        echo acym_displayLanguageRadio(
+            $data['translation_languages'],
+            'config[sender_info_translation]',
+            $this->config->get('sender_info_translation', ''),
+            acym_translation('ACYM_LANGUAGE_SENDER_INFORMATION_DESC')
+        );
+    } ?>
 	<div class="grid-x grid-margin-x margin-y">
 		<div class="cell large-6 xlarge-4">
 			<label class="cell grid-x">
-				<span class="cell"><?php echo acym_translation('ACYM_FROM_NAME'); ?></span>
+				<span class="cell"><?php echo acym_translation('ACYM_FROM_NAME').acym_info('ACYM_FROM_DESC'); ?></span>
 				<input type="text"
 					   name="config[from_name]"
 					   placeholder="<?php echo acym_translation('ACYM_FROM_NAME_PLACEHOLDER'); ?>"
@@ -14,14 +23,14 @@
 		</div>
 		<div class="cell large-6 xlarge-4">
 			<label class="cell grid-x">
-				<span class="cell"><?php echo acym_translation('ACYM_FROM_EMAIL'); ?></span>
+				<span class="cell"><?php echo acym_translation('ACYM_FROM_EMAIL').acym_info('ACYM_FROM_DESC'); ?></span>
 				<input type="email"
 					   name="config[from_email]"
 					   placeholder="<?php echo acym_translation('ACYM_FROM_EMAIL_PLACEHOLDER'); ?>"
 					   value="<?php echo acym_escape($this->config->get('from_email')); ?>" />
 			</label>
 		</div>
-
+        <?php if (!empty($data['button_copy_settings_from'])) echo $data['button_copy_settings_from']; ?>
 		<div class="cell margin-bottom-1 acym_vcenter">
 			<input type="hidden" id="from_as_replyto_value" name="config[from_as_replyto]" value="<?php echo acym_escape($this->config->get('from_as_replyto', 1)); ?>" />
 			<input id="from_as_replyto" data-toggle="acy_toggle_replyto" data-value="from_as_replyto_value" class="acym_toggle" type="checkbox" <?php
@@ -36,7 +45,7 @@
 
 		<div class="cell large-6 xlarge-4 acy_toggle_replyto">
 			<label class="cell grid-x">
-				<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_NAME'); ?></span>
+				<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_NAME').acym_info('ACYM_REPLYTO_DESC'); ?></span>
 				<input type="text"
 					   name="config[replyto_name]"
 					   placeholder="<?php echo acym_translation('ACYM_REPLYTO_NAME_PLACEHOLDER'); ?>"
@@ -45,7 +54,7 @@
 		</div>
 		<div class="cell large-6 xlarge-4 acy_toggle_replyto">
 			<label class="cell grid-x">
-				<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_EMAIL'); ?></span>
+				<span class="cell"><?php echo acym_translation('ACYM_REPLYTO_EMAIL').acym_info('ACYM_REPLYTO_DESC'); ?></span>
 				<input type="email"
 					   name="config[replyto_email]"
 					   placeholder="<?php echo acym_translation('ACYM_REPLYTO_EMAIL_PLACEHOLDER'); ?>"
@@ -55,13 +64,13 @@
 
 		<div class="cell grid-x">
 			<div class="cell medium-6 large-4 xlarge-3 grid-x">
-                <?php echo acym_switch('config[add_names]', $this->config->get('add_names'), acym_translation('ACYM_ADD_NAMES')); ?>
+                <?php echo acym_switch('config[add_names]', $this->config->get('add_names'), acym_translation('ACYM_ADD_NAMES').acym_info('ACYM_ADD_NAMES_DESC')); ?>
 			</div>
 		</div>
 
 		<div class="cell grid-x">
 			<label class="cell large-6 xlarge-4 grid-x">
-				<span class="cell"><?php echo acym_translation('ACYM_BOUNCE_EMAIL'); ?></span>
+				<span class="cell"><?php echo acym_translation('ACYM_BOUNCE_EMAIL').acym_info('ACYM_BOUNCE_ADDRESS_DESC'); ?></span>
 				<input type="text"
 					   name="config[bounce_email]"
 					   placeholder="<?php echo acym_translation('ACYM_BOUNCE_EMAIL_PLACEHOLDER'); ?>"
@@ -108,11 +117,11 @@
 
         <?php
         $options = [
-            'use_https' => [
-                'label' => 'ACYM_CONFIGURATION_HTTPS',
-            ],
             'special_chars' => [
                 'label' => 'ACYM_SPECIAL_CHARS',
+            ],
+            'multiple_part' => [
+                'label' => 'ACYM_CONFIGURATION_MULTIPART',
             ],
             'embed_images' => [
                 'label' => 'ACYM_CONFIGURATION_EMBED_IMAGES',
@@ -122,31 +131,43 @@
                 'label' => 'ACYM_CONFIGURATION_EMBED_ATTACHMENTS',
                 'info_disabled' => 'ACYM_CONFIGURATION_OPTION_DESC_DISABLED',
             ],
-            'multiple_part' => [
-                'label' => 'ACYM_CONFIGURATION_MULTIPART',
-            ],
             'prevent_hyphens' => [
                 'label' => 'ACYM_PREVENT_HYPHENS',
             ],
+            'unsubscribe_header' => [
+                'label' => 'ACYM_ADD_UNSUBSCRIBE_HEADER_IN_MAIL',
+                'default' => 1,
+            ],
         ];
+
+        if ($this->config->get('built_by_update', 0) == 1 || acym_level(1)) {
+            $options['display_built_by'] = [
+                'label' => 'ACYM_ADD_BUILT_BY_FOOTER',
+            ];
+        }
 
         foreach ($options as $oneOption => $option) {
             echo '<div class="cell medium-6 grid-x acym__configuration__mail__option">';
             $label = $option['label'];
 
-            $info = empty($option['info_disabled']) ? '' : '<span class="acym__configuration__mail__info__disabled">'.acym_info($option['info_disabled']).'</span>';
+            $info = empty($option['info_disabled']) ? '' : '<span class="acym__configuration__mail__info__disabled">'.acym_translation($option['info_disabled']).'</span> ';
 
             $description = $label.'_DESC';
             $translatedDescription = acym_translation($description);
             $label = acym_translation($label);
             if ($translatedDescription !== $description) {
-                $label .= acym_info(
-                    $description
-                );
+                $info .= $translatedDescription;
             }
+
+            if (!empty($info)) {
+                $info = acym_info($info);
+            }
+
+            $default = empty($option['default']) ? 0 : $option['default'];
+
             echo acym_switch(
                 'config['.$oneOption.']',
-                $this->config->get($oneOption),
+                $this->config->get($oneOption, $default),
                 $label.$info
             );
 

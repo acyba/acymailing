@@ -1,10 +1,7 @@
 .acym__row__no-listing {
     cursor: pointer;
     padding: 0.4rem;
-    border-radius: 4px;
-    box-shadow: 0 0 4px 2px #ebebeb;
-    margin-top: 0.3rem;
-    margin-bottom: 0.3rem;
+    border-bottom: 1px solid #e3e3e3;
 
     &.acym__listing__row__popup--disabled {
         opacity: .5;
@@ -15,8 +12,12 @@
         }
     }
 
-    &.acym__listing__row__popup:not(.acym__listing__row__popup--disabled):hover {
+    &.acym__listing__row__popup:not(.acym__listing__row__popup--disabled):not(.selected_row):hover {
         background-color: $light-gray;
+    }
+
+    &.selected_row {
+        background-color: #d2d2d2;
     }
 }
 

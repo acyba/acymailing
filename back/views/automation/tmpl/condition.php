@@ -41,16 +41,18 @@
 			</div>
 		</div>
 
-		<h6 class="acym__title acym__title__secondary cell"><?php echo acym_translation('ACYM_SELECT_YOUR_CONDITIONS'); ?></h6>
+		<h6 class="acym__title acym__title__secondary cell">
+			<?php echo acym_translation('ACYM_SELECT_YOUR_CONDITIONS').acym_info('ACYM_CONDITIONS_DESC'); ?>
+		</h6>
 		<div class="cell grid-x grid-margin-x margin-bottom-2" <?php echo $data['type_trigger'] == 'classic' ? 'style="display: none;"' : ''; ?>>
 			<div class="cell auto"></div>
 			<input type="hidden" name="type_condition" id="acym__automation__type-condition__input" value="<?php echo acym_escape($data['type_condition']); ?>">
 			<p data-condition="user" class="acym__automation__choose__condition medium-shrink cell <?php echo $data['type_condition'] == 'classic' ? '' : 'selected-condition'; ?>">
-                <?php echo acym_translation('ACYM_EXECUTE_CONDITIONS_ON_ONE_USERS'); ?>
+                <?php echo acym_translation('ACYM_EXECUTE_CONDITIONS_ON_ONE_SUBSCRIBER'); ?>
 			</p>
 			<p data-condition="classic"
 			   class="acym__automation__choose__condition medium-shrink cell <?php echo $data['type_condition'] == 'classic' ? 'selected-condition' : ''; ?>">
-                <?php echo acym_translation('ACYM_EXECUTE_CONDITIONS_ON_ALL_USERS'); ?>
+                <?php echo acym_translation('ACYM_EXECUTE_CONDITIONS_ON_ALL_SUBSCRIBERS'); ?>
 			</p>
 			<div class="cell auto"></div>
 		</div>

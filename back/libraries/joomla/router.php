@@ -7,11 +7,11 @@ function acym_addScript($raw, $script, $type = 'text/javascript', $defer = true,
     if ($raw) {
         $acyDocument->addScriptDeclaration($script, $type);
     } else {
-        if (ACYM_J40) {
+        if (ACYM_J37) {
             $attributes = [];
             $attributes['type'] = $type;
-            if($defer) $attributes['defer'] = 'defer';
-            if($async) $attributes['async'] = 'async';
+            if ($defer) $attributes['defer'] = 'defer';
+            if ($async) $attributes['async'] = 'async';
             $acyDocument->addScript($script, [], $attributes);
         } else {
             $acyDocument->addScript($script, $type, $defer, $async);
@@ -28,7 +28,17 @@ function acym_addStyle($raw, $style, $type = 'text/css', $media = null, $attribs
     if ($raw) {
         $acyDocument->addStyleDeclaration($style, $type);
     } else {
-        $acyDocument->addStyleSheet($style, $type, $media, $attribs);
+        if (ACYM_J37) {
+            $attributes = [];
+            $attributes['type'] = $type;
+            if ($media) $attributes['media'] = $media;
+            if (!empty($attribs)) {
+                $attributes = array_merge($attributes, $attribs);
+            }
+            $acyDocument->addStyleSheet($style, [], $attributes);
+        } else {
+            $acyDocument->addStyleSheet($style, $type, $media, $attribs);
+        }
     }
 }
 
@@ -50,7 +60,7 @@ function acym_loadCmsScripts()
     );
 
     JHtml::_('jquery.framework');
-    acym_addScript(false, ACYM_JS.'libraries/jquery-ui.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'jquery-ui.min.js'), 'text/javascript', true);
+    acym_addScript(false, ACYM_JS.'libraries/jquery-ui.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'jquery-ui.min.js'));
 }
 
 function acym_redirect($url, $msg = '', $msgType = 'message')

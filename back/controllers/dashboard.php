@@ -232,6 +232,12 @@ class DashboardController extends acymController
             'userEmail' => acym_currentUserEmail(),
         ];
 
+        //__START__wordpress_
+        if (ACYM_CMS == 'wordpress' && acym_isExtensionActive('wp-mail-smtp/wp_mail_smtp.php')) {
+            $data['wp_mail_smtp_installed'] = true;
+        }
+        //__END__wordpress_
+
         $data['sendingMethods'] = [];
 
         acym_trigger('onAcymGetSendingMethods', [&$data]);
@@ -438,7 +444,7 @@ class DashboardController extends acymController
     public function passWalkThrough($page = '')
     {
         if (empty($page)) $page = 'users&task=import';
-        
+
         $newConfig = new \stdClass();
         $newConfig->walk_through = 0;
         $this->config->save($newConfig);
@@ -623,6 +629,15 @@ class DashboardController extends acymController
 
             return false;
         }
+
+        $newConfig = [
+            'from_name' => $fromName,
+            'from_email' => $fromAddress,
+            'replyto_name' => $fromName,
+            'replyto_email' => $fromAddress,
+        ];
+
+        $this->config->save($newConfig);
 
         $firstMail->from_name = $fromName;
         $firstMail->from_email = $fromAddress;

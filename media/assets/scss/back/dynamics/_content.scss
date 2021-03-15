@@ -62,6 +62,14 @@
             margin: 0;
         }
 
+        .acym__dynamics__ordering__select {
+            width: 115px;
+
+            & + .select2 {
+                width: 115px !important;
+            }
+        }
+
         .acym__popup__listing {
             padding: 0 0.5rem;
 
@@ -97,10 +105,6 @@
 
                 &:hover {
                     background-color: $light-gray;
-                }
-
-                &.selected_row {
-                    background-color: #d2d2d2;
                 }
             }
 

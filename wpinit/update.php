@@ -69,6 +69,10 @@ class acyUpdate extends acyHook
         }
 
         if (empty($transient->response[$plugin_slug])) {
+            // Avoid error on wp update when nothing needs to be updated
+            if (empty($transient) && !is_object($transient)) $transient = new \stdClass();
+            if (empty($transient->response) && (!isset($transient->response) || !is_array($transient->response))) $transient->response = [];
+
             $transient->response[$plugin_slug] = (object)[
                 'new_version' => $latestVersion,
                 'package' => $downloadURL,

@@ -5,50 +5,10 @@ namespace AcyMailing\Controllers;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\PluginHelper;
-use AcyMailing\Helpers\TabHelper;
 use AcyMailing\Libraries\acymController;
 
 class DynamicsController extends acymController
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $this->setDefaultTask('popup');
-    }
-
-    public function popup()
-    {
-        $isAutomation = acym_getVar('string', 'automation');
-        $mailId = acym_getVar('int', 'mail_id', 0);
-
-        $js = 'function setTag(tagvalue, element){
-                    var $allRows = jQuery(".acym__listing__row__popup");
-                    $allRows.removeClass("selected_row");
-                    element.addClass("selected_row");
-                    window.document.getElementById(\'dtextcode\').value = tagvalue;
-               }';
-        $js .= 'try{window.parent.previousSelection = window.parent.getPreviousSelection(); }catch(err){window.parent.previousSelection=false; }';
-
-        acym_addScript(true, $js);
-
-        $tab = new TabHelper();
-
-
-        $plugins = acym_trigger('dynamicText', [$mailId]);
-
-        $data = [
-            "type" => acym_getVar('string', 'type', 'news'),
-            "plugins" => $plugins,
-            "tab" => $tab,
-            "automation" => $isAutomation,
-            'mail_id' => $mailId,
-            'mailType' => acym_getVar('string', 'mail_type', ''),
-            'typeNotif' => acym_getVar('string', 'type_notif', ''),
-        ];
-
-        parent::display($data);
-    }
-
     public function replaceDummy()
     {
         $mailClass = new MailClass();

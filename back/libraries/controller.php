@@ -335,4 +335,11 @@ class acymController extends acymObject
         }
         $this->$task();
     }
+
+    protected function prepareMultilingualOption(&$data)
+    {
+        if (!acym_isMultilingual()) return;
+
+        $data['translation_languages'] = acym_getMultilingualLanguages();
+    }
 }

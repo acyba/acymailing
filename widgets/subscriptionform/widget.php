@@ -236,7 +236,23 @@ class acym_subscriptionform_widget extends WP_Widget
         $onclick .= "if(this.value == 1){disp = 'block';}";
         $onclick .= "var elements = document.getElementsByClassName('".$this->get_field_id('unsubtextrow')."');";
         $onclick .= "for(var i = 0 ; i < elements.length ; i++){elements[i].style.display = disp;}";
-        echo acym_boolean($this->get_field_name('unsub'), $params['unsub'], $this->get_field_id('unsub'), ['onclick' => $onclick]).'</p>';
+        echo acym_select(
+                [
+                    '0' => 'ACYM_NO',
+                    '1' => 'ACYM_CONNECTED_USER_SUBSCRIBED',
+                    '2' => 'ACYM_ALWAYS',
+                ],
+                $this->get_field_name('unsub'),
+                $params['unsub'],
+                [
+                    'onclick' => $onclick,
+                    'class' => 'acym_simple_select2',
+                ],
+                'value',
+                'text',
+                $this->get_field_id('unsub'),
+                true
+            ).'</p>';
 
         echo '<p class="'.$this->get_field_id('unsubtextrow').'" '.($params['unsub'] == '0' ? 'style="display:none;"' : '').'>
         	<label class="acyWPconfig" for="'.$this->get_field_id('unsubtext').'" title="'.acym_translation('ACYM_UNSUBSCRIBE_TEXT_DESC').'">'.acym_translation(
@@ -343,7 +359,7 @@ class acym_subscriptionform_widget extends WP_Widget
         $params = new acymParameter($instance);
         acym_initModule($params);
 
-        if(!isset($instance['title'])) $instance['title'] = '';
+        if (!isset($instance['title'])) $instance['title'] = '';
         $title = apply_filters('widget_title', $instance['title']);
         if (!empty($title)) {
             echo $args['before_title'].$title.$args['after_title'];
@@ -369,7 +385,7 @@ class acym_subscriptionform_widget extends WP_Widget
         $listClass = new ListClass();
         $fieldClass = new FieldClass();
 
-        $allLists = $listClass->getAllWithoutManagement();
+        $allLists = $listClass->getAllWithoutManagement(true);
         $visibleLists = array_intersect($visibleLists, array_keys($allLists));
         $hiddenLists = array_intersect($hiddenLists, array_keys($allLists));
 
@@ -426,6 +442,7 @@ class acym_subscriptionform_widget extends WP_Widget
         $subscribeText = $params->get('subtext', 'ACYM_SUBSCRIBE');
         if (!empty($identifiedUser->id)) $subscribeText = $params->get('subtextlogged', 'ACYM_SUBSCRIBE');
         $unsubscribeText = $params->get('unsubtext', 'ACYM_UNSUBSCRIBE');
+        $unsubButton = $params->get('unsub', '0');
 
         // Formatting
         $listPosition = $params->get('listposition', 'before');

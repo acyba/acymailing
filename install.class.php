@@ -160,11 +160,11 @@ class acymInstall
 
         $allPref['license_key'] = '';
         $allPref['active_cron'] = 0;
-        $allPref['cron_updateme_frequency'] = 900;
-        $allPref['use_https'] = 1;
         $allPref['multilingual'] = 0;
 
         $allPref['delete_stats'] = 31104000;
+
+        $allPref['display_built_by'] = acym_level(1) ? 0 : 1;
 
         $query = "INSERT IGNORE INTO `#__acym_configuration` (`name`,`value`) VALUES ";
         foreach ($allPref as $namekey => $value) {
@@ -963,9 +963,8 @@ class acymInstall
             if (!empty($config->get('active_cron', 0))) {
                 $licenseKey = $config->get('license_key', '');
                 if (!empty($licenseKey)) {
-                    $frequency = $config->get('cron_updateme_frequency', 900);
                     $configurationController = new ConfigurationController();
-                    $configurationController->modifyCron('activateCron', $licenseKey, $frequency);
+                    $configurationController->modifyCron('activateCron', $licenseKey, 900);
                 }
             }
 
@@ -986,6 +985,21 @@ class acymInstall
 
             $fieldClass = new FieldClass();
             $fieldClass->insertLanguageField();
+        }
+        if (version_compare($this->fromVersion, '7.2.0', '<')) {
+            $config->save(['built_by_update' => 1]);
+            $config->save(['display_built_by' => 0]);
+            $this->updateQuery('ALTER TABLE #__acym_user CHANGE `language` `language` VARCHAR(20) NOT NULL DEFAULT ""');
+            $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `language` `language` VARCHAR(20) NOT NULL DEFAULT ""');
+            $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `links_language` `links_language` VARCHAR(20) NOT NULL DEFAULT ""');
+
+            $this->updateQuery('ALTER TABLE #__acym_list ADD `translation` LONGTEXT NULL');
+            $this->updateQuery('ALTER TABLE #__acym_field ADD `translation` LONGTEXT NULL');
+            $this->updateQuery('ALTER TABLE #__acym_mail ADD `translation` TEXT NULL');
+        }
+
+        if (version_compare($this->fromVersion, '7.2.1', '<')) {
+            $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `translation` `translation` TEXT NULL');
         }
     }
 

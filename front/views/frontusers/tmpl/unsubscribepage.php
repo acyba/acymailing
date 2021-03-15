@@ -1,7 +1,37 @@
+<?php
+if (!empty($data['languages'])) {
+    echo '<span id="acym__unsubscribe__label__language">'.acym_translation('ACYM_LANGUAGE').'</span>';
+    echo acym_select(
+        $data['languages'],
+        'language',
+        $data['lang'],
+        null,
+        'value',
+        'text',
+        'acym__unusbscribe__language__select'
+    );
+    ?>
+	<script>
+        var select = document.getElementById('acym__unusbscribe__language__select');
+        var link = '<?php echo acym_currentURL();?>';
+
+        var languageParam = link.match(/&language=[^&]+/);
+        if (null !== languageParam && languageParam.length > 0) {
+            link = link.replace(languageParam[0], '');
+        }
+
+        select.addEventListener('change', function () {
+            link += '&language=' + this.value;
+            window.location.href = link;
+        });
+	</script>
+    <?php
+}
+?>
 <form action="<?php echo acym_frontendLink('frontusers'); ?>"
 	  name="unsubscribepage"
 	  onsubmit="this.querySelector('#acym__save');"
-	  class="acym_front_page acym_front_page__unsubscribe">
+	  class="acym_front_page acym_front_page__unsubscribe margin-top-2">
 	<fieldset>
 		<legend><?php echo acym_translation('ACYM_YOUR_NEWSLETTER_SUBSCRIPTIONS'); ?></legend>
 		<h2 class="margin-top-2 acym_front_page__unsubscribe__title"><?php echo acym_translation('ACYM_HERE_LISTS_YOU_ARE_SUBSCRIBED_TO'); ?></h2>

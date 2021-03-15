@@ -17,6 +17,7 @@ class FrontlistsController extends ListsController
             'countNumberOfRecipients',
             'ajaxCreateNewList',
             'loadMoreSubscribers',
+            'setAjaxListing',
         ];
         $this->urlFrontMenu = 'index.php?option=com_acym&view=frontlists&layout=listing';
         parent::__construct();

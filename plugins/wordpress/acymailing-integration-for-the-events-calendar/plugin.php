@@ -82,8 +82,8 @@ class plgAcymTheeventscalendar extends acymPlugin
             'picthtml' => ['ACYM_IMAGE'],
             'startdate' => ['ACYM_START_DATE'],
             'enddate' => ['ACYM_END_DATE'],
-            'simpleenddate' => ['ACYM_START_DATE_SIMPLE'],
-            'simplestartdate' => ['ACYM_END_DATE_SIMPLE'],
+            'simplestartdate' => ['ACYM_START_DATE_SIMPLE'],
+            'simpleenddate' => ['ACYM_END_DATE_SIMPLE'],
         ];
     }
 
@@ -182,12 +182,14 @@ class plgAcymTheeventscalendar extends acymPlugin
                 'type' => 'date',
                 'name' => 'from',
                 'default' => time(),
+                'relativeDate' => '+',
             ],
             [
                 'title' => 'ACYM_TO',
                 'type' => 'date',
                 'name' => 'to',
                 'default' => '',
+                'relativeDate' => '+',
             ],
             [
                 'title' => 'ACYM_ORDER_BY',
@@ -461,7 +463,7 @@ class plgAcymTheeventscalendar extends acymPlugin
         }
 
         $varFields['{cats}'] = get_the_term_list($tag->id, 'tribe_events_cat', '', ', ');
-        if (in_array('cats', $tag->display)) {
+        if (in_array('cats', $tag->display) && !empty($varFields['{cats}'])) {
             $customFields[] = [
                 $varFields['{cats}'],
                 acym_translation('ACYM_CATEGORIES'),
@@ -469,7 +471,7 @@ class plgAcymTheeventscalendar extends acymPlugin
         }
 
         $varFields['{tags}'] = get_the_term_list($tag->id, 'post_tag', '', ', ');
-        if (in_array('tags', $tag->display)) {
+        if (in_array('tags', $tag->display) && !empty($varFields['{tags}'])) {
             $customFields[] = [
                 $varFields['{tags}'],
                 acym_translation('ACYM_TAGS'),
@@ -479,7 +481,7 @@ class plgAcymTheeventscalendar extends acymPlugin
         $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
                 acym_translation('ACYM_READ_MORE')
             ).'</span></a>';
-        if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
+        if ($tag->readmore === '1') $afterArticle .= $varFields['{readmore}'];
 
         $format = new stdClass();
         $format->tag = $tag;

@@ -34,6 +34,8 @@
 
         .select2-selection__rendered {
             line-height: 1.39rem;
+            max-width: 90%;
+            font-size: .8rem;
         }
     }
 
@@ -71,6 +73,7 @@
 
     .select2-selection__rendered {
         text-align: left;
+        font-size: .8rem;
 
         .select2-selection__choice {
             background-color: $color-palette-dark-blue;

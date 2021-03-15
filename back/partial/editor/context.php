@@ -41,6 +41,8 @@
 			</div>
 			<div class="grid-x cell acym__wysid__context__modal__container__block-settings grid-margin-y acym-grid-margin-x">
 			</div>
+			<div class="cell grid-x acym__wysid__context__modal__block-background acym_vcenter margin-top-1">
+			</div>
 			<div class="cell grid-x acym__wysid__context__modal__block-padding">
 			</div>
 		</div>
@@ -71,14 +73,19 @@
                     <?php echo acym_translation('ACYM_EDIT_BLOCK_HTML').acym_info('ACYM_BECAREFUL_EDITING_SOURCE_CODE'); ?>
 				</label>
 				<div class="cell shrink acym_vcenter">
-					<button type="button" class="button button-secondary" id="acym__wysid__context__block__edit-html"><?php echo acym_translation('ACYM_EDIT_HTML'); ?></button>
+					<button type="button" class="button button-secondary" id="acym__wysid__context__block__edit-html">
+                        <?php echo acym_translation('ACYM_EDIT_HTML'); ?>
+					</button>
 				</div>
 			</div>
 		</div>
 	</div>
+    <?php include acym_getPartial('editor', 'context_text'); ?>
 	<div id="acym__wysid__context__button" class="grid-x padding-1 acym__wysid__context__modal" style="display: none">
-		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title"><?php echo acym_translation('ACYM_BUTTON_TYPE'); ?>
-			<i class="acymicon-keyboard_arrow_up"></i></p>
+		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+            <?php echo acym_translation('ACYM_BUTTON_TYPE'); ?>
+			<i class="acymicon-keyboard_arrow_up"></i>
+		</p>
 		<div class="grid-x cell acym__wysid__context__modal__container grid-margin-x">
 			<button type="button"
 					class="button-radio cell medium-4 acym__wysid__context__button--type"

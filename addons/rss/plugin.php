@@ -156,7 +156,7 @@ class plgAcymRss extends acymPlugin
 
             $rssDoc = simplexml_load_file($parameter->url);
 
-            if ($rssDoc == false) {
+            if ($rssDoc === false) {
                 if (acym_isAdmin()) acym_enqueueMessage(acym_translation('ACYM_RSS_LOAD_ERROR'), 'error');
                 $this->generateCampaignResult->status = false;
                 $this->generateCampaignResult->message = acym_translation('ACYM_RSS_LOAD_ERROR');

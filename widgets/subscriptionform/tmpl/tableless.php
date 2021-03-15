@@ -71,17 +71,17 @@ if ($listPosition == 'before') echo $listsContent;
 </div>
 
 <p class="acysubbuttons">
-<noscript>
-	<div class="onefield fieldacycaptcha">
-        <?php echo acym_translation('ACYM_NO_JAVASCRIPT'); ?>
-	</div>
+	<noscript>
+<div class="onefield fieldacycaptcha">
+    <?php echo acym_translation('ACYM_NO_JAVASCRIPT'); ?>
+</div>
 </noscript>
 <input type="button"
 	   class="btn btn-primary button subbutton"
 	   value="<?php echo acym_translation($subscribeText, true); ?>"
 	   name="Submit"
 	   onclick="try{ return submitAcymForm('subscribe','<?php echo $formName; ?>', 'acymSubmitSubForm'); }catch(err){alert('The form could not be submitted '+err);return false;}" />
-<?php if ($params->get('unsub', '0') == '1' && !empty($countUnsub)) { ?>
+<?php if ($unsubButton === '2' || ($unsubButton === '1' && !empty($countUnsub))) { ?>
 	<span style="display: none;"></span>
 	<input type="button"
 		   class="btn button unsubbutton"

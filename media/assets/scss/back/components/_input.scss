@@ -11,27 +11,6 @@ select[multiple] {
     visibility: hidden;
 }
 
-.acym_radio_group {
-    input[type="radio"] {
-        display: none;
-    }
-
-    i.acym_radio_checked, i.acym_radio_unchecked {
-        cursor: pointer;
-        color: $color-palette-dark-blue;
-        vertical-align: middle;
-        font-size: 1rem;
-    }
-
-    &.dcontent_pictures {
-        display: inline-block;
-    }
-
-    label {
-        vertical-align: middle;
-    }
-}
-
 [type='radio'] {
     margin: .3rem 0 .5rem;
 }

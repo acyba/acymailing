@@ -7,7 +7,7 @@
 						<table align="center" border="0" cellpadding="0" cellspacing="0">
 							<tbody>
 								<tr>
-									<td class="acym__wysid__row ui-droppable ui-sortable" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);">
+									<td class="acym__wysid__row ui-droppable ui-sortable" bgcolor="#ffffff" style="background-color: transparent">
 										<table class="row acym__wysid__row__element" border="0" cellpadding="0" cellspacing="0">
 											<tbody>
 												<tr>

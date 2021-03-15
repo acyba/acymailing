@@ -43,7 +43,7 @@
 				<button data-task="passSplash" class="cell medium-shrink button primary acy_button_submit" type="button"><?php echo acym_translation('ACYM_LETS_GO'); ?></button>
             <?php } else { ?>
 				<div class="cell medium-shrink">
-                    <?php acym_upgradeTo('enterprise'); ?>
+                    <?php acym_upgradeTo('enterprise', 'bounces'); ?>
 				</div>
             <?php } ?>
 			<div class="cell medium-auto hide-for-small-only"></div>

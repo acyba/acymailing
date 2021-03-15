@@ -46,7 +46,11 @@ class acymPlugin extends acymObject
     var $replaceOptions = [];
     var $elementOptions = [];
     var $customOptions = [];
+    var $sendingPlugins = [];
     private $subCategories;
+    var $errors = [];
+
+    var $logFilename = '';
 
     public function __construct()
     {
@@ -72,6 +76,12 @@ class acymPlugin extends acymObject
 
         $pluginClass = new PluginClass();
         $this->savedSettings = $pluginClass->getSettings($this->name);
+
+        $this->sendingPlugins = [
+            'wp_mail_smtp' => 'WP Mail SMTP',
+        ];
+
+        $this->logFilename = (empty($this->name) ? get_class($this) : $this->name).'.txt';
     }
 
     protected function displaySelectionZone($zoneContent)
@@ -719,7 +729,7 @@ class acymPlugin extends acymObject
 
         if ($onlyValue) return $value;
 
-        if (acym_isPluginActive('languagefilter')) {
+        if (ACYM_CMS == 'joomla' && acym_isPluginActive('languagefilter')) {
             return '&lang='.substr($value, 0, strpos($value, '-'));
         } else {
             return '&language='.$value;
@@ -852,7 +862,7 @@ class acymPlugin extends acymObject
                     $field['value'],
                     $field['label'],
                     [],
-                    'shrink'
+                    'large-7'
                 );
             } elseif ($field['type'] == 'select') {
                 $text .= '<label class="cell shrink">'.$field['label'].'</label>';
@@ -1118,11 +1128,29 @@ class acymPlugin extends acymObject
 
     protected function getTestCredentialsSendingMethodButton($sendingMethodId)
     {
-        return '<button type="button" sending-method-id="'.$sendingMethodId.'" class="acym__configuration__sending__method-test cell shrink button button-secondary">
-                '.acym_translation('ACYM_TEST_CREDENTIALS').'
-			</button>
-			<span class="acym__configuration__sending__method-test__icon cell shrink margin-left-1"></span>
-			<span class="acym__configuration__sending__method-test__message cell shrink margin-left-1"></span>';
+        return '<div class="cell grid-x margin-top-1 acym__sending__methods__credentials__test">
+                    <button type="button" sending-method-id="'.$sendingMethodId.'" class="acym__configuration__sending__method-test cell shrink button button-secondary">
+                    '.acym_translation('ACYM_TEST_CREDENTIALS').'
+                    </button>
+                    <span class="acym__configuration__sending__method-icon cell shrink margin-left-1 acym_vcenter"></span>
+                    <span class="acym__configuration__sending__method-test__message cell shrink margin-left-1 acym_vcenter"></span>
+                </div>';
+    }
+
+    public function getCopySettingsButton($data, $sendingMethodId, $fromPlugin)
+    {
+        if (empty($data[$fromPlugin.'_installed'])) return '';
+
+        return '<div class="cell grid-x margin-top-1 acym__sending__methods__copy__data">
+					<button 
+					type="button"
+					class="cell shrink button button-secondary acym__configuration__copy__mail__settings" 
+					acym-data-plugin="'.$fromPlugin.'"
+					acym-data-method="'.$sendingMethodId.'">
+	                    '.acym_translationSprintf('ACYM_COPY_SETTINGS_FROM', $this->sendingPlugins[$fromPlugin]).'
+                    </button>
+                    <span class="acym__configuration__sending__method-icon cell shrink margin-left-1 acym_vcenter"></span>
+				</div>';
     }
 
     protected function getLinks($account = '', $pricing = '')
@@ -1140,9 +1168,31 @@ class acymPlugin extends acymObject
 
     public function onAcymGetSendingMethodsSelected(&$data)
     {
+        if (ACYM_CMS == 'wordpress') $this->config->load();
         $mailerMethod = $this->config->get('mailer_method', 'phpmail');
         foreach ($data['sendingMethods'] as $key => $sendingMethod) {
             $data['sendingMethods'][$key]['selected'] = $key == $mailerMethod;
         }
+    }
+
+    public function errorCallback()
+    {
+        $reportPath = acym_getLogPath($this->logFilename, true);
+
+        $lr = "\r\n";
+        file_put_contents(
+            $reportPath,
+            $lr.$lr.'********************     '.acym_getDate(time()).'     ********************'.$lr.implode($lr, $this->errors),
+            FILE_APPEND
+        );
+
+        $this->errors = [];
+    }
+
+    public function isLogFileEmpty()
+    {
+        $reportPath = acym_getLogPath($this->logFilename);
+
+        return !file_exists($reportPath);
     }
 }

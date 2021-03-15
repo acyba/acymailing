@@ -128,7 +128,7 @@ jQuery(document).ready(function ($) {
     }
 
     function setAjaxCallForChartLine(start, end) {
-        let url = ACYM_AJAX_URL + '&ctrl=stats&task=setDataForChartLine"&start=' + start + '&end=' + end + '&id=' + $('#mail_id').val();
+        let url = ACYM_AJAX_URL + '&ctrl=stats&task=setDataForChartLine&start=' + start + '&end=' + end + '&id=' + $('#mail_id').val();
 
         $.post(url, function (response) {
             if (response == 'error') {

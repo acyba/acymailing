@@ -9,7 +9,7 @@
  *
  * This implementation is based on the original work from Gary White
  */
-class Browser
+class AcymBrowser
 {
     private $_agent = '';
     private $_browser_name = '';

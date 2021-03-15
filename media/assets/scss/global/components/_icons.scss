@@ -72,16 +72,6 @@
 }
 
 #acym_wrapper {
-    // Used for the DText icon in the TinyMCE editor when editing a text zone
-    .mce-ico.mce-i-codesample {
-        font-family: 'tinymce', Arial;
-        display: inline-block;
-
-        &:before {
-            content: "\e603";
-        }
-    }
-
     .rotate180deg:before {
         -moz-transform: rotate(180deg);
         -ms-transform: rotate(180deg);

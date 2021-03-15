@@ -1,18 +1,3 @@
-#acym__wysid__modal__dynamic-text__ui__iframe {
-    width: 100%;
-    @media screen and (min-width: 649px) {
-        & {
-            min-height: 600px;
-        }
-    }
-
-    @media screen and (max-width: 649px) {
-        & {
-            min-height: 100%;
-        }
-    }
-}
-
 .acym__wysid__modal {
     #acym__wysid__modal__cms__load {
         margin-top: 24px;

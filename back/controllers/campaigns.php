@@ -32,6 +32,8 @@ class CampaignsController extends acymController
         $this->loadScripts = [
             'recipients' => ['vue-applications' => ['entity_select']],
             'send_settings' => ['datepicker'],
+            'summary' => ['vue-applications' => ['modal_users_summary']],
+            'segment' => ['vue-applications' => ['modal_users_summary']],
         ];
         acym_setVar('edition', '1');
         if (acym_isAdmin()) $this->stepContainerClass = 'xxlarge-9';
@@ -892,10 +894,33 @@ class CampaignsController extends acymController
 
     public function segment()
     {
-        if (!acym_level(2)) {
-            acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
+        acym_setVar('layout', 'segment');
+        acym_setVar('step', 'segment');
+
+        $campaignClass = new CampaignClass();
+        $mailClass = new MailClass();
+        $campaignId = acym_getVar('int', 'id');
+
+        if (empty($campaignId)) {
+            acym_enqueueMessage(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), 'error');
+            $this->listing();
+
+            return;
         }
 
+        $campaign = $campaignClass->getOneById($campaignId);
+
+        $mail = $mailClass->getOneById($campaign->mail_id);
+        $data = [
+            'campaign' => $campaign,
+            'containerClass' => $this->stepContainerClass,
+            'displaySegmentTab' => true,
+            'workflowHelper' => new WorkflowHelper(),
+        ];
+
+
+        $this->breadcrumb[acym_escape($mail->name)] = acym_completeLink(acym_completeLink('campaigns&task=edit&step=recipients&id='.$campaign->id));
+        parent::display($data);
     }
 
     public function sendSettings()
@@ -978,6 +1003,7 @@ class CampaignsController extends acymController
         $campaign['langChoice'] = acym_isMultilingual() ? '' : acym_languageOption($campaign['currentCampaign']->links_language, 'senderInformation[links_language]');
         $this->prepareListingClasses($campaign);
         $this->prepareSegmentDisplay($campaign, $campaign['currentCampaign']->sending_params);
+        $this->prepareMultilingualOption($campaign);
 
         return parent::display($campaign);
     }
@@ -1266,6 +1292,7 @@ class CampaignsController extends acymController
         $currentMail->reply_to_email = $senderInformation['reply_to_email'];
         $currentMail->bcc = $senderInformation['bcc'];
         $currentMail->tracking = $senderInformation['tracking'];
+        $currentMail->translation = empty($senderInformation['translation']) ? '' : $senderInformation['translation'];
         if (isset($senderInformation['links_language'])) $currentMail->links_language = $senderInformation['links_language'];
 
         $mailClass->save($currentMail);
@@ -1381,10 +1408,35 @@ class CampaignsController extends acymController
         $this->prepareMultilingual($data, false);
         $this->prepareAllMailsForMultilingual($data);
         $this->prepareListingClasses($data);
+        $this->prepareSegmentData($data);
         $this->prepareSegmentDisplay($data, $data['campaignInformation']->sending_params);
 
         $this->breadcrumb[$data['campaignInformation']->name] = acym_completeLink('campaigns&task=edit&step=summary&id='.$data['campaignInformation']->id);
         parent::display($data);
+    }
+
+    private function prepareSegmentData(&$data)
+    {
+        if (empty($data['campaignInformation']->sending_params['segment'])) return;
+
+        $segmentParams = $data['campaignInformation']->sending_params['segment'];
+
+        $segmentController = new SegmentsController();
+
+        if (!empty($segmentParams['segment_id'])) {
+            $segmentClass = new SegmentClass();
+            $segment = $segmentClass->getOneById($segmentParams['segment_id']);
+
+            $data['segment'] = [
+                'name' => $segment->name,
+                'count' => $segmentController->countSegmentById($segment->id, $data['listsIds'], false),
+            ];
+        } else {
+            $data['segment'] = [
+                'name' => acym_translation('ACYM_YOUR_CUSTOM_SEGMENT'),
+                'count' => $segmentController->countSegmentByParams($segmentParams, $data['listsIds']),
+            ];
+        }
     }
 
     protected function prepareCurrentUserSummary(&$data)
@@ -1469,27 +1521,23 @@ class CampaignsController extends acymController
     {
         $nbSubscribers = 0;
         $campaignLists = $data['mailClass']->getAllListsWithCountSubscribersByMailIds([$data['campaignInformation']->mail_id]);
+        $listsIds = [];
 
-        if ($data['campaignInformation']->sent) {
-            $mailStatClass = new MailStatClass();
-            $nbSubscribers = $mailStatClass->getTotalSubscribersByMailId($data['campaignInformation']->mail_id);
-        } else {
-            if (!empty($campaignLists)) {
-                $listsIds = [];
-                foreach ($campaignLists as $oneList) {
-                    $listsIds[] = $oneList->list_id;
-                }
-                if (empty($data['campaignInformation']->sending_params)) {
-                    $listClass = new ListClass();
-                    $nbSubscribers = $listClass->getSubscribersCount($listsIds);
-                } else {
-                    $campaignClass = new CampaignClass();
-                    $nbSubscribers = $campaignClass->countUsersCampaign($data['campaignInformation']->id);
-                }
+        if (!empty($campaignLists)) {
+            foreach ($campaignLists as $oneList) {
+                $listsIds[] = $oneList->list_id;
+            }
+            if (empty($data['campaignInformation']->sending_params)) {
+                $listClass = new ListClass();
+                $nbSubscribers = $listClass->getSubscribersCount($listsIds);
+            } else {
+                $campaignClass = new CampaignClass();
+                $nbSubscribers = $campaignClass->countUsersCampaign($data['campaignInformation']->id);
             }
         }
 
         $data['listsReceiver'] = $campaignLists;
+        $data['listsIds'] = $listsIds;
         $data['nbSubscribers'] = $nbSubscribers;
     }
 

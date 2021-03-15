@@ -27,10 +27,18 @@
                             ); ?></span></div>
 					<br />
 					<div class="cell acym__automation__summary__information__one">
-                        <?php echo implode(
+                        <?php
+                        foreach ($data['step']->triggers as $name => $oneTrigger) {
+                            if (!is_string($oneTrigger)) {
+                                $data['step']->triggers[$name] = acym_translation('ACYM_UNKNOWN');
+                            }
+                        }
+
+                        echo implode(
                             '<br /><span class="acym__automation__summary__information__one__title">'.acym_translation('ACYM_OR').'</span><br />',
                             $data['step']->triggers
-                        ); ?>
+                        );
+                        ?>
 					</div>
 				</div>
 				<div class="acym__automation__summary__actions cell grid-x margin-top-2 acym__content">
@@ -49,7 +57,7 @@
                             } else {
                                 echo '<span class="acym__automation__summary__information__one__title">'.acym_translationSprintf(
                                         'ACYM_CONDITIONS_APPLY_TO',
-                                        acym_translation($typeTrigger == 'classic' ? '' : 'ACYM_ONE_ACYMAILING_USER_CONDITION')
+                                        acym_translation($typeTrigger == 'classic' ? '' : 'ACYM_ONE_ACYMAILING_SUBSCRIBER_CONDITION')
                                     ).'</span></div><div class="acym__automation__summary__information__one">';
                                 foreach ($data['condition']->conditions as $or => $orValues) {
                                     if ($or === 'type_condition') continue;
@@ -76,7 +84,7 @@
                     <?php
                     if (!empty($data['action']->actions)) {
                         echo '<span class="acym__automation__summary__information__one__title">'.acym_translationSprintf(
-                                'ACYM_ACTIONS_USER_WILL',
+                                'ACYM_ACTIONS_SUBSCRIBER_WILL',
                                 acym_strtolower(acym_translation(empty($data['id']) ? 'ACYM_MASS_ACTION' : 'ACYM_AUTOMATION'))
                             ).'</span></div><div class="acym__automation__summary__information__one">';
                         $andNum = 0;

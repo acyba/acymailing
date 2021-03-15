@@ -6,6 +6,8 @@
     background-color: $white;
     color: map-get($editor-wysid-palette, primary);
     user-select: none;
+    height: -moz-fill-available;
+    height: -webkit-fill-available;
 
     #acym__wysid__right-toolbar__overlay {
         position: absolute;

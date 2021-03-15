@@ -23,7 +23,12 @@
             );
             ?>
 		</div>
-		<div class="cell medium-3 automatic_only automatic_manual"><?php echo acym_translation('ACYM_AUTO_SEND_PROCESS'); ?></div>
+		<div class="cell medium-3 automatic_only automatic_manual">
+            <?php
+            echo acym_translation('ACYM_AUTO_SEND_PROCESS');
+            echo acym_info('ACYM_AUTO_SEND_PROCESS_DESC');
+            ?>
+		</div>
 		<div class="cell medium-9 automatic_only automatic_manual">
             <?php
             $cronFrequency = $this->config->get('cron_frequency');
@@ -93,32 +98,40 @@
             ?>
 		</div>
 		<div class="cell medium-3"><?php echo acym_translation('ACYM_ORDER_SEND_QUEUE'); ?></div>
-		<div class="cell medium-9">
-            <?php
-            $ordering = [];
-            $ordering[] = acym_selectOption("user_id, ASC", 'user_id ASC');
-            $ordering[] = acym_selectOption("user_id, DESC", 'user_id DESC');
-            $ordering[] = acym_selectOption('rand', 'ACYM_RANDOM');
-            echo acym_select(
-                $ordering,
-                'config[sendorder]',
-                $this->config->get('sendorder', 'user_id, ASC'),
-                'class="intext_select"',
-                'value',
-                'text',
-                'sendorderid'
-            );
-
-            echo '</div>';
-
-            ?>
+		<div class="cell medium-9 grid-x">
+			<div class="cell medium-6 large-4 xlarge-3 xxlarge-2">
+                <?php
+                echo acym_select(
+                    [
+                        acym_selectOption(
+                            'user_id, ASC',
+                            acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', acym_translation('ACYM_USER_ID'), acym_translation('ACYM_ASC'))
+                        ),
+                        acym_selectOption(
+                            'user_id, DESC',
+                            acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', acym_translation('ACYM_USER_ID'), acym_translation('ACYM_DESC'))
+                        ),
+                        acym_selectOption('rand', 'ACYM_RANDOM'),
+                    ],
+                    'config[sendorder]',
+                    $this->config->get('sendorder', 'user_id, ASC'),
+                    'class="acym__select"',
+                    'value',
+                    'text',
+                    'sendorderid'
+                );
+                ?>
+			</div>
 		</div>
+        <?php
+
+        ?>
 	</div>
-    <?php
+</div>
+<?php
 if (!acym_level(1)) {
-    $data['version'] = 'essential';
     echo '<div class="acym_area">
             <div class="acym__title acym__title__secondary">'.acym_translation('ACYM_CRON').'</div>';
-    include acym_getView('dashboard', 'upgrade');
+    include acym_getView('configuration', 'upgrade_license');
     echo '</div>';
 }

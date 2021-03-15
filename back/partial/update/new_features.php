@@ -5,9 +5,9 @@
 			<img src="<?php echo ACYM_IMAGES.'splashscreen/header_airplane.png'; ?>" alt="planes" class="acym__splashcreen__header__planes">
 			<div class="cell auto"></div>
 			<div class="cell medium-6 grid-x grid-margin-y">
-				<h1 class="cell">AcyMailing 7.1 has arrived 🎉</h1>
-				<p class="cell">To get February off to a good start, here are some new features for you!</p>
-				<a href="<?php echo ACYM_ACYMAILLING_WEBSITE.'pricing/'; ?>" class="cell shrink button">Upgrade now!</a>
+				<h1 class="cell">AcyMailing 7.3 has arrived 🎉</h1>
+				<p class="cell">Small features and improvements come in your plugin, find out what’s new!</p>
+				<a href="<?php echo ACYM_ACYMAILLING_WEBSITE.'pricing/'; ?>" class="cell shrink button">Purchase a license!</a>
 			</div>
 		</div>
 		<div class="cell grid-x align-center margin-top-3">
@@ -27,8 +27,8 @@
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_1.png'; ?>" alt="card_1_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">Override WooCommerce emails</h4>
-					<p class="cell acym__splashcreen__body__card__text">Customize default emails sent from WooCommerce such as new order, completed order, refund....</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Non-transactional Sendinblue emails</h4>
+					<p class="cell acym__splashcreen__body__card__text">Non-transactional email can now be sent from Sendinblue.</p>
 				</div>
                 <?php
                 ?>
@@ -38,8 +38,8 @@
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_2.png'; ?>" alt="card_2_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">WooCommerce abandoned cart</h4>
-					<p class="cell acym__splashcreen__body__card__text">Send emails to your customer who left without purchasing their products</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Modern Events Calendar</h4>
+					<p class="cell acym__splashcreen__body__card__text">Your events can be integrated into your email.</p>
 				</div>
                 <?php
                 ?>
@@ -49,14 +49,14 @@
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_3.png'; ?>" alt="card_3_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">Joomla 4 compatibility</h4>
-					<p class="cell acym__splashcreen__body__card__text">AcyMailing is now compatible with Joomla 4, the last Joomla version.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Dynamic text</h4>
+					<p class="cell acym__splashcreen__body__card__text">Dynamic text is now accessible from the edit menu of your email.</p>
 				</div>
 			</div>
 			<div class="cell grid-x acym__splashcreen__body__middle margin-top-2">
 				<div class="cell medium-6 grid-x grid-margin-x acym__splashcreen__body__middle__left">
 					<h4 class="cell acym__splashcreen__body__subtitle">New main feature</h4>
-					<h2 class="cell acym__splashcreen__body__middle__left__title">WooCommerce abandoned cart</h2>
+					<h2 class="cell acym__splashcreen__body__middle__left__title">Modern Events Calendar</h2>
 				</div>
 				<div class="cell medium-6 acym__splashcreen__body__middle__right grid-x grid-margin-y">
 					<div class="cell grid-x">
@@ -66,8 +66,9 @@
 							</div>
 						</div>
 						<div class="cell auto grid-x">
-							<h2 class="cell acym__splashcreen__body__middle__right__title">Create customer experience</h2>
-							<p class="cell acym__splashcreen__body__middle__right__text">Send reminder email to your customers in a personalised way.</p>
+							<h2 class="cell acym__splashcreen__body__middle__right__title">Insert events in your emails</h2>
+							<p class="cell acym__splashcreen__body__middle__right__text">Communicate on your events directly in your emails and choose which elements will be
+								displayed about it.</p>
 						</div>
 					</div>
 					<div class="cell grid-x">
@@ -77,9 +78,9 @@
 							</div>
 						</div>
 						<div class="cell auto grid-x">
-							<h2 class="cell acym__splashcreen__body__middle__right__title">Improve your sales rate</h2>
-							<p class="cell acym__splashcreen__body__middle__right__text">Push customers purchase by reminding them that their purchase calmly waits in their
-								cart.</p>
+							<h2 class="cell acym__splashcreen__body__middle__right__title">Create automatic invitations</h2>
+							<p class="cell acym__splashcreen__body__middle__right__text">Segment your users and create automatic invitations. Choose when they will be sent to your
+								users and which one is concerned.</p>
 						</div>
 					</div>
 				</div>
@@ -90,17 +91,17 @@
 					<div class="cell margin-bottom-1 text-center">
 						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_1.png'; ?>" alt="">
 					</div>
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Faster sending process</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">Trigger multiple batches at the same time and choose how many and how often batches will be
-						sent.</p>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Multilingual options</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">Define custom fieds labels and descriptions on the user language and personalize their
+						experience.</p>
 				</div>
 				<div class="cell medium-6 acym__splashcreen__body__end__card">
 					<div class="cell margin-bottom-1 text-center">
 						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_2.png'; ?>" alt="">
 					</div>
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Integration with external sending services</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">Send your email with an external sending service. AcyMailing has now 4 new services:
-						SendGrid, Sendinblue, Postmark and Mailgun.</p>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Universal filter</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">In the automation, filter your AcyMailing users based on their data from any extension with
+						the Universal filter add-on.</p>
 				</div>
 			</div>
 		</div>

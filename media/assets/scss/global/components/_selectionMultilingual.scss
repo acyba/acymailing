@@ -1,0 +1,32 @@
+.acym__multilingual__selection {
+
+    .acym__title {
+        font-size: 1rem;
+        margin-bottom: 0;
+        font-weight: normal;
+    }
+
+    .acym__multilingual__selection__one {
+        padding: .2rem;
+        border-radius: 4px;
+        transition: .2s;
+        cursor: pointer !important;
+
+        &.acym__multilingual__selection__one__selected {
+            background-color: $light-gray;
+        }
+
+        img {
+            width: 34px;
+            height: 34px;
+        }
+    }
+}
+
+#acym__campaigns, #acym__fields__edit {
+    .acym__multilingual__selection {
+        .acym__title {
+            margin-left: 0;
+        }
+    }
+}

@@ -277,7 +277,7 @@ class CampaignClass extends acymClass
 
     public function getOneByIdWithMail($id)
     {
-        $query = 'SELECT campaign.*, mail.name, mail.subject, mail.body, mail.from_name, mail.from_email, mail.reply_to_name, mail.reply_to_email, mail.bcc, mail.links_language, mail.tracking
+        $query = 'SELECT campaign.*, mail.name, mail.subject, mail.body, mail.from_name, mail.from_email, mail.reply_to_name, mail.reply_to_email, mail.bcc, mail.links_language, mail.tracking, mail.translation
                 FROM #__acym_campaign AS campaign
                 JOIN #__acym_mail AS mail ON campaign.mail_id = mail.id
                 WHERE campaign.id = '.intval($id);
@@ -582,7 +582,7 @@ class CampaignClass extends acymClass
         $mailStatClass->save($mailStat);
 
         if ($result === 0) {
-            $this->errors[] = acym_translation('ACYM_NO_USERS_FOUND');
+            $this->errors[] = acym_translation('ACYM_NO_SUBSCRIBERS_FOUND');
 
             return false;
         }
@@ -833,7 +833,14 @@ class CampaignClass extends acymClass
     private function shouldGenerateCampaign($campaign, $campaignMail)
     {
         // The generateByCategory function is the only one that can stop a campaign generation, with min number of items
-        $results = acym_trigger('generateByCategory', [&$campaignMail]);
+        $results = acym_trigger(
+            'generateByCategory',
+            [&$campaignMail],
+            null,
+            function ($plugin) {
+                $plugin->generateCampaignResult->status = true;
+            }
+        );
 
         // If one of the return statuses is "false", we won't generate the campaign
         foreach ($results as $oneResult) {

@@ -30,6 +30,7 @@ define('ACYM_CSS', ACYM_MEDIA_URL.'css/');
 define('ACYM_JS', ACYM_MEDIA_URL.'js/');
 define('ACYM_TEMPLATE', ACYM_MEDIA.'templates'.DS);
 define('ACYM_TEMPLATE_URL', ACYM_MEDIA_URL.'templates'.DS);
+define('ACYM_TMP_URL', ACYM_MEDIA_URL.'tmp/');
 define('ACYM_TEMPLATE_THUMBNAILS', ACYM_IMAGES.'thumbnails/');
 define('ACYM_CORE_DYNAMICS_URL', acym_rootURI().'administrator/components/'.ACYM_COMPONENT.'/dynamics/');
 define('ACYM_DYNAMICS_URL', ACYM_CORE_DYNAMICS_URL);
@@ -41,6 +42,7 @@ define('ACYM_UPLOAD_FOLDER_THUMBNAIL', ACYM_MEDIA.'images'.DS.'thumbnails'.DS);
 
 define('ACYM_CUSTOM_PLUGIN_LAYOUT', ACYM_MEDIA.'plugins'.DS);
 define('ACYM_LOGS_FOLDER', ACYM_MEDIA_FOLDER.DS.'logs'.DS);
+define('ACYM_TMP_FOLDER', ACYM_MEDIA.'tmp'.DS);
 
 //Avoid the issue with 3.0.0_beta
 $jversion = preg_replace('#[^0-9\.]#i', '', JVERSION);

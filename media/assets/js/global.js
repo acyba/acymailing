@@ -14,7 +14,7 @@ jQuery(document).ready(function ($) {
         };
     }
 
-    $.Modal = function () {
+    $.acymModal = function () {
         acym_helperModal.initModal();
     };
 });

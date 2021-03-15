@@ -107,7 +107,7 @@ class plgAcymExample extends acymPlugin
     public function textPopup()
     {
         $text = '<div class="acym__popup__listing text-center grid-x">
-                    <h1 class="acym__popup__plugin__title cell">This is only en example, you can display any option here:</h1>';
+                    <h1 class="acym__title acym__title__secondary text-center cell">This is only en example, you can display any option here:</h1>';
 
         $others = [];
         $others['{'.$this->name.':45|anoption}'] = 'Some description, like "Name"';

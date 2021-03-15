@@ -50,7 +50,7 @@ class FrontstatsController extends acymController
                     }
 
                     require_once ACYM_INC.'browser'.DS.'browser.php';
-                    $browser = new \Browser($userAgent);
+                    $browser = new \AcymBrowser($userAgent);
                     $openedWith = $browser->getBrowser();
                 }
 

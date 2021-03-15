@@ -6,13 +6,12 @@ if (empty($data['mailInformation'])) $data['mailInformation'] = $data['mail'];
         <?php echo acym_translation('ACYM_CONFIGURATION_LANGUAGES').acym_info('ACYM_MULTILINGUAL_DESC'); ?>
 	</div>
 
-    <?php $code = strtolower(substr($data['main_language']->code, 3)); ?>
 	<div class="acym__wysid__edit__languages__selection acym__wysid__edit__languages-selected">
         <?php
         echo acym_tooltip(
             '<i class="acymicon-pencil acym__wysid__edit__languages__selection__edition"></i>
 						<i class="acymicon-check acym__wysid__edit__languages__selection__check"></i>
-						<img acym-data-lang="main" src="'.acym_getFlagByCode($code).'" alt="'.$code.' flag">',
+						<img acym-data-lang="main" src="'.acym_getFlagByCode($data['main_language']->code).'" alt="'.$data['main_language']->code.' flag">',
             $data['main_language']->name
         );
         ?>
@@ -27,7 +26,6 @@ if (empty($data['mailInformation'])) $data['mailInformation'] = $data['mail'];
 	</div>
     <?php
     foreach ($data['languages'] as $oneLanguage) {
-        $code = strtolower(substr($oneLanguage->code, 3));
         $containerClass = 'acym__wysid__edit__languages__selection';
         if (empty($oneLanguage->subject)) {
             $containerClass .= ' acym__wysid__edit__languages__selection-empty';
@@ -41,7 +39,7 @@ if (empty($data['mailInformation'])) $data['mailInformation'] = $data['mail'];
             <?php echo acym_tooltip(
                 '<i class="acymicon-pencil acym__wysid__edit__languages__selection__edition"></i>
 							<i class="acymicon-check acym__wysid__edit__languages__selection__check"></i>
-							<img acym-data-lang="'.$oneLanguage->code.'" src="'.acym_getFlagByCode($code).'" alt="'.$code.' flag">',
+							<img acym-data-lang="'.$oneLanguage->code.'" src="'.acym_getFlagByCode($oneLanguage->code).'" alt="'.$oneLanguage->code.' flag">',
                 $oneLanguage->name
             ); ?>
 

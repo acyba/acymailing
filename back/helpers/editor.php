@@ -47,6 +47,20 @@ class EditorHelper extends acymObject
             acym_addScript(false, ACYM_JS.'tinymce/tinymce.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'tinymce/tinymce.min.js'));
 
             $data = $this->data;
+            $mailId = empty($data['mail']->mail_id) ? (empty($data['mail']->id) ? 0 : $data['mail']->id) : $data['mail']->mail_id;
+            $data['tabHelper'] = new TabHelper();
+            $data['plugins'] = acym_trigger('dynamicText', [$mailId]);
+            usort(
+                $data['plugins'],
+                function ($a, $b) {
+                    return strtolower($a->name) > strtolower($b->name);
+                }
+            );
+
+            acym_setVar('mail_id', $mailId);
+            acym_setVar('mail_type', empty($data['mail']->type) ? '' : $data['mail']->type);
+            acym_setVar('automation', $this->automation ? 1 : 0);
+
             include acym_getPartial('editor', 'editor_wysid');
         } else {
             // Outside of the Acy wrapper to prevent foundation from breaking the 100 different editors we could have here

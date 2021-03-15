@@ -1,5 +1,5 @@
 <div class="cell grid-x text-right grid-margin-x margin-bottom-0 margin-y">
-	<h5 class="cell medium-auto medium-text-left text-center hide-for-small-only hide-for-medium-only acym__title"><?php echo acym_translation('ACYM_USER'); ?></h5>
+	<h5 class="cell medium-auto medium-text-left text-center hide-for-small-only hide-for-medium-only acym__title"><?php echo acym_translation('ACYM_SUBSCRIBER'); ?></h5>
     <?php
     echo acym_cancelButton();
     if (!empty($data['entityselect'])) echo $data['entityselect'];

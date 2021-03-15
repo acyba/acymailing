@@ -42,7 +42,7 @@ class acyRouter extends acyHook
             'stats',
             'users',
         ];
-        $headerPages = ['automation', 'bounces', 'campaigns', 'dashboard', 'fields', 'followups', 'forms', 'lists', 'mails', 'override', 'segments', 'stats', 'users'];
+        $headerPages = ['automation', 'bounces', 'campaigns', 'configuration', 'dashboard', 'fields', 'followups', 'forms', 'lists', 'mails', 'override', 'segments', 'stats', 'users'];
         foreach ($pages as $page) {
             if (in_array($page, $headerPages)) {
                 // Ensure we can set headers in the plugin

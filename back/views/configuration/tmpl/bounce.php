@@ -1,7 +1,7 @@
 <?php
 if (!acym_level(2)) {
-    $data['version'] = 'enterprise';
+    $data['isEnterprise'] = false;
     echo '<div class="margin-top-1">';
-    include acym_getView('dashboard', 'upgrade');
+    include acym_getView('bounces', 'splashscreen');
     echo '</div>';
 } ?>

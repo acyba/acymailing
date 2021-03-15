@@ -197,11 +197,12 @@ class MailClass extends acymClass
     }
 
     /**
-     * @param int $id
+     * @param int     $id
+     * @param boolean $needTranslatedSettings
      *
      * @return object
      */
-    public function getOneById($id)
+    public function getOneById($id, $needTranslatedSettings = false)
     {
         $mail = $this->decode(acym_loadObject('SELECT * FROM #__acym_mail WHERE id = '.intval($id)));
 
@@ -212,15 +213,47 @@ class MailClass extends acymClass
 
         if (isset($mail->access) && !is_array($mail->access)) $mail->access = explode(',', $mail->access);
 
+        if (!empty($mail->parent_id) && $needTranslatedSettings) {
+            $this->getTranslatedSettingsMail($mail);
+        }
+
+        return $mail;
+    }
+
+    private function getTranslatedSettingsMail(&$mail)
+    {
+        $parentMailTranslation = acym_loadResult('SELECT translation FROM #__acym_mail WHERE id = '.intval($mail->parent_id));
+        $parentMailTranslation = empty($parentMailTranslation) ? [] : json_decode($parentMailTranslation, true);
+
+        $translationConfig = $this->config->get('sender_info_translation', '');
+        $translationConfig = empty($translationConfig) ? [] : json_decode($translationConfig, true);
+
+        if (!empty($parentMailTranslation[$mail->language])) {
+            $senderTranslation = $parentMailTranslation[$mail->language];
+        } elseif (!empty($translationConfig[$mail->language])) {
+            $senderTranslation = $translationConfig[$mail->language];
+            $senderTranslation['reply_to_email'] = $senderTranslation['replyto_email'];
+            $senderTranslation['reply_to_name'] = $senderTranslation['replyto_name'];
+        } else {
+            return $mail;
+        }
+
+        $mail->from_name = $senderTranslation['from_name'];
+        $mail->from_email = $senderTranslation['from_email'];
+        $mail->reply_to_name = $senderTranslation['reply_to_name'];
+        $mail->reply_to_email = $senderTranslation['reply_to_email'];
+
         return $mail;
     }
 
     /**
-     * @param string $name
+     * @param string  $name
+     * @param boolean $library
+     * @param boolean $needTranslatedSettings
      *
      * @return object
      */
-    public function getOneByName($name, $library = false)
+    public function getOneByName($name, $library = false, $needTranslatedSettings = false)
     {
         $query = 'SELECT * FROM #__acym_mail WHERE `parent_id` IS NULL AND `name` = '.acym_escapeDB(utf8_encode($name));
         if ($library) $query .= ' AND `library` = 1';
@@ -230,6 +263,10 @@ class MailClass extends acymClass
         if (!empty($mail)) {
             $tagsClass = new TagClass();
             $mail->tags = $tagsClass->getAllTagsByElementId('mail', $mail->id);
+        }
+
+        if (!empty($mail->parent_id) && $needTranslatedSettings) {
+            $this->getTranslatedSettingsMail($mail);
         }
 
         return $mail;
@@ -922,9 +959,11 @@ class MailClass extends acymClass
             $isArray = false;
         }
 
-        $return = array_map([$this, 'utf8Encode'], $mails);
+        $encodedMails = array_map([$this, 'removePoweredByAcyMailing'], $mails);
 
-        return $isArray ? $return : $return[0];
+        $encodedMails = array_map([$this, 'utf8Encode'], $encodedMails);
+
+        return $isArray ? $encodedMails : $encodedMails[0];
     }
 
     /**
@@ -943,14 +982,16 @@ class MailClass extends acymClass
             $isArray = false;
         }
 
-        $return = array_map([$this, 'utf8Decode'], $mails);
+        $decodedMails = array_map([$this, 'utf8Decode'], $mails);
 
-        foreach ($return as $i => $oneMail) {
+        $decodedMails = array_map([$this, 'addPoweredByAcyMailing'], $decodedMails);
+
+        foreach ($decodedMails as $i => $oneMail) {
             if (!isset($oneMail->access) || is_array($oneMail->access)) continue;
-            $return[$i]->access = empty($oneMail->access) ? '' : explode(',', $oneMail->access);
+            $decodedMails[$i]->access = empty($oneMail->access) ? '' : explode(',', $oneMail->access);
         }
 
-        return $isArray ? $return : $return[0];
+        return $isArray ? $decodedMails : $decodedMails[0];
     }
 
     /**
@@ -976,6 +1017,102 @@ class MailClass extends acymClass
                 $value = utf8_decode($value);
             }
         }
+
+        return $mail;
+    }
+
+    protected function addPoweredByAcyMailing($mail)
+    {
+        if (empty($mail->body)) return $mail;
+        //If we don't display the powered by we remove it
+        if ($this->config->get('display_built_by', 0) != 1) {
+            if (strpos($mail->body, 'acym__powered_by_acymailing') !== false) {
+                $mailBodyDom = new \DOMDocument();
+                @$mailBodyDom->loadHTML('<?xml encoding="utf-8" ?>'.$mail->body);
+                $tables = $mailBodyDom->getElementsByTagName('table');
+                foreach ($tables as $table) {
+                    if ($table->getAttribute('id') != 'acym__powered_by_acymailing') continue;
+                    $table->parentNode->removeChild($table);
+                    break;
+                }
+                $mail->body = $mailBodyDom->saveHTML();
+            }
+
+            return $mail;
+        }
+        if (empty($mail->body)) return $mail;
+        if (strpos($mail->body, 'acym__powered_by_acymailing') !== false) return $mail;
+
+        $isWysidEditor = strpos($mail->body, 'acym__wysid__template') !== false;
+
+        $urlPoweredByImage = ACYM_IMAGES.'poweredby_black.png';
+
+        $poweredByHTML = '<p id="acym__powered_by_acymailing"><a href="https://www.acymailing.com/?utm_source=powered_by_v7" target="blank"><img height="40" width="199" style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;" src="'.$urlPoweredByImage.'"></a></p>';
+        $poweredByWYSID = <<<CONTENT
+<table id="acym__powered_by_acymailing" class="row" bgcolor="#ffffff" style="background-color: transparent" cellpadding="0">
+    <tbody bgcolor style="background-color: inherit;">
+        <tr>
+            <th class="small-12 medium-12 large-12 columns" valign="top" style="height: auto;">
+                <table border="0" cellpadding="0" cellspacing="0"
+                    style="min-height: 0px; display: table; height: auto;">
+                    <tbody style="min-height: 0px; display: table-row-group;">
+                        <tr
+                            style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">
+                            <td class="large-12">
+                                <div style="position: relative;">
+                                    <p style="word-break: break-word; text-align: center">
+                                    <a href="https://www.acymailing.com/?utm_source=powered_by_v7" target="blank">
+                                        <img src="$urlPoweredByImage"
+                                            title="poweredby" alt=""
+                                            style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0px 5px; display: inline-block; margin-left: auto; margin-right: auto;"
+                                            height="40" width="199">
+                                    </a>
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </th>
+        </tr>
+    </tbody>
+</table>
+CONTENT;
+
+        if (!$isWysidEditor) {
+            $mail->body = $mail->body.$poweredByHTML;
+        } else {
+
+            $mailBodyDom = new \DOMDocument();
+            //Some inserted content add specific tags that shows warnings
+            @$mailBodyDom->loadHTML('<?xml encoding="utf-8" ?>'.$mail->body);
+
+            $htmlToAddDom = new \DOMDocument();
+            $htmlToAddDom->loadHTML('<?xml encoding="utf-8" ?>'.$poweredByWYSID);
+            $tableToAdd = $htmlToAddDom->getElementById('acym__powered_by_acymailing');
+
+            $tds = $mailBodyDom->getElementsByTagName('td');
+            foreach ($tds as $td) {
+                $classes = explode(' ', $td->getAttribute('class'));
+                if (!in_array('acym__wysid__row', $classes)) continue;
+                $td->appendChild($mailBodyDom->importNode($tableToAdd, true));
+                break;
+            }
+            $mail->body = $mailBodyDom->saveHTML();
+        }
+
+        return $mail;
+    }
+
+    protected function removePoweredByAcyMailing($mail)
+    {
+        if (empty($mail->body)) return $mail;
+
+        if (strpos($mail->body, 'acym__wysid__template') !== false) return $mail;
+
+        $regexPoweredByAcyMailing = '#<p id="acym__powered_by_acymailing.*<\/p>#U';
+
+        $mail->body = preg_replace($regexPoweredByAcyMailing, '', $mail->body);
 
         return $mail;
     }
@@ -1060,12 +1197,14 @@ class MailClass extends acymClass
      */
     public function getMultilingualMails($parentId)
     {
-        return $this->decode(
+        $mails = $this->decode(
             acym_loadObjectList(
                 'SELECT * FROM #__acym_mail WHERE parent_id = '.intval($parentId).' OR id = '.intval($parentId),
                 'language'
             )
         );
+
+        return $this->translateMailSettings($mails);
     }
 
     /**
@@ -1082,11 +1221,58 @@ class MailClass extends acymClass
                 $parentName
             );
 
-        return $this->decode(acym_loadObjectList($query, 'language'));
+        $mails = $this->decode(acym_loadObjectList($query, 'language'));
+
+        return $this->translateMailSettings($mails);
+    }
+
+    private function translateMailSettings($mails)
+    {
+        if (empty($mails)) return $mails;
+
+        $defaultLanguage = $this->config->get('multilingual_default');
+
+        if (empty($mails[$defaultLanguage])) {
+            $firstMail = reset($mails);
+            if (empty($firstMail) || empty($firstMail->parent_id)) return $mails;
+            $mainMail = $this->getOneById($firstMail->parent_id);
+        } else {
+            $mainMail = $mails[$defaultLanguage];
+        }
+
+        if (!empty($mainMail->translation)) {
+            $translation = json_decode($mainMail->translation, true);
+
+            foreach ($mails as $lang => $mail) {
+                if (empty($mail->parent_id) || empty($translation[$lang])) continue;
+
+                if (!empty($translation[$lang]['from_name'])) $mails[$lang]->from_name = $translation[$lang]['from_name'];
+                if (!empty($translation[$lang]['from_email'])) $mails[$lang]->from_email = $translation[$lang]['from_email'];
+                if (!empty($translation[$lang]['reply_to_name'])) $mails[$lang]->reply_to_name = $translation[$lang]['reply_to_name'];
+                if (!empty($translation[$lang]['reply_to_email'])) $mails[$lang]->reply_to_email = $translation[$lang]['reply_to_email'];
+            }
+        }
+
+        return $mails;
     }
 
     public function getMailAttachments($mailId)
     {
         return acym_loadResult('SELECT attachments FROM #__acym_mail WHERE id = '.intval($mailId));
+    }
+
+    public function isTransactionalMail($mail)
+    {
+        if ($mail->type == self::TYPE_STANDARD) return false;
+
+        if ($mail->type == self::TYPE_AUTOMATION) {
+            $query = 'SELECT step.triggers FROM #__acym_step AS step
+                        JOIN #__acym_condition AS condition ON condition.step_id = step.id
+                        JOIN #__acym_action AS action ON action.condition_id = condition.id AND action.actions LIKE '.acym_escapeDB('%"acy_add_queue":{"mail_id":"13"%');
+
+            return empty(acym_loadResult($query));
+        }
+
+        return true;
     }
 }

@@ -118,6 +118,8 @@ class FieldsController extends acymController
             'language' => acym_translation('ACYM_LANGUAGE'),
         ];
 
+        $this->prepareMultilingualOption($data);
+
         return parent::display($data);
     }
 
@@ -206,7 +208,7 @@ class FieldsController extends acymController
         $fieldValues = $field['value'];
 
         if (in_array($id, [1, 2])) {
-            $field['type']= 'text';
+            $field['type'] = 'text';
         } elseif ($id == $languageFieldId) {
             $field['type'] = 'language';
         }
@@ -256,6 +258,7 @@ class FieldsController extends acymController
         } else {
             $newField->id = $id;
         }
+        $newField->translation = $field['translation'];
 
         return $newField;
     }

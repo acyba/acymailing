@@ -52,6 +52,8 @@ function acym_modalInclude($button, $file, $id, $data, $attributes = '', $classM
         $id = 'acymodal_'.rand(1000, 9000);
     }
 
+    $dataModal = $data;
+
     $modal = '<div data-open="'.acym_escape($id).'" '.$containerAttributes.'>'.$button;
     $modal .= '<div class="reveal '.$classModal.'" id="'.acym_escape($id).'" '.$attributes.' data-reveal>';
     ob_start();
@@ -65,42 +67,18 @@ function acym_modalInclude($button, $file, $id, $data, $attributes = '', $classM
 }
 
 /**
- * Deprecated see acym_modalPaginationLists
- */
-function acym_modal_pagination_lists($button, $class, $textButton = null, $id = null, $attributes = '', $inputEventId = "", $checkedLists = "[]", $needDisplaySubscribers = false, $attributesModal = '')
-{
-    return acym_modalPaginationLists(
-        $button,
-        $class,
-        $textButton = null,
-        $id = null,
-        $attributes = '',
-        $inputEventId = "",
-        $checkedLists = "[]",
-        $needDisplaySubscribers = false,
-        $attributesModal = ''
-    );
-}
-
-/**
- * @param string  $button     The Way to open the modal (Button, link ...). Add the attribute data-open (should be the ID of the modal) to any element.
- * @param         $class
- * @param         $textButton
- * @param null    $id         Id of modal
- * @param string  $attributes All attributes of the modal
- * @param boolean $isModal
  * @param string  $inputEventId
  * @param string  $checkedLists
  * @param boolean $needDisplaySubscribers
+ * @param string  $attributesModal
  *
  * @return string The modal
  */
-function acym_modalPaginationLists($button, $class, $textButton = null, $id = null, $attributes = '', $inputEventId = "", $checkedLists = "[]", $needDisplaySubscribers = false, $attributesModal = '')
+function acym_modalPaginationLists($inputEventId = '', $checkedLists = '[]', $needDisplaySubscribers = false, $attributesModal = '')
 {
-    $searchField = acym_filterSearch('', 'modal_search_lists', 'ACYM_SEARCH');
+    $searchField = acym_filterSearch('', 'modal_search_lists');
 
-    $data = "";
-
+    $data = '';
     if (!empty($inputEventId)) {
         $data .= '<input type="hidden" id="'.$inputEventId.'">';
     }
@@ -113,12 +91,12 @@ function acym_modalPaginationLists($button, $class, $textButton = null, $id = nu
             <input type="hidden" id="modal__pagination__search__lists">
             <input type="hidden" name="lists_selected" id="acym__modal__lists-selected" value="'.acym_escape($checkedLists).'">
             <div class="cell grid-x">
-                <h4 class="cell text-center acym__modal__pagination__title">'.acym_translation('ACYM_CHOOSE_LISTS').'</h4>
+                <h4 class="cell text-center acym__title acym__title__secondary">'.acym_translation('ACYM_CHOOSE_LISTS').'</h4>
             </div>
             <div class="cell grid-x modal__pagination__search">
                 '.$searchField.'
             </div>
-            <div class="cell text-center" id="modal__pagination__search__spinner" style="display: none">
+            <div class="cell text-center padding-top-1" id="modal__pagination__search__spinner" style="display: none">
                 <i class="acymicon-circle-o-notch acymicon-spin"></i>
             </div>
             <div class="cell medium-6 modal__pagination__show">

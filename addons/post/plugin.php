@@ -297,7 +297,7 @@ class plgAcymPost extends acymPlugin
         usort(
             $idsWithCatids,
             function ($a, $b) {
-                return strtolower($a->term_id) > strtolower($b->term_id);
+                return strtolower($a->term_id) > strtolower($b->term_id) ? 1 : -1;
             }
         );
         $elements = [];

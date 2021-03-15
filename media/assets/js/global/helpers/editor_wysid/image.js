@@ -43,5 +43,13 @@ const acym_editorWysidImage = {
         } else {
             acym_editorWysidJoomla.addMediaJoomlaWYSID(ui, rows);
         }
+    },
+    setChangeBuiltWithImage: function () {
+        jQuery('[name="acym__wysid__built-with__text__color"]').on('change', function () {
+            let $imageBuiltWith = jQuery('[title="poweredby"]');
+            let selected = jQuery(this).val();
+            let previous = selected === 'white' ? 'black' : 'white';
+            $imageBuiltWith.attr('src', $imageBuiltWith.attr('src').replace(previous, selected));
+        });
     }
 };

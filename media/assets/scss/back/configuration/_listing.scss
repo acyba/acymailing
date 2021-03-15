@@ -48,6 +48,7 @@
         .acym__configuration__advanced {
             .acym__configuration__mail__info__disabled {
                 display: none;
+                color: $white;
             }
         }
 
@@ -56,6 +57,7 @@
 
             a {
                 color: cornflowerblue;
+                text-decoration: none;
             }
         }
 
@@ -145,5 +147,9 @@
         .intext_input {
             margin-right: .5rem;
         }
+    }
+
+    .acym__configuration__sending__method-icon {
+        font-size: 1.1rem;
     }
 }

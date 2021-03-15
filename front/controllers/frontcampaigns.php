@@ -29,6 +29,8 @@ class FrontcampaignsController extends CampaignsController
             'saveAjax',
             'confirmCampaign',
             'stopScheduled',
+            'duplicate',
+            'delete',
         ];
         $this->urlFrontMenu = 'index.php?option=com_acym&view=frontcampaigns&layout=listing';
         parent::__construct();

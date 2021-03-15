@@ -85,7 +85,7 @@
                         <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
 					</div>
 					<div class="large-2 medium-3 small-4 cell acym__listing__header__title">
-                        <?php echo acym_translation('ACYM_USER'); ?>
+                        <?php echo acym_translation('ACYM_SUBSCRIBER'); ?>
 					</div>
 					<div class="xlarge-1 hide-for-large-only hide-for-medium-only hide-for-small-only cell acym__listing__header__title">
                         <?php echo acym_translation('ACYM_NAME'); ?>

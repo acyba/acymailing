@@ -31,11 +31,10 @@ class plgAcymOnline extends acymPlugin
 
         ?>
 		<script language="javascript" type="text/javascript">
-            <!--
-            var selectedTag = '';
+            var selectedOnlineDText = '';
 
             function changeOnlineTag(tagName) {
-                selectedTag = tagName;
+                selectedOnlineDText = tagName;
                 defaultText = [];
                 <?php
                 foreach ($others as $tagname => $tag) {
@@ -49,11 +48,9 @@ class plgAcymOnline extends acymPlugin
             }
 
             function setOnlineTag() {
-                var tag = '{' + selectedTag + '}' + document.getElementById('acym__popup__online__tagtext').value + '{/' + selectedTag + '}';
-                setTag(tag, jQuery('#tr_' + selectedTag));
+                var tag = '{' + selectedOnlineDText + '}' + document.getElementById('acym__popup__online__tagtext').value + '{/' + selectedOnlineDText + '}';
+                setTag(tag, jQuery('#tr_' + selectedOnlineDText));
             }
-
-            //-->
 		</script>
 
 		<div class="acym__popup__listing text-center grid-x">
@@ -67,10 +64,23 @@ class plgAcymOnline extends acymPlugin
 
             <?php
             foreach ($others as $tagname => $tag) {
-                $onclick = !empty($tag['disabled']) ? '' : 'onclick="changeOnlineTag(\''.$tagname.'\');"';
-                $class = !empty($tag['disabled']) ? 'acym__listing__row__popup--disabled' : '';
-                $rowHtml = '<div class="grid-x small-12 cell acym__row__no-listing acym__listing__row__popup text-left '.$class.'" '.$onclick.' id="tr_'.$tagname.'" ><div class="cell small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['desc'].'</div></div>';
-                echo !empty($tag['disabled']) ? acym_tooltip($rowHtml, $tag['tooltip'], 'cell') : $rowHtml;
+                if (empty($tag['disabled'])) {
+                    $onclick = 'onclick="changeOnlineTag(\''.$tagname.'\');"';
+                    $class = '';
+                } else {
+                    $onclick = '';
+                    $class = 'acym__listing__row__popup--disabled';
+                }
+
+                $rowHtml = '<div class="grid-x small-12 cell acym__row__no-listing acym__listing__row__popup text-left '.$class.'" '.$onclick.' id="tr_'.$tagname.'" >';
+                $rowHtml .= '<div class="cell small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['desc'].'</div>';
+                $rowHtml .= '</div>';
+
+                if (!empty($tag['disabled'])) {
+                    $rowHtml = acym_tooltip($rowHtml, $tag['tooltip'], 'cell');
+                }
+
+                echo $rowHtml;
             }
             ?>
 		</div>

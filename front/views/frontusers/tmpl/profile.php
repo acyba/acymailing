@@ -180,6 +180,7 @@
 		<input type="hidden" name="id" value="<?php echo acym_escape($data['user']->id); ?>" />
 		<input type="hidden" name="key" value="<?php echo acym_escape($data['user']->key); ?>" />
 		<input type="hidden" name="ajax" value="1" />
+		<input type="hidden" name="acyprofile" value="1" />
 
 		<p class="acymodifybutton">
 			<input class="btn btn-primary"

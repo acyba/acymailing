@@ -2,7 +2,6 @@ jQuery(document).ready(function ($) {
 
     function Init() {
         setAddstyleSheetHtml();
-        acym_helperDynamic.setModalDynamics();
         acym_helperEditorHtml.initEditorHtml();
         acym_helperEditorWysid.initEditor();
         acym_helperCampaigns.initAttachmentCampaigns();

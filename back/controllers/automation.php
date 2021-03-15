@@ -24,7 +24,7 @@ class AutomationController extends acymController
             'info' => ['datepicker'],
             'condition' => ['datepicker'],
             'action' => ['datepicker'],
-            'filter' => ['datepicker'],
+            'filter' => ['datepicker', 'vue-applications' => ['modal_users_summary']],
         ];
         acym_setVar('edition', '1');
     }
@@ -655,6 +655,7 @@ class AutomationController extends acymController
             foreach ($stepAutomation['filters'][$or] as $and => $andValues) {
                 $and = intval($and);
                 foreach ($andValues as $filterName => $options) {
+                    $options['countTotal'] = true;
                     acym_trigger('onAcymProcessFilter_'.$filterName, [&$query, &$options, &$and]);
                 }
             }

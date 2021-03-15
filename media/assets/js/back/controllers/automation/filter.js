@@ -1,6 +1,10 @@
 jQuery(document).ready(function ($) {
+    let filterRebuilt = true;
+    let blockRebuilt = true;
     const ajaxCalls = {};
     $.reloadCounters = function (element) {
+        if (!filterRebuilt) return;
+
         let or = $(element).closest('.acym__automation__group__filter').attr('data-filter-number');
         let $or = $(element).closest('.acym__automation__group__filter');
         let and = $(element).closest('.acym__automation__inserted__filter').attr('data-and');
@@ -32,6 +36,8 @@ jQuery(document).ready(function ($) {
     Init();
 
     function reloadGlobalCounter(groupFilter) {
+        if (!blockRebuilt) return;
+
         let or = groupFilter.attr('data-filter-number');
         let $counterInput = groupFilter.find('.acym__automation__or__total__result');
 
@@ -58,7 +64,7 @@ jQuery(document).ready(function ($) {
         acym_helperDatePicker.setDatePickerGlobal();
         acym_helperDatePicker.setRSDateChoice();
         acym_helperSelect2.setAjaxSelect2();
-        $.setAutomationReload();
+        acym_helperFilter.setAutomationReload();
     }
 
     function setSelectFilters(type) {
@@ -71,6 +77,9 @@ jQuery(document).ready(function ($) {
         $('.acym__automation__select__' + type + '__filter').off('change').on('change', function () {
             let $inputAnd = $('#acym__automation__filters__count__and');
             $inputAnd.val(parseInt($inputAnd.val()) + 1);
+
+            let seeUsersFilter = acym_helperSegment.getSeeUserModalButton($(this), $inputAnd.val());
+
             $(this).parent().parent().find('.acym__automation__inserted__filter').remove();
             let html = filters[$(this).val()].replace(/__numor__/g, $(this).closest('.acym__automation__group__filter').attr('data-filter-number'));
             html = html.replace(/__numand__/g, $inputAnd.val());
@@ -78,13 +87,19 @@ jQuery(document).ready(function ($) {
                 .parent()
                 .after('<div data-and="'
                        + $inputAnd.val()
-                       + '" class="cell grid-x grid-margin-x grid-margin-y acym__automation__inserted__filter margin-top-1 margin-left-2"><span class="countresults margin-bottom-1" id="results_'
+                       + '" class="cell grid-x grid-margin-x margin-y acym__automation__inserted__filter margin-top-1 margin-left-2 padding-right-2">'
+                       + '<div class="cell grid-x"><span class="cell shrink margin-right-1 countresults margin-bottom-1" id="results_'
                        + $inputAnd.val()
                        + '"></span>'
+                       + seeUsersFilter
+                       + '</div>'
                        + html
                        + '</div>');
             acym_helperSelect2.setSelect2();
             acym_helperDatePicker.setDatePickerGlobal();
+            acym_helperTooltip.setTooltip();
+            jQuery(document).foundation();
+            jQuery(document).trigger('acym__modal__users__summary__ready');
 
             $('.switch-label').off('click').on('click', function () {
                 let input = $('input[data-switch="' + $(this).attr('for') + '"]');
@@ -126,7 +141,7 @@ jQuery(document).ready(function ($) {
             if ('classic' === type) {
                 $(this)
                     .closest('.acym__automation__one__filter.acym__automation__one__filter__classic')
-                    .find('.acym__automation__inserted__filter input, .acym__automation__inserted__filter select')
+                    .find('.acym__automation__inserted__filter input, .acym__automation__inserted__filter textarea, .acym__automation__inserted__filter select')
                     .on('change', function () {
                         $.reloadCounters(this);
                     });
@@ -136,7 +151,8 @@ jQuery(document).ready(function ($) {
                 } else {
                     $.reloadCounters($(this)
                         .closest('.acym__automation__one__filter.acym__automation__one__filter__classic')
-                        .find('.acym__automation__inserted__filter input, .acym__automation__inserted__filter select'));
+                        .find(
+                            '.acym__automation__inserted__filter input, .acym__automation__inserted__filter textarea, .acym__automation__inserted__filter select'));
                 }
             }
 
@@ -231,7 +247,9 @@ jQuery(document).ready(function ($) {
             // Create a new OR block if needed
             if (or !== 0) $('.acym__automation__filters__or[data-filter-type="' + type + '"]').click();
 
+            blockRebuilt = false;
             // Foreach filters in this OR block
+            let lastFilterInOrBlock = Object.keys(oneORBlock).slice(-1)[0];
             $.each(oneORBlock, function (numAND, oneFilter) {
                 // Create a new AND block if needed
                 if (and !== 0) {
@@ -239,7 +257,7 @@ jQuery(document).ready(function ($) {
                         .find('.acym__automation__add-filter[data-filter-type="' + type + '"]')
                         .click();
                 }
-
+                filterRebuilt = false;
                 $.each(oneFilter, function (filterName, filterOptions) {
                     // Select the filter type in the correct dropdown
                     let $filterSelect = $('.acym__automation__group__filter[data-filter-number="' + or + '"]')
@@ -265,6 +283,13 @@ jQuery(document).ready(function ($) {
                                              + ']"]');
 
                         acym_helperFilter.setFieldValue($optionField, optionValue);
+
+                        if (key === keys.length - 1) {
+                            filterRebuilt = true;
+                            if (lastFilterInOrBlock === numAND) {
+                                blockRebuilt = true;
+                            }
+                        }
 
                         $optionField.trigger('change');
                     });

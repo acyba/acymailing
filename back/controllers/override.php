@@ -20,7 +20,9 @@ class OverrideController extends acymController
     public function listing()
     {
         if (!acym_level(2)) {
-            acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
+            acym_setVar('layout', 'splashscreen');
+
+            return parent::display([]);
         }
 
     }

@@ -17,6 +17,9 @@ class SegmentsController extends acymController
     {
         parent::__construct();
         $this->breadcrumb[acym_translation('ACYM_SEGMENTS')] = acym_completeLink('segments');
+        $this->loadScripts = [
+            'edit' => ['vue-applications' => ['modal_users_summary']],
+        ];
     }
 
     public function listing()
@@ -93,11 +96,19 @@ class SegmentsController extends acymController
 
         //if we are in the campaign edition
         $listsIds = acym_getVar('string', 'list_selected', '');
+        if (!empty($listsIds)) $listsIds = json_decode($listsIds);
 
+
+        echo json_encode(['count' => $this->countSegmentByParams($stepAutomation, $listsIds)]);
+        exit;
+    }
+
+    public function countSegmentByParams($segment, $listsIds)
+    {
         $automationHelpers = [];
 
-        if (!empty($stepAutomation) && !empty($stepAutomation['filters'])) {
-            foreach ($stepAutomation['filters'] as $or => $orValues) {
+        if (!empty($segment) && !empty($segment['filters'])) {
+            foreach ($segment['filters'] as $or => $orValues) {
                 $automationHelpers[$or] = new AutomationHelper();
                 if (empty($orValues)) continue;
                 foreach ($orValues as $and => $andValues) {
@@ -112,7 +123,6 @@ class SegmentsController extends acymController
         $join = '';
 
         if (!empty($listsIds)) {
-            $listsIds = json_decode($listsIds);
             acym_arrayToInteger($listsIds);
             $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
         }
@@ -140,11 +150,7 @@ class SegmentsController extends acymController
             }
         }
 
-        $userIds = array_unique($userIds);
-
-        echo json_encode(['count' => count($userIds)]);
-
-        exit;
+        return count(array_unique($userIds));
     }
 
     public function countResults()
@@ -184,16 +190,18 @@ class SegmentsController extends acymController
         exit;
     }
 
-    public function countGlobalBySegmentId()
+    public function countSegmentById($id, $listsIds, $ajax = true)
     {
-        $id = acym_getVar('int', 'id');
-        $listsIds = json_decode(acym_getVar('string', 'lists', '[]'));
         acym_arrayToInteger($listsIds);
         $automationHelperBase = new AutomationHelper();
 
         if (empty($listsIds)) {
-            echo json_encode(['count' => 0]);
-            exit;
+            if ($ajax) {
+                echo json_encode(['count' => 0]);
+                exit;
+            } else {
+                return 0;
+            }
         }
 
         $automationHelpers = [];
@@ -202,8 +210,12 @@ class SegmentsController extends acymController
             $segmentClass = new SegmentClass();
             $segment = $segmentClass->getOneById($id);
             if (empty($segment)) {
-                echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_COUNT_USER')]);
-                exit;
+                if ($ajax) {
+                    echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_COUNT_USER')]);
+                    exit;
+                } else {
+                    return 0;
+                }
             }
             foreach ($segment->filters as $or => $orValues) {
                 $automationHelpers[$or] = new AutomationHelper();
@@ -237,7 +249,16 @@ class SegmentsController extends acymController
             $userIds = array_unique($userIds);
         }
 
-        echo json_encode(['count' => count($userIds)]);
+        return count($userIds);
+    }
+
+    public function countGlobalBySegmentId()
+    {
+        $id = acym_getVar('int', 'id');
+        $listsIds = json_decode(acym_getVar('string', 'lists', '[]'));
+
+
+        echo json_encode(['count' => $this->countSegmentById($id, $listsIds)]);
         exit;
     }
 
@@ -266,5 +287,49 @@ class SegmentsController extends acymController
 
         echo json_encode($return);
         exit;
+    }
+
+    public function usersSummary()
+    {
+        $offset = acym_getVar('int', 'offset', 0);
+        $limit = acym_getVar('int', 'limit', 50);
+        $search = acym_getVar('string', 'modal_search', '');
+
+        $and = acym_getVar('int', 'and');
+        $or = acym_getVar('int', 'or');
+        $stepAutomation = acym_getVar('array', 'acym_action');
+
+        if (empty($stepAutomation['filters'][$or][$and])) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);
+
+        $automationHelper = new AutomationHelper();
+        
+        //if we are in the campaign edition
+        $listsIds = acym_getVar('string', 'list_selected', '');
+
+        if (!empty($listsIds)) {
+            $listsIds = json_decode($listsIds);
+            acym_arrayToInteger($listsIds);
+            $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
+            $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
+                    ',',
+                    $listsIds
+                ).') and user_list.status = 1 '.$join;
+        }
+
+        foreach ($stepAutomation['filters'][$or][$and] as $filterName => $options) {
+            acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelper, &$options, &$and]);
+            break;
+        }
+
+        if (!empty($search)) {
+            $search = acym_escapeDB('%'.$search.'%');
+            $automationHelper->where[] = ' (user.email LIKE '.$search.' OR user.name LIKE '.$search.' OR user.id LIKE '.$search.') ';
+        }
+
+        $automationHelper->limit = intval($offset).', '.intval($limit);
+
+        $users = acym_loadObjectList($automationHelper->getQuery(['user.email, user.name, user.id']), 'id');
+
+        acym_sendAjaxResponse('', ['users' => $users]);
     }
 }

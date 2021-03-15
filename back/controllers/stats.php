@@ -25,7 +25,7 @@ class StatsController extends acymController
             'all' => ['datepicker', 'thumbnail'],
         ];
         acym_session();
-        if (acym_getVar('string', 'ctrl', 'dashboard') != 'dashboard') $this->storeAndGetTask();
+        if (acym_getVar('string', 'ctrl', 'dashboard') != 'dashboard' && acym_getVar('string', 'task', '') != 'setDataForChartLine') $this->storeAndGetTask();
     }
 
     private function storeAndGetTask()
@@ -226,7 +226,7 @@ class StatsController extends acymController
         $this->prepareUserLinksDetailsListing($data);
         $exportHelper = new ExportHelper();
 
-        $columnsToExport['user.email'] = acym_translation('ACYM_USER');
+        $columnsToExport['user.email'] = acym_translation('ACYM_SUBSCRIBER');
         $columnsToExport['user_name'] = acym_translation('ACYM_USER_NAME');
         $columnsToExport['url_name'] = acym_translation('ACYM_URL');
         $columnsToExport['date_click'] = acym_translation('ACYM_CLICK_DATE');
@@ -644,7 +644,7 @@ class StatsController extends acymController
 
         $this->prepareLineChart($statsCampaignSelected, $mailIdOfCampaign, $newStart, $newEnd);
 
-        echo @acym_lineChart('', $statsCampaignSelected->month, $statsCampaignSelected->day, $statsCampaignSelected->hour);
+        echo @acym_lineChart('', $statsCampaignSelected->month, $statsCampaignSelected->day, $statsCampaignSelected->hour, true);
         exit;
     }
 

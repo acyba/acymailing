@@ -2,6 +2,7 @@ jQuery(document).ready(function ($) {
     function Init() {
         setColorPicker();
         setSubscriptionEvolutionChart();
+        acym_helperSelectionMultilingual.init('list');
     }
 
     Init();

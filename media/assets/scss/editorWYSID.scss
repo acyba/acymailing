@@ -33,6 +33,7 @@
     #acym__wysid__right {
         position: relative;
         min-width: 450px;
+        @import "global/editor_wysid/dynamicTexts";
         @import "global/editor_wysid/sendTest";
         @import "global/editor_wysid/rightToolbar";
     }

@@ -17,7 +17,7 @@ jQuery(document).ready(function ($) {
         acym_helperDatePicker.setDatePickerGlobal();
         acym_helperDatePicker.setRSDateChoice();
         acym_helperSelect2.setAjaxSelect2();
-        $.setAutomationReload();
+        acym_helperFilter.setAutomationReload();
     }
 
     function rebuildConditions() {
@@ -97,11 +97,12 @@ jQuery(document).ready(function ($) {
                 .parent()
                 .after('<div data-and="'
                        + $inputAnd.val()
-                       + '" class="cell grid-x grid-margin-x grid-margin-y acym__automation__inserted__condition margin-top-1 margin-left-2">'
+                       + '" class="cell grid-x grid-margin-x margin-y acym__automation__inserted__condition margin-top-1 margin-left-2">'
                        + html
                        + '</div>');
             acym_helperSelect2.setSelect2();
             acym_helperDatePicker.setDatePickerGlobal();
+            acym_helperTooltip.setTooltip();
 
             $('.switch-label').off('click').on('click', function () {
                 let input = $('input[data-switch="' + $(this).attr('for') + '"]');

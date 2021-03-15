@@ -52,7 +52,7 @@
             <?php } ?>
 			<div class="cell acym__migrate__input__element">
 				<input type="checkbox" id="acym__migrate__users" name="migrate[users]" class="acym__migrate__option" />
-				<label for="acym__migrate__users"><?php echo acym_translation('ACYM_USERS'); ?></label>
+				<label for="acym__migrate__users"><?php echo acym_translation('ACYM_SUBSCRIBERS'); ?></label>
 				<span id="acym__migrate__result__users__check"></span>
 			</div>
 			<div class="cell grid-x text-center align-right grid-margin-x">

@@ -3,7 +3,15 @@
         margin-left: inherit;
     }
 
-    #acym__wysid__text__tinymce__editor {
-        display: table;
+    .mce-abs-layout-item {
+        margin: auto;
     }
+
+    .row > .acym__wysid__row__selector {
+        max-width: none;
+    }
+}
+
+#status.navbar {
+    display: none;
 }

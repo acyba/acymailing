@@ -33,6 +33,19 @@ function acym_coreAddons()
             'latest_version' => '{__VERSION__}',
             'type' => 'CORE',
         ],
+        (object)[
+            'title' => acym_translation('ACYM_CREATE_USER'),
+            'folder_name' => 'createuser',
+            'version' => '{__VERSION__}',
+            'active' => '1',
+            'category' => 'User management',
+            'level' => 'starter',
+            'uptodate' => '1',
+            'features' => '[]',
+            'description' => '- Automatically creates a site user when an AcyMailing subscriber is created',
+            'latest_version' => '{__VERSION__}',
+            'type' => 'CORE',
+        ],
     ];
 }
 

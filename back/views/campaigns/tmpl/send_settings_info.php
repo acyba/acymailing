@@ -1,5 +1,15 @@
 <h5 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SENDER_INFORMATION'); ?></h5>
 <div class="cell grid-x align-center">
+    <?php
+    if (!empty($data['translation_languages'])) {
+        echo acym_displayLanguageRadio(
+            $data['translation_languages'],
+            'senderInformation[translation]',
+            $data['currentCampaign']->translation,
+            acym_translation('ACYM_LANGUAGE_SENDER_INFORMATION_DESC'),
+            $this->config->get('sender_info_translation', '')
+        );
+    } ?>
 	<div class="cell grid-x medium-11 grid-margin-x margin-y">
 		<div class="cell medium-5">
 			<label for="acym__campaign__sendsettings__from-name" class="cell acym__campaign__sendsettings__label-settings"><?php echo acym_translation('ACYM_FROM_NAME'); ?></label>

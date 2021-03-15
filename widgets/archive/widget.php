@@ -82,7 +82,7 @@ class acym_archive_widget extends WP_Widget
 
         echo $args['before_widget'];
 
-        if(!isset($instance['title'])) $instance['title'] = '';
+        if (!isset($instance['title'])) $instance['title'] = '';
         $title = apply_filters('widget_title', $instance['title']);
         if (!empty($title)) {
             echo $args['before_title'].$title.$args['after_title'];
@@ -90,13 +90,15 @@ class acym_archive_widget extends WP_Widget
 
         acym_displayMessages();
         acym_setVar('page', 'front');
-        $search = acym_getVar('string', 'acym_search', '');
+        $searchs = acym_getVar('array', 'acym_search', []);
+        $search = '';
+        if (!empty($searchs[$args['widget_id']])) $search = $searchs[$args['widget_id']];
 
         $viewParams = [
             'listsSent' => isset($instance['lists']) ? $instance['lists'] : [],
             'popup' => isset($instance['popup']) ? $instance['popup'] : '1',
             'nbNewslettersPerPage' => isset($instance['nbNewslettersPerPage']) ? $instance['nbNewslettersPerPage'] : '10',
-            'paramsCMS' => [],
+            'paramsCMS' => ['widget_id' => $args['widget_id']],
             'search' => $search,
         ];
 

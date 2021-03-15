@@ -121,14 +121,15 @@ class AutomationHelper extends acymObject
             $value = '';
         }
 
+        if(!empty($table)) $table = acym_secureDBColumn($table).'.';
         if ($type == 'datetime' && in_array($operator, ['=', '!='])) {
-            return 'DATE_FORMAT('.acym_secureDBColumn($table).'.`'.acym_secureDBColumn($column).'`, "%Y-%m-%d") '.$operator.' '.'DATE_FORMAT('.$value.', "%Y-%m-%d")';
+            return 'DATE_FORMAT('.$table.'`'.acym_secureDBColumn($column).'`, "%Y-%m-%d") '.$operator.' '.'DATE_FORMAT('.$value.', "%Y-%m-%d")';
         }
         if ($type == 'timestamp' && in_array($operator, ['=', '!='])) {
-            return 'FROM_UNIXTIME('.acym_secureDBColumn($table).'.`'.acym_secureDBColumn($column).'`, "%Y-%m-%d") '.$operator.' '.'FROM_UNIXTIME('.$value.', "%Y-%m-%d")';
+            return 'FROM_UNIXTIME('.$table.'`'.acym_secureDBColumn($column).'`, "%Y-%m-%d") '.$operator.' '.'FROM_UNIXTIME('.$value.', "%Y-%m-%d")';
         }
 
-        return acym_secureDBColumn($table).'.`'.acym_secureDBColumn($column).'` '.$operator.' '.$value;
+        return $table.'`'.acym_secureDBColumn($column).'` '.$operator.' '.$value;
     }
 
     public function deleteUnusedEmails()

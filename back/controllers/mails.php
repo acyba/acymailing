@@ -353,12 +353,27 @@ class MailsController extends acymController
 
                 $notifName = acym_translation('ACYM_NOTIFICATIION_'.strtoupper(substr($mail->name, 4)));
                 if (strpos($notifName, 'ACYM_NOTIFICATIION_') !== false) {
+
+                    array_pop($this->breadcrumb);
+                    $this->breadcrumb[acym_translation('ACYM_CONFIGURATION')] = acym_completeLink('configuration');
+
                     $notifName = $mail->name;
 
                     if ($notifName === 'acy_confirm') {
                         $notifName = acym_translation('ACYM_CONFIRMATION_EMAIL');
+                    } elseif ($notifName === 'acy_notification_create') {
+                        $notifName = acym_translation('ACYM_NOTIFICATION_CREATE_EMAIL');
+                    } elseif ($notifName === 'acy_notification_unsub') {
+                        $notifName = acym_translation('ACYM_NOTIFICATION_UNSUB_EMAIL');
+                    } elseif ($notifName === 'acy_notification_unsuball') {
+                        $notifName = acym_translation('ACYM_NOTIFICATION_UNSUBALL_EMAIL');
+                    } elseif ($notifName === 'acy_notification_subform') {
+                        $notifName = acym_translation('ACYM_NOTIFICATION_SUBFORM_EMAIL');
+                    } elseif ($notifName === 'acy_notification_profile') {
+                        $notifName = acym_translation('ACYM_NOTIFICATION_PROFILE_EMAIL');
+                    } elseif ($notifName === 'acy_notification_confirm') {
+                        $notifName = acym_translation('ACYM_NOTIFICATION_CONFIRM_EMAIL');
                     }
-                    //TODO: Also translate the other core mails names
                 }
 
                 $breadcrumbTitle = $notifName;

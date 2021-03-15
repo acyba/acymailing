@@ -13,29 +13,52 @@ function acym_getPageLink($menu)
 
 function acym_cmsModal($isIframe, $content, $buttonText, $isButton, $modalTitle, $identifier = null, $width = '800', $height = '400')
 {
-    JHtml::_('jquery.framework');
-    JHtml::_('script', 'system/modal-fields.js', ['version' => 'auto', 'relative' => true]);
-
     if (empty($identifier)) {
         $identifier = 'identifier_'.rand(1000, 9000);
     }
 
-    $html = '<a class="'.($isButton ? 'btn ' : '').'hasTooltip" data-toggle="modal" role="button" href="#'.$identifier.'" id="button_'.$identifier.'">'.acym_translation(
-            $buttonText
-        ).'</a>';
-    $html .= JHtml::_(
-        'bootstrap.renderModal',
-        $identifier,
-        [
-            'title' => $modalTitle,
-            'url' => $content,
-            'height' => $height.'px',
-            'width' => $width.'px',
-            'bodyHeight' => '70',
-            'modalWidth' => '80',
-            'footer' => '<a role="button" class="btn" data-dismiss="modal" aria-hidden="true">'.acym_translation('JLIB_HTML_BEHAVIOR_CLOSE').'</a>',
-        ]
-    );
+    $params = [
+        'title' => $modalTitle,
+        'url' => $content,
+        'height' => $height.'px',
+        'width' => $width.'px',
+        'bodyHeight' => '70',
+        'modalWidth' => '80',
+    ];
+
+    JHtml::_('jquery.framework');
+    if (ACYM_J40) {
+        $wa = JFactory::getApplication()->getDocument()->getWebAssetManager();
+        $wa->useScript('field.modal-fields');
+        acym_addStyle(
+            true,
+            '
+            #'.$identifier.' {
+                height: auto;
+                border: none;
+            }
+            
+            #'.$identifier.' .modal-dialog {
+                margin: 0;
+            }'
+        );
+    } else {
+        JHtml::_('script', 'system/modal-fields.js', ['version' => 'auto', 'relative' => true]);
+        acym_addStyle(true, '#'.$identifier.' .modal-body { overflow: auto; }');
+        $params['footer'] = '<a role="button" class="btn" data-dismiss="modal" aria-hidden="true">'.acym_translation('JLIB_HTML_BEHAVIOR_CLOSE').'</a>';
+    }
+
+
+    $html = '<a 
+                class="'.($isButton ? 'btn ' : '').'hasTooltip" 
+                data-toggle="modal" 
+                role="button" 
+                href="#'.$identifier.'" 
+                id="button_'.$identifier.'"
+                data-bs-toggle="modal"
+                data-bs-target="#'.$identifier.'">';
+    $html .= acym_translation($buttonText).'</a>';
+    $html .= JHtml::_('bootstrap.renderModal', $identifier, $params);
 
     return $html;
 }

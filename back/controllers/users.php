@@ -21,7 +21,7 @@ class UsersController extends acymController
     public function __construct()
     {
         parent::__construct();
-        $this->breadcrumb[acym_translation('ACYM_USERS')] = acym_completeLink('users');
+        $this->breadcrumb[acym_translation('ACYM_SUBSCRIBERS')] = acym_completeLink('users');
         $this->loadScripts = [
             'edit' => ['datepicker'],
             'all' => ['vue-applications' => ['entity_select']],
@@ -215,11 +215,12 @@ class UsersController extends acymController
         }
 
         $fieldValue = $fieldClass->getAllFieldsListingByUserIds($userIds, $fieldsToDisplay['ids'], 'field.backend_listing = 1');
+        $languages = acym_getLanguages();
         foreach ($data['allUsers'] as &$user) {
             $user->fields = [];
             foreach ($fieldsToDisplay['ids'] as $fieldId) {
                 if ($fieldId == $fieldClass->getLanguageFieldId()) {
-                    $user->fields[$fieldId] = $user->language;
+                    $user->fields[$fieldId] = empty($languages[$user->language]) ? $user->language : $languages[$user->language]->name;
                 } else {
                     $user->fields[$fieldId] = !isset($fieldValue[$fieldId.'-'.$user->id]) ? '' : $fieldValue[$fieldId.'-'.$user->id];
                 }
@@ -262,7 +263,7 @@ class UsersController extends acymController
             $data['user-information']->tracking = 1;
             $data['user-information']->language = '';
 
-            $this->breadcrumb[acym_escape(acym_translation('ACYM_NEW_USER'))] = acym_completeLink('users&task=edit');
+            $this->breadcrumb[acym_escape(acym_translation('ACYM_NEW_SUBSCRIBER'))] = acym_completeLink('users&task=edit');
         } else {
             $data['user-information'] = $this->currentClass->getOneById($userId);
 
@@ -582,7 +583,6 @@ class UsersController extends acymController
         if (!file_exists(ACYM_MEDIA.'import'.DS.$filename.'.csv')) {
             return;
         }
-        acym_noTemplate();
         $exportHelper = new ExportHelper();
         $exportHelper->setDownloadHeaders($filename);
         echo file_get_contents(ACYM_MEDIA.'import'.DS.$filename.'.csv');
@@ -600,7 +600,7 @@ class UsersController extends acymController
     public function export()
     {
         acym_setVar('layout', 'export');
-        $this->breadcrumb[acym_translation('ACYM_EXPORT_USERS')] = acym_completeLink('users&task=export');
+        $this->breadcrumb[acym_translation('ACYM_EXPORT_SUBSCRIBERS')] = acym_completeLink('users&task=export');
 
         $listClass = new ListClass();
         $lists = $listClass->getAll();

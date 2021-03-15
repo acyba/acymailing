@@ -29,17 +29,32 @@
 	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_CAPTCHA'); ?></div>
 	<div class="grid-x grid-margin-x margin-y">
 		<div class="cell medium-6 grid-x">
-            <?php echo acym_switch('config[captcha]', $this->config->get('captcha', 0), acym_translation('ACYM_CAPTCHA_INVISIBLE')); ?>
+            <?php
+            echo acym_switch(
+                'config[captcha]',
+                $this->config->get('captcha', 0),
+                acym_translation('ACYM_CAPTCHA_INVISIBLE').acym_info('ACYM_CAPTCHA_INVISIBLE_DESC')
+            );
+            ?>
 		</div>
 		<div class="cell medium-6 grid-x">
 			<label class="cell large-3" for="security_key">
-                <?php echo acym_translation('ACYM_SECURITY_KEY'); ?>
+                <?php echo acym_translation('ACYM_SECURITY_KEY').acym_info('ACYM_SECURITY_KEY_DESC'); ?>
 			</label>
 			<input class="cell large-9" id="security_key" type="text" name="config[security_key]" value="<?php echo acym_escape($this->config->get('security_key')); ?>" />
 		</div>
 		<div class="cell medium-6 grid-x">
 			<label class="cell large-3" for="recaptcha_sitekey">
-				<a href="https://www.google.com/recaptcha/admin" target="_blank"><?php echo acym_translation('ACYM_SITE_KEY'); ?></a>
+                <?php
+                echo acym_translation('ACYM_SITE_KEY');
+                echo acym_tooltip(
+                    '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+                    acym_translation('ACYM_RECAPTCHA_KEY_DESC'),
+                    'acym__tooltip__info',
+                    '',
+                    'https://www.google.com/recaptcha/admin'
+                );
+                ?>
 			</label>
 			<input class="cell large-9"
 				   id="recaptcha_sitekey"
@@ -49,7 +64,16 @@
 		</div>
 		<div class="cell medium-6 grid-x">
 			<label class="cell large-3" for="recaptcha_secretkey">
-				<a href="https://www.google.com/recaptcha/admin" target="_blank"><?php echo acym_translation('ACYM_SECRET_KEY'); ?></a>
+                <?php
+                echo acym_translation('ACYM_SECRET_KEY');
+                echo acym_tooltip(
+                    '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+                    acym_translation('ACYM_RECAPTCHA_KEY_DESC'),
+                    'acym__tooltip__info',
+                    '',
+                    'https://www.google.com/recaptcha/admin'
+                );
+                ?>
 			</label>
 			<input class="cell large-9"
 				   id="recaptcha_secretkey"
@@ -74,13 +98,13 @@
 	<div class="grid-x grid-margin-x margin-y">
 		<div class="cell medium-6 grid-x">
 			<label class="cell large-3" for="allowed_files">
-                <?php echo acym_translation('ACYM_ALLOWED_FILES'); ?>
+                <?php echo acym_translation('ACYM_ALLOWED_FILES').acym_info('ACYM_ALLOWED_FILES_DESC'); ?>
 			</label>
 			<input class="cell large-9" id="allowed_files" type="text" name="config[allowed_files]" value="<?php echo acym_escape($this->config->get('allowed_files')); ?>" />
 		</div>
 		<div class="cell medium-6 grid-x">
 			<label class="cell large-3" for="uploadfolder">
-                <?php echo acym_translation('ACYM_UPLOAD_FOLDER'); ?>
+                <?php echo acym_translation('ACYM_UPLOAD_FOLDER').acym_info('ACYM_UPLOAD_FOLDER_DESC'); ?>
 			</label>
 			<input class="cell large-9" id="uploadfolder" type="text" name="config[uploadfolder]" value="<?php echo acym_escape($this->config->get('uploadfolder')); ?>" />
 		</div>

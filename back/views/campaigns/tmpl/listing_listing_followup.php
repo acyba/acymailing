@@ -86,8 +86,12 @@
                             }
                             $details[] = '';
                             if (!empty($followup->condition)) {
-                                foreach ($followup->condition as $oneCondition) {
-                                    $details[] = $oneCondition;
+                                if (is_array($followup->condition)) {
+                                    foreach ($followup->condition as $oneCondition) {
+                                        $details[] = $oneCondition;
+                                    }
+                                } else {
+                                    $details[] = acym_translation('ACYM_MISSING_ADDON');
                                 }
                             }
                             echo acym_info(

@@ -83,6 +83,7 @@ class ListsController extends acymController
         $this->prepareListStat($data, $listId);
         $this->prepareListStatEvolution($data, $listId);
         $this->prepareWelcomeUnsubData($data);
+        $this->prepareMultilingualOption($data);
 
         parent::display($data);
     }
@@ -131,6 +132,7 @@ class ListsController extends acymController
             $listInformation->unsubscribe_id = '';
             $listInformation->access = [];
             $listInformation->tracking = 1;
+            $listInformation->translation = [];
 
             $this->breadcrumb[acym_translation('ACYM_NEW_LIST')] = acym_completeLink('lists&task=settings');
         } else {
@@ -624,5 +626,19 @@ class ListsController extends acymController
 
         echo $return;
         exit;
+    }
+
+    public function usersSummary()
+    {
+        $id = acym_getVar('int', 'list_id', 0);
+        $offset = acym_getVar('int', 'offset', 0);
+        $limit = acym_getVar('int', 'limit', 50);
+        $search = acym_getVar('string', 'modal_search', '');
+
+        if (empty($id)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);
+
+        $listClass = new ListClass();
+
+        acym_sendAjaxResponse('', ['users' => $listClass->getUsersForSummaryModal($id, $offset, $limit, $search)]);
     }
 }

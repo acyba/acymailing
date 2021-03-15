@@ -10,7 +10,7 @@ use AcyMailing\Helpers\TabHelper;
 use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\AutomationClass;
-use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Types\OperatorinType;
 
 class plgAcymWoocommerce extends acymPlugin
 {
@@ -238,6 +238,7 @@ class plgAcymWoocommerce extends acymPlugin
                 'type' => 'date',
                 'name' => 'end',
                 'default' => '',
+                'relativeDate' => '+',
             ],
             [
                 'title' => __('Discount type', 'woocommerce'),
@@ -397,7 +398,7 @@ class plgAcymWoocommerce extends acymPlugin
         ?>
 		<div class="cell grid-x">
 			<label for="acym__woocommerce__<?php echo $partId; ?>__product__number<?php echo $endIdMin; ?>" class="cell medium-6">
-                <?php echo acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info(acym_translation('ACYM_MIN_NUMBER_OF_PRODUCTS_DESC')); ?>
+                <?php echo acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info('ACYM_MIN_NUMBER_OF_PRODUCTS_DESC'); ?>
 			</label>
 			<input type="number"
 				   id="acym__woocommerce__<?php echo $partId; ?>__product__number<?php echo $endIdMin; ?>"
@@ -408,7 +409,7 @@ class plgAcymWoocommerce extends acymPlugin
 		</div>
 		<div class="cell grid-x">
 			<label for="acym__woocommerce__<?php echo $partId; ?>__product__number<?php echo $endIdMax; ?>" class="cell medium-6">
-                <?php echo acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info(acym_translation('ACYM_MAX_NUMBER_OF_PRODUCTS_DESC')); ?>
+                <?php echo acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info('ACYM_MAX_NUMBER_OF_PRODUCTS_DESC'); ?>
 			</label>
 			<input type="number"
 				   id="acym__woocommerce__<?php echo $partId; ?>__product__number<?php echo $endIdMax; ?>"
@@ -419,7 +420,7 @@ class plgAcymWoocommerce extends acymPlugin
 		</div>
 		<div class="cell grid-x">
 			<label for="acym__woocommerce__<?php echo $partId; ?>__cat" class="cell medium-6">
-                <?php echo acym_translation('ACYM_CATEGORY_FILTER').acym_info(acym_translation('ACYM_CATEGORY_FILTER_DESC')); ?>
+                <?php echo acym_translation('ACYM_CATEGORY_FILTER').acym_info('ACYM_CATEGORY_FILTER_DESC'); ?>
 			</label>
 			<div class="cell medium-6 acym__woocommerce__<?php echo $partId; ?>__cat__container">
                 <?php echo acym_selectMultiple(
@@ -449,7 +450,7 @@ class plgAcymWoocommerce extends acymPlugin
             ?>
 			<div class="cell grid-x">
 				<label class="cell medium-6">
-                    <?php echo acym_translation('ACYM_START_DATE').acym_info(acym_translation('ACYM_START_DATE_PURCHASED_PRODUCT_DESC')); ?>
+                    <?php echo acym_translation('ACYM_START_DATE').acym_info('ACYM_START_DATE_PURCHASED_PRODUCT_DESC'); ?>
 				</label>
                 <?php echo acym_dateField(
                     'min_date',
@@ -1030,12 +1031,7 @@ class plgAcymWoocommerce extends acymPlugin
         $ids = $this->getIdsSelectAjax();
 
         if (!empty($ids)) {
-            $cats = acym_loadObjectList(
-                'SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.term_id IN ("'.implode(
-                    '","',
-                    $ids
-                ).'") ORDER BY term.`name`'
-            );
+            $cats = $this->getWooCategories($ids);
 
             $value = [];
             if (!empty($cats)) {
@@ -1048,11 +1044,7 @@ class plgAcymWoocommerce extends acymPlugin
         }
 
         $search = acym_getVar('string', 'search', '');
-        $cats = acym_loadObjectList(
-            'SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.name LIKE '.acym_escapeDB(
-                '%'.$search.'%'
-            ).' ORDER BY term.`name`'
-        );
+        $cats = $this->getWooCategories([], $search);
         $categories = [];
         foreach ($cats as $oneCat) {
             $categories[] = [$oneCat->term_id, $oneCat->name];
@@ -1062,14 +1054,31 @@ class plgAcymWoocommerce extends acymPlugin
         exit;
     }
 
+    private function getWooCategories($ids = [], $nameSearch = '')
+    {
+        $query = 'SELECT term.`term_id`, term.`name` 
+			FROM #__terms AS term 
+			JOIN #__term_taxonomy AS tax 
+				ON term.`term_id` = tax.`term_id` 
+			WHERE tax.`taxonomy` = "product_cat" ';
+        if (!empty($ids)) {
+            acym_arrayToInteger($ids);
+            $query .= ' AND term.`term_id` IN ("'.implode('","', $ids).'")';
+        }
+        if (!empty($nameSearch)) {
+            $query .= ' AND term.`name` LIKE '.acym_escapeDB('%'.$nameSearch.'%');
+        }
+        $query .= ' ORDER BY term.`name`';
+
+        return acym_loadObjectList($query, 'term_id');
+    }
+
     public function onAcymDeclareConditions(&$conditions)
     {
         $categories = [
             'any' => acym_translation('ACYM_ANY_CATEGORY'),
         ];
-        $cats = acym_loadObjectList(
-            'SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" ORDER BY term.`name`'
-        );
+        $cats = $this->getWooCategories();
         foreach ($cats as $oneCat) {
             $categories[$oneCat->term_id] = $oneCat->name;
         }
@@ -1145,86 +1154,88 @@ class plgAcymWoocommerce extends acymPlugin
         );
         $conditions['user']['wooreminder']->option .= '</div>';
         $conditions['user']['wooreminder']->option .= '</div>';
+
+        // WooCommerce Subscriptions filter
+        if (acym_isExtensionActive('woocommerce-subscriptions/woocommerce-subscriptions.php')) {
+            $conditions['user']['woosubscription'] = new stdClass();
+            $conditions['user']['woosubscription']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', __('Subscription', 'woocommerce-subscriptions'));
+            $conditions['user']['woosubscription']->option = '<div class="cell grid-x grid-margin-x">';
+
+            $conditions['user']['woosubscription']->option .= '<div class="cell shrink acym_vcenter">';
+            $conditions['user']['woosubscription']->option .= acym_translation('ACYM_HAS_SUBSCRIPTION');
+            $conditions['user']['woosubscription']->option .= '</div>';
+
+            $conditions['user']['woosubscription']->option .= '<div class="intext_select_automation cell">';
+            $ajaxParams = json_encode(
+                [
+                    'plugin' => 'plgAcymWoocommerce',
+                    'trigger' => 'searchProduct',
+                ]
+            );
+            $conditions['user']['woosubscription']->option .= acym_select(
+                [],
+                'acym_condition[conditions][__numor__][__numand__][woosubscription][product]',
+                null,
+                'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_ANY_PRODUCT', true).'" data-params="'.acym_escape($ajaxParams).'"'
+            );
+            $conditions['user']['woosubscription']->option .= '</div>';
+
+            $conditions['user']['woosubscription']->option .= '<div class="intext_select_automation cell">';
+            $conditions['user']['woosubscription']->option .= acym_select(
+                $categories,
+                'acym_condition[conditions][__numor__][__numand__][woosubscription][category]',
+                'any',
+                'class="acym__select"'
+            );
+            $conditions['user']['woosubscription']->option .= '</div>';
+
+            $subscriptionStatuses = [
+                'any' => acym_translation('ACYM_SUBSCRIPTION_STATUS'),
+            ];
+            $statuses = wcs_get_subscription_statuses();
+            foreach ($statuses as $status => $statusName) {
+                $subscriptionStatuses[$status] = $statusName;
+            }
+            $conditions['user']['woosubscription']->option .= '<div class="intext_select_automation cell">';
+            $conditions['user']['woosubscription']->option .= acym_select(
+                $subscriptionStatuses,
+                'acym_condition[conditions][__numor__][__numand__][woosubscription][status]',
+                'any',
+                'class="acym__select"'
+            );
+            $conditions['user']['woosubscription']->option .= '</div>';
+
+            $conditions['user']['woosubscription']->option .= '</div>';
+
+            $conditions['user']['woosubscription']->option .= '<div class="cell grid-x grid-margin-x">';
+            $conditions['user']['woosubscription']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][woosubscription][datemin]', '', 'cell shrink');
+            $conditions['user']['woosubscription']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
+            $conditions['user']['woosubscription']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_START_DATE').'</span>';
+            $conditions['user']['woosubscription']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
+            $conditions['user']['woosubscription']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][woosubscription][datemax]', '', 'cell shrink');
+            $conditions['user']['woosubscription']->option .= '</div>';
+
+            $conditions['user']['woosubscription']->option .= '<div class="cell grid-x grid-margin-x">';
+            $conditions['user']['woosubscription']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][woosubscription][nextdatemin]', '', 'cell shrink');
+            $conditions['user']['woosubscription']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
+            $conditions['user']['woosubscription']->option .= '<span class="acym_vcenter">'.__('Next Payment', 'woocommerce-subscriptions').'</span>';
+            $conditions['user']['woosubscription']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
+            $conditions['user']['woosubscription']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][woosubscription][nextdatemax]', '', 'cell shrink');
+            $conditions['user']['woosubscription']->option .= '</div>';
+
+            $conditions['user']['woosubscription']->option .= '<div class="cell grid-x grid-margin-x">';
+            $conditions['user']['woosubscription']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][woosubscription][enddatemin]', '', 'cell shrink');
+            $conditions['user']['woosubscription']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
+            $conditions['user']['woosubscription']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_END_DATE').'</span>';
+            $conditions['user']['woosubscription']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
+            $conditions['user']['woosubscription']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][woosubscription][enddatemax]', '', 'cell shrink');
+            $conditions['user']['woosubscription']->option .= '</div>';
+        }
     }
 
     public function onAcymDeclareFilters(&$filters)
     {
-        $categories = [
-            'any' => acym_translation('ACYM_ANY_CATEGORY'),
-        ];
-        $cats = acym_loadObjectList(
-            'SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" ORDER BY term.`name`'
-        );
-        foreach ($cats as $oneCat) {
-            $categories[$oneCat->term_id] = $oneCat->name;
-        }
-
-        $filters['woopurchased'] = new stdClass();
-        $filters['woopurchased']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', acym_translation('ACYM_PURCHASED'));
-        $filters['woopurchased']->option = '<div class="cell grid-x grid-margin-x">';
-
-        $filters['woopurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_BOUGHT').'</div>';
-
-        $filters['woopurchased']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode(
-            [
-                'plugin' => 'plgAcymWoocommerce',
-                'trigger' => 'searchProduct',
-            ]
-        );
-        $filters['woopurchased']->option .= acym_select(
-            [],
-            'acym_action[filters][__numor__][__numand__][woopurchased][product]',
-            null,
-            'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_AT_LEAST_ONE_PRODUCT', true).'" data-params="'.acym_escape($ajaxParams).'"'
-        );
-        $filters['woopurchased']->option .= '</div>';
-
-        $filters['woopurchased']->option .= '<div class="intext_select_automation cell">';
-        $filters['woopurchased']->option .= acym_select($categories, 'acym_action[filters][__numor__][__numand__][woopurchased][category]', 'any', 'class="acym__select"');
-        $filters['woopurchased']->option .= '</div>';
-
-        $filters['woopurchased']->option .= '</div>';
-
-        $filters['woopurchased']->option .= '<div class="cell grid-x grid-margin-x">';
-        $filters['woopurchased']->option .= acym_dateField('acym_action[filters][__numor__][__numand__][woopurchased][datemin]', '', 'cell shrink');
-        $filters['woopurchased']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
-        $filters['woopurchased']->option .= '<span class="acym_vcenter">'.acym_translation('ACYM_DATE_CREATED').'</span>';
-        $filters['woopurchased']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
-        $filters['woopurchased']->option .= acym_dateField('acym_action[filters][__numor__][__numand__][woopurchased][datemax]', '', 'cell shrink');
-        $filters['woopurchased']->option .= '</div>';
-
-
-        $paymentMethods = ['any' => acym_translation('ACYM_ANY_PAYMENT_METHOD')];
-        if (function_exists('WC')) {
-            $payments = WC()->payment_gateways()->payment_gateways;
-            foreach ($payments as $oneMethod) {
-                $paymentMethods[$oneMethod->id] = $oneMethod->title;
-            }
-        }
-
-        $filters['wooreminder'] = new stdClass();
-        $filters['wooreminder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', acym_translation('ACYM_REMINDER'));
-        $filters['wooreminder']->option = '<div class="cell">';
-        $filters['wooreminder']->option .= acym_translationSprintf(
-            'ACYM_ORDER_WITH_STATUS',
-            '<input type="number" name="acym_action[filters][__numor__][__numand__][wooreminder][days]" value="1" min="1" class="intext_input"/>',
-            '<div class="intext_select_automation cell margin-right-1">'.acym_select(
-                $this->getOrderStatuses(),
-                'acym_action[filters][__numor__][__numand__][wooreminder][status]',
-                'wc-pending',
-                'class="acym__select"'
-            ).'</div>'
-        );
-        $filters['wooreminder']->option .= '<div class="intext_select_automation cell">';
-        $filters['wooreminder']->option .= acym_select(
-            $paymentMethods,
-            'acym_action[filters][__numor__][__numand__][wooreminder][payment]',
-            'any',
-            'class="acym__select"'
-        );
-        $filters['wooreminder']->option .= '</div>';
-        $filters['wooreminder']->option .= '</div>';
+        $this->filtersFromConditions($filters);
     }
 
     public function onAcymProcessFilterCount_woopurchased(&$query, $options, $num)
@@ -1323,6 +1334,104 @@ class plgAcymWoocommerce extends acymPlugin
         $this->processConditionFilter_wooreminder($query, $options, $num);
     }
 
+    public function onAcymProcessFilterCount_woosubscription(&$query, $options, $num)
+    {
+        $this->onAcymProcessFilter_woosubscription($query, $options, $num);
+
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
+    }
+
+    private function processConditionFilter_woosubscription(&$query, $options, $num)
+    {
+        // Retrieve the Acy users with subscriptions
+        $conditions = [];
+        $conditions[] = 'post'.$num.'.post_type = "shop_subscription"';
+
+        $statuses = wcs_get_subscription_statuses();
+        if (!empty($options['status']) && in_array($options['status'], array_keys($statuses))) {
+            $conditions[] = 'post'.$num.'.post_status = '.acym_escapeDB($options['status']);
+        }
+
+        $query->join['woosubscription_post'.$num] = '#__posts AS post'.$num.' ON '.implode(' AND ', $conditions);
+
+        $query->join['woosubscription_user'.$num] = '#__postmeta AS wcsuser'.$num.' 
+        	ON wcsuser'.$num.'.post_id = post'.$num.'.ID 
+        	AND wcsuser'.$num.'.meta_value = user.cms_id 
+        	AND wcsuser'.$num.'.meta_value != 0 
+        	AND wcsuser'.$num.'.meta_key = "_customer_user"';
+
+
+        // Apply condition on product / category linked to the subscription
+        if (!empty($options['product'])) {
+            $query->join['woosubscription_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' 
+            	ON post'.$num.'.ID = woooi'.$num.'.order_id 
+            	AND woooi'.$num.'.order_item_type = "line_item"';
+            $query->join['woosubscription_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' 
+            	ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id 
+            	AND woooim'.$num.'.meta_key = "_product_id" 
+            	AND woooim'.$num.'.meta_value = '.intval($options['product']);
+        } elseif (!empty($options['category']) && $options['category'] != 'any') {
+            $query->join['woosubscription_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' 
+            	ON post'.$num.'.ID = woooi'.$num.'.order_id 
+            	AND woooi'.$num.'.order_item_type = "line_item"';
+            $query->join['woosubscription_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' 
+            	ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id 
+            	AND woooim'.$num.'.meta_key = "_product_id"';
+            $query->join['woosubscription_cat_map'.$num] = '#__term_relationships AS termrel'.$num.' ON termrel'.$num.'.object_id = woooim'.$num.'.meta_value';
+            $query->join['woosubscription_cat'.$num] = '#__term_taxonomy AS termtax'.$num.' 
+            	ON termtax'.$num.'.term_taxonomy_id = termrel'.$num.'.term_taxonomy_id 
+            	AND termtax'.$num.'.term_id = '.intval($options['category']);
+        }
+
+
+        // Prepare date fields values
+        $dateOptions = ['datemin', 'datemax', 'nextdatemin', 'nextdatemax', 'enddatemin', 'enddatemax'];
+        foreach ($dateOptions as $oneDateOption) {
+            if (empty($options[$oneDateOption])) continue;
+
+            $options[$oneDateOption] = acym_replaceDate($options[$oneDateOption]);
+            if (!is_numeric($options[$oneDateOption])) $options[$oneDateOption] = strtotime($options[$oneDateOption]);
+            if (!empty($options[$oneDateOption])) {
+                $options[$oneDateOption] = acym_date($options[$oneDateOption], 'Y-m-d H:i:s', false);
+            }
+        }
+
+        // Apply date conditions
+        $dateOptions = [
+            'date' => '_schedule_start',
+            'nextdate' => '_schedule_next_payment',
+            'enddate' => '_schedule_end',
+        ];
+        foreach ($dateOptions as $oneDateType => $metaKey) {
+            if (!empty($options[$oneDateType.'min']) || !empty($options[$oneDateType.'max'])) {
+                $query->join['woosubscription_meta'.$oneDateType.$num] = '#__postmeta AS wcs_'.$oneDateType.$num.' 
+					ON wcs_'.$oneDateType.$num.'.post_id = post'.$num.'.ID 
+					AND wcs_'.$oneDateType.$num.'.meta_value != 0 
+					AND wcs_'.$oneDateType.$num.'.meta_key = '.acym_escapeDB($metaKey);
+
+                if (!empty($options[$oneDateType.'min'])) {
+                    $query->join['woosubscription_meta'.$oneDateType.$num] .= ' AND wcs_'.$oneDateType.$num.'.meta_value > '.acym_escapeDB($options[$oneDateType.'min']);
+                }
+
+                if (!empty($options[$oneDateType.'max'])) {
+                    $query->join['woosubscription_meta'.$oneDateType.$num] .= ' AND wcs_'.$oneDateType.$num.'.meta_value < '.acym_escapeDB($options[$oneDateType.'max']);
+                }
+            }
+        }
+    }
+
+    public function onAcymProcessCondition_woosubscription(&$query, $options, $num, &$conditionNotValid)
+    {
+        $this->processConditionFilter_woosubscription($query, $options, $num);
+        $affectedRows = $query->count();
+        if (empty($affectedRows)) $conditionNotValid++;
+    }
+
+    public function onAcymProcessFilter_woosubscription(&$query, $options, $num)
+    {
+        $this->processConditionFilter_woosubscription($query, $options, $num);
+    }
+
     public function onAcymDeclareSummary_conditions(&$automationCondition)
     {
         $this->summaryConditionFilters($automationCondition);
@@ -1359,13 +1468,12 @@ class plgAcymWoocommerce extends acymPlugin
                 $product = $product->post_title;
             }
 
-            $cats = acym_loadObjectList(
-                'SELECT term.`term_id`, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat"',
-                'term_id'
-            );
-            $category = empty($cats[$automationCondition['woopurchased']['category']]) ? acym_translation(
-                'ACYM_ANY_CATEGORY'
-            ) : $cats[$automationCondition['woopurchased']['category']]->name;
+            $cats = $this->getWooCategories();
+            if (empty($cats[$automationCondition['woopurchased']['category']])) {
+                $category = acym_translation('ACYM_ANY_CATEGORY');
+            } else {
+                $category = $cats[$automationCondition['woopurchased']['category']]->name;
+            }
 
             $finalText = acym_translationSprintf('ACYM_CONDITION_PURCHASED', $product, $category);
 
@@ -1380,6 +1488,53 @@ class plgAcymWoocommerce extends acymPlugin
 
             if (!empty($dates)) {
                 $finalText .= ' '.implode(' '.acym_translation('ACYM_AND').' ', $dates);
+            }
+
+            $automationCondition = $finalText;
+        }
+
+        if (!empty($automationCondition['woosubscription'])) {
+
+            if (empty($automationCondition['woosubscription']['product'])) {
+                $product = acym_translation('ACYM_AT_LEAST_ONE_PRODUCT');
+            } else {
+                $product = get_post($automationCondition['woosubscription']['product']);
+                $product = $product->post_title;
+            }
+
+            $cats = $this->getWooCategories();
+            if (empty($cats[$automationCondition['woosubscription']['category']])) {
+                $category = acym_translation('ACYM_ANY_CATEGORY');
+            } else {
+                $category = $cats[$automationCondition['woosubscription']['category']]->name;
+            }
+
+            $finalText = acym_translationSprintf('ACYM_HAS_SUBSCRIPTION_SUMMARY', $product, $category);
+            if (!empty($automationCondition['woosubscription']['status']) && $automationCondition['woosubscription']['status'] !== 'any') {
+                $statuses = wcs_get_subscription_statuses();
+                if (in_array($automationCondition['woosubscription']['status'], array_keys($statuses))) {
+                    $finalText .= '<br/>'.acym_translation('ACYM_SUBSCRIPTION_STATUS').' : '.$statuses[$automationCondition['woosubscription']['status']];
+                }
+            }
+
+            $dateOptions = [
+                'date' => acym_translation('ACYM_START_DATE'),
+                'nextdate' => __('Next Payment', 'woocommerce-subscriptions'),
+                'enddate' => acym_translation('ACYM_END_DATE'),
+            ];
+            foreach ($dateOptions as $oneDateOption => $dateLabel) {
+                $dates = [];
+                if (!empty($automationCondition['woosubscription'][$oneDateOption.'min'])) {
+                    $dates[] = acym_translation('ACYM_AFTER').' '.acym_replaceDate($automationCondition['woosubscription'][$oneDateOption.'min'], true);
+                }
+
+                if (!empty($automationCondition['woosubscription'][$oneDateOption.'max'])) {
+                    $dates[] = acym_translation('ACYM_BEFORE').' '.acym_replaceDate($automationCondition['woosubscription'][$oneDateOption.'max'], true);
+                }
+
+                if (!empty($dates)) {
+                    $finalText .= '<br/>'.$dateLabel.' : '.implode(' '.acym_translation('ACYM_AND').' ', $dates);
+                }
             }
 
             $automationCondition = $finalText;
@@ -1438,7 +1593,7 @@ class plgAcymWoocommerce extends acymPlugin
                         echo acym_selectMultiple(
                             $lists,
                             'config[woocommerce_autolists]',
-                            explode(',', $this->config->get('woocommerce_autolists')),
+                            explode(',', $this->config->get('woocommerce_autolists', '')),
                             ['class' => 'acym__select', 'id' => 'acym__config__woocommerce-autolists'],
                             'id',
                             'name'
@@ -1485,7 +1640,7 @@ class plgAcymWoocommerce extends acymPlugin
 
     public function onAcymInitWordpressAddons()
     {
-        add_filter('woocommerce_checkout_fields', [$this, 'addSubsciptionFieldWC']);
+        add_filter('woocommerce_checkout_fields', [$this, 'addSubscriptionFieldWC']);
         add_action('woocommerce_checkout_order_processed', [$this, 'subscribeUserOnCheckoutWC'], 15, 3);
         if (acym_isTrackingSalesActive()) {
             add_action('woocommerce_payment_successful_result', [$this, 'trackingWoocommerce'], 10, 2);
@@ -1606,7 +1761,7 @@ class plgAcymWoocommerce extends acymPlugin
      *
      * @return mixed
      */
-    public function addSubsciptionFieldWC($fields)
+    public function addSubscriptionFieldWC($fields)
     {
         $config = acym_config();
         if (!$config->get('woocommerce_sub', 0)) return $fields;
@@ -1711,8 +1866,10 @@ class plgAcymWoocommerce extends acymPlugin
         foreach ($items as $item) {
             $productIds[] = $item->get_product_id();
             $terms = get_the_terms($item->get_product_id(), 'product_cat');
-            foreach ($terms as $term) {
-                if (!in_array($term->term_id, $categoriesIds)) $categoriesIds[] = $term->term_id;
+            if (!empty($terms)) {
+                foreach ($terms as $term) {
+                    if (!in_array($term->term_id, $categoriesIds)) $categoriesIds[] = $term->term_id;
+                }
             }
         }
 
@@ -2020,7 +2177,7 @@ class plgAcymWoocommerce extends acymPlugin
             }
 
             if (empty($condition['products_status']) || empty($condition['products'])) {
-                $return[] = acym_translation('ACYM_EVERY_PRODUCTS');
+                $return[] = acym_translation('ACYM_ANY_PRODUCT');
             } else {
                 $args = [
                     'post__in' => $condition['products'],
@@ -2040,12 +2197,7 @@ class plgAcymWoocommerce extends acymPlugin
             if (empty($condition['categories_status']) || empty($condition['categories'])) {
                 $return[] = acym_translation('ACYM_EVERY_CATEGORIES');
             } else {
-                $cats = acym_loadObjectList(
-                    'SELECT term.term_id, term.`name` FROM #__terms AS term JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id WHERE tax.taxonomy = "product_cat" AND term.term_id IN ("'.implode(
-                        '","',
-                        $condition['categories']
-                    ).'") ORDER BY term.`name`'
-                );
+                $cats = $this->getWooCategories($condition['categories']);
 
                 $categoriesToDisplay = [];
                 if (!empty($cats)) {

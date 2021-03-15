@@ -10,7 +10,7 @@ const acym_editorWysidTinymce = {
             selector: '.acym__wysid__tinymce--text',
             inline: true,
             menubar: false,
-            plugins: 'textcolor colorpicker lists link code acydtext noneditable lineheight table',
+            plugins: 'textcolor colorpicker lists link code noneditable lineheight table',
             image_class_list: [
                 {
                     title: 'Responsive',
@@ -21,7 +21,7 @@ const acym_editorWysidTinymce = {
             fontsize_formats: '10px=10px 12px=12px 14px=14px 16px=16px 18px=18px 20px=20px 22px=22px 24px=24px 26px=26px 28px=28px 30px=30px 32px=32px 34px=34px 36px=36px',
             toolbar: [
                 'undo redo formatselect fontselect fontsizeselect | alignmentsplit | listsplit lineheightselect | table',
-                'bold italic underline strikethrough removeformat | forecolor backcolor | link unlink | code | acydtext'
+                'bold italic underline strikethrough removeformat | forecolor backcolor | link unlink | code'
             ],
             link_class_list: [
                 {
@@ -85,6 +85,7 @@ const acym_editorWysidTinymce = {
                         currentText.removeClass('acym__wysid__tinymce--text--placeholder--empty');
                     }
                     acym_editorWysidTinymce.checkForEmptyText();
+                    jQuery(editor.getElement()).trigger('click');
                 });
                 editor.on('click', function () {
                     acym_editorWysidToolbox.setDeleteAlltoolbox();
@@ -101,13 +102,13 @@ const acym_editorWysidTinymce = {
                 });
                 editor.on('ExecCommand', function (e) {
                     let currentText = jQuery(editor.getElement()).find('>:first-child');
-                    if (e.command == 'mceTableDelete' && acym_editorWysidTinymce.isCurrentTextEmpty(currentText)) {
+                    if (e.command === 'mceTableDelete' && acym_editorWysidTinymce.isCurrentTextEmpty(currentText)) {
                         e.target.bodyElement.innerHTML = '<p class="acym__wysid__tinymce--text--placeholder">&zwj;</p>';
                         jQuery(':focus').blur();
                     }
                 });
                 editor.on('BeforeSetContent', function (e) {
-                    if (e.content.indexOf('<table id="__mce"') == 0) {
+                    if (e.content.indexOf('<table id="__mce"') === 0) {
                         let currentText = jQuery(editor.getElement()).find('>:first-child');
                         if (acym_editorWysidTinymce.isCurrentTextEmpty(currentText)) {
                             currentText.remove();
@@ -212,6 +213,8 @@ const acym_editorWysidTinymce = {
             menubar: false,
             plugins: 'image nonbreaking',
             toolbar: [],
+            relative_urls: false,
+            remove_script_host: false,
             image_class_list: [
                 {
                     title: 'Responsive',

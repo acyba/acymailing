@@ -62,6 +62,13 @@ class MailerHelper extends acyPHPMailer
     // Preset override email
     public $overrideEmailToSend = '';
 
+    public $userLanguage = '';
+
+    public $mailId;
+    public $receiverEmail;
+
+    public $isTest = false;
+
     public function __construct()
     {
         parent::__construct();
@@ -70,7 +77,7 @@ class MailerHelper extends acyPHPMailer
         $this->editorHelper = new EditorHelper();
         $this->userClass = new UserClass();
         $this->config = acym_config();
-        $this->setFrom($this->config->get('from_email'), $this->config->get('from_name'));
+        $this->setFrom($this->getSendSettings('from_email'), $this->getSendSettings('from_name'));
         $this->Sender = $this->cleanText($this->config->get('bounce_email'));
         if (empty($this->Sender)) {
             $this->Sender = '';
@@ -131,6 +138,15 @@ class MailerHelper extends acyPHPMailer
                 $this->{$this->Mailer}->Username = trim($this->config->get('elasticemail_username'));
                 $this->{$this->Mailer}->Password = trim($this->config->get('elasticemail_password'));
             }
+        } elseif ($mailerMethodConfig == 'amazon') {
+            $this->isSMTP();
+            $amazonCredentials = [];
+            acym_trigger('onAcymGetCredentialsSendingMethod', [&$amazonCredentials, 'amazon'], 'plgAcymAmazon');
+            $this->Host = trim($amazonCredentials['amazon_host']).':587';
+            $this->Username = trim($amazonCredentials['amazon_username']);
+            $this->Password = trim($amazonCredentials['amazon_password']);
+            $this->SMTPAuth = true;
+            $this->SMTPSecure = 'tls';
         } elseif (in_array($mailerMethodConfig, $externalSendingMethod)) {
             $this->isExternal($mailerMethodConfig);
         } else {
@@ -257,17 +273,17 @@ class MailerHelper extends acyPHPMailer
             if (!empty($this->replyemail)) {
                 $replyToEmail = $this->replyemail;
             } elseif ($this->config->get('from_as_replyto', 1) == 1) {
-                $replyToEmail = $this->config->get('from_email');
+                $replyToEmail = $this->getSendSettings('from_email');
             } else {
-                $replyToEmail = $this->config->get('replyto_email');
+                $replyToEmail = $this->getSendSettings('replyto_email');
             }
 
             if (!empty($this->replyname)) {
                 $replyToName = $this->replyname;
             } elseif ($this->config->get('from_as_replyto', 1) == 1) {
-                $replyToName = $this->config->get('from_name');
+                $replyToName = $this->getSendSettings('from_name');
             } else {
-                $replyToName = $this->config->get('replyto_name');
+                $replyToName = $this->getSendSettings('replyto_name');
             }
 
             $this->_addReplyTo($replyToEmail, $replyToName);
@@ -350,9 +366,23 @@ class MailerHelper extends acyPHPMailer
         // BE CAREFUL! This space is not a space, it's a ALT0160 chr(194) by char(32) which means almost &nbsp;
         $this->Body = str_replace(" ", ' ', $this->Body);
 
-        ob_start();
-        $result = parent::send();
-        $warnings = ob_get_clean();
+        $externalSending = false;
+
+        $mailClass = new MailClass();
+        $isTransactional = $this->isTest || (!empty($this->defaultMail[$this->mailId]) && $mailClass->isTransactionalMail($this->defaultMail[$this->mailId]));
+
+        acym_trigger('onAcymProcessQueueExternalSendingCampaign', [&$externalSending, $isTransactional]);
+
+        $warnings = '';
+
+        if ($externalSending) {
+            $result = true;
+            acym_trigger('onAcymRegisterReceiverContentAndList', [&$result, $this->Body, $this->receiverEmail, $this->mailId, &$warnings]);
+        } else {
+            ob_start();
+            $result = parent::send();
+            $warnings = ob_get_clean();
+        }
 
         //display error if bloque is displayed... for free.fr especially
         if (!empty($warnings) && strpos($warnings, 'bloque')) {
@@ -410,8 +440,7 @@ class MailerHelper extends acyPHPMailer
         $this->errorNumber = 0;
         $this->MessageID = '';
         $this->ErrorInfo = '';
-
-        $this->setFrom($this->config->get('from_email'), $this->config->get('from_name'));
+        $this->setFrom($this->getSendSettings('from_email'), $this->getSendSettings('from_name'));
     }
 
     private function loadUrlAndStyle($mailId)
@@ -429,15 +458,15 @@ class MailerHelper extends acyPHPMailer
         if (!empty($this->overrideEmailToSend)) {
             $this->defaultMail[$mailId] = $this->overrideEmailToSend;
         } else {
-            $this->defaultMail[$mailId] = $mailClass->getOneById($mailId);
+            $this->defaultMail[$mailId] = $mailClass->getOneById($mailId, true);
         }
 
         global $acymLanguages;
-        if (!acym_isMultilingual()) {
-            $this->defaultMail[$mailId] = $mailClass->getOneById($mailId);
+        if (!acym_isMultilingual() || $this->isTest) {
+            $this->defaultMail[$mailId] = $mailClass->getOneById($mailId, true);
 
             if (empty($this->defaultMail[$mailId])) {
-                $this->defaultMail[$mailId] = $mailClass->getOneByName($mailId);
+                $this->defaultMail[$mailId] = $mailClass->getOneByName($mailId, false, true);
             }
         } elseif (empty($this->overrideEmailToSend)) {
             $defaultLanguage = $this->config->get('multilingual_default', ACYM_DEFAULT_LANGUAGE);
@@ -446,16 +475,16 @@ class MailerHelper extends acyPHPMailer
                 $mails = $mailClass->getMultilingualMailsByName($mailId);
             }
 
-            $userLanguage = $user != null && !empty($user->language) ? $user->language : $defaultLanguage;
+            $this->userLanguage = $user != null && !empty($user->language) ? $user->language : $defaultLanguage;
 
             if (!empty($mails)) {
                 $languages = array_keys($mails);
-                if (count($languages) == 1 && empty($languages[0])) {
+                if (count($languages) == 1) {
                     $key = $languages[0];
-                } elseif (empty($mails[$userLanguage])) {
+                } elseif (empty($mails[$this->userLanguage])) {
                     $key = $defaultLanguage;
                 } else {
-                    $key = $userLanguage;
+                    $key = $this->userLanguage;
                 }
 
                 $this->defaultMail[$mailId] = $mails[$key];
@@ -465,7 +494,8 @@ class MailerHelper extends acyPHPMailer
                 return false;
             }
 
-            $acymLanguages['userLanguage'] = $userLanguage;
+            $acymLanguages['userLanguage'] = $this->userLanguage;
+            $this->setFrom($this->getSendSettings('from_email'), $this->getSendSettings('from_name'));
         }
 
         //We could not load the email...
@@ -474,8 +504,6 @@ class MailerHelper extends acyPHPMailer
 
             return false;
         }
-
-        $this->defaultMail[$mailId]->altbody = $this->textVersion($this->defaultMail[$mailId]->body);
 
         if (!empty($this->defaultMail[$mailId]->attachments)) {
             $this->defaultMail[$mailId]->attach = [];
@@ -494,6 +522,8 @@ class MailerHelper extends acyPHPMailer
         if (!empty($acymLanguages['userLanguage'])) unset($acymLanguages['userLanguage']);
 
         $this->loadUrlAndStyle($mailId);
+
+        $this->mailId = $mailId;
 
         return $this->defaultMail[$mailId];
     }
@@ -603,6 +633,10 @@ class MailerHelper extends acyPHPMailer
             $receiver = $this->userClass->getOneById($user);
         }
 
+        $this->userLanguage = empty($receiver->language) ? acym_getLanguageTag() : $receiver->language;
+
+        $this->receiverEmail = $receiver->email;
+
         return $receiver;
     }
 
@@ -622,6 +656,7 @@ class MailerHelper extends acyPHPMailer
         }
 
         $receiver = $this->loadUser($user);
+        $this->isTest = $isTest;
 
         //Load the mail if it's not already loaded
         if (!isset($this->defaultMail[$mailId]) && !$this->load($mailId, $receiver)) {
@@ -668,14 +703,10 @@ class MailerHelper extends acyPHPMailer
 
         $this->Subject = $this->defaultMail[$mailId]->subject;
         $this->Body = $this->defaultMail[$mailId]->body;
-        if ($isTest && $testNote != '') {
+        if ($this->isTest && $testNote != '') {
             $this->Body = '<div style="text-align: center; padding: 25px; font-family: Poppins; font-size: 20px">'.$testNote.'</div>'.$this->Body;
         }
         $this->Preheader = $this->defaultMail[$mailId]->preheader;
-
-        if ($this->config->get('multiple_part', false)) {
-            $this->AltBody = $this->defaultMail[$mailId]->altbody;
-        }
 
         if (!empty($this->defaultMail[$mailId]->stylesheet)) {
             $this->stylesheet = $this->defaultMail[$mailId]->stylesheet;
@@ -686,7 +717,7 @@ class MailerHelper extends acyPHPMailer
             $this->mailHeader = $this->defaultMail[$mailId]->headers;
         }
 
-        $this->setFrom($this->defaultMail[$mailId]->from_email, $this->defaultMail[$mailId]->from_name);
+        $this->setFrom($this->getSendSettings('from_email', $mailId), $this->getSendSettings('from_name', $mailId));
         $this->_addReplyTo($this->defaultMail[$mailId]->reply_to_email, $this->defaultMail[$mailId]->reply_to_name);
 
         if (!empty($this->defaultMail[$mailId]->bcc)) {
@@ -706,24 +737,18 @@ class MailerHelper extends acyPHPMailer
                 }
             } else {
                 $attachStringHTML = '<br /><fieldset><legend>'.acym_translation('ATTACHMENTS').'</legend><table>';
-                $attachStringText = "\n"."\n".'------- '.acym_translation('ATTACHMENTS').' -------';
                 foreach ($this->defaultMail[$mailId]->attach as $attachment) {
                     $attachStringHTML .= '<tr><td><a href="'.$attachment->url.'" target="_blank">'.$attachment->name.'</a></td></tr>';
-                    $attachStringText .= "\n".'-- '.$attachment->name.' ( '.$attachment->url.' )';
                 }
                 $attachStringHTML .= '</table></fieldset>';
 
                 $this->Body .= $attachStringHTML;
-                if (!empty($this->AltBody)) {
-                    $this->AltBody .= "\n".$attachStringText;
-                }
             }
         }
 
         //We add the intro text at the top of the body
         if (!empty($this->introtext)) {
             $this->Body = $this->introtext.$this->Body;
-            $this->AltBody = $this->textVersion($this->introtext).$this->AltBody;
         }
 
         $preheader = '';
@@ -744,7 +769,6 @@ class MailerHelper extends acyPHPMailer
             } else {
                 $this->Body = $matches[1].$preheader.str_replace($matches[1], '', $this->Body);
             }
-            $this->AltBody = $this->textVersion($preheader).$this->AltBody;
         }
 
         //We replace the user tags here and for that, we will create a new object like if it was an e-mail from the database
@@ -767,7 +791,7 @@ class MailerHelper extends acyPHPMailer
         $this->stylesheet = &$this->stylesheet;
         $this->links_language = $this->defaultMail[$mailId]->links_language;
 
-        if (!$isTest && $this->canTrack($mailId, $receiver)) {
+        if (!$this->isTest && $this->canTrack($mailId, $receiver)) {
             $this->statPicture($this->id, $receiver->id);
             $this->body = acym_absoluteURL($this->body);
             $this->statClick($this->id, $receiver->id);
@@ -792,6 +816,10 @@ class MailerHelper extends acyPHPMailer
                     return -1;
                 }
             }
+        }
+
+        if ($this->config->get('multiple_part', false)) {
+            $this->altbody = $this->textVersion($this->Body);
         }
 
         $this->replaceParams();
@@ -881,18 +909,37 @@ class MailerHelper extends acyPHPMailer
             $utmCampaign = acym_getAlias($mail->subject);
         }
 
-        preg_match_all('#href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:|tel:)([^"]+)"#Ui', $this->body, $results);
+        preg_match_all('#<[^>]* href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:|tel:)([^"]+)"#Ui', $this->body, $results);
         if (empty($results)) return;
 
         $countLinks = array_count_values($results[1]);
         if (array_product($countLinks) != 1) {
+            $previousLinkHandled = '';
             foreach ($results[1] as $key => $url) {
-                if ($countLinks[$url] == 1) {
-                    continue;
+                if ($countLinks[$url] === 1) continue;
+
+                // Handle the Outlook buttons that double the link, we need to consider it as the same link that's on the main button element
+                $previousIsOutlook = false;
+                if (strpos($results[0][$key], '<v:roundrect') === 0) {
+                    $previousLinkHandled = $results[0][$key];
+                    if ($countLinks[$url] === 2) {
+                        $countLinks[$url] = 1;
+                        continue;
+                    }
+                } elseif (strpos($previousLinkHandled, '<v:roundrect') === 0) {
+                    $previousIsOutlook = true;
                 }
-                $countLinks[$url]--;
+                $previousLinkHandled = $results[0][$key];
+
+                if (!$previousIsOutlook) {
+                    $countLinks[$url]--;
+                }
 
                 $toAddUrl = (strpos($url, '?') === false ? '?' : '&').'idU='.$countLinks[$url];
+
+                if ($previousIsOutlook) {
+                    $countLinks[$url]--;
+                }
 
                 $posHash = strpos($url, '#');
                 if ($posHash !== false) {
@@ -902,7 +949,6 @@ class MailerHelper extends acyPHPMailer
                 }
 
                 $this->body = preg_replace('#href="('.preg_quote($url, '#').')"#Uis', 'href="'.$newURL.'"', $this->body, 1);
-                if (!$fromStat) $this->altbody = preg_replace('#\( ('.preg_quote($url, '#').') \)#Uis', '( '.$newURL.' )', $this->altbody, 1);
 
                 $results[0][$key] = 'href="'.$newURL.'"';
                 $results[1][$key] = $newURL;
@@ -1257,6 +1303,31 @@ class MailerHelper extends acyPHPMailer
         }
 
         return $statusSend;
+    }
+
+    private function getSendSettings($type, $mailId = 0)
+    {
+        if (!in_array($type, ['from_name', 'from_email', 'replyto_name', 'replyto_email'])) return false;
+
+        $mailType = strpos($type, 'replyto') !== false ? str_replace('replyto', 'reply_to', $type) : $type;
+
+        if (!empty($mailId) && !empty($this->defaultMail[$mailId]) && !empty($this->defaultMail[$mailId]->$mailType)) return $this->defaultMail[$mailId]->$mailType;
+
+        $lang = empty($this->userLanguage) ? acym_getLanguageTag() : $this->userLanguage;
+
+        $setting = $this->config->get($type);
+
+        $translation = $this->config->get('sender_info_translation');
+
+        if (!empty($translation)) {
+            $translation = json_decode($translation, true);
+
+            if (!empty($translation[$lang])) {
+                $setting = $translation[$lang][$type];
+            }
+        }
+
+        return $setting;
     }
 
     /* * * * * * * * * * * * * * * * *

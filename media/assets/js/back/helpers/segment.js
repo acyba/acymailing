@@ -1,7 +1,11 @@
 const acym_helperSegment = {
+    filterRebuilt: true,
+    blocksRebuilt: true,
     ajaxCalls: {},
     globalAjaxCall: '',
     reloadCounters: function (element) {
+        if (!acym_helperSegment.filterRebuilt) return;
+
         let and = jQuery(element).closest('.acym__segments__inserted__filter').attr('data-and');
         let or = jQuery(element).closest('[data-filter-number]').attr('data-filter-number');
         let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_segments&ctrl=segments&task=countResults&and=' + and + '&or=' + or;
@@ -26,6 +30,8 @@ const acym_helperSegment = {
         this.reloadGlobalCounter();
     },
     reloadGlobalCounter: function () {
+        if (!acym_helperSegment.blocksRebuilt) return;
+
         let $counterInput = '';
         if (jQuery('#acym__campaigns__segment').length > 0) {
             $counterInput = jQuery('#acym__campaigns__segment__edit-user-count');
@@ -92,6 +98,9 @@ const acym_helperSegment = {
             }
 
             $inputAnd.val(parseInt($inputAnd.val()) + 1);
+
+            let seeUsersFilter = acym_helperSegment.getSeeUserModalButton(jQuery(this), $inputAnd.val());
+
             jQuery(this).parent().parent().find('.acym__segments__inserted__filter').remove();
             let html = filters[jQuery(this).val()].replace(/__numor__/g, jQuery(this).closest('.acym__segments__group__filter').attr('data-filter-number'));
             html = html.replace(/__numand__/g, $inputAnd.val());
@@ -109,11 +118,15 @@ const acym_helperSegment = {
                        + $inputAnd.val()
                        + '"><span class="acym__segments__edit__filter-results cell"></span>'
                        + deleteFilter
+                       + seeUsersFilter
                        + '</span>'
                        + '</div>');
             acym_helperSelect2.setSelect2();
             acym_helperDatePicker.setDatePickerGlobal();
             acym_helperTooltip.setTooltip();
+            acym_helperFilter.setAutomationReload();
+            jQuery(document).foundation();
+            jQuery(document).trigger('acym__modal__users__summary__ready');
 
             jQuery('.switch-label').off('click').on('click', function () {
                 let input = jQuery('input[data-switch="' + jQuery(this).attr('for') + '"]');
@@ -164,7 +177,7 @@ const acym_helperSegment = {
             } else {
                 acym_helperSegment.reloadCounters(jQuery(this)
                     .closest('.acym__segments__one__filter.acym__segments__one__filter__classic')
-                    .find('.acym__segments__inserted__filter input, .acym__segments__inserted__filter select'));
+                    .find('.acym__segments__inserted__filter input, .acym__segments__inserted__filter select, .acym__segments__inserted__filter textarea'));
             }
 
 
@@ -214,12 +227,15 @@ const acym_helperSegment = {
         let filters = JSON.parse($filterElement.val());
         let or = 0;
         // Foreach OR block
+        let lastOrBlock = parseInt(Object.keys(filters).slice(-1)[0]);
+        acym_helperSegment.blocksRebuilt = false;
         jQuery.each(filters, function (numOR, oneORBlock) {
 
             // Create a new OR block if needed
             if (or !== 0) jQuery('.acym__automation__filters__or').click();
 
             let and = 0;
+            let lastFilterInOrBlock = Object.keys(oneORBlock).slice(-1)[0];
             jQuery.each(oneORBlock, function (numAND, oneFilter) {
                 // Create a new AND block if needed
                 if (and !== 0) {
@@ -228,6 +244,7 @@ const acym_helperSegment = {
                         .click();
                 }
 
+                acym_helperSegment.filterRebuilt = false;
                 jQuery.each(oneFilter, function (filterName, filterOptions) {
                     // Select the filter type in the correct dropdown
                     let $filterSelect = jQuery('.acym__segments__group__filter[data-filter-number="' + or + '"]')
@@ -253,6 +270,13 @@ const acym_helperSegment = {
                                                   + ']"]');
                         acym_helperFilter.setFieldValue($optionField, optionValue);
 
+                        if (key === keys.length - 1) {
+                            acym_helperSegment.filterRebuilt = true;
+                            if (lastFilterInOrBlock === numAND && lastOrBlock === parseInt(numOR)) {
+                                acym_helperSegment.blocksRebuilt = true;
+                            }
+                        }
+
                         $optionField.trigger('change');
                     });
                 });
@@ -273,5 +297,25 @@ const acym_helperSegment = {
             $newElement.find('button[data-filter-type]').click();
             if ('classic' === jQuery(this).attr('data-filter-type')) acym_helperSegment.reloadGlobalCounter($newElement);
         });
+    },
+    getSeeUserModalButton: function ($element, andValue) {
+        let idModal = `acym__segments__see-users__${andValue}`;
+        let $seeUserModalButton = jQuery('#acym__segment__see-users__example').clone();
+        let $seeUserModal = jQuery('#acym__segments__see-users').closest('.reveal-overlay').clone();
+
+        $seeUserModalButton.find('[data-open="acym__segments__see-users"]').attr('data-open', idModal);
+        $seeUserModal.find('#acym__segments__see-users').attr('id', idModal);
+
+        let dataSeeUserModal = {
+            ctrl: 'segments',
+            task: 'usersSummary',
+            and: andValue,
+            or: $element.closest('[data-filter-number]').attr('data-filter-number')
+        };
+        $seeUserModal.find('[acym-data-query]').attr('acym-data-query', JSON.stringify(dataSeeUserModal));
+
+        let seeUserModalHtml = $seeUserModalButton.html() + $seeUserModal[0].outerHTML;
+
+        return `<span class="cell shrink acym__segments__see-users">${seeUserModalHtml}</span>`;
     }
 };

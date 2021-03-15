@@ -84,7 +84,7 @@ class PaginationHelper extends acymObject
                 '100' => '100',
                 '200' => '200',
             ];
-            $pagination .= '<div class="cell shrink grid-x acym_vcenter">';
+            $pagination .= '<div class="cell shrink grid-x acym_vcenter acym__pagination__pagenb">';
 
             $paginationNumberEntries = '<div class="acym__select__pagination">'.acym_select(
                     $nbPagesOptions,

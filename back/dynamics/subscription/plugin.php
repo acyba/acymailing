@@ -49,12 +49,11 @@ class plgAcymSubscription extends acymPlugin
 
         ?>
 		<script language="javascript" type="text/javascript">
-            <!--
-            var openLists = true;
-            var selectedTag = '';
+            var openedLists = false;
+            var selectedSubscriptionDText = '';
 
             function changeSubscriptionTag(tagName) {
-                selectedTag = tagName;
+                selectedSubscriptionDText = tagName;
                 defaultText = [];
                 <?php
                 foreach ($others as $tagname => $tag) {
@@ -68,63 +67,48 @@ class plgAcymSubscription extends acymPlugin
             }
 
             function setSubscriptionTag() {
-                var tag = '{' + selectedTag;
+                var tag = '{' + selectedSubscriptionDText;
                 var lists = jQuery('#acym__popup__subscription__listids');
 
-                if ('subscribe' === selectedTag && lists.html() !== '') {
+                if ('subscribe' === selectedSubscriptionDText) {
                     tag += '|lists:' + lists.html();
-                } else {
-                    jQuery('#acym__popup__plugin__subscription__lists__modal').hide();
+                } else if (openedLists) {
+                    jQuery('#acym__popup__plugin__subscription__lists__modal').slideUp();
                     jQuery('#select_lists_zone').hide();
-                    lists.html('');
+                    openedLists = false;
                 }
 
-                tag += '}' + jQuery('#acym__popup__subscription__tagtext').val() + '{/' + selectedTag + '}';
-                setTag(tag, jQuery('#tr_' + selectedTag));
+                tag += '}' + jQuery('#acym__popup__subscription__tagtext').val() + '{/' + selectedSubscriptionDText + '}';
+                setTag(tag, jQuery('#tr_' + selectedSubscriptionDText));
             }
 
             function displayLists() {
-                jQuery.Modal();
-                jQuery('#acym__popup__plugin__subscription__lists__modal').toggle();
+                if (openedLists) return;
+                openedLists = true;
+
+                jQuery.acymModal();
+                jQuery('#acym__popup__plugin__subscription__lists__modal').slideDown();
                 jQuery('#select_lists_zone').toggle();
-                openLists = !openLists;
                 jQuery('#acym__popup__subscription__change').on('change', function () {
                     var lists = JSON.parse(jQuery('#acym__modal__lists-selected').val());
                     jQuery('#acym__popup__subscription__listids').html(lists.join());
                     changeSubscriptionTag('subscribe');
                 });
             }
-
-            //-->
 		</script>
         <?php
 
         //Add an area where the user will be able to select another text to add
         $text = '<div class="acym__popup__listing text-center grid-x">
-                    <h1 class="acym__popup__plugin__title cell">'.acym_translation('ACYM_SUBSCRIPTION').'</h1>
-                    <div class="medium-1"></div>
-                    <div class="medium-10 text-left">';
-        $text .= acym_modalPaginationLists(
-            '',
-            '',
-            '',
-            '',
-            '',
-            'acym__popup__subscription__change',
-            '',
-            false,
-            'style="display: none;" id="acym__popup__plugin__subscription__lists__modal"'
-        );
-        $text .= '  </div>
-                    <div class="medium-1"></div>
-					<div class="grid-x medium-12 cell acym__row__no-listing text-left">
-                        <div class="grid-x cell medium-5 small-12 acym__listing__title acym__listing__title__dynamics acym__subscription__subscription">
-                            <label class="small-3" style="line-height: 40px;" for="acym__popup__subscription__tagtext">'.acym_translation('ACYM_TEXT').': </label>
+                    <h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_SUBSCRIPTION').'</h1>
+                    <div class="grid-x medium-12 cell acym__row__no-listing text-left acym_vcenter">
+                        <div class="grid-x cell medium-5 small-12 acym__listing__title acym__listing__title__dynamics acym__subscription__subscription acym_vcenter">
+                            <label class="small-3 margin-bottom-0" for="acym__popup__subscription__tagtext">'.acym_translation('ACYM_TEXT').': </label>
                             <input class="small-9" type="text" name="tagtext" id="acym__popup__subscription__tagtext" onchange="setSubscriptionTag();">
                         </div>
                         <div class="medium-1"></div>
                         <div style="display: none;" id="select_lists_zone" class="grid-x cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">
-                            <p class="shrink" id="acym__popup__subscription__text__list">'.acym_translation('ACYM_LISTS_SELECTED').'</button>
+                            <p class="shrink" id="acym__popup__subscription__text__list">'.acym_translation('ACYM_LISTS_SELECTED').'</p>
                             <p class="shrink" id="acym__popup__subscription__listids"></p>
                         </div>
                     </div>';
@@ -136,9 +120,22 @@ class plgAcymSubscription extends acymPlugin
             if ($tagname == 'subscribe') {
                 $onclick .= 'displayLists();return false;';
             }
-            $text .= '<div class="grid-x small-12 cell acym__row__no-listing acym__listing__row__popup text-left"  onclick="'.$onclick.'" id="tr_'.$tagname.'" ><div class="cell small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['name'].'</div></div>';
+            $text .= '<div class="grid-x small-12 cell acym__row__no-listing acym__listing__row__popup text-left"  onclick="'.$onclick.'" id="tr_'.$tagname.'" >';
+            $text .= '<div class="cell small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['name'].'</div>';
+            $text .= '</div>';
         }
-        $text .= '</div></div>';
+        $text .= '</div>
+					<div class="medium-1"></div>
+                    <div class="medium-10 text-left">';
+        $text .= acym_modalPaginationLists(
+            'acym__popup__subscription__change',
+            '',
+            false,
+            'style="display: none;" id="acym__popup__plugin__subscription__lists__modal"'
+        );
+        $text .= '  </div>
+                    <div class="medium-1"></div>
+				</div>';
 
         // List tags
         $others = [];
@@ -149,11 +146,11 @@ class plgAcymSubscription extends acymPlugin
         $others['id'] = acym_translation('ACYM_LIST_ID', true);
 
         $text .= '<div class="acym__popup__listing text-center grid-x">
-					<h1 class="acym__popup__plugin__title cell">'.acym_translation('ACYM_LIST').'</h1>
+					<h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_LIST').'</h1>
 					<div class="cell grid-x">';
 
         foreach ($others as $tagname => $tag) {
-            $text .= '<div class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="setTag(\'{list:'.$tagname.'}\', jQuery(this));" id="tr_'.$tagname.'" >
+            $text .= '<div class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeSubscriptionTag(\'list\');setTag(\'{list:'.$tagname.'}\', jQuery(this));" id="tr_'.$tagname.'">
                         <div class="cell medium-12 small-12 acym__listing__title acym__listing__title__dynamics">'.$tag.'</div>
                       </div>';
         }
@@ -162,12 +159,12 @@ class plgAcymSubscription extends acymPlugin
 
         // Newsletter tags
         $text .= '<div class="acym__popup__listing text-center grid-x">
-					<span class="acym__popup__plugin__title cell">'.acym_translation('ACYM_CAMPAIGN').'</span>
+					<span class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_CAMPAIGN').'</span>
 					<div class="cell grid-x">';
         $othersMail = ['campaignid', 'subject'];
 
         foreach ($othersMail as $tag) {
-            $text .= '<div class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="setTag(\'{mail:'.$tag.'}\', jQuery(this));" id="tr_'.$tag.'" >
+            $text .= '<div class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeSubscriptionTag(\'mail\');setTag(\'{mail:'.$tag.'}\', jQuery(this));" id="tr_'.$tag.'">
                         <div class="cell medium-12 small-12 acym__listing__title acym__listing__title__dynamics">'.$tag.'</div>
                       </div>';
         }
@@ -175,14 +172,14 @@ class plgAcymSubscription extends acymPlugin
 
         // Smart newsletter tags
         $text .= '<div class="acym__popup__listing text-center grid-x">
-					<span class="acym__popup__plugin__title cell">'.acym_translation('ACYM_AUTO').' '.acym_translation('ACYM_CAMPAIGNS').'</span>
+					<span class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_AUTO').' '.acym_translation('ACYM_CAMPAIGNS').'</span>
 					<div class="cell grid-x">';
         $autoMail = ['number_generated' => ['name' => acym_translation('ACYM_ISSUE_NB'), 'default' => '#1']];
 
         foreach ($autoMail as $tag => $oneTag) {
             $tagInserted = $tag;
             if (!empty($oneTag['default'])) $tagInserted = $tag.'|default:'.$oneTag['default'];
-            $text .= '<div class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="setTag(\'{automail:'.$tagInserted.'}\', jQuery(this));" id="tr_'.$tag.'" >
+            $text .= '<div class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeSubscriptionTag(\'automail\');setTag(\'{automail:'.$tagInserted.'}\', jQuery(this));" id="tr_'.$tag.'">
                         <div class="cell medium-12 small-12 acym__listing__title acym__listing__title__dynamics">'.$oneTag['name'].'</div>
                       </div>';
         }
@@ -195,12 +192,18 @@ class plgAcymSubscription extends acymPlugin
     {
         $this->_replacelisttags($email, $user, $send);
 
-        //We add a list-unsubscribe automatically if there is a unsubscribe link.
-        if (empty($user) || empty($this->unsubscribeLink[$email->id]) || !empty($this->addedListUnsubscribe[$email->id][$user->id]) || !method_exists($email, 'addCustomHeader')) {
+
+        if ($this->config->get('unsubscribe_header', 1) == 0) return;
+
+        //We add a list-unsubscribe.
+        if (empty($user->id) || empty($this->unsubscribeLink[$email->id]) || !empty($this->addedListUnsubscribe[$email->id][$user->id]) || !method_exists(
+                $email,
+                'addCustomHeader'
+            )) {
             return;
         }
 
-        $link = 'frontusers&subid='.intval($user->id).'&task=unsubscribe&id='.$email->id.'&key='.urlencode($user->key).'&'.acym_noTemplate();
+        $link = 'frontusers&id='.intval($user->id).'&task=unsubscribe&mail_id='.$email->id.'&key='.urlencode($user->key).'&'.acym_noTemplate();
         $link .= $this->getLanguage($email->links_language);
         $myLink = acym_frontendLink($link);
 
@@ -213,6 +216,7 @@ class plgAcymSubscription extends acymPlugin
         if (empty($mailto)) {
             $mailto = $this->config->get('replyto_email');
         }
+
         $email->addCustomHeader(
             'List-Unsubscribe: <'.$myLink.'>, <mailto:'.$mailto.'?subject=unsubscribe_user_'.$user->id.'&body=Please%20unsubscribe%20user%20ID%20'.$user->id.'>'
         );
@@ -574,7 +578,7 @@ class plgAcymSubscription extends acymPlugin
             $lists = explode(',', $parameters->lists);
             acym_arrayToInteger($lists);
             $captchaKey = $this->config->get('captcha', '') == 1 ? '&seckey='.$this->config->get('security_key', '') : '';
-            $myLink = acym_frontendLink('frontusers&task=subscribe&hiddenlists='.implode(',', $lists).'&user[email]={subtag:email|urlencode}'.$lang.$captchaKey);
+            $myLink = acym_frontendLink('frontusers&task=subscribe&hiddenlists='.implode(',', $lists).'&id={subscriber:id}&key={subscriber:key|urlencode}'.$lang.$captchaKey);
             if (empty($allresults[2][$i])) {
                 return $myLink;
             }
@@ -736,7 +740,7 @@ class plgAcymSubscription extends acymPlugin
 
         if ($this->config->get('require_confirmation', '1') === '1') {
             $filters['unconfirmed'] = new stdClass();
-            $filters['unconfirmed']->name = acym_translation('ACYM_UNCONFIRMED_USERS');
+            $filters['unconfirmed']->name = acym_translation('ACYM_UNCONFIRMED_SUBSCRIBERS');
             // The count results doesn't show up if there are no options
             $filters['unconfirmed']->option = '<input type="hidden" name="acym_action[filters][__numor__][__numand__][unconfirmed][countresults]" />';
         }

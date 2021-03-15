@@ -79,3 +79,12 @@ function acym_addMetadata($meta, $data, $name = 'name')
 function acym_includeHeaders()
 {
 }
+
+function acym_getOptionRegacyPosition()
+{
+    return [
+        acym_selectOption('email', 'ACYM_EMAIL'),
+        acym_selectOption('password', 'ACYM_SMTP_PASSWORD'),
+        acym_selectOption('custom', 'ACYM_CUSTOM_FIELD'),
+    ];
+}

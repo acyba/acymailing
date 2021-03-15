@@ -382,6 +382,13 @@ class FieldClass extends acymClass
 
         $return = '';
 
+        if (acym_isMultilingual() && $displayFront && !empty($field->translation)) {
+            $field->translation = json_decode($field->translation, true);
+            if (!empty($field->translation[acym_getLanguageTag()]) && !empty($field->translation[acym_getLanguageTag()]['name'])) {
+                $field->name = $field->translation[acym_getLanguageTag()]['name'];
+            }
+        }
+
         $field->name = acym_translation($field->name);
 
         $style = empty($size) ? '' : ' style="'.$size.'"';
@@ -417,7 +424,7 @@ class FieldClass extends acymClass
             $nameAttribute = ' name="user[email]"';
             $return .= '<input '.$nameAttribute.$placeholder.$value.' required type="email" class="cell acym__user__edit__email" '.($displayFront && $cmsUser ? 'disabled' : '').'>';
         } elseif ($field->type == 'language') {
-            if(empty($defaultValue) && !empty($user->language)){
+            if (empty($defaultValue) && !empty($user->language)) {
                 $defaultValue = $user->language;
             }
 
@@ -601,7 +608,7 @@ class FieldClass extends acymClass
         $dataLanguages = [];
 
         foreach ($languages as $langCode => $language) {
-            if (strlen($langCode) != 5 || $langCode == "xx-XX") continue;
+            if ($langCode == "xx-XX") continue;
 
             $oneLanguage = new \stdClass();
             $oneLanguage->value = $langCode;
@@ -613,7 +620,7 @@ class FieldClass extends acymClass
         usort(
             $dataLanguages,
             function ($a, $b) {
-                return strtolower($a->text) > strtolower($b->text);
+                return strtolower($a->text) > strtolower($b->text) ? 1 : -1;
             }
         );
 

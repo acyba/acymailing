@@ -176,6 +176,7 @@ const acym_helper = {
     get: function (url = ACYM_AJAX_URL, data = {}) {
         return jQuery.get(url, data)
                      .then(res => {
+                         if (!res) return res;
                          if (typeof res !== 'object') res = this.parseJson(res);
 
                          if (res.error && !this.empty(res.message)) console.error(res.message);
@@ -203,7 +204,9 @@ const acym_helper = {
                          return error;
                      });
     },
-    sameArrays: function(array1, array2){
-        return array1.length === array2.length && array1.every(function(value, index) { return value === array2[index]; });
+    sameArrays: function (array1, array2) {
+        return array1.length === array2.length && array1.every(function (value, index) {
+            return value === array2[index];
+        });
     }
 };

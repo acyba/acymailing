@@ -612,7 +612,7 @@ class FormClass extends acymClass
             $form->fields_options['displayed'][$key]->valuesArray = $valuesArray;
         }
         $form->fieldClass = $fieldClass;
-        $form->lists = $listClass->getAllForSelect(false);
+        $form->lists = $listClass->getAllForSelect(false, 0, true);
 
         $form->form_tag_name = 'formAcym'.$form->id;
         $form->form_tag_action = htmlspecialchars_decode(ACYM_CMS == 'wordpress' ? acym_frontendLink('frontusers') : acym_completeLink('frontusers', true, true));

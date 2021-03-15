@@ -41,9 +41,7 @@ class plgAcymPostmark extends acymPlugin
 					   value="<?php echo empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value; ?>"
 					   name="config[<?php echo self::SENDING_METHOD_ID; ?>_api_key]"
 					   class="cell margin-right-1 acym__configuration__mail__settings__text">
-				<div class="cell grid-x margin-top-1">
-                    <?php echo $this->getTestCredentialsSendingMethodButton(self::SENDING_METHOD_ID); ?>
-				</div>
+                <?php echo $this->getTestCredentialsSendingMethodButton(self::SENDING_METHOD_ID); ?>
 			</div>
 		</div>
         <?php

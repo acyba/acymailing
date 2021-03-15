@@ -152,7 +152,7 @@ class getAcymTab extends cbTabHandler
         $currentSubscription = $userClass->getSubscriptionStatus($acyUser->id);
 
         $listClass = new ListClass();
-        $allLists = $listClass->getAllWithoutManagement();
+        $allLists = $listClass->getAllWithoutManagement(true);
 
         $addlists = [];
 
@@ -227,7 +227,7 @@ class getAcymTab extends cbTabHandler
     private function displayLists($mode, $acyUser, $lists)
     {
         $listClass = new ListClass();
-        $allLists = $listClass->getAllWithoutManagement();
+        $allLists = $listClass->getAllWithoutManagement(true);
 
         $userClass = new UserClass();
         $userLists = $userClass->getSubscriptionStatus($acyUser->id);

@@ -11,6 +11,8 @@ jQuery(document).ready(function ($) {
         acym_helperPagination.setPaginationGlobal();
         acym_helperModal.initOverlay();
         acym_helperSwitch.setSwitchFieldsGlobal();
+        acym_helperSwitch.setButtonSwitch();
+        acym_helperRadio.setRadioIconsGlobal();
         acym_helperTooltip.setTooltip();
         acym_helperTab.setTab();
         acym_helperPreview.setPreviewIframe();

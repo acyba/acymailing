@@ -25,9 +25,11 @@ class ImportHelper extends acymObject
     var $dispresults = true;
 
     //Variables used to handle the import on filter
-    var $dbwhere = [];
+    public $tableName = '';
+    public $dbWhere = [];
+    public $fieldsMap = [];
 
-    //Handle messages to say that X users haved been subscribed to list Y
+    //Handle messages to say that X users have been subscribed to list Y
     var $subscribedUsers = [];
 
 
@@ -150,7 +152,8 @@ class ImportHelper extends acymObject
         //Step 3 : insert the new ones
         $time = time();
         $formattedTime = acym_date($time, 'Y-m-d H:i:s');
-        $query = 'INSERT IGNORE INTO #__acym_user (`name`,`email`,`creation_date`,`active`,`cms_id`, `source`) SELECT `user`.`'.$this->cmsUserVars->name.'`,`user`.`'.$this->cmsUserVars->email.'`,`user`.`'.$this->cmsUserVars->registered.'`,1 - `user`.'.$this->cmsUserVars->blocked.',`user`.`'.$this->cmsUserVars->id.'`,\'Import on '.$formattedTime.'\' FROM '.$this->cmsUserVars->table.' AS `user` ';
+        $sourceImport = 'Import on '.$formattedTime;
+        $query = 'INSERT IGNORE INTO #__acym_user (`name`,`email`,`creation_date`,`active`,`cms_id`, `source`) SELECT `user`.`'.$this->cmsUserVars->name.'`,`user`.`'.$this->cmsUserVars->email.'`,`user`.`'.$this->cmsUserVars->registered.'`,1 - `user`.'.$this->cmsUserVars->blocked.',`user`.`'.$this->cmsUserVars->id.'`,\''.$sourceImport.'\' FROM '.$this->cmsUserVars->table.' AS `user` ';
         $groups = acym_getVar('array', 'groups', []);
         $this->config->save(['import_groups' => implode(',', $groups)]);
         if (!empty($groups)) {
@@ -170,7 +173,9 @@ class ImportHelper extends acymObject
 
         acym_query('UPDATE #__acym_configuration SET `value` = '.intval($time).' WHERE `name` = \'last_import\'');
 
-        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_NEW', $insertedUsers), 'info');
+        acym_trigger('onAcymAfterCMSUserImport', [$sourceImport]);
+
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_NEW_SUBS', $insertedUsers), 'info');
 
         //Step 4 : subscribe all the registered users to one or several lists
         $lists = $this->getImportedLists();
@@ -211,11 +216,12 @@ class ImportHelper extends acymObject
         return true;
     }
 
-    public function database()
+    public function database($onlyImport = false)
     {
         $this->forceconfirm = acym_getVar('int', 'import_confirmed_database');
 
-        $table = trim(acym_getVar('string', 'tablename'));
+
+        $table = empty($this->tableName) ? trim(acym_getVar('string', 'tablename')) : $this->tableName;
         $time = time();
         $formattedTime = acym_date($time, 'Y-m-d H:i:s');
 
@@ -235,7 +241,7 @@ class ImportHelper extends acymObject
         }
 
         //Ok now we have some fields and now we have a table selected.
-        $equivalentFields = acym_getVar('array', 'fields', []);
+        $equivalentFields = empty($this->fieldsMap) ? acym_getVar('array', 'fields', []) : $this->fieldsMap;
 
         if (empty($equivalentFields['email'])) {
             acym_enqueueMessage(acym_translation('ACYM_SPECIFYFIELDEMAIL'), 'warning');
@@ -266,20 +272,25 @@ class ImportHelper extends acymObject
             $select['`confirmed`'] = 1;
         }
 
-        $select['`source`'] = acym_escapeDB('Import on '.$formattedTime);
+        $sourceTxt = 'Import on '.$formattedTime;
+        $select['`source`'] = acym_escapeDB($sourceTxt);
 
-        $query = 'INSERT IGNORE INTO #__acym_user ('.implode(' , ', array_keys($select)).') SELECT '.implode(' , ', $select).' FROM '.acym_secureDBColumn(
-                $table
-            ).' WHERE '.acym_secureDBColumn($select['`email`']).' LIKE "%@%"';
-        if (!empty($this->dbwhere)) {
-            $query .= ' AND ( '.implode(' ) AND (', $this->dbwhere).' )';
+        $query = 'INSERT IGNORE INTO #__acym_user ('.implode(' , ', array_keys($select)).') SELECT '.implode(' , ', $select);
+        $query .= ' FROM '.acym_secureDBColumn($table).' WHERE '.acym_secureDBColumn($select['`email`']).' LIKE "%@%"';
+        if (!empty($this->dbWhere)) {
+            $query .= ' AND ( '.implode(' ) AND (', $this->dbWhere).' )';
         }
 
         $affectedRows = acym_query($query);
 
         acym_query('UPDATE #__acym_configuration SET `value` = '.intval($time).' WHERE `name` = "last_import"');
 
-        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_NEW', $affectedRows), 'info');
+        acym_trigger('onAcymAfterDatabaseUserImport', [$sourceTxt]);
+
+        if ($onlyImport) return true;
+
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_NEW_SUBS', $affectedRows), 'info');
+
 
         //Step 4 : subscribe all the registered users to one or several lists
         $lists = $this->getImportedLists();
@@ -297,10 +308,10 @@ class ImportHelper extends acymObject
         }
 
         $query = 'INSERT IGNORE INTO #__acym_user_has_list (`user_id`,`list_id`,`status`,`subscription_date`) ';
-        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time())).' FROM #__acym_list AS list, #__acym_user AS user WHERE list.`id` IN ('.implode(
-                ',',
-                $listsSubscribe
-            ).') AND user.`email` IN (SELECT '.acym_secureDBColumn($select['`email`']).' FROM '.acym_secureDBColumn($table).')';
+        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time())).' 
+                    FROM #__acym_list AS list, #__acym_user AS user 
+                    WHERE list.`id` IN ('.implode(',', $listsSubscribe).') 
+                        AND user.`email` IN (SELECT '.acym_secureDBColumn($select['`email`']).' FROM '.acym_secureDBColumn($table).')';
 
         $nbsubscribed = acym_query($query);
         acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_SUBSCRIPTION', $nbsubscribed));
@@ -698,7 +709,7 @@ class ImportHelper extends acymObject
             //All users have been added properly into the database... we will now subscribe the users
             acym_enqueueMessage(
                 acym_translationSprintf(
-                    'ACYM_IMPORT_REPORT',
+                    'ACYM_IMPORT_REPORTING',
                     $this->totalTry,
                     $this->totalInserted,
                     $this->totalTry - $this->totalValid,

@@ -6,7 +6,7 @@ function acym_getEmailCssFixes()
 
     $config = acym_config();
     if ('1' === $config->get('prevent_hyphens', '')) {
-        $emailFixes .= 'table td.acym__wysid__column__element__td, table td.acym__wysid__column__element__td p { word-break: keep-all !important; hyphens: none !important; }';
+        $emailFixes .= 'table td.acym__wysid__column__element__td, table td.acym__wysid__column__element__td p { word-break: break-word; -webkit-hyphens: none; -moz-hyphens: none; hyphens: none; }';
     }
 
     return $emailFixes;
@@ -33,9 +33,15 @@ function acym_getMailThumbnail($thumbnail)
 
 function acym_getFlagByCode($code)
 {
-    if (!file_exists(ACYM_MEDIA.'images'.DS.'flags'.DS.$code.'.png')) {
-        $code = 'unknown';
+    $code = explode('-', $code);
+    $finalCode = '';
+
+    foreach ($code as $part) {
+        $part = strtolower($part);
+        if (file_exists(ACYM_MEDIA.'images'.DS.'flags'.DS.$part.'.png')) $finalCode = $part;
     }
 
-    return ACYM_IMAGES.'flags/'.$code.'.png';
+    if (empty($finalCode)) $finalCode = 'unknown';
+
+    return ACYM_IMAGES.'flags/'.$finalCode.'.png';
 }

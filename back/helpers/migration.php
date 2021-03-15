@@ -143,7 +143,6 @@ class MigrationHelper extends acymObject
             'smtp_secured' => 'smtp_secured',
             'smtp_username' => 'smtp_username',
             'special_chars' => 'special_chars',
-            'ssl_links' => 'use_https',
         ];
 
         //Queue Process

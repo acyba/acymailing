@@ -503,4 +503,16 @@ class QueueClass extends acymClass
                 AND `queue`.`sending_date` < '.acym_escapeDB($twoDaysEarlier)
         );
     }
+
+    public function isSendingFinished($mailId)
+    {
+        $mailClass = new MailClass();
+        $mail = $mailClass->getOneById($mailId);
+
+        if (empty($mail) || $mailClass->isTransactionalMail($mail)) return false;
+
+        $res = intval(acym_loadResult('SELECT COUNT(mail_id) FROM #__acym_queue WHERE mail_id = '.intval($mailId)));
+
+        return empty($res);
+    }
 }

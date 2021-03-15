@@ -9,8 +9,9 @@ jQuery(document).ready(function ($) {
         setChoiceWalkthroughResult();
         setPreventSubmit();
         acym_helperEditorWysid.initEditor();
-        acym_helperDynamic.setModalDynamics();
         acym_helperMailer.setTestCredentialsSendingMethods();
+        acym_helperMailer.setButtonCopyFromPlugin();
+        acym_helperMailer.setSynchroExistingUsers();
         acym_helperSelectionPage.setSelectionElement(true, false, undefined, '#acym__phpmail-step__mailer__title');
     }
 

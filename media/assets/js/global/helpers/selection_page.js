@@ -16,7 +16,11 @@ const acym_helperSelectionPage = {
             if (undefined !== callback) callback();
 
             if (undefined !== scrollElementSelector) {
-                document.querySelector(scrollElementSelector).scrollIntoView();
+                document.querySelector(scrollElementSelector)
+                        .scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'end'
+                        });
             }
 
             if (configuration) return;

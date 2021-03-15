@@ -1189,7 +1189,7 @@ class Net_POP3
      */
     function _recvLn()
     {
-        $this->socket->lineLength = 8192;
+        $this->_socket->lineLength = 8192;
         if (PEAR::isError($lastline = $this->_socket->readLine())) {
             return $this->_raiseError('Failed to read from socket: ');
         }

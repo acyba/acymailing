@@ -147,11 +147,11 @@
 				<div id="acym__wysid__modal__joomla-image__bg" class="acym__wysid__modal__joomla-image--close"></div>
 				<div id="acym__wysid__modal__joomla-image__ui" class="float-center cell">
                     <?php
-                    $mediaURL = 'index.php?option=com_media&asset=com_content&author=acymailing&tmpl=component';
-                    if (!ACYM_J40){
-                    	$mediaURL .= '&view=images';
-                    }elseif (!acym_isAdmin()){
-                    	$mediaURL .= '&view=media';
+                    $mediaURL = 'index.php?option=com_media&asset=com_acym&author=acymailing&tmpl=component';
+                    if (!ACYM_J40) {
+                        $mediaURL .= '&view=images';
+                    } elseif (!acym_isAdmin()) {
+                        $mediaURL .= '&view=media';
                     }
                     ?>
 					<iframe id="acym__wysid__modal__joomla-image__ui__iframe" src="<?php echo $mediaURL; ?>" frameborder="0"></iframe>
@@ -182,21 +182,4 @@
 	<button id="acym__wysid__fullscreen__modal__close" class="close-button padding-1" aria-label="Dismiss alert" type="button" data-close="">
 		<span aria-hidden="true">×</span>
 	</button>
-</div>
-<div id="acym__wysid__modal__dynamic-text">
-	<div id="acym__wysid__modal__dynamic-text__bg" class="acym__wysid__modal__dynamic-text--close"></div>
-	<div id="acym__wysid__modal__dynamic-text__ui" class="float-center cell">
-		<i class="acymicon-close acym__wysid__modal__dynamic-text--close" id="acym__wysid__modal__dynamic-text__close__icon"></i>
-        <?php
-        $dynamicCtrl = acym_isAdmin() ? 'dynamics' : 'frontdynamics';
-        $mailType = !empty($data['mail']->type) ? $data['mail']->type : '';
-        $typeNotif = acym_getVar('string', 'notification', '');
-        ?>
-		<iframe id="acym__wysid__modal__dynamic-text__ui__iframe"
-				src="<?php echo acym_completeLink(
-                    $dynamicCtrl.'&task=popup&automation='.$this->automation.'&mail_id='.$this->mailId.'&mail_type='.$mailType.'&type_notif='.$typeNotif,
-                    true
-                ); ?>"
-				frameborder="0"></iframe>
-	</div>
 </div>

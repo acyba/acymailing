@@ -271,6 +271,9 @@ const acym_helperModal = {
         });
     },
     getContentAjaxModalPaginationLists: function () {
+        let container = jQuery('.modal__pagination__listing__lists__in-form');
+        if (container.length === 0) return;
+
         let ajaxURL = ACYM_AJAX_URL
                       + '&page=acymailing_lists&ctrl='
                       + acym_helper.ctrlLists
@@ -283,18 +286,14 @@ const acym_helperModal = {
         ajaxURL += '&search_lists=' + jQuery('#modal__pagination__search__lists').val();
         ajaxURL += jQuery('#modal__pagination__need__display__sub').length > 0 ? '&needDisplaySub=1&nonActive=1' : '&needDisplaySub=0&nonActive=0';
 
-        let container = jQuery('.modal__pagination__listing__lists__in-form');
-
-        if (container.length) {
-            jQuery.get(ajaxURL, function (response) {
-                jQuery('#modal__pagination__search__spinner').hide();
-                container.html(response);
-                acym_helperModal.setAjaxPaginationModalPagination();
-                acym_helperModal.setListingAjaxUserModalPaginationLists();
-                acym_helperModal.setShowSelectedOrShowAllListsModalPaginationLists();
-                acym_helperModal.setSearchListModalPaginationLists();
-            });
-        }
+        jQuery.get(ajaxURL, function (response) {
+            jQuery('#modal__pagination__search__spinner').hide();
+            container.html(response);
+            acym_helperModal.setAjaxPaginationModalPagination();
+            acym_helperModal.setListingAjaxUserModalPaginationLists();
+            acym_helperModal.setShowSelectedOrShowAllListsModalPaginationLists();
+            acym_helperModal.setSearchListModalPaginationLists();
+        });
     },
     setAjaxPaginationModalPagination: function () {
         jQuery('.acym__pagination__page__ajax').off('click').on('click', function () {
@@ -309,14 +308,12 @@ const acym_helperModal = {
             let inputListsSelected = jQuery('#acym__modal__lists-selected');
             let listsSelectedToInject = inputListsSelected.val();
             let listsSelected = [];
-
-            listsSelectedToInject === '' ? listsSelectedToInject = [] : listsSelectedToInject = JSON.parse(listsSelectedToInject);
-
+            listsSelectedToInject = listsSelectedToInject === '' ? [] : JSON.parse(listsSelectedToInject);
             if (jQuery(this).is(':checked')) {
                 spanName.addClass('acym__color__blue');
             } else {
                 spanName.removeClass('acym__color__blue');
-                listsSelectedToInject.splice(listsSelectedToInject.indexOf(jQuery(this).val()), 1);
+                listsSelectedToInject.splice(listsSelectedToInject.indexOf(parseInt(jQuery(this).val())), 1);
             }
 
             jQuery('.modal__pagination__listing__lists__list--checkbox:checked').each(function () {
@@ -324,9 +321,10 @@ const acym_helperModal = {
             });
 
             jQuery.each(listsSelected, function (index) {
-                jQuery.inArray(listsSelected[index], listsSelectedToInject) == -1 ? listsSelectedToInject.push(listsSelected[index]) : true;
+                if (jQuery.inArray(listsSelected[index], listsSelectedToInject) === -1) {
+                    listsSelectedToInject.push(listsSelected[index]);
+                }
             });
-
             inputListsSelected.val(JSON.stringify(listsSelectedToInject));
 
             jQuery('#acym__campaigns__recipients__event_on_change_count_recipients').trigger('change');

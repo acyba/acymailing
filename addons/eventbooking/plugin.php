@@ -2,6 +2,7 @@
 
 use AcyMailing\Libraries\acymPlugin;
 use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Types\OperatorinType;
 
 class plgAcymEventbooking extends acymPlugin
 {
@@ -224,12 +225,14 @@ class plgAcymEventbooking extends acymPlugin
                 'type' => 'date',
                 'name' => 'from',
                 'default' => time(),
+                'relativeDate' => '+',
             ],
             [
                 'title' => 'ACYM_TO',
                 'type' => 'date',
                 'name' => 'to',
                 'default' => '',
+                'relativeDate' => '+',
             ],
             [
                 'title' => 'ACYM_ORDER_BY',
@@ -613,6 +616,11 @@ class plgAcymEventbooking extends acymPlugin
         $conditions['user']['ebregistration']->option = '<div class="cell grid-x grid-margin-x">';
 
         $conditions['user']['ebregistration']->option .= '<div class="intext_select_automation cell">';
+        $operatorinType = new OperatorinType();
+        $conditions['user']['ebregistration']->option .= $operatorinType->display('acym_condition[conditions][__numor__][__numand__][ebregistration][in]');
+        $conditions['user']['ebregistration']->option .= '</div>';
+
+        $conditions['user']['ebregistration']->option .= '<div class="intext_select_automation cell">';
         $ajaxParams = json_encode(
             [
                 'plugin' => __CLASS__,
@@ -662,22 +670,22 @@ class plgAcymEventbooking extends acymPlugin
 
     private function processConditionFilter_ebregistration(&$query, $options, $num)
     {
-        $query->join['ebregistration'.$num] = '`#__eb_registrants` AS eventbooking'.$num.' ON (
-                                                    eventbooking'.$num.'.email = user.email 
-                                                    OR (
-                                                        eventbooking'.$num.'.user_id != 0 
-                                                        AND eventbooking'.$num.'.user_id = user.cms_id
-                                                    )
-                                                )';
+        $join = '`#__eb_registrants` AS eventbooking'.$num.' ON (
+                    eventbooking'.$num.'.email = user.email 
+                    OR (
+                        eventbooking'.$num.'.user_id != 0 
+                        AND eventbooking'.$num.'.user_id = user.cms_id
+                    )
+                )';
 
-        if (!empty($options['event'])) $query->where[] = 'eventbooking'.$num.'.event_id = '.intval($options['event']);
-        if (!empty($options['status']) && $options['status'] != -1) $query->where[] = 'eventbooking'.$num.'.published = '.intval($options['status']);
+        if (!empty($options['event'])) $join .= ' AND eventbooking'.$num.'.event_id = '.intval($options['event']);
+        if (isset($options['status']) && $options['status'] != -1) $join .= ' AND eventbooking'.$num.'.published = '.intval($options['status']);
 
         if (!empty($options['datemin'])) {
             $options['datemin'] = acym_replaceDate($options['datemin']);
             if (!is_numeric($options['datemin'])) $options['datemin'] = strtotime($options['datemin']);
             if (!empty($options['datemin'])) {
-                $query->where[] = 'eventbooking'.$num.'.register_date > '.acym_escapeDB(date('Y-m-d H:i:s', $options['datemin']));
+                $join .= ' AND eventbooking'.$num.'.register_date > '.acym_escapeDB(date('Y-m-d H:i:s', $options['datemin']));
             }
         }
 
@@ -685,8 +693,15 @@ class plgAcymEventbooking extends acymPlugin
             $options['datemax'] = acym_replaceDate($options['datemax']);
             if (!is_numeric($options['datemax'])) $options['datemax'] = strtotime($options['datemax']);
             if (!empty($options['datemax'])) {
-                $query->where[] = 'eventbooking'.$num.'.register_date < '.acym_escapeDB(date('Y-m-d H:i:s', $options['datemax']));
+                $join .= ' AND eventbooking'.$num.'.register_date < '.acym_escapeDB(date('Y-m-d H:i:s', $options['datemax']));
             }
+        }
+
+        if (empty($options['in']) || $options['in'] === 'in') {
+            $query->join['ebregistration'.$num] = $join;
+        } else {
+            $query->leftjoin['ebregistration'.$num] = $join;
+            $query->where[] = 'eventbooking'.$num.'.event_id IS NULL';
         }
     }
 

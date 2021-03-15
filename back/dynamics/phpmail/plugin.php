@@ -10,7 +10,7 @@ class plgAcymPhpmail extends acymPlugin
     public function __construct()
     {
         parent::__construct();
-        $this->pluginDescription->name = acym_translation('ACYM_PHP_MAIL_FUNCTION');
+        $this->pluginDescription->name = acym_translation('ACYM_PHPMAIL_FUNCTION');
     }
 
     public function onAcymGetSendingMethods(&$data, $isMailer = false)

@@ -58,14 +58,13 @@
 		<submenu>
 			<menu link="option=com_acym&amp;ctrl=dashboard">ACYM_DASHBOARD</menu>
 			<menu link="option=com_acym&amp;ctrl=forms">ACYM_SUBSCRIPTION_FORMS</menu>
-			<menu link="option=com_acym&amp;ctrl=users">ACYM_USERS</menu>
+			<menu link="option=com_acym&amp;ctrl=users">ACYM_SUBSCRIBERS</menu>
 			<menu link="option=com_acym&amp;ctrl=fields">ACYM_CUSTOM_FIELDS</menu>
 			<menu link="option=com_acym&amp;ctrl=lists">ACYM_LISTS</menu>
 			<menu link="option=com_acym&amp;ctrl=segments">ACYM_SEGMENTS</menu>
 			<menu link="option=com_acym&amp;ctrl=campaigns">ACYM_EMAILS</menu>
 			<menu link="option=com_acym&amp;ctrl=mails">ACYM_TEMPLATES</menu>
 			<menu link="option=com_acym&amp;ctrl=override">ACYM_EMAILS_OVERRIDE</menu>
-			<menu link="option=com_acym&amp;ctrl=automation">ACYM_AUTOMATION</menu>
 			<menu link="option=com_acym&amp;ctrl=queue">ACYM_QUEUE</menu>
 			<menu link="option=com_acym&amp;ctrl=stats">ACYM_STATISTICS</menu>
 			<menu link="option=com_acym&amp;ctrl=plugins">ACYM_ADD_ONS</menu>

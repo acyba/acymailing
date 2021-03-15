@@ -14,6 +14,9 @@
 		<h5 class="cell padding-left-1 acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SEND_FOLLOW_UP_EMAIL_IF'); ?></h5>
 		<div class="cell grid-x padding-left-1">
             <?php
+            if (!empty($data['followup']->condition) && empty($data['additionalCondition']) && !in_array($data['trigger'], ['user_subscribe', 'user_creation'])) {
+                echo '<p class="cell acym__color__orange padding-left-1"><b>'.acym_translation('ACYM_MISSING_ADDON').'</b></p>';
+            }
             if (!empty($data['additionalCondition']) || $data['trigger'] == 'user_subscribe') {
                 echo '<h5 class="cell acym__title__primary__color padding-left-1">'.acym_translation(
                         'ACYM_SPECIFIC_CONDITIONS_TRIGGER'

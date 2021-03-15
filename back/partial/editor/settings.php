@@ -1,6 +1,6 @@
 <div id="acym__wysid__right__toolbar__settings" style="display: none;" class="cell grid-padding-x acym__wysid__right__toolbar--menu">
 	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
-		<?php echo acym_translation('ACYM_TEMPLATE_DESIGN'); ?><i class="acymicon-keyboard_arrow_up"></i>
+        <?php echo acym_translation('ACYM_TEMPLATE_DESIGN'); ?><i class="acymicon-keyboard_arrow_up"></i>
 	</p>
 	<div class="grid-y acym__wysid__right__toolbar__design--show acym__wysid__context__modal__container">
 		<div class="grid-x margin-bottom-1 small-12 cell">
@@ -11,6 +11,21 @@
 				<input type="text" id="acym__wysid__background-colorpicker" class="cell medium-shrink small-4" />
 			</div>
 		</div>
+        <?php if ($this->config->get('display_built_by', 0) == 1) { ?>
+			<div class="grid-x small-12 cell">
+				<label class="cell grid-x">
+					<span class="cell large-6 small-8"><?php echo acym_translation('ACYM_BUILT_WITH_IMAGE_TEXT_COLOR'); ?></span>
+					<span class="cell small-4">
+                        <?php
+                        $brightness = [
+                            'black' => acym_translation('ACYM_BLACK'),
+                            'white' => acym_translation('ACYM_WHITE'),
+                        ];
+                        echo acym_select($brightness, 'acym__wysid__built-with__text__color', 'black', 'class="acym__select"'); ?>
+					</span>
+				</label>
+			</div>
+        <?php } ?>
 		<div class="grid-x small-12 cell">
 			<label class="cell grid-x">
 				<span class="cell large-6 small-8"><?php echo acym_translation('ACYM_MARGIN_TOP_CONTENT'); ?></span>
@@ -25,9 +40,9 @@
 		</div>
 	</div>
 	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
-		<?php echo acym_translation('ACYM_DESIGN'); ?>
+        <?php echo acym_translation('ACYM_DESIGN'); ?>
 		<i class="acymicon-keyboard_arrow_up"></i>
-		<?php echo acym_info('ACYM_DESIGN'); ?>
+        <?php echo acym_info('ACYM_INTRO_CUSTOMIZE_FONT'); ?>
 	</p>
 	<div class="grid-y acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__context__modal__container">
 		<div class="grid-x margin-bottom-1 small-12 cell">
@@ -117,7 +132,7 @@
 		</div>
 	</div>
 	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
-		<?php echo acym_translation('ACYM_CUSTOM_SOCIAL_ICONS'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
+        <?php echo acym_translation('ACYM_CUSTOM_SOCIAL_ICONS'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
 	<div class="grid-y acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__right__toolbar__design__social__icons acym__wysid__context__modal__container">
         <?php
         $config = acym_config();

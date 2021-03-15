@@ -67,7 +67,7 @@ function acym_radio($options, $name, $selected = null, $attributes = [], $params
             $return .= '<i data-radio="'.$currentId.'" class="acymicon-radio_button_unchecked acym_radio_unchecked"></i>';
         }
         $return .= '<input'.$formattedAttributes.$checked.' />';
-        $return .= '<label for="'.$currentId.'" id="'.$currentId.'-lbl">'.$label.'</label>';
+        $return .= '<label for="'.$currentId.'" id="'.$currentId.'-lbl">'.acym_translation($label).'</label>';
 
         if (!empty($params['pluginMode'])) $return .= '<br />';
         $k++;
@@ -766,7 +766,7 @@ function acym_cancelButton($text = 'ACYM_CANCEL', $url = '', $class = 'button me
 function acym_tooltip($hoveredText, $textShownInTooltip, $classContainer = '', $titleShownInTooltip = '', $link = '', $classText = '')
 {
     if (!empty($link)) {
-        $hoveredText = '<a href="'.$link.'" title="'.acym_escape($titleShownInTooltip).'">'.$hoveredText.'</a>';
+        $hoveredText = '<a href="'.$link.'" title="'.acym_escape($titleShownInTooltip).'" target="_blank">'.$hoveredText.'</a>';
     }
 
     if (!empty($titleShownInTooltip)) {

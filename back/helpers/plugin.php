@@ -418,24 +418,27 @@ class PluginHelper extends acymObject
             }
         } elseif (is_string($text) && !empty($text)) {
             foreach ($replacement as $code => $value) {
+                $codes = [$code, urlencode($code)];
                 $safePregValue = str_replace('$', '\$', $value);
 
-                // Dtext specific syntax
-                $text = preg_replace(
-                    '#<span[^>]+'.preg_quote($code, '#').'.+</em>[^<]*</span>#Uis',
-                    $safePregValue,
-                    $text
-                );
+                foreach ($codes as $oneCode) {
+                    // Dtext specific syntax
+                    $text = preg_replace(
+                        '#<span[^>]+'.preg_quote($oneCode, '#').'.+</em>[^<]*</span>#Uis',
+                        $safePregValue,
+                        $text
+                    );
 
-                // Dcontent specific syntax
-                $text = preg_replace(
-                    '#(<tr[^>]+)data-dynamic="'.preg_quote($code, '#').'"([^>]+>[^<]*<td[^>]*>).+</i>[^<]*</td>[^<]*</tr>#Uis',
-                    '$1$2'.$safePregValue.'</td></tr>',
-                    $text
-                );
+                    // Dcontent specific syntax
+                    $text = preg_replace(
+                        '#(<tr[^>]+)data-dynamic="'.preg_quote($oneCode, '#').'"([^>]+>[^<]*<td[^>]*>).+</i>[^<]*</td>[^<]*</tr>#Uis',
+                        '$1$2'.$safePregValue.'</td></tr>',
+                        $text
+                    );
 
-                // If the code was inserted directly in the email (in the subject for example, or a copy-paste)
-                $text = str_replace($code, $value, $text);
+                    // If the code was inserted directly in the email (in the subject for example, or a copy-paste)
+                    $text = str_replace($oneCode, $value, $text);
+                }
             }
         }
 
@@ -1107,17 +1110,22 @@ class PluginHelper extends acymObject
 
                 $default = empty($option['default']) ? null : $option['default'];
                 if (!empty($default) && strpos($default, ',')) list($default, $defaultOrder) = explode(',', $default);
+
+                $attributes = [
+                    'onchange' => $updateFunction.'();',
+                    'id' => $option['name'].$suffix,
+                ];
+                if ($option['name'] === 'order') {
+                    $attributes['class'] = 'acym__dynamics__ordering__select';
+                }
                 $currentOption .= acym_select(
                     $selectOptions,
                     $option['name'].$suffix,
                     $default,
-                    [
-                        'onchange' => $updateFunction.'();',
-                        'id' => $option['name'].$suffix,
-                    ]
+                    $attributes
                 );
 
-                if ($option['name'] == 'order') {
+                if ($option['name'] === 'order') {
 
                     $dirs = [
                         'desc' => acym_translation('ACYM_DESC'),
@@ -1128,7 +1136,11 @@ class PluginHelper extends acymObject
                             $dirs,
                             'orderdir',
                             $defaultOrder,
-                            'onchange="'.$updateFunction.'();" style="width: 115px;"'
+                            [
+                                'onchange' => $updateFunction.'();',
+                                'style' => 'width: 115px;',
+                                'class' => 'acym__dynamics__ordering__select',
+                            ]
                         );
 
                     $jsOptionsMerge[] = 'otherinfo += "| '.$option['name'].':" + jQuery(\'[name="'.$option['name'].$suffix.'"]\').val() + "," + jQuery(\'[name="orderdir"]\').val();';

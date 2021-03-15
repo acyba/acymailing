@@ -94,7 +94,6 @@ const acym_editorWysidFormAction = {
             } else {
                 if (!saveAsTmpl) {
                     jQuery('mail' === controller ? '[name="id"]' : '[name="id"], [name="mail[id]"]').val(res.data);
-                    acym_helperEditorWysid.insertDTextInSubject = true;
                     if (!fromSendTest) {
                         jQuery('#acym_header').css('display', '');
                         jQuery('.acym__content').css('display', '');
@@ -171,7 +170,6 @@ const acym_editorWysidFormAction = {
             if (jQuery('#acym__wysid .acym__wysid__template__content').css('background-image') !== 'none') {
                 jQuery('#acym__wysid__background-image__template-delete').hide();
             }
-            acym_helperEditorWysid.insertDTextInSubject = false;
             jQuery('.acym__wysid__row__element__toolbox__colorpicker').spectrum('destroy');
             jQuery('.sp-container').remove();
             jQuery('#acym_header').css('display', 'none');
@@ -221,7 +219,6 @@ const acym_editorWysidFormAction = {
     },
     setCancelButtonWYSID: function () {
         jQuery('#acym__wysid__cancel__button').off('click').on('click', function () {
-            acym_helperEditorWysid.insertDTextInSubject = true;
             jQuery('#acym_header').css('display', '');
             jQuery('.acym__content').css('display', '');
             jQuery('#acym__wysid').css('display', 'none');

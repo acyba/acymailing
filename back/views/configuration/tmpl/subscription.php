@@ -24,16 +24,18 @@
             ?>
 		</div>
 		<div class="cell grid-x grid-margin-x">
-            <?php echo acym_switch(
+            <?php
+            echo acym_switch(
                 'config[require_confirmation]',
                 $this->config->get('require_confirmation'),
-                acym_translation('ACYM_REQUIRE_CONFIRMATION'),
+                acym_translation('ACYM_REQUIRE_CONFIRMATION').acym_info('ACYM_REQUIRE_CONFIRMATION_DESC'),
                 [],
                 'xlarge-3 medium-5 small-9',
                 'auto',
                 '',
                 'confirm_config'
-            ); ?>
+            );
+            ?>
 		</div>
 		<div class="cell grid-x" id="confirm_config">
 			<div class="cell grid-x">
@@ -57,7 +59,12 @@
 				<span class="cell large-auto hide-for-large-only hide-for-medium-only"></span>
 			</label>
 		</div>
-		<div class="cell medium-3"><?php echo acym_translation('ACYM_ALLOW_MODIFICATION'); ?></div>
+		<div class="cell medium-3">
+            <?php
+            echo acym_translation('ACYM_ALLOW_MODIFICATION_UNAUTH');
+            echo '&nbsp;'.acym_info('ACYM_ALLOW_MODIFICATION_DESC');
+            ?>
+		</div>
 		<div class="cell medium-9">
             <?php
             $allowModif = [
@@ -133,7 +140,7 @@
             echo acym_switch(
                 'config[regacy]',
                 $this->config->get('regacy'),
-                acym_translation('ACYM_CREATE_ACY_USER_FOR_CMS_USER'),
+                acym_translation('ACYM_CREATE_SUBSCRIBER_FOR_CMS_USER'),
                 [],
                 'xlarge-3 medium-5 small-9',
                 'auto',
@@ -162,7 +169,7 @@
                 echo acym_switch(
                     'config[regacy_delete]',
                     $this->config->get('regacy_delete'),
-                    acym_translation('ACYM_DELETE_USER_OF_CMS_USER'),
+                    acym_translation('ACYM_DELETE_SUBSCRIBER_OF_CMS_USER'),
                     [],
                     'xlarge-3 medium-5 small-9',
                     'auto',
@@ -193,7 +200,7 @@
                 echo acym_selectMultiple(
                     $data['lists'],
                     'config[regacy_lists]',
-                    explode(',', $this->config->get('regacy_lists')),
+                    explode(',', $this->config->get('regacy_lists', '')),
                     ['class' => 'acym__select', 'id' => 'acym__config__regacy-lists'],
                     'id',
                     'name'
@@ -212,7 +219,7 @@
                 echo acym_selectMultiple(
                     $data['lists'],
                     'config[regacy_checkedlists]',
-                    explode(',', $this->config->get('regacy_checkedlists')),
+                    explode(',', $this->config->get('regacy_checkedlists', '')),
                     ['class' => 'acym__select', 'id' => 'acym__config__regacy-checkedlists'],
                     'id',
                     'name'
@@ -231,7 +238,7 @@
                 echo acym_selectMultiple(
                     $data['lists'],
                     'config[regacy_autolists]',
-                    explode(',', $this->config->get('regacy_autolists')),
+                    explode(',', $this->config->get('regacy_autolists', '')),
                     ['class' => 'acym__select', 'id' => 'acym__config__regacy-autolists'],
                     'id',
                     'name'
@@ -243,11 +250,6 @@
 
             <?php
             if ('joomla' === ACYM_CMS) {
-                $options = [
-                    acym_selectOption('email', 'ACYM_EMAIL'),
-                    acym_selectOption('password', 'ACYM_SMTP_PASSWORD'),
-                    acym_selectOption('custom', 'ACYM_CUSTOM_FIELD'),
-                ];
                 ?>
 				<div class="cell xlarge-3 medium-5">
 					<label for="acym__config__regacy-listsposition">
@@ -257,7 +259,7 @@
 				<div class="cell xlarge-4 medium-7">
                     <?php
                     echo acym_select(
-                        $options,
+                        acym_getOptionRegacyPosition(),
                         'config[regacy_listsposition]',
                         $this->config->get('regacy_listsposition', 'password'),
                         'class="acym__select" data-toggle-select="'.acym_escape('{"custom":"#acym__config__regacy__custom-list-position"}').'"',

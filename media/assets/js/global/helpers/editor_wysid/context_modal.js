@@ -22,7 +22,8 @@ const acym_editorWysidContextModal = {
             'acy-editor__space',
             'acym__wysid__column__element__button',
             'acym__wysid__row__selector',
-            'acym__wysid__right__toolbar__tabs'
+            'acym__wysid__right__toolbar__tabs',
+            'acym__wysid__tinymce--text'
         ];
         jQuery.each(classesOpeningContext, function (index, value) {
             if ($element.closest('.' + value).length > 0) isOpening = true;
@@ -245,6 +246,35 @@ const acym_editorWysidContextModal = {
             acym_editorWysidVersioning.setUndoAndAutoSave();
         });
     },
+    setTextContextOptions: function () {
+        jQuery('.acym__wysid__tinymce--text').off('click').on('click', function (event) {
+            let $contextText = jQuery('#acym__wysid__context__text');
+
+            // The context zone is already open
+            if ($contextText.is(':visible')) {
+                return true;
+            }
+
+            acym_editorWysidContextModal.showContextModal($contextText);
+
+            let $text = jQuery(this);
+            let $tdParent = $text.closest('.acym__wysid__column__element__td');
+
+            jQuery(window).off('mousedown').on('mousedown', function (event) {
+                if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextText)) return true;
+                if (jQuery(event.target).closest('.acym__wysid__tinymce--text').length > 0) return true;
+                if (jQuery(event.target).closest('#acym__wysid__text__tinymce__editor').length > 0) return true;
+                if (jQuery(event.target).closest('.mce-floatpanel').length > 0) return true;
+
+                // We clicked outside the text / editor options / dtext options so let's hide the dtext zone
+                jQuery(this).off('mousedown');
+                acym_editorWysidContextModal.hideContextModal($contextText, jQuery(event.target));
+                jQuery(window).unbind('click');
+                acym_helperEditorWysid.setColumnRefreshUiWYSID();
+                acym_editorWysidVersioning.setUndoAndAutoSave();
+            });
+        });
+    },
     setButtonContextModalWYSID: function () {
         jQuery('.acym__wysid__column__element__button').off('click').on('click', function (e) {
             e.stopPropagation();
@@ -342,25 +372,26 @@ const acym_editorWysidContextModal = {
                 .css('background-color', $button.css('font-weight') == 700 ? '' : 'inherit')
                 .off('click')
                 .on('click', function () {
-                    $button.css('font-weight') == 700 ? jQuery('#acym__wysid__context__button__bold').css('background-color', 'inherit') && $button.css('font-weight',
-                        'inherit'
-                    ) : jQuery('#acym__wysid__context__button__bold').css('background-color', '') && $button.css(
-                        'font-weight',
-                        700
-                    );
-
+                    if ($button.css('font-weight') == 700) {
+                        jQuery('#acym__wysid__context__button__bold').css('background-color', 'inherit');
+                        $button.css('font-weight', 'inherit');
+                    } else {
+                        jQuery('#acym__wysid__context__button__bold').css('background-color', '');
+                        $button.css('font-weight', 700);
+                    }
                 });
 
             jQuery('#acym__wysid__context__button__italic')
-                .css('background-color', $button.css('font-style') == 'italic' ? '' : 'inherit')
+                .css('background-color', $button.css('font-style') === 'italic' ? '' : 'inherit')
                 .off('click')
                 .on('click', function () {
-                    $button.css('font-style') == 'italic' ? jQuery('#acym__wysid__context__button__italic').css('background-color', 'inherit') && $button.css('font-style',
-                        'inherit'
-                    ) : jQuery('#acym__wysid__context__button__italic').css('background-color', '') && $button.css(
-                        'font-style',
-                        'italic'
-                    );
+                    if ($button.css('font-style') === 'italic') {
+                        jQuery('#acym__wysid__context__button__italic').css('background-color', 'inherit');
+                        $button.css('font-style', 'inherit');
+                    } else {
+                        jQuery('#acym__wysid__context__button__italic').css('background-color', '');
+                        $button.css('font-style', 'italic');
+                    }
                 });
 
             jQuery('.acym__wysid__context__button__align').each(function () {

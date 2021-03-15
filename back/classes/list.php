@@ -172,6 +172,15 @@ class ListClass extends acymClass
         return $results;
     }
 
+    public function getOneById($id)
+    {
+        $list = parent::getOneById($id);
+
+        $list->translation = empty($list->translation) ? [] : json_decode($list->translation, true);
+
+        return $list;
+    }
+
     private function setSelectedList(&$elements, $join)
     {
         if (strpos($join, 'join_list') !== false) {
@@ -454,6 +463,8 @@ class ListClass extends acymClass
             $list->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
         }
 
+        if (!empty($list->translation) && is_array($list->translation)) $list->translation = json_encode($list->translation);
+
         foreach ($list as $oneAttribute => $value) {
             if (empty($value)) continue;
 
@@ -496,7 +507,7 @@ class ListClass extends acymClass
         return $listsToReturn;
     }
 
-    public function getAllForSelect($emptyFirst = true, $userFrontID = 0)
+    public function getAllForSelect($emptyFirst = true, $userFrontID = 0, $needTranslation = false)
     {
         $groupCondition = '';
         if (!empty($userFrontID)) {
@@ -505,6 +516,10 @@ class ListClass extends acymClass
         }
 
         $lists = acym_loadObjectList('SELECT * FROM #__acym_list WHERE type = '.acym_escapeDB(self::LIST_TYPE_STANDARD).$groupCondition, 'id');
+
+        if (acym_isMultilingual() && $needTranslation) {
+            $lists = $this->getTranslatedNameDescription($lists);
+        }
 
         $return = [];
 
@@ -517,9 +532,33 @@ class ListClass extends acymClass
         return $return;
     }
 
-    public function getAllWithoutManagement()
+    public function getAllWithoutManagement($needTranslation = false)
     {
-        return acym_loadObjectList('SELECT * FROM #__acym_list WHERE type = '.acym_escapeDB(self::LIST_TYPE_STANDARD), 'id');
+        $lists = acym_loadObjectList('SELECT * FROM #__acym_list WHERE type = '.acym_escapeDB(self::LIST_TYPE_STANDARD), 'id');
+
+        if (acym_isMultilingual() && $needTranslation) {
+            $lists = $this->getTranslatedNameDescription($lists);
+        }
+
+        return $lists;
+    }
+
+    public function getTranslatedNameDescription($lists)
+    {
+        foreach ($lists as $id => $list) {
+            if (empty($list->translation)) continue;
+
+            $list->translation = json_decode($list->translation, true);
+            if (!empty($list->translation[acym_getLanguageTag()]) && !empty($list->translation[acym_getLanguageTag()]['name'])) {
+                $lists[$id]->name = $list->translation[acym_getLanguageTag()]['name'];
+            }
+
+            if (!empty($list->translation[acym_getLanguageTag()]) && !empty($list->translation[acym_getLanguageTag()]['description'])) {
+                $lists[$id]->description = $list->translation[acym_getLanguageTag()]['description'];
+            }
+        }
+
+        return $lists;
     }
 
     public function setVisible($elements, $status)
@@ -889,5 +928,41 @@ class ListClass extends acymClass
         $return = acym_loadResultArray('SELECT id FROM #__acym_list WHERE '.$type.' = '.intval($mailId));
 
         return empty($return) ? [] : $return;
+    }
+
+    public function getAll($key = null, $needTranslation = false)
+    {
+        if (empty($key)) $key = $this->pkey;
+
+        $lists = acym_loadObjectList('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table), $key);
+
+        if (acym_isMultilingual() && $needTranslation) {
+            $listClass = new ListClass();
+            $lists = $listClass->getTranslatedNameDescription($lists);
+        }
+
+        return $lists;
+    }
+
+    public function getUsersForSummaryModal($id, $offset, $limit, $search)
+    {
+        $whereQuery = ' AND user_list.status = 1 AND user.active = 1';
+
+        if (!empty($search)) {
+            $search = acym_escapeDB('%'.$search.'%');
+            $whereQuery .= ' AND (user.email LIKE '.$search.' OR user.name LIKE '.$search.' OR user.id LIKE '.$search.') ';
+        }
+
+        if ($this->config->get('require_confirmation', '1') === '1') {
+            $whereQuery .= ' AND user.confirmed = 1';
+        }
+
+        $query = 'SELECT user.email, user.name, user.id
+                  FROM #__acym_user as user 
+                  JOIN #__acym_user_has_list as user_list ON user.id = user_list.user_id 
+                  WHERE user_list.list_id = '.intval($id).$whereQuery.' LIMIT '.intval($offset).', '.intval($limit);
+
+
+        return acym_loadObjectList($query, 'id');
     }
 }

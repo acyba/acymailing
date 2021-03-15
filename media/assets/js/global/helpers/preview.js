@@ -106,7 +106,7 @@ const acym_helperPreview = {
         defaultContentWYSID += '<td align="center" class="center acym__wysid__template__content" valign="top" style="background-color: rgb(239, 239, 239);"><center>';
         defaultContentWYSID += '<table align="center" border="0" cellpadding="0" cellspacing="0"><tbody>';
         defaultContentWYSID += '<tr><td class="acym__wysid__row ui-droppable ui-sortable">';
-        defaultContentWYSID += '<table class="row acym__wysid__row__element" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: rgb(255, 255, 255);">';
+        defaultContentWYSID += '<table class="row acym__wysid__row__element" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: transparent;">';
         defaultContentWYSID += '<tr><th class="small-12 medium-12 large-12 columns">';
         defaultContentWYSID += '<table class="acym__wysid__column" style="min-height: 75px; display: block;" border="0" cellpadding="0" cellspacing="0"><tbody class="ui-sortable" style="min-height: 75px; display: block;"></tbody></table>';
         defaultContentWYSID += '</th></tr>';

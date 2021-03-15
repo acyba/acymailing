@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Classes\ListClass;
 use AcyMailing\Libraries\acymPlugin;
 use AcyMailing\Helpers\TabHelper;
 use AcyMailing\Types\OperatorinType;
@@ -23,7 +25,7 @@ class plgAcymVirtuemart extends acymPlugin
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.png';
         $this->rootCategoryId = 0;
 
-        if ($this->installed) {
+        if ($this->installed && acym_getVar('string', 'option', '') === 'com_acym') {
             $this->displayOptions = [
                 'title' => ['ACYM_TITLE', true],
                 'price' => ['ACYM_PRICE', true],
@@ -114,7 +116,8 @@ class plgAcymVirtuemart extends acymPlugin
         $product = acym_loadResult('SELECT virtuemart_product_id FROM #__virtuemart_products ORDER BY virtuemart_product_id desc');
         if (false === $this->loadLibraries('') || empty($product)) return;
         $vmProductModel = VmModel::getModel('product');
-        $element = $vmProductModel->getProduct($product, true, true, true, 1);
+        // VirtueMart generates a PHP notice even when the correct data is passed
+        $element = @$vmProductModel->getProduct($product, true, true, true, 1);
         if (empty($element)) return;
         foreach ($element as $key => $value) {
             $this->elementOptions[$key] = [$key];
@@ -341,12 +344,14 @@ class plgAcymVirtuemart extends acymPlugin
                 'type' => 'date',
                 'name' => 'start',
                 'default' => '',
+                'relativeDate' => '+',
             ],
             [
                 'title' => 'COM_VIRTUEMART_COUPON_EXPIRY',
                 'type' => 'date',
                 'name' => 'end',
                 'default' => '',
+                'relativeDate' => '+',
             ],
             [
                 'title' => 'COM_VIRTUEMART_COUPON_TYPE',
@@ -520,7 +525,9 @@ class plgAcymVirtuemart extends acymPlugin
                     2,
                     ',',
                     ' '
-                )) $price2 = $element->prices['salesPrice'];
+                )) {
+                $price2 = $element->prices['salesPrice'];
+            }
         } else {
             if (!empty($element->prices['basePrice'])) $price1 = $element->prices['basePrice'];
             if (!empty($element->prices['discountedPriceWithoutTax']) && number_format($price1, 2, ',', ' ') != number_format(
@@ -528,7 +535,9 @@ class plgAcymVirtuemart extends acymPlugin
                     2,
                     ',',
                     ' '
-                )) $price2 = $element->prices['discountedPriceWithoutTax'];
+                )) {
+                $price2 = $element->prices['discountedPriceWithoutTax'];
+            }
         }
 
         $currencyHelper = CurrencyDisplay::getInstance($element->product_currency);
@@ -723,7 +732,9 @@ class plgAcymVirtuemart extends acymPlugin
         if (empty($tag->code) || empty($tag->amount) || empty($tag->vendor) || empty($tag->type) || !in_array($tag->type, ['total', 'percent']) || empty($tag->ctype) || !in_array(
                 $tag->ctype,
                 ['permanent', 'gift']
-            )) return '';
+            )) {
+            return '';
+        }
 
         $intAttributes = ['amount', 'min', 'vendor'];
         foreach ($intAttributes as $oneAttribute) {
@@ -1236,5 +1247,201 @@ class plgAcymVirtuemart extends acymPlugin
     public function onAcymDeclareSummary_triggers(&$automation)
     {
         if (!empty($automation->triggers['vmorder'])) $automation->triggers['vmorder'] = acym_translation('ACYM_WHEN_ORDER');
+    }
+
+    public function onRegacyOptionsDisplay($lists)
+    {
+        if (!$this->installed) return;
+
+        ?>
+		<div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
+			<div class="acym__title acym__title__secondary"><?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', $this->pluginDescription->name)); ?></div>
+
+			<div class="grid-x">
+				<div class="cell grid-x grid-margin-x">
+                    <?php
+                    $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', $this->pluginDescription->name).acym_info(
+                            'ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC'
+                        );
+                    echo acym_switch(
+                        'config[virtuemart_sub]',
+                        $this->config->get('virtuemart_sub'),
+                        $subOptionTxt,
+                        [],
+                        'xlarge-3 medium-5 small-9',
+                        'auto',
+                        '',
+                        'acym__config__virtuemart_sub'
+                    );
+                    ?>
+				</div>
+				<div class="cell grid-x margin-y" id="acym__config__virtuemart_sub">
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__virtuemart-text">
+                            <?php echo acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info('ACYM_SUBSCRIBE_CAPTION_OPT_DESC'); ?>
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
+						<input type="text"
+							   name="config[virtuemart_text]"
+							   id="acym__config__virtuemart-text"
+							   value="<?php echo acym_escape($this->config->get('virtuemart_text')); ?>" />
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__virtuemart-lists">
+                            <?php echo acym_translation('ACYM_DISPLAYED_LISTS').acym_info('ACYM_DISPLAYED_LISTS_DESC'); ?>
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
+                        <?php
+                        echo acym_selectMultiple(
+                            $lists,
+                            'config[virtuemart_lists]',
+                            explode(',', $this->config->get('virtuemart_lists', '')),
+                            ['class' => 'acym__select', 'id' => 'acym__config__virtuemart-lists'],
+                            'id',
+                            'name'
+                        );
+                        ?>
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__virtuemart-checkedlists">
+                            <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info('ACYM_LISTS_CHECKED_DEFAULT_DESC'); ?>
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
+                        <?php
+                        echo acym_selectMultiple(
+                            $lists,
+                            'config[virtuemart_checkedlists]',
+                            explode(',', $this->config->get('virtuemart_checkedlists', '')),
+                            ['class' => 'acym__select', 'id' => 'acym__config__virtuemart-checkedlists'],
+                            'id',
+                            'name'
+                        );
+                        ?>
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__virtuemart-autolists">
+                            <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC'); ?>
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
+                        <?php
+                        echo acym_selectMultiple(
+                            $lists,
+                            'config[virtuemart_autolists]',
+                            explode(',', $this->config->get('virtuemart_autolists', '')),
+                            ['class' => 'acym__select', 'id' => 'acym__config__virtuemart-autolists'],
+                            'id',
+                            'name'
+                        );
+                        ?>
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__virtuemart-regacy-listsposition">
+                            <?php echo acym_escape(acym_translation('ACYM_LISTS_POSITION')); ?>
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
+                        <?php
+                        echo acym_select(
+                            acym_getOptionRegacyPosition(),
+                            'config[virtuemart_regacy_listsposition]',
+                            $this->config->get('virtuemart_regacy_listsposition', 'password'),
+                            'class="acym__select" data-toggle-select="'.acym_escape('{"custom":"#acym__config__virtuemart__regacy__custom-list-position"}').'"',
+                            'value',
+                            'text',
+                            'acym__config__virtuemart-regacy-listsposition'
+                        );
+                        ?>
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					<div class="cell grid-x" id="acym__config__virtuemart__regacy__custom-list-position">
+						<div class="cell xlarge-3 medium-5"></div>
+						<div class="cell xlarge-4 medium-7">
+							<input type="text"
+								   name="config[virtuemart_regacy_listspositioncustom]"
+								   value="<?php echo acym_escape($this->config->get('virtuemart_regacy_listspositioncustom')); ?>" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+        <?php
+    }
+
+    public function onBeforeSaveConfigFields(&$formData)
+    {
+        if (empty($formData['virtuemart_lists'])) $formData['virtuemart_lists'] = [];
+        if (empty($formData['virtuemart_checkedlists'])) $formData['virtuemart_checkedlists'] = [];
+        if (empty($formData['virtuemart_autolists'])) $formData['virtuemart_autolists'] = [];
+    }
+
+    public function onRegacyAddComponent(&$components)
+    {
+        $config = acym_config();
+        if (!$config->get('virtuemart_sub', 0) || acym_isAdmin()) return;
+
+        $components['com_virtuemart'] = [
+            'view' => ['user', 'cart', 'shop.registration', 'account.billing', 'checkout.index', 'editaddresscart', 'editaddresscheckout', 'askquestion'],
+            'lengthafter' => 500,
+            'valueClass' => 'controls',
+            'baseOption' => 'virtuemart',
+        ];
+    }
+
+    public function onRegacyAfterRoute()
+    {
+        //We are updating the user information from VM...
+        $option = acym_getVar('string', 'option', '');
+        $acySource = acym_getVar('string', 'acy_source', '');
+        if ($option == 'com_virtuemart' && $acySource == 'virtuemart registration form') {
+            $this->updateVM();
+        }
+    }
+
+    private function updateVM()
+    {
+        $config = acym_config();
+        if (!$config->get('virtuemart_sub', 0) || acym_isAdmin()) return;
+
+        $email = acym_getVar('string', 'email', '');
+        $selectedLists = acym_getVar('array', 'virtuemart_visible_lists_checked', []);
+        $autoLists = explode(',', $config->get('virtuemart_autolists', ''));
+        $listsToSubscribe = array_merge($selectedLists, $autoLists);
+
+        if (empty($email) || empty($listsToSubscribe)) return;
+
+        // Get existing AcyMailing user or create one
+        $userClass = new UserClass();
+        $user = $userClass->getOneByEmail($email);
+        if (empty($user)) {
+            $user = new stdClass();
+            $user->email = $email;
+
+            $userName = acym_getVar('string', 'name', '');
+            if (empty($userName)) {
+                $userNameArray = [];
+                $userNameArray[] = acym_getVar('string', 'first_name', '');
+                $userNameArray[] = acym_getVar('string', 'middle_name', '');
+                $userNameArray[] = acym_getVar('string', 'last_name', '');
+                $userName = trim(implode(' ', $userNameArray));
+            }
+            if (!empty($userName)) $user->name = $userName;
+
+            $user->source = 'virtuemart';
+            $user->id = $userClass->save($user);
+        }
+
+        if (empty($user->id)) return;
+
+        // Subscribe the user
+        $userClass->subscribe($user->id, $listsToSubscribe);
     }
 }

@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_user` (
 	`confirmation_date` DATETIME DEFAULT NULL,
 	`confirmation_ip` VARCHAR(16) DEFAULT NULL,
 	`tracking` TINYINT(1) NOT NULL DEFAULT 1,
-	`language` VARCHAR(10) NOT NULL DEFAULT '',
+	`language` VARCHAR(20) NOT NULL DEFAULT '',
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX `email_UNIQUE`(`email` ASC)
 )
@@ -62,13 +62,14 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail` (
 	`headers` TEXT NULL,
 	`autosave` LONGTEXT NULL,
 	`preheader` TEXT NULL,
-	`links_language` VARCHAR(10) NOT NULL DEFAULT '',
+	`links_language` VARCHAR(20) NOT NULL DEFAULT '',
 	`access` VARCHAR(50) NOT NULL DEFAULT '',
 	`tracking` TINYINT(1) NOT NULL DEFAULT 1,
-	`language` VARCHAR(10) NOT NULL DEFAULT '',
+	`language` VARCHAR(20) NOT NULL DEFAULT '',
 	`parent_id` INT NULL,
+	`translation` TEXT NULL,
 	PRIMARY KEY (`id`),
-	INDEX `fk_#__acym_mail1`(`parent_id` ASC),
+	INDEX `index_#__acym_mail1`(`parent_id` ASC),
 	CONSTRAINT `fk_#__acym_mail1`
 		FOREIGN KEY (`parent_id`)
 			REFERENCES `#__acym_mail`(`id`)
@@ -99,9 +100,10 @@ CREATE TABLE IF NOT EXISTS `#__acym_list` (
 	`description` TEXT NOT NULL,
 	`tracking` TINYINT(1) NOT NULL DEFAULT 1,
 	`type` VARCHAR(20) NOT NULL DEFAULT 'standard',
+	`translation` LONGTEXT NULL,
 	PRIMARY KEY (`id`),
-	INDEX `fk_#__acym_list_has_mail1`(`welcome_id` ASC),
-	INDEX `fk_#__acym_list_has_mail2`(`unsubscribe_id` ASC),
+	INDEX `index_#__acym_list_has_mail1`(`welcome_id` ASC),
+	INDEX `index_#__acym_list_has_mail2`(`unsubscribe_id` ASC),
 	CONSTRAINT `fk_#__acym_list_has_mail1`
 		FOREIGN KEY (`welcome_id`)
 			REFERENCES `#__acym_mail`(`id`)
@@ -136,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_campaign` (
 	`next_trigger` INT DEFAULT NULL,
 	`visible` TINYINT(1) NOT NULL DEFAULT 1,
 	PRIMARY KEY (`id`),
-	INDEX `fk_#__acym_campaign_has_mail1`(`mail_id` ASC),
+	INDEX `index_#__acym_campaign_has_mail1`(`mail_id` ASC),
 	CONSTRAINT `fk_#__acym_campaign_has_mail1`
 		FOREIGN KEY (`mail_id`)
 			REFERENCES `#__acym_mail`(`id`)
@@ -159,8 +161,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_user_has_list` (
 	`subscription_date` DATETIME NOT NULL,
 	`unsubscribe_date` DATETIME NULL,
 	PRIMARY KEY (`user_id`, `list_id`),
-	INDEX `fk_#__acym_user_has_list1`(`list_id` ASC),
-	INDEX `fk_#__acym_user_has_list2`(`user_id` ASC),
+	INDEX `index_#__acym_user_has_list1`(`list_id` ASC),
+	INDEX `index_#__acym_user_has_list2`(`user_id` ASC),
 	CONSTRAINT `fk_#__acym_user_has_list1`
 		FOREIGN KEY (`user_id`)
 			REFERENCES `#__acym_user`(`id`)
@@ -207,7 +209,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_step` (
 	`last_execution` INT NULL,
 	`next_execution` INT NULL,
 	PRIMARY KEY (`id`),
-	CONSTRAINT `fk#__acym__step1`
+	CONSTRAINT `fk_#__acym__step1`
 		FOREIGN KEY (`automation_id`)
 			REFERENCES `#__acym_automation`(`id`)
 			ON DELETE NO ACTION
@@ -237,8 +239,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail_has_list` (
 	`mail_id` INT NOT NULL,
 	`list_id` INT NOT NULL,
 	PRIMARY KEY (`mail_id`, `list_id`),
-	INDEX `fk_#__acym_mail_has_list1`(`list_id` ASC),
-	INDEX `fk_#__acym_mail_has_list2`(`mail_id` ASC),
+	INDEX `index_#__acym_mail_has_list1`(`list_id` ASC),
+	INDEX `index_#__acym_mail_has_list2`(`mail_id` ASC),
 	CONSTRAINT `fk_#__acym_mail_has_list1`
 		FOREIGN KEY (`mail_id`)
 			REFERENCES `#__acym_mail`(`id`)
@@ -266,8 +268,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_queue` (
 	`priority` INT NOT NULL DEFAULT 2,
 	`try` TINYINT NOT NULL DEFAULT 0,
 	PRIMARY KEY (`mail_id`, `user_id`),
-	INDEX `fk_#__acym_queue1`(`mail_id` ASC),
-	INDEX `fk_#__acym_queue2`(`user_id` ASC),
+	INDEX `index_#__acym_queue1`(`mail_id` ASC),
+	INDEX `index_#__acym_queue2`(`user_id` ASC),
 	CONSTRAINT `fk_#__acym_queue1`
 		FOREIGN KEY (`mail_id`)
 			REFERENCES `#__acym_mail`(`id`)
@@ -368,7 +370,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_url_click` (
 	`click` INT NOT NULL DEFAULT 0,
 	`date_click` DATETIME NULL,
 	PRIMARY KEY (`mail_id`, `url_id`, `user_id`),
-	INDEX `fk_#__acym_url_has_url1`(`url_id` ASC),
+	INDEX `index_#__acym_url_has_url1`(`url_id` ASC),
 	CONSTRAINT `fk_#__acym_url_click_has_mail`
 		FOREIGN KEY (`mail_id`)
 			REFERENCES `#__acym_mail`(`id`)
@@ -406,6 +408,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_field` (
 	`frontend_listing` TINYINT(3) NULL,
 	`access` VARCHAR(255) NULL,
 	`namekey` VARCHAR(255) NOT NULL,
+	`translation` LONGTEXT NULL,
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB
@@ -422,8 +425,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_user_has_field` (
 	`field_id` INT NOT NULL,
 	`value` LONGTEXT NULL,
 	PRIMARY KEY (`user_id`, `field_id`),
-	INDEX `fk_#__acym_user_has_field1`(`field_id` ASC),
-	INDEX `fk_#__acym_user_has_field2`(`user_id` ASC),
+	INDEX `index_#__acym_user_has_field1`(`field_id` ASC),
+	INDEX `index_#__acym_user_has_field2`(`user_id` ASC),
 	CONSTRAINT `fk_#__acym_user_has_field1`
 		FOREIGN KEY (`user_id`)
 			REFERENCES `#__acym_user`(`id`)
@@ -605,7 +608,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_followup` (
 	`list_id` INT NULL,
 	`last_trigger` INT NULL,
 	PRIMARY KEY (`id`),
-	INDEX `fk_#__acym_followup_has_list`(`list_id` ASC),
+	INDEX `index_#__acym_followup_has_list`(`list_id` ASC),
 	CONSTRAINT `fk_#__acym_followup_has_list`
 		FOREIGN KEY (`list_id`)
 			REFERENCES `#__acym_list`(`id`)
@@ -623,8 +626,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_followup_has_mail` (
 	`delay` INT NOT NULL,
 	`delay_unit` INT NOT NULL,
 	PRIMARY KEY (`mail_id`, `followup_id`),
-	INDEX `fk_#__acym_mail_has_followup1`(`followup_id` ASC),
-	INDEX `fk_#__acym_mail_has_followup2`(`mail_id` ASC),
+	INDEX `index_#__acym_mail_has_followup1`(`followup_id` ASC),
+	INDEX `index_#__acym_mail_has_followup2`(`mail_id` ASC),
 	CONSTRAINT `fk_#__acym_mail_has_followup1`
 		FOREIGN KEY (`mail_id`)
 			REFERENCES `#__acym_mail`(`id`)

@@ -28,6 +28,19 @@
 		</div>
 	</div>
 </div>
+<div style="display: none" id="acym__segment__see-users__example">
+    <?php echo acym_modalInclude(
+        '<span class="acym__segment__see-users__button cursor-pointer text-underline">'.acym_translation('ACYM_SEE_USERS').'</span>',
+        acym_getPartial('modal', 'users'),
+        'acym__segments__see-users',
+        [
+            'ctrl' => 'segments',
+            'task' => 'usersSummary',
+        ],
+        '',
+        'acym__modal__users__summary__container'
+    ); ?>
+</div>
 <div class="cell grid-x acym__segments__one__filter" id="acym__segments__and__example" style="display: none;">
 	<div class="acym__automation__and cell grid-x margin-top-2">
 		<h6 class="cell medium-shrink small-11 acym__title acym__title__secondary"><?php echo acym_translation('ACYM_AND'); ?></h6>

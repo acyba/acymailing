@@ -333,7 +333,7 @@ class plgAcymArticle extends acymPlugin
         usort(
             $idsWithCatids,
             function ($a, $b) {
-                return strtolower($a->catid) > strtolower($b->catid);
+                return strtolower($a->catid) > strtolower($b->catid) ? 1 : -1;
             }
         );
         $elements = [];
@@ -363,7 +363,12 @@ class plgAcymArticle extends acymPlugin
         $completeId = $element->id;
         if (!empty($element->alias)) $completeId .= ':'.$element->alias;
 
-        $link = ContentHelperRoute::getArticleRoute($completeId, $element->catid, $this->getLanguage($element->language, true));
+        if (defined('SH404SEF_IS_RUNNING') && SH404SEF_IS_RUNNING == 1) {
+            $link = 'index.php?option=com_content&view=article&id='.$completeId.'&catid='.$element->catid.$this->getLanguage($element->language);
+        } else {
+            $link = ContentHelperRoute::getArticleRoute($completeId, $element->catid, $this->getLanguage($element->language, true));
+        }
+
         $link = $this->finalizeLink($link);
         $varFields['{link}'] = $link;
 

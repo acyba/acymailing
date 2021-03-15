@@ -74,6 +74,6 @@
 			<div class="cell grid-x shrink margin-top-1"><?php echo $data['svg']; ?></div>
 		</div>
 		<div class="grid-x cell acym__listing v-align-top acym__list__settings__subscribers__listing" v-show="displayedSubscribers.length==0 && !loading" style="display:none;">
-			<span><?php echo acym_translation('ACYM_NO_USERS_FOUND'); ?></span>
+			<span><?php echo acym_translation('ACYM_NO_SUBSCRIBERS_FOUND'); ?></span>
 		</div>
 	</div>

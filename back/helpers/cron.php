@@ -40,11 +40,32 @@ class CronHelper extends acymObject
     // If we call the cron just to send a batch of emails
     var $cronLastOnCron = 0;
 
+    // If we call the cron just to send a batch of emails
+    var $externalSendingActivated = false;
+    var $externalSendingRepeat = false;
+    var $externalSendingNotFinished = false;
+
     public function __construct()
     {
         parent::__construct();
         $this->startQueue = acym_getVar('int', 'startqueue', 0);
-        if (!empty($this->startQueue)) $this->skip = ['schedule', 'cleanqueue', 'bounce', 'automation', 'campaign', 'specific', 'followup', 'delete_history'];
+
+        acym_trigger('onAcymProcessQueueExternalSendingCampaign', [&$this->externalSendingActivated]);
+
+        $this->externalSendingRepeat = empty(acym_getVar('int', 'external_sending_repeat', 0));
+        if (!empty($this->startQueue) || !empty($this->externalSendingRepeat)) {
+            $this->skip = [
+                'schedule',
+                'cleanqueue',
+                'bounce',
+                'automation',
+                'campaign',
+                'specific',
+                'followup',
+                'delete_history',
+                'clean_data_external_sending_method',
+            ];
+        }
     }
 
     public function cron()
@@ -132,6 +153,10 @@ class CronHelper extends acymObject
             }
             if (!empty($queueHelper->nbprocess)) {
                 $this->processed = true;
+
+                if (!$queueHelper->finish && $this->externalSendingActivated) {
+                    $this->externalSendingNotFinished = true;
+                }
             }
             $this->mainmessage = acym_translationSprintf('ACYM_CRON_PROCESS', $queueHelper->nbprocess, $queueHelper->successSend, $queueHelper->errorSend);
             $this->messages[] = $this->mainmessage;
@@ -272,6 +297,13 @@ class CronHelper extends acymObject
                 $this->processed = true;
             }
         }
+
+        // Step 12: Clean data on external sending method
+        if (!in_array('clean_data_external_sending_method', $this->skip) && $this->isDailyCron()) {
+            acym_trigger('onAcymCleanDataExternalSendingMethod');
+        }
+
+        if ($this->externalSendingNotFinished) acym_makeCurlCall(acym_frontendLink('cron&external_sending_repeat=1'), [], [], true);
 
         return true;
     }

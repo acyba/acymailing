@@ -44,20 +44,28 @@
                 <?php } ?>
 			</div>
         <?php } ?>
-        <?php if (acym_isAllowed('automation')) { ?>
+        <?php if (acym_isAllowed('automation')) {
+            $disabledLinks = !acym_level(2);
+            ?>
 			<div class="cell acym__content acym__dashboard__one-card text-center grid-x">
 				<div class="acym__dashboard__card__picto__automation acym__dashboard__card__picto">
 					<i class="acymicon-cog acym__dashboard__card__icon__automation"></i>
 				</div>
 				<h1 class="acym__dashboard__card__title"><?php echo acym_translation('ACYM_AUTOAMTION'); ?></h1>
 				<hr class="cell small-10">
-				<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('automation&task=listing'); ?>">
+				<a class="acym__dashboard__card__link"
+                    <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>
+				   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=listing'); ?>">
                     <?php echo acym_translation('ACYM_VIEW_ALL_AUTOMATIONS'); ?>
 				</a>
-				<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('automation&task=edit&step=info'); ?>">
+				<a class="acym__dashboard__card__link"
+                    <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>
+				   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=edit&step=info'); ?>">
                     <?php echo acym_translation('ACYM_NEW_AUTOMATION'); ?>
 				</a>
-				<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('automation&task=edit&step=filter'); ?>">
+				<a class="acym__dashboard__card__link"
+                    <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>
+				   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=edit&step=filter'); ?>">
                     <?php echo acym_translation('ACYM_NEW_MASS_ACTION'); ?>
 				</a>
 			</div>

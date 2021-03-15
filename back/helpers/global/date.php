@@ -38,10 +38,10 @@ function acym_dateField($name, $value = '', $class = '', $attributes = '', $rela
 
     // Relative date options
     $result .= '<div class="cell date_rs_selection_choice date_rs_selection_relative grid-x grid-margin-x align-center">
-                    <div class="cell shrink">
+                    <div class="cell medium-4">
                         <input type="number" class="relativenumber" value="0">
                     </div>
-                    <div class="cell shrink">';
+                    <div class="cell medium-4">';
     $result .= acym_select(
         [
             '60' => acym_translation('ACYM_MINUTES'),
@@ -54,7 +54,7 @@ function acym_dateField($name, $value = '', $class = '', $attributes = '', $rela
     );
 
     $result .= '</div>
-                <div class="cell shrink">';
+                <div class="cell medium-4">';
 
     $result .= acym_select(
         [
@@ -69,12 +69,11 @@ function acym_dateField($name, $value = '', $class = '', $attributes = '', $rela
             </div>';
 
     // Specific date option
-    $result .= '<div class="cell date_rs_selection_choice date_rs_selection_specific grid-x" style="display: none;">
-                    <div class="cell auto"></div>
+    $result .= '<div class="cell date_rs_selection_choice date_rs_selection_specific grid-x align-center acym_vcenter" style="display: none;">
+                    <span class="cell shrink margin-right-1">'.acym_translation('ACYM_CHOOSE_DATE').'</span>
                     <div class="cell shrink">
                         <input type="text" name="specific_'.acym_escape($name).'" class="acy_date_picker" readonly>
                     </div>
-                    <div class="cell auto"></div>
                 </div>
                 <div class="cell grid-x grid-margin-x">
                     <div class="cell auto"></div>
@@ -214,13 +213,29 @@ function acym_displayDateFormat($format, $name = 'date', $default = '', $attribu
     unset($formatToDisplay[0]);
     foreach ($formatToDisplay as $one) {
         if ($one == 'd') {
-            $return .= '<div class="medium-3 margin-left-0 cell">'.acym_select($days, $name, empty($default) ? '' : $defaultDate[$i], $attributes, 'value', 'text', $name.'-'.$one).'</div>';
+            $return .= '<div class="medium-3 margin-left-0 cell">'.acym_select(
+                    $days,
+                    $name,
+                    empty($default) ? '' : $defaultDate[$i],
+                    $attributes,
+                    'value',
+                    'text',
+                    $name.'-'.$one
+                ).'</div>';
         }
         if ($one == 'm') {
             $return .= '<div class="medium-5 cell">'.acym_select($month, $name, empty($default) ? '' : $defaultDate[$i], $attributes, 'value', 'text', $name.'-'.$one).'</div>';
         }
         if ($one == 'y') {
-            $return .= '<div class="medium-4 margin-right-0 cell">'.acym_select($year, $name, empty($default) ? '' : $defaultDate[$i], $attributes, 'value', 'text', $name.'-'.$one).'</div>';
+            $return .= '<div class="medium-4 margin-right-0 cell">'.acym_select(
+                    $year,
+                    $name,
+                    empty($default) ? '' : $defaultDate[$i],
+                    $attributes,
+                    'value',
+                    'text',
+                    $name.'-'.$one
+                ).'</div>';
         }
         $i++;
     }

@@ -10,7 +10,7 @@ class plgAcymAutomationexport extends acymPlugin
     public function onAcymDeclareActions(&$actions)
     {
         $actions['export'] = new stdClass();
-        $actions['export']->name = acym_translation('ACYM_EXPORT_USERS');
+        $actions['export']->name = acym_translation('ACYM_EXPORT_SUBSCRIBERS');
         $actions['export']->option = '<div class="cell grid-x margin-bottom-1">';
 
         $fields = acym_getColumns('user');
@@ -81,7 +81,7 @@ class plgAcymAutomationexport extends acymPlugin
             $pathtolog = ACYM_ROOT.strftime($action['path']);
         }
 
-        if (empty($action['core']) && empty($action['custom'])) return '['.acym_translation('ACYM_EXPORT_USERS').'] '.acym_translation('ACYM_EXPORT_SELECT_FIELD');
+        if (empty($action['core']) && empty($action['custom'])) return '['.acym_translation('ACYM_EXPORT_SUBSCRIBERS').'] '.acym_translation('ACYM_EXPORT_SELECT_FIELD');
 
         if (empty($action['core'])) $action['core'] = [];
         if (empty($action['custom'])) $action['custom'] = [];
@@ -100,14 +100,14 @@ class plgAcymAutomationexport extends acymPlugin
         if (empty($error)) {
             return acym_translationSprintf('ACYM_USERS_EXPORTED', $pathtolog);
         } else {
-            return '['.acym_translation('ACYM_EXPORT_USERS').'] '.$error;
+            return '['.acym_translation('ACYM_EXPORT_SUBSCRIBERS').'] '.$error;
         }
     }
 
     public function onAcymDeclareSummary_actions(&$automation)
     {
         if (!empty($automation['export'])) {
-            $automation = acym_translation('ACYM_ALL_USER_WILL_BE_EXPORTED');
+            $automation = acym_translation('ACYM_ALL_SUBSCRIBER_WILL_BE_EXPORTED');
         }
     }
 }

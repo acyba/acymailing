@@ -17,10 +17,10 @@ jQuery(document).ready(function ($) {
         acym_helperNotification.setNotificationCenter();
         acym_helperPagination.setPaginationGlobal();
         acym_helperSwitch.setSwitchFieldsGlobal();
+        acym_helperSwitch.setButtonSwitch();
         acym_helperSearch.setClearSearch();
         acym_helperPreview.setPreviewIframe();
         acym_helperRadio.setRadioIconsGlobal();
-        acym_helperDynamic.initPopup();
         acym_helperModal.initOverlay();
         acym_helperNotification.removeNotifications();
         acym_helperHeader.setVersionButton();

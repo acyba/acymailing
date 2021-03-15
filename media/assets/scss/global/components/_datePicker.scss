@@ -16,4 +16,12 @@
         margin: 0;
         width: 160px;
     }
+
+    .date_rs_selection_popup {
+        margin-top: 1.5rem;
+
+        .acy_date_picker {
+            cursor: pointer !important;
+        }
+    }
 }

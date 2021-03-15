@@ -149,7 +149,7 @@ const acym_editorWysidDynammic = {
                 $pluginsContext.html(data);
 
                 jQuery('#acym_pagination__ajax__load-more').val(1);
-                if (ACYM_IS_ADMIN) acym_helperRadio.setRadioIconsGlobal();
+                acym_helperRadio.setRadioIconsGlobal();
                 acym_editorWysidDynammic.setPluginFilters();
                 acym_editorWysidDynammic.setPluginPagination();
                 // Reload foundation for tabs in plugins popup
@@ -187,7 +187,7 @@ const acym_editorWysidDynammic = {
             jQuery('#acym__wysid__context__plugins select')
                 .select2({
                     theme: 'foundation',
-                    width: '115px'
+                    width: '160px'
                 });
         }
     },
@@ -281,15 +281,15 @@ const acym_editorWysidDynammic = {
         });
     },
     setDynamicsActions: function () {
-        jQuery('.acym_dynamic').off('click').on('click', function () {
+        jQuery('.acym_dynamic').off('click').on('click', function (event) {
             let selection = window.getSelection();
+            selection.removeAllRanges();
+
             let range = document.createRange();
             range.selectNode(this);
-            selection.removeAllRanges();
             selection.addRange(range);
 
-            jQuery('#acym__wysid__modal__dynamic-text__ui__iframe').contents().find('input[name="dtextcode"]').val('');
-            jQuery('#acym__wysid__modal__dynamic-text').show();
+            jQuery('#dtextcode').val('');
         });
 
         jQuery('.acym_remove_dynamic').off('click').on('click', function () {
@@ -325,5 +325,15 @@ const acym_editorWysidDynammic = {
             let functionName = document.getElementById('acym__dynamic__update__function').value;
             if (typeof window[functionName] === 'function') window[functionName]();
         });
+    },
+    setDTexts: function () {
+        jQuery('#dtext_options').hide();
     }
 };
+
+function setTag(tagvalue, element) {
+    var $allRows = jQuery('.acym__listing__row__popup');
+    $allRows.removeClass('selected_row');
+    element.addClass('selected_row');
+    window.document.getElementById('dtextcode').value = tagvalue;
+}

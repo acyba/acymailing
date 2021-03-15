@@ -88,7 +88,7 @@
                 $importHelper->additionalDataUsersImport(true)
             );
             echo acym_modal(
-                acym_translation('ACYM_IMPORT_USERS'),
+                acym_translation('ACYM_IMPORT_SUBSCRIBERS'),
                 $modalData,
                 'acym__user__import__add-subscription__modal',
                 '',

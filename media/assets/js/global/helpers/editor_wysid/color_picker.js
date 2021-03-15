@@ -1,18 +1,24 @@
 const acym_editorWysidColorPicker = {
-    setColorPickerForContextModal: function ($element, cssPropertyPrevious, $elementFocus, $previousElement, cssPropertyNew) {
+    setColorPickerForContextModal: function ($element, cssPropertyPrevious, $elementFocus, $previousElement, cssPropertyNew, allowEmpty = false) {
         $element.spectrum({
             color: $previousElement.css(cssPropertyPrevious),
             preferredFormat: 'hex',
             showButtons: false,
             showInput: true,
+            allowEmpty: allowEmpty,
             move: function (color) {
-                $elementFocus.css(cssPropertyNew, color.toHexString());
+                $elementFocus.css(cssPropertyNew, acym_editorWysidColorPicker.getHexStringFromColor(color));
             },
             change: function (color) {
-                $elementFocus.css(cssPropertyNew, color.toHexString());
+                $elementFocus.css(cssPropertyNew, acym_editorWysidColorPicker.getHexStringFromColor(color));
             },
             containerClassName: 'acym__context__color__picker'
         });
+    },
+    getHexStringFromColor: function (color) {
+        if (color === null) return 'rgba(0,0,0,0)';
+
+        return color.toHexString();
     },
     setRowColorPickerWYSID: function ($current) {
         let $colorPicker = jQuery('#acym__wysid__context__block__background-color');

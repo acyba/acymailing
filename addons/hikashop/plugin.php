@@ -26,6 +26,15 @@ class plgAcymHikashop extends acymPlugin
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.ico';
 
         if ($this->installed) {
+            $this->displayOptions = [
+                'title' => ['ACYM_TITLE', true],
+                'price' => ['ACYM_PRICE', true],
+                'image' => ['ACYM_IMAGE', true],
+                'shortdesc' => ['ACYM_SHORT_DESCRIPTION', true],
+                'desc' => ['ACYM_DESCRIPTION', false],
+                'readmore' => ['ACYM_READ_MORE', false],
+            ];
+
             $this->initReplaceOptionsCustomView();
             $this->initElementOptionsCustomView();
 
@@ -128,25 +137,38 @@ class plgAcymHikashop extends acymPlugin
         $displayOptions = [
             [
                 'title' => 'ACYM_DISPLAY',
-                'type' => 'radio',
-                'name' => 'type',
+                'type' => 'checkbox',
+                'name' => 'display',
+                'options' => $this->displayOptions,
+            ],
+            [
+                'title' => 'ACYM_PRICE',
+                'type' => 'select',
+                'name' => 'price_type',
                 'options' => [
-                    'title' => 'ACYM_TITLE_ONLY',
-                    'intro' => 'ACYM_INTRO_ONLY',
-                    'full' => 'ACYM_FULL_TEXT',
+                    'full' => 'ACYM_APPLY_DISCOUNTS',
+                    'no_discount' => 'ACYM_NO_DISCOUNT',
                 ],
                 'default' => 'full',
             ],
             [
-                'title' => 'ACYM_PRICE',
-                'type' => 'radio',
-                'name' => 'price',
-                'options' => [
-                    'full' => 'ACYM_APPLY_DISCOUNTS',
-                    'no_discount' => 'ACYM_NO_DISCOUNT',
-                    'none' => 'ACYM_NO',
-                ],
-                'default' => 'full',
+                'title' => 'ACYM_CLICKABLE_TITLE',
+                'type' => 'boolean',
+                'name' => 'clickable',
+                'default' => true,
+            ],
+            [
+                'title' => 'ACYM_TRUNCATE',
+                'type' => 'intextfield',
+                'isNumber' => 1,
+                'name' => 'wrap',
+                'text' => 'ACYM_TRUNCATE_AFTER',
+                'default' => 0,
+            ],
+            [
+                'title' => 'ACYM_DISPLAY_PICTURES',
+                'type' => 'pictures',
+                'name' => 'pictures',
             ],
         ];
 
@@ -187,10 +209,10 @@ class plgAcymHikashop extends acymPlugin
 
         $this->autoCampaignOptions($catOptions);
 
-        $displayOptions = array_merge($displayOptions, $catOptions);
+        $catOptions = array_merge($displayOptions, $catOptions);
 
         echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        echo $this->pluginHelper->displayOptions($catOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'hikashop_abandonedcart';
@@ -203,18 +225,7 @@ class plgAcymHikashop extends acymPlugin
             $paymentMethods[$method->payment_id] = $method->payment_name;
         }
 
-        $displayOptions = [
-            [
-                'title' => 'ACYM_DISPLAY',
-                'type' => 'radio',
-                'name' => 'type',
-                'options' => [
-                    'title' => 'ACYM_TITLE_ONLY',
-                    'intro' => 'ACYM_INTRO_ONLY',
-                    'full' => 'ACYM_FULL_TEXT',
-                ],
-                'default' => 'full',
-            ],
+        $abandonedOptions = [
             [
                 'title' => 'PAYMENT_METHOD',
                 'type' => 'select',
@@ -231,7 +242,9 @@ class plgAcymHikashop extends acymPlugin
             ],
         ];
 
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'simple', $this->defaultValues);
+        $abandonedOptions = array_merge($displayOptions, $abandonedOptions);
+
+        echo $this->pluginHelper->displayOptions($abandonedOptions, $identifier, 'simple', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'hikashop_coupon';
@@ -267,7 +280,7 @@ class plgAcymHikashop extends acymPlugin
         $query = 'SELECT currency_id AS value, CONCAT(currency_symbol, " ", currency_code) AS text FROM #__hikashop_currency WHERE currency_published = 1';
         $currencies = acym_loadObjectList($query);
 
-        $displayOptions = [
+        $couponOptions = [
             [
                 'title' => 'DISCOUNT_CODE',
                 'type' => 'text',
@@ -296,12 +309,14 @@ class plgAcymHikashop extends acymPlugin
                 'type' => 'date',
                 'name' => 'start',
                 'default' => '',
+                'relativeDate' => '+',
             ],
             [
                 'title' => 'DISCOUNT_END_DATE',
                 'type' => 'date',
                 'name' => 'end',
                 'default' => '',
+                'relativeDate' => '+',
             ],
             [
                 'title' => 'MINIMUM_ORDER_VALUE',
@@ -313,6 +328,12 @@ class plgAcymHikashop extends acymPlugin
                 'title' => 'DISCOUNT_QUOTA',
                 'type' => 'number',
                 'name' => 'quota',
+                'default' => '3',
+            ],
+            [
+                'title' => 'DISCOUNT_QUOTA_PER_USER',
+                'type' => 'number',
+                'name' => 'quota_user',
                 'default' => '',
             ],
             [
@@ -331,7 +352,7 @@ class plgAcymHikashop extends acymPlugin
             ],
         ];
 
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'simple', $this->defaultValues);
+        echo $this->pluginHelper->displayOptions($couponOptions, $identifier, 'simple', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -476,6 +497,7 @@ class plgAcymHikashop extends acymPlugin
 
     public function replaceIndividualContent($tag)
     {
+        // Get product data
         $query = 'SELECT b.*, a.*
                     FROM #__hikashop_product AS a
                     LEFT JOIN #__hikashop_file AS b ON a.product_id = b.file_ref_id AND file_type = "product"
@@ -510,10 +532,10 @@ class plgAcymHikashop extends acymPlugin
 
         $varFields = $this->getCustomLayoutVars($product);
 
-        $tag->itemid = 0;
+
+        // Prepare the price
         $main_currency = $currency_id = (int)$this->hikaConfig->get('main_currency', 1);
         $zone_id = explode(',', $this->hikaConfig->get('main_tax_zone', 0));
-
         $zone_id = count($zone_id) ? array_shift($zone_id) : 0;
 
         $ids = [$product->product_id];
@@ -521,7 +543,8 @@ class plgAcymHikashop extends acymPlugin
         $this->currencyClass->getPrices($product, $ids, $currency_id, $main_currency, $zone_id, $discount_before_tax);
 
         $finalPrice = '';
-        if (empty($tag->price) || $tag->price == 'full') {
+        // Tests on $tag->type are for retro compatibility since 2/2/21
+        if ((empty($tag->type) && $tag->price_type === 'full') || (!empty($tag->type) && $tag->price === 'full')) {
             $priceSource = $this->getParam('vat', '1') === '1' ? 'price_value_with_tax' : 'price_value';
             $finalPrice = @$this->currencyClass->format(
                 $product->prices[0]->$priceSource,
@@ -538,7 +561,7 @@ class plgAcymHikashop extends acymPlugin
                 $oldPrice .= '</span> ';
                 $finalPrice = $oldPrice.$finalPrice;
             }
-        } elseif ($tag->price == 'no_discount') {
+        } elseif (empty($tag->type) || $tag->price === 'no_discount') {
             $vatActive = $this->getParam('vat', '1') === '1';
 
             $priceSource = $vatActive ? 'price_value_without_discount_with_tax' : 'price_value_without_discount';
@@ -551,61 +574,88 @@ class plgAcymHikashop extends acymPlugin
         }
         $varFields['{finalPrice}'] = $finalPrice;
 
-        if (empty($tag->type) || $tag->type == 'full') {
-            $description = $product->product_description;
-        } else {
-            $pos = strpos($product->product_description, '<hr id="system-readmore"');
-            if ($pos !== false) {
-                $description = substr($product->product_description, 0, $pos);
-            } else {
-                $description = substr($product->product_description, 0, 100).'...';
-            }
-        }
 
+        // Prepare the link
         $link = 'index.php?option=com_hikashop&ctrl=product&task=show&cid='.$product->product_id;
-        if (!empty($tag->itemid)) {
-            $link .= '&Itemid='.$tag->itemid;
-        }
         if (!empty($product->product_canonical)) {
             $link = $product->product_canonical;
         }
         $link = $this->finalizeLink($link);
         $varFields['{link}'] = $link;
 
-        $varFields['{pictHTML}'] = '';
-        if (!empty($product->file_path)) {
-            $img = $this->imageHelper->getThumbnail($product->file_path, null);
-            if ($img->success) {
-                $varFields['{pictHTML}'] = $img->url;
-            } else {
-                $varFields['{pictHTML}'] = $this->imageHelper->display($product->file_path, false, $product->product_name);
-            }
-        }
-        $varFields['{pictHTML}'] = ltrim($varFields['{pictHTML}'], './');
-        if (strpos($varFields['{pictHTML}'], acym_rootURI()) !== 0) $varFields['{pictHTML}'] = acym_mainURL($varFields['{pictHTML}']).$varFields['{pictHTML}'];
 
-        $title = $product->product_name;
-        if (!empty($finalPrice)) {
+        $title = '';
+        $varFields['{title}'] = $product->product_name;
+        if (!empty($tag->type) || in_array('title', $tag->display)) $title = $varFields['{title}'];
+        if ((!empty($tag->type) || in_array('price', $tag->display)) && !empty($finalPrice)) {
             $title .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.$finalPrice;
         }
 
-        $picture = '';
-        $contentText = '';
-        if (empty($tag->type) || $tag->type != 'title') {
-            $picture = $varFields['{pictHTML}'];
-            $contentText = $description;
+
+        // Prepare the main picture
+        $imagePath = '';
+        if (!empty($product->file_path)) {
+            $img = $this->imageHelper->getThumbnail($product->file_path, null);
+            if ($img->success) {
+                $imagePath = $img->url;
+            } else {
+                $imagePath = $this->imageHelper->display($product->file_path, false, $product->product_name);
+            }
         }
+        $imagePath = ltrim($imagePath, './');
+        if (strpos($imagePath, acym_rootURI()) !== 0) {
+            $imagePath = acym_mainURL($imagePath).$imagePath;
+        }
+        // For retro compatibility
+        $varFields['{pictHTML}'] = $imagePath;
+        $varFields['{picthtml}'] = '<img alt="'.acym_escape($product->product_name.' '.acym_translation('ACYM_FEATURED_IMAGE')).'" src="'.$imagePath.'">';
+
+        if (empty($tag->type) && !in_array('image', $tag->display)) $imagePath = '';
+
+
+        // Prepare the main content
+        $contentText = '';
+        $varFields['{desc}'] = $product->product_description;
+        $cutPosition = strpos($varFields['{desc}'], '<hr id="system-readmore"');
+        if ($cutPosition === false) {
+            if (empty($tag->type)) {
+                $varFields['{shortdesc}'] = $varFields['{desc}'];
+            } else {
+                $varFields['{shortdesc}'] = substr($varFields['{desc}'], 0, 100).'...';
+            }
+        } else {
+            $varFields['{shortdesc}'] = substr($varFields['{desc}'], 0, $cutPosition);
+        }
+
+        if (empty($tag->type)) {
+            if (in_array('shortdesc', $tag->display)) $contentText .= $varFields['{shortdesc}'];
+            if (in_array('desc', $tag->display)) $contentText .= $varFields['{desc}'];
+        } elseif ($tag->type !== 'title') {
+            // Retro compat
+            if ($tag->type === 'full') {
+                $contentText = $varFields['{desc}'];
+            } else {
+                $contentText = $varFields['{shortdesc}'];
+            }
+        }
+
+
+        $afterArticle = '';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'">';
+        $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span></a>';
+        if (empty($tag->type) && in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
+
 
         $format = new stdClass();
         $format->tag = $tag;
         $format->title = $title;
         $format->afterTitle = '';
-        $format->afterArticle = '';
-        $format->imagePath = $picture;
+        $format->afterArticle = $afterArticle;
+        $format->imagePath = $imagePath;
         $format->description = $contentText;
-        $format->link = $link;
+        $format->link = empty($tag->clickable) ? '' : $link;
         $format->customFields = [];
-        $result = '<div class="acym_product">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
+        $result = '<div class="acym_product acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 
         return $this->finalizeElementFormat($result, $tag, $varFields);
     }
@@ -616,11 +666,11 @@ class plgAcymHikashop extends acymPlugin
 
         $this->hikaConfig = hikashop_config();
 
-        $this->_replaceAbandonedCarts($email, $user);
-        $this->_replaceCoupons($email, $user, $send);
+        $this->replaceAbandonedCarts($email, $user);
+        $this->replaceCoupons($email, $user, $send);
     }
 
-    public function _replaceAbandonedCarts(&$email, &$user)
+    public function replaceAbandonedCarts(&$email, &$user)
     {
         $tags = $this->pluginHelper->extractTags($email, 'hikashop_abandonedcart');
         if (empty($tags)) {
@@ -631,7 +681,7 @@ class plgAcymHikashop extends acymPlugin
         foreach ($tags as $i => $oneTag) {
             if (isset($tagsReplaced[$i])) continue;
 
-            $tagsReplaced[$i] = $this->_replaceAbandonedCart($oneTag, $user);
+            $tagsReplaced[$i] = $this->replaceAbandonedCart($oneTag, $user);
         }
 
         $this->pluginHelper->replaceTags($email, $tagsReplaced, true);
@@ -639,7 +689,7 @@ class plgAcymHikashop extends acymPlugin
         $this->replaceOne($email);
     }
 
-    public function _replaceAbandonedCart($oneTag, $user)
+    public function replaceAbandonedCart($oneTag, $user)
     {
         if (empty($user->cms_id)) return '';
 
@@ -674,7 +724,7 @@ class plgAcymHikashop extends acymPlugin
         return $this->finalizeCategoryFormat($myquery, $oneTag);
     }
 
-    public function _replaceCoupons(&$email, &$user, $send = true)
+    public function replaceCoupons(&$email, &$user, $send = true)
     {
         $tags = $this->pluginHelper->extractTags($email, 'hikashop_coupon');
         if (empty($tags)) {
@@ -715,6 +765,8 @@ class plgAcymHikashop extends acymPlugin
             $tax_id = $tag->tax;
         }
 
+        $quotaPerUser = empty($tag->quota_user) ? 0 : $tag->quota_user;
+
         $key = acym_generateKey(5);
 
         if ($percent_amount > 0) {
@@ -729,7 +781,7 @@ class plgAcymHikashop extends acymPlugin
             $start = acym_replaceDate($start);
             $start = hikashop_getTime($start);
         }
-        
+
         if ($end) {
             $end = acym_replaceDate($end);
             $end = hikashop_getTime($end);
@@ -779,7 +831,8 @@ class plgAcymHikashop extends acymPlugin
             `discount_currency_id`,
             `discount_product_id`,
             `discount_tax_id`,
-            `discount_published`
+            `discount_published`,
+            `discount_quota_per_user`
 		) VALUES (
 		    '.acym_escapeDB($code).',
 		    '.acym_escapeDB($percent_amount).',
@@ -792,7 +845,8 @@ class plgAcymHikashop extends acymPlugin
 		    '.acym_escapeDB($currency_id).',
 		    '.acym_escapeDB($product_id).',
 		    '.acym_escapeDB($tax_id).',
-		    1
+		    1,
+		    '.acym_escapeDB($quotaPerUser).'
         )';
 
         acym_query($query);
@@ -1341,7 +1395,7 @@ class plgAcymHikashop extends acymPlugin
         }
 
         if (empty($condition['products_status']) || empty($condition['products'])) {
-            $return[] = acym_translation('ACYM_EVERY_PRODUCTS');
+            $return[] = acym_translation('ACYM_ANY_PRODUCT');
         } else {
             acym_arrayToInteger($condition['products']);
             $productsToDisplay = acym_loadResultArray(
@@ -1445,7 +1499,7 @@ class plgAcymHikashop extends acymPlugin
                         echo acym_selectMultiple(
                             $lists,
                             'config[hikashop_lists]',
-                            explode(',', $this->config->get('hikashop_lists')),
+                            explode(',', $this->config->get('hikashop_lists', '')),
                             ['class' => 'acym__select', 'id' => 'acym__config__hikashop-lists'],
                             'id',
                             'name'
@@ -1464,7 +1518,7 @@ class plgAcymHikashop extends acymPlugin
                         echo acym_selectMultiple(
                             $lists,
                             'config[hikashop_checkedlists]',
-                            explode(',', $this->config->get('hikashop_checkedlists')),
+                            explode(',', $this->config->get('hikashop_checkedlists', '')),
                             ['class' => 'acym__select', 'id' => 'acym__config__hikashop-checkedlists'],
                             'id',
                             'name'
@@ -1482,7 +1536,7 @@ class plgAcymHikashop extends acymPlugin
                         echo acym_selectMultiple(
                             $lists,
                             'config[hikashop_autolists]',
-                            explode(',', $this->config->get('hikashop_autolists')),
+                            explode(',', $this->config->get('hikashop_autolists', '')),
                             ['class' => 'acym__select', 'id' => 'acym__config__hikashop-autolists'],
                             'id',
                             'name'
@@ -1490,7 +1544,33 @@ class plgAcymHikashop extends acymPlugin
                         ?>
 					</div>
 					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
-
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__hikashop-regacy-listsposition">
+                            <?php echo acym_escape(acym_translation('ACYM_LISTS_POSITION')); ?>
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
+                        <?php
+                        echo acym_select(
+                            acym_getOptionRegacyPosition(),
+                            'config[hikashop_regacy_listsposition]',
+                            $this->config->get('hikashop_regacy_listsposition', 'password'),
+                            'class="acym__select" data-toggle-select="'.acym_escape('{"custom":"#acym__config__hikashop__regacy__custom-list-position"}').'"',
+                            'value',
+                            'text',
+                            'acym__config__hikashop-regacy-listsposition'
+                        );
+                        ?>
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					<div class="cell grid-x" id="acym__config__hikashop__regacy__custom-list-position">
+						<div class="cell xlarge-3 medium-5"></div>
+						<div class="cell xlarge-4 medium-7">
+							<input type="text"
+								   name="config[hikashop_regacy_listspositioncustom]"
+								   value="<?php echo acym_escape($this->config->get('hikashop_regacy_listspositioncustom')); ?>" />
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

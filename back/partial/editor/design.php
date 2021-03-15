@@ -48,7 +48,7 @@
 	<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
 		<?php echo acym_translation('ACYM_CONTENTS'); ?>
 		<i class="acymicon-keyboard_arrow_up"></i>
-		<?php echo acym_info('ACYM_INTRO_CUSTOMIZE_FONT'); ?>
+		<?php echo acym_info('ACYM_INTRO_DRAG_CONTENT'); ?>
 	</p>
 	<div class="grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__contents acym__wysid__context__modal__container">
 		<div class="grid-x cell acym__wysid__column__element--new acym__wysid__column__element--new--title ui-draggable ui-draggable-handle">

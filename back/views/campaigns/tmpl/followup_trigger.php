@@ -9,15 +9,20 @@
             ?>
 		</div>
 		<h1 class="margin-top-1 margin-bottom-2 acym__title">
-			<?php echo acym_translation('ACYM_WHAT_TRIGGERS_FOLLOW_UP_SHOULD_START'); ?>
+            <?php echo acym_translation('ACYM_WHAT_TRIGGERS_FOLLOW_UP_SHOULD_START'); ?>
 		</h1>
 		<div class="cell grid-x grid-margin-x align-center margin-y">
             <?php
             $blocks = [];
+            $oneSelected = false;
             acym_trigger('getFollowupTriggerBlock', [&$blocks]);
             foreach ($blocks as $block) {
                 if (!acym_level($block['level'])) continue;
-                $selected = !empty($data['followup']->trigger) && $data['followup']->trigger == $block['alias'] ? 'acym__selection__card-selected' : '';
+                $selected = '';
+                if (!empty($data['followup']->trigger) && $data['followup']->trigger == $block['alias']) {
+                    $selected = 'acym__selection__card-selected';
+                    $oneSelected = true;
+                }
                 ?>
 				<div class="acym__selection__card acym__selection__select-card cell xxlarge-2 xlarge-3 medium-4 text-center <?php echo $selected; ?>"
 					 acym-data-link="<?php echo $block['link']; ?>">
@@ -33,6 +38,11 @@
 				<a href="<?php echo ACYM_ACYMAILLING_WEBSITE; ?>contact/" target="_blank" class="button button-secondary"><?php echo acym_translation('ACYM_SUGGEST_IDEA'); ?></a>
 			</div>
 		</div>
+        <?php
+        if (!empty($data['followup']->trigger) && !$oneSelected) {
+            echo '<div class="cell grid-x align-center margin-y acym__color__orange"><b>'.acym_translation('ACYM_MISSING_ADDON').'</b></div>';
+        }
+        ?>
 		<button type="button" class="cell shrink button" id="acym__selection__button-select" disabled><?php echo acym_translation('ACYM_CREATE'); ?></button>
 	</div>
     <?php acym_formOptions(); ?>

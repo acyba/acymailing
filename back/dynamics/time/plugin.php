@@ -18,7 +18,7 @@ class plgAcymTime extends acymPlugin
     public function textPopup()
     {
         $text = '<div class="acym__popup__listing text-center grid-x">
-                    <h1 class="acym__popup__plugin__title cell">'.acym_translation('ACYM_TIME_FORMAT').'</h1>';
+                    <h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_TIME_FORMAT').'</h1>';
 
         $others = [];
         $others['{date:1}'] = 'ACYM_DATE_FORMAT_LC1';
@@ -34,7 +34,7 @@ class plgAcymTime extends acymPlugin
         $k = 0;
         foreach ($others as $tagname => $tag) {
             $text .= '<div class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="setTag(\''.$tagname.'\', jQuery(this));" >
-                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$tag.'</div>
+                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_translation($tag).'</div>
                         <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_getDate(time(), acym_translation($tag)).'</div>
                      </div>';
             $k = 1 - $k;

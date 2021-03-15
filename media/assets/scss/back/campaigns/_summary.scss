@@ -132,8 +132,34 @@
             margin-bottom: 0;
         }
 
-        .acym__campaign__summary__section:hover .acym__campaign__summary__modify span {
-            visibility: visible;
+        .acym__campaign__summary__section {
+
+            .acym__listing__row {
+                font-size: .9rem !important;
+
+                &:nth-child(even) {
+                    background-color: $white;
+                }
+
+                border-bottom: 1px solid $light-gray;
+                padding: .7rem;
+            }
+
+            &:hover .acym__campaign__summary__modify span {
+                visibility: visible;
+            }
+
+            .acym__campaign__summary__segment {
+                span {
+                    font-size: .9rem;
+                }
+            }
+
+            .acym__title__secondary {
+                .acym__tooltip__info {
+                    margin: 0 .3rem;
+                }
+            }
         }
 
         @keyframes extendIframe {

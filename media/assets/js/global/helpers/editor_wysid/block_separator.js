@@ -26,12 +26,16 @@ const acym_helperBlockSeparator = {
     initRows: function () {
         let $row = jQuery('.acym__wysid__row__element--focus');
         let $th = $row.find('.acym__wysid__row__element__th');
+        let $modalContainerStructure = jQuery('.acym__wysid__context__modal__container--structure');
         if ($th.length <= 1) {
-            jQuery('.acym__wysid__context__modal__container--structure').hide();
+            $modalContainerStructure.hide();
             return true;
         }
+
         acym_helperBlockSeparator.initPadding();
-        jQuery('.acym__wysid__context__modal__container--structure').show();
+        acym_helperBlockSeparator.initBackgroundColor();
+
+        $modalContainerStructure.show();
         $th.each(function (index) {
             let classValue = acym_helperBlockSeparator.getLargeClass(jQuery(this));
             let needRight = $th[index + 1] !== undefined;
@@ -356,5 +360,31 @@ const acym_helperBlockSeparator = {
         $styleTag.html(styleTagHtml.replace(formerIdRegex, newId));
 
         return $element;
+    },
+    initBackgroundColor: function () {
+        let $th = jQuery('.acym__wysid__row__element--focus .acym__wysid__row__element__th');
+        let $paddingContainer = jQuery('.acym__wysid__context__modal__block-background');
+        let html = `<h6 class="cell shrink acym__wysid__context__block__background__title margin-right-1">
+                        ${ACYM_JS_TXT.ACYM_BACKGROUND_COLOR}${acym_helperTooltip.addInfo(ACYM_JS_TXT.ACYM_BACKGROUND_COLOR_DESC)}:
+                    </h6>`;
+
+        for (let i = 0 ; i < $th.length ; i++) {
+            html += `<div class="cell large-2 grid-x acym_vcenter">
+                        <span class="cell shrink">${this.blockName[i]}:</span>
+                        <input class="cell shrink acym__wysid__context__block__background__color-picker" data-acym-block="${i}">
+                      </div>`;
+        }
+        $paddingContainer.html(html);
+        acym_helperTooltip.setTooltip();
+
+        this.setBackgroundColor($th);
+    },
+    setBackgroundColor: function ($th) {
+        let $inputsColor = jQuery('.acym__wysid__context__block__background__color-picker');
+
+        $inputsColor.each(function () {
+            let $table = jQuery($th[jQuery(this).attr('data-acym-block')]);
+            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery(this), 'background', $table, $table, 'background', true);
+        });
     }
 };

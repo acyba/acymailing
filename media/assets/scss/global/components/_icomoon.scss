@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'acymicon';
-    src: url('fonts/acymicon.eot?fa2cin');
-    src: url('fonts/acymicon.eot?fa2cin#iefix') format('embedded-opentype'),
-    url('fonts/acymicon.ttf?fa2cin') format('truetype'),
-    url('fonts/acymicon.woff?fa2cin') format('woff'),
-    url('fonts/acymicon.svg?fa2cin#acymicon') format('svg');
+    src: url('fonts/acymicon.eot?1tugno');
+    src: url('fonts/acymicon.eot?1tugno#iefix') format('embedded-opentype'),
+    url('fonts/acymicon.ttf?1tugno') format('truetype'),
+    url('fonts/acymicon.woff?1tugno') format('woff'),
+    url('fonts/acymicon.svg?1tugno#acymicon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -25,48 +25,28 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.acymicon-dropdown_arrow:before {
-    content: "\e93b";
+.acymicon-user:before {
+    content: "\e93e";
 }
 
-.acymicon-checkbox_empty:before {
-    content: "\e912";
+.acymicon-pie-chart:before {
+    content: "\e93c";
 }
 
-.acymicon-radio_button_checked:before {
-    content: "\e917";
+.acymicon-power:before {
+    content: "\e93d";
 }
 
-.acymicon-radio_button_unchecked:before {
-    content: "\e925";
+.acymicon-lightning:before {
+    content: "\e93d";
 }
 
-.acymicon-checkbox_checked:before {
-    content: "\e926";
+.acymicon-bolt:before {
+    content: "\e93d";
 }
 
-.acymicon-follow:before {
-    content: "\e90e";
-}
-
-.acymicon-life-bouy:before {
-    content: "\e93a";
-}
-
-.acymicon-external-link:before {
-    content: "\e939";
-}
-
-.acymicon-chevrons:before {
-    content: "\e935";
-}
-
-.acymicon-puzzle-piece:before {
-    content: "\e934";
-}
-
-.acymicon-filter:before {
-    content: "\f0b0";
+.acymicon-electricity:before {
+    content: "\e93d";
 }
 
 .acymicon-user-plus:before {
@@ -487,6 +467,50 @@
 
 .acymicon-address-book-o:before {
     content: "\f2ba";
+}
+
+.acymicon-dropdown_arrow:before {
+    content: "\e93b";
+}
+
+.acymicon-checkbox_empty:before {
+    content: "\e912";
+}
+
+.acymicon-radio_button_checked:before {
+    content: "\e917";
+}
+
+.acymicon-radio_button_unchecked:before {
+    content: "\e925";
+}
+
+.acymicon-checkbox_checked:before {
+    content: "\e926";
+}
+
+.acymicon-follow:before {
+    content: "\e90e";
+}
+
+.acymicon-life-bouy:before {
+    content: "\e93a";
+}
+
+.acymicon-external-link:before {
+    content: "\e939";
+}
+
+.acymicon-chevrons:before {
+    content: "\e935";
+}
+
+.acymicon-puzzle-piece:before {
+    content: "\e934";
+}
+
+.acymicon-filter:before {
+    content: "\f0b0";
 }
 
 .acymicon-vertical_align_bottom:before {

@@ -132,6 +132,18 @@
             button, input {
                 margin-bottom: 0;
             }
+
+            .acym__sending__methods__clean__data {
+                [type="number"] {
+                    margin: 0 10px;
+                }
+            }
+
+            .acym__sending__methods__log {
+                a {
+                    text-decoration: none;
+                }
+            }
         }
     }
 }

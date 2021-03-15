@@ -58,7 +58,6 @@ const acym_helperDatePicker = {
             let $modal = jQuery(`#${$self.attr('data-open')}`);
 
             if (undefined === $input.val() || '' === $input.val() || $input.val() === '[time]') {
-                $modal.find('.relativewhen').val('-').trigger('change');
                 $modal.find('.relativetype').val('60').trigger('change');
                 $modal.find('.relativenumber').val('0').trigger('change');
                 return true;

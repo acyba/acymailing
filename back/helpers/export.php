@@ -230,7 +230,7 @@ class ExportHelper extends acymObject
     {
         $final = implode($this->eol, $csvLines);
 
-        @ob_get_clean();
+        if (ACYM_CMS === 'wordpress') @ob_get_clean();
         $filename = 'export_stats_'.$type.'_'.date('Y-m-d');
         $this->setDownloadHeaders($filename);
         echo $final;

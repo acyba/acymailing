@@ -56,6 +56,27 @@ input[type="checkbox"] {
     }
 }
 
+.acym_radio_group {
+    input[type="radio"] {
+        display: none;
+    }
+
+    i.acym_radio_checked, i.acym_radio_unchecked {
+        cursor: pointer;
+        color: $color-palette-dark-blue;
+        vertical-align: middle;
+        font-size: 1rem;
+    }
+
+    &.dcontent_pictures {
+        display: inline-block;
+    }
+
+    label {
+        vertical-align: middle;
+    }
+}
+
 .acym__label {
     display: block;
     font-size: 0.875rem;

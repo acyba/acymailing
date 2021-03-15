@@ -114,16 +114,20 @@
 
 									<div class="cell">
 										<div class="progress_bar <?php echo $class; ?>">
-                                            <?php if (!empty($row->nbqueued) && $row->iscampaign) {
-                                                $percentageSent = 100 - ceil($row->nbqueued * 100 / $row->recipients);
+                                            <?php
+                                            $percentageSent = 0;
+                                            if (!empty($row->nbqueued) && $row->iscampaign) {
+                                                if (!empty($row->recipients)) $percentageSent = 100 - ceil($row->nbqueued * 100 / $row->recipients);
                                                 echo '<div class="progress_bar_left" style="width: '.$percentageSent.'%;"></div>';
-                                            } ?>
-
+                                            }
+                                            ?>
 											<div class="progress_bar_text grid-x">
 												<span class="cell auto acym_text_ellipsis"><?php echo $text; ?></span>
-                                                <?php if (!empty($row->nbqueued) && $row->iscampaign) {
+                                                <?php
+                                                if (!empty($row->nbqueued) && $row->iscampaign) {
                                                     echo '<span class="cell" style="width: 40px;">'.$percentageSent.'%</span>';
-                                                } ?>
+                                                }
+                                                ?>
 											</div>
 										</div>
 									</div>

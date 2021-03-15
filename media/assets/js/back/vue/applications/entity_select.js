@@ -201,7 +201,9 @@ function readyFunction($) {
                 },
                 getAllEntities(entity) {
                     let joinColumn = '';
-                    if (this.tableJoin !== undefined && this.columnJoin !== undefined) joinColumn = '&join_table=' + this.tableJoin + '.' + this.columnJoin;
+                    if (!acym_helper.empty(this.tableJoin) && !acym_helper.empty(this.columnJoin)) {
+                        joinColumn = '&join_table=' + this.tableJoin + '.' + this.columnJoin;
+                    }
                     let ctrl = ACYM_IS_ADMIN ? 'entitySelect' : 'frontentityselect';
                     $.get(ACYM_AJAX_URL
                           + '&ctrl='

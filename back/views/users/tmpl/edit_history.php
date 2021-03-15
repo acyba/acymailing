@@ -10,7 +10,7 @@
 		</div>
 		<div class="cell grid-x align-middle" data-acym-type="mail">
             <?php if (empty($data['userMailHistory'])) {
-                echo '<h2 class="cell acym__title__primary__color text-center">'.acym_translation('ACYM_YOU_DIDNT_SENT_EMAIL_USER').'</h2>';
+                echo '<h2 class="cell acym__title__primary__color text-center">'.acym_translation('ACYM_YOU_DIDNT_SENT_EMAIL_SUBSCRIBER').'</h2>';
             } else { ?>
 				<div class="grid-x cell grid-margin-x acym__listing__header acym__listing__header__user_history text-center">
 					<div class="medium-4 hide-for-small-only cell acym__listing__header__title">

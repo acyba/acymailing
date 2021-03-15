@@ -341,13 +341,10 @@ class plgAcymMemberpress extends acymPlugin
 
 		<script language="javascript" type="text/javascript">
             <!--
-            var selectedTag;
-
             function changeMemberPressTag(tagname, element) {
                 if (!tagname) return;
                 setTag('{<?php echo $this->name; ?>:' + tagname + '}', element);
             }
-
             -->
 		</script>
 

@@ -27,20 +27,8 @@ class UserClass extends acymClass
     var $subscribed = false;
     var $confirmationSentError;
 
-    public function __construct()
-    {
-        parent::__construct();
-
-        // Make sure the imported users have a key
-        $missingKey = acym_loadResultArray('SELECT `id` FROM #__acym_user WHERE `key` IS NULL LIMIT 5000');
-        if (!empty($missingKey)) {
-            $newValues = [];
-            foreach ($missingKey as $oneUserId) {
-                $newValues[] = intval($oneUserId).','.acym_escapeDB(acym_generateKey(14));
-            }
-            acym_query('INSERT INTO #__acym_user (`id`, `key`) VALUES ('.implode('),(', $newValues).') ON DUPLICATE KEY UPDATE `key` = VALUES(`key`)');
-        }
-    }
+    // For integration, for example someone is activating user subscription on member ship pro on the joomla backend and he needs to send the confirmation emails
+    var $forceConfAdmin = false;
 
     /**
      * Get users depending on filters (search, status, pagination)
@@ -282,18 +270,35 @@ class UserClass extends acymClass
     }
 
     /**
+     * @param string $column
+     * @param string $value
+     *
+     * @return array
+     */
+    public function getByColumnValue($column, $value)
+    {
+        $userColumns = acym_getColumns('user');
+        if (!in_array($column, $userColumns)) return [];
+
+        $query = 'SELECT * FROM #__acym_user WHERE '.acym_secureDBColumn($column).' = '.acym_escapeDB($value);
+
+        return acym_loadObjectList($query);
+    }
+
+    /**
      * Get the subscription of one user
      *
      * @param int     $userId
      * @param string  $key
      * @param boolean $includeManagement
      * @param boolean $visible
+     * @param boolean $needTranslation
      *
      * @return array
      */
-    public function getUserSubscriptionById($userId, $key = 'id', $includeManagement = false, $visible = false)
+    public function getUserSubscriptionById($userId, $key = 'id', $includeManagement = false, $visible = false, $needTranslation = false)
     {
-        $query = 'SELECT list.id, list.name, list.color, list.active, list.visible, list.description, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
+        $query = 'SELECT list.id, list.translation, list.name, list.color, list.active, list.visible, list.description, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
                 FROM #__acym_list AS list 
                 JOIN #__acym_user_has_list AS userlist 
                     ON list.id = userlist.list_id 
@@ -309,25 +314,41 @@ class UserClass extends acymClass
             $query .= ' AND list.visible = 1';
         }
 
-        return acym_loadObjectList($query, $key);
+        $lists = acym_loadObjectList($query, $key);
+
+        if (acym_isMultilingual() && $needTranslation) {
+            $listClass = new ListClass();
+            $lists = $listClass->getTranslatedNameDescription($lists);
+        }
+
+        return $lists;
     }
 
     /**
      * Get the subscription of one user
      *
-     * @param int $userId
+     * @param int     $userId
+     * @param string  $key
+     * @param boolean $needTranslation
      *
      * @return array
      */
-    public function getAllListsUserSubscriptionById($userId, $key = 'id')
+    public function getAllListsUserSubscriptionById($userId, $key = 'id', $needTranslation = false)
     {
-        $query = 'SELECT list.id, list.name, list.color, list.active, list.visible, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
+        $query = 'SELECT list.id, list.translation, list.name, list.color, list.active, list.visible, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
                 FROM #__acym_list AS list 
                 LEFT JOIN #__acym_user_has_list AS userlist 
                     ON list.id = userlist.list_id 
                     AND userlist.user_id = '.intval($userId);
 
-        return acym_loadObjectList($query, $key);
+        $lists = acym_loadObjectList($query, $key);
+
+        if (acym_isMultilingual() && $needTranslation) {
+            $listClass = new ListClass();
+            $lists = $listClass->getTranslatedNameDescription($lists);
+        }
+
+        return $lists;
     }
 
     /**
@@ -526,6 +547,8 @@ class UserClass extends acymClass
     {
         if (empty($lists)) return false;
 
+        $savingProfile = acym_getVar('int', 'acyprofile', 0);
+
         if (!is_array($userIds)) $userIds = [$userIds];
         if (!is_array($lists)) $lists = [$lists];
 
@@ -537,10 +560,13 @@ class UserClass extends acymClass
 
             $currentSubscription = $this->getUserSubscriptionById($userId);
 
+            $currentlySubscribed = [];
             $currentlyUnsubscribed = [];
             foreach ($currentSubscription as $oneList) {
                 if ($oneList->status == 0) {
                     $currentlyUnsubscribed[$oneList->id] = $oneList;
+                }elseif ($oneList->status == 1){
+                    $currentlySubscribed[$oneList->id] = $oneList;
                 }
             }
 
@@ -548,6 +574,9 @@ class UserClass extends acymClass
             foreach ($lists as $oneListId) {
                 // The user is already unsubscribed
                 if (empty($oneListId) || !empty($currentlyUnsubscribed[$oneListId])) continue;
+
+                // If the user is saving its profile, don't unsubscribe from non-subscribed lists
+                if ($savingProfile === 1 && empty($currentlySubscribed[$oneListId])) continue;
 
                 $subscription = new \stdClass();
                 $subscription->user_id = $userId;
@@ -651,8 +680,6 @@ class UserClass extends acymClass
         if (empty($elements)) return 0;
 
         if (acym_isAdmin() || 'delete' === $this->config->get('frontend_delete_button', 'delete')) {
-            acym_trigger('onAcymBeforeUserDelete', [&$elements]);
-
             acym_query('DELETE FROM #__acym_user_has_list WHERE user_id IN ('.implode(',', $elements).')');
             acym_query('DELETE FROM #__acym_queue WHERE user_id IN ('.implode(',', $elements).')');
             acym_query('DELETE FROM #__acym_user_has_field WHERE user_id IN ('.implode(',', $elements).')');
@@ -836,7 +863,7 @@ class UserClass extends acymClass
             }
             $existUser = acym_loadObject('SELECT * FROM #__acym_user WHERE email = '.acym_escapeDB($user->email).' AND id != '.intval($user->id));
             if (!empty($existUser->id)) {
-                if (!$this->allowModif && !$allowSubscriptionModifications) {
+                if (!$this->allowModif && !$allowUserModifications) {
                     $this->errors[] = acym_translation('ACYM_ADDRESS_TAKEN');
 
                     return false;
@@ -893,7 +920,11 @@ class UserClass extends acymClass
             }
         }
 
+        $fromProfile = acym_getVar('int', 'acyprofile', 0) == 1;
+
         if (empty($formData['listsub'])) {
+            if (!$fromProfile) $this->sendNotification($id, 'acy_notification_subform');
+
             $this->sendNotification(
                 $id,
                 $this->newUser ? 'acy_notification_create' : 'acy_notification_profile'
@@ -921,6 +952,8 @@ class UserClass extends acymClass
 
         $this->subscribed = $this->subscribe($id, $addLists);
 
+        if (!$fromProfile) $this->sendNotification($id, 'acy_notification_subform');
+
         $this->sendNotification(
             $id,
             $this->newUser ? 'acy_notification_create' : 'acy_notification_profile'
@@ -935,7 +968,7 @@ class UserClass extends acymClass
     {
         if (!$this->forceConf && !$this->sendConf) return true;
 
-        if ($this->config->get('require_confirmation', 1) != 1 || acym_isAdmin()) return false;
+        if ($this->config->get('require_confirmation', 1) != 1 || (acym_isAdmin() && !$this->forceConfAdmin)) return false;
 
         $myuser = $this->getOneById($userID);
 
@@ -1022,8 +1055,14 @@ class UserClass extends acymClass
             $return[$value] = $value;
         }
 
-        // Acy custom fields except name and email
-        $customFields = acym_loadObjectList('SELECT * FROM #__acym_field WHERE id NOT IN (1, 2) '.($inAction ? 'AND type != "phone"' : ''), 'id');
+        $fieldClass = new FieldClass();
+        $languageFieldId = $this->config->get($fieldClass::LANGUAGE_FIELD_ID_KEY, 0);
+
+        // Acy custom fields except name, email and language because they already are in the user table
+        $customFields = acym_loadObjectList(
+            'SELECT * FROM #__acym_field WHERE id NOT IN (1, 2, '.intval($languageFieldId).') '.($inAction ? 'AND type != "phone"' : ''),
+            'id'
+        );
         if (!empty($customFields)) {
             foreach ($customFields as $key => $value) {
                 $return[$key] = $value->name;
@@ -1061,6 +1100,11 @@ class UserClass extends acymClass
         }
 
         return $user;
+    }
+
+    public function getAllSimpleData()
+    {
+        return acym_loadObjectList('SELECT email, name FROM #__acym_user');
     }
 
     public function synchSaveCmsUser($user, $isnew, $oldUser = null)
@@ -1118,7 +1162,7 @@ class UserClass extends acymClass
 
         // Force trigger confirmation process on cms user confirmation (send welcome emails, automation, save history...)
         $confirmationRequired = $this->config->get('require_confirmation', 1);
-        if (!$isnew && !$regacyForceConf && $user['block'] == 0 && $oldUser['block'] == 1 && $confirmationRequired == 1) {
+        if (!$isnew && !$regacyForceConf && $user['block'] == 0 && !empty($oldUser['block']) && $confirmationRequired == 1) {
             $this->confirm($id);
         }
 
@@ -1232,13 +1276,11 @@ class UserClass extends acymClass
         $mailer->autoAddUser = true;
 
         $user = $this->getOneById($userId);
-        foreach ($user as $map => $value) {
-            $mailer->addParam('user:'.$map, $value);
-        }
-
         $userField = $this->getAllUserFields($user);
-        foreach ($user as $map => $value) {
-            $mailer->addParam('user:'.$map, $value);
+        if (!empty($userField)) {
+            foreach ($userField as $map => $value) {
+                $mailer->addParam('user:'.$map, $value);
+            }
         }
 
         // Load the subscription

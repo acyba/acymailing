@@ -29,6 +29,19 @@
 				</div>
 			</div>
 		</div>
+		<div style="display: none" id="acym__segment__see-users__example">
+            <?php echo acym_modalInclude(
+                '<span class="acym__segment__see-users__button cursor-pointer text-underline">'.acym_translation('ACYM_SEE_USERS').'</span>',
+                acym_getPartial('modal', 'users'),
+                'acym__segments__see-users',
+                [
+                    'ctrl' => 'segments',
+                    'task' => 'usersSummary',
+                ],
+                '',
+                'acym__modal__users__summary__container'
+            ); ?>
+		</div>
 		<div class="cell grid-x acym__automation__one__filter" id="acym__automation__and__example" style="display: none;">
 			<div class="acym__automation__and cell grid-x margin-top-2">
 				<h6 class="cell medium-shrink small-11 acym__title acym__title__secondary"><?php echo acym_translation('ACYM_AND'); ?></h6>
@@ -48,10 +61,10 @@
 			<div class="cell auto"></div>
 			<input type="hidden" name="type_filter" id="acym__automation__type-filter__input" value="<?php echo acym_escape($data['type_filter']); ?>">
 			<p data-filter="user" class="acym__automation__choose__filter medium-shrink cell <?php echo $data['type_filter'] == 'classic' ? '' : 'selected-filter'; ?>">
-                <?php echo acym_translation('ACYM_EXECUTE_ACTIONS_ON_ONE_USERS'); ?>
+                <?php echo acym_translation('ACYM_EXECUTE_ACTIONS_ON_ONE_SUBSCRIBER'); ?>
 			</p>
 			<p data-filter="classic" class="acym__automation__choose__filter medium-shrink cell <?php echo $data['type_filter'] == 'classic' ? 'selected-filter' : ''; ?>">
-                <?php echo acym_translation('ACYM_EXECUTE_ACTIONS_ON_ALL_USERS'); ?>
+                <?php echo acym_translation('ACYM_EXECUTE_ACTIONS_ON_ALL_SUBSCRIBERS'); ?>
 			</p>
 			<div class="cell auto"></div>
 		</div>
@@ -99,7 +112,10 @@
                     <?php echo acym_backToListing("automation"); ?>
 				</div>
 				<div class="auto cell"></div>
-				<button type="button" class="button button-secondary acy_button_submit medium-margin-bottom-0 margin-bottom-1 medium-shrink cell" data-task="edit" data-step="saveExitFilters"><?php echo acym_translation(
+				<button type="button"
+						class="button button-secondary acy_button_submit medium-margin-bottom-0 margin-bottom-1 medium-shrink cell"
+						data-task="edit"
+						data-step="saveExitFilters"><?php echo acym_translation(
                         'ACYM_SAVE_EXIT'
                     ); ?></button>
 				<button type="button" class="button acy_button_submit medium-shrink cell" data-task="edit" data-step="saveFilters"><?php echo acym_translation(

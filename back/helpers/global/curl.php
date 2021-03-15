@@ -1,6 +1,6 @@
 <?php
 
-function acym_makeCurlCall($url, $fields, $headers = [])
+function acym_makeCurlCall($url, $fields, $headers = [], $dontVerifySSL = false)
 {
     $urlPost = '';
     if (!empty($fields)) {
@@ -19,6 +19,10 @@ function acym_makeCurlCall($url, $fields, $headers = [])
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $urlPost);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    if ($dontVerifySSL) {
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    }
     if (!empty($headers)) curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     //execute post
@@ -43,6 +47,8 @@ function acym_makeCurlCall($url, $fields, $headers = [])
 function acym_asyncCurlCall($urls)
 {
     if (!function_exists('curl_multi_exec')) return;
+
+    if (!is_array($urls)) $urls = [$urls];
 
     try {
         $mh = curl_multi_init();

@@ -65,7 +65,7 @@
 			<div class="grid-x cell acym__listing__header">
 				<div class="grid-x medium-auto small-11 cell">
 					<div class="auto cell acym__listing__header__title">
-                        <?php echo acym_translation('ACYM_USER'); ?>
+                        <?php echo acym_translation('ACYM_SUBSCRIBER'); ?>
 					</div>
 					<div class="auto cell acym__listing__header__title hide-for-small-only">
                         <?php echo acym_translation('ACYM_URL'); ?>

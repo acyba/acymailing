@@ -34,33 +34,22 @@ class plgAcymOverride extends acymPlugin
         }
     }
 
-
     public function textPopup()
     {
+        $mailId = acym_getVar('int', 'mail_id', 0);
+        if (empty($mailId)) return;
+
         ?>
-
 		<script language="javascript" type="text/javascript">
-            <!--
-            var selectedTag;
-
             function changeOverrideTag(tagname, element) {
                 if (!tagname) return;
                 setTag('{' + tagname + '}', element);
             }
-
-            -->
 		</script>
-
         <?php
-        $mailId = acym_getVar('int', 'id', 0);
-
-        if (empty($mailId)) {
-            echo '';
-            exit;
-        }
 
         $text = '<div class="acym__popup__listing text-center grid-x">';
-        $text .= '<h1 class="acym__popup__plugin__title cell">'.acym_translation('ACYM_ORIGINAL_EMAIL_DATA').'</h1>';
+        $text .= '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_ORIGINAL_EMAIL_DATA').'</h1>';
 
         $overridesClass = new OverrideClass();
         $overrideParams = $overridesClass->getParamsByMailId($mailId);

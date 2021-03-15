@@ -27,7 +27,7 @@
 			<div class="cell medium-auto hide-for-small-only"></div>
 
 			<div class="cell medium-shrink">
-                <?php acym_upgradeTo('enterprise'); ?>
+                <?php acym_upgradeTo('enterprise', 'custom_fields'); ?>
 			</div>
 			<div class="cell medium-auto hide-for-small-only"></div>
 		</div>

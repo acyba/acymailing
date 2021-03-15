@@ -14,8 +14,10 @@
             <?php
             $blocks = [];
             acym_trigger('getFollowupTriggerBlock', [&$blocks]);
+            $triggerAdded = false;
             foreach ($blocks as $block) {
                 if ($data['followup']->trigger !== $block['alias']) continue;
+                $triggerAdded = true;
                 ?>
 				<div class="cell grid-x">
 					<div class="cell small-5 medium-4 large-2 acym__summary__card text-center">
@@ -25,6 +27,15 @@
 				</div>
                 <?php
                 break;
+            }
+            if (!empty($data['followup']->trigger) && !$triggerAdded) {
+                ?>
+				<div class="cell grid-x">
+					<div class="cell small-8 large-6 acym__summary__card text-center">
+						<p class="acym__color__orange"><?php echo acym_translation('ACYM_MISSING_ADDON'); ?></p>
+					</div>
+				</div>
+                <?php
             }
             ?>
 		</div>
@@ -113,7 +124,9 @@
 			</div>
 			<div class="cell medium-auto grid-x text-right">
 				<div class="cell medium-auto"></div>
-				<button data-task="followupDraft" type="submit" class="cell button-secondary medium-shrink button margin-bottom-1 medium-margin-bottom-0 margin-right-1 acy_button_submit">
+				<button data-task="followupDraft"
+						type="submit"
+						class="cell button-secondary medium-shrink button margin-bottom-1 medium-margin-bottom-0 margin-right-1 acy_button_submit">
                     <?php echo acym_translation('ACYM_SAVE_AS_DRAFT'); ?>
 				</button>
 				<button data-task="followupActivate" type="submit" class="cell medium-shrink button margin-bottom-0 acy_button_submit">

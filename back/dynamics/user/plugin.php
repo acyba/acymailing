@@ -28,41 +28,43 @@ class plgAcymUser extends acymPlugin
     public function textPopup()
     {
         ?>
-
 		<script language="javascript" type="text/javascript">
-            <!--
-            var selectedTag;
+            var selectedUserDText;
 
             function changeUserTag(tagname) {
                 if (!tagname) return;
 
-                selectedTag = tagname;
+                selectedUserDText = tagname;
 
-                var string;
+                var dText;
                 var iscf = tagname.toLowerCase().indexOf('custom');
 
-                if (iscf >= 0) string = '{usertag:' + tagname.substr(0, iscf) + '|type:custom'; else string = '{usertag:' + tagname;
+                if (iscf >= 0) {
+                    dText = '{usertag:' + tagname.substr(0, iscf) + '|type:custom';
+                } else {
+                    dText = '{usertag:' + tagname;
+                }
 
-                if (tagname.toLowerCase().indexOf('date') >= 0) string += '|type:date';
-                string += '|info:' + jQuery('input[name="typeinfo"]:checked').val() + '}';
+                if (tagname.toLowerCase().indexOf('date') >= 0) {
+                    dText += '|type:date';
+                }
+                dText += '|info:' + jQuery('input[name="typeInfoUser"]:checked').val() + '}';
 
-                setTag(string, jQuery('#' + tagname + 'option'));
+                setTag(dText, jQuery('#' + tagname + 'option'));
             }
-
-            -->
 		</script>
 
         <?php
 
         $isAutomation = acym_getVar('string', 'automation');
-        $text = '<div class="acym__popup__listing text-center grid-x">';
+        echo '<div class="acym__popup__listing text-center grid-x">';
 
         $typeinfo = [];
         $typeinfo[] = acym_selectOption('receiver', 'ACYM_RECEIVER_INFORMATION');
         $typeinfo[] = acym_selectOption('sender', 'ACYM_SENDER_INFORMATION');
         if (!empty($isAutomation)) $typeinfo[] = acym_selectOption('current', 'ACYM_USER_TRIGGERING_AUTOMATION');
 
-        $text .= acym_radio($typeinfo, 'typeinfo', 'receiver', ['onclick' => 'changeUserTag(selectedTag)']);
+        echo acym_radio($typeinfo, 'typeInfoUser', 'receiver', ['onclick' => 'changeUserTag(selectedUserDText)']);
 
         $fields = [
             $this->cmsUserVars->username => 'ACYM_LOGIN_NAME',
@@ -72,10 +74,10 @@ class plgAcymUser extends acymPlugin
         ];
 
         foreach ($fields as $fieldname => $description) {
-            $text .= '<div class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" id="'.$fieldname.'option" onclick="changeUserTag(\''.$fieldname.'\');" >
-                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$fieldname.'</div>
-                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_translation($description).'</div>
-                     </div>';
+            echo '<div class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" id="'.$fieldname.'option" onclick="changeUserTag(\''.$fieldname.'\');" >
+					<div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escape($fieldname).'</div>
+					<div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escape(acym_translation($description)).'</div>
+				 </div>';
         }
 
         // Handle joomla custom fields
@@ -90,24 +92,22 @@ class plgAcymUser extends acymPlugin
             // Load custom fields
             $customFields = acym_loadObjectList('SELECT id, title, group_id FROM #__fields WHERE context = "com_users.user" AND state = 1 ORDER BY title ASC');
             if (!empty($customFields)) {
-                $text .= '<h1 class="acym__popup__plugin__title cell" style="margin-top: 20px;">'.acym_translation('ACYM_CUSTOM_FIELDS').'</h1>';
+                echo '<h1 class="acym__title acym__title__secondary text-center cell" style="margin-top: 20px;">'.acym_translation('ACYM_CUSTOM_FIELDS').'</h1>';
 
                 foreach ($groups as $oneGroup) {
                     foreach ($customFields as $oneCF) {
                         if ($oneCF->group_id != $oneGroup->id) {
                             continue;
                         }
-                        $text .= '<div class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" id="'.$oneCF->id.'customoption" onclick="changeUserTag(\''.$oneCF->id.'custom\');" >
-                                    <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$oneCF->title.'</div>
-                                 </div>';
+                        echo '<div class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" id="'.$oneCF->id.'customoption" onclick="changeUserTag(\''.$oneCF->id.'custom\');" >
+								<div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escape($oneCF->title).'</div>
+							 </div>';
                     }
                 }
-                $text .= '</table></div>';
             }
         }
 
-        $text .= '</div>';
-        echo $text;
+        echo '</div>';
     }
 
     public function replaceUserInformation(&$email, &$user, $send = true)
@@ -337,7 +337,7 @@ class plgAcymUser extends acymPlugin
         $conditions['user']['acy_cmsfield']->option .= '<input class="intext_input_automation cell" type="text" name="acym_condition[conditions][__numor__][__numand__][acy_cmsfield][value]">';
 
         $conditions['classic']['acy_totaluser'] = new stdClass();
-        $conditions['classic']['acy_totaluser']->name = acym_translation('ACYM_NUMBER_OF_USERS');
+        $conditions['classic']['acy_totaluser']->name = acym_translation('ACYM_NUMBER_OF_SUBSCRIBERS');
         $conditions['classic']['acy_totaluser']->option = '<div class="cell shrink acym__automation__inner__text">'.acym_translation('ACYM_THERE_IS').'</div>';
         $conditions['classic']['acy_totaluser']->option .= '<div class="intext_select_automation cell">';
         $conditions['classic']['acy_totaluser']->option .= acym_select(

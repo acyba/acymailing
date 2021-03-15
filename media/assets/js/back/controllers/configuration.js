@@ -14,15 +14,18 @@ jQuery(document).ready(function ($) {
         setMultilingualOptions();
         setAcl();
         acym_helperMailer.setTestCredentialsSendingMethods();
+        acym_helperMailer.setButtonCopyFromPlugin();
+        acym_helperMailer.setSynchroExistingUsers();
         acym_helperSelectionPage.setSelectionElement(true, true, setEmbedImageToggle);
         setEmbedImageToggle();
+        acym_helperSelectionMultilingual.init('configuration');
     }
 
     Configuration();
 
     function setOrderWarning() {
         $('#sendorderid').on('change', function () {
-            if (this.value == 'rand') {
+            if (this.value === 'rand') {
                 alert(ACYM_JS_TXT.ACYM_NO_RAND_FOR_MULTQUEUE);
             }
         });
@@ -223,6 +226,10 @@ jQuery(document).ready(function ($) {
             .trigger('change');
 
         $.acymConfigSave = function () {
+            if ($('[name="config[sender_info_translation]"]').length > 0) {
+                acym_helperSelectionMultilingual.changeLanguage_configuration(acym_helperSelectionMultilingual.mainLanguage);
+            }
+
             // Update delay fields (bounce and queue process)
             $('input[id^="delayvar"]').trigger('change');
 

@@ -1,0 +1,39 @@
+#acym__wysid__context__text {
+    padding-bottom: 80px;
+
+    div[data-tabs-content="dtext_options"] {
+        border: none;
+        width: 100%;
+    }
+
+    #acym__dynamic__texts__insert__zone {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px;
+        background: white;
+        box-shadow: 0 -3px 3px -3px rgba(200, 200, 200, .7);
+        border-radius: 0 0 4px 4px;
+
+        #insertButton {
+            height: 100%;
+        }
+    }
+
+    .acym__popup__listing {
+        margin-bottom: 1rem;
+
+        .pagination {
+            .pagination_container {
+                .pagination-turbo-left, .pagination-turbo-right, & > .pagination_border_left:first-of-type, & > .pagination_border_right:last-of-type {
+                    display: none;
+                }
+            }
+
+            .acym__pagination__pagenb {
+                display: none;
+            }
+        }
+    }
+}

@@ -216,7 +216,7 @@ class ArchiveController extends acymController
 
         return [
             'newsletters' => $returnLastNewsletters['matchingNewsletters'],
-            'paramsJoomla' => $viewParams['paramsCMS'],
+            'paramsCMS' => $viewParams['paramsCMS'],
             'pagination' => $pagination,
             'userId' => $userId,
             'popup' => '1' === $viewParams['popup'],

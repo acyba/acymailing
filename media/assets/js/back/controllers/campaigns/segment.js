@@ -6,6 +6,7 @@ jQuery(document).ready(function ($) {
         setActionOnSelectSegment();
         setButtonToggleSaveSegment();
         setButtonSaveSegment();
+        acym_helperFilter.setAutomationReload();
     }
 
     function setActionOnSelectSegment() {

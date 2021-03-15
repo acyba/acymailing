@@ -7,12 +7,9 @@ function acym_route($url, $xhtml = true, $ssl = null)
         if (!acym_isAdmin() && !empty($Itemid) && strpos($url, 'Itemid') === false) {
             $url .= (strpos($url, '?') ? '&' : '?').'Itemid='.$Itemid;
         }
-        $result = JRoute::_($url, $xhtml, $ssl === null ? 0 : $ssl);
-
-        return $result;
     }
 
-    return JRoute::_($url, $xhtml, $ssl);
+    return JRoute::_($url, $xhtml, $ssl === null ? 0 : $ssl);
 }
 
 function acym_baseURI($pathonly = false)
@@ -41,7 +38,13 @@ function acym_frontendLink($link, $complete = true)
     }
 
     if (ACYM_J39 && strpos($link, 'ctrl=cron') === false && strpos($link, 'ctrl=fronturl') === false) {
-        return JRoute::link('site', $link, true, 0, true);
+        $sh404SEF = acym_isExtensionActive('com_sh404sef') && defined('SH404SEF_IS_RUNNING') && SH404SEF_IS_RUNNING == 1;
+        if ($sh404SEF && class_exists('Sh404sefHelperGeneral') && method_exists('Sh404sefHelperGeneral', 'getSefFromNonSef')) {
+            // sh404 generates a PHP notice when the content language is missing in Joomla
+            return @Sh404sefHelperGeneral::getSefFromNonSef($link);
+        } else {
+            return JRoute::link('site', $link, true, 0, true);
+        }
     }
 
     $mainurl = acym_mainURL($link);

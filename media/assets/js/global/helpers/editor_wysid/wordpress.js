@@ -4,8 +4,8 @@ const acym_editorWysidWordpress = {
         rows = rows === undefined ? false : rows;
         let file_frame;
         file_frame = wp.media.frames.file_frame = wp.media({
-            title: 'Select a image to upload',
-            button: {text: 'Use this image'},
+            title: ACYM_JS_TXT.ACYM_SELECT_IMAGE_TO_UPLOAD,
+            button: {text: ACYM_JS_TXT.ACYM_USE_THIS_IMAGE},
             multiple: false
         });
         file_frame.on('select', function () {

@@ -44,6 +44,7 @@ include_once ACYM_HELPER_GLOBAL.'security.php';
 include_once ACYM_HELPER_GLOBAL.'url.php';
 include_once ACYM_HELPER_GLOBAL.'version.php';
 include_once ACYM_HELPER_GLOBAL.'view.php';
+include_once ACYM_HELPER_GLOBAL.'log.php';
 
 
 // Load libraries

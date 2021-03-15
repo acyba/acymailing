@@ -5,21 +5,8 @@ const acym_helperTab = {
     },
     setTab: function () {
         jQuery('.acym_tab').off('click').on('click', function (e) {
-            if (jQuery(this).attr('data-empty') == 'true') {
+            if (jQuery(this).attr('data-empty') === 'true') {
                 return false;
-            }
-            if (jQuery(this).attr('data-dynamics')) {
-                let mailId = jQuery('[name="mail_id"]').val();
-                let mailType = jQuery('[name="mail_type"]').val();
-                let typeNotif = jQuery('[name="type_notif"]').val();
-                let ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlDynamics + '&task=trigger&trigger=textPopup&plugin=' + jQuery(this)
-                    .attr('data-dynamics') + '&id=' + mailId + '&mail_type=' + mailType + '&type_notif=' + typeNotif;
-
-                jQuery.post(ajaxUrl, function (response) {
-                    jQuery('.tabs-panel.is-active').html(response);
-
-                    acym_helperTab.reloadRadioButtons();
-                });
             }
 
             let tabsIdentifier = jQuery(this).closest('.tabs').attr('id');

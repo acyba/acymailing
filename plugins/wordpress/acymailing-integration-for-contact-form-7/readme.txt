@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, newsletter form, acymailing, form, subscription
 Requires at least: 4.7
-Tested up to: 5.5
+Tested up to: 5.6
 Stable tag: 1.1
 Requires PHP: 5.6.0
 License: GPLv3

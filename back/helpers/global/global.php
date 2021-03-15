@@ -12,7 +12,7 @@ function acydump($arg, $ajax = false, $indent = true)
         file_put_contents(ACYM_ROOT.'acydebug.txt', $result, FILE_APPEND);
     } else {
         $style = $indent ? 'margin-left: 220px;' : '';
-        echo '<pre style="'.$style.'">'.$result.'</pre>';
+        echo '<pre style="'.$style.'">'.htmlentities($result).'</pre>';
     }
 }
 
@@ -143,6 +143,7 @@ function acym_header($header, $replace = true)
     header($header, $replace);
 }
 
-function acym_getSocialMedias(){
+function acym_getSocialMedias()
+{
     return json_decode(ACYM_SOCIAL_MEDIA, true);
 }

@@ -119,6 +119,7 @@ jQuery(document).ready(function ($) {
         setDatabaseField();
         setDisplayOnlyIf();
         setDeleteValue();
+        acym_helperSelectionMultilingual.init('field');
     }
 
     Init();

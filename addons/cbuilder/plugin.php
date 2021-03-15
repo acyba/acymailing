@@ -25,8 +25,13 @@ class plgAcymCbuilder extends acymPlugin
     {
         ?>
 		<script type="text/javascript">
+            var selectedCBUserDText;
+
             function applyCB(tagname, element) {
-                let string = '{cbtag:' + tagname + '|info:' + jQuery('input[name="typeinfo"]:checked').val() + '}';
+                if (!tagname) return;
+
+                selectedCBUserDText = tagname;
+                let string = '{cbtag:' + tagname + '|info:' + jQuery('input[name="typeInfoCB"]:checked').val() + '}';
                 setTag(string, jQuery(element));
             }
 		</script>
@@ -37,7 +42,7 @@ class plgAcymCbuilder extends acymPlugin
         $typeinfo = [];
         $typeinfo[] = acym_selectOption('receiver', 'ACYM_RECEIVER_INFORMATION');
         $typeinfo[] = acym_selectOption('sender', 'ACYM_SENDER_INFORMATION');
-        $text .= acym_radio($typeinfo, 'typeinfo', 'receiver');
+        $text .= acym_radio($typeinfo, 'typeInfoCB', 'receiver', ['onclick' => 'applyCB(selectedCBUserDText, this)']);
 
         $fieldType = acym_loadObjectList('SELECT name, type FROM #__comprofiler_fields', 'name');
 

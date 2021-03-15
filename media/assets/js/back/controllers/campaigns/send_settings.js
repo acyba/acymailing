@@ -2,6 +2,7 @@ jQuery(document).ready(function ($) {
 
     function Init() {
         setSendSettingsAutoSelect();
+        acym_helperSelectionMultilingual.init('campaign');
 
         $('.acym__campaign__sendsettings__params__one select').addClass('shrink');
     }

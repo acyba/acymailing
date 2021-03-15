@@ -10,9 +10,9 @@ jQuery(document).ready(function ($) {
             acym_editorWysidVersioning.checkForUnsavedVersion();
             if (jQuery('#acym__walkthrough__email').length > 0) {
                 jQuery('#acym__wysid').parent().insertAfter('#acym__walkthrough__email');
-                jQuery('#acym__wysid__modal__dynamic-text').insertAfter('#acym__walkthrough__email');
             }
 
+            acym_editorWysidImage.setChangeBuiltWithImage();
             acym_editorWysidDragDrop.setFixJquerySortableWYSID();
             acym_editorWysidDragDrop.setNewColumnElementDraggableWYSID();
             acym_editorWysidDragDrop.setNewRowElementDraggableWYSID();
@@ -36,6 +36,7 @@ jQuery(document).ready(function ($) {
             jQuery('[id^="mce_"]').removeAttr('id');
 
             acym_editorWysidMultilingual.setLanguageSelection();
+            acym_editorWysidDynammic.setDTexts();
         },
         setColumnRefreshUiWYSID: function (reloadTinyMCE = true) {
             jQuery('.ui-helper-hidden-accessible').remove();
@@ -46,6 +47,7 @@ jQuery(document).ready(function ($) {
             acym_editorWysidDragDrop.setColumnElementDraggableWYSID();
             acym_editorWysidDragDrop.setColumnSortableWYSID();
             acym_editorWysidColorPicker.setGeneralColorPickerWYSID();
+            acym_editorWysidContextModal.setTextContextOptions();
             acym_editorWysidContextModal.setButtonContextModalWYSID();
             acym_editorWysidContextModal.setSpaceContextModalWYSID();
             acym_editorWysidContextModal.setFollowContextModalWYSID();
@@ -224,7 +226,6 @@ jQuery(document).ready(function ($) {
         $focusElement: '',
         saveSettings: jQuery('.acym__wysid__hidden__save__settings').val(),
         mailsSettings: {},
-        insertDTextInSubject: true,
         stylesheetTemp: '',
         savedStylesheet: jQuery('.acym__wysid__hidden__save__stylesheet').val(),
         clicking: false,
