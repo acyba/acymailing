@@ -14,9 +14,8 @@ jQuery(document).ready(function ($) {
 
         $('#results_' + and).css('maxHeight', '18px').html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
-        ajaxCalls[and] = $.get(ajaxUrl,
-            $(element).closest('#acym_form').serialize() + '&page=acymailing_automation&ctrl=automation&task=countresults&or=' + or + '&and=' + and
-        )
+        let ajaxData = $(element).closest('#acym_form').serialize() + '&page=acymailing_automation&ctrl=automation&task=countresults&or=' + or + '&and=' + and;
+        ajaxCalls[and] = $.get(ajaxUrl, ajaxData)
                           .done(function (result) {
                               $('#results_' + and).css('maxHeight', '').html(result);
                           })

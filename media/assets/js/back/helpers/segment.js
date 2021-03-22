@@ -16,9 +16,8 @@ const acym_helperSegment = {
             .find('.acym__segments__edit__filter-results')
             .html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
-        this.ajaxCalls[and] = jQuery.post(ajaxUrl,
-            jQuery(element).closest('#acym_form').serialize() + '&page=acymailing_segments&ctrl=segments&task=countResults&and=' + and + '&or=' + or
-        )
+        let ajaxData = jQuery(element).closest('#acym_form').serialize() + '&page=acymailing_segments&ctrl=segments&task=countResults&and=' + and + '&or=' + or;
+        this.ajaxCalls[and] = jQuery.post(ajaxUrl, ajaxData)
                                     .done(function (result) {
                                         result = acym_helper.parseJson(result);
                                         jQuery('#results_' + and).find('.acym__segments__edit__filter-results').html(result.message);

@@ -110,6 +110,15 @@ define(
                 'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-memberpress/',
             ],
             (object)[
+                'name' => 'Modern Events Calendar',
+                'description' => '- Insert events in your emails<br />- Filter users attending your events',
+                'image' => 'moderneventscalendar.png',
+                'level' => 'starter',
+                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/modern-events-calendar',
+                'category' => 'Events management',
+                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-modern-events-calendar/',
+            ],
+            (object)[
                 'name' => 'RSS content',
                 'description' => '- Insert content in your emails from an RSS link',
                 'image' => 'rss.png',
