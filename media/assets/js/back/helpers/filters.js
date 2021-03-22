@@ -86,16 +86,30 @@ const acym_helperFilter = {
                                 let $container = jQuery(oneDecodedParams['change']);
                                 $container.html(result);
 
+                                [
+                                    'segments',
+                                    'automation'
+                                ].forEach(function (selector) {
+                                    let containerClasses = '.acym__' + selector + '__one__filter.acym__' + selector + '__one__filter__classic';
+                                    let inputClasses = '.acym__' + selector + '__inserted__filter input';
+                                    inputClasses += ', .acym__' + selector + '__inserted__filter textarea';
+                                    inputClasses += ', .acym__' + selector + '__inserted__filter select';
+
+                                    $container
+                                        .closest(containerClasses)
+                                        .find(inputClasses)
+                                        .on('change acym-reloaded', function () {
+                                            if (selector === 'segments') {
+                                                acym_helperSegment.reloadCounters($container);
+                                            } else {
+                                                jQuery.reloadCounters($container);
+                                            }
+                                        }).trigger('acym-reloaded');
+                                });
+
                                 acym_helperSelect2.setSelect2();
                                 acym_helperSelect2.setAjaxSelect2();
                                 acym_helperTooltip.setTooltip();
-                                $container
-                                    .closest('.acym__automation__one__filter.acym__automation__one__filter__classic')
-                                    .find(
-                                        '.acym__automation__inserted__filter input, .acym__automation__inserted__filter textarea, .acym__automation__inserted__filter select')
-                                    .on('change', function () {
-                                        jQuery.reloadCounters($container);
-                                    });
                             }
                         });
                     });

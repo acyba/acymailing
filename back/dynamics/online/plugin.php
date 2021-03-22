@@ -107,6 +107,7 @@ class plgAcymOnline extends acymPlugin
                 $link = acym_getPageLink('view=frontusers&layout=profile');
                 $link .= strpos($link, '?') ? '&' : '?';
                 $link .= 'id={subtag:id}&key={subtag:key}';
+                $link .= $this->getLanguage($email->links_language);
             } else {
                 $link = 'archive&task=view&id='.$email->id.'&userid={subtag:id}-{subtag:key}&'.acym_noTemplate(false);
                 $link .= $this->getLanguage($email->links_language);

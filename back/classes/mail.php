@@ -1267,8 +1267,8 @@ CONTENT;
 
         if ($mail->type == self::TYPE_AUTOMATION) {
             $query = 'SELECT step.triggers FROM #__acym_step AS step
-                        JOIN #__acym_condition AS condition ON condition.step_id = step.id
-                        JOIN #__acym_action AS action ON action.condition_id = condition.id AND action.actions LIKE '.acym_escapeDB('%"acy_add_queue":{"mail_id":"13"%');
+                        JOIN #__acym_condition AS acym_condition ON acym_condition.step_id = step.id
+                        JOIN #__acym_action AS action ON action.condition_id = acym_condition.id AND action.actions LIKE '.acym_escapeDB('%"acy_add_queue":{"mail_id":"13"%');
 
             return empty(acym_loadResult($query));
         }
