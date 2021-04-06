@@ -17,13 +17,18 @@ foreach ($data['detailsLists']['displayLists'] as $listId) {
 }
 
 $acymmail = '';
+$acymname = '';
 foreach ($data['tag']->options as $oneOption) {
     if (strpos($oneOption, 'acymmail:') !== false) {
         $optionExploded = explode(':', $oneOption);
         $acymmail .= $optionExploded[1];
     }
+    if (strpos($oneOption, 'acymname:') !== false) {
+        $optionExploded = explode(':', $oneOption);
+        $acymname .= $optionExploded[1];
+    }
 }
-$acymData = 'data-acymfield="'.$data['tagName'].'" data-acymmail="'.$acymmail.'"';
+$acymData = 'data-acymfield="'.$data['tagName'].'" data-acymmail="'.$acymmail.'" data-acymname="'.$acymname.'"';
 ?>
 
 <input type="hidden" name="acymhiddenlists_<?php echo $data['tagName']; ?>" <?php echo $acymData; ?> value="<?php echo implode(',', $data['detailsLists']['autoLists']); ?>" />

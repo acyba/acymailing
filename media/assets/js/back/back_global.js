@@ -28,7 +28,6 @@ jQuery(document).ready(function ($) {
         acym_helperModal.initModal();
         acym_helperDebugger.initDebugger();
         if (ACYM_CMS === 'joomla') acym_helperJoomla.setJoomlaLeftMenu();
-
     }
 
     BackGlobal();

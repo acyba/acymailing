@@ -155,6 +155,10 @@ jQuery(document).ready(function ($) {
                 }
             }
 
+            let $toggle = $(this).closest('.acym__automation__one__filter').find('[data-acym-toggle-filter]');
+
+            acym_helperFilter.setToggle($toggle);
+
             $(document).foundation();
             $('.reveal-overlay').appendTo('#acym_form');
             refreshFilterProcess();

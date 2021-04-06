@@ -120,17 +120,27 @@
             font-weight: 500;
         }
 
+        .acym__automation__filter__date-option {
+            .acym__automation__filter__date-text {
+                margin-left: 1rem;
+            }
+        }
+
         .acym__automation__condition__container, .acym__automation__condition__filter {
             position: relative;
         }
 
-        .intext_select_automation, .intext_input_automation {
+        .intext_select_automation, .intext_input_automation, .intext_select {
             width: 200px;
             margin-top: 0;
             display: inline-flex;
 
             &.acym__small_select {
                 width: 90px;
+            }
+
+            & + .select2 {
+                margin-right: 5px;
             }
         }
 

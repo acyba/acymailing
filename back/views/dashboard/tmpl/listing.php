@@ -98,7 +98,7 @@
 							<a class="acym__dashboard__active-campaigns__one-campaign__title medium-4 small-12"
 							   href="<?php echo acym_completeLink('campaigns&task=edit&step=editEmail&id=').$campaign->id; ?>"><?php echo $campaign->name; ?></a>
 							<div class="acym__dashboard__active-campaigns__one-campaign__state medium-2 small-12 acym__background-color__blue text-center">
-								<span><?php echo acym_translation('ACYM_SCHEDULED').' : '.acym_getDate($campaign->sending_date, 'M. j, Y'); ?></span></div>
+								<span><?php echo acym_translation('ACYM_SCHEDULED').' : '.acym_getDate($campaign->sending_date, 'ACYM_DATE_FORMAT_LC3'); ?></span></div>
 							<p id="<?php echo intval($campaign->id); ?>"
 							   class="medium-6 small-12 acym__dashboard__active-campaigns__one-campaign__action acym__color__dark-gray"><?php echo acym_translation(
                                     'ACYM_CANCEL_SCHEDULING'

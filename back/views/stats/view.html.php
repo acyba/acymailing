@@ -20,7 +20,7 @@ class StatsViewStats extends acymView
         ];
     }
 
-    public function isMailSelected($mailId)
+    public function isMailSelected($mailId, $clickMap)
     {
     }
 }

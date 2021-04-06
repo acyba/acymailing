@@ -4,6 +4,7 @@ jQuery(document).ready(function ($) {
         setCreateButton();
         setExportTemplate();
         setDuplicateTemplate();
+        initButtonFile();
     }
 
     Init();
@@ -34,6 +35,24 @@ jQuery(document).ready(function ($) {
             $('input[name="task"]').val($(this).attr('data-task'));
             $('input[name="templateId"]').val($(this).attr('data-template'));
             $('#formSubmit').click();
+        });
+    }
+
+    function initButtonFile() {
+        let $inputFile = $('[name="uploadedfile"]');
+        let $fileName = $('#acym__template__import__filename');
+        $('#acym__template__import__file').off('click').on('click', function () {
+            $inputFile.trigger('click');
+        });
+        $inputFile.on('change', function () {
+            let name = '';
+            if (acym_helper.empty($(this).val())) {
+                name = ACYM_JS_TXT.ACYM_NO_FILE_CHOSEN;
+            } else {
+                let path = $(this).val().split('\\');
+                name = path[path.length - 1];
+            }
+            $fileName.html(name);
         });
     }
 });

@@ -32,6 +32,14 @@ if (empty($ctrl)) {
 }
 
 $controllerNamespace = 'AcyMailing\\FrontControllers\\'.ucfirst($ctrl).'Controller';
+
+if (!class_exists($controllerNamespace)) {
+    //We redirect to the homepage...
+    acym_redirect(acym_rootURI());
+
+    return;
+}
+
 $controller = new $controllerNamespace;
 if (empty($controller)) {
     //We redirect to the homepage...

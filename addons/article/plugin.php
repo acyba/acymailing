@@ -83,6 +83,8 @@ class plgAcymArticle extends acymPlugin
         foreach ($element as $key => $value) {
             $this->elementOptions[$value] = [$value];
         }
+        $this->elementOptions['image_intro_caption'] = ['image_intro_caption'];
+        $this->elementOptions['image_fulltext_caption'] = ['image_fulltext_caption'];
     }
 
     public function getPossibleIntegrations()
@@ -189,26 +191,13 @@ class plgAcymArticle extends acymPlugin
                 ],
             ],
             [
-                'title' => 'ACYM_COLUMNS',
-                'type' => 'number',
-                'name' => 'cols',
-                'default' => 1,
-                'min' => 1,
-                'max' => 10,
-            ],
-            [
-                'title' => 'ACYM_MAX_NB_ELEMENTS',
-                'type' => 'number',
-                'name' => 'max',
-                'default' => 20,
-            ],
-            [
                 'title' => 'ACYM_GROUP_BY_CATEGORY',
                 'type' => 'boolean',
                 'name' => 'groupbycat',
                 'default' => false,
             ],
         ];
+        $this->autoContentOptions($catOptions);
 
         $this->autoCampaignOptions($catOptions);
 
@@ -382,7 +371,7 @@ class plgAcymArticle extends acymPlugin
         $varFields['{title}'] = $element->title;
         if (in_array('title', $tag->display)) $title = $varFields['{title}'];
 
-        $images = json_decode($element->images);
+        $images = json_decode($element->images, true);
 
         $varFields['{picthtml}'] = '';
         if (!empty($element->images)) {
@@ -415,6 +404,9 @@ class plgAcymArticle extends acymPlugin
                 acym_translation('ACYM_AUTHOR'),
             ];
         }
+
+        $varFields['{image_intro_caption}'] = empty($images['image_intro_caption']) ? '' : $images['image_intro_caption'];
+        $varFields['{image_fulltext_caption}'] = empty($images['image_fulltext_caption']) ? '' : $images['image_fulltext_caption'];
 
         $varFields['{publishing}'] = acym_date($element->publish_up);
         if (in_array('publishing', $tag->display)) {

@@ -232,7 +232,7 @@ if (typeof submitAcymForm !== 'function') {
                     reg = new RegExp(authorized['regex']);
                 }
 
-                if (reg !== '' && !reg.test(authorizeContent[i].value)) {
+                if (reg !== '' && authorizeContent[i].value.length > 0 && !reg.test(authorizeContent[i].value)) {
                     authorizeContent[i].classList.add('invalid');
                     errorMessages += '\r\n' + authorized['message'];
                 }
@@ -253,7 +253,11 @@ if (typeof submitAcymForm !== 'function') {
                     if (allLists[b].checked) listschecked = true;
                 }
                 if (!listschecked) {
-                    alert(acymModule['NO_LIST_SELECTED']);
+                    if (acytask !== 'unsubscribe') {
+                        alert(acymModule['NO_LIST_SELECTED']);
+                    }else{
+                        alert(acymModule['NO_LIST_SELECTED_UNSUB']);
+                    }
                     return false;
                 }
             }
@@ -323,7 +327,7 @@ if (typeof submitAcymForm !== 'function') {
                 message = response.message;
                 type = response.type;
             }
-            acymDisplayAjaxResponse(decodeURIComponent(message), type, acyformName);
+            acymDisplayAjaxResponse(message, type, acyformName);
         };
         xhr.send(formData);
 

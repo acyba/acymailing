@@ -1,0 +1,100 @@
+#acym_wrapper {
+    .acym__gopro__head {
+        position: relative;
+        min-height: 300px;
+
+        .acym__gopro__head__text, .acym__gopro__head__img {
+            position: absolute;
+        }
+
+        .acym__gopro__head__text {
+            bottom: 5px;
+
+            p {
+                min-height: 80px;
+                margin-left: 2rem;
+            }
+        }
+
+        .acym__gopro__blueblock {
+            border-radius: 50px;
+        }
+
+        img {
+            max-width: 450px;
+        }
+    }
+
+    .acym__gopro__image__bigger {
+        width: auto;
+        max-height: 250px;
+    }
+
+    .acym__gopro__images {
+        width: auto;
+        max-height: 200px;
+    }
+
+    .acym__gopro__images__larger {
+        max-height: 150px;
+        width: auto;
+    }
+
+    .acym__gopro__override .acym__gopro__images__cosmonaut {
+        max-height: 150px;
+        width: auto;
+    }
+
+    .acym__gopro__doublepic {
+        position: relative;
+        min-height: 245px;
+
+        img {
+            position: absolute;
+        }
+
+        .acym__gopro__transat {
+            bottom: 0px;
+            margin-left: -115px;
+        }
+    }
+
+    .acym__gopro__text {
+        align-content: center;
+
+        h3 {
+            font-size: 1.1rem;
+        }
+    }
+
+    .acym__gopro__separator {
+        border-bottom: 2px solid $light-blue;
+        margin: 1rem 0;
+    }
+
+    .acym__gopro__blueblock {
+        background-color: $color-palette-dark-blue;
+
+        p, h3, i {
+            color: white;
+        }
+    }
+
+    .acym__gopro__footer {
+        border-radius: 10px;
+
+        .acym__gopro__footer__i {
+            margin: auto;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .acym__gopro__head {
+            .acym__gopro__head__text {
+                p {
+                    margin-left: 0px;
+                }
+            }
+        }
+    }
+}

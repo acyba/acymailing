@@ -126,25 +126,25 @@
                         <?php if (!empty($data['usersSubscriptions'][$user->id])) {
                             $counter = 0;
                             foreach ($data['usersSubscriptions'][$user->id] as $oneSub) {
-                                if ($counter < 5) {
-                                    echo acym_tooltip(
-                                        '<i class="acym_subscription acymicon-circle" style="color:'.acym_escape($oneSub->color).'"></i>',
+                                $classes = 'acym_subscription ';
+                                $classes .= intval($oneSub->status) === 1 ? 'acymicon-circle' : 'acymicon-radio_button_unchecked';
+                                if ($counter >= 5) $classes .= ' acym_subscription_more';
+
+                                echo acym_tooltip(
+                                    '<i class="'.$classes.'" style="color:'.acym_escape($oneSub->color).'"></i>',
+                                    acym_translationSprintf(
+                                        intval($oneSub->status) === 1 ? 'ACYM_SUBSCRIBED_TO_LIST' : 'ACYM_UNSUBSCRIBED_FROM_LIST',
                                         acym_escape($oneSub->name)
-                                    );
-                                } else {
-                                    echo acym_tooltip(
-                                        '<i class="acym_subscription acym_subscription_more acymicon-circle" style="color:'.acym_escape($oneSub->color).'"></i>',
-                                        acym_escape($oneSub->name)
-                                    );
-                                }
+                                    )
+                                );
                                 $counter++;
                             }
                             if ($counter > 5) {
                                 $counter = $counter - 5;
-                                echo '<span class="acym__user__show-subscription acymicon-stack hide-for-medium" data-iscollapsed="0" value="'.$counter.'">
-													<i class="acym__user__button__showsubscription acymicon-circle acymicon-stack-2x"></i>
-													<h6 class="acym__listing__text acym__user__show-subscription-bt acymicon-stack-1x">+'.$counter.'</h6>
-												</span>';
+                                echo '<span class="acym__user__show-subscription acymicon-stack" data-iscollapsed="0" acym-data-value="'.$counter.'">
+										<i class="acym__user__button__showsubscription acymicon-circle acymicon-stack-2x"></i>
+										<span class="acym__listing__text acym__user__show-subscription-bt acymicon-stack-1x">+'.$counter.'</span>
+									</span>';
                             }
                         } ?>
 

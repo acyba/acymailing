@@ -63,7 +63,10 @@ class acym_archive_widget extends WP_Widget
             $lists,
             $this->get_field_name('lists'),
             explode(',', $params['lists']),
-            ['class' => 'acym_simple_select2', 'id' => $this->get_field_id('lists')],
+            [
+                'style' => 'width:100%;',
+                'id' => $this->get_field_id('lists'),
+            ],
             'id',
             'name'
         );

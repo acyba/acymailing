@@ -246,3 +246,25 @@ function acym_checkVersion($ajax = false)
 
     return false;
 }
+
+function acym_triggerCmsHook($action, $args = [])
+{
+    array_unshift($args, $action);
+
+    return call_user_func_array('do_action', $args);
+}
+
+function acym_getCmsCaptcha()
+{
+    return [];
+}
+
+function acym_loadCaptcha($captchaPluginName, $id)
+{
+    return '';
+}
+
+function acym_checkCaptcha($captchaPluginName)
+{
+    return true;
+}

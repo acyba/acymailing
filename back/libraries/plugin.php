@@ -214,6 +214,38 @@ class acymPlugin extends acymObject
         return $this->subCategories[$categoryId];
     }
 
+    protected function autoContentOptions(&$options)
+    {
+
+        $options[] = [
+            'title' => 'ACYM_COLUMNS',
+            'type' => 'number',
+            'name' => 'cols',
+            'default' => 1,
+        ];
+
+        $options[] = [
+            'title' => 'ACYM_COLUMN_HORIZONTAL_PADDING',
+            'type' => 'number',
+            'name' => 'hpadding',
+            'default' => 10,
+        ];
+
+        $options[] = [
+            'title' => 'ACYM_COLUMN_VERTICAL_PADDING',
+            'type' => 'number',
+            'name' => 'vpadding',
+            'default' => 10,
+        ];
+
+        $options[] = [
+            'title' => 'ACYM_MAX_NB_ELEMENTS',
+            'type' => 'number',
+            'name' => 'max',
+            'default' => 20,
+        ];
+    }
+
     protected function autoCampaignOptions(&$options)
     {
         if (empty($this->campaignId) && empty($this->campaignType)) {

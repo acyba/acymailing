@@ -26,7 +26,12 @@ if (!empty($data['translation_languages'])) {
 				<h2 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_INFORMATION'); ?></h2>
                 <?php
                 if (!empty($data['translation_languages'])) {
-                    echo acym_displayLanguageRadio($data['translation_languages'], 'field[translation]', empty($data['field']->translation) ? '' : $data['field']->translation, acym_translation('ACYM_LANGUAGE_CUSTOM_FIELD_DESC'));
+                    echo acym_displayLanguageRadio(
+                        $data['translation_languages'],
+                        'field[translation]',
+                        empty($data['field']->translation) ? '' : $data['field']->translation,
+                        acym_translation('ACYM_LANGUAGE_CUSTOM_FIELD_DESC')
+                    );
                 } ?>
 				<label class="cell xlarge-12 large-6 margin-top-1">
                     <?php echo acym_translation('ACYM_NAME'); ?>
@@ -210,9 +215,8 @@ if (!empty($data['translation_languages'])) {
 				</div>
 
 				<!--if the user didn't respect the authorized content then we display the message below-->
-				<label class="cell margin-top-1 large-6 acym__fields__change" id="acym__fields__error-message-invalid"><?php echo acym_translation(
-                        'ACYM_ERROR_MESSAGE_INVALID_CONTENT'
-                    ); ?>
+				<label class="cell margin-top-1 large-6 acym__fields__change" id="acym__fields__error-message-invalid">
+                    <?php echo acym_translation('ACYM_ERROR_MESSAGE_INVALID_CONTENT'); ?>
 					<input type="text"
 						   name="field[option][error_message_invalid]"
 						   value="<?php echo empty($data['field']->option->error_message_invalid) ? '' : $data['field']->option->error_message_invalid; ?>">

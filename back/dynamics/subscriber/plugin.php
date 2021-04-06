@@ -28,6 +28,8 @@ class plgAcymSubscriber extends acymPlugin
         'user_confirmation' => 'ACYM_WHEN_USER_CONFIRMS_SUBSCRIPTION',
     ];
 
+    const TRIGGERS_MAIL = ['user_click', 'user_open'];
+
     public function __construct()
     {
         parent::__construct();
@@ -176,12 +178,29 @@ class plgAcymSubscriber extends acymPlugin
         return $replaceme;
     }
 
-    public function onAcymDeclareTriggers(&$triggers)
+    public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
     {
         foreach (self::TRIGGERS as $key => $name) {
             $triggers['user'][$key] = new stdClass();
-            $triggers['user'][$key]->name = acym_translation($name);
+            $triggers['user'][$key]->name = '<div class="cell shrink">'.acym_translation($name).'</div>';
             $triggers['user'][$key]->option = '<input type="hidden" name="[triggers][user]['.$key.'][]" value="">';
+
+            if (in_array($key, self::TRIGGERS_MAIL)) {
+                $ajaxParams = json_encode(['plugin' => 'plgAcymStatistics', 'trigger' => 'searchMail',]);
+                $mailIdAttributes = [
+                    'data-class' => 'acym_select2_ajax',
+                    'data-placeholder' => acym_translation('ACYM_ANY_EMAIL', true),
+                    'data-params' => $ajaxParams,
+                ];
+                if (!empty($defaultValues['mail_'.$key])) $mailIdAttributes['data-selected'] = $defaultValues['mail_'.$key];
+
+                $triggers['user'][$key]->option .= '<div class="cell shrink">'.acym_select(
+                        [],
+                        '[triggers][user][mail_'.$key.']',
+                        null,
+                        $mailIdAttributes
+                    ).'</div>';
+            }
         }
     }
 
@@ -191,8 +210,13 @@ class plgAcymSubscriber extends acymPlugin
 
         $triggers = $step->triggers;
 
+
         foreach (self::TRIGGERS as $identifier => $name) {
             if (empty($triggers[$identifier])) continue;
+
+            if (!empty($triggers['mail_'.$identifier]) && in_array($identifier, self::TRIGGERS_MAIL)) {
+                if (empty($data['mailId']) || $data['mailId'] != $triggers['mail_'.$identifier]) continue;
+            }
 
             $execute = true;
             break;
@@ -286,7 +310,7 @@ class plgAcymSubscriber extends acymPlugin
                 if (!is_numeric($options['value'])) {
                     $options['value'] = strtotime($options['value']);
                 }
-                $options['value'] = acym_date($options['value'], "Y-m-d H:i:s");
+                $options['value'] = acym_date($options['value'], 'Y-m-d H:i:s');
             }
             $query->where[] = $query->convertQuery('user', $options['field'], $options['operator'], $options['value']);
         }
@@ -571,7 +595,7 @@ class plgAcymSubscriber extends acymPlugin
         if (empty($action['time']) || empty($action['mail_id'])) return '';
 
         $sendDate = acym_replaceDate($action['time']);
-        $sendDate = acym_date($sendDate, "Y-m-d H:i:s", false);
+        $sendDate = acym_date($sendDate, 'Y-m-d H:i:s', false);
         $mailClass = new MailClass();
 
         //We generate the new mail if it's a template

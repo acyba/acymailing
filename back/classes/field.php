@@ -393,7 +393,7 @@ class FieldClass extends acymClass
 
         $style = empty($size) ? '' : ' style="'.$size.'"';
         $messageRequired = empty($field->option->error_message)
-            ? acym_translationSprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', $field->name)
+            ? acym_translationSprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', '"'.$field->name.'"')
             : acym_translation(
                 $field->option->error_message
             );
@@ -437,6 +437,9 @@ class FieldClass extends acymClass
         } elseif ($field->type == 'text') {
             $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
             $field->option->authorized_content->message = $field->option->error_message_invalid;
+            if (empty($field->option->authorized_content->message)) {
+                $field->option->authorized_content->message = acym_translationSprintf('ACYM_INCORRECT_FIELD_VALUE', $field->name);
+            }
             $authorizedContent = ' data-authorized-content="'.acym_escape(json_encode($field->option->authorized_content)).'"';
             $return .= '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.' type="text">';
         } elseif ($field->type == 'textarea') {
@@ -532,10 +535,8 @@ class FieldClass extends acymClass
         }
 
 
-        if (($displayOutside && (in_array($field->id, [1, 2]) || in_array(
-                    $field->type,
-                    ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file', 'language']
-                )))) {
+        $labelTypes = ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file', 'language'];
+        if ($displayOutside && (in_array($field->id, [1, 2]) || in_array($field->type, $labelTypes))) {
             $return .= '</label>';
         }
         if ($displayOutside && in_array($field->type, ['date', 'radio', 'checkbox'])) {

@@ -153,7 +153,7 @@
             <?php
         }
 
-        if (empty($data['user']->id) && $data['config']->get('captcha', '') == 1) {
+        if (empty($data['user']->id) && $data['config']->get('captcha', 'none') !== 'none') {
             echo '<div id="trcaptcha" class="acy_onefield">';
             echo $data['captchaHelper']->display('acyprofileform');
             echo '</div>';

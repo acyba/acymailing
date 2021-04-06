@@ -66,6 +66,10 @@ function acym_redirect($url, $msg = '', $msgType = 'message')
     }
     @ob_get_clean();
     if (empty($url)) $url = acym_rootURI();
-    acym_addScript(true, 'window.location.href = "'.addslashes($url).'";');
+    if (headers_sent()) {
+        acym_addScript(true, 'window.location.href = "'.addslashes($url).'";');
+    } else {
+        wp_redirect($url);
+    }
     exit;
 }

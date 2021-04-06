@@ -14,6 +14,7 @@ const acym_helperNotification = {
         }
 
         $button.off('click').on('click', function () {
+            acym_helperNotification.readFullNotification();
             let $notifButton = jQuery(this);
             let $notificationCenter = jQuery('.acym__header__notification__center');
             let notifButtonOffset = $notifButton.offset();
@@ -141,5 +142,18 @@ const acym_helperNotification = {
                         + '</div>';
 
         return structure;
+    },
+    readFullNotification: function () {
+        jQuery('.acym__header__notification__one').off('click').on('click', function () {
+            let $messageTag = jQuery(this).find('.acym__header__notification__message');
+            let messageInAttribute = $messageTag.attr('data-acym-full');
+
+            if (acym_helper.empty(messageInAttribute)) return true;
+
+            let messageInTag = $messageTag.html();
+
+            $messageTag.html(messageInAttribute);
+            $messageTag.attr('data-acym-full', messageInTag);
+        });
     }
 };

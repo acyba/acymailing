@@ -66,6 +66,7 @@
 			</div>
 			<div class="cell acym_area medium-6 acym__content">
 				<div class="acym__title"><?php echo acym_translation('ACYM_SUBSCRIBERS_TO_EXPORT'); ?></div>
+				<p class="cell margin-bottom-1"><?php echo acym_translation('ACYM_WARNING_FILTERS_APPLIED_EXPORT'); ?></p>
                 <?php if (empty($data['checkedElements']) || $data['isPreselectedList']) { ?>
 					<fieldset id="acym__users__export__users-to-export" class="margin-bottom-1">
                         <?php

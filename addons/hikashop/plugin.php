@@ -1,10 +1,11 @@
 <?php
 
-use AcyMailing\Classes\FollowupClass;
-use AcyMailing\Libraries\acymPlugin;
-use AcyMailing\Helpers\TabHelper;
-use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\AutomationClass;
+use AcyMailing\Classes\FollowupClass;
+use AcyMailing\Classes\UserClass;
+use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Types\DelayType;
 
 class plgAcymHikashop extends acymPlugin
 {
@@ -193,19 +194,8 @@ class plgAcymHikashop extends acymPlugin
                     'rand' => 'ACYM_RANDOM',
                 ],
             ],
-            [
-                'title' => 'ACYM_COLUMNS',
-                'type' => 'number',
-                'name' => 'cols',
-                'default' => 1,
-            ],
-            [
-                'title' => 'ACYM_MAX_NB_ELEMENTS',
-                'type' => 'number',
-                'name' => 'max',
-                'default' => 20,
-            ],
         ];
+        $this->autoContentOptions($catOptions);
 
         $this->autoCampaignOptions($catOptions);
 
@@ -991,12 +981,13 @@ class plgAcymHikashop extends acymPlugin
             $paymentMethods[$oneMethod->payment_id] = $oneMethod->payment_name;
         }
 
+        $delayType = new DelayType();
         $conditions['user']['hikareminder'] = new stdClass();
         $conditions['user']['hikareminder']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'HikaShop', acym_translation('ACYM_REMINDER'));
         $conditions['user']['hikareminder']->option = '<div class="cell">';
         $conditions['user']['hikareminder']->option .= acym_translationSprintf(
             'ACYM_ORDER_WITH_STATUS',
-            '<input type="number" name="acym_condition[conditions][__numor__][__numand__][hikareminder][days]" value="1" min="1" class="intext_input"/>',
+            $delayType->display('acym_condition[conditions][__numor__][__numand__][hikareminder][days]', 1, 1, '__numor____numand__'),
             '<div class="intext_select_automation cell margin-right-1">'.acym_select(
                 $orderStatuses,
                 'acym_condition[conditions][__numor__][__numand__][hikareminder][status]',
@@ -1083,7 +1074,7 @@ class plgAcymHikashop extends acymPlugin
         $query->where[] = 'order'.$num.'.order_type = "sale"';
         $query->where[] = 'order'.$num.'.order_status = '.acym_escapeDB($orderStatus);
 
-        $query->where[] = 'FROM_UNIXTIME(order'.$num.'.order_created, "%Y-%m-%d") = '.acym_escapeDB(date('Y-m-d', time() - ($options['days'] * 86400)));
+        $query->where[] = 'FROM_UNIXTIME(order'.$num.'.order_created, "%Y-%m-%d") = '.acym_escapeDB(date('Y-m-d', time() - $options['days']));
 
         if (!empty($options['payment']) && $options['payment'] != 'any') {
             $query->where[] = 'order'.$num.'.order_payment_id = '.intval($options['payment']);
@@ -1132,12 +1123,16 @@ class plgAcymHikashop extends acymPlugin
             $orderStatuses = acym_loadObjectList('SELECT `orderstatus_id`, `orderstatus_name` FROM #__hikashop_orderstatus', 'orderstatus_id');
             $paymentMethods = acym_loadObjectList('SELECT `payment_id`, `payment_name` FROM #__hikashop_payment', 'payment_id');
 
+            $delayType = new DelayType();
+            $delay = $delayType->get((int)$automationCondition['hikareminder']['days'], 1);
+
             $paymentName = @$paymentMethods[$automationCondition['hikareminder']['payment']]->payment_name;
             if (empty($paymentName)) $paymentName = 'ACYM_ANY_PAYMENT_METHOD';
             $automationCondition = acym_translationSprintf(
-                'ACYM_CONDITION_ECOMMERCE_REMINDER',
+                'ACYM_CONDITION_HIKASHOP_REMINDER',
                 acym_translation($paymentName),
-                intval($automationCondition['hikareminder']['days']),
+                $delay->value,
+                strtolower($delay->typeText),
                 $orderStatuses[$automationCondition['hikareminder']['status']]->orderstatus_name
             );
         }

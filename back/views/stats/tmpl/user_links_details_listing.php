@@ -70,6 +70,9 @@
 					<div class="auto cell acym__listing__header__title hide-for-small-only">
                         <?php echo acym_translation('ACYM_URL'); ?>
 					</div>
+					<div class="auto cell acym__listing__header__title hide-for-small-only">
+                        <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
+					</div>
 					<div class="large-2 medium-3 cell acym__listing__header__title text-center hide-for-small-only acym__listing__user_links_details__click-date">
                         <?php echo acym_translation('ACYM_CLICK_DATE'); ?>
 					</div>
@@ -92,6 +95,12 @@
                             <?php
                             echo $userLinkDetails->url_name.'<a href="'.$userLinkDetails->url_name.'" class="acym__listing__user_links_details__content__links" target="_blank"><i class="acymicon-external-link"></i></a>';
                             ?>
+						</div>
+						<div class="medium-auto small-12 cell acym__listing__user_links_details__content">
+							<span data-acym-tooltip="<?php echo acym_translationSprintf(
+                                'ACYM_MAIL_NAME_X',
+                                $userLinkDetails->mail_name
+                            ); ?>"><?php echo $userLinkDetails->mail_subject; ?></span>
 						</div>
 						<div class="large-2 medium-3 hide-for-small-only cell acym__listing__user_links_details__content acym__listing__user_links_details__click-date text-center">
                             <?php

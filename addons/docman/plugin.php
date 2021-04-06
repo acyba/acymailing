@@ -160,20 +160,6 @@ class plgAcymDocman extends acymPlugin
 
         $catOptions = [
             [
-                'title' => 'ACYM_MAX_NB_ELEMENTS',
-                'type' => 'number',
-                'name' => 'max',
-                'default' => 20,
-            ],
-            [
-                'title' => 'ACYM_COLUMNS',
-                'type' => 'number',
-                'name' => 'cols',
-                'default' => 1,
-                'min' => 1,
-                'max' => 10,
-            ],
-            [
                 'title' => 'ACYM_ORDER_BY',
                 'type' => 'select',
                 'name' => 'order',
@@ -187,6 +173,7 @@ class plgAcymDocman extends acymPlugin
                 'defaultdir' => 'desc',
             ],
         ];
+        $this->autoContentOptions($catOptions);
 
         $this->autoCampaignOptions($catOptions);
 

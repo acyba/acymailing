@@ -298,18 +298,13 @@ const acym_editorWysidNewContent = {
                 }
                 $insertBtn.removeClass('disabled');
             } else if (vimeoId != null) {
-                jQuery.ajax({
-                    url: 'https://www.vimeo.com/api/v2/video/' + vimeoId[5] + '.json',
-                    dataType: 'jsonp',
-                    success: function (data) {
-                        $result.html('<a href="https://vimeo.com/'
-                                     + vimeoId[5]
-                                     + '"><img alt="" src="'
-                                     + data[0].thumbnail_large
-                                     + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/></a>');
-                        $insertBtn.removeClass('disabled');
-                    }
-                });
+                let script = document.createElement('script');
+                script.id = 'vimeothumb';
+                script.type = 'text/javascript';
+                script.src = 'https://vimeo.com/api/v2/video/' + vimeoId[5] + '.json?callback=showThumb';
+                jQuery('#acym__wysid__modal__video__search').before(script);
+                jQuery('#vimeothumb').remove();
+
             } else {
                 $result.html('<div class="acym__wysid__error_msg" style="text-align: center; margin-top: 100px;">' + ACYM_JS_TXT.ACYM_NON_VALID_URL + '</div>');
                 $insertBtn.addClass('disabled').off('click');
@@ -328,3 +323,17 @@ const acym_editorWysidNewContent = {
         });
     }
 };
+
+function showThumb(data) {
+    let thumbnail = 'https://i.vimeocdn.com/filter/overlay?src=' + encodeURIComponent(data[0].thumbnail_large);
+    thumbnail += '&src=' + encodeURIComponent('https://f.vimeocdn.com/p/images/crawler_play.png');
+
+    let styling = 'max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;';
+
+    let thumbWithLink = '<a href="https://vimeo.com/' + data[0].id + '">';
+    thumbWithLink += '<img alt="" src="' + thumbnail + '" style="' + styling + '"/>';
+    thumbWithLink += '</a>';
+
+    jQuery('#acym__wysid__modal__video__result').html(thumbWithLink);
+    jQuery('#acym__wysid__modal__video__insert').removeClass('disabled');
+}

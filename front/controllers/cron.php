@@ -17,6 +17,9 @@ class CronController extends acymController
 
     public function cron()
     {
+        // Starter versions shouldn't have access to the cron
+        if (!acym_level(1)) exit;
+
         acym_header('Content-type:text/html; charset=utf-8');
         //We block the cron if there is no domain specified... it can happen if you created your own cron with a wrong command.
         //Why 10? Because it should be at least http://1.1
@@ -25,6 +28,7 @@ class CronController extends acymController
         }
 
         $expirationDate = $this->config->get('expirationdate', 0);
+        // $expirationDate is empty when no call has been made yet on our server, or when it is a Starter license. Starter licenses don't have access to the cron
         if (empty($expirationDate) || (time() - 604800) > $this->config->get('lastlicensecheck', 0)) {
             acym_checkVersion();
             $this->config = acym_config(true);

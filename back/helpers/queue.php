@@ -380,7 +380,7 @@ class QueueHelper extends acymObject
         $userStatClass = new UserStatClass();
         $mailStatClass = new MailStatClass();
 
-        $time = acym_date("now", "Y-m-d H:i:s");
+        $time = acym_date("now", 'Y-m-d H:i:s');
 
         foreach ($statsAdd as $mailId => $infos) {
 

@@ -362,19 +362,19 @@ class UserClass extends acymClass
     public function getUsersSubscriptionsByIds($usersId, $creatorId = 0)
     {
         $listClass = new ListClass();
-        $query = 'SELECT id, user_id, l.color, l.name
-                FROM #__acym_list AS l
-                JOIN #__acym_user_has_list AS userlist 
-                    ON l.id = userlist.list_id
-                WHERE user_id IN ('.implode(',', $usersId).')
-                AND userlist.status = 1
-                AND l.type = '.acym_escapeDB($listClass::LIST_TYPE_STANDARD);
+        $query = 'SELECT `list`.`id`, `list`.`color`, `list`.`name`, `userlist`.`user_id`, `userlist`.`status`
+                FROM #__acym_list AS `list`
+                JOIN #__acym_user_has_list AS `userlist` 
+                    ON `list`.`id` = `userlist`.`list_id`
+                WHERE `userlist`.`user_id` IN ('.implode(',', $usersId).')
+                    AND `list`.`type` = '.acym_escapeDB($listClass::LIST_TYPE_STANDARD);
 
         if (!empty($creatorId)) {
             $userGroups = acym_getGroupsByUser($creatorId);
-            $groupCondition = 'l.access LIKE "%,'.implode(',%" OR l.access LIKE "%,', $userGroups).',%"';
-            $query .= ' AND (l.cms_user_id = '.intval($creatorId).' OR '.$groupCondition.')';
+            $groupCondition = '`list`.`access` LIKE "%,'.implode(',%" OR `list`.`access` LIKE "%,', $userGroups).',%"';
+            $query .= ' AND (`list`.`cms_user_id` = '.intval($creatorId).' OR '.$groupCondition.')';
         }
+        $query .= ' ORDER BY `userlist`.`status` DESC';
 
         return acym_loadObjectList($query);
     }
@@ -390,14 +390,18 @@ class UserClass extends acymClass
         return acym_loadResult($query);
     }
 
-    public function getSubscriptionStatus($userId, $listids = [])
+    public function getSubscriptionStatus($userId, $listIds = [], $wantedStatus = null)
     {
         $query = 'SELECT status, list_id
                     FROM #__acym_user_has_list  
                     WHERE user_id = '.intval($userId);
-        if (!empty($listids)) {
-            acym_arrayToInteger($listids);
-            $query .= ' AND list_id IN ('.implode(',', $listids).')';
+        if (!empty($listIds)) {
+            acym_arrayToInteger($listIds);
+            $query .= ' AND list_id IN ('.implode(',', $listIds).')';
+        }
+
+        if ($wantedStatus !== null) {
+            $query .= ' AND status = '.intval($wantedStatus);
         }
 
         return acym_loadObjectList($query, 'list_id');
@@ -565,7 +569,7 @@ class UserClass extends acymClass
             foreach ($currentSubscription as $oneList) {
                 if ($oneList->status == 0) {
                     $currentlyUnsubscribed[$oneList->id] = $oneList;
-                }elseif ($oneList->status == 1){
+                } elseif ($oneList->status == 1) {
                     $currentlySubscribed[$oneList->id] = $oneList;
                 }
             }
@@ -844,7 +848,7 @@ class UserClass extends acymClass
             return false;
         }
 
-        if (!$this->allowModif && !empty($connectedUser)) {
+        if (!$allowUserModifications && !empty($connectedUser)) {
             if ($connectedUser->email != $user->email) {
                 $this->errors[] = acym_translation('ACYM_NOT_ALLOWED_MODIFY_USER');
 

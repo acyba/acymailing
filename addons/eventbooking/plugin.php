@@ -207,20 +207,6 @@ class plgAcymEventbooking extends acymPlugin
 
         $catOptions = [
             [
-                'title' => 'ACYM_COLUMNS',
-                'type' => 'number',
-                'name' => 'cols',
-                'default' => 1,
-                'min' => 1,
-                'max' => 10,
-            ],
-            [
-                'title' => 'ACYM_MAX_NB_ELEMENTS',
-                'type' => 'number',
-                'name' => 'max',
-                'default' => 20,
-            ],
-            [
                 'title' => 'ACYM_FROM',
                 'type' => 'date',
                 'name' => 'from',
@@ -249,6 +235,7 @@ class plgAcymEventbooking extends acymPlugin
                 'defaultdir' => 'asc',
             ],
         ];
+        $this->autoContentOptions($catOptions);
 
         $this->autoCampaignOptions($catOptions);
 

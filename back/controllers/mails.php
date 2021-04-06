@@ -132,7 +132,7 @@ class MailsController extends acymController
         $otherContent = acym_modal(
             '<i class="acymicon-download"></i>'.acym_translation('ACYM_IMPORT'),
             $data['templateImportView'],
-            null,
+            'acym__template__import__reveal',
             '',
             'class="button button-secondary cell medium-6 large-shrink" data-reload="true" data-ajax="false"'
         );
@@ -805,7 +805,7 @@ class MailsController extends acymController
             $return .= '</div>
                             <div class="cell grid-x acym__templates__footer text-center">
                                 <div class="cell acym__templates__footer__title acym_text_ellipsis" title="'.acym_escape($oneTemplate->name).'">'.acym_escape($oneTemplate->name).'</div>
-                                <div class="cell">'.acym_date($oneTemplate->creation_date, 'M. j, Y').'</div>
+                                <div class="cell">'.acym_date($oneTemplate->creation_date, 'ACYM_DATE_FORMAT_LC3').'</div>
                             </div>
                         </div>';
         }

@@ -205,7 +205,7 @@
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">
-				<label for="acym__wysid__context__button__background" class="cell small-5"><?php echo acym_translation('ACYM_BACKGROUND_COLOR'); ?></label>
+				<label for="acym__wysid__context__button__background-color" class="cell small-5"><?php echo acym_translation('ACYM_BACKGROUND_COLOR').acym_info('ACYM_BACKGROUND_COLOR_BUTTON_DESC'); ?></label>
 				<input type="text" id="acym__wysid__context__button__background-color" class="small-5 cell">
 			</div>
 			<div class="grid-x cell">

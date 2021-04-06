@@ -1,25 +1,29 @@
 #acym_wrapper {
     #acym__users {
-        @media screen and (max-width: 639px) {
-            .acym__users__subscription {
-                padding-left: 7px;
-                margin-top: 22px;
-            }
-            .acym_subscription_more {
-                display: none;
-            }
-            .acym__user__show-subscription-bt {
-                margin-top: 5px;
-                font-size: 8px;
-            }
-            .acym__user__show-subscription {
-                height: inherit;
-                vertical-align: top;
-                cursor: pointer;
-            }
+        .acym__users__subscription {
+            padding-left: 7px;
+        }
+
+        .acym_subscription_more {
+            display: none;
+        }
+
+        .acym__user__show-subscription {
+            height: inherit;
+            width: 25px;
+            vertical-align: top;
+            cursor: pointer;
+
             .acym__user__button__showsubscription {
                 color: $light-blue;
                 margin-top: 0;
+            }
+
+            .acym__user__show-subscription-bt {
+                margin-top: 5px;
+                font-size: 8px;
+                font-weight: bold;
+                line-height: 1;
             }
         }
 
@@ -29,6 +33,10 @@
 
         .secondary_status {
             margin-left: 5px;
+        }
+
+        i.acymicon-radio_button_unchecked {
+            font-size: 19px;
         }
     }
 

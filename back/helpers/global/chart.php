@@ -403,7 +403,7 @@ function acym_roundChart($id, $percentage, $type = '', $class = '', $topLabel = 
  *
  * @return string|void
  */
-function acym_pieChart($id, $data = [], $class = '', $topLabel = '', $bottomLabel = '')
+function acym_pieChart($id, $data = [], $class = '', $topLabel = '', $cap = true)
 {
     if (empty($data)) return '';
 
@@ -422,11 +422,23 @@ function acym_pieChart($id, $data = [], $class = '', $topLabel = '', $bottomLabe
     asort($data);
     $data = array_reverse($data, true);
     $position = 0;
+    $cappedValue = 0;
     foreach ($data as $label => $number) {
+        if ($position > 9 && $cap) {
+            $cappedValue += (float)$number;
+            unset($data[$label]);
+            continue;
+        }
         $data[$label] = (float)$number;
         $allLabelsArray[] = $label;
         $colors[] = acym_getChartColor($position);
         $position++;
+    }
+
+    if ($cappedValue > 0) {
+        $data[acym_translation('ACYM_OTHER')] = $cappedValue;
+        $allLabelsArray[] = acym_translation('ACYM_OTHER');
+        $colors[] = acym_getChartColor($position);
     }
 
     $allNumbers = implode(',', $data);

@@ -236,7 +236,7 @@ class QueueClass extends acymClass
 
         foreach ($mailReady as $mailid => $mail) {
             $nbQueue[$mailid] = $this->queue($mail);
-            $this->messages[] = acym_translationSprintf('ACYM_ADDED_QUEUE_SCHEDULE', $nbQueue, '<b>'.$mail->name.'</b>');
+            $this->messages[] = acym_translationSprintf('ACYM_ADDED_QUEUE_SCHEDULE', $nbQueue[$mailid], '<b>'.$mail->name.'</b>');
         }
 
         $mailIds = array_keys($mailReady);
@@ -440,6 +440,12 @@ class QueueClass extends acymClass
         if ($this->config->get('require_confirmation', 1) == 1) $automationHelper->where[] = '`user`.`confirmed` = 1';
 
         if ($mail->id == $mail->parent_id) $automationHelper->leftjoin['childmail'] = ' #__acym_mail AS childmail ON childmail.parent_id = '.$mail->id;
+
+        $sendingParams = json_decode($mail->sending_params, true);
+        if (!empty($sendingParams['resendTarget']) && 'new' === $sendingParams['resendTarget']) {
+            $automationHelper->leftjoin['us'] = '`#__acym_user_stat` AS `us` ON `us`.`user_id` = `user`.`id` AND `us`.`mail_id` = '.intval($mail->id);
+            $automationHelper->where[] = '`us`.`user_id` IS NULL';
+        }
 
 
         $segmentsController = new SegmentsController();

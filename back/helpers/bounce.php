@@ -814,6 +814,7 @@ class BounceHelper extends acymObject
 
     private function actionUser(&$oneRule)
     {
+        $commonListsMailUser = [];
         $message = '';
 
         if (empty($this->_message->userid)) {
@@ -830,12 +831,36 @@ class BounceHelper extends acymObject
                 'subscribe_user',
                 $oneRule->action_user
             )) {
-            $status = $this->userClass->getSubscriptionStatus($this->_message->userid);
             if (empty($this->_message->subemail)) {
                 $currentUser = $this->userClass->getOneById($this->_message->userid);
                 if (!empty($currentUser->email)) {
                     $this->_message->subemail = $currentUser->email;
                 }
+            }
+
+            $userSubscription = $this->userClass->getSubscriptionStatus($this->_message->userid);
+
+            $bounceContent = '';
+            if (!empty($this->_message->html)) {
+                $bounceContent .= ' '.$this->_message->html;
+            }
+            if (!empty($this->_message->text)) {
+                $bounceContent .= ' '.$this->_message->text;
+            }
+
+            $emailLists = [];
+            preg_match('#Please unsubscribe user ID \d+ from list\(s\) ([^.]+)\.#Uis', $bounceContent, $emailLists);
+            if (!empty($emailLists[1])) {
+                $currentEmailLists = explode(',', $emailLists[1]);
+                foreach ($currentEmailLists as $oneListId) {
+                    if (!empty($userSubscription[$oneListId]) && $userSubscription[$oneListId]->status == 1) {
+                        $commonListsMailUser[] = $oneListId;
+                    }
+                }
+            }
+
+            if (empty($commonListsMailUser)) {
+                $commonListsMailUser = array_keys($userSubscription);
             }
         }
 
@@ -918,11 +943,11 @@ class BounceHelper extends acymObject
 
             $listName = empty($this->allLists[$listId]->name) ? $listId : $this->allLists[$listId]->name;
             $message .= ' | ';
-            if (isset($status[$listId])) {
+            if (isset($userSubscription[$listId])) {
                 $message .= acym_translationSprintf('ACYM_USER_X_NOT_SUBSCRIBED_TO', $this->_message->subemail, $listName);
-                if ($status[$listId]->status == 1) {
+                if ($userSubscription[$listId]->status == 1) {
                     $message .= acym_translation('ACYM_USER_ALREADY_SUBSCRIBED');
-                } elseif ($status[$listId]->status == 0) {
+                } elseif ($userSubscription[$listId]->status == 0) {
                     $message .= acym_translation('ACYM_USER_ALREADY_UNSUBSCRIBED');
                 }
             } else {
@@ -932,36 +957,36 @@ class BounceHelper extends acymObject
         }
 
         if (in_array('delete_user_subscription', $oneRule->action_user)) {
-            $unsubLists = array_diff(array_keys($status), [$listId]);
-            if (!empty($unsubLists)) {
-                $listnames = [];
-                foreach ($unsubLists as $oneListId) {
+            $removeLists = array_diff($commonListsMailUser, [$listId]);
+            if (!empty($removeLists)) {
+                $listNames = [];
+                foreach ($removeLists as $oneListId) {
                     if (!empty($this->allLists[$oneListId]->name)) {
-                        $listnames[] = $this->allLists[$oneListId]->name;
+                        $listNames[] = $this->allLists[$oneListId]->name;
                     } else {
-                        $listnames[] = $oneListId;
+                        $listNames[] = $oneListId;
                     }
                 }
-                $message .= ' | '.acym_translationSprintf('ACYM_USER_X_REMOVED_FROM', $this->_message->subemail, implode(', ', $listnames));
-                $this->userClass->removeSubscription($this->_message->userid, $unsubLists);
+                $message .= ' | '.acym_translationSprintf('ACYM_USER_X_REMOVED_FROM', $this->_message->subemail, implode(', ', $listNames));
+                $this->userClass->removeSubscription($this->_message->userid, $removeLists);
             } else {
                 $message .= ' | '.acym_translationSprintf('ACYM_USER_X_NOT_SUBSCRIBED', $this->_message->subemail);
             }
         }
 
         if (in_array('unsubscribe_user', $oneRule->action_user)) {
-            $unsubLists = array_diff(array_keys($status), [$listId]);
+            $unsubLists = array_diff($commonListsMailUser, [$listId]);
             if (!empty($unsubLists)) {
-                $listnames = [];
+                $listNames = [];
                 foreach ($unsubLists as $oneListId) {
                     if (!empty($this->allLists[$oneListId]->name)) {
-                        $listnames[] = $this->allLists[$oneListId]->name;
+                        $listNames[] = $this->allLists[$oneListId]->name;
                     } else {
-                        $listnames[] = $oneListId;
+                        $listNames[] = $oneListId;
                     }
                 }
                 $this->userClass->unsubscribe($this->_message->userid, $unsubLists);
-                $message .= ' | '.acym_translationSprintf('ACYM_USER_X_UNSUBSCRIBED_FROM', $this->_message->subemail, implode(', ', $listnames));
+                $message .= ' | '.acym_translationSprintf('ACYM_USER_X_UNSUBSCRIBED_FROM', $this->_message->subemail, implode(', ', $listNames));
             } else {
                 $message .= ' | '.acym_translationSprintf('ACYM_USER_X_NOT_SUBSCRIBED', $this->_message->subemail);
             }

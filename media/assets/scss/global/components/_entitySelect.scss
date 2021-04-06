@@ -35,6 +35,10 @@
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+
+                .acym_subscription {
+                    vertical-align: middle;
+                }
             }
 
             .plus-container {

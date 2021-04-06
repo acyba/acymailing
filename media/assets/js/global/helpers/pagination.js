@@ -33,7 +33,7 @@ const acym_helperPagination = {
         });
 
         jQuery('.acym__filter__status').off('click').on('click', function () {
-            jQuery('#acym_filter_status').val(jQuery(this).attr('status'));
+            jQuery('#acym_filter_status').val(jQuery(this).attr('acym-data-status'));
             acym_helperPagination.initPagination();
         });
 

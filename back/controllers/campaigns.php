@@ -33,7 +33,7 @@ class CampaignsController extends acymController
             'recipients' => ['vue-applications' => ['entity_select']],
             'send_settings' => ['datepicker'],
             'summary' => ['vue-applications' => ['modal_users_summary']],
-            'segment' => ['vue-applications' => ['modal_users_summary']],
+            'segment' => ['datepicker', 'vue-applications' => ['modal_users_summary']],
         ];
         acym_setVar('edition', '1');
         if (acym_isAdmin()) $this->stepContainerClass = 'xxlarge-9';
@@ -283,7 +283,7 @@ class CampaignsController extends acymController
             $textToDisplay->triggers = $campaign->sending_params;
             acym_trigger('onAcymDeclareSummary_triggers', [&$textToDisplay], 'plgAcymTime');
             $textToDisplay = array_values($textToDisplay->triggers);
-            $data['allCampaigns'][$key]->sending_params = empty($textToDisplay[0]) ? acym_translation('ACYM_ERROR_WHILE_RECOVERING_TRIGGERS') : $textToDisplay[0];
+            $data['allCampaigns'][$key]->sending_params['trigger_text'] = empty($textToDisplay[0]) ? acym_translation('ACYM_ERROR_WHILE_RECOVERING_TRIGGERS') : $textToDisplay[0];
         }
     }
 
@@ -335,7 +335,7 @@ class CampaignsController extends acymController
     private function getIsPendingGenerated(&$data)
     {
         $campaignClass = new CampaignClass();
-        $campaingsGenerated = $campaignClass->getAllCampaignsGenerated();
+        $campaingsGenerated = $campaignClass->getAllCampaignsGeneratedWaiting();
         $data['generatedPending'] = !empty($campaingsGenerated);
     }
 
@@ -1297,7 +1297,7 @@ class CampaignsController extends acymController
 
         $mailClass->save($currentMail);
 
-        if (empty($currentCampaign->sent) && $isScheduled && !empty($sendingDate)) {
+        if ($isScheduled && !empty($sendingDate)) {
             $currentCampaign->sending_date = acym_date(acym_getTime($sendingDate), 'Y-m-d H:i:s', false);
             if ($currentCampaign->sending_date < acym_date('now', 'Y-m-d H:i:s', false)) acym_enqueueMessage(acym_translation('ACYM_BE_CAREFUL_SENDING_DATE_IN_PAST'), 'warning');
         }
@@ -1339,6 +1339,9 @@ class CampaignsController extends acymController
             $campaign->draft = 1;
             $campaign->sent = 0;
             $campaign->active = 0;
+            if (!empty($campaign->sending_params['resendTarget'])) {
+                unset($campaign->sending_params['resendTarget']);
+            }
 
             //We get the mail to duplicate it
             $mail = $mailClass->getOneById($campaign->mail_id);
@@ -1802,7 +1805,7 @@ class CampaignsController extends acymController
                     ).$campaign->id.'">'.$campaign->name.'</a>
                         <div class="acym__dashboard__active-campaigns__one-campaign__state medium-2 small-12 acym__background-color__blue text-center"><span>'.acym_translation(
                         'ACYM_SCHEDULED'
-                    ).' : '.acym_getDate($campaign->sending_date, 'M. j, Y').'</span></div>
+                    ).' : '.acym_getDate($campaign->sending_date, 'ACYM_DATE_FORMAT_LC3').'</span></div>
                         <div class="medium-6 small-12"><p id="'.$campaign->id.'" class="acym__dashboard__active-campaigns__one-campaign__action acym__color__dark-gray">'.acym_translation(
                         'ACYM_CANCEL_SCHEDULING'
                     ).'</p></div>
@@ -2270,6 +2273,7 @@ class CampaignsController extends acymController
                         $receiver->name = $decodedInformation['name'];
                         $receiver->confirmed = 1;
                         $receiver->enabled = 1;
+                        $mailerHelper->isSpamTest = true;
 
                         if ($mailerHelper->sendOne($campaign->mail_id, $receiver)) {
                             $result->type = 'success';

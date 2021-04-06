@@ -1,14 +1,19 @@
 const acym_editorWysidFontStyle = {
+    allTags: [
+        'p',
+        'a',
+        'li',
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6'
+    ],
     setAllHtmlElementStyleWYSID: function () {
-        acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('p');
-        acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('a');
-        acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('li');
-        acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('h1');
-        acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('h2');
-        acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('h3');
-        acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('h4');
-        acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('h5');
-        acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID('h6');
+        this.allTags.map(tag => {
+            acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID(tag);
+        });
         jQuery('.acym__wysid__template__content')
             .css('background-color', acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID('#acym__wysid__background-colorpicker', 'background-color'));
     },
@@ -25,10 +30,22 @@ const acym_editorWysidFontStyle = {
                && acym_helperEditorWysid.mailsSettings[element][property]
                !== undefined ? acym_helperEditorWysid.mailsSettings[element][property] : acym_helperEditorWysid.defaultMailsSettings[element][property];
     },
-    setSettingsElementStyle: function (element, property, value) {
+    setSettingsElementStyle: function (element, property, value, override = true) {
         acym_helperEditorWysid.mailsSettings[element] === undefined ? acym_helperEditorWysid.mailsSettings[element] = {} : true;
 
+        if (!override
+            && !acym_helper.empty(acym_helperEditorWysid.mailsSettings[element].overridden)
+            && !acym_helper.empty(acym_helperEditorWysid.mailsSettings[element].overridden[property])) {
+            return;
+        }
+
         acym_helperEditorWysid.mailsSettings[element][property] = value;
+        if (override) {
+            if (acym_helper.empty(acym_helperEditorWysid.mailsSettings[element].overridden)) {
+                acym_helperEditorWysid.mailsSettings[element].overridden = {};
+            }
+            acym_helperEditorWysid.mailsSettings[element].overridden[property] = true;
+        }
         acym_editorWysidFontStyle.setAllHtmlElementStyleWYSID();
     },
     setSettingsWYSID: function () {
@@ -90,10 +107,11 @@ const acym_editorWysidFontStyle = {
             acym_editorWysidFontStyle.setSettingsWYSID();
         });
 
-        jQuery('#acym__wysid__right__toolbar__settings__font-family').on('change', function () {
+        jQuery('#acym__wysid__right__toolbar__settings__font-family').off('select2:select').on('change select2:select', function (event) {
             acym_editorWysidFontStyle.setSettingsElementStyle(jQuery('#acym__wysid__right__toolbar__settings__font--select').val(),
                 'font-family',
-                jQuery(this).val()
+                jQuery(this).val(),
+                event.type !== 'change'
             );
         });
 
@@ -215,5 +233,29 @@ const acym_editorWysidFontStyle = {
                 }
             });
         });
+    },
+    initDefaultFont: function () {
+        let self = this;
+
+        let savedFont = acym_helperEditorWysid.defaultMailsSettings.default['font-family'];
+        if (!acym_helper.empty(acym_helperEditorWysid.mailsSettings.default)
+            && !acym_helper.empty(acym_helperEditorWysid.mailsSettings.default['font-family'])) {
+            savedFont = acym_helperEditorWysid.mailsSettings.default['font-family'];
+        }
+
+        let $defaultFontSelect = jQuery('[name="default_font"]');
+
+        $defaultFontSelect.on('change', function (event) {
+            let font = jQuery(this).val();
+
+            if (acym_helper.empty(acym_helperEditorWysid.mailsSettings.default)) acym_helperEditorWysid.mailsSettings.default = {};
+            acym_helperEditorWysid.mailsSettings.default['font-family'] = font;
+
+            self.allTags.map(tag => {
+                self.setSettingsElementStyle(tag, 'font-family', font, false);
+            });
+        });
+
+        $defaultFontSelect.val(savedFont).trigger('change');
     }
 };

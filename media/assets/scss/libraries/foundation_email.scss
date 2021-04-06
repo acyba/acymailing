@@ -18,6 +18,14 @@
     border: none;
     padding: 0;
 
+    p, p span, h1, h2, h3, h4, h5, h6, a {
+        mso-line-height-rule: exactly;
+    }
+
+    strong {
+        font-weight: 700 !important;
+    }
+
     center > table {
         max-width: $global-width;
     }

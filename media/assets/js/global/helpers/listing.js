@@ -64,7 +64,7 @@ const acym_helperListing = {
             form.submit();
         });
 
-        jQuery('.acym__select__sort').on('change', function(){
+        jQuery('.acym__select__sort').on('change', function () {
             jQuery(this).closest('#acym_form').submit();
         });
     },
@@ -113,7 +113,7 @@ const acym_helperListing = {
     setCheckboxesActionsListings: function () {
         let listing_checkboxes = jQuery('[name="elements_checked[]"]');
         listing_checkboxes.off('change').on('change', function () {
-            let nbChecked = (jQuery('[name="elements_checked[]"]:checked').length);
+            let nbChecked = jQuery('[name="elements_checked[]"]:checked').length;
 
             if (nbChecked === 1) {
                 jQuery('.acym__campaign__duplicate').show();
@@ -135,18 +135,19 @@ const acym_helperListing = {
                 jQuery('#checkbox_all').prop('checked', true);
             }
 
-            //Si on est sur le listing user, on fait le compte des utilisateurs cochés.
+            // On the users listing, handle the export button
             if (jQuery('#acym__users').length) {
                 let $nbToExport = jQuery('#acym__users__listing__number_to_export');
                 let $nbToAddToList = jQuery('#acym__users__listing__number_to_add_to_list');
                 let $buttonAddToList = jQuery('#acym__users__listing__button--add-to-list');
 
-                if (nbChecked == 0) {
-                    $nbToExport.html($nbToExport.attr('data-default'));
+                acym_helperListing.checkFiltersApplied();
+                if (nbChecked === 0) {
+                    $nbToExport.html('&nbsp;(' + $nbToExport.attr('data-default') + ')');
                     $buttonAddToList.addClass('disabled').attr('disabled', 'true');
                     $nbToAddToList.html(nbChecked);
                 } else {
-                    $nbToExport.html(nbChecked);
+                    $nbToExport.html('&nbsp;(' + nbChecked + ')');
                     $buttonAddToList.removeClass('disabled').removeAttr('disabled');
                     $nbToAddToList.html(nbChecked);
                 }
@@ -155,7 +156,7 @@ const acym_helperListing = {
             if (jQuery('#acym__lists').length) {
                 let $nbToExport = jQuery('#acym__lists__listing__number_to_export');
 
-                if (nbChecked == 0) {
+                if (nbChecked === 0) {
                     $nbToExport.html($nbToExport.attr('data-default'));
                 } else {
                     $nbToExport.html(nbChecked);
@@ -163,5 +164,24 @@ const acym_helperListing = {
             }
         });
         listing_checkboxes.trigger('change');
+
+        if (jQuery('#acym__users').length) {
+            jQuery('#users_list, [name="users_search"]').on('change', function () {
+                acym_helperListing.checkFiltersApplied();
+            });
+            jQuery('.acym__status__select').on('click', function () {
+                acym_helperListing.checkFiltersApplied();
+            });
+        }
+    },
+    checkFiltersApplied: function () {
+        let nbChecked = jQuery('[name="elements_checked[]"]:checked').length;
+        let $nbToExport = jQuery('#acym__users__listing__number_to_export');
+        if (nbChecked === 0 && (jQuery('#users_list').val() > 0 || jQuery('[name="users_search"]').val().length > 0 || jQuery('.acym__status__select')
+            .attr('acym-data-status').length > 0)) {
+            $nbToExport.hide();
+        } else {
+            $nbToExport.show();
+        }
     }
 };

@@ -410,7 +410,7 @@ class FollowupClass extends acymClass
         $followupLists = acym_loadObjectList(
             'SELECT followup.list_id, IF(user_list.status IS NULL, "", status) AS status, followup.id, followup.send_once FROM #__acym_followup AS followup
              LEFT JOIN #__acym_user_has_list AS user_list ON followup.list_id = user_list.list_id AND (user_list.user_id = '.intval($userId).' OR user_list.user_id IS NULL)
-             WHERE followup.id = '.implode(',', $followupIds),
+             WHERE followup.id IN ('.implode(',', $followupIds).')',
             'list_id'
         );
 
@@ -483,7 +483,7 @@ class FollowupClass extends acymClass
         if (empty($mailStat)) {
             $mailStatNew->mail_id = intval($mailId);
             $mailStatNew->total_subscribers = 1;
-            $mailStatNew->send_date = acym_date('now', "Y-m-d H:i:s", false);
+            $mailStatNew->send_date = acym_date('now', 'Y-m-d H:i:s', false);
         } else {
             $mailStatNew->mail_id = intval($mailId);
             $mailStatNew->total_subscribers = $mailStat->total_subscribers + 1;

@@ -34,13 +34,15 @@
     "babel-polyfill": "6.26.0",
     "babel-preset-env": "1.7.0",
     "cypress": "6.3.0",
+    "cypress-file-upload": "5.0.2",
     "file-saver": "^2.0.0",
     "gulp-babel": "8.0.0",
     "gulp-remove-code": "3.0.4"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "sync_package_cypress": "node tools/cypress/settings/synch_packages.js"
   },
   "repository": {
     "type": "git",

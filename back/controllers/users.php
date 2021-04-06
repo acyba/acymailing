@@ -71,10 +71,12 @@ class UsersController extends acymController
             )
         );
 
+        $exportButton = acym_translation('ACYM_EXPORT');
+        $exportButton .= '<span id="acym__users__listing__number_to_export" data-default="'.acym_strtolower(acym_translation('ACYM_ALL')).'">&nbsp;(';
+        $exportButton .= acym_strtolower(acym_translation('ACYM_ALL'));
+        $exportButton .= ')</span>';
         $toolbarHelper->addButton(
-            acym_translation('ACYM_EXPORT').' (<span id="acym__users__listing__number_to_export" data-default="'.acym_strtolower(acym_translation('ACYM_ALL')).'">'.acym_strtolower(
-                acym_translation('ACYM_ALL')
-            ).'</span>)',
+            $exportButton,
             ['data-task' => 'export', 'type' => 'submit'],
             'upload'
         );
@@ -104,7 +106,6 @@ class UsersController extends acymController
         $data['search'] = $this->getVarFiltersListing('string', 'users_search', '');
         $data['list'] = $this->getVarFiltersListing('int', 'users_list', 0);
         $data['list_status'] = $this->getVarFiltersListing('string', 'list_status', 'sub');
-
 
         $listClass = new ListClass();
         $data['lists'] = $listClass->getAll('name');
@@ -608,10 +609,20 @@ class UsersController extends acymController
         $preselectList = acym_getVar('boolean', 'preselectList', false);
         $checkedElements = acym_getVar('array', 'elements_checked', []);
 
+        $filtersListing = [];
+
+        $filtersListing['list'] = $this->getVarFiltersListing('int', 'users_list', 0);
+        $filtersListing['list_status'] = $this->getVarFiltersListing('string', 'list_status', 'all');
+
         $list = acym_getVar('int', 'users_list', 0);
         if (!empty($list)) {
             $preselectList = true;
             $checkedElements = [$list];
+        }
+
+        if (!empty($filtersListing['list'])) {
+            $preselectList = true;
+            $checkedElements = [$filtersListing['list']];
         }
 
         $fields = acym_getColumns('user');
@@ -630,6 +641,8 @@ class UsersController extends acymController
             $entitySelect = $entityHelper->entitySelect('list', ['join' => ''], $entityHelper->getColumnsForList('', true));
         }
 
+        if ($filtersListing['list_status'] == 'none') $filtersListing['list_status'] = 'all';
+
         $data = [
             'lists' => $lists,
             'checkedElements' => $checkedElements,
@@ -637,7 +650,7 @@ class UsersController extends acymController
             'customfields' => $customFields,
             'isPreselectedList' => $preselectList,
             'entitySelect' => $entitySelect,
-            'exportListStatus' => acym_getVar('string', 'list_status', 'all'),
+            'exportListStatus' => $filtersListing['list_status'],
             'encodingHelper' => $encodingHelper,
             'userClass' => $userClass,
         ];
@@ -745,6 +758,26 @@ class UsersController extends acymController
 
             if ($exportUsersType == 'sub') $where[] = 'userlist.status = 1';
             if ($exportUsersType == 'unsub') $where[] = 'userlist.status = 0';
+        }
+
+        $filtersListingSearch = $this->getVarFiltersListing('string', 'users_search', '');
+        $filtersListingStatus = $this->getVarFiltersListing('string', 'users_status', '');
+
+        if (!empty($filtersListingSearch)) {
+            $search = acym_escapeDB('%'.$filtersListingSearch.'%');
+            $where[] = 'user.name LIKE '.$search.' OR user.email LIKE '.$search.' OR user.id LIKE '.$search;
+        }
+
+        if (!empty($filtersListingStatus)) {
+            if ($filtersListingStatus == 'active') {
+                $where[] = 'user.active = 1';
+            } elseif ($filtersListingStatus == 'inactive') {
+                $where[] = 'user.active = 0';
+            } elseif ($filtersListingStatus == 'confirmed') {
+                $where[] = 'user.confirmed = 1';
+            } else {
+                $where[] = 'user.confirmed = 0';
+            }
         }
 
         if (!empty($where)) $query .= ' WHERE ('.implode(') AND (', $where).')';

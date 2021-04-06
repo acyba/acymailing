@@ -80,6 +80,18 @@ class MailStatClass extends acymClass
         return acym_loadObject($query);
     }
 
+    public function getSentFailByMailIds($mailIds = [])
+    {
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+
+        acym_arrayToInteger($mailIds);
+
+        $query = 'SELECT SUM(sent) AS sent, SUM(fail) AS fail FROM #__acym_mail_stat';
+        $query .= empty($mailIds) ? '' : ' WHERE `mail_id` IN ('.implode(',', $mailIds).')';
+
+        return acym_loadObject($query);
+    }
+
     public function getAllFromMailIds($mailsIds = [])
     {
         acym_arrayToInteger($mailsIds);
@@ -102,22 +114,32 @@ class MailStatClass extends acymClass
     public function getAllMailsForStats($search = '')
     {
         $mailClass = new MailClass();
+        $campaignClass = new CampaignClass();
 
         $query = 'SELECT mail.* 
                   FROM #__acym_mail AS mail 
                   JOIN #__acym_mail_stat AS mail_stat ON mail.id = mail_stat.mail_id';
 
+        $queryAutoCampaign = 'SELECT mail.* FROM #__acym_mail AS mail 
+                              JOIN #__acym_campaign as campaign ON campaign.mail_id = mail.id AND campaign.sending_type = '.acym_escapeDB($campaignClass::SENDING_TYPE_AUTO);
+
         $querySearch = '';
 
         if (!empty($search)) {
-            $querySearch .= ' AND mail.name LIKE '.acym_escapeDB('%'.$search.'%').' ';
+            $querySearch .= ' mail.name LIKE '.acym_escapeDB('%'.utf8_encode($search).'%').' ';
+            $queryAutoCampaign .= ' WHERE '.$querySearch;
+
+            $querySearch = ' AND '.$querySearch;
         }
 
         $query .= ' WHERE mail.parent_id IS NULL '.$querySearch;
 
         $query .= ' ORDER BY mail_stat.send_date DESC LIMIT 20';
 
-        return $mailClass->decode(acym_loadObjectList($query));
+        $mails = acym_loadObjectList($query);
+        $mailsAuto = acym_loadObjectList($queryAutoCampaign);
+
+        return $mailClass->decode(array_merge($mails, $mailsAuto));
     }
 
     public function getCumulatedStatsByMailIds($mailsIds = [])
@@ -131,5 +153,14 @@ class MailStatClass extends acymClass
         $query = 'SELECT SUM(sent) AS sent, SUM(open_unique) AS open, SUM(fail) AS fails, SUM(bounce_unique) AS bounces FROM #__acym_mail_stat '.$condMailIds;
 
         return acym_loadObject($query);
+    }
+
+    public function getByMailIds($mailIds)
+    {
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+
+        acym_arrayToInteger($mailIds);
+
+        return acym_loadObject('SELECT * FROM #__acym_mail_stat WHERE mail_id IN ('.implode(',', $mailIds).')');
     }
 }

@@ -2,7 +2,7 @@
 
 use AcyMailing\Helpers\HeaderHelper;
 
-function acym_enqueueMessage($message, $type = 'success')
+function acym_enqueueMessage($message, $type = 'success', $notification = true)
 {
     $type = str_replace(['notice', 'message'], ['info', 'success'], $type);
     $message = is_array($message) ? implode('<br/>', $message) : $message;
@@ -15,7 +15,7 @@ function acym_enqueueMessage($message, $type = 'success')
 
     $handledTypes = ['info', 'warning', 'error'];
 
-    if (acym_isAdmin()) {
+    if ($notification && acym_isAdmin()) {
         $helperHeader = new HeaderHelper();
         $notification->id = $helperHeader->addNotification($notification);
     } else {

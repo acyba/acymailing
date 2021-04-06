@@ -32,7 +32,7 @@ class UrlClickClass extends acymClass
         if (!empty($urlClick['click'])) {
             $onDuplicate[] = "click = click + 1";
             $automationClass = new AutomationClass();
-            $automationClass->trigger('user_click', ['userId' => $urlClick['user_id']]);
+            $automationClass->trigger('user_click', ['userId' => $urlClick['user_id'], 'mailId' => $urlClick['mail_id']]);
         }
 
         if (!empty($onDuplicate)) {
@@ -46,25 +46,33 @@ class UrlClickClass extends acymClass
         acym_query($query);
     }
 
-    public function getNumberUsersClicked($mailid = '')
+    public function getNumberUsersClicked($mailIds = [])
     {
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+
+        acym_arrayToInteger($mailIds);
+
         $query = 'SELECT COUNT(DISTINCT user_id) FROM #__acym_url_click AS url_click';
         $isMultilingual = acym_isMultilingual();
-        if ($isMultilingual && !empty($mailid)) {
-            $query .= ' LEFT JOIN #__acym_mail AS mail ON `mail`.`id` = `url_click`.`mail_id` WHERE `mail`.`id` = '.intval(
-                    $mailid
-                ).' OR  `mail`.`parent_id` = '.intval($mailid);
+        if ($isMultilingual && !empty($mailIds)) {
+            $query .= ' LEFT JOIN #__acym_mail AS mail ON `mail`.`id` = `url_click`.`mail_id` WHERE `mail`.`id` IN ('.implode(
+                    ',',
+                    $mailIds
+                ).') OR  `mail`.`parent_id` IN ('.implode(',', $mailIds).')';
         }
-        if (!$isMultilingual && !empty($mailid)) $query .= ' WHERE `url_click`.`mail_id` = '.intval($mailid);
+        if (!$isMultilingual && !empty($mailIds)) $query .= ' WHERE `url_click`.`mail_id` IN ('.implode(',', $mailIds).')';
         $clickNb = acym_loadResult($query);
 
         return empty($clickNb) ? 0 : $clickNb;
     }
 
-    public function getAllClickByMailMonth($mailid = '', $start = '', $end = '')
+    public function getAllClickByMailMonth($mailIds = [], $start = '', $end = '')
     {
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+        acym_arrayToInteger($mailIds);
+
         $query = 'SELECT COUNT(*) as click, DATE_FORMAT(date_click, \'%Y-%m\') as date_click FROM #__acym_url_click WHERE click > 0';
-        $query .= empty($mailid) ? '' : ' AND `mail_id` = '.intval($mailid);
+        $query .= empty($mailIds) ? '' : ' AND `mail_id` IN ('.implode(',', $mailIds).')';
         $query .= empty($start) ? '' : ' AND date_click >= '.acym_escapeDB($start);
         $query .= empty($end) ? '' : ' AND date_click <= '.acym_escapeDB($end);
         $query .= ' GROUP BY MONTH(date_click), YEAR(date_click) ORDER BY date_click';
@@ -83,10 +91,13 @@ class UrlClickClass extends acymClass
         return acym_loadObjectList($query);
     }
 
-    public function getAllClickByMailDay($mailid = '', $start = '', $end = '')
+    public function getAllClickByMailDay($mailIds = [], $start = '', $end = '')
     {
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+        acym_arrayToInteger($mailIds);
+
         $query = 'SELECT COUNT(*) as click, DATE_FORMAT(date_click, \'%Y-%m-%d\') as date_click FROM #__acym_url_click WHERE click > 0';
-        $query .= empty($mailid) ? '' : ' AND `mail_id` = '.intval($mailid);
+        $query .= empty($mailIds) ? '' : ' AND `mail_id` IN ('.implode(',', $mailIds).')';
         $query .= empty($start) ? '' : ' AND date_click >= '.acym_escapeDB($start);
         $query .= empty($end) ? '' : ' AND date_click <= '.acym_escapeDB($end);
         $query .= ' GROUP BY DAYOFYEAR(date_click), YEAR(date_click) ORDER BY date_click';
@@ -94,10 +105,13 @@ class UrlClickClass extends acymClass
         return acym_loadObjectList($query);
     }
 
-    public function getAllClickByMailHour($mailid = '', $start = '', $end = '')
+    public function getAllClickByMailHour($mailIds = [], $start = '', $end = '')
     {
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+        acym_arrayToInteger($mailIds);
+
         $query = 'SELECT COUNT(*) as click, DATE_FORMAT(date_click, \'%Y-%m-%d %H:00:00\') as date_click FROM #__acym_url_click WHERE click > 0';
-        $query .= empty($mailid) ? '' : ' AND `mail_id` = '.intval($mailid);
+        $query .= empty($mailIds) ? '' : ' AND `mail_id` IN ('.implode(',', $mailIds).')';
         $query .= empty($start) ? '' : ' AND date_click >= '.acym_escapeDB($start);
         $query .= empty($end) ? '' : ' AND date_click <= '.acym_escapeDB($end);
         $query .= ' GROUP BY HOUR(date_click), DAYOFYEAR(date_click), YEAR(date_click) ORDER BY date_click';
@@ -133,13 +147,19 @@ class UrlClickClass extends acymClass
 
     public function getUrlsFromMailsWithDetails($params)
     {
-        if (empty($params['mail_id'])) return [];
+        if (empty($params['mail_ids'])) return [];
 
-        $query = 'SELECT url.id, url.name, SUM(click) AS total_click, COUNT(DISTINCT user_id) AS unique_click FROM #__acym_url AS url
-                  JOIN #__acym_url_click AS url_click ON url.id = url_click.url_id AND url_click.mail_id = '.intval($params['mail_id']);
+        if (!is_array($params['mail_ids'])) $params['mail_ids'] = [$params['mail_ids']];
+        acym_arrayToInteger($params['mail_ids']);
+
+        $query = 'SELECT url.id, url.name, SUM(click) AS total_click, COUNT(DISTINCT user_id) AS unique_click, mail.subject AS mail_subject, mail.name AS mail_name
+                  FROM #__acym_url AS url
+                  JOIN #__acym_url_click AS url_click ON url.id = url_click.url_id AND url_click.mail_id IN ('.implode(',', $params['mail_ids']).')
+                  JOIN #__acym_mail AS mail ON mail.id = url_click.mail_id';
 
         $queryCount = 'SELECT COUNT(DISTINCT url.id) FROM #__acym_url AS url
-                  JOIN #__acym_url_click AS url_click ON url.id = url_click.url_id AND url_click.mail_id = '.intval($params['mail_id']);
+                  JOIN #__acym_url_click AS url_click ON url.id = url_click.url_id AND url_click.mail_id IN ('.implode(',', $params['mail_ids']).')
+                  JOIN #__acym_mail AS mail ON mail.id = url_click.mail_id';
 
         if (!empty($params['search'])) {
             $searchTerms = acym_escapeDB('%'.$params['search'].'%');
@@ -169,15 +189,29 @@ class UrlClickClass extends acymClass
 
     public function getUserUrlClicksStats($params)
     {
-        if (empty($params['mail_id'])) return [];
+        if (empty($params['mail_ids'])) return [];
 
-        $query = 'SELECT url.id AS url_id, user.id AS user_id, user.email, user.name AS user_name, url.name AS url_name, url_click.date_click, url_click.click FROM #__acym_user AS user 
-                  JOIN #__acym_url_click AS url_click ON url_click.user_id = user.id AND url_click.mail_id = '.intval($params['mail_id']).'
-                  JOIN #__acym_url AS url ON url.id = url_click.url_id';
+        if (!is_array($params['mail_ids'])) $params['mail_ids'] = [$params['mail_ids']];
+        acym_arrayToInteger($params['mail_ids']);
+
+        $query = 'SELECT url.id AS url_id,
+                        user.id AS user_id,
+                        user.email,
+                        user.name AS user_name,
+                        url.name AS url_name,
+                        url_click.date_click,
+                        url_click.click,
+                        mail.subject AS mail_subject,
+                        mail.name AS mail_name
+                  FROM #__acym_user AS user 
+                  JOIN #__acym_url_click AS url_click ON url_click.user_id = user.id AND url_click.mail_id IN ('.implode(',', $params['mail_ids']).')
+                  JOIN #__acym_url AS url ON url.id = url_click.url_id
+                  JOIN #__acym_mail AS mail ON mail.id = url_click.mail_id';
 
         $queryCount = 'SELECT COUNT(DISTINCT user.id) FROM #__acym_user AS user 
-                  JOIN #__acym_url_click AS url_click ON url_click.user_id = user.id AND url_click.mail_id = '.intval($params['mail_id']).'
-                  JOIN #__acym_url AS url ON url.id = url_click.url_id';
+                  JOIN #__acym_url_click AS url_click ON url_click.user_id = user.id AND url_click.mail_id IN ('.implode(',', $params['mail_ids']).')
+                  JOIN #__acym_url AS url ON url.id = url_click.url_id
+                  JOIN #__acym_mail AS mail ON mail.id = url_click.mail_id';
 
         if (!empty($params['search'])) {
             $searchTerms = acym_escapeDB('%'.$params['search'].'%');

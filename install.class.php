@@ -1,12 +1,13 @@
 <?php
 
 use AcyMailing\Classes\ActionClass;
+use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\ConditionClass;
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\FormClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
-use AcyMailing\Classes\PluginClass;
+use AcyMailing\Classes\RuleClass;
 use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Controllers\ConfigurationController;
 use AcyMailing\Controllers\PluginsController;
@@ -1001,6 +1002,88 @@ class acymInstall
         if (version_compare($this->fromVersion, '7.2.1', '<')) {
             $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `translation` `translation` TEXT NULL');
         }
+
+        if (version_compare($this->fromVersion, '7.4.0', '<')) {
+            $actionClass = new ActionClass();
+            $actions = $actionClass->getAll();
+            foreach ($actions as $action) {
+                if (strpos($action->filters, 'hikareminder')) {
+                    $action->filters = preg_replace_callback(
+                        '/"hikareminder":{"days":"(\d+)"/',
+                        [$this, 'replaceHikaReminder'],
+                        $action->filters
+                    );
+                    $actionClass->save($action);
+                }
+            }
+
+            $conditionClass = new ConditionClass();
+            $conditions = $conditionClass->getAll();
+            foreach ($conditions as $condition) {
+                if (strpos($condition->conditions, 'hikareminder')) {
+                    $condition->conditions = preg_replace_callback(
+                        '/"hikareminder":{"days":"(\d+)"/',
+                        [$this, 'replaceHikaReminder'],
+                        $condition->conditions
+                    );
+                    $conditionClass->save($condition);
+                }
+            }
+
+            $segmentClass = new SegmentClass();
+            $segments = $segmentClass->getAll();
+            foreach ($segments as $segment) {
+                if (strpos($segment->filters, 'hikareminder')) {
+                    $segment->filters = preg_replace_callback(
+                        '/"hikareminder":{"days":"(\d+)"/',
+                        [$this, 'replaceHikaReminder'],
+                        $segment->filters
+                    );
+                    $segmentClass->save($segment);
+                }
+            }
+
+            $campaignClass = new CampaignClass();
+            $campaigns = $campaignClass->getAll();
+            foreach ($campaigns as $campaign) {
+                $campaign->sending_params = json_encode($campaign->sending_params);
+                if (strpos($campaign->sending_params, 'hikareminder')) {
+                    $campaign->sending_params = preg_replace_callback(
+                        '/"hikareminder":{"days":"(\d+)"/',
+                        [$this, 'replaceHikaReminder'],
+                        $campaign->sending_params
+                    );
+                    $campaign->sending_params = json_decode($campaign->sending_params);
+                    $campaignClass->save($campaign);
+                }
+            }
+
+            $rule = new stdClass();
+            $rule->name = 'ACYM_LIST_UNSUBSCRIBE_HANDLING';
+            $rule->ordering = 1;
+            $rule->regex = 'Please unsubscribe user ID \\d+';
+            $rule->executed_on = '["body"]';
+            $rule->action_message = '["delete_message"]';
+            $rule->action_user = '["unsubscribe_user"]';
+            $rule->active = 1;
+            $rule->increment_stats = 0;
+            $rule->execute_action_after = 0;
+
+            $ruleClass = new RuleClass();
+            $ruleClass->save($rule);
+
+            $captchaOption = $config->get('captcha', 0);
+            $config->save(
+                [
+                    'captcha' => intval($captchaOption) === 1 ? 'acym_ireCaptcha' : 'none',
+                ]
+            );
+
+            $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `from_name` `from_name` VARCHAR(100) NULL');
+            $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `from_email` `from_email` VARCHAR(100) NULL');
+            $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `reply_to_name` `reply_to_name` VARCHAR(100) NULL');
+            $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `reply_to_email` `reply_to_email` VARCHAR(100) NULL');
+        }
     }
 
     public function updateQuery($query)
@@ -1014,4 +1097,13 @@ class acymInstall
             acym_enqueueMessage(isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200).'...', 'error');
         }
     }
+
+    public function replaceHikaReminder($matches)
+    {
+        $val = (int)$matches[1] * 86400;
+
+        return '"hikareminder":{"days":"'.$val.'"';
+    }
+
+
 }

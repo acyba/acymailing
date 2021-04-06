@@ -210,6 +210,7 @@ const acym_editorWysidFormAction = {
             $template.find('[id^="mce_"]').removeAttr('id');
 
             acym_helperEditorWysid.setColumnRefreshUiWYSID();
+            acym_helperEditorWysid.setInitFunctionsOnEdtionStart();
             // When the edition starts, we reload the editor
             acym_editorWysidVersioning.setUndoAndAutoSave(true);
 

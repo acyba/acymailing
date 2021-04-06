@@ -193,19 +193,8 @@ class plgAcymWoocommerce extends acymPlugin
                     'rand' => 'ACYM_RANDOM',
                 ],
             ],
-            [
-                'title' => 'ACYM_COLUMNS',
-                'type' => 'number',
-                'name' => 'cols',
-                'default' => 1,
-            ],
-            [
-                'title' => 'ACYM_MAX_NB_ELEMENTS',
-                'type' => 'number',
-                'name' => 'max',
-                'default' => 20,
-            ],
         ];
+        $this->autoContentOptions($catOptions);
 
         $this->autoCampaignOptions($catOptions);
 
@@ -1255,7 +1244,7 @@ class plgAcymWoocommerce extends acymPlugin
             $options['datemin'] = acym_replaceDate($options['datemin']);
             if (!is_numeric($options['datemin'])) $options['datemin'] = strtotime($options['datemin']);
             if (!empty($options['datemin'])) {
-                $conditions[] = 'post'.$num.'.post_date > '.acym_escapeDB(acym_date($options['datemin'], "Y-m-d H:i:s"));
+                $conditions[] = 'post'.$num.'.post_date > '.acym_escapeDB(acym_date($options['datemin'], 'Y-m-d H:i:s'));
             }
         }
 
@@ -1263,7 +1252,7 @@ class plgAcymWoocommerce extends acymPlugin
             $options['datemax'] = acym_replaceDate($options['datemax']);
             if (!is_numeric($options['datemax'])) $options['datemax'] = strtotime($options['datemax']);
             if (!empty($options['datemax'])) {
-                $conditions[] = 'post'.$num.'.post_date < '.acym_escapeDB(acym_date($options['datemax'], "Y-m-d H:i:s"));
+                $conditions[] = 'post'.$num.'.post_date < '.acym_escapeDB(acym_date($options['datemax'], 'Y-m-d H:i:s'));
             }
         }
 
@@ -2216,7 +2205,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-new_order',
                 'base_subject' => [
-                    '[{site_title}]: New order #{order_number}',
+                    __('[{site_title}]: New order #{order_number}', 'woocommerce'),
                 ],
                 'base_body' => '',
                 'new_subject' => '[{param1}]: New order #{param2}',
@@ -2233,7 +2222,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_completed_order',
                 'base_subject' => [
-                    'Your {site_title} order is now complete',
+                    __('Your {site_title} order is now complete', 'woocommerce'),
                 ],
                 'base_body' => '',
                 'new_subject' => 'Your {param1} order is now complete',
@@ -2252,7 +2241,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_on_hold_order',
                 'base_subject' => [
-                    'Your {site_title} order has been received!',
+                    __('Your {site_title} order has been received!', 'woocommerce'),
                 ],
                 'base_body' => '',
                 'new_subject' => 'Your {param1} order has been received!',
@@ -2271,7 +2260,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_invoice',
                 'base_subject' => [
-                    'Invoice for order #{order_number} on {site_title}',
+                    __('Invoice for order #{order_number} on {site_title}', 'woocommerce'),
                 ],
                 'base_body' => '',
                 'new_subject' => 'Invoice for order #{param1} on {param2}',
@@ -2290,7 +2279,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_processing_order',
                 'base_subject' => [
-                    'Your {site_title} order has been received!',
+                    __('Your {site_title} order has been received!', 'woocommerce'),
                 ],
                 'base_body' => '',
                 'new_subject' => 'Your {param1} order has been received!',
@@ -2309,7 +2298,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_refunded_order',
                 'base_subject' => [
-                    'Your {site_title} order #{order_number} has been refunded',
+                    __('Your {site_title} order #{order_number} has been refunded', 'woocommerce'),
                 ],
                 'base_body' => '',
                 'new_subject' => 'Your {param1} order #{param2} has been refunded',
@@ -2328,7 +2317,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-failed_order',
                 'base_subject' => [
-                    '[{site_title}]: Order #{order_number} has failed',
+                    __('[{site_title}]: Order #{order_number} has failed', 'woocommerce'),
                 ],
                 'base_body' => '',
                 'new_subject' => '[{param1}]: Order #{param2} has failed',
@@ -2345,7 +2334,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-cancelled_order',
                 'base_subject' => [
-                    '[{site_title}]: Order #{order_number} has been cancelled',
+                    __('[{site_title}]: Order #{order_number} has been cancelled', 'woocommerce'),
                 ],
                 'base_body' => '',
                 'new_subject' => '[{param1}]: Order #{param2} has been cancelled',
@@ -2362,7 +2351,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_reset_password',
                 'base_subject' => [
-                    'Password Reset Request for {site_title}',
+                    __('Password Reset Request for {site_title}', 'woocommerce'),
                 ],
                 'base_body' => '',
                 'new_subject' => 'Password Reset Request for {param1}',
@@ -2381,7 +2370,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_new_account',
                 'base_subject' => [
-                    'Your {site_title} account has been created!',
+                    __('Your {site_title} account has been created!', 'woocommerce'),
                 ],
                 'base_body' => '',
                 'new_subject' => 'Your {param1} account has been created!',
@@ -2396,7 +2385,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_note',
                 'base_subject' => [
-                    'Note added to your {site_title} order from {order_date}',
+                    __('Note added to your {site_title} order from {order_date}', 'woocommerce'),
                 ],
                 'base_body' => '',
                 'new_subject' => 'Note added to your {param1} order from {param2}',

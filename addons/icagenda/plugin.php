@@ -216,20 +216,6 @@ class plgAcymIcagenda extends acymPlugin
 
         $catOptions = [
             [
-                'title' => 'ACYM_COLUMNS',
-                'type' => 'number',
-                'name' => 'cols',
-                'default' => 1,
-                'min' => 1,
-                'max' => 10,
-            ],
-            [
-                'title' => 'ACYM_MAX_NB_ELEMENTS',
-                'type' => 'number',
-                'name' => 'max',
-                'default' => 20,
-            ],
-            [
                 'title' => 'ACYM_FROM',
                 'type' => 'date',
                 'name' => 'from',
@@ -257,6 +243,7 @@ class plgAcymIcagenda extends acymPlugin
                 'defaultdir' => 'asc',
             ],
         ];
+        $this->autoContentOptions($catOptions);
 
         $this->autoCampaignOptions($catOptions);
 
@@ -371,9 +358,11 @@ class plgAcymIcagenda extends acymPlugin
             // Not started events
             $where[] = 'event.`startdate` >= '.acym_escapeDB($parameter->from).' OR event.next >= '.acym_escapeDB($parameter->from);
 
-            if (!empty($parameter->to)) $where[] = '(event.startdate <= '.acym_escapeDB(
-                    $parameter->to
-                ).' AND event.startdate != "0000-00-00 00:00:00") OR event.next <= '.acym_escapeDB($parameter->to);
+            if (!empty($parameter->to)) {
+                $where[] = '(event.startdate <= '.acym_escapeDB(
+                        $parameter->to
+                    ).' AND event.startdate != "0000-00-00 00:00:00") OR event.next <= '.acym_escapeDB($parameter->to);
+            }
 
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);

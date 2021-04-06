@@ -22,10 +22,14 @@
     <?php if (!empty($data['user-information']->source)) { ?>
 		<div class="cell grid-x margin-top-1">
 			<div class="cell medium-6 small-12">
-                <?php echo acym_translation('ACYM_DATE_CREATED'); ?> : <b><?php echo !empty($data['user-information']->id) ? acym_date(
-                        $data['user-information']->creation_date,
-                        'M. j, Y'
-                    ) : acym_date(time(), 'M. j, Y'); ?></b>
+                <?php
+                echo acym_translation('ACYM_DATE_CREATED').' : <b>';
+                echo acym_date(
+                    empty($data['user-information']->id) ? time() : $data['user-information']->creation_date,
+                    'ACYM_DATE_FORMAT_LC3'
+                );
+                echo '</b>';
+                ?>
 			</div>
 			<div class="cell medium-6 small-12">
                 <?php echo acym_translation('ACYM_SOURCE'); ?> : <b><?php echo acym_escape($data['user-information']->source); ?></b>
@@ -33,10 +37,14 @@
 		</div>
     <?php } else { ?>
 		<div class="cell margin-top-1">
-            <?php echo acym_translation('ACYM_DATE_CREATED'); ?> : <b><?php echo !empty($data['user-information']->id) ? acym_date(
-                    $data['user-information']->creation_date,
-                    'M. j, Y'
-                ) : acym_date(time(), 'M. j, Y'); ?></b>
+            <?php echo acym_translation('ACYM_DATE_CREATED'); ?> : <b>
+                <?php
+                echo acym_date(
+                    empty($data['user-information']->id) ? time() : $data['user-information']->creation_date,
+                    'ACYM_DATE_FORMAT_LC3'
+                );
+                ?>
+			</b>
 		</div>
     <?php } ?>
 </div>

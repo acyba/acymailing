@@ -1,9 +1,42 @@
+<?php
+
+use AcyMailing\Helpers\BounceHelper;
+
+if (acym_getVar('boolean', 'run_bounce')) {
+    $bounceHelper = new BounceHelper();
+    $bounceHelper->report = true;
+    if ($bounceHelper->init() && $bounceHelper->connect()) {
+        $nbMessages = $bounceHelper->getNBMessages();
+        $bounceHelper->close();
+        $messages = [
+            acym_translationSprintf('ACYM_BOUNCE_CONNECT_SUCC', $this->config->get('bounce_username')),
+            acym_translationSprintf('ACYM_NB_MAIL_MAILBOX', $nbMessages),
+        ];
+
+        if (!empty($nbMessages)) {
+            $messages[] = acym_modal(
+                acym_translation('ACYM_CLICK_BOUNCE'),
+                '',
+                null,
+                '',
+                'data-ajax="true" data-iframe="&ctrl=bounces&task=process" class="acym__color__light-blue cursor-pointer" style="margin: 0"'
+            );
+        }
+
+        acym_display('<div>'.implode('</div><div>', $messages).'</div>', 'info', false);
+    }
+}
+?>
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm">
     <?php $data['toolbar']->displayToolbar($data); ?>
 	<div id="acym__bounces" class="acym__content">
 		<div class="cell grid-x acym__listing__actions">
             <?php
-            $actions = ['delete' => acym_translation('ACYM_DELETE')];
+            $actions = [
+                'delete' => acym_translation('ACYM_DELETE'),
+                'setInactive' => acym_translation('ACYM_DISABLE'),
+                'setActive' => acym_translation('ACYM_ENABLE'),
+            ];
             echo acym_listingActions($actions);
             ?>
 		</div>
