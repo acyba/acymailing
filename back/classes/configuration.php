@@ -24,7 +24,7 @@ class ConfigurationClass extends acymClass
         return $default;
     }
 
-    public function save($newConfig)
+    public function save($newConfig, $escape = true)
     {
         // We do a replace so that values are always kept up to date and added if necessary in the mean time
         $query = 'REPLACE INTO #__acym_configuration (`name`, `value`) VALUES ';
@@ -55,7 +55,11 @@ class ConfigurationClass extends acymClass
             $this->values[$name]->value = $value;
 
             // We do a strip tags to avoid HTML injections
-            $params[] = '('.acym_escapeDB(strip_tags($name)).','.acym_escapeDB(strip_tags($value)).')';
+            if ($escape) {
+                $params[] = '('.acym_escapeDB(strip_tags($name)).','.acym_escapeDB(strip_tags($value)).')';
+            } else {
+                $params[] = '('.acym_escapeDB($name).','.acym_escapeDB($value).')';
+            }
         }
 
         if (empty($params)) return true;

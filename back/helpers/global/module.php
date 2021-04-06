@@ -20,7 +20,7 @@ function acym_initModule($params = null)
 
     $loadJsInModule = false;
 
-    if (method_exists($params, 'get')) {
+    if (!is_null($params) && method_exists($params, 'get')) {
         $nameCaption = $params->get('nametext');
         $emailCaption = $params->get('emailtext');
         $loadJsInModule = $params->get('includejs') == 'module';
@@ -43,6 +43,7 @@ function acym_initModule($params = null)
 			acymModule['VALID_EMAIL'] = '".str_replace("'", "\'", acym_translation('ACYM_VALID_EMAIL'))."';
 			acymModule['CAPTCHA_MISSING'] = '".str_replace("'", "\'", acym_translation('ACYM_WRONG_CAPTCHA'))."';
 			acymModule['NO_LIST_SELECTED'] = '".str_replace("'", "\'", acym_translation('ACYM_SELECT_LIST'))."';
+			acymModule['NO_LIST_SELECTED_UNSUB'] = '".str_replace("'", "\'", acym_translation('ACYM_SELECT_LIST_UNSUB'))."';
             acymModule['ACCEPT_TERMS'] = '".str_replace("'", "\'", acym_translation('ACYM_ACCEPT_TERMS'))."';
         }
 		";

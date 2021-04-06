@@ -64,7 +64,7 @@
                                 echo acym_escape($oneTemplate->name);
                                 ?>
 							</div>
-							<div class="cell"><?php echo acym_date($oneTemplate->creation_date, 'M. j, Y'); ?></div>
+							<div class="cell"><?php echo acym_date($oneTemplate->creation_date, 'ACYM_DATE_FORMAT_LC3'); ?></div>
 						</div>
 					</div>
                 <?php } ?>

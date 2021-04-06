@@ -7,6 +7,7 @@ document.addEventListener('wpcf7submit', function (event) {
         let urlAction = jQuery('[name="acymaction_' + listField + '"]').val();
 
         let mailField = currentfield.attr('data-acymmail');
+        let nameField = currentfield.attr('data-acymname');
         if (undefined === mailField || mailField.length === 0) {
             let inputs = event.detail.inputs;
             for (let k = 0 ; k < inputs.length ; k++) {
@@ -20,6 +21,11 @@ document.addEventListener('wpcf7submit', function (event) {
         if (mailField.length === 0 || listField.length === 0 || urlAction.length === 0) return;
 
         let emailAddress = jQuery('[name="' + mailField + '"]').val();
+        let nameValue = '';
+
+        if (undefined !== nameField && nameField.length !== 0) {
+            nameValue = jQuery('[name="' + nameField + '"]').val();
+        }
 
         let hiddenLists = currentfield.val();
         let allListsField = jQuery('[name="' + listField + '[]"]');
@@ -36,8 +42,10 @@ document.addEventListener('wpcf7submit', function (event) {
             url: urlAction,
             data: {
                 'user[email]': emailAddress,
+                'user[name]': nameValue,
                 'hiddenlists': hiddenLists,
-                'subscription': allLists
+                'subscription': allLists,
+                'acy_source': 'Contact Form 7'
             },
             timeout: 5000,
             error: function () {

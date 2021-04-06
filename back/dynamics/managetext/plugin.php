@@ -13,8 +13,8 @@ class plgAcymManagetext extends acymPlugin
 
     public function replaceUserInformation(&$email, &$user, $send = true)
     {
-        $this->pluginHelper->replaceVideos($email->body);
         $this->pluginHelper->cleanHtml($email->body);
+        $this->pluginHelper->replaceVideos($email->body);
 
         $this->_removetext($email);
         $this->_ifstatement($email, $user);

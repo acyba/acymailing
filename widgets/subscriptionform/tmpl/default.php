@@ -60,7 +60,7 @@ if ($listPosition == 'before') echo $listsContent;
             if (!$displayInline) echo '</tr><tr>';
         }
 
-        if (empty($identifiedUser->id) && $config->get('captcha', '') == 1) {
+        if (empty($identifiedUser->id) && $config->get('captcha', 'none') !== 'none') {
             echo '<td class="captchakeymodule" '.($displayOutside && !$displayInline ? 'colspan="2"' : '').'>';
             $captcha = new CaptchaHelper();
             echo $captcha->display($formName);
@@ -82,18 +82,22 @@ if ($listPosition == 'before') echo $listsContent;
                     <?php echo acym_translation('ACYM_NO_JAVASCRIPT'); ?>
 				</div>
 			</noscript>
+            <?php
+            $onclickSubscribe = 'try{ return submitAcymForm("subscribe","'.$formName.'", "acymSubmitSubForm"); }catch(err){alert("The form could not be submitted "+err);return false;}';
+            $onclickUnsubscribe = 'try{ return submitAcymForm("unsubscribe","'.$formName.'", "acymSubmitSubForm"); }catch(err){alert("The form could not be submitted "+err);return false;}';
+            ?>
 			<input type="button"
 				   class="btn btn-primary button subbutton"
 				   value="<?php echo acym_translation($subscribeText, true); ?>"
 				   name="Submit"
-				   onclick="try{ return submitAcymForm('subscribe','<?php echo $formName; ?>', 'acymSubmitSubForm'); }catch(err){alert('The form could not be submitted '+err);return false;}" />
+				   onclick="<?php echo acym_isAdmin() ? 'return true' : acym_escape($onclickSubscribe); ?>" />
             <?php if ($unsubButton === '2' || ($unsubButton === '1' && !empty($countUnsub))) { ?>
 				<span style="display: none;"></span>
 				<input type="button"
 					   class="btn button unsubbutton"
 					   value="<?php echo acym_translation($unsubscribeText, true); ?>"
 					   name="Submit"
-					   onclick="try{ return submitAcymForm('unsubscribe','<?php echo $formName; ?>', 'acymSubmitSubForm'); }catch(err){alert('The form could not be submitted '+err);return false;}" />
+					   onclick="<?php echo acym_isAdmin() ? 'return true' : acym_escape($onclickUnsubscribe); ?>" />
             <?php } ?>
 		</td>
 	</tr>

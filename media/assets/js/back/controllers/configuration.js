@@ -293,11 +293,11 @@ jQuery(document).ready(function ($) {
             if (parseInt($embedImageToggle.val()) === 1) $switchLabel.click();
             $switchPaddle.addClass('disabled').attr('data-acym-tooltip', $info.find('.acym__tooltip__text ').html());
             $embedImageToggle.next().attr('disabled', 'true');
-            $info.show();
+            $info.closest('.acym__tooltip__info').show();
         } else {
             $embedImageToggle.next().removeAttr('disabled');
             $switchPaddle.removeClass('disabled').removeAttr('data-acym-tooltip');
-            $info.hide();
+            $info.closest('.acym__tooltip__info').hide();
         }
         acym_helperTooltip.setTooltip();
     }

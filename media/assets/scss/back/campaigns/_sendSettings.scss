@@ -5,6 +5,10 @@
 
             button {
                 max-width: 300px;
+
+                &.disabled {
+                    cursor: default;
+                }
             }
         }
 

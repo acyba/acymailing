@@ -38,6 +38,38 @@
 				<input type="number" min="0" value="20" id="acym__wysid__padding__bottom__content" class="cell small-4">
 			</label>
 		</div>
+		<div class="grid-x margin-bottom-1 small-12 cell">
+			<label class="cell grid-x">
+				<span class="cell large-6 small-8"><?php echo acym_translation('ACYM_DEFAULT_FONT'); ?></span>
+				<div class="cell large-6 small-8">
+                    <?php
+                    $fonts = [
+                        'Andale Mono' => 'Andale Mono',
+                        'Arial' => 'Arial',
+                        'Book Antiqua' => 'Book Antiqua',
+                        'Comic Sans MS' => 'Comic Sans MS',
+                        'Courier New' => 'Courier New',
+                        'Georgia' => 'Georgia',
+                        'Helvetica' => 'Helvetica',
+                        'Impact' => 'Impact',
+                        'Times New Roman' => 'Times New Roman',
+                        'Trebuchet MS' => 'Trebuchet MS',
+                        'Verdana' => 'Verdana',
+                    ];
+
+                    $defaultFont = 'Helvetica';
+
+                    if (!empty($data['mail']->settings)) {
+                        if (!is_array($data['mail']->settings)) $data['mail']->settings = json_decode($data['mail']->settings, true);
+
+                        if (!empty($data['mail']->settings['default']['font-family'])) $defaultFont = $data['mail']->settings['default']['font-family'];
+                    }
+
+                    echo acym_select($fonts, 'default_font', $defaultFont, 'class="acym__select"');
+                    ?>
+				</div>
+			</label>
+		</div>
 	</div>
 	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
         <?php echo acym_translation('ACYM_DESIGN'); ?>

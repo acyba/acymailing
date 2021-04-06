@@ -117,19 +117,8 @@ class plgAcymRss extends acymPlugin
                 'text' => 'ACYM_TRUNCATE_AFTER',
                 'default' => 0,
             ],
-            [
-                'title' => 'ACYM_COLUMNS',
-                'type' => 'number',
-                'name' => 'cols',
-                'default' => 1,
-            ],
-            [
-                'title' => 'ACYM_MAX_NB_ELEMENTS',
-                'type' => 'number',
-                'name' => 'max',
-                'default' => 5,
-            ],
         ];
+        $this->autoContentOptions($displayOptions);
 
         $this->autoCampaignOptions($displayOptions);
 

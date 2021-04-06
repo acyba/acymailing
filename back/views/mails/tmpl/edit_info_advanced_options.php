@@ -48,7 +48,7 @@
 			</div>
             <?php if (!empty($data['mail']->type) && !in_array(
                     $data['mail']->type,
-                    [$data['mailClass']::TYPE_STANDARD, $data['mailClass']::TYPE_TEMPLATE, $data['mailClass']::TYPE_WELCOME, $data['mailClass']::TYPE_UNSUBSCRIBE]
+                    [$data['mailClass']::TYPE_STANDARD, $data['mailClass']::TYPE_TEMPLATE]
                 )) { ?>
 				<div class="cell grid-x">
 					<div class="cell grid-x medium-6">

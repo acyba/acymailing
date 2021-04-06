@@ -1,22 +1,25 @@
 const acym_editorWysidColorPicker = {
-    setColorPickerForContextModal: function ($element, cssPropertyPrevious, $elementFocus, $previousElement, cssPropertyNew, allowEmpty = false) {
+    setColorPickerForContextModal: function ($element, cssPropertyPrevious, $elementFocus, $previousElement, cssPropertyNew, allowEmpty = false, showAlpha = false) {
         $element.spectrum({
             color: $previousElement.css(cssPropertyPrevious),
             preferredFormat: 'hex',
             showButtons: false,
             showInput: true,
             allowEmpty: allowEmpty,
+            showAlpha: showAlpha,
             move: function (color) {
-                $elementFocus.css(cssPropertyNew, acym_editorWysidColorPicker.getHexStringFromColor(color));
+                $elementFocus.css(cssPropertyNew, acym_editorWysidColorPicker.getHexStringFromColor(color, showAlpha));
             },
             change: function (color) {
-                $elementFocus.css(cssPropertyNew, acym_editorWysidColorPicker.getHexStringFromColor(color));
+                $elementFocus.css(cssPropertyNew, acym_editorWysidColorPicker.getHexStringFromColor(color, showAlpha));
             },
             containerClassName: 'acym__context__color__picker'
         });
     },
-    getHexStringFromColor: function (color) {
+    getHexStringFromColor: function (color, showAlpha) {
         if (color === null) return 'rgba(0,0,0,0)';
+
+        if (showAlpha) return color.toRgbString();
 
         return color.toHexString();
     },

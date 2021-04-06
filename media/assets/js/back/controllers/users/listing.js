@@ -3,7 +3,7 @@ jQuery(document).ready(function ($) {
     function Init() {
         setButtonAddSubscriptionUser();
         setCheckAll();
-        setShowSubscribtion();
+        setShowSubscription();
         setListingListFilter();
     }
 
@@ -39,7 +39,7 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    function setShowSubscribtion() {
+    function setShowSubscription() {
         $('.acym__user__show-subscription').off('click').on('click', function () {
             let $buttonShowSubscription = $(this);
             let $subscriptions = $buttonShowSubscription.closest('.acym__users__subscription');
@@ -48,12 +48,12 @@ jQuery(document).ready(function ($) {
             if ($buttonShowSubscription.attr('data-iscollapsed') == 0) {
                 $buttonShowSubscription.attr('data-iscollapsed', '1').hide();
                 $buttonText.text('<');
-                $subscriptions.fadeIn('slow');
+                $subscriptions.fadeIn('slow').css('display', 'inline-block');
                 $buttonShowSubscription.fadeIn('slow');
             } else {
                 $buttonShowSubscription.attr('data-iscollapsed', '0').hide();
                 $subscriptions.fadeOut('slow', function () {
-                    $buttonText.text('+' + $buttonShowSubscription.attr('value'));
+                    $buttonText.text('+' + $buttonShowSubscription.attr('acym-data-value'));
                     $buttonShowSubscription.fadeIn('fast');
                 });
             }
@@ -66,7 +66,7 @@ jQuery(document).ready(function ($) {
 
         $listListsSelect.find('option:selected').val() !== '0' ? $listStatusesSelect.parent().show() : $listStatusesSelect.parent().hide();
 
-        $listListsSelect.off('change').on('change', function () {
+        $listListsSelect.on('change', function () {
             jQuery('#select2-users_list-container').html(jQuery(this).find('option:selected').text());
             jQuery(this).val() !== '0' ? $listStatusesSelect.parent().show() : $listStatusesSelect.parent().hide();
         });

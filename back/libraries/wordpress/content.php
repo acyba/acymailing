@@ -65,6 +65,8 @@ function acym_cmsCleanHtml($html)
     $replacements = [
         '#<!-- wp:core-embed/vimeo.*"url":"([^"]+)".+<!-- /wp:core-embed/vimeo -->#Uis' => '{vimeo}$1{/vimeo}',
         '#<!-- wp:core-embed/youtube.*"url":"([^"]+)".+<!-- /wp:core-embed/youtube -->#Uis' => '{youtube}$1{/youtube}',
+        '#<!-- wp:embed .*"url":"([^"]+)".+"providerNameSlug":"vimeo".+<!-- /wp:embed -->#Uis' => '{vimeo}$1{/vimeo}',
+        '#<!-- wp:embed .*"url":"([^"]+)".+"providerNameSlug":"youtube".+<!-- /wp:embed -->#Uis' => '{youtube}$1{/youtube}',
         '#<a [^>]*wp-block-file__button[^>]*>[^<]*</a>#Uis' => '',
     ];
 

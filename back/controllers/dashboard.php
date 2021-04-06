@@ -31,7 +31,6 @@ class DashboardController extends acymController
         acym_setVar('layout', 'listing');
 
         if ($this->migration()) return;
-        if ($this->feedback()) return;
         if ($this->walkthrough()) return;
 
         $campaignClass = new CampaignClass();
@@ -565,30 +564,6 @@ class DashboardController extends acymController
         $newConfig = new \stdClass();
         $newConfig->migration = '1';
         $this->config->save($newConfig);
-
-        return false;
-    }
-
-    public function feedback()
-    {
-        if ('wordpress' !== ACYM_CMS) return false;
-
-        $installDate = $this->config->get('install_date', time());
-        $remindme = json_decode($this->config->get('remindme', '[]'), true);
-
-        if ($installDate < time() - 1814400 && !in_array('reviews', $remindme)) {
-            $remindme[] = 'reviews';
-            $this->config->save(['remindme' => json_encode($remindme)]);
-
-            $this->config = acym_config();
-            $remindme = json_decode($this->config->get('remindme', '[]'), true);
-            if (in_array('reviews', $remindme)) {
-                acym_setVar('layout', 'feedback');
-                parent::display();
-
-                return true;
-            }
-        }
 
         return false;
     }

@@ -273,24 +273,13 @@ class plgAcymVirtuemart extends acymPlugin
                 'default' => false,
             ],
             [
-                'title' => 'ACYM_COLUMNS',
-                'type' => 'number',
-                'name' => 'cols',
-                'default' => 1,
-            ],
-            [
-                'title' => 'ACYM_MAX_NB_ELEMENTS',
-                'type' => 'number',
-                'name' => 'max',
-                'default' => 20,
-            ],
-            [
                 'title' => 'COM_VIRTUEMART_MANUFACTURER',
                 'type' => 'select',
                 'name' => 'manufacturer',
                 'options' => $manufacturers,
             ],
         ];
+        $this->autoContentOptions($catOptions);
 
         $this->autoCampaignOptions($catOptions);
 
@@ -1036,6 +1025,11 @@ class plgAcymVirtuemart extends acymPlugin
         if (empty($affectedRows)) $conditionNotValid++;
     }
 
+    public function onAcymProcessFilter_vmfield(&$query, $options, $num)
+    {
+        $this->processConditionFilter_vmfield($query, $options, $num);
+    }
+
     private function processConditionFilter_vmfield(&$query, $options, $num)
     {
         $query->join['vmfield_user'] = '#__virtuemart_userinfos AS vmfield_user ON user.cms_id = vmfield_user.virtuemart_user_id';
@@ -1047,6 +1041,11 @@ class plgAcymVirtuemart extends acymPlugin
         $this->processConditionFilter_vmreminder($query, $options, $num);
         $affectedRows = $query->count();
         if (empty($affectedRows)) $conditionNotValid++;
+    }
+
+    public function onAcymProcessFilter_vmreminder(&$query, $options, $num)
+    {
+        $this->processConditionFilter_vmreminder($query, $options, $num);
     }
 
     private function processConditionFilter_vmreminder(&$query, $options, $num)
@@ -1067,6 +1066,11 @@ class plgAcymVirtuemart extends acymPlugin
         $this->processConditionFilter_vmpurchased($query, $options, $num);
         $affectedRows = $query->count();
         if (empty($affectedRows)) $conditionNotValid++;
+    }
+
+    public function onAcymProcessFilter_vmpurchased(&$query, $options, $num)
+    {
+        $this->processConditionFilter_vmpurchased($query, $options, $num);
     }
 
     private function processConditionFilter_vmpurchased(&$query, $options, $num)

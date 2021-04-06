@@ -293,7 +293,9 @@ const acym_editorWysidContextModal = {
                 'background-color',
                 $button,
                 $button,
-                'background-color'
+                'background-color',
+                false,
+                true
             );
             acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__button__border-color'),
                 'border-left-color',

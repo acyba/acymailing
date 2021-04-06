@@ -66,6 +66,9 @@
 					<div class="auto cell acym__listing__header__title">
                         <?php echo acym_translation('ACYM_URL'); ?>
 					</div>
+					<div class="auto cell acym__listing__header__title">
+                        <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>
+					</div>
 					<div class="large-2 medium-3 small-4 cell acym__listing__header__title text-center">
                         <?php echo acym_translation('ACYM_UNIQUE_CLICKS'); ?>
 					</div>
@@ -85,6 +88,12 @@
                                     'stats&task=userClickDetails&user_links_details_search='.urlencode(base64_encode($linkDetails->name))
                                 ).'" class="acym__listing__links_details__content__links" target="_blank"><i class="acymicon-bar-chart"></i></a>';
                             ?>
+						</div>
+						<div class="auto cell acym__listing__links_details__content">
+							<span data-acym-tooltip="<?php echo acym_translationSprintf(
+                                'ACYM_MAIL_NAME_X',
+                                $linkDetails->mail_name
+                            ); ?>"><?php echo $linkDetails->mail_subject; ?></span>
 						</div>
 						<div class="large-2 medium-3 small-4 cell acym__listing__links_details__content text-center">
                             <?php

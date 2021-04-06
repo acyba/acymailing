@@ -30,7 +30,6 @@ jQuery(document).on('acy_preview_loaded', () => {
 jQuery(document).ready(function ($) {
 
     function stats() {
-        setDropdownChooseCampaign();
         setStartEndDate();
         resetExportButton();
         setSelect2();
@@ -102,13 +101,6 @@ jQuery(document).ready(function ($) {
 
                 resetExportButton();
             });
-    }
-
-    function setDropdownChooseCampaign() {
-        $('#mail_id').off('change').on('change', function () {
-            $('.acym__stats__select__language option:selected').val(0);
-            $('#formSubmit').click();
-        });
     }
 
     function setStartEndDate() {

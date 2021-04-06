@@ -102,7 +102,7 @@
 						<p class='acym__listing__title__secondary'>
                             <?php
                             if (!empty($campaign->sending_date) && (!$campaign->scheduled || $campaign->sent)) {
-                                echo acym_translation('ACYM_SENDING_DATE').' : '.acym_date($campaign->sending_date, 'M. j, Y');
+                                echo acym_translation('ACYM_SENDING_DATE').' : '.acym_date($campaign->sending_date, 'ACYM_DATE_FORMAT_LC3');
                             } elseif ($data['statusAuto'] === $campaign->sending_type) {
                                 $numberCampaignsGenerated = empty($campaign->sending_params['number_generated']) ? '0' : $campaign->sending_params['number_generated'];
                                 echo acym_translationSprintf('ACYM_X_CAMPAIGN_GENERATED', $numberCampaignsGenerated);

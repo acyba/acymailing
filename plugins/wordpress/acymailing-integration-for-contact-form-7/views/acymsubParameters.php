@@ -1,6 +1,9 @@
 <div class="control-box">
 	<fieldset>
-		<legend><?php echo acym_translation('ACYM_INSERT_CONTACTFORM_TAG'); ?></legend>
+        <?php
+        $docLink = '<a href="https://docs.acymailing.com/addons/wordpress-add-ons/contact-form-7" target="_blank">'.acym_translation('ACYM_SEE_DOCUMENTATION').'</a>';
+        ?>
+		<legend><?php echo acym_translation('ACYM_INSERT_CONTACTFORM_TAG').' '.$docLink; ?></legend>
 
 		<table class="form-table">
 			<tbody>
@@ -20,7 +23,20 @@
 				<tr>
 					<th scope="row"><label for="<?php echo esc_attr($data['args']['content'].'-acymmail'); ?>"><?php echo acym_translation('ACYM_MAIL_FIELD_CONTACT'); ?></label>
 					</th>
-					<td><input type="text" name="acymmail" class="classvalue oneline option" id="<?php echo esc_attr($data['args']['content'].'-acymmail'); ?>" /></td>
+					<td><input type="text"
+							   name="acymmail"
+							   placeholder="your-email"
+							   class="classvalue oneline option"
+							   id="<?php echo esc_attr($data['args']['content'].'-acymmail'); ?>" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="<?php echo esc_attr($data['args']['content'].'-acymname'); ?>"><?php echo acym_translation('ACYM_NAME_FIELD_CONTACT'); ?></label>
+					</th>
+					<td><input type="text"
+							   name="acymname"
+							   placeholder="your-name"
+							   class="classvalue oneline option"
+							   id="<?php echo esc_attr($data['args']['content'].'-acymname'); ?>" /></td>
 				</tr>
 
                 <?php foreach ($data['propertyLabels'] as $key => $label) { ?>

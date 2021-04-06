@@ -38,11 +38,14 @@ class acymController extends acymObject
         if (empty($_SESSION[$this->sessionName])) $_SESSION[$this->sessionName] = [];
     }
 
-    public function getVarFiltersListing($type, $varName, $default)
+    public function getVarFiltersListing($type, $varName, $default, $overrideIfNull = false)
     {
         if ($this->taskCalled == 'clearFilters') return $default;
 
         $returnValue = acym_getVar($type, $varName);
+
+        if (is_null($returnValue) && $overrideIfNull) $returnValue = $default;
+
         if (!is_null($returnValue)) {
             $_SESSION[$this->sessionName][$varName] = $returnValue;
 

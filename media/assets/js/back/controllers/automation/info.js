@@ -72,12 +72,14 @@ jQuery(document).ready(function ($) {
                 //We remove the placeholder
                 $('.acym__automation__droppable__drag').remove();
 
+                let dataTrigger = $(ui.helper).attr('data-trigger');
+
                 //we hide the trigger from the the selection
                 $('.acym__automation__all-trigger__' + type)
                     .append('<div class="acym__automation__trigger__droppable__'
                             + type
                             + ' margin-top-1 cell" style="display: none" data-trigger="'
-                            + $(ui.helper).attr('data-trigger')
+                            + dataTrigger
                             + '">'
                             + $(ui.helper).html()
                             + '</div>');
@@ -96,6 +98,7 @@ jQuery(document).ready(function ($) {
             $(this).removeAttr('data-class');
         });
         acym_helperSelect2.setSelect2();
+        acym_helperSelect2.setAjaxSelect2();
         //we add automation to the name to save it
         $('.acym__automation__user-trigger__' + type + ' [name]').each(function () {
             if (!$(this).attr('name').includes('stepAutomation')) {

@@ -217,7 +217,7 @@ const acym_helperModal = {
             let $reload = jQuery(this).attr('data-reload');
             let ajax = jQuery(this).attr('data-ajax');
             let classIframe = jQuery(this).attr('data-iframe-class');
-            let urlIframe = ajax == 'true' ? ACYM_AJAX_URL + jQuery(this).attr('data-iframe') : jQuery(this).attr('data-iframe');
+            let urlIframe = ajax === 'true' ? ACYM_AJAX_URL + jQuery(this).attr('data-iframe') : jQuery(this).attr('data-iframe');
             $popup.prepend('<iframe src="' + urlIframe + '"></iframe>');
             if (classIframe !== undefined) {
                 $popup.find('iframe').addClass(classIframe);

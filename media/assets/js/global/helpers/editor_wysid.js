@@ -38,6 +38,9 @@ jQuery(document).ready(function ($) {
             acym_editorWysidMultilingual.setLanguageSelection();
             acym_editorWysidDynammic.setDTexts();
         },
+        setInitFunctionsOnEdtionStart: function () {
+            acym_editorWysidFontStyle.initDefaultFont();
+        },
         setColumnRefreshUiWYSID: function (reloadTinyMCE = true) {
             jQuery('.ui-helper-hidden-accessible').remove();
             acym_editorWysidRowSelector.setRowSelector();
@@ -301,6 +304,9 @@ jQuery(document).ready(function ($) {
                 'font-weight': 'normal',
                 'font-style': 'normal',
                 'color': '#000000'
+            },
+            'default': {
+                'font-family': 'Helvetica'
             }
         },
         socialMedia: {

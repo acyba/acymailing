@@ -18,7 +18,7 @@ class SegmentsController extends acymController
         parent::__construct();
         $this->breadcrumb[acym_translation('ACYM_SEGMENTS')] = acym_completeLink('segments');
         $this->loadScripts = [
-            'edit' => ['vue-applications' => ['modal_users_summary']],
+            'edit' => ['datepicker', 'vue-applications' => ['modal_users_summary']],
         ];
     }
 
@@ -302,7 +302,7 @@ class SegmentsController extends acymController
         if (empty($stepAutomation['filters'][$or][$and])) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);
 
         $automationHelper = new AutomationHelper();
-        
+
         //if we are in the campaign edition
         $listsIds = acym_getVar('string', 'list_selected', '');
 

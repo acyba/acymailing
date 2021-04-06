@@ -6,22 +6,22 @@ use AcyMailing\Helpers\HeaderHelper;
  * @param string $message The message to display
  * @param string $type    The type (success, error, warning, info, message, notice)
  */
-function acym_enqueueMessage($message, $type = 'success')
+function acym_enqueueMessage($message, $type = 'success', $notification = true)
 {
     $type = str_replace(['notice', 'message'], ['info', 'success'], $type);
     $message = is_array($message) ? implode('<br/>', $message) : $message;
 
-    $notification = new stdClass();
-    $notification->message = $message;
-    $notification->date = time();
-    $notification->read = false;
-    $notification->level = $type;
-
     $handledTypes = ['info', 'warning', 'error'];
 
-    if (acym_isAdmin()) {
+    if ($notification && acym_isAdmin()) {
+        $notification = new stdClass();
+        $notification->message = $message;
+        $notification->date = time();
+        $notification->read = false;
+        $notification->level = $type;
+
         $helperHeader = new HeaderHelper();
-        $notification->id = $helperHeader->addNotification($notification);
+        $helperHeader->addNotification($notification);
     } else {
         $handledTypes[] = 'success';
     }

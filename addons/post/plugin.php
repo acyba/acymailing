@@ -150,24 +150,13 @@ class plgAcymPost extends acymPlugin
                 ],
             ],
             [
-                'title' => 'ACYM_COLUMNS',
-                'type' => 'number',
-                'name' => 'cols',
-                'default' => 1,
-            ],
-            [
-                'title' => 'ACYM_MAX_NB_ELEMENTS',
-                'type' => 'number',
-                'name' => 'max',
-                'default' => 20,
-            ],
-            [
                 'title' => 'ACYM_GROUP_BY_CATEGORY',
                 'type' => 'boolean',
                 'name' => 'groupbycat',
                 'default' => false,
             ],
         ];
+        $this->autoContentOptions($catOptions);
 
         $this->autoCampaignOptions($catOptions);
 
@@ -408,19 +397,20 @@ class plgAcymPost extends acymPlugin
         return $categoryTitle.$this->finalizeElementFormat($result, $tag, $varFields);
     }
 
-    public function getPosts()
+    public function getPosts($ajax = true, $postPerPage = 20)
     {
-        $return = [];
+        $return = $ajax ? [] : [0 => ['', acym_translation('ACYM_SELECT_AN_ARTICLE')]];
 
-        $search_results = new WP_Query(
-            [
-                's' => acym_getVar('string', 'searchedterm', ''),
-                'post_status' => 'publish',
-                'ignore_sticky_posts' => 1,
-                'post_type' => ['page', 'post'],
-                'posts_per_page' => 20,
-            ]
-        );
+        $query = [
+            's' => acym_getVar('string', 'searchedterm', ''),
+            'post_status' => 'publish',
+            'ignore_sticky_posts' => 1,
+            'post_type' => ['page', 'post'],
+        ];
+
+        if (!empty($postPerPage)) $query['posts_per_page'] = $postPerPage;
+
+        $search_results = new WP_Query($query);
 
         if ($search_results->have_posts()) {
             while ($search_results->have_posts()) {
@@ -429,8 +419,12 @@ class plgAcymPost extends acymPlugin
             }
         }
 
-        echo json_encode($return);
-        exit;
+        if ($ajax) {
+            echo json_encode($return);
+            exit;
+        } else {
+            return $return;
+        }
     }
 
     protected function getTranslationId($elementId, $translationTool, $defaultLanguage = false)

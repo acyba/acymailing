@@ -22,7 +22,7 @@ function acym_modal($button, $data, $id = null, $attributesModal = '', $attribut
     $modal .= $data;
     $modal .= '<button class="close-button" data-close aria-label="Close reveal" type="button">';
     $modal .= '<span aria-hidden="true">&times;</span>';
-    $modal .= '</button ></div>';
+    $modal .= '</button></div>';
 
     return $modal;
 }

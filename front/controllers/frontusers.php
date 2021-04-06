@@ -190,7 +190,7 @@ class FrontusersController extends UsersController
             }
         }
 
-        if (empty($currentUserid) && $this->config->get('captcha', '') == 1) {
+        if (empty($currentUserid) && $this->config->get('captcha', 'none') !== 'none') {
             $captchaHelper = new CaptchaHelper();
             if (!$captchaHelper->check()) {
                 $this->displayMessage('ACYM_WRONG_CAPTCHA', $ajax);
@@ -287,6 +287,15 @@ class FrontusersController extends UsersController
     private function unsubscribeDirectly($alreadyExists, $ajax)
     {
         $userClass = new UserClass();
+        if ($this->config->get('allow_modif', 'data') === 'none') {
+            $currentUser = $userClass->identify(true);
+            if (empty($currentUser->email)) {
+                $this->endUnsubscribe('ACYM_LOGIN', $ajax, 'error');
+
+                return;
+            }
+        }
+
         $visibleSubscription = acym_getVar('array', 'subscription', []);
         $hiddenLists = trim(acym_getVar('string', 'hiddenlists', ''));
         $hiddenSubscription = empty($hiddenLists) ? [] : explode(',', $hiddenLists);
@@ -306,13 +315,18 @@ class FrontusersController extends UsersController
             $msg = 'ACYM_UNSUBSCRIPTION_OK';
         }
 
+        $this->endUnsubscribe($msg, $ajax);
+    }
+
+    private function endUnsubscribe($msg, $ajax, $type = 'success')
+    {
         $msg = acym_translation($msg);
 
         if ($ajax) {
-            echo '{"message":"'.str_replace('"', '\"', $msg).'","type":"success","code":"10"}';
+            echo '{"message":"'.str_replace('"', '\"', $msg).'","type":"'.$type.'","code":"10"}';
             exit;
         }
-        acym_enqueueMessage($msg, 'success');
+        acym_enqueueMessage($msg, $type);
 
         $redirectUrl = urldecode(acym_getVar('string', 'redirectunsub', ''));
         if (empty($redirectUrl)) {
@@ -338,7 +352,7 @@ class FrontusersController extends UsersController
 
         $currentUserid = acym_currentUserId();
         $user = $userClass->identify();
-        if (empty($user) && empty($currentUserid) && $this->config->get('captcha', '') == 1) {
+        if (empty($user) && empty($currentUserid) && $this->config->get('captcha', 'none') !== 'none') {
             $captchaClass = new CaptchaHelper();
             if (!$captchaClass->check()) {
                 $this->displayMessage('ACYM_WRONG_CAPTCHA', $ajax);
@@ -479,7 +493,7 @@ class FrontusersController extends UsersController
         if (ACYM_CMS === 'joomla' && !empty($_GET['language'])) $lang = $_GET['language'];
         acym_setLanguage($lang);
         acym_loadLanguage($lang);
-        
+
         $userSubscriptions = $userClass->getUserSubscriptionById($alreadyExists->id, 'id', false, false, true);
 
         $data = [

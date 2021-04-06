@@ -116,7 +116,7 @@
 						<p class='acym__listing__title__secondary'>
                             <?php
                             if (!empty($campaign->sending_date) && (!$campaign->scheduled || $campaign->sent)) {
-                                echo acym_translation('ACYM_SENDING_DATE').' : '.acym_date($campaign->sending_date, 'M. j, Y');
+                                echo acym_translation('ACYM_SENDING_DATE').' : '.acym_date($campaign->sending_date, 'ACYM_DATE_FORMAT_LC3');
                             } elseif ($data['statusAuto'] === $campaign->sending_type) {
                                 $numberCampaignsGenerated = empty($campaign->sending_params['number_generated']) ? '0' : $campaign->sending_params['number_generated'];
                                 echo acym_translationSprintf('ACYM_X_CAMPAIGN_GENERATED', $numberCampaignsGenerated);
@@ -154,7 +154,7 @@
                             } elseif ($campaign->scheduled && !$campaign->draft) {
                                 echo '<div class="cell acym__campaign__status__status acym__background-color__orange"><span>'.acym_translation('ACYM_SCHEDULED').' : '.acym_date(
                                         $campaign->sending_date,
-                                        'M. j, Y'
+                                        'ACYM_DATE_FORMAT_LC3'
                                     ).'</span></div>';
                                 $target = '<div class="acym__campaign__listing__scheduled__stop grid-x cell xlarge-shrink acym_vcenter" data-campaignid="'.acym_escape(
                                         $campaign->id
@@ -172,7 +172,7 @@
 
                                 echo acym_tooltip(
                                     '<div class="cell acym__campaign__status__status acym__background-color__purple">
-																<span class="acym__color__white">'.$campaign->sending_params.'</span>
+																<span class="acym__color__white">'.$campaign->sending_params['trigger_text'].'</span>
 															</div>',
                                     $tooltip,
                                     'cell'
@@ -276,7 +276,7 @@
                             ?>
 						</div>
                     <?php } ?>
-					<h6 class="large-1 hide-for-medium-only hide-for-small-only cell text-center acym__listing__text"><?php echo acym_escape($campaign->id); ?></h6>
+					<h6 class="large-1 hide-for-medium-only hide-for-small-only cell text-center acym__listing__text acym__campaign__listing__id"><?php echo acym_escape($campaign->id); ?></h6>
 				</div>
 			</div>
             <?php

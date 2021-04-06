@@ -179,6 +179,9 @@ const acym_helperSegment = {
                     .find('.acym__segments__inserted__filter input, .acym__segments__inserted__filter select, .acym__segments__inserted__filter textarea'));
             }
 
+            let $toggle = jQuery(this).closest('.acym__segments__one__filter').find('[data-acym-toggle-filter]');
+
+            acym_helperFilter.setToggle($toggle, 'acym__segments__one__filter');
 
             jQuery(document).foundation();
             jQuery('.reveal-overlay').appendTo('#acym_form');

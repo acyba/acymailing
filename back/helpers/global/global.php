@@ -94,9 +94,9 @@ function acym_display($messages, $type = 'success', $close = true)
     foreach ($messages as $id => $message) {
         echo '<div class="acym__message grid-x acym__message__'.$type.'">';
 
-        if (is_array($message)) $message = implode('</p><p>', $message);
+        if (is_array($message)) $message = implode('</div><div>', $message);
 
-        echo '<div class="cell auto"><p>'.$message.'</p></div>';
+        echo '<div class="cell auto"><div>'.$message.'</div></div>';
 
         if ($close) {
             echo '<i data-id="'.acym_escape($id).'" class="cell shrink acym__message__close acymicon-remove"></i>';

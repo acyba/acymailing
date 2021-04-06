@@ -25,6 +25,27 @@ const acym_helperFilter = {
                 }
             });
 
+        } else if ($field.attr('type') === 'hidden' && $field.attr('id') !== undefined && $field.attr('id').substr(0, 8) === 'delayvar') {
+            let typeDelay = 'second';
+            if (value >= 60 && value % 60 == 0) {
+                value = value / 60;
+                typeDelay = 'minute';
+                if (value >= 60 && value % 60 == 0) {
+                    typeDelay = 'hour';
+                    value = value / 60;
+                    if (value >= 24 && value % 24 == 0) {
+                        typeDelay = 'day';
+                        value = value / 24;
+                        if (value >= 7 && value % 7 == 0) {
+                            typeDelay = 'week';
+                            value = value / 7;
+                        }
+                    }
+                }
+            }
+            let numDelayField = $field.attr('id').substr(8);
+            jQuery('#delayvalue' + numDelayField).val(value);
+            jQuery('#delaytype' + numDelayField).val(typeDelay).trigger('change');
         } else if (!$field.is(':checkbox') && $field.attr('data-switch') === undefined) {
             $field.val(value);
         } else if ($field.is(':checkbox') && value == 1) {
@@ -116,5 +137,31 @@ const acym_helperFilter = {
                 }, 100);
             });
         });
+    },
+    setToggle: function ($toggle, parentClass = 'acym__automation__one__filter') {
+        if ($toggle.length < 1) return true;
+
+        let paramsToggle = $toggle.attr('data-acym-toggle-filter');
+        if (undefined === paramsToggle) return true;
+
+        paramsToggle = acym_helper.parseJson(paramsToggle);
+
+        let $blockToToggle = $toggle.closest(`.${parentClass}`).find(`.${paramsToggle.class}`);
+
+        acym_helperFilter.toggleBlock($toggle, $blockToToggle, paramsToggle);
+        $toggle.on('change', function () {
+            acym_helperFilter.toggleBlock($toggle, $blockToToggle, paramsToggle);
+        });
+    },
+    toggleBlock: function ($toggle, $blockToToggle, paramsToggle) {
+        let $input = $blockToToggle.find('[name*="[filters]"]');
+        if (paramsToggle.values.includes($toggle.val())) {
+            if ($blockToToggle.is(':visible')) return;
+            $blockToToggle.css('display', 'flex');
+            $input.attr('name', `acym_action${$input.attr('name')}`);
+            return;
+        }
+        $blockToToggle.hide();
+        $input.attr('name', $input.attr('name').replace('acym_action', ''));
     }
 };

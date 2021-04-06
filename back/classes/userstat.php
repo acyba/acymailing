@@ -59,7 +59,7 @@ class UserStatClass extends acymClass
         if (!empty($userStat['open'])) {
             $onDuplicate[] = 'open = open + 1';
             $automationClass = new AutomationClass();
-            $automationClass->trigger('user_open', ['userId' => $userStat['user_id']]);
+            $automationClass->trigger('user_open', ['userId' => $userStat['user_id'], 'mailId' => $userStat['mail_id']]);
         }
 
         if (!empty($userStat['open_date'])) {
@@ -113,18 +113,21 @@ class UserStatClass extends acymClass
     {
         $mailClass = new MailClass();
 
-        $query = 'SELECT us.*, m.name, m.subject, u.email, u.name AS username, c.id as campaign_id, c.parent_id, 0 AS total_click 
+        $query = 'SELECT us.*, m.name, m.subject, u.email, u.name AS username, c.id as campaign_id, c.parent_id, SUM(click) AS total_click 
                     FROM #__acym_user_stat AS us
                     LEFT JOIN #__acym_user AS u ON us.user_id = u.id
                     INNER JOIN #__acym_mail AS m ON us.mail_id = m.id
-                    LEFT JOIN #__acym_campaign AS c ON m.id = c.mail_id';
+                    LEFT JOIN #__acym_campaign AS c ON m.id = c.mail_id
+                    LEFT JOIN #__acym_url_click AS url_click ON url_click.mail_id = m.id AND url_click.user_id = us.user_id';
         $queryCount = 'SELECT COUNT(*) FROM #__acym_user_stat as us
                         LEFT JOIN #__acym_user AS u ON us.user_id = u.id
                         INNER JOIN #__acym_mail AS m ON us.mail_id = m.id';
         $where = [];
 
-        if (!empty($settings['mail_id'])) {
-            $where[] = 'us.mail_id = '.intval($settings['mail_id']);
+        if (!empty($settings['mail_ids'])) {
+            if (!is_array($settings['mail_ids'])) $settings['mail_ids'] = [$settings['mail_ids']];
+            acym_arrayToInteger($settings['mail_ids']);
+            $where[] = 'us.mail_id IN ('.implode(',', $settings['mail_ids']).')';
         }
 
         if (!empty($settings['search'])) {
@@ -144,6 +147,8 @@ class UserStatClass extends acymClass
                 $table = 'u';
             } elseif ($settings['ordering'] == 'subject') {
                 $table = 'm';
+            } elseif ($settings['ordering'] == 'click') {
+                $table = 'url_click';
             } else {
                 $table = 'us';
             }
@@ -157,9 +162,6 @@ class UserStatClass extends acymClass
             foreach ($mails as $mail) {
                 if (!in_array($mail->mail_id, $mailIds)) $mailIds[] = $mail->mail_id;
             }
-            $userClick = acym_loadObjectList(
-                'SELECT user_id, mail_id, SUM(click) as total_click FROM #__acym_url_click WHERE mail_id IN ('.implode(',', $mailIds).') GROUP BY user_id, mail_id '
-            );
 
             $trackingSales = [];
             if (acym_isTrackingSalesActive()) {
@@ -174,16 +176,7 @@ class UserStatClass extends acymClass
                 }
             }
 
-            $newUserClick = [];
-            if (!empty($userClick)) {
-                foreach ($userClick as $value) {
-                    $newUserClick[$value->user_id.'-'.$value->mail_id] = $value;
-                }
-            }
             foreach ($mails as $key => $mail) {
-                if (!empty($newUserClick[$mail->user_id.'-'.$mail->mail_id])) {
-                    $mails[$key]->total_click = $newUserClick[$mail->user_id.'-'.$mail->mail_id]->total_click;
-                }
                 if (!empty($trackingSales[$mail->mail_id.'-'.$mail->user_id])) {
                     acym_trigger('getCurrency', [&$mails[$key]->currency]);
                     $mails[$key]->sales = $trackingSales[$mail->mail_id.'-'.$mail->user_id]->sale;
@@ -214,9 +207,12 @@ class UserStatClass extends acymClass
         return acym_loadResultArray($query);
     }
 
-    public function getOpenTimeStats($mailId)
+    public function getOpenTimeStats($mailIds)
     {
-        $where = empty($mailId) ? '' : ' AND mail_id = '.intval($mailId);
+
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+        acym_arrayToInteger($mailIds);
+        $where = empty($mailIds) ? '' : ' AND mail_id in ('.implode(',', $mailIds).')';
 
         $query = 'SELECT SUM(`open`) AS open_total, DATE_FORMAT(open_date, "%w") AS day, FORMAT(CONVERT(DATE_FORMAT(open_date, "%H"), SIGNED INTEGER) / 3, 0) AS hour, CONCAT(DATE_FORMAT(open_date, "%w"), "_", FORMAT(CONVERT(DATE_FORMAT(open_date, "%H"), SIGNED INTEGER) / 3, 0)) AS date_id FROM `#__acym_user_stat` WHERE open_date IS NOT NULL '.$where.' GROUP BY date_id';
 
@@ -267,10 +263,13 @@ class UserStatClass extends acymClass
         return $percentage;
     }
 
-    public function getOpenSourcesStats($mailId = '')
+    public function getOpenSourcesStats($mailIds = [])
     {
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+        acym_arrayToInteger($mailIds);
+
         $query = 'SELECT opened_with, COUNT(*) AS number FROM #__acym_user_stat WHERE `open` > 0';
-        if (!empty($mailId)) $query .= ' AND mail_id = '.intval($mailId);
+        if (!empty($mailIds)) $query .= ' AND mail_id IN ('.implode(',', $mailIds).')';
         $query .= ' GROUP BY opened_with';
 
         return acym_loadObjectList($query);

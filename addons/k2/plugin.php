@@ -191,21 +191,8 @@ class plgAcymK2 extends acymPlugin
                 'name' => 'featured',
                 'default' => false,
             ],
-            [
-                'title' => 'ACYM_COLUMNS',
-                'type' => 'number',
-                'name' => 'cols',
-                'default' => 1,
-                'min' => 1,
-                'max' => 10,
-            ],
-            [
-                'title' => 'ACYM_MAX_NB_ELEMENTS',
-                'type' => 'number',
-                'name' => 'max',
-                'default' => 20,
-            ],
         ];
+        $this->autoContentOptions($catOptions);
 
         $this->autoCampaignOptions($catOptions);
 

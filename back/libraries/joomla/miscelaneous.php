@@ -65,8 +65,11 @@ function acym_getLeftMenu($name)
     $menus['queue'] = ['title' => 'ACYM_QUEUE', 'class-i' => 'acymicon-hourglass-2', 'span-class' => 'acym__joomla__left-menu__fa'];
     $menus['stats'] = ['title' => 'ACYM_STATISTICS', 'class-i' => 'acymicon-bar-chart', 'span-class' => 'acym__joomla__left-menu__fa'];
     $menus['plugins'] = ['title' => $addOnsTitle, 'class-i' => 'acymicon-plug', 'span-class' => 'acym__joomla__left-menu__fa'];
-    $menus['bounces'] = ['title' => 'ACYM_BOUNCE_HANDLING', 'class-i' => 'acymicon-random', 'span-class' => 'acym__joomla__left-menu__fa'];
     $menus['configuration'] = ['title' => 'ACYM_CONFIGURATION', 'class-i' => 'acymicon-settings', 'span-class' => ''];
+
+    if (!acym_level(1)) {
+        $menus['gopro'] = ['title' => 'ACYM_GOPRO', 'class-i' => 'acymicon-star', 'span-class' => ''];
+    }
 
 
     $leftMenu = '<div id="acym__joomla__left-menu--show"><i class="acym-logo"></i><i id="acym__joomla__left-menu--burger" class="acymicon-menu"></i></div>

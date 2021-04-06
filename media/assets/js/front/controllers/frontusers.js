@@ -24,6 +24,31 @@ function initUser() {
             }
         });
     }
+
+    var showSusbcriptionZone = document.querySelector('.acym__user__show-subscription');
+    if (showSusbcriptionZone) {
+        showSusbcriptionZone.addEventListener('click', function () {
+            let buttonShowSubscription = this;
+            let subscriptions = buttonShowSubscription.parentElement;
+            let buttonText = subscriptions.querySelector('.acym__user__show-subscription-bt');
+            subscriptions = subscriptions.querySelectorAll('.acym_subscription_more');
+            if (buttonShowSubscription.getAttribute('data-iscollapsed') == 0) {
+                buttonShowSubscription.setAttribute('data-iscollapsed', '1');
+                buttonText.innerText = '<';
+                for (let additionalList in subscriptions) {
+                    if (!subscriptions.hasOwnProperty(additionalList)) continue;
+                    subscriptions[additionalList].style.display = 'inline-block';
+                }
+            } else {
+                buttonShowSubscription.setAttribute('data-iscollapsed', '0');
+                buttonText.innerText = '+' + buttonShowSubscription.getAttribute('acym-data-value');
+                for (let additionalList in subscriptions) {
+                    if (!subscriptions.hasOwnProperty(additionalList)) continue;
+                    subscriptions[additionalList].style.display = 'none';
+                }
+            }
+        });
+    }
 }
 
 function acym_checkChangeForm() {

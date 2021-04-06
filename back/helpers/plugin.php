@@ -36,7 +36,7 @@ class PluginHelper extends acymObject
         $beforeBlock['br'] = '';
 
         $beforeOne = [];
-        $beforeOne['table'] = '<td valign="top" width="{equalwidth}" class="elementstable_td numcol{numcol}" >'."\n";
+        $beforeOne['table'] = '<td valign="top" width="{equalwidth}" style="{padding}" class="elementstable_td numcol{numcol}" >'."\n";
         $beforeOne['ul'] = '<li class="elementsul_li numrow{rownum}">'."\n";
         $beforeOne['br'] = '';
 
@@ -68,19 +68,40 @@ class PluginHelper extends acymObject
             $cols = $parameter->cols;
         }
 
+        $parameter->hpadding = is_null($parameter->hpadding) ? 10 : $parameter->hpadding;
+        $parameter->vpadding = is_null($parameter->vpadding) ? 10 : $parameter->vpadding;
+
+        $horizontalPadding = round($parameter->hpadding / 2);
+        $verticalPadding = round($parameter->vpadding / 2);
+
         $string = $beforeAll[$type];
         $a = 0;
         $numrow = 1;
-        foreach ($elements as $oneElement) {
+        foreach ($elements as $key => $oneElement) {
+            $topPadding = $verticalPadding.'px';
+            $rightPadding = $horizontalPadding.'px';
+            $bottomPadding = $verticalPadding.'px';
+            $leftPadding = $horizontalPadding.'px';
+
             if ($a == $cols) {
                 $string .= $afterBlock[$type];
                 $a = 0;
-            }
-            if ($a == 0) {
-                $string .= str_replace('{rownum}', $numrow, $beforeBlock[$type]);
                 $numrow++;
             }
+
+            if ($a == 0) {
+                $string .= str_replace('{rownum}', $numrow, $beforeBlock[$type]);
+                $leftPadding = '0px';
+            }
+
+            if ($a + 1 == $cols) $rightPadding = '0px';
+            if ($numrow == 1) $topPadding = '0px';
+            if (round(count($elements) / $cols) == $numrow) $bottomPadding = '0px';
+
+            $padding = 'padding: '.$topPadding.' '.$rightPadding.' '.$bottomPadding.' '.$leftPadding.' !important;';
+
             $string .= str_replace('{numcol}', $a + 1, $beforeOne[$type]).$oneElement.$afterOne[$type];
+            $string = str_replace('{padding}', $padding, $string);
             $a++;
         }
         while ($cols > $a) {
@@ -203,6 +224,7 @@ class PluginHelper extends acymObject
             '<a target="_blank" href="https://www.youtube.com/watch?v=$1"><img src="https://img.youtube.com/vi/$1/0.jpg"/></a>',
             $text
         );
+
         $text = preg_replace(
             '#{youtube}[^{]+v=([^{&]+)(&[^{]*)?{/youtube}#Uis',
             '<a target="_blank" href="https://www.youtube.com/watch?v=$1"><img src="https://img.youtube.com/vi/$1/0.jpg"/></a>',
@@ -227,9 +249,8 @@ class PluginHelper extends acymObject
                     $replace = strpos($hash[0]['thumbnail_large'], '_') === false ? '.' : '_';
                     $hash[0]['thumbnail_large'] = substr($hash[0]['thumbnail_large'], 0, strrpos($hash[0]['thumbnail_large'], $replace)).'_'.$width[1].$extension;
                 }
-                $thumbnail = 'https://i.vimeocdn.com/filter/overlay?src='.urlencode($hash[0]['thumbnail_large']).'&src='.urlencode(
-                        'https://f.vimeocdn.com/p/images/crawler_play.png'
-                    );
+                $thumbnail = 'https://i.vimeocdn.com/filter/overlay?src='.urlencode($hash[0]['thumbnail_large']);
+                $thumbnail .= '&src='.urlencode('https://f.vimeocdn.com/p/images/crawler_play.png');
 
                 $text = str_replace(
                     $matches[0][$key],
@@ -1026,16 +1047,16 @@ class PluginHelper extends acymObject
                         ['containerClass' => 'dcontent_pictures'],
                         !acym_isAdmin()
                     ).'</div>';
-                $currentOption .= '<span id="pictsize'.$suffix.'" class="cell grid-x" '.$resizeDisplay.'>
-                                <div class="cell large-5 acym_plugin_field">'.acym_translation('ACYM_DIMENSIONS').'</div>
-                                <div class="cell large-7">'.acym_translation(
-                        'ACYM_WIDTH'
-                    ).' <input class="intext_input" name="pictwidth'.$suffix.'" type="number" onchange="'.$updateFunction.'();" value="'.intval($maxWidth).'"/>
-                                x '.acym_translation(
-                        'ACYM_HEIGHT'
-                    ).' <input class="intext_input" name="pictheight'.$suffix.'" type="number" onchange="'.$updateFunction.'();" value="'.intval($maxHeight).'"/>
+                $currentOption .= '<div id="pictsize'.$suffix.'" class="cell grid-x margin-y margin-top-1" '.$resizeDisplay.'>
+                                <div class="cell large-5 acym_plugin_field">'.acym_translation('ACYM_MAX_WIDTH').'</div>
+                                <div class="cell large-7">
+                                	<input class="intext_input" name="pictwidth'.$suffix.'" type="number" onchange="'.$updateFunction.'();" value="'.intval($maxWidth).'"/>
                             	</div>
-                            </span>';
+                                <div class="cell large-5 acym_plugin_field">'.acym_translation('ACYM_MAX_HEIGHT').'</div>
+                                <div class="cell large-7">
+                    				<input class="intext_input" name="pictheight'.$suffix.'" type="number" onchange="'.$updateFunction.'();" value="'.intval($maxHeight).'"/>
+                            	</div>
+                            </div>';
                 $jsOptionsMerge[] = '
                     var _pictVal'.$suffix.' = jQuery(\'input[name="pict'.$suffix.'"]:checked\').val();
                     otherinfo += "| pict:" + _pictVal'.$suffix.';

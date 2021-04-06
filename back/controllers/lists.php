@@ -641,4 +641,13 @@ class ListsController extends acymController
 
         acym_sendAjaxResponse('', ['users' => $listClass->getUsersForSummaryModal($id, $offset, $limit, $search)]);
     }
+
+    public function getListsAjax()
+    {
+        $listClass = new ListClass();
+
+        $lists = $listClass->getAllForSelect(false);
+
+        acym_sendAjaxResponse('', $lists);
+    }
 }

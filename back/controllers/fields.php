@@ -258,7 +258,9 @@ class FieldsController extends acymController
         } else {
             $newField->id = $id;
         }
-        $newField->translation = $field['translation'];
+        if (!empty($field['translation'])) {
+            $newField->translation = $field['translation'];
+        }
 
         return $newField;
     }

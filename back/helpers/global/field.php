@@ -868,7 +868,7 @@ function acym_filterStatus($options, $selected, $name)
         if (!empty($text[2]) && 'pending' == $text[2]) {
             $extraIcon = ' <i class="acymicon-exclamation-triangle acym__color__orange" style="font-size: 15px;"></i>';
         }
-        $filterStatus .= '<button type="button" status="'.acym_escape($value).'" class="'.acym_escape($class).'"'.$disabled.'>';
+        $filterStatus .= '<button type="button" acym-data-status="'.acym_escape($value).'" class="'.acym_escape($class).'"'.$disabled.'>';
         $filterStatus .= acym_translation($text[0]).$extraIcon.' ('.$text[1].')</button>';
     }
 

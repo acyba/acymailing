@@ -36,9 +36,22 @@ class HeaderHelper extends acymObject
 
     private function getLastNews()
     {
-        $context = stream_context_create(['http' => ['timeout' => 1]]);
-        $news = @file_get_contents(ACYM_ACYMAILLING_WEBSITE.'acymnews.xml', false, $context);
-        if (!$news) return '';
+        $lastNewsCheck = $this->config->get('last_news_check', 0);
+        if ($lastNewsCheck < time() - 7200) {
+            $context = stream_context_create(['http' => ['timeout' => 1]]);
+            $news = @file_get_contents(ACYM_ACYMAILLING_WEBSITE.'acymnews.xml', false, $context);
+            $this->config->save(
+                [
+                    'last_news_check' => time(),
+                    'last_news' => $news,
+                ],
+                false
+            );
+        } else {
+            $news = $this->config->get('last_news', '');
+        }
+        if (empty($news)) return '';
+
         $news = @simplexml_load_string($news);
         if (empty($news->news)) return '';
 
@@ -291,12 +304,15 @@ class HeaderHelper extends acymObject
                     'ACYM_NOTIFICATIONS'
                 ).'</p><div class="cell shrink cursor-pointer acym__header__notification__toolbox__remove text-right">'.acym_translation('ACYM_DELETE_ALL').'</div></div>';
             foreach ($notifications as $key => $notif) {
+                $fullMessageHover = $notif['message'];
                 if (strlen($notif['message']) > 150) $notif['message'] = substr($notif['message'], 0, 150).'...';
+                $fullMessageHover = $fullMessageHover != $notif['message'] ? 'data-acym-full="'.acym_escape($fullMessageHover).'"' : '';
+
                 $logo = $notif['level'] == 'info' ? 'acymicon-bell' : ($notif['level'] == 'warning' ? 'acymicon-exclamation-triangle' : 'acymicon-exclamation-circle');
                 $read = $notif['read'] ? 'acym__header__notification__one__read' : '';
                 $notificationCenter .= '<div class="'.$read.' cell grid-x acym__header__notification__one acym_vcenter acym_vcenter acym__header__notification__one__'.$notif['level'].'">';
                 $notificationCenter .= '<div class="cell small-3 align-center grid-x acym__header__notification__one__icon"><i class="cell '.$logo.'"></i></div>';
-                $notificationCenter .= '<div class="cell grid-x small-8"><p class="cell acym__header__notification__message">'.$notif['message'];
+                $notificationCenter .= '<div class="cell grid-x small-8"><p class="cell acym__header__notification__message" '.$fullMessageHover.'>'.$notif['message'];
                 $notificationCenter .= '<div class="cell acym__header__notification__one__date">'.acym_date($notif['date']).'</div></div>';
                 $notificationCenter .= '<i class="cell small-1 acym__header__notification__one__delete acymicon-close" data-id="'.acym_escape($key).'"></i>';
                 $notificationCenter .= '</div>';

@@ -171,3 +171,61 @@ function acym_checkVersion($ajax = false)
 
     return $newConfig->lastlicensecheck;
 }
+
+function acym_triggerCmsHook($method, $args = [])
+{
+    if (ACYM_J40) {
+        return JFactory::getApplication()->triggerEvent($method, $args);
+    }
+
+    global $acydispatcher;
+    if ($acydispatcher === null) {
+        $acydispatcher = JDispatcher::getInstance();
+    }
+
+    return @$acydispatcher->trigger($method, $args);
+}
+
+function acym_getCmsCaptcha()
+{
+    $captchaPlugins = acym_loadObjectList(
+        'SELECT `element`, `name` 
+        FROM #__extensions 
+        WHERE `type` = "plugin" 
+            AND `folder` = "captcha" 
+            AND `enabled` = 1
+        ORDER BY `name`'
+    );
+
+    // Import plugins to translate their name
+    JPluginHelper::importPlugin('captcha');
+    $results = [];
+    foreach ($captchaPlugins as $captchaPlugin) {
+        $results[$captchaPlugin->element] = acym_translation($captchaPlugin->name);
+    }
+
+    return $results;
+}
+
+function acym_loadCaptcha($captchaPluginName, $id)
+{
+    JPluginHelper::importPlugin('captcha', $captchaPluginName);
+    acym_triggerCmsHook('onInit', [$id]);
+    $result = acym_triggerCmsHook('onDisplay', [null, $id, 'class=""']);
+
+    return empty($result[0]) ? '' : $result[0];
+}
+
+function acym_checkCaptcha($captchaPluginName)
+{
+    JPluginHelper::importPlugin('captcha', $captchaPluginName);
+    try {
+        $result = acym_triggerCmsHook('onCheckAnswer', [null]);
+    } catch (Exception $e) {
+        acym_enqueueMessage($e->getMessage(), 'error');
+
+        return false;
+    }
+
+    return isset($result[0]) ? $result[0] : false;
+}

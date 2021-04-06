@@ -164,21 +164,8 @@ class plgAcymFlexicontent extends acymPlugin
                     'rand' => 'ACYM_RANDOM',
                 ],
             ],
-            [
-                'title' => 'ACYM_COLUMNS',
-                'type' => 'number',
-                'name' => 'cols',
-                'default' => 1,
-                'min' => 1,
-                'max' => 10,
-            ],
-            [
-                'title' => 'ACYM_MAX_NB_ELEMENTS',
-                'type' => 'number',
-                'name' => 'max',
-                'default' => 20,
-            ],
         ];
+        $this->autoContentOptions($catOptions);
 
         $this->autoCampaignOptions($catOptions);
 
@@ -407,7 +394,9 @@ class plgAcymFlexicontent extends acymPlugin
         foreach ($tag->display as $key => $oneField) {
             if ((is_numeric(
                         $oneField
-                    ) && $fieldsId[$oneField]->iscore != 1) || ($fieldsId[$oneField]->field_type == 'title' || $fieldsId[$oneField]->field_type == 'text')) continue; // Not a core field
+                    ) && $fieldsId[$oneField]->iscore != 1) || ($fieldsId[$oneField]->field_type == 'title' || $fieldsId[$oneField]->field_type == 'text')) {
+                continue;
+            } // Not a core field
             $oneFieldObject = $fieldsId[$oneField];
             $oneField = $oneFieldObject->name;
             if (!isset($item->$oneField) && $oneFieldObject->field_type != 'categories' && $oneFieldObject->field_type != 'tags') continue;

@@ -5,7 +5,7 @@
 			<img src="<?php echo ACYM_IMAGES.'splashscreen/header_airplane.png'; ?>" alt="planes" class="acym__splashcreen__header__planes">
 			<div class="cell auto"></div>
 			<div class="cell medium-6 grid-x grid-margin-y">
-				<h1 class="cell">AcyMailing 7.3 has arrived 🎉</h1>
+				<h1 class="cell">AcyMailing 7.4 has arrived 🎉</h1>
 				<p class="cell">Small features and improvements come in your plugin, find out what’s new!</p>
 				<a href="<?php echo ACYM_ACYMAILLING_WEBSITE.'pricing/'; ?>" class="cell shrink button">Purchase a license!</a>
 			</div>
@@ -27,8 +27,8 @@
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_1.png'; ?>" alt="card_1_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">Non-transactional Sendinblue emails</h4>
-					<p class="cell acym__splashcreen__body__card__text">Non-transactional email can now be sent from Sendinblue.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Gutenberg subscription form</h4>
+					<p class="cell acym__splashcreen__body__card__text">Your subscription form is available in the Gutenberg editor on WordPress.</p>
 				</div>
                 <?php
                 ?>
@@ -38,8 +38,8 @@
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_2.png'; ?>" alt="card_2_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">Modern Events Calendar</h4>
-					<p class="cell acym__splashcreen__body__card__text">Your events can be integrated into your email.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Statistics</h4>
+					<p class="cell acym__splashcreen__body__card__text">Statistics provide more precise informations about your email campaigns.</p>
 				</div>
                 <?php
                 ?>
@@ -49,38 +49,38 @@
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_3.png'; ?>" alt="card_3_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">Dynamic text</h4>
-					<p class="cell acym__splashcreen__body__card__text">Dynamic text is now accessible from the edit menu of your email.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Automation</h4>
+					<p class="cell acym__splashcreen__body__card__text">The actions triggered by your users are more detailed in the automation.</p>
 				</div>
 			</div>
 			<div class="cell grid-x acym__splashcreen__body__middle margin-top-2">
 				<div class="cell medium-6 grid-x grid-margin-x acym__splashcreen__body__middle__left">
 					<h4 class="cell acym__splashcreen__body__subtitle">New main feature</h4>
-					<h2 class="cell acym__splashcreen__body__middle__left__title">Modern Events Calendar</h2>
+					<h2 class="cell acym__splashcreen__body__middle__left__title">Gutenberg subscription form</h2>
 				</div>
 				<div class="cell medium-6 acym__splashcreen__body__middle__right grid-x grid-margin-y">
 					<div class="cell grid-x">
 						<div class="cell medium-2 small-3 acym_vcenter">
 							<div class="acym__splashcreen__body__middle__right__icon acym_vcenter align-center">
-								<i class="acymicon-group"></i>
+								<i class="acymicon-edit"></i>
 							</div>
 						</div>
 						<div class="cell auto grid-x">
-							<h2 class="cell acym__splashcreen__body__middle__right__title">Insert events in your emails</h2>
-							<p class="cell acym__splashcreen__body__middle__right__text">Communicate on your events directly in your emails and choose which elements will be
-								displayed about it.</p>
+							<h2 class="cell acym__splashcreen__body__middle__right__title">Insert a subscription form</h2>
+							<p class="cell acym__splashcreen__body__middle__right__text">Insert subscription forms directly from your WordPress Gutenberg editor and convert your
+								visitors into subscribers.</p>
 						</div>
 					</div>
 					<div class="cell grid-x">
 						<div class="cell medium-2 small-3 acym_vcenter">
 							<div class="acym__splashcreen__body__middle__right__icon acym_vcenter align-center">
-								<i class="acymicon-email"></i>
+								<i class="acymicon-text_fields"></i>
 							</div>
 						</div>
 						<div class="cell auto grid-x">
-							<h2 class="cell acym__splashcreen__body__middle__right__title">Create automatic invitations</h2>
-							<p class="cell acym__splashcreen__body__middle__right__text">Segment your users and create automatic invitations. Choose when they will be sent to your
-								users and which one is concerned.</p>
+							<h2 class="cell acym__splashcreen__body__middle__right__title">Personalize your forms</h2>
+							<p class="cell acym__splashcreen__body__middle__right__text">Choose the information you want to highlight in your form and customize the fields, list
+								options and many more.</p>
 						</div>
 					</div>
 				</div>
@@ -91,17 +91,17 @@
 					<div class="cell margin-bottom-1 text-center">
 						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_1.png'; ?>" alt="">
 					</div>
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Multilingual options</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">Define custom fieds labels and descriptions on the user language and personalize their
-						experience.</p>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Non-transactional Sendinblue emails</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">Limited by sending mass emails in Sendinblue? You can now send non-transactional email
+						(newsletter, promotional emails) with Sendinblue.</p>
 				</div>
 				<div class="cell medium-6 acym__splashcreen__body__end__card">
 					<div class="cell margin-bottom-1 text-center">
 						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_2.png'; ?>" alt="">
 					</div>
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Universal filter</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">In the automation, filter your AcyMailing users based on their data from any extension with
-						the Universal filter add-on.</p>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Modern Events Calendar</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">Your events can be now integrated directly into your emails. Choose which information
+						(location, date, price...) to put in your email and schedule it.</p>
 				</div>
 			</div>
 		</div>

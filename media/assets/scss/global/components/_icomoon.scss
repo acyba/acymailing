@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'acymicon';
-    src: url('fonts/acymicon.eot?1tugno');
-    src: url('fonts/acymicon.eot?1tugno#iefix') format('embedded-opentype'),
-    url('fonts/acymicon.ttf?1tugno') format('truetype'),
-    url('fonts/acymicon.woff?1tugno') format('woff'),
-    url('fonts/acymicon.svg?1tugno#acymicon') format('svg');
+    src: url('fonts/acymicon.eot?dycbaw');
+    src: url('fonts/acymicon.eot?dycbaw#iefix') format('embedded-opentype'),
+    url('fonts/acymicon.ttf?dycbaw') format('truetype'),
+    url('fonts/acymicon.woff?dycbaw') format('woff'),
+    url('fonts/acymicon.svg?dycbaw#acymicon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -47,6 +47,30 @@
 
 .acymicon-electricity:before {
     content: "\e93d";
+}
+
+.acymicon-dropdown_arrow:before {
+    content: "\e93b";
+}
+
+.acymicon-checkbox_empty:before {
+    content: "\e912";
+}
+
+.acymicon-radio_button_checked:before {
+    content: "\e917";
+}
+
+.acymicon-radio_button_unchecked:before {
+    content: "\e925";
+}
+
+.acymicon-checkbox_checked:before {
+    content: "\e926";
+}
+
+.acymicon-follow:before {
+    content: "\e90e";
 }
 
 .acymicon-user-plus:before {
@@ -467,30 +491,6 @@
 
 .acymicon-address-book-o:before {
     content: "\f2ba";
-}
-
-.acymicon-dropdown_arrow:before {
-    content: "\e93b";
-}
-
-.acymicon-checkbox_empty:before {
-    content: "\e912";
-}
-
-.acymicon-radio_button_checked:before {
-    content: "\e917";
-}
-
-.acymicon-radio_button_unchecked:before {
-    content: "\e925";
-}
-
-.acymicon-checkbox_checked:before {
-    content: "\e926";
-}
-
-.acymicon-follow:before {
-    content: "\e90e";
 }
 
 .acymicon-life-bouy:before {

@@ -338,6 +338,7 @@ class EditorHelper extends acymObject
         foreach ($settings as $element => $rules) {
             $styles .= '#acym__wysid__template '.$element.':not(.acym__wysid__content-no-settings-style){';
             foreach ($rules as $ruleName => $value) {
+                if ($ruleName == 'overridden') continue;
                 $styles .= $ruleName.': '.$value.';';
             }
             $styles .= '}';

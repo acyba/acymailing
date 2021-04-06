@@ -68,6 +68,7 @@ class MailerHelper extends acyPHPMailer
     public $receiverEmail;
 
     public $isTest = false;
+    public $isSpamTest = false;
 
     public function __construct()
     {
@@ -369,7 +370,7 @@ class MailerHelper extends acyPHPMailer
         $externalSending = false;
 
         $mailClass = new MailClass();
-        $isTransactional = $this->isTest || (!empty($this->defaultMail[$this->mailId]) && $mailClass->isTransactionalMail($this->defaultMail[$this->mailId]));
+        $isTransactional = $this->isTest || $this->isSpamTest || (!empty($this->defaultMail[$this->mailId]) && $mailClass->isTransactionalMail($this->defaultMail[$this->mailId]));
 
         acym_trigger('onAcymProcessQueueExternalSendingCampaign', [&$externalSending, $isTransactional]);
 
@@ -463,11 +464,7 @@ class MailerHelper extends acyPHPMailer
 
         global $acymLanguages;
         if (!acym_isMultilingual() || $this->isTest) {
-            $this->defaultMail[$mailId] = $mailClass->getOneById($mailId, true);
-
-            if (empty($this->defaultMail[$mailId])) {
-                $this->defaultMail[$mailId] = $mailClass->getOneByName($mailId, false, true);
-            }
+            if (empty($this->defaultMail[$mailId])) $this->defaultMail[$mailId] = $mailClass->getOneByName($mailId, false, true);
         } elseif (empty($this->overrideEmailToSend)) {
             $defaultLanguage = $this->config->get('multilingual_default', ACYM_DEFAULT_LANGUAGE);
             $mails = $mailClass->getMultilingualMails($mailId);
@@ -645,6 +642,7 @@ class MailerHelper extends acyPHPMailer
      * @param $user     Mixed Can be the user Id, an email address or the user object
      * @param $isTest   Boolean If we send a test
      * @param $testNote String Message added at the top of the sent test
+     * @param $clear    Boolean If we want to clear the mailer parameters
      *
      * @return bool
      * @throws Exception

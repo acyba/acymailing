@@ -1,5 +1,9 @@
 <?php
 
+use AcyMailing\Classes\FieldClass;
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\UserClass;
+
 function acym_formToken()
 {
     return '<input type="hidden" name="_wpnonce" value="'.wp_create_nonce('acymnonce').'">';
@@ -108,4 +112,199 @@ function acym_includeHeaders()
 
 function acym_getOptionRegacyPosition()
 {
+}
+
+function acym_renderForm($params, $args = [])
+{
+    acym_initModule($params);
+
+    $return = !empty($args['before_widget']) ? $args['before_widget'] : '';
+    if (!empty($args['before_title'])) $return .= $args['before_title'];
+    $return .= $params->get('title', 'Receive our newsletters');
+    if (!empty($args['after_title'])) $return .= $args['after_title'];
+
+    $identifiedUser = null;
+    $currentUserEmail = acym_currentUserEmail();
+    $userClass = new UserClass();
+    if ($params->get('userinfo', '1') == '1' && !empty($currentUserEmail)) {
+        $identifiedUser = $userClass->getOneByEmail($currentUserEmail);
+    }
+
+    $visibleLists = $params->get('displists', []);
+    $hiddenLists = $params->get('hiddenlists', []);
+    $allFields = $params->get('fields', []);
+    if (!in_array('2', $allFields)) {
+        $allFields[] = 2;
+    }
+    acym_arrayToInteger($visibleLists);
+    acym_arrayToInteger($hiddenLists);
+    acym_arrayToInteger($allFields);
+
+    $listClass = new ListClass();
+    $fieldClass = new FieldClass();
+
+    $allLists = $listClass->getAllWithoutManagement(true);
+    $visibleLists = array_intersect($visibleLists, array_keys($allLists));
+    $hiddenLists = array_intersect($hiddenLists, array_keys($allLists));
+
+    $allFields = $fieldClass->getFieldsByID($allFields);
+    $fields = [];
+    foreach ($allFields as $field) {
+        if ($field->active === '0') continue;
+        $fields[$field->id] = $field;
+    }
+
+    if (empty($visibleLists) && empty($hiddenLists)) {
+        $hiddenLists = array_keys($allLists);
+    }
+
+    // Make sure we don't display a list that's in "automatically subscribe to"
+    if (!empty($visibleLists) && !empty($hiddenLists)) {
+        $visibleLists = array_diff($visibleLists, $hiddenLists);
+    }
+
+    if (empty($identifiedUser->id)) {
+        //Check lists based on the option
+        $checkedLists = $params->get('listschecked', []);
+        if (!is_array($checkedLists)) {
+            if (strtolower($checkedLists) == 'all') {
+                $checkedLists = $visibleLists;
+            } elseif (strpos($checkedLists, ',') || is_numeric($checkedLists)) {
+                $checkedLists = explode(',', $checkedLists);
+            } else {
+                $checkedLists = [];
+            }
+        }
+    } else {
+        $checkedLists = [];
+        $userLists = $userClass->getUserSubscriptionById($identifiedUser->id);
+
+        $countSub = 0;
+        $countUnsub = 0;
+        $formLists = array_merge($visibleLists, $hiddenLists);
+        foreach ($formLists as $idOneList) {
+            if (empty($userLists[$idOneList]) || $userLists[$idOneList]->status == 0) {
+                $countSub++;
+            } else {
+                $countUnsub++;
+                $checkedLists[] = $idOneList;
+            }
+        }
+    }
+    acym_arrayToInteger($checkedLists);
+
+
+    $config = acym_config();
+
+    // Texts
+    $subscribeText = $params->get('subtext', 'ACYM_SUBSCRIBE');
+    if (!empty($identifiedUser->id)) $subscribeText = $params->get('subtextlogged', 'ACYM_SUBSCRIBE');
+    $unsubscribeText = $params->get('unsubtext', 'ACYM_UNSUBSCRIBE');
+    $unsubButton = $params->get('unsub', '0');
+
+    // Formatting
+    $listPosition = $params->get('listposition', 'before');
+    $displayOutside = $params->get('textmode') == '0';
+
+    // Display success message
+    $successMode = $params->get('successmode', 'replace');
+
+    // Redirections
+    $redirectURL = $params->get('redirect', '');
+    $unsubRedirectURL = $params->get('unsubredirect', '');
+    $ajax = empty($redirectURL) && empty($unsubRedirectURL) && $successMode != 'standard' ? '1' : '0';
+
+    // Customization
+    $formClass = $params->get('formclass', '');
+    $alignment = $params->get('alignment', 'none');
+    $style = $alignment == 'none' ? '' : 'style="text-align: '.$alignment.'"';
+
+    // Articles
+    $displayInAPopup = 0;
+    $termsURL = acym_getArticleURL($params->get('termscontent', 0), $displayInAPopup, 'ACYM_TERMS_CONDITIONS');
+    $privacyURL = acym_getArticleURL($params->get('privacypolicy', 0), $displayInAPopup, 'ACYM_PRIVACY_POLICY');
+
+    if (empty($termsURL) && empty($privacyURL)) {
+        $termslink = '';
+    } elseif (empty($privacyURL)) {
+        $termslink = acym_translationSprintf('ACYM_I_AGREE_TERMS', $termsURL);
+    } elseif (empty($termsURL)) {
+        $termslink = acym_translationSprintf('ACYM_I_AGREE_PRIVACY', $privacyURL);
+    } else {
+        $termslink = acym_translationSprintf('ACYM_I_AGREE_BOTH', $termsURL, $privacyURL);
+    }
+
+    $formName = acym_getModuleFormName();
+    $formAction = htmlspecialchars_decode(acym_frontendLink('frontusers'));
+
+    $js = "window.addEventListener('DOMContentLoaded', (event) => {";
+    $js .= "\n"."acymModule['excludeValues".$formName."'] = [];";
+    $fieldsToDisplay = [];
+    foreach ($fields as $field) {
+        $fieldsToDisplay[$field->id] = $field->name;
+        $js .= "\n"."acymModule['excludeValues".$formName."']['".$field->id."'] = '".acym_translation($field->name, true)."';";
+    }
+    $js .= "  });";
+    // Exclude default values from fields, if the user didn't fill them in
+    $return .= '<script type="text/javascript">
+                <!--
+                '.$js.'
+                //-->
+                </script>';
+    ob_start();
+    ?>
+	<div class="acym_module <?php echo acym_escape($formClass); ?>" id="acym_module_<?php echo $formName; ?>">
+		<div class="acym_fulldiv" id="acym_fulldiv_<?php echo $formName; ?>" <?php echo $style; ?>>
+			<form enctype="multipart/form-data"
+				  id="<?php echo acym_escape($formName); ?>"
+				  name="<?php echo acym_escape($formName); ?>"
+				  method="POST"
+				  action="<?php echo acym_escape($formAction); ?>"
+				  onsubmit="return submitAcymForm('subscribe','<?php echo $formName; ?>', 'acymSubmitSubForm')">
+				<div class="acym_module_form">
+                    <?php
+                    $introText = $params->get('introtext', '');
+                    if (!empty($introText)) {
+                        echo '<div class="acym_introtext">'.$introText.'</div>';
+                    }
+                    if ($params->get('mode', 'tableless') == 'tableless') {
+                        include ACYM_FOLDER.'widgets'.DS.'subscriptionform'.DS.'tmpl'.DS.'tableless.php';
+                    } else {
+                        $displayInline = $params->get('mode', 'tableless') != 'vertical';
+                        include ACYM_FOLDER.'widgets'.DS.'subscriptionform'.DS.'tmpl'.DS.'default.php';
+                    }
+                    ?>
+				</div>
+
+				<input type="hidden" name="ctrl" value="frontusers" />
+				<input type="hidden" name="task" value="notask" />
+				<input type="hidden" name="option" value="<?php echo acym_escape(ACYM_COMPONENT); ?>" />
+
+                <?php
+                if (!empty($redirectURL)) echo '<input type="hidden" name="redirect" value="'.acym_escape($redirectURL).'"/>';
+                if (!empty($unsubRedirectURL)) echo '<input type="hidden" name="redirectunsub" value="'.acym_escape($unsubRedirectURL).'"/>';
+                ?>
+				<input type="hidden" name="ajax" value="<?php echo acym_escape($ajax); ?>" />
+				<input type="hidden" name="successmode" value="<?php echo acym_escape($successMode); ?>" />
+				<input type="hidden" name="acy_source" value="<?php echo acym_escape($params->get('source', '')); ?>" />
+				<input type="hidden" name="hiddenlists" value="<?php echo implode(',', $hiddenLists); ?>" />
+				<input type="hidden" name="acyformname" value="<?php echo acym_escape($formName); ?>" />
+				<input type="hidden" name="acysubmode" value="widget_acym" />
+				<input type="hidden" name="confirmation_message" value="<?php echo acym_escape($params->get('confirmation_message', '')); ?>" />
+
+                <?php
+                $postText = $params->get('posttext', '');
+                if (!empty($postText)) {
+                    echo '<div class="acym_posttext">'.$postText.'</div>';
+                }
+                ?>
+			</form>
+		</div>
+	</div>
+    <?php
+    $return .= ob_get_clean();
+
+    if (!empty($args['after_widget'])) $return .= $args['after_widget'];
+
+    return $return;
 }

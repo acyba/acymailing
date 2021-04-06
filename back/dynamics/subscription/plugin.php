@@ -24,6 +24,9 @@ class plgAcymSubscription extends acymPlugin
     var $campaigns = [];
     //Used to know if we should add a List-Unsubscribe header
     var $unsubscribeLink = [];
+    // Used for list-unsubscribe to store the mail's list ids
+    private $mailLists = [];
+    private $userClass = null;
 
     public function __construct()
     {
@@ -188,38 +191,51 @@ class plgAcymSubscription extends acymPlugin
         echo $text;
     }
 
-    public function replaceUserInformation(&$email, &$user, $send = true)
-    {
+	public function replaceUserInformation(&$email, &$user, $send = true)
+	{
         $this->_replacelisttags($email, $user, $send);
 
-
+        // Check if we should add the List-Unsubscribe header
         if ($this->config->get('unsubscribe_header', 1) == 0) return;
+        if (empty($user->id) || !empty($this->addedListUnsubscribe[$email->id][$user->id])) return;
+        if (empty($this->unsubscribeLink[$email->id]) || !method_exists($email, 'addCustomHeader')) return;
 
-        //We add a list-unsubscribe.
-        if (empty($user->id) || empty($this->unsubscribeLink[$email->id]) || !empty($this->addedListUnsubscribe[$email->id][$user->id]) || !method_exists(
-                $email,
-                'addCustomHeader'
-            )) {
-            return;
-        }
-
-        $link = 'frontusers&id='.intval($user->id).'&task=unsubscribe&mail_id='.$email->id.'&key='.urlencode($user->key).'&'.acym_noTemplate();
-        $link .= $this->getLanguage($email->links_language);
-        $myLink = acym_frontendLink($link);
 
         $this->addedListUnsubscribe[$email->id][$user->id] = true;
-        //We add a mailto as well to handle list unsubscribe feedback loop by GMail so we can receive complaints
-        if (!empty($email->replyemail)) {
-            $mailto = $email->replyemail;
+
+        // Prepare the mailto parameters for the header
+        $mailto = '';
+        if ($this->config->get('auto_bounce', 0)) {
+            $mailto = $this->config->get('bounce_email');
         }
-        //If there is no reply-to then we use the default one from the config
         if (empty($mailto)) {
-            $mailto = $this->config->get('replyto_email');
+            $mailto = empty($email->replyemail) ? $this->config->get('replyto_email') : $email->replyemail;
+        }
+        // No bounce address, no reply-to address on the email or the configuration
+        if (empty($mailto)) return;
+
+        $body = 'Please%20unsubscribe%20user%20ID%20'.$user->id;
+
+        if (!isset($this->mailLists[$email->id])) {
+            $mailClass = new MailClass();
+            $lists = $mailClass->getAllListsByMailId($email->id);
+            $this->mailLists[$email->id] = empty($lists) ? null : array_keys($lists);
         }
 
-        $email->addCustomHeader(
-            'List-Unsubscribe: <'.$myLink.'>, <mailto:'.$mailto.'?subject=unsubscribe_user_'.$user->id.'&body=Please%20unsubscribe%20user%20ID%20'.$user->id.'>'
-        );
+        // Make sure we unsubscribe from the correct lists and not all the lists
+        if (!empty($this->mailLists[$email->id])) {
+            $userClass = $this->getUserClass();
+            $userLists = $userClass->getSubscriptionStatus($user->id, [], 1);
+            if (!empty($userLists)) {
+                $commonLists = array_intersect($this->mailLists[$email->id], array_keys($userLists));
+
+                if (!empty($commonLists)) {
+                    $body .= '%20from%20list(s)%20'.implode(',', $commonLists).'.';
+                }
+            }
+        }
+
+        $email->addCustomHeader('List-Unsubscribe: <mailto:'.$mailto.'?subject=unsubscribe_user_'.$user->id.'&body='.$body.'>');
     }
 
     public function replaceContent(&$email, $send = true)
@@ -333,7 +349,7 @@ class plgAcymSubscription extends acymPlugin
         $userLists = [];
 
         if (!empty($subid)) {
-            $userClass = new UserClass();
+            $userClass = $this->getUserClass();
             $userLists = $userClass->getUserSubscriptionById($subid);
 
             $listid = null;
@@ -391,7 +407,7 @@ class plgAcymSubscription extends acymPlugin
             }
         }
 
-        //Still no list? well, lets load the first list the user is subcribed to then
+        //Still no list? well, lets load the first list the user is subscribed to then
         if (!empty($userLists)) {
             $listIds = array_keys($userLists);
             $this->lists[$mailid][$subid] = array_shift($listIds);
@@ -406,7 +422,7 @@ class plgAcymSubscription extends acymPlugin
     {
         if (empty($user->id)) return '';
 
-        $userClass = new UserClass();
+        $userClass = $this->getUserClass();
         $usersubscription = $userClass->getUserSubscriptionById($user->id, 'id', false, true);
         $lists = [];
         if (!empty($usersubscription)) {
@@ -495,7 +511,7 @@ class plgAcymSubscription extends acymPlugin
     {
         if (empty($user->id)) return '';
 
-        $userClass = new UserClass();
+        $userClass = $this->getUserClass();
         $usersubscription = $userClass->getUserSubscriptionById($user->id);
         $listids = [];
         if (!empty($parameter->listids)) $listids = explode(',', $parameter->listids);
@@ -577,7 +593,7 @@ class plgAcymSubscription extends acymPlugin
             }
             $lists = explode(',', $parameters->lists);
             acym_arrayToInteger($lists);
-            $captchaKey = $this->config->get('captcha', '') == 1 ? '&seckey='.$this->config->get('security_key', '') : '';
+            $captchaKey = $this->config->get('captcha', 'none') !== 'none' ? '&seckey='.$this->config->get('security_key', '') : '';
             $myLink = acym_frontendLink('frontusers&task=subscribe&hiddenlists='.implode(',', $lists).'&id={subscriber:id}&key={subscriber:key|urlencode}'.$lang.$captchaKey);
             if (empty($allresults[2][$i])) {
                 return $myLink;
@@ -776,7 +792,7 @@ class plgAcymSubscription extends acymPlugin
                 $options['date-min'] = strtotime($options['date-min']);
             }
             if (!empty($options['date-min'])) {
-                $otherConditions .= ' AND userlist'.$num.'.'.acym_secureDBColumn($options['date-type']).' > '.acym_escapeDB(acym_date($options['date-min'], "Y-m-d H:i:s", false));
+                $otherConditions .= ' AND userlist'.$num.'.'.acym_secureDBColumn($options['date-type']).' > '.acym_escapeDB(acym_date($options['date-min'], 'Y-m-d H:i:s', false));
             }
         }
         if (!empty($options['date-max'])) {
@@ -785,7 +801,7 @@ class plgAcymSubscription extends acymPlugin
                 $options['date-max'] = strtotime($options['date-max']);
             }
             if (!empty($options['date-max'])) {
-                $otherConditions .= ' AND userlist'.$num.'.'.acym_secureDBColumn($options['date-type']).' < '.acym_escapeDB(acym_date($options['date-max'], "Y-m-d H:i:s", false));
+                $otherConditions .= ' AND userlist'.$num.'.'.acym_secureDBColumn($options['date-type']).' < '.acym_escapeDB(acym_date($options['date-max'], 'Y-m-d H:i:s', false));
             }
         }
 
@@ -860,7 +876,7 @@ class plgAcymSubscription extends acymPlugin
                         'user.id',
                         $action['list_id'],
                         '1',
-                        acym_escapeDB(acym_date(time(), "Y-m-d H:i:s")),
+                        acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s')),
                     ]
                 ).') ON DUPLICATE KEY UPDATE status = 1';
         } elseif ($action['list_actions'] == 'remove') {
@@ -1026,5 +1042,14 @@ class plgAcymSubscription extends acymPlugin
             'level' => 2,
             'alias' => self::FOLLOWTRIGGER,
         ];
+    }
+
+    private function getUserClass()
+    {
+        if ($this->userClass === null) {
+            $this->userClass = new UserClass();
+        }
+
+        return $this->userClass;
     }
 }

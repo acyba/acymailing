@@ -32,7 +32,7 @@
 	<div class="cell small-6">
         <?php echo acym_translation('ACYM_DATE_CREATED'); ?> : <b><?php echo acym_date(
                 empty($data['listInformation']->id) ? time() : $data['listInformation']->creation_date,
-                'M. j, Y'
+                'ACYM_DATE_FORMAT_LC3'
             ); ?></b>
 	</div>
 </div>

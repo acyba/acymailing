@@ -346,6 +346,9 @@ class MailClass extends acymClass
 
     public function getAllListsByMailId($id)
     {
+        //If we are from the stats and we have an array we take the first email because it's the main email from automatic campaign
+        if (is_array($id)) $id = $id[0];
+
         $mail = $this->getOneById($id);
         if (empty($mail)) return [];
 
@@ -1047,7 +1050,7 @@ class MailClass extends acymClass
 
         $urlPoweredByImage = ACYM_IMAGES.'poweredby_black.png';
 
-        $poweredByHTML = '<p id="acym__powered_by_acymailing"><a href="https://www.acymailing.com/?utm_source=powered_by_v7" target="blank"><img height="40" width="199" style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;" src="'.$urlPoweredByImage.'"></a></p>';
+        $poweredByHTML = '<p id="acym__powered_by_acymailing"><a href="https://www.acymailing.com/?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="blank"><img height="40" width="199" style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;" src="'.$urlPoweredByImage.'"></a></p>';
         $poweredByWYSID = <<<CONTENT
 <table id="acym__powered_by_acymailing" class="row" bgcolor="#ffffff" style="background-color: transparent" cellpadding="0">
     <tbody bgcolor style="background-color: inherit;">
@@ -1060,8 +1063,8 @@ class MailClass extends acymClass
                             style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">
                             <td class="large-12">
                                 <div style="position: relative;">
-                                    <p style="word-break: break-word; text-align: center">
-                                    <a href="https://www.acymailing.com/?utm_source=powered_by_v7" target="blank">
+                                    <p style="word-break: break-word; text-align: center;">
+                                    <a href="https://www.acymailing.com/?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="_blank">
                                         <img src="$urlPoweredByImage"
                                             title="poweredby" alt=""
                                             style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0px 5px; display: inline-block; margin-left: auto; margin-right: auto;"
@@ -1088,14 +1091,14 @@ CONTENT;
             @$mailBodyDom->loadHTML('<?xml encoding="utf-8" ?>'.$mail->body);
 
             $htmlToAddDom = new \DOMDocument();
-            $htmlToAddDom->loadHTML('<?xml encoding="utf-8" ?>'.$poweredByWYSID);
+            @$htmlToAddDom->loadHTML('<?xml encoding="utf-8" ?>'.$poweredByWYSID);
             $tableToAdd = $htmlToAddDom->getElementById('acym__powered_by_acymailing');
 
             $tds = $mailBodyDom->getElementsByTagName('td');
             foreach ($tds as $td) {
                 $classes = explode(' ', $td->getAttribute('class'));
                 if (!in_array('acym__wysid__row', $classes)) continue;
-                $td->appendChild($mailBodyDom->importNode($tableToAdd, true));
+                if (!empty($tableToAdd)) $td->appendChild($mailBodyDom->importNode($tableToAdd, true));
                 break;
             }
             $mail->body = $mailBodyDom->saveHTML();
@@ -1274,5 +1277,40 @@ CONTENT;
         }
 
         return true;
+    }
+
+    public function getAutomaticMailIds($mailIds)
+    {
+        acym_arrayToInteger($mailIds);
+
+        $query = 'SELECT DISTINCT campaign2.mail_id 
+                  FROM #__acym_campaign AS campaign1 
+                  JOIN #__acym_campaign AS campaign2 ON campaign1.id = campaign2.parent_id 
+                  WHERE campaign1.mail_id IN ('.implode(',', $mailIds).')';
+        $generatedMailIds = acym_loadResultArray($query);
+
+        if (empty($generatedMailIds)) return [];
+
+        acym_arrayToInteger($generatedMailIds);
+
+        return $generatedMailIds;
+    }
+
+    public function getMultilingualMailIds($mailIds)
+    {
+        acym_arrayToInteger($mailIds);
+
+        $query = 'SELECT DISTINCT mail2.id 
+                  FROM #__acym_mail AS mail1 
+                  JOIN #__acym_mail AS mail2 ON mail1.id = mail2.parent_id 
+                  WHERE mail1.id IN ('.implode(',', $mailIds).')';
+
+        $multipleMailIds = acym_loadResultArray($query);
+
+        if (empty($multipleMailIds)) return [];
+
+        acym_arrayToInteger($multipleMailIds);
+
+        return $multipleMailIds;
     }
 }

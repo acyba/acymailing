@@ -63,6 +63,7 @@ class acyMenu extends acyHook
             42
         );
 
+        $menuExtra = [];
         $menus = [
             'ACYM_SUBSCRIPTION_FORMS' => 'forms',
             'ACYM_SUBSCRIBERS' => 'users',
@@ -75,16 +76,22 @@ class acyMenu extends acyHook
         $menus['ACYM_QUEUE'] = 'queue';
         $menus['ACYM_STATISTICS'] = 'stats';
         $menus['ACYM_ADD_ONS'] = 'plugins';
-        $menus['ACYM_BOUNCE_HANDLING'] = 'bounces';
         $menus['ACYM_CONFIGURATION'] = 'configuration';
+
+        if (!acym_level(1)) {
+            $menus['ACYM_GOPRO'] = 'gopro';
+            $menuExtra['ACYM_GOPRO']['icon'] = '<i class="acymicon-star"></i>';
+        }
 
         foreach ($menus as $title => $ctrl) {
             if (!acym_isAllowed($ctrl)) continue;
 
+            $text = acym_translation($title);
+            if (!empty($menuExtra[$title]['icon'])) $text .= ' '.$menuExtra[$title]['icon'];
             add_submenu_page(
                 ACYM_COMPONENT.'_dashboard',
                 acym_translation($title),
-                acym_translation($title),
+                $text,
                 $capability,
                 ACYM_COMPONENT.'_'.$ctrl,
                 [$this->router, 'router']

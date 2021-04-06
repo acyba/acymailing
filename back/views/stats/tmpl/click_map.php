@@ -14,7 +14,7 @@
 		</div>
         <?php
         $workflow = $data['workflowHelper'];
-        $this->isMailSelected($data['selectedMailid']);
+        $this->isMailSelected($data['selectedMailid'], empty($data['no_click_map']));
         echo $workflow->displayTabs($this->tabs, 'clickMap');
         ?>
 		<div id="acym__stats__click-map" class="acym__content">

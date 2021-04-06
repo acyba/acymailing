@@ -601,10 +601,13 @@ class CampaignClass extends acymClass
         return $this->decode(acym_loadObjectList($query));
     }
 
-    public function getOpenRateOneCampaign($mail_id)
+    public function getOpenRateCampaigns($mailIds)
     {
-        $query = 'SELECT sent, open_unique FROM #__acym_mail_stat 
-                    WHERE mail_id = '.intval($mail_id);
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+        acym_arrayToInteger($mailIds);
+
+        $query = 'SELECT SUM(sent) AS sent, SUM(open_unique) AS open_unique FROM #__acym_mail_stat 
+                    WHERE mail_id IN ('.implode(',', $mailIds).')';
 
         return acym_loadObject($query);
     }
@@ -624,18 +627,25 @@ class CampaignClass extends acymClass
     }
 
 
-    public function getBounceRateOneCampaign($mail_id)
+    public function getBounceRateCampaigns($mailIds)
     {
-        $query = 'SELECT sent, bounce_unique FROM #__acym_mail_stat 
-                    WHERE mail_id = '.intval($mail_id);
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+
+        acym_arrayToInteger($mailIds);
+
+        $query = 'SELECT SUM(sent) AS sent, SUM(bounce_unique) AS bounce_unique FROM #__acym_mail_stat 
+                    WHERE mail_id IN ('.implode(',', $mailIds).')';
 
         return acym_loadObject($query);
     }
 
-    public function getOpenByMonth($mail_id = '', $start = '', $end = '')
+    public function getOpenByMonth($mailIds = [], $start = '', $end = '')
     {
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+        acym_arrayToInteger($mailIds);
+
         $query = 'SELECT COUNT(user_id) as open, DATE_FORMAT(open_date, \'%Y-%m\') as open_date FROM #__acym_user_stat WHERE open > 0';
-        $query .= empty($mail_id) ? '' : ' AND  `mail_id`='.intval($mail_id);
+        $query .= empty($mailIds) ? '' : ' AND  `mail_id` IN ('.implode(',', $mailIds).')';
         $query .= ' AND `open_date` > "0000-00-00"';
         $query .= empty($start) ? '' : ' AND `open_date` >= '.acym_escapeDB($start);
         $query .= empty($end) ? '' : ' AND `open_date` <= '.acym_escapeDB($end);
@@ -656,10 +666,13 @@ class CampaignClass extends acymClass
         return acym_loadObjectList($query);
     }
 
-    public function getOpenByDay($mail_id = '', $start = '', $end = '')
+    public function getOpenByDay($mailIds = [], $start = '', $end = '')
     {
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+        acym_arrayToInteger($mailIds);
+
         $query = 'SELECT COUNT(user_id) as open, DATE_FORMAT(open_date, \'%Y-%m-%d\') as open_date FROM #__acym_user_stat WHERE open > 0';
-        $query .= empty($mail_id) ? '' : ' AND  `mail_id`='.intval($mail_id);
+        $query .= empty($mailIds) ? '' : ' AND  `mail_id` IN ('.implode(',', $mailIds).')';
         $query .= ' AND `open_date` > "0000-00-00"';
         $query .= empty($start) ? '' : ' AND `open_date` >= '.acym_escapeDB($start);
         $query .= empty($end) ? '' : ' AND `open_date` <= '.acym_escapeDB($end);
@@ -668,10 +681,13 @@ class CampaignClass extends acymClass
         return acym_loadObjectList($query);
     }
 
-    public function getOpenByHour($mail_id = '', $start = '', $end = '')
+    public function getOpenByHour($mailIds = [], $start = '', $end = '')
     {
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+        acym_arrayToInteger($mailIds);
+
         $query = 'SELECT COUNT(user_id) as open, DATE_FORMAT(open_date, \'%Y-%m-%d %H:00:00\') as open_date FROM #__acym_user_stat WHERE open > 0';
-        $query .= empty($mail_id) ? '' : ' AND  `mail_id`='.intval($mail_id);
+        $query .= empty($mailIds) ? '' : ' AND  `mail_id` IN ('.implode(',', $mailIds).')';
         $query .= ' AND `open_date` > "0000-00-00 00:00:00"';
         $query .= empty($start) ? '' : ' AND `open_date` >= '.acym_escapeDB($start);
         $query .= empty($end) ? '' : ' AND `open_date` <= '.acym_escapeDB($end);
@@ -680,10 +696,13 @@ class CampaignClass extends acymClass
         return acym_loadObjectList($query);
     }
 
-    public function getDevicesWithCountByMailId($mailId = '')
+    public function getDevicesWithCountByMailId($mailIds = [])
     {
+        if (!is_array($mailIds)) $mailIds = [$mailIds];
+        acym_arrayToInteger($mailIds);
+
         $query = 'SELECT device, COUNT(*) as number FROM #__acym_user_stat WHERE `open` > 0';
-        if (!empty($mailId)) $query .= ' AND mail_id = '.intval($mailId);
+        if (!empty($mailIds)) $query .= ' AND mail_id IN ('.implode(',', $mailIds).')';
         $query .= ' GROUP BY device';
 
         return acym_loadObjectList($query);
@@ -941,6 +960,13 @@ class CampaignClass extends acymClass
     }
 
     public function getAllCampaignsGenerated()
+    {
+        $query = 'SELECT id FROM #__acym_campaign WHERE parent_id IS NOT NULL AND sending_type = '.acym_escapeDB(self::SENDING_TYPE_NOW);
+
+        return acym_loadObjectList($query);
+    }
+
+    public function getAllCampaignsGeneratedWaiting()
     {
         $query = 'SELECT id FROM #__acym_campaign WHERE parent_id IS NOT NULL AND sending_type = '.acym_escapeDB(
                 self::SENDING_TYPE_NOW

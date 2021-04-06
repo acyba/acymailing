@@ -69,6 +69,44 @@
         }
     }
 
+    #acym__template__import__reveal {
+        position: relative;
+        overflow-x: hidden;
+
+        #acym__template__import {
+            .acym__template__import__info {
+                padding: 1rem;
+                background-color: $light-gray;
+                border-radius: 10px;
+            }
+
+            #acym__template__import__image__template {
+                width: 250px;
+                height: 250px;
+            }
+
+            [name="uploadedfile"] {
+                display: none;
+            }
+        }
+
+        #acym__template__import__image__spaceman {
+            position: absolute;
+            width: 40%;
+            bottom: 0;
+            left: -5%;
+            z-index: -1;
+        }
+
+        #acym__template__import__image__smoke {
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            left: 0;
+            z-index: -1;
+        }
+    }
+
     a.downloadmore {
         color: #0068b5;
     }
