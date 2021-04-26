@@ -25,7 +25,7 @@ class QueueController extends acymController
         acym_setVar('layout', 'campaigns');
         $pagination = new PaginationHelper();
 
-        if (acym_level(1) && $this->config->get('cron_last', 0) < (time() - 43200)) {
+        if (acym_level(ACYM_ESSENTIAL) && $this->config->get('cron_last', 0) < (time() - 43200)) {
             acym_enqueueMessage(
                 acym_translation('ACYM_CREATE_CRON_REMINDER').' <a id="acym__queue__configure-cron" href="'.acym_completeLink('configuration&tab=license').'">'.acym_translation(
                     'ACYM_GOTO_CONFIG'

@@ -37,7 +37,7 @@
 
 <?php
 if ($data['mail']->type === $data['mailClass']::TYPE_TEMPLATE) {
-    if (acym_level(2) && ACYM_CMS === 'joomla') {
+    if (acym_level(ACYM_ENTERPRISE) && ACYM_CMS === 'joomla') {
         ?>
 		<div class="cell xlarge-3 medium-6">
 			<label class="cell">

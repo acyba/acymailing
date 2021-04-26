@@ -464,12 +464,12 @@ class plgAcymModerneventscalendar extends acymPlugin
 
             $where[] = 'post.post_type = "mec-events"';
             $where[] = 'post.post_status = "publish"';
-            $where[] = 'CAST(CONCAT(startdate.meta_value, " ", CAST(starthour.meta_value/3600 AS int), ":", CAST((starthour.meta_value%3600)/60 AS int), ":00") AS datetime) >= '.acym_escapeDB(
+            $where[] = 'CAST(CONCAT(startdate.meta_value, " ", (starthour.meta_value/3600), ":", ((starthour.meta_value%3600)/60), ":00") AS datetime) >= '.acym_escapeDB(
                     $parameter->from
                 );
 
             if (!empty($parameter->to)) {
-                $where[] = 'CAST(CONCAT(startdate.meta_value, " ", CAST(starthour.meta_value/3600 AS int), ":", CAST((starthour.meta_value%3600)/60 AS int), ":00") AS datetime) <= '.acym_escapeDB(
+                $where[] = 'CAST(CONCAT(startdate.meta_value, " ", (starthour.meta_value/3600), ":", ((starthour.meta_value%3600)/60), ":00") AS datetime) <= '.acym_escapeDB(
                         $parameter->to
                     );
             }

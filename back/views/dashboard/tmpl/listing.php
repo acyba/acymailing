@@ -45,7 +45,7 @@
 			</div>
         <?php } ?>
         <?php if (acym_isAllowed('automation')) {
-            $disabledLinks = !acym_level(2);
+            $disabledLinks = !acym_level(ACYM_ENTERPRISE);
             ?>
 			<div class="cell acym__content acym__dashboard__one-card text-center grid-x">
 				<div class="acym__dashboard__card__picto__automation acym__dashboard__card__picto">

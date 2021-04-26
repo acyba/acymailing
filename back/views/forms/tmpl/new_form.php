@@ -18,32 +18,32 @@
 					<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_SHORTCODE_SUBFORM_DESC'); ?></p>
 				</div>
             <?php } ?>
-			<div class="acym__selection__card <?php echo !acym_level(2) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center"
+			<div class="acym__selection__card <?php echo !acym_level(ACYM_ENTERPRISE) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center"
 				 acym-data-link="<?php echo $data['popup_link']; ?>">
 				<i class="acymicon-window acym__selection__card__icon"></i>
 				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_POPUP'); ?></h1>
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_POPUP_SUBFORM_DESC'); ?></p>
-                <?php if (!acym_level(2)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
+                <?php if (!acym_level(ACYM_ENTERPRISE)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
                         'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION'
                     ).'</div>'; ?>
 			</div>
 		</div>
 		<div class="cell grid-x grid-margin-x align-center">
-			<div class="acym__selection__card <?php echo !acym_level(2) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center"
+			<div class="acym__selection__card <?php echo !acym_level(ACYM_ENTERPRISE) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center"
 				 acym-data-link="<?php echo $data['header_link']; ?>">
 				<i class="acymicon-vertical_align_top acym__selection__card__icon"></i>
 				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_HEADER'); ?></h1>
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_HEADER_SUBFORM_DESC'); ?></p>
-                <?php if (!acym_level(2)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
+                <?php if (!acym_level(ACYM_ENTERPRISE)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
                         'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION'
                     ).'</div>'; ?>
 			</div>
-			<div class="acym__selection__card <?php echo !acym_level(2) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center"
+			<div class="acym__selection__card <?php echo !acym_level(ACYM_ENTERPRISE) ? 'acym__selection__card__disabled' : ''; ?> cell large-2 medium-4 text-center"
 				 acym-data-link="<?php echo $data['footer_link']; ?>">
 				<i class="acymicon-vertical_align_bottom acym__selection__card__icon"></i>
 				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_FOOTER'); ?></h1>
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_FOOTER_SUBFORM_DESC'); ?></p>
-                <?php if (!acym_level(2)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
+                <?php if (!acym_level(ACYM_ENTERPRISE)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
                         'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION'
                     ).'</div>'; ?>
 			</div>

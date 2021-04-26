@@ -7,7 +7,7 @@
 				<button class="cell margin-left-1 shrink acy_button_submit button" data-task="listing"><?php echo acym_translation('ACYM_VALIDATE'); ?></button>
 			</div>
             <?php if (!empty($data['emailTranslationsFilters']) && !empty($data['emailTranslations'])) { ?>
-				<div class="cell grid-x margin-top-1 acym_vcenter">
+				<div class="cell grid-x margin-top-1 acym_vcenter acym__stats__select__language__container">
 					<h2 class="cell medium-5 text-right acym_stats__title__choose-smaller"><?php echo acym_translation('ACYM_SPECIFY_LANGUAGE'); ?></h2>
 					<div class="cell large-2 medium-4 margin-left-1"><?php echo $data['emailTranslationsFilters']; ?></div>
 				</div>

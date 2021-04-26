@@ -2,6 +2,7 @@ const acym_editorWysidFontStyle = {
     allTags: [
         'p',
         'a',
+        'span.acym_link',
         'li',
         'h1',
         'h2',

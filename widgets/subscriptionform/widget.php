@@ -394,8 +394,6 @@ class acym_subscriptionform_widget extends WP_Widget
     {
         require_once rtrim(dirname(dirname(__DIR__)), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
 
-        echo $args['before_widget'];
-
         $params = new acymParameter($instance);
 
         echo acym_renderForm($params, $args);

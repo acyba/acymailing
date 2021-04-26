@@ -31,12 +31,12 @@
 			</div>
 		</div>
 		<div class="cell grid-x grid-margin-x align-center">
-			<div class="acym__selection__card <?php echo !acym_level(1) ? 'acym__selection__card__disabled' : ''; ?> cell medium-4 text-center"
+			<div class="acym__selection__card <?php echo !acym_level(ACYM_ESSENTIAL) ? 'acym__selection__card__disabled' : ''; ?> cell medium-4 text-center"
 				 acym-data-link="<?php echo $data['campaign_scheduled_link']; ?>">
 				<i class="acymicon-access_time acym__selection__card__icon"></i>
 				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_SCHEDULED_CAMPAIGN'); ?></h1>
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_SCHEDULED_CAMPAIGN_DESC'); ?></p>
-                <?php if (!acym_level(1)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
+                <?php if (!acym_level(ACYM_ESSENTIAL)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
                         'ACYM_ONLY_AVAILABLE_ESSENTIAL_VERSION'
                     ).'</div>'; ?>
 			</div>

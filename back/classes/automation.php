@@ -92,7 +92,7 @@ class AutomationClass extends acymClass
      */
     public function trigger($trigger, $data = [])
     {
-        if (!acym_level(2) || empty($trigger)) return;
+        if (!acym_level(ACYM_ENTERPRISE) || empty($trigger)) return;
 
         $stepClass = new StepClass();
         $actionClass = new ActionClass();

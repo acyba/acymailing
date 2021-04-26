@@ -23,7 +23,7 @@
 						</div>
                         <?php
                         $icon = empty($data['upgrade']) ? '<i></i>' : acym_tooltip('<i class="acymicon-question-circle-o"></i>', acym_translation('ACYM_NEED_PRO_VERSION'));
-                        $iconSpamTest = acym_level(2) ? '<i></i>' : acym_tooltip('<i class="acymicon-question-circle-o"></i>', acym_translation('ACYM_NEED_ENTERPRISE_VERSION'));
+                        $iconSpamTest = acym_level(ACYM_ENTERPRISE) ? '<i></i>' : acym_tooltip('<i class="acymicon-question-circle-o"></i>', acym_translation('ACYM_NEED_ENTERPRISE_VERSION'));
                         ?>
 						<div class="cell grid-x <?php echo !empty($data['upgrade']) ? 'acym__campaigns__tests__starter' : 'is-hidden'; ?>" id="safe_check_results">
 							<div class="cell grid-x acym_vcenter" id="check_words">
@@ -61,7 +61,7 @@
                         <?php
                         $blocDisplay = '';
                         $getProBtn = acym_buttonGetProVersion();
-                        if (acym_level(1)) {
+                        if (acym_level(ACYM_ESSENTIAL)) {
                             $blocDisplay = 'style="display:none;"';
                             $getProBtn = acym_buttonGetProVersion('cell shrink', 'ACYM_GET_ENTERPRISE_VERSION');
                         }

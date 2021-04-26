@@ -116,7 +116,7 @@ class FormsController extends acymController
         acym_setVar('layout', 'edit');
         $id = acym_getVar('int', 'id', 0);
         $type = acym_getVar('string', 'type', ACYM_CMS == 'wordpress' ? $this->currentClass->getConstShortcode() : $this->currentClass->getConstPopup());
-        if (!acym_level(2) && in_array($type, [$this->currentClass->getConstPopup(), $this->currentClass->getConstHeader(), $this->currentClass->getConstFooter()])) {
+        if (!acym_level(ACYM_ENTERPRISE) && in_array($type, [$this->currentClass->getConstPopup(), $this->currentClass->getConstHeader(), $this->currentClass->getConstFooter()])) {
             acym_enqueueMessage(acym_translation('ACYM_NOT_ALLOWED_CREATE_TYPE_FORM'), 'info');
             $this->listing();
 

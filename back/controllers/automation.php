@@ -31,7 +31,7 @@ class AutomationController extends acymController
 
     public function listing()
     {
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
 
@@ -49,7 +49,7 @@ class AutomationController extends acymController
 
     public function info()
     {
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
 
@@ -57,7 +57,7 @@ class AutomationController extends acymController
 
     public function condition()
     {
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
 
@@ -66,7 +66,7 @@ class AutomationController extends acymController
     public function filter()
     {
 
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
     }
@@ -79,7 +79,7 @@ class AutomationController extends acymController
     public function action()
     {
 
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
     }
@@ -87,7 +87,7 @@ class AutomationController extends acymController
     public function summary()
     {
 
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
     }

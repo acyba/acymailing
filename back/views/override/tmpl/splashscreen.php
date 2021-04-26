@@ -36,7 +36,9 @@
 				<a target="_blank" href="https://docs.acymailing.com/main-pages/email-overrides" class="button button-secondary cell shrink">
                     <?php echo acym_translation('ACYM_SEE_MORE'); ?>
 				</a>
-				<a target="_blank" href="<?php echo ACYM_ACYMAILLING_WEBSITE; ?>pricing?utm_source=override&utm_medium=acymailing_plugin&utm_campaign=purchase" class="button cell shrink">
+				<a target="_blank"
+				   href="<?php echo ACYM_ACYMAILLING_WEBSITE; ?>pricing?utm_source=acymailing_plugin&utm_medium=override&utm_campaign=purchase"
+				   class="button cell shrink">
                     <?php echo acym_translation('ACYM_GET_ENTERPRISE_VERSION'); ?>
 				</a>
 			</div>

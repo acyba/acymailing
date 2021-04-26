@@ -2,6 +2,7 @@
 
 function acym_escapeDB($value)
 {
+    // esc_sql replaces % by something like {svzzvzevzv} but it's normal, it will be replaced back by % before the query is executed
     return "'".esc_sql($value)."'";
 }
 

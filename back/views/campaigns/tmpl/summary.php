@@ -208,6 +208,14 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                 !acym_isAdmin()
                             );
                             ?>
+							<div class="cell">
+								<span id="resend_receivers_new" style="display: none;">
+									<?php echo acym_translationSprintf('ACYM_X_RECIPIENTS', $data['receiversNew']); ?>
+								</span>
+								<span id="resend_receivers_all" style="display: none;">
+									<?php echo acym_translationSprintf('ACYM_X_RECIPIENTS', $data['receiversAll']); ?>
+								</span>
+							</div>
 						</div>
                         <?php
                     }
@@ -252,7 +260,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                             if ($data['campaignClass']::SENDING_TYPE_NOW == $data['campaignInformation']->sending_type) {
                                 $task = 'addQueue';
                                 $buttonText = 'ACYM_SEND_CAMPAIGN';
-                                if (!acym_level(1) || $this->config->get('cron_last', 0) < (time() - 43200)) $buttonText = 'ACYM_ADD_TO_QUEUE';
+                                if (!acym_level(ACYM_ESSENTIAL) || $this->config->get('cron_last', 0) < (time() - 43200)) $buttonText = 'ACYM_ADD_TO_QUEUE';
                             } elseif (!$data['campaignInformation']->isAuto) {
                                 $task = 'confirmCampaign';
                                 $buttonText = 'ACYM_CONFIRM_CAMPAIGN';

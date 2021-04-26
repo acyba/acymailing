@@ -13,7 +13,7 @@ function acym_loadLanguage($lang = null)
 
 function acym_isMultilingual()
 {
-    if (!acym_level(1)) return false;
+    if (!acym_level(ACYM_ESSENTIAL)) return false;
 
     $config = acym_config();
     $mainLanguage = $config->get('multilingual_default');

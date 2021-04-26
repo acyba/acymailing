@@ -2,6 +2,7 @@
 
 use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Classes\OverrideClass;
 use AcyMailing\Controllers\CampaignsController;
 use AcyMailing\Helpers\PluginHelper;
@@ -1682,25 +1683,49 @@ class plgAcymWoocommerce extends acymPlugin
         acym_trigger('formatCookie', [&$cookie, &$formattedCookie], 'plgAcymWoocommerce');
 
         if (empty($formattedCookie['userid']) || empty($formattedCookie['mailid'])) return $result;
-        $userStatClass = new UserStatClass();
-        $userStat = $userStatClass->getOneByMailAndUserId($formattedCookie['mailid'], $formattedCookie['userid']);
-        if (empty($userStat)) return $result;
-        unset($userStat->statusSending);
-        unset($userStat->open);
-        unset($userStat->open_date);
 
         $order = wc_get_order($order_id);
+
         $currency = $order->get_currency();
         if (empty($currency)) return $result;
 
         $total = (float)$order->get_total() - $order->get_total_tax() - $order->get_total_shipping() - $order->get_shipping_tax();
 
+        $this->saveTrackingWoocommerceMailStat($formattedCookie, $total, $currency);
+        $this->saveTrackingWoocommerceUserStat($formattedCookie, $total, $currency);
+
+        return $result;
+    }
+
+    private function saveTrackingWoocommerceMailStat($formattedCookie, $total, $currency)
+    {
+        $mailStatClass = new MailStatClass();
+        $mailStat = $mailStatClass->getOneById($formattedCookie['mailid']);
+
+        if (empty($mailStat)) return;
+
+        $newMailStat = [
+            'mail_id' => $mailStat->mail_id,
+            'tracking_sale' => empty($mailStat->tracking_sale) ? $total : $mailStat->tracking_sale + $total,
+            'currency' => $currency,
+        ];
+
+        $mailStatClass->save($newMailStat);
+    }
+
+    private function saveTrackingWoocommerceUserStat($formattedCookie, $total, $currency)
+    {
+        $userStatClass = new UserStatClass();
+        $userStat = $userStatClass->getOneByMailAndUserId($formattedCookie['mailid'], $formattedCookie['userid']);
+        if (empty($userStat)) return;
+        unset($userStat->statusSending);
+        unset($userStat->open);
+        unset($userStat->open_date);
+
         $userStat->tracking_sale = empty($userStat->tracking_sale) ? $total : $userStat->tracking_sale + $total;
         $userStat->currency = $currency;
 
         $userStatClass->save($userStat);
-
-        return $result;
     }
 
 

@@ -10,7 +10,7 @@ class FrontlistsController extends ListsController
 {
     public function __construct()
     {
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_rootURI(), 'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', 'warning');
         }
         $this->authorizedFrontTasks = [

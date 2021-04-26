@@ -12,9 +12,6 @@ class UserClass extends acymClass
     var $pkey = 'id';
     var $nameColumn = 'email';
 
-    var $sendWelcome = true;
-    var $sendUnsubscribe = true;
-
     var $checkVisitor = true;
     var $restrictedFields = ['id', 'key', 'confirmed', 'active', 'cms_id', 'creation_date'];
     var $allowModif = false;
@@ -39,7 +36,8 @@ class UserClass extends acymClass
      */
     public function getMatchingElements($settings = [])
     {
-        $columns = 'user.*';
+        // Initialize the queries
+        $columns = '`user`.*';
         if (!empty($settings['columns'])) {
             foreach ($settings['columns'] as $key => $value) {
                 $settings['columns'][$key] = $key === 'join' ? $value : 'user.'.$value;
@@ -47,150 +45,22 @@ class UserClass extends acymClass
             $columns = implode(', ', $settings['columns']);
         }
 
-        $query = 'SELECT DISTINCT '.$columns.' FROM #__acym_user AS user';
+        $query = $columns.' FROM #__acym_user AS `user`';
         $queryCount = 'SELECT COUNT(DISTINCT user.id) FROM #__acym_user AS user';
         $queryStatus = 'SELECT COUNT(DISTINCT user.id) AS number, user.confirmed + user.active*2 AS score FROM #__acym_user AS user';
         $filters = [];
 
-        if (!empty($settings['join'])) $query .= $this->getJoinForQuery($settings['join']);
-
-        if (!empty($settings['joins'])) {
-            foreach ($settings['joins'] as $oneJoin) {
-                $query .= ' '.$oneJoin.' ';
-                $queryCount .= ' '.$oneJoin.' ';
-                $queryStatus .= ' '.$oneJoin.' ';
-            }
+        if (!empty($settings['join'])) {
+            $query .= $this->getJoinForQuery($settings['join']);
         }
 
-        if (!acym_isAdmin()) {
-            $settings['creator_id'] = acym_currentUserId();
-            if (empty($settings['creator_id'])) $settings['creator_id'] = '-1';
-        }
-        if (!empty($settings['creator_id'])) {
-            $userGroups = acym_getGroupsByUser($settings['creator_id']);
-            $groupCondition = 'list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%"';
-            $joinList = ' JOIN #__acym_user_has_list as user_list ON user_list.user_id = user.id JOIN #__acym_list AS list ON list.id = user_list.list_id AND (list.cms_user_id = '.intval(
-                    $settings['creator_id']
-                ).' OR '.$groupCondition.')';
-            $query .= $joinList;
-            $queryCount .= $joinList;
-            $queryStatus .= $joinList;
-        }
+        $this->handleSubscriptionFilter($settings, $filters, $query, $queryCount, $queryStatus);
+        $this->handleFrontend($settings, $query, $queryCount, $queryStatus);
+        $this->handleSearchFilter($settings, $query, $queryCount, $queryStatus, $filters);
+        $results['status'] = $this->handleUserStatusFilter($queryStatus, $filters);
+        $entityResult = $this->handleEntitySelect($settings, $filters);
 
-        // Search filter
-        if (!empty($settings['search'])) {
-            $searchValue = acym_escapeDB('%'.$settings['search'].'%');
-            $searchFilter = 'user.email LIKE '.$searchValue.' OR user.name LIKE '.$searchValue.' OR user.id = '.intval($settings['search']);
-
-            // Search in visible custom fields
-            $listingFields = acym_loadResultArray('SELECT `id` FROM #__acym_field WHERE `'.(acym_isAdmin() ? 'back' : 'front').'end_listing` = 1');
-
-            if (!empty($listingFields)) {
-                $join = ' LEFT JOIN #__acym_user_has_field AS userfield ON user.id = userfield.user_id AND userfield.field_id IN ('.implode(', ', $listingFields).') ';
-                $query .= $join;
-                $queryCount .= $join;
-                $queryStatus .= $join;
-                $searchFilter .= ' OR userfield.value LIKE '.$searchValue;
-
-                $fieldsWithMultipleValues = acym_loadObjectList(
-                    'SELECT * 
-                    FROM #__acym_field 
-                    WHERE id IN ('.implode(', ', $listingFields).')
-                        AND `value` LIKE '.acym_escapeDB('%"title":"'.$settings['search'].'"%')
-                );
-                if (!empty($fieldsWithMultipleValues)) {
-                    foreach ($fieldsWithMultipleValues as $oneField) {
-                        $oneField->value = json_decode($oneField->value, true);
-                        foreach ($oneField->value as $value) {
-                            if (stripos($value['title'], $settings['search']) !== false) {
-                                $searchFilter .= ' OR (userfield.field_id = '.intval($oneField->id).' AND userfield.value LIKE '.acym_escapeDB('%'.$value['value'].'%').')';
-                            }
-                        }
-                    }
-                }
-            }
-
-            $filters[] = $searchFilter;
-        }
-
-        if (!empty($settings['conditions'])) {
-            $filters = array_merge($filters, $settings['conditions']);
-        }
-
-        // Status
-        if (!empty($filters)) {
-            $queryStatus .= ' WHERE ('.implode(') AND (', $filters).')';
-        }
-
-        if (!empty($settings['status'])) {
-            $allowedStatus = [
-                'active' => 'active = 1',
-                'inactive' => 'active = 0',
-                'confirmed' => 'confirmed = 1',
-                'unconfirmed' => 'confirmed = 0',
-            ];
-            if (empty($allowedStatus[$settings['status']])) {
-                die('Injection denied');
-            }
-            $filters[] = 'user.'.$allowedStatus[$settings['status']];
-        }
-
-        if (isset($settings['hiddenElements'])) {
-            if (empty($settings['hiddenElements'])) {
-                $filters[] = 'user.id IS NOT NULL';
-            } else {
-                acym_arrayToInteger($settings['hiddenElements']);
-                $filters[] = 'user.id NOT IN('.implode(',', $settings['hiddenElements']).')';
-            }
-        }
-
-        if (isset($settings['onlyElements'])) {
-            if (empty($settings['onlyElements'])) {
-                $filters[] = 'user.id IS NULL';
-            } else {
-                acym_arrayToInteger($settings['onlyElements']);
-                $filters[] = 'user.id IN('.implode(',', $settings['onlyElements']).')';
-            }
-        }
-
-        //Pour la modal, quand on selectionne "show only selected users"
-        if (!empty($settings['showOnlySelected'])) {
-            if (!empty($settings['selectedUsers'])) {
-                acym_arrayToInteger($settings['selectedUsers']);
-                $filters[] = 'user.id IN('.implode(',', $settings['selectedUsers']).')';
-            } else {
-                return ['users' => [], 'total' => 0];
-            }
-        }
-
-        if (!empty($settings['relation']) && !empty($settings['relation']['target']) && !empty($settings['relation']['target_id']) && isset($settings['relation']['is_related'])) {
-            if ($settings['relation']['is_related']) {
-                switch ($settings['relation']['target']) {
-                    case 'list':
-                        $join = ' JOIN #__acym_user_has_list AS userlist ON user.id = userlist.user_id';
-                        $filters[] = '(userlist.list_id = '.acym_escapeDB($settings['relation']['target_id']).') AND (userlist.status = 1)';
-                        break;
-                    default:
-                        $join = '';
-                        break;
-                }
-            } else {
-                switch ($settings['relation']['target']) {
-                    case 'list':
-                        $join = ' LEFT JOIN #__acym_user_has_list AS userlist ON user.id = userlist.user_id AND userlist.list_id = '.acym_escapeDB(
-                                $settings['relation']['target_id']
-                            );
-                        $filters[] = '(userlist.user_id IS NULL OR userlist.status = 0)';
-                        break;
-                    default:
-                        $join = '';
-                        break;
-                }
-            }
-
-            $query .= $join;
-            $queryCount .= $join;
-        }
+        if (!empty($entityResult)) return $entityResult;
 
         if (!empty($filters)) {
             $query .= ' WHERE ('.implode(') AND (', $filters).')';
@@ -210,27 +80,178 @@ class UserClass extends acymClass
             $settings['elementsPerPage'] = $pagination->getListLimit();
         }
 
-        //This line if for guys with big database to not break the page
+        // This line warns the database that a big query is about to be ran
         acym_query('SET SQL_BIG_SELECTS=1');
-        $results['elements'] = acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']);
+        // The beginning of $query can be modified in handleSearchFilter, don't move the SELECT up
+        $results['elements'] = acym_loadObjectList('SELECT '.$query, '', $settings['offset'], $settings['elementsPerPage']);
         $results['total'] = acym_loadResult($queryCount);
 
-        // Status
+        // Get CMS username separately if needed
+        if (!empty($results['elements']) && !empty($settings['cms_username'])) {
+            $cmsIds = array_diff(array_column($results['elements'], 'cms_id'), [0]);
+            if (!empty($cmsIds)) {
+                $userNames = acym_loadObjectList(
+                    'SELECT '.$this->cmsUserVars->id.' AS id, '.$this->cmsUserVars->username.' AS `cms_username` 
+                    FROM '.$this->cmsUserVars->table.' 
+                    WHERE id IN ('.implode(', ', $cmsIds).')',
+                    'id'
+                );
+                foreach ($results['elements'] as $key => $oneElement) {
+                    if (empty($results['elements'][$key]->cms_id)) continue;
+                    $results['elements'][$key]->cms_username = $userNames[$results['elements'][$key]->cms_id]->cms_username;
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    private function handleSubscriptionFilter($settings, &$filters, &$query, &$queryCount, &$queryStatus)
+    {
+        if (empty($settings['list'])) return;
+
+        $listJoin = ' JOIN #__acym_user_has_list AS list ON user.id = list.user_id AND list.list_id = '.intval($settings['list']).' ';
+
+        if ($settings['list_status'] === 'none') {
+            $listJoin = ' LEFT'.$listJoin;
+            $filters[] = 'list.user_id IS NULL';
+        } else {
+            $filters[] = 'list.status = '.($settings['list_status'] === 'sub' ? 1 : 0);
+        }
+
+        $query .= $listJoin;
+        $queryCount .= $listJoin;
+        $queryStatus .= $listJoin;
+    }
+
+    private function handleFrontend($settings, &$query, &$queryCount, &$queryStatus)
+    {
+        if (!acym_isAdmin()) {
+            $settings['creator_id'] = acym_currentUserId();
+            if (empty($settings['creator_id'])) $settings['creator_id'] = '-1';
+        }
+
+        if (!empty($settings['creator_id'])) {
+            $userGroups = acym_getGroupsByUser($settings['creator_id']);
+            $groupCondition = 'list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%"';
+            $joinList = ' JOIN #__acym_user_has_list as user_list ON user_list.user_id = user.id JOIN #__acym_list AS list ON list.id = user_list.list_id AND (list.cms_user_id = '.intval(
+                    $settings['creator_id']
+                ).' OR '.$groupCondition.')';
+
+            $query .= $joinList;
+            $queryCount .= $joinList;
+            $queryStatus .= $joinList;
+        }
+    }
+
+    private function handleSearchFilter($settings, &$query, &$queryCount, &$queryStatus, &$filters)
+    {
+        if (empty($settings['search'])) return;
+
+        $searchValue = acym_escapeDB('%'.$settings['search'].'%');
+        $searchFilter = 'user.email LIKE '.$searchValue.' OR user.name LIKE '.$searchValue.' OR user.id = '.intval($settings['search']);
+
+        // Search in visible custom fields
+        $listingFields = acym_loadResultArray('SELECT `id` FROM #__acym_field WHERE `'.(acym_isAdmin() ? 'back' : 'front').'end_listing` = 1');
+        if (!empty($listingFields)) {
+            $query = 'DISTINCT '.$query;
+            $join = ' LEFT JOIN #__acym_user_has_field AS userfield ON user.id = userfield.user_id AND userfield.field_id IN ('.implode(', ', $listingFields).') AND ';
+            $cfSearch = 'userfield.value LIKE '.$searchValue;
+
+            $fieldsWithMultipleValues = acym_loadObjectList(
+                'SELECT * 
+                FROM #__acym_field 
+                WHERE id IN ('.implode(', ', $listingFields).')
+                    AND `value` LIKE '.acym_escapeDB('%"title":"'.$settings['search'].'"%')
+            );
+
+            if (!empty($fieldsWithMultipleValues)) {
+                foreach ($fieldsWithMultipleValues as $oneField) {
+                    $oneField->value = json_decode($oneField->value, true);
+                    foreach ($oneField->value as $value) {
+                        if (stripos($value['title'], $settings['search']) !== false) {
+                            $cfSearch .= ' OR (userfield.field_id = '.intval($oneField->id).' AND userfield.value LIKE '.acym_escapeDB('%'.$value['value'].'%').')';
+                        }
+                    }
+                }
+            }
+
+            $join .= '('.$cfSearch.')';
+            $searchFilter .= ' OR userfield.field_id IS NOT NULL';
+
+            $query .= $join;
+            $queryCount .= $join;
+            $queryStatus .= $join;
+        }
+
+        $filters[] = $searchFilter;
+    }
+
+    private function handleUserStatusFilter($queryStatus, &$filters)
+    {
+        if (!empty($filters)) {
+            $queryStatus .= ' WHERE ('.implode(') AND (', $filters).')';
+        }
+
         $usersPerStatus = acym_loadObjectList($queryStatus.' GROUP BY score', 'score');
 
         for ($i = 0 ; $i < 4 ; $i++) {
             $usersPerStatus[$i] = empty($usersPerStatus[$i]) ? 0 : $usersPerStatus[$i]->number;
         }
 
-        $results['status'] = [
+        if (!empty($settings['status'])) {
+            $allowedStatus = [
+                'active' => 'active = 1',
+                'inactive' => 'active = 0',
+                'confirmed' => 'confirmed = 1',
+                'unconfirmed' => 'confirmed = 0',
+            ];
+            if (empty($allowedStatus[$settings['status']])) {
+                die('Injection denied');
+            }
+            $filters[] = 'user.'.$allowedStatus[$settings['status']];
+        }
+
+        return [
             'all' => array_sum($usersPerStatus),
             'active' => $usersPerStatus[2] + $usersPerStatus[3],
             'inactive' => $usersPerStatus[0] + $usersPerStatus[1],
             'confirmed' => $usersPerStatus[1] + $usersPerStatus[3],
             'unconfirmed' => $usersPerStatus[0] + $usersPerStatus[2],
         ];
+    }
 
-        return $results;
+    private function handleEntitySelect($settings, &$filters)
+    {
+        if (isset($settings['hiddenElements'])) {
+            if (empty($settings['hiddenElements'])) {
+                $filters[] = 'user.id IS NOT NULL';
+            } else {
+                acym_arrayToInteger($settings['hiddenElements']);
+                $filters[] = 'user.id NOT IN('.implode(',', $settings['hiddenElements']).')';
+            }
+        }
+
+        if (isset($settings['onlyElements'])) {
+            if (empty($settings['onlyElements'])) {
+                $filters[] = 'user.id IS NULL';
+            } else {
+                acym_arrayToInteger($settings['onlyElements']);
+                $filters[] = 'user.id IN('.implode(',', $settings['onlyElements']).')';
+            }
+        }
+
+        // For the entity select when selecting "show only selected users"
+        if (!empty($settings['showOnlySelected'])) {
+            if (!empty($settings['selectedUsers'])) {
+                acym_arrayToInteger($settings['selectedUsers']);
+                $filters[] = 'user.id IN('.implode(',', $settings['selectedUsers']).')';
+            } else {
+                return ['users' => [], 'total' => 0];
+            }
+        }
+
+        return null;
     }
 
     public function getJoinForQuery($joinType)
@@ -293,10 +314,11 @@ class UserClass extends acymClass
      * @param boolean $includeManagement
      * @param boolean $visible
      * @param boolean $needTranslation
+     * @param boolean $sortBySubscription
      *
      * @return array
      */
-    public function getUserSubscriptionById($userId, $key = 'id', $includeManagement = false, $visible = false, $needTranslation = false)
+    public function getUserSubscriptionById($userId, $key = 'id', $includeManagement = false, $visible = false, $needTranslation = false, $sortBySubscription = false)
     {
         $query = 'SELECT list.id, list.translation, list.name, list.color, list.active, list.visible, list.description, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
                 FROM #__acym_list AS list 
@@ -312,6 +334,10 @@ class UserClass extends acymClass
 
         if ($visible) {
             $query .= ' AND list.visible = 1';
+        }
+
+        if ($sortBySubscription) {
+            $query .= ' ORDER BY userlist.subscription_date DESC';
         }
 
         $lists = acym_loadObjectList($query, $key);
@@ -712,7 +738,6 @@ class UserClass extends acymClass
     {
         if (empty($user->email) && empty($user->id)) return false;
 
-
         if (isset($user->email)) {
             $user->email = strtolower($user->email);
             if (!acym_isValidEmail($user->email)) {
@@ -752,13 +777,15 @@ class UserClass extends acymClass
 
             $user->creation_date = date('Y-m-d H:i:s', time());
         } elseif (!empty($user->confirmed)) {
-            $oldUser = $this->getOneById($user->id);
-            if (!empty($oldUser) && empty($oldUser->confirmed)) {
+            $oldUser = $this->getOneByIdWithCustomFields($user->id);
+            if (!empty($oldUser) && empty($oldUser['confirmed'])) {
                 $user->confirmation_date = date('Y-m-d H:i:s', time());
                 $user->confirmation_ip = acym_getIP();
 
                 acym_trigger('onAcymAfterUserConfirm', [&$user]);
             }
+        } else {
+            $oldUser = $this->getOneByIdWithCustomFields($user->id);
         }
 
         foreach ($user as $oneAttribute => $value) {
@@ -813,7 +840,7 @@ class UserClass extends acymClass
             acym_trigger('onAcymAfterUserCreate', [&$user]);
         } else {
             $historyClass->insert($user->id, 'modified');
-            acym_trigger('onAcymAfterUserModify', [&$user]);
+            acym_trigger('onAcymAfterUserModify', [&$user, &$oldUser]);
         }
 
         $this->sendConfirmation($userID);
@@ -867,7 +894,7 @@ class UserClass extends acymClass
             }
             $existUser = acym_loadObject('SELECT * FROM #__acym_user WHERE email = '.acym_escapeDB($user->email).' AND id != '.intval($user->id));
             if (!empty($existUser->id)) {
-                if (!$this->allowModif && !$allowUserModifications) {
+                if (!$this->allowModif && !$allowSubscriptionModifications) {
                     $this->errors[] = acym_translation('ACYM_ADDRESS_TAKEN');
 
                     return false;

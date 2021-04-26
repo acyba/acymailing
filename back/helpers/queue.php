@@ -172,7 +172,17 @@ class QueueHelper extends acymObject
 
         if ($externalSending) {
             $listExternalSending = [];
-            acym_trigger('onAcymInitExternalSendingMethodBeforeSend', [&$listExternalSending, $this->id]);
+            if (!empty($this->id)) {
+                acym_trigger('onAcymInitExternalSendingMethodBeforeSend', [&$listExternalSending, $this->id]);
+            } else {
+                $mailIds = [];
+                foreach ($queueElements as $oneElement) {
+                    if (!in_array($oneElement->mail_id, $mailIds)) {
+                        $mailIds[] = $oneElement->mail_id;
+                        acym_trigger('onAcymInitExternalSendingMethodBeforeSend', [&$listExternalSending, $oneElement->mail_id]);
+                    }
+                }
+            }
         }
 
         $mailIds = [];
@@ -450,7 +460,7 @@ class QueueHelper extends acymObject
                 //We used to send e-mails but now we can not any more... sounds like a server limitation!
                 $message .= acym_translation('ACYM_SEND_REFUSE');
                 $message .= '<br />';
-                if (!acym_level(1)) {
+                if (!acym_level(ACYM_ESSENTIAL)) {
                     $message .= acym_translation('ACYM_SEND_CONTINUE_COMMERCIAL');
                 } else {
                     $message .= acym_translation('ACYM_SEND_CONTINUE_AUTO');

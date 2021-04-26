@@ -1,4 +1,4 @@
-<?php if (count($data['languages']) > 1 && acym_level(1)) { ?>
+<?php if (count($data['languages']) > 1 && acym_level(ACYM_ESSENTIAL)) { ?>
 	<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2">
 		<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_MULTILINGUAL'); ?></div>
 		<div class="grid-x margin-y">

@@ -863,13 +863,21 @@ function acym_filterStatus($options, $selected, $name)
         if ($value == $selected) {
             $class .= ' font-bold acym__status__select';
         }
-        $disabled = empty($text[1]) ? ' disabled' : '';
+
         $extraIcon = '';
         if (!empty($text[2]) && 'pending' == $text[2]) {
             $extraIcon = ' <i class="acymicon-exclamation-triangle acym__color__orange" style="font-size: 15px;"></i>';
         }
+
+        if (is_null($text[1])) {
+            $disabled = '';
+            $userCount = '';
+        } else {
+            $disabled = empty($text[1]) ? ' disabled' : '';
+            $userCount = ' ('.$text[1].')';
+        }
         $filterStatus .= '<button type="button" acym-data-status="'.acym_escape($value).'" class="'.acym_escape($class).'"'.$disabled.'>';
-        $filterStatus .= acym_translation($text[0]).$extraIcon.' ('.$text[1].')</button>';
+        $filterStatus .= acym_translation($text[0]).$extraIcon.$userCount.'</button>';
     }
 
     return $filterStatus;
@@ -909,4 +917,25 @@ function acym_displayParam($type, $value, $name, $params = [])
     }
 
     return $field->getInput();
+}
+
+/**
+ * @param string $text         Displayed text
+ * @param string $link         Link to go to
+ * @param bool   $displayIcon  Display or not the icon
+ * @param bool   $openInNewTab Open or not in a new tab
+ * @param array  $classesA     Custom classes to add to a tag
+ *
+ * @return string
+ */
+function acym_externalLink($text, $link, $displayIcon = true, $openInNewTab = true, $classesA = [])
+{
+    $target = $openInNewTab ? 'target="_blank"' : '';
+    $link = 'href="'.$link.'"';
+    $icon = $displayIcon ? ' <i class="acymicon-external-link"></i>' : '';
+    $translatedText = acym_translation($text);
+    $classesA[] = 'acym__external__link';
+    $classesAHtml = 'class="'.implode(' ', $classesA).'"';
+
+    return '<a '.$target.' '.$link.' '.$classesAHtml.'>'.$translatedText.$icon.'</a>';
 }

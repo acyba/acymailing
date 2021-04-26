@@ -260,13 +260,17 @@ class MailerHelper extends acyPHPMailer
         }
 
         if (empty($this->Subject) || empty($this->Body)) {
-            $this->reportMessage = acym_translation('ACYM_SEND_EMPTY');
-            $this->errorNumber = 8;
-            if ($this->report) {
-                acym_enqueueMessage($this->reportMessage, 'error');
-            }
+            if ($this->isTest && empty($this->Subject)) {
+                $this->Subject = acym_translation('ACYM_EMAIL_SUBJECT');
+            } else {
+                $this->reportMessage = acym_translation('ACYM_SEND_EMPTY');
+                $this->errorNumber = 8;
+                if ($this->report) {
+                    acym_enqueueMessage($this->reportMessage, 'error');
+                }
 
-            return false;
+                return false;
+            }
         }
 
         //Check if there is at least one reply to otherwise add the default one.

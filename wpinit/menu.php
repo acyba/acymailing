@@ -78,7 +78,7 @@ class acyMenu extends acyHook
         $menus['ACYM_ADD_ONS'] = 'plugins';
         $menus['ACYM_CONFIGURATION'] = 'configuration';
 
-        if (!acym_level(1)) {
+        if (!acym_level(ACYM_ESSENTIAL)) {
             $menus['ACYM_GOPRO'] = 'gopro';
             $menuExtra['ACYM_GOPRO']['icon'] = '<i class="acymicon-star"></i>';
         }

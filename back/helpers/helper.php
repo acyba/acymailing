@@ -11,6 +11,9 @@ define('ACYM_REDIRECT', ACYM_UPDATEMEURL.'redirect&page=');
 define('ACYM_UPDATEURL', ACYM_UPDATEMEURL.'update&task=');
 define('ACYM_DOCUMENTATION', 'https://docs.acymailing.com/');
 define('ACYM_COMPONENT_NAME_API', 'acymailing');
+define('ACYM_STARTER', 0);
+define('ACYM_ESSENTIAL', 1);
+define('ACYM_ENTERPRISE', 2);
 if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 
 include_once rtrim(dirname(__DIR__), DS).DS.'libraries'.DS.strtolower('{__CMS__}.php');

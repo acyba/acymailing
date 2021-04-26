@@ -7,6 +7,7 @@ use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\FormClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Classes\RuleClass;
 use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Controllers\ConfigurationController;
@@ -49,7 +50,7 @@ class acymInstall
         $allPref['from_name'] = acym_getCMSConfig('fromname');
         $allPref['from_email'] = acym_getCMSConfig('mailfrom');
         $allPref['bounce_email'] = acym_getCMSConfig('mailfrom');
-        $allPref['mailer_method'] = acym_getCMSConfig('mailer');
+        $allPref['mailer_method'] = acym_getCMSConfig('mailer', 'phpmail');
         $allPref['sendmail_path'] = acym_getCMSConfig('sendmail');
         $smtpinfos = explode(':', acym_getCMSConfig('smtphost'));
         $allPref['smtp_port'] = acym_getCMSConfig('smtpport');
@@ -134,9 +135,9 @@ class acymInstall
 
         $allPref['installcomplete'] = '0';
 
-        $allPref['Starter'] = '0';
-        $allPref['Essential'] = '1';
-        $allPref['Enterprise'] = '2';
+        $allPref['Starter'] = ACYM_STARTER;
+        $allPref['Essential'] = ACYM_ESSENTIAL;
+        $allPref['Enterprise'] = ACYM_ENTERPRISE;
         $allPref['from_as_replyto'] = '1';
         $allPref['templates_installed'] = '0';
 
@@ -165,7 +166,7 @@ class acymInstall
 
         $allPref['delete_stats'] = 31104000;
 
-        $allPref['display_built_by'] = acym_level(1) ? 0 : 1;
+        $allPref['display_built_by'] = acym_level(ACYM_ESSENTIAL) ? 0 : 1;
 
         $query = "INSERT IGNORE INTO `#__acym_configuration` (`name`,`value`) VALUES ";
         foreach ($allPref as $namekey => $value) {
@@ -987,6 +988,7 @@ class acymInstall
             $fieldClass = new FieldClass();
             $fieldClass->insertLanguageField();
         }
+
         if (version_compare($this->fromVersion, '7.2.0', '<')) {
             $config->save(['built_by_update' => 1]);
             $config->save(['display_built_by' => 0]);
@@ -1084,6 +1086,32 @@ class acymInstall
             $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `reply_to_name` `reply_to_name` VARCHAR(100) NULL');
             $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `reply_to_email` `reply_to_email` VARCHAR(100) NULL');
         }
+
+        if (version_compare($this->fromVersion, '7.5.0', '<')) {
+            $fieldClass = new FieldClass();
+            $languageFieldId = $config->get($fieldClass::LANGUAGE_FIELD_ID_KEY, 0);
+            if (!empty($languageFieldId)) {
+                $this->updateQuery('UPDATE `#__acym_field` SET `namekey` = "acym_language" WHERE `id` = '.intval($languageFieldId));
+            }
+
+            $news = $config->get('last_news', '');
+            if (!empty($news)) {
+                $config->save(
+                    [
+                        'last_news' => base64_encode($news),
+                    ],
+                    false
+                );
+            }
+
+            $this->updateQuery('ALTER TABLE `#__acym_user_has_list` ADD INDEX `index_#__acym_user_has_list3` (`subscription_date` ASC)');
+            $this->updateQuery('ALTER TABLE `#__acym_user_has_list` ADD INDEX `index_#__acym_user_has_list4` (`unsubscribe_date` ASC)');
+            $this->updateQuery('ALTER TABLE #__acym_mail_stat ADD `tracking_sale` FLOAT NULL');
+            $this->updateQuery('ALTER TABLE #__acym_mail_stat ADD `currency` VARCHAR(5) NULL');
+
+            $mailStatsClass = new MailStatClass();
+            $mailStatsClass->migrateTrackingSale();
+        }
     }
 
     public function updateQuery($query)
@@ -1105,5 +1133,19 @@ class acymInstall
         return '"hikareminder":{"days":"'.$val.'"';
     }
 
+    public function checkDB()
+    {
+        $configController = new ConfigurationController();
+        $messages = $configController->checkDB('report');
 
+        if (empty($messages)) return;
+
+        $isError = false;
+        $textMsgs = [];
+        foreach ($messages as $oneMsg) {
+            if ($oneMsg['error'] == true) $isError = true;
+            $textMsgs[] = $oneMsg['msg'];
+        }
+        if ($isError && !empty($textMsgs)) acym_enqueueMessage(implode('<br />', $textMsgs), 'warning');
+    }
 }

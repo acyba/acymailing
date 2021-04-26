@@ -7,7 +7,7 @@ class acyCron extends acyHook
     public function __construct()
     {
         $ctrl = acym_getVar('string', 'ctrl', '');
-        if (acym_level(1) && !acym_isNoTemplate() && $ctrl !== 'cron') {
+        if (acym_level(ACYM_ESSENTIAL) && !acym_isNoTemplate() && $ctrl !== 'cron') {
             add_action('init', [$this, 'callAcyCron']);
         }
     }

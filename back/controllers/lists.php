@@ -229,7 +229,10 @@ class ListsController extends acymController
                 'user',
                 ['join' => 'join_list-'.$listId],
                 $entityHelper->getColumnsForUser('userlist.user_id'),
-                ['text' => acym_translation('ACYM_CONFIRM'), 'action' => 'saveSubscribers']
+                ['text' => acym_translation('ACYM_CONFIRM'), 'action' => 'saveSubscribers'],
+                true,
+                '',
+                'subscriber'
             ),
             null,
             '',

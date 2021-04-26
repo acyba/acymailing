@@ -28,6 +28,7 @@ function installAcym()
     $installClass->addPref();
     $installClass->updatePref();
     $installClass->updateSQL();
+    $installClass->checkDB();
 
     $updateHelper = new UpdateHelper();
     $updateHelper->fromLevel = $installClass->fromLevel;

@@ -29,8 +29,9 @@
 					</div>
 					<div class="cell grid-x medium-5 align-right">
 						<div class="cell medium-2"></div>
-						<button type="button" class="acy_button_submit button button-secondary" data-task="checkUpdates"><?php echo acym_translation('ACYM_CHECK_FOR_UPDATES'); ?><i
-									class="acymicon-autorenew"></i></button>
+						<button type="button" class="acy_button_submit button button-secondary acym_vcenter" data-task="checkUpdates">
+							<i class="acymicon-autorenew"></i><?php echo acym_translation('ACYM_CHECK_FOR_UPDATES'); ?>
+						</button>
 					</div>
 				</div>
 				<div class="cell grid-x" v-show="noPluginTodisplay" style="display: none;">
@@ -60,7 +61,9 @@
 								<div class="acym__plugins__card__params cell grid-x">
 									<div class="cell grid-x acym_vcenter acym__plugins__card__params__title-line">
 										<h2 class="cell medium-10 acym__plugins__card__params__title acym_text_ellipsis" :title="plugin.title">{{ plugin.title }}</h2>
-										<a target="_blank" :href="documentationUrl(plugin.folder_name)" class="acym__plugins__documentation cell medium-1"><i class="acymicon-book"></i></a>
+										<a target="_blank" :href="documentationUrl(plugin.folder_name)" class="acym__plugins__documentation cell medium-1">
+											<i class="acymicon-book"></i>
+										</a>
 										<i v-if="plugin.settings && plugin.settings!='not_installed'"
 										   @click="toggleSettings(plugin.folder_name)"
 										   class="acymicon-cog cell shrink acym__plugins__settings__toggle cursor-pointer"></i>

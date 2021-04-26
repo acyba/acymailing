@@ -89,20 +89,23 @@
 		<div class="grid-x cell acym__wysid__context__modal__container grid-margin-x">
 			<button type="button"
 					class="button-radio cell medium-4 acym__wysid__context__button--type"
+					acym-button-radio-group="buttonType"
 					acym-data-type="call-action"><?php echo acym_translation('ACYM_CALL_TO_ACTION'); ?></button>
             <?php
             echo acym_tooltip(
-                '<button type="button" class="button-radio cell acym__wysid__context__button--type" acym-data-type="unsubscribe">'.acym_translation(
-                    'ACYM_UNSUBSCRIBE'
-                ).'</button>',
+                '<button type="button" 
+					class="button-radio cell acym__wysid__context__button--type" 
+					acym-button-radio-group="buttonType" 
+					acym-data-type="unsubscribe">'.acym_translation('ACYM_UNSUBSCRIBE').'</button>',
                 acym_translation('ACYM_UNSUBSCRIBE_BUTTON_DESC'),
                 'cell medium-4 grid-x'
             );
 
             echo acym_tooltip(
-                '<button type="button" class="button-radio cell acym__wysid__context__button--type" acym-data-type="confirm">'.acym_translation(
-                    'ACYM_SUBSCRIPTION_CONFIRMATION'
-                ).'</button>',
+                '<button type="button" 
+                	class="button-radio cell acym__wysid__context__button--type" 
+					acym-button-radio-group="buttonType" 
+					acym-data-type="confirm">'.acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION').'</button>',
                 acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION_BUTTON_DESC'),
                 'cell medium-4 grid-x'
             );
@@ -205,7 +208,9 @@
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x">
-				<label for="acym__wysid__context__button__background-color" class="cell small-5"><?php echo acym_translation('ACYM_BACKGROUND_COLOR').acym_info('ACYM_BACKGROUND_COLOR_BUTTON_DESC'); ?></label>
+				<label for="acym__wysid__context__button__background-color" class="cell small-5">
+                    <?php echo acym_translation('ACYM_BACKGROUND_COLOR').acym_info('ACYM_BACKGROUND_COLOR_BUTTON_DESC'); ?>
+				</label>
 				<input type="text" id="acym__wysid__context__button__background-color" class="small-5 cell">
 			</div>
 			<div class="grid-x cell">
@@ -449,6 +454,37 @@
 			</div>
 		</div>
 	</div>
+    <?php if ($this->config->get('display_built_by', 0) == 1) { ?>
+		<div id="acym__wysid__context__poweredby" style="display: none" class="grid-x padding-1 acym__wysid__context__modal">
+            <?php if (!acym_level(ACYM_ESSENTIAL)) { ?>
+				<h3 class="cell acym__title text-center"><?php echo acym_translation('ACYM_WANT_TO_REMOVE_THIS'); ?></h3>
+				<div class="cell grid-x grid-margin-y text-center margin-bottom-1">
+					<div class="cell"><?php echo acym_translation('ACYM_SEEING_THIS_AS_FREE_VERSION'); ?></div>
+					<div class="cell"><?php echo acym_translation('ACYM_DISABLE_BY_GETTING_PRO'); ?></div>
+					<div class="cell"><?php echo acym_translation('ACYM_PRICES_STARTS_AT'); ?></div>
+				</div>
+				<div class="cell text-center margin-bottom-1">
+					<a class="button button-secondary"
+					   target="_blank"
+					   href="https://www.acymailing.com/pricing/?utm_source=acymailing_plugin&utm_campaign=purchase&utm_medium=built_with_footer">
+                        <?php echo acym_translation('ACYM_SEE_PRO_VERSION_FEATURES'); ?>
+					</a>
+				</div>
+				<hr data-kind="solid" style="border-bottom: 1px solid black" class="cell margin-1">
+            <?php } ?>
+			<div class="grid-x small-12 cell">
+				<label class="middle large-6 small-8 cell" for="acym__wysid__built-with__text__color"><?php echo acym_translation('ACYM_BUILT_WITH_IMAGE_TEXT_COLOR'); ?></label>
+				<div class="cell large-6 small-4">
+                    <?php
+                    $brightness = [
+                        'black' => acym_translation('ACYM_BLACK'),
+                        'white' => acym_translation('ACYM_WHITE'),
+                    ];
+                    echo acym_select($brightness, 'acym__wysid__built-with__text__color', 'black', 'class="acym__select"'); ?>
+				</div>
+			</div>
+		</div>
+    <?php } ?>
 
 	<div id="acym__wysid__context__plugins" class="grid-x padding-1 acym__wysid__context__modal margin-top-1" style="display: none">
 	</div>

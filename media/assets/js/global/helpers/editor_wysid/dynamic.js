@@ -1,4 +1,4 @@
-const acym_editorWysidDynammic = {
+const acym_editorWysidDynamic = {
     inCall: false,
     getUniqueId: function ($focusedElement) {
         let uniqueId;
@@ -70,7 +70,7 @@ const acym_editorWysidDynammic = {
         }
 
         if (0 === shortcode.length) {
-            acym_editorWysidDynammic.endDContentInsertion($focusedElement, shortcode, '', plugin, initEdit);
+            acym_editorWysidDynamic.endDContentInsertion($focusedElement, shortcode, '', plugin, initEdit);
             return;
         }
 
@@ -100,9 +100,9 @@ const acym_editorWysidDynammic = {
             } else {
                 preview = response.content;
             }
-            acym_editorWysidDynammic.endDContentInsertion($focusedElement, shortcode, preview, plugin, initEdit);
+            acym_editorWysidDynamic.endDContentInsertion($focusedElement, shortcode, preview, plugin, initEdit);
 
-            if ('undefined' !== typeof $elementsToLoop && $elementsToLoop.length > 0) acym_editorWysidDynammic.insertDContent('', $elementsToLoop);
+            if ('undefined' !== typeof $elementsToLoop && $elementsToLoop.length > 0) acym_editorWysidDynamic.insertDContent('', $elementsToLoop);
         });
     },
     openDContentModal: function (plugin, shortcode) {
@@ -150,25 +150,26 @@ const acym_editorWysidDynammic = {
 
                 jQuery('#acym_pagination__ajax__load-more').val(1);
                 acym_helperRadio.setRadioIconsGlobal();
-                acym_editorWysidDynammic.setPluginFilters();
-                acym_editorWysidDynammic.setPluginPagination();
+                acym_editorWysidDynamic.setPluginFilters();
+                acym_editorWysidDynamic.setPluginPagination();
                 // Reload foundation for tabs in plugins popup
                 jQuery(document).foundation();
                 jQuery('.reveal-overlay').not('#acym_form .reveal-overlay').appendTo('#acym__wysid__context__plugins');
-                acym_editorWysidDynammic.selectFirstTab();
+                acym_editorWysidDynamic.selectFirstTab();
                 acym_helperDatePicker.setDatePickerGlobal();
                 acym_helperTooltip.setTooltip();
                 acym_helperDatePicker.setRSDateChoice();
+                acym_helper.setButtonRadio();
                 acym_editorWysidToolbar.setRightToolbarWYSID();
-                if (0 === shortcode.length) acym_editorWysidDynammic.insertDContent('');
+                if (0 === shortcode.length) acym_editorWysidDynamic.insertDContent('');
                 jQuery(document).trigger('acym_plugins_installed_loaded');
-                acym_editorWysidDynammic.setRefreshCustomViewChanged();
+                acym_editorWysidDynamic.setRefreshCustomViewChanged();
             }
         });
     },
     setPluginFilters: function () {
         jQuery('#plugin_listing_filters select').off('change').on('change', function () {
-            acym_editorWysidDynammic.setAjaxDynamic();
+            acym_editorWysidDynamic.setAjaxDynamic();
         });
         jQuery('#plugin_listing_filters input[type="text"]').off('keyup').on('keyup', function () {
             jQuery('#plugin_listing').off('scroll');
@@ -176,10 +177,10 @@ const acym_editorWysidDynammic = {
             clearTimeout(acym_helperEditorWysid.typingTimer);
             if (search.length >= 2) {
                 acym_helperEditorWysid.typingTimer = setTimeout(function () {
-                    acym_editorWysidDynammic.setAjaxDynamic();
+                    acym_editorWysidDynamic.setAjaxDynamic();
                 }, 1000);
             } else if (search == '') {
-                acym_editorWysidDynammic.setAjaxDynamic();
+                acym_editorWysidDynamic.setAjaxDynamic();
             }
         });
 
@@ -228,7 +229,7 @@ const acym_editorWysidDynammic = {
                 $pluginListing.append(response);
             }
             this.inCall = false;
-            acym_editorWysidDynammic.setPluginPagination();
+            acym_editorWysidDynamic.setPluginPagination();
         });
     },
     setPluginPagination: function () {
@@ -258,7 +259,7 @@ const acym_editorWysidDynammic = {
                 $paginationInput.val(currentPage + 1);
 
                 //We make the ajax call
-                acym_editorWysidDynammic.setAjaxDynamic(true);
+                acym_editorWysidDynamic.setAjaxDynamic(true);
             }
         });
     },
@@ -300,7 +301,7 @@ const acym_editorWysidDynammic = {
 
         jQuery('tr[data-dynamic]').off('click').on('click', function () {
             acym_helperEditorWysid.$focusElement = jQuery(this);
-            acym_editorWysidDynammic.openDContentModal(jQuery(this).attr('data-plugin'), jQuery(this).attr('data-dynamic'));
+            acym_editorWysidDynamic.openDContentModal(jQuery(this).attr('data-plugin'), jQuery(this).attr('data-dynamic'));
         });
     },
     setTagPWordBreak: function () {

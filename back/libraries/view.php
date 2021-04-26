@@ -86,7 +86,7 @@ class acymView extends acymObject
         if (!empty($data['header'])) echo $data['header'];
 
         $remindme = json_decode($this->config->get('remindme', '[]'), true);
-        if (acym_isAdmin() && !in_array('multilingual', $remindme) && acym_level(1) && $this->config->get('multilingual', '0') === '0' && $this->config->get(
+        if (acym_isAdmin() && !in_array('multilingual', $remindme) && acym_level(ACYM_ESSENTIAL) && $this->config->get('multilingual', '0') === '0' && $this->config->get(
                 'walk_through',
                 0
             ) == 0) {

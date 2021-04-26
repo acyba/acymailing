@@ -24,7 +24,7 @@ class SegmentsController extends acymController
 
     public function listing()
     {
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
 
@@ -41,7 +41,7 @@ class SegmentsController extends acymController
 
     public function edit()
     {
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
         }
 

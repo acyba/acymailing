@@ -54,6 +54,14 @@ class MailStatClass extends acymClass
             $onDuplicate[] = ' unsubscribe_total = unsubscribe_total + '.intval($mailStat['unsubscribe_total']);
         }
 
+        if (!empty($mailStat['tracking_sale'])) {
+            $onDuplicate[] = 'tracking_sale = '.floatval($mailStat['tracking_sale']);
+        }
+
+        if (!empty($mailStat['currency'])) {
+            $onDuplicate[] = 'currency = '.acym_escapeDB($mailStat['currency']);
+        }
+
         if (!empty($onDuplicate)) {
             $query .= ' ON DUPLICATE KEY UPDATE ';
             $query .= implode(',', $onDuplicate);
@@ -62,7 +70,7 @@ class MailStatClass extends acymClass
             $query = 'INSERT IGNORE INTO '.$query;
         }
 
-        acym_query($query);
+        return acym_query($query);
     }
 
     public function getTotalSubscribersByMailId($mailId)
@@ -162,5 +170,32 @@ class MailStatClass extends acymClass
         acym_arrayToInteger($mailIds);
 
         return acym_loadObject('SELECT * FROM #__acym_mail_stat WHERE mail_id IN ('.implode(',', $mailIds).')');
+    }
+
+    public function migrateTrackingSale()
+    {
+        $query = 'SELECT tracking_sale, currency, mail_id FROM #__acym_user_stat WHERE currency IS NOT NULL';
+
+        $trackingSales = acym_loadObjectList($query);
+
+        if (empty($trackingSales)) return;
+
+        $mailStats = [];
+
+        foreach ($trackingSales as $sale) {
+            if (empty($mailStats[$sale->mail_id])) {
+                $mailStats[$sale->mail_id] = [
+                    'mail_id' => $sale->mail_id,
+                    'tracking_sale' => $sale->tracking_sale,
+                    'currency' => $sale->currency,
+                ];
+            } else {
+                $mailStats[$sale->mail_id]['tracking_sale'] += $sale->tracking_sale;
+            }
+        }
+
+        foreach ($mailStats as $mailStat) {
+            $this->save($mailStat);
+        }
     }
 }

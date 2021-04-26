@@ -54,7 +54,7 @@ class plgAcymcreateuser extends acymPlugin
         $this->createCmsUser($user);
     }
 
-    public function onAcymAfterUserModify(&$user)
+    public function onAcymAfterUserModify(&$user, &$oldUser)
     {
         if ($this->getParam('onModif', '0') === '0') return;
 

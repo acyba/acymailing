@@ -1,0 +1,15 @@
+#acym__wysid__context__plugins {
+    .dcontentFormatContainer {
+        .button-radio {
+            margin: 3px;
+
+            &.button-radio-selected {
+                background-color: $light-blue;
+            }
+
+            img {
+                width: 50px;
+            }
+        }
+    }
+}

@@ -7,6 +7,7 @@ use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailStatClass;
+use AcyMailing\Classes\QueueClass;
 use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Classes\TagClass;
 use AcyMailing\Classes\UserClass;
@@ -196,7 +197,7 @@ class CampaignsController extends acymController
 
     public function campaigns_auto()
     {
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             $this->campaigns();
         }
     }
@@ -1277,7 +1278,7 @@ class CampaignsController extends acymController
 
         $currentCampaign->sending_type = $sendingType;
         if (empty($currentCampaign->sending_params)) $currentCampaign->sending_params = [];
-        $currentCampaign->sending_params = array_merge($sendingParams, $currentCampaign->sending_params);
+        $currentCampaign->sending_params = array_merge($currentCampaign->sending_params, $sendingParams);
         $currentCampaign->sending_date = null;
 
         if (empty($currentMail) || empty($senderInformation)) {
@@ -1542,6 +1543,16 @@ class CampaignsController extends acymController
         $data['listsReceiver'] = $campaignLists;
         $data['listsIds'] = $listsIds;
         $data['nbSubscribers'] = $nbSubscribers;
+
+        if (!empty($data['campaignInformation']->sent) && !empty($data['campaignInformation']->active)) {
+            $queueClass = new QueueClass();
+            $data['mailInformation']->sending_params = $data['campaignInformation']->sending_params;
+            $automationHelper = $queueClass->getMailReceivers($data['mailInformation'], true);
+            $data['receiversNew'] = acym_loadResult($automationHelper->getQuery(['COUNT(`user`.id)']));
+
+            $automationHelper = $queueClass->getMailReceivers($data['mailInformation'], false);
+            $data['receiversAll'] = acym_loadResult($automationHelper->getQuery(['COUNT(`user`.id)']));
+        }
     }
 
     public function unpause_campaign()
@@ -1857,7 +1868,7 @@ class CampaignsController extends acymController
 
     private function _redirectAfterQueued()
     {
-        if (acym_isAdmin() && (!acym_level(1) || $this->config->get('cron_last', 0) < (time() - 43200))) {
+        if (acym_isAdmin() && (!acym_level(ACYM_ESSENTIAL) || $this->config->get('cron_last', 0) < (time() - 43200))) {
             acym_redirect(acym_completeLink('queue&task=campaigns', false, true));
         } else {
             $this->listing();
@@ -1964,7 +1975,7 @@ class CampaignsController extends acymController
         $data = [
             'id' => $campaign->id,
             'test_emails' => $defaultEmails,
-            'upgrade' => !acym_level(1),
+            'upgrade' => !acym_level(ACYM_ESSENTIAL),
             'version' => 'enterprise',
         ];
 

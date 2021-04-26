@@ -8,22 +8,24 @@
 		<div class="cell grid-x grid-margin-x margin-bottom-2">
 			<div class="cell auto grid-x align-center">
                 <?php
-                $class = $data['currentCampaign']->send_now ? '' : 'button-radio-unselected';
+                $class = $data['currentCampaign']->send_now ? 'button-radio-selected' : 'button-radio-unselected';
                 $class .= $data['currentCampaign']->draft ? '' : ' disabled';
                 ?>
 				<button type="button"
 						class="cell medium-6 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo $class; ?>"
+						acym-button-radio-group="sendingType"
 						id="acym__campaign__sendsettings__now"
 						data-sending-type="<?php echo $data['campaignClass']::SENDING_TYPE_NOW; ?>"><?php echo acym_translation('ACYM_NOW'); ?></button>
 			</div>
             <?php
-            $tooltip = acym_level(1) ? '' : 'data-acym-tooltip="'.acym_translationSprintf('ACYM_USE_THIS_FEATURE', 'AcyMailing Essential').'"';
-            $class = $data['currentCampaign']->send_scheduled ? '' : 'button-radio-unselected';
+            $tooltip = acym_level(ACYM_ESSENTIAL) ? '' : 'data-acym-tooltip="'.acym_translationSprintf('ACYM_USE_THIS_FEATURE', 'AcyMailing Essential').'"';
+            $class = $data['currentCampaign']->send_scheduled ? 'button-radio-selected' : 'button-radio-unselected';
             $class .= $data['currentCampaign']->draft ? '' : ' disabled';
             ?>
 			<div class="cell auto grid-x align-center">
 				<button type="button" <?php echo $tooltip; ?>
 						class="cell medium-6 small-12 button-radio acym__campaign__sendsettings__buttons-type <?php echo $class; ?>"
+						acym-button-radio-group="sendingType"
 						id="acym__campaign__sendsettings__scheduled"
 						data-sending-type="<?php echo $data['campaignClass']::SENDING_TYPE_SCHEDULED; ?>"><?php echo acym_translation('ACYM_SCHEDULED'); ?></button>
 			</div>

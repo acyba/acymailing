@@ -2,7 +2,7 @@
 	<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
 		<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_FRONTEND_EDITION'); ?></div>
         <?php
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             $data['version'] = 'enterprise';
             include acym_getView('dashboard', 'upgrade', true);
         }

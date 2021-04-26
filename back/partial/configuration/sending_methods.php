@@ -4,11 +4,12 @@
         uksort(
             $data['sendingMethods'],
             function ($first, $next) {
-                if ($first === 'sendinblue') return false;
+                if ($first === 'sendinblue') return -1;
 
-                return $first !== 'phpmail' || $next === 'sendinblue';
+                return $first !== 'phpmail' || $next === 'sendinblue' ? 1 : -1;
             }
         );
+
         foreach ($data['sendingMethods'] as $key => $sendingMethod) {
             ?>
             <?php $selected = isset($sendingMethod['selected']) && $sendingMethod['selected'];

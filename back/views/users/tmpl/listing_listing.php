@@ -124,11 +124,12 @@
                     ?>
 					<div class="acym__users__subscription medium-auto small-11 cell">
                         <?php if (!empty($data['usersSubscriptions'][$user->id])) {
+                        	$subscriptionsCount = count($data['usersSubscriptions'][$user->id]);
                             $counter = 0;
                             foreach ($data['usersSubscriptions'][$user->id] as $oneSub) {
                                 $classes = 'acym_subscription ';
                                 $classes .= intval($oneSub->status) === 1 ? 'acymicon-circle' : 'acymicon-radio_button_unchecked';
-                                if ($counter >= 5) $classes .= ' acym_subscription_more';
+                                if ($counter >= 5 && $subscriptionsCount !== 6) $classes .= ' acym_subscription_more';
 
                                 echo acym_tooltip(
                                     '<i class="'.$classes.'" style="color:'.acym_escape($oneSub->color).'"></i>',
@@ -139,7 +140,8 @@
                                 );
                                 $counter++;
                             }
-                            if ($counter > 5) {
+
+                            if ($counter > 5 && $subscriptionsCount !== 6) {
                                 $counter = $counter - 5;
                                 echo '<span class="acym__user__show-subscription acymicon-stack" data-iscollapsed="0" acym-data-value="'.$counter.'">
 										<i class="acym__user__button__showsubscription acymicon-circle acymicon-stack-2x"></i>

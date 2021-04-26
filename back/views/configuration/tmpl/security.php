@@ -126,6 +126,39 @@
 		</div>
 	</div>
 </div>
+<div class="acym__configuration__check-database acym__content acym_area padding-vertical-1 padding-horizontal-2">
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_REDIRECTIONS'); ?></div>
+	<div class="grid-x grid-margin-x margin-y">
+		<div class="cell medium-6 grid-x acym_vcenter">
+			<label class="cell large-3" for="allowed_files">
+                <?php echo acym_translation('ACYM_ALLOWED_HOSTS').acym_info('ACYM_ALLOWED_HOSTS_DESC'); ?>
+			</label>
+			<div class="cell grid-x large-9">
+                <?php
+                $allowedHosts = $this->config->get('allowed_hosts', '');
+                if (empty($allowedHosts)) {
+                    $allowedHosts = [];
+                } else {
+                    $allowedHosts = explode(',', $allowedHosts);
+                }
+                $allowedHostsFormatted = [];
+                if (!empty($allowedHosts)) {
+                    $allowedHostsFormatted = [];
+                    foreach ($allowedHosts as $host) {
+                        $allowedHostsFormatted[$host] = $host;
+                    }
+                }
+                echo acym_selectMultiple(
+                    $allowedHostsFormatted,
+                    'config[allowed_hosts]',
+                    $allowedHosts,
+                    ['class' => 'acym__allowed__hosts__select', 'placeholder' => acym_translation('ACYM_ENTER_NEW_DOMAIN')]
+                );
+                ?>
+			</div>
+		</div>
+	</div>
+</div>
 
 <div class="acym__configuration__check-database acym__content acym_area padding-vertical-1 padding-horizontal-2">
 	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_DB_MAINTENANCE'); ?></div>

@@ -53,7 +53,7 @@ class EditorHelper extends acymObject
             usort(
                 $data['plugins'],
                 function ($a, $b) {
-                    return strtolower($a->name) > strtolower($b->name);
+                    return strtolower($a->name) > strtolower($b->name) ? 1 : -1;
                 }
             );
 
@@ -336,7 +336,7 @@ class EditorHelper extends acymObject
 
         $styles = '';
         foreach ($settings as $element => $rules) {
-            $styles .= '#acym__wysid__template '.$element.':not(.acym__wysid__content-no-settings-style){';
+            $styles .= '#acym__wysid__template .acym__wysid__column__element__td .acym__wysid__tinymce--text '.$element.':not(.acym__wysid__content-no-settings-style){';
             foreach ($rules as $ruleName => $value) {
                 if ($ruleName == 'overridden') continue;
                 $styles .= $ruleName.': '.$value.';';

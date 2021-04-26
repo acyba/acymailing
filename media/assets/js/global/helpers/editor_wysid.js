@@ -36,7 +36,7 @@ jQuery(document).ready(function ($) {
             jQuery('[id^="mce_"]').removeAttr('id');
 
             acym_editorWysidMultilingual.setLanguageSelection();
-            acym_editorWysidDynammic.setDTexts();
+            acym_editorWysidDynamic.setDTexts();
         },
         setInitFunctionsOnEdtionStart: function () {
             acym_editorWysidFontStyle.initDefaultFont();
@@ -55,6 +55,7 @@ jQuery(document).ready(function ($) {
             acym_editorWysidContextModal.setSpaceContextModalWYSID();
             acym_editorWysidContextModal.setFollowContextModalWYSID();
             acym_editorWysidContextModal.setSeparatorContextModalWYSID();
+            acym_editorWysidContextModal.setPoweredByContextModal();
             acym_editorWysidColorPicker.setSettingsColorPickerWYSID(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID(jQuery(
                 '#acym__wysid__right__toolbar__settings__font--select').val(), 'color'));
             acym_editorWysidFontStyle.setSettingsWYSID();
@@ -63,9 +64,9 @@ jQuery(document).ready(function ($) {
             acym_helperEditorWysid.checkForEmptyTbodyWYSID();
             acym_helperEditorWysid.setSizeEditorWYSID();
             acym_helperEditorWysid.setSelectOneTemplate();
-            acym_editorWysidDynammic.setDynamicsActions();
-            acym_editorWysidDynammic.setTagPWordBreak();
-            acym_editorWysidDynammic.setTagPreInserted();
+            acym_editorWysidDynamic.setDynamicsActions();
+            acym_editorWysidDynamic.setTagPWordBreak();
+            acym_editorWysidDynamic.setTagPreInserted();
             acym_helperEditorWysid.removeBlankCharacters();
             if (reloadTinyMCE) acym_editorWysidTinymce.addTinyMceWYSID();
             acym_editorWysidTinymce.checkForEmptyText();
@@ -250,6 +251,13 @@ jQuery(document).ready(function ($) {
                 'color': '#000000'
             },
             'a': {
+                'font-family': 'Helvetica',
+                'font-size': '12px',
+                'font-weight': 'normal',
+                'font-style': 'normal',
+                'color': '#0000F1'
+            },
+            'span.acym_link': {
                 'font-family': 'Helvetica',
                 'font-size': '12px',
                 'font-weight': 'normal',

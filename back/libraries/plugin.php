@@ -477,9 +477,12 @@ class acymPlugin extends acymObject
 
         $arrayElements = [];
         unset($parameter->id);
+
+        $i = 0;
         foreach ($elements as $oneElementId) {
             $args = [];
             $args[] = $this->name.':'.$oneElementId;
+
             foreach ($parameter as $oneParam => $val) {
                 if (is_bool($val)) {
                     $args[] = $oneParam;
@@ -487,7 +490,14 @@ class acymPlugin extends acymObject
                     $args[] = $oneParam.':'.$val;
                 }
             }
+
+            if ($i % 2 === 1 && !empty($parameter->alternate)) {
+                $args[] = 'invert';
+            }
+
             $arrayElements[] = '{'.implode('| ', $args).'}';
+
+            $i++;
         }
 
         return $this->pluginHelper->getFormattedResult($arrayElements, $parameter);

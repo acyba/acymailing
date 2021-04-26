@@ -191,8 +191,8 @@ class plgAcymSubscription extends acymPlugin
         echo $text;
     }
 
-	public function replaceUserInformation(&$email, &$user, $send = true)
-	{
+    public function replaceUserInformation(&$email, &$user, $send = true)
+    {
         $this->_replacelisttags($email, $user, $send);
 
         // Check if we should add the List-Unsubscribe header
@@ -350,7 +350,7 @@ class plgAcymSubscription extends acymPlugin
 
         if (!empty($subid)) {
             $userClass = $this->getUserClass();
-            $userLists = $userClass->getUserSubscriptionById($subid);
+            $userLists = $userClass->getUserSubscriptionById($subid, 'id', false, false, false, true);
 
             $listid = null;
             foreach ($userLists as $id => $oneList) {
@@ -585,7 +585,7 @@ class plgAcymSubscription extends acymPlugin
                 return $myLink;
             }
 
-            return '<a target="_blank" href="'.$myLink.'">'.$allresults[2][$i].'</a>';
+            return '<a target="_blank" href="'.$myLink.'"><span class="acym_confirm acym_link">'.$allresults[2][$i].'</span></a>';
         } elseif ($parameters->id == 'subscribe') {
             // direct subscription link
             if (empty($parameters->lists)) {
@@ -599,7 +599,7 @@ class plgAcymSubscription extends acymPlugin
                 return $myLink;
             }
 
-            return '<a style="text-decoration:none;" target="_blank" href="'.$myLink.'"><span class="acym_subscribe">'.$allresults[2][$i].'</span></a>';
+            return '<a style="text-decoration:none;" target="_blank" href="'.$myLink.'"><span class="acym_subscribe acym_link">'.$allresults[2][$i].'</span></a>';
         } else {
             // unsubscribe link
             $this->unsubscribeLink[$email->id] = true;
@@ -609,7 +609,7 @@ class plgAcymSubscription extends acymPlugin
                 return $myLink;
             }
 
-            return '<a style="text-decoration:none;" target="_blank" href="'.$myLink.'"><span class="acym_unsubscribe">'.$allresults[2][$i].'</span></a>';
+            return '<a style="text-decoration:none;" target="_blank" href="'.$myLink.'"><span class="acym_unsubscribe acym_link">'.$allresults[2][$i].'</span></a>';
         }
     }
 

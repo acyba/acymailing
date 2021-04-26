@@ -308,24 +308,25 @@ const acym_editorWysidContextModal = {
             let $inputLink = jQuery('.acym__wysid__context__button__link__container');
             let $inputText = jQuery('.acym__wysid__context__button__text__container');
 
-            let $buttonsType = jQuery('.acym__wysid__context__button--type').removeClass('button-radio-unselected').addClass('button-radio-unselected');
+            let $buttonsType = jQuery('.acym__wysid__context__button--type').addClass('button-radio-unselected').removeClass('button-radio-selected');
 
             if ($button.attr('href').indexOf('{confirm}') !== -1) {
-                jQuery('[acym-data-type="confirm"]').removeClass('button-radio-unselected');
+                jQuery('[acym-data-type="confirm"]').removeClass('button-radio-unselected').addClass('button-radio-selected');
                 $inputLink.hide();
             } else if ($button.attr('href').indexOf('{unsubscribe}') !== -1) {
-                jQuery('[acym-data-type="unsubscribe"]').removeClass('button-radio-unselected');
+                jQuery('[acym-data-type="unsubscribe"]').removeClass('button-radio-unselected').addClass('button-radio-selected');
                 $inputLink.hide();
             } else {
-                jQuery('[acym-data-type="call-action"]').removeClass('button-radio-unselected');
+                jQuery('[acym-data-type="call-action"]').removeClass('button-radio-unselected').addClass('button-radio-selected');
                 $inputLink.show();
             }
 
             $buttonsType.off('click').on('click', function () {
                 let $self = jQuery(this);
                 if (!$self.hasClass('button-radio-unselected')) return;
-                $buttonsType.addClass('button-radio-unselected');
-                $self.removeClass('button-radio-unselected');
+
+                $buttonsType.addClass('button-radio-unselected').removeClass('button-radio-selected');
+                $self.removeClass('button-radio-unselected').addClass('button-radio-selected');
 
                 let linkType = $self.attr('acym-data-type');
                 if (linkType.indexOf('call-action') !== -1) {
@@ -718,6 +719,26 @@ const acym_editorWysidContextModal = {
 
         jQuery('.acym__wysid__column__element__follow a').unbind('click').click(function (event) {
             event.preventDefault();
+        });
+    },
+    setPoweredByContextModal: function () {
+        jQuery('#acym__powered_by_acymailing').off('click').on('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            let $contextPoweredBy = jQuery('#acym__wysid__context__poweredby');
+            acym_editorWysidContextModal.showContextModal($contextPoweredBy);
+
+            jQuery(window).off('mousedown').on('mousedown', function (event) {
+                if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextPoweredBy)) return true;
+                if (event.target.title !== 'poweredby' && jQuery(event.target).children().children('[title="poweredby"]').length === 0) {
+
+                    jQuery(this).off('mousedown');
+                    acym_editorWysidContextModal.hideContextModal($contextPoweredBy, jQuery(event.target));
+                    jQuery('.acym__wysid__context__modal__container--structure').hide();
+                    acym_editorWysidVersioning.setUndoAndAutoSave();
+                }
+            });
         });
     },
     getFollowDataFormatWYSID: function (data) {

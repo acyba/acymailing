@@ -70,7 +70,7 @@ const acym_editorWysidTinymce = {
             preview_styles: false,
             block_formats: 'Paragraph=p;Heading 1=h1;Heading 2=h2;Heading 3=h3;Heading 4=h4;Heading 5=h5;Heading 6=h6',
             init_instance_callback: function (editor) {
-                acym_editorWysidDynammic.setDynamicsActions();
+                acym_editorWysidDynamic.setDynamicsActions();
                 editor.on('keydown', function (e) {
                     let currentText = jQuery(editor.getElement()).find('>:first-child');
                     if (acym_editorWysidTinymce.isCurrentTextEmpty(currentText) && e.which === 8) {
@@ -92,6 +92,10 @@ const acym_editorWysidTinymce = {
                     acym_editorWysidToolbox.setDeleteAlltoolbox();
                 });
                 editor.off('change').on('change', function (e) {
+                    if (e.lineheight !== undefined) {
+                        let $element = jQuery(editor.getElement()).find('.acym__wysid__tinymce--text--placeholder, .acym__wysid__tinymce--title--placeholder');
+                        $element.css('line-height', e.lineheight);
+                    }
                     acym_editorWysidFontStyle.setAllHtmlElementStyleWYSID();
                 });
                 editor.on('blur', function (e) {

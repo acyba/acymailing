@@ -135,6 +135,7 @@ class ExportHelper extends acymObject
                 ];
             }
         }
+
         acym_createArchive($exportFolder, $zipFiles);
 
         // 7 - Remove the temporary folder
@@ -350,6 +351,104 @@ class ExportHelper extends acymObject
             return 15000;
         } else {
             return 5000;
+        }
+    }
+
+    public function getExportChangesFileName($year, $month, $extension = true)
+    {
+        $filename = 'export_changes_'.$year.'_'.$month;
+
+        if ($extension) $filename .= '.csv';
+
+        return $filename;
+    }
+
+    public function getExportChangesFilePath()
+    {
+        $filename = $this->getExportChangesFileName(acym_date('now', 'Y'), acym_date('now', 'm'));
+
+        return acym_getLogPath($filename);
+    }
+
+    public function generateExportChangesFilePathConfigChanges()
+    {
+        $filename = $this->getExportChangesFileName(acym_date('now', 'Y'), acym_date('now', 'm'), false);
+
+        $i = 1;
+
+        $newFilename = $filename.'_'.$i.'.csv';
+
+        while (file_exists(acym_getLogPath($newFilename))) {
+            $i++;
+            $newFilename = $filename.'_'.$i.'.csv';
+        }
+
+        return acym_getLogPath($newFilename);
+    }
+
+    public function exportChanges($user, $fieldsToExport, $fieldName, $newValue, $oldValue)
+    {
+        if (empty($user) || empty($fieldName)) return;
+
+        $exportFullPath = $this->getExportChangesFilePath();
+
+        $separator = '","';
+        $content = '';
+
+        if (!file_exists($exportFullPath)) {
+            $columnsHeader = [];
+            foreach ($fieldsToExport as $field) {
+                $columnsHeader[] = $field;
+            }
+            $columnsHeader = array_merge(
+                $columnsHeader,
+                [
+                    acym_translation('ACYM_FIELD_MODIFIED'),
+                    acym_translation('ACYM_NEW_VALUE'),
+                    acym_translation('ACYM_OLD_VALUE'),
+                    acym_translation('ACYM_DATE'),
+                ]
+            );
+            $content .= $this->before.implode($separator, $columnsHeader).$this->after;
+        }
+
+
+        $columns = [];
+
+        foreach ($fieldsToExport as $field) {
+            $columns[] = empty($user[$field]) ? '' : $user[$field];
+        }
+
+        $columns = array_merge(
+            $columns,
+            [
+                $fieldName,
+                $newValue,
+                $oldValue,
+                acym_date(),
+            ]
+        );
+
+        $content .= $this->eol;
+        $content .= $this->before.implode($separator, $columns).$this->after;
+
+        file_put_contents(
+            $exportFullPath,
+            $content,
+            FILE_APPEND
+        );
+    }
+
+    public function cleanExportChangesFile()
+    {
+        $exportFolder = acym_getLogPath('');
+        $files = scandir($exportFolder);
+        if (empty($files)) return;
+
+        $filenameToSearch = $this->getExportChangesFileName(acym_date('2 month ago', 'Y'), acym_date('2 month ago', 'm'), false);
+        foreach ($files as $file) {
+            if (strpos($file, $filenameToSearch) === false) continue;
+            @unlink(acym_getLogPath($file));
         }
     }
 }

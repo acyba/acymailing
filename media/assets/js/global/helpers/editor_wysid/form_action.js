@@ -215,7 +215,7 @@ const acym_editorWysidFormAction = {
             acym_editorWysidVersioning.setUndoAndAutoSave(true);
 
             let $elementsToReload = jQuery('tr[data-dynamic]');
-            if ($elementsToReload.length > 0) acym_editorWysidDynammic.insertDContent('', $elementsToReload);
+            if ($elementsToReload.length > 0) acym_editorWysidDynamic.insertDContent('', $elementsToReload);
         });
     },
     setCancelButtonWYSID: function () {
