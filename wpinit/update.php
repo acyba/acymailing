@@ -39,7 +39,7 @@ class acyUpdate extends acyHook
 
         $currentVersion = $config->get('version');
         $url = ACYM_UPDATEMEURL.'updatexml&component=acymailing&cms=wp&level='.$config->get('level').'&version='.$currentVersion;
-        if (acym_level(1)) {
+        if (acym_level(ACYM_ESSENTIAL)) {
             $url .= '&li='.urlencode(base64_encode(ACYM_LIVE));
         }
 
@@ -94,7 +94,7 @@ class acyUpdate extends acyHook
 
         $config->save($newConfig);
 
-        if (acym_level(1)) acym_checkVersion();
+        if (acym_level(ACYM_ESSENTIAL)) acym_checkVersion();
 
         return $transient;
     }

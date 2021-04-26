@@ -98,7 +98,7 @@ class plgAcymSendinblue extends acymPlugin
         $this->users->addAttributeToUser($receiverEmail, $htmlContent, $mailId);
     }
 
-    public function onAcymAfterUserModify($user)
+    public function onAcymAfterUserModify($user, &$oldUser)
     {
         $this->users->createUser($user);
     }

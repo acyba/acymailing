@@ -94,11 +94,12 @@ class StatsController extends acymController
     {
         $data['workflowHelper'] = new WorkflowHelper();
 
-        $overrideFilter = false;
-        //If we unselect all email in the dropdown the getVarFiltersListing is not resetting correctly the selected mails ids
-        if (acym_getVar('string', 'task', '') == 'listing' && empty(acym_getVar('array', 'mail_ids', []))) $overrideFilter = true;
+        $overrideFilterMailIds = false;
 
-        $data['selectedMailid'] = $this->getVarFiltersListing('array', 'mail_ids', [], $overrideFilter);
+        //If we unselect all email in the dropdown the getVarFiltersListing is not resetting correctly the selected mails ids
+        if (acym_getVar('string', 'task', '') == 'listing' && empty(acym_getVar('array', 'mail_ids', []))) $overrideFilterMailIds = true;
+
+        $data['selectedMailid'] = $this->getVarFiltersListing('array', 'mail_ids', [], $overrideFilterMailIds);
 
         if ($needMailId && empty($data['selectedMailid'])) {
             $this->globalStats();
@@ -106,14 +107,15 @@ class StatsController extends acymController
             return;
         }
 
-
         $mailStatClass = new MailStatClass();
         $data['sentMails'] = $mailStatClass->getAllMailsForStats();
         $data['show_date_filters'] = true;
         $data['page_title'] = false;
 
         if (acym_isMultilingual() && count($data['selectedMailid']) == 1) {
-            $multilingualMailSelected = $this->getVarFiltersListing('int', 'mail_id_language', 0);
+            $overrideFilterMailIdLanguage = !empty(acym_getVar('array', 'mail_ids', []));
+
+            $multilingualMailSelected = $this->getVarFiltersListing('int', 'mail_id_language', 0, $overrideFilterMailIdLanguage);
             if (!empty($multilingualMailSelected)) $data['selectedMailid'] = [$multilingualMailSelected];
         }
 
@@ -463,7 +465,7 @@ class StatsController extends acymController
         }
 
         $attributes = [
-            'class' => 'acym__select acym_select2_ajax',
+            'class' => 'acym__select acym_select2_ajax acym__stats__select__mails',
             'data-placeholder' => acym_translation('ACYM_ALL_EMAILS'),
             'data-ctrl' => 'stats',
             'data-task' => 'searchSentMail',
@@ -499,7 +501,7 @@ class StatsController extends acymController
         if (empty($data['selectedMailid'])) return;
 
         $urlClickClass = new UrlClickClass();
-        $allClickInfo = $urlClickClass->getAllLinkFromEmail($data['selectedMailid']);
+        $allClickInfo = $urlClickClass->getAllLinkFromEmail($this->selectedMailIds[0]);
 
         $data['url_click'] = [];
         $data['url_click']['allClick'] = $allClickInfo['allClick'];

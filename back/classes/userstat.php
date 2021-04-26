@@ -108,7 +108,6 @@ class UserStatClass extends acymClass
         return acym_loadObjectList($query);
     }
 
-
     public function getDetailedStats($settings)
     {
         $mailClass = new MailClass();

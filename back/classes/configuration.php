@@ -80,6 +80,6 @@ class ConfigurationClass extends acymClass
 
     public function setLicenseKeyByDomain()
     {
-        if (!acym_level(1)) return true;
+        if (!acym_level(ACYM_ESSENTIAL)) return true;
     }
 }

@@ -103,3 +103,48 @@
 		</div>
 	</div>
 </div>
+<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2 grid-margin-y">
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_USER_DATA_MANAGEMENT'); ?></div>
+	<div class="grid-x grid-margin-x margin-y">
+        <?php
+        echo acym_switch(
+            'config[export_data_changes]',
+            $this->config->get('export_data_changes', 0),
+            acym_translation('ACYM_EXPORT_DATA_CHANGES').acym_info('ACYM_EXPORT_DATA_CHANGES_DESC'),
+            [],
+            'xlarge-3 medium-5 small-9',
+            'auto',
+            '',
+            'export_data_changes'
+        ); ?>
+		<div id="export_data_changes" class="cell grid-x">
+			<div class="cell grid-x">
+				<label class="xlarge-3 medium-5 small-9"><?php echo acym_translation('ACYM_SELECT_FIELDS_TO_EXPORT'); ?></label>
+				<div class="cell xlarge-3 medium-5 small-9">
+                    <?php echo acym_selectMultiple(
+                        $data['fields'],
+                        'config[export_data_changes_fields]',
+                        $data['export_data_changes_fields'],
+                        ['class' => 'acym__select'],
+                        'id',
+                        'name',
+                        true
+                    ); ?>
+				</div>
+			</div>
+			<div class="cell grid-x margin-top-1">
+				<div class="cell xlarge-3 medium-5 small-9 grid-x">
+					<button type="button" class="button button-secondary acy_button_submit cell shrink" data-task="downloadExportChangesFile">
+                        <?php echo acym_translation('ACYM_EXPORT'); ?>
+					</button>
+				</div>
+				<div class="cell xlarge-3 medium-5 small-9">
+                    <?php
+                    $choices = [1 => acym_translation('ACYM_CURRENT_MONTH'), 0 => acym_translation('ACYM_PREVIOUS_MONTH')];
+                    echo acym_select($choices, 'export_changes_file_current', 1, ['class' => 'acym__select']);
+                    ?>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

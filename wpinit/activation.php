@@ -83,6 +83,7 @@ class acyActivation extends acyHook
         $installClass->addPref();
         $installClass->updatePref();
         $installClass->updateSQL();
+        $installClass->checkDB();
 
         $config->save(['downloadurl' => '', 'lastupdatecheck' => '0']);
 

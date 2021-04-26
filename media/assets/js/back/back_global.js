@@ -6,6 +6,7 @@ jQuery(document).ready(function ($) {
         acym_helper.preventEnter();
         acym_helper.setMessageClose();
         acym_helper.setDeleteOptionsGlobal();
+        acym_helper.setButtonRadio();
         acym_helperSelect2.initJsSelect2();
         acym_helperToggle.initJsToggle();
         acym_helperListing.initJsListing();

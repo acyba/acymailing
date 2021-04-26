@@ -436,9 +436,10 @@ class FieldClass extends acymClass
             );
         } elseif ($field->type == 'text') {
             $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
-            $field->option->authorized_content->message = $field->option->error_message_invalid;
-            if (empty($field->option->authorized_content->message)) {
+            if(empty($field->option->error_message_invalid)){
                 $field->option->authorized_content->message = acym_translationSprintf('ACYM_INCORRECT_FIELD_VALUE', $field->name);
+            }else{
+                $field->option->authorized_content->message = $field->option->error_message_invalid;
             }
             $authorizedContent = ' data-authorized-content="'.acym_escape(json_encode($field->option->authorized_content)).'"';
             $return .= '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.' type="text">';
@@ -598,9 +599,9 @@ class FieldClass extends acymClass
 
     public function getLanguageFieldId()
     {
-        $languageFieldId = $this->config->get(self::LANGUAGE_FIELD_ID_KEY, 0);
+        $languageFieldId = acym_loadResult('SELECT `id` FROM `#__acym_field` WHERE `namekey` = "acym_language"');
 
-        return $languageFieldId !== 0 ? $languageFieldId : false;
+        return empty($languageFieldId) ? false : $languageFieldId;
     }
 
     public function getLanguagesForDropdown()

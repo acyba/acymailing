@@ -16,7 +16,7 @@
 				<label for="acym__migrate__config"><?php echo acym_translation('ACYM_CONFIGURATION'); ?></label>
 				<span id="acym__migrate__result__config__check"></span>
 			</div>
-            <?php if (acym_level(2)) { ?>
+            <?php if (acym_level(ACYM_ENTERPRISE)) { ?>
 				<div class="cell acym__migrate__input__element">
 					<input type="checkbox" id="acym__migrate__bounce" name="migrate[bounce]" class="acym__migrate__option" />
 					<label for="acym__migrate__bounce"><?php echo acym_translation('ACYM_BOUNCE_HANDLING'); ?></label>
@@ -43,7 +43,7 @@
 				<label for="acym__migrate__templates"><?php echo acym_translation('ACYM_TEMPLATES'); ?></label>
 				<span id="acym__migrate__result__templates__check"></span>
 			</div>
-            <?php if (acym_level(2)) { ?>
+            <?php if (acym_level(ACYM_ENTERPRISE)) { ?>
 				<div class="cell acym__migrate__input__element">
 					<input type="checkbox" id="acym__migrate__fields" name="migrate[fields]" class="acym__migrate__option" />
 					<label for="acym__migrate__fields"><?php echo acym_translation('ACYM_CUSTOM_FIELDS'); ?></label>

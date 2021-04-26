@@ -67,7 +67,7 @@ function acym_getLeftMenu($name)
     $menus['plugins'] = ['title' => $addOnsTitle, 'class-i' => 'acymicon-plug', 'span-class' => 'acym__joomla__left-menu__fa'];
     $menus['configuration'] = ['title' => 'ACYM_CONFIGURATION', 'class-i' => 'acymicon-settings', 'span-class' => ''];
 
-    if (!acym_level(1)) {
+    if (!acym_level(ACYM_ESSENTIAL)) {
         $menus['gopro'] = ['title' => 'ACYM_GOPRO', 'class-i' => 'acymicon-star', 'span-class' => ''];
     }
 

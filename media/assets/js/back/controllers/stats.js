@@ -35,6 +35,7 @@ jQuery(document).ready(function ($) {
         setSelect2();
         setChartExport();
         setSelect2Language();
+        setSelect2MailFilter();
         acym_helperStats.setLineChartOpenTimeWeek();
     }
 
@@ -134,6 +135,12 @@ jQuery(document).ready(function ($) {
     function setSelect2Language() {
         $('.acym__stats__select__language').off('change').on('change', function () {
             $('#formSubmit').click();
+        });
+    }
+
+    function setSelect2MailFilter() {
+        $('.acym__stats__select__mails').on('change', function () {
+            $('.acym__stats__select__language__container').remove();
         });
     }
 });

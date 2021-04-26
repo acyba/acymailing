@@ -17,7 +17,16 @@ function acym_modal($button, $data, $id = null, $attributesModal = '', $attribut
         $id = 'acymodal_'.rand(1000, 9000);
     }
 
-    $modal = $isButton ? '<button type="button" data-open="'.$id.'" '.$attributesButton.'>'.$button.'</button>' : $button;
+    $buttonParams = '';
+    if (is_array($attributesButton)) {
+        foreach ($attributesButton as $oneAttribute => $oneValue) {
+            $buttonParams .= ' '.$oneAttribute.'="'.acym_escape($oneValue).'"';
+        }
+    } else {
+        $buttonParams = $attributesButton;
+    }
+
+    $modal = $isButton ? '<button type="button" data-open="'.$id.'" '.$buttonParams.'>'.$button.'</button>' : $button;
     $modal .= '<div class="reveal" '.($isLarge ? 'data-reveal-larger' : '').' id="'.$id.'" '.$attributesModal.' data-reveal>';
     $modal .= $data;
     $modal .= '<button class="close-button" data-close aria-label="Close reveal" type="button">';

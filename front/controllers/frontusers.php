@@ -81,7 +81,7 @@ class FrontusersController extends UsersController
 
     protected function prepareFieldsEdit(&$data, $fieldVisibility = 'frontend_edition')
     {
-        if (!acym_level(2) && acym_isAdmin()) {
+        if (!acym_level(ACYM_ENTERPRISE) && acym_isAdmin()) {
             acym_redirect(acym_rootURI(), 'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', 'warning');
         }
 
@@ -90,7 +90,7 @@ class FrontusersController extends UsersController
 
     protected function prepareUsersListing(&$data)
     {
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_rootURI(), 'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', 'warning');
         }
 
@@ -281,7 +281,7 @@ class FrontusersController extends UsersController
             $redirectUrl = acym_rootURI();
         }
 
-        acym_redirect($redirectUrl);
+        acym_redirect($redirectUrl, '', 'message', true);
     }
 
     private function unsubscribeDirectly($alreadyExists, $ajax)

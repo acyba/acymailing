@@ -78,6 +78,14 @@
 
         .acym__wysid__tinymce--text span {
             color: inherit;
+
+            &.acym_link {
+                color: #0000F1;
+                font-family: Helvetica, serif;
+                font-size: 12px;
+                font-weight: normal;
+                font-style: normal;
+            }
         }
 
         tbody tr:nth-child(even) {

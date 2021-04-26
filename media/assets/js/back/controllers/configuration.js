@@ -19,6 +19,8 @@ jQuery(document).ready(function ($) {
         acym_helperSelectionPage.setSelectionElement(true, true, setEmbedImageToggle);
         setEmbedImageToggle();
         acym_helperSelectionMultilingual.init('configuration');
+        resetSubmitButtons();
+        setAllowedHostsMultipleSelect();
     }
 
     Configuration();
@@ -305,5 +307,39 @@ jQuery(document).ready(function ($) {
     function setEmbedImageToggle() {
         setOptionDisabled('acym__config__mail__embed__image__blocked', 'embed_images');
         setOptionDisabled('acym__config__mail__embed__attachment__blocked', 'embed_files');
+    }
+
+
+    function resetSubmitButtons() {
+        $('[data-task="downloadExportChangesFile"]').on('click', function () {
+            setTimeout(function () {
+                $('#formSubmit')[0].disabled = false;
+                $('[name="task"]').val('');
+            }, 5);
+        });
+    }
+
+    function setAllowedHostsMultipleSelect() {
+        let $multipleSelect = $('.acym__allowed__hosts__select');
+
+        $multipleSelect.select2({
+            width: '100%',
+            placeholder: $multipleSelect.attr('placeholder'),
+            tags: true,
+            theme: 'foundation',
+            tokenSeparators: [' '],
+            createTag: function (params) {
+                let term = jQuery.trim(params.term);
+
+                if (term === '') {
+                    return null;
+                }
+
+                return {
+                    id: term,
+                    text: term
+                };
+            }
+        });
     }
 });

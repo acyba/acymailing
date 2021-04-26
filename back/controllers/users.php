@@ -88,11 +88,17 @@ class UsersController extends acymController
                 'list',
                 ['join' => ''],
                 $entityHelper->getColumnsForList(),
-                ['text' => acym_translation('ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS'), 'action' => 'addToList']
+                [
+                    'text' => acym_translation('ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS'),
+                    'action' => 'addToList',
+                ]
             ),
             null,
             '',
-            'class="button button-secondary disabled cell medium-6 large-shrink" id="acym__users__listing__button--add-to-list"'
+            [
+                'class' => 'button button-secondary disabled cell medium-6 large-shrink',
+                'id' => 'acym__users__listing__button--add-to-list',
+            ]
         );
         $toolbarHelper->addOtherContent($otherContent);
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit'], 'user-plus', true);
@@ -134,26 +140,6 @@ class UsersController extends acymController
         $usersPerPage = $data['pagination']->getListLimit();
         $page = acym_getVar('int', 'users_pagination_page', 1);
 
-        $joins = [];
-        $conditions = [];
-        if (!empty($data['list'])) {
-            $listJoin = 'JOIN #__acym_user_has_list AS list ON user.id = list.user_id AND list.list_id = '.intval($data['list']);
-
-            if ($data['list_status'] === 'none') {
-                $joins[] = 'LEFT '.$listJoin;
-                $conditions[] = 'list.user_id IS NULL';
-            } else {
-                $joins[] = $listJoin;
-                if ($data['list_status'] === 'sub') {
-                    $conditions[] = 'list.status = 1';
-                } else {
-                    $conditions[] = 'list.status = 0';
-                }
-            }
-        }
-
-        $joins[] = 'LEFT JOIN '.$this->cmsUserVars->table.' AS cmsuser ON cmsuser.'.$this->cmsUserVars->id.' = `user`.cms_id ';
-
         $matchingUsers = $this->getMatchingElementsFromData(
             [
                 'search' => $data['search'],
@@ -162,12 +148,9 @@ class UsersController extends acymController
                 'status' => $data['status'],
                 'ordering' => $data['ordering'],
                 'ordering_sort_order' => $data['orderingSortOrder'],
-                'columns' => [
-                    '*',
-                    'join' => '`cmsuser`.'.$this->cmsUserVars->username.' AS `cms_username`',
-                ],
-                'joins' => $joins,
-                'conditions' => $conditions,
+                'list' => $data['list'],
+                'list_status' => $data['list_status'],
+                'cms_username' => true,
             ],
             $data['status'],
             $page
@@ -217,10 +200,11 @@ class UsersController extends acymController
 
         $fieldValue = $fieldClass->getAllFieldsListingByUserIds($userIds, $fieldsToDisplay['ids'], 'field.backend_listing = 1');
         $languages = acym_getLanguages();
+        $languageFieldId = $fieldClass->getLanguageFieldId();
         foreach ($data['allUsers'] as &$user) {
             $user->fields = [];
             foreach ($fieldsToDisplay['ids'] as $fieldId) {
-                if ($fieldId == $fieldClass->getLanguageFieldId()) {
+                if ($fieldId == $languageFieldId) {
                     $user->fields[$fieldId] = empty($languages[$user->language]) ? $user->language : $languages[$user->language]->name;
                 } else {
                     $user->fields[$fieldId] = !isset($fieldValue[$fieldId.'-'.$user->id]) ? '' : $fieldValue[$fieldId.'-'.$user->id];
@@ -451,6 +435,7 @@ class UsersController extends acymController
         $fieldClass = new FieldClass();
         $fieldsElements = $fieldClass->getMatchingElements();
         $allFields = $fieldsElements['elements'];
+        $languageFieldId = $fieldClass->getLanguageFieldId();
 
         foreach ($allFields as $one) {
             $one->option = json_decode($one->option);
@@ -483,7 +468,7 @@ class UsersController extends acymController
                 $defaultValue = empty($data['user-information']->id) ? '' : $data['user-information']->name;
             } elseif ($one->id == 2) {
                 $defaultValue = empty($data['user-information']->id) ? '' : $data['user-information']->email;
-            } elseif ($one->id == $fieldClass->getLanguageFieldId()) {
+            } elseif ($one->id == $languageFieldId) {
                 $defaultValue = empty($data['user-information']->id) ? acym_getLanguageTag() : $data['user-information']->language;
             } elseif (isset($data['fieldsValues'][$one->id]) && (((is_array($data['fieldsValues'][$one->id]) || $data['fieldsValues'][$one->id] instanceof Countable) && count(
                             $data['fieldsValues'][$one->id]

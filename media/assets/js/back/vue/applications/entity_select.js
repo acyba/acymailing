@@ -97,17 +97,8 @@ function readyFunction($) {
                 this.columnJoin = entitySelectContainer.getAttribute('data-column-join');
                 this.tableJoin = entitySelectContainer.getAttribute('data-table-join');
 
-                this.data = JSON.parse(document.getElementById('acym__entity_select__data').value);
-                this.handleEntities(this.data.elements);
-
-                if (this.data.total < entityPerCalls) {
-                    //If we don't have data to load anymore
-                    this.loading = false;
-                } else {
-                    //we load every thing
-                    entityNumber += entityPerCalls;
-                    this.getAllEntities(this.entity);
-                }
+                //we load everything
+                this.getAllEntities(this.entity);
                 $(window).off('refreshEntitySelect').on('refreshEntitySelect', function () {
                     readyFunction($);
                 });

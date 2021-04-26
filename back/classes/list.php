@@ -68,7 +68,6 @@ class ListClass extends acymClass
             $filters[] = 'list.name LIKE '.acym_escapeDB('%'.$settings['search'].'%');
         }
 
-
         if (!empty($settings['creator_id']) && !acym_isAdmin()) {
             $userGroups = acym_getGroupsByUser($settings['creator_id']);
             $groupCondition = '(list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%")';
@@ -118,7 +117,6 @@ class ListClass extends acymClass
             $settings['elementsPerPage'] = $pagination->getListLimit();
         }
 
-
         $results['elements'] = acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']);
         if (!empty($settings['join'])) {
             $this->setSelectedList($results['elements'], $settings['join']);
@@ -135,7 +133,7 @@ class ListClass extends acymClass
 
         $countUserByList = [];
         $countEvolByList = [];
-        if (!empty($listsId)) {
+        if (!empty($listsId) && empty($settings['entitySelect'])) {
             $countUserByList = $this->getSubscribersCountPerStatusByListId($listsId);
             $countEvolByList = $this->getSubscribersEvolutionByList($listsId);
         }
@@ -778,13 +776,14 @@ class ListClass extends acymClass
             acym_arrayToInteger($listIds);
             $condList = ' AND list_id IN ('.implode(',', $listIds).')';
         }
-        $queryEvolSub = 'SELECT list_id,  COUNT(*) AS newSub FROM #__acym_user_has_list';
-        $queryEvolSub .= ' WHERE DATE(subscription_date) > DATE_SUB(NOW(), INTERVAL 1 MONTH) '.$condList;
+        $dateNow = acym_loadResult('SELECT DATE_SUB(NOW(), INTERVAL 1 MONTH)');
+        $queryEvolSub = 'SELECT list_id, COUNT(*) AS newSub FROM #__acym_user_has_list';
+        $queryEvolSub .= ' WHERE subscription_date > '.acym_escapeDB($dateNow).' '.$condList;
         $queryEvolSub .= ' GROUP BY list_id';
         $evolSubscibers = acym_loadObjectList($queryEvolSub, 'list_id');
 
-        $queryEvolUnsub = 'SELECT list_id,  COUNT(*) AS newUnsub FROM #__acym_user_has_list';
-        $queryEvolUnsub .= ' WHERE DATE(unsubscribe_date) > DATE_SUB(NOW(), INTERVAL 1 MONTH) '.$condList;
+        $queryEvolUnsub = 'SELECT list_id, COUNT(*) AS newUnsub FROM #__acym_user_has_list';
+        $queryEvolUnsub .= ' WHERE unsubscribe_date > '.acym_escapeDB($dateNow).' '.$condList;
         $queryEvolUnsub .= ' GROUP BY list_id';
         $newUnsubscribers = acym_loadObjectList($queryEvolUnsub, 'list_id');
 

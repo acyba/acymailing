@@ -208,5 +208,20 @@ const acym_helper = {
         return array1.length === array2.length && array1.every(function (value, index) {
             return value === array2[index];
         });
+    },
+    setButtonRadio: function () {
+        jQuery('.button-radio').off('click').on('click', function (event) {
+            event.preventDefault();
+
+            jQuery('[acym-button-radio-group="' + jQuery(this).attr('acym-button-radio-group') + '"').removeClass('button-radio-selected');
+            jQuery(this).addClass('button-radio-selected');
+
+            let callback = jQuery(this).attr('acym-callback');
+            setTimeout(() => {
+                if (!acym_helper.empty(callback) && typeof window[callback] === 'function') {
+                    window[callback]();
+                }
+            }, 100);
+        });
     }
 };

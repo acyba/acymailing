@@ -21,6 +21,7 @@ if (!empty($_SERVER['DOCUMENT_ROOT'])) {
 }
 define('ACYM_ROOT', rtrim($acyAbsPath, DS.'/').DS);
 define('ACYM_FOLDER', WP_PLUGIN_DIR.DS.ACYM_COMPONENT.DS);
+define('ACYM_WIDGETS', ACYM_FOLDER.'widgets'.DS);
 define('ACYM_FRONT', ACYM_FOLDER.'front'.DS);
 define('ACYM_BACK', ACYM_FOLDER.'back'.DS);
 define('ACYM_VIEW', ACYM_BACK.'views'.DS);

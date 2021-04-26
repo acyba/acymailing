@@ -371,13 +371,13 @@ class plgAcymArticle extends acymPlugin
         $varFields['{title}'] = $element->title;
         if (in_array('title', $tag->display)) $title = $varFields['{title}'];
 
-        $images = json_decode($element->images, true);
-
+        $images = [];
         $varFields['{picthtml}'] = '';
         if (!empty($element->images)) {
-            $pictVar = in_array('intro', $tag->display) || empty($images->image_fulltext) ? 'image_intro' : 'image_fulltext';
-            if (!empty($images->$pictVar)) {
-                $imagePath = acym_rootURI().$images->$pictVar;
+            $images = json_decode($element->images, true);
+            $pictVar = in_array('intro', $tag->display) || empty($images['image_fulltext']) ? 'image_intro' : 'image_fulltext';
+            if (!empty($images[$pictVar])) {
+                $imagePath = acym_rootURI().$images[$pictVar];
                 $varFields['{picthtml}'] = '<img alt="" src="'.acym_escape($imagePath).'" />';
             }
         }

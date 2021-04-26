@@ -211,7 +211,6 @@ const acym_helperModal = {
         });
     },
     setPopupIframeToggleGlobal: function () {
-
         jQuery('[data-iframe]').on('click', function () {
             let $popup = jQuery('#' + jQuery(this).attr('data-open'));
             let $reload = jQuery(this).attr('data-reload');

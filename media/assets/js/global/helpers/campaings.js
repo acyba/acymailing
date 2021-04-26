@@ -92,8 +92,9 @@ const acym_helperCampaigns = {
     setSendSettingsButtons: function () {
         jQuery('.acym__campaign__sendsettings__buttons-type').off('click').on('click', function () {
             if (jQuery(this).hasClass('disabled')) return true;
-            jQuery('.acym__campaign__sendsettings__buttons-type').addClass('button-radio-unselected');
-            jQuery(this).removeClass('button-radio-unselected');
+
+            jQuery('.acym__campaign__sendsettings__buttons-type').addClass('button-radio-unselected').removeClass('button-radio-selected');
+            jQuery(this).removeClass('button-radio-unselected').addClass('button-radio-selected');
             jQuery('.acym__campaign__sendsettings__params').hide();
             jQuery('[data-show="' + jQuery(this).attr('id') + '"]').show();
             jQuery('[name="sending_type"]').val(jQuery(this).attr('data-sending-type'));

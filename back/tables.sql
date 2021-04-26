@@ -163,6 +163,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_user_has_list` (
 	PRIMARY KEY (`user_id`, `list_id`),
 	INDEX `index_#__acym_user_has_list1`(`list_id` ASC),
 	INDEX `index_#__acym_user_has_list2`(`user_id` ASC),
+	INDEX `index_#__acym_user_has_list3`(`subscription_date` ASC),
+	INDEX `index_#__acym_user_has_list4`(`unsubscribe_date` ASC),
 	CONSTRAINT `fk_#__acym_user_has_list1`
 		FOREIGN KEY (`user_id`)
 			REFERENCES `#__acym_user`(`id`)
@@ -301,6 +303,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail_stat` (
 	`bounce_unique` MEDIUMINT(8) NOT NULL DEFAULT 0,
 	`bounce_details` LONGTEXT NULL,
 	`unsubscribe_total` INT NOT NULL DEFAULT 0,
+    `tracking_sale` FLOAT NULL,
+    `currency` VARCHAR(5) NULL,
 	PRIMARY KEY (`mail_id`),
 	CONSTRAINT `fk_#__acym_mail_stat1`
 		FOREIGN KEY (`mail_id`)

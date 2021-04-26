@@ -6,7 +6,7 @@ if (!empty($data['translation_languages'])) {
 ?>
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate>
 	<input type="hidden" name="id" value="<?php echo empty($data['field']->id) ? '' : intval($data['field']->id); ?>">
-	<input type="hidden" name="namekey" value="<?php echo empty($data['field']->namekey) ? '' : acym_escape($data['field']->namekey); ?>">
+	<input type="hidden" name="field[namekey]" value="<?php echo empty($data['field']->namekey) ? '' : acym_escape($data['field']->namekey); ?>">
 	<div id="acym__fields__edit" class="acym__content grid-x cell">
 		<div class="cell grid-x text-right grid-margin-x margin-left-0 margin-right-0 margin-y margin-bottom-0">
 			<h5 class="cell medium-auto medium-text-left text-center hide-for-small-only hide-for-medium-only acym__title">
@@ -14,12 +14,12 @@ if (!empty($data['translation_languages'])) {
 			</h5>
 			<div class="cell auto hide-for-small-only hide-for-medium-only"></div>
             <?php echo acym_cancelButton(); ?>
-			<button data-task="apply" <?php echo $beforeSave; ?> class="cell button button-secondary medium-6 large-shrink acy_button_submit"><?php echo acym_translation(
-                    'ACYM_SAVE'
-                ); ?></button>
-			<button data-task="save" <?php echo $beforeSave; ?> class="cell button medium-6 large-shrink margin-right-0 acy_button_submit"><?php echo acym_translation(
-                    'ACYM_SAVE_EXIT'
-                ); ?></button>
+			<button data-task="apply" <?php echo $beforeSave; ?> class="cell button button-secondary medium-6 large-shrink acy_button_submit">
+                <?php echo acym_translation('ACYM_SAVE'); ?>
+			</button>
+			<button data-task="save" <?php echo $beforeSave; ?> class="cell button medium-6 large-shrink margin-right-0 acy_button_submit">
+                <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
+			</button>
 		</div>
 		<div class="cell grid-x grid-margin-x">
 			<div class="xlarge-4 cell grid-x acym__fields__edit__field__general acym__content grid-margin-x margin-bottom-1 acym_center_baseline">

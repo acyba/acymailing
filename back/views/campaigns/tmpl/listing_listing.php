@@ -250,8 +250,9 @@
                     <?php if (acym_isTrackingSalesActive()) { ?>
 						<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
                             <?php
-                            if (!empty($campaign->sale) && !empty($campaign->currency)) {
-                                echo round($campaign->sale, 2).' '.$campaign->currency;
+                            if (!empty($campaign->tracking_sale) && !empty($campaign->currency)) {
+                                acym_trigger('getCurrency', [&$campaign->currency]);
+                                echo round($campaign->tracking_sale, 2).' '.$campaign->currency;
                             } else {
                                 echo '-';
                             }
@@ -276,7 +277,9 @@
                             ?>
 						</div>
                     <?php } ?>
-					<h6 class="large-1 hide-for-medium-only hide-for-small-only cell text-center acym__listing__text acym__campaign__listing__id"><?php echo acym_escape($campaign->id); ?></h6>
+					<h6 class="large-1 hide-for-medium-only hide-for-small-only cell text-center acym__listing__text acym__campaign__listing__id">
+                        <?php echo acym_escape($campaign->id); ?>
+					</h6>
 				</div>
 			</div>
             <?php

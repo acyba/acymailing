@@ -26,7 +26,7 @@ class BouncesController extends acymController
         $data = [];
 
 
-        if (!acym_level(2)) {
+        if (!acym_level(ACYM_ENTERPRISE)) {
             acym_setVar('layout', 'splashscreen');
             $data['isEnterprise'] = false;
         }

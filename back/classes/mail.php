@@ -344,6 +344,21 @@ class MailClass extends acymClass
         return acym_loadObjectList($query);
     }
 
+    public function getAllListsByMailIds($ids)
+    {
+        acym_arrayToInteger($ids);
+        if (empty($ids)) {
+            return [];
+        }
+
+        $query = 'SELECT mailLists.mail_id, list.name, list.color
+                    FROM #__acym_mail_has_list AS mailLists 
+                    JOIN #__acym_list AS list ON mailLists.list_id = list.id
+                    WHERE mailLists.mail_id IN ('.implode(',', $ids).')';
+
+        return acym_loadObjectList($query);
+    }
+
     public function getAllListsByMailId($id)
     {
         //If we are from the stats and we have an array we take the first email because it's the main email from automatic campaign

@@ -18,7 +18,7 @@ const acym_editorWysidToolbox = {
             let theClone = $elementToClone.clone();
             // Handle the duplication of DContents with unique IDs
             if (theClone.attr('data-dynamic') !== undefined) {
-                theClone.attr('id', acym_editorWysidDynammic.getUniqueId());
+                theClone.attr('id', acym_editorWysidDynamic.getUniqueId());
             }
             theClone.insertAfter($elementToClone);
             acym_helperEditorWysid.setColumnRefreshUiWYSID();

@@ -399,24 +399,24 @@ class plgAcymPost extends acymPlugin
 
     public function getPosts($ajax = true, $postPerPage = 20)
     {
-        $return = $ajax ? [] : [0 => ['', acym_translation('ACYM_SELECT_AN_ARTICLE')]];
+        $return = $ajax ? [] : [0 => [0, acym_translation('ACYM_SELECT_AN_ARTICLE')]];
 
-        $query = [
-            's' => acym_getVar('string', 'searchedterm', ''),
-            'post_status' => 'publish',
-            'ignore_sticky_posts' => 1,
-            'post_type' => ['page', 'post'],
-        ];
+        $search = acym_getVar('string', 'searchedterm', '');
+        if (!empty($search)) {
+            $search = acym_escapeDB('%'.$search.'%');
+            $search = 'post_title LIKE '.$search.' OR post_name LIKE '.$search.' OR post_content LIKE '.$search;
+            $search = ' AND ('.$search.')';
+        }
 
-        if (!empty($postPerPage)) $query['posts_per_page'] = $postPerPage;
+        $limit = '';
+        if (!empty($postPerPage)) {
+            $limit = 'LIMIT '.$postPerPage;
+        }
 
-        $search_results = new WP_Query($query);
-
-        if ($search_results->have_posts()) {
-            while ($search_results->have_posts()) {
-                $search_results->the_post();
-                $return[] = [$search_results->post->ID, $search_results->post->post_title];
-            }
+        $query = 'SELECT ID, post_title FROM #__posts WHERE post_status = "publish" AND post_type IN ("post", "page") '.$search.' '.$limit;
+        $posts = acym_loadObjectList($query);
+        foreach ($posts as $post) {
+            $return[] = [$post->ID, $post->post_title];
         }
 
         if ($ajax) {

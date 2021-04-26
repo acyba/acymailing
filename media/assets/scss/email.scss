@@ -1,13 +1,21 @@
-.acymailing_content {
-    margin-bottom: 10px;
+#acym__wysid__template {
+    .acymailing_content {
+        margin-bottom: 10px;
 
-    .acymailing_readmore {
-        margin-top: 10px;
-        display: block;
-    }
+        .acydescription {
+            img {
+                display: inline-block;
+            }
+        }
 
-    td.cflabel, td.cfvalue {
-        padding: .2rem .625rem;
+        .acymailing_readmore {
+            margin-top: 10px;
+            display: block;
+        }
+
+        td.cflabel, td.cfvalue {
+            padding: .2rem .625rem;
+        }
     }
 }
 

@@ -687,7 +687,7 @@ class PluginHelper extends acymObject
     }
 
     /**
-     * get the right format
+     * Returns a formatted version of the passed content
      *
      * TOP_LEFT : title on top, image with float left and covering description
      * TOP_RIGHT : title on top, image with float rigth and covering description
@@ -699,7 +699,6 @@ class PluginHelper extends acymObject
      * COL_RIGHT : image on right column, title and description on left column
      *
      * @param object $format
-     * @param array  $varFields
      *
      * @return string
      */
@@ -708,7 +707,7 @@ class PluginHelper extends acymObject
         // By default, put float left on the picture
         if (empty($format->tag->format)) $format->tag->format = 'TOP_LEFT';
         if (!in_array($format->tag->format, ['TOP_LEFT', 'TOP_RIGHT', 'TITLE_IMG', 'TITLE_IMG_RIGHT', 'CENTER_IMG', 'TOP_IMG', 'COL_LEFT', 'COL_RIGHT'])) {
-            return 'Wrong format supplied: '.$format->tag->format;
+            $format->tag->format = 'TOP_LEFT';
         }
 
         $invertValues = [
@@ -736,12 +735,12 @@ class PluginHelper extends acymObject
             }
 
             if (!empty($style)) {
+                $linkStyle = 'style="float:'.$style.';"';
+
                 if ($style === 'left') {
                     $style = 'style="float:left; margin-right: 7px; margin-bottom: 7px;"';
-                    $linkStyle = 'style="float:left;"';
                 } else {
                     $style = 'style="float:right; margin-left: 7px; margin-bottom: 7px;"';
-                    $linkStyle = 'style="float:right;"';
                 }
             }
 
@@ -772,7 +771,7 @@ class PluginHelper extends acymObject
             if (empty($image)) {
                 $format->tag->format = 'TOP_LEFT';
             } else {
-                $result = '<table><tr><td valign="top" class="acyleftcol">';
+                $result = '<table><tr><td valign="middle" style="vertical-align: middle; padding-right: 7px;" class="acyleftcol">';
                 if ($format->tag->format == 'COL_LEFT') {
                     $result .= $image.'</td><td valign="top" class="acyrightcol">';
                 }
@@ -830,7 +829,7 @@ class PluginHelper extends acymObject
             }
 
             if ($format->tag->format == 'COL_RIGHT') {
-                $result .= '</td><td valign="top" class="acyrightcol">'.$image;
+                $result .= '</td><td valign="middle" style="vertical-align: middle; padding-left: 7px;" class="acyrightcol">'.$image;
             }
             $result .= '</td></tr></table>';
         }
@@ -897,117 +896,6 @@ class PluginHelper extends acymObject
         }
 
         return acym_absoluteURL($result);
-    }
-
-    /**
-     * Returns the
-     */
-    public function getFormatOption($plugin, $default = 'TOP_LEFT', $singleElement = true, $function = 'updateTag')
-    {
-        $contentformat = [
-            'TOP_LEFT' => '-208',
-            'TOP_RIGHT' => '-260',
-            'TITLE_IMG' => '0',
-            'TITLE_IMG_RIGHT' => '-52',
-            'CENTER_IMG' => '-104',
-            'TOP_IMG' => '-156',
-            'COL_LEFT' => '-312',
-            'COL_RIGHT' => '-364',
-        ];
-
-        $name = $singleElement ? 'contentformat' : 'contentformatauto';
-
-        $result = '<input type="hidden" name="'.$name.'" id="'.$name.'" value="'.$default.'" size="1"/>';
-        $result .= '<span id="'.$name.'button" class="btn acybuttonformat" style="margin: 0px 10px 0px 0px; background-position: '.$contentformat[$default].'px -6px;height:34px;" onclick="togglediv'.$name.'();"></span>';
-        $result .= '<div id="'.$name.'div" class="formatbox" style="display:none;">';
-
-        $reset = '';
-        if (file_exists(ACYM_MEDIA.'plugins')) {
-
-            //We need this import to use JFolder on joomla 3
-
-
-            $files = acym_getFiles(ACYM_MEDIA.'plugins', '^'.$plugin);
-            foreach ($files as $oneFile) {
-                $reset .= "document.getElementById('".$name.$oneFile."').style.backgroundPosition = '-480px -5px';document.getElementById('".$name.$oneFile."').style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05)';";
-                $result .= '<span id="'.$name.$oneFile.'" class="btn acybuttonformat" style="background-position: -480px -5px;height:34px;" onclick="selectFormat'.$name.'(\''.$oneFile.'\',\''.$oneFile.'\',true);"></span>'.substr(
-                        $oneFile,
-                        0,
-                        strlen($oneFile) - 4
-                    ).'<br/>';
-            }
-            $result .= '<br />';
-        }
-
-        foreach ($contentformat as $value => $position) {
-            $reset .= "document.getElementById('".$name.$value."').style.backgroundPosition = '".$position."px -10px';document.getElementById('".$name.$value."').style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05)';";
-            $result .= '<span id="'.$name.$value.'" class="btn acybuttonformat" style="background-position: '.$position.'px '.($value == $default ? -64 : -10).'px;" onclick="selectFormat'.$name.'(\''.$value.'\',\''.$position.'\',false);"></span>';
-        }
-
-        $result .= '<br />';
-
-        if (!$singleElement) {
-            $result .= '<br /><input type="hidden" id="'.$name.'invert" value="0"/>';
-            $result .= '<span id="'.$name.'invertbutton" class="btn acybuttonformat" style="background-position:-415px -8px;width:58px;height:30px;" onclick="toggleInvert'.$name.'();"></span>'.acym_tooltip(
-                    'Alternatively display the image on the left and right',
-                    'Alternate',
-                    '',
-                    'Alternate'
-                );
-        }
-
-        $result .= '<span class="btn acyokbutton acybuttonformat" onclick="togglediv'.$name.'();">'.acym_translation('ACY_CLOSE').'</span>';
-        $result .= '</div>';
-        ob_start();
-        ?>
-		<script type="text/javascript">
-            <!--
-            function togglediv<?php echo $name; ?>() {
-                var divelement = document.getElementById('<?php echo $name; ?>div');
-                if (divelement.style.display == 'none') {
-                    divelement.style.display = '';
-                } else {
-                    divelement.style.display = 'none';
-                }
-            }
-            <?php if(!$singleElement){ ?>
-            function toggleInvert<?php echo $name; ?>() {
-                var invertElement = document.getElementById('<?php echo $name; ?>invert');
-                var posy = '8';
-                var shadow = 'inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05)';
-                if (invertElement.value == 0) {
-                    posy = '60';
-                    shadow = 'inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05)';
-                }
-                invertElement.value = 1 - invertElement.value;
-                document.getElementById('<?php echo $name; ?>invertbutton').style.backgroundPosition = '-415px -' + posy + 'px';
-                document.getElementById('<?php echo $name; ?>invertbutton').style.boxShadow = shadow;
-                <?php echo $function; ?>();
-            }
-            <?php } ?>
-
-            function selectFormat<?php echo $name; ?>(format, position, custom) {
-                <?php echo $reset; ?>
-                var prosy = '64';
-                var newVal = format;
-                if (custom) {
-                    position = '-480';
-                    prosy = '58';
-                    newVal = '<?php echo $default; ?>| template:' + format;
-                }
-                document.getElementById('<?php echo $name; ?>').value = newVal;
-                document.getElementById('<?php echo $name; ?>button').style.backgroundPosition = position + 'px -5px';
-                document.getElementById('<?php echo $name; ?>' + format).style.backgroundPosition = position + 'px -' + prosy + 'px';
-                document.getElementById('<?php echo $name; ?>' + format).style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05)';
-                <?php echo $function; ?>();
-            }
-
-            -->
-		</script>
-        <?php
-        $result .= ob_get_clean();
-
-        return $result;
     }
 
     public function displayOptions($options, $dynamicIdentifier, $type = 'individual', $defaultValues = null)
@@ -1232,6 +1120,50 @@ class PluginHelper extends acymObject
 
             if (!empty($option['main']) || in_array($option['type'], ['pictures', 'checkbox'])) {
                 $outputStructure['topOptions'][$currentLabel] = $currentOption;
+
+                if ($option['type'] === 'checkbox' && $currentLabel === 'ACYM_DISPLAY') {
+                    $formatOption = '<div class="grid-x">';
+                    $formatOption .= '<div class="cell large-3">'.acym_translation('ACYM_FORMAT').'</div>';
+                    $formatOption .= '<div class="cell large-9 dcontentFormatContainer">';
+
+                    $default = empty($defaultValues->format) ? 'TOP_LEFT' : $defaultValues->format;
+                    $formats = ['TOP_LEFT', 'TOP_RIGHT', 'TITLE_IMG', 'TITLE_IMG_RIGHT', 'CENTER_IMG', 'TOP_IMG', 'COL_LEFT', 'COL_RIGHT'];
+                    foreach ($formats as $oneFormat) {
+                        $class = 'button-radio';
+                        if ($default === $oneFormat) $class .= ' button-radio-selected';
+
+                        $formatOption .= '<button 
+											class="'.$class.'" 
+											acym-button-radio-group="dcontentFormat'.$suffix.'" 
+											acym-data-type="'.$oneFormat.'"
+											acym-callback="'.$updateFunction.'">
+											<img alt="'.$oneFormat.'" src="'.ACYM_IMAGES.'dynamics/'.strtolower($oneFormat).'.png"/>
+										</button>';
+                    }
+                    $formatOption .= '</div>';
+
+                    if ($type === 'grouped') {
+                        $formatOption .= '<div class="cell large-3">'.acym_translation('ACYM_ALTERNATE').acym_info('ACYM_ALTERNATE_DESC').'</div>';
+                        $formatOption .= '<div class="cell large-9">';
+                        $formatOption .= acym_boolean(
+                            'alternate'.$suffix,
+                            !empty($defaultValues->alternate),
+                            'alternate'.$suffix,
+                            ['onclick' => $updateFunction.'();']
+                        );
+                        $formatOption .= '</div>';
+
+                        $jsOptionsMerge[] = 'var alternate = jQuery(\'input[name="alternate'.$suffix.'"]:checked\').val();';
+                        $jsOptionsMerge[] = 'if (!acym_helper.empty(alternate)) otherinfo += "| alternate";';
+                    }
+
+                    $formatOption .= '</div>';
+
+                    $jsOptionsMerge[] = 'var selectedFormatOption = jQuery(\'.button-radio-selected[acym-button-radio-group="dcontentFormat'.$suffix.'"]\')';
+                    $jsOptionsMerge[] = 'if (!acym_helper.empty(selectedFormatOption)) otherinfo += "| format:" + selectedFormatOption.attr("acym-data-type");';
+
+                    $outputStructure['topOptions']['ACYM_FORMAT'] = $formatOption;
+                }
                 continue;
             }
 
@@ -1354,7 +1286,7 @@ class PluginHelper extends acymObject
         }
 
         $output .= '
-                    acym_editorWysidDynammic.insertDContent(tag);
+                    acym_editorWysidDynamic.insertDContent(tag);
                 }
                
                 function addAdditionalInfo'.$suffix.'(index, value){

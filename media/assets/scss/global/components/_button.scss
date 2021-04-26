@@ -134,7 +134,7 @@
         border-radius: 0 $primary-radius $primary-radius 0;
     }
 
-    &.is-active{
+    &.is-active {
         background-color: $blue-green;
         border: 1px solid $blue-green;
         color: $white;
@@ -142,13 +142,17 @@
 }
 
 .button-radio {
-    border: 1px solid $color-palette-cyan;
+    border: 1px solid $light-gray;
     padding: .5rem;
-    color: $color-palette-cyan;
+    color: $color-palette-dark-text;
     cursor: pointer;
     transition: .2s;
     transition-property: color, border;
-    box-shadow: 0 0 4px 2px rgba(100, 100, 100, .1);
+
+    &.button-radio-selected {
+        color: $color-palette-cyan;
+        border: 1px solid $color-palette-cyan;
+    }
 }
 
 .button-radio-unselected {

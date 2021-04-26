@@ -18,7 +18,7 @@ class CronController extends acymController
     public function cron()
     {
         // Starter versions shouldn't have access to the cron
-        if (!acym_level(1)) exit;
+        if (!acym_level(ACYM_ESSENTIAL)) exit;
 
         acym_header('Content-type:text/html; charset=utf-8');
         //We block the cron if there is no domain specified... it can happen if you created your own cron with a wrong command.

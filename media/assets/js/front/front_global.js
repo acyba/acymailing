@@ -4,6 +4,7 @@ jQuery(document).ready(function ($) {
             jQuery(document).foundation();
         }
         acym_helper.setSubmitButtonGlobal();
+        acym_helper.setButtonRadio();
         acym_helperDatePicker.setDatePickerGlobal();
         acym_helperToggle.initJsToggle();
         acym_helperListing.initJsListing();

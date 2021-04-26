@@ -53,7 +53,7 @@ if (!empty($data['translation_languages'])) {
                 ); ?></b>
 		</div>
 	</div>
-<?php if (acym_level(2) && ACYM_CMS === 'joomla') { ?>
+<?php if (acym_level(ACYM_ENTERPRISE) && ACYM_CMS === 'joomla') { ?>
 	<div class="cell grid-x">
 		<div class="cell grid-x">
 			<label class="cell">

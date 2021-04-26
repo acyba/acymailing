@@ -140,7 +140,7 @@
             ],
         ];
 
-        if ($this->config->get('built_by_update', 0) == 1 || acym_level(1)) {
+        if ($this->config->get('built_by_update', 0) == 1 || acym_level(ACYM_ESSENTIAL)) {
             $options['display_built_by'] = [
                 'label' => 'ACYM_ADD_BUILT_BY_FOOTER',
             ];

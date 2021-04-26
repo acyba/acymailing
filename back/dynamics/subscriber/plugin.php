@@ -3,6 +3,7 @@
 use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Helpers\AutomationHelper;
+use AcyMailing\Helpers\ExportHelper;
 use AcyMailing\Libraries\acymPlugin;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\MailClass;
@@ -697,10 +698,57 @@ class plgAcymSubscriber extends acymPlugin
         }
     }
 
-    public function onAcymAfterUserModify(&$user)
+    public function onAcymAfterUserModify(&$user, &$oldUser)
     {
+        if (empty($user)) return;
+
         $automationClass = new AutomationClass();
         $automationClass->trigger('user_modification', ['userId' => $user->id]);
+
+        if (empty($oldUser)) return;
+
+        $exportChanges = $this->config->get('export_data_changes', 0);
+        if (!$exportChanges) return;
+
+        $fieldsToExport = $this->config->get('export_data_changes_fields', []);
+        if (empty($fieldsToExport)) return;
+
+        $userClass = new UserClass();
+        $newUser = $userClass->getOneByIdWithCustomFields($user->id);
+        if (empty($newUser)) return;
+
+        if (empty($fieldsToExport)) return;
+
+        $fieldsToExport = explode(',', $fieldsToExport);
+        $fieldClass = new FieldClass();
+        $fields = $fieldClass->getByIds($fieldsToExport);
+
+        $fieldsName = [];
+        foreach ($fields as $field) {
+            if ($field->name == 'ACYM_NAME') {
+                $name = 'name';
+            } elseif ($field->name == 'ACYM_EMAIL') {
+                $name = 'email';
+            } elseif ($field->name == 'ACYM_LANGUAGE') {
+                $name = 'language';
+            } else {
+                $name = $field->name;
+            }
+            $fieldsName[] = $name;
+        }
+
+        if (empty($fieldsName)) return;
+
+        $exportHelper = new ExportHelper();
+
+        foreach ($newUser as $column => $value) {
+            if (!isset($oldUser[$column])) $oldUser[$column] = '';
+            if (!isset($newUser[$column])) $newUser[$column] = '';
+
+            if ($oldUser[$column] == $newUser[$column]) continue;
+
+            $exportHelper->exportChanges($newUser, $fieldsName, $column, $newUser[$column], $oldUser[$column]);
+        }
     }
 
     public function onAcymDeclareSummary_conditions(&$automation)
@@ -863,5 +911,25 @@ class plgAcymSubscriber extends acymPlugin
             'level' => 2,
             'alias' => self::FOLLOWTRIGGER,
         ];
+    }
+
+    public function onBeforeSaveConfigFields(&$newConfig)
+    {
+        $fieldToExportOnChange = $this->config->get('export_data_changes_fields', []);
+        if (empty($fieldToExportOnChange)) return;
+
+        if (!is_array($fieldToExportOnChange)) $fieldToExportOnChange = explode(',', $fieldToExportOnChange);
+
+        if (empty($newConfig['export_data_changes_fields'])) $newConfig['export_data_changes_fields'] = [];
+
+        if ($fieldToExportOnChange == $newConfig['export_data_changes_fields']) return;
+
+        $exportHelper = new ExportHelper();
+        $fileExportPath = $exportHelper->getExportChangesFilePath();
+
+        if (!file_exists($fileExportPath)) return;
+
+        $newFilename = $exportHelper->generateExportChangesFilePathConfigChanges();
+        @rename($fileExportPath, $newFilename);
     }
 }

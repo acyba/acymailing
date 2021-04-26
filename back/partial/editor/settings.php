@@ -4,71 +4,57 @@
 	</p>
 	<div class="grid-y acym__wysid__right__toolbar__design--show acym__wysid__context__modal__container">
 		<div class="grid-x margin-bottom-1 small-12 cell">
-			<label for="acym__wysid__background-colorpicker" class="cell large-6 small-9"><?php echo acym_translation('ACYM_BACKGROUND_COLOR'); ?></label>
+			<label for="acym__wysid__background-colorpicker" class="cell large-6 small-9" for="acym__wysid__background-colorpicker">
+                <?php echo acym_translation('ACYM_BACKGROUND_COLOR'); ?>
+			</label>
 			<i class="acymicon-insert_photo small-1 acym_vcenter text-center cell acym__color__light-blue cursor-pointer" id="acym__wysid__background-image__template"></i>
 			<i class="acymicon-close acym_vcenter acym__color__red" id="acym__wysid__background-image__template-delete"></i>
 			<div class="small-2 text-center cell" style="margin:auto 0;">
 				<input type="text" id="acym__wysid__background-colorpicker" class="cell medium-shrink small-4" />
 			</div>
 		</div>
-        <?php if ($this->config->get('display_built_by', 0) == 1) { ?>
-			<div class="grid-x small-12 cell">
-				<label class="cell grid-x">
-					<span class="cell large-6 small-8"><?php echo acym_translation('ACYM_BUILT_WITH_IMAGE_TEXT_COLOR'); ?></span>
-					<span class="cell small-4">
-                        <?php
-                        $brightness = [
-                            'black' => acym_translation('ACYM_BLACK'),
-                            'white' => acym_translation('ACYM_WHITE'),
-                        ];
-                        echo acym_select($brightness, 'acym__wysid__built-with__text__color', 'black', 'class="acym__select"'); ?>
-					</span>
-				</label>
-			</div>
-        <?php } ?>
-		<div class="grid-x small-12 cell">
-			<label class="cell grid-x">
-				<span class="cell large-6 small-8"><?php echo acym_translation('ACYM_MARGIN_TOP_CONTENT'); ?></span>
+		<div class="grid-x margin-bottom-1 small-12 cell">
+			<label class="middle large-6 cell" for="acym__wysid__padding__top__content"><?php echo acym_translation('ACYM_MARGIN_TOP_CONTENT'); ?></label>
+			<div class="cell large-6">
 				<input type="number" min="0" value="20" id="acym__wysid__padding__top__content" class="cell small-4">
-			</label>
+			</div>
 		</div>
 		<div class="grid-x margin-bottom-1 small-12 cell">
-			<label class="cell grid-x">
-				<span class="cell large-6 small-8"><?php echo acym_translation('ACYM_MARGIN_BOTTOM_CONTENT'); ?></span>
+			<label class="middle large-6 cell" for="acym__wysid__padding__bottom__content"><?php echo acym_translation('ACYM_MARGIN_BOTTOM_CONTENT'); ?></label>
+			<div class="cell large-6">
 				<input type="number" min="0" value="20" id="acym__wysid__padding__bottom__content" class="cell small-4">
-			</label>
+			</div>
 		</div>
 		<div class="grid-x margin-bottom-1 small-12 cell">
-			<label class="cell grid-x">
-				<span class="cell large-6 small-8"><?php echo acym_translation('ACYM_DEFAULT_FONT'); ?></span>
-				<div class="cell large-6 small-8">
-                    <?php
-                    $fonts = [
-                        'Andale Mono' => 'Andale Mono',
-                        'Arial' => 'Arial',
-                        'Book Antiqua' => 'Book Antiqua',
-                        'Comic Sans MS' => 'Comic Sans MS',
-                        'Courier New' => 'Courier New',
-                        'Georgia' => 'Georgia',
-                        'Helvetica' => 'Helvetica',
-                        'Impact' => 'Impact',
-                        'Times New Roman' => 'Times New Roman',
-                        'Trebuchet MS' => 'Trebuchet MS',
-                        'Verdana' => 'Verdana',
-                    ];
+			<label class="middle large-6 cell" for="default_font"><?php echo acym_translation('ACYM_DEFAULT_FONT'); ?></label>
+			<div class="cell large-6">
+                <?php
+                $fonts = [
+                    'Andale Mono' => 'Andale Mono',
+                    'Arial' => 'Arial',
+                    'Book Antiqua' => 'Book Antiqua',
+                    'Comic Sans MS' => 'Comic Sans MS',
+                    'Courier New' => 'Courier New',
+                    'Georgia' => 'Georgia',
+                    'Helvetica' => 'Helvetica',
+                    'Impact' => 'Impact',
+                    'Times New Roman' => 'Times New Roman',
+                    'Trebuchet MS' => 'Trebuchet MS',
+                    'Verdana' => 'Verdana',
+                ];
 
-                    $defaultFont = 'Helvetica';
+                $defaultFont = 'Helvetica';
 
-                    if (!empty($data['mail']->settings)) {
-                        if (!is_array($data['mail']->settings)) $data['mail']->settings = json_decode($data['mail']->settings, true);
+                if (!empty($data['mail']->settings)) {
+                    if (!is_array($data['mail']->settings)) $data['mail']->settings = json_decode($data['mail']->settings, true);
 
-                        if (!empty($data['mail']->settings['default']['font-family'])) $defaultFont = $data['mail']->settings['default']['font-family'];
-                    }
+                    if (!empty($data['mail']->settings['default']['font-family'])) $defaultFont = $data['mail']->settings['default']['font-family'];
+                }
 
-                    echo acym_select($fonts, 'default_font', $defaultFont, 'class="acym__select"');
-                    ?>
-				</div>
-			</label>
+                echo acym_select($fonts, 'default_font', $defaultFont, 'class="acym__select"');
+                ?>
+			</div>
+
 		</div>
 	</div>
 	<p class="acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
@@ -83,6 +69,7 @@
 				<select id="acym__wysid__right__toolbar__settings__font--select" class="small-8 large-4 cell acym__select">
 					<option value="p">p - <?php echo acym_translation('ACYM_PARAGRAPH'); ?></option>
 					<option value="a">a - <?php echo acym_translation('ACYM_LINKS'); ?></option>
+					<option value="span.acym_link"><?php echo acym_translation('ACYM_DYNAMIC_TEXTS_LINKS'); ?></option>
 					<option value="li">li - <?php echo acym_translation('ACYM_BULLET_LIST'); ?></option>
 					<option value="h1">h1</option>
 					<option value="h2">h2</option>

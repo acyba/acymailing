@@ -120,7 +120,7 @@ class plgAcymOnline extends acymPlugin
             if (empty($results[2][$i])) {
                 $tags[$oneTag] = $link;
             } else {
-                $tags[$oneTag] = '<a style="text-decoration:none;" href="'.$link.'" target="_blank"><span class="acym_online">'.$results[2][$i].'</span></a>';
+                $tags[$oneTag] = '<a style="text-decoration:none;" href="'.$link.'" target="_blank"><span class="acym_online acym_link">'.$results[2][$i].'</span></a>';
             }
         }
 

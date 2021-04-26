@@ -3,6 +3,7 @@
 namespace AcyMailing\Helpers;
 
 use AcyMailing\Classes\MailClass;
+use AcyMailing\Controllers\SegmentsController;
 use AcyMailing\Libraries\acymObject;
 
 class AutomationHelper extends acymObject
@@ -72,8 +73,12 @@ class AutomationHelper extends acymObject
         $this->limit = '';
     }
 
-    public function removeFlag($id)
+    public function removeFlag($id = null)
     {
+        if (is_null($id)) {
+            $segmentsController = new SegmentsController();
+            $id = $segmentsController::FLAG_USERS;
+        }
         acym_query('UPDATE #__acym_user SET automation = REPLACE(automation, "a'.intval($id).'a", "") WHERE automation LIKE "%a'.intval($id).'a%"');
     }
 
@@ -121,7 +126,7 @@ class AutomationHelper extends acymObject
             $value = '';
         }
 
-        if(!empty($table)) $table = acym_secureDBColumn($table).'.';
+        if (!empty($table)) $table = acym_secureDBColumn($table).'.';
         if ($type == 'datetime' && in_array($operator, ['=', '!='])) {
             return 'DATE_FORMAT('.$table.'`'.acym_secureDBColumn($column).'`, "%Y-%m-%d") '.$operator.' '.'DATE_FORMAT('.$value.', "%Y-%m-%d")';
         }

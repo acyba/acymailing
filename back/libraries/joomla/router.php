@@ -63,10 +63,15 @@ function acym_loadCmsScripts()
     acym_addScript(false, ACYM_JS.'libraries/jquery-ui.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'jquery-ui.min.js'));
 }
 
-function acym_redirect($url, $msg = '', $msgType = 'message')
+function acym_redirect($url, $msg = '', $msgType = 'message', $safe = false)
 {
     $msg = acym_translation($msg);
     $acyapp = acym_getGlobal('app');
+
+    if ($safe && !acym_checkRedirect($url)) {
+        $url = acym_rootURI();
+        acym_enqueueMessage(acym_translation('ACYM_REDIRECT_NOT_ALLOWED'), 'warning');
+    }
 
     if (ACYM_J40) {
         if (!empty($msg)) {
@@ -77,4 +82,22 @@ function acym_redirect($url, $msg = '', $msgType = 'message')
     } else {
         return $acyapp->redirect($url, $msg, $msgType);
     }
+}
+
+function acym_checkRedirect($redirectUrl)
+{
+    $config = acym_config();
+    $allowedHosts = $config->get('allowed_hosts', '');
+    $allowedHosts = str_replace(',', '|', $allowedHosts);
+    $allowedHosts = str_replace(['https://', 'http://', 'www.'], '', $allowedHosts);
+
+    //Check the redirect url..
+    $regex = trim(preg_replace('#[^a-z0-9\|\.]#i', '', $allowedHosts), '|');
+    if (empty($regex) || $regex == 'all' || empty($redirectUrl)) return true;
+
+    preg_match('#^(https?://)?(www.)?([^/]*)#i', $redirectUrl, $resultsurl);
+    $domainredirect = preg_replace('#[^a-z0-9\.]#i', '', @$resultsurl[3]);
+    if (preg_match('#^'.$regex.'$#i', $domainredirect)) return true;
+
+    return false;
 }

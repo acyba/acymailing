@@ -43,12 +43,13 @@ class HeaderHelper extends acymObject
             $this->config->save(
                 [
                     'last_news_check' => time(),
-                    'last_news' => $news,
+                    'last_news' => base64_encode($news),
                 ],
                 false
             );
         } else {
             $news = $this->config->get('last_news', '');
+            if (!empty($news)) $news = base64_decode($news);
         }
         if (empty($news)) return '';
 
@@ -154,7 +155,7 @@ class HeaderHelper extends acymObject
 
         $version .= '</div></div>';
 
-        if (!acym_level(1)) return $version;
+        if (!acym_level(ACYM_ESSENTIAL)) return $version;
 
         $expirationDate = $this->config->get('expirationdate', 0);
         if (empty($expirationDate) || $expirationDate == -1) return $version;
@@ -198,7 +199,7 @@ class HeaderHelper extends acymObject
 
     private function getCheckVersionButton()
     {
-        if (ACYM_CMS == 'wordpress' && !acym_level(1)) return '';
+        if (ACYM_CMS == 'wordpress' && !acym_level(ACYM_ESSENTIAL)) return '';
         $lastLicenseCheck = $this->config->get('lastlicensecheck', 0);
         $time = time();
         $checking = ($time > $lastLicenseCheck + 604800) ? $checking = '1' : '0';
@@ -222,7 +223,7 @@ class HeaderHelper extends acymObject
 
     private function getHelpWedButton()
     {
-        if (ACYM_CMS != 'wordpress' || acym_level(1)) return '';
+        if (ACYM_CMS != 'wordpress' || acym_level(ACYM_ESSENTIAL)) return '';
 
         return '<a type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" target="_blank" href="https://wordpress.org/support/plugin/acymailing/">
                     <i class="cell shrink acymicon-life-bouy"></i>
@@ -335,6 +336,7 @@ class HeaderHelper extends acymObject
             $notifications = [];
         }
 
+        $notif->message = str_replace('<br />', "\r\n", $notif->message);
         $notif->message = strip_tags($notif->message);
 
         // Prevent duplicated notifications

@@ -51,6 +51,7 @@ function acym_checkPluginsVersion()
 
     $res = acym_fileGetContent($url);
     $pluginsAvailable = json_decode($res, true);
+    if (empty($pluginsAvailable)) return true;
 
     foreach ($pluginsInstalled as $key => $pluginInstalled) {
         foreach ($pluginsAvailable as $pluginAvailable) {

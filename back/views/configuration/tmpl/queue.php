@@ -32,12 +32,12 @@
 		<div class="cell medium-9 automatic_only automatic_manual">
             <?php
             $cronFrequency = $this->config->get('cron_frequency');
-            $valueBatch = acym_level(2) ? intval($this->config->get('queue_batch_auto', 1)) : 1;
+            $valueBatch = acym_level(ACYM_ENTERPRISE) ? intval($this->config->get('queue_batch_auto', 1)) : 1;
             if (!function_exists('curl_multi_exec') && (intval($cronFrequency) < 900 || intval($valueBatch) > 1)) {
                 acym_display(acym_translation('ACYM_MULTI_CURL_DISABLED'), 'error');
             }
 
-            $disabledBatch = acym_level(2) ? '' : 'disabled';
+            $disabledBatch = acym_level(ACYM_ENTERPRISE) ? '' : 'disabled';
             $delayTypeAuto = $data['typeDelay'];
             $delayHtml = '<span data-acym-tooltip="'.acym_translation('ACYM_CRON_TRIGGERED_DESC').'">'.$delayTypeAuto->display(
                     'config[cron_frequency]',
@@ -129,7 +129,7 @@
 	</div>
 </div>
 <?php
-if (!acym_level(1)) {
+if (!acym_level(ACYM_ESSENTIAL)) {
     echo '<div class="acym_area">
             <div class="acym__title acym__title__secondary">'.acym_translation('ACYM_CRON').'</div>';
     include acym_getView('configuration', 'upgrade_license');

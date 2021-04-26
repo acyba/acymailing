@@ -72,7 +72,7 @@ class CampaignClass extends acymClass
         $tagClass = new TagClass();
         $mailClass = new MailClass();
 
-        $query = 'SELECT campaign.*, mail.name, mail_stat.sent AS subscribers, mail_stat.open_unique FROM #__acym_campaign AS campaign';
+        $query = 'SELECT campaign.*, mail.name, mail_stat.sent AS subscribers, mail_stat.open_unique, mail_stat.tracking_sale, mail_stat.currency FROM #__acym_campaign AS campaign';
         $queryCount = 'SELECT campaign.* FROM #__acym_campaign AS campaign';
 
 
@@ -154,7 +154,7 @@ class CampaignClass extends acymClass
         }
 
         $tags = $tagClass->getAllTagsByTypeAndElementIds('mail', $mailIds);
-        $lists = $mailClass->getAllListsWithCountSubscribersByMailIds($mailIds);
+        $lists = $mailClass->getAllListsByMailIds($mailIds);
 
         $isMultilingual = acym_isMultilingual();
 
@@ -193,11 +193,13 @@ class CampaignClass extends acymClass
 
     private function prepareStatsCampaign(&$element)
     {
-        $query = 'SELECT SUM(mailstat.sent) AS subscribers, SUM(mailstat.open_unique) AS open_unique FROM #__acym_mail_stat AS mailstat
+        $query = 'SELECT SUM(mailstat.sent) AS subscribers, SUM(mailstat.open_unique) AS open_unique, SUM(mailstat.tracking_sale) AS tracking_sale
+                  FROM #__acym_mail_stat AS mailstat
                   LEFT JOIN #__acym_mail AS mail ON mail.id = mailstat.mail_id WHERE mail.parent_id = '.intval($element->mail_id);
         $stats = acym_loadObject($query);
         $element->subscribers += $stats->subscribers;
         $element->open_unique += $stats->open_unique;
+        $element->tracking_sale += $stats->tracking_sale;
     }
 
     public function getStatsCampaign(&$element, $urlClickClass)
@@ -209,11 +211,12 @@ class CampaignClass extends acymClass
             $clicksNb = $urlClickClass->getNumberUsersClicked($element->mail_id);
             $element->click = number_format($clicksNb / $element->subscribers * 100, 2);
         }
+    }
 
-        //Tracking sales
+    public function getTrackingSales(&$element)
+    {
         $element->sale = 0;
         $element->currency = '';
-        if (!acym_isTrackingSalesActive()) return;
 
         if (acym_isMultilingual()) {
             $trackingSales = acym_loadObject(
@@ -256,8 +259,8 @@ class CampaignClass extends acymClass
         if (!acym_isTrackingSalesActive()) return;
 
         $trackingSales = acym_loadObject(
-            'SELECT SUM(user_stat.tracking_sale) as sale, user_stat.currency 
-            FROM #__acym_user_stat AS user_stat 
+            'SELECT SUM(mail_stat.tracking_sale) AS sale, mail_stat.currency 
+            FROM #__acym_mail_stat AS mail_stat 
             WHERE mail_id IN (SELECT mail_id FROM #__acym_campaign WHERE parent_id = '.intval($element->id).') AND currency IS NOT NULL'
         );
         $this->formatSaleTracking($element, $trackingSales);
@@ -531,8 +534,7 @@ class CampaignClass extends acymClass
 
             $automationHelper->where = $conditions;
 
-            $segmentsController = new SegmentsController();
-            $automationHelper->removeFlag($segmentsController::FLAG_USERS);
+            $automationHelper->removeFlag();
 
             $automationHelpers = [];
 
@@ -894,6 +896,7 @@ class CampaignClass extends acymClass
         $newCampaign->mail_id = $newMail->id;
         $newCampaign->parent_id = $campaign->id;
         $newCampaign->active = 1;
+        $newCampaign->visible = $campaign->visible;
         $newCampaign->draft = 1;
         $newCampaign->sending_type = self::SENDING_TYPE_NOW;
         $newCampaign->sent = 0;

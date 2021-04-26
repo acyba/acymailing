@@ -59,7 +59,7 @@ function acym_loadCmsScripts()
     wp_enqueue_script('jquery-effects-slide');
 }
 
-function acym_redirect($url, $msg = '', $msgType = 'message')
+function acym_redirect($url, $msg = '', $msgType = 'message', $safe = false)
 {
     if (acym_isAdmin() && substr($url, 0, 4) != 'http' && substr($url, 0, 4) != 'www.') {
         $url = acym_addPageParam($url);
@@ -69,7 +69,11 @@ function acym_redirect($url, $msg = '', $msgType = 'message')
     if (headers_sent()) {
         acym_addScript(true, 'window.location.href = "'.addslashes($url).'";');
     } else {
-        wp_redirect($url);
+        if ($safe) {
+            wp_safe_redirect($url);
+        } else {
+            wp_redirect($url);
+        }
     }
     exit;
 }

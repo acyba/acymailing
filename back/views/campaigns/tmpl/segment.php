@@ -11,7 +11,7 @@
             $workflow = $data['workflowHelper'];
             echo $workflow->display($this->steps, $this->step);
 
-            if (!acym_level(2)) {
+            if (!acym_level(ACYM_ENTERPRISE)) {
                 include acym_getView('campaigns', 'segment_splashscreen');
             }
             ?>

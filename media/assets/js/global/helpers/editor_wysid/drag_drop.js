@@ -128,7 +128,7 @@ const acym_editorWysidDragDrop = {
                 let plugin = $item.attr('data-plugin');
                 if (plugin) {
                     acym_helperEditorWysid.$focusElement = jQuery($item);
-                    acym_editorWysidDynammic.openDContentModal(plugin, acym_helperEditorWysid.$focusElement.attr('data-dynamic'));
+                    acym_editorWysidDynamic.openDContentModal(plugin, acym_helperEditorWysid.$focusElement.attr('data-dynamic'));
                 } else {
                     if ($item.hasClass('acym__wysid__column__element--new--title')) {
                         acym_editorWysidNewContent.addTitleWYSID($item);
