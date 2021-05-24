@@ -99,6 +99,7 @@ jQuery(document).ready(function ($) {
                     acym_helperDatePicker.setRSDateChoice();
                     acym_helperDatePicker.setDatePickerGlobal();
                     acym_helperSelect2.setSelect2();
+                    acym_helperInput.setMulticouple();
                 },
                 setShowSettings() {
                     for (let plugin in this.allPlugins) {

@@ -44,6 +44,7 @@ function acym_prepareQuery($query)
     $query = str_replace('#__', $wpdb->prefix, $query);
     if (is_multisite()) {
         $query = str_replace($wpdb->prefix.'users', $wpdb->base_prefix.'users', $query);
+        $query = str_replace($wpdb->prefix.'usermeta', $wpdb->base_prefix.'usermeta', $query);
     }
 
     return $query;

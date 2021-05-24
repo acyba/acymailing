@@ -13,9 +13,9 @@
 		<div class="cell grid-x align-center margin-top-3">
 			<a href="<?php echo ACYM_ACYMAILLING_WEBSITE.'change-log/'; ?>"
 			   class="margin-right-1 cell shrink button-secondary button margin-left-1"
-			   target="_blank"><?php echo acym_translation(
-                    'ACYM_SEE_FULL_CHANGELOG'
-                ); ?></a>
+			   target="_blank">
+                <?php echo acym_translation('ACYM_SEE_FULL_CHANGELOG'); ?>
+			</a>
 			<button class="cell shrink button acy_button_submit" type="button" data-task="listing"><?php echo acym_translation('ACYM_SKIP'); ?></button>
 		</div>
 		<div class="cell grid-x acym__splashcreen__body align-center margin-top-3 margin-bottom-3">

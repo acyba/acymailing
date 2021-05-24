@@ -24,7 +24,7 @@ class SendinblueCampaign extends SendinblueClass
             'sender' => $this->sender->getSender($mail),
             'name' => 'AcyMailing Mail '.$mail->id,
             'htmlContent' => '<html>{% autoescape off %}{{ contact.'.$this->user->getAttributeName($mail->id).' }}{% endautoescape %}</html>',
-            'scheduledAt' => date('c', time()),
+            'scheduledAt' => date('c', time() + 60),
             'subject' => $mail->subject,
             'replyTo' => $this->sender->getReplyToEmail($mail),
             'recipients' => [

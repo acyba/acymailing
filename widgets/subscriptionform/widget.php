@@ -59,7 +59,6 @@ class acym_subscriptionform_widget extends WP_Widget
             'termscontent' => '0',
             'privacypolicy' => '0',
             'articlepopup' => '1',
-
             'unsub' => '0',
             'unsubtext' => '',
             'unsubredirect' => '',
@@ -94,16 +93,12 @@ class acym_subscriptionform_widget extends WP_Widget
             $params['hiddenlists'] = '';
         }
 
-        echo '<div class="acyblock widget" id="mainopt_acywidget">
-                <div class="widget-top">
-                    <div class="widget-title-action">
-                        <button type="button" class="widget-action hide-if-no-js" aria-expanded="false">
-                            <span class="toggle-indicator" aria-hidden="true"></span>
-                        </button>
+        echo '<div class="acym_toggle_zone">
+                <div class="acyblock" id="mainopt_acywidget">
+                    <div class="acym_toggle_div_title">
+                        <h3>'.acym_translation('ACYM_MAIN_OPTIONS').'</h3>
                     </div>
-                    <div class="widget-title"><h3>'.acym_translation('ACYM_MAIN_OPTIONS').'</h3></div>
-                </div>
-                <div class="widget-inside">';
+                    <div class="acym_toggle_div" style="display: none;">';
 
         echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('title').'">'.acym_translation('ACYM_TITLE').'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" value="'.$params['title'].'" /></p>';
@@ -136,7 +131,7 @@ class acym_subscriptionform_widget extends WP_Widget
             ],
             'id',
             'name'
-        );
+        ).'</p>';
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_DISPLAYED_LISTS_DESC').'">'.acym_translation('ACYM_DISPLAYED_LISTS').'</label>';
         echo acym_selectMultiple(
@@ -149,7 +144,7 @@ class acym_subscriptionform_widget extends WP_Widget
             ],
             'id',
             'name'
-        );
+        ).'</p>';
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_LISTS_CHECKED_DEFAULT_DESC').'">'.acym_translation('ACYM_LISTS_CHECKED_DEFAULT').'</label>';
         echo acym_selectMultiple(
@@ -162,7 +157,7 @@ class acym_subscriptionform_widget extends WP_Widget
             ],
             'id',
             'name'
-        );
+        ).'</p>';
 
         $options = [];
         $options[] = acym_selectOption('before', 'ACYM_BEFORE_FIELDS');
@@ -189,7 +184,7 @@ class acym_subscriptionform_widget extends WP_Widget
                 'class' => 'acym_simple_select2',
                 'id' => $this->get_field_id('fields'),
             ]
-        );
+        ).'</p>';
 
         $options = [];
         $options[] = acym_selectOption('1', 'ACYM_TEXT_INSIDE');
@@ -254,16 +249,11 @@ class acym_subscriptionform_widget extends WP_Widget
 
         echo '</div>
             </div>
-            <div class="acyblock widget" id="advopt_acywidget">
-                <div class="widget-top">
-                    <div class="widget-title-action">
-                        <button type="button" class="widget-action hide-if-no-js" aria-expanded="false">
-                            <span class="toggle-indicator" aria-hidden="true"></span>
-                        </button>
-                    </div>
-                    <div class="widget-title"><h3>'.acym_translation('ACYM_ADVANCED_OPTIONS').'</h3></div>
+            <div class="acyblock" id="advopt_acywidget">
+                <div class="acym_toggle_div_title">
+                    <h3>'.acym_translation('ACYM_ADVANCED_OPTIONS').'</h3>
                 </div>
-                <div class="widget-inside">';
+                <div class="acym_toggle_div" style="display: none;">';
 
         echo '<p><label class="acyWPconfig">'.acym_translation('ACYM_DISPLAY_UNSUB_BUTTON').'</label>';
         $onchange = "var disp = 'none';";
@@ -386,7 +376,7 @@ class acym_subscriptionform_widget extends WP_Widget
         echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('source').'" title="'.acym_translation('ACYM_SOURCE_DESC').'">'.acym_translation('ACYM_SOURCE').'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('source').'" name="'.$this->get_field_name('source').'" value="'.$params['source'].'" /></p>';
 
-        echo '</div></div>';
+        echo '</div></div></div>';
     }
 
     // Widget's output

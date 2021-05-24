@@ -59,7 +59,7 @@ function acym_initModule($params = null)
         acym_addScript(true, $js, 'text/javascript', false, false, false, ['script_name' => $scriptName]);
     }
 
-    if ('wordpress' === ACYM_CMS) {
+    if ('wordpress' === ACYM_CMS && !in_array(acym_getVar('string', 'action'), ['elementor', 'elementor_ajax'])) {
         wp_enqueue_style('style_acymailing_module', ACYM_CSS.'module.min.css?v='.$version);
     } else {
         acym_addStyle(false, ACYM_CSS.'module.min.css?v='.$version);

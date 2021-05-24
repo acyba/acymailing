@@ -1,12 +1,38 @@
+.select2-container.select2-container--default.select2-container--open{
+    z-index: 500001;
+}
+
 .acyblock {
     margin: 10px 0;
 
-    .widget-top {
-        cursor: pointer !important;
+    .acym_toggle_div_title {
+        border: 1px solid #c3c4c7;
+        background: #f6f7f7;
+        color: #1d2327;
+        cursor: pointer;
+
+        &:hover {
+            border-color: #8c8f94;
+        }
+
+        h3 {
+            margin: 0;
+            padding: 15px;
+            font-size: 1em;
+            line-height: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
     }
 
-    &.widget:not(.open) .toggle-indicator:before {
-        content: "\f140" !important;
+    .acym_toggle_div {
+        border: 1px solid rgb(140, 143, 148);
+        border-top: 0;
+        padding: 1px 15px 15px 15px;
     }
 
     .acyWPconfig {

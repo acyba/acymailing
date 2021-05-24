@@ -1204,12 +1204,12 @@ class ConfigurationController extends acymController
         acym_sendAjaxResponse('', $data);
     }
 
-    public function synchonizeExistingUsers()
+    public function synchronizeExistingUsers()
     {
         $sendingMethod = acym_getVar('string', 'sendingMethod', '');
 
         if (empty($sendingMethod)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_FIND_SENDING_METHOD'), [], false);
-        acym_trigger('onAcymSynchonizeExistingeUsers', [$sendingMethod]);
+        acym_trigger('onAcymSynchronizeExistingUsers', [$sendingMethod]);
     }
 
     function downloadLogFile()

@@ -473,8 +473,6 @@ class MigrationHelper extends acymObject
 
         $optionConnection = [
             'errormessage' => 'error_message',
-            'editablecreate' => 'editable_user_creation',
-            'editablemodify' => 'editable_user_modification',
             'checkcontent' => 'authorized_content',
             'errormessagecheckcontent' => 'error_message_invalid',
             'cols' => 'columns',

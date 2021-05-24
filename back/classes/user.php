@@ -57,7 +57,7 @@ class UserClass extends acymClass
         $this->handleSubscriptionFilter($settings, $filters, $query, $queryCount, $queryStatus);
         $this->handleFrontend($settings, $query, $queryCount, $queryStatus);
         $this->handleSearchFilter($settings, $query, $queryCount, $queryStatus, $filters);
-        $results['status'] = $this->handleUserStatusFilter($queryStatus, $filters);
+        $results['status'] = $this->handleUserStatusFilter($settings, $queryStatus, $filters);
         $entityResult = $this->handleEntitySelect($settings, $filters);
 
         if (!empty($entityResult)) return $entityResult;
@@ -187,7 +187,7 @@ class UserClass extends acymClass
         $filters[] = $searchFilter;
     }
 
-    private function handleUserStatusFilter($queryStatus, &$filters)
+    private function handleUserStatusFilter($settings, $queryStatus, &$filters)
     {
         if (!empty($filters)) {
             $queryStatus .= ' WHERE ('.implode(') AND (', $filters).')';

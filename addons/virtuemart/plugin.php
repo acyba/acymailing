@@ -581,9 +581,7 @@ class plgAcymVirtuemart extends acymPlugin
             $mainPict = reset($element->images);
             $pictvar = 'file_url';
             if (empty($mainPict->file_url) || !file_exists(JPATH_SITE.DS.$mainPict->file_url)) $pictvar = 'file_url_thumb';
-            if (!empty($mainPict->$pictvar) && file_exists(JPATH_SITE.DS.$mainPict->$pictvar)) {
-                $imagePath = $mainPict->$pictvar;
-            }
+            if (!empty($mainPict->$pictvar) && file_exists(JPATH_SITE.DS.$mainPict->$pictvar)) $imagePath = $mainPict->$pictvar;
         }
         if (!in_array('image', $tag->display)) $imagePath = '';
         $varFields['{image}'] = $imagePath;
@@ -813,10 +811,14 @@ class plgAcymVirtuemart extends acymPlugin
     {
         $id = acym_getVar('int', 'id');
         if (!empty($id)) {
-            $value = '';
-            $element = acym_loadResult('SELECT `category_name` FROM #__virtuemart_categories_'.$this->lang.' WHERE `virtuemart_category_id` = '.intval($id));
-            if (!empty($element)) $value = $element;
-            echo json_encode(['value' => $value]);
+            $element = acym_loadObject(
+                'SELECT `virtuemart_category_id` AS id, `category_name` AS name FROM #__virtuemart_categories_'.$this->lang.' WHERE `virtuemart_category_id` = '.intval($id)
+            );
+            if (empty($element)) {
+                echo json_encode([]);
+            } else {
+                echo json_encode(['value' => $element->id, 'text' => $element->name]);
+            }
             exit;
         }
 

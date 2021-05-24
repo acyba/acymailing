@@ -45,11 +45,16 @@ class UserStatClass extends acymClass
         foreach ($userStat as $key => $value) {
             if (in_array($key, $columnName)) {
                 $column[] = '`'.acym_secureDBColumn($key).'`';
-                $valueColumn[] = acym_escapeDB($value);
+
+                if ($key === 'tracking_sale') {
+                    $valueColumn[] = strlen($value) === 0 ? 'NULL' : floatval($value);
+                } else {
+                    $valueColumn[] = acym_escapeDB($value);
+                }
             }
         }
 
-        $query = 'INSERT INTO #__acym_user_stat ('.implode(',', $column).') VALUE ('.implode(',', $valueColumn).')';
+        $query = 'INSERT INTO #__acym_user_stat ('.implode(',', $column).') VALUE ('.implode(', ', $valueColumn).')';
         $onDuplicate = [];
 
         if (!empty($userStat['statusSending'])) {

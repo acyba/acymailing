@@ -22,11 +22,16 @@ class MailStatClass extends acymClass
         foreach ($mailStat as $key => $value) {
             if (in_array($key, $columnName)) {
                 $column[] = '`'.acym_secureDBColumn($key).'`';
-                $valueColumn[] = acym_escapeDB($value);
+
+                if ($key === 'tracking_sale') {
+                    $valueColumn[] = strlen($value) === 0 ? 'NULL' : floatval($value);
+                } else {
+                    $valueColumn[] = acym_escapeDB($value);
+                }
             }
         }
 
-        $query = '#__acym_mail_stat ('.implode(',', $column).') VALUES ('.implode(',', $valueColumn).')';
+        $query = '#__acym_mail_stat ('.implode(',', $column).') VALUES ('.implode(', ', $valueColumn).')';
 
         $onDuplicate = [];
 

@@ -153,10 +153,10 @@ class plgAcymSendinblue extends acymPlugin
         $data['embedAttachment'][self::SENDING_METHOD_ID] = false;
     }
 
-    public function onAcymSynchonizeExistingeUsers($sendingMethod)
+    public function onAcymSynchronizeExistingUsers($sendingMethod)
     {
         if ($sendingMethod !== self::SENDING_METHOD_ID) return;
 
-        $this->users->synchonizeExistingUsers();
+        $this->users->synchronizeExistingUsers();
     }
 }

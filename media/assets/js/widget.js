@@ -4,7 +4,20 @@ const acym_widget = {
         this.initWordpressWidget();
     },
     initSelect: function () {
-        jQuery('.acym_simple_select2').not('#widget-list .acym_simple_select2').not('.select2-hidden-accessible').select2({width: '100%'});
+        jQuery('.acym_toggle_div_title').off('click').on('click', function () {
+            let closing = jQuery(this).hasClass('acym_toggle_div_active');
+
+            let container = jQuery(this).closest('.acym_toggle_zone');
+            container.find('.acym_toggle_div_active + .acym_toggle_div').slideUp();
+            container.find('.acym_toggle_div_active').removeClass('acym_toggle_div_active');
+
+            if (closing) return;
+
+            jQuery(this).addClass('acym_toggle_div_active');
+            container.find('.acym_toggle_div_active + .acym_toggle_div').slideDown();
+        });
+
+        jQuery('.acym_simple_select2').not('#widget-list .acym_simple_select2').not('#available-widgets-list .acym_simple_select2').not('.select2-hidden-accessible').select2({width: '100%'});
 
         jQuery('.acym_post_select2').not('#widget-list .acym_post_select2').not('.select2-hidden-accessible').select2({
             ajax: {

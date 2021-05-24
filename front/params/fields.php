@@ -44,6 +44,14 @@ class JFormFieldFields extends JFormField
             $this->value = array_keys($fields);
         }
 
-        return acym_selectMultiple($fields, $this->name, $this->value, ['id' => $this->name]);
+        return acym_selectMultiple(
+            $fields,
+            $this->name,
+            $this->value,
+            [
+                'class' => 'acym_simple_select2',
+                'id' => $this->name,
+            ]
+        );
     }
 }

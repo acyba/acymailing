@@ -123,8 +123,9 @@
                     }
                     ?>
 					<div class="acym__users__subscription medium-auto small-11 cell">
-                        <?php if (!empty($data['usersSubscriptions'][$user->id])) {
-                        	$subscriptionsCount = count($data['usersSubscriptions'][$user->id]);
+                        <?php
+                        if (!empty($data['usersSubscriptions'][$user->id])) {
+                            $subscriptionsCount = count($data['usersSubscriptions'][$user->id]);
                             $counter = 0;
                             foreach ($data['usersSubscriptions'][$user->id] as $oneSub) {
                                 $classes = 'acym_subscription ';
@@ -148,8 +149,8 @@
 										<span class="acym__listing__text acym__user__show-subscription-bt acymicon-stack-1x">+'.$counter.'</span>
 									</span>';
                             }
-                        } ?>
-
+                        }
+                        ?>
 					</div>
                     <?php if (acym_isAdmin()) { ?>
 						<div class="cell hide-for-small-only medium-1">

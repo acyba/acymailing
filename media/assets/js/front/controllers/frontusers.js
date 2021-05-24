@@ -52,7 +52,7 @@ function initUser() {
 }
 
 function acym_checkChangeForm() {
-    let varform = document.acyprofileform;
+    let varform = document[acyformName];
     let emailField = varform.elements['data[user][email]'];
     if (emailField) {
         if (emailField.value != acymModule['EMAILCAPTION']) {
@@ -69,7 +69,7 @@ function acym_checkChangeForm() {
 
     //required fields
     let lastName, checked, i, required, reg;
-    let requiredRadio = document.querySelectorAll('[type="radio"][data-required]');
+    let requiredRadio = document.querySelectorAll('#' + acyformName + ' [type="radio"][data-required]');
     if (requiredRadio.length > 0) {
         lastName = '';
         checked = 0;
@@ -93,7 +93,7 @@ function acym_checkChangeForm() {
         }
     }
 
-    let requiredCheckbox = document.querySelectorAll('[type="checkbox"][data-required]');
+    let requiredCheckbox = document.querySelectorAll('#' + acyformName + ' [type="checkbox"][data-required]');
     if (requiredCheckbox.length > 0) {
         lastName = '';
         checked = 0;
@@ -117,7 +117,7 @@ function acym_checkChangeForm() {
         }
     }
 
-    let requiredFields = document.querySelectorAll('[data-required]');
+    let requiredFields = document.querySelectorAll('#' + acyformName + ' [data-required]');
     if (requiredFields.length > 0) {
         for (i = 0 ; i < requiredFields.length ; i++) {
             required = JSON.parse(requiredFields[i].getAttribute('data-required'));
@@ -171,13 +171,13 @@ function acym_checkChangeForm() {
     varform.style.filter = 'alpha(opacity=50)';
     varform.style.opacity = '0.5';
 
-    let message = document.querySelector('.message_acyprofileform');
+    let message = document.querySelector('.message_' + acyformName);
     if (message) message.parentNode.removeChild(message);
 
     let xhr = new XMLHttpRequest();
     xhr.open('POST', varform.getAttribute('action'));
     xhr.onload = function () {
-        let message = 'Ajax Request Failure';
+        let message = ACYM_JS_TXT.ACYM_ERROR;
         let type = 'error';
 
         if (xhr.status === 200) {
@@ -185,7 +185,7 @@ function acym_checkChangeForm() {
             message = response.message;
             type = response.type;
         }
-        acymDisplayAjaxResponse(decodeURIComponent(message), type, 'acyprofileform', false);
+        acymDisplayAjaxResponse(decodeURIComponent(message), type, acyformName, false);
     };
     xhr.send(formData);
 

@@ -270,6 +270,10 @@ class plgAcymHikashop extends acymPlugin
         $query = 'SELECT currency_id AS value, CONCAT(currency_symbol, " ", currency_code) AS text FROM #__hikashop_currency WHERE currency_published = 1';
         $currencies = acym_loadObjectList($query);
 
+        $flatValue = 0;
+        $flatCurrency = null;
+        if (!empty($this->defaultValues->flat)) $flatValue = $this->defaultValues->flat;
+        if (!empty($this->defaultValues->currency)) $flatCurrency = $this->defaultValues->currency;
         $couponOptions = [
             [
                 'title' => 'DISCOUNT_CODE',
@@ -283,8 +287,8 @@ class plgAcymHikashop extends acymPlugin
                 'title' => 'DISCOUNT_FLAT_AMOUNT',
                 'type' => 'custom',
                 'name' => 'flat',
-                'output' => '<input type="number" name="flathikashop_coupon" id="flat" onchange="updateDynamichikashop_coupon();" value="0" class="acym_plugin_text_field" style="display: inline-block;" />
-                            '.acym_select($currencies, 'currencyhikashop_coupon', null, 'onchange="updateDynamichikashop_coupon();" style="width: 80px;"'),
+                'output' => '<input type="number" name="flathikashop_coupon" id="flat" onchange="updateDynamichikashop_coupon();" value="'.$flatValue.'" class="acym_plugin_text_field" style="display: inline-block;" />
+                            '.acym_select($currencies, 'currencyhikashop_coupon', $flatCurrency, 'onchange="updateDynamichikashop_coupon();" style="width: 80px;"'),
                 'js' => 'otherinfo += "| flat:" + jQuery(\'input[name="flathikashop_coupon"]\').val();
                         otherinfo += "| currency:" + jQuery(\'[name="currencyhikashop_coupon"]\').val();',
             ],
@@ -739,21 +743,20 @@ class plgAcymHikashop extends acymPlugin
     public function generateCoupon($tag, $user, $raw)
     {
         if (empty($tag->code)) {
-            list($minimum_order, $quota, $start, $end, $percent_amount, $flat_amount, $currency_id, $code, $product_id, $tax_id) = explode('|', $raw);
-            $minimum_order = substr($minimum_order, strpos($minimum_order, ':') + 1);
-            $tax_id = intval($tax_id);
+            $code = '[name][key][value]';
         } else {
-            $minimum_order = $tag->min;
-            $quota = $tag->quota;
-            $start = $tag->start;
-            $end = $tag->end;
-            $percent_amount = $tag->percent;
-            $flat_amount = $tag->flat;
-            $currency_id = $tag->currency;
             $code = $tag->code;
-            $product_id = $tag->product;
-            $tax_id = $tag->tax;
         }
+
+        $minimum_order = $tag->min;
+        $quota = $tag->quota;
+        $start = $tag->start;
+        $end = $tag->end;
+        $percent_amount = $tag->percent;
+        $flat_amount = $tag->flat;
+        $currency_id = $tag->currency;
+        $product_id = $tag->product;
+        $tax_id = $tag->tax;
 
         $quotaPerUser = empty($tag->quota_user) ? 0 : $tag->quota_user;
 

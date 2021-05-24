@@ -41,9 +41,25 @@ class JFormFieldLists extends JFormField
             $this->value = [];
         }
         if (in_array('All', $this->value)) {
-            $this->value = array_keys($lists);
+            $visibleLists = [];
+            foreach ($lists as $listId => $oneList) {
+                if ($oneList->visible == 0) continue;
+
+                $visibleLists[] = $listId;
+            }
+            $this->value = $visibleLists;
         }
 
-        return acym_selectMultiple($lists, $this->name, $this->value, ['id' => $this->name], 'id', 'name');
+        return acym_selectMultiple(
+            $lists,
+            $this->name,
+            $this->value,
+            [
+                'class' => 'acym_simple_select2',
+                'id' => $this->name,
+            ],
+            'id',
+            'name'
+        );
     }
 }

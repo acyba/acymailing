@@ -106,7 +106,7 @@ class SendinblueUsers extends SendinblueClass
         $this->callApiSendingMethod(plgAcymSendinblue::SENDING_METHOD_API_URL.'contacts/attributes/normal/'.$this->getAttributeName($mailId), [], $this->headers, 'DELETE');
     }
 
-    public function synchonizeExistingUsers()
+    public function synchronizeExistingUsers()
     {
         // Generate file with user to import
         $userClass = new UserClass();
@@ -118,9 +118,20 @@ class SendinblueUsers extends SendinblueClass
 
         $filePath = ACYM_TMP_FOLDER.plgAcymSendinblue::SENDING_METHOD_ID.'.txt';
         file_put_contents($filePath, "LASTNAME;EMAIL\n");
+        $limit = 5000;
+        $buffer = '';
         foreach ($users as $oneUser) {
-            $userTxt = '"'.$oneUser->name.'";"'.$oneUser->email."\"\n";
-            file_put_contents($filePath, $userTxt, FILE_APPEND);
+            $buffer .= '"'.$oneUser->name.'";"'.$oneUser->email."\"\n";
+            $limit--;
+
+            if ($limit === 0) {
+                file_put_contents($filePath, $buffer, FILE_APPEND);
+                $limit = 5000;
+                $buffer = '';
+            }
+        }
+        if (!empty($buffer)) {
+            file_put_contents($filePath, $buffer, FILE_APPEND);
         }
 
         // Create folder (needed to import users to assign list)

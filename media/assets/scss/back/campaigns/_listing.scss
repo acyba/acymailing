@@ -11,6 +11,29 @@
             }
         }
 
+        .acym_subscription_more {
+            display: none;
+        }
+
+        .acym__campaign__show-subscription {
+            height: inherit;
+            width: 25px;
+            vertical-align: top;
+            cursor: pointer;
+
+            .acym__campaign__button__showsubscription {
+                color: $light-blue;
+                margin-top: 0;
+            }
+
+            .acym__campaign__show-subscription-bt {
+                margin-top: 5px;
+                font-size: 8px;
+                font-weight: bold;
+                line-height: 1;
+            }
+        }
+
         .acym__campaign__auto__generation {
             margin: 0 10px;
         }

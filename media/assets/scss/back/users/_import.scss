@@ -19,6 +19,10 @@
     }
 
     #acym__users__import__generic {
+        .acym_area {
+            overflow: auto;
+        }
+
         .fieldAssignment {
             border-radius: $primary-radius;
             background-color: $light-blue;

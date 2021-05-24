@@ -1,6 +1,7 @@
 <?php
 
 use AcyMailing\Classes\ActionClass;
+use AcyMailing\Classes\AutomationClass;
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\ConditionClass;
 use AcyMailing\Classes\FieldClass;
@@ -611,7 +612,7 @@ class acymInstall
 
                 // 2 - the user first name
                 $firstEmail->body = preg_replace(
-                    '#(<span[^>]+data\-dynamic="{subtag:name[^>]+>[^<]+)(</span>)#Uis',
+                    '#(<span[^>]+data\-dynamic="{subscriber:name[^>]+>[^<]+)(</span>)#Uis',
                     '$1'.$closing.'$2',
                     $firstEmail->body
                 );
@@ -1111,6 +1112,29 @@ class acymInstall
 
             $mailStatsClass = new MailStatClass();
             $mailStatsClass->migrateTrackingSale();
+        }
+
+        if (version_compare($this->fromVersion, '7.5.5', '<')) {
+            $automationClass = new AutomationClass();
+            $adminAutomations = $automationClass->getAutomationsAdmin();
+
+            if (!empty($adminAutomations)) {
+                $mailClass = new MailClass();
+                foreach ($adminAutomations as $oneAutomation) {
+                    $actions = $automationClass->getActionsByAutomationId($oneAutomation->id);
+                    foreach ($actions as $oneAction){
+                        $oneAction->actions = json_decode($oneAction->actions, true);
+                        foreach($oneAction->actions as $action){
+                            if(empty($action['acy_add_queue']['mail_id'])) continue;
+
+                            $mail = $mailClass->getOneById($action['acy_add_queue']['mail_id']);
+                            $mail->body = str_replace('{subtag:', '{subscriber:', $mail->body);
+
+                            $mailClass->save($mail);
+                        }
+                    }
+                }
+            }
         }
     }
 

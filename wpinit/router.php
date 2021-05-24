@@ -42,7 +42,22 @@ class acyRouter extends acyHook
             'stats',
             'users',
         ];
-        $headerPages = ['automation', 'bounces', 'campaigns', 'configuration', 'dashboard', 'fields', 'followups', 'forms', 'lists', 'mails', 'override', 'segments', 'stats', 'users'];
+        $headerPages = [
+            'automation',
+            'bounces',
+            'campaigns',
+            'configuration',
+            'dashboard',
+            'fields',
+            'followups',
+            'forms',
+            'lists',
+            'mails',
+            'override',
+            'segments',
+            'stats',
+            'users',
+        ];
         foreach ($pages as $page) {
             if (in_array($page, $headerPages)) {
                 // Ensure we can set headers in the plugin
@@ -79,6 +94,9 @@ class acyRouter extends acyHook
 
         // The "Checkout Field Manager for WooCommerce" plugin breaks the js on every pages
         wp_dequeue_script('checkout_fields_js');
+
+        // Fixed editor incompatibility
+        wp_dequeue_script('wp-optimize-minify-admin-purge');
     }
 
     public function removeCssBreakingPages()

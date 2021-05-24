@@ -238,7 +238,7 @@ class FrontusersController extends UsersController
 
         $msgtype = 'success';
         if (empty($myuser->confirmed) && $this->config->get('require_confirmation', 1) == 1) {
-            if ($userClass->confirmationSentSuccess) {
+            if ($userClass->confirmationSentSuccess || empty($userClass->confirmationSentError)) {
                 $msg = 'ACYM_CONFIRMATION_SENT';
                 $code = 2;
             } else {

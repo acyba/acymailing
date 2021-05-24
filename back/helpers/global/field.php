@@ -4,9 +4,9 @@
  * @param array   $options    It is either an array with value => label or an array of objects
  * @param         $name
  * @param null    $selected
- * @param null    $id
  * @param array   $attributes The html attributes for the inputs
- * @param bool    $params     Special parameters
+ * @param array   $params     Special parameters
+ * @param bool    $frontDisplay
  *
  * @return string A formatted radio button
  */

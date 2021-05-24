@@ -391,6 +391,18 @@ class FieldClass extends acymClass
 
         $field->name = acym_translation($field->name);
 
+        if (empty($field->option)) {
+            $authorizedContent = '';
+        } else {
+            if (empty($field->option->error_message_invalid)) {
+                $field->option->authorized_content->message = acym_translationSprintf('ACYM_INCORRECT_FIELD_VALUE', $field->name);
+            } else {
+                $field->option->authorized_content->message = $field->option->error_message_invalid;
+            }
+            $authorizedContent = ' data-authorized-content="'.acym_escape(json_encode($field->option->authorized_content)).'"';
+        }
+
+        $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
         $style = empty($size) ? '' : ' style="'.$size.'"';
         $messageRequired = empty($field->option->error_message)
             ? acym_translationSprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', '"'.$field->name.'"')
@@ -404,8 +416,9 @@ class FieldClass extends acymClass
 
         $name = 'customField['.intval($field->id).']';
         $nameAttribute = ' name="'.$name.'"';
-        if ($field->type == 'text') $value = ' value="'.acym_escape($defaultValue).'"';
-
+        if ($field->type === 'text') {
+            $value = ' value="'.acym_escape($defaultValue).'"';
+        }
 
         if (($displayOutside && (in_array($field->id, [1, 2]) || in_array(
                     $field->type,
@@ -419,11 +432,11 @@ class FieldClass extends acymClass
 
         if ($field->id == 1) {
             $nameAttribute = ' name="user[name]"';
-            $return .= '<input '.$nameAttribute.$placeholder.$required.$value.' type="text" class="cell">';
+            $return .= '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.' type="text" class="cell">';
         } elseif ($field->id == 2) {
             $nameAttribute = ' name="user[email]"';
-            $return .= '<input '.$nameAttribute.$placeholder.$value.' required type="email" class="cell acym__user__edit__email" '.($displayFront && $cmsUser ? 'disabled' : '').'>';
-        } elseif ($field->type == 'language') {
+            $return .= '<input '.$nameAttribute.$placeholder.$value.$authorizedContent.$style.$maxCharacters.' required type="email" class="cell acym__user__edit__email" '.($displayFront && $cmsUser ? 'disabled' : '').'>';
+        } elseif ($field->type === 'language') {
             if (empty($defaultValue) && !empty($user->language)) {
                 $defaultValue = $user->language;
             }
@@ -434,21 +447,13 @@ class FieldClass extends acymClass
                 empty($defaultValue) ? acym_getLanguageTag() : $defaultValue,
                 'class="acym__select"'.$style.$required
             );
-        } elseif ($field->type == 'text') {
-            $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
-            if(empty($field->option->error_message_invalid)){
-                $field->option->authorized_content->message = acym_translationSprintf('ACYM_INCORRECT_FIELD_VALUE', $field->name);
-            }else{
-                $field->option->authorized_content->message = $field->option->error_message_invalid;
-            }
-            $authorizedContent = ' data-authorized-content="'.acym_escape(json_encode($field->option->authorized_content)).'"';
+        } elseif ($field->type === 'text') {
             $return .= '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.' type="text">';
-        } elseif ($field->type == 'textarea') {
-            $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
+        } elseif ($field->type === 'textarea') {
             $return .= '<textarea '.$nameAttribute.$required.$maxCharacters.' rows="'.intval($field->option->rows).'" cols="'.intval(
                     $field->option->columns
                 ).'">'.(empty($defaultValue) ? '' : $defaultValue).'</textarea>';
-        } elseif ($field->type == 'radio') {
+        } elseif ($field->type === 'radio') {
             $defaultValue = strlen($defaultValue) === 0 ? null : $defaultValue;
             if ($displayFront) {
                 foreach ($valuesArray as $key => $oneValue) {
@@ -463,7 +468,7 @@ class FieldClass extends acymClass
                     $field->required ? ['data-required' => $requiredJson] : []
                 );
             }
-        } elseif ($field->type == 'checkbox') {
+        } elseif ($field->type === 'checkbox') {
             if ($displayFront) {
                 $defaultValue = empty($defaultValue) ? null : (explode(',', $defaultValue));
                 foreach ($valuesArray as $key => $oneValue) {
@@ -494,9 +499,9 @@ class FieldClass extends acymClass
                     $return .= '<input '.$attributes.' type="checkbox" name="'.$name.'['.acym_escape($key).']" class="acym__users__creation__fields__checkbox"></label>';
                 }
             }
-        } elseif ($field->type == 'single_dropdown') {
+        } elseif ($field->type === 'single_dropdown') {
             $return .= acym_select($valuesArray, $name, empty($defaultValue) ? '' : $defaultValue, 'class="acym__custom__fields__select__form acym__select"'.$style.$required);
-        } elseif ($field->type == 'multiple_dropdown') {
+        } elseif ($field->type === 'multiple_dropdown') {
             $defaultValue = is_array($defaultValue) ? $defaultValue : explode(',', $defaultValue);
 
             $attributes = [
@@ -506,22 +511,20 @@ class FieldClass extends acymClass
             if ($field->required) $attributes['data-required'] = $displayFront ? acym_escape($requiredJson) : $requiredJson;
 
             $return .= acym_selectMultiple($valuesArray, $name, empty($defaultValue) ? [] : $defaultValue, $attributes);
-        } elseif ($field->type == 'date') {
+        } elseif ($field->type === 'date') {
             $defaultValue = is_array($defaultValue) ? implode('/', $defaultValue) : $defaultValue;
             $attributes = 'class="acym__custom__fields__select__form acym__select" acym-field-type="date" ';
             if ($field->required) $attributes .= $required;
             $return .= acym_displayDateFormat($field->option->format, $name.'[]', $defaultValue, $attributes);
-        } elseif ($field->type == 'file') {
+        } elseif ($field->type === 'file') {
             $defaultValue = is_array($defaultValue) ? $defaultValue[0] : $defaultValue;
             if ($displayFront) {
                 $return .= '<input '.$nameAttribute.$required.' type="file">';
             } else {
                 $return .= acym_inputFile($name.'[]', $defaultValue, '', '', $required);
             }
-        } elseif ($field->type == 'phone') {
+        } elseif ($field->type === 'phone') {
             $defaultValue = !empty($defaultValue) ? explode(',', $defaultValue) : '';
-            $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
-
             $indicator = !empty($defaultValue[0]) ? $defaultValue[0] : '';
             $number = !empty($defaultValue[1]) ? $defaultValue[1] : '';
 
@@ -531,7 +534,7 @@ class FieldClass extends acymClass
             $return .= '</div>';
             $return .= '<input '.$placeholder.$required.$style.$maxCharacters.' class="cell large-7 medium-8" type="tel" name="'.$name.'[phone]" value="'.acym_escape($number).'">';
             if ($displayOutside) $return .= '</div>';
-        } elseif ($field->type == 'custom_text') {
+        } elseif ($field->type === 'custom_text') {
             $return .= $field->option->custom_text;
         }
 
@@ -581,7 +584,7 @@ class FieldClass extends acymClass
         $field->active = 1;
         $field->required = 1;
         $field->ordering = $this->getOrdering() + 1;
-        $field->option = '{"editable_user_creation":"1","editable_user_modification":"1"}';
+        $field->option = '{}';
         $field->core = 1;
         $field->backend_edition = 1;
         $field->backend_listing = 0;

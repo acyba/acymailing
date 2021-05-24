@@ -314,6 +314,11 @@ function acym_getJSMessages()
         'ACYM_SOURCE',
         'ACYM_FORM_AUTOFILL_ID',
         'ACYM_REDIRECT_LINK',
+        'ACYM_DKIM_KEY',
+        'ACYM_VALUE',
+        'ACYM_CF_VALUE_CHANGED',
+        'ACYM_OLD_VALUE',
+        'ACYM_NEW_VALUE',
     ];
 
     foreach ($keysToLoad as $oneKey) {

@@ -276,4 +276,17 @@ class AutomationClass extends acymClass
 
         return acym_loadObjectList($query, 'name');
     }
+
+    public function getActionsByAutomationId($id)
+    {
+        return acym_loadObjectList(
+            'SELECT action.* 
+            FROM `#__acym_action` AS `action` 
+            JOIN `#__acym_condition` AS `condition` 
+                ON `action`.`condition_id` = `condition`.`id` 
+            JOIN `#__acym_step` AS `step` 
+                ON `condition`.`step_id` = `step`.`id` 
+            WHERE `step`.`automation_id` = '.intval($id)
+        );
+    }
 }

@@ -25,7 +25,7 @@ function acym_addPageParam($url, $ajax = false, $front = false)
 function acym_baseURI($pathonly = false)
 {
     if (acym_isAdmin()) {
-        return acym_rootURI().'wp-admin/';
+        return admin_url();
     }
 
     return acym_rootURI();
