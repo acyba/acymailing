@@ -216,7 +216,6 @@ class acymPlugin extends acymObject
 
     protected function autoContentOptions(&$options)
     {
-
         $options[] = [
             'title' => 'ACYM_COLUMNS',
             'type' => 'number',
@@ -883,7 +882,10 @@ class acymPlugin extends acymObject
 
             $id = $plugin->folder_name.'_'.$key;
             $name = $plugin->folder_name.'['.$key.']';
-            if (!empty($field['label'])) $field['label'] = acym_translation($field['label']);
+            if (!empty($field['label'])) {
+                $field['label'] = acym_translation($field['label']);
+            }
+
             if (!empty($field['info'])) {
                 $field['label'] .= acym_info(
                     acym_translation($field['info']),
@@ -989,6 +991,27 @@ class acymPlugin extends acymObject
                     'acym-data-plugins-id="'.$idCustomView.'" acym-data-plugin-class="'.get_class($this).'" acym-data-plugin-folder="'.$this->name.'"',
                     'class="cell button"'
                 );
+            } elseif ($field['type'] == 'multikeyvalue') {
+                $text .= '<label class="cell shrink">'.$field['label'].'</label>';
+
+                $text .= '<div class="multikeyvalue_container grid-x">';
+
+                if (!empty($field['value'])) {
+                    $headers = json_decode($field['value'], true);
+                    foreach ($headers as $headerKey => $headerValue) {
+                        $text .= '<input type="text" class="cell" placeholder="'.acym_translation('ACYM_DKIM_KEY', true).'" value="'.acym_escape($headerKey).'"/>';
+                        $text .= '<input type="text" class="cell" placeholder="'.acym_translation('ACYM_VALUE', true).'" value="'.acym_escape($headerValue).'" />';
+                        $text .= '<div class="multikeyvalue_container_separator cell small-6"></div>';
+                    }
+                }
+
+                $text .= '<input type="text" class="cell" placeholder="'.acym_translation('ACYM_DKIM_KEY', true).'" value=""/>';
+                $text .= '<input type="text" class="cell" placeholder="'.acym_translation('ACYM_VALUE', true).'" value="" />';
+
+                $text .= '<button class="button multikeyvalue_container_new">'.acym_translation('ACYM_ADD_NEW').'</button>';
+
+                $text .= '<input type="hidden" name="'.$name.'" value="" />';
+                $text .= '</div>';
             } elseif ($field['type'] == 'custom') {
                 $text .= $field['content'];
             }
@@ -1085,10 +1108,10 @@ class acymPlugin extends acymObject
         $tmpMails = [];
         foreach ($specialMails as $i => $oneMail) {
             if ($oneMail->sending_type == $mailType) {
-                if ($time >= $dayBasedOnCMSTimezoneAtSpecifiedHour && (empty($oneMail->next_trigger) || date('m-d', $oneMail->next_trigger) == date(
-                            'm-d',
-                            $dayBasedOnCMSTimezoneAtSpecifiedHour
-                        ))) {
+                $noNextTrigger = empty($oneMail->next_trigger);
+                $nextTriggerIsNow = date('m-d', $oneMail->next_trigger) == date('m-d', $dayBasedOnCMSTimezoneAtSpecifiedHour);
+                $nextTriggerIsInPast = $oneMail->next_trigger < $time;
+                if ($time >= $dayBasedOnCMSTimezoneAtSpecifiedHour && ($noNextTrigger || $nextTriggerIsNow || $nextTriggerIsInPast)) {
                     $oneMail->next_trigger = acym_getTime('tomorrow '.$dailyHour.':'.$dailyMinute);
                     $oneMail->last_generated = $time;
                     $campaignClass->save($oneMail);

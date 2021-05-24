@@ -20,11 +20,11 @@ class ActionClass extends acymClass
 
     public function getActionsByConditionId($id)
     {
-        $query = 'SELECT action.* FROM #__acym_action as action LEFT JOIN #__acym_condition as acycondition ON acycondition.id = action.condition_id WHERE acycondition.id = '.intval(
-                $id
-            );
-
-        return acym_loadObjectList($query);
+        return acym_loadObjectList(
+            'SELECT action.* 
+            FROM #__acym_action as action 
+            WHERE action.condition_id = '.intval($id)
+        );
     }
 
     public function getAllActionsIdByConditionsId($elements)

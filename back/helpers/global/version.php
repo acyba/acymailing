@@ -3,19 +3,25 @@
 /**
  * Return TRUE if the level is handled by the current application
  * Return FALSE if the level is not enough
- * 0 : Starter
- * 1 : Essential
- * 2 : Enterprise
- * 3 : Sidekick
+ *
+ * @param $neededLevel
+ *
+ * @return bool
  */
-function acym_level($level)
+function acym_level($neededLevel)
 {
-    $config = acym_config();
-    if ($config->get($config->get('level'), 0) >= $level) {
-        return true;
-    }
+    $levels = [
+        'Starter' => 0,
+        'Essential' => 1,
+        'Enterprise' => 2,
+    ];
 
-    return false;
+    $config = acym_config();
+    $currentLevel = $config->get('level');
+
+    $currentLevelNumber = in_array($currentLevel, $levels) ? $levels[$currentLevel] : 0;
+
+    return $currentLevelNumber >= $neededLevel;
 }
 
 function acym_upgradeTo($version, $utmSource)

@@ -1,4 +1,7 @@
-<div id="acym_fulldiv_acyprofileform" class="acym_front_page">
+<?php
+    $formName = acym_getModuleFormName();
+?>
+<div id="acym_fulldiv_<?php echo $formName; ?>" class="acym_front_page">
     <?php
     if (!empty($data['show_page_heading'])) {
         echo '<h1 class="contentheading'.$data['suffix'].'">'.$data['page_heading'].'</h1>';
@@ -12,14 +15,11 @@
 	<form enctype="multipart/form-data"
 		  action="<?php echo acym_frontendLink('frontusers'.(acym_isNoTemplate() ? '&'.acym_noTemplate() : '')); ?>"
 		  method="post"
-		  name="acyprofileform"
-		  id="acyprofileform"
+		  name="<?php echo $formName; ?>"
+		  id="<?php echo $formName; ?>"
 		  onsubmit="this.querySelector('input[type=submit]').click(); return false;">
 		<fieldset class="adminform acy_user_info">
 			<legend><span><?php echo acym_translation('ACYM_USER_INFORMATION'); ?></span></legend>
-            <?php
-
-            ?>
 			<div id="acyuserinfo">
                 <?php
 
@@ -58,7 +58,7 @@
             if (!empty($data['user']->id) && !(empty($exportButton) && empty($deleteButton))) {
                 ?>
 				<div id="acyuseractions">
-					<table cellpadding="0">
+					<table cellpadding="0" cellspacing="0" border="0">
 						<tr>
                             <?php
                             if ($exportButton == 1) {
@@ -66,7 +66,7 @@
 								<td id="acybutton_subscriber_download_data" <?php if ($deleteButton == 1) {
                                     echo 'style="padding-right: 10px;"';
                                 } ?>>
-									<button class="btn" onclick="this.form.task.value='exportdata'; this.form.submit(); return false;">
+									<button class="btn button" onclick="this.form.task.value='exportdata'; this.form.submit(); return false;">
                                         <?php echo acym_translation('ACYM_EXPORT_MY_DATA'); ?>
 									</button>
 								</td>
@@ -75,7 +75,7 @@
                             if ($deleteButton == 1) {
                                 ?>
 								<td id="acybutton_subscriber_delete_data">
-									<button class="btn"
+									<button class="btn button"
 											onclick="if(confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE + '\n' + ACYM_JS_TXT.ACYM_DELETE_MY_DATA_CONFIRM)){ this.form.task.value = 'delete'; this.form.submit(); } return false;">
                                         <?php echo acym_translation('ACYM_DELETE_MY_DATA'); ?>
 									</button>
@@ -92,7 +92,7 @@
 
         if ($data['displayLists']) {
             ?>
-			<fieldset class="adminform acy_subscription_list">
+			<fieldset class="adminform acy_subscription_list margin-bottom-1">
 				<legend><span><?php echo acym_translation('ACYM_SUBSCRIPTION'); ?></span></legend>
 
 				<div id="acyusersubscription">
@@ -155,7 +155,7 @@
 
         if (empty($data['user']->id) && $data['config']->get('captcha', 'none') !== 'none') {
             echo '<div id="trcaptcha" class="acy_onefield">';
-            echo $data['captchaHelper']->display('acyprofileform');
+            echo $data['captchaHelper']->display($formName);
             echo '</div>';
         }
 
@@ -185,7 +185,7 @@
 		<p class="acymodifybutton">
 			<input class="btn btn-primary"
 				   type="submit"
-				   onclick="return submitAcymForm('savechanges', 'acyprofileform', 'acym_checkChangeForm');"
+				   onclick="return submitAcymForm('savechanges', '<?php echo $formName; ?>', 'acym_checkChangeForm');"
 				   value="<?php echo acym_escape(acym_translation(empty($data['user']->id) ? 'ACYM_SUBSCRIBE' : 'ACYM_SAVE_CHANGES')); ?>" />
 		</p>
 	</form>

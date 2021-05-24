@@ -118,7 +118,7 @@ jQuery(document).ready(function ($) {
         setValueCustomFields();
         setDatabaseField();
         setDisplayOnlyIf();
-        setDeleteValue();
+        setValuesOptions();
         acym_helperSelectionMultilingual.init('field');
     }
 
@@ -150,21 +150,21 @@ jQuery(document).ready(function ($) {
 
     function setValueCustomFields() {
         $('#acym__fields__value__add-value').off('click').on('click', function () {
-            let htmlSelect = '<select acym-data-infinite class="acym__fields__edit__select acym__select" name="field[value][disabled][]" class=""><option value="n">'
-                             + ACYM_JS_TXT.ACYM_NO
-                             + '</option><option value="y">'
-                             + ACYM_JS_TXT.ACYM_YES
-                             + '</option></select>';
-            let newContent = '<div class="grid-x cell acym__fields__value__sortable acym__content margin-bottom-1 grid-margin-x">';
+            let htmlSelect = '<select acym-data-infinite class="acym__fields__edit__select acym__select" name="field[value][disabled][]">';
+            htmlSelect += '<option value="n">' + ACYM_JS_TXT.ACYM_NO + '</option>';
+            htmlSelect += '<option value="y">' + ACYM_JS_TXT.ACYM_YES + '</option>';
+            htmlSelect += '</select>';
+
+            let newContent = '<div class="grid-x cell acym__fields__value__sortable acym__content margin-bottom-1 grid-margin-x margin-y">';
             newContent += '<div class="medium-1 cell acym_vcenter align-center acym__field__sortable__listing__handle">';
             newContent += '<div class="grabbable acym__sortable__field__edit__handle grid-x">';
             newContent += '<i class="acymicon-ellipsis-h cell acym__color__dark-gray"></i>';
             newContent += '<i class="acymicon-ellipsis-h cell acym__color__dark-gray"></i>';
             newContent += '</div>';
             newContent += '</div>';
-            newContent += '<input type="text" name="field[value][value][]" class="cell medium-4" value="">';
-            newContent += '<input type="text" name="field[value][title][]" class="cell medium-4" value="">';
-            newContent += '<div class="cell small-2">' + htmlSelect + '</div>';
+            newContent += '<input type="text" name="field[value][value][]" class="cell medium-4 acym__fields__value__value" value="">';
+            newContent += '<input type="text" name="field[value][title][]" class="cell medium-4 acym__fields__value__title" value="">';
+            newContent += '<div class="cell medium-2">' + htmlSelect + '</div>';
             newContent += '<i class="cell acymicon-close small-1 acym__color__red cursor-pointer acym__field__delete__value"></i>';
             newContent += '</div>';
 
@@ -172,13 +172,30 @@ jQuery(document).ready(function ($) {
             acym_helperSelect2.setSelect2();
 
             setSortableValuesField();
-            setDeleteValue();
+            setValuesOptions();
         });
     }
 
-    function setDeleteValue() {
+    function setValuesOptions() {
+        let previousValue = '';
+        $('.acym__fields__value__value').on('focus', function () {
+            previousValue = this.value;
+        }).off('change').on('change', function () {
+            if (acym_helper.empty(previousValue)) return;
+
+            let confirmMessage = ACYM_JS_TXT.ACYM_CF_VALUE_CHANGED + '\n\n';
+            confirmMessage += ACYM_JS_TXT.ACYM_OLD_VALUE + ': ' + previousValue + '\n';
+            confirmMessage += ACYM_JS_TXT.ACYM_NEW_VALUE + ': ' + this.value;
+
+            if (!acym_helper.confirm(confirmMessage)) {
+                this.value = previousValue;
+            }
+        });
+
         $('.acym__field__delete__value').off('click').on('click', function () {
-            $(this).parent().remove();
+            if (acym_helper.confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE)) {
+                $(this).parent().remove();
+            }
         });
     }
 

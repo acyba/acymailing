@@ -290,6 +290,18 @@ $perspective: 600;
 
                     .acym__plugins__settings-one {
                         margin: .7rem 0;
+
+                        .multikeyvalue_container {
+                            input[type=text] {
+                                margin-bottom: 1rem !important;
+                            }
+
+                            .multikeyvalue_container_separator {
+                                border-top: 1px solid $dark-gray;
+                                margin: auto;
+                                margin-bottom: 1rem;
+                            }
+                        }
                     }
                 }
             }

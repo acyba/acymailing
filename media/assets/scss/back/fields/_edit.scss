@@ -1,27 +1,5 @@
 #acym_wrapper {
     #acym__fields__edit {
-        .acym__fields__edit__section__title {
-            position: relative;
-
-            &:first-of-type {
-                padding-top: 0 !important;
-
-                &:before {
-                    display: none;
-                }
-            }
-
-            &:before {
-                content: "";
-                position: absolute;
-                left: calc(50% - 25%);
-                border-top: 1px solid $light-gray;
-                width: 50%;
-            }
-
-            padding-top: 1.5rem;
-        }
-
         .acym__listing {
             margin-bottom: 0;
         }
@@ -56,7 +34,7 @@
 
             .acym__fields__value__sortable {
                 margin-left: 0;
-                padding: 20px 10px;
+                padding: 20px 10px 0 10px;
             }
         }
     }

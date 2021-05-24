@@ -57,7 +57,7 @@ input[type="checkbox"] {
 }
 
 .acym_radio_group {
-    input[type="radio"] {
+    i.acym_radio_unchecked + input[type="radio"] {
         display: none;
     }
 

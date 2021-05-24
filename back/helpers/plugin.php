@@ -747,6 +747,10 @@ class PluginHelper extends acymObject
             preg_match('#src="([^"]+)"#Uis', $format->imagePath, $matches);
             if (!empty($matches[1])) $format->imagePath = $matches[1];
             $image = '<img class="content_main_image" alt="" src="'.$format->imagePath.'" '.$style.' />';
+
+            if(!empty($format->imageCaption) && !in_array($format->tag->format, ['TITLE_IMG', 'TITLE_IMG_RIGHT'])){
+                $image .= '<p class="content_main_image_caption">'.acym_escape($format->imageCaption).'</p>';
+            }
         }
 
         // If TITLE_IMG, add the image to the title
@@ -945,6 +949,24 @@ class PluginHelper extends acymObject
                     				<input class="intext_input" name="pictheight'.$suffix.'" type="number" onchange="'.$updateFunction.'();" value="'.intval($maxHeight).'"/>
                             	</div>
                             </div>';
+                if (!empty($option['caption'])) {
+                    $currentOption .= '<div class="cell grid-x margin-top-1">';
+                    $currentOption .= '<label class="cell large-5 acym_plugin_field">'.acym_translation('ACYM_CAPTION').'</label>';
+                    $currentOption .= acym_radio(
+                        [
+                            acym_selectOption('1', 'ACYM_YES'),
+                            acym_selectOption('0', 'ACYM_NO'),
+                        ],
+                        'caption'.$suffix,
+                        isset($defaultValues->caption) ? $defaultValues->caption : '0',
+                        ['onchange' => $updateFunction.'();'],
+                        ['containerClass' => 'cell large-7']
+                    );
+                    $currentOption .= '</div>';
+
+                    $jsOptionsMerge[] = 'otherinfo += "| caption:" + jQuery(\'input[name="caption'.$suffix.'"]:checked\').val();';
+                }
+
                 $jsOptionsMerge[] = '
                     var _pictVal'.$suffix.' = jQuery(\'input[name="pict'.$suffix.'"]:checked\').val();
                     otherinfo += "| pict:" + _pictVal'.$suffix.';

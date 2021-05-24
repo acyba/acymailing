@@ -184,7 +184,14 @@ class QueueClass extends acymClass
         }
 
         if (!empty($settings['search'])) {
-            $filters[] = 'mail.subject LIKE '.acym_escapeDB('%'.$settings['search'].'%').' OR mail.name LIKE '.acym_escapeDB('%'.$settings['search'].'%');
+            $searchColumns = [
+                'user.email',
+                'user.name',
+                'mail.subject',
+                'mail.name',
+            ];
+
+            $filters[] = implode(' LIKE '.acym_escapeDB('%'.$settings['search'].'%').' OR ', $searchColumns).' LIKE '.acym_escapeDB('%'.$settings['search'].'%');
         }
 
         if (!empty($filters)) {

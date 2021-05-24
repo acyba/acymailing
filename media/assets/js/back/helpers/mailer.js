@@ -91,7 +91,7 @@ const acym_helperMailer = {
 
             const data = {
                 ctrl: 'configuration',
-                task: 'synchonizeExistingUsers',
+                task: 'synchronizeExistingUsers',
                 sendingMethod: sendingMethod
             };
 

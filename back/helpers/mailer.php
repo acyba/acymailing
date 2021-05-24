@@ -358,7 +358,7 @@ class MailerHelper extends acyPHPMailer
 
         //Let's do some referal if we send using elasticemail
         if (strpos($this->Host, 'elasticemail')) {
-            $this->addCustomHeader('referral:2f0447bb-173a-459d-ab1a-ab8cbebb9aab');
+            $this->addCustomHeader('referral', '2f0447bb-173a-459d-ab1a-ab8cbebb9aab');
         }
 
         // These characters can break the send process, let's remove them from the subject
@@ -582,7 +582,8 @@ class MailerHelper extends acyPHPMailer
         //By the way there are more than 23 000 char in foundation library
         unset($style['foundation']);
 
-        $finalContent = '<html><head>';
+        $finalContent = '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head>';
+        $finalContent .= '<!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->';
         $finalContent .= '<meta http-equiv="Content-Type" content="text/html; charset='.strtolower($this->config->get('charset')).'" />'."\n";
         $finalContent .= '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'."\n";
         $finalContent .= '<title>'.$mail->subject.'</title>'."\n";

@@ -1,22 +1,24 @@
 <input type="hidden" id="default_template" value="<?php echo acym_escape($this->defaultTemplate); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__content" id="editor_content" name="editor_content" value="" />
 <input type="hidden" class="acym__wysid__hidden__save__content__template" id="editor_content_template" name="editor_content_template" value="" />
+<?php $wysidStylesheet = $this->getWYSIDStylesheet(); ?>
 <input type="hidden"
 	   class="acym__wysid__hidden__save__stylesheet"
 	   id="editor_stylesheet"
 	   name="editor_stylesheet"
-	   value="<?php echo acym_escape($this->getWYSIDStylesheet()); ?>" />
+	   value="<?php echo acym_escape($wysidStylesheet); ?>" />
 <input type="hidden"
 	   class="acym__wysid__hidden__save__stylesheet__template"
 	   id="editor_stylesheet_template"
 	   name="editor_stylesheet_template"
-	   value="<?php echo acym_escape($this->getWYSIDStylesheet()); ?>" />
-<input type="hidden" class="acym__wysid__hidden__save__settings" id="editor_settings" name="editor_settings" value="<?php echo acym_escape($this->getWYSIDSettings()); ?>" />
+	   value="<?php echo acym_escape($wysidStylesheet); ?>" />
+<?php $wysidSettings = $this->getWYSIDSettings(); ?>
+<input type="hidden" class="acym__wysid__hidden__save__settings" id="editor_settings" name="editor_settings" value="<?php echo acym_escape($wysidSettings); ?>" />
 <input type="hidden"
 	   class="acym__wysid__hidden__save__settings__template"
 	   id="editor_settings_template"
 	   name="editor_settings_template"
-	   value="<?php echo acym_escape($this->getWYSIDSettings()); ?>" />
+	   value="<?php echo acym_escape($wysidSettings); ?>" />
 <input type="hidden" id="acym__wysid__session--lifetime" name="acym_session_lifetime" value="<?php echo acym_escape(ini_get('session.gc_maxlifetime')); ?>" />
 <input type="hidden" class="acym__wysid__hidden__mailId" id="editor_mailid" name="editor_autoSave" value="<?php echo intval($this->mailId); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__auto" id="editor_autoSave" value="<?php echo acym_escape($this->autoSave); ?>">

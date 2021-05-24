@@ -18,6 +18,7 @@ class acySubscriptionFormWidget extends \Elementor\Widget_Base
     var $alignment;
     var $includeJavascript;
     var $settings;
+    var $borderTypes;
 
     public function initParams()
     {
@@ -81,6 +82,17 @@ class acySubscriptionFormWidget extends \Elementor\Widget_Base
         $this->includeJavascript = [
             'header' => acym_translation('ACYM_IN_HEADER'),
             'module' => acym_translation('ACYM_ON_THE_MODULE'),
+        ];
+
+        $this->borderTypes = [
+            'solid' => acym_translation('ACYM_SOLID'),
+            'dotted' => acym_translation('ACYM_DOTTED'),
+            'dashed' => acym_translation('ACYM_DASHED'),
+            'double' => acym_translation('ACYM_DOUBLE'),
+            'groove' => acym_translation('ACYM_GROOVE'),
+            'ridge' => acym_translation('ACYM_RIDGE'),
+            'inset' => acym_translation('ACYM_INSET'),
+            'outset' => acym_translation('ACYM_OUTSET'),
         ];
     }
 
@@ -159,15 +171,30 @@ class acySubscriptionFormWidget extends \Elementor\Widget_Base
         $this->getSimpleSelect('includejs', acym_translation('ACYM_MODULE_JS'), $this->includeJavascript, 'header');
         $this->getText('source', acym_translation('ACYM_SOURCE'), 'elementor_subscription_form');
         $this->end_controls_section();
+
+        // Style zone
+        $this->startControlsSection('global_options', acym_translation('ACYM_GLOBAL_OPTIONS'), \Elementor\Controls_Manager::TAB_STYLE);
+        $this->getColor('background_color', acym_translation('ACYM_BACKGROUND_COLOR'));
+        $this->getColor('text_color', acym_translation('ACYM_TEXT_COLOR'));
+        $this->end_controls_section();
+
+        $this->startControlsSection('button_options', acym_translation('ACYM_BUTTON'), \Elementor\Controls_Manager::TAB_STYLE);
+        $this->getColor('button_background_color', acym_translation('ACYM_BACKGROUND_COLOR'));
+        $this->getColor('button_text_color', acym_translation('ACYM_TEXT_COLOR'));
+        $this->getColor('button_border_color', acym_translation('ACYM_BORDER_COLOR'));
+        $this->getSimpleSelect('button_border_type', acym_translation('ACYM_BORDER_TYPE'), $this->borderTypes, 'solid');
+        $this->getNumber('button_border_size', acym_translation('ACYM_BORDER_SIZE'));
+        $this->getNumber('button_border_radius', acym_translation('ACYM_RADIUS'));
+        $this->end_controls_section();
     }
 
-    private function startControlsSection($option, $label)
+    private function startControlsSection($option, $label, $type = null)
     {
         $this->start_controls_section(
             $option,
             [
                 'label' => $label,
-                'tab' => \Elementor\Controls_Manager::TAB_CONTENT,
+                'tab' => empty($type) ? \Elementor\Controls_Manager::TAB_CONTENT : $type,
             ]
         );
     }
@@ -212,6 +239,40 @@ class acySubscriptionFormWidget extends \Elementor\Widget_Base
 
         if (!empty($default)) $data['default'] = $default;
 
+        $this->add_control(
+            $option,
+            $data
+        );
+    }
+
+    private function getColor($option, $label, $default = '')
+    {
+        $data = [
+            'label' => $label,
+            'type' => \Elementor\Controls_Manager::COLOR,
+            'global' => [
+                'active' => false,
+            ],
+        ];
+
+        if (!empty($default)) $data['default'] = $default;
+
+        $this->add_control(
+            $option,
+            $data
+        );
+    }
+
+    private function getNumber($option, $label, $default = '')
+    {
+        $data = [
+            'label' => $label,
+            'type' => \Elementor\Controls_Manager::NUMBER,
+            'label_block' => false,
+            'min' => 0,
+        ];
+
+        if (!empty($default)) $data['default'] = $default;
 
         $this->add_control(
             $option,

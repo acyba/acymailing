@@ -80,25 +80,23 @@ class UpdateHelper extends acymObject
         //We delete updates if Joomla already found some as it may be for another level of Acy
         acym_query('DELETE FROM #__updates WHERE element = "com_acym"');
 
-        //Test for the presence of acym in database.
-        $update_site_id = acym_loadResult("SELECT update_site_id FROM #__update_sites WHERE location LIKE '%component=acymailing%' AND type LIKE 'extension'");
-
         $object = new \stdClass();
+        $object->enabled = 1;
         $object->name = 'AcyMailing';
         $object->type = 'extension';
         $object->location = ACYM_UPDATEMEURL.'updatexml&component=acymailing&cms=joomla&level='.$this->config->get('level').'&version='.$this->config->get('version');
 
-        $object->enabled = 1;
 
-        //If acym is not present in the database.
+        // Test for the presence of acym in database.
+        $update_site_id = acym_loadResult('SELECT update_site_id FROM #__update_sites WHERE location LIKE "%component=acymailing%" AND type = "extension"');
         if (empty($update_site_id)) {
-            $update_site_id = acym_insertObject("#__update_sites", $object);
+            $update_site_id = acym_insertObject('#__update_sites', $object);
         } else {
             $object->update_site_id = $update_site_id;
-            acym_updateObject("#__update_sites", $object, 'update_site_id');
+            acym_updateObject('#__update_sites', $object, 'update_site_id');
         }
 
-        $extension_id = acym_loadResult("SELECT extension_id FROM #__extensions WHERE `element` = 'com_acym' AND type LIKE 'component'");
+        $extension_id = acym_loadResult('SELECT extension_id FROM #__extensions WHERE `element` = "com_acym" AND type = "component"');
         if (empty($update_site_id) || empty($extension_id)) {
             return false;
         }
@@ -225,8 +223,8 @@ class UpdateHelper extends acymObject
     public function installFields()
     {
         $query = "INSERT IGNORE INTO #__acym_field (`id`, `name`, `type`, `value`, `active`, `default_value`, `required`, `ordering`, `option`, `core`, `backend_edition`, `backend_listing`, `frontend_edition`, `frontend_listing`, `access`, `namekey`) VALUES 
-    (1, 'ACYM_NAME', 'text', NULL, 1, NULL, 0, 1, '{\"editable_user_creation\":\"1\",\"editable_user_modification\":\"1\",\"error_message\":\"\",\"error_message_invalid\":\"\",\"size\":\"\",\"rows\":\"\",\"columns\":\"\",\"format\":\"\",\"custom_text\":\"\",\"css_class\":\"\",\"authorized_content\":{\"0\":\"all\",\"regex\":\"\"}}', 1, 1, 1, 1, 1, 'all', 'acym_name'), 
-    (2, 'ACYM_EMAIL', 'text', NULL, 1, NULL, 1, 2, '{\"editable_user_creation\":\"1\",\"editable_user_modification\":\"1\",\"error_message\":\"\",\"error_message_invalid\":\"\",\"size\":\"\",\"rows\":\"\",\"columns\":\"\",\"format\":\"\",\"custom_text\":\"\",\"css_class\":\"\",\"authorized_content\":{\"0\":\"all\",\"regex\":\"\"}}', 1, 1, 1, 1, 1, 'all', 'acym_email');";
+    (1, 'ACYM_NAME', 'text', NULL, 1, NULL, 0, 1, '{\"error_message\":\"\",\"error_message_invalid\":\"\",\"size\":\"\",\"rows\":\"\",\"columns\":\"\",\"format\":\"\",\"custom_text\":\"\",\"css_class\":\"\",\"authorized_content\":{\"0\":\"all\",\"regex\":\"\"}}', 1, 1, 1, 1, 1, 'all', 'acym_name'), 
+    (2, 'ACYM_EMAIL', 'text', NULL, 1, NULL, 1, 2, '{\"error_message\":\"\",\"error_message_invalid\":\"\",\"size\":\"\",\"rows\":\"\",\"columns\":\"\",\"format\":\"\",\"custom_text\":\"\",\"css_class\":\"\",\"authorized_content\":{\"0\":\"all\",\"regex\":\"\"}}', 1, 1, 1, 1, 1, 'all', 'acym_email');";
         acym_query($query);
 
         $fieldClass = new FieldClass();
@@ -306,10 +304,10 @@ class UpdateHelper extends acymObject
         $adminCreate->conditions = '{"type_condition":"user"}';
         $adminCreate->emailTitle = acym_translation('ACYM_SUBSCRIBER_CREATION');
         $adminCreate->emailSubject = acym_translation('ACYM_SUBSCRIBER_CREATION');
-        $adminCreate->emailContent = '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subtag:name|ucfirst}', 'Marc').',</h1>
+        $adminCreate->emailContent = '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subscriber:name|ucfirst}', 'Marc').',</h1>
                     <p>'.acym_translation('ACYM_NEW_USER_ACYMAILING').':</p>
-                    <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{subtag:name|info:current}', 'Roger').'</p>
-                    <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{subtag:email|info:current}', 'roger@example.com').'</p>';
+                    <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{subscriber:name|info:current}', 'Roger').'</p>
+                    <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{subscriber:email|info:current}', 'roger@example.com').'</p>';
 
         $adminModif = new \stdClass();
         $adminModif->desc = 'ACYM_ADMIN_USER_MODIFICATION_DESC';
@@ -317,10 +315,10 @@ class UpdateHelper extends acymObject
         $adminModif->conditions = '{"type_condition":"user"}';
         $adminModif->emailTitle = acym_translation('ACYM_SUBSCRIBER_MODIFICATION');
         $adminModif->emailSubject = acym_translation('ACYM_SUBSCRIBER_MODIFICATION');
-        $adminModif->emailContent = '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subtag:name|ucfirst}', 'Marc').',</h1>
+        $adminModif->emailContent = '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subscriber:name|ucfirst}', 'Marc').',</h1>
                     <p>'.acym_translation('ACYM_USER_MODIFY_ACYMAILING').':</p>
-                    <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{subtag:name|info:current}', 'Roger').'</p>
-                    <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{subtag:email|info:current}', 'roger@example.com').'</p>';
+                    <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{subscriber:name|info:current}', 'Roger').'</p>
+                    <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{subscriber:email|info:current}', 'roger@example.com').'</p>';
 
         $info = [
             'ACYM_ADMIN_USER_CREATE' => $adminCreate,
@@ -417,9 +415,9 @@ class UpdateHelper extends acymObject
         if (empty($notifications['acy_confirm'])) {
             $addNotif[] = [
                 'name' => 'acy_confirm',
-                'subject' => '{subtag:name|ucfirst}, {trans:ACYM_PLEASE_CONFIRM_SUBSCRIPTION}',
+                'subject' => '{subscriber:name|ucfirst}, {trans:ACYM_PLEASE_CONFIRM_SUBSCRIPTION}',
                 'content' => $this->getFormatedNotification(
-                    '<h1 style="font-size: 24px;">{trans:ACYM_HELLO} '.$this->getDTextDisplay('{subtag:name|ucfirst}', 'Marc').',</h1>
+                    '<h1 style="font-size: 24px;">{trans:ACYM_HELLO} '.$this->getDTextDisplay('{subscriber:name|ucfirst}', 'Marc').',</h1>
                     <p>{trans:ACYM_CONFIRM_MESSAGE}</p>
                     <p>{trans:ACYM_CONFIRM_MESSAGE_ACTIVATE}</p>
                     <p style="text-align: center;"><strong>{confirm}{trans:ACYM_CONFIRM_SUBSCRIPTION}{/confirm}</strong></p>'
@@ -432,7 +430,7 @@ class UpdateHelper extends acymObject
                 'name' => 'acy_notification_create',
                 'subject' => acym_translation('ACYM_NOTIFICATION_CREATE_SUBJECT').': {user:email}',
                 'content' => $this->getFormatedNotification(
-                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subtag:name|ucfirst}', 'Marc').',</h1>
+                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subscriber:name|ucfirst}', 'Marc').',</h1>
                     <p>'.acym_translation('ACYM_NOTIFICATION_CREATE_BODY').'</p>
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{user:name}', 'Julia').'</p>
                     <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{user:email}', 'julia@example.com').'</p>
@@ -447,7 +445,7 @@ class UpdateHelper extends acymObject
                 'name' => 'acy_notification_unsub',
                 'subject' => acym_translation('ACYM_NOTIFICATION_UNSUB_SUBJECT').': {user:email}',
                 'content' => $this->getFormatedNotification(
-                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subtag:name|ucfirst}', 'Marc').',</h1>
+                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subscriber:name|ucfirst}', 'Marc').',</h1>
                     <p>'.acym_translation('ACYM_NOTIFICATION_UNSUB_BODY').'</p>
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{user:name}', 'Julia').'</p>
                     <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{user:email}', 'julia@example.com').'</p>
@@ -461,7 +459,7 @@ class UpdateHelper extends acymObject
                 'name' => 'acy_notification_unsuball',
                 'subject' => acym_translation('ACYM_NOTIFICATION_UNSUBALL_SUBJECT').': {user:email}',
                 'content' => $this->getFormatedNotification(
-                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subtag:name|ucfirst}', 'Marc').',</h1>
+                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subscriber:name|ucfirst}', 'Marc').',</h1>
                     <p>'.acym_translation('ACYM_NOTIFICATION_UNSUBALL_BODY').'</p>
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{user:name}', 'Julia').'</p>
                     <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{user:email}', 'julia@example.com').'</p>'
@@ -474,7 +472,7 @@ class UpdateHelper extends acymObject
                 'name' => 'acy_notification_subform',
                 'subject' => acym_translation('ACYM_NOTIFICATION_SUBFORM_SUBJECT').': {user:email}',
                 'content' => $this->getFormatedNotification(
-                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subtag:name|ucfirst}', 'Marc').',</h1>
+                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subscriber:name|ucfirst}', 'Marc').',</h1>
                     <p>'.acym_translation('ACYM_NOTIFICATION_SUBFORM_BODY').'</p>
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{user:name}', 'Julia').'</p>
                     <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{user:email}', 'julia@example.com').'</p>
@@ -488,7 +486,7 @@ class UpdateHelper extends acymObject
                 'name' => 'acy_notification_profile',
                 'subject' => acym_translation('ACYM_NOTIFICATION_PROFILE_SUBJECT').': {user:email}',
                 'content' => $this->getFormatedNotification(
-                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subtag:name|ucfirst}', 'Marc').',</h1>
+                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subscriber:name|ucfirst}', 'Marc').',</h1>
                     <p>'.acym_translation('ACYM_NOTIFICATION_PROFILE_BODY').'</p>
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{user:name}', 'Julia').'</p>
                     <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{user:email}', 'julia@example.com').'</p>
@@ -502,7 +500,7 @@ class UpdateHelper extends acymObject
                 'name' => 'acy_notification_confirm',
                 'subject' => acym_translation('ACYM_NOTIFICATION_CONFIRM_SUBJECT').': {user:email}',
                 'content' => $this->getFormatedNotification(
-                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subtag:name|ucfirst}', 'Marc').',</h1>
+                    '<h1 style="font-size: 24px;">'.acym_translation('ACYM_HELLO').' '.$this->getDTextDisplay('{subscriber:name|ucfirst}', 'Marc').',</h1>
                     <p>'.acym_translation('ACYM_NOTIFICATION_CONFIRM_BODY').'</p>
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{user:name}', 'Julia').'</p>
                     <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{user:email}', 'julia@example.com').'</p>

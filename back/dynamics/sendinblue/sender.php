@@ -13,9 +13,14 @@ class SendinblueSender extends SendinblueClass
             'email' => empty($mail->from_email) ? $this->config->get('from_email') : $mail->from_email,
         ];
 
-        if (!empty($response['senders']) && !empty($mail->from_email)) {
+        if (!empty($response['senders'])) {
             foreach ($response['senders'] as $sender) {
-                if ($sender['email'] == $mail->from_email) return $data;
+                if ($sender['email'] != $data['email']) continue;
+
+                return [
+                    'name' => $sender['name'],
+                    'id' => $sender['id'],
+                ];
             }
         }
 
@@ -23,7 +28,10 @@ class SendinblueSender extends SendinblueClass
 
         if (!empty($response['code'])) return false;
 
-        return $data;
+        return [
+            'name' => $data['name'],
+            'id' => $response['id'],
+        ];
     }
 
     public function getReplyToEmail($mail)

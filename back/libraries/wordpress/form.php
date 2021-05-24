@@ -251,6 +251,27 @@ function acym_renderForm($params, $args = [])
                 '.$js.'
                 //-->
                 </script>';
+
+    $buttonStyle = '';
+    if (!empty($params->get('button_background_color', ''))) $buttonStyle .= 'background-color: '.$params->get('button_background_color', '').';';
+    if (!empty($params->get('button_text_color', ''))) $buttonStyle .= 'color: '.$params->get('button_text_color', '').';';
+    if (strlen($params->get('button_border_size', '')) > 0) $buttonStyle .= 'border-width: '.$params->get('button_border_size', '').'px;';
+    if (!empty($params->get('button_border_type', ''))) $buttonStyle .= 'border-style: '.$params->get('button_border_type', '').';';
+    if (!empty($params->get('button_border_color', ''))) $buttonStyle .= 'border-color: '.$params->get('button_border_color', '').';';
+    if (strlen($params->get('button_border_radius', '')) > 0) $buttonStyle .= 'border-radius: '.$params->get('button_border_radius', '').'px;';
+
+    if (!empty($buttonStyle)) {
+        acym_addStyle(true, '#acym_module_'.$formName.' .acysubbuttons .subbutton {'.$buttonStyle.'}');
+    }
+
+    $globalStyle = '';
+    if (!empty($params->get('background_color', ''))) $globalStyle .= 'background-color: '.$params->get('background_color', '').';';
+    if (!empty($params->get('text_color', ''))) $globalStyle .= 'color: '.$params->get('text_color', '').';';
+
+    if (!empty($globalStyle)) {
+        acym_addStyle(true, '#acym_module_'.$formName.', #acym_module_'.$formName.' td {'.$globalStyle.'}');
+    }
+
     ob_start();
     ?>
 	<div class="acym_module <?php echo acym_escape($formClass); ?>" id="acym_module_<?php echo $formName; ?>">

@@ -124,20 +124,34 @@
                             ?>
 						</p>
 					</div>
-					<div class="<?php echo $data['campaign_type'] == 'campaigns_auto' ? 'large-1' : 'large-2'; ?> medium-3 small-5 cell">
+					<div class="<?php echo $data['campaign_type'] == 'campaigns_auto' ? 'large-1' : 'large-2'; ?> acym__campaign__recipients medium-3 small-5 cell">
                         <?php
                         if (!empty($campaign->lists)) {
-                            echo '<div class="grid-x cell text-center">';
+
+                            $subscriptionsCount = count($campaign->lists);
+                            $counter = 0;
                             foreach ($campaign->lists as $list) {
-                                echo acym_tooltip('<i class="acym_subscription acymicon-circle" style="color:'.acym_escape($list->color).'"></i>', acym_escape($list->name));
+                                $classes = 'acym_subscription acymicon-circle';
+                                if ($counter >= 5 && $subscriptionsCount !== 6) $classes .= ' acym_subscription_more';
+
+                                echo acym_tooltip(
+                                    '<i class="'.$classes.'" style="color:'.acym_escape($list->color).'"></i>',
+									acym_escape($list->name)
+                                );
+                                $counter++;
                             }
-                            echo '</div>';
+
+                            if ($counter > 5 && $subscriptionsCount !== 6) {
+                                $counter = $counter - 5;
+                                echo '<span class="acym__campaign__show-subscription acymicon-stack" data-iscollapsed="0" acym-data-value="'.$counter.'">
+										<i class="acym__campaign__button__showsubscription acymicon-circle acymicon-stack-2x"></i>
+										<span class="acym__listing__text acym__campaign__show-subscription-bt acymicon-stack-1x">+'.$counter.'</span>
+									</span>';
+                            }
                         } else {
-                            echo '<div class="cell medium-12">'.(empty($campaign->automation)
-                                    ? acym_translation('ACYM_NO_LIST_SELECTED')
-                                    : acym_translation(
-                                        'ACYM_SENT_WITH_AUTOMATION'
-                                    )).'</div>';
+                            echo '<div class="cell medium-12">';
+                            echo acym_translation(empty($campaign->automation) ? 'ACYM_NO_LIST_SELECTED' : 'ACYM_SENT_WITH_AUTOMATION');
+                            echo '</div>';
                         }
                         ?>
 					</div>

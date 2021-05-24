@@ -20,8 +20,9 @@ const acym_editorWysidOutlook = {
 
         let backgroundColor = ' fillcolor="' + $element.css('background-color') + '"';
         let href = ' href="' + $element.attr('href') + '"';
-        let widthButton = $element.outerWidth();
-        let cssRoundrect = 'style="width: ' + widthButton + '; height:' + $element.css('height').replace(/[^-\d\.]/g, '') + ';v-text-anchor:middle;"';
+        let widthButton = Math.ceil($element.outerWidth()) + 'px';
+        let heightButton = $element.css('height').replace(/[^-\d\.]/g, '') + 'px';
+        let cssRoundrect = 'style="width: ' + widthButton + '; height:' + heightButton + ';v-text-anchor:middle;"';
         let css = 'color :' + $element.css('color') + '; font-family:' + $element.css('font-family') + '; font-size:' + $element.css('font-size') + ';';
         let text = $element.html();
 

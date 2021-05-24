@@ -249,8 +249,14 @@ class ExportHelper extends acymObject
         if (!in_array($separator, [',', ';'])) $separator = ',';
         $separator = '"'.$separator.'"';
 
+        $allFieldsToExport = array_merge($fieldsToExport, $customFieldsToExport);
+
+        foreach ($allFieldsToExport as $key => $field) {
+            $allFieldsToExport[$key] = $encodingClass->change($field, 'UTF-8', $charset);
+        }
+
         // This first line shows the column headers ("name", "email", etc...)
-        $firstLine = $this->before.implode($separator, array_merge($fieldsToExport, $customFieldsToExport)).$this->after.$this->eol;
+        $firstLine = $this->before.implode($separator, $allFieldsToExport).$this->after.$this->eol;
 
         if (empty($exportFile)) {
             @ob_get_clean();

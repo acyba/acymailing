@@ -1,6 +1,11 @@
 <?php
 
 use AcyMailing\Classes\UserClass;
+use Joomla\Registry\Registry;
+use Joomla\CMS\Access\Access;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\User\User;
+use Joomla\CMS\Factory;
 
 class plgAcymcreateuser extends acymPlugin
 {
@@ -45,7 +50,6 @@ class plgAcymcreateuser extends acymPlugin
                 'value' => $defaultUsergroup,
                 'data' => $usergroups,
             ],
-
         ];
     }
 
@@ -119,16 +123,15 @@ class plgAcymcreateuser extends acymPlugin
         $joomlaUser = new JUser();
 
         // Check if the user needs to activate his account.
-        if ($useractivation == 1 || $useractivation == 2) {
+        if (in_array($useractivation, [1, 2])) {
             $userData['activation'] = JApplicationHelper::getHash(JUserHelper::genrandompassword());
             $userData['block'] = 1;
         }
 
         // Write to database
         if (!$joomlaUser->bind($userData)) return false;
-
         // Store the data.
-        if (!$joomlaUser->save()) return false;
+        if (!$this->save($joomlaUser)) return false;
 
         $user->cms_id = $joomlaUser->id;
         $userClass = new UserClass();
@@ -143,16 +146,17 @@ class plgAcymcreateuser extends acymPlugin
 
         // Handle account activation/confirmation emails.
         $emailSubject = acym_translation_sprintf('COM_USERS_EMAIL_ACCOUNT_DETAILS', $data['name'], $data['sitename']);
-        if ($useractivation == 2 || $useractivation == 1) {
+        if (in_array($useractivation, [1, 2])) {
             $base = acym_currentURL();
             $activationLink = 'index.php?option=com_users&task=registration.activate&token=';
+            $data['activate'] = $data['siteurl'].$activationLink.$data['activation'];
 
             if ($useractivation == 2) {
                 $emailBody = acym_translation_sprintf(
                     'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY',
                     $data['name'],
                     $data['sitename'],
-                    $data['siteurl'].$activationLink.$data['activation'],
+                    $data['activate'],
                     $data['siteurl'],
                     $data['username'],
                     $data['password_clear']
@@ -163,14 +167,12 @@ class plgAcymcreateuser extends acymPlugin
                     $activationMessage,
                     $data['name'],
                     $data['sitename'],
-                    $data['siteurl'].$activationLink.$data['activation'],
+                    $data['activate'],
                     $data['siteurl'],
                     $data['username'],
                     $data['password_clear']
                 );
             }
-
-            $data['activate'] = $base.acym_route($activationLink.$data['activation'], false);
         } else {
             $emailBody = acym_translation_sprintf(
                 'COM_USERS_EMAIL_REGISTERED_BODY',
@@ -180,6 +182,20 @@ class plgAcymcreateuser extends acymPlugin
                 $data['username'],
                 $data['password_clear']
             );
+        }
+
+        // Replace variables for Joomla 4
+        if (ACYM_J40) {
+            $keys = [];
+            $replaceData = [];
+            foreach ($data as $key => $oneKey) {
+                if (is_array($oneKey)) continue;
+
+                $keys[] = '{'.strtoupper($key).'}';
+                $replaceData[] = $oneKey;
+            }
+            $emailSubject = str_replace($keys, $replaceData, $emailSubject);
+            $emailBody = str_replace($keys, $replaceData, $emailBody);
         }
 
         // Fetch the mail object - A reference to the global mail object (JMail) is fetched through the JFactory object. This is the object creating our mail.
@@ -199,6 +215,78 @@ class plgAcymcreateuser extends acymPlugin
         // Send the mail - It is sent with the function Send. It returns true on success or a JError object.
         $send = $mailer->Send();
         if ($send !== true) return false;
+    }
+
+    public function save($joomlaUser)
+    {
+        // Create the user table object
+        $table = $joomlaUser->getTable();
+        $joomlaUser->params = '{}';
+        $table->bind($joomlaUser->getProperties());
+
+        try {
+            if (!$table->check()) {
+                $joomlaUser->setError($table->getError());
+
+                return false;
+            }
+
+            $isNew = empty($joomlaUser->id);
+
+            $my = \JFactory::getUser();
+
+            $oldUser = new User($joomlaUser->id);
+
+            $iAmRehashingSuperadmin = false;
+            if (($my->id == 0 && !$isNew) && $joomlaUser->id == $oldUser->id && $oldUser->authorise('core.admin') && $oldUser->password != $joomlaUser->password) {
+                $iAmRehashingSuperadmin = true;
+            }
+
+            // We are only worried about edits to this account if I am not a Super Admin.
+            $iAmSuperAdmin = $my->authorise('core.admin');
+            if ($iAmSuperAdmin != true && $iAmRehashingSuperadmin != true) {
+                // I am not a Super Admin, and this one is, so fail.
+                if (!$isNew && Access::check($joomlaUser->id, 'core.admin')) {
+                    throw new \RuntimeException('User not Super Administrator');
+                }
+
+                if ($joomlaUser->groups != null) {
+                    // I am not a Super Admin and I'm trying to make one.
+                    foreach ($joomlaUser->groups as $groupId) {
+                        if (Access::checkGroup($groupId, 'core.admin')) {
+                            throw new \RuntimeException('User not Super Administrator');
+                        }
+                    }
+                }
+            }
+
+            // Fire the onUserBeforeSave event.
+            PluginHelper::importPlugin('user');
+            if (ACYM_J40) {
+                $result = Factory::getApplication()->triggerEvent('onUserBeforeSave', [$oldUser->getProperties(), $isNew, $joomlaUser->getProperties()]);
+            } else {
+                $dispatcher = \JEventDispatcher::getInstance();
+                $result = $dispatcher->trigger('onUserBeforeSave', [$oldUser->getProperties(), $isNew, $joomlaUser->getProperties()]);
+            }
+            if (in_array(false, $result, true)) return false;
+
+            $result = $table->store();
+
+            if (empty($joomlaUser->id)) {
+                $joomlaUser->id = $table->get('id');
+            }
+
+            if ($my->id == $table->id) {
+                $registry = new Registry($table->params);
+                $my->setParameters($registry);
+            }
+        } catch (\Exception $e) {
+            $joomlaUser->setError($e->getMessage());
+
+            return false;
+        }
+
+        return $result;
     }
 
     protected function createWordpressUser($user)

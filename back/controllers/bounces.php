@@ -39,10 +39,18 @@ class BouncesController extends acymController
     public function prepareToolbar(&$data)
     {
         $toolbarHelper = new ToolbarHelper();
-        $toolbarHelper->addButton(acym_translation('ACYM_CONFIGURE'), ['data-task' => 'config', 'id' => 'acym__bounce__button__config', 'type' => 'button'], 'settings');
-        $toolbarHelper->addButton(acym_translation('ACYM_RESET_DEFAULT_RULES'), ['data-task' => 'reinstall', 'type' => 'button'], 'repeat');
-        $toolbarHelper->addButton(acym_translation('ACYM_RUN_BOUNCE_HANDLING'), ['data-task' => 'test'], 'play_arrow');
-        $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit', 'type' => 'submit'], 'add', true);
+        $toolbarHelper->addButton('ACYM_CONFIGURE', ['data-task' => 'config', 'id' => 'acym__bounce__button__config', 'type' => 'button'], 'settings');
+        $toolbarHelper->addButton(
+            'ACYM_RESET_DEFAULT_RULES',
+            [
+                'data-task' => 'reinstall',
+                'type' => 'button',
+                'data-confirmation-message' => 'ACYM_ARE_YOU_SURE',
+            ],
+            'repeat'
+        );
+        $toolbarHelper->addButton('ACYM_RUN_BOUNCE_HANDLING', ['data-task' => 'test'], 'play_arrow');
+        $toolbarHelper->addButton('ACYM_CREATE', ['data-task' => 'edit', 'type' => 'submit'], 'add', true);
 
         $data['toolbar'] = $toolbarHelper;
     }

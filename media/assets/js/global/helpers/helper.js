@@ -120,7 +120,7 @@ const acym_helper = {
         });
     },
     confirm: function (text) {
-        return confirm(text);
+        return confirm(text.replace('<br />', '\n'));
     },
     setMessageClose: function () {
         jQuery('.acym_message i.acymicon-remove').off('click').on('click', function () {

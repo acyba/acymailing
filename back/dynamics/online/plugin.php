@@ -106,10 +106,10 @@ class plgAcymOnline extends acymPlugin
             if (ACYM_CMS == 'joomla' && strpos($oneTag, 'modify_profile') !== false) {
                 $link = acym_getPageLink('view=frontusers&layout=profile');
                 $link .= strpos($link, '?') ? '&' : '?';
-                $link .= 'id={subtag:id}&key={subtag:key}';
+                $link .= 'id={subscriber:id}&key={subscriber:key}';
                 $link .= $this->getLanguage($email->links_language);
             } else {
-                $link = 'archive&task=view&id='.$email->id.'&userid={subtag:id}-{subtag:key}&'.acym_noTemplate(false);
+                $link = 'archive&task=view&id='.$email->id.'&userid={subscriber:id}-{subscriber:key}&'.acym_noTemplate(false);
                 $link .= $this->getLanguage($email->links_language);
                 if (!empty($email->key)) $link .= '&key='.$email->key;
                 $link = acym_frontendLink($link);

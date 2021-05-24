@@ -154,6 +154,7 @@ const acym_editorWysidContextModal = {
 
             jQuery(window).off('mousedown').on('mousedown', function (event) {
                 if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextBlock)) return true;
+                if (jQuery(event.target).hasClass('acym__wysid__row__toolbox__edit')) return true;
                 if (!jQuery(event.target).hasClass('acym__wysid__row__selector') && !jQuery('.sp-container').is(':visible') && !jQuery(event.target)
                     .closest('#acym__wysid__editor__source').length > 0) {
                     jQuery('#acym__wysid__editor__source, #acym__wysid__right-toolbar__overlay').removeClass('acym__wysid__visible');

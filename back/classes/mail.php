@@ -905,15 +905,15 @@ class MailClass extends acymClass
         // If we send a notification
         if (isset($automationAdmin['automationAdmin']) && $automationAdmin['automationAdmin']) {
             $userClass = new UserClass();
-            $mailerHelper = new MailerHelper();
             $mail = $this->getOneById($mailId);
             $user = $userClass->getOneById($automationAdmin['user_id']);
 
             if (empty($mail) || empty($user)) return false;
 
             // Get the current user values
+            $mailerHelper = new MailerHelper();
             $pluginHelper = new PluginHelper();
-            $extractedTags = $pluginHelper->extractTags($mail, 'subtag');
+            $extractedTags = $pluginHelper->extractTags($mail, 'subscriber');
             if (!empty($extractedTags)) {
                 foreach ($extractedTags as $dtext => $oneTag) {
                     if (empty($oneTag->info) || $oneTag->info != 'current' || empty($user->{$oneTag->id})) continue;

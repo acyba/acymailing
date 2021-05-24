@@ -1,7 +1,9 @@
 if (typeof submitAcymForm !== 'function') {
-    let acytask, acyformName;
+    var acytask, acyformName, acysubmitting;
 
     function submitAcymForm(newtask, newformName, submitFunction) {
+        if (typeof acysubmitting !== 'undefined' && acysubmitting !== undefined && acysubmitting === newformName) return;
+
         acytask = newtask;
         acyformName = newformName;
         submitFunction = submitFunction === undefined ? 'acymSubmitSubForm' : submitFunction;
@@ -67,7 +69,7 @@ if (typeof submitAcymForm !== 'function') {
 
         // Reset invalid CSS class
         let invalidFields = document.querySelectorAll('#' + acyformName + ' .invalid');
-        if (invalidFields.length != 0) {
+        if (invalidFields.length !== 0) {
             for (i = 0 ; i < invalidFields.length ; i++) {
                 invalidFields[i].classList.remove('invalid');
             }
@@ -255,7 +257,7 @@ if (typeof submitAcymForm !== 'function') {
                 if (!listschecked) {
                     if (acytask !== 'unsubscribe') {
                         alert(acymModule['NO_LIST_SELECTED']);
-                    }else{
+                    } else {
                         alert(acymModule['NO_LIST_SELECTED_UNSUB']);
                     }
                     return false;
@@ -309,6 +311,7 @@ if (typeof submitAcymForm !== 'function') {
         form.className += ' acym_module_loading';
         form.style.filter = 'alpha(opacity=50)';
         form.style.opacity = '0.5';
+        acysubmitting = acyformName;
 
         // Delete the previous error messages if the user re-submits the form
         let previousErrorMessages = document.querySelectorAll('.responseContainer.acym_module_error.message_' + acyformName);
@@ -321,6 +324,9 @@ if (typeof submitAcymForm !== 'function') {
         xhr.onload = function () {
             let message = 'Ajax Request Failure';
             let type = 'error';
+            if (acysubmitting === acyformName) {
+                acysubmitting = '';
+            }
 
             if (xhr.status === 200) {
                 let response = JSON.parse(xhr.responseText);
