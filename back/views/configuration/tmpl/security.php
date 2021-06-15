@@ -106,6 +106,15 @@
 		<div class="cell medium-6 grid-x">
             <?php echo acym_switch('config[email_checkdomain]', $this->config->get('email_checkdomain'), acym_translation('ACYM_CHECK_DOMAIN_EXISTS')); ?>
 		</div>
+		<div class="cell medium-6 grid-x">
+            <?php
+            echo acym_switch(
+                'config[email_spellcheck]',
+                $this->config->get('email_spellcheck'),
+                acym_translation('ACYM_SPELLCHECK_SUGGESTIONS').acym_info('ACYM_SPELLCHECK_SUGGESTIONS_DESC')
+            );
+            ?>
+		</div>
 	</div>
 </div>
 

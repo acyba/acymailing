@@ -89,7 +89,7 @@ class FieldsController extends acymController
             $this->breadcrumb[acym_translation('ACYM_NEW_CUSTOM_FIELD')] = acym_completeLink('fields&task=edit');
         }
 
-        $allFields = $fieldClass->getAllfields();
+        $allFields = $fieldClass->getAll();
 
         $allFieldsName = [];
         foreach ($allFields as $one) {

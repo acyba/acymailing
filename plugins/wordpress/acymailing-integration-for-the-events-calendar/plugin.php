@@ -66,8 +66,8 @@ class plgAcymTheeventscalendar extends acymPlugin
         $format = new stdClass();
         $format->tag = $tag;
         $format->title = '{title}';
-        $format->afterTitle = 'Price: {price}';
-        $format->afterArticle = 'Date: {date} <br> Location: {location}';
+        $format->afterTitle = acym_translation('ACYM_PRICE').': {price}';
+        $format->afterArticle = acym_translation('ACYM_DATE').': {date} <br> '.acym_translation('ACYM_LOCATION').': {location}';
         $format->imagePath = '{image}';
         $format->description = '{intro}';
         $format->link = '{link}';
@@ -108,13 +108,7 @@ class plgAcymTheeventscalendar extends acymPlugin
     public function insertionOptions($defaultValues = null)
     {
         $this->defaultValues = $defaultValues;
-
-        $this->categories = acym_loadObjectList(
-            'SELECT cat.term_taxonomy_id AS id, cat.parent AS parent_id, catdetails.name AS title 
-            FROM `#__term_taxonomy` AS cat 
-            JOIN `#__terms` AS catdetails ON cat.term_id = catdetails.term_id
-            WHERE cat.taxonomy = "tribe_events_cat"'
-        );
+        $this->prepareWPCategories('tribe_events_cat');
 
         $tabHelper = new TabHelper();
         $identifier = $this->name;
@@ -497,7 +491,14 @@ class plgAcymTheeventscalendar extends acymPlugin
                 WHERE ID = '.intval($id)
             );
             if (empty($subject)) $subject = '';
-            echo json_encode(['value' => $id.' - '.$subject]);
+            echo json_encode(
+                [
+                    [
+                        'value' => $id,
+                        'text' => $id.' - '.$subject,
+                    ],
+                ]
+            );
             exit;
         }
 

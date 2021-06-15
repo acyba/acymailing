@@ -104,7 +104,7 @@
 						</div>
 						<div class="large-2 medium-3 hide-for-small-only cell acym__listing__user_links_details__content acym__listing__user_links_details__click-date text-center">
                             <?php
-                            echo empty($userLinkDetails->date_click) ? '-' : acym_date($userLinkDetails->date_click, 'Y-m-d H:i:s');
+                            echo empty($userLinkDetails->date_click) ? '-' : acym_date($userLinkDetails->date_click, 'Y-m-d H:i:s', false);
                             ?>
 						</div>
 						<div class="large-2 medium-3 small-4 cell acym__listing__user_links_details__content text-center">

@@ -1037,7 +1037,7 @@ class UserClass extends acymClass
         $res = acym_query($query);
         if ($res === false) {
             // If there is an error we definitely want to warn the user about it.
-            $msg = 'Please contact the admin of this website with the error message:<br />'.substr(strip_tags(acym_getDBError()), 0, 200).'...';
+            $msg = acym_translation('ACYM_CONTACT_ADMIN_ERROR').'<br />'.substr(strip_tags(acym_getDBError()), 0, 200).'...';
             acym_display($msg, 'error');
             exit;
         }
@@ -1371,5 +1371,37 @@ class UserClass extends acymClass
         }
 
         return ['status' => $status !== false, 'message' => $message];
+    }
+
+    public function resetSubscription($userIds, $lists)
+    {
+        if (empty($lists)) return false;
+
+        if (!is_array($userIds)) $userIds = [$userIds];
+        if (!is_array($lists)) $lists = [$lists];
+
+        acym_arrayToInteger($userIds);
+        acym_arrayToInteger($lists);
+
+        foreach ($userIds as $userId) {
+            acym_query(
+                'DELETE FROM `#__acym_user_has_list` 
+                WHERE user_id = '.$userId.' 
+                    AND list_id IN ('.implode(',', $lists).')'
+            );
+
+            acym_query(
+                'DELETE FROM #__acym_queue WHERE user_id = '.$userId.' AND mail_id IN (
+                    SELECT followup_mail.mail_id FROM #__acym_followup_has_mail AS followup_mail
+                    JOIN #__acym_followup AS followup ON followup.id = followup_mail.followup_id AND followup.list_id IN ('.implode(',', $lists).')
+                )'
+            );
+
+            $historyClass = new HistoryClass();
+            $historyData = acym_translationSprintf('ACYM_LISTS_NUMBERS', implode(', ', $lists));
+            $historyClass->insert($userId, 'reset_subscription', [$historyData]);
+        }
+
+        return true;
     }
 }

@@ -614,7 +614,7 @@ class UsersController extends acymController
 
         // Get custom fields and exclude name and email as we already have them
         $fieldClass = new FieldClass();
-        $customFields = $fieldClass->getAllfields();
+        $customFields = $fieldClass->getAll();
 
         $entityHelper = new EntitySelectHelper();
         $encodingHelper = new EncodingHelper();
@@ -625,8 +625,6 @@ class UsersController extends acymController
         } else {
             $entitySelect = $entityHelper->entitySelect('list', ['join' => ''], $entityHelper->getColumnsForList('', true));
         }
-
-        if ($filtersListing['list_status'] == 'none') $filtersListing['list_status'] = 'all';
 
         $data = [
             'lists' => $lists,
@@ -689,7 +687,7 @@ class UsersController extends acymController
 
         $tableFields = acym_getColumns('user');
         $fieldClass = new FieldClass();
-        $customFields = $fieldClass->getAllfields();
+        $customFields = $fieldClass->getAll();
 
         $customFieldsToExport = [];
 
@@ -737,10 +735,16 @@ class UsersController extends acymController
             acym_arrayToInteger($selectedUsersArray);
             $where[] = 'user.id IN ('.implode(',', $selectedUsersArray).')';
         } elseif ($usersToExport == 'list' && !empty($listsToExport)) {
-            $query .= ' JOIN #__acym_user_has_list AS userlist ON userlist.user_id = user.id';
             acym_arrayToInteger($listsToExport);
-            $where[] = 'userlist.list_id IN ('.implode(',', $listsToExport).')';
 
+            $listJoin = '#__acym_user_has_list AS userlist ON userlist.user_id = user.id AND userlist.list_id IN ('.implode(',', $listsToExport).')';
+
+            if ($exportUsersType == 'none') {
+                $query .= ' LEFT JOIN '.$listJoin;
+                $where[] = 'userlist.status IS NULL';
+            } else {
+                $query .= ' JOIN '.$listJoin;
+            }
             if ($exportUsersType == 'sub') $where[] = 'userlist.status = 1';
             if ($exportUsersType == 'unsub') $where[] = 'userlist.status = 0';
         }
@@ -787,6 +791,22 @@ class UsersController extends acymController
         acym_setNoTemplate(false);
 
         return acym_redirect(acym_completeLink('users&task=export', false, true));
+    }
+
+    public function resetSubscription()
+    {
+        $userId = acym_getVar('int', 'id');
+
+        if (empty($userId)) {
+            $this->listing();
+
+            return;
+        }
+
+        $list = acym_getVar('int', 'acym__entity_select__selected');
+        $this->currentClass->resetSubscription($userId, [$list]);
+
+        $this->edit();
     }
 
     public function unsubscribeUser()

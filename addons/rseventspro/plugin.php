@@ -67,10 +67,10 @@ class plgAcymRseventspro extends acymPlugin
         $format = new stdClass();
         $format->tag = $tag;
         $format->title = '{title}';
-        $format->afterTitle = 'Date: {date}';
+        $format->afterTitle = acym_translation('ACYM_DATE').': {date}';
         $format->afterArticle = '';
         $format->imagePath = '{icon}';
-        $format->description = '{short} <br> Location: {location}';
+        $format->description = '{short} <br> '.acym_translation('ACYM_LOCATION').': {location}';
         $format->link = '{link}';
         $format->customFields = [];
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
@@ -505,7 +505,14 @@ class plgAcymRseventspro extends acymPlugin
         if (!empty($id)) {
             $subject = acym_loadResult('SELECT `name` FROM #__rseventspro_events WHERE `id` = '.intval($id));
             if (empty($subject)) $subject = '';
-            echo json_encode(['value' => $id.' - '.$subject]);
+            echo json_encode(
+                [
+                    [
+                        'value' => $id,
+                        'text' => $id.' - '.$subject,
+                    ],
+                ]
+            );
             exit;
         }
 

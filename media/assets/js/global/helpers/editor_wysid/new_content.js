@@ -31,12 +31,12 @@ const acym_editorWysidNewContent = {
         let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
         content += '<td class="large-12 acym__wysid__column__element__td">';
         content += '<div class="acym__wysid__tinymce--image acym__wysid__media__inserted--focus">';
-        content += '<p style="text-align: center" data-mce-style="text-align: center">';
+        content += '<div style="text-align: center" data-mce-style="text-align: center">';
         content += '<img class="acym__wysid__media__inserted" src="'
                    + ACYM_MEDIA_URL
                    + 'images/default_image.png" title="image" alt="" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;"/>';
         content += '</div>';
-        content += '</p>';
+        content += '</div>';
         content += '</td>';
         content += '</tr>';
         jQuery(ui).replaceWith(content);
@@ -56,7 +56,7 @@ const acym_editorWysidNewContent = {
         content += '<td class="large-12 acym__wysid__column__element__td">';
 
         content += '<div style="text-align: center;box-sizing: inherit;">';
-        content += '<a class="acym__wysid__column__element__button acym__wysid__content-no-settings-style" style="background-color: #222222; color: white; padding: 25px 30px; max-width: 100%; overflow: unset; border: 1px solid white; text-overflow: ellipsis; text-align: center; text-decoration: none; word-break: break-all;display: inline-block; box-shadow: none;font-family: Arial; font-size: 14px; cursor: pointer; line-height: 1; border-radius: 0" href="#">Button</a>';
+        content += '<a class="acym__wysid__column__element__button acym__wysid__content-no-settings-style" style="background-color: #222222; color: white; padding: 25px 30px; max-width: 100%; overflow: unset; border: 1px solid white; text-overflow: ellipsis; text-align: center; text-decoration: none; word-break: break-word;display: inline-block; box-shadow: none;font-family: Arial; font-size: 14px; cursor: pointer; line-height: 1; border-radius: 0" href="#">Button</a>';
         content += '</div>';
 
         content += '</td>';

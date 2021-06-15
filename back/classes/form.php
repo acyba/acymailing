@@ -474,7 +474,7 @@ class FormClass extends acymClass
         ];
         $return['render'] = [];
         $fieldClass = new FieldClass();
-        $allFields = $fieldClass->getAllfields();
+        $allFields = $fieldClass->getAll();
         $fields = [];
         foreach ($allFields as $field) {
             if ($field->id == 2 || $field->active === '0') continue;

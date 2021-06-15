@@ -88,13 +88,7 @@ class plgAcymPost extends acymPlugin
     public function insertionOptions($defaultValues = null)
     {
         $this->defaultValues = $defaultValues;
-
-        $this->categories = acym_loadObjectList(
-            "SELECT cat.term_taxonomy_id AS id, cat.parent AS parent_id, catdetails.name AS title 
-            FROM `#__term_taxonomy` AS cat 
-            JOIN `#__terms` AS catdetails ON cat.term_id = catdetails.term_id
-            WHERE cat.taxonomy = 'category'"
-        );
+        $this->prepareWPCategories('category');
 
         $tabHelper = new TabHelper();
         $identifier = $this->name;

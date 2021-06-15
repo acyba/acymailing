@@ -87,13 +87,13 @@
                         <?php echo $data['entitySelect']; ?>
 						<div class="margin-bottom-1 margin-top-1">
                             <?php
-                            $exportSub = [
-                                'sub' => acym_translation('ACYM_SUBSCRIBED_USER'),
-                                'unsub' => acym_translation('ACYM_UNSUBSCRIBED_USER'),
-                                'all' => acym_translation('ACYM_EXPORT_BOTH'),
-                            ];
                             echo acym_radio(
-                                $exportSub,
+                                [
+                                    'sub' => acym_translation('ACYM_SUBSCRIBED_USER'),
+                                    'unsub' => acym_translation('ACYM_UNSUBSCRIBED_USER'),
+                                    'all' => acym_translation('ACYM_EXPORT_BOTH'),
+                                    'none' => acym_translation('ACYM_NO_SUBSCRIPTION_STATUS'),
+                                ],
                                 'export_list',
                                 $data['exportListStatus']
                             );

@@ -405,7 +405,8 @@ class plgAcymArticle extends acymPlugin
             $pictVar = in_array('intro', $tag->display) || empty($images['image_fulltext']) ? 'image_intro' : 'image_fulltext';
             if (!empty($images[$pictVar])) {
                 $imagePath = acym_rootURI().$images[$pictVar];
-                $varFields['{picthtml}'] = '<img alt="" src="'.acym_escape($imagePath).'" />';
+                $altImage = empty($images['image_intro_alt']) ? 'image' : $images['image_intro_alt'];
+                $varFields['{picthtml}'] = '<img alt="'.$altImage.'" src="'.acym_escape($imagePath).'" />';
 
                 if (!empty($tag->caption)) {
                     $imageCaption = $varFields['{'.$pictVar.'_caption}'];

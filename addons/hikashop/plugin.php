@@ -80,7 +80,7 @@ class plgAcymHikashop extends acymPlugin
         $format->tag = $tag;
         $format->title = '{product_name}';
         $format->afterTitle = '';
-        $format->afterArticle = 'Price: {finalPrice}';
+        $format->afterArticle = acym_translation('ACYM_PRICE').': {finalPrice}';
         $format->imagePath = '{pictHTML}';
         $format->description = '{product_description}';
         $format->link = '{link}';

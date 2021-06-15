@@ -164,6 +164,22 @@ class acymPlugin extends acymObject
         return $result;
     }
 
+    public function prepareWPCategories($type)
+    {
+        $this->categories = acym_loadObjectList(
+            'SELECT cat.term_taxonomy_id AS id, parent.term_taxonomy_id AS parent_id, catdetails.name AS title 
+            FROM `#__term_taxonomy` AS cat 
+            JOIN `#__terms` AS catdetails ON cat.term_id = catdetails.term_id 
+            LEFT JOIN `#__term_taxonomy` AS parent ON cat.parent = parent.term_id 
+            WHERE cat.taxonomy = '.acym_escapeDB($type)
+        );
+        foreach ($this->categories as $i => $oneCat) {
+            if (empty($oneCat->parent_id)) {
+                $this->categories[$i]->parent_id = $this->rootCategoryId;
+            }
+        }
+    }
+
     protected function getCategoryFilter()
     {
         $filter_cat = acym_getVar('int', 'plugin_category', 0);
@@ -415,11 +431,19 @@ class acymPlugin extends acymObject
         if (empty($parameter->order)) return;
 
         $ordering = explode(',', $parameter->order);
-        if ($ordering[0] == 'rand') {
+        if ($ordering[0] === 'rand') {
             $query .= ' ORDER BY rand()';
         } else {
             $table = null === $table ? '' : $table.'.';
-            $query .= ' ORDER BY '.$table.'`'.acym_secureDBColumn(trim($ordering[0])).'` '.acym_secureDBColumn(trim($ordering[1]));
+            $column = $ordering[0];
+
+            if (strpos($column, '.') !== false) {
+                $parts = explode('.', $column, 2);
+                $table = acym_secureDBColumn($parts[0]).'.';
+                $column = $parts[1];
+            }
+
+            $query .= ' ORDER BY '.$table.'`'.acym_secureDBColumn(trim($column)).'` '.acym_secureDBColumn(trim($ordering[1]));
         }
     }
 

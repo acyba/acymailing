@@ -77,7 +77,7 @@ class plgAcymVirtuemart extends acymPlugin
         $format = new stdClass();
         $format->tag = $tag;
         $format->title = '{title}';
-        $format->afterTitle = 'Price: {price}';
+        $format->afterTitle = acym_translation('ACYM_PRICE').': {price}';
         $format->afterArticle = '';
         $format->imagePath = '{image}';
         $format->description = '{shortdesc}';
@@ -589,9 +589,8 @@ class plgAcymVirtuemart extends acymPlugin
 
         $varFields['{shortdesc}'] = '<p>'.$element->product_s_desc.'</p>';
         if (in_array('shortdesc', $tag->display)) $contentText .= $varFields['{shortdesc}'];
-        $varFields['{desc}'] = '<p>'.$element->product_s_desc.'</p>';
+        $varFields['{desc}'] = '<p>'.$element->product_desc.'</p>';
         if (in_array('desc', $tag->display)) $contentText .= $varFields['{desc}'];
-
 
         $categories = acym_loadObjectList(
             'SELECT cattrans.virtuemart_category_id, cattrans.category_name 
@@ -783,7 +782,14 @@ class plgAcymVirtuemart extends acymPlugin
             $value = '';
             $element = acym_loadResult('SELECT `product_name` FROM #__virtuemart_products_'.$this->lang.' WHERE `virtuemart_product_id` = '.intval($id));
             if (!empty($element)) $value = $element;
-            echo json_encode(['value' => $value]);
+            echo json_encode(
+                [
+                    [
+                        'value' => $id,
+                        'text' => $value,
+                    ],
+                ]
+            );
             exit;
         }
 

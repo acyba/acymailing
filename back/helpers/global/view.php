@@ -319,6 +319,7 @@ function acym_getJSMessages()
         'ACYM_CF_VALUE_CHANGED',
         'ACYM_OLD_VALUE',
         'ACYM_NEW_VALUE',
+        'ACYM_CUSTOM_FIELDS',
     ];
 
     foreach ($keysToLoad as $oneKey) {

@@ -1,5 +1,6 @@
 <?php
 
+use AcyMailing\Libraries\acymPlugin;
 use AcyMailing\Classes\UserClass;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Access\Access;
@@ -67,7 +68,8 @@ class plgAcymcreateuser extends acymPlugin
 
     public function createCmsUser($user)
     {
-        if (empty($user->email) || !empty($user->cms_id) || empty($this->getParam('enableCreate', '0'))) return;
+        $enableCreate = $this->getParam('enableCreate', '0');
+        if (empty($user->email) || !empty($user->cms_id) || empty($enableCreate)) return;
 
         // Should we only create from front subscriber creation
         if ($this->getParam('onlyFront', 'front') === 'front' && acym_isAdmin()) return;

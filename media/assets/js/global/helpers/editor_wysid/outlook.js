@@ -23,7 +23,10 @@ const acym_editorWysidOutlook = {
         let widthButton = Math.ceil($element.outerWidth()) + 'px';
         let heightButton = $element.css('height').replace(/[^-\d\.]/g, '') + 'px';
         let cssRoundrect = 'style="width: ' + widthButton + '; height:' + heightButton + ';v-text-anchor:middle;"';
-        let css = 'color :' + $element.css('color') + '; font-family:' + $element.css('font-family') + '; font-size:' + $element.css('font-size') + ';';
+        let css = 'color :' + $element.css('color') + ';';
+        css += ' font-family:' + $element.css('font-family') + ';';
+        css += ' font-size:' + $element.css('font-size') + ';';
+        css += ' font-weight:' + $element.css('font-weight') + ';';
         let text = $element.html();
 
         return '<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"'
