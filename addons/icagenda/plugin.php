@@ -72,7 +72,7 @@ class plgAcymIcagenda extends acymPlugin
         $format->tag = $tag;
         $format->title = '{title}';
         $format->afterTitle = '';
-        $format->afterArticle = 'Date: {date}<br/> Location: {venue}<br/> Avalaible seats: {availableseats}';
+        $format->afterArticle = acym_translation('ACYM_DATE').': {date}<br/> '.acym_translation('ACYM_LOCATION').': {venue}<br/> Avalaible seats: {availableseats}';
         $format->imagePath = '{image}';
         $format->description = '{short}';
         $format->link = '{link}';
@@ -576,7 +576,14 @@ class plgAcymIcagenda extends acymPlugin
         if (!empty($id)) {
             $subject = acym_loadResult('SELECT `title` FROM #__icagenda_events WHERE `id` = '.intval($id));
             if (empty($subject)) $subject = '';
-            echo json_encode(['value' => $id.' - '.$subject]);
+            echo json_encode(
+                [
+                    [
+                        'value' => $id,
+                        'text' => $id.' - '.$subject,
+                    ],
+                ]
+            );
             exit;
         }
 

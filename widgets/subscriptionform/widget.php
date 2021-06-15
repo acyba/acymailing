@@ -30,7 +30,7 @@ class acym_subscriptionform_widget extends WP_Widget
 
         $listClass = new ListClass();
         $fieldClass = new FieldClass();
-        $allFields = $fieldClass->getAllfields();
+        $allFields = $fieldClass->getAll();
         $fields = [];
         foreach ($allFields as $field) {
             if ($field->id == 2 || $field->active === '0') continue;

@@ -187,7 +187,8 @@ const acym_editorWysidContextModal = {
                 let cssToApply = acym_helper.parseJson(jQuery(this).attr('data-css'));
                 let alignmentPosition = jQuery(this).attr('data-float') === 'none' ? 'center' : jQuery(this).attr('data-float');
                 $imgSelected.css(cssToApply);
-                $imgSelected.closest('p').css('text-align', alignmentPosition);
+                $imgSelected.closest('div').find('.acym__wysid__media_caption').css(cssToApply);
+                $imgSelected.closest('div').css('text-align', alignmentPosition);
                 jQuery('.acym__wysid__context__image__align').css('background-color', 'inherit');
                 jQuery(this).css('background-color', '');
             });

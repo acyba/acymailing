@@ -149,6 +149,7 @@ function acym_checkVersion($ajax = false)
 
     // Could not load the user information
     if (empty($userInformation) || $userInformation === false) {
+        $config->save(['lastlicensecheck' => time()]);
         if ($ajax) {
             echo json_encode(['content' => '<br/><span style="color:#C10000;">'.acym_translation('ACYM_ERROR_LOAD_FROM_ACYBA').'</span><br/>'.$result]);
             exit;

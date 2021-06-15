@@ -50,7 +50,7 @@ const acym_editorWysidWordpress = {
                     let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
                     content += '<td class="large-12 acym__wysid__column__element__td">';
                     content += '<div class="acym__wysid__tinymce--image">';
-                    content += '<p style="text-align: center" data-mce-style="text-align: center">';
+                    content += '<div style="text-align: center" data-mce-style="text-align: center">';
                     if ($link.length > 0) content += '<a href="' + $link.attr('href') + '" class="acym__wysid__link__image" target="_blank">';
                     content += '<img class="acym__wysid__media__inserted acym__wysid__media__inserted--focus acym__wysid__media__inserted--selected" src="'
                                + attachment.url
@@ -59,9 +59,15 @@ const acym_editorWysidWordpress = {
                                + '" alt="'
                                + acym_helper.escape(attachment.alt)
                                + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;"/>';
+                    if (attachment.caption !== undefined && attachment.caption.length > 0) {
+                        content += '<div class="acym__wysid__media_caption" '
+                                   + 'style="width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display:block;">'
+                                   + acym_helper.escape(attachment.caption)
+                                   + '</div>';
+                    }
                     if ($link.length > 0) content += '</a>';
                     content += '</div>';
-                    content += '</p>';
+                    content += '</div>';
                     content += '</td>';
                     content += '</tr>';
                     jQuery(ui).replaceWith(content);

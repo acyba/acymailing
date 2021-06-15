@@ -28,6 +28,7 @@
 
     center > table {
         max-width: $global-width;
+        width: 100%;
     }
 
     @media screen and (max-width: $global-breakpoint) {

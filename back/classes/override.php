@@ -118,6 +118,7 @@ class OverrideClass extends acymClass
                 $oneOverride->$identifier = '';
                 foreach ($decodedValue as $partialTrad) {
                     $oneOverride->$identifier .= acym_translation($partialTrad, false, true, '');
+                    if ($oneOverride->source == 'woocommerce') $oneOverride->$identifier = __($oneOverride->$identifier, 'woocommerce');
                 }
 
 

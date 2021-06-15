@@ -51,17 +51,25 @@ function acym_initModule($params = null)
     $config = acym_config();
     $version = str_replace('.', '', $config->get('version'));
 
+    global $acymEmailMisspelledLoaded;
+    $spellChecker = empty($acymEmailMisspelledLoaded) && !empty($config->get('email_spellcheck'));
+    if ($spellChecker) $acymEmailMisspelledLoaded = true;
+
     if ($loadJsInModule) {
+        if ($spellChecker) echo '<script type="text/javascript" src="'.ACYM_JS.'libraries/email-misspelled.min.js?v='.$version.'"></script>';
         echo '<script type="text/javascript" src="'.ACYM_JS.'module.min.js?v='.$version.'"></script>';
         echo '<script type="text/javascript">'.$js.'</script>';
     } else {
+        if ($spellChecker) acym_addScript(false, ACYM_JS.'libraries/email-misspelled.min.js?v='.$version);
         $scriptName = acym_addScript(false, ACYM_JS.'module.min.js?v='.$version);
         acym_addScript(true, $js, 'text/javascript', false, false, false, ['script_name' => $scriptName]);
     }
 
     if ('wordpress' === ACYM_CMS && !in_array(acym_getVar('string', 'action'), ['elementor', 'elementor_ajax'])) {
+        if ($spellChecker) wp_enqueue_style('style_email_spellchecker', ACYM_CSS.'libraries/email-misspelled.min.css?v='.$version);
         wp_enqueue_style('style_acymailing_module', ACYM_CSS.'module.min.css?v='.$version);
     } else {
+        if ($spellChecker) acym_addStyle(false, ACYM_CSS.'libraries/email-misspelled.min.css?v='.$version);
         acym_addStyle(false, ACYM_CSS.'module.min.css?v='.$version);
     }
 }

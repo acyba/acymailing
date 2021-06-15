@@ -21,7 +21,8 @@ const acym_editorWysidTinymce = {
             fontsize_formats: '10px=10px 12px=12px 14px=14px 16px=16px 18px=18px 20px=20px 22px=22px 24px=24px 26px=26px 28px=28px 30px=30px 32px=32px 34px=34px 36px=36px',
             lineheight_formats: '100% 110% 120% 130% 140% 150% 160% 170% 180% 190% 200% 210% 220% 230% 240%',
             toolbar: [
-                'undo redo formatselect fontselect fontsizeselect | alignmentsplit | listsplit lineheightselect | table',
+                'undo redo formatselect fontselect fontsizeselect',
+                'alignmentsplit | listsplit lineheightselect | table',
                 'bold italic underline strikethrough removeformat | forecolor backcolor | link unlink | code'
             ],
             link_class_list: [

@@ -19,7 +19,7 @@ function acym_level($neededLevel)
     $config = acym_config();
     $currentLevel = $config->get('level');
 
-    $currentLevelNumber = in_array($currentLevel, $levels) ? $levels[$currentLevel] : 0;
+    $currentLevelNumber = in_array($currentLevel, array_keys($levels)) ? $levels[$currentLevel] : 0;
 
     return $currentLevelNumber >= $neededLevel;
 }

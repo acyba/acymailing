@@ -920,7 +920,14 @@ class plgAcymJevents extends acymPlugin
                 WHERE attendance.id = '.intval($id)
             );
             if (empty($subject)) $subject = '';
-            echo json_encode(['value' => $id.' - '.$subject]);
+            echo json_encode(
+                [
+                    [
+                        'value' => $id,
+                        'text' => $id.' - '.$subject,
+                    ],
+                ]
+            );
             exit;
         }
 

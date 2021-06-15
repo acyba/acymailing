@@ -8,6 +8,8 @@
  */
 defined('_JEXEC') or die;
 
+use AcyMailing\Libraries\acymPlugin;
+
 class plgAcymSurvey extends acymPlugin
 {
     public function __construct()

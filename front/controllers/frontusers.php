@@ -574,6 +574,14 @@ class FrontusersController extends UsersController
             }
         }
 
+        global $acymEmailMisspelledLoaded;
+        $spellChecker = empty($acymEmailMisspelledLoaded) && !empty($this->config->get('email_spellcheck'));
+        if ($spellChecker) $acymEmailMisspelledLoaded = true;
+
+        if ($spellChecker) {
+            acym_addStyle(false, ACYM_CSS.'libraries/email-misspelled.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'email-misspelled.min.css'));
+            acym_addScript(false, ACYM_JS.'libraries/email-misspelled.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'email-misspelled.min.js'));
+        }
         acym_addScript(false, ACYM_JS.'module.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'module.min.js'));
 
         // Get the page parameters

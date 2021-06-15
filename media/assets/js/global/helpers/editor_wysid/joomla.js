@@ -27,7 +27,7 @@ const acym_editorWysidJoomla = {
             acym_helperEditorWysid.checkForEmptyTbodyWYSID();
         }
     },
-    validateMediaSelection: function (isRowBackgroundImage, imagesUrls, altValue, valueTitle) {
+    validateMediaSelection: function (isRowBackgroundImage, imagesUrls, altValue, valueTitle, valueCaption) {
         // No image selected and no url provided
         if (acym_helper.empty(imagesUrls)) {
             alert(ACYM_JS_TXT.ACYM_SELECT_A_PICTURE);
@@ -90,19 +90,25 @@ const acym_editorWysidJoomla = {
                 content += '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
                 content += '<td class="large-12 acym__wysid__column__element__td">';
                 content += '<div class="acym__wysid__tinymce--image">';
-                content += '<p style="text-align: center" data-mce-style="text-align: center">';
+                content += '<div style="text-align: center; " data-mce-style="text-align: center">';
                 if ($link.length > 0 && parseInt(i) === 0) content += '<a href="' + $link.attr('href') + '" class="acym__wysid__link__image" target="_blank">';
                 content += '<img class="acym__wysid__media__inserted '
                            + classImage
-                           + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;" src="'
+                           + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display:block; margin-left: auto; margin-right: auto;" src="'
                            + linkImage
                            + '" alt="'
                            + acym_helper.escape(alt)
                            + '" title="'
                            + acym_helper.escape(title)
                            + '"/>';
+                if (valueCaption !== undefined && valueCaption.length > 0) {
+                    content += '<div class="acym__wysid__media_caption" '
+                               + 'style="width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display:block;">'
+                               + acym_helper.escape(valueCaption)
+                               + '</div>';
+                }
                 if ($link.length > 0) content += '</a>';
-                content += '</p>';
+                content += '</div>';
                 content += '</div>';
                 content += '</td>';
                 content += '</tr>';
@@ -146,7 +152,7 @@ const acym_editorWysidJoomla = {
                 });
             }
 
-            acym_editorWysidJoomla.validateMediaSelection(rows, imagesUrls, '', '');
+            acym_editorWysidJoomla.validateMediaSelection(rows, imagesUrls, '', '', '');
         });
 
         // Joomla 3
@@ -157,12 +163,13 @@ const acym_editorWysidJoomla = {
             let urlImg = $modalUi.contents().find('#f_url').val();
             let altValue = $modalUi.contents().find('#f_alt').val();
             let valueTitle = $modalUi.contents().find('#f_title').val();
+            let valueCaption = $modalUi.contents().find('#f_caption').val();
             let imagesUrls = [];
             if (!acym_helper.empty(urlImg)) {
                 if (urlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER)) urlImg = ACYM_JOOMLA_MEDIA_IMAGE + urlImg;
                 imagesUrls.push(urlImg);
             }
-            acym_editorWysidJoomla.validateMediaSelection(rows, imagesUrls, altValue, valueTitle);
+            acym_editorWysidJoomla.validateMediaSelection(rows, imagesUrls, altValue, valueTitle, valueCaption);
         });
     }
 };

@@ -15,7 +15,7 @@ class plgAcymAutomationexport extends acymPlugin
 
         $fields = acym_getColumns('user');
         $fieldClass = new FieldClass();
-        $customFields = $fieldClass->getAllfields();
+        $customFields = $fieldClass->getAll();
         $fields = array_merge($fields, $customFields);
 
         $defaultFields = explode(',', $this->config->get('export_fields', 'name,email'));

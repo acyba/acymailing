@@ -1122,10 +1122,10 @@ class acymInstall
                 $mailClass = new MailClass();
                 foreach ($adminAutomations as $oneAutomation) {
                     $actions = $automationClass->getActionsByAutomationId($oneAutomation->id);
-                    foreach ($actions as $oneAction){
+                    foreach ($actions as $oneAction) {
                         $oneAction->actions = json_decode($oneAction->actions, true);
-                        foreach($oneAction->actions as $action){
-                            if(empty($action['acy_add_queue']['mail_id'])) continue;
+                        foreach ($oneAction->actions as $action) {
+                            if (empty($action['acy_add_queue']['mail_id'])) continue;
 
                             $mail = $mailClass->getOneById($action['acy_add_queue']['mail_id']);
                             $mail->body = str_replace('{subtag:', '{subscriber:', $mail->body);
@@ -1133,6 +1133,22 @@ class acymInstall
                             $mailClass->save($mail);
                         }
                     }
+                }
+            }
+        }
+
+        if (version_compare($this->fromVersion, '7.6.0', '<')) {
+            $fieldClass = new FieldClass();
+            $fields = $fieldClass->getAll();
+            foreach ($fields as $field) {
+                $field->option = json_decode($field->option, true);
+                $options = array_keys($field->option);
+                if (in_array('editable_user_creation', $options) || in_array('editable_user_modification', $options)) {
+                    unset($field->option['editable_user_creation']);
+                    unset($field->option['editable_user_modification']);
+
+                    $field->option = json_encode($field->option);
+                    $fieldClass->save($field);
                 }
             }
         }

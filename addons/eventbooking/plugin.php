@@ -578,7 +578,14 @@ class plgAcymEventbooking extends acymPlugin
         if (!empty($id)) {
             $subject = acym_loadResult('SELECT `title` FROM #__eb_events WHERE `id` = '.intval($id));
             if (empty($subject)) $subject = '';
-            echo json_encode(['value' => $id.' - '.$subject]);
+            echo json_encode(
+                [
+                    [
+                        'value' => $id,
+                        'text' => $id.' - '.$subject,
+                    ],
+                ]
+            );
             exit;
         }
 

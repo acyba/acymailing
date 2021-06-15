@@ -67,7 +67,7 @@ class plgAcymDpcalendar extends acymPlugin
         $format->tag = $tag;
         $format->title = '{title}';
         $format->afterTitle = '';
-        $format->afterArticle = 'Date: {date} <br/> Location: {venue} <br/> Booking closing date: {closingdate}';
+        $format->afterArticle = acym_translation('ACYM_DATE').': {date} <br/> '.acym_translation('ACYM_LOCATION').': {venue} <br/> Booking closing date: {closingdate}';
         $format->imagePath = '{image}';
         $format->description = '{desc}';
         $format->link = '{link}';

@@ -61,8 +61,14 @@ class FieldClass extends acymClass
         return acym_loadResult('SELECT COUNT(id) FROM #__acym_field');
     }
 
+    /**
+     * @return array
+     *
+     * @deprecated use getAll instead
+     */
     public function getAllfields()
     {
+        //TODO Remove this method in January 2022, the wp plugin acymailing-automation-export used it in a previous version
         return acym_loadObjectList('SELECT * FROM #__acym_field', 'id');
     }
 
@@ -435,7 +441,11 @@ class FieldClass extends acymClass
             $return .= '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.' type="text" class="cell">';
         } elseif ($field->id == 2) {
             $nameAttribute = ' name="user[email]"';
-            $return .= '<input '.$nameAttribute.$placeholder.$value.$authorizedContent.$style.$maxCharacters.' required type="email" class="cell acym__user__edit__email" '.($displayFront && $cmsUser ? 'disabled' : '').'>';
+            $uniqueId = 'email_field_'.rand(100, 900);
+            $return .= '<input id="'.$uniqueId.'" '.$nameAttribute.$placeholder.$value.$authorizedContent.$style.$maxCharacters.' required type="email" class="cell acym__user__edit__email" '.($displayFront && $cmsUser ? 'disabled' : '').'>';
+            if ($displayFront && !$cmsUser && !empty($this->config->get('email_spellcheck'))) {
+                $return .= '<ul acym-data-field="'.$uniqueId.'" class="acym_email_suggestions" style="display: none;"></ul>';
+            }
         } elseif ($field->type === 'language') {
             if (empty($defaultValue) && !empty($user->language)) {
                 $defaultValue = $user->language;

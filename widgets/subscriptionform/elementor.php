@@ -38,7 +38,7 @@ class acySubscriptionFormWidget extends \Elementor\Widget_Base
         ];
 
         $fieldClass = new FieldClass();
-        $allFields = $fieldClass->getAllfields();
+        $allFields = $fieldClass->getAll();
         foreach ($allFields as $field) {
             if ($field->id == 2 || $field->active === '0') continue;
             $this->fields[$field->id] = acym_translation($field->name);

@@ -80,7 +80,7 @@ class plgAcymJdownloads extends acymPlugin
         $format->tag = $tag;
         $format->title = '{symbol} {title}';
         $format->afterTitle = '';
-        $format->afterArticle = 'Price: {price}<br> {readmore}';
+        $format->afterArticle = acym_translation('ACYM_PRICE').': {price}<br> {readmore}';
         $format->imagePath = '{image}';
         $format->description = '{shortdesc}';
         $format->link = '{link}';
