@@ -96,7 +96,7 @@ function readyFunction($) {
                 this.displaySelected = entitySelectContainer.getAttribute('data-display-selected') === 'true';
                 this.columnJoin = entitySelectContainer.getAttribute('data-column-join');
                 this.tableJoin = entitySelectContainer.getAttribute('data-table-join');
-
+                
                 //we load everything
                 this.getAllEntities(this.entity);
                 $(window).off('refreshEntitySelect').on('refreshEntitySelect', function () {
@@ -105,6 +105,10 @@ function readyFunction($) {
                 setTimeout(() => {
                     acym_helperTooltip.setTooltip();
                 }, 400);
+
+                $('#acym__lists__settings__subscribers__entity__modal').off('open.zf.reveal').on('open.zf.reveal', function () {
+                    acym_helperTooltip.setUserInfoLoadingHover();
+                });
             },
             methods: {
                 getClass(column) {

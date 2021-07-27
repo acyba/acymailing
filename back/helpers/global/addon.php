@@ -10,6 +10,12 @@ function acym_trigger($method, $args = [], $plugin = null, $callbackOnePlugin = 
     // On WordPress we load the addons before the tables are created on installation
     if (!in_array(acym_getPrefix().'acym_configuration', acym_getTableList())) return null;
 
+    // Handle multilingual
+    if (in_array($method, ['replaceContent', 'replaceUserInformation']) && !empty($args[0]->language)) {
+        $previousLanguage = acym_setLanguage($args[0]->language);
+        acym_loadLanguage($args[0]->language);
+    }
+
     global $acymPlugins;
     global $acymAddonsForSettings;
     if (empty($acymPlugins)) acym_loadPlugins();
@@ -32,6 +38,11 @@ function acym_trigger($method, $args = [], $plugin = null, $callbackOnePlugin = 
         } catch (Exception $e) {
 
         }
+    }
+
+    if (!empty($previousLanguage)) {
+        acym_setLanguage($previousLanguage);
+        acym_loadLanguage($previousLanguage);
     }
 
     return $result;

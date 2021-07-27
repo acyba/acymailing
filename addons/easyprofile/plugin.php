@@ -36,9 +36,7 @@ class plgAcymEasyprofile extends acymPlugin
             }
             $this->bannedFields = ['password', 'avatar'];
 
-            $this->initDisplayOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
-            $this->initElementOptionsCustomView();
+            $this->initCustomView(true);
 
             $this->settings = [
                 'custom_view' => [
@@ -173,7 +171,7 @@ class plgAcymEasyprofile extends acymPlugin
         }
     }
 
-    public function initDisplayOptionsCustomView()
+    public function initCustomOptionsCustomView()
     {
         acym_loadLanguageFile('com_jsn', JPATH_ADMINISTRATOR);
 

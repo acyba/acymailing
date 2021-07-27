@@ -1067,7 +1067,7 @@ class MailClass extends acymClass
 
         $poweredByHTML = '<p id="acym__powered_by_acymailing"><a href="https://www.acymailing.com/?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="blank"><img height="40" width="199" style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;" src="'.$urlPoweredByImage.'"></a></p>';
         $poweredByWYSID = <<<CONTENT
-<table id="acym__powered_by_acymailing" class="row" bgcolor="#ffffff" style="background-color: transparent" cellpadding="0">
+<table id="acym__powered_by_acymailing" class="row" bgcolor="#ffffff" style="background-color: transparent" cellpadding="0" cellspacing="0" border="0">
     <tbody bgcolor style="background-color: inherit;">
         <tr>
             <th class="small-12 medium-12 large-12 columns" valign="top" style="height: auto;">

@@ -45,8 +45,7 @@ class plgAcymWoocommerce extends acymPlugin
                 'attribs' => ['ACYM_DETAILS', false],
             ];
 
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [

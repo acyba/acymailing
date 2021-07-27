@@ -147,3 +147,11 @@ function acym_getSocialMedias()
 {
     return json_decode(ACYM_SOCIAL_MEDIA, true);
 }
+
+function acym_isAcyCheckerInstalled()
+{
+    $installed = ACYM_CMS === 'joomla' && acym_isExtensionActive('com_acychecker');
+    $installed = $installed || (ACYM_CMS === 'wordpress' && acym_isExtensionActive('acychecker/acychecker.php'));
+
+    return $installed;
+}

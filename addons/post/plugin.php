@@ -29,8 +29,7 @@ class plgAcymPost extends acymPlugin
                 'readmore' => ['ACYM_READ_MORE', false],
             ];
 
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [

@@ -17,9 +17,13 @@ class SendinblueUsers extends SendinblueClass
         $sendingMethod = $this->config->get('mailer_method', 'phpmail');
         if ($sendingMethod != plgAcymSendinblue::SENDING_METHOD_ID) return;
 
+        $nameParts = explode(' ', $user->name, 2);
         $userData = [
             'email' => $user->email,
-            'attributes' => ['LASTNAME' => $user->name],
+            'attributes' => [
+                'LASTNAME' => empty($nameParts[1]) ? '' : $nameParts[1],
+                'FIRSTNAME' => $nameParts[0],
+            ],
             'updateEnabled' => true,
         ];
         $this->callApiSendingMethod('contacts', $userData, $this->headers, 'POST');
@@ -117,11 +121,14 @@ class SendinblueUsers extends SendinblueClass
         if (!$ret) acym_sendAjaxResponse(acym_translation('ACYM_ERROR_CREATING_EXPORT_FILE'));
 
         $filePath = ACYM_TMP_FOLDER.plgAcymSendinblue::SENDING_METHOD_ID.'.txt';
-        file_put_contents($filePath, "LASTNAME;EMAIL\n");
+        file_put_contents($filePath, "LASTNAME;FIRSTNAME;EMAIL\n");
         $limit = 5000;
         $buffer = '';
         foreach ($users as $oneUser) {
-            $buffer .= '"'.$oneUser->name.'";"'.$oneUser->email."\"\n";
+            $nameParts = explode(' ', $oneUser->name, 2);
+            $lastName = str_replace('"', '', empty($nameParts[1]) ? '' : $nameParts[1]);
+            $firstName = str_replace('"', '', $nameParts[0]);
+            $buffer .= '"'.$lastName.'";"'.$firstName.'";"'.$oneUser->email."\"\n";
             $limit--;
 
             if ($limit === 0) {

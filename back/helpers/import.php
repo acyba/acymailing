@@ -319,6 +319,75 @@ class ImportHelper extends acymObject
         return true;
     }
 
+    public function mailpoet()
+    {
+        // Step 1 : import subscriber from mailpoet
+        $time = time();
+        $formattedTime = acym_date($time, 'Y-m-d H:i:s');
+        $sourceImport = 'import_on_'.$formattedTime.'_mailpoet';
+
+        $query = 'INSERT IGNORE INTO #__acym_user (`name`,`email`,`creation_date`,`active`, `confirmed`,`cms_id`, `source`) 
+                  SELECT CONCAT(`subscriber`.`first_name`, `subscriber`.`last_name`),
+                         `subscriber`.`email`,
+                         `subscriber`.`created_at`, 
+                         IF(`subscriber`.`status` = "inactive", 0, 1),
+                         IF(`subscriber`.`status` = "subscribed", 1, 0),
+                         `subscriber`.`wp_user_id`,
+                         \''.$sourceImport.'\' 
+                  FROM #__mailpoet_subscribers AS `subscriber` ';
+        $listsMailpoet = acym_getVar('array', 'mailpoet_lists', []);
+        if (!empty($listsMailpoet)) {
+            acym_arrayToInteger($listsMailpoet);
+            $query .= ' JOIN #__mailpoet_subscriber_segment AS sub_segment ON `subscriber`.`id` = `sub_segment`.`subscriber_id` AND `sub_segment`.`segment_id` IN ('.implode(
+                    ',',
+                    $listsMailpoet
+                ).')';
+        }
+        $query .= ' WHERE `subscriber`.`deleted_at` IS NULL ON DUPLICATE KEY UPDATE `source`='.acym_escapeDB($sourceImport);
+
+        $insertedUsers = acym_query($query);
+
+        acym_query('UPDATE #__acym_configuration SET `value` = '.intval($time).' WHERE `name` = \'last_import\'');
+
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_NEW_SUBS', $insertedUsers), 'info');
+
+        // Step 2 : subscribe all the registered users to one or several lists
+        $lists = $this->getImportedLists();
+        $listsSubscribe = [];
+        if (!empty($lists)) {
+            foreach ($lists as $listid => $val) {
+                if (!empty($val)) {
+                    $listsSubscribe[] = intval($listid);
+                }
+            }
+        }
+
+        if (empty($listsSubscribe)) {
+            return true;
+        }
+
+        $query = 'INSERT IGNORE INTO #__acym_user_has_list (`user_id`,`list_id`,`status`,`subscription_date`) ';
+        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time())).'
+                    FROM #__acym_list AS list, #__acym_user AS user ';
+        $conditions = [];
+        $conditions[] = 'list.`id` IN ('.implode(',', $listsSubscribe).')';
+        $conditions[] = 'user.`source` = '.acym_escapeDB($sourceImport);
+
+        if (!empty($listsMailpoet)) {
+            $query .= ' JOIN #__mailpoet_subscribers AS subscriber ON subscriber.email = user.email';
+            $query .= ' JOIN #__mailpoet_subscriber_segment AS subscriber_segment ON subscriber.id = subscriber_segment.subscriber_id AND subscriber_segment.segment_id IN ('.implode(
+                    ',',
+                    $listsMailpoet
+                ).')';
+        }
+
+        $query .= ' WHERE '.implode(' AND ', $conditions);
+        $nbsubscribed = acym_query($query);
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_SUBSCRIPTION', $nbsubscribed));
+
+        return true;
+    }
+
     private function _createUploadFolder()
     {
         $folderPath = acym_cleanPath(ACYM_ROOT.trim(html_entity_decode(str_replace('/', DS, ACYM_MEDIA_FOLDER).DS.'import'))).DS;

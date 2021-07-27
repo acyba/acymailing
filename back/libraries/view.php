@@ -90,7 +90,7 @@ class acymView extends acymObject
                 'walk_through',
                 0
             ) == 0) {
-            if (count(acym_getLanguages(true)) > 1) {
+            if (count(acym_getLanguages(false, true)) > 1) {
                 $message = acym_translation('ACYM_MULTILINGUAL_OPTIONS_PROMPT');
                 $message .= ' <a id="acym__multilingual__reminder" href="'.acym_completeLink('configuration&task=multilingual').'">'.acym_translation('ACYM_YES').'</a>';
                 $message .= ' / <a href="#" class="acym__do__not__remindme" title="multilingual">'.acym_translation('ACYM_NO').'</a>';

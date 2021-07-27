@@ -68,7 +68,7 @@ function acym_CMSArticleTitle($id)
     return acym_loadResult('SELECT title FROM #__content WHERE id = '.intval($id));
 }
 
-function acym_getArticleURL($id, $popup, $text, $titleModal = '')
+function acym_getArticleURL($id, $popup, $text)
 {
     if (empty($id)) return '';
 
@@ -92,7 +92,7 @@ function acym_getArticleURL($id, $popup, $text, $titleModal = '')
 
     if ($popup == 1) {
         $url .= (strpos($url, '?') ? '&' : '?').acym_noTemplate();
-        $url = acym_cmsModal(true, acym_route($url), $text, false, $titleModal);
+        $url = acym_frontModal(acym_route($url), $text, false);
     } else {
         $url = '<a title="'.acym_translation($text, true).'" href="'.acym_escape(acym_route($url)).'" target="_blank">'.acym_translation($text).'</a>';
     }

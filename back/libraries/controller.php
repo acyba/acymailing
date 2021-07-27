@@ -57,6 +57,12 @@ class acymController extends acymObject
         return $default;
     }
 
+    public function setVarFiltersListing($varName, $value)
+    {
+        acym_setVar($varName, $value);
+        $_SESSION[$this->sessionName][$varName] = $value;
+    }
+
     public function clearFilters()
     {
         $_SESSION[$this->sessionName] = [];
@@ -265,12 +271,12 @@ class acymController extends acymObject
         $ids = acym_getVar('array', 'elements_checked', []);
         $allChecked = acym_getVar('string', 'checkbox_all');
         $currentPage = explode('_', acym_getVar('string', 'page'));
-        $pageNumber = acym_getVar('int', end($currentPage).'_pagination_page');
+        $pageNumber = $this->getVarFiltersListing('int', end($currentPage).'_pagination_page', 1);
 
         if (!empty($ids) && !empty($this->currentClass)) {
             $this->currentClass->delete($ids);
             if ($allChecked == 'on') {
-                acym_setVar(end($currentPage).'_pagination_page', $pageNumber - 1);
+                $this->setVarFiltersListing(end($currentPage).'_pagination_page', $pageNumber - 1);
             }
         }
 

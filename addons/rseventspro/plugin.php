@@ -28,8 +28,7 @@ class plgAcymRseventspro extends acymPlugin
                 'tags' => ['COM_RSEVENTSPRO_GLOBAL_TAGS', false],
             ];
 
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [

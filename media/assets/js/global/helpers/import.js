@@ -9,7 +9,15 @@ const acym_helperImport = {
         acym_helperImport.setCreateListFromImportPage();
     },
     setImportCMSLists: function () {
-        let $submitButton = jQuery('#acym__users__import__from_database').is(':visible') ? jQuery('#submit_import_database') : jQuery('#submit_import_cms');
+        let $submitButton;
+        if (jQuery('#acym__users__import__from_database').is(':visible')) {
+            $submitButton = jQuery('#submit_import_database');
+        } else if (jQuery('#acym__users__import__cms_users').is(':visible')) {
+            $submitButton = jQuery('#submit_import_cms');
+        } else {
+            $submitButton = jQuery('#submit_import_mailpoet');
+        }
+
         jQuery('.acym__users__import__button').off('click').on('click', function () {
             $submitButton.click();
         });

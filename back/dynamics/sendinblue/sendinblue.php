@@ -17,10 +17,12 @@ class SendinblueClass extends acymPlugin
     protected function callApiSendingMethod($url, $data = [], $headers = [], $type = 'GET', $authentication = [], $dataDecoded = false)
     {
         $response = parent::callApiSendingMethod(plgAcymSendinblue::SENDING_METHOD_API_URL.$url, $data, $headers, $type, $authentication, $dataDecoded);
+
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
         if (!empty($response['error_curl'])) {
+            if (!$backtrace[0]['file'] && !empty($backtrace[1]['function'])) $this->plugin->errors[] = $backtrace[0]['file'].': '.$backtrace[1]['function'];
             $this->plugin->errors[] = $response['error_curl'];
         } elseif (!empty($response['message']) && strpos($response['message'], 'Contact already in list') === false) {
-            $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
             if (!$backtrace[0]['file'] && !empty($backtrace[1]['function'])) $this->plugin->errors[] = $backtrace[0]['file'].': '.$backtrace[1]['function'];
             $this->plugin->errors[] = $response['message'];
             /*

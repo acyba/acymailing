@@ -165,4 +165,17 @@
             []
         ); ?>
 	</div>
+    <?php if ($this->config->get('mailer_method') === 'postmark') { ?>
+		<div class="cell grid-x">
+			<div class="cell grid-x medium-10 large-7 xlarge-5 margin-left-3 margin-top-1">
+				<label class="cell medium-6">
+					Postmark Stream ID
+					<input type="text"
+						   class="cell auto"
+						   name="sending_params[message_stream_id]"
+						   value="<?php echo empty($data['currentCampaign']->sending_params['message_stream_id']) ? '' : $data['currentCampaign']->sending_params['message_stream_id']; ?>">
+				</label>
+			</div>
+		</div>
+    <?php } ?>
 </div>

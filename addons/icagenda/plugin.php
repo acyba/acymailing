@@ -31,9 +31,7 @@ class plgAcymIcagenda extends acymPlugin
                 'cat' => ['ACYM_CATEGORY', false],
             ];
 
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
-            $this->initCustomOptionsCustomView();
+            $this->initCustomView(true);
 
             $this->settings = [
                 'custom_view' => [

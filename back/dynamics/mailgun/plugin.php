@@ -105,7 +105,7 @@ class plgAcymMailgun extends acymPlugin
         }
     }
 
-    public function onAcymSendEmail(&$response, $sendingMethod, $to, $subject, $from, $reply_to, $body, $bcc = [], $attachments = [])
+    public function onAcymSendEmail(&$response, $sendingMethod, $to, $subject, $from, $reply_to, $body, $bcc = [], $attachments = [], $mailId = null)
     {
         //https://documentation.mailgun.com/en/latest/user_manual.html#sending-via-api
         if ($sendingMethod != self::SENDING_METHOD_ID) return;

@@ -821,7 +821,19 @@ class UserClass extends acymClass
                 );
                 if (!empty($userCmsID)) $user->cms_id = $userCmsID;
             }
-            acym_trigger('onAcymBeforeUserCreate', [&$user]);
+            $result = acym_trigger('onAcymBeforeUserCreate', [&$user]);
+            if (in_array(false, $result)) {
+                $acycheckerError = acym_getVar('string', 'acychecker_error');
+                if (!empty($acycheckerError)) {
+                    if ($ajax) {
+                        $this->errors[] = $acycheckerError;
+                    } else {
+                        acym_enqueueMessage($acycheckerError, 'error');
+                    }
+                }
+
+                return false;
+            }
         } else {
             acym_trigger('onAcymBeforeUserModify', [&$user]);
         }
@@ -1074,6 +1086,36 @@ class UserClass extends acymClass
         }
 
         return array_merge($user, $fieldsValue);
+    }
+
+    public function getCustomFieldValueById($id)
+    {
+        $fieldsValue = acym_loadObjectList(
+            'SELECT user_field.value AS value, field.name AS name, field.type AS type, field.value AS field_params, field.id AS id
+            FROM #__acym_user_has_field as user_field 
+            LEFT JOIN #__acym_field as field ON user_field.field_id = field.id 
+            WHERE user_field.user_id = '.intval($id),
+            'id'
+        );
+
+        $fieldReturn = [];
+
+        foreach ($fieldsValue as $fieldId => $field) {
+            if (in_array($field->type, ['checkbox', 'radio', 'single_dropdown', 'multiple_dropdown'])) {
+                $field->field_params = json_decode($field->field_params, true);
+                $field->value = explode(',', $field->value);
+                $values = [];
+                foreach ($field->value as $oneValue) {
+                    $key = array_search($oneValue, array_column($field->field_params, 'value'));
+                    $values[] = $field->field_params[$key]['title'];
+                }
+                $fieldReturn[$field->name] = implode(',', $values);
+            } else {
+                $fieldReturn[$field->name] = $field->value;
+            }
+        }
+
+        return $fieldReturn;
     }
 
     public function getAllColumnsUserAndCustomField($inAction = false)

@@ -27,7 +27,7 @@ class FrontlistsController extends ListsController
     {
         // Prepare the pagination
         $listsPerPage = $data['pagination']->getListLimit();
-        $page = acym_getVar('int', 'lists_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'lists_pagination_page', 1);
         $idCurrentUser = acym_currentUserId();
 
         if (empty($idCurrentUser)) return;

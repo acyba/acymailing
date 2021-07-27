@@ -35,8 +35,7 @@ class plgAcymEventsmanager extends acymPlugin
                 'readmore' => ['ACYM_READ_MORE', false],
             ];
 
-            $this->initReplaceOptionsCustomView();
-            $this->initElementOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [
@@ -427,14 +426,28 @@ class plgAcymEventsmanager extends acymPlugin
             $locationData = acym_loadObject('SELECT * FROM #__em_locations WHERE location_id = '.intval($properties['_location_id']->value));
 
             if (!empty($locationData)) {
-                $googleMapsSearch = [];
-                $googleMapsSearch[] = $locationData->location_address;
-                $googleMapsSearch[] = $locationData->location_town;
-                if (!empty($locationData->location_postcode)) $googleMapsSearch[] = $locationData->location_postcode;
-                if (!empty($locationData->location_state)) $googleMapsSearch[] = $locationData->location_state;
+                $locationLink = '';
+                // wp-content / plugins / events-manager / classes / em-location.php line 740
+                if (defined('EM_MS_GLOBAL') && EM_MS_GLOBAL) {
+                    $blog_id = get_current_site()->blog_id;
+                    if (get_site_option('dbem_ms_mainblog_locations')) {
+                        $locationLink = get_blog_permalink($blog_id, $locationData->post_id);
+                    } elseif ($blog_id != get_current_blog_id()) {
+                        $dbemLocationsPage = get_option('dbem_locations_page');
+                        if (!get_site_option('dbem_ms_global_locations_links') && is_main_site() && $dbemLocationsPage) {
+                            $locationLink = get_permalink($dbemLocationsPage).get_site_option('dbem_ms_locations_slug', EM_LOCATION_SLUG);
+                            $locationLink = trailingslashit($locationLink.'/'.$locationData->location_slug.'-'.$locationData->location_id);
+                        } else {
+                            $locationLink = get_blog_permalink($blog_id, $locationData->post_id);
+                        }
+                    }
+                }
 
-                $gmapQuery = implode(' ', $googleMapsSearch);
-                $varFields['{location}'] = '<a href="https://maps.google.com/?q='.urlencode($gmapQuery).'" target="_blank">'.$locationData->location_name.'</a>';
+                if (empty($locationLink)) {
+                    $locationLink = get_post_permalink($locationData->post_id);
+                }
+
+                $varFields['{location}'] = '<a href="'.esc_url($locationLink).'" target="_blank">'.$locationData->location_name.'</a>';
             }
         }
 
@@ -728,7 +741,7 @@ class plgAcymEventsmanager extends acymPlugin
         } elseif (!empty($options['event'])) {
             $query->join[$event] = '#__em_events AS '.$event.' ON '.$event.'.event_id = '.$booking.'.event_id ';
             $query->where[] = $event.'.post_id = '.intval($options['event']);
-        }elseif (!empty($options['category'])){
+        } elseif (!empty($options['category'])) {
             $query->join[$event] = '#__em_events AS '.$event.' ON '.$event.'.event_id = '.$booking.'.event_id ';
             $query->join[$category] = '#__term_relationships AS '.$category.' ON '.$event.'.post_id = '.$category.'.object_id ';
             $query->where[] = $category.'.term_taxonomy_id = '.intval($options['category']);

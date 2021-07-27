@@ -43,8 +43,7 @@ class plgAcymModerneventscalendar extends acymPlugin
                 'labels' => [__('Event Labels', $this->textDomain), false],
             ];
 
-            $this->initReplaceOptionsCustomView();
-            $this->initElementOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [

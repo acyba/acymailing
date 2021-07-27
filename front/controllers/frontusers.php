@@ -96,7 +96,7 @@ class FrontusersController extends UsersController
 
         // Prepare the pagination
         $usersPerPage = $data['pagination']->getListLimit();
-        $page = acym_getVar('int', 'users_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'users_pagination_page', 1);
         $currentUserId = acym_currentUserId();
 
         if (empty($currentUserId)) return;

@@ -130,6 +130,7 @@ class OverrideClass extends acymClass
                         '/%([0-9].?\$)?s/',
                         '/\\\{[A-Z_]+\\\}/i',
                         '/###[A-Z_-]+###/i',
+                        '/\\\#\\\#\\\#[A-Z_-]+\\\#\\\#\\\#/i',
                     ],
                     '(.*)',
                     preg_quote($oneOverride->$identifier, '/')

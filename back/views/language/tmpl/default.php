@@ -6,7 +6,7 @@
 			</h1>
             <?php
             //__START__joomla_
-            if ('{__CMS__}' === 'Joomla') {
+            if (ACYM_CMS === 'joomla') {
                 ?>
 				<button data-task="share" class="acy_button_submit button button-secondary medium-6 large-shrink cell">
                     <?php echo acym_translation('ACYM_SHARE_TRANSLATION'); ?>
@@ -14,7 +14,7 @@
                 <?php
             }
 
-            if ('{__CMS__}' === 'Joomla' && !empty($data['showLatest'])) {
+            if (ACYM_CMS === 'joomla' && !empty($data['showLatest'])) {
                 ?>
 				<button data-task="latest"
 						class="cell medium-6 large-shrink button button-secondary acy_button_submit">
@@ -30,7 +30,7 @@
                 <?php echo acym_translation('ACYM_SAVE'); ?>
 			</button>
 		</div>
-		<div class="cell acym__language__modal__existing acym__content<?php if ('{__CMS__}' === 'WordPress') echo ' is-hidden'; ?>">
+		<div class="cell acym__language__modal__existing acym__content<?php if (ACYM_CMS === 'wordpress') echo ' is-hidden'; ?>">
 			<textarea readonly rows="18" name="content" id="translation" class="acym__language__modal__existing__translation"><?php echo str_replace(
                     '&',
                     '&amp;',

@@ -32,7 +32,7 @@ function acym_getArticleURL($id, $popup, $text)
 
     if ($popup == 1) {
         $url .= (strpos($url, '?') ? '&' : '?').acym_noTemplate();
-        $url = acym_cmsModal(true, $url, $text, false);
+        $url = acym_frontModal($url, $text, false);
     } else {
         $url = '<a title="'.acym_translation($text, true).'" href="'.acym_escape($url).'" target="_blank">'.acym_translation($text).'</a>';
     }

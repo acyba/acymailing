@@ -137,6 +137,7 @@ const acym_editorWysidDynamic = {
         ajaxURL += '&plugin=' + plugin;
         ajaxURL += '&shortcode=' + encodeURIComponent(shortcode);
         ajaxURL += '&campaignId=' + jQuery('#acym__campaign__recipients__form__campaign').val();
+        if(!acym_helper.empty(acym_editorWysidMultilingual)) ajaxURL += '&language=' + acym_editorWysidMultilingual.selectedLanguage;
 
         let $campaignType = jQuery('[name="campaign_type"]');
         if ($campaignType.length > 0) ajaxURL += '&campaign_type=' + $campaignType.val();

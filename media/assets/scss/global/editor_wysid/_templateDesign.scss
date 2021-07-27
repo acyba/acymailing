@@ -1,5 +1,4 @@
 #acym__wysid__template {
-
     overflow: hidden;
     overflow-y: auto;
     padding: 0;
@@ -14,6 +13,10 @@
         max-width: 580px !important;
         min-width: inherit !important;
         margin: auto;
+    }
+
+    center > table {
+        width: 100%;
     }
 
     a {

@@ -4,10 +4,8 @@ if (version_compare(PHP_VERSION, '5.6.0', '<')) {
     exit;
 }
 
-$helperFile = rtrim(
-        JPATH_ADMINISTRATOR,
-        DIRECTORY_SEPARATOR
-    ).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
+$ds = DIRECTORY_SEPARATOR;
+$helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
 if (!include_once $helperFile) {
     echo 'Could not load AcyMailing library';
 

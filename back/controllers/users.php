@@ -5,6 +5,7 @@ namespace AcyMailing\Controllers;
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\HistoryClass;
 use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailpoetClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Helpers\EncodingHelper;
@@ -49,7 +50,7 @@ class UsersController extends acymController
     protected function prepareToolbar(&$data)
     {
         $toolbarHelper = new ToolbarHelper();
-        $toolbarHelper->addSearchBar($data['search'], 'users_search', 'ACYM_SEARCH');
+        $toolbarHelper->addSearchBar($data['search'], 'users_search');
         $toolbarHelper->addOptionSelect(
             acym_translation('ACYM_LIST'),
             acym_select(
@@ -70,6 +71,18 @@ class UsersController extends acymController
                 ['class' => 'acym__select']
             )
         );
+
+        //TODO AcyChecker online
+        if (false) {
+            $toolbarHelper->addButton(
+                'ACYM_ACYCHECKER_CLEAN_USERS',
+                [
+                    'data-task' => 'clean',
+                    'type' => 'submit',
+                ],
+                'user-check'
+            );
+        }
 
         $exportButton = acym_translation('ACYM_EXPORT');
         $exportButton .= '<span id="acym__users__listing__number_to_export" data-default="'.acym_strtolower(acym_translation('ACYM_ALL')).'">&nbsp;(';
@@ -114,7 +127,7 @@ class UsersController extends acymController
         $data['list_status'] = $this->getVarFiltersListing('string', 'list_status', 'sub');
 
         $listClass = new ListClass();
-        $data['lists'] = $listClass->getAll('name');
+        $data['lists'] = $listClass->getAll('id');
         $defaultList = new \stdClass();
         $defaultList->id = 0;
         $defaultList->name = acym_translation('ACYM_SELECT_A_LIST');
@@ -138,7 +151,7 @@ class UsersController extends acymController
     {
         // Prepare the pagination
         $usersPerPage = $data['pagination']->getListLimit();
-        $page = acym_getVar('int', 'users_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'users_pagination_page', 1);
 
         $matchingUsers = $this->getMatchingElementsFromData(
             [
@@ -509,11 +522,26 @@ class UsersController extends acymController
             'importHelper' => new ImportHelper(),
         ];
 
+        //__START__wordpress_
+        if (ACYM_CMS === 'wordpress') {
+            $this->prepareMailPoetList($data);
+        }
+        //__END__wordpress_
+
         $this->breadcrumb[acym_translation('ACYM_IMPORT')] = acym_completeLink('users&task=import');
 
 
         parent::display($data);
     }
+
+    //__START__wordpress_
+    private function prepareMailPoetList(&$data)
+    {
+        $mailpoetClass = new MailpoetClass();
+        $data['mailpoet_list'] = $mailpoetClass->getAllLists();
+    }
+
+    //__END__wordpress_
 
     public function ajaxEncoding()
     {
@@ -985,5 +1013,32 @@ class UsersController extends acymController
             $this->currentClass->subscribe($user, $listsSelected);
         }
         $this->listing();
+    }
+
+    public function clean()
+    {
+        if (acym_isAcyCheckerInstalled()) {
+            if (ACYM_CMS === 'joomla') {
+                acym_redirect(acym_route('index.php?option=com_acychecker', false));
+            } else {
+                acym_redirect(admin_url().'admin.php?page=acychecker_dashboard');
+            }
+        } else {
+            acym_redirect(acym_completeLink('dashboard&task=acychecker', false, true));
+        }
+    }
+
+    public function getUserInfo()
+    {
+        $id = acym_getVar('int', 'id', 0);
+
+        if (empty($id)) acym_sendAjaxResponse(acym_translation('ACYM_USER_NOT_FOUND'), [], false);
+
+        $userClass = new UserClass();
+        $user = $userClass->getCustomFieldValueById($id);
+
+        if (empty($user)) acym_sendAjaxResponse(acym_translation('ACYM_SUBSCRIBER_NOT_CUSTOM_FIELD'), [], false);
+
+        acym_sendAjaxResponse('', $user, true);
     }
 }

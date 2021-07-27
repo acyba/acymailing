@@ -41,7 +41,7 @@ class QueueController extends acymController
 
         // Get pagination data
         $campaignsPerPage = $pagination->getListLimit();
-        $page = acym_getVar('int', 'cqueue_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'cqueue_pagination_page', 1);
 
         $queueClass = new QueueClass();
         $matchingElements = $queueClass->getMatchingCampaigns(
@@ -120,7 +120,7 @@ class QueueController extends acymController
 
         // Get pagination data
         $elementsPerPage = $pagination->getListLimit();
-        $page = acym_getVar('int', 'dqueue_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'dqueue_pagination_page', 1);
 
         $queueClass = new QueueClass();
         $matchingElements = $queueClass->getMatchingResults(

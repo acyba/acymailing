@@ -76,7 +76,7 @@ const acym_helperCampaigns = {
                 }
             });
             let mailid = current.attr('data-mail');
-            jQuery.get(ACYM_AJAX_URL + '&ctrl=campaigns&task=deleteAttach&id=' + idRemove + '&mail=' + mailid, function (response) {
+            jQuery.post(ACYM_AJAX_URL + '&ctrl=campaigns&task=deleteAttach&id=' + idRemove + '&mail=' + mailid, function (response) {
                 response = acym_helper.parseJson(response);
                 if (undefined !== response.error) {
                     acym_helperNotification.addNotification(response.error, 'error');

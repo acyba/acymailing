@@ -45,7 +45,7 @@ class OverrideController extends acymController
     {
         // Prepare the pagination
         $emailsOverridePerPage = $data['pagination']->getListLimit();
-        $page = acym_getVar('int', 'override_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'override_pagination_page', 1);
 
         $this->installOverrideEmails();
 

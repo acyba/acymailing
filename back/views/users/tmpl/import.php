@@ -17,6 +17,14 @@
         include acym_getView('users', 'importfromdatabase', true);
         $data['tab']->endTab();
 
+        //__START__wordpress_
+        if (ACYM_CMS == 'wordpress' && acym_isExtensionActive('mailpoet/mailpoet.php')) {
+            $data['tab']->startTab(acym_translation('ACYM_IMPORT_MAILPOET'));
+            include acym_getView('users', 'importfrommailpoet', true);
+            $data['tab']->endTab();
+        }
+        //__END__wordpress_
+
         $data['tab']->display('import');
         ?>
 	</div>

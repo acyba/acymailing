@@ -17,6 +17,12 @@ class CronController extends acymController
 
     public function cron()
     {
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            exit;
+        }
+        //__END__demo_
+
         // Starter versions shouldn't have access to the cron
         if (!acym_level(ACYM_ESSENTIAL)) exit;
 
@@ -45,7 +51,7 @@ class CronController extends acymController
         echo '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" /><title>'.acym_translation('ACYM_CRON').'</title></head><body>';
         $cronHelper = new CronHelper();
         $cronHelper->report = true;
-        $cronHelper->skip = explode(',', acym_getVar('string', 'skip'));
+        $cronHelper->addSkipFromString(acym_getVar('string', 'skip'));
         $emailtypes = acym_getVar('string', 'emailtypes');
         if (!empty($emailtypes)) {
             $cronHelper->emailtypes = explode(',', $emailtypes);

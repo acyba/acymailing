@@ -177,6 +177,7 @@
         ?>
 
 		<input type="hidden" name="hiddenlists" value="<?php echo implode(',', $data['hiddenlists']); ?>" />
+		<input type="hidden" name="user[id]" value="<?php echo acym_escape($data['user']->id); ?>" />
 		<input type="hidden" name="id" value="<?php echo acym_escape($data['user']->id); ?>" />
 		<input type="hidden" name="key" value="<?php echo acym_escape($data['user']->key); ?>" />
 		<input type="hidden" name="ajax" value="1" />

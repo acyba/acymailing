@@ -33,7 +33,7 @@ class MailerHelper extends acyPHPMailer
 
     var $report = true;
     var $alreadyCheckedAddresses = false;
-    //Error numer which induct a new try soon
+    //Error number which induct a new try soon
     var $errorNewTry = [1, 6];
     var $autoAddUser = false;
     var $reportMessage = '';
@@ -182,7 +182,7 @@ class MailerHelper extends acyPHPMailer
 
         @ini_set('pcre.backtrack_limit', 1000000);
 
-        $this->SMTPOptions = ["ssl" => ["verify_peer" => false, "verify_peer_name" => false, "allow_self_signed" => true]];
+        $this->SMTPOptions = ['ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]];
 
         // Dynamic text for debug purposes
         $this->addParamInfo();
@@ -236,6 +236,7 @@ class MailerHelper extends acyPHPMailer
             $this->Body,
             $bcc,
             $attachments,
+            $this->mailId,
         ];
         acym_trigger('onAcymSendEmail', $data);
 
@@ -380,14 +381,24 @@ class MailerHelper extends acyPHPMailer
 
         $warnings = '';
 
-        if ($externalSending) {
-            $result = true;
-            acym_trigger('onAcymRegisterReceiverContentAndList', [&$result, $this->Body, $this->receiverEmail, $this->mailId, &$warnings]);
-        } else {
-            ob_start();
-            $result = parent::send();
-            $warnings = ob_get_clean();
+        //__START__production_
+        if (ACYM_PRODUCTION) {
+            if ($externalSending) {
+                $result = true;
+                acym_trigger('onAcymRegisterReceiverContentAndList', [&$result, $this->Body, $this->receiverEmail, $this->mailId, &$warnings]);
+            } else {
+                ob_start();
+                $result = parent::send();
+                $warnings = ob_get_clean();
+            }
         }
+        //__END__production_
+
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            $result = true;
+        }
+        //__END__demo_
 
         //display error if bloque is displayed... for free.fr especially
         if (!empty($warnings) && strpos($warnings, 'bloque')) {
@@ -578,7 +589,7 @@ class MailerHelper extends acyPHPMailer
         preg_match('@<[^>"t]*/body[^>]*>@', $mail->body, $matches);
         if (empty($matches[0])) $mail->body = $mail->body.'</body>';
 
-        // We remove the foudation library because it's already inlined and we just need the media queries
+        // We remove the foundation library because it's already inlined and we just need the media queries
         //By the way there are more than 23 000 char in foundation library
         unset($style['foundation']);
 
@@ -589,6 +600,8 @@ class MailerHelper extends acyPHPMailer
         $finalContent .= '<title>'.$mail->subject.'</title>'."\n";
         //We add the CSS like that for gmail because it delete the tag style over 8000 char
         $finalContent .= '<style type="text/css">'.implode('</style><style type="text/css">', $style).'</style>';
+        $finalContent .= '<!--[if mso]>--><style type="text/css">#acym__wysid__template center > table { width: 580px; }</style><!--<![endif]-->';
+        $finalContent .= '<!--[if !mso]>--><style type="text/css">#acym__wysid__template center > table { width: 100%; }</style><!--<![endif]-->';
         if (!empty($mail->headers)) $finalContent .= $mail->headers;
         $finalContent .= '</head>'.$mail->body.'</html>';
 

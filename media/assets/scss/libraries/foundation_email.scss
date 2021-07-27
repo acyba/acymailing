@@ -28,7 +28,6 @@
 
     center > table {
         max-width: $global-width;
-        width: 100%;
     }
 
     @media screen and (max-width: $global-breakpoint) {
@@ -144,5 +143,9 @@
 
     span {
         color: inherit;
+    }
+
+    .body .row .large-12 {
+        width: 580px;
     }
 }

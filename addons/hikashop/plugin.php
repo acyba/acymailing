@@ -36,8 +36,7 @@ class plgAcymHikashop extends acymPlugin
                 'readmore' => ['ACYM_READ_MORE', false],
             ];
 
-            $this->initReplaceOptionsCustomView();
-            $this->initElementOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [

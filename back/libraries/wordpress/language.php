@@ -132,7 +132,7 @@ function acym_translation_sprintf()
     return call_user_func_array('sprintf', $args);
 }
 
-function acym_getLanguages($installed = false)
+function acym_getLanguages($uppercaseLangCode = false, $published = false)
 {
     global $acyWPLangCodes;
 
@@ -148,7 +148,7 @@ function acym_getLanguages($installed = false)
 
         $lang = new stdClass();
         $lang->sef = empty($wplanguages[$oneLang]['iso'][1]) ? null : $wplanguages[$oneLang]['iso'][1];
-        $lang->language = strtolower($langTag);
+        $lang->language = $uppercaseLangCode ? $langTag : strtolower($langTag);
         $lang->name = empty($wplanguages[$wpLangCode]) ? $langTag : $wplanguages[$wpLangCode]['native_name'];
         $lang->exists = file_exists(ACYM_LANGUAGE.$langTag.'.'.ACYM_LANGUAGE_FILE.'.ini');
         $lang->content = true;

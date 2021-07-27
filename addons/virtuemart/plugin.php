@@ -36,9 +36,7 @@ class plgAcymVirtuemart extends acymPlugin
                 'readmore' => ['ACYM_READ_MORE', false],
             ];
 
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
-            $this->initCustomOptionsCustomView();
+            $this->initCustomView(true);
 
             $this->settings = [
                 'custom_view' => [

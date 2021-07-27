@@ -39,6 +39,7 @@ class ConfigurationController extends acymController
         $this->prepareAcl($data);
         $this->prepareClass($data);
         $this->prepareDataTab($data);
+        $this->prepareSecurity($data);
         $this->checkConfigMail();
         $this->prepareToolbar($data);
 
@@ -219,6 +220,12 @@ class ConfigurationController extends acymController
             'configuration' => 'ACYM_CONFIGURATION',
         ];
         $data['aclType'] = new AclType();
+    }
+
+    private function prepareSecurity(&$data)
+    {
+        $data['acychecker_installed'] = acym_isAcyCheckerInstalled();
+        $data['acychecker_get_link'] = ACYM_ACYMAILLING_WEBSITE.'acychecker_pricing?utm_source=acymailing_plugin&utm_campaign=purchase_acychecker_license&utm_medium=button_configuration_security';
     }
 
     private function prepareDataTab(&$data)
@@ -572,14 +579,42 @@ class ConfigurationController extends acymController
         $licenseKeyBeforeSave = $this->config->get('license_key');
         $isLicenseKeyUpdated = isset($formData['license_key']) && $licenseKeyBeforeSave !== $formData['license_key'];
 
+        if (!empty($formData['email_verification'])) {
+            $verificationOptions = [
+                'email_verification_non_existing',
+                'email_verification_disposable',
+                'email_verification_free',
+                'email_verification_role',
+                'email_verification_acceptall',
+            ];
+            $disabledOptions = true;
+            foreach ($verificationOptions as $oneOption) {
+                if (!empty($formData[$oneOption])) {
+                    $disabledOptions = false;
+                }
+            }
+            if ($disabledOptions) {
+                $formData['email_verification'] = false;
+                acym_enqueueMessage(acym_translation('ACYM_ACYCHECKER_AUTO_DISABLED'), 'info');
+            }
+        }
+
         // Handle reset select2 fields from addon
         acym_trigger('onBeforeSaveConfigFields', [&$formData]);
+
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            $formData['license_key'] = '';
+        }
+        //__END__demo_
+
         $status = $this->config->save($formData);
 
         if ($status) {
             acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
 
-            if ($isLicenseKeyUpdated) {
+            //__START__production_
+            if ($isLicenseKeyUpdated && ACYM_PRODUCTION) {
                 // If we add a key or edit it, we try to attach it
                 if (!empty($formData['license_key'])) {
                     $resultAttachLicenseOnUpdateMe = $this->attachLicenseOnUpdateMe($formData['license_key']);
@@ -596,6 +631,7 @@ class ConfigurationController extends acymController
                     }
                 }
             }
+            //__END__production_
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
         }
@@ -887,6 +923,13 @@ class ConfigurationController extends acymController
 
     public function unlinkLicense()
     {
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            $this->listing();
+
+            return true;
+        }
+        //__END__demo_
         $config = acym_getVar('array', 'config', []);
         $licenseKey = empty($config['license_key']) ? $this->config->get('license_key') : $config['license_key'];
 
@@ -908,6 +951,13 @@ class ConfigurationController extends acymController
 
     public function attachLicense()
     {
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            $this->listing();
+
+            return true;
+        }
+        //__END__demo_
         $config = acym_getVar('array', 'config', []);
         $licenseKey = $config['license_key'];
 
@@ -939,6 +989,13 @@ class ConfigurationController extends acymController
 
     private function attachLicenseOnUpdateMe($licenseKey = null)
     {
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            $this->listing();
+
+            return true;
+        }
+        //__END__demo_
         //We get the license key saved
         if (is_null($licenseKey)) {
             $licenseKey = $this->config->get('license_key', '');
@@ -987,6 +1044,13 @@ class ConfigurationController extends acymController
 
     private function unlinkLicenseOnUpdateMe($licenseKey = null)
     {
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            $this->listing();
+
+            return true;
+        }
+        //__END__demo_
         //We get the license key saved
         if (is_null($licenseKey)) {
             $licenseKey = $this->config->get('license_key', '');
@@ -1051,6 +1115,13 @@ class ConfigurationController extends acymController
 
     public function activateCron($licenseKey = null)
     {
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            $this->listing();
+
+            return true;
+        }
+        //__END__demo_
         $result = $this->modifyCron('activateCron', $licenseKey);
         //If everything went ok we save config with a active_cron to true
         if ($result !== false && $this->displayMessage($result['message'])) $this->config->save(['active_cron' => 1]);
@@ -1062,6 +1133,13 @@ class ConfigurationController extends acymController
     //The listing parameter allows us to know if we need to display the listing or not
     public function deactivateCron($listing = true, $licenseKey = null)
     {
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            $this->listing();
+
+            return true;
+        }
+        //__END__demo_
         $result = $this->modifyCron('deactivateCron', $licenseKey);
         //If everything went ok we save config with a active_cron to false
         if ($result !== false && $this->displayMessage($result['message'])) $this->config->save(['active_cron' => 0]);

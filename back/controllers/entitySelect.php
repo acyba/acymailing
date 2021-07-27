@@ -66,6 +66,12 @@ class EntitySelectController extends acymController
                 $availableEntity['elements'][$key]->color = '<i style="color: '.$element->color.'" class="acym_subscription acymicon-circle">';
                 if (!empty($element->description)) $availableEntity['elements'][$key]->name = $element->name.acym_info($element->description);
             }
+        } elseif ($entity == 'user') {
+            foreach ($availableEntity['elements'] as $key => $element) {
+                $availableEntity['elements'][$key]->email = $element->email.'<span class="acym__hover__user_info" data-id="'.$availableEntity['elements'][$key]->id.'">
+                '.acym_info('<i class="acymicon-circle-o-notch acymicon-spin"></i>').'
+                </span>';
+            }
         }
     }
 
