@@ -123,6 +123,12 @@
                 ?>
 			</div>
 		</div>
+		<div class="cell medium-3"><?php echo acym_translation('ACYM_NUMBER_OF_DAYS_TO_CLEAN_QUEUE').acym_info('ACYM_NUMBER_OF_DAYS_TO_CLEAN_QUEUE_DESC'); ?></div>
+		<div class="cell medium-9 grid-x">
+			<div class="cell medium-6 large-4 xlarge-3 xxlarge-2">
+				<input type="number" class="intext_input" min="0" name="config[queue_delete_days]" value="<?php echo $this->config->get('queue_delete_days', 0); ?>">
+			</div>
+		</div>
         <?php
 
         ?>

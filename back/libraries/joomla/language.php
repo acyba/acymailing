@@ -82,7 +82,7 @@ function acym_translation_sprintf()
     return call_user_func_array(['JText', 'sprintf'], $args);
 }
 
-function acym_getLanguages($installed = false, $uppercase = false)
+function acym_getLanguages($uppercaseLangCode = false, $published = false)
 {
     $result = [];
 
@@ -92,10 +92,10 @@ function acym_getLanguages($installed = false, $uppercase = false)
     $languages = acym_loadObjectList('SELECT * FROM #__languages', 'lang_code');
 
     foreach ($dirs as $dir) {
-        if (strlen($dir) != 5 || $dir == "xx-XX") {
+        if (strlen($dir) != 5 || $dir == 'xx-XX') {
             continue;
         }
-        if ($installed && (empty($languages[$dir]) || $languages[$dir]->published != 1)) {
+        if ($published && (empty($languages[$dir]) || $languages[$dir]->published != 1)) {
             continue;
         }
 
@@ -113,8 +113,8 @@ function acym_getLanguages($installed = false, $uppercase = false)
 
         $lang = new stdClass();
         $lang->sef = empty($languages[$dir]) ? null : $languages[$dir]->sef;
-        $lang->language = $uppercase ? $dir : strtolower($dir);
-        $lang->name = empty($data['name']) ? (empty($languages[$dir]) ? $dir : $languages[$dir]->title_native) : $data['name'];
+        $lang->language = $uppercaseLangCode ? $dir : strtolower($dir);
+        $lang->name = empty($languages[$dir]->title_native) ? (empty($data['name']) ? $dir : $data['name']) : $languages[$dir]->title_native;
         $lang->exists = file_exists(ACYM_LANGUAGE.$dir.DS.$dir.'.'.ACYM_COMPONENT.'.ini');
         $lang->content = empty($languages[$dir]) ? false : $languages[$dir]->published == 1;
 

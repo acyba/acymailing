@@ -241,7 +241,7 @@ class StatsController extends acymController
         $urlClickClass = new UrlClickClass();
 
         $detailedStatsPerPage = $pagination->getListLimit();
-        $page = acym_getVar('int', 'user_links_details_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'user_links_details_pagination_page', 1);
 
         $userClicks = $urlClickClass->getUserUrlClicksStats(
             [
@@ -302,7 +302,7 @@ class StatsController extends acymController
         $urlClickClass = new UrlClickClass();
 
         $detailedStatsPerPage = $pagination->getListLimit();
-        $page = acym_getVar('int', 'links_details_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'links_details_pagination_page', 1);
 
         $urlClicks = $urlClickClass->getUrlsFromMailsWithDetails(
             [
@@ -427,7 +427,7 @@ class StatsController extends acymController
         $pagination = new PaginationHelper();
 
         $detailedStatsPerPage = $pagination->getListLimit();
-        $page = acym_getVar('int', 'detailed_stats_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'detailed_stats_pagination_page', 1);
 
         $matchingDetailedStats = $userStatClass->getDetailedStats(
             [

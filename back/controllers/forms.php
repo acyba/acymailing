@@ -31,7 +31,7 @@ class FormsController extends acymController
 
         // Get pagination data
         $formsPerPage = $pagination->getListLimit();
-        $page = acym_getVar('int', 'forms_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'forms_pagination_page', 1);
 
         $requestData = [
             'ordering' => $ordering,

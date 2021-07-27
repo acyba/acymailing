@@ -27,8 +27,7 @@ class plgAcymDpcalendar extends acymPlugin
                 'tags' => ['ACYM_TAGS', false],
             ];
 
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [

@@ -154,13 +154,13 @@ class CampaignsController extends acymController
         $ids = acym_getVar('array', 'elements_checked', []);
         $allChecked = acym_getVar('string', 'checkbox_all');
         $currentPage = explode('_', acym_getVar('string', 'page'));
-        $pageNumber = acym_getVar('int', end($currentPage).'_pagination_page');
+        $pageNumber = $this->getVarFiltersListing('int', end($currentPage).'_pagination_page', 1);
 
         if (!empty($ids)) {
             $followupClass = new FollowupClass();
             $followupClass->delete($ids);
             if ($allChecked == 'on') {
-                acym_setVar(end($currentPage).'_pagination_page', $pageNumber - 1);
+                $this->setVarFiltersListing(end($currentPage).'_pagination_page', $pageNumber - 1);
             }
         }
 
@@ -292,7 +292,7 @@ class CampaignsController extends acymController
     {
         // Prepare the pagination
         $campaignsPerPage = $data['pagination']->getListLimit();
-        $page = acym_getVar('int', 'campaigns_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'campaigns_pagination_page', 1);
         $status = $data['status'];
 
         // Get the matching campaigns
@@ -644,7 +644,7 @@ class CampaignsController extends acymController
 
         // Get pagination data
         $mailsPerPage = $pagination->getListLimit();
-        $page = acym_getVar('int', 'mailchoose_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'mailchoose_pagination_page', 1);
 
         $mailClass = new MailClass();
         $matchingMails = $mailClass->getMatchingElements(
@@ -1222,10 +1222,9 @@ class CampaignsController extends acymController
         $campaignId = acym_getVar('int', 'id');
         $senderInformation = acym_getVar('', 'senderInformation');
         $sendingDate = acym_getVar('string', 'sendingDate');
-
         $sendingType = acym_getVar('string', 'sending_type', $campaignClass::SENDING_TYPE_NOW);
-        $sendingParams = [];
-
+        $sendingParams = acym_getVar('array', 'sending_params', []);
+        $specificSendingParams = [];
         $isScheduled = $campaignClass::SENDING_TYPE_SCHEDULED == $sendingType;
 
         $currentCampaign = $campaignClass->getOneById($campaignId);
@@ -1249,13 +1248,20 @@ class CampaignsController extends acymController
 
             $needConfirmToSend = acym_getVar('int', 'need_confirm', 0);
 
-            $sendingParams = acym_getVar('array', $triggerType, '');
-            $sendingParams = [$triggerType => $sendingParams, 'need_confirm_to_send' => $needConfirmToSend, 'trigger_type' => $triggerType];
+            $specificSendingParams = [
+                $triggerType => acym_getVar('array', $triggerType, ''),
+                'need_confirm_to_send' => $needConfirmToSend,
+                'trigger_type' => $triggerType,
+            ];
 
             $startDate = acym_getVar('string', 'start_date', 0);
-            if (!empty($startDate)) $sendingParams['start_date'] = acym_date(acym_getTime($startDate), 'Y-m-d H:i:s', false);
+            if (!empty($startDate)){
+                $specificSendingParams['start_date'] = acym_date(acym_getTime($startDate), 'Y-m-d H:i:s', false);
+            }
 
-            if (!empty($currentCampaign->sending_params['number_generated'])) $sendingParams['number_generated'] = $currentCampaign->sending_params['number_generated'];
+            if (!empty($currentCampaign->sending_params['number_generated'])){
+                $specificSendingParams['number_generated'] = $currentCampaign->sending_params['number_generated'];
+            }
 
             // Clean old settings saved in the campaign
             $triggers = [];
@@ -1271,14 +1277,18 @@ class CampaignsController extends acymController
         if (!in_array($sendingType, $campaignClass::SENDING_TYPES)) {
             $specialSendings = [];
             acym_trigger('saveCampaignSpecificSendSettings', [$currentCampaign->sending_type, &$specialSendings]);
-            if (!empty($specialSendings)) $sendingParams = $specialSendings[0];
+            if (!empty($specialSendings)){
+                $specificSendingParams = $specialSendings[0];
+            }
         }
 
-        empty($currentCampaign->mail_id) ? : $currentMail = $mailClass->getOneById($currentCampaign->mail_id);
+        if (!empty($currentCampaign->mail_id)) {
+            $currentMail = $mailClass->getOneById($currentCampaign->mail_id);
+        }
 
         $currentCampaign->sending_type = $sendingType;
         if (empty($currentCampaign->sending_params)) $currentCampaign->sending_params = [];
-        $currentCampaign->sending_params = array_merge($currentCampaign->sending_params, $sendingParams);
+        $currentCampaign->sending_params = array_merge($currentCampaign->sending_params, $sendingParams, $specificSendingParams);
         $currentCampaign->sending_date = null;
 
         if (empty($currentMail) || empty($senderInformation)) {
@@ -1978,6 +1988,12 @@ class CampaignsController extends acymController
             'upgrade' => !acym_level(ACYM_ESSENTIAL),
             'version' => 'enterprise',
         ];
+        //TODO AcyChecker online
+        if (false && !acym_isAcyCheckerInstalled()) {
+            $lists = $campaignClass->getListsForCampaign($campaign->mail_id);
+            $listClass = new ListClass();
+            $data['recipients'] = $listClass->getTotalSubCount($lists);
+        }
 
         $this->prepareListingClasses($data);
         $this->prepareSegmentDisplay($data, $campaign->sending_params);

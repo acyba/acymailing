@@ -525,15 +525,21 @@ class QueueClass extends acymClass
     {
         $twoDaysEarlier = acym_date(time() - 172800, 'Y-m-d H:i:s', false);
 
-        $condition = '`user`.`active` = 0';
-        if ($this->config->get('require_confirmation', 1) == 1) $condition .= ' OR `user`.`confirmed` = 0';
+        $conditionUser = '`user`.`active` = 0';
+        if ($this->config->get('require_confirmation', 1) == 1) $conditionUser .= ' OR `user`.`confirmed` = 0';
+
+        $numberOfDaysToWait = $this->config->get('queue_delete_days', 0);
+        $conditionDateDelete = '';
+        if (!empty($numberOfDaysToWait)) {
+            $dateTimeConditionDelete = acym_date(time() - ($numberOfDaysToWait * 86400), 'Y-m-d H:i:s', false);
+            $conditionDateDelete = ' OR (`queue`.`sending_date` < '.acym_escapeDB($dateTimeConditionDelete).')';
+        }
 
         return acym_query(
             'DELETE `queue`.* 
             FROM `#__acym_queue` AS `queue` 
             JOIN `#__acym_user` AS `user` ON `queue`.`user_id` = `user`.`id` 
-            WHERE ('.$condition.') 
-                AND `queue`.`sending_date` < '.acym_escapeDB($twoDaysEarlier)
+            WHERE (('.$conditionUser.') AND `queue`.`sending_date` < '.acym_escapeDB($twoDaysEarlier).') '.$conditionDateDelete
         );
     }
 

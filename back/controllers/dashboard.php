@@ -721,4 +721,11 @@ class DashboardController extends acymController
 
         parent::display($data);
     }
+
+    public function acychecker()
+    {
+        acym_setVar('layout', 'acychecker');
+
+        parent::display();
+    }
 }

@@ -67,7 +67,7 @@ jQuery(document).on('acym_plugins_installed_loaded', function () {
                     if (!confirm(ACYM_JS_TXT.ACYM_RESET_VIEW_CONFIRM)) return;
                     this.deleting = true;
                     let ajaxUrl = ACYM_AJAX_URL + '&ctrl=plugins&task=deleteCustomViewPlugin&plugin=' + pluginFolderName + '&plugin_class=' + pluginClassName;
-                    jQuery.get(ajaxUrl, (response) => {
+                    jQuery.post(ajaxUrl, (response) => {
                         response = acym_helper.parseJson(response);
                         if (undefined !== response.error) {
                             acym_helperNotification.addNotification(response.error, 'error');

@@ -97,6 +97,16 @@ class DynamicsController extends acymController
             $defaultValues->defaultPluginTab = $pluginSubType;
         }
 
+        if (empty((array)$defaultValues) && $trigger == 'insertionOptions') {
+            $rawDefaultValues = $this->config->get('dcontent_default_'.$plugin);
+
+            if (!empty($rawDefaultValues)) {
+                $defaultValues = json_decode($rawDefaultValues, true);
+                unset($defaultValues['id']);
+                $defaultValues = (object)$defaultValues;
+            }
+        }
+
         acym_trigger($trigger, [$defaultValues], $plugin);
 
         exit;

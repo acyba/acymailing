@@ -16,13 +16,13 @@ class plgAcymManagetext extends acymPlugin
         $this->pluginHelper->cleanHtml($email->body);
         $this->pluginHelper->replaceVideos($email->body);
 
-        $this->_removetext($email);
-        $this->_ifstatement($email, $user);
-        $this->_replaceConstant($email, $user);
+        $this->removetext($email);
+        $this->ifstatement($email, $user);
+        $this->replaceConstant($email, $user);
     }
 
     //Replace tags such as {const:CONTANT_NAME} or {trans:MY_TRANSLATION}
-    private function _replaceConstant(&$email, $user)
+    private function replaceConstant(&$email, $user)
     {
         //load the tags
         $tags = $this->pluginHelper->extractTags($email, '(?:const|trans|config)');
@@ -125,7 +125,7 @@ class plgAcymManagetext extends acymPlugin
     }
 
 
-    private function _ifstatement(&$email, $user, $loop = 1)
+    private function ifstatement(&$email, $user, $loop = 1)
     {
         if (isset($this->noIfStatementTags[$email->id])) {
             return;
@@ -145,6 +145,7 @@ class plgAcymManagetext extends acymPlugin
         $match = '#{if:(((?!{if).)*)}(((?!{if).)*){/if}#Uis';
         $variables = ['subject', 'body', 'altbody', 'From', 'FromName', 'ReplyTo'];
         $found = false;
+        $results = [];
         foreach ($variables as $var) {
             if (empty($email->$var)) continue;
 
@@ -269,10 +270,10 @@ class plgAcymManagetext extends acymPlugin
 
         $this->pluginHelper->replaceTags($email, $tags, true);
 
-        $this->_ifstatement($email, $user, $loop + 1);
+        $this->ifstatement($email, $user, $loop + 1);
     }
 
-    private function _removetext(&$email)
+    private function removetext(&$email)
     {
         //Remove text
         $removetext = '{reg},{/reg},{pub},{/pub}';
@@ -402,7 +403,7 @@ class plgAcymManagetext extends acymPlugin
 
     public function addPictureAlign(&$html)
     {
-        if (preg_match_all('#< *img([^>]*)>#Ui', $html, $allPictures)) ;
+        preg_match_all('#< *img([^>]*)>#Ui', $html, $allPictures);
 
         foreach ($allPictures[0] as $i => $onePict) {
             // 1 - We add a align="right" or align="left" for the pictures in order to have good result on Outlook 2007

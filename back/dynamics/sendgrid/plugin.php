@@ -69,7 +69,7 @@ class plgAcymSendgrid extends acymPlugin
         }
     }
 
-    public function onAcymSendEmail(&$response, $sendingMethod, $to, $subject, $from, $reply_to, $body, $bcc = [], $attachments = [])
+    public function onAcymSendEmail(&$response, $sendingMethod, $to, $subject, $from, $reply_to, $body, $bcc = [], $attachments = [], $mailId = null)
     {
         //https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html
         if ($sendingMethod != self::SENDING_METHOD_ID) return;

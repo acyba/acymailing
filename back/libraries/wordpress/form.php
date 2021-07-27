@@ -119,9 +119,13 @@ function acym_renderForm($params, $args = [])
     acym_initModule($params);
 
     $return = !empty($args['before_widget']) ? $args['before_widget'] : '';
-    if (!empty($args['before_title'])) $return .= $args['before_title'];
-    $return .= $params->get('title', 'Receive our newsletters');
-    if (!empty($args['after_title'])) $return .= $args['after_title'];
+
+    $title = apply_filters('widget_title', $params->get('title'));
+    if (!empty($title)) {
+        if (!empty($args['before_title'])) $return .= $args['before_title'];
+        $return .= $title;
+        if (!empty($args['after_title'])) $return .= $args['after_title'];
+    }
 
     $identifiedUser = null;
     $currentUserEmail = acym_currentUserEmail();

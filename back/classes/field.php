@@ -594,7 +594,6 @@ class FieldClass extends acymClass
         $field->active = 1;
         $field->required = 1;
         $field->ordering = $this->getOrdering() + 1;
-        $field->option = '{}';
         $field->core = 1;
         $field->backend_edition = 1;
         $field->backend_listing = 0;
@@ -619,7 +618,7 @@ class FieldClass extends acymClass
 
     public function getLanguagesForDropdown()
     {
-        $languages = acym_getLanguages();
+        $languages = acym_getLanguages(false, true);
         $dataLanguages = [];
 
         foreach ($languages as $langCode => $language) {

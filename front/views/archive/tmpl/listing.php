@@ -25,26 +25,16 @@
                 $archiveURL = acym_frontendLink('archive&task=view&id='.$oneNewsletter->id.'&'.acym_noTemplate(false));
 
                 if ($data['popup']) {
-                    ?>
-					<p class="acym__front__archive__newsletter_name" data-nlid="<?php echo $oneNewsletter->id; ?>"><?php echo $oneNewsletter->subject; ?></p>
+                    $iframeClass = 'acym__modal__iframe';
+                    if (empty($data['userId'])) $iframeClass .= ' acym__front__not_connected_user';
 
-					<div id="acym__front__archive__modal__<?php echo $oneNewsletter->id; ?>" class="acym__front__archive__modal" style="display: none;">
-						<div class="acym__front__archive__modal__content">
-							<div class="acym__front__archive__modal__close"><span>&times;</span></div>
-
-                            <?php
-                            if (empty($data['userId'])) echo '<p class="acym_front_message_warning">'.acym_translation('ACYM_FRONT_ARCHIVE_NOT_CONNECTED').'</p>';
-
-                            $iframeClass = 'acym__front__archive__modal__iframe';
-                            if (empty($data['userId'])) $iframeClass .= ' acym__front__not_connected_user';
-                            ?>
-
-							<iframe class="<?php echo $iframeClass; ?>" src="<?php echo $archiveURL; ?>"></iframe>
-						</div>
-					</div>
-                    <?php
+                    $additionalContent = '';
+                    if (empty($data['userId'])) {
+                        $additionalContent = '<p class="acym_front_message_warning">'.acym_translation('ACYM_FRONT_ARCHIVE_NOT_CONNECTED').'</p>';
+                    }
+                    echo acym_frontModal($archiveURL, $oneNewsletter->subject, false, $oneNewsletter->id, $iframeClass, $additionalContent);
                 } else {
-                    echo '<p class="acym__front__archive__newsletter_name"><a href="'.$archiveURL.'" target="_blank">'.$oneNewsletter->subject.'</a></p>';
+                    echo '<p class="acym__modal__handle"><a href="'.$archiveURL.'" target="_blank">'.$oneNewsletter->subject.'</a></p>';
                 }
                 echo '<p class="acym__front__archive__newsletter_sending-date">'.acym_translation('ACYM_SENDING_DATE').' : '.acym_date(
                         $oneNewsletter->sending_date,

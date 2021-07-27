@@ -19,8 +19,7 @@ class plgAcymJevents extends acymPlugin
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.ico';
 
         if ($this->installed) {
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [
@@ -304,7 +303,6 @@ class plgAcymJevents extends acymPlugin
         $this->query .= 'JOIN `#__categories` AS cat ON ev.catid = cat.id ';
         $this->query .= 'JOIN `#__jevents_vevdetail` AS detail ON ev.detail_id = detail.evdet_id ';
         $this->filters = [];
-        $this->filters[] = 'rpt.startrepeat > NOW()';
         $this->searchFields = ['rpt.rp_id', 'detail.evdet_id', 'detail.description', 'detail.summary', 'detail.contact', 'detail.location'];
         $this->pageInfo->order = 'rpt.startrepeat';
         $this->elementIdTable = 'rpt';
@@ -322,7 +320,7 @@ class plgAcymJevents extends acymPlugin
         $this->pageInfo->orderdir = 'ASC';
 
         if (!empty($this->pageInfo->filter_cat)) {
-            $filters[] = 'ev.catid = '.intval($this->pageInfo->filter_cat);
+            $this->filters[] = 'ev.catid = '.intval($this->pageInfo->filter_cat);
         }
 
         $listingOptions = [

@@ -36,8 +36,7 @@ class plgAcymEventbooking extends acymPlugin
                 'group' => ['EB_REGISTER_GROUP', false],
             ];
 
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [

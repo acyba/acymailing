@@ -56,6 +56,18 @@ class ListsController extends acymController
         $toolbarHelper->addSearchBar($data['search'], 'lists_search', 'ACYM_SEARCH');
         $toolbarHelper->addFilterByTag($data, 'lists_tag', 'acym__lists__filter__tags acym__select');
 
+        //TODO AcyChecker online
+        if (false) {
+            $toolbarHelper->addButton(
+                'ACYM_ACYCHECKER_CLEAN_LISTS',
+                [
+                    'data-task' => 'clean',
+                    'type' => 'submit',
+                ],
+                'user-check'
+            );
+        }
+
         $toolbarHelper->addButton(
             acym_translation('ACYM_EXPORT').' (<span id="acym__lists__listing__number_to_export" data-default="0"></span>)',
             ['data-task' => 'export', 'type' => 'submit', 'data-ctrl' => 'users', 'id' => 'acym__list__export'],
@@ -92,7 +104,7 @@ class ListsController extends acymController
     {
         // Prepare the pagination
         $listsPerPage = $data['pagination']->getListLimit();
-        $page = acym_getVar('int', 'lists_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'lists_pagination_page', 1);
 
         // Get the matching lists
         $matchingLists = $this->getMatchingElementsFromData(
@@ -234,7 +246,7 @@ class ListsController extends acymController
                 '',
                 'subscriber'
             ),
-            null,
+            'acym__lists__settings__subscribers__entity__modal',
             '',
             'class="cell medium-6 large-shrink button button-secondary"'
         );
@@ -652,5 +664,18 @@ class ListsController extends acymController
         $lists = $listClass->getAllForSelect(false);
 
         acym_sendAjaxResponse('', $lists);
+    }
+
+    public function clean()
+    {
+        if (acym_isAcyCheckerInstalled()) {
+            if (ACYM_CMS === 'joomla') {
+                acym_redirect(acym_route('index.php?option=com_acychecker', false));
+            } else {
+                acym_redirect(admin_url().'admin.php?page=acychecker_dashboard');
+            }
+        } else {
+            acym_redirect(acym_completeLink('dashboard&task=acychecker', false, true));
+        }
     }
 }

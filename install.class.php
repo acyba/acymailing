@@ -552,7 +552,7 @@ class acymInstall
             );
 
             $pluginsBefore650 = [
-                'Joomla' => [
+                'joomla' => [
                     'cbuilder' => 'com_comprofiler',
                     'eventbooking' => 'com_eventbooking',
                     'hikashop' => 'com_hikashop',
@@ -561,13 +561,13 @@ class acymInstall
                     'seblod' => 'com_cck',
                     'virtuemart' => 'com_virtuemart',
                 ],
-                'WordPress' => [
+                'wordpress' => [
                     'woocommerce' => 'woocommerce',
                 ],
             ];
 
             $pluginsController = new PluginsController();
-            foreach ($pluginsBefore650['{__CMS__}'] as $plugin => $extension) {
+            foreach ($pluginsBefore650[ACYM_CMS] as $plugin => $extension) {
                 $install = false;
                 if (defined('JPATH_ADMINISTRATOR') && file_exists(rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.$extension.DS)) {
                     $install = true;
@@ -1149,6 +1149,24 @@ class acymInstall
 
                     $field->option = json_encode($field->option);
                     $fieldClass->save($field);
+                }
+            }
+        }
+
+        if (version_compare($this->fromVersion, '7.5.10', '<')) {
+            if (ACYM_CMS == 'joomla') {
+                $dynamicsToDelete = [
+                    'gravityforms',
+                    'page',
+                    'post',
+                    'theeventscalendar',
+                    'ultimatemember',
+                    'woocommerce',
+                    'jomsocial',
+                ];
+
+                foreach ($dynamicsToDelete as $dynamicFolder) {
+                    if (file_exists(ACYM_BACK.'dynamics'.DS.$dynamicFolder)) acym_deleteFolder(ACYM_BACK.'dynamics'.DS.$dynamicFolder);
                 }
             }
         }

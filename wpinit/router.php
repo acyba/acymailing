@@ -128,6 +128,16 @@ class acyRouter extends acyHook
 
     public function router($front = false)
     {
+        //__START__demo_
+        if (!ACYM_PRODUCTION && acym_isAdmin()) {
+            //No need to translate this message as our demo website will be in english
+            acym_enqueueMessage(
+                'This is a demo website please be careful with the data that you save, other users will be able to see it. No email will be sent, no matter which email method you choose.',
+                'warning'
+            );
+        }
+        //__END__demo_
+
         if (!$front) auth_redirect();
 
         if (is_multisite()) {

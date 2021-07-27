@@ -46,7 +46,12 @@
 			<div class="grid-x cell acym__list__settings__subscribers__listing" v-infinite-scroll="loadMoreSubscriber" :infinite-scroll-disabled="busy">
 				<div class="grid-x cell acym__listing__row" v-for="(sub, index) in displayedSubscribers">
 					<div class="cell small-12 large-4 acym__listing__title acym_word-break">
-						<h6 :class="sub.confirmed==1 || requireConfirmation==0?'':'acym__color__dark-gray'">{{ sub.email }}</h6>
+						<h6 :class="sub.confirmed==1 || requireConfirmation==0?'':'acym__color__dark-gray'">
+							{{ sub.email }}
+							<span class="acym__hover__user_info" :data-id="sub.id">
+								<?php echo acym_info('<i class="acymicon-circle-o-notch acymicon-spin"></i>'); ?>
+							</span>
+						</h6>
 					</div>
 					<div class="cell medium-7 small-10 acym_word-break" :class="requireConfirmation==1?'large-3':'large-4'">
 						<span :class="sub.confirmed==1 || requireConfirmation==0?'':'acym__color__dark-gray'">{{ sub.name }}</span>

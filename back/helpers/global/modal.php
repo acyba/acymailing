@@ -119,3 +119,37 @@ function acym_modalPaginationLists($inputEventId = '', $checkedLists = '[]', $ne
 
     return $data;
 }
+
+function acym_frontModal($iframeSrc, $buttonText, $isButton, $identifier = null, $iframeClass = null, $additionalContent = '')
+{
+    static $loaded = false;
+    if (empty($loaded)) {
+        $loaded = true;
+        acym_addStyle(false, ACYM_CSS.'modal.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'modal.min.css'));
+        acym_addScript(false, ACYM_JS.'modal.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'modal.min.js'));
+    }
+
+    if (empty($identifier)) {
+        $identifier = 'identifier_'.rand(1000, 9000);
+    }
+
+    if (empty($iframeClass)) {
+        $iframeClass = 'acym__modal__iframe';
+    }
+
+    ob_start();
+    ?>
+	<a class="<?php echo $isButton ? 'btn ' : ''; ?>acym__modal__handle" data-acym-modal="<?php echo acym_escape($identifier); ?>" href="#">
+        <?php echo acym_translation($buttonText); ?>
+	</a>
+	<div class="acym__modal" id="acym__modal__<?php echo $identifier; ?>" style="display: none;">
+		<div class="acym__modal__content">
+			<div class="acym__modal__close"><span>&times;</span></div>
+			<?php echo $additionalContent; ?>
+			<iframe class="<?php echo $iframeClass; ?>" src="<?php echo $iframeSrc; ?>"></iframe>
+		</div>
+	</div>
+    <?php
+
+    return ob_get_clean();
+}

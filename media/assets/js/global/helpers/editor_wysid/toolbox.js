@@ -1,8 +1,15 @@
 const acym_editorWysidToolbox = {
     setRefreshAfterToolbox: function () {
         jQuery('.acym__wysid__row__toolbox__copy').unbind('click').click(function () {
-            acym_helperBlockSeparator.changeIdOnduplicate(jQuery(this).closest('.acym__wysid__row__element').clone())
+            let duplication = jQuery(this).closest('.acym__wysid__row__element').clone();
+            acym_helperBlockSeparator.changeIdOnduplicate(duplication)
                                      .insertAfter(jQuery(this).closest('.acym__wysid__row__element'));
+
+            // Make sure the DContents in the duplicated container have a different id
+            duplication.find('tr[data-dynamic]').each(function () {
+                jQuery(this).attr('id', acym_editorWysidDynamic.getUniqueId());
+            });
+
             acym_helperEditorWysid.setColumnRefreshUiWYSID();
             acym_editorWysidVersioning.setUndoAndAutoSave();
         });

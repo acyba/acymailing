@@ -7,10 +7,24 @@
         }
     }
 
+    div.acym_vcenter#check_spam[data-open="spamtestpopup"] {
+        display: flex;
+    }
+
+    #spamtestpopup {
+        text-align: center;
+    }
+
     .acym__iframe_spamtest {
         width: 98%;
         height: 100%;
         border: 0;
+    }
+
+    #email_checker_ad {
+        a {
+            margin: auto;
+        }
     }
 
     #spam_test_zone {

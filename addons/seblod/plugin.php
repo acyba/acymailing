@@ -15,9 +15,7 @@ class plgAcymSeblod extends acymPlugin
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.svg';
 
         if ($this->installed) {
-            $this->initDisplayOptionsCustomView();
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
+            $this->initCustomView(true);
 
             $this->settings = [
                 'custom_view' => [
@@ -59,7 +57,7 @@ class plgAcymSeblod extends acymPlugin
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initDisplayOptionsCustomView()
+    public function initCustomOptionsCustomView()
     {
         $this->displayOptions = [];
         $this->displayOptions = [
@@ -162,6 +160,11 @@ class plgAcymSeblod extends acymPlugin
         $tabHelper->startTab(acym_translation('ACYM_BY_CATEGORY'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
         $catOptions = [
+            [
+                'title' => 'ACYM_LANGUAGE',
+                'type' => 'language',
+                'name' => 'language',
+            ],
             [
                 'title' => 'ACYM_ORDER_BY',
                 'type' => 'select',
@@ -444,6 +447,10 @@ class plgAcymSeblod extends acymPlugin
                 if (!empty($lastGenerated)) {
                     $where[] = 'publish_up > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
                 }
+            }
+
+            if (!empty($parameter->language) && $parameter->language !== 'any') {
+                $where[] = 'language IN ("*", '.acym_escapeDB($parameter->language).')';
             }
 
             $query .= ' WHERE ('.implode(') AND (', $where).')';

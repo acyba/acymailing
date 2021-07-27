@@ -195,7 +195,7 @@ class LanguageController extends acymController
         } else {
             $loadLatest = true;
             // Load the default language
-            if ('{__CMS__}' === 'Joomla') {
+            if (ACYM_CMS === 'joomla') {
                 $message = acym_translation('ACYM_LOAD_ENGLISH_1');
                 $message .= '<br />'.acym_translation('ACYM_LOAD_ENGLISH_2');
                 $message .= '<br />'.acym_translation('ACYM_LOAD_ENGLISH_3');
@@ -212,7 +212,7 @@ class LanguageController extends acymController
         if ($loadLatest || acym_getVar('cmd', 'task') == 'latest') {
             if (file_exists(acym_getLanguagePath(ACYM_ROOT, $code))) {
                 //__START__joomla_
-                if ('{__CMS__}' === 'Joomla') {
+                if (ACYM_CMS === 'joomla') {
                     acym_addScript(false, ACYM_UPDATEURL.'languageload&component=acym&code='.acym_getVar('cmd', 'code'));
                 }
                 //__END__joomla_

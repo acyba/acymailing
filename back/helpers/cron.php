@@ -52,7 +52,7 @@ class CronHelper extends acymObject
 
         acym_trigger('onAcymProcessQueueExternalSendingCampaign', [&$this->externalSendingActivated]);
 
-        $this->externalSendingRepeat = empty(acym_getVar('int', 'external_sending_repeat', 0));
+        $this->externalSendingRepeat = !empty(acym_getVar('int', 'external_sending_repeat', 0));
         if (!empty($this->startQueue) || !empty($this->externalSendingRepeat)) {
             $this->skip = [
                 'schedule',
@@ -71,6 +71,12 @@ class CronHelper extends acymObject
 
     public function cron()
     {
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            exit;
+        }
+        //__END__demo_
+
         // Step 1: Check the last cron launched...
         $time = time();
 
@@ -428,5 +434,16 @@ class CronHelper extends acymObject
         $lastCronDayBasedOnCMSTimezone = acym_date($this->cronLastOnCron, 'Y-m-d');
 
         return $time >= $dayBasedOnCMSTimezoneAtSpecifiedHour && $lastCronDayBasedOnCMSTimezone != $dayBasedOnCMSTimezone;
+    }
+
+    public function addSkipFromString($skipVar)
+    {
+        if (empty($skipVar)) return;
+
+        $skipVar = explode(',', $skipVar);
+
+        if (empty($skipVar)) return;
+
+        $this->skip = array_unique(array_merge($this->skip, $skipVar));
     }
 }

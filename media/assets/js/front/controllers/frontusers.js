@@ -192,9 +192,9 @@ function acym_checkChangeForm() {
     return false;
 }
 
-function acymSubmitForm(task) {
-    let taskField = document.querySelector('[name="task"]');
-    let submitButton = document.getElementById('formSubmit');
+function acymSubmitForm(task, button) {
+    let taskField = button.closest('form').querySelector('[name="task"]');
+    let submitButton = button.closest('form').querySelector('#formSubmit');
 
     if (undefined === taskField || undefined === submitButton) {
         alert(ACYM_JS_TXT.ACYM_COULD_NOT_SUBMIT_FORM_CONTACT_ADMIN_WEBSITE);

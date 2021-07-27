@@ -56,5 +56,27 @@ const acym_helperTooltip = {
             'acym__tooltip__info',
             classText
         );
+    },
+    setUserInfoLoadingHover: function () {
+        jQuery('.acym__hover__user_info').off('mouseenter').on('mouseenter', function () {
+            if (jQuery(this).find('.acymicon-spin').length > 0) {
+                let ajaxUrl = ACYM_AJAX_URL + '&ctrl=users&task=getUserInfo';
+                let data = {
+                    id: jQuery(this).attr('data-id')
+                };
+
+                acym_helper.get(ajaxUrl, data).then(response => {
+                    let content = '';
+                    if (!acym_helper.empty(response.message)) {
+                        content = response.message;
+                    } else {
+                        for (let [name, value] of Object.entries(response.data)) {
+                            content += `${name}: ${value}<br>`;
+                        }
+                    }
+                    jQuery(this).find('.acym__tooltip__text').html(content);
+                });
+            }
+        });
     }
 };

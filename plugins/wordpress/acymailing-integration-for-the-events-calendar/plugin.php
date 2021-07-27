@@ -37,8 +37,7 @@ class plgAcymTheeventscalendar extends acymPlugin
                 'cats' => ['ACYM_CATEGORIES', false],
             ];
 
-            $this->initReplaceOptionsCustomView();
-            $this->initElementOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [

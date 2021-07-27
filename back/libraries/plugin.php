@@ -51,6 +51,7 @@ class acymPlugin extends acymObject
     var $errors = [];
 
     var $logFilename = '';
+    private $active;
 
     public function __construct()
     {
@@ -75,7 +76,12 @@ class acymPlugin extends acymObject
         $this->campaignType = acym_getVar('string', 'campaign_type', '');
 
         $pluginClass = new PluginClass();
-        $this->savedSettings = $pluginClass->getSettings($this->name);
+        $currentAddon = $pluginClass->getOneByFolderName($this->name);
+        $this->active = empty($currentAddon) || $currentAddon->active;
+        $this->savedSettings = empty($currentAddon) ? null : $currentAddon->settings;
+        if (!empty($this->savedSettings) && is_string($this->savedSettings)) {
+            $this->savedSettings = json_decode($this->savedSettings, true);
+        }
 
         $this->sendingPlugins = [
             'wp_mail_smtp' => 'WP Mail SMTP',
@@ -198,7 +204,7 @@ class acymPlugin extends acymObject
             $this->subCategories[$oneCat->id] = $this->getSubCats($oneCat->id);
         }
 
-        return acym_select($this->catvalues, 'plugin_category', intval($filter_cat), 'class="plugin_category_select"', 'value', 'text');
+        return acym_select($this->catvalues, 'plugin_category', intval($filter_cat), 'class="plugin_category_select"');
     }
 
     private function getSubCats($categoryId)
@@ -423,6 +429,7 @@ class acymPlugin extends acymObject
     {
         $this->generateByCategory($email);
         if (empty($this->tags)) return;
+
         $this->pluginHelper->replaceTags($email, $this->tags, true);
     }
 
@@ -554,6 +561,11 @@ class acymPlugin extends acymObject
     {
         $tags = $this->pluginHelper->extractTags($email, $this->name);
         if (empty($tags)) return;
+
+        $newConfiguration = [
+            'dcontent_default_'.get_class($this) => json_encode(end($tags)),
+        ];
+        $this->config->save($newConfiguration);
 
         if (false === $this->loadLibraries($email)) return;
         $this->emailLanguage = $email->links_language;
@@ -1283,5 +1295,18 @@ class acymPlugin extends acymObject
         $reportPath = acym_getLogPath($this->logFilename);
 
         return !file_exists($reportPath);
+    }
+
+    public function initCustomView($customFields = false)
+    {
+        $ctrl = acym_getVar('cmd', 'ctrl', str_replace(ACYM_COMPONENT.'_', '', acym_getVar('cmd', 'page')));
+        $task = acym_getVar('cmd', 'task', 'installed');
+
+        // Installed add-ons page or installed + editor
+        if (($ctrl === 'plugins' && $task === 'installed') || ($this->active && $ctrl === 'dynamics' && $task === 'trigger')) {
+            $this->initElementOptionsCustomView();
+            $this->initReplaceOptionsCustomView();
+            if ($customFields) $this->initCustomOptionsCustomView();
+        }
     }
 }

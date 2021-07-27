@@ -28,20 +28,18 @@
             );
             ?>
 		</div>
-        <?php if ('wordpress' === ACYM_CMS) { ?>
-			<div class="cell grid-x margin-top-1" id="unsubpage_header">
-				<div class="cell grid-x">
-                    <?php
-                    echo acym_switch(
-                        'config[unsubpage_header]',
-                        $this->config->get('unsubpage_header', 0),
-                        acym_translation('ACYM_UNSUBSCRIBE_PAGE_HEADER'),
-                        [],
-                        'xlarge-3 medium-5 small-9'
-                    );
-                    ?>
-				</div>
+		<div class="cell grid-x margin-top-1" id="unsubpage_header">
+			<div class="cell grid-x">
+                <?php
+                echo acym_switch(
+                    'config[unsubpage_header]',
+                    $this->config->get('unsubpage_header', 0),
+                    acym_translation('ACYM_UNSUBSCRIBE_PAGE_HEADER'),
+                    [],
+                    'xlarge-3 medium-5 small-9'
+                );
+                ?>
 			</div>
-        <?php } ?>
+		</div>
 	</div>
 </div>

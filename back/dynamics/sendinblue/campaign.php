@@ -30,6 +30,7 @@ class SendinblueCampaign extends SendinblueClass
             'recipients' => [
                 'listIds' => [$listIdSendinblue],
             ],
+            'footer' => '<span style="display: none !important;">{here}</span>',
             'inlineImageActivation' => empty($this->config->get('embed_images', 0)) ? false : true,
         ];
 

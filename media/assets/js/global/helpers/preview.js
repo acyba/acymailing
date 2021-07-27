@@ -140,8 +140,9 @@ const acym_helperPreview = {
         // Apply the CSS
         $iframeHead.append('<link rel="stylesheet" href="' + FOUNDATION_FOR_EMAIL + '">');
         $iframeHead.append('<style>' + ACYM_FIXES_FOR_EMAIL + '</style>');
+        $iframeHead.append('<style type="text/css">#acym__wysid__template center > table { width: 100%; }</style>');
 
-        if ($savedStylesheet != undefined && $savedStylesheet != '') {
+        if ($savedStylesheet !== undefined && $savedStylesheet !== '') {
             setTimeout(function () {
                 $iframeHead.append('<style>' + $savedStylesheet + '</style>');
             }, 100);
@@ -152,29 +153,29 @@ const acym_helperPreview = {
         if (onEditor) {
             $savedContent.attr('value', '<div id="acym__wysid__template" class="cell">' + $templateHtml + '</div>');
             $previewContent = '<div id="acym__wysid__template" class="cell">' + jQuery('#acym__template__preview').val() + '</div>';
-        } else if ($savedContent.attr('value') == '') {
-            if ($templateHtml == '') {
+        } else if ($savedContent.attr('value') === '') {
+            if ($templateHtml === '') {
                 $savedContent.attr('value', defaultContentWYSID);
             } else {
                 $savedContent.attr('value', '<div id="acym__wysid__template" class="cell">' + $templateHtml + '</div>');
             }
         }
 
-        if ($savedContent.attr('value') == 'empty') {
+        if ($savedContent.attr('value') === 'empty') {
             $savedContent.attr('value', defaultContentWYSID);
         }
 
         // Set content and user stylesheet for summary preview
-        if ($mailContent != '') {
+        if ($mailContent !== '') {
             let $mailStylesheet = jQuery('.acym__hidden__mail__stylesheet').html();
-            if ($mailStylesheet != undefined && $mailStylesheet != '') {
+            if ($mailStylesheet !== undefined && $mailStylesheet !== '') {
                 $iframeHead.append('<style>' + $mailStylesheet + '</style>');
             }
             $iframeBody.html('');
             $iframeBody.append($mailContent);
         }
 
-        if ($previewContent != undefined && $previewContent != '') {
+        if ($previewContent !== '') {
             $iframeBody.css('margin', '0').append($previewContent);
         } else {
             $iframeBody.css('margin', '0').append($savedContent.attr('value'));

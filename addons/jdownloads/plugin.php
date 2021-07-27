@@ -45,8 +45,7 @@ class plgAcymJdownloads extends acymPlugin
                 'readmore' => ['ACYM_READ_MORE', true],
             ];
 
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [

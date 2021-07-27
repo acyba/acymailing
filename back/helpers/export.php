@@ -324,7 +324,7 @@ class ExportHelper extends acymObject
                         }
                     }
 
-                    $oneData = acym_escape($oneData);
+                    $oneData = htmlspecialchars($oneData);
                 }
 
                 $dataexport = implode($separator, $data);

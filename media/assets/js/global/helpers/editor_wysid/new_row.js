@@ -1,6 +1,6 @@
 const acym_editorWysidNewRow = {
     addRow1WYSID: function (ui) {
-        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0">';
+        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0" cellspacing="0" border="0">';
         content += '<tbody>';
         content += '<tr>';
 
@@ -16,7 +16,7 @@ const acym_editorWysidNewRow = {
         acym_helperEditorWysid.setColumnRefreshUiWYSID();
     },
     addRow2WYSID: function (ui) {
-        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0">';
+        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0" cellspacing="0" border="0">';
         content += '<tbody>';
         content += '<tr>';
 
@@ -36,7 +36,7 @@ const acym_editorWysidNewRow = {
         acym_helperEditorWysid.setColumnRefreshUiWYSID();
     },
     addRow3WYSID: function (ui) {
-        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0">';
+        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0" cellspacing="0" border="0">';
         content += '<tbody>';
         content += '<tr>';
 
@@ -60,7 +60,7 @@ const acym_editorWysidNewRow = {
         acym_helperEditorWysid.setColumnRefreshUiWYSID();
     },
     addRow4WYSID: function (ui) {
-        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0">';
+        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0" cellspacing="0" border="0">';
         content += '<tbody>';
         content += '<tr>';
 
@@ -88,7 +88,7 @@ const acym_editorWysidNewRow = {
         acym_helperEditorWysid.setColumnRefreshUiWYSID();
     },
     addRow5WYSID: function (ui) {
-        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0">';
+        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0" cellspacing="0" border="0">';
         content += '<tbody>';
         content += '<tr>';
 
@@ -108,7 +108,7 @@ const acym_editorWysidNewRow = {
         acym_helperEditorWysid.setColumnRefreshUiWYSID();
     },
     addRow6WYSID: function (ui) {
-        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0">';
+        let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0" cellspacing="0" border="0">';
         content += '<tbody>';
         content += '<tr>';
 

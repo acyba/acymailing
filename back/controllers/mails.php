@@ -65,7 +65,7 @@ class MailsController extends acymController
         $pagination = new PaginationHelper();
         // Get pagination data
         $mailsPerPage = $pagination->getListLimit();
-        $page = acym_getVar('int', 'mails_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'mails_pagination_page', 1);
         $mailClass = $this->currentClass;
         $status = $mailClass::TYPE_STANDARD;
 
@@ -85,7 +85,7 @@ class MailsController extends acymController
         $matchingMailsNb = count($matchingMails['elements']);
 
         if (empty($matchingMailsNb) && $page > 1) {
-            acym_setVar('mails_pagination_page', 1);
+            $this->setVarFiltersListing('mails_pagination_page', 1);
             $this->listing();
 
             return;
@@ -172,7 +172,7 @@ class MailsController extends acymController
 
         // Get pagination data
         $mailsPerPage = 12;
-        $page = acym_getVar('int', 'mailchoose_pagination_page', 1);
+        $page = $this->getVarFiltersListing('int', 'mailchoose_pagination_page', 1);
 
         $mailClass = $this->currentClass;
         $matchingMails = $mailClass->getMatchingElements(

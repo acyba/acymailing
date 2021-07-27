@@ -28,8 +28,7 @@ class plgAcymArticle extends acymPlugin
                 'readmore' => ['ACYM_READ_MORE', false],
             ];
 
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
+            $this->initCustomView();
 
             $this->settings = [
                 'custom_view' => [
@@ -187,6 +186,11 @@ class plgAcymArticle extends acymPlugin
 
         $catOptions = [
             [
+                'title' => 'ACYM_LANGUAGE',
+                'type' => 'language',
+                'name' => 'language',
+            ],
+            [
                 'title' => 'ACYM_ORDER_BY',
                 'type' => 'select',
                 'name' => 'order',
@@ -324,6 +328,10 @@ class plgAcymArticle extends acymPlugin
                 if (!empty($lastGenerated)) {
                     $where[] = 'element.publish_up > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
                 }
+            }
+
+            if (!empty($parameter->language) && $parameter->language !== 'any') {
+                $where[] = 'element.language IN ("*", '.acym_escapeDB($parameter->language).')';
             }
 
             $query .= ' WHERE ('.implode(') AND (', $where).')';

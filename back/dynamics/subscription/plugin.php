@@ -604,7 +604,9 @@ class plgAcymSubscription extends acymPlugin
             // unsubscribe link
             $this->unsubscribeLink[$email->id] = true;
 
-            $myLink = acym_frontendLink('frontusers&task=unsubscribe&id={subscriber:id}&key={subscriber:key|urlencode}&'.acym_noTemplate().$lang.'&mail_id='.$email->id);
+            $myLink = 'frontusers&task=unsubscribe&id={subscriber:id}&key={subscriber:key|urlencode}'.$lang.'&mail_id='.$email->id;
+            if ($this->config->get('unsubpage_header') != 1) $myLink .= '&'.acym_noTemplate();
+            $myLink = acym_frontendLink($myLink);
             if (empty($allresults[2][$i])) {
                 return $myLink;
             }

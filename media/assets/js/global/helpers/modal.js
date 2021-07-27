@@ -34,7 +34,7 @@ const acym_helperModal = {
                 let $input = jQuery(this).closest('.acym__automation__inserted__action').find('[name$="[mail_id]"]');
                 let $html = jQuery(this).parent();
                 let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_mails&ctrl=' + acym_helper.ctrlMails + '&task=deleteMailAutomation&id=' + $input.val();
-                jQuery.get(ajaxUrl, function (res) {
+                jQuery.post(ajaxUrl, function (res) {
                     $input.val('').prev().html(ACYM_JS_TXT.ACYM_CREATE_MAIL);
                     $html.html('');
                     acym_helperModal.setAjaxCallStartFrom();
@@ -123,7 +123,7 @@ const acym_helperModal = {
 
             ajaxUrl += '&previousId=' + $actionContainer.find('[name$="[mail_id]"]').val();
 
-            jQuery.get(ajaxUrl, function (res) {
+            jQuery.post(ajaxUrl, function (res) {
                 let mail = acym_helper.parseJson(res, {'error': acym_helper.sprintf(ACYM_JS_TXT.ACYM_NOT_FOUND, ACYM_JS_TXT.ACYM_EMAIL)});
                 if (undefined !== mail.error) {
                     alert(mail.error);

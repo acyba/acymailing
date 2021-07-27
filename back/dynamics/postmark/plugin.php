@@ -87,11 +87,11 @@ class plgAcymPostmark extends acymPlugin
         }
     }
 
-    public function onAcymSendEmail(&$response, $sendingMethod, $to, $subject, $from, $reply_to, $body, $bcc = [], $attachments = [])
+    public function onAcymSendEmail(&$response, $sendingMethod, $to, $subject, $from, $reply_to, $body, $bcc = [], $attachments = [], $mailId = null)
     {
         //https://postmarkapp.com/developer/api/email-api
         if ($sendingMethod != self::SENDING_METHOD_ID) return;
-        $headers = $this->getHeadersSendingMethod(self::SENDING_METHOD_ID);
+
         $data = [
             'From' => $from['email'],
             'ReplyTo' => $reply_to['email'],
@@ -114,6 +114,23 @@ class plgAcymPostmark extends acymPlugin
             $data['Attachments'] = $attachFormated;
         }
 
+        // Handle the Stream ID
+        if (!empty($mailId)) {
+            if (acym_isMultilingual()) {
+                $parentId = acym_loadResult('SELECT parent_id FROM `#__acym_mail` WHERE id = '.intval($mailId));
+                if (!empty($parentId)) $mailId = $parentId;
+            }
+
+            $sendParams = acym_loadResult('SELECT sending_params FROM `#__acym_campaign` WHERE mail_id = '.intval($mailId));
+            if (!empty($sendParams)) {
+                $sendParams = json_decode($sendParams, true);
+                if (!empty($sendParams['message_stream_id'])) {
+                    $data['MessageStream'] = $sendParams['message_stream_id'];
+                }
+            }
+        }
+
+        $headers = $this->getHeadersSendingMethod(self::SENDING_METHOD_ID);
         $responseMailer = $this->callApiSendingMethod(self::SENDING_METHOD_API_URL.'email', $data, $headers, 'POST');
 
         if (!empty($responseMailer['ErrorCode'])) {

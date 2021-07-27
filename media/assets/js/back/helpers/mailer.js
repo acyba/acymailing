@@ -54,7 +54,7 @@ const acym_helperMailer = {
 
             let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=copySettingsSendingMethod';
 
-            acym_helper.get(ajaxUrl, data).then(response => {
+            acym_helper.post(ajaxUrl, data).then(response => {
                 if (response.error) {
                     acym_helperNotification.addNotification(response.message, 'error');
                     return false;

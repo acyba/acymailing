@@ -28,7 +28,7 @@ const acym_helperNotification = {
 
             let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=markNotificationRead';
 
-            jQuery.get(ajaxUrl, function (res) {
+            jQuery.post(ajaxUrl, function (res) {
                 res = acym_helper.parseJson(res);
                 if (undefined === res.error) {
                     jQuery('.acym__header__notification')
@@ -64,7 +64,7 @@ const acym_helperNotification = {
             let id = $closeButton.attr('data-id');
             if (id !== undefined && id != 0) {
                 let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=markNotificationRead&id=' + id;
-                jQuery.get(ajaxUrl, function (res) {
+                jQuery.post(ajaxUrl, function (res) {
                     res = acym_helper.parseJson(res);
 
                     if (undefined === res.error) {
@@ -83,7 +83,7 @@ const acym_helperNotification = {
             let id = jQuery(this).hasClass('acym__header__notification__toolbox__remove') ? 'all' : jQuery(this).attr('data-id');
             let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=removeNotification&id=' + id;
 
-            jQuery.get(ajaxUrl, function (res) {
+            jQuery.post(ajaxUrl, function (res) {
                 res = acym_helper.parseJson(res);
                 if (undefined === res.error) {
                     jQuery('.acym__header__notification__center').html(res.data);
@@ -119,7 +119,7 @@ const acym_helperNotification = {
 
         let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=addNotification&message=' + message + '&level=' + type;
 
-        jQuery.get(ajaxUrl, function (res) {
+        jQuery.post(ajaxUrl, function (res) {
             res = acym_helper.parseJson(res);
             if (res.error === undefined) {
                 jQuery('.acym__header__notification').replaceWith(res.data);

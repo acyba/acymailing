@@ -155,8 +155,9 @@ class HeaderHelper extends acymObject
 
         $version .= '</div></div>';
 
-        if (!acym_level(ACYM_ESSENTIAL)) return $version;
+        if (!acym_level(ACYM_ESSENTIAL) && ACYM_PRODUCTION) return $version;
 
+        //__START__production_
         $expirationDate = $this->config->get('expirationdate', 0);
         if (empty($expirationDate) || $expirationDate == -1) return $version;
 
@@ -195,6 +196,7 @@ class HeaderHelper extends acymObject
         $version .= '</div>';
 
         return $version;
+        //__END__production_
     }
 
     private function getCheckVersionButton()

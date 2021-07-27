@@ -16,9 +16,7 @@ class plgAcymK2 extends acymPlugin
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.png';
 
         if ($this->installed) {
-            $this->initDisplayOptionsCustomView();
-            $this->initElementOptionsCustomView();
-            $this->initReplaceOptionsCustomView();
+            $this->initCustomView(true);
 
             $this->settings = [
                 'custom_view' => [
@@ -60,7 +58,7 @@ class plgAcymK2 extends acymPlugin
         $customView = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
     }
 
-    public function initDisplayOptionsCustomView()
+    public function initCustomOptionsCustomView()
     {
         $extraFields = acym_loadObjectList('SELECT * FROM #__k2_extra_fields WHERE published = 1 AND type NOT IN ("csv", "header")');
 

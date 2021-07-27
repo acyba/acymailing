@@ -57,14 +57,14 @@
 									</div>
 								</div>
 								<div v-if="!installed[plugin.image]" v-show="rightLevel(plugin.level)" class="cell grid-x acym__plugins__card__actions">
-									<button v-show="'{__CMS__}' == 'Joomla'" type="button" class="acym__plugins__button cell text-center button button-secondary" @click="download(plugin)">
+									<button v-show="'<?php echo ACYM_CMS; ?>' == 'joomla'" type="button" class="acym__plugins__button cell text-center button button-secondary" @click="download(plugin)">
 										<span v-show="!downloading[plugin.image]">
 											<?php echo acym_translation('ACYM_DOWNLOAD'); ?>
 											<i class="acymicon-file_download"></i>
 										</span>
 										<span v-show="downloading[plugin.image]"><?php echo acym_loaderLogo(); ?></span>
 									</button>
-									<a v-show="'{__CMS__}' == 'WordPress'"
+									<a v-show="'<?php echo ACYM_CMS; ?>' == 'wordpress'"
 									   target="_blank"
 									   :href="plugin.downloadlink"
 									   class="acym__plugins__button cell acym__plugins__button__purchase text-center button button-secondary">
