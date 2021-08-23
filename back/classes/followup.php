@@ -69,7 +69,7 @@ class FollowupClass extends acymClass
         $results['elements'] = acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']);
         $urlClickClass = new UrlClickClass();
         foreach ($results['elements'] as $key => $oneFollowup) {
-            $results['elements'][$key]->subscribers = $this->getNumberSubscribersByFollowupId($oneFollowup->list_id);
+            $results['elements'][$key]->subscribers = $this->getNumberSubscribersByListId($oneFollowup->list_id);
             $this->getGlobalStats($results['elements'][$key], $urlClickClass);
         }
 
@@ -78,15 +78,19 @@ class FollowupClass extends acymClass
         return $results;
     }
 
-    public function getNumberSubscribersByFollowupId($followupId = 0)
+    public function getNumberSubscribersByListId($listId = 0, $onlySubscribed = false)
     {
-        if (empty($followupId)) return 0;
+        if (empty($listId)) return 0;
 
-        return acym_loadResult(
-            'SELECT COUNT(*) 
+        $query = 'SELECT COUNT(*) 
                 FROM #__acym_user_has_list 
-                WHERE list_id = '.intval($followupId)
-        );
+                WHERE `list_id` = '.intval($listId);
+
+        if ($onlySubscribed) {
+            $query .= ' AND `status` = 1';
+        }
+
+        return acym_loadResult($query);
     }
 
     private function getGlobalStats(&$element, $urlClickClass)
@@ -384,6 +388,7 @@ class FollowupClass extends acymClass
     {
         if (!is_array($followupIds)) $followupIds = [$followupIds];
         acym_arrayToInteger($followupIds);
+
         $mailsInfo = acym_loadObjectList(
             'SELECT followup_mail.*, followup.send_once
                   FROM #__acym_followup_has_mail AS followup_mail
@@ -498,5 +503,30 @@ class FollowupClass extends acymClass
         acym_trigger('onAcymGetFollowupDailyBases', [&$triggers]);
 
         return acym_loadObjectList('SELECT * FROM #__acym_followup WHERE `trigger` IN ("'.implode('","', $triggers).'") AND active  = 1');
+    }
+
+    public function queueForSubscribers($emailId)
+    {
+        if (empty($emailId)) return false;
+
+        $mailInfo = acym_loadObject(
+            'SELECT map.*, followup.list_id 
+            FROM #__acym_followup_has_mail AS map 
+            JOIN #__acym_followup AS followup 
+                ON followup.id = map.followup_id 
+            WHERE map.mail_id = '.intval($emailId)
+        );
+        if (empty($mailInfo)) return false;
+
+        $this->addMailStat($mailInfo->mail_id);
+
+        $delay = intval($mailInfo->delay) * intval($mailInfo->delay_unit);
+        $query = 'INSERT IGNORE INTO #__acym_queue (`mail_id`, `user_id`, `sending_date`, `priority`) 
+                SELECT '.intval($mailInfo->mail_id).', user_id, TIMESTAMPADD(SECOND, '.$delay.', subscription_date), 2
+                FROM #__acym_user_has_list 
+                WHERE status = 1 
+                    AND list_id = '.intval($mailInfo->list_id);
+
+        return acym_query($query);
     }
 }

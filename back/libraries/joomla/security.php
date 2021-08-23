@@ -43,11 +43,6 @@ function acym_setVar($name, $value = null, $hash = 'method', $overwrite = true)
     return JRequest::setVar($name, $value, $hash, $overwrite);
 }
 
-function acym_raiseError($level, $code, $msg, $info = null)
-{
-    return JError::raise($level, $code, $msg, $info);
-}
-
 function acym_isAdmin()
 {
     $acyapp = acym_getGlobal('app');

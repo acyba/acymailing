@@ -170,20 +170,6 @@ class plgAcymRseventspro extends acymPlugin
                 'default' => false,
             ],
             [
-                'title' => 'ACYM_FROM',
-                'type' => 'date',
-                'name' => 'from',
-                'default' => time(),
-                'relativeDate' => '+',
-            ],
-            [
-                'title' => 'ACYM_TO',
-                'type' => 'date',
-                'name' => 'to',
-                'default' => '',
-                'relativeDate' => '+',
-            ],
-            [
                 'title' => 'ACYM_ORDER_BY',
                 'type' => 'select',
                 'name' => 'order',
@@ -197,7 +183,7 @@ class plgAcymRseventspro extends acymPlugin
                 'defaultdir' => 'asc',
             ],
         ];
-        $this->autoContentOptions($catOptions);
+        $this->autoContentOptions($catOptions, 'event');
 
         $this->autoCampaignOptions($catOptions);
 

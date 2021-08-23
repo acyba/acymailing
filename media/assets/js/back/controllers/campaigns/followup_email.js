@@ -2,6 +2,7 @@ jQuery(document).ready(function ($) {
     function followupEmail() {
         setDuplicateMail();
         setDeleteMail();
+        setEmailAddQueue();
     }
 
     function setDuplicateMail() {
@@ -19,6 +20,26 @@ jQuery(document).ready(function ($) {
                 $('[name="action_mail_id"]').val($(this).attr('acym-data-id'));
                 $('#acym_form').submit();
             }
+        });
+    }
+
+    function setEmailAddQueue() {
+        $('.acym__followup__add_queue').off('click').on('click', function () {
+            let data = {
+                ctrl: 'followups',
+                task: 'addQueueAjax',
+                emailId: $(this).attr('data-acym-email-id')
+            };
+
+            acym_helper.get(ACYM_AJAX_URL, data).then(res => {
+                if (res.error) {
+                    acym_helperNotification.addNotification(res.message, 'error', true);
+                    return;
+                }
+
+                acym_helperNotification.addNotification(res.message, 'success', true);
+                $(this).closest('.acym__message').remove();
+            });
         });
     }
 

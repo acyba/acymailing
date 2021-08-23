@@ -411,7 +411,7 @@ class FieldClass extends acymClass
         $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
         $style = empty($size) ? '' : ' style="'.$size.'"';
         $messageRequired = empty($field->option->error_message)
-            ? acym_translationSprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', '"'.$field->name.'"')
+            ? acym_translationSprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', $field->name)
             : acym_translation(
                 $field->option->error_message
             );

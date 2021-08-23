@@ -449,6 +449,10 @@ class plgAcymVirtuemart extends acymPlugin
                 $query .= 'JOIN #__virtuemart_product_manufacturers AS manufacturer ON manufacturer.virtuemart_product_id = product.virtuemart_product_id ';
                 $where[] = 'manufacturer.virtuemart_manufacturer_id = '.intval($parameter->manufacturer);
             }
+            if (!empty($parameter->min_publish)) {
+                $parameter->min_publish = acym_date(acym_replaceDate($parameter->min_publish), 'Y-m-d H:i:s', false);
+                $where[] = 'product.created_on >= '.acym_escapeDB($parameter->min_publish);
+            }
 
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);
@@ -1425,6 +1429,11 @@ class plgAcymVirtuemart extends acymPlugin
         $selectedLists = acym_getVar('array', 'virtuemart_visible_lists_checked', []);
         $autoLists = explode(',', $config->get('virtuemart_autolists', ''));
         $listsToSubscribe = array_merge($selectedLists, $autoLists);
+
+        if (empty($email)) {
+            $user = JFactory::getUser();
+            if (!empty($user)) $email = $user->get('email');
+        }
 
         if (empty($email) || empty($listsToSubscribe)) return;
 

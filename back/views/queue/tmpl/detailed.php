@@ -41,7 +41,7 @@
                     <?php foreach ($data["allElements"] as $row) { ?>
 						<div data-acy-elementid="<?php echo acym_escape($row->id.'_'.$row->user_id); ?>" class="cell grid-x acym__listing__row">
 							<div class="cell large-2 medium-3">
-                                <?php echo acym_date($row->sending_date, 'j F Y H:i'); ?>
+                                <?php echo acym_date($row->sending_date, acym_getDateTimeFormat()); ?>
 							</div>
 							<div class="cell medium-4">
 								<div class="acym__listing__title acym_text_ellipsis">

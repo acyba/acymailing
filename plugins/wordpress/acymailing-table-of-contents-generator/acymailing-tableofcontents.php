@@ -32,11 +32,13 @@ function acym_table_of_contents_uninstall()
     $pluginClass->deleteByFolderName('tableofcontents');
 }
 
-add_action('acym_load_installed_integrations', 'acym_table_of_contents');
-function acym_table_of_contents(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_table_of_contents', 10, 2);
+function acym_table_of_contents(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymTableofcontents',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymTableofcontents',
+        ];
+    }
 }

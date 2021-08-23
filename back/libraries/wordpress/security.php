@@ -149,12 +149,6 @@ function acym_setVar($name, $value = null, $hash = 'REQUEST', $overwrite = true)
     }
 }
 
-function acym_raiseError($level, $code, $msg, $info = null)
-{
-    acym_display($code.': '.$msg, 'error');
-    wp_die();
-}
-
 function acym_isAdmin()
 {
     $page = acym_getVar('string', 'page', '');

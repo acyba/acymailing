@@ -576,10 +576,17 @@ class MailsController extends acymController
                 $listClass = new ListClass();
                 $listClass->setWelcomeUnsubEmail($listIds, $mailID, $mail->type);
             } elseif (!empty($mail->type) && $mail->type == $mailClass::TYPE_FOLLOWUP) {
+                // Pass the new email ID in the return URL to ask user if we should add it to the queue
+                acym_setVar('return', acym_getVar('string', 'return').'&newEmailId='.$mailID);
+
                 $followupData = acym_getVar('array', 'followup', []);
                 $followupClass = new FollowupClass();
-                if (!$followupClass->saveDelaySettings($followupData, $mailID)) acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_SAVE_DELAY_SETTINGS'), 'error');
-                if (!empty($followupData['id'])) acym_setVar('followup_id', $followupData['id']);
+                if (!$followupClass->saveDelaySettings($followupData, $mailID)) {
+                    acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_SAVE_DELAY_SETTINGS'), 'error');
+                }
+                if (!empty($followupData['id'])) {
+                    acym_setVar('followup_id', $followupData['id']);
+                }
             }
 
             if (!$ajax) acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');

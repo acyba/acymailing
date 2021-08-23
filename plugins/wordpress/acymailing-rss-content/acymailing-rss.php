@@ -32,11 +32,13 @@ function acym_integration_rss_uninstall()
     $pluginClass->deleteByFolderName('rss');
 }
 
-add_action('acym_load_installed_integrations', 'acym_integration_rss');
-function acym_integration_rss(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_integration_rss', 10, 2);
+function acym_integration_rss(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymRss',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymRss',
+        ];
+    }
 }

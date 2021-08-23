@@ -32,11 +32,13 @@ function acym_custom_headers_uninstall()
     $pluginClass->deleteByFolderName('customheaders');
 }
 
-add_action('acym_load_installed_integrations', 'acym_custom_headers');
-function acym_custom_headers(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_custom_headers', 10, 2);
+function acym_custom_headers(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymCustomheaders',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymCustomheaders',
+        ];
+    }
 }

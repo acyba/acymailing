@@ -219,22 +219,8 @@ class plgAcymJevents extends acymPlugin
                 'default' => 'startrepeat',
                 'defaultdir' => 'asc',
             ],
-            [
-                'title' => 'ACYM_FROM',
-                'type' => 'date',
-                'name' => 'from',
-                'default' => time(),
-                'relativeDate' => '+',
-            ],
-            [
-                'title' => 'ACYM_TO',
-                'type' => 'date',
-                'name' => 'to',
-                'default' => '',
-                'relativeDate' => '+',
-            ],
         ];
-        $this->autoContentOptions($catOptions);
+        $this->autoContentOptions($catOptions, 'event');
 
         $this->autoCampaignOptions($catOptions);
 

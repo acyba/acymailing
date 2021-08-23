@@ -662,7 +662,7 @@ class MailClass extends acymClass
         }
 
         if (!extension_loaded('zlib')) {
-            acym_raiseError(E_WARNING, 'SOME_ERROR_CODE', acym_translation('WARNINSTALLZLIB'));
+            acym_raiseError(500, acym_translation('ACYM_MISSING_ZLIB'));
 
             return false;
         }

@@ -44,10 +44,8 @@ function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
 function acym_getGroups()
 {
     return acym_loadObjectList(
-        'SELECT `groups`.*, `groups`.title AS text, `groups`.id AS `value`, COUNT(ugm.user_id) AS nbusers 
-        FROM #__usergroups AS `groups` 
-        LEFT JOIN #__user_usergroup_map ugm ON `groups`.id = ugm.group_id 
-        GROUP BY `groups`.id',
+        'SELECT `groups`.*, `groups`.title AS text, `groups`.id AS `value` 
+        FROM #__usergroups AS `groups`',
         'id'
     );
 }

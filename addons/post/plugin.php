@@ -246,6 +246,10 @@ class plgAcymPost extends acymPlugin
 
             $where[] = 'post.post_type = "post"';
             $where[] = 'post.post_status = "publish"';
+            if (!empty($parameter->min_publish)) {
+                $parameter->min_publish = acym_date(acym_replaceDate($parameter->min_publish), 'Y-m-d H:i:s', false);
+                $where[] = 'post.post_date_gmt >= '.acym_escapeDB($parameter->min_publish);
+            }
 
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);
@@ -336,7 +340,7 @@ class plgAcymPost extends acymPlugin
         }
 
         $customFields = [];
-        $varFields['{author}'] = empty($element->user_nicename) ? $element->display_name : $element->user_nicename;
+        $varFields['{author}'] = empty($element->display_name) ? $element->user_nicename : $element->display_name;
         if (in_array('author', $tag->display) && !empty($varFields['{author}'])) {
             $customFields[] = [
                 $varFields['{author}'],

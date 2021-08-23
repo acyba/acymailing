@@ -10,14 +10,19 @@ jQuery(document).ready(function ($) {
         let and = $(element).closest('.acym__automation__inserted__filter').attr('data-and');
         let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_automation&ctrl=automation&task=countresults&or=' + or + '&and=' + and;
 
-        if (undefined !== ajaxCalls[and]) ajaxCalls[and].abort();
+        if (undefined !== ajaxCalls[and] && typeof ajaxCalls[and].abort === 'function') {
+            ajaxCalls[and].abort();
+        }
 
         $('#results_' + and).css('maxHeight', '18px').html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
         let ajaxData = $(element).closest('#acym_form').serialize() + '&page=acymailing_automation&ctrl=automation&task=countresults&or=' + or + '&and=' + and;
-        ajaxCalls[and] = $.get(ajaxUrl, ajaxData)
-                          .done(function (result) {
-                              $('#results_' + and).css('maxHeight', '').html(result);
+
+        ajaxCalls[and] = $.post(ajaxUrl, ajaxData)
+                          .done(function (response) {
+                              if (typeof response !== 'object') response = acym_helper.parseJson(response);
+
+                              $('#results_' + and).css('maxHeight', '').html(response.error ? ACYM_JS_TXT.ACYM_ERROR : response.message);
                           })
                           .fail(function () {
                               $('#results_' + and).css('maxHeight', '').html(ACYM_JS_TXT.ACYM_ERROR);
@@ -41,16 +46,17 @@ jQuery(document).ready(function ($) {
         let $counterInput = groupFilter.find('.acym__automation__or__total__result');
 
         let ajaxUrlTotal = ACYM_AJAX_URL + '&page=acymailing_automation&ctrl=automation&task=countResultsOrTotal&or=' + or;
+        let ajaxData = groupFilter.closest('#acym_form').serialize() + '&page=acymailing_automation&ctrl=automation&task=countResultsOrTotal&or=' + or;
 
         $counterInput.html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
-        $.get(ajaxUrlTotal, groupFilter.closest('#acym_form').serialize() + '&page=acymailing_automation&ctrl=automation&task=countResultsOrTotal&or=' + or)
-         .done(function (result) {
-             $counterInput.html(result);
-         })
-         .fail(function () {
-             $counterInput.html(ACYM_JS_TXT.ACYM_ERROR);
-         });
+        acym_helper.post(ajaxUrlTotal, ajaxData).then(response => {
+            if (response.error) {
+                $counterInput.html(ACYM_JS_TXT.ACYM_ERROR);
+            } else {
+                $counterInput.html(response.message);
+            }
+        });
     }
 
     function refreshFilterProcess() {
@@ -74,13 +80,16 @@ jQuery(document).ready(function ($) {
 
 
         $('.acym__automation__select__' + type + '__filter').off('change').on('change', function () {
+            let selectedFilter = $(this).val();
+            if (selectedFilter === null) return;
+
             let $inputAnd = $('#acym__automation__filters__count__and');
             $inputAnd.val(parseInt($inputAnd.val()) + 1);
 
             let seeUsersFilter = acym_helperSegment.getSeeUserModalButton($(this), $inputAnd.val());
 
             $(this).parent().parent().find('.acym__automation__inserted__filter').remove();
-            let html = filters[$(this).val()].replace(/__numor__/g, $(this).closest('.acym__automation__group__filter').attr('data-filter-number'));
+            let html = filters[selectedFilter].replace(/__numor__/g, $(this).closest('.acym__automation__group__filter').attr('data-filter-number'));
             html = html.replace(/__numand__/g, $inputAnd.val());
             $(this)
                 .parent()

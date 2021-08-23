@@ -104,6 +104,7 @@ class acyRouter extends acyHook
         wp_dequeue_style('saswp-main-css');
         wp_dequeue_style('WP REST API Controller');
         wp_dequeue_style('wpml-select-2');
+        wp_dequeue_style('swcfpc_admin_css');
     }
 
     public function protectMotherland()

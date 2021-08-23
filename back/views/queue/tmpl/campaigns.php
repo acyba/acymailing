@@ -59,7 +59,7 @@
                                     ?>
 									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo $row->name.(empty($row->language) ? '' : ' - '.$row->language); ?></h6>
 									<p class="acym__listing__title__secondary">
-                                        <?php echo acym_date($row->sending_date, 'ACYM_DATE_FORMAT_LC2'); ?>
+                                        <?php echo acym_date($row->sending_date, acym_getDateTimeFormat()); ?>
 									</p>
 								</div>
 							</div>

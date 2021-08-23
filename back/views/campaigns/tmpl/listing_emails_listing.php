@@ -69,7 +69,7 @@
 						</a>
 						<p class='acym__listing__title__secondary'>
                             <?php
-                            echo acym_date(acym_getTime($email->creation_date), 'Y-m-d H:i:s');
+                            echo acym_date(acym_getTime($email->creation_date), acym_getDateTimeFormat());
                             ?>
 						</p>
 					</div>

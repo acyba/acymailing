@@ -33,13 +33,15 @@ function acym_integration_ultimatemember_uninstall()
     $pluginClass->deleteByFolderName('ultimatemember');
 }
 
-add_action('acym_load_installed_integrations', 'acym_integration_ultimatemember');
-function acym_integration_ultimatemember(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_integration_ultimatemember', 10, 2);
+function acym_integration_ultimatemember(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymUltimatemember',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymUltimatemember',
+        ];
+    }
 }
 
 add_action('um_after_register_fields', 'addRegistrationFields');

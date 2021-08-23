@@ -32,11 +32,13 @@ function acym_integration_theeventscalendar_uninstall()
     $pluginClass->deleteByFolderName('theeventscalendar');
 }
 
-add_action('acym_load_installed_integrations', 'acym_integration_theeventscalendar');
-function acym_integration_theeventscalendar(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_integration_theeventscalendar', 10, 2);
+function acym_integration_theeventscalendar(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymTheeventscalendar',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymTheeventscalendar',
+        ];
+    }
 }

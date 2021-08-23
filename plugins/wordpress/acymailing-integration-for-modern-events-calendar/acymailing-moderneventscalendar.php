@@ -32,11 +32,13 @@ function acym_integration_moderneventscalendar_uninstall()
     $pluginClass->deleteByFolderName('moderneventscalendar');
 }
 
-add_action('acym_load_installed_integrations', 'acym_integration_moderneventscalendar');
-function acym_integration_moderneventscalendar(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_integration_moderneventscalendar', 10, 2);
+function acym_integration_moderneventscalendar(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymModerneventscalendar',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymModerneventscalendar',
+        ];
+    }
 }

@@ -121,3 +121,13 @@ function acym_isAllowed($controller, $task = '')
 
     return false;
 }
+
+function acym_raiseError($code, $message)
+{
+    echo '<link type="text/css" rel="stylesheet" href="'.ACYM_CSS.'back_global.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'back_global.min.css').'">';
+    echo '<div id="acym_wrapper">';
+    acym_display('Error '.$code.': '.$message, 'error', false);
+    echo '</div>';
+    http_response_code($code);
+    exit;
+}

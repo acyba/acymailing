@@ -236,8 +236,35 @@ class acymPlugin extends acymObject
         return $this->subCategories[$categoryId];
     }
 
-    protected function autoContentOptions(&$options)
+    protected function autoContentOptions(&$options, $type = null)
     {
+        if ($type === 'event') {
+            $options[] = [
+                'title' => 'ACYM_FROM',
+                'type' => 'date',
+                'name' => 'from',
+                'default' => time(),
+                'relativeDate' => '+',
+            ];
+
+            $options[] = [
+                'title' => 'ACYM_TO',
+                'type' => 'date',
+                'name' => 'to',
+                'default' => '',
+                'relativeDate' => '+',
+            ];
+        } elseif ($type !== 'simple') {
+            $options[] = [
+                'title' => 'ACYM_MIN_PUBLISH_DATE',
+                'tooltip' => 'ACYM_MIN_PUBLISH_DATE_DESC',
+                'type' => 'date',
+                'name' => 'min_publish',
+                'default' => '',
+                'relativeDate' => '-',
+            ];
+        }
+
         $options[] = [
             'title' => 'ACYM_COLUMNS',
             'type' => 'number',
@@ -1300,6 +1327,8 @@ class acymPlugin extends acymObject
     public function initCustomView($customFields = false)
     {
         $ctrl = acym_getVar('cmd', 'ctrl', str_replace(ACYM_COMPONENT.'_', '', acym_getVar('cmd', 'page')));
+        if (!in_array($ctrl, ['plugins', 'dynamics'])) return;
+
         $task = acym_getVar('cmd', 'task', 'installed');
 
         // Installed add-ons page or installed + editor

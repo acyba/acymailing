@@ -251,7 +251,15 @@ class QueueClass extends acymClass
         $campaigns = acym_loadObjectList('SELECT id, mail_id FROM #__acym_campaign WHERE mail_id IN ('.implode(',', $mailIds).')');
         $campaignClass = new CampaignClass();
         foreach ($campaigns as $campaign) {
-            $campaignClass->send($campaign->id, $nbQueue[$campaign->mail_id]);
+            $result = $campaignClass->send($campaign->id, $nbQueue[$campaign->mail_id]);
+            if (empty($result) && acym_isMultilingual()) {
+                $translatedMails = acym_loadResultArray('SELECT id FROM #__acym_mail WHERE id != '.intval($campaign->mail_id).' AND parent_id = '.intval($campaign->mail_id));
+                if (!empty($translatedMails)) {
+                    foreach ($translatedMails as $translatedMailId) {
+                        if (!empty($nbQueue[$translatedMailId])) $campaignClass->send($campaign->id, $nbQueue[$translatedMailId]);
+                    }
+                }
+            }
         }
 
         return count($mailReady);
@@ -445,16 +453,14 @@ class QueueClass extends acymClass
         ];
 
         if ($onlyNew === null && acym_isMultilingual()) {
-            $where = $mail->id == $mail->parent_id ? ' OR user.language = "" OR (user.language != "" AND user.language != childmail.language)' : '';
+            $where = $mail->id == $mail->parent_id ? ' OR user.language = "" OR user.language NOT IN(SELECT language FROM #__acym_mail WHERE parent_id = '.intval(
+                    $mail->id
+                ).')' : '';
             $automationHelper->where[] = ' (user.language = '.acym_escapeDB($mail->language).' '.$where.')';
         }
 
         if ($this->config->get('require_confirmation', 1) == 1) {
             $automationHelper->where[] = '`user`.`confirmed` = 1';
-        }
-
-        if ($mail->id == $mail->parent_id) {
-            $automationHelper->leftjoin['childmail'] = ' #__acym_mail AS childmail ON childmail.parent_id = '.$mail->id;
         }
 
         if ((is_null($onlyNew) && !empty($sendingParams['resendTarget']) && 'new' === $sendingParams['resendTarget']) || $onlyNew) {

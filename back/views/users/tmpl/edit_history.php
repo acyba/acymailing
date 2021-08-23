@@ -43,7 +43,7 @@
                                     ? '-'
                                     : acym_tooltip(
                                         acym_date(acym_getTime($oneMailHistory->send_date), 'd F H:i'),
-                                        acym_date(acym_getTime($oneMailHistory->send_date), 'd F Y H:i:s')
+                                        acym_date(acym_getTime($oneMailHistory->send_date), acym_getDateTimeFormat())
                                     ); ?>
 							</div>
 							<div class="medium-1 cell text-center">
@@ -54,7 +54,7 @@
                                     ? '-'
                                     : acym_tooltip(
                                         acym_date(acym_getTime($oneMailHistory->open_date), 'd F H:i'),
-                                        acym_date(acym_getTime($oneMailHistory->open_date), 'd F Y H:i:s')
+                                        acym_date(acym_getTime($oneMailHistory->open_date), acym_getDateTimeFormat())
                                     ); ?>
 							</div>
 							<div class="medium-1 cell text-center">
@@ -94,7 +94,7 @@
                     foreach ($data['userHistory'] as $key => $oneHistory) { ?>
 						<div class="grid-x cell text-center acym__listing__row grid-margin-x">
 							<div class="cell small-12 medium-2">
-                                <?php echo acym_date($oneHistory->date, 'Y-m-d H:i'); ?>
+                                <?php echo acym_date($oneHistory->date, acym_getDateTimeFormat()); ?>
 							</div>
 							<div class="cell small-6 medium-2">
                                 <?php echo acym_escape($oneHistory->ip); ?>

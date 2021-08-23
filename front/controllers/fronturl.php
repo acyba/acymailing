@@ -29,7 +29,7 @@ class FronturlController extends acymController
         $urlObject = $urlClass->getOneUrlById($urlid);
 
         if (empty($urlObject->id)) {
-            return acym_raiseError(E_ERROR, 404, acym_translation('ACYM_PAGE_NOT_FOUND'));
+            return acym_raiseError(404, acym_translation('ACYM_PAGE_NOT_FOUND'));
         }
 
         // Avoid issue with table constraint if the mail has been removed before the click

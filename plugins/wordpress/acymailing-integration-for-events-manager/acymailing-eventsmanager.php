@@ -32,11 +32,13 @@ function acym_integration_eventsmanager_uninstall()
     $pluginClass->deleteByFolderName('eventsmanager');
 }
 
-add_action('acym_load_installed_integrations', 'acym_integration_eventsmanager');
-function acym_integration_eventsmanager(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_integration_eventsmanager', 10, 2);
+function acym_integration_eventsmanager(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymEventsmanager',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymEventsmanager',
+        ];
+    }
 }

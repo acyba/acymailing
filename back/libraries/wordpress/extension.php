@@ -106,7 +106,8 @@ function acym_loadPlugins()
 
     // Load the installed integrations
     $integrationsRaw = [];
-    do_action_ref_array('acym_load_installed_integrations', [&$integrationsRaw]);
+    $acyVersion = acym_config()->get('version');
+    do_action_ref_array('acym_load_installed_integrations', [&$integrationsRaw, $acyVersion]);
 
     $integrations = [];
     foreach ($integrationsRaw as $oneIntegration) {

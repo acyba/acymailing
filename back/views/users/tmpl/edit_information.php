@@ -26,7 +26,7 @@
                 echo acym_translation('ACYM_DATE_CREATED').' : <b>';
                 echo acym_date(
                     empty($data['user-information']->id) ? time() : $data['user-information']->creation_date,
-                    'ACYM_DATE_FORMAT_LC3'
+                    acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC3')
                 );
                 echo '</b>';
                 ?>
@@ -41,7 +41,7 @@
                 <?php
                 echo acym_date(
                     empty($data['user-information']->id) ? time() : $data['user-information']->creation_date,
-                    'ACYM_DATE_FORMAT_LC3'
+                    acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC3')
                 );
                 ?>
 			</b>

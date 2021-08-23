@@ -96,9 +96,10 @@ class RegacyHelper extends acymObject
     private function _formatResults()
     {
         $base = $this->options['baseOption'];
+        $checkedListsOnAjaxUpdate = acym_getVar('array', $base.'_visible_lists_checked');
         $result = '<table class="acym__'.$base.'__lists" style="border:0">';
         foreach ($this->lists as $id => $oneList) {
-            $checked = $oneList['checked'] ? 'checked="checked"' : '';
+            $checked = $oneList['checked'] || in_array($id, $checkedListsOnAjaxUpdate) ? 'checked="checked"' : '';
             $result .= '<tr style="border:0">
                             <td style="border:0">
                                 <input type="checkbox" id="acym__'.$base.'__lists-'.intval(
