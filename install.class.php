@@ -1137,10 +1137,12 @@ class acymInstall
             }
         }
 
-        if (version_compare($this->fromVersion, '7.6.0', '<')) {
+        if (version_compare($this->fromVersion, '7.5.9', '<')) {
             $fieldClass = new FieldClass();
             $fields = $fieldClass->getAll();
             foreach ($fields as $field) {
+                if (empty($field->option)) continue;
+
                 $field->option = json_decode($field->option, true);
                 $options = array_keys($field->option);
                 if (in_array('editable_user_creation', $options) || in_array('editable_user_modification', $options)) {

@@ -18,6 +18,7 @@ class plgAcymModerneventscalendar extends acymPlugin
         $this->cms = 'WordPress';
         $this->liteInstalled = acym_isExtensionActive('modern-events-calendar-lite/modern-events-calendar-lite.php');
         $this->fullInstalled = acym_isExtensionActive('modern-events-calendar/mec.php');
+        $this->installed = $this->liteInstalled || $this->fullInstalled;
         $this->textDomain = self::MEC_LITE;
         if ($this->fullInstalled) $this->textDomain = self::MEC_FULL;
 
@@ -122,20 +123,6 @@ class plgAcymModerneventscalendar extends acymPlugin
 
         $catOptions = [
             [
-                'title' => 'ACYM_FROM',
-                'type' => 'date',
-                'name' => 'from',
-                'default' => time(),
-                'relativeDate' => '+',
-            ],
-            [
-                'title' => 'ACYM_TO',
-                'type' => 'date',
-                'name' => 'to',
-                'default' => '',
-                'relativeDate' => '+',
-            ],
-            [
                 'title' => 'ACYM_ORDER_BY',
                 'type' => 'select',
                 'name' => 'order',
@@ -149,7 +136,7 @@ class plgAcymModerneventscalendar extends acymPlugin
                 'defaultdir' => 'asc',
             ],
         ];
-        $this->autoContentOptions($catOptions);
+        $this->autoContentOptions($catOptions, 'event');
 
         $this->autoCampaignOptions($catOptions);
 

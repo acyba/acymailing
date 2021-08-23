@@ -32,11 +32,13 @@ function acym_integration_gravityforms_uninstall()
     $pluginClass->deleteByFolderName('gravityforms');
 }
 
-add_action('acym_load_installed_integrations', 'acym_integration_gravityforms');
-function acym_integration_gravityforms(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_integration_gravityforms', 10, 2);
+function acym_integration_gravityforms(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymGravityforms',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymGravityforms',
+        ];
+    }
 }

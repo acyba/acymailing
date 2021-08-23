@@ -33,7 +33,7 @@ class ArchiveController extends acymController
         $oneMail = $mailerHelper->load($mailId);
 
         if (empty($oneMail->id)) {
-            acym_raiseError(E_ERROR, 404, acym_translation('ACYM_EMAIL_NOT_FOUND'));
+            acym_raiseError(404, acym_translation('ACYM_EMAIL_NOT_FOUND'));
 
             return;
         }

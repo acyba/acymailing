@@ -40,7 +40,7 @@ if ((($needToMigrate || $config->get('walk_through') == 1) && !acym_isNoTemplate
 
 $controllerNamespace = 'AcyMailing\\Controllers\\'.ucfirst($ctrl).'Controller';
 
-if (!class_exists($controllerNamespace)) return acym_raiseError(E_ERROR, 404, acym_translation('ACYM_PAGE_NOT_FOUND').': '.$ctrl);
+if (!class_exists($controllerNamespace)) return acym_raiseError(404, acym_translation('ACYM_PAGE_NOT_FOUND').': '.$ctrl);
 
 $controller = new $controllerNamespace;
 if (empty($controller)) {

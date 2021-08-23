@@ -32,11 +32,13 @@ function acym_integration_memberpress_uninstall()
     $pluginClass->deleteByFolderName('memberpress');
 }
 
-add_action('acym_load_installed_integrations', 'acym_integration_memberpress');
-function acym_integration_memberpress(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_integration_memberpress', 10, 2);
+function acym_integration_memberpress(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymMemberpress',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymMemberpress',
+        ];
+    }
 }

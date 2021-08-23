@@ -98,9 +98,7 @@ class SegmentsController extends acymController
         $listsIds = acym_getVar('string', 'list_selected', '');
         if (!empty($listsIds)) $listsIds = json_decode($listsIds);
 
-
-        echo json_encode(['count' => $this->countSegmentByParams($stepAutomation, $listsIds)]);
-        exit;
+        acym_sendAjaxResponse($this->countSegmentByParams($stepAutomation, $listsIds));
     }
 
     public function countSegmentByParams($segment, $listsIds)
@@ -162,7 +160,9 @@ class SegmentsController extends acymController
         //if we are in the campaign edition
         $listsIds = acym_getVar('string', 'list_selected', '');
 
-        if (empty($stepAutomation['filters'][$or][$and])) die(acym_translation('ACYM_AUTOMATION_NOT_FOUND'));
+        if (empty($stepAutomation['filters'][$or][$and])) {
+            acym_sendAjaxResponse(acym_translation('ACYM_AUTOMATION_NOT_FOUND'), [], false);
+        }
 
         $automationHelper = new AutomationHelper();
         $messages = '';
@@ -186,8 +186,7 @@ class SegmentsController extends acymController
 
         if (!empty($listsIds)) $messages .= acym_info('ACYM_CONDITION_WITH_LISTS_COUNT', '', '', 'wysid_tooltip');
 
-        echo json_encode(['message' => $messages]);
-        exit;
+        acym_sendAjaxResponse($messages);
     }
 
     public function countSegmentById($id, $listsIds, $ajax = true)

@@ -65,7 +65,7 @@ class jMail_acym extends PHPMailer
 
 
         if (($this->Mailer == 'mail') && !function_exists('mail')) {
-            return acym_raiseError(E_NOTICE, 500, acym_translation('JLIB_MAIL_FUNCTION_DISABLED'));
+            return acym_raiseError(500, acym_translation('JLIB_MAIL_FUNCTION_DISABLED'));
         }
 
         try {
@@ -85,7 +85,7 @@ class jMail_acym extends PHPMailer
         }
 
         if ($result == false) {
-            $result = acym_raiseError(E_NOTICE, 500, acym_translation($this->ErrorInfo));
+            $result = acym_raiseError(500, acym_translation($this->ErrorInfo));
         }
 
         return $result;
@@ -119,7 +119,7 @@ class jMail_acym extends PHPMailer
             $result = $this->SetFrom(JMailHelper::cleanLine($from));
         } else {
             // If it is neither, we throw a warning
-            acym_raiseError(E_WARNING, 0, acym_translationSprintf('JLIB_MAIL_INVALID_EMAIL_SENDER', $from));
+            acym_raiseError(500, acym_translationSprintf('JLIB_MAIL_INVALID_EMAIL_SENDER', $from));
         }
 
         // Check for boolean false return if exception handling is disabled

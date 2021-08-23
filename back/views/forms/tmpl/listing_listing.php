@@ -82,7 +82,7 @@
                         echo acym_tooltip(
                             acym_date(
                                 $form->creation_date,
-                                acym_translation('ACYM_DATE_FORMAT_LC5'),
+                                acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC5'),
                                 false
                             ),
                             $form->creation_date

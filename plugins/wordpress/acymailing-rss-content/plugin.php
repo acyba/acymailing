@@ -162,15 +162,25 @@ class plgAcymRss extends acymPlugin
                 $lastGenerated = $this->getLastGenerated($email->id);
             }
 
+            if (!empty($parameter->min_publish)) {
+                $parameter->min_publish = acym_replaceDate($parameter->min_publish);
+            }
+
             $resultfeeds = [];
             foreach ($rssDoc->channel->item as $oneFeed) {
                 if (count($resultfeeds) >= $maxArticle) break;
 
-                if (!empty($lastGenerated) && !empty($oneFeed->pubDate)) {
+                if (!empty($oneFeed->pubDate)) {
                     $date = str_replace('&apos;', "'", $oneFeed->pubDate->__toString());
                     $date = strtotime($date);
 
-                    if ($date < $lastGenerated) break;
+                    if (!empty($parameter->min_publish) && $date < $parameter->min_publish) {
+                        break;
+                    }
+
+                    if (!empty($lastGenerated) && $date < $lastGenerated) {
+                        break;
+                    }
                 }
 
                 $resultfeeds[] = $this->getItemView($oneFeed, $parameter);

@@ -32,11 +32,13 @@ function acym_integration_universalfilter_uninstall()
     $pluginClass->deleteByFolderName('universalfilter');
 }
 
-add_action('acym_load_installed_integrations', 'acym_integration_universalfilter');
-function acym_integration_universalfilter(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_integration_universalfilter', 10, 2);
+function acym_integration_universalfilter(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymUniversalfilter',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymUniversalfilter',
+        ];
+    }
 }

@@ -241,7 +241,7 @@ class plgAcymEasyprofile extends acymPlugin
                 ],
             ],
         ];
-        $this->autoContentOptions($catOptions);
+        $this->autoContentOptions($catOptions, 'simple');
 
         $this->autoCampaignOptions($catOptions);
 

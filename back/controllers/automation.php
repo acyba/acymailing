@@ -630,7 +630,9 @@ class AutomationController extends acymController
         $and = acym_getVar('int', 'and');
         $stepAutomation = acym_getVar('array', 'acym_action');
 
-        if (empty($stepAutomation['filters'][$or][$and])) die(acym_translation('ACYM_AUTOMATION_NOT_FOUND'));
+        if (empty($stepAutomation['filters'][$or][$and])) {
+            acym_sendAjaxResponse(acym_translation('ACYM_AUTOMATION_NOT_FOUND'), [], false);
+        }
 
         $query = new AutomationHelper();
         $messages = '';
@@ -640,8 +642,7 @@ class AutomationController extends acymController
             break;
         }
 
-        echo implode(' | ', $messages);
-        exit;
+        acym_sendAjaxResponse(implode(' | ', $messages));
     }
 
     public function countResultsOrTotal()
@@ -663,7 +664,6 @@ class AutomationController extends acymController
 
         $result = $query->count();
 
-        echo acym_translationSprintf('ACYM_SELECTED_USERS_TOTAL', $result);
-        exit;
+        acym_sendAjaxResponse(acym_translationSprintf('ACYM_SELECTED_USERS_TOTAL', $result));
     }
 }

@@ -234,8 +234,6 @@ class plgAcymDocman extends acymPlugin
 
     public function generateByCategory(&$email)
     {
-        $time = time();
-
         //load the tags
         $tags = $this->pluginHelper->extractTags($email, 'auto'.$this->name);
         $this->tags = [];
@@ -258,6 +256,10 @@ class plgAcymDocman extends acymPlugin
 
             $where[] = 'document.access = 0';
             $where[] = 'document.enabled = 1';
+            if (!empty($parameter->min_publish)) {
+                $parameter->min_publish = acym_date(acym_replaceDate($parameter->min_publish), 'Y-m-d H:i:s', false);
+                $where[] = 'document.publish_on >= '.acym_escapeDB($parameter->min_publish);
+            }
 
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);

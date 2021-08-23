@@ -32,11 +32,13 @@ function acym_integration_contactform7_uninstall()
     $pluginClass->deleteByFolderName('contactform7');
 }
 
-add_action('acym_load_installed_integrations', 'acym_integration_contactform7');
-function acym_integration_contactform7(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_integration_contactform7', 10, 2);
+function acym_integration_contactform7(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymContactform7',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymContactform7',
+        ];
+    }
 }

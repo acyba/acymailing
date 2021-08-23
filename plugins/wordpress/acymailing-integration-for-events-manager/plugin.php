@@ -176,20 +176,6 @@ class plgAcymEventsmanager extends acymPlugin
 
         $catOptions = [
             [
-                'title' => 'ACYM_FROM',
-                'type' => 'date',
-                'name' => 'from',
-                'default' => time(),
-                'relativeDate' => '+',
-            ],
-            [
-                'title' => 'ACYM_TO',
-                'type' => 'date',
-                'name' => 'to',
-                'default' => '',
-                'relativeDate' => '+',
-            ],
-            [
                 'title' => 'ACYM_ORDER_BY',
                 'type' => 'select',
                 'name' => 'order',
@@ -203,7 +189,7 @@ class plgAcymEventsmanager extends acymPlugin
                 'defaultdir' => 'asc',
             ],
         ];
-        $this->autoContentOptions($catOptions);
+        $this->autoContentOptions($catOptions, 'event');
 
         $this->autoCampaignOptions($catOptions);
 
@@ -472,7 +458,7 @@ class plgAcymEventsmanager extends acymPlugin
             ];
         }
 
-        $varFields['{author}'] = empty($element->user_nicename) ? $element->display_name : $element->user_nicename;
+        $varFields['{author}'] = empty($element->display_name) ? $element->user_nicename : $element->display_name;
         if (in_array('author', $tag->display) && !empty($varFields['{author}'])) {
             $customFields[] = [
                 $varFields['{author}'],

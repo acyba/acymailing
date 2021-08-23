@@ -49,7 +49,7 @@ if (!empty($data['translation_languages'])) {
 		<div class="cell small-6">
             <?php echo acym_translation('ACYM_DATE_CREATED'); ?> : <b><?php echo acym_date(
                     empty($data['listInformation']->id) ? time() : $data['listInformation']->creation_date,
-                    'ACYM_DATE_FORMAT_LC3'
+                    acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC3')
                 ); ?></b>
 		</div>
 	</div>

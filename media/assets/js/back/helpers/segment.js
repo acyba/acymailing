@@ -10,7 +10,9 @@ const acym_helperSegment = {
         let or = jQuery(element).closest('[data-filter-number]').attr('data-filter-number');
         let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_segments&ctrl=segments&task=countResults&and=' + and + '&or=' + or;
 
-        if (undefined !== this.ajaxCalls[and]) this.ajaxCalls[and].abort();
+        if (undefined !== this.ajaxCalls[and] && typeof this.ajaxCalls[and].abort === 'function') {
+            this.ajaxCalls[and].abort();
+        }
 
         jQuery('#results_' + and)
             .find('.acym__segments__edit__filter-results')
@@ -18,9 +20,11 @@ const acym_helperSegment = {
 
         let ajaxData = jQuery(element).closest('#acym_form').serialize() + '&page=acymailing_segments&ctrl=segments&task=countResults&and=' + and + '&or=' + or;
         this.ajaxCalls[and] = jQuery.post(ajaxUrl, ajaxData)
-                                    .done(function (result) {
-                                        result = acym_helper.parseJson(result);
-                                        jQuery('#results_' + and).find('.acym__segments__edit__filter-results').html(result.message);
+                                    .done(function (response) {
+                                        response = acym_helper.parseJson(response);
+                                        jQuery('#results_' + and)
+                                            .find('.acym__segments__edit__filter-results')
+                                            .html(response.error ? ACYM_JS_TXT.ACYM_ERROR : response.message);
                                     })
                                     .fail(function () {
                                         jQuery('#results_' + and).find('.acym__segments__edit__filter-results').html(ACYM_JS_TXT.ACYM_ERROR);
@@ -48,23 +52,21 @@ const acym_helperSegment = {
             $counterInput.show();
         }
 
-        if (this.globalAjaxCall !== '') {
+        if (this.globalAjaxCall !== '' && typeof this.globalAjaxCall.abort === 'function') {
             this.globalAjaxCall.abort();
             this.globalAjaxCall = '';
         }
 
         let groupFilter = jQuery('.acym__segments__group__filter');
-
         let ajaxUrlTotal = ACYM_AJAX_URL + '&page=acymailing_segments&ctrl=segments&task=countResultsTotal';
+        let ajaxData = groupFilter.closest('#acym_form').serialize() + '&page=acymailing_segments&ctrl=segments&task=countResultsTotal';
 
         $counterInput.html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
-        this.globalAjaxCall = jQuery.post(ajaxUrlTotal,
-            groupFilter.closest('#acym_form').serialize() + '&page=acymailing_segments&ctrl=segments&task=countResultsTotal'
-        )
-                                    .done(function (result) {
-                                        result = acym_helper.parseJson(result);
-                                        $counterInput.html(result.count);
+        this.globalAjaxCall = jQuery.post(ajaxUrlTotal, ajaxData)
+                                    .done(function (response) {
+                                        response = acym_helper.parseJson(response);
+                                        $counterInput.html(response.error ? ACYM_JS_TXT.ACYM_ERROR : response.message);
                                     })
                                     .fail(function () {
                                         $counterInput.html(ACYM_JS_TXT.ACYM_ERROR);

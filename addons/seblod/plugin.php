@@ -441,6 +441,10 @@ class plgAcymSeblod extends acymPlugin
             }
 
             $where[] = 'state = 1';
+            if (!empty($parameter->min_publish)) {
+                $parameter->min_publish = acym_date(acym_replaceDate($parameter->min_publish), 'Y-m-d H:i:s', false);
+                $where[] = '`publish_up` >= '.acym_escapeDB($parameter->min_publish);
+            }
 
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);

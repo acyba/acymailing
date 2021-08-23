@@ -1,4 +1,13 @@
 #acym_wrapper {
+    .acym__followup__add_queue {
+        color: $blue-green;
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
     #acym__followup__email {
         #acym__followup__email__information {
 

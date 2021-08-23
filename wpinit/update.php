@@ -92,7 +92,23 @@ class acyUpdate extends acyHook
         $newConfig->latestversion = $latestVersion;
         $newConfig->downloadurl = $downloadURL;
 
-        $config->save($newConfig);
+        // Save the downloadurl in all the sites' config to ensure a correct download for special ways to update
+        if (is_multisite()) {
+            $currentBlog = get_current_blog_id();
+            $sites = function_exists('get_sites') ? get_sites() : wp_get_sites();
+
+            foreach ($sites as $site) {
+                if (is_object($site)) {
+                    $site = get_object_vars($site);
+                }
+                switch_to_blog($site['blog_id']);
+                $config->save($newConfig);
+            }
+
+            switch_to_blog($currentBlog);
+        } else {
+            $config->save($newConfig);
+        }
 
         if (acym_level(ACYM_ESSENTIAL)) acym_checkVersion();
 

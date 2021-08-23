@@ -91,7 +91,7 @@
                             echo '<a href="'.$link.'">'.$userLinkDetails->email.' - '.$userLinkDetails->user_name.'</a>';
                             ?>
 						</div>
-						<div class="medium-auto small-12 cell acym__listing__user_links_details__content">
+						<div class="medium-auto small-12 cell acym__listing__user_links_details__content acym__stats__link">
                             <?php
                             echo $userLinkDetails->url_name.'<a href="'.$userLinkDetails->url_name.'" class="acym__listing__user_links_details__content__links" target="_blank"><i class="acymicon-external-link"></i></a>';
                             ?>
@@ -104,7 +104,7 @@
 						</div>
 						<div class="large-2 medium-3 hide-for-small-only cell acym__listing__user_links_details__content acym__listing__user_links_details__click-date text-center">
                             <?php
-                            echo empty($userLinkDetails->date_click) ? '-' : acym_date($userLinkDetails->date_click, 'Y-m-d H:i:s', false);
+                            echo empty($userLinkDetails->date_click) ? '-' : acym_date($userLinkDetails->date_click, acym_getDateTimeFormat(), false);
                             ?>
 						</div>
 						<div class="large-2 medium-3 small-4 cell acym__listing__user_links_details__content text-center">

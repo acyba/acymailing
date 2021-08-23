@@ -122,7 +122,7 @@
                             <?php
                             echo acym_tooltip(
                                 '<p>'.acym_date(acym_getTime($detailed_stat->send_date), 'd/m/Y').'</p>',
-                                acym_date(acym_getTime($detailed_stat->send_date), 'd F Y H:i:s')
+                                acym_date(acym_getTime($detailed_stat->send_date), acym_getDateTimeFormat())
                             );
                             ?>
 						</div>
@@ -170,7 +170,7 @@
                             if (!empty($detailed_stat->open_date)) {
                                 echo acym_tooltip(
                                     '<p>'.acym_date(acym_getTime($detailed_stat->open_date), 'd/m/Y').'</p>',
-                                    acym_date(acym_getTime($detailed_stat->open_date), 'd F Y H:i:s')
+                                    acym_date(acym_getTime($detailed_stat->open_date), acym_getDateTimeFormat())
                                 );
                             }
                             ?>

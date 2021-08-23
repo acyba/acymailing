@@ -32,11 +32,13 @@ function acym_integration_automationexport_uninstall()
     $pluginClass->deleteByFolderName('automationexport');
 }
 
-add_action('acym_load_installed_integrations', 'acym_integration_automationexport');
-function acym_integration_automationexport(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_integration_automationexport', 10, 2);
+function acym_integration_automationexport(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymAutomationexport',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymAutomationexport',
+        ];
+    }
 }

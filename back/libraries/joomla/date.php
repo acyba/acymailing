@@ -19,3 +19,8 @@ function acym_dateTimeCMS($time)
 {
     return JHTML::_('date', $time, 'Y-m-d H:i:s', null);
 }
+
+function acym_getDateTimeFormat($default = 'ACYM_DATE_FORMAT_LC2')
+{
+    return acym_translation($default);
+}

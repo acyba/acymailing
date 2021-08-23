@@ -41,7 +41,8 @@ class plgAcymStatistics extends acymPlugin
             'SELECT mail.`id`, mail.`name`, mail.`subject`, mail.`type`, campaign.`id` AS campaignId 
             FROM #__acym_mail AS mail 
             LEFT JOIN #__acym_campaign AS campaign ON mail.`id` = campaign.`mail_id` 
-            WHERE mail.`subject` LIKE '.acym_escapeDB('%'.$search.'%').' OR mail.`name` LIKE '.acym_escapeDB('%'.$search.'%').'
+            WHERE (mail.`subject` LIKE '.acym_escapeDB('%'.$search.'%').' OR mail.`name` LIKE '.acym_escapeDB('%'.$search.'%').') 
+                AND mail.`type` != '.acym_escapeDB($mailClass::TYPE_TEMPLATE).'
             ORDER BY mail.`name` ASC'
         );
 

@@ -26,7 +26,7 @@ if (empty($Itemid)) {
 
 $ctrl = acym_getVar('cmd', 'ctrl', acym_getVar('cmd', 'view', ''));
 if (empty($ctrl)) {
-    return acym_raiseError(E_ERROR, 404, acym_translation('ACYM_PAGE_NOT_FOUND'));
+    return acym_raiseError(404, acym_translation('ACYM_PAGE_NOT_FOUND'));
 }
 
 $controllerNamespace = 'AcyMailing\\FrontControllers\\'.ucfirst($ctrl).'Controller';

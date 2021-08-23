@@ -538,6 +538,10 @@ class plgAcymWoocommerce extends acymPlugin
 
             $where[] = 'product.post_type = "product"';
             $where[] = 'product.post_status = "publish"';
+            if (!empty($parameter->min_publish)) {
+                $parameter->min_publish = acym_date(acym_replaceDate($parameter->min_publish), 'Y-m-d H:i:s', false);
+                $where[] = 'product.post_date_gmt >= '.acym_escapeDB($parameter->min_publish);
+            }
 
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);

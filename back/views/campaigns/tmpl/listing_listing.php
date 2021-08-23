@@ -116,7 +116,7 @@
 						<p class='acym__listing__title__secondary'>
                             <?php
                             if (!empty($campaign->sending_date) && (!$campaign->scheduled || $campaign->sent)) {
-                                echo acym_translation('ACYM_SENDING_DATE').' : '.acym_date($campaign->sending_date, 'ACYM_DATE_FORMAT_LC3');
+                                echo acym_translation('ACYM_SENDING_DATE').' : '.acym_date($campaign->sending_date, acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC3'));
                             } elseif ($data['statusAuto'] === $campaign->sending_type) {
                                 $numberCampaignsGenerated = empty($campaign->sending_params['number_generated']) ? '0' : $campaign->sending_params['number_generated'];
                                 echo acym_translationSprintf('ACYM_X_CAMPAIGN_GENERATED', $numberCampaignsGenerated);
@@ -136,7 +136,7 @@
 
                                 echo acym_tooltip(
                                     '<i class="'.$classes.'" style="color:'.acym_escape($list->color).'"></i>',
-									acym_escape($list->name)
+                                    acym_escape($list->name)
                                 );
                                 $counter++;
                             }
@@ -168,7 +168,7 @@
                             } elseif ($campaign->scheduled && !$campaign->draft) {
                                 echo '<div class="cell acym__campaign__status__status acym__background-color__orange"><span>'.acym_translation('ACYM_SCHEDULED').' : '.acym_date(
                                         $campaign->sending_date,
-                                        'ACYM_DATE_FORMAT_LC3'
+                                        acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC3')
                                     ).'</span></div>';
                                 $target = '<div class="acym__campaign__listing__scheduled__stop grid-x cell xlarge-shrink acym_vcenter" data-campaignid="'.acym_escape(
                                         $campaign->id
@@ -229,7 +229,7 @@
                             if (empty($campaign->last_generated)) {
                                 echo '-';
                             } else {
-                                echo acym_date($campaign->last_generated, acym_translation('ACYM_DATE_FORMAT_LC2'));
+                                echo acym_date($campaign->last_generated, acym_getDateTimeFormat());
                             }
                             ?>
 						</div>
@@ -238,7 +238,7 @@
                             if (empty($campaign->next_trigger)) {
                                 echo '-';
                             } else {
-                                echo acym_date($campaign->next_trigger, acym_translation('ACYM_DATE_FORMAT_LC2'));
+                                echo acym_date($campaign->next_trigger, acym_getDateTimeFormat());
                             }
                             ?>
 						</div>

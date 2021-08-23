@@ -471,6 +471,10 @@ class plgAcymHikashop extends acymPlugin
             if ($this->getParam('stock', '1') === '1') {
                 $this->filters[] = '(b.product_quantity = -1 OR b.product_quantity > 0)';
             }
+            if (!empty($parameter->min_publish)) {
+                $parameter->min_publish = acym_replaceDate($parameter->min_publish);
+                $where[] = 'b.`product_created` >= '.acym_escapeDB($parameter->min_publish);
+            }
 
             if (!empty($parameter->filter) && !empty($email->params['lastgenerateddate'])) {
                 $condition = 'b.`product_created` > '.acym_escapeDB($email->params['lastgenerateddate']);

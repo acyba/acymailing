@@ -25,14 +25,6 @@ function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
 
 function acym_getGroups()
 {
-    $usersPerGroup = acym_loadObjectList('SELECT meta_value, COUNT(meta_value) AS nbusers FROM #__usermeta WHERE meta_key = "#__capabilities" GROUP BY meta_value');
-
-    $nbUsers = [];
-    foreach ($usersPerGroup as $oneGroup) {
-        $oneGroup->meta_value = unserialize($oneGroup->meta_value);
-        $nbUsers[key($oneGroup->meta_value)] = $oneGroup->nbusers;
-    }
-
     $roles = wp_roles();
     if (empty($roles->roles)) {
         $groups = acym_loadResult('SELECT option_value FROM #__options WHERE option_name = "#__user_roles"');
@@ -47,7 +39,6 @@ function acym_getGroups()
         $newGroup->value = $key;
         $newGroup->parent_id = 0;
         $newGroup->text = $group['name'];
-        $newGroup->nbusers = empty($nbUsers[$key]) ? 0 : $nbUsers[$key];
         $groups[$key] = $newGroup;
     }
 

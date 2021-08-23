@@ -9,7 +9,7 @@ jQuery(document).ready(function ($) {
 
     function initEmailsToggle() {
         $('.acym__followup__emails__toggle').off('click').on('click', function () {
-            if (undefined !== ajaxCall) {
+            if (undefined !== ajaxCall && typeof ajaxCall.abort === 'function'){
                 ajaxCall.abort();
                 ajaxCall = undefined;
             }

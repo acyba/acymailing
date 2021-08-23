@@ -184,6 +184,10 @@ const acym_helper = {
                          return res;
                      })
                      .fail((xhr, status, error) => {
+                         let response = {};
+                         response.error = true;
+                         response.message = error;
+                         response.data = [];
                          console.error(`Error calling ${url}, responded with error ${status} ${error}`);
 
                          return error;
@@ -199,9 +203,14 @@ const acym_helper = {
                          return res;
                      })
                      .fail((xhr, status, error) => {
+                         let response = {};
+                         response.error = true;
+                         response.message = error;
+                         response.data = [];
+
                          console.error(`Error calling ${url}, responded with error ${status} ${error}`);
 
-                         return error;
+                         return response;
                      });
     },
     sameArrays: function (array1, array2) {

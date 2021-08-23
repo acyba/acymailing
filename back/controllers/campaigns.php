@@ -454,7 +454,7 @@ class CampaignsController extends acymController
             acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_LOAD_DATA'), 'error');
             $this->listing();
 
-            return false;
+            return;
         }
 
         $followupClass = new FollowupClass();
@@ -464,7 +464,7 @@ class CampaignsController extends acymController
             acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_LOAD_DATA'), 'error');
             $this->listing();
 
-            return false;
+            return;
         }
 
         $data = [
@@ -480,6 +480,20 @@ class CampaignsController extends acymController
         $this->breadcrumb[empty($followup->name) ? acym_translation('ACYM_NEW_FOLLOW_UP') : $followup->name] = acym_completeLink(
             'campaigns&task=edit&step=followupEmail&id='.$followup->id
         );
+
+        // Ask the user if he wants to add the new email to the queue for the users that already triggered the followup
+        if ($followup->active === '1') {
+            $newlyCreatedEmail = acym_getVar('int', 'newEmailId');
+            if (!empty($newlyCreatedEmail)) {
+                $numberOfSubscribers = $followupClass->getNumberSubscribersByListId($followup->list_id, true);
+                if (!empty($numberOfSubscribers)) {
+                    $message = '<span class="acym__followup__add_queue" data-acym-email-id="'.intval($newlyCreatedEmail).'">';
+                    $message .= acym_translationSprintf('ACYM_FOLLOWUP_ADD_QUEUE', $numberOfSubscribers);
+                    $message .= '</span>';
+                    acym_enqueueMessage($message, 'info', false);
+                }
+            }
+        }
 
         parent::display($data);
     }
@@ -1255,11 +1269,11 @@ class CampaignsController extends acymController
             ];
 
             $startDate = acym_getVar('string', 'start_date', 0);
-            if (!empty($startDate)){
+            if (!empty($startDate)) {
                 $specificSendingParams['start_date'] = acym_date(acym_getTime($startDate), 'Y-m-d H:i:s', false);
             }
 
-            if (!empty($currentCampaign->sending_params['number_generated'])){
+            if (!empty($currentCampaign->sending_params['number_generated'])) {
                 $specificSendingParams['number_generated'] = $currentCampaign->sending_params['number_generated'];
             }
 
@@ -1277,7 +1291,7 @@ class CampaignsController extends acymController
         if (!in_array($sendingType, $campaignClass::SENDING_TYPES)) {
             $specialSendings = [];
             acym_trigger('saveCampaignSpecificSendSettings', [$currentCampaign->sending_type, &$specialSendings]);
-            if (!empty($specialSendings)){
+            if (!empty($specialSendings)) {
                 $specificSendingParams = $specialSendings[0];
             }
         }

@@ -78,7 +78,7 @@
 							<div class="cell acym__templates__footer__title acym_text_ellipsis" title="<?php echo acym_escape($oneTemplate->name); ?>">
                                 <?php echo acym_escape($oneTemplate->name); ?>
 							</div>
-							<div class="cell"><?php echo acym_date($oneTemplate->creation_date, 'ACYM_DATE_FORMAT_LC3'); ?></div>
+							<div class="cell"><?php echo acym_date($oneTemplate->creation_date, acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC3')); ?></div>
 						</div>
 					</div>
                 <?php } ?>

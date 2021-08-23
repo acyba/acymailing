@@ -22,7 +22,7 @@ class SendinblueCampaign extends SendinblueClass
 
         $data = [
             'sender' => $this->sender->getSender($mail),
-            'name' => 'AcyMailing Mail '.$mail->id,
+            'name' => 'AcyMailing Mail '.$mail->id.' ('.$mail->subject.')',
             'htmlContent' => '<html>{% autoescape off %}{{ contact.'.$this->user->getAttributeName($mail->id).' }}{% endautoescape %}</html>',
             'scheduledAt' => date('c', time() + 60),
             'subject' => $mail->subject,
@@ -58,15 +58,18 @@ class SendinblueCampaign extends SendinblueClass
         $startSendDate = date('c', $time - $cleanFrequency);
 
         foreach ($response['campaigns'] as $campaign) {
-            //If it's not an AcyMailing campaign we get out
-            if (strpos($campaign['name'], 'AcyMailing Mail ') === false) continue;
-
             //If it is a recent campaign we don't delete it
             $sendDate = strtotime($campaign['sentDate']);
             if ($sendDate > $startSendDate) continue;
 
+            //If it's not an AcyMailing campaign we get out
+            preg_match('#AcyMailing Mail ([0-9]+)#is', $campaign['name'], $match);
+            if (empty($match)) continue;
+
             //We get the id of the email
-            $id = intval(str_replace('AcyMailing Mail ', '', $campaign['name']));
+            $id = intval($match[1]);
+
+            if(empty($id)) continue;
 
             //We delete what we created in Sendinblue
             $this->user->deleteAttribute($id);

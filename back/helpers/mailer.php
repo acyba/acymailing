@@ -600,8 +600,8 @@ class MailerHelper extends acyPHPMailer
         $finalContent .= '<title>'.$mail->subject.'</title>'."\n";
         //We add the CSS like that for gmail because it delete the tag style over 8000 char
         $finalContent .= '<style type="text/css">'.implode('</style><style type="text/css">', $style).'</style>';
-        $finalContent .= '<!--[if mso]>--><style type="text/css">#acym__wysid__template center > table { width: 580px; }</style><!--<![endif]-->';
-        $finalContent .= '<!--[if !mso]>--><style type="text/css">#acym__wysid__template center > table { width: 100%; }</style><!--<![endif]-->';
+        $finalContent .= '<!--[if mso]><style type="text/css">#acym__wysid__template center > table { width: 580px; }</style><![endif]-->';
+        $finalContent .= '<!--[if !mso]><style type="text/css">#acym__wysid__template center > table { width: 100%; }</style><![endif]-->';
         if (!empty($mail->headers)) $finalContent .= $mail->headers;
         $finalContent .= '</head>'.$mail->body.'</html>';
 

@@ -69,4 +69,23 @@ class FollowupsController extends acymController
         echo json_encode($results);
         exit;
     }
+
+    public function addQueueAjax()
+    {
+        acym_checkToken();
+
+        $emailId = acym_getVar('int', 'emailId', 0);
+        if (empty($emailId)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_EMAIL_NOT_FOUND'), [], false);
+        }
+
+        $followupClass = new FollowupClass();
+        $queued = $followupClass->queueForSubscribers($emailId);
+
+        if ($queued === false) {
+            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_ADD_QUEUE'), [], false);
+        }
+
+        acym_sendAjaxResponse(acym_translationSprintf('ACYM_EMAILS_ADDED_QUEUE', $queued));
+    }
 }

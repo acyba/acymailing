@@ -32,11 +32,13 @@ function acym_integration_woocommerce_uninstall()
     $pluginClass->deleteByFolderName('woocommerce');
 }
 
-add_action('acym_load_installed_integrations', 'acym_integration_woocommerce');
-function acym_integration_woocommerce(&$integrations)
+add_action('acym_load_installed_integrations', 'acym_integration_woocommerce', 10, 2);
+function acym_integration_woocommerce(&$integrations, $acyVersion)
 {
-    $integrations[] = [
-        'path' => __DIR__,
-        'className' => 'plgAcymWoocommerce',
-    ];
+    if (version_compare($acyVersion, '7.5.11', '>=')) {
+        $integrations[] = [
+            'path' => __DIR__,
+            'className' => 'plgAcymWoocommerce',
+        ];
+    }
 }
