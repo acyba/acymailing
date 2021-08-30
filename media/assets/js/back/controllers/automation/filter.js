@@ -20,7 +20,7 @@ jQuery(document).ready(function ($) {
 
         ajaxCalls[and] = $.post(ajaxUrl, ajaxData)
                           .done(function (response) {
-                              if (typeof response !== 'object') response = acym_helper.parseJson(response);
+                              response = acym_helper.parseJson(response);
 
                               $('#results_' + and).css('maxHeight', '').html(response.error ? ACYM_JS_TXT.ACYM_ERROR : response.message);
                           })

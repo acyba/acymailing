@@ -67,28 +67,58 @@ class UpdateHelper extends acymObject
     /**
      * Add update site on Joomla to handle auto-update
      */
-    public function addUpdateSite()
+    public function addUpdateSite($extension = null)
     {
-        //We update the website url in the config... it's a check to make sure we are still on the right website
-        $newconfig = new \stdClass();
-        $newconfig->website = ACYM_LIVE;
-        //We reset the max execution time when the website changes...
-        $newconfig->max_execution_time = 0;
+        $newConfig = new \stdClass();
+        $newConfig->website = ACYM_LIVE;
+        $newConfig->max_execution_time = 0;
+        $this->config->save($newConfig);
 
-        $this->config->save($newconfig);
-
-        //We delete updates if Joomla already found some as it may be for another level of Acy
-        acym_query('DELETE FROM #__updates WHERE element = "com_acym"');
-
+        // Init extension information
         $object = new \stdClass();
         $object->enabled = 1;
-        $object->name = 'AcyMailing';
         $object->type = 'extension';
-        $object->location = ACYM_UPDATEMEURL.'updatexml&component=acymailing&cms=joomla&level='.$this->config->get('level').'&version='.$this->config->get('version');
+        $object->location = ACYM_UPDATEMEURL.'updatexml&version={__VERSION__}';
 
+        if (empty($extension)) {
+            $type = 'component';
+            $folder = '';
+            $element = 'com_acym';
+            $object->location .= '&component=acymailing&cms=joomla&level={__LEVEL__}';
+        }else{
+            if (strpos($extension, 'mod_') === 0) {
+                $type = 'module';
+                $folder = '';
+                $element = $extension;
+            } else {
+                $extension = explode('_', $extension);
+                $type = 'plugin';
+                $folder = $extension[1];
+                $element = $extension[2];
+            }
+            $object->location .= '&task=updateXMLExtension&type='.$type.'&folder='.$folder.'&element='.$element;
+        }
+
+        // Get the extension
+        $extension = acym_loadObject(
+            'SELECT `extension_id`, `name` 
+                FROM #__extensions 
+                WHERE `element` = '.acym_escapeDB($element).' 
+                    AND type = '.acym_escapeDB($type).'
+                    AND folder = '.acym_escapeDB($folder)
+        );
+        if (empty($extension)) return false;
+
+        if ($extension->name === 'Acym') {
+            $extension->name = 'AcyMailing';
+        }
+        $object->name = $extension->name;
+
+        // Delete the previous update if any, then add the new one
+        acym_query('DELETE FROM #__updates WHERE extension_id = '.intval($extension->extension_id));
 
         // Test for the presence of acym in database.
-        $update_site_id = acym_loadResult('SELECT update_site_id FROM #__update_sites WHERE location LIKE "%component=acymailing%" AND type = "extension"');
+        $update_site_id = acym_loadResult('SELECT update_site_id FROM #__update_sites WHERE `type` = "extension" AND `name` = '.acym_escapeDB($extension->name));
         if (empty($update_site_id)) {
             $update_site_id = acym_insertObject('#__update_sites', $object);
         } else {
@@ -96,12 +126,11 @@ class UpdateHelper extends acymObject
             acym_updateObject('#__update_sites', $object, 'update_site_id');
         }
 
-        $extension_id = acym_loadResult('SELECT extension_id FROM #__extensions WHERE `element` = "com_acym" AND type = "component"');
-        if (empty($update_site_id) || empty($extension_id)) {
+        if (empty($update_site_id)) {
             return false;
         }
 
-        $query = 'INSERT IGNORE INTO #__update_sites_extensions (update_site_id, extension_id) values ('.intval($update_site_id).','.intval($extension_id).')';
+        $query = 'INSERT IGNORE INTO #__update_sites_extensions (update_site_id, extension_id) values ('.intval($update_site_id).','.intval($extension->extension_id).')';
         acym_query($query);
 
         return true;
@@ -633,6 +662,7 @@ class UpdateHelper extends acymObject
             $extension = ACYM_BACK.'extensions'.DS.$oneExtension;
             if (file_exists($extension)) {
                 $installer->install($extension);
+                $this->addUpdateSite($oneExtension);
             }
         }
 

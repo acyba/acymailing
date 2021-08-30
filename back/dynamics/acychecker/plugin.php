@@ -19,6 +19,7 @@ class plgAcymAcychecker extends acymPlugin
 
     public function onBeforeSaveConfigFields(&$formData)
     {
+        if (!isset($formData['email_verification'])) return;
         if (!acym_isAcyCheckerInstalled()) return;
         $this->loadAcychecker();
 
