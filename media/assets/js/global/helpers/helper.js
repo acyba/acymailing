@@ -12,6 +12,8 @@ const acym_helper = {
         return str;
     },
     parseJson: function (json, defaultValue) {
+        if (typeof json === 'object') return json;
+
         try {
             let begin = json.indexOf('{');
             let beginBrackets = json.indexOf('[');
