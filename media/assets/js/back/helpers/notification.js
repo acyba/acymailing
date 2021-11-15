@@ -29,16 +29,11 @@ const acym_helperNotification = {
             let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=markNotificationRead';
 
             jQuery.post(ajaxUrl, function (res) {
-                res = acym_helper.parseJson(res);
-                if (undefined === res.error) {
-                    jQuery('.acym__header__notification')
-                        .removeClass(
-                            'acym__header__notification__pulse acym__header__notification__button__success acym__header__notification__button__info acym__header__notification__button__warning acym__header__notification__button__error')
-                        .find('> i')
-                        .attr('class', 'acymicon-bell-o');
-                } else {
-                    console.log(res.error);
-                }
+                jQuery('.acym__header__notification')
+                    .removeClass(
+                        'acym__header__notification__pulse acym__header__notification__button__success acym__header__notification__button__info acym__header__notification__button__warning acym__header__notification__button__error')
+                    .find('> i')
+                    .attr('class', 'acymicon-bell-o');
             });
 
             $button.off('click').on('click', function (e) {
@@ -65,13 +60,7 @@ const acym_helperNotification = {
             if (id !== undefined && id != 0) {
                 let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=markNotificationRead&id=' + id;
                 jQuery.post(ajaxUrl, function (res) {
-                    res = acym_helper.parseJson(res);
-
-                    if (undefined === res.error) {
-                        $closeButton.closest('.acym__message').remove();
-                    } else {
-                        console.log(res.error);
-                    }
+                    $closeButton.closest('.acym__message').remove();
                 });
             } else {
                 $closeButton.closest('.acym__message').remove();
@@ -85,12 +74,12 @@ const acym_helperNotification = {
 
             jQuery.post(ajaxUrl, function (res) {
                 res = acym_helper.parseJson(res);
-                if (undefined === res.error) {
-                    jQuery('.acym__header__notification__center').html(res.data);
+                if (!res.error) {
+                    jQuery('.acym__header__notification__center').html(res.data.html);
                     jQuery('.acym__header__notification').find('> i').attr('class', 'acymicon-bell-o');
                     acym_helperNotification.removeNotifications();
                 } else {
-                    console.log(res.error);
+                    console.log(res.message);
                 }
             });
         });
@@ -121,11 +110,11 @@ const acym_helperNotification = {
 
         jQuery.post(ajaxUrl, function (res) {
             res = acym_helper.parseJson(res);
-            if (res.error === undefined) {
-                jQuery('.acym__header__notification').replaceWith(res.data);
+            if (!res.error) {
+                jQuery('.acym__header__notification').replaceWith(res.data.notificationCenter);
                 acym_helperNotification.setNotificationCenter();
             } else {
-                console.log(res.error);
+                console.log(res.message);
             }
         });
     },

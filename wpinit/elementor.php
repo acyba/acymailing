@@ -2,13 +2,14 @@
 
 namespace AcyMailing\Init;
 
-class acyElementor extends acyHook
+class acyElementor
 {
     public function __construct()
     {
         add_action('elementor/editor/before_enqueue_scripts', [$this, 'addAcyScriptElementor']);
         add_action('elementor/widgets/widgets_registered', [$this, 'registerWidgets']);
         add_action('elementor/elements/categories_registered', [$this, 'addWidgetCategories']);
+        add_action('elementor_pro/init', [$this, 'addAcyFormAction']);
     }
 
     public function addAcyScriptElementor()
@@ -27,13 +28,17 @@ class acyElementor extends acyHook
 
     public function addWidgetCategories($elements_manager)
     {
-        $elements_manager->add_category(
-            'acymailing',
-            [
-                'title' => 'AcyMailing',
-            ]
-        );
+        $elements_manager->add_category('acymailing', [
+            'title' => 'AcyMailing',
+        ]);
     }
+
+    public function addAcyFormAction()
+    {
+        $acymailing = new ElementorForm();
+        \ElementorPro\Plugin::instance()->modules_manager->get_modules('forms')->add_form_action($acymailing->get_name(), $acymailing);
+    }
+
 }
 
 $acyElementor = new acyElementor();

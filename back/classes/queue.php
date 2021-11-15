@@ -306,9 +306,18 @@ class QueueClass extends acymClass
                 $query .= ' AND mail_id = '.intval($mailId);
             }
 
-            $res = acym_query($query);
+            try {
+                $res = acym_query($query);
+            } catch (\Exception $e) {
+                $res = false;
+            }
             if ($res === false) {
-                $this->errors[] = acym_getDBError();
+                if (isset($e)) {
+                    $this->errors[] = $e->getMessage();
+                    unset($e);
+                } else {
+                    $this->errors[] = acym_getDBError();
+                }
             } else {
                 $nbDeleted += $res;
             }

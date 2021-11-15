@@ -9,7 +9,8 @@ class acym_subscriptionform_widget extends WP_Widget
 {
     public function __construct()
     {
-        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
+        $ds = DIRECTORY_SEPARATOR;
+        require_once rtrim(dirname(dirname(__DIR__)), $ds).$ds.'back'.$ds.'helpers'.$ds.'helper.php';
 
         parent::__construct(
             'acym_subscriptionform_widget',
@@ -21,7 +22,8 @@ class acym_subscriptionform_widget extends WP_Widget
     // Configuration
     public function form($instance)
     {
-        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
+        $ds = DIRECTORY_SEPARATOR;
+        require_once rtrim(dirname(dirname(__DIR__)), $ds).$ds.'back'.$ds.'helpers'.$ds.'helper.php';
 
         wp_enqueue_style('select2lib', ACYM_CSS.'libraries/select2-original.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'select2-original.min.css'));
         wp_enqueue_script('select2lib', ACYM_JS.'libraries/select2-full.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'select2-full.min.js'), ['jquery']);

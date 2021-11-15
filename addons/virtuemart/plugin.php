@@ -10,6 +10,7 @@ use AcyMailing\Types\OperatorType;
 class plgAcymVirtuemart extends acymPlugin
 {
     var $lang = null;
+    private $baseOption = 'virtuemart';
 
     public function __construct()
     {
@@ -1085,29 +1086,33 @@ class plgAcymVirtuemart extends acymPlugin
 
     private function processConditionFilter_vmpurchased(&$query, $options, $num)
     {
-        $query->join['vmpurchased_user_'.$num] = '`#__virtuemart_order_userinfos` AS `vmorderuserinfos_'.$num.'` ON `vmorderuserinfos_'.$num.'`.`email` = `user`.`email`';
-        $query->join['vmpurchased_order_'.$num] = '`#__virtuemart_orders` AS `vmorder_'.$num.'` ON `vmorder_'.$num.'`.`virtuemart_order_id` = `vmorderuserinfos_'.$num.'`.`virtuemart_order_id`';
-        $query->where[] = '`vmorder_'.$num.'`.`order_status` IN ("C", "F", "U")';
+        $orderUser = '`vmorderuserinfos_'.$num.'`';
+        $order = '`vmorder_'.$num.'`';
+        $orderItem = '`vmorderitem_'.$num.'`';
+
+        $query->join[$orderUser] = '`#__virtuemart_order_userinfos` AS '.$orderUser.' ON '.$orderUser.'.`email` = `user`.`email` OR '.$orderUser.'.`virtuemart_user_id` = `user`.`cms_id`';
+        $query->join[$order] = '`#__virtuemart_orders` AS '.$order.' ON '.$order.'.`virtuemart_order_id` = '.$orderUser.'.`virtuemart_order_id`';
+        $query->where[] = $order.'.`order_status` IN ("C", "F", "U")';
 
         if (!empty($options['datemin'])) {
             $options['datemin'] = acym_replaceDate($options['datemin']);
             if (is_numeric($options['datemin'])) $options['datemin'] = acym_date($options['datemin'], 'Y-m-d H:i:s', false);
-            $query->where[] = '`vmorder_'.$num.'`.created_on > '.acym_escapeDB($options['datemin']);
+            $query->where[] = $order.'.created_on > '.acym_escapeDB($options['datemin']);
         }
 
         if (!empty($options['datemax'])) {
             $options['datemax'] = acym_replaceDate($options['datemax']);
             if (is_numeric($options['datemax'])) $options['datemax'] = acym_date($options['datemax'], 'Y-m-d H:i:s', false);
-            $query->where[] = '`vmorder_'.$num.'`.created_on < '.acym_escapeDB($options['datemax']);
+            $query->where[] = $order.'.created_on < '.acym_escapeDB($options['datemax']);
         }
 
-        $join = '`#__virtuemart_order_items` AS `vmorderitem_'.$num.'` ON `vmorderitem_'.$num.'`.`virtuemart_order_id` = `vmorderuserinfos_'.$num.'`.`virtuemart_order_id` ';
+        $join = '`#__virtuemart_order_items` AS '.$orderItem.' ON '.$orderItem.'.`virtuemart_order_id` = '.$orderUser.'.`virtuemart_order_id` ';
         if (!empty($options['product'])) {
             $query->join['vmpurchased_item_'.$num] = $join;
-            $query->where[] = '`vmorderitem_'.$num.'`.`virtuemart_product_id` = '.intval($options['product']);
+            $query->where[] = $orderItem.'.`virtuemart_product_id` = '.intval($options['product']);
         } elseif (!empty($options['category'])) {
             $query->join['vmpurchased_item_'.$num] = $join;
-            $query->join['vmpurchased_products_'.$num] = '`#__virtuemart_products` AS vp'.$num.' ON vmorderitem_'.$num.'.virtuemart_product_id = vp'.$num.'.virtuemart_product_id';
+            $query->join['vmpurchased_products_'.$num] = '`#__virtuemart_products` AS vp'.$num.' ON '.$orderItem.'.virtuemart_product_id = vp'.$num.'.virtuemart_product_id';
             $query->join['vmpurchased_order_cat'.$num] = '`#__virtuemart_product_categories` AS vpc'.$num.' 
                                                                 ON vp'.$num.'.virtuemart_product_id = vpc'.$num.'.virtuemart_product_id 
                                                                 OR vp'.$num.'.product_parent_id = vpc'.$num.'.virtuemart_product_id';
@@ -1406,7 +1411,7 @@ class plgAcymVirtuemart extends acymPlugin
             'view' => ['user', 'cart', 'shop.registration', 'account.billing', 'checkout.index', 'editaddresscart', 'editaddresscheckout', 'askquestion'],
             'lengthafter' => 500,
             'valueClass' => 'controls',
-            'baseOption' => 'virtuemart',
+            'baseOption' => $this->baseOption,
         ];
     }
 
@@ -1426,16 +1431,12 @@ class plgAcymVirtuemart extends acymPlugin
         if (!$config->get('virtuemart_sub', 0) || acym_isAdmin()) return;
 
         $email = acym_getVar('string', 'email', '');
-        $selectedLists = acym_getVar('array', 'virtuemart_visible_lists_checked', []);
-        $autoLists = explode(',', $config->get('virtuemart_autolists', ''));
-        $listsToSubscribe = array_merge($selectedLists, $autoLists);
-
         if (empty($email)) {
             $user = JFactory::getUser();
             if (!empty($user)) $email = $user->get('email');
         }
 
-        if (empty($email) || empty($listsToSubscribe)) return;
+        if (empty($email)) return;
 
         // Get existing AcyMailing user or create one
         $userClass = new UserClass();
@@ -1460,7 +1461,55 @@ class plgAcymVirtuemart extends acymPlugin
 
         if (empty($user->id)) return;
 
-        // Subscribe the user
-        $userClass->subscribe($user->id, $listsToSubscribe);
+        // Handle user subscription
+        $currentSubscription = $userClass->getSubscriptionStatus($user->id);
+
+        $autoLists = explode(',', $config->get('virtuemart_autolists', ''));
+        acym_arrayToInteger($autoLists);
+
+        $listsClass = new ListClass();
+        $allLists = $listsClass->getAll();
+
+        $visibleLists = acym_getVar('string', 'virtuemart_visible_lists');
+        $visibleLists = explode(',', $visibleLists);
+        acym_arrayToInteger($visibleLists);
+
+        $visibleListsChecked = acym_getVar('array', 'virtuemart_visible_lists_checked', []);
+        acym_arrayToInteger($visibleListsChecked);
+
+
+        // Handle the unsubscription
+        if (!empty($visibleLists)) {
+            $currentlySubscribedLists = [];
+            foreach ($currentSubscription as $oneSubscription) {
+                if ($oneSubscription->status == 1) $currentlySubscribedLists[] = $oneSubscription->list_id;
+            }
+            $unsubscribeLists = array_intersect($currentlySubscribedLists, array_diff($visibleLists, $visibleListsChecked));
+            $userClass->unsubscribe($user->id, $unsubscribeLists);
+        }
+
+        // Handle the subscription
+        $listsToSubscribe = [];
+        foreach ($allLists as $oneList) {
+            if (!$oneList->active) continue;
+            if (!empty($currentSubscription[$oneList->id]) && $currentSubscription[$oneList->id]->status == 1) continue;
+
+            if (in_array($oneList->id, $visibleListsChecked) || (in_array($oneList->id, $autoLists) && !in_array(
+                        $oneList->id,
+                        $visibleLists
+                    ) && empty($currentSubscription[$oneList->id]))) {
+                $listsToSubscribe[] = $oneList->id;
+            }
+        }
+
+        if (!empty($listsToSubscribe)) $userClass->subscribe($user->id, $listsToSubscribe);
+    }
+
+    public function onAcymRegacyDisplayLists()
+    {
+        $task = acym_getVar('cmd', 'task');
+        if ($task === 'updateCartNoMethods') {
+            $this->onRegacyAfterRoute();
+        }
     }
 }

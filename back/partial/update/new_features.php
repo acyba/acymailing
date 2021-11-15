@@ -5,9 +5,17 @@
 			<img src="<?php echo ACYM_IMAGES.'splashscreen/header_airplane.png'; ?>" alt="planes" class="acym__splashcreen__header__planes">
 			<div class="cell auto"></div>
 			<div class="cell medium-6 grid-x grid-margin-y">
-				<h1 class="cell">AcyMailing 7.5 has arrived 🎉</h1>
-				<p class="cell">Small features and improvements come in your plugin, find out what’s new!</p>
-				<a href="<?php echo ACYM_ACYMAILLING_WEBSITE.'pricing/'; ?>" class="cell shrink button">Purchase a license!</a>
+				<h1 class="cell">AcyMailing 7.6 has arrived 🎉</h1>
+				<p class="cell">Features and improvements come in your plugin, find out what’s new!</p>
+                <?php
+                //__START__starter_
+                if (!acym_level(ACYM_ESSENTIAL)) {
+                    ?>
+					<a href="<?php echo ACYM_ACYMAILLING_WEBSITE.'pricing/'; ?>" class="cell shrink button">Purchase a license!</a>
+                    <?php
+                }
+                //__END__starter_
+                ?>
 			</div>
 		</div>
 		<div class="cell grid-x align-center margin-top-3">
@@ -27,36 +35,33 @@
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_1.png'; ?>" alt="card_1_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">Loading time improvement</h4>
-					<p class="cell acym__splashcreen__body__card__text">The listing loading time has been optimised.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Integration with AcyChecker</h4>
+					<p class="cell acym__splashcreen__body__card__text">AcyMailing is now integrated with our email checker tool. Clean your contacts to reduce sending costs and
+						improve your deliverability.</p>
 				</div>
-                <?php
-                ?>
 				<div class="cell medium-4 acym__splashcreen__body__card grid-x">
 					<div class="cell grid-x align-center">
 						<div class="acym__splashcreen__body__card__icon acym_vcenter align-center">
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_2.png'; ?>" alt="card_2_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">Subscription form on Elementor</h4>
-					<p class="cell acym__splashcreen__body__card__text">A subscription form can be integrated into your posts with Elementor.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">A new add-on with JCal Pro is available</h4>
+					<p class="cell acym__splashcreen__body__card__text">Automatically insert events in your emails, no need to do it manually anymore!</p>
 				</div>
-                <?php
-                ?>
 				<div class="cell medium-4 acym__splashcreen__body__card grid-x">
 					<div class="cell grid-x align-center">
 						<div class="acym__splashcreen__body__card__icon acym_vcenter align-center">
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_3.png'; ?>" alt="card_3_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">User Data management </h4>
-					<p class="cell acym__splashcreen__body__card__text">Export the changes made to users over the last two months.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">AcyMailing actions for Elementor</h4>
+					<p class="cell acym__splashcreen__body__card__text">You can now add custom AcyMailing actions on Elementor form submission to subscribe the users.</p>
 				</div>
 			</div>
 			<div class="cell grid-x acym__splashcreen__body__middle margin-top-2">
 				<div class="cell medium-6 grid-x grid-margin-x acym__splashcreen__body__middle__left">
 					<h4 class="cell acym__splashcreen__body__subtitle">New main feature</h4>
-					<h2 class="cell acym__splashcreen__body__middle__left__title">Loading time improvement</h2>
+					<h2 class="cell acym__splashcreen__body__middle__left__title">Unsubscribe Reason</h2>
 				</div>
 				<div class="cell medium-6 acym__splashcreen__body__middle__right grid-x grid-margin-y">
 					<div class="cell grid-x">
@@ -66,19 +71,9 @@
 							</div>
 						</div>
 						<div class="cell auto grid-x">
-							<h2 class="cell acym__splashcreen__body__middle__right__title">Get to your emails list faster.</h2>
-							<p class="cell acym__splashcreen__body__middle__right__text">Your email list now loads up to 4 times faster than before.</p>
-						</div>
-					</div>
-					<div class="cell grid-x">
-						<div class="cell medium-2 small-3 acym_vcenter">
-							<div class="acym__splashcreen__body__middle__right__icon acym_vcenter align-center">
-								<i class="acymicon-autorenew"></i>
-							</div>
-						</div>
-						<div class="cell auto grid-x">
-							<h2 class="cell acym__splashcreen__body__middle__right__title">Get to your users list faster.</h2>
-							<p class="cell acym__splashcreen__body__middle__right__text">Your user list now loads up to 2 times faster than before.</p>
+							<h2 class="cell acym__splashcreen__body__middle__right__title">Know why your users unsubscribe from your lists</h2>
+							<p class="cell acym__splashcreen__body__middle__right__text">A text field has been added into the unsubscribe page so you can now collect feedback.
+								This way you’ll be able to know what improvements you should do to keep them in your subscribers list.</p>
 						</div>
 					</div>
 				</div>
@@ -89,26 +84,22 @@
 					<div class="cell margin-bottom-1 text-center">
 						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_1.png'; ?>" alt="">
 					</div>
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Gutenberg integration</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">Do you want to add a subscription form to your posts? Insert your subscription forms using
-						the WordPress Gutenberg editor.</p>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Loading time improvement</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">The listing loading time has been optimised.</p>
 				</div>
 				<div class="cell medium-6 acym__splashcreen__body__end__card">
 					<div class="cell margin-bottom-1 text-center">
 						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_2.png'; ?>" alt="">
 					</div>
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Statistics</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">You can now analyse the results of several campaigns at the same time. You’ll have a better
-						overview of your marketing campaigns.</p>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Subscription form on Elementor</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">A subscription form can be integrated into your posts with Elementor.</p>
 				</div>
 			</div>
 		</div>
 		<div class="cell grid-x align-center margin-top-1 margin-bottom-2">
 			<a href="<?php echo ACYM_ACYMAILLING_WEBSITE.'change-log/'; ?>"
 			   class="margin-right-1 cell shrink button-secondary button margin-left-1"
-			   target="_blank"><?php echo acym_translation(
-                    'ACYM_SEE_FULL_CHANGELOG'
-                ); ?></a>
+			   target="_blank"><?php echo acym_translation('ACYM_SEE_FULL_CHANGELOG'); ?></a>
 			<button class="cell shrink button acy_button_submit" type="button" data-task="listing"><?php echo acym_translation('ACYM_SKIP'); ?></button>
 		</div>
 		<div class="cell grid-x acym__splashcreen__footer align-center grid-margin-x">

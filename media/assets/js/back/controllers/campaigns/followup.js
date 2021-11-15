@@ -26,8 +26,8 @@ jQuery(document).ready(function ($) {
                     url: ACYM_AJAX_URL + '&ctrl=followups&task=getEmailsListing&id=' + $(this).attr('acym-data-id'),
                     success: function (response) {
                         let stats = acym_helper.parseJson(response);
-                        if (stats.type === 'error') {
-                            acym_helperNotification.addNotification(stats.message, stats.type);
+                        if (stats.error) {
+                            acym_helperNotification.addNotification(stats.message, 'error');
                             return;
                         }
 

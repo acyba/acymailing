@@ -30,6 +30,10 @@ class plgAcymModerneventscalendar extends acymPlugin
         $this->rootCategoryId = 0;
 
         if ($this->installed) {
+            $diplayBookingOption = [
+                'bookingsLimit' => ['ACYM_BOOKING_LIMIT', false],
+                'attendees' => ['ACYM_ATTENDEES', false],
+            ];
             $this->displayOptions = [
                 'title' => ['ACYM_TITLE', true],
                 'price' => ['ACYM_PRICE', true],
@@ -42,8 +46,18 @@ class plgAcymModerneventscalendar extends acymPlugin
                 'tags' => ['ACYM_TAGS', false],
                 'cats' => ['ACYM_CATEGORIES', false],
                 'labels' => [__('Event Labels', $this->textDomain), false],
+                'organizer' => ['ACYM_ORGANIZER', false],
+                'otherOrganizer' => ['ACYM_OTHER_ORGANIZER', false],
+                'otherLocation' => ['ACYM_OTHER_LOCATION', false],
+                'eventNextOccurrences' => ['ACYM_NEXT_OCCURRENCES', false],
             ];
 
+            if ($this->fullInstalled) {
+                $bookingIsOn = get_option('mec_options', []);
+                if ($bookingIsOn["settings"]["booking_status"]) {
+                    $this->displayOptions = array_merge($this->displayOptions, $diplayBookingOption);
+                }
+            }
             $this->initCustomView();
 
             $this->settings = [
@@ -240,7 +254,6 @@ class plgAcymModerneventscalendar extends acymPlugin
         $varFields['{title}'] = $element->post_title;
         if (in_array('title', $tag->display)) $title = $varFields['{title}'];
 
-
         $imageId = get_post_thumbnail_id($tag->id);
         if (!empty($imageId)) {
             $imagePath = get_the_post_thumbnail_url($tag->id);
@@ -360,6 +373,161 @@ class plgAcymModerneventscalendar extends acymPlugin
             ];
         }
 
+        $varFields['{organizer}'] = '';
+        $organizer_id = get_post_meta($tag->id, 'mec_organizer_id', true);
+        $organizerUrl = get_term_meta($organizer_id, 'url', true);
+        $organizerTel = get_term_meta($organizer_id, 'tel', true);
+        $organizerEmail = get_term_meta($organizer_id, 'email', true);
+        // $organizer_id = 1 : hide organizer
+        if ($organizer_id != 1) {
+            $organizer = [];
+            $organizerValue = get_term($organizer_id, 'mec_organizer');
+            if (!empty($organizerValue)) {
+                $organizer[] = $organizerValue->name;
+            }
+            if (!empty($organizerTel)) {
+                $organizer[] = $organizerTel;
+            }
+            if (!empty($organizerEmail)) {
+                $organizer[] = $organizerEmail;
+            }
+            if (!empty($organizerUrl)) {
+                $organizer[] = '<a href="'.$organizerUrl.'" target="_blank">'.$organizerUrl.'</a>';
+            }
+            $varFields['{organizer}'] = implode('<br />', $organizer);
+            if (in_array('organizer', $tag->display) && !empty($varFields['{organizer}'])) {
+                $customFields[] = [
+                    $varFields['{organizer}'],
+                    acym_translation('ACYM_ORGANIZER'),
+                ];
+            }
+        }
+
+        $otherOrganizersIds = get_post_meta($tag->id, 'mec_additional_organizer_ids', true);
+        if (!is_array($otherOrganizersIds)) $otherOrganizersIds = [$otherOrganizersIds];
+        $otherOrganizers = [];
+        if (!empty($otherOrganizersIds)) {
+            foreach ($otherOrganizersIds as $otherOrganizersId) {
+                $otherOrganizer = get_term($otherOrganizersId, 'mec_organizer');
+                $otherOrganizerUrl = get_term_meta($otherOrganizersId, 'url', true);
+                if (isset($otherOrganizer->name)) {
+                    $otherOrganizers[] = $otherOrganizer->name;
+                    $otherOrganizerTel = get_term_meta($otherOrganizersId, 'tel', true);
+                    $otherOrganizerEmail = get_term_meta($otherOrganizersId, 'email', true);
+                    if (!empty($otherOrganizerTel)) {
+                        $otherOrganizers[] = $otherOrganizerTel;
+                    }
+                    if (!empty($otherOrganizerEmail)) {
+                        $otherOrganizers[] = $otherOrganizerEmail;
+                    }
+                    if (!empty($otherOrganizerUrl)) {
+                        $otherOrganizers[] = '<a href="'.$otherOrganizerUrl.'" target="_blank">'.$otherOrganizerUrl.'</a>';
+                    }
+                }
+            }
+        }
+        $varFields['{otherOrganizer}'] = implode('<br />', $otherOrganizers);
+        if (in_array('otherOrganizer', $tag->display) && !empty($varFields['{otherOrganizer}'])) {
+            $customFields[] = [
+                $varFields['{otherOrganizer}'],
+                acym_translation('ACYM_OTHER_ORGANIZER'),
+            ];
+        }
+
+        $varFields['{otherLocation}'] = '';
+        $varFields['{otherLocationAddress}'] = '';
+        $varFields['{otherLocationLatLong}'] = '';
+        $varFields['{otherLocationUrl}'] = '';
+        $additionalLocationsIds = get_post_meta($tag->id, 'mec_additional_location_ids', true);
+        $otherLocation = [];
+        if (!empty($additionalLocationsIds)) {
+            foreach ($additionalLocationsIds as $additionalLocationsId) {
+                $addressDetails = get_term_meta($additionalLocationsId, 'address', true);
+                if (!empty($addressDetails)) {
+                    $varFields['{otherLocationAddress}'] = $addressDetails;
+                    $otherLocation[] = $addressDetails;
+                }
+                $longitude = get_term_meta($additionalLocationsId, 'longitude', true);
+                $latitude = get_term_meta($additionalLocationsId, 'latitude', true);
+                if (!empty($latitude) || !empty($longitude)) {
+                    $varFields['{otherLocationLatLong}'] = $latitude.','.$longitude;
+                    $otherLocation[] = $latitude.','.$longitude;
+                }
+                $url = get_term_meta($additionalLocationsId, 'url', true);
+                if (!empty($url)) {
+                    $varFields['{otherLocationUrl}'] = $url;
+                    $otherLocation[] = '<a href="'.$url.'" target="_blank">'.$url.'</a>';
+                }
+            }
+            $varFields['{otherLocation}'] = implode('<br />', $otherLocation);
+            if (in_array('otherLocation', $tag->display) && !empty($varFields['{otherLocation}'])) {
+                $customFields[] = [
+                    $varFields['{otherLocation}'],
+                    acym_translation('ACYM_OTHER_LOCATION'),
+                ];
+            }
+        }
+
+        $varFields['{eventNextOccurrences}'] = '';
+        $eventOccurrences = acym_loadObjectList('SELECT `post_id`, `tstart`, `tend` FROM `#__mec_dates` WHERE `post_id`='.intval($tag->id).' LIMIT 20');
+        $occurrences = '';
+        if (!empty($eventOccurrences)) {
+            foreach ($eventOccurrences as $occurrence) {
+                $occurrences .= acym_date($occurrence->tstart, 'ACYM_DATE_FORMAT_LC4').' - '.acym_date($occurrence->tend, 'ACYM_DATE_FORMAT_LC4').'<br />';
+            }
+
+            $varFields['{eventNextOccurrences}'] = $occurrences;
+            if (in_array('eventNextOccurrences', $tag->display) && !empty($varFields['{eventNextOccurrences}'])) {
+                $customFields[] = [
+                    $varFields['{eventNextOccurrences}'],
+                    acym_translation('ACYM_NEXT_OCCURRENCES'),
+                ];
+            }
+        }
+
+        if ($this->fullInstalled) {
+            $bookingIsOn = get_option('mec_options', []);
+            if ($bookingIsOn['settings']['booking_status']) {
+                $properties = acym_loadObjectList(
+                    'SELECT post_id, meta_key, meta_value AS `value` FROM #__postmeta WHERE meta_key = "mec_event_id" AND meta_value ='.intval($tag->id)
+                );
+                $attendeesIds = [];
+                if (!empty($properties)) {
+                    foreach ($properties as $property) {
+                        $attendeesIds[] = acym_escapeDB($property->post_id);
+                    }
+                }
+                $booked = 0;
+                $attendeesIdsString = implode(',', $attendeesIds);
+                $mecTicketIds = acym_loadObjectList(
+                    'SELECT post_id, meta_key, meta_value AS `value` FROM #__postmeta WHERE meta_key = "mec_ticket_id" AND post_id IN('.$attendeesIdsString.')'
+                );
+                if (!empty($mecTicketIds)) {
+                    foreach ($mecTicketIds as $mecTicketId) {
+                        $booked += count(array_filter(explode(',', trim($mecTicketId->value, ','))));
+                    }
+                }
+                $varFields['{attendees}'] = acym_translationSprintf('ACYM_N_ATTENDEES', $booked);
+                if (in_array('attendees', $tag->display) && !empty($varFields['{attendees}'])) {
+                    $customFields[] = [
+                        $varFields['{attendees}'],
+                        acym_translation('ACYM_ATTENDEES'),
+                    ];
+                }
+
+                $tab = get_post_meta($tag->id, 'mec_booking', true);
+                if (array_key_exists('bookings_limit', $tab)) {
+                    $varFields['{bookingsLimit}'] = $tab['bookings_limit'];
+                    if (in_array('bookingsLimit', $tag->display) && !empty($varFields['{bookingsLimit}'])) {
+                        $customFields[] = [
+                            $varFields['{bookingsLimit}'],
+                            acym_translation('ACYM_BOOKING_LIMIT'),
+                        ];
+                    }
+                }
+            }
+        }
+
         $varFields['{tags}'] = get_the_term_list($tag->id, 'post_tag', '', ', ');
         if (in_array('tags', $tag->display) && !empty($varFields['{tags}'])) {
             $customFields[] = [
@@ -376,7 +544,8 @@ class plgAcymModerneventscalendar extends acymPlugin
             ];
         }
 
-        $varFields['{moreinfo}'] = empty($properties['mec_more_info']->value) ? '' : '<a target="_blank" href="'.$properties['mec_more_info']->value.'">'.$properties['mec_more_info']->value.'</a>';
+        $varFields['{moreinfo}'] = empty($properties['mec_more_info']->value) ? ''
+            : '<a target="_blank" href="'.$properties['mec_more_info']->value.'">'.$properties['mec_more_info']->value.'</a>';
         if (in_array('moreinfo', $tag->display) && !empty($properties['mec_more_info']->value)) {
             $customFields[] = [
                 $varFields['{moreinfo}'],
@@ -387,7 +556,9 @@ class plgAcymModerneventscalendar extends acymPlugin
         $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
                 acym_translation('ACYM_READ_MORE')
             ).'</span></a>';
-        if ($tag->readmore === '1') $afterArticle .= $varFields['{readmore}'];
+        if ($tag->readmore === '1') {
+            $afterArticle .= $varFields['{readmore}'];
+        }
 
         $format = new stdClass();
         $format->tag = $tag;
@@ -534,14 +705,12 @@ class plgAcymModerneventscalendar extends acymPlugin
                 WHERE ID = '.intval($id)
             );
             if (empty($subject)) $subject = '';
-            echo json_encode(
+            echo json_encode([
                 [
-                    [
-                        'value' => $id,
-                        'text' => $id.' - '.$subject,
-                    ],
-                ]
-            );
+                    'value' => $id,
+                    'text' => $id.' - '.$subject,
+                ],
+            ]);
             exit;
         }
 

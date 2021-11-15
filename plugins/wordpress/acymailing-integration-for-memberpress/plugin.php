@@ -106,9 +106,10 @@ class plgAcymMemberpress extends acymPlugin
     public function onAcymDeclareConditions(&$conditions)
     {
         $allGroups = acym_loadObjectList(
-            'SELECT post_meta.meta_value AS `text`, `ID` AS `value` FROM #__posts AS post
-             JOIN #__postmeta AS post_meta ON post.ID = post_meta.post_id AND post_meta.meta_key = "_mepr_product_pricing_title"
-             WHERE post_type = "memberpressproduct" AND post_status = "publish"'
+            'SELECT post.post_title AS `text`, post.`ID` AS `value` 
+			 FROM #__posts AS post
+             WHERE post.`post_type` = "memberpressproduct" AND post.`post_status` = "publish" 
+             ORDER BY post.post_title ASC'
         );
         if (empty($allGroups)) return;
 
@@ -138,8 +139,8 @@ class plgAcymMemberpress extends acymPlugin
 
         $activeMemberPress = [
             acym_selectOption('', acym_translation('ACYM_ACTIVATED_OR_DEACTIVATED')),
-            acym_selectOption(1, acym_translation('ACYM_ACTIVE')),
-            acym_selectOption(-1, acym_translation('ACYM_DEACTIVATE')),
+            acym_selectOption(1, acym_translation('ACYM_ACTIVATED')),
+            acym_selectOption(-1, acym_translation('ACYM_DEACTIVATED')),
         ];
 
         $conditions['user']['memberpress']->option .= '<div class="intext_select_automation cell">';
@@ -163,7 +164,7 @@ class plgAcymMemberpress extends acymPlugin
             $statusMemberPress,
             'acym_condition[conditions][__numor__][__numand__][memberpress][status]',
             '',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['memberpress']->option .= '</div>';
 
@@ -195,47 +196,58 @@ class plgAcymMemberpress extends acymPlugin
 
     private function processConditionFilter_memberpress(&$query, $options, $num)
     {
-        $joinSubscription = '`#__mepr_subscriptions` AS memberpress_sub'.$num.' ON memberpress_sub'.$num.'.`user_id` = user.`cms_id`';
-        $leftJoinTransaction = '`#__mepr_transactions` AS memberpress_transaction'.$num.' ON memberpress_transaction'.$num.'.`subscription_id` = memberpress_sub'.$num.'.`id`';
-        if (!empty($options['membership'])) $joinSubscription .= ' AND memberpress_sub'.$num.'.`product_id` = '.intval($options['membership']);
-        if (!empty($options['status'])) $joinSubscription .= ' AND memberpress_sub'.$num.'.`status` = '.acym_escapeDB($options['status']);
+        $transaction = 'memberpress_transaction'.$num;
+        $subscription = 'memberpress_sub'.$num;
+        $joinTransaction = '`#__mepr_transactions` AS '.$transaction.' ON '.$transaction.'.`user_id` = user.`cms_id` AND user.`cms_id` > 0';
+        if (!empty($options['membership'])) $joinTransaction .= ' AND '.$transaction.'.`product_id` = '.intval($options['membership']);
 
         if (!empty($options['signup_date_inf'])) {
             $options['signup_date_inf'] = acym_replaceDate($options['signup_date_inf']);
             if (!is_numeric($options['signup_date_inf'])) $options['signup_date_inf'] = strtotime($options['signup_date_inf']);
-            $leftJoinTransaction .= ' AND memberpress_transaction'.$num.'.`created_at` > '.acym_escapeDB(acym_date($options['signup_date_inf'], 'Y-m-d H:i', false));
+            $joinTransaction .= ' AND '.$transaction.'.`created_at` > '.acym_escapeDB(acym_date($options['signup_date_inf'], 'Y-m-d H:i', false));
         }
         if (!empty($options['signup_date_sup'])) {
             $options['signup_date_sup'] = acym_replaceDate($options['signup_date_sup']);
             if (!is_numeric($options['signup_date_sup'])) $options['signup_date_sup'] = strtotime($options['signup_date_sup']);
-            $leftJoinTransaction .= ' AND memberpress_transaction'.$num.'.`created_at` < '.acym_escapeDB(acym_date($options['signup_date_sup'], 'Y-m-d H:i', false));
+            $joinTransaction .= ' AND '.$transaction.'.`created_at` < '.acym_escapeDB(acym_date($options['signup_date_sup'], 'Y-m-d H:i', false));
         }
 
         if (!empty($options['expiration_date_inf'])) {
             $options['expiration_date_inf'] = acym_replaceDate($options['expiration_date_inf']);
             if (!is_numeric($options['expiration_date_inf'])) $options['expiration_date_inf'] = strtotime($options['expiration_date_inf']);
-            $leftJoinTransaction .= ' AND (memberpress_transaction'.$num.'.`expires_at` > '.acym_escapeDB(acym_date($options['expiration_date_inf'], 'Y-m-d H:i', false));
-            $leftJoinTransaction .= ' OR memberpress_transaction'.$num.'.`expires_at` = "0000-00-00 00:00:00")';
+            $joinTransaction .= ' AND ('.$transaction.'.`expires_at` > '.acym_escapeDB(acym_date($options['expiration_date_inf'], 'Y-m-d H:i', false));
+            $joinTransaction .= ' OR '.$transaction.'.`expires_at` = "0000-00-00 00:00:00")';
         }
         if (!empty($options['expiration_date_sup'])) {
             $options['expiration_date_sup'] = acym_replaceDate($options['expiration_date_sup']);
             if (!is_numeric($options['expiration_date_sup'])) $options['expiration_date_sup'] = strtotime($options['expiration_date_sup']);
-            $leftJoinTransaction .= ' AND memberpress_transaction'.$num.'.`expires_at` < '.acym_escapeDB(acym_date($options['expiration_date_sup'], 'Y-m-d H:i', false));
-            $leftJoinTransaction .= ' AND memberpress_transaction'.$num.'.`expires_at` > "0000-00-00 00:00:00"';
+            $joinTransaction .= ' AND '.$transaction.'.`expires_at` < '.acym_escapeDB(acym_date($options['expiration_date_sup'], 'Y-m-d H:i', false));
+            $joinTransaction .= ' AND '.$transaction.'.`expires_at` > "0000-00-00 00:00:00"';
         }
 
-        $query->join['memberpress_sub'.$num] = $joinSubscription;
-        $query->leftjoin['memberpress_transaction'.$num] = $leftJoinTransaction;
-
+        $options['active'] = intval($options['active']);
         if (in_array($options['active'], [1, -1])) {
-            $like = $options['active'] == -1 ? 'NOT LIKE' : 'LIKE';
-            $query->join['memberpress_member'.$num] = '#__mepr_members AS memberpress_member'.$num.' ON memberpress_member'.$num.'.`user_id` = memberpress_sub'.$num.'.`user_id` 
-                                                       AND memberpress_member'.$num.'.`memberships` '.$like.' '.acym_escapeDB('%'.$options['membership'].'%');
+            $joinTransaction .= ' AND '.$transaction.'.`status` '.($options['active'] === 1 ? '=' : '!=').' "complete"';
         }
 
-        $query->where['member'] = 'user.`cms_id` > 0';
-        $operator = (empty($options['type']) || $options['type'] === 'in') ? 'IS NOT NULL' : 'IS NULL';
-        $query->where[] = 'memberpress_sub'.$num.'.`user_id` '.$operator;
+        if (empty($options['type']) || $options['type'] === 'in') {
+            $query->join[$transaction] = $joinTransaction;
+
+            if (!empty($options['status'])) {
+                $query->join[$subscription] = '`#__mepr_subscriptions` AS '.$subscription.' ON '.$subscription.'.`id` = '.$transaction.'.`subscription_id`';
+                $query->where[] = $subscription.'.`status` = '.acym_escapeDB($options['status']);
+            }
+        } else {
+            $query->leftjoin[$transaction] = $joinTransaction;
+
+            if (empty($options['status'])) {
+                $query->where[] = $transaction.'.`user_id` IS NULL';
+            } else {
+                $query->leftjoin[$subscription] = '`#__mepr_subscriptions` AS '.$subscription.' ON '.$subscription.'.`id` = '.$transaction.'.`subscription_id`';
+                $query->leftjoin[$subscription] .= ' AND '.$subscription.'.`status` = '.acym_escapeDB($options['status']);
+                $query->where[] = $subscription.'.`user_id` IS NULL';
+            }
+        }
     }
 
     public function onAcymDeclareFilters(&$filters)
@@ -345,6 +357,7 @@ class plgAcymMemberpress extends acymPlugin
                 if (!tagname) return;
                 setTag('{<?php echo $this->name; ?>:' + tagname + '}', element);
             }
+
             -->
 		</script>
 

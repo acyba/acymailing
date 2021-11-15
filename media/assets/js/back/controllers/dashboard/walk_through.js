@@ -1,8 +1,7 @@
 jQuery(document).ready(function ($) {
     function Init() {
+        setSendingMethodSwitch();
         setReplyToInformation();
-        setToggleMailServer();
-        setSelectedFunction();
         setSubscribeUser();
         setWalkthroughList();
         setStepFailToggle();
@@ -12,7 +11,22 @@ jQuery(document).ready(function ($) {
         acym_helperMailer.setTestCredentialsSendingMethods();
         acym_helperMailer.setButtonCopyFromPlugin();
         acym_helperMailer.setSynchroExistingUsers();
-        acym_helperSelectionPage.setSelectionElement(true, false, undefined, '#acym__phpmail-step__mailer__title');
+        acym_helperSelectionPage.setSelectionElement(true, false, undefined, '#acym__selection__button-select');
+    }
+
+    function setSendingMethodSwitch() {
+        let $method = $('input[name="config[mailer_method]"]');
+        $method.on('change', function () {
+            $('.send_settings').hide();
+            let selected = $('input[name="config[mailer_method]"]:checked').val();
+            const $settings = $(`#${selected}_settings`);
+            if ($settings.length > 0) {
+                $settings.show();
+                jQuery('#acym__selection__button-select').removeAttr('disabled');
+            }
+        });
+
+        $method.trigger('change');
     }
 
     Init();
@@ -20,47 +34,6 @@ jQuery(document).ready(function ($) {
     function setReplyToInformation() {
         $('#acym__walk-through-1__content__toggle-reply-to__checkbox').off('change').on('change', function () {
             $('.acym__walk-through-1__content__reply-to').toggle();
-        });
-    }
-
-    function setToggleMailServer() {
-        let $yourServer = $('.acym__walk-through-2__choose_your-server');
-        let $externalServer = $('.acym__walk-through-2__choose_external-server');
-        let $smtpServer = $('.acym__walk-through-2__smtp-server');
-        let $elasticEmail = $('.acym__walk-through-2__elastic-email');
-        let $spanServer = $('.acym__walk-through-2__toggle-mail .acym__walk_through_toggle-span');
-        let $spanSmtpElastic = $('.acym__walk-through-2__choose_external-server .acym__walk_through_toggle-span');
-        $spanServer.off('click').on('click', function () {
-            $spanServer.removeClass('walk-through_selected');
-            $(this).addClass('walk-through_selected');
-
-            let newValue;
-            if ($(this).attr('id') === 'your-server') {
-                $yourServer.show();
-                $externalServer.hide();
-                newValue = $('.your_server_selected').attr('id');
-            } else {
-                $yourServer.hide();
-                $externalServer.show();
-                newValue = $('.acym__walk-through-2__choose_external-server .walk-through_selected').attr('id');
-            }
-            $('#acym__walk-through-2__way-mail').val(newValue);
-        });
-        $spanSmtpElastic.off('click').on('click', function () {
-            $spanSmtpElastic.removeClass('walk-through_selected');
-            $(this).addClass('walk-through_selected');
-            $(this).attr('id') === 'smtp' ? $smtpServer.show() && $elasticEmail.hide() : $smtpServer.hide() && $elasticEmail.show();
-            $('#acym__walk-through-2__way-mail').attr('value', $(this).attr('id'));
-        });
-    }
-
-    function setSelectedFunction() {
-        let $buttons = $('.acym__walk-through-2__button');
-        $buttons.off('click').on('click', function (e) {
-            e.preventDefault();
-            $buttons.addClass('unselected').removeClass('your_server_selected');
-            $(this).removeClass('unselected').addClass('your_server_selected');
-            $('#acym__walk-through-2__way-mail').attr('value', $(this).attr('id'));
         });
     }
 
@@ -86,6 +59,7 @@ jQuery(document).ready(function ($) {
         $('#acym__walkthrough__list__new').on('click', function () {
             $(this).hide();
             $('#acym__walkthrough__list__add-zone').show();
+            $('#acym__walkthrough__list__new-address').focus();
         });
 
         $('#acym__walkthrough__list__add').on('click', function () {

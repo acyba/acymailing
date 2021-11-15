@@ -49,12 +49,12 @@
         display: none;
         position: absolute;
         top: 0;
-        right: 0;
         padding: 5px;
         background-color: orange;
         color: #f1f1f1;
-        border-bottom-left-radius: 4px;
         user-select: none;
+        right: 0;
+        border-bottom-left-radius: 4px;
     }
 
     h1 {

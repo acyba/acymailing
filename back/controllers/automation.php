@@ -635,12 +635,10 @@ class AutomationController extends acymController
         }
 
         $query = new AutomationHelper();
-        $messages = '';
 
-        foreach ($stepAutomation['filters'][$or][$and] as $filterName => $options) {
-            $messages = acym_trigger('onAcymProcessFilterCount_'.$filterName, [&$query, &$options, &$and]);
-            break;
-        }
+        $filterName = key($stepAutomation['filters'][$or][$and]);
+        $options = current($stepAutomation['filters'][$or][$and]);
+        $messages = acym_trigger('onAcymProcessFilterCount_'.$filterName, [&$query, &$options, &$and]);
 
         acym_sendAjaxResponse(implode(' | ', $messages));
     }

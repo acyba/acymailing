@@ -4,7 +4,7 @@ namespace AcyMailing\Init;
 
 use AcyMailing\Classes\PluginClass;
 
-class acyMenu extends acyHook
+class acyMenu
 {
     var $router;
 
@@ -16,6 +16,9 @@ class acyMenu extends acyHook
             // Add AcyMailing menu in the back-end's left menu of WordPress
             add_action('admin_menu', [$this, 'addMenus'], 99);
         }
+
+        // Add "settings" link for acym on plugins listing
+        add_filter('plugin_action_links_'.plugin_basename(dirname(__DIR__).'/index.php'), [$this, 'addPluginLinks']);
     }
 
     // Add AcyMailing menu to WP left menu and define controllers
@@ -116,6 +119,15 @@ class acyMenu extends acyHook
         if (isset($submenu[ACYM_COMPONENT.'_dashboard'])) {
             $submenu[ACYM_COMPONENT.'_dashboard'][0][0] = acym_translation('ACYM_DASHBOARD');
         }
+    }
+
+    // Add links on the plugins listing
+    public function addPluginLinks($links)
+    {
+        $settings_link = '<a href="admin.php?page='.ACYM_COMPONENT.'_configuration">'.__('Settings').'</a>';
+        $links = array_merge([$settings_link], $links);
+
+        return $links;
     }
 }
 

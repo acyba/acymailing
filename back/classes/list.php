@@ -532,7 +532,7 @@ class ListClass extends acymClass
 
     public function getAllWithoutManagement($needTranslation = false)
     {
-        $lists = acym_loadObjectList('SELECT * FROM #__acym_list WHERE type = '.acym_escapeDB(self::LIST_TYPE_STANDARD), 'id');
+        $lists = acym_loadObjectList('SELECT * FROM #__acym_list WHERE `type` = '.acym_escapeDB(self::LIST_TYPE_STANDARD), 'id');
 
         if (acym_isMultilingual() && $needTranslation) {
             $lists = $this->getTranslatedNameDescription($lists);
@@ -673,14 +673,18 @@ class ListClass extends acymClass
 
     public function getTotalSubCount($ids)
     {
+        if (empty($ids)) {
+            return 0;
+        }
+
         acym_arrayToInteger($ids);
-        $query = "SELECT COUNT(DISTINCT hasList.user_id) 
+        $query = 'SELECT COUNT(DISTINCT hasList.user_id) 
                     FROM #__acym_user_has_list AS hasList 
                     JOIN #__acym_user AS user 
                         ON hasList.user_id = user.id
                     WHERE hasList.status = 1 
                         AND user.active = 1 
-                        AND hasList.list_id IN (".implode(',', $ids).")";
+                        AND hasList.list_id IN ('.implode(',', $ids).')';
 
 
         if ($this->config->get('require_confirmation', 1) == 1) {

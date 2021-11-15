@@ -63,13 +63,13 @@ const acym_editorWysidTest = {
 
         jQuery.post(url, function (res) {
             res = acym_helper.parseJson(res);
-            res.message = res.message.replace(/<.*?>/gm, ' ');
-            let error = res.level === 'error';
-            acym_editorWysidNotifications.addEditorNotification(res, error ? false : 3000, !error);
+            res.data.message = res.data.message.replace(/<.*?>/gm, ' ');
+
+            acym_editorWysidNotifications.addEditorNotification(res.data, res.error ? false : 3000, !res.error);
             jQuery('.acym__wysid__send__test__icon').show();
             jQuery('.acym__wysid__send__test__icon__loader').hide();
             jQuery('#acym__wysid__send__test__button').removeAttr('disabled');
-            if (res.level === 'info') jQuery('.acym__wysid__send__test-close').click();
+            if (res.data.level === 'info') jQuery('.acym__wysid__send__test-close').click();
             acym_helperEditorWysid.setColumnRefreshUiWYSID();
         });
     }

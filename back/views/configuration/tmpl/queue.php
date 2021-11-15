@@ -32,9 +32,11 @@
 		<div class="cell medium-9 automatic_only automatic_manual">
             <?php
             $cronFrequency = $this->config->get('cron_frequency');
-            $valueBatch = acym_level(ACYM_ENTERPRISE) ? intval($this->config->get('queue_batch_auto', 1)) : 1;
+            $valueBatch = acym_level(ACYM_ENTERPRISE) ? $this->config->get('queue_batch_auto', 1) : 1;
             if (!function_exists('curl_multi_exec') && (intval($cronFrequency) < 900 || intval($valueBatch) > 1)) {
-                acym_display(acym_translation('ACYM_MULTI_CURL_DISABLED'), 'error');
+                acym_display(acym_translation('ACYM_MULTI_CURL_DISABLED'), 'error', false);
+            } elseif (empty($cronFrequency) && !empty($this->config->get('active_cron', 0))) {
+                acym_display(acym_translation('ACYM_EMPTY_FREQUENCY'), 'error', false);
             }
 
             $disabledBatch = acym_level(ACYM_ENTERPRISE) ? '' : 'disabled';

@@ -64,25 +64,17 @@ class UsersController extends acymController
         );
         $toolbarHelper->addOptionSelect(
             acym_translation('ACYM_SUBSCRIPTION_STATUS'),
-            acym_select(
-                $data['list_statuses'],
-                'list_status',
-                $data['list_status'],
-                ['class' => 'acym__select']
-            )
+            acym_select($data['list_statuses'], 'list_status', $data['list_status'], ['class' => 'acym__select'])
         );
 
-        //TODO AcyChecker online
-        if (false) {
-            $toolbarHelper->addButton(
-                'ACYM_ACYCHECKER_CLEAN_USERS',
-                [
-                    'data-task' => 'clean',
-                    'type' => 'submit',
-                ],
-                'user-check'
-            );
-        }
+        $toolbarHelper->addButton(
+            'ACYM_ACYCHECKER_CLEAN_USERS',
+            [
+                'data-task' => 'clean',
+                'type' => 'submit',
+            ],
+            'user-check'
+        );
 
         $exportButton = acym_translation('ACYM_EXPORT');
         $exportButton .= '<span id="acym__users__listing__number_to_export" data-default="'.acym_strtolower(acym_translation('ACYM_ALL')).'">&nbsp;(';
@@ -97,15 +89,10 @@ class UsersController extends acymController
         $entityHelper = new EntitySelectHelper();
         $otherContent = acym_modal(
             '<i class="acymicon-bell1"></i>'.acym_translation('ACYM_SUBSCRIBE').' (<span id="acym__users__listing__number_to_add_to_list">0</span>)',
-            $entityHelper->entitySelect(
-                'list',
-                ['join' => ''],
-                $entityHelper->getColumnsForList(),
-                [
-                    'text' => acym_translation('ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS'),
-                    'action' => 'addToList',
-                ]
-            ),
+            $entityHelper->entitySelect('list', ['join' => ''], $entityHelper->getColumnsForList(), [
+                'text' => acym_translation('ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS'),
+                'action' => 'addToList',
+            ]),
             null,
             '',
             [
@@ -292,12 +279,7 @@ class UsersController extends acymController
 
         $data['entityselect'] = acym_modal(
             acym_translation('ACYM_MANAGE_SUBSCRIPTION'),
-            $entityHelper->entitySelect(
-                'list',
-                ['join' => 'join_user-'.$userId],
-                $columnsToDisplay,
-                ['text' => acym_translation('ACYM_CONFIRM'), 'action' => 'apply']
-            ),
+            $entityHelper->entitySelect('list', ['join' => 'join_user-'.$userId], $columnsToDisplay, ['text' => acym_translation('ACYM_CONFIRM'), 'action' => 'apply']),
             null,
             '',
             'class="cell medium-6 large-shrink button button-secondary"'
@@ -407,6 +389,15 @@ class UsersController extends acymController
                     if (preg_match('#^[A-Z_]*$#', $part2)) $part2 = acym_translation($part2);
                     $details .= '<b>'.acym_escape(acym_translation($part1)).' : </b>'.acym_escape($part2).'<br />';
                 }
+                if ($oneHistory->action === 'unsubscribed') {
+                    $details .= acym_translation('ACYM_UNSUBSCRIBE_REASON');
+                    if (empty(acym_escape($oneHistory->unsubscribe_reason))) {
+                        $details .= ' '.acym_translation('ACYM_NO_REASON_SET_BY_USER');
+                    } else {
+                        $details .= ' '.acym_escape($oneHistory->unsubscribe_reason);
+                    }
+                }
+
                 $details .= '</div>';
 
                 $oneHistory->data = acym_modal(
@@ -523,7 +514,7 @@ class UsersController extends acymController
         ];
 
         //__START__wordpress_
-        if (ACYM_CMS === 'wordpress') {
+        if (ACYM_CMS === 'wordpress' && acym_isExtensionActive('mailpoet/mailpoet.php')) {
             $this->prepareMailPoetList($data);
         }
         //__END__wordpress_
@@ -721,7 +712,7 @@ class UsersController extends acymController
 
         foreach ($fieldsToExport as $i => $oneField) {
             if (empty($customFields[$oneField])) continue;
-            $customFieldsToExport[$oneField] = acym_translation($customFields[$oneField]->name, true);
+            $customFieldsToExport[$oneField] = $customFields[$oneField]->namekey;
             unset($fieldsToExport[$i]);
         }
 

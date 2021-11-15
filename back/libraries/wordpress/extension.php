@@ -4,9 +4,17 @@ use AcyMailing\Classes\PluginClass;
 
 function acym_isExtensionActive($extension)
 {
+    // Test first as mu-plugins don't have an active status for WP
+    if (acym_isMuPlugin($extension)) return true;
+
     if (function_exists('is_plugin_active')) return is_plugin_active($extension);
 
     return file_exists(WP_PLUGIN_DIR.DS.$extension);
+}
+
+function acym_isMuPlugin($extension)
+{
+    return file_exists(WPMU_PLUGIN_DIR.DS.$extension);
 }
 
 function acym_getPluginsPath($file, $dir)

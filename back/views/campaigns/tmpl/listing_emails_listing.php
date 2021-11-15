@@ -59,7 +59,8 @@
                         <?php
                         $isFront = !acym_isAdmin() && ACYM_CMS == 'joomla';
                         $controller = $isFront ? 'frontmails' : 'mails';
-                        $linkTask = 'edit&step=editEmail&type=welcome&type_editor=acyEditor';
+                        $linkTask = 'edit&step=editEmail&type=welcome';
+                        if ($email->drag_editor !== '0') $linkTask .= '&type_editor=acyEditor';
                         $returnLink = acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('cmd', 'task');
                         $return = '&return='.urlencode(base64_encode($isFront ? acym_frontendLink($returnLink) : acym_completeLink($returnLink))); ?>
 						<a class="cell auto" href="<?php echo acym_completeLink($controller.'&task='.$linkTask.'&id='.intval($email->id).$return); ?>">

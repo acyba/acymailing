@@ -92,6 +92,8 @@ function acym_getJSMessages()
     $msg .= '"defaultMsg": "'.acym_translation('ACYM_DEFAULT_VALIDATION_ERROR', true).'"';
 
     $keysToLoad = [
+        'ACYM_SUBMIT_AND_DEACTIVATE',
+        'ACYM_SKIP_AND_DEACTIVATE',
         'ACYM_SAVE',
         'ACYM_ARE_YOU_SURE',
         'ACYM_INSERT_IMG_BAD_NAME',
@@ -320,6 +322,8 @@ function acym_getJSMessages()
         'ACYM_OLD_VALUE',
         'ACYM_NEW_VALUE',
         'ACYM_CUSTOM_FIELDS',
+        'ACYM_CUSTOM_VIEW_EDITOR_DESC',
+        'ACYM_PREVIEW_CUSTOM_VIEW',
     ];
 
     foreach ($keysToLoad as $oneKey) {

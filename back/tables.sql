@@ -7,10 +7,10 @@ CREATE TABLE IF NOT EXISTS `#__acym_user` (
 	`cms_id` INT NOT NULL DEFAULT 0,
 	`source` VARCHAR(255) NULL,
 	`confirmed` TINYINT(1) NOT NULL DEFAULT 0,
-	`key` VARCHAR(255) NULL,
+	`key` VARCHAR(30) NULL,
 	`automation` VARCHAR(50) NOT NULL DEFAULT '',
 	`confirmation_date` DATETIME DEFAULT NULL,
-	`confirmation_ip` VARCHAR(16) DEFAULT NULL,
+	`confirmation_ip` VARCHAR(50) DEFAULT NULL,
 	`tracking` TINYINT(1) NOT NULL DEFAULT 1,
 	`language` VARCHAR(20) NOT NULL DEFAULT '',
 	PRIMARY KEY (`id`),
@@ -45,7 +45,6 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail` (
 	`creation_date` DATETIME NOT NULL,
 	`thumbnail` LONGTEXT NULL,
 	`drag_editor` TINYINT(1) NULL,
-	`library` TINYINT(1) NULL,
 	`type` VARCHAR(30) NOT NULL,
 	`body` LONGTEXT NOT NULL,
 	`subject` VARCHAR(255) NULL,
@@ -476,11 +475,12 @@ CREATE TABLE IF NOT EXISTS `#__acym_rule` (
 CREATE TABLE IF NOT EXISTS `#__acym_history` (
 	`user_id` INT NOT NULL,
 	`date` INT NOT NULL,
-	`ip` VARCHAR(16) DEFAULT NULL,
+	`ip` VARCHAR(50) DEFAULT NULL,
 	`action` VARCHAR(50) NOT NULL,
 	`data` text,
 	`source` text,
 	`mail_id` MEDIUMINT DEFAULT NULL,
+	`unsubscribe_reason` TEXT NULL,
 	PRIMARY KEY (`user_id`, `date`)
 )
 	ENGINE = InnoDB
@@ -574,6 +574,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_form` (
 	`delay` SMALLINT(10),
 	`pages` TEXT,
 	`redirection_options` TEXT,
+	`message_options` TEXT,
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB

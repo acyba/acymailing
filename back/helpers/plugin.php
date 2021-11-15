@@ -68,8 +68,8 @@ class PluginHelper extends acymObject
             $cols = $parameter->cols;
         }
 
-        $parameter->hpadding = is_null($parameter->hpadding) ? 10 : $parameter->hpadding;
-        $parameter->vpadding = is_null($parameter->vpadding) ? 10 : $parameter->vpadding;
+        $parameter->hpadding = !isset($parameter->hpadding) || is_null($parameter->hpadding) ? 10 : $parameter->hpadding;
+        $parameter->vpadding = !isset($parameter->vpadding) || is_null($parameter->vpadding) ? 10 : $parameter->vpadding;
 
         $horizontalPadding = round($parameter->hpadding / 2);
         $verticalPadding = round($parameter->vpadding / 2);
@@ -364,6 +364,8 @@ class PluginHelper extends acymObject
 
         // May God punish every person using Outlook, or imposing this monstrosity for his employees
         $pregreplace['#(<p style=")([^>]*>\s*<img *[^>]*margin-left: auto; margin-right: auto;[^>]*>\s*</p>)#Uis'] = '$1text-align: center;$2';
+        // Outlook doesn't handle webp images
+        $pregreplace['#(<img [^>]*src="[^"]+\.webp"[^>]*>)#Uis'] = '<!--[if !mso]>$1<![endif]-->';
 
         $newbody = preg_replace(array_keys($pregreplace), $pregreplace, $html);
         //we do it in two steps as this regex can break the page
@@ -1169,7 +1171,7 @@ class PluginHelper extends acymObject
             if (!empty($option['main']) || in_array($option['type'], ['pictures', 'checkbox'])) {
                 $outputStructure['topOptions'][$currentLabel] = $currentOption;
 
-                if ($option['type'] === 'checkbox' && $currentLabel === 'ACYM_DISPLAY') {
+                if ($option['type'] === 'checkbox' && $currentLabel === 'ACYM_DISPLAY' && (!isset($option['format']) || $option['format'])) {
                     $formatOption = '<div class="grid-x">';
                     $formatOption .= '<div class="cell large-3">'.acym_translation('ACYM_FORMAT').'</div>';
                     $formatOption .= '<div class="cell large-9 dcontentFormatContainer">';

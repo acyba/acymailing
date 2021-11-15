@@ -56,17 +56,14 @@ class ListsController extends acymController
         $toolbarHelper->addSearchBar($data['search'], 'lists_search', 'ACYM_SEARCH');
         $toolbarHelper->addFilterByTag($data, 'lists_tag', 'acym__lists__filter__tags acym__select');
 
-        //TODO AcyChecker online
-        if (false) {
-            $toolbarHelper->addButton(
-                'ACYM_ACYCHECKER_CLEAN_LISTS',
-                [
-                    'data-task' => 'clean',
-                    'type' => 'submit',
-                ],
-                'user-check'
-            );
-        }
+        $toolbarHelper->addButton(
+            'ACYM_ACYCHECKER_CLEAN_LISTS',
+            [
+                'data-task' => 'clean',
+                'type' => 'submit',
+            ],
+            'user-check'
+        );
 
         $toolbarHelper->addButton(
             acym_translation('ACYM_EXPORT').' (<span id="acym__lists__listing__number_to_export" data-default="0"></span>)',
@@ -221,7 +218,7 @@ class ListsController extends acymController
         $data['classSortOrder'] = $data['orderingSortOrder'] == 'asc' ? 'acymicon-sort-amount-asc' : 'acymicon-sort-amount-desc';
         $data['subscribers'] = $this->currentClass->getSubscribersForList($listId, 0, 500, 1, $data['ordering'], $data['orderingSortOrder']);
         foreach ($data['subscribers'] as &$oneSub) {
-            $oneSub->subscription_date = acym_getDate($oneSub->subscription_date);
+            $oneSub->subscription_date = acym_date(strtotime($oneSub->subscription_date), acym_translation('ACYM_DATE_FORMAT_LC2'));
         }
     }
 
@@ -506,10 +503,9 @@ class ListsController extends acymController
         $orderingSortOrder = acym_getVar('string', 'orderByOrdering', 'desc');
         $subscribers = $this->currentClass->getSubscribersForList($listId, $offset, $perCalls, $status, $orderBy, $orderingSortOrder);
         foreach ($subscribers as &$oneSub) {
-            $oneSub->subscription_date = acym_getDate($oneSub->subscription_date);
+            $oneSub->subscription_date = acym_date(strtotime($oneSub->subscription_date), acym_translation('ACYM_DATE_FORMAT_LC2'));
         }
-        echo json_encode(['data' => $subscribers]);
-        exit;
+        acym_sendAjaxResponse('', ['subscribers' => $subscribers]);
     }
 
     public function setAjaxListing()

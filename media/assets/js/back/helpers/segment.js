@@ -86,7 +86,7 @@ const acym_helperSegment = {
         let $options = jQuery('#acym__segments__edit__info__options');
         if (!$options.length) return;
 
-        let filters = JSON.parse($options.val());
+        let filters = acym_helper.parseJson($options.val());
 
         jQuery('.acym__segments__select__' + type + '__filter').off('change').on('change', function () {
             if (inCampaignStep) {
@@ -228,7 +228,7 @@ const acym_helperSegment = {
         let $filterElement = jQuery('#acym__segments__filters');
         if ($filterElement.val() === '') return;
 
-        let filters = JSON.parse($filterElement.val());
+        let filters = acym_helper.parseJson($filterElement.val());
         let or = 0;
         // Foreach OR block
         let lastOrBlock = parseInt(Object.keys(filters).slice(-1)[0]);

@@ -29,9 +29,9 @@ if ($listPosition == 'before') echo $listsContent;
 	<tr>
         <?php
         foreach ($fields as $field) {
+            $field->option = json_decode($field->option);
             $fieldDB = empty($field->option->fieldDB) ? '' : json_decode($field->option->fieldDB);
             $field->value = empty($field->value) ? '' : json_decode($field->value);
-            $field->option = json_decode($field->option);
             $valuesArray = [];
             if (!empty($field->value)) {
                 foreach ($field->value as $value) {
@@ -90,14 +90,14 @@ if ($listPosition == 'before') echo $listsContent;
 				   class="btn btn-primary button subbutton"
 				   value="<?php echo acym_translation($subscribeText, true); ?>"
 				   name="Submit"
-				   onclick="<?php echo acym_isAdmin() ? 'return true' : acym_escape($onclickSubscribe); ?>" />
+				   onclick="<?php echo $disableButtons ? 'return true' : acym_escape($onclickSubscribe); ?>" />
             <?php if ($unsubButton === '2' || ($unsubButton === '1' && !empty($countUnsub))) { ?>
 				<span style="display: none;"></span>
 				<input type="button"
 					   class="btn button unsubbutton"
 					   value="<?php echo acym_translation($unsubscribeText, true); ?>"
 					   name="Submit"
-					   onclick="<?php echo acym_isAdmin() ? 'return true' : acym_escape($onclickUnsubscribe); ?>" />
+					   onclick="<?php echo $disableButtons ? 'return true' : acym_escape($onclickUnsubscribe); ?>" />
             <?php } ?>
 		</td>
 	</tr>

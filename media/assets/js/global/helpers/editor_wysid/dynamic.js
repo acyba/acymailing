@@ -15,7 +15,7 @@ const acym_editorWysidDynamic = {
 
         return uniqueId;
     },
-    endDContentInsertion: function ($focusedElement, shortcode, previewContent, plugin, initEdit) {
+    endDContentInsertion: function ($focusedElement, shortcode, previewContent, plugin, initEdit, customView = false) {
         let uniqueId = this.getUniqueId($focusedElement);
 
         shortcode = shortcode.replace(/"/g, '\\"');
@@ -24,6 +24,13 @@ const acym_editorWysidDynamic = {
         let previewTooltip = '<span class="acym__tooltip acym__dynamics__preview">' + ACYM_JS_TXT.ACYM_PREVIEW;
         previewTooltip += '<span class="acym__tooltip__text wysid_tooltip">' + ACYM_JS_TXT.ACYM_PREVIEW_DESC + '</span>';
         previewTooltip += '</span>';
+
+        if (customView) {
+            previewTooltip = `<span class="acym__tooltip acym__dynamics__preview">
+                                  ${ACYM_JS_TXT.ACYM_PREVIEW_CUSTOM_VIEW}
+                                  <span class="acym__tooltip__text wysid_tooltip">${ACYM_JS_TXT.ACYM_PREVIEW_DESC}<br>${ACYM_JS_TXT.ACYM_CUSTOM_VIEW_EDITOR_DESC}</span>
+                               </span>`;
+        }
 
         if (0 === previewContent.length) {
             previewContent = '<div class="acym_default_dcontent"><span class="acym_default_dcontent_text">'
@@ -94,13 +101,15 @@ const acym_editorWysidDynamic = {
             if (currentPreviewIdentifier !== acym_helperEditorWysid.dynamicPreviewIdentifier) return;
 
             let preview;
+            let customView = false;
             if (response) response = acym_helper.parseJson(response);
-            if (!response.content || 0 === response.content.length) {
+            if (!response.data.content || 0 === response.data.content.length) {
                 preview = '';
             } else {
-                preview = response.content;
+                preview = response.data.content;
+                customView = response.data.custom_view;
             }
-            acym_editorWysidDynamic.endDContentInsertion($focusedElement, shortcode, preview, plugin, initEdit);
+            acym_editorWysidDynamic.endDContentInsertion($focusedElement, shortcode, preview, plugin, initEdit, customView);
 
             if ('undefined' !== typeof $elementsToLoop && $elementsToLoop.length > 0) acym_editorWysidDynamic.insertDContent('', $elementsToLoop);
         });
@@ -137,7 +146,7 @@ const acym_editorWysidDynamic = {
         ajaxURL += '&plugin=' + plugin;
         ajaxURL += '&shortcode=' + encodeURIComponent(shortcode);
         ajaxURL += '&campaignId=' + jQuery('#acym__campaign__recipients__form__campaign').val();
-        if(!acym_helper.empty(acym_editorWysidMultilingual)) ajaxURL += '&language=' + acym_editorWysidMultilingual.selectedLanguage;
+        if (!acym_helper.empty(acym_editorWysidMultilingual)) ajaxURL += '&language=' + acym_editorWysidMultilingual.selectedLanguage;
 
         let $campaignType = jQuery('[name="campaign_type"]');
         if ($campaignType.length > 0) ajaxURL += '&campaign_type=' + $campaignType.val();

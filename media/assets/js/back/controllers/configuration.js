@@ -1,6 +1,5 @@
 jQuery(document).ready(function ($) {
     function Configuration() {
-        setPlatformSwitchConfiguration();
         setSendingMethodSwitchConfiguration();
         setCheckPortConfiguration();
         setDKIMSelectConfiguration();
@@ -31,43 +30,6 @@ jQuery(document).ready(function ($) {
                 alert(ACYM_JS_TXT.ACYM_NO_RAND_FOR_MULTQUEUE);
             }
         });
-    }
-
-    function setPlatformSwitchConfiguration() {
-        let $platform = $('input[name="config[sending_platform]"]');
-        $platform.on('change', function () {
-            let $selected = $('input[name="config[sending_platform]"]:checked').val();
-
-            if ($selected === 'server') {
-                $('i[data-radio="config_mailer_methodelasticemail"], label[for="config_mailer_methodelasticemail"]').addClass('is-hidden');
-                $('i[data-radio="config_mailer_methodsmtp"], label[for="config_mailer_methodsmtp"]').addClass('is-hidden');
-                $('i[data-radio="config_mailer_methodsendgrid"], label[for="config_mailer_methodsendgrid"]').addClass('is-hidden');
-                $('i[data-radio="config_mailer_methodsendinblue"], label[for="config_mailer_methodsendinblue"]').addClass('is-hidden');
-
-                $('i[data-radio="config_mailer_methodqmail"], label[for="config_mailer_methodqmail"]').removeClass('is-hidden').show();
-                $('i[data-radio="config_mailer_methodsendmail"], label[for="config_mailer_methodsendmail"]').removeClass('is-hidden').show();
-                $('i[data-radio="config_mailer_methodphpmail"], label[for="config_mailer_methodphpmail"]').removeClass('is-hidden').show().click();
-            } else {
-                $('i[data-radio="config_mailer_methodqmail"], label[for="config_mailer_methodqmail"]').addClass('is-hidden');
-                $('i[data-radio="config_mailer_methodsendmail"], label[for="config_mailer_methodsendmail"]').addClass('is-hidden');
-                $('i[data-radio="config_mailer_methodphpmail"], label[for="config_mailer_methodphpmail"]').addClass('is-hidden');
-
-                $('i[data-radio="config_mailer_methodsendinblue"], label[for="config_mailer_methodsendinblue"]').removeClass('is-hidden').show();
-                $('i[data-radio="config_mailer_methodsendgrid"], label[for="config_mailer_methodsendgrid"]').removeClass('is-hidden').show();
-                $('i[data-radio="config_mailer_methodelasticemail"], label[for="config_mailer_methodelasticemail"]').removeClass('is-hidden').show();
-                $('i[data-radio="config_mailer_methodsmtp"], label[for="config_mailer_methodsmtp"]').removeClass('is-hidden').show().click();
-            }
-        });
-
-        let $selected = $('input[name="config[mailer_method]"]:checked').val();
-        if ($selected === 'phpmail' || $selected === 'sendmail' || $selected === 'qmail') {
-            $('#config_sending_platformserver').click();
-        } else {
-            $('#config_sending_platformexternal').click();
-        }
-
-        $platform.trigger('change');
-        $('#config_mailer_method' + $selected).click();
     }
 
     function setSendingMethodSwitchConfiguration() {

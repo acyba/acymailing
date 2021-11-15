@@ -18,17 +18,16 @@ const acym_helperToggle = {
 
             let url = ACYM_TOGGLE_URL + '&table=' + table + '&field=' + field + '&id=' + elementid + '&value=' + newvalue;
 
-            jQuery.ajax({
-                url: url,
-                type: 'GET'
-            }).done(function (result) {
-                let json = jQuery.parseJSON(result);
-                let toggleElement = jQuery('[data-acy-table=' + table + '][data-acy-field=' + field + '][data-acy-elementid=' + elementid + ']');
+            acym_helper.get(url).then(res => {
+                if (res.error) {
+                    console.log(res.message);
+                } else {
+                    let toggleElement = jQuery('[data-acy-table=' + table + '][data-acy-field=' + field + '][data-acy-elementid=' + elementid + ']');
+                    toggleElement.attr('data-acy-newvalue', res.data.value).attr('class', res.data.classes);
 
-                toggleElement.attr('data-acy-newvalue', json.value).attr('class', json.classes);
-
-                if (typeof json.tooltip !== 'undefined') {
-                    toggleElement.closest('.acym__tooltip').find('.acym__tooltip__text').html(json.tooltip);
+                    if (typeof res.data.tooltip !== 'undefined') {
+                        toggleElement.closest('.acym__tooltip').find('.acym__tooltip__text').html(res.data.tooltip);
+                    }
                 }
             });
         });
@@ -79,7 +78,11 @@ const acym_helperToggle = {
                 type: 'GET'
             }).done(function (result) {
                 let json = jQuery.parseJSON(result);
-                $element.attr('data-acy-newvalue', json.value);
+                if (json.error) {
+                    console.log(json.message);
+                } else {
+                    $element.attr('data-acy-newvalue', json.data.value);
+                }
             });
         });
     },

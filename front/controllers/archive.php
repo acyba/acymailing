@@ -160,6 +160,7 @@ class ArchiveController extends acymController
         $nbNewslettersPerPage = $menuParams->get('archiveNbNewslettersPerPage', 10);
         $listsSent = $menuParams->get('lists', '');
         $popup = $menuParams->get('popup', '1');
+        $displayUserListOnly = $menuParams->get('displayUserListOnly', '1');
 
         $viewParams = [
             'nbNewslettersPerPage' => $nbNewslettersPerPage,
@@ -167,6 +168,7 @@ class ArchiveController extends acymController
             'popup' => $popup,
             'paramsCMS' => $paramsJoomla,
             'search' => $search,
+            'displayUserListOnly' => $displayUserListOnly,
         ];
 
         $this->showArchive($viewParams);
@@ -207,6 +209,10 @@ class ArchiveController extends acymController
             $params['search'] = $viewParams['search'];
         }
 
+        if (!empty($viewParams['displayUserListOnly'])) {
+            $params['displayUserListOnly'] = $viewParams['displayUserListOnly'];
+        }
+
         $params['page'] = acym_getVar('int', 'acym_front_page', 1);
 
         $campaignClass = new CampaignClass();
@@ -220,6 +226,7 @@ class ArchiveController extends acymController
             'pagination' => $pagination,
             'userId' => $userId,
             'popup' => '1' === $viewParams['popup'],
+            'displayUserListOnly' => '1' === $viewParams['displayUserListOnly'],
             'search' => $viewParams['search'],
             'actionUrl' => acym_currentURL(),
         ];

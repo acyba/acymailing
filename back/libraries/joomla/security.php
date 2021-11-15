@@ -36,11 +36,10 @@ function acym_setVar($name, $value = null, $hash = 'method', $overwrite = true)
         $input = JFactory::getApplication()->input;
         $hashInput = $input->__get($hash);
         $hashInput->set($name, $value);
-
-        return $input->set($name, $value);
+        $input->set($name, $value);
+    } else {
+        JRequest::setVar($name, $value, $hash, $overwrite);
     }
-
-    return JRequest::setVar($name, $value, $hash, $overwrite);
 }
 
 function acym_isAdmin()
@@ -146,8 +145,14 @@ function acym_checkVersion($ajax = false)
     if (empty($userInformation) || $userInformation === false) {
         $config->save(['lastlicensecheck' => time()]);
         if ($ajax) {
-            echo json_encode(['content' => '<br/><span style="color:#C10000;">'.acym_translation('ACYM_ERROR_LOAD_FROM_ACYBA').'</span><br/>'.$result]);
-            exit;
+            acym_sendAjaxResponse(
+                '',
+                [
+                    'content' => '<br/><span style="color:#C10000;">'.acym_translation('ACYM_ERROR_LOAD_FROM_ACYBA').'</span><br/>'.$result,
+                    'lastcheck' => acym_date(time(), 'Y/m/d H:i'),
+                ],
+                false
+            );
         } else {
             return '';
         }

@@ -52,7 +52,7 @@ const acym_editorWysidWordpress = {
                     content += '<div class="acym__wysid__tinymce--image">';
                     content += '<div style="text-align: center" data-mce-style="text-align: center">';
                     if ($link.length > 0) content += '<a href="' + $link.attr('href') + '" class="acym__wysid__link__image" target="_blank">';
-                    content += '<img class="acym__wysid__media__inserted acym__wysid__media__inserted--focus acym__wysid__media__inserted--selected" src="'
+                    content += '<img hspace="0" class="acym__wysid__media__inserted acym__wysid__media__inserted--focus acym__wysid__media__inserted--selected" src="'
                                + attachment.url
                                + '" title="'
                                + acym_helper.escape(attachment.title)

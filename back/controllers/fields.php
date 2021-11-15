@@ -204,14 +204,15 @@ class FieldsController extends acymController
 
         $field['name'] = strip_tags($field['name'], '<i><b><strong>');
         $field['namekey'] = empty($field['namekey']) ? $fieldClass->generateNamekey($field['name']) : $field['namekey'];
-        $field['option']['format'] = ($field['type'] == 'date' && empty($field['option']['format'])) ? '%d%m%y' : strtolower($field['option']['format']);
+        $field['option']['format'] = $field['type'] === 'date' && empty($field['option']['format']) ? '%d%m%y' : strtolower($field['option']['format']);
         $field['option']['rows'] = ($field['type'] == 'textarea' && empty($field['option']['rows'])) ? '5' : $field['option']['rows'];
         $field['option']['columns'] = ($field['type'] == 'textarea' && empty($field['option']['columns'])) ? '30' : $field['option']['columns'];
 
         $field['value'] = json_encode($value);
         $field['option']['fieldDB'] = $fieldDB;
         if (!empty($field['option']['format'])) {
-            $field['option']['format'] = preg_replace('/[^a-zA-Z\%]/', '', $field['option']['format']);
+            $field['option']['format'] = preg_replace('/[^a-z\%]/', '', $field['option']['format']);
+            $field['option']['format'] = preg_replace('/\%[^ymd]/', '', $field['option']['format']);
         }
 
         $newField = new \stdClass();

@@ -64,6 +64,25 @@
 						<input type="hidden" name="previous_multilingual_languages" value="<?php echo acym_escape($selectedLanguages); ?>" />
 					</div>
 				</div>
+				<div class="cell grid-x">
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__multilingual-default">
+                            <?php echo acym_translation('ACYM_DEFAULT_USER_LANGUAGE').acym_info('ACYM_DEFAULT_USER_LANGUAGE_DESC'); ?>
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
+                        <?php
+                        echo acym_select(
+                            $data['user_languages'],
+                            'config[multilingual_user_default]',
+                            $this->config->get('multilingual_user_default', 'current_language'),
+                            ['class' => 'acym__select'],
+                            'language',
+                            'name'
+                        );
+                        ?>
+					</div>
+				</div>
                 <?php if (!empty($data['content_translation'])) { ?>
 					<div class="cell grid-x">
 						<div class="cell xlarge-3 medium-5">

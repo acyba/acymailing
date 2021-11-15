@@ -2,7 +2,7 @@
 
 namespace AcyMailing\Init;
 
-class acyAddons extends acyHook
+class acyAddons
 {
     public function __construct()
     {

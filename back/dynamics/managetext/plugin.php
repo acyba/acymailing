@@ -196,7 +196,7 @@ class plgAcymManagetext extends acymPlugin
                     }
                     $tags[$oneTag] = $allresults[3][$i];
                     continue;
-                };
+                }
                 $field = trim($operators[1]);
                 $prop = '';
 

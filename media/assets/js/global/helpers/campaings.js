@@ -76,18 +76,25 @@ const acym_helperCampaigns = {
                 }
             });
             let mailid = current.attr('data-mail');
-            jQuery.post(ACYM_AJAX_URL + '&ctrl=campaigns&task=deleteAttach&id=' + idRemove + '&mail=' + mailid, function (response) {
+            jQuery.post(ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlCampaigns + '&task=deleteAttach&id=' + idRemove + '&mail=' + mailid, function (response) {
                 response = acym_helper.parseJson(response);
-                if (undefined !== response.error) {
-                    acym_helperNotification.addNotification(response.error, 'error');
+                if (response.error) {
+                    acym_helperCampaigns.setDisplayNotif(response.message, 'error');
                 } else {
-                    acym_helperNotification.addNotification(response.message, 'info');
+                    acym_helperCampaigns.setDisplayNotif(response.message, 'info');
                     jQuery('#acym__campaigns__attach__del' + idDivToRemove).remove();
                 }
             }).fail(function (e) {
                 console.log(e);
             });
         });
+    },
+    setDisplayNotif: function (message, type) {
+        if (acym_helper.ctrlCampaigns.substr(0, 5) !== 'front') {
+            acym_helperNotification.addNotification(message, type);
+        } else {
+            console.log(message);
+        }
     },
     setSendSettingsButtons: function () {
         jQuery('.acym__campaign__sendsettings__buttons-type').off('click').on('click', function () {

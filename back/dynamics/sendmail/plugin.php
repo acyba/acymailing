@@ -26,7 +26,7 @@ class plgAcymSendmail extends acymPlugin
     {
         ob_start();
         ?>
-		<div id="<?php echo self::SENDING_METHOD_ID; ?>_settings" class="send_settings grid-x cell">
+		<div class="send_settings grid-x cell" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 				<label for="<?php echo self::SENDING_METHOD_ID; ?>_path" class="cell">
                     <?php echo acym_translation('ACYM_SENDMAIL_PATH'); ?>

@@ -12,8 +12,6 @@ class FrontentityselectController extends EntitySelectController
         $this->authorizedFrontTasks = [
             'loadEntityFront',
             'loadEntityBack',
-            'loadEntitySelect',
-            'getEntityNumber',
         ];
     }
 }

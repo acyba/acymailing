@@ -11,7 +11,7 @@ jQuery(document).ready(function ($) {
         let $actionElement = $('#actions');
         if (!$actionElement.length) return;
 
-        let actions = JSON.parse($actionElement.val());
+        let actions = acym_helper.parseJson($actionElement.val());
         let and = 0;
 
         // Foreach actions
@@ -70,7 +70,7 @@ jQuery(document).ready(function ($) {
         let $options = $('#acym__automation__actions__json');
         if (!$options.length) return;
 
-        let actions = JSON.parse($options.val());
+        let actions = acym_helper.parseJson($options.val());
 
         $('.acym__automation__actions__select').off('change.loadoptions').on('change.loadoptions', function () {
             $(this).parent().parent().find('.acym__automation__inserted__action').remove();

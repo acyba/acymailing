@@ -27,8 +27,13 @@ class EntitySelectController extends acymController
         $joinColumnGet = acym_getVar('string', 'join_table', '');
         $columnsToDisplay = explode(',', acym_getVar('string', 'columns', ''));
         if (!empty($joinColumnGet)) $columnsToDisplay['join'] = $joinColumnGet;
-        echo json_encode($this->loadEntityBack($entity, $offset, $perCalls, $join, $columnsToDisplay));
-        exit;
+
+        $entityBack = $this->loadEntityBack($entity, $offset, $perCalls, $join, $columnsToDisplay);
+        if (!empty($entityBack['error'])) {
+            acym_sendAjaxResponse($entityBack['error'], [], false);
+        } else {
+            acym_sendAjaxResponse('', ['results' => $entityBack]);
+        }
     }
 
     public function loadEntityBack($entity, $offset, $perCalls, $join, $columnsToDisplay)
@@ -73,38 +78,5 @@ class EntitySelectController extends acymController
                 </span>';
             }
         }
-    }
-
-    public function loadEntitySelect()
-    {
-        $join = acym_getVar('string', 'join');
-        if (empty($join)) {
-            echo json_encode(['data' => 'end']);
-            exit;
-        } else {
-            $this->loadEntity();
-        }
-    }
-
-    public function getEntityNumber()
-    {
-        $entity = acym_getVar('string', 'entity');
-        $join = acym_getVar('string', 'join');
-
-        if (empty($entity)) {
-            echo json_encode(['error' => acym_translation('ACYM_MISSING_PARAMETERS')]);
-            exit;
-        }
-
-        $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($entity).'Class';
-        $entityClass = new $namespaceClass;
-
-        $joinQuery = '';
-        if (!empty($join)) $joinQuery = $entityClass->getJoinForQuery($join);
-
-        $query = 'SELECT COUNT(id) FROM #__acym_'.acym_escape($entity).' AS '.$entity.$joinQuery;
-
-        echo json_encode(['data' => acym_loadResult($query)]);
-        exit;
     }
 }

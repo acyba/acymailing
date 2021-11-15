@@ -3,7 +3,7 @@ Contributors: acyba
 Tags: newsletter, acymailing, memberpress, subscription
 Requires at least: 4.7
 Tested up to: 5.7
-Stable tag: 1.0
+Stable tag: 1.2
 Requires PHP: 5.6.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html

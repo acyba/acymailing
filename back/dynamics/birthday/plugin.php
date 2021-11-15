@@ -167,8 +167,10 @@ class plgAcymBirthday extends acymPlugin
 
         foreach ($users as $oneUser) {
             if (empty($oneUser->date)) continue;
+
             $userBirthday = DateTime::createFromFormat($format, $oneUser->date);
             if (empty($userBirthday)) continue;
+
             $userBirthday->sub(new DateInterval('P'.$dayBefore.'D'));
 
             if ($now->format('m-d') === $userBirthday->format('m-d')) {
@@ -355,16 +357,6 @@ class plgAcymBirthday extends acymPlugin
 
         if (empty($birthdayField)) return;
 
-        $fieldOptions = json_decode($birthdayField->option);
-        $tmp = explode('%', $fieldOptions->format);
-        $formatArray = [];
-        foreach ($tmp as $val) {
-            if (empty($val)) continue;
-            if ($val == 'y') $val = 'Y';
-            $formatArray[] = '%'.$val;
-        }
-        $format = implode('/', $formatArray);
-
         $dateNowWithTimeZone = acym_date('now', 'Y-m-d h:i:s');
         $dateToCheck = new DateTime($dateNowWithTimeZone);
         $interval = new DateInterval('P'.intval($options['days']).'D');
@@ -375,9 +367,8 @@ class plgAcymBirthday extends acymPlugin
         }
 
         $query->join['birthday_field'.$num] = '#__acym_user_has_field AS uf'.$num.' ON uf'.$num.'.user_id = user.id';
-        $query->where[] = 'uf'.$num.'.field_id = '.$birthdayField->id;
-        $query->where[] = 'MONTH(STR_TO_DATE(uf'.$num.'.value, "'.$format.'")) = MONTH("'.date_format($dateToCheck, 'Y-m-d').'")';
-        $query->where[] = 'DAY(STR_TO_DATE(uf'.$num.'.value, "'.$format.'")) = DAY("'.date_format($dateToCheck, 'Y-m-d').'")';
+        $query->where[] = 'uf'.$num.'.field_id = '.intval($birthdayField->id);
+        $query->where[] = 'uf'.$num.'.value LIKE '.acym_escapeDB('%'.date_format($dateToCheck, '-m-d'));
     }
 
     public function specialActionOnDelete($typeElement, $elements)
@@ -494,23 +485,12 @@ class plgAcymBirthday extends acymPlugin
 
             if (empty($birthdayField)) return;
 
-            $fieldOptions = json_decode($birthdayField->option);
-            $tmp = explode('%', $fieldOptions->format);
-            $formatArray = [];
-            foreach ($tmp as $val) {
-                if (empty($val)) continue;
-                if ($val == 'y') $val = 'Y';
-                $formatArray[] = '%'.$val;
-            }
-            $format = implode('/', $formatArray);
-
             $dateNowWithTimeZone = acym_date('now', 'Y-m-d h:i:s');
             $dateToCheck = new DateTime($dateNowWithTimeZone);
 
             $automationHelper->join['birthday_field'] = '#__acym_user_has_field AS uf ON uf.user_id = user.id';
             $automationHelper->where[] = 'uf.field_id = '.$birthdayField->id;
-            $automationHelper->where[] = 'MONTH(STR_TO_DATE(uf.value, "'.$format.'")) = MONTH("'.date_format($dateToCheck, 'Y-m-d').'")';
-            $automationHelper->where[] = 'DAY(STR_TO_DATE(uf.value, "'.$format.'")) = DAY("'.date_format($dateToCheck, 'Y-m-d').'")';
+            $automationHelper->where[] = 'uf.value LIKE '.acym_escapeDB('%-'.date_format($dateToCheck, 'm-d'));
 
             $userIds = acym_loadResultArray($automationHelper->getQuery(['user.id']));
 

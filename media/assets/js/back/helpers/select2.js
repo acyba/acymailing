@@ -44,7 +44,7 @@ const acym_helperSelect2 = {
 
             let dataParams = jQuery(this).attr('data-params');
             if (dataParams) {
-                let decodedParams = JSON.parse(dataParams);
+                let decodedParams = acym_helper.parseJson(dataParams);
                 Object.assign(searchParams, decodedParams);
             }
 

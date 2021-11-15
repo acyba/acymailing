@@ -7,15 +7,17 @@ use AcyMailing\Libraries\acymController;
 
 class UpdateController extends acymController
 {
-    //Function called in Ajax that's why we exit
     public function checkForNewVersion()
     {
-        $lastlicensecheck = acym_checkVersion(true);
-
+        $lastLicenseCheck = acym_checkVersion(true);
         $headerHelper = new HeaderHelper();
-        $myAcyArea = $headerHelper->checkVersionArea();
 
-        echo json_encode(['content' => $myAcyArea, 'lastcheck' => acym_date($lastlicensecheck, 'Y/m/d H:i')]);
-        exit;
+        acym_sendAjaxResponse(
+            '',
+            [
+                'content' => $headerHelper->checkVersionArea(),
+                'lastcheck' => acym_date($lastLicenseCheck, 'Y/m/d H:i'),
+            ]
+        );
     }
 }

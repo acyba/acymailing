@@ -50,7 +50,7 @@
 		display: block;
 	}
 
-	<?php if (in_array($form->style_options['position'], ['image-right', 'image-left'])){?>
+	<?php if (!empty($form->style_options['position']) && in_array($form->style_options['position'], ['image-right', 'image-left'])){?>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__shortcode <?php echo '#'.$form->form_tag_name;?>{
 		display: flex;
 		justify-content: center;

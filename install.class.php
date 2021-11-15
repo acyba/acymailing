@@ -1076,11 +1076,9 @@ class acymInstall
             $ruleClass->save($rule);
 
             $captchaOption = $config->get('captcha', 0);
-            $config->save(
-                [
-                    'captcha' => intval($captchaOption) === 1 ? 'acym_ireCaptcha' : 'none',
-                ]
-            );
+            $config->save([
+                'captcha' => intval($captchaOption) === 1 ? 'acym_ireCaptcha' : 'none',
+            ]);
 
             $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `from_name` `from_name` VARCHAR(100) NULL');
             $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `from_email` `from_email` VARCHAR(100) NULL');
@@ -1171,6 +1169,68 @@ class acymInstall
                     if (file_exists(ACYM_BACK.'dynamics'.DS.$dynamicFolder)) acym_deleteFolder(ACYM_BACK.'dynamics'.DS.$dynamicFolder);
                 }
             }
+        }
+
+        if (version_compare($this->fromVersion, '7.6.0', '<')) {
+            $this->updateQuery('ALTER TABLE #__acym_user CHANGE `key` `key` VARCHAR(30) NULL');
+            $this->updateQuery('ALTER TABLE #__acym_mail DROP `library`');
+            $this->updateQuery('ALTER TABLE #__acym_user_has_list ADD `unsubscribe_reason` TEXT NULL');
+        }
+
+        if (version_compare($this->fromVersion, '7.6.1', '<')) {
+            $this->updateQuery('ALTER TABLE #__acym_user_has_list DROP COLUMN `unsubscribe_reason`');
+            $this->updateQuery('ALTER TABLE #__acym_history ADD `unsubscribe_reason` TEXT NULL');
+        }
+
+        if (version_compare($this->fromVersion, '7.6.1', '<')) {
+            $fieldClass = new FieldClass();
+            $dateCustomFields = $fieldClass->getFieldsByType('date');
+
+            // Convert the already saved data into the new format
+            foreach ($dateCustomFields as $oneField) {
+                $oneField->option = json_decode($oneField->option);
+
+                $formatToDisplay = explode('%', $oneField->option->format);
+                unset($formatToDisplay[0]);
+
+                $values = $fieldClass->getFieldsValueByFieldId($oneField->id);
+                foreach ($values as $oneValue) {
+                    $userDate = explode('/', $oneValue->value);
+                    $year = '0000';
+                    $month = '00';
+                    $day = '00';
+                    $i = 0;
+                    foreach ($formatToDisplay as $one) {
+                        // This is a value stored when the format was "%m%y" for example and the format changed to something else
+                        if (!isset($userDate[$i])) continue 2;
+
+                        if ($one === 'd') {
+                            $day = $userDate[$i];
+                        }
+                        if ($one === 'm') {
+                            $month = $userDate[$i];
+                        }
+                        if ($one === 'y') {
+                            $year = $userDate[$i];
+                        }
+                        $i++;
+                    }
+
+                    acym_query(
+                        'UPDATE #__acym_user_has_field 
+                        SET `value` = '.acym_escapeDB($year.'-'.$month.'-'.$day).' 
+                        WHERE `field_id` = '.intval($oneValue->field_id).' AND `user_id` = '.intval($oneValue->user_id)
+                    );
+                }
+            }
+
+            $this->updateQuery('ALTER TABLE #__acym_user CHANGE `automation` `automation` VARCHAR(50) NOT NULL DEFAULT \'\'');
+        }
+
+        if (version_compare($this->fromVersion, '7.6.2', '<')) {
+            $this->updateQuery('ALTER TABLE `#__acym_form` ADD `message_options` TEXT');
+            $this->updateQuery('ALTER TABLE `#__acym_history` CHANGE `ip` `ip` VARCHAR(50)');
+            $this->updateQuery('ALTER TABLE `#__acym_user` CHANGE `confirmation_ip` `confirmation_ip` VARCHAR(50)');
         }
     }
 

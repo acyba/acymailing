@@ -137,12 +137,14 @@ function acym_renderForm($params, $args = [])
     $visibleLists = $params->get('displists', []);
     $hiddenLists = $params->get('hiddenlists', []);
     $allFields = $params->get('fields', []);
-    if (!in_array('2', $allFields)) {
-        $allFields[] = 2;
-    }
     acym_arrayToInteger($visibleLists);
     acym_arrayToInteger($hiddenLists);
     acym_arrayToInteger($allFields);
+
+    // We need the email address
+    if (!in_array(2, $allFields)) {
+        $allFields[] = 2;
+    }
 
     $listClass = new ListClass();
     $fieldClass = new FieldClass();
@@ -205,6 +207,8 @@ function acym_renderForm($params, $args = [])
     if (!empty($identifiedUser->id)) $subscribeText = $params->get('subtextlogged', 'ACYM_SUBSCRIBE');
     $unsubscribeText = $params->get('unsubtext', 'ACYM_UNSUBSCRIBE');
     $unsubButton = $params->get('unsub', '0');
+
+    $disableButtons = !empty($args['disableButtons']) || acym_isAdmin();
 
     // Formatting
     $listPosition = $params->get('listposition', 'before');

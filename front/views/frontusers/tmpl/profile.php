@@ -24,9 +24,9 @@
                 <?php
 
                 foreach ($data['fields'] as $field) {
+                    $field->option = json_decode($field->option);
                     $fieldDB = empty($field->option->fieldDB) ? '' : json_decode($field->option->fieldDB);
                     $field->value = empty($field->value) ? '' : json_decode($field->value);
-                    $field->option = json_decode($field->option);
                     $valuesArray = [];
                     if (!empty($field->value)) {
                         foreach ($field->value as $value) {

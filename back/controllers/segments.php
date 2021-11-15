@@ -92,7 +92,18 @@ class SegmentsController extends acymController
 
     public function countResultsTotal()
     {
-        $stepAutomation = acym_getVar('array', 'acym_action');
+        $segmentSelected = acym_getVar('int', 'segment_selected');
+        if (empty($segmentSelected)) {
+            $stepAutomation = acym_getVar('array', 'acym_action');
+        } else {
+            $segmentClass = new SegmentClass();
+            $segment = $segmentClass->getOneById($segmentSelected);
+            if (empty($segment)) {
+                $stepAutomation = [];
+            } else {
+                $stepAutomation = ['filters' => $segment->filters];
+            }
+        }
 
         //if we are in the campaign edition
         $listsIds = acym_getVar('string', 'list_selected', '');
@@ -129,20 +140,22 @@ class SegmentsController extends acymController
 
         if (empty($automationHelpers)) {
             $automationHelperBase = new AutomationHelper();
-            if (!empty($join)) {
+            if (!empty($listsIds)) {
                 $automationHelperBase->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
                         ',',
                         $listsIds
                     ).') and user_list.status = 1 '.$join;
+                    $automationHelperBase->where[] = 'user.active = 1';
             }
             $userIds = acym_loadResultArray($automationHelperBase->getQuery(['user.id']));
         } else {
-            foreach ($automationHelpers as $key => $automationHelper) {
-                if (!empty($join)) {
+            foreach ($automationHelpers as $automationHelper) {
+                if (!empty($listsIds)) {
                     $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
                             ',',
                             $listsIds
                         ).') and user_list.status = 1 '.$join;
+                    $automationHelper->where[] = 'user.active = 1';
                 }
                 $userIds = array_merge($userIds, acym_loadResultArray($automationHelper->getQuery(['user.id'])));
             }
@@ -165,7 +178,6 @@ class SegmentsController extends acymController
         }
 
         $automationHelper = new AutomationHelper();
-        $messages = '';
 
         if (!empty($listsIds)) {
             $listsIds = json_decode($listsIds);
@@ -177,11 +189,9 @@ class SegmentsController extends acymController
                 ).') and user_list.status = 1 '.$join;
         }
 
-        foreach ($stepAutomation['filters'][$or][$and] as $filterName => $options) {
-            $messages = acym_trigger('onAcymProcessFilterCount_'.$filterName, [&$automationHelper, &$options, &$and]);
-            break;
-        }
-
+        $filterName = key($stepAutomation['filters'][$or][$and]);
+        $options = current($stepAutomation['filters'][$or][$and]);
+        $messages = acym_trigger('onAcymProcessFilterCount_'.$filterName, [&$automationHelper, &$options, &$and]);
         $messages = $messages[0];
 
         if (!empty($listsIds)) $messages .= acym_info('ACYM_CONDITION_WITH_LISTS_COUNT', '', '', 'wysid_tooltip');
@@ -195,12 +205,7 @@ class SegmentsController extends acymController
         $automationHelperBase = new AutomationHelper();
 
         if (empty($listsIds)) {
-            if ($ajax) {
-                echo json_encode(['count' => 0]);
-                exit;
-            } else {
-                return 0;
-            }
+            return 0;
         }
 
         $automationHelpers = [];
@@ -210,8 +215,7 @@ class SegmentsController extends acymController
             $segment = $segmentClass->getOneById($id);
             if (empty($segment)) {
                 if ($ajax) {
-                    echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_COUNT_USER')]);
-                    exit;
+                    acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_COUNT_USER'), [], false);
                 } else {
                     return 0;
                 }
@@ -256,9 +260,7 @@ class SegmentsController extends acymController
         $id = acym_getVar('int', 'id');
         $listsIds = json_decode(acym_getVar('string', 'lists', '[]'));
 
-
-        echo json_encode(['count' => $this->countSegmentById($id, $listsIds)]);
-        exit;
+        acym_sendAjaxResponse('', ['count' => $this->countSegmentById($id, $listsIds)]);
     }
 
     public function saveFromCampaign()
@@ -275,17 +277,12 @@ class SegmentsController extends acymController
         $segment->active = 1;
         $segment->filters = json_encode($filters['filters']);
 
-        $return = [];
         $segmentId = $segmentClass->save($segment);
         if ($segmentId) {
-            $return['message'] = acym_translation('ACYM_SEGMENT_WELL_SAVE');
-            $return['segment_id'] = $segmentId;
+            acym_sendAjaxResponse(acym_translation('ACYM_SEGMENT_WELL_SAVE'), ['segment_id' => $segmentId]);
         } else {
-            $return['error'] = acym_translation('ACYM_COULD_NOT_SAVE_SEGMENT');
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_SAVE_SEGMENT'), [], false);
         }
-
-        echo json_encode($return);
-        exit;
     }
 
     public function usersSummary()
@@ -315,10 +312,9 @@ class SegmentsController extends acymController
                 ).') and user_list.status = 1 '.$join;
         }
 
-        foreach ($stepAutomation['filters'][$or][$and] as $filterName => $options) {
-            acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelper, &$options, &$and]);
-            break;
-        }
+        $filterName = key($stepAutomation['filters'][$or][$and]);
+        $options = current($stepAutomation['filters'][$or][$and]);
+        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelper, &$options, &$and]);
 
         if (!empty($search)) {
             $search = acym_escapeDB('%'.$search.'%');

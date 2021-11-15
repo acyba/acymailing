@@ -98,6 +98,11 @@ class FieldClass extends acymClass
         return acym_loadObjectList($query, 'field_id');
     }
 
+    public function getFieldsValueByFieldId($fieldId)
+    {
+        return acym_loadObjectList('SELECT * FROM #__acym_user_has_field WHERE field_id = '.intval($fieldId));
+    }
+
     public function generateNamekey($name, $namekey = '')
     {
         $fieldsNamekey = acym_loadResultArray('SELECT namekey FROM #__acym_field');
@@ -202,7 +207,27 @@ class FieldClass extends acymClass
                 } elseif ($field->type == 'checkbox') {
                     $value = implode(',', array_keys($value));
                 } elseif ($field->type == 'date') {
-                    $value = $this->isDateEmpty($value) ? '' : implode('/', $value);
+                    $formatToDisplay = explode('%', $fieldOptions->format);
+                    unset($formatToDisplay[0]);
+
+                    $year = '0000';
+                    $month = '00';
+                    $day = '00';
+                    $i = 0;
+                    foreach ($formatToDisplay as $one) {
+                        if ($one === 'd') {
+                            $day = $value[$i];
+                        }
+                        if ($one === 'm') {
+                            $month = $value[$i];
+                        }
+                        if ($one === 'y') {
+                            $year = $value[$i];
+                        }
+                        $i++;
+                    }
+
+                    $value = $year.'-'.$month.'-'.$day;
                 } else {
                     $value = json_encode($value);
                 }
@@ -226,19 +251,9 @@ class FieldClass extends acymClass
         }
     }
 
-    private function isDateEmpty($date)
-    {
-        $return = count($date);
-        foreach ($date as $value) {
-            if (empty($value)) $return--;
-        }
-
-        return empty($return);
-    }
-
     public function getAllFieldsListingByUserIds($userIds, $fieldIds, $listing = '')
     {
-        $query = 'SELECT field.type AS `type`, field.value AS `value`, field.name AS field_name, user_field.user_id AS user_id, user_field.field_id AS field_id, user_field.value AS field_value, field.active 
+        $query = 'SELECT field.type AS `type`, field.value AS `value`, field.name AS field_name, user_field.user_id AS user_id, user_field.field_id AS field_id, user_field.value AS field_value, field.active, field.option 
                     FROM #__acym_user_has_field AS user_field
                     LEFT JOIN #__acym_field AS field ON user_field.field_id = field.id';
 
@@ -268,6 +283,13 @@ class FieldClass extends acymClass
             if (!in_array($one->type, $fieldsTypeWithInField)) {
                 if ($one->type === 'phone') {
                     $fieldValues[$one->field_id.'-'.$one->user_id] = empty($one->field_value) ? '' : '+'.preg_replace('/,/', ' ', $one->field_value, 1);
+                } elseif ($one->type === 'date') {
+                    if (empty($one->field_value)) {
+                        $fieldValues[$one->field_id.'-'.$one->user_id] = '';
+                    } else {
+                        $one->option = json_decode($one->option);
+                        $fieldValues[$one->field_id.'-'.$one->user_id] = acym_displayDateFormat($one->option->format, '', $one->field_value, [], false);
+                    }
                 } else {
                     $decoded = json_decode($one->field_value);
                     $fieldValues[$one->field_id.'-'.$one->user_id] = is_array($decoded) ? implode(', ', $decoded) : $one->field_value;
@@ -289,7 +311,8 @@ class FieldClass extends acymClass
 
     public function getAllFieldsBackendListing()
     {
-        $query = 'SELECT id, name FROM #__acym_field WHERE backend_listing = 1 AND active = 1 AND id NOT IN (1, 2) ORDER BY ordering';
+        $whereLanguage = '(backend_listing = 1 OR `type` = "language")';
+        $query = 'SELECT id, name FROM #__acym_field WHERE '.$whereLanguage.' AND active = 1 AND id NOT IN (1, 2) ORDER BY ordering';
 
         $return = [
             'names' => [],
@@ -337,7 +360,15 @@ class FieldClass extends acymClass
 
     public function displayField($field, $defaultValue, $size, $valuesArray, $displayOutside = true, $displayFront = false, $user = null, $display = 1, $displayIf = '')
     {
-        if ($display == 0) return '';
+        $isCoreField = $field->core == 1;
+
+        if (!$isCoreField && !acym_level(ACYM_ENTERPRISE)) return '';
+
+        $return = '';
+
+        if ($display == 0 && acym_isAdmin() && acym_level(ACYM_ENTERPRISE) && !$isCoreField) return '';
+
+        if ($display == 0 && !acym_isAdmin()) return '';
 
         $cmsUser = false;
         if ($displayFront && !empty($user->id)) {
@@ -386,8 +417,6 @@ class FieldClass extends acymClass
             }
         }
 
-        $return = '';
-
         if (acym_isMultilingual() && $displayFront && !empty($field->translation)) {
             $field->translation = json_decode($field->translation, true);
             if (!empty($field->translation[acym_getLanguageTag()]) && !empty($field->translation[acym_getLanguageTag()]['name'])) {
@@ -397,7 +426,7 @@ class FieldClass extends acymClass
 
         $field->name = acym_translation($field->name);
 
-        if (empty($field->option)) {
+        if (empty((array)$field->option)) {
             $authorizedContent = '';
         } else {
             if (empty($field->option->error_message_invalid)) {
@@ -436,13 +465,25 @@ class FieldClass extends acymClass
             $return .= '<div '.$displayIf.' class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.$field->name.'</div>';
         }
 
+        $readonly = '';
+
+        if ($display == 0 && acym_isAdmin() && acym_level(ACYM_ENTERPRISE) && $isCoreField) {
+            $readonly = ' disabled ';
+            $required = '';
+        }
+
         if ($field->id == 1) {
             $nameAttribute = ' name="user[name]"';
-            $return .= '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.' type="text" class="cell">';
+            $inputTmp = '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.$readonly.' type="text" class="cell">';
+            if (!empty($readonly)) $inputTmp = acym_tooltip($inputTmp, acym_translation('ACYM_CF_EDITION_BLOCKED'));
+            $return .= $inputTmp;
         } elseif ($field->id == 2) {
             $nameAttribute = ' name="user[email]"';
             $uniqueId = 'email_field_'.rand(100, 900);
-            $return .= '<input id="'.$uniqueId.'" '.$nameAttribute.$placeholder.$value.$authorizedContent.$style.$maxCharacters.' required type="email" class="cell acym__user__edit__email" '.($displayFront && $cmsUser ? 'disabled' : '').'>';
+            $inputTmp = '<input id="'.$uniqueId.'" '.$nameAttribute.$placeholder.$value.$authorizedContent.$style.$maxCharacters.$readonly.' required type="email" class="cell acym__user__edit__email" '.($displayFront && $cmsUser
+                    ? 'disabled' : '').'>';
+            if (!empty($readonly)) $inputTmp = acym_tooltip($inputTmp, acym_translation('ACYM_CF_EDITION_BLOCKED'));
+            $return .= $inputTmp;
             if ($displayFront && !$cmsUser && !empty($this->config->get('email_spellcheck'))) {
                 $return .= '<ul acym-data-field="'.$uniqueId.'" class="acym_email_suggestions" style="display: none;"></ul>';
             }
@@ -451,12 +492,14 @@ class FieldClass extends acymClass
                 $defaultValue = $user->language;
             }
 
-            $return .= acym_select(
+            $selectTmp = acym_select(
                 $this->getLanguagesForDropdown(),
                 'user[language]',
                 empty($defaultValue) ? acym_getLanguageTag() : $defaultValue,
-                'class="acym__select"'.$style.$required
+                'class="acym__select"'.$style.$required.$readonly
             );
+            if (!empty($readonly)) $selectTmp = acym_tooltip($selectTmp, acym_translation('ACYM_CF_EDITION_BLOCKED'));
+            $return .= $selectTmp;
         } elseif ($field->type === 'text') {
             $return .= '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.' type="text">';
         } elseif ($field->type === 'textarea') {
@@ -522,10 +565,19 @@ class FieldClass extends acymClass
 
             $return .= acym_selectMultiple($valuesArray, $name, empty($defaultValue) ? [] : $defaultValue, $attributes);
         } elseif ($field->type === 'date') {
-            $defaultValue = is_array($defaultValue) ? implode('/', $defaultValue) : $defaultValue;
-            $attributes = 'class="acym__custom__fields__select__form acym__select" acym-field-type="date" ';
-            if ($field->required) $attributes .= $required;
-            $return .= acym_displayDateFormat($field->option->format, $name.'[]', $defaultValue, $attributes);
+            $attributes = [
+                'class' => 'acym__custom__fields__select__form acym__select',
+                'acym-field-type' => 'date',
+            ];
+            if (!empty($required)) {
+                $attributes['data-required'] = $requiredJson;
+            }
+            $return .= acym_displayDateFormat(
+                $field->option->format,
+                $name.'[]',
+                $defaultValue,
+                $attributes
+            );
         } elseif ($field->type === 'file') {
             $defaultValue = is_array($defaultValue) ? $defaultValue[0] : $defaultValue;
             if ($displayFront) {
@@ -631,12 +683,9 @@ class FieldClass extends acymClass
             $dataLanguages[] = $oneLanguage;
         }
 
-        usort(
-            $dataLanguages,
-            function ($a, $b) {
-                return strtolower($a->text) > strtolower($b->text) ? 1 : -1;
-            }
-        );
+        usort($dataLanguages, function ($a, $b) {
+            return strtolower($a->text) > strtolower($b->text) ? 1 : -1;
+        });
 
         return $dataLanguages;
     }

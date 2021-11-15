@@ -32,6 +32,8 @@ class plgAcymMailgun extends acymPlugin
             'us' => acym_translation('ACYM_US'),
             'eu' => acym_translation('ACYM_EU'),
         ];
+        $defaultDomain = empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_domain']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_domain']->value;
+        $defaultApiKey = empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value;
         ob_start();
         ?>
 		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
@@ -58,7 +60,7 @@ class plgAcymMailgun extends acymPlugin
 				</label>
 				<input type="text"
 					   id="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-domain"
-					   value="<?php echo empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_domain']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_domain']->value; ?>"
+					   value="<?php echo empty($defaultDomain) ? $this->config->get(self::SENDING_METHOD_ID.'_api_domain') : $defaultDomain; ?>"
 					   name="config[<?php echo self::SENDING_METHOD_ID; ?>_api_domain]"
 					   class="cell acym__configuration__mail__settings__text">
 			</div>
@@ -72,7 +74,7 @@ class plgAcymMailgun extends acymPlugin
                 <?php echo $this->getLinks('https://signup.mailgun.com/new/signup', 'https://www.mailgun.com/pricing/'); ?>
 				<input type="text"
 					   id="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-key"
-					   value="<?php echo empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value; ?>"
+					   value="<?php echo empty($defaultApiKey) ? $this->config->get(self::SENDING_METHOD_ID.'_api_key') : $defaultApiKey; ?>"
 					   name="config[<?php echo self::SENDING_METHOD_ID; ?>_api_key]"
 					   class="cell acym__configuration__mail__settings__text">
                 <?php echo $this->getTestCredentialsSendingMethodButton(self::SENDING_METHOD_ID); ?>

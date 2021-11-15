@@ -25,6 +25,7 @@ class plgAcymPostmark extends acymPlugin
 
     public function onAcymGetSendingMethodsHtmlSetting(&$data)
     {
+    	$defaultApiKey = empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value;
         ob_start();
         ?>
 		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
@@ -38,7 +39,7 @@ class plgAcymPostmark extends acymPlugin
                 <?php echo $this->getLinks('https://account.postmarkapp.com/sign_up', 'https://postmarkapp.com/pricing'); ?>
 				<input type="text"
 					   id="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-key"
-					   value="<?php echo empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value; ?>"
+					   value="<?php echo empty($defaultApiKey) ? $this->config->get(self::SENDING_METHOD_ID.'_api_key') : $defaultApiKey; ?>"
 					   name="config[<?php echo self::SENDING_METHOD_ID; ?>_api_key]"
 					   class="cell margin-right-1 acym__configuration__mail__settings__text">
                 <?php echo $this->getTestCredentialsSendingMethodButton(self::SENDING_METHOD_ID); ?>

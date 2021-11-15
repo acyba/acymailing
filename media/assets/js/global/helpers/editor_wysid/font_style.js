@@ -161,7 +161,7 @@ const acym_editorWysidFontStyle = {
         });
     },
     setSocialIconImport: function () {
-        let allSocialIcons = JSON.parse(jQuery('#acym__mail__edit__editor__social__icons').val());
+        let allSocialIcons = acym_helper.parseJson(jQuery('#acym__mail__edit__editor__social__icons').val());
         if (undefined === allSocialIcons) return;
 
         jQuery.each(Object.keys(allSocialIcons), function (index, value) {
@@ -213,24 +213,22 @@ const acym_editorWysidFontStyle = {
                 type: 'post',
                 success: function (res) {
                     res = acym_helper.parseJson(res);
-                    if (res.type !== undefined) {
-                        if (res.type === 'success') {
-                            let img = jQuery('img').filter('[src^="' + res.url + '"]');
-                            let finalUrl = res.url + '.' + res.extension;
+                    if (!res.error) {
+                        let img = jQuery('img').filter('[src^="' + res.data.url + '"]');
+                        let finalUrl = res.data.url + '.' + res.data.extension;
 
-                            jQuery.each(img, function () {
-                                let d = new Date();
-                                jQuery(this).removeAttr('src').attr('src', finalUrl + '?d=' + d.getTime());
-                            });
-                            acym_helperEditorWysid.socialMedia[whichIcon].src = finalUrl;
-                        }
-
-                        $input.val('').trigger('change');
-                        acym_editorWysidNotifications.addEditorNotification({
-                            'message': res.message,
-                            'level': res.type
+                        jQuery.each(img, function () {
+                            let d = new Date();
+                            jQuery(this).removeAttr('src').attr('src', finalUrl + '?d=' + d.getTime());
                         });
+                        acym_helperEditorWysid.socialMedia[whichIcon].src = finalUrl;
                     }
+
+                    $input.val('').trigger('change');
+                    acym_editorWysidNotifications.addEditorNotification({
+                        'message': res.message,
+                        'level': res.error ? 'error' : 'success'
+                    });
                 }
             });
         });

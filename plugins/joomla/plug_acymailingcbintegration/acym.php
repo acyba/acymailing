@@ -326,12 +326,14 @@ class getAcymTab extends cbTabHandler
         if (empty($acyUser->id)) return;
 
         if (!empty($postdata['acymcb']['list'])) {
+            $currentSubscriptions = $userClass->getSubscriptionStatus($acyUser->id);
+
             $addLists = [];
             $unsubLists = [];
             foreach ($postdata['acymcb']['list'] as $listID => $status) {
                 if ('1' === $status) {
                     $addLists[] = $listID;
-                } else {
+                } elseif (!empty($currentSubscriptions[$listID]->status)) {
                     $unsubLists[] = $listID;
                 }
             }

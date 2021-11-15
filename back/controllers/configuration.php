@@ -7,6 +7,7 @@ use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Classes\UrlClass;
+use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\EncodingHelper;
 use AcyMailing\Helpers\ExportHelper;
 use AcyMailing\Helpers\HeaderHelper;
@@ -59,10 +60,13 @@ class ConfigurationController extends acymController
 
     private function checkConfigMail()
     {
+        $queueType = $this->config->get('queue_type');
         $batchesNumber = $this->config->get('queue_batch_auto', 1);
         $emailsPerBatch = $this->config->get('queue_nbmail_auto', 70);
         $cronFrequency = $this->config->get('cron_frequency', 900);
-        if ($batchesNumber > 4 || $emailsPerBatch > 300 || $cronFrequency < 300) acym_enqueueMessage(acym_translation('ACYM_SEND_CONFIGURATION_WARNING'), 'warning');
+        if ($queueType !== 'manual' && ($batchesNumber > 4 || $emailsPerBatch > 300 || $cronFrequency < 300)) {
+            acym_enqueueMessage(acym_translation('ACYM_SEND_CONFIGURATION_WARNING'), 'warning');
+        }
     }
 
     private function prepareMailSettings(&$data)
@@ -152,6 +156,13 @@ class ConfigurationController extends acymController
 
 
         $data['content_translation'] = acym_getTranslationTools();
+
+        $data['user_languages'] = array_merge(
+            [
+                (object)['language' => 'current_language', 'name' => acym_translation('ACYM_BROWSING_LANGUAGE')],
+            ],
+            $data['languages']
+        );
     }
 
     private function prepareLists(&$data)
@@ -225,7 +236,7 @@ class ConfigurationController extends acymController
     private function prepareSecurity(&$data)
     {
         $data['acychecker_installed'] = acym_isAcyCheckerInstalled();
-        $data['acychecker_get_link'] = ACYM_ACYMAILLING_WEBSITE.'acychecker_pricing?utm_source=acymailing_plugin&utm_campaign=purchase_acychecker_license&utm_medium=button_configuration_security';
+        $data['acychecker_get_link'] = ACYM_ACYCHECKER_WEBSITE.'?utm_source=acymailing_plugin&utm_campaign=get_acychecker&utm_medium=button_configuration_security';
     }
 
     private function prepareDataTab(&$data)
@@ -523,6 +534,13 @@ class ConfigurationController extends acymController
             }
         }
 
+        // Add a key for users that don't have one
+        $userClass = new UserClass();
+        $addedKeys = $userClass->addMissingKeys();
+        if (!empty($addedKeys)) {
+            $messagesNoHtml[] = ['error' => false, 'color' => 'green', 'msg' => acym_translationSprintf('ACYM_CHECKDB_ADDED_KEYS', $addedKeys)];
+        }
+
         if ($returnMode == 'report') {
             return $messagesNoHtml;
         }
@@ -555,6 +573,18 @@ class ConfigurationController extends acymController
             $formData['replyto_name'] = $formData['from_name'];
             $formData['replyto_email'] = $formData['from_email'];
         }
+
+        if (empty($formData['mailer_wordwrap']) || $formData['mailer_wordwrap'] < 0) $formData['mailer_wordwrap'] = 0;
+        if ($formData['mailer_wordwrap'] > 998) $formData['mailer_wordwrap'] = 998;
+
+        //__START__demo_
+        if (!ACYM_PRODUCTION) {
+            $formData['wp_access'] = 'demo';
+            foreach ($formData as $index => $data) {
+                if (strpos($index, 'acl') !== false) unset($formData[$index]);
+            }
+        }
+        //__END__demo_
 
         // Handle reset select2 fields
         $select2Fields = [
@@ -718,11 +748,11 @@ class ConfigurationController extends acymController
         foreach ($tests as $port => $server) {
             $fp = @fsockopen($server, $port, $errno, $errstr, 5);
             if ($fp) {
-                echo '<span style="color:#3dea91" >'.acym_translationSprintf('ACYM_SMTP_AVAILABLE_PORT', $port).'</span><br />';
+                echo '<span style="color:#3dea91">'.acym_translationSprintf('ACYM_SMTP_AVAILABLE_PORT', $port).'</span><br />';
                 fclose($fp);
                 $total++;
             } else {
-                echo '<br /><span style="color:#ff5259" >'.acym_translationSprintf('ACYM_SMTP_NOT_AVAILABLE_PORT', $port, $errno.' - '.utf8_encode($errstr)).'</span>';
+                echo '<span style="color:#ff5259">'.acym_translationSprintf('ACYM_SMTP_NOT_AVAILABLE_PORT', $port, $errno.' - '.utf8_encode($errstr)).'</span><br />';
             }
         }
 
@@ -835,8 +865,7 @@ class ConfigurationController extends acymController
         $whichNotification = acym_getVar('string', 'id');
 
         if ($whichNotification != 0 && empty($whichNotification)) {
-            echo json_encode(['error' => acym_translation('ACYM_NOTIFICATION_NOT_FOUND')]);
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_NOTIFICATION_NOT_FOUND'), [], false);
         }
 
         if ('all' === $whichNotification) {
@@ -849,8 +878,7 @@ class ConfigurationController extends acymController
         }
         $helperHeader = new HeaderHelper();
 
-        echo json_encode(['data' => $helperHeader->getNotificationCenterInner($notifications)]);
-        exit;
+        acym_sendAjaxResponse('', ['html' => $helperHeader->getNotificationCenterInner($notifications)]);
     }
 
     public function markNotificationRead()
@@ -859,8 +887,7 @@ class ConfigurationController extends acymController
 
         $notifications = json_decode($this->config->get('notifications', '[]'), true);
         if (empty($notifications)) {
-            echo json_encode(['message' => 'done']);
-            exit;
+            acym_sendAjaxResponse('', []);
         }
 
         if (empty($which)) {
@@ -877,8 +904,7 @@ class ConfigurationController extends acymController
 
         $this->config->save(['notifications' => json_encode($notifications)]);
 
-        echo json_encode(['message' => 'done']);
-        exit;
+        acym_sendAjaxResponse('', []);
     }
 
     public function addNotification()
@@ -887,8 +913,7 @@ class ConfigurationController extends acymController
         $level = acym_getVar('string', 'level');
 
         if (empty($message) || empty($level)) {
-            echo json_encode(['error' => acym_translation('ACYM_ERROR')]);
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_ERROR'), [], false);
         }
 
         $helperHeader = new HeaderHelper();
@@ -901,8 +926,7 @@ class ConfigurationController extends acymController
 
         $helperHeader->addNotification($newNotification);
 
-        echo json_encode(['data' => $helperHeader->getNotificationCenter()]);
-        exit;
+        acym_sendAjaxResponse('', ['notificationCenter' => $helperHeader->getNotificationCenter()]);
     }
 
     public function getAjax()
@@ -913,12 +937,10 @@ class ConfigurationController extends acymController
         $res = $this->config->get($field, '');
 
         if (empty($res)) {
-            echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_LOAD_INFORMATION')]);
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_LOAD_INFORMATION'), [], false);
         } else {
-            echo json_encode(['data' => $res]);
+            acym_sendAjaxResponse('', ['value' => $res]);
         }
-
-        exit;
     }
 
     public function unlinkLicense()

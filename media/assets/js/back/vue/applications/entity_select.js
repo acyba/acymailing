@@ -91,12 +91,12 @@ function readyFunction($) {
                 entitySelectContainer.style.display = 'flex';
                 this.entity = entitySelectContainer.getAttribute('data-entity');
                 this.columnsToDisplay = entitySelectContainer.getAttribute('data-columns').split(',');
-                this.columnsClasses = JSON.parse(entitySelectContainer.getAttribute('data-columns-class'));
+                this.columnsClasses = acym_helper.parseJson(entitySelectContainer.getAttribute('data-columns-class'));
                 this.join = entitySelectContainer.getAttribute('data-join');
                 this.displaySelected = entitySelectContainer.getAttribute('data-display-selected') === 'true';
                 this.columnJoin = entitySelectContainer.getAttribute('data-column-join');
                 this.tableJoin = entitySelectContainer.getAttribute('data-table-join');
-                
+
                 //we load everything
                 this.getAllEntities(this.entity);
                 $(window).off('refreshEntitySelect').on('refreshEntitySelect', function () {
@@ -200,33 +200,29 @@ function readyFunction($) {
                         joinColumn = '&join_table=' + this.tableJoin + '.' + this.columnJoin;
                     }
                     let ctrl = ACYM_IS_ADMIN ? 'entitySelect' : 'frontentityselect';
-                    $.get(ACYM_AJAX_URL
-                          + '&ctrl='
-                          + ctrl
-                          + '&task=loadEntityFront&offset='
-                          + entityNumber
-                          + '&perCalls='
-                          + entityPerCalls
-                          + '&entity='
-                          + entity
-                          + '&join='
-                          + this.join
-                          + '&columns='
-                          + this.columnsToDisplay.join(',')
-                          + joinColumn, (res) => {
+
+                    let ajaxUrl = ACYM_AJAX_URL;
+                    ajaxUrl += '&ctrl=' + ctrl;
+                    ajaxUrl += '&task=loadEntityFront';
+                    ajaxUrl += '&offset=' + entityNumber;
+                    ajaxUrl += '&perCalls=' + entityPerCalls;
+                    ajaxUrl += '&entity=' + entity;
+                    ajaxUrl += '&join=' + this.join;
+                    ajaxUrl += '&columns=' + this.columnsToDisplay.join(',') + joinColumn;
+                    $.get(ajaxUrl, (res) => {
                         res = acym_helper.parseJson(res);
-                        if (undefined !== res.error) {
+                        if (res.error) {
                             console.log(res.error);
                             return false;
                         }
-                        numberOfEntities = res.data.total;
 
-                        if ('end' === res.data) {
+                        if ('end' === res.data.results.data) {
                             this.loading = false;
                             return true;
                         }
 
-                        this.handleEntities(res.data.elements);
+                        numberOfEntities = res.data.results.data.total;
+                        this.handleEntities(res.data.results.data.elements);
                         if (entityNumber > numberOfEntities) {
                             this.loading = false;
                             return true;

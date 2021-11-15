@@ -4,18 +4,8 @@ namespace AcyMailing\Init;
 
 use AcyMailing\Helpers\UpdateHelper;
 
-class acyActivation extends acyHook
+class acyActivation
 {
-    public function __construct()
-    {
-        $entryPoint = dirname(__DIR__).'/index.php';
-        // Install Acy DB and sample data on first activation (not installation because of FTP install)
-        register_activation_hook($entryPoint, [$this, 'install']);
-
-        // Add "settings" link for acym on plugins listing
-        add_filter('plugin_action_links_'.plugin_basename($entryPoint), [$this, 'addPluginLinks']);
-    }
-
     // Install DB and sample data
     public function install()
     {
@@ -106,7 +96,7 @@ class acyActivation extends acyHook
         // Only install the templates if it is the first install
         if (!$installClass->update) {
             $installClass->deleteNewSplashScreenInstall();
-            $updateHelper->installTemplates(true);
+            $updateHelper->installTemplates();
         } else {
             if (!empty($installClass->fromVersion)) {
                 $fromVersion = substr($installClass->fromVersion, 0, strrpos($installClass->fromVersion, '.'));
@@ -129,15 +119,4 @@ class acyActivation extends acyHook
         // Reload conf
         acym_config(true);
     }
-
-    // Add links on the plugins listing
-    public function addPluginLinks($links)
-    {
-        $settings_link = '<a href="admin.php?page='.ACYM_COMPONENT.'_configuration">'.__('Settings').'</a>';
-        $links = array_merge([$settings_link], $links);
-
-        return $links;
-    }
 }
-
-$acyActivation = new acyActivation();

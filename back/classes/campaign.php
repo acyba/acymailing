@@ -738,14 +738,14 @@ class CampaignClass extends acymClass
         }
 
         // If we want an archive for a specific user
-        if (isset($params['userId'])) {
+        if (isset($params['userId']) && !empty($params['displayUserListOnly'])) {
             $where .= 'AND userlist.user_id = '.intval($params['userId']).' ';
         }
 
         // If the user search for a newsletter
         if (isset($params['search'])) {
             $search = acym_escapeDB('%'.utf8_encode($params['search']).'%');
-            $where .= 'AND (mail.subject LIKE '.$search.' OR mail.name LIKE '.$search.')';
+            $where .= 'AND (mail.subject LIKE '.$search.' OR mail.body LIKE '.$search.')';
         }
 
         $query .= $where;

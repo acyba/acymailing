@@ -13,30 +13,21 @@ class FollowupsController extends acymController
 {
     public function getEmailsListing()
     {
-        $results = [
-            'type' => 'error',
-            'message' => '',
-            'data' => [],
-        ];
         $id = acym_getVar('int', 'id', 0);
         if (empty($id)) {
-            $results['message'] = acym_translation('ACYM_FOLLOWUP_NOT_FOUND');
-            echo json_encode($results);
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_FOLLOWUP_NOT_FOUND'), [], false);
         }
 
         $emailIds = $this->currentClass->getEmailsByIds($id);
-
         if (empty($emailIds)) {
-            $results['message'] = acym_translation('ACYM_NO_EMAIL_FOR_FOLLOWUP');
-            echo json_encode($results);
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_NO_EMAIL_FOR_FOLLOWUP'), [], false);
         }
 
         $mailClass = new MailClass();
         $mailStatClass = new MailStatClass();
         $campaignClass = new CampaignClass();
         $urlClickClass = new UrlClickClass();
+        $data = [];
         foreach ($emailIds as $oneMailId) {
             $mail = $mailClass->getOneById($oneMailId);
             if (empty($mail)) continue;
@@ -62,12 +53,10 @@ class FollowupsController extends acymController
                 $thisMailStats['income'] = round($stats->sale, 2).' '.$stats->currency;
             }
 
-            $results['data'][] = $thisMailStats;
+            $data[] = $thisMailStats;
         }
 
-        $results['type'] = 'success';
-        echo json_encode($results);
-        exit;
+        acym_sendAjaxResponse('', $data);
     }
 
     public function addQueueAjax()

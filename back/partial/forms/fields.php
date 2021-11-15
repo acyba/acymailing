@@ -1,12 +1,25 @@
 <div class="acym__subscription__form__fields">
     <?php
     include acym_getPartial('forms', 'recaptcha');
-    if ($form->lists_options['display_position'] == 'before') include acym_getPartial('forms', 'lists');
+    if ($form->lists_options['display_position'] == 'before') {
+        if ($form->type == 'popup' && !empty($form->message_options['text']) && $form->message_options['position'] == 'before-lists') {
+            echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+        }
+        include acym_getPartial('forms', 'lists');
+    }
+    if ($form->type == 'popup' && !empty($form->message_options['text']) && $form->message_options['position'] == 'before-fields') {
+        echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+    }
     foreach ($form->fields_options['displayed'] as $field) {
         $size = empty($field->option->size) ? '' : 'width:'.$field->option->size.'px';
         echo $form->fieldClass->displayField($field, $field->default_value, $size, $field->valuesArray, $form->fields_options['display_mode'] == 'outside', true);
     }
-    if ($form->lists_options['display_position'] == 'after') include acym_getPartial('forms', 'lists');
+    if ($form->lists_options['display_position'] == 'after') {
+        if ($form->type == 'popup' && !empty($form->message_options['text']) && $form->message_options['position'] == 'before-lists') {
+            echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+        }
+        include acym_getPartial('forms', 'lists');
+    }
     include acym_getPartial('forms', 'termspolicy');
     ?>
 	<style>

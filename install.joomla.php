@@ -38,7 +38,7 @@ function installAcym()
     // Only install the templates if it is the first install
     if (!$installClass->update) {
         $installClass->deleteNewSplashScreenInstall();
-        $updateHelper->installTemplates(true);
+        $updateHelper->installTemplates();
     } else {
         if (!empty($installClass->fromVersion)) {
             $fromVersion = substr($installClass->fromVersion, 0, strrpos($installClass->fromVersion, '.'));

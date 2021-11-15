@@ -221,6 +221,7 @@ class QueueController extends acymController
         $helperQueue->start = $alreadySent;
         $helperQueue->pause = $this->config->get('queue_pause');
         // ->Process will exit the current page if it needs to be continued
+        $helperQueue->fromManual = true;
         $helperQueue->process();
 
         //We should never be there... but if the user tries to resume the send process and the messages are not ready to be sent then it will land here...

@@ -99,14 +99,18 @@ class acymClass extends acymObject
 
         $pkey = $this->pkey;
 
-        if (empty($cloneElement->$pkey)) {
-            $status = acym_insertObject('#__acym_'.$this->table, $cloneElement);
-        } else {
-            $status = acym_updateObject('#__acym_'.$this->table, $cloneElement, $pkey);
+        try {
+            if (empty($cloneElement->$pkey)) {
+                $status = acym_insertObject('#__acym_'.$this->table, $cloneElement);
+            } else {
+                $status = acym_updateObject('#__acym_'.$this->table, $cloneElement, $pkey);
+            }
+        } catch (\Exception $e) {
+            $status = false;
         }
 
         if (!$status) {
-            $dbError = strip_tags(acym_getDBError());
+            $dbError = strip_tags(isset($e) ? $e->getMessage() : acym_getDBError());
             if (!empty($dbError)) {
                 if (strlen($dbError) > 203) $dbError = substr($dbError, 0, 200).'...';
                 $this->errors[] = $dbError;
@@ -137,7 +141,6 @@ class acymClass extends acymObject
         }
 
         acym_trigger('onAcymBefore'.ucfirst($this->table).'Delete', [&$elements]);
-        $this->logDeletion($elements);
 
         $query = 'DELETE FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE '.acym_secureDBColumn($column).' IN ('.implode(',', $escapedElements).')';
         $result = acym_query($query);
@@ -147,40 +150,6 @@ class acymClass extends acymObject
         acym_trigger('onAcymAfter'.ucfirst($this->table).'Delete', [&$elements]);
 
         return $result;
-    }
-
-    private function logDeletion($elements)
-    {
-        $report = [];
-        $currentUser = acym_currentUserEmail();
-        foreach ($elements as $oneElementId) {
-            if (empty($oneElementId)) continue;
-            $element = $this->getOneById($oneElementId);
-            if (empty($element) || empty($element->{$this->nameColumn})) continue;
-
-            $report[] = acym_translationSprintf(
-                'ACYM_ELEMENT_DELETED_LOG',
-                $this->table,
-                $element->{$this->nameColumn},
-                $currentUser
-            );
-        }
-
-        if (!empty($report)) {
-            ob_start();
-            acym_debug(false, false);
-            $report[] = str_replace(
-                ['<br/>', '<pre style="">string', '</pre>'],
-                ["\n", '', ''],
-                ob_get_clean()
-            );
-
-            acym_writeFile(
-                ACYM_ROOT.ACYM_UPLOAD_FOLDER.'logs'.DS.'deletion_logs_'.date('Y').'-'.date('m').'.txt',
-                implode("\n", $report)."\n",
-                FILE_APPEND
-            );
-        }
     }
 
     public function setActive($elements)

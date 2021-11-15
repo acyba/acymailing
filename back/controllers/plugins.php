@@ -123,8 +123,7 @@ class PluginsController extends acymController
     private function handleError($error, $ajax)
     {
         if ($ajax) {
-            echo json_encode(['error' => acym_translation($error)]);
-            exit;
+            acym_sendAjaxResponse(acym_translation($error), [], false);
         } else {
             return acym_translation($error);
         }
@@ -135,9 +134,7 @@ class PluginsController extends acymController
         $currentVersion = $this->config->get('version', '');
         $latestVersion = $this->config->get('latestversion', '');
         if (!version_compare($currentVersion, $latestVersion, '>=')) {
-            echo json_encode(['error' => acym_translation('ACYM_NEED_LATEST_VERSION_TO_DOWNLOAD')]);
-
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_NEED_LATEST_VERSION_TO_DOWNLOAD'), [], false);
         }
     }
 
@@ -159,12 +156,10 @@ class PluginsController extends acymController
 
         $id = $pluginClass->save($pluginToSave);
         if (!empty($id)) {
-            echo json_encode(['message' => acym_translation('ACYM_ADD_ON_SUCCESSFULLY_UPDATED')]);
+            acym_sendAjaxResponse(acym_translation('ACYM_ADD_ON_SUCCESSFULLY_UPDATED'));
         } else {
-            echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_UPDATE_ADD_ON')]);
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_UPDATE_ADD_ON'), [], false);
         }
-
-        exit;
     }
 
     public function download($ajax = true, $pluginFromUpdate = '')
@@ -211,8 +206,7 @@ class PluginsController extends acymController
         if (!empty($pluginToSave->id)) {
             //we send the success message
             if ($ajax) {
-                echo json_encode(['message' => acym_translation('ACYM_ADD_ON_SUCCESSFULLY_INSTALLED')]);
-                exit;
+                acym_sendAjaxResponse(acym_translation('ACYM_ADD_ON_SUCCESSFULLY_INSTALLED'));
             }
         } else {
             return $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
@@ -248,8 +242,7 @@ class PluginsController extends acymController
         $plugin = $pluginClass->getOneById($id);
 
         if (empty($plugin)) {
-            echo json_encode(['error' => acym_translation('ACYM_ADD_ON_NOT_FOUND')]);
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_ADD_ON_NOT_FOUND'), [], false);
         }
 
         $routePlugin = dirname(acym_getPluginPath($plugin->folder_name));
@@ -257,14 +250,10 @@ class PluginsController extends acymController
         if (file_exists($routePlugin)) {
             acym_deleteFolder($routePlugin);
             if ($pluginClass->delete($id)) {
-                echo json_encode(['message' => acym_translation('ACYM_ADD_ON_SUCCESSFULLY_DELETED')]);
-
-                exit;
+                acym_sendAjaxResponse(acym_translation('ACYM_ADD_ON_SUCCESSFULLY_DELETED'));
             }
         }
-        echo json_encode(['error' => acym_translation('ACYM_ADD_ON_NOT_FOUND')]);
-
-        exit;
+        acym_sendAjaxResponse(acym_translation('ACYM_ADD_ON_NOT_FOUND'), [], false);
     }
 
     public function toggleActivate()
@@ -276,20 +265,16 @@ class PluginsController extends acymController
 
 
         if (empty($plugin)) {
-            echo json_encode(['error' => acym_translation('ACYM_ADD_ON_NOT_FOUND')]);
-
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_ADD_ON_NOT_FOUND'), [], false);
         }
 
         $plugin->active = $plugin->active == 0 ? 1 : 0;
 
-        if ($pluginClass->save($plugin)) {
-            echo json_encode(['message' => 'ok', 'data' => json_encode($plugin)]);
-        } else {
-            echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_SAVE_ADD_ON')]);
+        if (!$pluginClass->save($plugin)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_SAVE_ADD_ON'), [], false);
         }
 
-        exit;
+        acym_sendAjaxResponse();
     }
 
     public function checkUpdates()
@@ -352,9 +337,8 @@ class PluginsController extends acymController
         $return['folderName'] = acym_getVar('string', 'plugin');
         $return['className'] = acym_getVar('string', 'plugin_class');
 
-        if (empty($return['folderName'] || $return['className'])) {
-            echo json_encode(['error' => acym_translation('ACYM_CUSTOM_VIEW_NOT_FOUND')]);
-            exit;
+        if (empty($return['folderName']) && empty($return['className'])) {
+            acym_sendAjaxResponse(acym_translation('ACYM_CUSTOM_VIEW_NOT_FOUND'), [], false);
         }
 
         return $return;
@@ -371,8 +355,7 @@ class PluginsController extends acymController
         if (file_exists($customLayoutPath)) $customView = acym_fileGetContent($customLayoutPath);
         if (empty($customView)) acym_trigger('getStandardStructure', [&$customView], $plugin['className']);
 
-        echo json_encode(['content' => $customView]);
-        exit;
+        acym_sendAjaxResponse('', ['content' => $customView]);
     }
 
     public function saveCustomViewPlugin()
@@ -385,8 +368,11 @@ class PluginsController extends acymController
 
         $result = acym_writeFile($customLayoutPath, $pluginCustomView);
 
-        echo json_encode(['message' => acym_translation($result ? 'ACYM_CUSTOM_VIEW_WELL_SAVED' : 'ACYM_CUSTOM_VIEW_SAVED_FAILED')]);
-        exit;
+        if ($result) {
+            acym_sendAjaxResponse(acym_translation('ACYM_CUSTOM_VIEW_WELL_SAVED'));
+        } else {
+            acym_sendAjaxResponse(acym_translation('ACYM_CUSTOM_VIEW_SAVED_FAILED'), [], false);
+        }
     }
 
     public function deleteCustomViewPlugin()
@@ -396,19 +382,12 @@ class PluginsController extends acymController
         $customLayoutPath = ACYM_CUSTOM_PLUGIN_LAYOUT.$plugin['folderName'].'.html';
 
         if (file_exists($customLayoutPath) && !acym_deleteFile($customLayoutPath)) {
-            echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_DELETE_CUSTOM_VIEW')]);
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_DELETE_CUSTOM_VIEW'), [], false);
         }
 
         $customView = '';
         acym_trigger('getStandardStructure', [&$customView], $plugin['className']);
 
-        echo json_encode(
-            [
-                'content' => $customView,
-                'message' => acym_translation('ACYM_CUSTOM_VIEW_WELL_DELETED'),
-            ]
-        );
-        exit;
+        acym_sendAjaxResponse(acym_translation('ACYM_CUSTOM_VIEW_WELL_DELETED'), ['content' => $customView]);
     }
 }

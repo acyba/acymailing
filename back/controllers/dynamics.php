@@ -43,7 +43,6 @@ class DynamicsController extends acymController
         $email->creator_id = acym_currentUserId();
         $email->thumbnail = '';
         $email->drag_editor = '1';
-        $email->library = '0';
         $email->type = $mailClass::TYPE_STANDARD;
         $email->settings = '';
         $email->stylesheet = '';
@@ -74,8 +73,13 @@ class DynamicsController extends acymController
 
         @acym_trigger('replaceUserInformation', [&$email, &$user, false]);
 
-        echo json_encode(['content' => $email->body]);
-        exit;
+        acym_sendAjaxResponse(
+            '',
+            [
+                'content' => $email->body,
+                'custom_view' => !empty($email->custom_view),
+            ]
+        );
     }
 
     public function trigger()

@@ -203,7 +203,7 @@ jQuery(document).ready(function ($) {
         $('select[name="fieldDB[database]"]').off('change').on('change', function () {
             let ajaxUrl = ACYM_AJAX_URL + '&ctrl=fields&task=getTables&database=' + $(this).val();
             $.post(ajaxUrl, function (response) {
-                let tables = JSON.parse(response);
+                let tables = acym_helper.parseJson(response);
                 $('select[name="fieldDB[table]"]').html('');
                 for (let i = 0 ; i < tables.length ; i++) {
                     $('select[name="fieldDB[table]"]').append('<option value="' + tables[i] + '">' + tables[i] + '</option>');
@@ -213,7 +213,7 @@ jQuery(document).ready(function ($) {
         $('select[name="fieldDB[table]"]').off('change').on('change', function () {
             let ajaxUrl = ACYM_AJAX_URL + '&ctrl=fields&task=setColumns&table=' + $(this).val() + '&database=' + $('select[name="fieldDB[database]"]').val();
             $.post(ajaxUrl, function (response) {
-                let columns = JSON.parse(response);
+                let columns = acym_helper.parseJson(response);
                 $('.acym__fields__database__columns').html('');
                 for (let i = 0 ; i < columns.length ; i++) {
                     let column = columns[i];

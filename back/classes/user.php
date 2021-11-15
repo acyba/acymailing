@@ -83,7 +83,7 @@ class UserClass extends acymClass
         // This line warns the database that a big query is about to be ran
         acym_query('SET SQL_BIG_SELECTS=1');
         // The beginning of $query can be modified in handleSearchFilter, don't move the SELECT up
-        $results['elements'] = acym_loadObjectList('SELECT '.$query, '', $settings['offset'], $settings['elementsPerPage']);
+        $results['elements'] = acym_loadObjectList('SELECT DISTINCT '.$query, '', $settings['offset'], $settings['elementsPerPage']);
         $results['total'] = acym_loadResult($queryCount);
 
         // Get CMS username separately if needed
@@ -613,7 +613,6 @@ class UserClass extends acymClass
                 $subscription->list_id = $oneListId;
                 $subscription->status = 0;
                 $subscription->unsubscribe_date = date('Y-m-d H:i:s', time());
-
                 if (empty($currentSubscription[$oneListId])) {
                     // The user isn't already subscribed, we unsubscribe him directly
                     acym_insertObject('#__acym_user_has_list', $subscription);
@@ -635,7 +634,7 @@ class UserClass extends acymClass
 
             $historyClass = new HistoryClass();
             $historyData = acym_translationSprintf('ACYM_LISTS_NUMBERS', implode(', ', $lists));
-            $historyClass->insert($userId, 'unsubscribed', [$historyData]);
+            $historyClass->insert($userId, 'unsubscribed', [$historyData], 0, acym_getVar('string', 'unsubscribe_reason'));
 
             acym_trigger('onAcymAfterUserUnsubscribe', [&$user, &$unsubscribedLists]);
 
@@ -646,11 +645,7 @@ class UserClass extends acymClass
                     $currentList = $listClass->getOneById($oneListId);
                     $unsubscribedLists[$i] = $currentList->name;
                 }
-                $this->sendNotification(
-                    $user->id,
-                    'acy_notification_unsub',
-                    ['lists' => implode(', ', $unsubscribedLists)]
-                );
+                $this->sendNotification($user->id, 'acy_notification_unsub', ['lists' => implode(', ', $unsubscribedLists)]);
             }
         }
 
@@ -750,9 +745,19 @@ class UserClass extends acymClass
         if (empty($user->id)) {
             if (!isset($user->active)) $user->active = 1;
 
-            if (empty($user->language) && acym_isMultilingual()) {
-                if (!acym_isAdmin()) $cmsUserLanguage = acym_getCmsUserLanguage();
-                $user->language = empty($cmsUserLanguage) ? acym_getLanguageTag() : $cmsUserLanguage;
+            if (empty($user->language)) {
+                // Take the user account's language
+                if (!acym_isAdmin()) {
+                    $cmsUserLanguage = acym_getCmsUserLanguage();
+                }
+
+                if (!empty($cmsUserLanguage)) {
+                    $user->language = $cmsUserLanguage;
+                } elseif (acym_isMultilingual()) {
+                    // Take the configuration's language
+                    $configUserLanguage = $this->config->get('multilingual_user_default', 'current_language');
+                    $user->language = $configUserLanguage === 'current_language' ? acym_getLanguageTag() : $configUserLanguage;
+                }
             }
 
             $currentUserid = acym_currentUserId();
@@ -1046,10 +1051,16 @@ class UserClass extends acymClass
         $query = 'UPDATE `#__acym_user`';
         $query .= ' SET `confirmed` = 1, `confirmation_date` = '.acym_escapeDB($confirmDate).', `confirmation_ip` = '.acym_escapeDB($ip);
         $query .= ' WHERE `id` = '.intval($userId).' LIMIT 1';
-        $res = acym_query($query);
+
+        try {
+            $res = acym_query($query);
+        } catch (\Exception $e) {
+            $res = false;
+        }
         if ($res === false) {
+            $errorMessage = isset($e) ? $e->getMessage() : acym_getDBError();
             // If there is an error we definitely want to warn the user about it.
-            $msg = acym_translation('ACYM_CONTACT_ADMIN_ERROR').'<br />'.substr(strip_tags(acym_getDBError()), 0, 200).'...';
+            $msg = acym_translation('ACYM_CONTACT_ADMIN_ERROR').'<br />'.substr(strip_tags($errorMessage), 0, 200).'...';
             acym_display($msg, 'error');
             exit;
         }
@@ -1059,6 +1070,8 @@ class UserClass extends acymClass
 
         $historyClass = new HistoryClass();
         $historyClass->insert($userId, 'confirmed');
+
+        if (empty($this->config->get('require_confirmation', 1))) return;
 
         $listIDs = acym_loadResultArray('SELECT `list_id` FROM `#__acym_user_has_list` WHERE `status` = 1 AND `user_id` = '.intval($userId));
 
@@ -1229,7 +1242,7 @@ class UserClass extends acymClass
             $cmsUser->source = $source;
         }
 
-        $isnew = (bool)($isnew || empty($cmsUser->id));
+        $isnew = $isnew || empty($cmsUser->id);
 
         $id = $this->save($cmsUser);
 
@@ -1445,5 +1458,15 @@ class UserClass extends acymClass
         }
 
         return true;
+    }
+
+    public function addMissingKeys()
+    {
+        $usersMissingKey = acym_loadResultArray('SELECT `id` FROM #__acym_user WHERE `key` IS NULL');
+        foreach ($usersMissingKey as $oneUserId) {
+            acym_query('UPDATE #__acym_user SET `key` = '.acym_escapeDB(acym_generateKey(14)).' WHERE `id` = '.intval($oneUserId));
+        }
+
+        return count($usersMissingKey);
     }
 }

@@ -406,19 +406,14 @@ class plgAcymWoocommerce extends acymPlugin
                 <?php echo acym_translation('ACYM_CATEGORY_FILTER').acym_info('ACYM_CATEGORY_FILTER_DESC'); ?>
 			</label>
 			<div class="cell medium-6 acym__woocommerce__<?php echo $partId; ?>__cat__container">
-                <?php echo acym_selectMultiple(
-                    $this->catvalues,
-                    'cat',
-                    $selectedArea,
-                    [
+                <?php echo acym_selectMultiple($this->catvalues, 'cat', $selectedArea, [
                         'id' => 'acym__woocommerce__'.$partId.'__cat',
                         'onchange' => '_selectedRows'.$identifier.' = {}
                         				for(let option of this.options){
                         					if(option.selected) _selectedRows'.$identifier.'[option.value] = true;
                         				} 	
                         				updateDynamic'.$identifier.'();',
-                    ]
-                ); ?>
+                    ]); ?>
 			</div>
 		</div>
 		<script type="text/javascript">
@@ -992,15 +987,13 @@ class plgAcymWoocommerce extends acymPlugin
         $return = [];
         $search = acym_getVar('string', 'search', '');
 
-        $search_results = new WP_Query(
-            [
+        $search_results = new WP_Query([
                 's' => $search,
                 'post_status' => 'publish',
                 'ignore_sticky_posts' => 1,
                 'post_type' => 'product',
                 'posts_per_page' => 20,
-            ]
-        );
+            ]);
 
         if ($search_results->have_posts()) {
             while ($search_results->have_posts()) {
@@ -1077,12 +1070,10 @@ class plgAcymWoocommerce extends acymPlugin
         $conditions['user']['woopurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_BOUGHT').'</div>';
 
         $conditions['user']['woopurchased']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode(
-            [
+        $ajaxParams = json_encode([
                 'plugin' => 'plgAcymWoocommerce',
                 'trigger' => 'searchProduct',
-            ]
-        );
+            ]);
         $conditions['user']['woopurchased']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][woopurchased][product]',
@@ -1153,12 +1144,10 @@ class plgAcymWoocommerce extends acymPlugin
             $conditions['user']['woosubscription']->option .= '</div>';
 
             $conditions['user']['woosubscription']->option .= '<div class="intext_select_automation cell">';
-            $ajaxParams = json_encode(
-                [
+            $ajaxParams = json_encode([
                     'plugin' => 'plgAcymWoocommerce',
                     'trigger' => 'searchProduct',
-                ]
-            );
+                ]);
             $conditions['user']['woosubscription']->option .= acym_select(
                 [],
                 'acym_condition[conditions][__numor__][__numand__][woosubscription][product]',
@@ -1631,7 +1620,7 @@ class plgAcymWoocommerce extends acymPlugin
         add_action('woocommerce_checkout_order_processed', [$this, 'subscribeUserOnCheckoutWC'], 15, 3);
         if (acym_isTrackingSalesActive()) {
             add_action('woocommerce_payment_successful_result', [$this, 'trackingWoocommerce'], 10, 2);
-            add_action('init', [$this, 'trackingWoocommerceAddCookie']);
+            $this->trackingWoocommerceAddCookie();
         }
         add_action('woocommerce_order_status_changed', [$this, 'onWooCommerceOrderStatusChange'], 50, 4);
         add_filter('woocommerce_mail_callback_params', [$this, 'onWooCommerceEmailSend'], 10, 2);
@@ -1729,9 +1718,9 @@ class plgAcymWoocommerce extends acymPlugin
     /**
      * Subscribe user when the WooCommerce checkout is processed
      *
-     * @param $order_id    : WooCommerce order ID
+     * @param $order_id : WooCommerce order ID
      * @param $posted_data : All data WooCommerce will get from form on checkout process
-     * @param $order       : WooCommerce order
+     * @param $order : WooCommerce order
      */
     public function subscribeUserOnCheckoutWC($order_id, $posted_data, $order)
     {
@@ -1894,14 +1883,11 @@ class plgAcymWoocommerce extends acymPlugin
         $followupClass->addFollowupEmailsQueue(self::FOLLOWTRIGGER, $acyUser->id, $params);
 
         $automationClass = new AutomationClass();
-        $automationClass->trigger(
-            'woocommerce_order_change',
-            [
+        $automationClass->trigger('woocommerce_order_change', [
                 'userId' => $acyUser->id,
                 'statusFrom' => $statusFrom,
                 'statusTo' => $statusTo,
-            ]
-        );
+            ]);
     }
 
     public function getNewEmailsTypeBlock(&$extraBlocks)
@@ -2062,12 +2048,10 @@ class plgAcymWoocommerce extends acymPlugin
     {
         if ($trigger == self::FOLLOWTRIGGER) {
             $woocommerceOrderStatus = $this->getOrderStatuses();
-            $multiselectOrderStatus = acym_selectMultiple(
-                $woocommerceOrderStatus,
+            $multiselectOrderStatus = acym_selectMultiple($woocommerceOrderStatus,
                 'followup[condition][order_status]',
                 !empty($followup->condition) && $followup->condition['order_status'] ? $followup->condition['order_status'] : [],
-                ['class' => 'acym__select']
-            );
+                ['class' => 'acym__select']);
             $multiselectOrderStatus = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectOrderStatus.'</span>';
             $statusOrderStatus = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
                     $statusArray,
@@ -2078,12 +2062,10 @@ class plgAcymWoocommerce extends acymPlugin
             $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
 
-            $ajaxParams = json_encode(
-                [
+            $ajaxParams = json_encode([
                     'plugin' => 'plgAcymWoocommerce',
                     'trigger' => 'searchProduct',
-                ]
-            );
+                ]);
             $parametersProductSelect = [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-params' => acym_escape($ajaxParams),
@@ -2105,12 +2087,10 @@ class plgAcymWoocommerce extends acymPlugin
                 ).'</span>';;
             $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
-            $ajaxParams = json_encode(
-                [
+            $ajaxParams = json_encode([
                     'plugin' => 'plgAcymWoocommerce',
                     'trigger' => 'searchCat',
-                ]
-            );
+                ]);
             $parametersCategoriesSelect = [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-params' => acym_escape($ajaxParams),
@@ -2227,7 +2207,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-new_order',
                 'base_subject' => [
-                    __('[{site_title}]: New order #{order_number}', 'woocommerce'),
+                    '[{site_title}]: New order #{order_number}',
                 ],
                 'base_body' => '',
                 'new_subject' => '[{param1}]: New order #{param2}',
@@ -2244,7 +2224,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_completed_order',
                 'base_subject' => [
-                    __('Your {site_title} order is now complete', 'woocommerce'),
+                    'Your {site_title} order is now complete',
                 ],
                 'base_body' => '',
                 'new_subject' => 'Your {param1} order is now complete',
@@ -2263,7 +2243,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_on_hold_order',
                 'base_subject' => [
-                    __('Your {site_title} order has been received!', 'woocommerce'),
+                    'Your {site_title} order has been received!',
                 ],
                 'base_body' => '',
                 'new_subject' => 'Your {param1} order has been received!',
@@ -2282,7 +2262,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_invoice',
                 'base_subject' => [
-                    __('Invoice for order #{order_number} on {site_title}', 'woocommerce'),
+                    'Invoice for order #{order_number} on {site_title}',
                 ],
                 'base_body' => '',
                 'new_subject' => 'Invoice for order #{param1} on {param2}',
@@ -2301,7 +2281,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_processing_order',
                 'base_subject' => [
-                    __('Your {site_title} order has been received!', 'woocommerce'),
+                    'Your {site_title} order has been received!',
                 ],
                 'base_body' => '',
                 'new_subject' => 'Your {param1} order has been received!',
@@ -2320,7 +2300,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_refunded_order',
                 'base_subject' => [
-                    __('Your {site_title} order #{order_number} has been refunded', 'woocommerce'),
+                    'Your {site_title} order #{order_number} has been refunded',
                 ],
                 'base_body' => '',
                 'new_subject' => 'Your {param1} order #{param2} has been refunded',
@@ -2339,7 +2319,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-failed_order',
                 'base_subject' => [
-                    __('[{site_title}]: Order #{order_number} has failed', 'woocommerce'),
+                    '[{site_title}]: Order #{order_number} has failed',
                 ],
                 'base_body' => '',
                 'new_subject' => '[{param1}]: Order #{param2} has failed',
@@ -2356,7 +2336,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-cancelled_order',
                 'base_subject' => [
-                    __('[{site_title}]: Order #{order_number} has been cancelled', 'woocommerce'),
+                    '[{site_title}]: Order #{order_number} has been cancelled',
                 ],
                 'base_body' => '',
                 'new_subject' => '[{param1}]: Order #{param2} has been cancelled',
@@ -2373,7 +2353,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_reset_password',
                 'base_subject' => [
-                    __('Password Reset Request for {site_title}', 'woocommerce'),
+                    'Password Reset Request for {site_title}',
                 ],
                 'base_body' => '',
                 'new_subject' => 'Password Reset Request for {param1}',
@@ -2392,7 +2372,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_new_account',
                 'base_subject' => [
-                    __('Your {site_title} account has been created!', 'woocommerce'),
+                    'Your {site_title} account has been created!',
                 ],
                 'base_body' => '',
                 'new_subject' => 'Your {param1} account has been created!',
@@ -2407,7 +2387,7 @@ class plgAcymWoocommerce extends acymPlugin
             [
                 'name' => 'woo-customer_note',
                 'base_subject' => [
-                    __('Note added to your {site_title} order from {order_date}', 'woocommerce'),
+                    'Note added to your {site_title} order from {order_date}',
                 ],
                 'base_body' => '',
                 'new_subject' => 'Note added to your {param1} order from {param2}',

@@ -34,7 +34,7 @@ const acym_editorWysidNewContent = {
         content += '<div style="text-align: center" data-mce-style="text-align: center">';
         content += '<img class="acym__wysid__media__inserted" src="'
                    + ACYM_MEDIA_URL
-                   + 'images/default_image.png" title="image" alt="" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;"/>';
+                   + 'images/default_image.png" title="image" hspace="0" alt="" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;"/>';
         content += '</div>';
         content += '</div>';
         content += '</td>';
@@ -46,9 +46,9 @@ const acym_editorWysidNewContent = {
             acym_helperEditorWysid.setColumnRefreshUiWYSID();
             acym_editorWysidVersioning.setUndoAndAutoSave();
             setTimeout(() => {
-                $editor.find('p').click();
-                jQuery('#acym__wysid__right__toolbar__block__tab').click();
-            }, 200);
+                $editor.find('img').click();
+                document.querySelector('.acym__wysid__media__inserted--selected').click();
+            }, 500);
         });
     },
     addButtonWYSID: function (ui) {
@@ -72,13 +72,13 @@ const acym_editorWysidNewContent = {
         content += '<p class="acym__wysid__column__element__follow" style="text-align: center; cursor: pointer; padding: 0;margin: 0;">';
 
         content += '<a class="acym__wysid__column__element__follow__facebook" href="">';
-        content += '<img style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="'
+        content += '<img hspace="0" style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="'
                    + acym_helperEditorWysid.socialMedia.facebook.src
                    + '" width="40" alt="facebook">';
         content += '</a>';
 
         content += '<a class="acym__wysid__column__element__follow__twitter" href="">';
-        content += '<img style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="'
+        content += '<img hspace="0" style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="'
                    + acym_helperEditorWysid.socialMedia.twitter.src
                    + '"  width="40" alt="twitter">';
         content += '</a>';
@@ -136,7 +136,7 @@ const acym_editorWysidNewContent = {
         content += '<a style="display: inline-block" class="acym__wysid__column__element__share__social acym__wysid__column__element__share__facebook" href="'
                    + acym_helperEditorWysid.socialMedia.facebook.link
                    + '">';
-        content += '<img style="vertical-align: middle; width: 30px; display: inline; margin-right: 5px;" src="'
+        content += '<img hspace="0" style="vertical-align: middle; width: 30px; display: inline; margin-right: 5px;" src="'
                    + acym_helperEditorWysid.socialMedia.facebook.src
                    + '" alt="'
                    + acym_helperEditorWysid.socialMedia.facebook.src
@@ -149,7 +149,7 @@ const acym_editorWysidNewContent = {
         content += '<a style="display: inline-block" class="acym__wysid__column__element__share__social acym__wysid__column__element__share__twitter" href="'
                    + acym_helperEditorWysid.socialMedia.twitter.link
                    + '">';
-        content += '<img style="vertical-align: middle; width: 30px; display: inline; margin-right: 5px;" src="'
+        content += '<img hspace="0" style="vertical-align: middle; width: 30px; display: inline; margin-right: 5px;" src="'
                    + acym_helperEditorWysid.socialMedia.twitter.src
                    + '" alt="'
                    + acym_helperEditorWysid.socialMedia.twitter.src
@@ -169,7 +169,7 @@ const acym_editorWysidNewContent = {
     },
     setModalGiphyWYSID: function () {
         let content = '<div class="grid-container"><div class="cell grid-x align-center grid-padding-x">';
-        content += '<img class="cell" id="acym__wysid__modal__giphy--image" src="' + ACYM_MEDIA_URL + 'images/giphy.png" alt="">';
+        content += '<img hspace="0" class="cell" id="acym__wysid__modal__giphy--image" src="' + ACYM_MEDIA_URL + 'images/giphy.png" alt="">';
         content += '<div class="cell grid-x grid-margin-x"><input class="cell auto" type="text" id="acym__wysid__modal__giphy--search" placeholder="'
                    + ACYM_JS_TXT.ACYM_SEARCH_FOR_GIFS
                    + '">';

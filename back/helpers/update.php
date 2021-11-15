@@ -48,7 +48,7 @@ class UpdateHelper extends acymObject
         $query .= "(7, 'ACYM_BLOCKED_GOOGLE_GROUPS', 7, 'message *rejected *by *Google *Groups', '[\"body\"]', '[\"delete_message\"]', '[]', 1, 1, 0),";
         $query .= "(8, 'ACYM_MAILBOX_DOESNT_EXIST_1', 8, '(Invalid|no such|unknown|bad|des?activated|inactive|unrouteable) *(mail|destination|recipient|user|address|person)|bad-mailbox|inactive-mailbox|not listed in.{1,20}directory|RecipNotFound|(user|mailbox|address|recipients?|host|account|domain) *(is|has been)? *(error|disabled|failed|unknown|unavailable|not *(found|available)|.{1,30}inactiv)|no *mailbox *here|user does.?n.t have.{0,30}account', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
         $query .= "(9, 'ACYM_MESSAGE_BLOCKED_RECIPIENTS', 9, 'blocked *by|block *list|look(ed)? *like *spam|spam-related|spam *detected| CXBL | CDRBL | IPBL | URLBL |(unacceptable|banned|offensive|filtered|blocked|unsolicited) *(content|message|e?-?mail)|service refused|(status(-code)?|554) *(:|=)? *5.7.1|administratively *denied|blacklisted *IP|policy *reasons|rejected.{1,10}spam|junkmail *rejected|throttling *constraints|exceeded.{1,10}max.{1,40}hour|comply with required standards|421 RP-00|550 SC-00|550 DY-00|550 OU-00', '[\"body\"]', '{\"0\":\"delete_message\",\"1\":\"forward_message\",\"forward_to\":\"".$forwardEmail."\"}', '[]', 1, 1, 0),";
-        $query .= "(10, 'ACYM_MAILBOX_DOESNT_EXIST_2', 10, 'status(-code)? *(:|=)? *5.(1.[1-6]|0.0|4.[0123467])|recipient *address *rejected|does *not *like *recipient', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
+        $query .= "(10, 'ACYM_MAILBOX_DOESNT_EXIST_2', 10, 'status(-? ?code)? *(:|=)? *(550)? *5.(1.[1-6]|0.0|4.[0123467])|recipient *address *rejected|does *not *like *recipient|recipient *unknown *to *address', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
         $query .= "(11, 'ACYM_DOMAIN_NOT_EXIST', 11, 'No.{1,10}MX *(record|host)|host *does *not *receive *any *mail|bad-domain|connection.{1,10}mail.{1,20}fail|domain.{1,10}not *exist|fail.{1,10}establish *connection', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
         $query .= "(12, 'ACYM_TEMPORARY_FAILURES', 12, 'has.*been.*delayed|delayed *mail|message *delayed|message-expired|temporar(il)?y *(failure|unavailable|disable|offline|unable)|deferred|delayed *([0-9]*) *(hour|minut)|possible *mail *loop|too *many *hops|delivery *time *expired|Action: *delayed|status(-code)? *(:|=)? *4.4.6|will continue to be attempted|unable to deliver in.*Status: 4.4.7', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
         $query .= "(13, 'ACYM_FAILED_PERM', 13, 'failed *permanently|permanent.{1,20}(failure|error)|not *accepting *(any)? *mail|does *not *exist|no *valid *route|delivery *failure', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
@@ -85,7 +85,7 @@ class UpdateHelper extends acymObject
             $folder = '';
             $element = 'com_acym';
             $object->location .= '&component=acymailing&cms=joomla&level={__LEVEL__}';
-        }else{
+        } else {
             if (strpos($extension, 'mod_') === 0) {
                 $type = 'module';
                 $folder = '';
@@ -260,50 +260,28 @@ class UpdateHelper extends acymObject
         $fieldClass->insertLanguageField();
     }
 
-    public function installTemplates($checkBeforeInstall = false)
+    public function installTemplates()
     {
         $mailClass = new MailClass();
-
-        $defaultTemplatesFolder = ACYM_BACK.'templates'.DS;
-        $names = acym_getFolders($defaultTemplatesFolder);
-
-        $creationDate = acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false));
-        $currentUserId = acym_currentUserId();
         $installedTemplates = 0;
-        foreach ($names as $name) {
-            $templatePath = $defaultTemplatesFolder.$name.DS;
-            $mailName = str_replace('_', ' ', $name);
-            // If we want to check if already installed (for example: avoid double installation in install + migration)
-            if ($checkBeforeInstall) {
-                $oneMail = $mailClass->getOneByName($mailName, true);
-                if (!empty($oneMail)) continue;
+
+        $templates = acym_getFiles(ACYM_BACK.'templates'.DS, '.zip', false, true);
+        foreach ($templates as $oneTemplate) {
+            $templateName = substr($oneTemplate, strrpos($oneTemplate, DS) + 1);
+            $templateName = substr($templateName, 0, strrpos($templateName, '.'));
+
+            $oneMail = $mailClass->getOneByName($templateName, false, $mailClass::TYPE_TEMPLATE);
+            if (!empty($oneMail)) continue;
+
+            $templateFolder = $mailClass->extractTemplate($oneTemplate, false);
+            if (empty($templateFolder)) continue;
+
+            if ($mailClass->installExtractedTemplate($templateFolder)) {
+                $installedTemplates++;
             }
-
-            $tmplName = acym_escapeDB($mailName);
-            $thumbnail = acym_escapeDB($name.'.png');
-            $settings = acym_escapeDB(file_get_contents($templatePath.'settings.txt'));
-            if (file_exists($templatePath.'stylesheet.txt')) {
-                $stylesheet = acym_escapeDB(file_get_contents($templatePath.'stylesheet.txt'));
-            } else {
-                $stylesheet = '""';
-            }
-
-            $template = new \stdClass();
-            $template->body = str_replace(
-                '{acym_media}',
-                ACYM_IMAGES,
-                file_get_contents($templatePath.'content.txt')
-            );
-            $template = $mailClass->encode($template);
-
-            $query = 'INSERT INTO `#__acym_mail` (`name`, `creation_date`, `thumbnail`, `drag_editor`, `library`, `type`, `body`, `subject`, `from_name`, `from_email`, `reply_to_name`, `reply_to_email`, `bcc`, `settings`, `stylesheet`, `attachments`, `creator_id`) VALUES
-                     ('.$tmplName.', '.$creationDate.', '.$thumbnail.', 1, 1, '.acym_escapeDB($mailClass::TYPE_TEMPLATE).', '.acym_escapeDB(
-                    $template->body
-                ).', "", NULL, NULL, NULL, NULL, NULL, '.$settings.', '.$stylesheet.', NULL, '.$currentUserId.');';
-            acym_query($query);
-            $installedTemplates++;
         }
-        if ($installedTemplates == 0) {
+
+        if ($installedTemplates === 0) {
             acym_enqueueMessage(acym_translation('ACYM_DEFAULT_TEMPLATES_ALREADY_INSTALL'), 'info');
         }
     }
@@ -377,7 +355,6 @@ class UpdateHelper extends acymObject
 
         $mailAutomation = new \stdClass();
         $mailAutomation->type = $mailClass::TYPE_AUTOMATION;
-        $mailAutomation->library = 1;
         $mailAutomation->drag_editor = 1;
         $mailAutomation->creator_id = acym_currentUserId();
         $mailAutomation->creation_date = date('Y-m-d H:i:s', time());
@@ -600,7 +577,6 @@ class UpdateHelper extends acymObject
             foreach ($addNotif as $oneNotif) {
                 $notif = new \stdClass();
                 $notif->type = empty($oneNotif['type']) ? $mailClass::TYPE_NOTIFICATION : $oneNotif['type'];
-                $notif->library = 1;
                 $notif->settings = empty($oneNotif['settings']) ? '' : $oneNotif['settings'];
                 $notif->drag_editor = 1;
                 $notif->creator_id = acym_currentUserId();

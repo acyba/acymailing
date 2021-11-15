@@ -7,6 +7,7 @@ require_once ACYM_INC.'phpmailer'.DS.'smtp.php';
 require_once ACYM_INC.'phpmailer'.DS.'phpmailer.php';
 require_once ACYM_INC.'emogrifier.php';
 
+use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\OverrideClass;
 use AcyMailing\Classes\UrlClass;
@@ -82,6 +83,10 @@ class MailerHelper extends acyPHPMailer
         $this->Sender = $this->cleanText($this->config->get('bounce_email'));
         if (empty($this->Sender)) {
             $this->Sender = '';
+        }
+        $maxLineLength = $this->config->get('mailer_wordwrap', 0);
+        if (!empty($maxLineLength) && self::MAX_LINE_LENGTH > $maxLineLength) {
+            $this->WordWrap = $maxLineLength;
         }
 
         $externalSendingMethod = [];
@@ -478,8 +483,8 @@ class MailerHelper extends acyPHPMailer
         }
 
         global $acymLanguages;
-        if (!acym_isMultilingual() || $this->isTest) {
-            if (empty($this->defaultMail[$mailId])) $this->defaultMail[$mailId] = $mailClass->getOneByName($mailId, false, true);
+        if (!acym_isMultilingual()) {
+            if (empty($this->defaultMail[$mailId])) $this->defaultMail[$mailId] = $mailClass->getOneByName($mailId, true);
         } elseif (empty($this->overrideEmailToSend)) {
             $defaultLanguage = $this->config->get('multilingual_default', ACYM_DEFAULT_LANGUAGE);
             $mails = $mailClass->getMultilingualMails($mailId);
@@ -498,8 +503,7 @@ class MailerHelper extends acyPHPMailer
                 } else {
                     $key = $this->userLanguage;
                 }
-
-                $this->defaultMail[$mailId] = $mails[$key];
+                if (isset($mails[$key])) $this->defaultMail[$mailId] = $mails[$key];
             } else {
                 unset($this->defaultMail[$mailId]);
 
@@ -531,7 +535,6 @@ class MailerHelper extends acyPHPMailer
         }
 
         acym_trigger('replaceContent', [&$this->defaultMail[$mailId], true]);
-        if (!empty($acymLanguages['userLanguage'])) unset($acymLanguages['userLanguage']);
 
         $this->loadUrlAndStyle($mailId);
 
@@ -833,6 +836,7 @@ class MailerHelper extends acyPHPMailer
                 }
             }
         }
+        if (!empty($acymLanguages['userLanguage'])) unset($acymLanguages['userLanguage']);
 
         if ($this->config->get('multiple_part', false)) {
             $this->altbody = $this->textVersion($this->Body);
@@ -921,6 +925,8 @@ class MailerHelper extends acyPHPMailer
         if (strpos($trackingSystem, 'google') !== false) {
             $mailClass = new MailClass();
             $mail = $mailClass->getOneById($mailId);
+            $campaignClass = new CampaignClass();
+            $campaign = $campaignClass->getOneCampaignByMailId($mailId);
 
             $utmCampaign = acym_getAlias($mail->subject);
         }
@@ -1004,8 +1010,9 @@ class MailerHelper extends acyPHPMailer
             }
 
             if (strpos($url, 'utm_source') === false && strpos($trackingSystem, 'google') !== false) {
+                $idToUse = empty($campaign) ? $mailId : $campaign->id;
                 $args = [];
-                $args[] = 'utm_source=newsletter_'.$mailId;
+                $args[] = 'utm_source=newsletter_'.$idToUse;
                 $args[] = 'utm_medium=email';
                 $args[] = 'utm_campaign='.$utmCampaign;
                 //If we have an anchor we need to remove it and add it to the end of the url

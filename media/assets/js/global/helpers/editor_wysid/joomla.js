@@ -100,7 +100,7 @@ const acym_editorWysidJoomla = {
                            + acym_helper.escape(alt)
                            + '" title="'
                            + acym_helper.escape(title)
-                           + '"/>';
+                           + '" hspace="0"/>';
                 if (valueCaption !== undefined && valueCaption.length > 0) {
                     content += '<div class="acym__wysid__media_caption" '
                                + 'style="width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display:block;">'
@@ -166,7 +166,9 @@ const acym_editorWysidJoomla = {
             let valueCaption = $modalUi.contents().find('#f_caption').val();
             let imagesUrls = [];
             if (!acym_helper.empty(urlImg)) {
-                if (urlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER)) urlImg = ACYM_JOOMLA_MEDIA_IMAGE + urlImg;
+                if (urlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER) || urlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER_IMAGES)){
+                    urlImg = ACYM_JOOMLA_MEDIA_IMAGE + urlImg;
+                }
                 imagesUrls.push(urlImg);
             }
             acym_editorWysidJoomla.validateMediaSelection(rows, imagesUrls, altValue, valueTitle, valueCaption);

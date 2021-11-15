@@ -19,7 +19,7 @@ const acym_helperSelectionPage = {
                 document.querySelector(scrollElementSelector)
                         .scrollIntoView({
                             behavior: 'smooth',
-                            block: 'end'
+                            block: 'center'
                         });
             }
 

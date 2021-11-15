@@ -7,12 +7,12 @@ use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Libraries\acymParameter;
 
-class acyGutenberg extends acyHook
+class acyGutenberg
 {
     public function __construct()
     {
-        add_filter('block_categories', [$this, 'registerAcymCategory'], 1, 2);
-        add_action('init', [$this, 'registerBlock']);
+        add_filter('block_categories_all', [$this, 'registerAcymCategory'], 1, 2);
+        $this->registerBlock();
     }
 
     public function registerBlock()
@@ -158,9 +158,11 @@ class acyGutenberg extends acyHook
     {
         $params = new acymParameter($block_attributes);
 
-        return acym_renderForm($params);
+        return acym_renderForm(
+            $params,
+            ['disableButtons' => strpos(acym_currentURL(), 'block-renderer') !== false]
+        );
     }
-
 }
 
 $acyGutenberg = new acyGutenberg();

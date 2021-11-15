@@ -358,11 +358,30 @@ function acym_getFolders($path, $filter = '.', $recurse = false, $full = false, 
     return array_values($arr);
 }
 
+/**
+ * Returns an array of the file names contained in the passed folder. Doesn't return the folder names
+ *
+ * @param string   $path
+ * @param string   $filter  A regex for the file name
+ * @param bool     $recurse Should it get the file names in the contained folders?
+ * @param bool     $full    Returns the full file paths if true
+ * @param string[] $exclude
+ * @param string[] $excludefilter
+ * @param bool     $naturalSort
+ *
+ * @return array|false
+ */
 function acym_getFiles(
-    $path, $filter = '.', $recurse = false, $full = false, $exclude = ['.svn', 'CVS', '.DS_Store', '__MACOSX'], $excludefilter = [
-    '^\..*',
-    '.*~',
-], $naturalSort = false
+    $path,
+    $filter = '.',
+    $recurse = false,
+    $full = false,
+    $exclude = ['.svn', 'CVS', '.DS_Store', '__MACOSX'],
+    $excludefilter = [
+        '^\..*',
+        '.*~',
+    ],
+    $naturalSort = false
 ) {
     $path = acym_cleanPath($path);
 
@@ -404,7 +423,7 @@ function acym_getItems($path, $filter, $recurse, $full, $exclude, $excludefilter
                 ))) {
             continue;
         }
-        $fullpath = $path.'/'.$file;
+        $fullpath = rtrim($path, '/').'/'.$file;
 
         $isDir = is_dir($fullpath);
 

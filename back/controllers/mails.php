@@ -468,7 +468,8 @@ class MailsController extends acymController
 
             $mainLang = new \stdClass();
             $mainLang->code = $data['editor']->data['main_language'];
-            $mainLang->name = empty($allLanguages[$data['editor']->data['main_language']]) ? $data['editor']->data['main_language'] : $allLanguages[$data['editor']->data['main_language']]->name;
+            $mainLang->name = empty($allLanguages[$data['editor']->data['main_language']]) ? $data['editor']->data['main_language']
+                : $allLanguages[$data['editor']->data['main_language']]->name;
             $data['editor']->data['main_language'] = $mainLang;
             $mailClass = new MailClass();
             $mailId = empty($data['mail']->id) ? -1 : $data['mail']->id;
@@ -550,7 +551,6 @@ class MailsController extends acymController
         $mail->stylesheet = acym_getVar('string', $inputNameStylesheet, '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->headers = acym_getVar('string', 'editor_headers', '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->thumbnail = $fromAutomation ? '' : acym_getVar('string', 'editor_thumbnail', '', 'REQUEST', ACYM_ALLOWRAW);
-        $mail->library = 0;
         $mail->drag_editor = strpos($mail->body, 'acym__wysid__template') === false ? 0 : 1;
         if ($fromAutomation) $mail->type = $mailClass::TYPE_AUTOMATION;
         if (empty($mail->id)) {
@@ -804,7 +804,8 @@ class MailsController extends acymController
 
             $return .= '<img src="'.acym_escape(acym_getMailThumbnail($oneTemplate->thumbnail)).'" alt="template thumbnail"/>';
             if (!$automation || !empty($returnUrl)) $return .= '</a>';
-            $return .= '<div class="acym__templates__choose__ribbon '.($oneTemplate->drag_editor ? 'acyeditor' : 'htmleditor').'">'.($oneTemplate->drag_editor ? 'AcyEditor' : 'HTML Editor').'</div>';
+            $return .= '<div class="acym__templates__choose__ribbon '.($oneTemplate->drag_editor ? 'acyeditor' : 'htmleditor').'">'.($oneTemplate->drag_editor ? 'AcyEditor'
+                    : 'HTML Editor').'</div>';
 
             if (strlen($oneTemplate->name) > 55) {
                 $oneTemplate->name = substr($oneTemplate->name, 0, 50).'...';
@@ -895,9 +896,7 @@ class MailsController extends acymController
     public function sendTest()
     {
         $controller = acym_getVar('string', 'controller', 'mails');
-        $result = new \stdClass();
-        $result->level = 'info';
-        $result->message = '';
+        $level = 'info';
 
         $testNote = acym_getVar('string', 'test_note', '');
 
@@ -908,9 +907,7 @@ class MailsController extends acymController
             $campaignClass = new CampaignClass();
             $campaign = $campaignClass->getOneById($campaingId);
             if (empty($campaign)) {
-                echo json_encode(['level' => 'error', 'message' => acym_translation('ACYM_CAMPAIGN_NOT_FOUND')]);
-
-                exit;
+                acym_sendAjaxResponse('', ['level' => 'error', 'message' => acym_translation('ACYM_CAMPAIGN_NOT_FOUND')], false);
             }
 
             $mailId = $campaign->mail_id;
@@ -926,9 +923,7 @@ class MailsController extends acymController
         $mail = $mailClass->getOneById($mailId);
 
         if (empty($mail)) {
-            echo json_encode(['level' => 'error', 'message' => acym_translation('ACYM_EMAIL_NOT_FOUND')]);
-
-            exit;
+            acym_sendAjaxResponse('', ['level' => 'error', 'message' => acym_translation('ACYM_EMAIL_NOT_FOUND')], false);
         }
 
         $mailerHelper = new MailerHelper();
@@ -942,8 +937,7 @@ class MailsController extends acymController
         $testEmails = explode(',', acym_getVar('string', 'test_emails'));
         foreach ($testEmails as $oneAddress) {
             if (!$mailerHelper->sendOne($mail->id, $oneAddress, true, $testNote)) {
-                $result->level = 'error';
-                $result->timer = '';
+                $level = 'error';
             }
 
             if (!empty($mailerHelper->reportMessage)) {
@@ -951,9 +945,7 @@ class MailsController extends acymController
             }
         }
 
-        $result->message = implode('<br/>', $report);
-        echo json_encode($result);
-        exit;
+        acym_sendAjaxResponse('', ['level' => $level, 'message' => implode('<br/>', $report)], $level !== 'error');
     }
 
     public function setNewThumbnail()
@@ -975,8 +967,8 @@ class MailsController extends acymController
 
         acym_createFolder(ACYM_UPLOAD_FOLDER_THUMBNAIL);
         file_put_contents(ACYM_UPLOAD_FOLDER_THUMBNAIL.$file, base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $contentThumbnail)));
-        echo $file;
 
+        echo $file;
         exit;
     }
 
@@ -1009,13 +1001,7 @@ class MailsController extends acymController
         $socialName = acym_getVar('string', 'social', '');
         $socialMedias = acym_getSocialMedias();
         if (!in_array($socialName, $socialMedias)) {
-            echo json_encode(
-                [
-                    'type' => 'error',
-                    'message' => acym_translationSprintf('ACYM_UNKNOWN_SOCIAL', $socialName),
-                ]
-            );
-            exit;
+            acym_sendAjaxResponse(acym_translationSprintf('ACYM_UNKNOWN_SOCIAL', $socialName), [], false);
         }
         $extension = pathinfo($_FILES['file']['name']);
         $newPath = ACYM_UPLOAD_FOLDER.'socials'.DS.$socialName;
@@ -1029,13 +1015,7 @@ class MailsController extends acymController
         }
 
         if (!empty($errorMessage)) {
-            echo json_encode(
-                [
-                    'type' => 'error',
-                    'message' => $errorMessage,
-                ]
-            );
-            exit;
+            acym_sendAjaxResponse($errorMessage, [], false);
         }
 
         $newConfig = new \stdClass();
@@ -1048,15 +1028,13 @@ class MailsController extends acymController
         $newConfig->social_icons = json_encode($newConfig->social_icons);
         $this->config->save($newConfig);
 
-        echo json_encode(
+        acym_sendAjaxResponse(
+            acym_translation('ACYM_ICON_IMPORTED'),
             [
-                'type' => 'success',
-                'message' => acym_translation('ACYM_ICON_IMPORTED'),
                 'url' => $newImgWithoutExtension,
                 'extension' => $extension['extension'],
             ]
         );
-        exit;
     }
 
     public function deleteMailAutomation()
@@ -1065,8 +1043,6 @@ class MailsController extends acymController
         $mailId = acym_getVar('int', 'id', 0);
 
         if (!empty($mailId)) $mailClass->delete($mailId);
-
-
         exit;
     }
 
@@ -1079,15 +1055,13 @@ class MailsController extends acymController
         if (!empty($prevMail)) $mailClass->delete($prevMail);
 
         if (empty($mailId)) {
-            echo json_encode(['error' => acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_ID'))]);
-            exit;
+            acym_sendAjaxResponse(acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_ID')), [], false);
         }
 
         $mail = $mailClass->getOneById($mailId);
 
         if (empty($mail)) {
-            echo json_encode(['error' => acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_EMAIL'))]);
-            exit;
+            acym_sendAjaxResponse(acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_EMAIL')), [], false);
         }
 
         $newMail = new \stdClass();
@@ -1095,7 +1069,6 @@ class MailsController extends acymController
         $newMail->thumbnail = '';
         $newMail->type = $mailClass::TYPE_AUTOMATION;
         $newMail->drag_editor = $mail->drag_editor;
-        $newMail->library = 0;
         $newMail->body = $mail->body;
         $newMail->subject = $mail->subject;
         $newMail->from_name = $mail->from_name;
@@ -1112,25 +1085,26 @@ class MailsController extends acymController
         $newMail->id = $mailClass->save($newMail);
 
         if (empty($newMail->id)) {
-            echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_DUPLICATE_EMAIL')]);
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_DUPLICATE_EMAIL'), [], false);
         }
 
-        echo json_encode($newMail);
-        exit;
+        acym_sendAjaxResponse('', ['newMail' => $newMail]);
     }
 
     public function saveAjax()
     {
-        $return = $this->store(true);
-        echo json_encode(['error' => !$return ? acym_translation('ACYM_ERROR_SAVING') : '', 'data' => $return]);
-        exit;
+        $result = $this->store(true);
+        if ($result) {
+            acym_sendAjaxResponse('', ['result' => $result]);
+        } else {
+            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_SAVING'), [], false);
+        }
     }
 
     public function installDefaultTmpl()
     {
         $updateHelper = new UpdateHelper();
-        $updateHelper->installTemplates(true);
+        $updateHelper->installTemplates();
 
         $this->listing();
     }
@@ -1223,7 +1197,7 @@ class MailsController extends acymController
     public function saveAsTmplAjax()
     {
         $isWellSaved = $this->store(true);
-        acym_sendAjaxResponse($isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), $isWellSaved, $isWellSaved);
+        acym_sendAjaxResponse($isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), ['result' => $isWellSaved], $isWellSaved);
     }
 }
 

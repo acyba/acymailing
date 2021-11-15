@@ -30,6 +30,7 @@ class QueueHelper extends acymObject
     var $obend = 0;
     //type of emails we should send... news, followup, action
     var $emailtypes = [];
+    var $fromManual = false;
 
     public function __construct()
     {
@@ -186,7 +187,8 @@ class QueueHelper extends acymObject
         }
 
         $mailIds = [];
-        $emailFrequency = $this->config->get('email_frequency', 0);
+        $emailFrequency = $this->fromManual ? 0 : $this->config->get('email_frequency', 0);
+
         foreach ($queueElements as $oneQueue) {
             if (!in_array($oneQueue->mail_id, $mailIds)) $mailIds[] = $oneQueue->mail_id;
             if (!empty($emailFrequency) && intval($emailFrequency) > 0) sleep(intval($emailFrequency));
@@ -202,6 +204,7 @@ class QueueHelper extends acymObject
                 }
             }
 
+            $this->triggerSentHook($oneQueue->mail_id);
             $result = $mailHelper->sendOne($oneQueue->mail_id, $oneQueue->user_id);
 
             $queueDeleteOk = true;
@@ -341,6 +344,15 @@ class QueueHelper extends acymObject
         }
 
         return true;
+    }
+
+    private function triggerSentHook($mailId)
+    {
+        static $triggered = [];
+        if (!empty($triggered[$mailId])) return;
+
+        $triggered[$mailId] = true;
+        acym_triggerCmsHook('onAcymSendMail', [$mailId]);
     }
 
     /**

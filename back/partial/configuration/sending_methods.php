@@ -1,18 +1,14 @@
 <div class="cell grid-x acym__sending__methods__choose acym__selection">
 	<div class="cell grid-x grid-margin-x grid-margin-y acym__sending__methods__choose__selection <?php echo !empty($data['step']) && $data['step'] == 'phpmail' ? 'align-center' : ''; ?>">
         <?php
-        uksort(
-            $data['sendingMethods'],
-            function ($first, $next) {
-                if ($first === 'sendinblue') return -1;
+        uksort($data['sendingMethods'], function ($first, $next) {
+            if ($first === 'sendinblue') return -1;
 
-                return $first !== 'phpmail' || $next === 'sendinblue' ? 1 : -1;
-            }
-        );
+            return $first !== 'phpmail' || $next === 'sendinblue' ? 1 : -1;
+        });
 
         foreach ($data['sendingMethods'] as $key => $sendingMethod) {
-            ?>
-            <?php $selected = isset($sendingMethod['selected']) && $sendingMethod['selected'];
+            $selected = isset($sendingMethod['selected']) && $sendingMethod['selected'];
             $class = !empty($sendingMethod['premium']) ? 'acym__sending__methods__one__premium' : '';
             $class .= empty($data['step']) ? ' acym__sending__methods__one__config' : '';
             $name = !empty($sendingMethod['premium']) ? $sendingMethod['name'].' <br>('.acym_translation('ACYM_OUR_PARTNER').')' : $sendingMethod['name'];

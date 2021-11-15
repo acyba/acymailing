@@ -124,16 +124,16 @@ const acym_helperModal = {
             ajaxUrl += '&previousId=' + $actionContainer.find('[name$="[mail_id]"]').val();
 
             jQuery.post(ajaxUrl, function (res) {
-                let mail = acym_helper.parseJson(res, {'error': acym_helper.sprintf(ACYM_JS_TXT.ACYM_NOT_FOUND, ACYM_JS_TXT.ACYM_EMAIL)});
-                if (undefined !== mail.error) {
-                    alert(mail.error);
+                res = acym_helper.parseJson(res, {'error': true, 'message': acym_helper.sprintf(ACYM_JS_TXT.ACYM_NOT_FOUND, ACYM_JS_TXT.ACYM_EMAIL)});
+                if (res.error) {
+                    alert(res.message);
                     return false;
                 }
 
                 $actionContainer.find('.acym__automation__action__mail__name')
-                                .html(mail.name
+                                .html(res.data.newMail.name
                                       + '<i class="cursor-pointer acymicon-close acym__color__red acym__automation__action__reset__mail margin-left-1"></i>');
-                $actionContainer.find('[name$="[mail_id]"]').val(mail.id);
+                $actionContainer.find('[name$="[mail_id]"]').val(res.data.newMail.id);
                 $actionContainer.find('[data-task="createMail"]').html(ACYM_JS_TXT.ACYM_EDIT_MAIL);
                 jQuery('.reveal').foundation('close');
                 acym_helperModal.setResetMail();
@@ -307,7 +307,7 @@ const acym_helperModal = {
             let inputListsSelected = jQuery('#acym__modal__lists-selected');
             let listsSelectedToInject = inputListsSelected.val();
             let listsSelected = [];
-            listsSelectedToInject = listsSelectedToInject === '' ? [] : JSON.parse(listsSelectedToInject);
+            listsSelectedToInject = listsSelectedToInject === '' ? [] : acym_helper.parseJson(listsSelectedToInject);
             if (jQuery(this).is(':checked')) {
                 spanName.addClass('acym__color__blue');
             } else {
