@@ -190,7 +190,7 @@ class FormClass extends acymClass
             ];
         }
         $newForm->button_options = [
-            'text' => '',
+            'text' => acym_translation('ACYM_SUBSCRIBE'),
             'background_color' => '#000000',
             'text_color' => '#ffffff',
             'border_color' => '#000000',
@@ -324,7 +324,7 @@ class FormClass extends acymClass
                 $return['render'][$key] .= '<input type="number" class="cell medium-3 margin-right-0" v-model="'.$vModel.'.width'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span>';
             } elseif ($key == 'text') {
                 $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_TEXT').'</label>';
-                $return['render'][$key] .= '<input type="text" placeholder="'.acym_translation('ACYM_SUBSCRIBE').'" class="cell auto" v-model="'.$vModel.'" name="'.$name.'">';
+                $return['render'][$key] .= '<input type="text" class="cell auto" v-model="'.$vModel.'" name="'.$name.'">';
             }
         }
 

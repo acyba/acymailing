@@ -69,10 +69,17 @@
 			<label class="cell shrink" for="acym__campaign__sendsettings__send">
                 <?php
                 $value = empty($data['currentCampaign']->sending_date) ? '' : acym_date($data['currentCampaign']->sending_date, 'Y-m-d H:i');
+                $required = $data['currentCampaign']->send_scheduled ? 'required="required"' : '';
                 echo acym_tooltip(
-                    '<input class="text-center acy_date_picker" data-acym-translate="0" type="text" name="sendingDate" id="acym__campaign__sendsettings__send-type-scheduled__date" value="'.acym_escape(
-                        $value
-                    ).'" readonly>',
+                    '<input 
+                    	class="text-center acy_date_picker" 
+                    	data-acym-translate="0" 
+                    	type="text" 
+                    	name="sendingDate" 
+                    	id="acym__campaign__sendsettings__send-type-scheduled__date" 
+                    	value="'.acym_escape($value).'" 
+                    	readonly
+                    	'.$required.'>',
                     acym_translation('ACYM_CLICK_TO_EDIT')
                 );
                 ?>
@@ -173,7 +180,8 @@
 					<input type="text"
 						   class="cell auto"
 						   name="sending_params[message_stream_id]"
-						   value="<?php echo empty($data['currentCampaign']->sending_params['message_stream_id']) ? '' : $data['currentCampaign']->sending_params['message_stream_id']; ?>">
+						   value="<?php echo empty($data['currentCampaign']->sending_params['message_stream_id']) ? ''
+                               : $data['currentCampaign']->sending_params['message_stream_id']; ?>">
 				</label>
 			</div>
 		</div>
