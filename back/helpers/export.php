@@ -277,11 +277,15 @@ class ExportHelper extends acymObject
 
         $start = 0;
         do {
-            $users = acym_loadObjectList($query.' LIMIT '.intval($start).', '.intval($nbExport), 'id');
+            try{
+                $users = acym_loadObjectList($query.' LIMIT '.intval($start).', '.intval($nbExport), 'id');
+            }catch (\Exception $e){
+                $users = false;
+            }
             $start += $nbExport;
 
             if ($users === false) {
-                $errorLine = $this->eol.$this->eol.'Error: '.acym_getDBError();
+                $errorLine = $this->eol.$this->eol.'Error: '.(isset($e) ? $e->getMessage() : acym_getDBError());
 
                 if (empty($exportFile)) {
                     echo $errorLine;

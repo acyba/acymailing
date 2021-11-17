@@ -130,15 +130,10 @@ class FrontusersController extends UsersController
         $entityHelper = new EntitySelectHelper();
         $otherContent = acym_modal(
             '<i class="acymicon-bell1"></i>'.acym_translation('ACYM_SUBSCRIBE').' (<span id="acym__users__listing__number_to_add_to_list">0</span>)',
-            $entityHelper->entitySelect(
-                'list',
-                ['join' => ''],
-                $entityHelper->getColumnsForList(),
-                [
-                    'text' => acym_translation('ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS'),
-                    'action' => 'addToList',
-                ]
-            ),
+            $entityHelper->entitySelect('list', ['join' => ''], $entityHelper->getColumnsForList(), [
+                'text' => acym_translation('ACYM_SUBSCRIBE_USERS_TO_THESE_LISTS'),
+                'action' => 'addToList',
+            ]),
             null,
             '',
             'class="button button-secondary disabled cell medium-6 large-shrink" id="acym__users__listing__button--add-to-list"'
@@ -237,6 +232,7 @@ class FrontusersController extends UsersController
         }
 
         $msgtype = 'success';
+        $extraMsg = '';
         if (empty($myuser->confirmed) && $this->config->get('require_confirmation', 1) == 1) {
             if ($userClass->confirmationSentSuccess || empty($userClass->confirmationSentError)) {
                 $msg = 'ACYM_CONFIRMATION_SENT';
@@ -246,6 +242,7 @@ class FrontusersController extends UsersController
                 $code = 7;
                 $msgtype = 'error';
             }
+            $extraMsg = acym_getVar('string', 'confirmation_message');
         } else {
             if ($userClass->subscribed) {
                 $msg = acym_getVar('string', 'confirmation_message');
@@ -265,6 +262,7 @@ class FrontusersController extends UsersController
         }
 
         $msg = str_replace(array_keys($replace), $replace, acym_translation($msg));
+        if (!empty($extraMsg)) $msg = str_replace(array_keys($replace), $replace, acym_translation($extraMsg)).'<br />'.$msg;
 
         if ($ajax) {
             //Make sure the message has a valid format for Ajax... so the user can customize it the way he wants without breaking anything
@@ -457,7 +455,6 @@ class FrontusersController extends UsersController
 
         //get the user
         $user = $this->getUserFromUnsubPage();
-
         //get the list the user want to sub
         $listsChecked = acym_getVar('array', 'lists');
         //if he uncheck all lists we directly unsubscribe to all lists

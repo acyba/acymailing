@@ -12,7 +12,7 @@ class HistoryClass extends acymClass
      * Function insert to insert a line into the history...
      * User modification, user update, bounces... etc.
      */
-    public function insert($userId, $action, $data = [], $mailid = 0)
+    public function insert($userId, $action, $data = [], $mailid = 0, $unsubscribe_reason = null)
     {
         $currentUserid = acym_currentUserId();
         if (!empty($currentUserid)) {
@@ -22,6 +22,7 @@ class HistoryClass extends acymClass
         $history->user_id = intval($userId);
         $history->action = strip_tags($action);
         $history->data = implode("\n", $data);
+        $history->unsubscribe_reason = $unsubscribe_reason;
         //Avoid a memory issue when the data is way too big.
         if (strlen($history->data) > 100000) {
             $history->data = substr($history->data, 0, 10000);

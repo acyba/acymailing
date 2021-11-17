@@ -1,7 +1,7 @@
 const acym_helperEditorWysid = {
     initEditor: function () {
         if (jQuery('#acym__wysid').length < 1) return false;
-        acym_helperEditorWysid.mailsSettings = acym_helperEditorWysid.saveSettings === '' ? {} : JSON.parse(acym_helperEditorWysid.saveSettings);
+        acym_helperEditorWysid.mailsSettings = acym_helperEditorWysid.saveSettings === '' ? {} : acym_helper.parseJson(acym_helperEditorWysid.saveSettings);
         jQuery('#editor_thumbnail').val('');
         jQuery('#acym__wysid__edit')
             .append('<style id="acym__wysid__custom__style">' + acym_helperEditorWysid.parseTextToCss(acym_helperEditorWysid.savedStylesheet) + '</style>');

@@ -320,11 +320,11 @@ class plgAcymArticle extends acymPlugin
             }
 
             $where[] = 'element.state = 1';
-            $where[] = '`publish_up` < '.acym_escapeDB(date('Y-m-d H:i:s', $time - date('Z')));
-            $where[] = '`publish_down` > '.acym_escapeDB(date('Y-m-d H:i:s', $time - date('Z'))).' OR `publish_down` = 0';
+            $where[] = 'element.`publish_up` < '.acym_escapeDB(date('Y-m-d H:i:s', $time - date('Z')));
+            $where[] = 'element.`publish_down` > '.acym_escapeDB(date('Y-m-d H:i:s', $time - date('Z'))).' OR element.`publish_down` = 0 OR element.`publish_down` IS NULL';
             if (!empty($parameter->min_publish)) {
                 $parameter->min_publish = acym_date(acym_replaceDate($parameter->min_publish), 'Y-m-d H:i:s', false);
-                $where[] = '`publish_up` >= '.acym_escapeDB($parameter->min_publish);
+                $where[] = 'element.`publish_up` >= '.acym_escapeDB($parameter->min_publish);
             }
 
             if (!empty($parameter->onlynew)) {
@@ -418,7 +418,7 @@ class plgAcymArticle extends acymPlugin
             if (!empty($images[$pictVar])) {
                 $imagePath = acym_rootURI().$images[$pictVar];
                 $altImage = empty($images['image_intro_alt']) ? 'image' : $images['image_intro_alt'];
-                $varFields['{picthtml}'] = '<img alt="'.$altImage.'" src="'.acym_escape($imagePath).'" />';
+                $varFields['{picthtml}'] = '<img alt="'.$altImage.'" class="content_main_image" src="'.acym_escape($imagePath).'" />';
 
                 if (!empty($tag->caption)) {
                     $imageCaption = $varFields['{'.$pictVar.'_caption}'];

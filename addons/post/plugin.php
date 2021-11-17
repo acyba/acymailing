@@ -327,7 +327,7 @@ class plgAcymPost extends acymPlugin
             $imagePath = get_the_post_thumbnail_url($tag->id);
         }
         $varFields['{image}'] = $imagePath;
-        $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
+        $varFields['{picthtml}'] = '<img class="content_main_image" alt="" src="'.$imagePath.'">';
         if (!in_array('image', $tag->display)) $imagePath = '';
 
         $contentText = '';

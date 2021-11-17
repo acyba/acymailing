@@ -41,11 +41,7 @@ class plgAcymContactform7 extends acymPlugin
     // Add handler to display tag content in form
     public function addFormTagAcymsub()
     {
-        wpcf7_add_form_tag(
-            ['acymsub', 'acymsub*'],
-            'acym_addFormTagAcymsubHandler',
-            ['name-attr' => true]
-        );
+        wpcf7_add_form_tag(['acymsub', 'acymsub*'], 'acym_addFormTagAcymsubHandler', ['name-attr' => true]);
     }
 
     // Add tag in form generator
@@ -87,7 +83,7 @@ class plgAcymContactform7 extends acymPlugin
         $submitted = acym_getVar('string', 'acymaction_'.$tag->name, '');
 
         if (!empty($submitted)) return '';
-        
+
         $this->loadCSS('acymcontactform', false, ACYM_PLUGINS_URL.'/'.basename(__DIR__));
         $this->loadJavascript('acymcontactform', false, ACYM_PLUGINS_URL.'/'.basename(__DIR__));
 
@@ -107,7 +103,13 @@ class plgAcymContactform7 extends acymPlugin
         $listNames = $listClass->getAllForSelect();
 
         $detailsLists = $this->prepareLists($tag->values);
-        $acymSubmitUrl = htmlspecialchars_decode(acym_frontendLink('frontusers&task=subscribe'));
+
+        $securityKey = '';
+        if (!empty($this->config->get('recaptcha_secretkey', ''))) {
+            $securityKey = '&seckey='.$this->config->get('security_key', '');
+        }
+
+        $acymSubmitUrl = htmlspecialchars_decode(acym_frontendLink('frontusers&task=subscribe'.$securityKey));
 
         $data = [
             'tag' => $tag,

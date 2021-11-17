@@ -11,18 +11,21 @@
         'margin-0'
     ); ?>
 </div>
-
-<div class="cell grid-x large-12 margin-top-1">
-    <?php echo acym_switch(
-        'field[backend_listing]',
-        $data['field']->backend_listing,
-        acym_translationSprintf('ACYM_BACKEND_X', acym_translation('ACYM_LISTING')),
-        [],
-        'auto',
-        'shrink',
-        'margin-0'
-    ); ?>
-</div>
+<?php if (empty($data['field']->core)) { ?>
+	<div class="cell grid-x large-12 margin-top-1">
+        <?php echo acym_switch(
+            'field[backend_listing]',
+            $data['field']->backend_listing,
+            acym_translationSprintf('ACYM_BACKEND_X', acym_translation('ACYM_LISTING')),
+            [],
+            'auto',
+            'shrink',
+            'margin-0'
+        ); ?>
+	</div>
+<?php } else {
+    echo '<input type="hidden" name="field[backend_listing]" value="1">';
+} ?>
 
 <?php if ('joomla' === ACYM_CMS) { ?>
 	<div class="cell grid-x large-12 margin-top-1">

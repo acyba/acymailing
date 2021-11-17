@@ -5,7 +5,7 @@ namespace AcyMailing\Init;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\RegacyHelper;
 
-class acyUsersynch extends acyHook
+class acyUsersynch
 {
     public function __construct()
     {
@@ -22,7 +22,22 @@ class acyUsersynch extends acyHook
 
     public function addRegistrationFields($externalPluginConfig = '')
     {
-        parent::addRegistrationFields();
+        $config = acym_config();
+
+        $displayOnExternalPlugin = true;
+        if (!empty($externalPluginConfig)) $displayOnExternalPlugin = $config->get($externalPluginConfig, 0) == 1;
+
+        if (!$config->get('regacy', 0) || !$displayOnExternalPlugin) return;
+
+        $regacyHelper = new RegacyHelper();
+        if (!$regacyHelper->prepareLists(['formatted' => true])) return;
+
+        ?>
+		<div class="acym__regacy">
+			<label class="acym__regacy__label"><?php echo $regacyHelper->label; ?></label>
+			<div class="acym__regacy__values"><?php echo $regacyHelper->lists; ?></div>
+		</div>
+        <?php
     }
 
     public function addProfileFields()

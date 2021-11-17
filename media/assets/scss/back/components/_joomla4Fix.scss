@@ -21,6 +21,10 @@ body {
             &::before, &::after {
                 background: $very-light-gray;
             }
+
+            #subhead-container {
+                display: none;
+            }
         }
 
         .col-md-12 {

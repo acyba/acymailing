@@ -1,6 +1,14 @@
 #acym_wrapper {
     #acym__walkthrough {
 
+        #acym__walkthrough__phpmail {
+            .acym__sending__methods__clean__data {
+                .select2-container {
+                    width: 150px !important;
+                }
+            }
+        }
+
         #acym__walkthrough__list {
             #acym__walkthrough__list__receivers {
                 display: inline-table;

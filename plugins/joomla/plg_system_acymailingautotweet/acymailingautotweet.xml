@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.0" type="plugin" group="system" method="upgrade">
+	<name>AcyMailing - Perfect Publisher integration</name>
+	<creationDate>October 2021</creationDate>
+	<version>1.0.0</version>
+	<author>Acyba</author>
+	<authorEmail>dev@acyba.com</authorEmail>
+	<authorUrl>https://www.acymailing.com</authorUrl>
+	<copyright>Copyright (C) 2009-2021 ACYBA SAS - All rights reserved.</copyright>
+	<license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
+	<description>ACYM_PLG_SYSTEM_AUTOTWEET_DESCRIPTION</description>
+	<files>
+		<filename plugin="acymailingautotweet">acymailingautotweet.php</filename>
+		<languages folder="language">
+			<language tag="en-GB">en-GB/en-GB.com_acym.ini</language>
+			<language tag="en-US">en-US/en-US.com_acym.ini</language>
+			<language tag="fr-FR">fr-FR/fr-FR.com_acym.ini</language>
+		</languages>
+	</files>
+	<config>
+		<fields name="params" addfieldpath="/components/com_acym/params">
+			<fieldset name="basic">
+				<field name="lists" type="lists" default="None" label="ACYM_LISTS" description="ACYM_PLG_SYSTEM_AUTOTWEET_LIST_DESCRIPTION"/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

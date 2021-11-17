@@ -149,6 +149,13 @@ class FormClass extends acymClass
             'termscond' => 0,
             'privacy' => 0,
         ];
+        if ($type == self::SUB_FORM_TYPE_POPUP) {
+            $newForm->message_options = [
+                'text' => '',
+                'position' => 'before-fields',
+                'color' => '#000000',
+            ];
+        }
         if (in_array($type, [self::SUB_FORM_TYPE_FOOTER, self::SUB_FORM_TYPE_HEADER, self::SUB_FORM_TYPE_POPUP])) {
             $newForm->cookie = [
                 'cookie_expiration' => 1,
@@ -183,7 +190,7 @@ class FormClass extends acymClass
             ];
         }
         $newForm->button_options = [
-            'text' => acym_translation('ACYM_SUBSCRIBE'),
+            'text' => '',
             'background_color' => '#000000',
             'text_color' => '#ffffff',
             'border_color' => '#000000',
@@ -317,7 +324,7 @@ class FormClass extends acymClass
                 $return['render'][$key] .= '<input type="number" class="cell medium-3 margin-right-0" v-model="'.$vModel.'.width'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span>';
             } elseif ($key == 'text') {
                 $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_TEXT').'</label>';
-                $return['render'][$key] .= '<input type="text" class="cell auto" v-model="'.$vModel.'" name="'.$name.'">';
+                $return['render'][$key] .= '<input type="text" placeholder="'.acym_translation('ACYM_SUBSCRIBE').'" class="cell auto" v-model="'.$vModel.'" name="'.$name.'">';
             }
         }
 
@@ -352,6 +359,24 @@ class FormClass extends acymClass
                 $functionName = 'renderPadding_'.$type;
                 if (!method_exists($this, $functionName)) continue;
                 $return['render'][$key] = $this->$functionName($vModel);
+            }
+        }
+
+        return $return;
+    }
+
+    private function prepareMenuHtmlStyle_message_options($optionName, $options, $type)
+    {
+        $return = [
+            'title' => acym_translation('ACYM_MESSAGE'),
+        ];
+        $return['render'] = [];
+        foreach ($options as $key => $value) {
+            $name = 'form['.$optionName.']['.$key.']';
+            $vModel = 'form.'.$optionName.'.'.$key;
+            if ($key == 'color') {
+                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_COLOR').'</label>';
+                $return['render'][$key] .= '<spectrum :name="\''.$name.'\'" v-model="'.$vModel.'" :value="\''.$value.'\'">';
             }
         }
 
@@ -414,6 +439,36 @@ class FormClass extends acymClass
         $html .= '<div class="cell grid-x auto acym_vcenter"><span class="cell shrink acym__forms__menu__options__style__size__default margin-right-1">100%</span><span class="cell medium-1">x</span><input type="number" class="cell medium-3" v-model="'.$vModel.'.height'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span></div>';
 
         return $html;
+    }
+
+    private function prepareMenuHtmlSettings_message_options($optionName, $options)
+    {
+        $return = [
+            'title' => acym_translation('ACYM_MESSAGE'),
+        ];
+        $return['render'] = [];
+
+        foreach ($options as $key => $value) {
+            $name = 'form['.$optionName.']['.$key.']';
+            $vModel = 'form.'.$optionName.'.'.$key;
+            if ($key == 'text') {
+                $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_CUSTOM_MESSAGE_DISPLAY').'</label>';
+                $return['render'][$key] .= '<textarea class="cell" name="'.$name.'" v-model="'.$vModel.'"></textarea>';
+            } elseif ($key == 'position') {
+                $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_MESSAGE_POSITION').'</label>';
+                $positions = [
+                    'before-image' => acym_translation('ACYM_BEFORE_IMAGE'),
+                    'before-fields' => acym_translation('ACYM_BEFORE_FIELDS'),
+                    'before-lists' => acym_translation('ACYM_BEFORE_LISTS'),
+                    'before-button' => acym_translation('ACYM_BEFORE_BUTTON'),
+                ];
+                $return['render'][$key] .= '<div class="cell">
+                                                <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape(json_encode($positions)).'" v-model="'.$vModel.'"></select2>
+                                            </div>';
+            }
+        }
+
+        return $return;
     }
 
     private function prepareMenuHtmlSettings_lists_options($optionName, $options)
@@ -589,9 +644,9 @@ class FormClass extends acymClass
         $form->fields_options['displayed'][] = 2;
         $form->fields_options['displayed'] = $fieldClass->getFieldsByID($form->fields_options['displayed']);
         foreach ($form->fields_options['displayed'] as $key => $field) {
+            $field->option = json_decode($field->option);
             $fieldDB = empty($field->option->fieldDB) ? '' : json_decode($field->option->fieldDB);
             $field->value = empty($field->value) ? '' : json_decode($field->value);
-            $field->option = json_decode($field->option);
             $valuesArray = [];
             if (!empty($field->value)) {
                 foreach ($field->value as $value) {

@@ -27,7 +27,7 @@ class RegacyHelper extends acymObject
         acym_arrayToInteger($visibleLists);
 
         $listsClass = new ListClass();
-        $allLists = $listsClass->getAllWithoutManagement();
+        $allLists = $listsClass->getAllWithoutManagement(true);
 
         // Display only published and visible lists, except if we're on the back-end
         $isAdmin = acym_isAdmin();
@@ -95,8 +95,9 @@ class RegacyHelper extends acymObject
 
     private function _formatResults()
     {
+        acym_trigger('onAcymRegacyDisplayLists', []);
         $base = $this->options['baseOption'];
-        $checkedListsOnAjaxUpdate = acym_getVar('array', $base.'_visible_lists_checked');
+        $checkedListsOnAjaxUpdate = acym_getVar('array', $base.'_visible_lists_checked', []);
         $result = '<table class="acym__'.$base.'__lists" style="border:0">';
         foreach ($this->lists as $id => $oneList) {
             $checked = $oneList['checked'] || in_array($id, $checkedListsOnAjaxUpdate) ? 'checked="checked"' : '';

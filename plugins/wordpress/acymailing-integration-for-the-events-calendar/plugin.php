@@ -513,8 +513,8 @@ class plgAcymTheeventscalendar extends acymPlugin
             'SELECT ticket.`ID`, ticket.`post_title` 
             FROM `#__posts` AS ticket 
             JOIN #__postmeta AS meta 
-                ON meta.post_id = ticket.ID AND meta.meta_key = "_tribe_rsvp_for_event"
-            WHERE ticket.`post_type` = "tribe_rsvp_tickets" 
+                ON meta.post_id = ticket.ID
+            WHERE meta.meta_key LIKE "_tribe_%_for_event"
                 AND meta.`meta_value` = '.intval($id).' 
             ORDER BY ticket.`post_title` ASC'
         );
@@ -625,21 +625,21 @@ class plgAcymTheeventscalendar extends acymPlugin
             $elemT = 'eventTicketsElement'.$num;
             $dateField = $entryT.'.post_date_gmt';
 
-            $query->join[$userT] = '#__postmeta AS '.$userT.' ON '.$userT.'.meta_value = user.cms_id AND '.$userT.'.meta_key = "_tribe_tickets_attendee_user_id"';
-            $query->join[$entryT] = '#__posts AS '.$entryT.' ON '.$entryT.'.ID = '.$userT.'.post_id AND '.$entryT.'.post_type = "tribe_rsvp_attendees"';
+            $query->join[$userT] = '#__postmeta AS '.$userT.' ON '.$userT.'.meta_value = user.email AND '.$userT.'.meta_key = "_tribe_tickets_email"';
+            $query->join[$entryT] = '#__posts AS '.$entryT.' ON '.$entryT.'.ID = '.$userT.'.post_id';
 
             if (!empty($options['ticket'])) {
-                $type = '_tribe_rsvp_product';
+                $type = '_tribe_%_product';
                 $value = 'ticket';
             } elseif (!empty($options['event'])) {
-                $type = '_tribe_rsvp_event';
+                $type = '_tribe_%_event';
                 $value = 'event';
             }
 
             if (!empty($type) && !empty($value)) {
                 $query->join[$elemT] = '#__postmeta AS '.$elemT.' 
                                             ON '.$entryT.'.ID = '.$elemT.'.post_id 
-                                            AND '.$elemT.'.meta_key = "'.$type.'" 
+                                            AND '.$elemT.'.meta_key LIKE '.acym_escapeDB($type).' 
                                             AND '.$elemT.'.meta_value = '.intval($options[$value]);
             }
         } elseif ($this->rtecInstalled) {

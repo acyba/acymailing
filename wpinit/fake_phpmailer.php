@@ -10,4 +10,19 @@ class acyFakePhpMailer
     {
         return true;
     }
+
+    public function IsSMTP()
+    {
+
+    }
+
+    public function addReplyTo($replyto, $name = '')
+    {
+        return true;
+    }
+
+    public function setFrom($address, $name = '', $auto = true)
+    {
+        return true;
+    }
 }

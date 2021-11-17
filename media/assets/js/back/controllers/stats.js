@@ -1,7 +1,7 @@
 jQuery(document).on('acy_preview_loaded', () => {
     let $clicksValue = jQuery('#acym__stats_click__map__all-links__click');
     if ($clicksValue.length < 1) return;
-    let allLinksClick = JSON.parse($clicksValue.val());
+    let allLinksClick = acym_helper.parseJson($clicksValue.val());
     jQuery('#acym__wysid__preview__iframe__acym__wysid__email__preview')
         .contents()
         .find('body')

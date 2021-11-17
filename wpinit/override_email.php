@@ -4,7 +4,7 @@ namespace AcyMailing\Init;
 
 use AcyMailing\Helpers\MailerHelper;
 
-class acyOverrideEmail extends acyHook
+class acyOverrideEmail
 {
     public function __construct()
     {

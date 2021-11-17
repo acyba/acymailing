@@ -3,7 +3,7 @@
 
 namespace AcyMailing\Init;
 
-class acySecurity extends acyHook
+class acySecurity
 {
     public function __construct()
     {

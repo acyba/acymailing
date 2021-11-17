@@ -26,7 +26,7 @@ class plgAcymElasticemail extends acymPlugin
     {
         ob_start();
         ?>
-		<div id="<?php echo self::SENDING_METHOD_ID; ?>_settings" class="send_settings grid-x cell">
+		<div class="send_settings grid-x cell" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 				<label for="elasticemail_username" class="cell shrink margin-right-1">
                     <?php echo acym_translation('ACYM_SMTP_USERNAME'); ?>

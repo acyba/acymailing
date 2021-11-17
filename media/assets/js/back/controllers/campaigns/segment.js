@@ -33,7 +33,12 @@ jQuery(document).ready(function ($) {
 
             $.get(ajaxUrl, function (res) {
                 res = acym_helper.parseJson(res);
-                $counterInput.html(res.count);
+                if (res.error) {
+                    acym_helperNotification.addNotification(res.message, 'error');
+                    $counterInput.html('?');
+                } else {
+                    $counterInput.html(res.data.count);
+                }
             });
         });
     }
@@ -67,13 +72,13 @@ jQuery(document).ready(function ($) {
 
             $.post(ajaxUrl, jQuery('#acym_form').serialize() + '&ctrl=segments&task=saveFromCampaign').done(function (result) {
                 result = acym_helper.parseJson(result);
-                if (result.error !== undefined) {
-                    acym_helperNotification.addNotification(result.error, 'error', true);
+                if (result.error) {
+                    acym_helperNotification.addNotification(result.message, 'error', true);
                     return false;
                 }
                 acym_helperNotification.addNotification(result.message, 'info', true);
                 $message.css('display', 'flex').html(result.message);
-                $('[name="saved_segment_id"]').val(result.segment_id);
+                $('[name="saved_segment_id"]').val(result.data.segment_id);
             }).error(function () {
                 acym_helperNotification.addNotification(ACYM_JS_TXT.ACYM_COULD_NOT_SAVE_SEGMENT, 'error', true);
             }).always(function () {

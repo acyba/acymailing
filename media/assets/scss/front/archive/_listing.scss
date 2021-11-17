@@ -20,7 +20,7 @@
             height: 83%;
         }
 
-        .acym__modal__handle {
+        .acym__modal__handle, .acym__front__archive__raw {
             cursor: pointer;
             font-size: 15px;
             font-weight: 500;
@@ -44,4 +44,8 @@
     .acym__front__archive__title {
         display: none;
     }
+}
+
+#bild {
+    display: none !important;
 }

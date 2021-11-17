@@ -159,11 +159,11 @@
 					<iframe id="acym__wysid__modal__joomla-image__ui__iframe" src="<?php echo $mediaURL; ?>" frameborder="0"></iframe>
                     <?php if (ACYM_J40) { ?>
 						<div id="acym__wysid__modal__joomla-image__ui__actions" class="cell grid-x grid-margin-x align-right">
-							<button id="acym__wysid__modal__joomla-image__ui__actions__select" type="button" class="button button-secondary cell shrink margin-bottom-0">
-                                <?php echo acym_translation('ACYM_SELECT'); ?>
-							</button>
 							<button id="acym__wysid__modal__joomla-image__ui__actions__cancel" type="button" class="button button-secondary cell shrink margin-bottom-0">
                                 <?php echo acym_translation('ACYM_CANCEL'); ?>
+							</button>
+							<button id="acym__wysid__modal__joomla-image__ui__actions__select" type="button" class="button button-secondary cell shrink margin-bottom-0">
+                                <?php echo acym_translation('ACYM_SELECT'); ?>
 							</button>
 						</div>
                     <?php } ?>

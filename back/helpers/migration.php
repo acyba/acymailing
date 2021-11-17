@@ -282,7 +282,7 @@ class MigrationHelper extends acymObject
         try {
             $result = acym_query($query);
         } catch (\Exception $e) {
-            $this->errors[] = acym_getDBError();
+            $this->errors[] = $e->getMessage();
 
             return false;
         }
@@ -301,7 +301,7 @@ class MigrationHelper extends acymObject
         try {
             $resultQuery = acym_query($queryInsert);
         } catch (\Exception $e) {
-            $this->errors[] = acym_getDBError();
+            $this->errors[] = $e->getMessage();
 
             return false;
         }
@@ -355,7 +355,6 @@ class MigrationHelper extends acymObject
                         acym_escapeDB(empty($oneTemplate->name) ? acym_translation('ACYM_MIGRATED_TEMPLATE').' '.time() : $oneTemplate->name),
                         acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false)),
                         '0',
-                        '0',
                         acym_escapeDB($mailClass::TYPE_TEMPLATE),
                         acym_escapeDB(empty($oneTemplate->body) ? '' : $oneTemplate->body),
                         acym_escapeDB($oneTemplate->subject),
@@ -373,7 +372,7 @@ class MigrationHelper extends acymObject
             return true;
         }
 
-        $queryInsert = 'INSERT INTO #__acym_mail (`name`, `creation_date`, `drag_editor`, `library`, `type`, `body`, `subject`, `from_name`, `from_email`, `reply_to_name`, `reply_to_email`, `stylesheet`, `creator_id`) VALUES '.implode(
+        $queryInsert = 'INSERT INTO #__acym_mail (`name`, `creation_date`, `drag_editor`, `type`, `body`, `subject`, `from_name`, `from_email`, `reply_to_name`, `reply_to_email`, `stylesheet`, `creator_id`) VALUES '.implode(
                 ',',
                 $valuesToInsert
             ).';';
@@ -683,7 +682,6 @@ class MigrationHelper extends acymObject
                 'name' => acym_escapeDB($oneMail->subject),
                 'creation_date' => acym_escapeDB(acym_date(empty($oneMail->created) ? 'now' : $oneMail->created, 'Y-m-d H:i:s')),
                 'drag_editor' => 0,
-                'library' => 0,
                 'type' => acym_escapeDB($mailType),
                 'body' => acym_escapeDB($oneMail->body),
                 'subject' => acym_escapeDB($oneMail->subject),
@@ -727,7 +725,7 @@ class MigrationHelper extends acymObject
             return true;
         }
 
-        $queryMailsInsert = 'INSERT INTO #__acym_mail (`id`, `name`, `creation_date`, `drag_editor`, `library`, `type`, `body`, `subject`, `from_name`, `from_email`, `reply_to_name`, `reply_to_email`, `bcc`, `stylesheet`, `creator_id`) VALUES '.implode(
+        $queryMailsInsert = 'INSERT INTO #__acym_mail (`id`, `name`, `creation_date`, `drag_editor`, `type`, `body`, `subject`, `from_name`, `from_email`, `reply_to_name`, `reply_to_email`, `bcc`, `stylesheet`, `creator_id`) VALUES '.implode(
                 ',',
                 $mailsToInsert
             ).';';
@@ -735,7 +733,7 @@ class MigrationHelper extends acymObject
         try {
             $resultMail = acym_query($queryMailsInsert);
         } catch (\Exception $e) {
-            $this->errors[] = acym_getDBError();
+            $this->errors[] = $e->getMessage();
 
             return false;
         }
@@ -757,7 +755,7 @@ class MigrationHelper extends acymObject
             try {
                 $resultCampaign = acym_query($queryCampaignInsert);
             } catch (\Exception $e) {
-                $this->errors[] = acym_getDBError();
+                $this->errors[] = $e->getMessage();
 
                 return false;
             }
@@ -798,6 +796,7 @@ class MigrationHelper extends acymObject
                 'color' => acym_escapeDB($oneList->color),
                 'creation_date' => acym_escapeDB(acym_date('now', 'Y-m-d H:i:s')),
                 'cms_user_id' => empty($oneList->userid) ? acym_currentUserId() : intval($oneList->userid),
+                'description' => acym_escapeDB('')
             ];
 
             $listsToInsert[] = '('.implode(', ', $list).')';
@@ -807,7 +806,7 @@ class MigrationHelper extends acymObject
             return true;
         }
 
-        $queryInsert = 'INSERT INTO #__acym_list (`id`, `name`, `active`, `visible`, `clean`, `color`, `creation_date`, `cms_user_id`) VALUES '.implode(',', $listsToInsert).';';
+        $queryInsert = 'INSERT INTO #__acym_list (`id`, `name`, `active`, `visible`, `clean`, `color`, `creation_date`, `cms_user_id`, `description`) VALUES '.implode(',', $listsToInsert).';';
 
         return $this->_insertQuery($queryInsert, $result);
     }
@@ -930,7 +929,7 @@ class MigrationHelper extends acymObject
         try {
             return acym_query($queryInsert);
         } catch (\Exception $e) {
-            $this->errors[] = acym_getDBError();
+            $this->errors[] = $e->getMessage();
 
             return false;
         }
@@ -1155,8 +1154,13 @@ class MigrationHelper extends acymObject
         $hasError = false;
 
         foreach ($queryClean as $oneQuery) {
-            if (acym_query($oneQuery) === null) {
-                $this->errors[] = acym_getDBError();
+            try {
+                $res = acym_query($oneQuery);
+            } catch (\Exception $e) {
+                $res = null;
+            }
+            if ($res === null) {
+                $this->errors[] = isset($e) ? $e->getMessage() : acym_getDBError();
                 $hasError = true;
                 break;
             }

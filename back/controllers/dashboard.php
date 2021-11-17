@@ -121,10 +121,13 @@ class DashboardController extends acymController
     public function saveAjax()
     {
         $mailController = new MailsController();
+        $result = $mailController->store(true);
 
-        $isWellSaved = $mailController->store(true);
-        echo json_encode(['error' => $isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), 'data' => $isWellSaved]);
-        exit;
+        if ($result) {
+            acym_sendAjaxResponse('', ['result' => $result]);
+        } else {
+            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_SAVING'), [], false);
+        }
     }
 
     public function saveStepEmail()
@@ -228,7 +231,8 @@ class DashboardController extends acymController
 
         $data = [
             'step' => 'phpmail',
-            'userEmail' => acym_currentUserEmail(),
+            'userEmail' => $this->config->get('from_email', acym_currentUserEmail()),
+            'siteName' => $this->config->get('from_name', acym_getCMSConfig('sitename')),
         ];
 
         //__START__wordpress_
@@ -240,9 +244,9 @@ class DashboardController extends acymController
         $data['sendingMethods'] = [];
 
         acym_trigger('onAcymGetSendingMethods', [&$data]);
+        acym_trigger('onAcymGetSendingMethodsSelected', [&$data]);
 
         $data['sendingMethodsHtmlSettings'] = [];
-
         acym_trigger('onAcymGetSendingMethodsHtmlSetting', [&$data]);
 
         if (!empty($this->errorMailer)) $data['error'] = $this->errorMailer;
@@ -490,7 +494,7 @@ class DashboardController extends acymController
 
         $updateHelper = new UpdateHelper();
         $updateHelper->installNotifications();
-        $updateHelper->installTemplates(true);
+        $updateHelper->installTemplates();
         $updateHelper->installOverrideEmails();
 
         $this->listing();

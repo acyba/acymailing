@@ -607,6 +607,8 @@ class acymPlugin extends acymObject
             }
             $tagsReplaced[$i] = $this->replaceIndividualContent($oneTag, $email);
         }
+        
+        $email->custom_view = file_exists(ACYM_CUSTOM_PLUGIN_LAYOUT.$this->name.'.html');
 
         $this->pluginHelper->replaceTags($email, $tagsReplaced, true);
     }
@@ -1227,7 +1229,7 @@ class acymPlugin extends acymObject
             CURLOPT_HTTPHEADER => $headers,
         ];
 
-        if (empty($dataDecoded) || $dataDecoded === false) {
+        if (empty($dataDecoded)) {
             $optionsArray[CURLOPT_POSTFIELDS] = json_encode($data);
         } elseif ($dataDecoded === true) {
             $optionsArray[CURLOPT_POSTFIELDS] = $data;

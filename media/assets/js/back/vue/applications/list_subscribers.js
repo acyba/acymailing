@@ -36,7 +36,7 @@ jQuery(document).ready(function ($) {
                 this.requireConfirmation = document.getElementById('requireConfirmation').value;
                 let subscriberListingContainer = document.getElementById('acym__list__settings__subscribers__listing');
                 if (null !== subscriberListingContainer) subscriberListingContainer.style.display = 'flex';
-                this.subscribed = JSON.parse(document.getElementById('subscribers_subscribed').value);
+                this.subscribed = acym_helper.parseJson(document.getElementById('subscribers_subscribed').value);
                 this.listid = document.querySelector('[name="id"]').value;
                 this.total = this.subscribed.length;
                 this.displayedSubscribers = this.subscribed.slice(0, start);
@@ -69,21 +69,16 @@ jQuery(document).ready(function ($) {
                           + this.users_ordering
                           + '&orderByOrdering='
                           + this.users_ordering_sort_order, (res) => {
-                        res = JSON.parse(res);
+                        res = acym_helper.parseJson(res);
 
-                        if (undefined !== res.error) {
-                            console.log(res.error);
-                            return false;
-                        }
-
-                        if (0 === res.data.length) {
+                        if (0 === res.data.subscribers.length) {
                             this.loading = false;
                             return true;
                         }
 
-                        let nbLoaded = res.data.length;
+                        let nbLoaded = res.data.subscribers.length;
 
-                        this.subscribed = this.subscribed.concat(res.data);
+                        this.subscribed = this.subscribed.concat(res.data.subscribers);
                         this.total += nbLoaded;
                         this.displayedSubscribers = this.subscribed.slice(0, perScroll);
 

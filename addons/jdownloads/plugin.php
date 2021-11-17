@@ -323,6 +323,12 @@ class plgAcymJdownloads extends acymPlugin
 
         if (empty($element)) return '';
 
+        $settings = new stdClass();
+        $settings->id = $tag->id;
+        $settings->lang = 'en,1'; // 1 is the language_id value in the table xxx_falang_content
+        $referenceTable = '#__jdownloads_files'; // reference_table value in the table xxx_falang_content
+        $this->pluginHelper->translateItem($element, $tag, $referenceTable);
+
         $varFields = $this->getCustomLayoutVars($element);
 
         $completeId = intval($element->id);

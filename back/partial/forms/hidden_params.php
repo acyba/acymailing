@@ -1,7 +1,6 @@
 <input type="hidden" name="ctrl" value="frontusers" />
 <input type="hidden" name="task" value="notask" />
 <input type="hidden" name="page" value="acymailing_front"/>
-<input type="hidden" name="action" value="acymailing_frontrouter"/>
 <input type="hidden" name="option" value="<?php echo acym_escape(ACYM_COMPONENT); ?>" />
 <input type="hidden" name="acy_source" value="<?php echo 'Form ID '.$form->id; ?>">
 <input type="hidden" name="acyformname" value="<?php echo $form->form_tag_name; ?>">

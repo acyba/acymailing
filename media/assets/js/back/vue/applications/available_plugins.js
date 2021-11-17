@@ -33,14 +33,14 @@ jQuery(document).ready(function ($) {
                         return false;
                     }
                     acym_helperBack.config_get('level').done((resConfig) => {
-                        if (undefined !== resConfig.error) {
-                            acym_helperNotification.addNotification(resConfig.error, 'error');
+                        if (resConfig.error) {
+                            acym_helperNotification.addNotification(resConfig.message, 'error');
 
                             return false;
                         }
                         this.getAllPluginsInstalled().then((resPluginsSite) => {
                             this.allPluginsInstalled = resPluginsSite.elements;
-                            this.currentLevel = resConfig.data.toLowerCase();
+                            this.currentLevel = resConfig.data.value.toLowerCase();
                             this.allPlugins = res;
                             res = res.map((plugin) => {
                                 plugin.description = plugin.description.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br />');
@@ -91,8 +91,8 @@ jQuery(document).ready(function ($) {
                         data: {'plugin': plugin}
                     }).then((res) => {
                         res = acym_helper.parseJson(res);
-                        if (undefined !== res.error) {
-                            acym_helperNotification.addNotification(res.error, 'error');
+                        if (res.error) {
+                            acym_helperNotification.addNotification(res.message, 'error');
                             this.downloading[plugin.image] = false;
                             this.downloading = {...this.downloading};
                             return false;

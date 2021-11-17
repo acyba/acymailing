@@ -1,4 +1,10 @@
 #acym_wrapper {
+    #acym__wysid__template {
+        table.row {
+            display: table;
+        }
+    }
+
     .row {
         margin-left: inherit;
     }
@@ -14,4 +20,14 @@
 
 #status.navbar {
     display: none;
+}
+
+#acym_wrapper.cms_joomla.cms_v_4 {
+    #acym__wysid__right__toolbar__current-block {
+        #acym__wysid__context__text {
+            #acym__dynamic__texts__insert__zone {
+                padding-bottom: 50px;
+            }
+        }
+    }
 }

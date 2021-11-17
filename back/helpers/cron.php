@@ -77,6 +77,18 @@ class CronHelper extends acymObject
         }
         //__END__demo_
 
+        // Is this a call to unlink the license?
+        if (acym_getVar('int', 'unlink', 0) === 1) {
+            $callLicenseKey = acym_getVar('string', 'licenseKey');
+            $configLicenseKey = $this->config->get('license_key');
+
+            if (!empty($configLicenseKey) && $configLicenseKey === $callLicenseKey) {
+                $this->config->save(['license_key' => '', 'active_cron' => 0]);
+            }
+
+            exit;
+        }
+
         // Step 1: Check the last cron launched...
         $time = time();
 
@@ -182,7 +194,6 @@ class CronHelper extends acymObject
                 'auto_bounce_next',
                 0
             ) && (empty($queueHelper->stoptime) || time() < $queueHelper->stoptime - 5)) {
-
             //First we update the config
             $newConfig = new \stdClass();
             $newConfig->auto_bounce_next = $time + (int)$this->config->get('auto_bounce_frequency', 0);
@@ -353,10 +364,7 @@ class CronHelper extends acymObject
         if (!$this->executed) {
             return;
         }
-
-        if ($this->processed) {
-            $this->saveReport();
-        }
+        $this->saveReport();
 
         $newConfig = new \stdClass();
         $newConfig->cron_report = implode("\n", $this->messages);
@@ -369,6 +377,8 @@ class CronHelper extends acymObject
     public function saveReport()
     {
         $saveReport = $this->config->get('cron_savereport');
+        if (!(($saveReport == 2 && $this->processed) || $saveReport == 1 || ($saveReport == 3 && $this->errorDetected))) return;
+
         $reportPath = $this->config->get('cron_savepath');
         if (empty($saveReport) || empty($reportPath)) return;
 
@@ -419,7 +429,6 @@ class CronHelper extends acymObject
 
     private function isDailyCron()
     {
-
         // Only once a day
         $dailyHour = $this->config->get('daily_hour', '12');
         $dailyMinute = $this->config->get('daily_minute', '00');

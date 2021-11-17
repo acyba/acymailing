@@ -4,22 +4,16 @@ namespace AcyMailing\Init;
 
 use AcyMailing\Classes\PluginClass;
 
-class acyRouter extends acyHook
+class acyRouter
 {
     var $activation;
 
-    public function __construct($activation)
+    public function __construct()
     {
-        $this->activation = $activation;
-
         // Back router
         add_action('wp_ajax_acymailing_router', [$this, 'router']);
         // Front router
         if (!acym_isAdmin()) add_action('wp_loaded', [$this, 'frontRouter']);
-
-        //TODO: Legacy front router, remove in September 2021 to minimize the issues in sent mails for users updating
-        add_action('wp_ajax_acymailing_frontrouter', [$this, 'frontRouter']);
-        add_action('wp_ajax_nopriv_acymailing_frontrouter', [$this, 'frontRouter']);
 
         // Make sure we can redirect / download / modify headers if needed after some checks
         $pages = [
@@ -69,7 +63,6 @@ class acyRouter extends acyHook
         }
         add_action('admin_print_scripts-toplevel_page_acymailing_dashboard', [$this, 'disableJsBreakingPages']);
         add_action('admin_print_styles-toplevel_page_acymailing_dashboard', [$this, 'removeCssBreakingPages']);
-        add_action('plugins_loaded', [$this, 'protectMotherland'], 5);
     }
 
     public function waitHeaders()
@@ -107,18 +100,6 @@ class acyRouter extends acyHook
         wp_dequeue_style('swcfpc_admin_css');
     }
 
-    public function protectMotherland()
-    {
-        // Make sure we're on an AcyMailing page
-        $page = acym_getVar('cmd', 'page', '');
-        if (empty($page) || strpos($page, 'acymailing_') !== 0) return;
-
-        // Prevent plugins from breaking AcyMailing pages
-        remove_action('plugins_loaded', 'mailchimp_on_all_plugins_loaded', 12);
-        remove_action('plugins_loaded', '_imagify_init');
-        remove_action('plugins_loaded', 'plugins_loaded_wps_hide_login_plugin');
-    }
-
     public function frontRouter()
     {
         $page = acym_getVar('string', 'page');
@@ -141,6 +122,7 @@ class acyRouter extends acyHook
 
         if (!$front) auth_redirect();
 
+        $acyActivation = new acyActivation();
         if (is_multisite()) {
             $currentBlog = get_current_blog_id();
             $sites = function_exists('get_sites') ? get_sites() : wp_get_sites();
@@ -151,12 +133,12 @@ class acyRouter extends acyHook
                 }
                 switch_to_blog($site['blog_id']);
                 acym_config(true);
-                $this->activation->updateAcym();
+                $acyActivation->updateAcym();
             }
 
             switch_to_blog($currentBlog);
         } else {
-            $this->activation->updateAcym();
+            $acyActivation->updateAcym();
         }
 
         if (file_exists(ACYM_FOLDER.'update.php')) {
@@ -240,4 +222,4 @@ class acyRouter extends acyHook
     }
 }
 
-$acyRouter = new acyRouter($acyActivation);
+$acyRouter = new acyRouter();

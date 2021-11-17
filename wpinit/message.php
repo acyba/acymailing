@@ -2,7 +2,7 @@
 
 namespace AcyMailing\Init;
 
-class acyMessage extends acyHook
+class acyMessage
 {
     public function __construct()
     {

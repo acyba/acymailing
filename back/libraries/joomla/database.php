@@ -86,6 +86,9 @@ function acym_getEscaped($value, $extra = false)
 
 function acym_getDBError()
 {
+    // Joomla decided to remove the getErrorMsg function in J4 and only use PHP exceptions
+    if (ACYM_J40) return '';
+
     $acydb = acym_getGlobal('db');
 
     return $acydb->getErrorMsg();

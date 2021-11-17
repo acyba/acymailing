@@ -8,7 +8,8 @@ class acym_profile_widget extends WP_Widget
 {
     public function __construct()
     {
-        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
+        $ds = DIRECTORY_SEPARATOR;
+        require_once rtrim(dirname(dirname(__DIR__)), $ds).$ds.'back'.$ds.'helpers'.$ds.'helper.php';
 
         parent::__construct(
             'acym_profile_widget',
@@ -20,7 +21,8 @@ class acym_profile_widget extends WP_Widget
     // Configuration
     public function form($instance)
     {
-        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
+        $ds = DIRECTORY_SEPARATOR;
+        require_once rtrim(dirname(dirname(__DIR__)), $ds).$ds.'back'.$ds.'helpers'.$ds.'helper.php';
 
         acym_addStyle(false, ACYM_CSS.'widget.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'widget.min.css'));
 
@@ -113,7 +115,8 @@ class acym_profile_widget extends WP_Widget
     // Widget's output
     public function widget($args, $instance)
     {
-        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
+        $ds = DIRECTORY_SEPARATOR;
+        require_once rtrim(dirname(dirname(__DIR__)), $ds).$ds.'back'.$ds.'helpers'.$ds.'helper.php';
         if (!acym_isElementorEdition()) acym_loadAssets('frontusers', 'profile');
 
         echo $args['before_widget'];

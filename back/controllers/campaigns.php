@@ -283,8 +283,12 @@ class CampaignsController extends acymController
             $textToDisplay = new \stdClass();
             $textToDisplay->triggers = $campaign->sending_params;
             acym_trigger('onAcymDeclareSummary_triggers', [&$textToDisplay], 'plgAcymTime');
-            $textToDisplay = array_values($textToDisplay->triggers);
-            $data['allCampaigns'][$key]->sending_params['trigger_text'] = empty($textToDisplay[0]) ? acym_translation('ACYM_ERROR_WHILE_RECOVERING_TRIGGERS') : $textToDisplay[0];
+
+            if (empty($textToDisplay->triggers['trigger_type']) || empty($textToDisplay->triggers[$textToDisplay->triggers['trigger_type']])) {
+                $data['allCampaigns'][$key]->sending_params['trigger_text'] = acym_translation('ACYM_ERROR_WHILE_RECOVERING_TRIGGERS');
+            } else {
+                $data['allCampaigns'][$key]->sending_params['trigger_text'] = $textToDisplay->triggers[$textToDisplay->triggers['trigger_type']];
+            }
         }
     }
 
@@ -1047,7 +1051,6 @@ class CampaignsController extends acymController
             $mail = new \stdClass();
             $mail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
             $mail->type = $mailClass::TYPE_STANDARD;
-            $mail->library = 0;
 
             $campaign = new \stdClass();
             $campaign->draft = 1;
@@ -1303,7 +1306,6 @@ class CampaignsController extends acymController
         $currentCampaign->sending_type = $sendingType;
         if (empty($currentCampaign->sending_params)) $currentCampaign->sending_params = [];
         $currentCampaign->sending_params = array_merge($currentCampaign->sending_params, $sendingParams, $specificSendingParams);
-        $currentCampaign->sending_date = null;
 
         if (empty($currentMail) || empty($senderInformation)) {
             $this->listing();
@@ -1921,32 +1923,22 @@ class CampaignsController extends acymController
             $mailClass = new MailClass();
 
             if ($mailClass->deleteOneAttachment($mailid, $attachid)) {
-                echo json_encode(['message' => acym_translation('ACYM_ATTACHMENT_WELL_DELETED')]);
-                exit;
+                acym_sendAjaxResponse(acym_translation('ACYM_ATTACHMENT_WELL_DELETED'));
             }
         }
 
-        echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_DELETE_ATTACHMENT')]);
-        exit;
+        acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_DELETE_ATTACHMENT'), [], false);
     }
 
     public function test()
     {
-        $result = new \stdClass();
-        $result->type = 'info';
-        $result->timer = 5000;
-        $result->message = '';
-
         $campaignId = acym_getVar('int', 'id', 0);
 
         $campaignClass = new CampaignClass();
         $campaign = $campaignClass->getOneById($campaignId);
 
         if (empty($campaign)) {
-            $result->type = 'error';
-            $result->timer = '';
-            $result->message = acym_translation('ACYM_CAMPAIGN_NOT_FOUND');
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), [], false);
         }
 
         $mailerHelper = new MailerHelper();
@@ -1954,15 +1946,14 @@ class CampaignsController extends acymController
         $mailerHelper->checkConfirmField = false;
         $mailerHelper->report = false;
 
-
         $report = [];
+        $success = true;
         $testNote = acym_getVar('string', 'test_note', '');
 
         $testEmails = explode(',', acym_getVar('string', 'test_emails'));
         foreach ($testEmails as $oneAddress) {
             if (!$mailerHelper->sendOne($campaign->mail_id, $oneAddress, true, $testNote)) {
-                $result->type = 'error';
-                $result->timer = '';
+                $success = false;
             }
 
             if (!empty($mailerHelper->reportMessage)) {
@@ -1970,9 +1961,7 @@ class CampaignsController extends acymController
             }
         }
 
-        $result->message = implode('<br/>', $report);
-        echo json_encode($result);
-        exit;
+        acym_sendAjaxResponse(implode('<br/>', $report), [], $success);
     }
 
     public function tests()
@@ -2002,8 +1991,7 @@ class CampaignsController extends acymController
             'upgrade' => !acym_level(ACYM_ESSENTIAL),
             'version' => 'enterprise',
         ];
-        //TODO AcyChecker online
-        if (false && !acym_isAcyCheckerInstalled()) {
+        if (!acym_isAcyCheckerInstalled()) {
             $lists = $campaignClass->getListsForCampaign($campaign->mail_id);
             $listClass = new ListClass();
             $data['recipients'] = $listClass->getTotalSubCount($lists);
@@ -2271,16 +2259,16 @@ class CampaignsController extends acymController
 
     public function checkSPAM()
     {
-        $result = new \stdClass();
-        $result->type = 'error';
-        $result->message = '';
+        $message = '';
+        $data = [];
+        $success = false;
 
         $campaignId = acym_getVar('int', 'id', 0);
         $campaignClass = new CampaignClass();
         $campaign = $campaignClass->getOneByIdWithMail($campaignId);
 
         if (empty($campaign->mail_id)) {
-            $result->message = acym_translation('ACYM_CAMPAIGN_NOT_FOUND');
+            $message = acym_translation('ACYM_CAMPAIGN_NOT_FOUND');
         } else {
             ob_start();
             $urlSite = trim(base64_encode(preg_replace('#https?://(www2?\.)?#i', '', ACYM_LIVE)), '=/');
@@ -2290,16 +2278,16 @@ class CampaignsController extends acymController
 
             // Could not load the information
             if (empty($spamtestSystem) || !empty($warnings)) {
-                $result->message = acym_translation('ACYM_ERROR_LOAD_FROM_ACYBA').(!empty($warnings) && acym_isDebug() ? $warnings : '');
+                $message = acym_translation('ACYM_ERROR_LOAD_FROM_ACYBA').(!empty($warnings) && acym_isDebug() ? $warnings : '');
             } else {
                 $decodedInformation = json_decode($spamtestSystem, true);
                 if (!empty($decodedInformation['messages']) || !empty($decodedInformation['error'])) {
                     $msgError = empty($decodedInformation['messages']) ? '' : $decodedInformation['messages'].'<br />';
                     $msgError .= empty($decodedInformation['error']) ? '' : $decodedInformation['error'];
-                    $result->message = $msgError;
+                    $message = $msgError;
                 } else {
                     if (empty($decodedInformation['email'])) {
-                        $result->message = acym_translation('ACYM_SPAMTEST_MISSING_EMAIL');
+                        $message = acym_translation('ACYM_SPAMTEST_MISSING_EMAIL');
                     } else {
                         $mailerHelper = new MailerHelper();
                         $mailerHelper->checkConfirmField = false;
@@ -2317,33 +2305,35 @@ class CampaignsController extends acymController
                         $mailerHelper->isSpamTest = true;
 
                         if ($mailerHelper->sendOne($campaign->mail_id, $receiver)) {
-                            $result->type = 'success';
-                            $result->message = 'https://mailtester.acyba.com/'.(substr($decodedInformation['email'], 0, strpos($decodedInformation['email'], '@')));
-                            $result->lang = acym_getLanguageTag(true);
+                            $success = true;
+                            $data['url'] = 'https://mailtester.acyba.com/'.(substr($decodedInformation['email'], 0, strpos($decodedInformation['email'], '@')));
+                            $data['lang'] = acym_getLanguageTag(true);
                         } else {
-                            $result->message = $mailerHelper->reportMessage;
+                            $message = $mailerHelper->reportMessage;
                         }
                     }
                 }
             }
         }
 
-        echo json_encode($result);
-        exit;
+        acym_sendAjaxResponse($message, $data, $success);
     }
 
     public function saveAjax()
     {
-        $return = $this->saveEditEmail(true);
-        echo json_encode(['error' => !$return ? acym_translation('ACYM_ERROR_SAVING') : '', 'data' => $return]);
-        exit;
+        $result = $this->saveEditEmail(true);
+        if ($result) {
+            acym_sendAjaxResponse('', ['result' => $result]);
+        } else {
+            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_SAVING'), [], false);
+        }
     }
 
     public function saveAsTmplAjax()
     {
         $mailController = new MailsController();
         $isWellSaved = $mailController->store(true);
-        acym_sendAjaxResponse($isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), $isWellSaved, $isWellSaved);
+        acym_sendAjaxResponse($isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), ['result' => $isWellSaved], $isWellSaved);
     }
 
     /**

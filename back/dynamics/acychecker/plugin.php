@@ -1,8 +1,8 @@
 <?php
 
 use AcyMailing\Libraries\acymPlugin;
-use CheckThisEmail\Classes\ConfigurationClass;
-use CheckThisEmail\Services\ApiService;
+use AcyChecker\Classes\ConfigurationClass;
+use AcyChecker\Services\ApiService;
 
 class plgAcymAcychecker extends acymPlugin
 {
@@ -26,7 +26,6 @@ class plgAcymAcychecker extends acymPlugin
         $cteConfig = new ConfigurationClass();
         $registrationIntegrations = explode(',', $cteConfig->get('registration_integrations'));
         if (empty($formData['email_verification'])) {
-
             if (in_array('acymailing', $registrationIntegrations)) {
                 unset($registrationIntegrations[array_search('acymailing', $registrationIntegrations)]);
 

@@ -179,10 +179,16 @@ function acym_secondsToTime($seconds)
     return $dtF->diff($dtT)->format('%a day(s) %h h, %i min');
 }
 
-function acym_displayDateFormat($format, $name = 'date', $default = '', $attributes = '')
+function acym_displayDateFormat($format, $name = 'date', $default = '', $attributes = [], $inputMode = true)
 {
-    $attributes = empty($attributes) ? 'class="acym__custom__fields__select__form acym__select"' : $attributes;
-    $return = '<div class="cell grid-x grid-margin-x">';
+    if (empty($attributes)) {
+        $attributes = [
+            'class' => 'acym__custom__fields__select__form acym__select',
+        ];
+    }
+
+    $return = [];
+    if ($inputMode) $return[] = '<div class="cell grid-x grid-margin-x">';
     $days = ['' => acym_translation('ACYM_DAY')];
     for ($i = 1 ; $i <= 31 ; $i++) {
         $days[$i < 10 ? '0'.$i : $i] = $i < 10 ? '0'.$i : $i;
@@ -207,42 +213,66 @@ function acym_displayDateFormat($format, $name = 'date', $default = '', $attribu
         $year[$i] = $i;
     }
     $formatToDisplay = explode('%', $format);
-    $defaultDate = empty($default) ? '' : explode('/', $default);
+    $defaultDate = empty($default) ? [] : explode('-', $default);
 
     $i = 0;
     unset($formatToDisplay[0]);
     foreach ($formatToDisplay as $one) {
         if ($one == 'd') {
-            $return .= '<div class="medium-3 margin-left-0 cell">'.acym_select(
-                    $days,
-                    $name,
-                    empty($default) ? '' : $defaultDate[$i],
-                    $attributes,
-                    'value',
-                    'text',
-                    $name.'-'.$one
-                ).'</div>';
+            if ($inputMode) {
+                $return[] = '<div class="medium-3 margin-left-0 cell">'.acym_select(
+                        $days,
+                        $name,
+                        empty($defaultDate[2]) || $defaultDate[2] === '00' ? '' : $defaultDate[2],
+                        $attributes,
+                        'value',
+                        'text',
+                        $name.'-'.$one
+                    ).'</div>';
+            } elseif (!empty($defaultDate[2]) && $defaultDate[2] !== '00') {
+                $return[] = $defaultDate[2];
+            }
         }
         if ($one == 'm') {
-            $return .= '<div class="medium-5 cell">'.acym_select($month, $name, empty($default) ? '' : $defaultDate[$i], $attributes, 'value', 'text', $name.'-'.$one).'</div>';
+            if ($inputMode) {
+                $return[] = '<div class="medium-5 cell">'.acym_select(
+                        $month,
+                        $name,
+                        empty($defaultDate[1]) || $defaultDate[1] === '00' ? '' : $defaultDate[1],
+                        $attributes,
+                        'value',
+                        'text',
+                        $name.'-'.$one
+                    ).'</div>';
+            } elseif (!empty($defaultDate[1]) && $defaultDate[1] !== '00') {
+                $return[] = $month[$defaultDate[1]];
+            }
         }
         if ($one == 'y') {
-            $return .= '<div class="medium-4 margin-right-0 cell">'.acym_select(
-                    $year,
-                    $name,
-                    empty($default) ? '' : $defaultDate[$i],
-                    $attributes,
-                    'value',
-                    'text',
-                    $name.'-'.$one
-                ).'</div>';
+            if ($inputMode) {
+                $return[] = '<div class="medium-4 margin-right-0 cell">'.acym_select(
+                        $year,
+                        $name,
+                        empty($defaultDate[0]) || $defaultDate[0] === '0000' ? '' : $defaultDate[0],
+                        $attributes,
+                        'value',
+                        'text',
+                        $name.'-'.$one
+                    ).'</div>';
+            } elseif (!empty($defaultDate[0]) && $defaultDate[0] !== '0000') {
+                $return[] = $defaultDate[0];
+            }
         }
         $i++;
     }
 
-    $return .= '</div>';
+    if ($inputMode) {
+        $return[] = '</div>';
 
-    return $return;
+        return implode('', $return);
+    } else {
+        return implode(' ', $return);
+    }
 }
 
 function acym_getTimeFromUTCDate($date)

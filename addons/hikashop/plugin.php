@@ -101,8 +101,7 @@ class plgAcymHikashop extends acymPlugin
         $this->elementOptions = [];
         $query = 'SELECT b.*, a.*
                     FROM #__hikashop_product AS a
-                    LEFT JOIN #__hikashop_file AS b ON a.product_id = b.file_ref_id AND file_type = "product"
-                    ORDER BY b.file_ordering ASC, b.file_id ASC';
+                    LEFT JOIN #__hikashop_file AS b ON a.product_id = b.file_ref_id AND file_type = "product"';
         $element = acym_loadObject($query);
         if (empty($element)) return;
         foreach ($element as $key => $value) {
@@ -945,12 +944,10 @@ class plgAcymHikashop extends acymPlugin
         $conditions['user']['hikapurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_BOUGHT').'</div>';
 
         $conditions['user']['hikapurchased']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode(
-            [
-                'plugin' => __CLASS__,
-                'trigger' => 'searchProduct',
-            ]
-        );
+        $ajaxParams = json_encode([
+            'plugin' => __CLASS__,
+            'trigger' => 'searchProduct',
+        ]);
         $conditions['user']['hikapurchased']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][hikapurchased][product]',
@@ -1192,6 +1189,10 @@ class plgAcymHikashop extends acymPlugin
         $triggers['user']['hikashoporder'] = new stdClass();
         $triggers['user']['hikashoporder']->name = acym_translationSprintf('ACYM_ORDER_STATUS_CHANGED', 'HikaShop', '');
 
+        $triggers['user']['hikashopNewOrder'] = new stdClass();
+        $triggers['user']['hikashopNewOrder']->name = acym_translationSprintf('ACYM_X_NEW_ORDER', 'HikaShop');
+        $triggers['user']['hikashopNewOrder']->option = '<input type="hidden" name="[triggers][user][hikashopNewOrder][hidden]" value="">';
+
         $cats = [];
         foreach ($statusClass->categories as $category) {
             if (empty($category->value)) {
@@ -1205,12 +1206,7 @@ class plgAcymHikashop extends acymPlugin
         }
 
         $selectedValue = empty($defaultValues['hikashoporder']['status']) ? [] : $defaultValues['hikashoporder']['status'];
-        $triggers['user']['hikashoporder']->option = acym_selectMultiple(
-            $cats,
-            '[triggers][user][hikashoporder][status]',
-            $selectedValue,
-            ['data-class' => 'acym__select']
-        );
+        $triggers['user']['hikashoporder']->option = acym_selectMultiple($cats, '[triggers][user][hikashoporder][status]', $selectedValue, ['data-class' => 'acym__select']);
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)
@@ -1222,6 +1218,11 @@ class plgAcymHikashop extends acymPlugin
         if (!empty($triggers['hikashoporder']) && !empty($data['order'])) {
             // Check order status in allowed statuses in the triggrer
             if (!empty($triggers['hikashoporder']) && in_array($data['order']->order_status, $triggers['hikashoporder']['status'])) {
+                $execute = true;
+            }
+        }
+        if (!empty($triggers['hikashopNewOrder']) && !empty($data['order'])) {
+            if ($data['order']->order_status == 'confirmed') {
                 $execute = true;
             }
         }
@@ -1268,13 +1269,15 @@ class plgAcymHikashop extends acymPlugin
         $followupClass->addFollowupEmailsQueue(self::FOLLOWTRIGGER, $user->id, $params);
 
         $automationClass = new AutomationClass();
-        $automationClass->trigger(
-            'hikashoporder',
-            [
-                'userId' => $user->id,
-                'order' => $order,
-            ]
-        );
+
+        $automationClass->trigger('hikashopNewOrder', [
+            'userId' => $user->id,
+            'order' => $order,
+        ]);
+        $automationClass->trigger('hikashoporder', [
+            'userId' => $user->id,
+            'order' => $order,
+        ]);
     }
 
     // Build Hikashop trigger display for the summary
@@ -1284,6 +1287,9 @@ class plgAcymHikashop extends acymPlugin
             //$return = acym_translation('ACYM_HIKASHOP_ORDER_STATUS_TO').' ';
             $status = implode(', ', $automation->triggers['hikashoporder']['status']);
             $automation->triggers['hikashoporder'] = acym_translationSprintf('ACYM_ORDER_STATUS_CHANGED', 'HikaShop', $status);
+        }
+        if (isset($automation->triggers['hikashopNewOrder'])) {
+            $automation->triggers['hikashopNewOrder'] = acym_translationSprintf('ACYM_X_NEW_ORDER', 'HikaShop');
         }
     }
 
@@ -1308,12 +1314,10 @@ class plgAcymHikashop extends acymPlugin
     {
         if ($trigger == self::FOLLOWTRIGGER) {
             $orderStatus = acym_loadObjectList('SELECT `orderstatus_id` AS value, `orderstatus_name` AS text FROM #__hikashop_orderstatus ORDER BY `orderstatus_name`');
-            $multiselectOrderStatus = acym_selectMultiple(
-                $orderStatus,
+            $multiselectOrderStatus = acym_selectMultiple($orderStatus,
                 'followup[condition][order_status]',
                 !empty($followup->condition) && !empty($followup->condition['order_status']) ? $followup->condition['order_status'] : [],
-                ['class' => 'acym__select']
-            );
+                ['class' => 'acym__select']);
             $multiselectOrderStatus = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectOrderStatus.'</span>';
             $statusOrderStatus = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
                     $statusArray,
@@ -1324,12 +1328,10 @@ class plgAcymHikashop extends acymPlugin
             $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
 
-            $ajaxParams = json_encode(
-                [
-                    'plugin' => __CLASS__,
-                    'trigger' => 'searchProduct',
-                ]
-            );
+            $ajaxParams = json_encode([
+                'plugin' => __CLASS__,
+                'trigger' => 'searchProduct',
+            ]);
             $parametersProductSelect = [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-params' => acym_escape($ajaxParams),
@@ -1350,12 +1352,10 @@ class plgAcymHikashop extends acymPlugin
                 ).'</span>';
             $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
-            $ajaxParams = json_encode(
-                [
-                    'plugin' => __CLASS__,
-                    'trigger' => 'searchCat',
-                ]
-            );
+            $ajaxParams = json_encode([
+                'plugin' => __CLASS__,
+                'trigger' => 'searchCat',
+            ]);
             $parametersCategoriesSelect = [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-params' => acym_escape($ajaxParams),

@@ -1,7 +1,7 @@
 <div id="acym__override__splashscreen" class="acym__content cell grid-x">
 	<div class="cell grid-x acym__splashscreen__bloc margin-top-2">
 		<div class="cell text-center">
-			<img src="<?php echo ACYM_IMAGES.'icons/logo_acychecker.png'; ?>" alt="Check This Email" title="Check This Email" style="max-width:100px;">
+			<img src="<?php echo ACYM_IMAGES.'icons/logo_acychecker.png'; ?>" alt="AcyChecker" title="AcyChecker" style="max-width:100px;">
 		</div>
 	</div>
 	<div class="cell grid-x acym__splashscreen__bloc margin-top-2">
@@ -47,12 +47,12 @@
 		<div class="cell grid-x text-center align-center">
 			<div class="cell grid-margin-x">
 				<a target="_blank"
-				   href="<?php echo ACYM_ACYMAILLING_WEBSITE; ?>checkthisemail?utm_source=acymailing_plugin&utm_medium=splash_acychecker&utm_campaign=try_acychecker"
+				   href="<?php echo ACYM_ACYCHECKER_WEBSITE; ?>?utm_source=acymailing_plugin&utm_medium=splash_acychecker&utm_campaign=try_acychecker"
 				   class="button button-secondary cell shrink">
                     <?php echo acym_translation('ACYM_ACYCHECKER_TRY_FOR_FREE'); ?>
 				</a>
 				<a target="_blank"
-				   href="<?php echo ACYM_ACYMAILLING_WEBSITE; ?>checkthisemail?utm_source=acymailing_plugin&utm_medium=splash_acychecker&utm_campaign=acychecker_more_info"
+				   href="<?php echo ACYM_ACYCHECKER_WEBSITE; ?>email-checker?utm_source=acymailing_plugin&utm_medium=splash_acychecker&utm_campaign=acychecker_more_info"
 				   class="button button-secondary cell shrink">
                     <?php echo acym_translation('ACYM_ACYCHECKER_MORE_INFORMATION'); ?>
 				</a>

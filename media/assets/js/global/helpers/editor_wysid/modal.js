@@ -55,11 +55,11 @@ const acym_editorWysidModal = {
                 'code': $toInsert
             }).then(response => {
                 if (!response) {
-                    response = {'content': $toInsert};
+                    response = {'data': {'content': $toInsert}};
                 }
 
                 let toInsert = '<span id="acymRangeId" class="acym_dynamic mceNonEditable" data-dynamic="' + $toInsert + '">';
-                toInsert += response.content;
+                toInsert += response.data.content;
                 toInsert += '<em class="acym_remove_dynamic acymicon-close">&zwj;</em></span> &zwj;';
 
                 if (!acym_helper.empty(lastKnownRangeInEditor) && !acym_editorWysidModal.isSelectionInEditor()) {

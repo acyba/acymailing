@@ -76,7 +76,7 @@ jQuery(document).ready(function ($) {
         let $options = $('#acym__automation__filter__' + type + '__options');
         if (!$options.length) return;
 
-        let filters = JSON.parse($options.val());
+        let filters = acym_helper.parseJson($options.val());
 
 
         $('.acym__automation__select__' + type + '__filter').off('change').on('change', function () {
@@ -246,7 +246,7 @@ jQuery(document).ready(function ($) {
         let $filterElement = $('#filters');
         if (!$filterElement.length) return;
 
-        let filters = JSON.parse($filterElement.val());
+        let filters = acym_helper.parseJson($filterElement.val());
         let type = filters['type_filter'];
 
         let or = 0;

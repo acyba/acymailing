@@ -22,8 +22,8 @@ jQuery(document).ready(function ($) {
                 let ajaxUrl = ACYM_AJAX_URL + '&ctrl=plugins&task=toggleActivate&id=' + id;
                 $.get(ajaxUrl, (res) => {
                     res = acym_helper.parseJson(res);
-                    if (undefined !== res.error) {
-                        acym_helperNotification.addNotification(res.error, 'error');
+                    if (res.error) {
+                        acym_helperNotification.addNotification(res.message, 'error');
                         return false;
                     }
                     this.loading = false;
@@ -65,14 +65,14 @@ jQuery(document).ready(function ($) {
             },
             mounted: function () {
                 acym_helperBack.config_get('level').done((resConfig) => {
-                    if (undefined !== resConfig.error) {
-                        acym_helperNotification.addNotification(resConfig.error, 'error');
+                    if (resConfig.error) {
+                        acym_helperNotification.addNotification(resConfig.message, 'error');
 
                         return false;
                     }
                     let resPluginsSite = acym_helper.parseJson(document.getElementById('acym__plugins__all').value);
                     this.allPlugins = resPluginsSite.elements;
-                    this.currentLevel = resConfig.data.toLowerCase();
+                    this.currentLevel = resConfig.data.value.toLowerCase();
                     this.resetDisplay();
                     if (this.displayedPlugins.length === 0) {
                         this.noPluginTodisplay = true;
@@ -133,8 +133,8 @@ jQuery(document).ready(function ($) {
                         data: {'plugin': plugin}
                     }).then((res) => {
                         res = acym_helper.parseJson(res);
-                        if (undefined !== res.error) {
-                            acym_helperNotification.addNotification(res.error, 'error');
+                        if (res.error) {
+                            acym_helperNotification.addNotification(res.message, 'error');
                             this.updating[plugin.id] = false;
                             this.updating = {...this.updating};
                             return false;
@@ -193,8 +193,8 @@ jQuery(document).ready(function ($) {
                         let ajaxUrl = ACYM_AJAX_URL + '&ctrl=plugins&task=deletePlugin&id=' + id;
                         $.get(ajaxUrl, (res) => {
                             res = acym_helper.parseJson(res);
-                            if (undefined !== res.error) {
-                                acym_helperNotification.addNotification(res.error, 'error');
+                            if (res.error) {
+                                acym_helperNotification.addNotification(res.message, 'error');
                                 return false;
                             }
                             acym_helperNotification.addNotification(res.message, 'info');

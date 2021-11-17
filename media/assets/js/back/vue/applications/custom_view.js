@@ -34,13 +34,13 @@ jQuery(document).on('acym_plugins_installed_loaded', function () {
                 this.setTags();
                 jQuery.get(ajaxUrl, (response) => {
                     response = acym_helper.parseJson(response);
-                    if (undefined !== response.error) {
-                        acym_helperNotification.addNotification(response.error, 'error');
+                    if (response.error) {
+                        acym_helperNotification.addNotification(response.message, 'error');
                         $modal.foundation('close');
                         return false;
                     }
-                    response.content = undefined === html_beautify ? response.content : html_beautify(response.content, this.optionIndent);
-                    this.code = response.content;
+                    response.data.content = undefined === html_beautify ? response.data.content : html_beautify(response.data.content, this.optionIndent);
+                    this.code = response.data.content;
                     this.loading = false;
                 });
             },
@@ -50,11 +50,6 @@ jQuery(document).on('acym_plugins_installed_loaded', function () {
                     let ajaxUrl = ACYM_AJAX_URL + '&ctrl=plugins&task=saveCustomViewPlugin&plugin=' + pluginFolderName;
                     jQuery.post(ajaxUrl, {custom_view: encodeURIComponent(this.code)}, (response) => {
                         response = acym_helper.parseJson(response);
-                        if (undefined !== response.error) {
-                            acym_helperNotification.addNotification(response.error, 'error');
-                            $modal.foundation('close');
-                            return false;
-                        }
                         this.saving = false;
                         this.messageSaved = response.message;
                         this.saved = true;
@@ -69,13 +64,13 @@ jQuery(document).on('acym_plugins_installed_loaded', function () {
                     let ajaxUrl = ACYM_AJAX_URL + '&ctrl=plugins&task=deleteCustomViewPlugin&plugin=' + pluginFolderName + '&plugin_class=' + pluginClassName;
                     jQuery.post(ajaxUrl, (response) => {
                         response = acym_helper.parseJson(response);
-                        if (undefined !== response.error) {
-                            acym_helperNotification.addNotification(response.error, 'error');
+                        if (response.error) {
+                            acym_helperNotification.addNotification(response.message, 'error');
                             $modal.foundation('close');
                             return false;
                         }
-                        response.content = undefined === html_beautify ? response.content : html_beautify(response.content, this.optionIndent);
-                        this.code = response.content;
+                        response.data.content = undefined === html_beautify ? response.data.content : html_beautify(response.data.content, this.optionIndent);
+                        this.code = response.data.content;
                         this.deleting = false;
                         this.messageDeleted = response.message;
                         this.deleted = true;
@@ -106,7 +101,7 @@ jQuery(document).on('acym_plugins_installed_loaded', function () {
             }
         });
     });
-    $modals.on('closed.zf.reveal', function (){
+    $modals.on('closed.zf.reveal', function () {
         jQuery(document).trigger('acym_custom_view_modal_closed');
-    })
+    });
 });

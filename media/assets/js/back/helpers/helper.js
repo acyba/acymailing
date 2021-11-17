@@ -12,10 +12,10 @@ const acym_helperBack = {
             let ajaxUrl = ACYM_TOGGLE_URL + '&task=setDoNotRemindMe&value=' + encodeURIComponent(jQuery(this).attr('title'));
             jQuery.post(ajaxUrl, function (response) {
                 response = acym_helper.parseJson(response);
-                if ('' === response.error) {
-                    jQuery('#acym__reviews__footer').html(response.message);
+                if (response.error) {
+                    console.log(response.message);
                 } else {
-                    console.log(response.error);
+                    jQuery('#acym__reviews__footer').html(response.message);
                 }
             });
         });
@@ -26,8 +26,8 @@ const acym_helperBack = {
             let ajaxUrl = ACYM_TOGGLE_URL + '&task=setDoNotRemindMe&value=' + encodeURIComponent(identifier);
             jQuery.post(ajaxUrl, function (response) {
                 response = acym_helper.parseJson(response);
-                if ('' !== response.error) {
-                    console.log(response.error);
+                if (response.error) {
+                    console.log(response.message);
                 } else {
                     location.reload();
                 }

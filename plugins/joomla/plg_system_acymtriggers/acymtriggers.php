@@ -165,8 +165,8 @@ class plgSystemAcymtriggers extends JPlugin
         if (!$regacyNeeded) return;
 
         // Get the current extension
-        if (empty($_REQUEST['option'])) return;
-        $option = $_REQUEST['option'];
+        $option = $this->getVar('cmd', 'option');
+        if (empty($option)) return;
 
         if (!$this->initAcy()) return;
 
@@ -180,7 +180,7 @@ class plgSystemAcymtriggers extends JPlugin
                     'email' => ['jform[email2]', 'jform[email1]'],
                     'password' => ['jform[password2]', 'jform[password1]'],
                     'checkLayout' => ['profile' => 'edit'],
-                    'lengthafter' => 200,
+                    'lengthafter' => ACYM_J40 ? 500 : 200,
                     'containerClass' => 'control-group',
                     'labelClass' => 'control-label',
                     'valueClass' => 'controls',
@@ -216,10 +216,39 @@ class plgSystemAcymtriggers extends JPlugin
         $this->includeRegacyLists($components[$option], $regacyHelper->label, $regacyHelper->lists);
     }
 
+    function getVar($type, $name)
+    {
+        $jversion = preg_replace('#[^0-9\.]#i', '', JVERSION);
+        if (version_compare($jversion, '4.0.0', '>=')) {
+            $acyapp = JFactory::getApplication();
+            $input = $acyapp->input;
+            $sourceInput = $input->__get('REQUEST');
+
+            if ($acyapp->isClient('administrator')) {
+                $result = $sourceInput->get($name, null, $type);
+            } else {
+                // When the SEF is active, $_REQUEST is empty as Joomla doesn't populate it anymore
+                $result = $sourceInput->get($name, $input->get($name, null, $type), $type);
+            }
+        } else {
+            $result = JRequest::getVar($name, null, 'REQUEST', $type);
+        }
+
+        if (is_string($result)) {
+            return JComponentHelper::filterText($result);
+        }
+
+        return $result;
+    }
+
     private function includeRegacyLists($options, $label, $lists)
     {
         $config = acym_config();
-        $body = JResponse::getBody();
+        if (ACYM_J40) {
+            $body = JFactory::getApplication()->getBody(false);
+        } else {
+            $body = JResponse::getBody();
+        }
 
         $listsPosition = $config->get('regacy_listsposition', 'password');
 
@@ -237,7 +266,6 @@ class plgSystemAcymtriggers extends JPlugin
 
         $i = 0;
         while ($i < count($after)) {
-
             $lengthAfterMin = empty($options['lengthaftermin']) ? 0 : $options['lengthaftermin'];
             $lengthAfter = $options['lengthafter'];
 
@@ -249,7 +277,11 @@ class plgSystemAcymtriggers extends JPlugin
                         <td class="acym__regacy__values">'.$lists.'</td>
                     </tr>';
                 $body = preg_replace($regex, '$1'.$lists, $body, 1);
-                JResponse::setBody($body);
+                if (ACYM_J40) {
+                    JFactory::getApplication()->setBody($body);
+                } else {
+                    JResponse::setBody($body);
+                }
 
                 return;
             }
@@ -282,7 +314,11 @@ class plgSystemAcymtriggers extends JPlugin
                         </'.$dispall[1].'>';
                     }
                     $body = preg_replace($regex, '$1'.$lists, $body, 1);
-                    JResponse::setBody($body);
+                    if (ACYM_J40) {
+                        JFactory::getApplication()->setBody($body);
+                    } else {
+                        JResponse::setBody($body);
+                    }
 
                     return;
                 }

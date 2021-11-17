@@ -75,14 +75,6 @@ class MailClass extends acymClass
             $filters[] = 'mail.name LIKE '.acym_escapeDB('%'.$settings['search'].'%');
         }
 
-        if (!empty($settings['type'])) {
-            if ($settings['type'] == 'custom') {
-                $filters[] .= 'mail.library = 0';
-            } else {
-                $filters[] .= 'mail.library = 1';
-            }
-        }
-
         if (!empty($settings['editor'])) {
             if ($settings['editor'] == 'html') {
                 $filters[] .= 'mail.drag_editor = 0';
@@ -248,15 +240,15 @@ class MailClass extends acymClass
 
     /**
      * @param string  $name
-     * @param boolean $library
      * @param boolean $needTranslatedSettings
+     * @param string  $onlyType
      *
      * @return object
      */
-    public function getOneByName($name, $library = false, $needTranslatedSettings = false)
+    public function getOneByName($name, $needTranslatedSettings = false, $onlyType = null)
     {
         $query = 'SELECT * FROM #__acym_mail WHERE `parent_id` IS NULL AND `name` = '.acym_escapeDB(utf8_encode($name));
-        if ($library) $query .= ' AND `library` = 1';
+        if (!empty($onlyType)) $query .= ' AND `type` = '.acym_escapeDB($onlyType);
 
         $mail = $this->decode(acym_loadObject($query));
 
@@ -613,6 +605,19 @@ class MailClass extends acymClass
 
     public function doupload()
     {
+        $zipFilePath = $this->uploadTemplate();
+        if (empty($zipFilePath)) return false;
+
+        $templateFolder = $this->extractTemplate($zipFilePath);
+        if (empty($templateFolder)) return false;
+
+        if (!$this->installExtractedTemplate($templateFolder)) return false;
+
+        return true;
+    }
+
+    private function uploadTemplate()
+    {
         $importFile = acym_getVar('none', 'uploadedfile', '', 'files');
 
         $fileError = $importFile['error'];
@@ -676,23 +681,33 @@ class MailClass extends acymClass
             return false;
         }
 
-        $jpath = acym_getCMSConfig('tmp_path', ACYM_MEDIA.'tmp'.DS);
-        $tmp_dest = acym_cleanPath($jpath.DS.$filename);
+        $tmpPath = acym_getCMSConfig('tmp_path', ACYM_MEDIA.'tmp'.DS);
+        $zipFilePath = acym_cleanPath($tmpPath.DS.$filename);
         $tmp_src = $importFile['tmp_name'];
 
-        $uploaded = acym_uploadFile($tmp_src, $tmp_dest);
+        $uploaded = acym_uploadFile($tmp_src, $zipFilePath);
         if (!$uploaded) {
-            acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_7', $tmp_src, $tmp_dest), 'error');
+            acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_7', $tmp_src, $zipFilePath), 'error');
 
             return false;
         }
 
-        $tmpdir = uniqid().'_template';
+        return $zipFilePath;
+    }
 
-        $extractdir = acym_cleanPath(dirname($tmp_dest).DS.$tmpdir);
+    public function extractTemplate($zipFilePath, $deleteZip = true)
+    {
+        $extractdir = acym_cleanPath(dirname($zipFilePath).DS.uniqid().'_template');
 
-        $result = acym_extractArchive($tmp_dest, $extractdir);
-        acym_deleteFile($tmp_dest);
+        $result = acym_extractArchive($zipFilePath, $extractdir);
+
+        if (!$result) {
+            acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_9', $zipFilePath, $extractdir), 'error');
+
+            return false;
+        }
+
+        if ($deleteZip) acym_deleteFile($zipFilePath);
 
         $allFiles = acym_getFiles($extractdir, '.', true, true, [], []);
         foreach ($allFiles as $oneFile) {
@@ -704,24 +719,22 @@ class MailClass extends acymClass
             }
         }
 
-        if (!$result) {
-            acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_9', $tmp_dest, $extractdir), 'error');
+        return $extractdir;
+    }
 
-            return false;
-        }
-
-        if ($this->detecttemplates($extractdir)) {
-
+    public function installExtractedTemplate($templateFolder)
+    {
+        if ($this->detecttemplates($templateFolder)) {
             $messages = $this->templateNames;
             array_unshift($messages, acym_translationSprintf('ACYM_TEMPLATES_INSTALL', count($this->templateNames)));
-            acym_enqueueMessage($messages, 'success');
-            if (is_dir($extractdir)) acym_deleteFolder($extractdir);
+            acym_enqueueMessage($messages);
+            if (is_dir($templateFolder)) acym_deleteFolder($templateFolder);
 
             return true;
         }
 
         acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_10'), 'error');
-        if (is_dir($extractdir)) acym_deleteFolder($extractdir);
+        if (is_dir($templateFolder)) acym_deleteFolder($templateFolder);
 
         return false;
     }
@@ -791,11 +804,15 @@ class MailClass extends acymClass
                 'src="./',
                 'src="../',
                 'src="images/',
+                'url("images/',
+                'url(&quot;images/',
             ],
             [
                 'src="'.ACYM_TEMPLATE_URL.$newTemplateFolder.'/',
                 'src="'.ACYM_TEMPLATE_URL,
                 'src="'.ACYM_TEMPLATE_URL.$newTemplateFolder.'/images/',
+                'url("'.ACYM_TEMPLATE_URL.$newTemplateFolder.'/images/',
+                'url(&quot;'.ACYM_TEMPLATE_URL.$newTemplateFolder.'/images/',
             ],
             $fileContent
         );
@@ -884,7 +901,6 @@ class MailClass extends acymClass
 
         $newTemplate->drag_editor = 0;
         $newTemplate->type = $this::TYPE_TEMPLATE;
-        $newTemplate->library = 0;
         $newTemplate->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
 
         $tempid = $this->save($newTemplate);
@@ -1065,7 +1081,10 @@ class MailClass extends acymClass
 
         $urlPoweredByImage = ACYM_IMAGES.'poweredby_black.png';
 
-        $poweredByHTML = '<p id="acym__powered_by_acymailing"><a href="https://www.acymailing.com/?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="blank"><img height="40" width="199" style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;" src="'.$urlPoweredByImage.'"></a></p>';
+        $poweredByHTML = '<p id="acym__powered_by_acymailing">';
+        $poweredByHTML .= '<a href="https://www.acymailing.com/?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="blank">';
+        $poweredByHTML .= '<img alt="Email built with AcyMailing" height="40" width="199" style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;" src="'.$urlPoweredByImage.'"/>';
+        $poweredByHTML .= '</a></p>';
         $poweredByWYSID = <<<CONTENT
 <table id="acym__powered_by_acymailing" class="row" bgcolor="#ffffff" style="background-color: transparent" cellpadding="0" cellspacing="0" border="0">
     <tbody bgcolor style="background-color: inherit;">

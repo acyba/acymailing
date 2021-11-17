@@ -2,7 +2,7 @@
 
 namespace AcyMailing\Init;
 
-class acyWpRocket extends acyHook
+class acyWpRocket
 {
     public function __construct()
     {

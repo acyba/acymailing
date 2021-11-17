@@ -876,19 +876,10 @@ class plgAcymSubscriber extends acymPlugin
         $fields = $fieldsData['elements'];
 
         foreach ($fields as $oneField) {
-            $option = json_decode($oneField->option);
-
-            if (empty($option->format)) continue;
-
-            $format = explode('%', $option->format);
-            unset($format[0]);
-            $format = implode('/', $format);
-            $format = str_replace('y', 'Y', $format);
-
             $data['fields'][] = [
                 'name' => $oneField->name,
                 'id' => $oneField->id,
-                'format' => $format,
+                'format' => 'Y-m-d',
                 'query' => 'SELECT user_id, value AS date FROM #__acym_user_has_field WHERE field_id = '.intval($oneField->id),
             ];
         }

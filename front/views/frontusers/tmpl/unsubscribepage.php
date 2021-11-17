@@ -49,6 +49,10 @@ if (!empty($data['languages'])) {
             echo '</ul>';
             ?>
 		</div>
+		<div class="margin-top-1">
+			<h2 class="acym_front_page__unsubscribe__title"><?php echo acym_translation('ACYM_WHY_ARE_YOU_UNSUBSCRIBING'); ?></h2>
+			<input type="text" name="unsubscribe_reason">
+		</div>
 		<div class="acym_front_page__unsubscribe__lists__actions">
 			<h5 class="margin-top-1 margin-bottom-1 acym_front_page__unsubscribe__sub-title"><?php echo acym_translation('ACYM_CLICK_HERE_TO_MAKE_CHANGES'); ?></h5>
 			<button type="button" class="button margin-right-1" id="acym__save" onclick="return acymSubmitForm('saveSubscriptions', this);">

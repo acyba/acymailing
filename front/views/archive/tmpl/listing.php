@@ -34,7 +34,7 @@
                     }
                     echo acym_frontModal($archiveURL, $oneNewsletter->subject, false, $oneNewsletter->id, $iframeClass, $additionalContent);
                 } else {
-                    echo '<p class="acym__modal__handle"><a href="'.$archiveURL.'" target="_blank">'.$oneNewsletter->subject.'</a></p>';
+                    echo '<p class="acym__front__archive__raw"><a href="'.$archiveURL.'" target="_blank">'.$oneNewsletter->subject.'</a></p>';
                 }
                 echo '<p class="acym__front__archive__newsletter_sending-date">'.acym_translation('ACYM_SENDING_DATE').' : '.acym_date(
                         $oneNewsletter->sending_date,

@@ -2,7 +2,7 @@
 
 use AcyMailing\Classes\ConfigurationClass;
 
-function acydump($arg, $ajax = false, $indent = true)
+function acydump($arg, $ajax = false, $indent = true, $htmlentities = false)
 {
     ob_start();
     var_dump($arg);
@@ -12,7 +12,9 @@ function acydump($arg, $ajax = false, $indent = true)
         file_put_contents(ACYM_ROOT.'acydebug.txt', $result, FILE_APPEND);
     } else {
         $style = $indent ? 'margin-left: 220px;' : '';
-        echo '<pre style="'.$style.'">'.htmlentities($result).'</pre>';
+        echo '<pre style="'.$style.'">';
+        echo $htmlentities ? htmlentities($result) : $result;
+        echo '</pre>';
     }
 }
 

@@ -28,6 +28,7 @@ class SendinblueCredentials extends SendinblueClass
     public function getSendingMethodsHtmlSetting(&$data)
     {
         $delayType = new DelayType();
+        $defaultApiKey = empty($data['tab']->config->values[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key']->value;
         ob_start();
         ?>
 		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings">
@@ -44,7 +45,7 @@ class SendinblueCredentials extends SendinblueClass
                 ); ?>
 				<input type="text"
 					   id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings_api-key"
-					   value="<?php echo empty($data['tab']->config->values[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key']->value; ?>"
+					   value="<?php echo empty($defaultApiKey) ? $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_api_key') : $defaultApiKey; ?>"
 					   name="config[<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_api_key]"
 					   class="cell margin-right-1 acym__configuration__mail__settings__text">
                 <?php echo $this->getTestCredentialsSendingMethodButton(plgAcymSendinblue::SENDING_METHOD_ID); ?>

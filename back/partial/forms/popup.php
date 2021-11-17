@@ -8,12 +8,25 @@
             $cookieExpirationAttr = empty($form->cookie['cookie_expiration']) ? 'acym-data-cookie="1"' : 'acym-data-cookie="'.$form->cookie['cookie_expiration'].'"';
             echo '<form acym-data-id="'.$form->id.'" '.$cookieExpirationAttr.' action="'.$form->form_tag_action.'" id="'.$form->form_tag_name.'" name="'.$form->form_tag_name.'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acymSubmitSubForm\')">';
         }
-        if (in_array($form->style_options['position'], ['image-top', 'image-left'])) include acym_getPartial('forms', 'image');
+        if (in_array($form->style_options['position'], ['image-top', 'image-left'])) {
+            if (!empty($form->message_options['text']) && $form->message_options['position'] == 'before-image') {
+                echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+            }
+            include acym_getPartial('forms', 'image');
+        }
         echo '<div class="acym__subscription__form__popup__fields-button">';
         include acym_getPartial('forms', 'fields');
+        if (!empty($form->message_options['text']) && $form->message_options['position'] == 'before-button') {
+            echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+        }
         include acym_getPartial('forms', 'button');
         echo '</div>';
-        if (in_array($form->style_options['position'], ['image-bottom', 'image-right'])) include acym_getPartial('forms', 'image');
+        if (in_array($form->style_options['position'], ['image-bottom', 'image-right'])) {
+            if (!empty($form->message_options['text']) && $form->message_options['position'] == 'before-image') {
+                echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+            }
+            include acym_getPartial('forms', 'image');
+        }
         include acym_getPartial('forms', 'hidden_params');
         ?>
 		</form>
@@ -82,6 +95,10 @@
 		display: block;
 		width: 100%;
 		margin: 1rem 10px !important;
+	}
+
+	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>#acym__subscription__form__popup-text{
+		color: <?php echo $form->message_options['color']?>;
 	}
 
 	<?php if (in_array($form->style_options['position'], ['image-right', 'image-left'])){?>

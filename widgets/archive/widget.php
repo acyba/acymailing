@@ -7,7 +7,8 @@ class acym_archive_widget extends WP_Widget
 {
     public function __construct()
     {
-        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
+        $ds = DIRECTORY_SEPARATOR;
+        require_once rtrim(dirname(dirname(__DIR__)), $ds).$ds.'back'.$ds.'helpers'.$ds.'helper.php';
 
         parent::__construct(
             'acym_archive_widget',
@@ -19,13 +20,15 @@ class acym_archive_widget extends WP_Widget
     //Widget Configuration
     public function form($instance)
     {
-        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
+        $ds = DIRECTORY_SEPARATOR;
+        require_once rtrim(dirname(dirname(__DIR__)), $ds).$ds.'back'.$ds.'helpers'.$ds.'helper.php';
 
         $params = [
             'title' => 'See all newsletters',
             'nbNewslettersPerPage' => '10',
             'lists' => '',
             'popup' => '1',
+            'displayUserListOnly' => '1',
         ];
 
         $listClass = new ListClass();
@@ -52,7 +55,7 @@ class acym_archive_widget extends WP_Widget
         echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('title').'">'.acym_translation('ACYM_TITLE').'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" value="'.$params['title'].'" /></p>';
 
-        echo '<p><label class="acyWPconfig"> '.acym_translation('ACYM_WIDGET_ARCHIVE_NUMBER_PER_PAGE').'</label>
+        echo '<p><label class="acyWPconfig"> '.acym_translation('ACYM_WIDGET_CAMPAIGN_NUMBER_PER_PAGE').'</label>
            '.acym_translationSprintf(
                 'ACYM_X_NEWSLETTERS_PER_PAGE',
                 '<input class="tiny-text" type="number" min="1"  max="20" name="'.$this->get_field_name('nbNewslettersPerPage').'" value="'.$params['nbNewslettersPerPage'].'">'
@@ -74,13 +77,17 @@ class acym_archive_widget extends WP_Widget
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_ARCHIVE_POPUP_DESC').'">'.acym_translation('ACYM_ARCHIVE_POPUP').'</label>';
         echo acym_boolean($this->get_field_name('popup'), $params['popup'], $this->get_field_id('popup')).'</p>';
 
+        echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_ARCHIVE_ONLY_USER_LIST_DESC').'">'.acym_translation('ACYM_ARCHIVE_ONLY_USER_LIST').'</label>';
+        echo acym_boolean($this->get_field_name('displayUserListOnly'), $params['displayUserListOnly'], $this->get_field_id('displayUserListOnly')).'</p>';
+
         echo '</div>';
     }
 
     // Widget's output
     public function widget($args, $instance)
     {
-        require_once rtrim(dirname(dirname(__DIR__)), DS).DS.'back'.DS.'helpers'.DS.'helper.php';
+        $ds = DIRECTORY_SEPARATOR;
+        require_once rtrim(dirname(dirname(__DIR__)), $ds).$ds.'back'.$ds.'helpers'.$ds.'helper.php';
         if (!acym_isElementorEdition()) acym_loadAssets('archive', 'listing');
 
         echo $args['before_widget'];
@@ -100,6 +107,7 @@ class acym_archive_widget extends WP_Widget
         $viewParams = [
             'listsSent' => isset($instance['lists']) ? $instance['lists'] : [],
             'popup' => isset($instance['popup']) ? $instance['popup'] : '1',
+            'displayUserListOnly' => isset($instance['displayUserListOnly']) ? $instance['displayUserListOnly'] : '1',
             'nbNewslettersPerPage' => isset($instance['nbNewslettersPerPage']) ? $instance['nbNewslettersPerPage'] : '10',
             'paramsCMS' => ['widget_id' => $args['widget_id']],
             'search' => $search,

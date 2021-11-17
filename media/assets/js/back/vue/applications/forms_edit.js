@@ -59,16 +59,16 @@ jQuery(document).ready(function ($) {
                     }
                 }).then((res) => {
                     this.loading = false;
-                    if (res.error !== undefined) {
-                        acym_helperNotification.addNotification(res.error, 'error');
+                    if (res.error) {
+                        acym_helperNotification.addNotification(res.message, 'error');
                         return false;
                     }
                     if (exit) {
                         window.location.href = $('#acym_form').attr('action') + '&task=listing';
                     } else {
                         acym_helperNotification.addNotification(res.message, 'info', true);
-                        this.form.id = res.id;
-                        $('#acym__form__structure').val(res.id);
+                        this.form.id = res.data.id;
+                        $('#acym__form__structure').val(res.data.id);
                     }
                 });
             },
@@ -98,11 +98,11 @@ jQuery(document).ready(function ($) {
                     }
                 }).then((res) => {
                     this.loading = false;
-                    if (res.error !== undefined) {
-                        acym_helperNotification.addNotification(res.error, 'error');
+                    if (res.error) {
+                        acym_helperNotification.addNotification(res.message, 'error');
                         return false;
                     }
-                    this.fillIframe(res.html);
+                    this.fillIframe(res.data.html);
                 });
             }
         },

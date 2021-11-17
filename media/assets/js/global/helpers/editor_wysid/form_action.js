@@ -89,11 +89,11 @@ const acym_editorWysidFormAction = {
         }
 
         return acym_helper.post(ajaxUrl, jQuery('#acym_form').serialize()).done(function (res) {
-            if (res['error'] === true && '' !== res['message']) {
-                acym_helperNotification.addNotification(res['message'], 'error');
+            if (res.error) {
+                acym_helperNotification.addNotification(res.message, 'error');
             } else {
                 if (!saveAsTmpl) {
-                    jQuery('mail' === controller ? '[name="id"]' : '[name="id"], [name="mail[id]"]').val(res.data);
+                    jQuery('mail' === controller ? '[name="id"]' : '[name="id"], [name="mail[id]"]').val(res.data.result);
                     if (!fromSendTest) {
                         jQuery('#acym_header').css('display', '');
                         jQuery('.acym__content').css('display', '');
@@ -106,7 +106,7 @@ const acym_editorWysidFormAction = {
                         'level': 'success'
                     }, 3000, false);
                 }
-                if (fromSendTest) acym_editorWysidTest.sendTest(res.data);
+                if (fromSendTest) acym_editorWysidTest.sendTest(res.data.result);
                 jQuery('#acym__wysid__warning__thumbnail').toggle();
             }
             jQuery('#acym__wysid__save__button').removeAttr('disabled');
@@ -185,10 +185,10 @@ const acym_editorWysidFormAction = {
             if ('' !== jQuery('.acym__wysid__hidden__save__content').val()) {
                 jQuery('#acym__wysid__template').replaceWith(jQuery('.acym__wysid__hidden__save__content').val());
             }
-            acym_helperEditorWysid.saveSettings = jQuery('.acym__wysid__hidden__save__settings').val() != '' ? jQuery('.acym__wysid__hidden__save__settings')
+            acym_helperEditorWysid.saveSettings = jQuery('.acym__wysid__hidden__save__settings').val() !== '' ? jQuery('.acym__wysid__hidden__save__settings')
                 .val() : '';
-            acym_helperEditorWysid.mailsSettings = acym_helperEditorWysid.saveSettings == '' ? {} : JSON.parse(acym_helperEditorWysid.saveSettings);
-            if (jQuery('.acym__wysid__hidden__save__stylesheet').val() != '') {
+            acym_helperEditorWysid.mailsSettings = acym_helperEditorWysid.saveSettings === '' ? {} : acym_helper.parseJson(acym_helperEditorWysid.saveSettings);
+            if (jQuery('.acym__wysid__hidden__save__stylesheet').val() !== '') {
                 acym_helperEditorWysid.savedStylesheet = jQuery('.acym__wysid__hidden__save__stylesheet').val();
                 jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val(acym_helperEditorWysid.savedStylesheet);
             }

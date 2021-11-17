@@ -8,8 +8,8 @@ const acym_helperHeader = {
             let ajaxUrl = ACYM_AJAX_URL + '&ctrl=update&task=checkForNewVersion';
             jQuery.get(ajaxUrl, function (response) {
                 response = acym_helper.parseJson(response);
-                $checkVersionArea.html(response.content);
-                jQuery('#acym__check__version__last__check').html(response.lastcheck);
+                $checkVersionArea.html(response.data.content);
+                jQuery('#acym__check__version__last__check').html(response.data.lastcheck);
             });
         });
 

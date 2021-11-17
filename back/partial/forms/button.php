@@ -1,6 +1,8 @@
 <div class="acym__subscription__form__button">
     <?php
-    $onclick = $edition ? '' : 'onclick="try{ return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acymSubmitSubForm\'); }catch(err){alert(\'The form could not be submitted \'+err);return false;}"';
+    $onclick = $edition ? ''
+        : 'onclick="try{ return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acymSubmitSubForm\'); }catch(err){alert(\'The form could not be submitted \'+err);return false;}"';
+    $form->button_options['text'] = empty($form->button_options['text']) ? acym_translation('ACYM_SUBSCRIBE') : $form->button_options['text'];
     ?>
 	<button type="button" <?php echo $onclick; ?>><?php echo $form->button_options['text']; ?></button>
 	<style>

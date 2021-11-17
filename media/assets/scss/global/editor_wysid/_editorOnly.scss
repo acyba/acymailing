@@ -1,6 +1,8 @@
 #acym_wrapper {
-    tr[data-dynamic]:hover .acym__dynamics__preview {
-        display: block;
+    tr[data-dynamic]:hover {
+        .acym__dynamics__preview {
+            display: block;
+        }
     }
 
     .plugin_loader {

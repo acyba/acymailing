@@ -122,20 +122,18 @@ class ToggleController extends acymController
 
         // Return the replacement icon
         if (empty($this->icons[$table][$field][$newValue])) {
-            echo 'test';
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_UNAUTHORIZED_ACCESS'), [], false);
         }
 
-        $result = [];
-        $result['value'] = 1 - $newValue;
-        $result['classes'] = 'acym_toggleable '.$this->icons[$table][$field][$newValue];
+        $data = [];
+        $data['value'] = 1 - $newValue;
+        $data['classes'] = 'acym_toggleable '.$this->icons[$table][$field][$newValue];
 
         if (!empty($this->tooltips[$table][$field][$newValue])) {
-            $result['tooltip'] = ucfirst(acym_translation($this->tooltips[$table][$field][$newValue]));
+            $data['tooltip'] = ucfirst(acym_translation($this->tooltips[$table][$field][$newValue]));
         }
 
-        echo json_encode($result);
-        exit;
+        acym_sendAjaxResponse('', $data);
     }
 
     protected function doToggle($id, $table, $field, $newValue)
@@ -171,13 +169,8 @@ class ToggleController extends acymController
     {
         $newValue = acym_getVar('string', 'value');
 
-        $return = [];
-        $return['error'] = '';
-
         if (empty($newValue)) {
-            $return['error'] = acym_translation('ACYM_ERROR_SAVING');
-            echo json_encode($return);
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_SAVING'), [], false);
         }
 
         $newConfig = new \stdClass();
@@ -186,12 +179,9 @@ class ToggleController extends acymController
         $newConfig->remindme = json_encode($newConfig->remindme);
 
         if ($this->config->save($newConfig)) {
-            $return['message'] = acym_translation('ACYM_THANKS');
+            acym_sendAjaxResponse(acym_translation('ACYM_THANKS'));
         } else {
-            $return['error'] = acym_translation('ACYM_ERROR_SAVING');
+            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_SAVING'), [], false);
         }
-
-        echo json_encode($return);
-        exit;
     }
 }

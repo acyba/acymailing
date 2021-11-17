@@ -78,7 +78,9 @@ class acymView extends acymObject
         }
 
         // Open wrapper and display the header
-        if (acym_getVar('cmd', 'task') != 'ajaxEncoding') echo '<div id="acym_wrapper" class="'.$name.'_'.$view.'">';
+        if (acym_getVar('cmd', 'task') != 'ajaxEncoding') {
+            echo '<div id="acym_wrapper" class="'.$name.'_'.$view.' cms_'.ACYM_CMS.' cms_v_'.substr(ACYM_CMSV, 0, 1).'">';
+        }
 
         //if joomla we add the left menu and a div for the content
         if (acym_isLeftMenuNecessary()) echo acym_getLeftMenu($name).'<div id="acym_content">';

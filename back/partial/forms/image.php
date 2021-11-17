@@ -14,6 +14,7 @@
 			display: inline-block;
 			width: <?php echo $form->image_options['size']['width']; ?>px;
 			height: <?php echo $form->image_options['size']['height']; ?>px;
+			margin: 0 1rem;
 		}
 	</style>
 <?php } ?>

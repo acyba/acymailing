@@ -175,6 +175,19 @@
         }
         ?>
 		<div class="cell medium-6 grid-x">
+			<label class="cell grid-x">
+				<span class="cell medium-6">
+					<?php echo acym_translation('ACYM_MAIL_MAX_LINE_LENGTH').acym_info('ACYM_MAIL_MAX_LINE_LENGTH_DESC'); ?>
+				</span>
+				<input type="number"
+					   name="config[mailer_wordwrap]"
+					   value="<?php echo acym_escape($this->config->get('mailer_wordwrap', 0)); ?>"
+					   min="0"
+					   max="998"
+					   class="cell medium-auto" />
+			</label>
+		</div>
+		<div class="cell medium-6 grid-x">
             <?php echo acym_switch(
                 'config[dkim]',
                 $this->config->get('dkim'),

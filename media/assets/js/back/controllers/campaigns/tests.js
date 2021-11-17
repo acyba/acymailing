@@ -22,8 +22,8 @@ jQuery(document).ready(function ($) {
             $.post(url, function (res) {
                 test.removeAttr('disabled');
                 $('#acym__campaigns__send-test__spinner').hide();
-                res = JSON.parse(res);
-                acym_helperNotification.addNotification(res.message, res.type);
+                res = acym_helper.parseJson(res);
+                acym_helperNotification.addNotification(res.message, res.error ? 'error' : 'info');
             });
         });
     }
@@ -62,69 +62,64 @@ jQuery(document).ready(function ($) {
         let $check = $('#' + check).removeClass('acym_clickable').off('click');
         let $checkI = $check.find('.acym_icon_container i');
 
-        $.ajax({
-            url: ACYM_AJAX_URL + '&ctrl=campaigns&task=' + task + '&id=' + campaignID,
-            success: function (data) {
+        acym_helper.get(ACYM_AJAX_URL + '&ctrl=campaigns&task=' + task + '&id=' + campaignID).then(result => {
+            if (xhr === 'SPAM') {
+                if (!result.error) {
+                    $check.next('.acym_check_results').html(ACYM_JS_TXT.ACYM_TESTS_SPAM_SENT).show();
 
-                if (xhr === 'SPAM') {
-                    let result = $.parseJSON(data);
-                    if (result.type === 'success') {
-                        $check.next('.acym_check_results').html(ACYM_JS_TXT.ACYM_TESTS_SPAM_SENT).show();
+                    let nbTesterCalls = 0;
+                    let testerCall = setInterval(function () {
+                        nbTesterCalls++;
+                        acym_helper.get(result.data.url + '&format=json').then(data => {
+                            if (data.status !== false) {
+                                clearInterval(testerCall);
+                                $check.next('.acym_check_results').hide();
+                                $('#acym_spam_test_details').removeClass('is-hidden');
 
-                        let nbTesterCalls = 0;
-                        let testerCall = setInterval(function () {
-                            nbTesterCalls++;
-                            $.getJSON(result.message + '&format=json', function (data) {
-                                if (data.status !== false) {
-                                    clearInterval(testerCall);
-                                    $check.next('.acym_check_results').hide();
-                                    $('#acym_spam_test_details').removeClass('is-hidden');
-
-                                    if (data.mark > -2) {
-                                        $checkI.removeClass().addClass('acymicon-check-circle acym_icon_green');
-                                    } else {
-                                        $checkI.removeClass().addClass('acymicon-exclamation-circle acym_icon_red');
-                                    }
-
-                                    if (!$check.attr('data-open')) {
-                                        $check.attr('data-open', $check.attr('data-iframe'));
-                                    }
-                                    $check.addClass('acym_clickable').attr('data-iframe', result.message + '&lang=' + result.lang);
-                                    acym_helperModal.initModal();
-                                } else if (nbTesterCalls > 5) {
-                                    $check.next('.acym_check_results').html(data.title);
-                                    $check.addClass('acym_clickable').on('click', function () {
-                                        $(this).next('.acym_check_results').slideToggle();
-                                    });
+                                if (data.mark > -2) {
+                                    $checkI.removeClass().addClass('acymicon-check-circle acym_icon_green');
+                                } else {
                                     $checkI.removeClass().addClass('acymicon-exclamation-circle acym_icon_red');
-                                    clearInterval(testerCall);
                                 }
-                            });
-                        }, 10000);
-                    } else {
-                        $check.next('.acym_check_results').html(result.message);
-                        $check.addClass('acym_clickable').on('click', function () {
-                            $(this).next('.acym_check_results').slideToggle();
-                        });
-                        $checkI.removeClass().addClass('acymicon-exclamation-circle acym_icon_red');
-                    }
-                } else {
-                    if (data) {
-                        $checkI.removeClass().addClass('acymicon-exclamation-circle acym_icon_red');
-                        $check.addClass('acym_clickable').on('click', function () {
-                            $(this).next('.acym_check_results').slideToggle();
-                        });
-                        $check.next('.acym_check_results').html(data);
-                    } else {
-                        $checkI.removeClass().addClass('acymicon-check-circle acym_icon_green');
-                    }
-                }
 
-                _spamtestStep++;
-                if (_spamtestStep === 3) {
-                    _spamtestStep = 0;
-                    $('#launch_spamtest').removeClass('disabled');
+                                if (!$check.attr('data-open')) {
+                                    $check.attr('data-open', $check.attr('data-iframe'));
+                                }
+                                $check.addClass('acym_clickable').attr('data-iframe', result.data.url + '&lang=' + result.data.lang);
+                                acym_helperModal.initModal();
+                            } else if (nbTesterCalls > 5) {
+                                $check.next('.acym_check_results').html(data.title);
+                                $check.addClass('acym_clickable').on('click', function () {
+                                    $(this).next('.acym_check_results').slideToggle();
+                                });
+                                $checkI.removeClass().addClass('acymicon-exclamation-circle acym_icon_red');
+                                clearInterval(testerCall);
+                            }
+                        });
+                    }, 10000);
+                } else {
+                    $check.next('.acym_check_results').html(result.message);
+                    $check.addClass('acym_clickable').on('click', function () {
+                        $(this).next('.acym_check_results').slideToggle();
+                    });
+                    $checkI.removeClass().addClass('acymicon-exclamation-circle acym_icon_red');
                 }
+            } else {
+                if (result) {
+                    $checkI.removeClass().addClass('acymicon-exclamation-circle acym_icon_red');
+                    $check.addClass('acym_clickable').on('click', function () {
+                        $(this).next('.acym_check_results').slideToggle();
+                    });
+                    $check.next('.acym_check_results').html(result);
+                } else {
+                    $checkI.removeClass().addClass('acymicon-check-circle acym_icon_green');
+                }
+            }
+
+            _spamtestStep++;
+            if (_spamtestStep === 3) {
+                _spamtestStep = 0;
+                $('#launch_spamtest').removeClass('disabled');
             }
         });
     }

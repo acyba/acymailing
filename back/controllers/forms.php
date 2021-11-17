@@ -127,6 +127,7 @@ class FormsController extends acymController
             $this->breadcrumb[acym_translation('ACYM_NEW_FORM')] = acym_completeLink('forms&task=edit&id=0&type='.$type);
         } else {
             $form = $this->currentClass->getOneById($id);
+            $form = $this->getFormWithMissingParams((array)$form);
             $this->breadcrumb[$form->name] = acym_completeLink('forms&task=edit&id='.$id);
         }
 
@@ -155,29 +156,25 @@ class FormsController extends acymController
         $formArray = acym_getVar('array', 'form');
 
         if (empty($formArray)) {
-            echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_GET_FORM_INFORMATION')]);
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_GET_FORM_INFORMATION'), [], false);
         }
 
         $form = $this->getFormWithMissingParams($formArray);
 
         if (empty($form)) {
-            echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_GET_FORM_INFORMATION')]);
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_GET_FORM_INFORMATION'), [], false);
         }
 
-        $return = [
+        $data = [
             'html' => $this->currentClass->renderForm($form, true),
         ];
 
 
-        if (empty($return['html'])) {
-            echo json_encode(['error' => acym_translation('ACYM_SOMETHING_WENT_WRONG_GENERATION_FORM')]);
-            exit;
+        if (empty($data['html'])) {
+            acym_sendAjaxResponse(acym_translation('ACYM_SOMETHING_WENT_WRONG_GENERATION_FORM'), [], false);
         }
 
-        echo json_encode($return);
-        exit;
+        acym_sendAjaxResponse('', $data);
     }
 
     public function saveAjax()
@@ -185,8 +182,7 @@ class FormsController extends acymController
         $formArray = acym_getVar('array', 'form');
 
         if (empty($formArray)) {
-            echo json_encode(['error' => acym_translation('ACYM_COULD_NOT_GET_FORM_INFORMATION')]);
-            exit;
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_GET_FORM_INFORMATION'), [], false);
         }
 
         $form = $this->getFormWithMissingParams($formArray);
@@ -201,11 +197,10 @@ class FormsController extends acymController
 
         $id = $this->currentClass->save($form);
         if (empty($id)) {
-            echo json_encode(['error' => acym_translation('ACYM_SOMETHING_WENT_WRONG_FORM_SAVING')]);
+            acym_sendAjaxResponse(acym_translation('ACYM_SOMETHING_WENT_WRONG_FORM_SAVING'), [], false);
         } else {
-            echo json_encode(['id' => $id, 'message' => acym_translation('ACYM_FORM_WELL_SAVED')]);
+            acym_sendAjaxResponse(acym_translation('ACYM_FORM_WELL_SAVED'), ['id' => $id]);
         }
-        exit;
     }
 
     private function getFormWithMissingParams($formArray)

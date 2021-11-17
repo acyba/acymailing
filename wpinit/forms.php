@@ -4,7 +4,7 @@ namespace AcyMailing\Init;
 
 use AcyMailing\Classes\FormClass;
 
-class acyForms extends acyHook
+class acyForms
 {
     var $formToDisplay = [];
     var $formClass;
@@ -16,7 +16,7 @@ class acyForms extends acyHook
 
         add_action('wp_head', [$this, 'prepareFormsToDisplay']);
         add_action('wp_footer', [$this, 'displayForms']);
-        add_action('init', [$this, 'registerShortcodes']);
+        $this->registerShortcodes();
     }
 
     public function prepareFormsToDisplay()

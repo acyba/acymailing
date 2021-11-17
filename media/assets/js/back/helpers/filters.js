@@ -68,7 +68,7 @@ const acym_helperFilter = {
                 let selectReload = jQuery(this);
                 setTimeout(function () {
                     let params = selectReload.attr('acym-automation-reload');
-                    let decodedParams = JSON.parse(params);
+                    let decodedParams = acym_helper.parseJson(params);
 
                     if (!acym_helper.empty(decodedParams['plugin'])) {
                         decodedParams = [decodedParams];
