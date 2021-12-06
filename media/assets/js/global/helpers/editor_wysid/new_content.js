@@ -56,7 +56,7 @@ const acym_editorWysidNewContent = {
         content += '<td class="large-12 acym__wysid__column__element__td">';
 
         content += '<div style="text-align: center;box-sizing: inherit;">';
-        content += '<a class="acym__wysid__column__element__button acym__wysid__content-no-settings-style" style="background-color: #222222; color: white; padding: 25px 30px; max-width: 100%; overflow: unset; border: 1px solid white; text-overflow: ellipsis; text-align: center; text-decoration: none; word-break: break-word;display: inline-block; box-shadow: none;font-family: Arial; font-size: 14px; cursor: pointer; line-height: 1; border-radius: 0" href="#">Button</a>';
+        content += '<a class="acym__wysid__column__element__button acym__wysid__content-no-settings-style" style="background-color: #222222; color: white; padding: 25px 30px; max-width: 100%; overflow: unset; border: 1px solid white; text-overflow: ellipsis; text-align: center; text-decoration: none; word-break: break-word;display: inline-block; box-shadow: none;font-family: Arial; font-size: 14px; cursor: pointer; line-height: 1; border-radius: 0" href="#" target="_blank">'+ACYM_JS_TXT.ACYM_BUTTON+'</a>';
         content += '</div>';
 
         content += '</td>';
@@ -119,7 +119,7 @@ const acym_editorWysidNewContent = {
         let content = '<tr class="acym__wysid__column__element acym__wysid__column__element__separator cursor-pointer" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
         content += '<td class="large-12 acym__wysid__column__element__td">';
 
-        content += '<hr style="border-bottom: 3px solid black; width: 100%; border-top: none; border-left: none; border-right: none;" class="acym__wysid__row__separator">';
+        content += '<hr style="color: black; size: 3px; border-bottom: 3px solid black; width: 100%; border-top: none; border-left: none; border-right: none;" class="acym__wysid__row__separator">';
 
         content += '</td>';
         content += '</tr>';

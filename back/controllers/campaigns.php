@@ -3,6 +3,7 @@
 namespace AcyMailing\Controllers;
 
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\ListClass;
@@ -20,6 +21,8 @@ use AcyMailing\Helpers\ToolbarHelper;
 use AcyMailing\Helpers\WorkflowHelper;
 use AcyMailing\Libraries\acymController;
 use AcyMailing\Types\UploadfileType;
+use AcyMailing\Libraries\acymParameter;
+
 
 class CampaignsController extends acymController
 {
@@ -179,6 +182,8 @@ class CampaignsController extends acymController
         $this->prepareToolbar($data);
         $this->prepareListingClasses($data);
 
+        $data['menuClass'] = $this->menuClass;
+
         parent::display($data);
     }
 
@@ -216,6 +221,8 @@ class CampaignsController extends acymController
         $this->prepareToolbar($data);
         $this->prepareListingClasses($data);
 
+        $data['menuClass'] = $this->menuClass;
+
         parent::display($data);
     }
 
@@ -232,6 +239,8 @@ class CampaignsController extends acymController
         $this->prepareWelcomeUnsubListing($data);
         $this->prepareToolbar($data);
         $this->prepareListingClasses($data);
+
+        $data['menuClass'] = $this->menuClass;
 
         parent::display($data);
     }
@@ -627,12 +636,14 @@ class CampaignsController extends acymController
                 ),
             ];
         }
+        $data['menuClass'] = $this->menuClass;
 
         parent::display($data);
     }
 
     private function prepareSegmentDisplay(&$data, $sendingParams)
     {
+        $data['menuClass'] = $this->menuClass;
         $data['displaySegmentTab'] = empty($sendingParams) ? false : array_key_exists('segment', $sendingParams);
     }
 
@@ -665,18 +676,16 @@ class CampaignsController extends acymController
         $page = $this->getVarFiltersListing('int', 'mailchoose_pagination_page', 1);
 
         $mailClass = new MailClass();
-        $matchingMails = $mailClass->getMatchingElements(
-            [
-                'ordering' => $ordering,
-                'ordering_sort_order' => $orderingSortOrder,
-                'search' => $searchFilter,
-                'elementsPerPage' => $mailsPerPage,
-                'offset' => ($page - 1) * $mailsPerPage,
-                'tag' => $tagFilter,
-                'onlyStandard' => true,
-                'creator_id' => $this->setFrontEndParamsForTemplateChoose(),
-            ]
-        );
+        $matchingMails = $mailClass->getMatchingElements([
+            'ordering' => $ordering,
+            'ordering_sort_order' => $orderingSortOrder,
+            'search' => $searchFilter,
+            'elementsPerPage' => $mailsPerPage,
+            'offset' => ($page - 1) * $mailsPerPage,
+            'tag' => $tagFilter,
+            'onlyStandard' => true,
+            'creator_id' => $this->setFrontEndParamsForTemplateChoose(),
+        ]);
 
         // Prepare the pagination
         $pagination->setStatus($matchingMails['total'], $page, $mailsPerPage);
@@ -696,6 +705,7 @@ class CampaignsController extends acymController
         $this->prepareListingClasses($data);
         $this->prepareSegmentDisplay($data, empty($campaign->sending_params) ? false : $campaign->sending_params);
 
+        $data['menuClass'] = $this->menuClass;
 
         parent::display($data);
     }
@@ -872,6 +882,8 @@ class CampaignsController extends acymController
 
         $data['before-save'] = $data['editor']->editor != 'acyEditor' ? '' : 'acym-data-before="acym_editorWysidMultilingual.storeCurrentValues(true);"';
 
+        $data['menuClass'] = $this->menuClass;
+
         parent::display($data);
     }
 
@@ -983,10 +995,7 @@ class CampaignsController extends acymController
         // Handle special emails
         $campaign['currentCampaign']->send_specific = [];
         if (!in_array($currentCampaign->sending_type, $campaignClass::SENDING_TYPES)) {
-            acym_trigger(
-                'getCampaignSpecificSendSettings',
-                [$currentCampaign->sending_type, $currentCampaign->sending_params, &$campaign['currentCampaign']->send_specific]
-            );
+            acym_trigger('getCampaignSpecificSendSettings', [$currentCampaign->sending_type, $currentCampaign->sending_params, &$campaign['currentCampaign']->send_specific]);
         }
 
         $campaign['senderInformations']->from_name = empty($currentCampaign->from_name) ? '' : $currentCampaign->from_name;
@@ -1718,6 +1727,11 @@ class CampaignsController extends acymController
 
         $campaign->active = empty($campaign->active) ? 1 : 0;
 
+        // Remove the next trigger when disabling the automatic campaign. It will be calculated again properly if reactivated
+        if ($campaign->active === 0 && $campaign->sending_type === $campaignClass::SENDING_TYPE_AUTO) {
+            $campaign->next_trigger = null;
+        }
+
         $resultSave = $campaignClass->save($campaign);
 
         if ($resultSave) {
@@ -2015,6 +2029,7 @@ class CampaignsController extends acymController
         $campaignClass = new CampaignClass();
         $campaign = $campaignClass->getOneByIdWithMail($campaignId);
 
+        $result = '';
         $spamWords = [
             '4U',
             'you are a winner',
@@ -2198,18 +2213,19 @@ class CampaignsController extends acymController
             'Why pay more?',
         ];
 
-        $errors = [];
+        $spamWordsInContent = [];
         foreach ($spamWords as $oneWord) {
             if ((bool)preg_match('#'.preg_quote($oneWord, '#').'#Uis', $campaign->subject.$campaign->body)) {
-                $errors[] = $oneWord;
+                $spamWordsInContent[] = $oneWord;
             }
         }
 
-        if (count($errors) > 2) {
-            echo acym_translation('ACYM_TESTS_CONTENT_DESC');
-            echo '<ul class="acym__ul"><li>'.implode('</li><li>', $errors).'</li></ul>';
+        if (count($spamWordsInContent) > 2) {
+            $result = acym_translation('ACYM_TESTS_CONTENT_DESC');
+            $result .= '<ul class="acym__ul"><li>'.implode('</li><li>', $spamWordsInContent).'</li></ul>';
         }
-        exit;
+
+        acym_sendAjaxResponse('', ['result' => $result]);
     }
 
     public function checkLinks()
@@ -2233,8 +2249,9 @@ class CampaignsController extends acymController
 
         preg_match_all('# (href|src)="([^"]+)"#Uis', acym_absoluteURL($mail->body), $URLs);
 
-        $errors = [];
+        $brokenLinks = [];
         $processed = [];
+        $result = '';
         foreach ($URLs[2] as $oneURL) {
             if (in_array($oneURL, $processed)) continue;
             if (0 === strpos($oneURL, 'mailto:')) continue;
@@ -2246,15 +2263,16 @@ class CampaignsController extends acymController
             $headers = is_array($headers) ? implode("\n ", $headers) : $headers;
 
             if (empty($headers) || preg_match('#^HTTP/.*\s+[(200|301|302|304)]+\s#i', $headers) !== 1) {
-                $errors[] = '<a target="_blank" href="'.$oneURL.'">'.(strlen($oneURL) > 50 ? substr($oneURL, 0, 25).'...'.substr($oneURL, strlen($oneURL) - 20) : $oneURL).'</a>';
+                $brokenLinks[] = '<a target="_blank" href="'.$oneURL.'">'.(strlen($oneURL) > 50 ? substr($oneURL, 0, 25).'...'.substr($oneURL, strlen($oneURL) - 20)
+                        : $oneURL).'</a>';
             }
         }
 
-        if (!empty($errors)) {
-            echo '<ul class="acym__ul"><li>'.implode('</li><li>', $errors).'</li></ul>';
+        if (!empty($brokenLinks)) {
+            $result = '<ul class="acym__ul"><li>'.implode('</li><li>', $brokenLinks).'</li></ul>';
         }
 
-        exit;
+        acym_sendAjaxResponse('', ['result' => $result]);
     }
 
     public function checkSPAM()

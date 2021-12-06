@@ -105,12 +105,12 @@ jQuery(document).ready(function ($) {
                     $checkI.removeClass().addClass('acymicon-exclamation-circle acym_icon_red');
                 }
             } else {
-                if (result) {
+                if (result.data.result.length > 0) {
                     $checkI.removeClass().addClass('acymicon-exclamation-circle acym_icon_red');
                     $check.addClass('acym_clickable').on('click', function () {
                         $(this).next('.acym_check_results').slideToggle();
                     });
-                    $check.next('.acym_check_results').html(result);
+                    $check.next('.acym_check_results').html(result.data.result);
                 } else {
                     $checkI.removeClass().addClass('acymicon-check-circle acym_icon_green');
                 }

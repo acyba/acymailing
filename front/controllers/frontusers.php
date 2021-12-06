@@ -17,6 +17,15 @@ class FrontusersController extends UsersController
 {
     public function __construct()
     {
+        if (ACYM_CMS == 'joomla') {
+            $menu = acym_getMenu();
+            if (is_object($menu)) {
+                $params = method_exists($menu, 'getParams') ? $menu->getParams() : $menu->params;
+                $menuParams = new acymParameter($params);
+                $this->menuClass = $menuParams->get('pageclass_sfx', '');
+            }
+        }
+
         $this->authorizedFrontTasks = [
             'subscribe',
             'unsubscribe',
@@ -28,6 +37,7 @@ class FrontusersController extends UsersController
             'prepareParams',
             'savechanges',
             'exportdata',
+            'ajaxGetEnqueuedMessages',
         ];
         $this->urlFrontMenu = 'index.php?option=com_acym&view=frontusers&layout=listing';
         parent::__construct();
@@ -85,6 +95,8 @@ class FrontusersController extends UsersController
             acym_redirect(acym_rootURI(), 'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', 'warning');
         }
 
+        $data['menuClass'] = $this->menuClass;
+
         parent::prepareFieldsEdit($data, $fieldVisibility);
     }
 
@@ -100,7 +112,6 @@ class FrontusersController extends UsersController
         $currentUserId = acym_currentUserId();
 
         if (empty($currentUserId)) return;
-
         $matchingUsers = $this->getMatchingElementsFromData(
             [
                 'search' => $data['search'],
@@ -118,6 +129,7 @@ class FrontusersController extends UsersController
         // Prepare the pagination
         $data['pagination']->setStatus($matchingUsers['total'], $page, $usersPerPage);
 
+        $data['menuClass'] = $this->menuClass;
         $data['allUsers'] = $matchingUsers['elements'];
         $data['userNumberPerStatus'] = $matchingUsers['status'];
     }
@@ -862,5 +874,30 @@ class FrontusersController extends UsersController
     public function save()
     {
         $this->apply(true);
+    }
+
+    public function ajaxGetEnqueuedMessages()
+    {
+        acym_session();
+
+        $output = '';
+        $types = ['success', 'info', 'warning', 'error'];
+        foreach ($types as $type) {
+            if (empty($_SESSION['acymessage'.$type])) continue;
+
+            $messages = $_SESSION['acymessage'.$type];
+            if (!is_array($messages)) {
+                $messages = [$messages];
+            }
+
+            $output .= '<div class="acym_callout acym__callout__front__'.$type.'">'.implode(' ', $messages).'<div class="acym_callout_close">x</div></div>';
+
+            unset($_SESSION['acymessage'.$type]);
+        }
+
+        if (!empty($output)) {
+            $output = '<div id="acym__callout__container">'.$output.'</div>';
+        }
+        acym_sendAjaxResponse('', ['messages' => $output]);
     }
 }

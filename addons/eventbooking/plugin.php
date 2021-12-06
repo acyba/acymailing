@@ -19,25 +19,23 @@ class plgAcymEventbooking extends acymPlugin
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.png';
 
         if ($this->installed) {
+            acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
             $this->displayOptions = [
-                'title' => ['ACYM_TITLE', true],
-                'price' => ['ACYM_PRICE', true],
-                'sdate' => ['ACYM_DATE', true],
-                'edate' => ['EB_EVENT_END_DATE', true],
-                'image' => ['ACYM_IMAGE', true],
-                'short' => ['ACYM_SHORT_DESCRIPTION', true],
-                'desc' => ['ACYM_DESCRIPTION', false],
-                'cats' => ['ACYM_CATEGORIES', false],
-                'location' => ['ACYM_LOCATION', true],
-                'capacity' => ['EB_CAPACTIY', false],
-                'regstart' => ['EB_REGISTRATION_START_DATE', false],
-                'cut' => ['EB_CUT_OFF_DATE', false],
-                'indiv' => ['EB_REGISTER_INDIVIDUAL', false],
-                'group' => ['EB_REGISTER_GROUP', false],
+                'eb_title' => [acym_translation('EB_TITLE'), true],
+                'eb_price' => [acym_translation('EB_PRICE'), true],
+                'eb_price_text' => [acym_translation('EB_PRICE_TEXT'), false],
+                'eb_sdate' => [acym_translation('EB_EVENT_DATE'), true],
+                'eb_edate' => [acym_translation('EB_EVENT_END_DATE'), true],
+                'eb_imageee' => [acym_translation('EB_EVENT_IMAGE'), true],
+                'eb_short' => [acym_translation('EB_SHORT_DESCRIPTION'), true],
+                'eb_desc' => [acym_translation('EB_DESCRIPTION'), false],
+                'eb_cats' => [acym_translation('EB_CATEGORIES'), false],
+                'eb_location' => [acym_translation('EB_LOCATIONS'), true],
+                'eb_capacity' => [acym_translation('EB_CAPACITY'), false],
+                'eb_regstart' => [acym_translation('EB_REGISTRATION_START_DATE'), false],
+                'eb_cut' => [acym_translation('EB_CUT_OFF_DATE'), false],
             ];
-
             $this->initCustomView();
-
             $this->settings = [
                 'custom_view' => [
                     'type' => 'custom_view',
@@ -127,16 +125,17 @@ class plgAcymEventbooking extends acymPlugin
                 'type' => 'checkbox',
                 'name' => 'display',
                 'options' => [
-                    'title' => ['ACYM_TITLE', true],
-                    'price' => ['ACYM_PRICE', true],
-                    'sdate' => ['ACYM_DATE', true],
+                    'title' => ['EB_TITLE', true],
+                    'price' => ['EB_PRICE', true],
+                    'price_text' => ['EB_PRICE_TEXT', false],
+                    'sdate' => ['EB_EVENT_DATE', true],
                     'edate' => ['EB_EVENT_END_DATE', true],
-                    'image' => ['ACYM_IMAGE', true],
-                    'short' => ['ACYM_SHORT_DESCRIPTION', true],
-                    'desc' => ['ACYM_DESCRIPTION', false],
-                    'cats' => ['ACYM_CATEGORIES', false],
-                    'location' => ['ACYM_LOCATION', true],
-                    'capacity' => ['EB_CAPACTIY', false],
+                    'image' => ['EB_EVENT_IMAGE', true],
+                    'short' => ['EB_SHORT_DESCRIPTION', true],
+                    'desc' => ['EB_DESCRIPTION', false],
+                    'cats' => ['EB_CATEGORIES', false],
+                    'location' => ['EB_LOCATIONS', true],
+                    'capacity' => ['EB_CAPACITY', false],
                     'regstart' => ['EB_REGISTRATION_START_DATE', false],
                     'cut' => ['EB_CUT_OFF_DATE', false],
                     'indiv' => ['EB_REGISTER_INDIVIDUAL', false],
@@ -374,7 +373,9 @@ class plgAcymEventbooking extends acymPlugin
 
     public function replaceIndividualContent($tag)
     {
-        $query = 'SELECT event.*, location.name AS location_name FROM `#__eb_events` AS event ';
+        acym_loadLanguageFile('com_eventbooking', JPATH_SITE, $this->emailLanguage);
+
+        $query = 'SELECT event.*, location.*, location.name AS location_name FROM `#__eb_events` AS event ';
         $query .= 'LEFT JOIN `#__eb_locations` AS location ON event.location_id = location.id ';
         $query .= 'WHERE event.id = '.intval($tag->id);
 
@@ -398,11 +399,16 @@ class plgAcymEventbooking extends acymPlugin
         $contentText = '';
         $customFields = [];
 
-        $varFields['{title}'] = $element->title;
+        $languageMethod = 'title_'.substr($this->emailLanguage, 0, 2);
+        $varFields['{title}'] = !empty($element->$languageMethod) ? $element->$languageMethod : $element->title;
         if (in_array('title', $tag->display)) $title = $varFields['{title}'];
-        $varFields['{short}'] = $element->short_description;
+
+        $languageMethod = 'short_description_'.substr($this->emailLanguage, 0, 2);
+        $varFields['{short}'] = !empty($element->$languageMethod) ? $element->$languageMethod : $element->short_description;
         if (in_array('short', $tag->display)) $contentText .= $varFields['{short}'];
-        $varFields['{desc}'] = $element->description;
+
+        $languageMethod = 'description_'.substr($this->emailLanguage, 0, 2);
+        $varFields['{desc}'] = !empty($element->$languageMethod) ? $element->$languageMethod : $element->description;
         if (in_array('desc', $tag->display)) $contentText .= $varFields['{desc}'];
 
         $varFields['{image}'] = acym_frontendLink($element->image, false);
@@ -421,14 +427,16 @@ class plgAcymEventbooking extends acymPlugin
         }
 
         $varFields['{location}'] = '';
-        if (!empty($element->location_id)) $varFields['{location}'] = '<a href="index.php?option=com_eventbooking&view=map&format=html&location_id='.$element->location_id.'">'.$element->location_name.'</a>';
+        $languageMethod = 'name_'.substr($this->emailLanguage, 0, 2);
+        $languageName = !empty($element->$languageMethod) ? $element->$languageMethod : $element->location_name;
+        if (!empty($element->location_id)) $varFields['{location}'] = '<a href="index.php?option=com_eventbooking&view=map&format=html&location_id='.$element->location_id.'">'.$languageName.'</a>';
         if (in_array('location', $tag->display) && !empty($element->location_id)) {
             $customFields[] = [$varFields['{location}'], acym_translation('EB_LOCATION')];
         }
 
 
         $categories = acym_loadObjectList(
-            'SELECT cat.id, cat.name
+            'SELECT cat.*
                 FROM #__eb_categories AS cat 
                 JOIN #__eb_event_categories AS eventcats ON cat.id = eventcats.category_id 
                 WHERE eventcats.event_id = '.intval($tag->id).' 
@@ -436,7 +444,10 @@ class plgAcymEventbooking extends acymPlugin
         );
 
         foreach ($categories as $i => $oneCat) {
-            $categories[$i] = '<a href="index.php?option=com_eventbooking&view=category&id='.$oneCat->id.'">'.acym_escape($oneCat->name).'</a>';
+            $categories[$i] =
+                '<a href="index.php?option=com_eventbooking&view=category&id='.$oneCat->id.'">'.acym_escape(
+                    !empty($oneCat->$languageMethod) ? $oneCat->$languageMethod : $oneCat->name.'</a>'
+                );
         }
         $varFields['{cats}'] = implode(', ', $categories);
         if (in_array('cats', $tag->display)) {
@@ -449,9 +460,9 @@ class plgAcymEventbooking extends acymPlugin
             $customFields[] = [$varFields['{capacity}'], acym_translation('EB_CAPACTIY')];
         }
 
-
-        if (!empty($element->price_text)) {
-            $varFields['{price}'] = $element->price_text;
+        $languageMethod = 'price_'.substr($this->emailLanguage, 0, 2);
+        if (!empty($element->$languageMethod)) {
+            $varFields['{price}'] = $element->$languageMethod;
         } elseif ($element->individual_price > 0) {
             $varFields['{price}'] = @EventBookingHelper::formatCurrency($element->individual_price, $this->eventbookingconfig, $element->currency_symbol);
         } else {
@@ -459,6 +470,18 @@ class plgAcymEventbooking extends acymPlugin
         }
         if (in_array('price', $tag->display)) {
             $customFields[] = [$varFields['{price}'], acym_translation('EB_PRICE')];
+        }
+
+        $languageMethod = 'price_text_'.substr($this->emailLanguage, 0, 2);
+        if (!empty($element->$languageMethod)) {
+            $varFields['{price_text}'] = $element->$languageMethod;
+        } elseif (!empty($element->price_text)) {
+            $varFields['{price_text}'] = $element->price_text;
+        } else {
+            $varFields['{price_text}'] = acym_translation('EB_FREE');
+        }
+        if (in_array('price_text', $tag->display)) {
+            $customFields[] = [$varFields['{price_text}'], acym_translation('EB_PRICE_TEXT')];
         }
 
         if (!empty($tag->custom) && !empty($element->custom_fields)) {
@@ -786,7 +809,8 @@ class plgAcymEventbooking extends acymPlugin
                                                                     type="number" 
                                                                     name="[triggers][classic][eventbooking_reminder][number]" 
                                                                     class="intext_input" 
-                                                                    value="'.(empty($defaultValues['eventbooking_reminder']) ? '1' : $defaultValues['eventbooking_reminder']['number']).'">
+                                                                    value="'.(empty($defaultValues['eventbooking_reminder']) ? '1'
+                : $defaultValues['eventbooking_reminder']['number']).'">
                                                             </div>';
         $triggers['classic']['eventbooking_reminder']->option .= '<div class="cell medium-shrink">'.acym_select(
                 $params['every'],

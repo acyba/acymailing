@@ -2,7 +2,13 @@
 $isSent = !empty($data['campaignInformation']->sent) && !empty($data['campaignInformation']->active);
 $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 ?>
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" class="acym__form__campaign__edit" data-abide novalidate>
+<form id="acym_form"
+	  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>"
+	  method="post"
+	  name="acyForm"
+	  class="acym__form__campaign__edit <?php echo !empty($data['menuClass']) ? acym_escape($data['menuClass']) : ''; ?>"
+	  data-abide
+	  novalidate>
 	<div class="grid-x">
 		<div class="cell medium-auto"></div>
 		<div class="cell <?php echo $data['containerClass']; ?> acym__content">

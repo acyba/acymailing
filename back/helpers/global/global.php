@@ -157,3 +157,8 @@ function acym_isAcyCheckerInstalled()
 
     return $installed;
 }
+
+function acydie($arg, $ajax = false, $indent = true)
+{
+    die(acydump($arg, $ajax, $indent));
+}

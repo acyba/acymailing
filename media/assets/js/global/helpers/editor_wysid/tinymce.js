@@ -74,7 +74,7 @@ const acym_editorWysidTinymce = {
                 acym_editorWysidDynamic.setDynamicsActions();
                 editor.on('keydown', function (e) {
                     let currentText = jQuery(editor.getElement()).find('>:first-child');
-                    if (acym_editorWysidTinymce.isCurrentTextEmpty(currentText) && e.which === 8) {
+                    if (acym_editorWysidTinymce.isCurrentTextEmpty(currentText) && e.which === 8 && jQuery(editor.getElement()).children().length === 1) {
                         e.preventDefault();
                         return true;
                     }

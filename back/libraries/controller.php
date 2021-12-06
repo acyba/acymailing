@@ -18,6 +18,7 @@ class acymController extends acymObject
     var $sessionName = '';
     var $taskCalled = '';
     var $preventCallTask = false;
+    protected $menuClass = '';
 
     public function __construct()
     {
@@ -34,14 +35,21 @@ class acymController extends acymObject
         $this->taskCalled = acym_getVar('string', 'task', '');
 
         $this->breadcrumb['AcyMailing'] = acym_completeLink('dashboard');
+    }
+
+    private function initSession()
+    {
         acym_session();
-        if (empty($_SESSION[$this->sessionName])) $_SESSION[$this->sessionName] = [];
+        if (empty($_SESSION[$this->sessionName])) {
+            $_SESSION[$this->sessionName] = [];
+        }
     }
 
     public function getVarFiltersListing($type, $varName, $default, $overrideIfNull = false)
     {
         if ($this->taskCalled == 'clearFilters') return $default;
 
+        $this->initSession();
         $returnValue = acym_getVar($type, $varName);
 
         if (is_null($returnValue) && $overrideIfNull) $returnValue = $default;
@@ -52,7 +60,9 @@ class acymController extends acymObject
             return $returnValue;
         }
 
-        if (!empty($_SESSION[$this->sessionName][$varName])) return $_SESSION[$this->sessionName][$varName];
+        if (!empty($_SESSION[$this->sessionName][$varName])) {
+            return $_SESSION[$this->sessionName][$varName];
+        }
 
         return $default;
     }
@@ -60,11 +70,13 @@ class acymController extends acymObject
     public function setVarFiltersListing($varName, $value)
     {
         acym_setVar($varName, $value);
+        $this->initSession();
         $_SESSION[$this->sessionName][$varName] = $value;
     }
 
     public function clearFilters()
     {
+        $this->initSession();
         $_SESSION[$this->sessionName] = [];
 
         $taskToCall = acym_getVar('string', 'cleartask', $this->defaulttask);

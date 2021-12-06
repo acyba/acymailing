@@ -58,12 +58,12 @@
 					<div class="cell medium-auto small-7 acym__listing__title acym__campaign__title">
                         <?php
                         $isFront = !acym_isAdmin() && ACYM_CMS == 'joomla';
-                        $controller = $isFront ? 'frontmails' : 'mails';
+                        $controllerName = $isFront ? 'frontmails' : 'mails';
                         $linkTask = 'edit&step=editEmail&type=welcome';
                         if ($email->drag_editor !== '0') $linkTask .= '&type_editor=acyEditor';
                         $returnLink = acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('cmd', 'task');
                         $return = '&return='.urlencode(base64_encode($isFront ? acym_frontendLink($returnLink) : acym_completeLink($returnLink))); ?>
-						<a class="cell auto" href="<?php echo acym_completeLink($controller.'&task='.$linkTask.'&id='.intval($email->id).$return); ?>">
+						<a class="cell auto" href="<?php echo acym_completeLink($controllerName.'&task='.$linkTask.'&id='.intval($email->id).$return); ?>">
 							<h6 class='acym__listing__title__primary acym_text_ellipsis'>
                                 <?php echo acym_escape($email->name); ?>
 							</h6>

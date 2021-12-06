@@ -1,7 +1,7 @@
 <?php
-    $formName = acym_getModuleFormName();
+$formName = acym_getModuleFormName();
 ?>
-<div id="acym_fulldiv_<?php echo $formName; ?>" class="acym_front_page">
+<div id="acym_fulldiv_<?php echo $formName; ?>" class="acym_front_page <?php echo $data['suffix']; ?>">
     <?php
     if (!empty($data['show_page_heading'])) {
         echo '<h1 class="contentheading'.$data['suffix'].'">'.$data['page_heading'].'</h1>';

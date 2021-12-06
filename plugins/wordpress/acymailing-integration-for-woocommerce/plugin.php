@@ -375,8 +375,12 @@ class plgAcymWoocommerce extends acymPlugin
         }
 
         $selectedArea = empty($this->defaultValues->id) ? [] : $this->getSelectedArea($this->defaultValues);
-        $this->defaultValues->min = empty($this->defaultValues->min) && $this->defaultValues->min !== '0' ? self::MIN_PRODUCT_DISPLAY_LAST_PURCHASED : $this->defaultValues->min;
-        $this->defaultValues->max = empty($this->defaultValues->max) && $this->defaultValues->max !== '0' ? self::MAX_PRODUCT_DISPLAY_LAST_PURCHASED : $this->defaultValues->max;
+		if(!isset($this->defaultValues->min) || (empty($this->defaultValues->min) && $this->defaultValues->min !== '0')){
+			$this->defaultValues->min = self::MIN_PRODUCT_DISPLAY_LAST_PURCHASED;
+		}
+		if(!isset($this->defaultValues->max) || (empty($this->defaultValues->max) && $this->defaultValues->max !== '0')){
+			$this->defaultValues->max = self::MAX_PRODUCT_DISPLAY_LAST_PURCHASED;
+		}
         ob_start();
         ?>
 		<div class="cell grid-x">

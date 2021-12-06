@@ -1,9 +1,11 @@
 jQuery(document).ready(function ($) {
+    const ajaxUrl = ACYM_AJAX_URL + '&ctrl=dynamics&task=trigger';
 
     function Init() {
         acym_helperCampaigns.initCampaigns();
         acym_helperSelectionPage.initSelectionPage();
         setShowRecipients();
+        setSelectPluginField();
     }
 
     function setShowRecipients() {
@@ -24,6 +26,35 @@ jQuery(document).ready(function ($) {
                     $buttonShowSubscription.fadeIn('fast');
                 });
             }
+        });
+    }
+
+    function setSelectPluginField() {
+        $('#acym_plugin_field').on('change', function () {
+            if ($(this).val() == '') {
+                $('#acym_div_date_field').hide();
+            } else {
+                findFieldByCurrentPlugin($(this).val());
+            }
+        });
+    }
+
+    function findFieldByCurrentPlugin(plugin) {
+        acym_helper.get(ajaxUrl, {
+            plugin: plugin,
+            trigger: 'getJsonBirthdayField'
+        }).then(response => {
+            let data = acym_helper.parseJson(response);
+            $('#acym_birthday_field option:not(:first)').remove();
+            if (data.fields.length !== 0) {
+                for (const [key, value] of Object.entries(data.fields)) {
+                    $('#acym_birthday_field').append($('<option></option>').attr('value', key).text(value));
+                }
+            } else {
+                $('#acym_birthday_field').append($('<option></option>').attr('value', '').text(ACYM_JS_TXT.ACYM_NO_FIELD_AVAILABLE));
+            }
+
+            $('#acym_div_date_field').show();
         });
     }
 

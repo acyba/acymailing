@@ -100,11 +100,11 @@ const acym_editorWysidContextModal = {
                 jQuery(this).off('change').on('change', function (event) {
                     $table.css('padding-' + jQuery(this).attr('data-block-padding'), jQuery(this).val() + 'px');
                     if (jQuery(this).attr('data-block-padding') === 'top' || jQuery(this).attr('data-block-padding') === 'bottom') {
-                        $selector.css('height', $table.height()
-                                                + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, ''))
-                                                + parseInt($table.css('padding-bottom')
-                                                                 .replace(/[^-\d\.]/g, ''))
-                                                + 'px');
+                        $selector.css(
+                            'height',
+                            $table.height() + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, '')) + parseInt($table.css('padding-bottom')
+                                                                                                                            .replace(/[^-\d\.]/g, '')) + 'px'
+                        );
                     }
                 });
             });
@@ -790,13 +790,13 @@ const acym_editorWysidContextModal = {
             jQuery('#sliderOutput4').val($hr.css('margin-top').replace(/[^-\d\.]/g, ''));
             jQuery('[aria-controls="sliderOutput4"]').css('left', leftSlider4).next().css('width', leftSlider4);
 
+            const $colorInput = jQuery('#acym__wysid__context__separator__color');
             //We set the colors picker of the separator
-            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__separator__color'),
-                'border-bottom-color',
-                $hr,
-                $hr,
-                'border-bottom-color'
-            );
+            acym_editorWysidColorPicker.setColorPickerForContextModal($colorInput, 'border-bottom-color', $hr, $hr, 'border-bottom-color');
+
+            $colorInput.on('change', function () {
+                $hr.css('color', this.value);
+            });
 
             let $allType = jQuery('.acym__wysid__context__separator__kind');
             $allType.removeClass('separator-selected');
@@ -819,6 +819,7 @@ const acym_editorWysidContextModal = {
             $slider.off('moved.zf.slider').on('moved.zf.slider', function () {
                 if ($slider.css('display') !== 'none') {
                     $hr.css('border-bottom-width', jQuery('#sliderOutput2').val() + 'px');
+                    $hr.css('size', jQuery('#sliderOutput2').val() + 'px');
                 }
             });
 
@@ -850,6 +851,7 @@ const acym_editorWysidContextModal = {
                 jQuery(this).off('mousedown');
                 acym_editorWysidContextModal.hideContextModal($contextSeparator, jQuery(event.target));
                 jQuery(window).off('click');
+                $colorInput.off('change');
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
                 acym_editorWysidVersioning.setUndoAndAutoSave();
             });

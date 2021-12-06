@@ -290,20 +290,52 @@ class plgAcymBirthday extends acymPlugin
         $fieldClass = new FieldClass();
         $dateFields = $fieldClass->getFieldsByType(['date']);
 
-        $fieldsOptions = [];
+        $pluginFields = [];
         foreach ($dateFields as $oneField) {
-            $fieldsOptions[$oneField->id] = acym_translation($oneField->name);
+            $pluginFields[$oneField->id] = acym_translation($oneField->name);
         }
+
+        $availablePlugins = [
+            '' => acym_translation('ACYM_SELECT_PLUGIN'),
+            get_class($this) => 'AcyMailing',
+        ];
+        acym_trigger('onAcymGetPluginField', [&$availablePlugins]);
+
+        $onlyAcymailing = count($availablePlugins) === 2;
+        $selectedPlugin = '';
+        $availableFields = [
+            '' => acym_translation('ACYM_SELECT_FIELD'),
+        ];
+        if (!empty($sendingParams) && !empty($sendingParams[self::MAILTYPE.'_plugin'])) {
+            $selectedPlugin = $sendingParams[self::MAILTYPE.'_plugin'];
+        }
+        acym_trigger('getBirthdayField', [&$availableFields], $selectedPlugin);
+
+        if (count($availableFields) == 1) {
+            $availableFields = ['' => acym_translation('ACYM_NO_FIELD_AVAILABLE')];
+        }
+
+        $inputField = '<div class="cell medium-2 margin-left-1 margin-right-1" >';
+        $inputField .= acym_select($availablePlugins, 'acym_plugin_field', !empty($selectedPlugin) ? $selectedPlugin : '', 'class="acym__select"');
+        $inputField .= '</div><div class="cell medium-8"></div>';
+
+        $additionalSettings = '<div class="cell grid-x acym_vcenter margin-left-3 margin-bottom-1" '.($onlyAcymailing ? 'style="display:none"' : '').'>';
+        $additionalSettings .= acym_translationSprintf('ACYM_CHOOSE_PLUGIN_TO_SELECT_BIRTHDAY_FIELD', $inputField);
+        $additionalSettings .= '</div>';
+
+
         $selectedField = '';
         if (!empty($sendingParams) && isset($sendingParams[self::MAILTYPE.'_field'])) {
             $selectedField = $sendingParams[self::MAILTYPE.'_field'];
         }
+
         $inputField = '<div class="cell medium-2 margin-left-1 margin-right-1">';
-        $inputField .= acym_select($fieldsOptions, 'acym_birthday_field', $selectedField, 'class="acym__select"');
+        $inputField .= acym_select($availableFields, 'acym_birthday_field', (!empty($selectedPlugin) ? $selectedField : ''), 'class="acym__select"');
         $inputField .= '</div><div class="cell medium-8"></div>';
 
-        $additionalSettings = '<div class="cell grid-x acym_vcenter margin-left-3 margin-bottom-1">';
-        $additionalSettings .= acym_translationSprintf('ACYM_BIRTHDAY_FIELD', $inputField);
+        $additionalSettings .= '<div class="cell grid-x acym_vcenter margin-left-3 margin-bottom-1" id="acym_div_date_field"'.(empty($selectedPlugin) && !$onlyAcymailing
+                ? 'style="display:none"' : '').'>';
+        $additionalSettings .= acym_translationSprintf('ACYM_BIRTHDAY_FIELD_PLUGIN', $inputField);
         $additionalSettings .= '</div>';
 
         $specificSettings[] = [
@@ -319,12 +351,14 @@ class plgAcymBirthday extends acymPlugin
         $inputTime = acym_getVar('int', 'acym_birthday_time_number', 0);
         $typeTime = acym_getVar('string', 'acym_birthday_time_frame', 'day');
         $relative = acym_getVar('string', 'acym_birthday_relative', 'before');
+        $plugin = acym_getVar('string', 'acym_plugin_field', 0);
         $field = acym_getVar('string', 'acym_birthday_field', 0);
 
         $specialSendings[] = [
             self::MAILTYPE.'_number' => $inputTime,
             self::MAILTYPE.'_type' => $typeTime,
             self::MAILTYPE.'_relative' => $relative,
+            self::MAILTYPE.'_plugin' => $plugin,
             self::MAILTYPE.'_field' => $field,
         ];
     }
@@ -344,27 +378,22 @@ class plgAcymBirthday extends acymPlugin
                 'days' => $sendingTime,
                 'field' => $campaign->sending_params[self::MAILTYPE.'_field'],
                 'relative' => $campaign->sending_params[self::MAILTYPE.'_relative'],
+                'plugin' => $campaign->sending_params[self::MAILTYPE.'_plugin'],
             ],
 
         ];
         $filters[] = $filter;
     }
 
-    public function onAcymProcessFilter_birthday(&$query, $options, $num)
+    public function onAcymProcessFilter_birthday(&$query, $options, $num = null)
     {
+        if ($options['plugin'] !== get_class($this)) return;
+
+        $dateToCheck = $this->processDateToCheck($options);
+
         $fieldClass = new FieldClass();
         $birthdayField = $fieldClass->getOneById($options['field']);
-
         if (empty($birthdayField)) return;
-
-        $dateNowWithTimeZone = acym_date('now', 'Y-m-d h:i:s');
-        $dateToCheck = new DateTime($dateNowWithTimeZone);
-        $interval = new DateInterval('P'.intval($options['days']).'D');
-        if ($options['relative'] == 'before') {
-            $dateToCheck->add($interval);
-        } else {
-            $dateToCheck->sub($interval);
-        }
 
         $query->join['birthday_field'.$num] = '#__acym_user_has_field AS uf'.$num.' ON uf'.$num.'.user_id = user.id';
         $query->where[] = 'uf'.$num.'.field_id = '.intval($birthdayField->id);
@@ -502,4 +531,20 @@ class plgAcymBirthday extends acymPlugin
         }
     }
 
+    public function getBirthdayField(&$availableFields)
+    {
+        $fieldClass = new FieldClass();
+        $dateFields = $fieldClass->getFieldsByType(['date']);
+        foreach ($dateFields as $oneField) {
+            $availableFields[$oneField->id] = acym_translation($oneField->name);
+        }
+    }
+
+    public function getJsonBirthdayField()
+    {
+        $availableFields = [];
+        $this->getBirthdayField($availableFields);
+        echo json_encode(['fields' => $availableFields]);
+        exit;
+    }
 }

@@ -2,7 +2,7 @@
 	  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>"
 	  method="post"
 	  name="acyForm"
-	  class="acym__form__campaign__edit">
+	  class="acym__form__campaign__edit <?php echo !empty($data['menuClass']) ? acym_escape($data['menuClass']) : ''; ?>">
 	<input type="hidden"
 		   value="<?php echo !empty($data['campaignInformation']) ? acym_escape($data['campaignInformation']) : ''; ?>"
 		   name="id"
