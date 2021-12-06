@@ -20,7 +20,8 @@ class plgAcymDpcalendar extends acymPlugin
                 'image' => ['ACYM_IMAGE', true],
                 'date' => ['ACYM_DATE', true],
                 'venue' => ['ACYM_LOCATION', true],
-                'desc' => ['ACYM_DESCRIPTION', true],
+                'intro' => ['ACYM_INTRO_TEXT', true],
+                'desc' => ['ACYM_FULL_TEXT', false],
                 'url' => ['ACYM_URL', false],
                 'capacity' => ['COM_DPCALENDAR_FIELD_CAPACITY_LABEL', false],
                 'closingdate' => ['COM_DPCALENDAR_FIELD_BOOKING_CLOSING_DATE_LABEL', true],
@@ -360,9 +361,17 @@ class plgAcymDpcalendar extends acymPlugin
         $customFields = [];
 
         $varFields['{title}'] = $element->title;
-        $varFields['{desc}'] = $element->description;
         if (in_array('title', $tag->display)) $title = $varFields['{title}'];
-        if (in_array('desc', $tag->display)) $contentText .= $varFields['{desc}'];
+
+        $varFields['{desc}'] = $element->description;
+        $hrPos = strpos($varFields['{desc}'], '<hr');
+        $varFields['{intro}'] = $hrPos === false ? $varFields['{desc}'] : substr($varFields['{desc}'], 0, $hrPos);
+
+        if (in_array('desc', $tag->display)) {
+            $contentText .= $varFields['{desc}'];
+        } elseif (in_array('intro', $tag->display)) {
+            $contentText .= $varFields['{intro}'];
+        }
 
         if (!empty($element->images)) {
             $element->images = json_decode($element->images, true);

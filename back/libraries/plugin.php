@@ -607,7 +607,7 @@ class acymPlugin extends acymObject
             }
             $tagsReplaced[$i] = $this->replaceIndividualContent($oneTag, $email);
         }
-        
+
         $email->custom_view = file_exists(ACYM_CUSTOM_PLUGIN_LAYOUT.$this->name.'.html');
 
         $this->pluginHelper->replaceTags($email, $tagsReplaced, true);
@@ -1339,5 +1339,19 @@ class acymPlugin extends acymObject
             $this->initReplaceOptionsCustomView();
             if ($customFields) $this->initCustomOptionsCustomView();
         }
+    }
+
+    public function processDateToCheck($options)
+    {
+        $dateNowWithTimeZone = acym_date('now', 'Y-m-d h:i:s');
+        $dateToCheck = new \DateTime($dateNowWithTimeZone);
+        $interval = new \DateInterval('P'.intval($options['days']).'D');
+        if ($options['relative'] == 'before') {
+            $dateToCheck->add($interval);
+        } else {
+            $dateToCheck->sub($interval);
+        }
+
+        return $dateToCheck;
     }
 }

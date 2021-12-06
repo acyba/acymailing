@@ -1,6 +1,6 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm">
     <?php
-    $isEmpty = empty($data['allUsers']) && empty($data['search']) && empty($data['status']) && empty($data['list']);
+    $isEmpty = empty($data['allUsers']) && empty($data['search']) && empty($data['status']) && empty($data['list']) && empty($data['segment']);
     if (!$isEmpty) {
         $data['toolbar']->displayToolbar($data);
     } ?>

@@ -6,72 +6,23 @@ class acyMessage
 {
     public function __construct()
     {
-        if (!defined('WP_ADMIN') || !WP_ADMIN) {
-            add_action('wp_footer', [$this, 'frontMessages']);
-        }
-    }
+        // This is the frontend message system, don't load on the backend
+        if(defined('WP_ADMIN') && WP_ADMIN) return;
 
-    public function frontMessages()
-    {
-        $sessionID = session_id();
-        if (empty($sessionID)) @session_start();
+        if (defined('DOING_AJAX') && DOING_AJAX) return;
 
-        $output = '';
-        $types = ['success', 'info', 'warning', 'error'];
-        foreach ($types as $type) {
-            if (empty($_SESSION['acymessage'.$type])) continue;
-
-            $messages = $_SESSION['acymessage'.$type];
-            if (!is_array($messages)) {
-                $messages = [$messages];
-            }
-
-            $output .= '<div class="acym_callout acym__callout__front__'.$type.'">'.implode(' ', $messages).'<div class="acym_callout_close">x</div></div>';
-
-            unset($_SESSION['acymessage'.$type]);
-        }
-
-        if (empty($output)) return;
-
-        echo '<div id="acym__callout__container">'.$output.'</div>';
-
-        $script = '
-        function setCallouts(){
-            var callouts = document.getElementsByClassName("acym_callout");
-            
-            for(var i = 0; i < callouts.length; i++){
-                var callout = callouts[i];
-                var calloutClose = callout.getElementsByClassName("acym_callout_close")[0];
-                
-                displayCallout(callout, i);
-                
-                calloutClose.onclick = function(event){
-                    var eventElement = event.target;
-                    var eventCallout = eventElement.closest(".acym_callout");
- 
-                    closeCallout(eventCallout);
-                }
-            }
-        }
-        setCallouts();
+        // When calling acym_getFormToken() while _locale is set, it breaks the backend widget edition for some reason
+        $locale = acym_getVar('string', '_locale', '');
+        if (!empty($locale)) return;
         
-        function closeCallout(callout){
-            callout.style["margin-left"] = "640px";
-            callout.style["margin-right"] = "-640px";
-            setTimeout(function(){ callout.remove() }, 1000);
-        }
-        
-        function displayCallout(callout, i){
-            setTimeout(function(){
-                callout.style["margin-left"] = "0px";
-                callout.style["margin-right"] = "0px";
-            }, 1000 * i);         
-        }';
-
-
-        echo '<script type="text/javascript">'.$script.'</script>';
-        echo '<link type="text/css" rel="stylesheet" href="'.ACYM_CSS.'front/messages.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'front'.DS.'messages.min.css').'">';
+        wp_enqueue_style('acy_front_messages_css', ACYM_CSS.'front/messages.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'front'.DS.'messages.min.css'));
+        wp_enqueue_script('acy_front_messages_js', ACYM_JS.'front/messages.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'front'.DS.'messages.min.js'));
+        wp_add_inline_script(
+            'acy_front_messages_js',
+            'var ACYM_AJAX = "admin-ajax.php?action='.ACYM_COMPONENT.'_router&'.acym_noTemplate().'&'.acym_getFormToken().'&nocache='.time().'";',
+            'before'
+        );
     }
 }
 
-$acyMessage = new acyMessage();
+new acyMessage();

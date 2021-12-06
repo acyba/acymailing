@@ -62,6 +62,7 @@ class RegacyHelper extends acymObject
             if (!empty($currentUser)) {
                 $checkedLists = [];
                 $currentSubscription = $userClass->getSubscriptionStatus($currentUser->id, $visibleLists);
+                acym_trigger('onRegacyPrepareCheckedLists', [&$currentSubscription]);
 
                 foreach ($currentSubscription as $listId => $oneSubsciption) {
                     if ($oneSubsciption->status == '1') $checkedLists[] = $listId;
@@ -95,7 +96,6 @@ class RegacyHelper extends acymObject
 
     private function _formatResults()
     {
-        acym_trigger('onAcymRegacyDisplayLists', []);
         $base = $this->options['baseOption'];
         $checkedListsOnAjaxUpdate = acym_getVar('array', $base.'_visible_lists_checked', []);
         $result = '<table class="acym__'.$base.'__lists" style="border:0">';

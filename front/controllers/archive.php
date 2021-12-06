@@ -197,6 +197,10 @@ class ArchiveController extends acymController
             $userId = $currentUser->id;
         }
 
+        if (acym_isMultilingual()) {
+            $params['language'] = acym_getLanguageTag();
+        }
+
         if (!empty($viewParams['nbNewslettersPerPage'])) {
             $params['numberPerPage'] = $viewParams['nbNewslettersPerPage'];
         }

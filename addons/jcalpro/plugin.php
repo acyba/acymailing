@@ -284,7 +284,7 @@ class plgAcymJcalpro extends acymPlugin
             // Not started events
             $where[] = 'event.`start_date` >= '.acym_escapeDB($parameter->from);
 
-            if (!empty($parameter->to)){
+            if (!empty($parameter->to)) {
                 $where[] = 'event.start_date <= '.acym_escapeDB($parameter->to);
             }
 
@@ -303,6 +303,14 @@ class plgAcymJcalpro extends acymPlugin
         }
 
         return $this->generateCampaignResult;
+    }
+
+    protected function loadLibraries($email)
+    {
+        $jcalproUrlHelper = rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_jcalpro'.DS.'helpers'.DS.'url.php';
+        if (file_exists($jcalproUrlHelper)) include_once $jcalproUrlHelper;
+
+        return true;
     }
 
     public function replaceIndividualContent($tag)

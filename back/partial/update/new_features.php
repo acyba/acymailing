@@ -5,7 +5,7 @@
 			<img src="<?php echo ACYM_IMAGES.'splashscreen/header_airplane.png'; ?>" alt="planes" class="acym__splashcreen__header__planes">
 			<div class="cell auto"></div>
 			<div class="cell medium-6 grid-x grid-margin-y">
-				<h1 class="cell">AcyMailing 7.6 has arrived 🎉</h1>
+				<h1 class="cell">AcyMailing 7.7 has arrived 🎉</h1>
 				<p class="cell">Features and improvements come in your plugin, find out what’s new!</p>
                 <?php
                 //__START__starter_
@@ -32,48 +32,51 @@
 				<div class="cell medium-4 acym__splashcreen__body__card grid-x">
 					<div class="cell grid-x align-center">
 						<div class="acym__splashcreen__body__card__icon acym_vcenter align-center">
-							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_1.png'; ?>" alt="card_1_image">
+							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_1.jpg'; ?>" alt="card_1_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">Integration with AcyChecker</h4>
-					<p class="cell acym__splashcreen__body__card__text">AcyMailing is now integrated with our email checker tool. Clean your contacts to reduce sending costs and
-						improve your deliverability.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Translation of events made with Event booking</h4>
+					<p class="cell acym__splashcreen__body__card__text">If you activate multilingual in AcyMailing, it will now automatically take the correct event's translation
+						if available when sending a campaign in multiple languages. Have more efficient event campaigns with Event Booking!</p>
 				</div>
 				<div class="cell medium-4 acym__splashcreen__body__card grid-x">
 					<div class="cell grid-x align-center">
 						<div class="acym__splashcreen__body__card__icon acym_vcenter align-center">
-							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_2.png'; ?>" alt="card_2_image">
+							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_2.jpg'; ?>" alt="card_2_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">A new add-on with JCal Pro is available</h4>
-					<p class="cell acym__splashcreen__body__card__text">Automatically insert events in your emails, no need to do it manually anymore!</p>
+					<h4 class="cell acym__splashcreen__body__card__title">New interface with Ultimate member and AcyMailing</h4>
+					<p class="cell acym__splashcreen__body__card__text">You don’t have to add the birth dates on AcyMailing anymore if your users have already inserted their
+						birthday on Ultimate Member. No more configuration needed, the data is now usable on AcyMailing birthday campaigns.</p>
 				</div>
 				<div class="cell medium-4 acym__splashcreen__body__card grid-x">
 					<div class="cell grid-x align-center">
 						<div class="acym__splashcreen__body__card__icon acym_vcenter align-center">
-							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_3.png'; ?>" alt="card_3_image">
+							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_3.jpg'; ?>" alt="card_3_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">AcyMailing actions for Elementor</h4>
-					<p class="cell acym__splashcreen__body__card__text">You can now add custom AcyMailing actions on Elementor form submission to subscribe the users.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Filter your users by segment</h4>
+					<p class="cell acym__splashcreen__body__card__text">A new feature has been added to your subscribers listing to refine your search. Get to know your audience
+						better, and visualize the population of your segments better.
+						Only available on AcyMailing Enterprise version.</p>
 				</div>
 			</div>
 			<div class="cell grid-x acym__splashcreen__body__middle margin-top-2">
 				<div class="cell medium-6 grid-x grid-margin-x acym__splashcreen__body__middle__left">
 					<h4 class="cell acym__splashcreen__body__subtitle">New main feature</h4>
-					<h2 class="cell acym__splashcreen__body__middle__left__title">Unsubscribe Reason</h2>
+					<h2 class="cell acym__splashcreen__body__middle__left__title">Brand new templates</h2>
 				</div>
 				<div class="cell medium-6 acym__splashcreen__body__middle__right grid-x grid-margin-y">
 					<div class="cell grid-x">
-						<div class="cell medium-2 small-3 acym_vcenter">
+						<div class="cell medium-3 acym_vcenter">
 							<div class="acym__splashcreen__body__middle__right__icon acym_vcenter align-center">
-								<i class="acymicon-autorenew"></i>
+								<img src="<?php echo ACYM_IMAGES.'splashscreen/main_feature.jpg'; ?>" alt="main_feature_image">
 							</div>
 						</div>
 						<div class="cell auto grid-x">
-							<h2 class="cell acym__splashcreen__body__middle__right__title">Know why your users unsubscribe from your lists</h2>
-							<p class="cell acym__splashcreen__body__middle__right__text">A text field has been added into the unsubscribe page so you can now collect feedback.
-								This way you’ll be able to know what improvements you should do to keep them in your subscribers list.</p>
+							<h2 class="cell acym__splashcreen__body__middle__right__title">An easy way to see what you can do</h2>
+							<p class="cell acym__splashcreen__body__middle__right__text">New templates are available by default in AcyMailing. Discover brand new themes and
+								inspiration, to improve your content and your campaigns.</p>
 						</div>
 					</div>
 				</div>
@@ -84,15 +87,17 @@
 					<div class="cell margin-bottom-1 text-center">
 						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_1.png'; ?>" alt="">
 					</div>
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Loading time improvement</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">The listing loading time has been optimised.</p>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Integration with AcyChecker</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">AcyMailing is now integrated with our email checker tool. Clean your contacts to reduce
+						sending costs and improve your deliverability.</p>
 				</div>
 				<div class="cell medium-6 acym__splashcreen__body__end__card">
 					<div class="cell margin-bottom-1 text-center">
-						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_2.png'; ?>" alt="">
+						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_2.jpg'; ?>" alt="">
 					</div>
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Subscription form on Elementor</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">A subscription form can be integrated into your posts with Elementor.</p>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Unsubscribe Reason</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">A text field has been added into the unsubscribe page so you can now collect feedback. This
+						way you’ll be able to know what improvements you should do to keep them in your subscribers list.</p>
 				</div>
 			</div>
 		</div>

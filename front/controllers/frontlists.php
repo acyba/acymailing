@@ -5,6 +5,8 @@ namespace AcyMailing\FrontControllers;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Controllers\ListsController;
 use AcyMailing\Helpers\ToolbarHelper;
+use AcyMailing\Libraries\acymParameter;
+
 
 class FrontlistsController extends ListsController
 {
@@ -12,6 +14,14 @@ class FrontlistsController extends ListsController
     {
         if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_rootURI(), 'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', 'warning');
+        }
+        if (ACYM_CMS == 'joomla') {
+            $menu = acym_getMenu();
+            if (is_object($menu)) {
+                $params = method_exists($menu, 'getParams') ? $menu->getParams() : $menu->params;
+                $menuParams = new acymParameter($params);
+                $this->menuClass = $menuParams->get('pageclass_sfx', '');
+            }
         }
         $this->authorizedFrontTasks = [
             'countNumberOfRecipients',
@@ -49,6 +59,7 @@ class FrontlistsController extends ListsController
         );
         $data['pagination']->setStatus($matchingLists['total'], $page, $listsPerPage);
 
+        $data['menuClass'] = $this->menuClass;
         $data['lists'] = $matchingLists['elements'];
         $data['listNumberPerStatus'] = $matchingLists['status'];
     }
@@ -65,6 +76,7 @@ class FrontlistsController extends ListsController
     protected function prepareWelcomeUnsubData(&$data)
     {
         $data['tmpls'] = [];
+        $data['menuClass'] = $this->menuClass;
         if (empty($data['listInformation']->id)) return;
 
         $mailClass = new MailClass();

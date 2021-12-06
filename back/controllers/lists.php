@@ -218,6 +218,7 @@ class ListsController extends acymController
         $data['classSortOrder'] = $data['orderingSortOrder'] == 'asc' ? 'acymicon-sort-amount-asc' : 'acymicon-sort-amount-desc';
         $data['subscribers'] = $this->currentClass->getSubscribersForList($listId, 0, 500, 1, $data['ordering'], $data['orderingSortOrder']);
         foreach ($data['subscribers'] as &$oneSub) {
+            if ($oneSub->subscription_date == '0000-00-00 00:00:00') continue;
             $oneSub->subscription_date = acym_date(strtotime($oneSub->subscription_date), acym_translation('ACYM_DATE_FORMAT_LC2'));
         }
     }
@@ -503,6 +504,7 @@ class ListsController extends acymController
         $orderingSortOrder = acym_getVar('string', 'orderByOrdering', 'desc');
         $subscribers = $this->currentClass->getSubscribersForList($listId, $offset, $perCalls, $status, $orderBy, $orderingSortOrder);
         foreach ($subscribers as &$oneSub) {
+            if ($oneSub->subscription_date == '0000-00-00 00:00:00') continue;
             $oneSub->subscription_date = acym_date(strtotime($oneSub->subscription_date), acym_translation('ACYM_DATE_FORMAT_LC2'));
         }
         acym_sendAjaxResponse('', ['subscribers' => $subscribers]);

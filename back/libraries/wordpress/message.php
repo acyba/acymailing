@@ -40,7 +40,7 @@ function acym_displayMessages()
 {
     $types = ['success', 'info', 'warning', 'error'];
     acym_session();
-    foreach ($types as $id => $type) {
+    foreach ($types as $type) {
         if (empty($_SESSION['acymessage'.$type])) continue;
 
         acym_display($_SESSION['acymessage'.$type], $type);

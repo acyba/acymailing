@@ -1,13 +1,12 @@
-<div class="acym_front_page">
-
+<div class="acym_front_page <?php echo $data['paramsCMS']['suffix']; ?>">
     <?php
     if (!empty($data['paramsCMS']['show_page_heading'])) {
-        echo '<h1 class="contentheading'.$data['paramsCMS']['suffix'].'">'.$data['paramsCMS']['page_heading'].'</h1>';
+        echo '<h1 class="contentheading '.$data['paramsCMS']['suffix'].'"> '.$data['paramsCMS']['page_heading'].'</h1>';
     }
     ?>
-
-	<div class="acym__front__archive">
-		<form method="post" action="<?php echo $data['actionUrl']; ?>" id="acym_form" class="acym__archive__form">
+	<div class="acym__front__archive ">
+		<form method="post" action="<?php
+        echo $data['actionUrl']; ?>" id="acym_form" class="acym__archive__form">
 			<h1 class="acym__front__archive__title"><?php echo acym_translation('ACYM_NEWSLETTERS'); ?></h1>
 			<div id="acym__front__archive__search">
                 <?php

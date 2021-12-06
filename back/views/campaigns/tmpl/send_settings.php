@@ -3,7 +3,7 @@
 		  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>"
 		  method="post"
 		  name="acyForm"
-		  class="cell grid-x acym__form__campaign__edit"
+		  class="cell grid-x acym__form__campaign__edit <?php echo !empty($data['menuClass']) ? acym_escape($data['menuClass']) : ''; ?>"
 		  data-abide>
 		<input type="hidden" value="<?php echo acym_escape($data['currentCampaign']->id); ?>" name="id">
 		<input type="hidden" value="<?php echo acym_escape($data['from']); ?>" name="from">

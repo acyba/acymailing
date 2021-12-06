@@ -1,4 +1,5 @@
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm">
+<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm"
+    <?php echo !empty($data['menuClass']) ? 'class="'.acym_escape($data['menuClass']).'"' : ''; ?> >
 	<div id="acym__email__new" class="cell grid-x grid-margin-y align-center acym__content acym__selection">
 		<h1 class="margin-top-1 margin-bottom-2 acym__title"><?php echo acym_translation('ACYM_WHICH_KIND_OF_MAIL_CREATE'); ?></h1>
 		<div class="cell grid-x grid-margin-x align-center margin-y">
@@ -36,9 +37,11 @@
 				<i class="acymicon-access_time acym__selection__card__icon"></i>
 				<h1 class="acym__selection__card__title"><?php echo acym_translation('ACYM_SCHEDULED_CAMPAIGN'); ?></h1>
 				<p class="acym__selection__card__description"><?php echo acym_translation('ACYM_SCHEDULED_CAMPAIGN_DESC'); ?></p>
-                <?php if (!acym_level(ACYM_ESSENTIAL)) echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
-                        'ACYM_ONLY_AVAILABLE_ESSENTIAL_VERSION'
-                    ).'</div>'; ?>
+                <?php if (!acym_level(ACYM_ESSENTIAL)) {
+                    echo '<div class="acym__selection__card__disabled__container cell">'.acym_translation(
+                            'ACYM_ONLY_AVAILABLE_ESSENTIAL_VERSION'
+                        ).'</div>';
+                } ?>
 			</div>
 		</div>
 		<button type="button" class="cell shrink button" disabled id="acym__selection__button-select"><?php echo acym_translation('ACYM_CREATE'); ?></button>

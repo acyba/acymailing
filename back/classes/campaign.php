@@ -510,6 +510,7 @@ class CampaignClass extends acymClass
         acym_arrayToInteger($lists);
 
         $date = acym_date('now', 'Y-m-d H:i:s', false);
+
         if (empty($result)) {
             $conditions = [
                 '`user`.`active` = 1',
@@ -535,9 +536,7 @@ class CampaignClass extends acymClass
             $automationHelper->where = $conditions;
 
             $automationHelper->removeFlag();
-
             $automationHelpers = [];
-
             foreach ($filters as $or => $orValues) {
                 $automationHelpers[$or] = clone $automationHelper;
                 foreach ($orValues as $and => $andValues) {
@@ -779,11 +778,23 @@ class CampaignClass extends acymClass
         $return['count'] = acym_loadResult($queryCountSelect.$query.') AS r ');
         $return['matchingNewsletters'] = $this->decode(acym_loadObjectList($querySelect.$query.$endQuerySelect));
 
+        if (isset($params['language']) && !empty($return['matchingNewsletters'])) {
+            $mailIds = array_column($return['matchingNewsletters'], 'id');
+
+            $translatedEmails = acym_loadObjectList(
+                'SELECT mail.* 
+                 FROM #__acym_mail AS mail 
+                 WHERE mail.parent_id IN ('.implode(',', $mailIds).') AND mail.language = '.acym_escapeDB($params['language']),
+                'parent_id'
+            );
+        }
+
         $userClass = new UserClass();
         $userEmail = acym_currentUserEmail();
         $user = $userClass->getOneByEmail($userEmail);
 
         foreach ($return['matchingNewsletters'] as $i => $oneNewsletter) {
+            if (isset($translatedEmails[$oneNewsletter->id])) $oneNewsletter = $translatedEmails[$oneNewsletter->id];
             acym_trigger('replaceContent', [&$oneNewsletter, false]);
             acym_trigger('replaceUserInformation', [&$oneNewsletter, &$user, false]);
 
@@ -854,14 +865,9 @@ class CampaignClass extends acymClass
     private function shouldGenerateCampaign($campaign, $campaignMail)
     {
         // The generateByCategory function is the only one that can stop a campaign generation, with min number of items
-        $results = acym_trigger(
-            'generateByCategory',
-            [&$campaignMail],
-            null,
-            function ($plugin) {
-                $plugin->generateCampaignResult->status = true;
-            }
-        );
+        $results = acym_trigger('generateByCategory', [&$campaignMail], null, function ($plugin) {
+            $plugin->generateCampaignResult->status = true;
+        });
 
         // If one of the return statuses is "false", we won't generate the campaign
         foreach ($results as $oneResult) {

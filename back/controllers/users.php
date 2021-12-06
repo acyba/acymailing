@@ -6,6 +6,7 @@ use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\HistoryClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailpoetClass;
+use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Helpers\EncodingHelper;
@@ -38,6 +39,7 @@ class UsersController extends acymController
         $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'users_ordering_sort_order', 'desc');
         $data['pagination'] = new PaginationHelper();
 
+        $this->prepareSegmentField($data);
         $this->prepareListingFilters($data);
         $this->prepareUsersListing($data);
         $this->prepareUsersSubscriptions($data);
@@ -47,10 +49,25 @@ class UsersController extends acymController
         parent::display($data);
     }
 
+    protected function prepareSegmentField(&$data)
+    {
+        $segmentClass = new SegmentClass();
+        $segments = $segmentClass->getAllForSelect();
+        $data['segments'] = [];
+        foreach ($segments as $id => $name) {
+            if (empty($id)) $id = 0;
+            $data['segments'][$id] = $name;
+        }
+    }
+
     protected function prepareToolbar(&$data)
     {
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'users_search');
+        $toolbarHelper->addOptionSelect(
+            acym_translation('ACYM_SEGMENT'),
+            acym_select($data['segments'], 'segment', $data['segment'], ['class' => 'acym__select'])
+        );
         $toolbarHelper->addOptionSelect(
             acym_translation('ACYM_LIST'),
             acym_select(
@@ -98,8 +115,7 @@ class UsersController extends acymController
             [
                 'class' => 'button button-secondary disabled cell medium-6 large-shrink',
                 'id' => 'acym__users__listing__button--add-to-list',
-            ]
-        );
+            ]);
         $toolbarHelper->addOtherContent($otherContent);
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit'], 'user-plus', true);
 
@@ -112,6 +128,7 @@ class UsersController extends acymController
         $data['search'] = $this->getVarFiltersListing('string', 'users_search', '');
         $data['list'] = $this->getVarFiltersListing('int', 'users_list', 0);
         $data['list_status'] = $this->getVarFiltersListing('string', 'list_status', 'sub');
+        $data['segment'] = $this->getVarFiltersListing('int', 'segment', 0);
 
         $listClass = new ListClass();
         $data['lists'] = $listClass->getAll('id');
@@ -126,11 +143,15 @@ class UsersController extends acymController
             'none' => acym_translation('ACYM_NO_SUBSCRIPTION_STATUS'),
         ];
 
+        $data['status_toolbar'] = [];
         if (!empty($data['list'])) {
             $data['status_toolbar'] = [
                 'users_list' => $data['list'],
                 'list_status' => $data['list_status'],
             ];
+        }
+        if (!empty($data['segment'])) {
+            $data['status_toolbar'][] = $data['segment'];
         }
     }
 
@@ -149,6 +170,7 @@ class UsersController extends acymController
                 'ordering' => $data['ordering'],
                 'ordering_sort_order' => $data['orderingSortOrder'],
                 'list' => $data['list'],
+                'segment' => $data['segment'],
                 'list_status' => $data['list_status'],
                 'cms_username' => true,
             ],
@@ -520,7 +542,7 @@ class UsersController extends acymController
         //__END__wordpress_
 
         $this->breadcrumb[acym_translation('ACYM_IMPORT')] = acym_completeLink('users&task=import');
-
+        $data['menuClass'] = $this->menuClass;
 
         parent::display($data);
     }

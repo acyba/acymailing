@@ -1,4 +1,4 @@
-<div id="acym__editor__content" class="grid-x acym__content acym__editor__area">
+<div id="acym__editor__content" class="grid-x acym__content acym__editor__area <?php echo !empty($data['menuClass']) ? acym_escape($data['menuClass']) : ''; ?>">
 	<div class="cell grid-x grid-margin-x align-right">
 		<input type="hidden" id="acym__mail__edit__editor" value="<?php echo acym_escape($data['mail']->editor); ?>">
 		<input type="hidden"

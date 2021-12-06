@@ -127,7 +127,6 @@ class acym_profile_widget extends WP_Widget
             echo $args['before_title'].$title.$args['after_title'];
         }
 
-        acym_displayMessages();
         acym_setVar('page', ACYM_COMPONENT.'_front');
         $params = new acymParameter($instance);
         acym_initModule($params);

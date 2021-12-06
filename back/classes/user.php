@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Classes;
 
+use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Helpers\MailerHelper;
 use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Libraries\acymClass;
@@ -53,7 +54,7 @@ class UserClass extends acymClass
         if (!empty($settings['join'])) {
             $query .= $this->getJoinForQuery($settings['join']);
         }
-
+        $this->handleSegmentFilter($settings, $filters, $query, $queryCount, $queryStatus);
         $this->handleSubscriptionFilter($settings, $filters, $query, $queryCount, $queryStatus);
         $this->handleFrontend($settings, $query, $queryCount, $queryStatus);
         $this->handleSearchFilter($settings, $query, $queryCount, $queryStatus, $filters);
@@ -254,6 +255,43 @@ class UserClass extends acymClass
         return null;
     }
 
+    private function handleSegmentFilter($settings, &$filters, &$query, &$queryCount, &$queryStatus)
+    {
+        if (!array_key_exists('segment', $settings)) return;
+        if ($settings['segment'] == 0) return;
+
+        $segmentClass = (new SegmentClass())->getOneById($settings['segment']);
+        $automationHelpers = [];
+        if (!empty($segmentClass) && !empty($segmentClass->filters)) {
+            foreach ($segmentClass->filters as $or => $orValues) {
+                if (empty($orValues)) continue;
+                $automationHelpers[$or] = new AutomationHelper();
+                foreach ($orValues as $and => $andValues) {
+                    $and = intval($and);
+                    foreach ($andValues as $filterName => $options) {
+                        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelpers[$or], &$options, $and.'_'.$or]);
+                    }
+                }
+            }
+        }
+        
+        $where = '';
+        $join = '';
+        foreach ($automationHelpers as $index => $automationHelper) {
+            if (!empty($automationHelper->where)) {
+                $where .= ' ('.implode(') and (', $automationHelper->where).')';
+                // Add 'or' except for the last condition
+                if ($index != count($automationHelpers) - 1) $where .= ' OR ';
+            }
+            if (!empty($automationHelper->join)) $join .= ' JOIN '.implode(' JOIN ', $automationHelper->join);
+            if (!empty($automationHelper->leftjoin)) $join .= ' LEFT JOIN '.implode(' LEFT JOIN ', $automationHelper->leftjoin);
+        }
+        $filters[] = $where;
+        $query .= $join;
+        $queryCount .= $join;
+        $queryStatus .= $join;
+    }
+
     public function getJoinForQuery($joinType)
     {
         if (strpos($joinType, 'join_list') !== false) {
@@ -276,7 +314,6 @@ class UserClass extends acymClass
 
         return acym_loadObject($query);
     }
-
 
     /**
      * @param string $email

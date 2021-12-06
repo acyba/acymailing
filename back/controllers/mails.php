@@ -431,6 +431,8 @@ class MailsController extends acymController
         if (!empty($return)) $data['return'] = $return;
 
         acym_setVar('layout', 'edit');
+        $data['menuClass'] = $this->menuClass;
+
         parent::display($data);
     }
 

@@ -98,7 +98,6 @@ class acym_archive_widget extends WP_Widget
             echo $args['before_title'].$title.$args['after_title'];
         }
 
-        acym_displayMessages();
         acym_setVar('page', 'front');
         $searchs = acym_getVar('array', 'acym_search', []);
         $search = '';

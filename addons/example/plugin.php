@@ -12,7 +12,7 @@ class plgAcymExample extends acymPlugin
     public function __construct()
     {
         parent::__construct();
-        // Joomla, WordPress or all for an addon that can work on both CMSs, don't forget the uppercases
+        // Joomla, WordPress or all for an add-on that can work on both CMSs, don't forget the uppercase characters
         $this->cms = 'all';
 
         // Title displayed on the tab in the dynamic texts popup or the dynamic content insertion button
@@ -79,9 +79,9 @@ class plgAcymExample extends acymPlugin
             'custom_view' => [
                 'type' => 'custom_view',
                 'tags' => [
-                    'title',
-                    'desc',
-                    'readmore',
+                    'title' => ['ACYM_TITLE'],
+                    'desc' => ['ACYM_DESCRIPTION'],
+                    'readmore' => ['ACYM_READ_MORE'],
                 ],
             ],
         ];

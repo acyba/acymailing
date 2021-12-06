@@ -9,7 +9,7 @@ use AcyMailing\Types\OperatorType;
 
 class plgAcymVirtuemart extends acymPlugin
 {
-    var $lang = null;
+    private $lang = null;
     private $baseOption = 'virtuemart';
 
     public function __construct()
@@ -67,7 +67,6 @@ class plgAcymVirtuemart extends acymPlugin
         }
     }
 
-
     public function getStandardStructure(&$customView)
     {
         $tag = new stdClass();
@@ -87,7 +86,6 @@ class plgAcymVirtuemart extends acymPlugin
 
     public function initCustomOptionsCustomView()
     {
-
         $customFieldsObjects = acym_loadObjectList(
             'SELECT cf.virtuemart_custom_id, cf.custom_title, cf.show_title, cf.field_type, cfvalues.customfield_value 
                 FROM #__virtuemart_customs AS cf 
@@ -1420,7 +1418,8 @@ class plgAcymVirtuemart extends acymPlugin
         //We are updating the user information from VM...
         $option = acym_getVar('string', 'option', '');
         $acySource = acym_getVar('string', 'acy_source', '');
-        if ($option == 'com_virtuemart' && $acySource == 'virtuemart registration form') {
+        $task = acym_getVar('cmd', 'task', '');
+        if ($option == 'com_virtuemart' && $acySource == 'virtuemart registration form' && $task != 'updateCartNoMethods') {
             $this->updateVM();
         }
     }
@@ -1505,11 +1504,39 @@ class plgAcymVirtuemart extends acymPlugin
         if (!empty($listsToSubscribe)) $userClass->subscribe($user->id, $listsToSubscribe);
     }
 
-    public function onAcymRegacyDisplayLists()
+    /**
+     * Only for connected users that are already subscribed to a list when regacy is added to a VM form
+     * VirtueMart automatically submits the form using ajax when a field is changed, but we don't want to subscribe/unsubscribe the user to/from the lists directly when he checks
+     * the checkbox: it would send the confirmation/welcome/goodbye emails
+     *
+     * @param array $currentSubscription
+     */
+    public function onRegacyPrepareCheckedLists(&$currentSubscription)
     {
-        $task = acym_getVar('cmd', 'task');
-        if ($task === 'updateCartNoMethods') {
-            $this->onRegacyAfterRoute();
+        // Task used by VirtueMart when the form is refreshed using ajax
+        $task = acym_getVar('cmd', 'task', '');
+        if ($task != 'updateCartNoMethods') return;
+
+        // If the user unchecks the checkbox, it isn't saved with the ajax call, but since the form is refreshed it automatically re-checks the checkbox
+
+        $visibleLists = acym_getVar('string', 'virtuemart_visible_lists');
+        $visibleLists = explode(',', $visibleLists);
+        acym_arrayToInteger($visibleLists);
+        if (empty($visibleLists)) return;
+
+        $visibleListsChecked = acym_getVar('array', 'virtuemart_visible_lists_checked', []);
+        acym_arrayToInteger($visibleListsChecked);
+
+        // apply the lists status in $currentSubscription based on what the user checked, to not change the checkbox on form refresh
+        foreach ($visibleLists as $oneListId) {
+            if (empty($currentSubscription[$oneListId])) {
+                $currentSubscription[$oneListId] = (object)[
+                    'status' => in_array($oneListId, $visibleListsChecked) ? '1' : '0',
+                    'list_id' => $oneListId,
+                ];
+            } else {
+                $currentSubscription[$oneListId]->status = in_array($oneListId, $visibleListsChecked) ? '1' : '0';
+            }
         }
     }
 }
