@@ -88,7 +88,7 @@ class acymController extends acymObject
         if ($this->preventCallTask) return;
 
         // If not authorized, display message and redirect to dashboard
-        if (!in_array($task, ['countResultsTotal', 'countGlobalBySegmentId', 'countResults']) && !acym_isAllowed($this->name, $task)) {
+        if (!in_array($task, ['countResultsTotal', 'countGlobalBySegmentId', 'countResults']) && strpos($task, 'Ajax') === false && !acym_isAllowed($this->name, $task)) {
             acym_enqueueMessage(acym_translation('ACYM_ACCESS_DENIED'), 'warning');
             acym_redirect(acym_completeLink('dashboard'));
 
