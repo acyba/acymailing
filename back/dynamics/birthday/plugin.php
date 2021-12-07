@@ -378,7 +378,7 @@ class plgAcymBirthday extends acymPlugin
                 'days' => $sendingTime,
                 'field' => $campaign->sending_params[self::MAILTYPE.'_field'],
                 'relative' => $campaign->sending_params[self::MAILTYPE.'_relative'],
-                'plugin' => $campaign->sending_params[self::MAILTYPE.'_plugin'],
+                'plugin' => isset($campaign->sending_params[self::MAILTYPE.'_plugin']) ? $campaign->sending_params[self::MAILTYPE.'_plugin'] : get_class($this),
             ],
 
         ];
