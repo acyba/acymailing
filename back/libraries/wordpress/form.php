@@ -25,8 +25,8 @@ function acym_getFormToken()
     $token = acym_getVar('cmd', '_wpnonce', '');
     if (empty($token)) {
         $token = wp_create_nonce('acymnonce');
+    	acym_setVar('_wpnonce', $token);
     }
-    acym_setVar('_wpnonce', $token);
 
     return '_wpnonce='.$token;
 }

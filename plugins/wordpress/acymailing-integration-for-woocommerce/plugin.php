@@ -375,12 +375,12 @@ class plgAcymWoocommerce extends acymPlugin
         }
 
         $selectedArea = empty($this->defaultValues->id) ? [] : $this->getSelectedArea($this->defaultValues);
-		if(!isset($this->defaultValues->min) || (empty($this->defaultValues->min) && $this->defaultValues->min !== '0')){
-			$this->defaultValues->min = self::MIN_PRODUCT_DISPLAY_LAST_PURCHASED;
-		}
-		if(!isset($this->defaultValues->max) || (empty($this->defaultValues->max) && $this->defaultValues->max !== '0')){
-			$this->defaultValues->max = self::MAX_PRODUCT_DISPLAY_LAST_PURCHASED;
-		}
+        if (!isset($this->defaultValues->min) || (empty($this->defaultValues->min) && $this->defaultValues->min !== '0')) {
+            $this->defaultValues->min = self::MIN_PRODUCT_DISPLAY_LAST_PURCHASED;
+        }
+        if (!isset($this->defaultValues->max) || (empty($this->defaultValues->max) && $this->defaultValues->max !== '0')) {
+            $this->defaultValues->max = self::MAX_PRODUCT_DISPLAY_LAST_PURCHASED;
+        }
         ob_start();
         ?>
 		<div class="cell grid-x">
@@ -411,13 +411,13 @@ class plgAcymWoocommerce extends acymPlugin
 			</label>
 			<div class="cell medium-6 acym__woocommerce__<?php echo $partId; ?>__cat__container">
                 <?php echo acym_selectMultiple($this->catvalues, 'cat', $selectedArea, [
-                        'id' => 'acym__woocommerce__'.$partId.'__cat',
-                        'onchange' => '_selectedRows'.$identifier.' = {}
+                    'id' => 'acym__woocommerce__'.$partId.'__cat',
+                    'onchange' => '_selectedRows'.$identifier.' = {}
                         				for(let option of this.options){
                         					if(option.selected) _selectedRows'.$identifier.'[option.value] = true;
                         				} 	
                         				updateDynamic'.$identifier.'();',
-                    ]); ?>
+                ]); ?>
 			</div>
 		</div>
 		<script type="text/javascript">
@@ -992,12 +992,12 @@ class plgAcymWoocommerce extends acymPlugin
         $search = acym_getVar('string', 'search', '');
 
         $search_results = new WP_Query([
-                's' => $search,
-                'post_status' => 'publish',
-                'ignore_sticky_posts' => 1,
-                'post_type' => 'product',
-                'posts_per_page' => 20,
-            ]);
+            's' => $search,
+            'post_status' => 'publish',
+            'ignore_sticky_posts' => 1,
+            'post_type' => 'product',
+            'posts_per_page' => 20,
+        ]);
 
         if ($search_results->have_posts()) {
             while ($search_results->have_posts()) {
@@ -1075,9 +1075,9 @@ class plgAcymWoocommerce extends acymPlugin
 
         $conditions['user']['woopurchased']->option .= '<div class="intext_select_automation cell">';
         $ajaxParams = json_encode([
-                'plugin' => 'plgAcymWoocommerce',
-                'trigger' => 'searchProduct',
-            ]);
+            'plugin' => 'plgAcymWoocommerce',
+            'trigger' => 'searchProduct',
+        ]);
         $conditions['user']['woopurchased']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][woopurchased][product]',
@@ -1149,9 +1149,9 @@ class plgAcymWoocommerce extends acymPlugin
 
             $conditions['user']['woosubscription']->option .= '<div class="intext_select_automation cell">';
             $ajaxParams = json_encode([
-                    'plugin' => 'plgAcymWoocommerce',
-                    'trigger' => 'searchProduct',
-                ]);
+                'plugin' => 'plgAcymWoocommerce',
+                'trigger' => 'searchProduct',
+            ]);
             $conditions['user']['woosubscription']->option .= acym_select(
                 [],
                 'acym_condition[conditions][__numor__][__numand__][woosubscription][product]',
@@ -1888,10 +1888,10 @@ class plgAcymWoocommerce extends acymPlugin
 
         $automationClass = new AutomationClass();
         $automationClass->trigger('woocommerce_order_change', [
-                'userId' => $acyUser->id,
-                'statusFrom' => $statusFrom,
-                'statusTo' => $statusTo,
-            ]);
+            'userId' => $acyUser->id,
+            'statusFrom' => $statusFrom,
+            'statusTo' => $statusTo,
+        ]);
     }
 
     public function getNewEmailsTypeBlock(&$extraBlocks)
@@ -1973,8 +1973,8 @@ class plgAcymWoocommerce extends acymPlugin
             self::MAILTYPE.'_status' => $status,
         ];
     }
-
-    public function onAcymSendCampaignSpecial($campaign, &$filters)
+    
+    public function onAcymSendCampaignSpecial($campaign, &$filters, &$pluginIsExisting)
     {
         if ($campaign->sending_type != self::MAILTYPE) return;
 
@@ -1992,6 +1992,12 @@ class plgAcymWoocommerce extends acymPlugin
             ],
 
         ];
+
+        if (!$this->installed) {
+            $pluginIsExisting = false;
+
+            return;
+        }
         $filters[] = $filter;
     }
 
@@ -2052,10 +2058,12 @@ class plgAcymWoocommerce extends acymPlugin
     {
         if ($trigger == self::FOLLOWTRIGGER) {
             $woocommerceOrderStatus = $this->getOrderStatuses();
-            $multiselectOrderStatus = acym_selectMultiple($woocommerceOrderStatus,
+            $multiselectOrderStatus = acym_selectMultiple(
+                $woocommerceOrderStatus,
                 'followup[condition][order_status]',
                 !empty($followup->condition) && $followup->condition['order_status'] ? $followup->condition['order_status'] : [],
-                ['class' => 'acym__select']);
+                ['class' => 'acym__select']
+            );
             $multiselectOrderStatus = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectOrderStatus.'</span>';
             $statusOrderStatus = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
                     $statusArray,
@@ -2067,9 +2075,9 @@ class plgAcymWoocommerce extends acymPlugin
 
 
             $ajaxParams = json_encode([
-                    'plugin' => 'plgAcymWoocommerce',
-                    'trigger' => 'searchProduct',
-                ]);
+                'plugin' => 'plgAcymWoocommerce',
+                'trigger' => 'searchProduct',
+            ]);
             $parametersProductSelect = [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-params' => acym_escape($ajaxParams),
@@ -2092,9 +2100,9 @@ class plgAcymWoocommerce extends acymPlugin
             $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
             $ajaxParams = json_encode([
-                    'plugin' => 'plgAcymWoocommerce',
-                    'trigger' => 'searchCat',
-                ]);
+                'plugin' => 'plgAcymWoocommerce',
+                'trigger' => 'searchCat',
+            ]);
             $parametersCategoriesSelect = [
                 'class' => 'acym__select acym_select2_ajax',
                 'data-params' => acym_escape($ajaxParams),

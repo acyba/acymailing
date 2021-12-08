@@ -495,10 +495,11 @@ class CampaignClass extends acymClass
         }
 
         $filters = $this->getFilterCampaign($campaign->sending_params);
-
+        $pluginIsExisting = true;
         foreach ($filters as $key => $filter) {
-            acym_trigger('onAcymSendCampaignSpecial', [$campaign, &$filters[$key]]);
+            acym_trigger('onAcymSendCampaignSpecial', [$campaign, &$filters[$key], &$pluginIsExisting]);
         }
+        if (!$pluginIsExisting) return false;
 
         // Make sure some receivers have been selected
         $lists = acym_loadResultArray('SELECT list_id FROM #__acym_mail_has_list WHERE mail_id = '.intval($campaign->mail_id));

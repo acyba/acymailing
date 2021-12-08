@@ -296,12 +296,11 @@ class plgAcymBirthday extends acymPlugin
         }
 
         $availablePlugins = [
-            '' => acym_translation('ACYM_SELECT_PLUGIN'),
             get_class($this) => 'AcyMailing',
         ];
         acym_trigger('onAcymGetPluginField', [&$availablePlugins]);
 
-        $onlyAcymailing = count($availablePlugins) === 2;
+        $onlyAcymailing = count($availablePlugins) === 1;
         $selectedPlugin = '';
         $availableFields = [
             '' => acym_translation('ACYM_SELECT_FIELD'),
@@ -309,7 +308,23 @@ class plgAcymBirthday extends acymPlugin
         if (!empty($sendingParams) && !empty($sendingParams[self::MAILTYPE.'_plugin'])) {
             $selectedPlugin = $sendingParams[self::MAILTYPE.'_plugin'];
         }
-        acym_trigger('getBirthdayField', [&$availableFields], $selectedPlugin);
+
+        if (!empty($selectedPlugin)) {
+            $installed = false;
+            acym_trigger('onAcymCheckInstalled', [&$installed], $selectedPlugin);
+
+            if (!$installed) {
+                acym_trigger('getBirthdayField', [&$availableFields], get_class($this));
+                acym_enqueueMessage(
+                    acym_translation('ACYM_WARNING_CAMPAIGN_BASED_ON_ANOTHER_PLUGIN'),
+                    'error'
+                );
+            } else {
+                acym_trigger('getBirthdayField', [&$availableFields], $selectedPlugin);
+            }
+        } elseif ($onlyAcymailing) {
+            acym_trigger('getBirthdayField', [&$availableFields], get_class($this));
+        }
 
         if (count($availableFields) == 1) {
             $availableFields = ['' => acym_translation('ACYM_NO_FIELD_AVAILABLE')];
@@ -330,7 +345,7 @@ class plgAcymBirthday extends acymPlugin
         }
 
         $inputField = '<div class="cell medium-2 margin-left-1 margin-right-1">';
-        $inputField .= acym_select($availableFields, 'acym_birthday_field', (!empty($selectedPlugin) ? $selectedField : ''), 'class="acym__select"');
+        $inputField .= acym_select($availableFields, 'acym_birthday_field', $selectedField, 'class="acym__select"');
         $inputField .= '</div><div class="cell medium-8"></div>';
 
         $additionalSettings .= '<div class="cell grid-x acym_vcenter margin-left-3 margin-bottom-1" id="acym_div_date_field"'.(empty($selectedPlugin) && !$onlyAcymailing
@@ -363,7 +378,7 @@ class plgAcymBirthday extends acymPlugin
         ];
     }
 
-    public function onAcymSendCampaignSpecial($campaign, &$filters)
+    public function onAcymSendCampaignSpecial($campaign, &$filters, &$pluginIsExisting)
     {
         if ($campaign->sending_type != self::MAILTYPE) return;
 
@@ -380,8 +395,16 @@ class plgAcymBirthday extends acymPlugin
                 'relative' => $campaign->sending_params[self::MAILTYPE.'_relative'],
                 'plugin' => isset($campaign->sending_params[self::MAILTYPE.'_plugin']) ? $campaign->sending_params[self::MAILTYPE.'_plugin'] : get_class($this),
             ],
-
         ];
+
+        $installed = false;
+        acym_trigger('onAcymCheckInstalled', [&$installed], $filter['birthday']['plugin']);
+
+        if (!$installed) {
+            $pluginIsExisting = false;
+
+            return;
+        }
         $filters[] = $filter;
     }
 
