@@ -1354,4 +1354,9 @@ class acymPlugin extends acymObject
 
         return $dateToCheck;
     }
+
+    public function onAcymCheckInstalled(&$installed)
+    {
+        $installed = $this->installed;
+    }
 }

@@ -33,7 +33,9 @@ const acym_editorWysidImage = {
         if (jQuery('.acym__wysid__media__inserted').length > 0) {
             setTimeout(function () {
                 let $insertedImg = jQuery('.acym__wysid__media__inserted');
-                $insertedImg.attr('height', $insertedImg.height()).attr('width', $insertedImg.width());
+                $insertedImg.each(function () {
+                    jQuery(this).attr('height', jQuery(this).height()).attr('width', jQuery(this).width());
+                });
             }, 200);
         }
     },

@@ -45,8 +45,9 @@ jQuery(document).ready(function ($) {
             trigger: 'getJsonBirthdayField'
         }).then(response => {
             let data = acym_helper.parseJson(response);
-            $('#acym_birthday_field option:not(:first)').remove();
+            $('#acym_birthday_field option').remove();
             if (data.fields.length !== 0) {
+                $('#acym_birthday_field').append($('<option></option>').attr('value', '').text(ACYM_JS_TXT.ACYM_SELECT_FIELD));
                 for (const [key, value] of Object.entries(data.fields)) {
                     $('#acym_birthday_field').append($('<option></option>').attr('value', key).text(value));
                 }
