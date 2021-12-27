@@ -1,6 +1,5 @@
 <?php
 
-//DISPLAY PHP5.3 WARNING!
 use AcyMailing\Helpers\UpdateHelper;
 
 if (version_compare(PHP_VERSION, '5.6.0', '<')) {

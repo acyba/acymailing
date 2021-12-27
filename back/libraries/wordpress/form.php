@@ -25,7 +25,7 @@ function acym_getFormToken()
     $token = acym_getVar('cmd', '_wpnonce', '');
     if (empty($token)) {
         $token = wp_create_nonce('acymnonce');
-    	acym_setVar('_wpnonce', $token);
+        acym_setVar('_wpnonce', $token);
     }
 
     return '_wpnonce='.$token;
@@ -250,14 +250,12 @@ function acym_renderForm($params, $args = [])
     $fieldsToDisplay = [];
     foreach ($fields as $field) {
         $fieldsToDisplay[$field->id] = $field->name;
-        $js .= "\n"."acymModule['excludeValues".$formName."']['".$field->id."'] = '".acym_translation($field->name, true)."';";
+        $js .= "\n".'acymModule["excludeValues'.$formName.'"]["'.$field->id.'"] = "'.acym_translation($field->name, true).'";';
     }
     $js .= "  });";
     // Exclude default values from fields, if the user didn't fill them in
     $return .= '<script type="text/javascript">
-                <!--
                 '.$js.'
-                //-->
                 </script>';
 
     $buttonStyle = '';

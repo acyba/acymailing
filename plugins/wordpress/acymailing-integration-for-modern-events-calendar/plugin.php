@@ -144,6 +144,7 @@ class plgAcymModerneventscalendar extends acymPlugin
                     'ID' => 'ACYM_DATE_CREATED',
                     'post_date' => 'ACYM_DATE',
                     'post_title' => 'ACYM_TITLE',
+                    'menu_order' => 'ACYM_MENU_ORDER',
                     'rand' => 'ACYM_RANDOM',
                 ],
                 'default' => 'post_date',

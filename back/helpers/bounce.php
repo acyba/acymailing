@@ -1035,12 +1035,6 @@ class BounceHelper extends acymObject
             $data[] = 'ACY_RULE::'.$oneRule->id.' '.$oneRule->name;
             $data[] = 'REPLYTO_ADDRESS::'.$this->_message->header->reply_to_name.' ( '.$this->_message->header->reply_to_email.' )';
             $data[] = 'FROM_ADDRESS::'.$this->_message->header->from_name.' ( '.$this->_message->header->from_email.' )';
-            if (!empty($this->_message->html)) {
-                $data[] = 'HTML_VERSION::'.@htmlentities($this->_message->html, ENT_COMPAT, 'UTF-8');
-            }
-            if (!empty($this->_message->text)) {
-                $data[] = 'TEXT_VERSION::'.nl2br(@htmlentities($this->_message->text, ENT_COMPAT, 'UTF-8'));
-            }
             $data[] = print_r($this->_message->headerinfo, true);
             if (empty($this->_message->mailid)) {
                 $this->_message->mailid = 0;

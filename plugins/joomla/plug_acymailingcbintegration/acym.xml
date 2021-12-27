@@ -68,5 +68,4 @@ margin-right: 5px;
 		<tab name="Mailing lists" description="Enables the user to manage his subscription to the AcyMailing Mailing Lists" class="getAcymTab" fields="0" position="cb_tabmain" displaytype="tab">
 		</tab>
 	</tabs>
-	<scriptfile>installviacb.php</scriptfile>
 </cbinstall>

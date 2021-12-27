@@ -369,7 +369,7 @@ class plgAcymArticle extends acymPlugin
 
     public function replaceIndividualContent($tag)
     {
-        $query = 'SELECT element.*, `user`.`name` AS authorname, cat.`title` AS category_title
+        $query = 'SELECT element.*, `user`.`name` AS authorname, cat.`title` AS category_title, cat.`access` AS category_access
                     FROM #__content AS element 
                     JOIN #__categories AS cat 
                         ON element.`catid` = cat.`id`
@@ -392,7 +392,7 @@ class plgAcymArticle extends acymPlugin
             $link = ContentHelperRoute::getArticleRoute($completeId, $element->catid, $this->getLanguage($element->language, true));
         }
 
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $element->access === '1' && $element->category_access === '1');
         $varFields['{link}'] = $link;
 
         $title = '';

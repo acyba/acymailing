@@ -184,6 +184,7 @@ class plgAcymWoocommerce extends acymPlugin
                     'post_date' => 'ACYM_PUBLISHING_DATE',
                     'post_modified' => 'ACYM_MODIFICATION_DATE',
                     'post_title' => 'ACYM_TITLE',
+                    'menu_order' => 'ACYM_MENU_ORDER',
                     'rand' => 'ACYM_RANDOM',
                 ],
             ],

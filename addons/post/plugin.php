@@ -93,7 +93,23 @@ class plgAcymPost extends acymPlugin
         $identifier = $this->name;
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
+        $defaultSizes = ['thumbnail', 'medium', 'medium_large', 'large', 'post-thumbnail'];
+        $imageFeaturedSize = ['full' => 'ACYM_ORIGINAL_IMAGE_RESOLUTION'];
+        
+        foreach (wp_get_registered_image_subsizes() as $sizeName => $sizes) {
+            if (in_array($sizeName, $defaultSizes) && (!empty($sizes['width']) || !empty($sizes['height']))) {
+                $imageFeaturedSize[$sizeName] = $sizes['width'].'x'.$sizes['height'].'px';
+            }
+        }
+
         $displayOptions = [
+            [
+                'title' => 'ACYM_FEATURED_IMAGE_SIZE',
+                'type' => 'select',
+                'name' => 'size',
+                'options' => $imageFeaturedSize,
+                'default' => 'full',
+            ],
             [
                 'title' => 'ACYM_DISPLAY',
                 'type' => 'checkbox',
@@ -139,6 +155,7 @@ class plgAcymPost extends acymPlugin
                     'post_date' => 'ACYM_PUBLISHING_DATE',
                     'post_modified' => 'ACYM_MODIFICATION_DATE',
                     'post_title' => 'ACYM_TITLE',
+                    'menu_order' => 'ACYM_MENU_ORDER',
                     'rand' => 'ACYM_RANDOM',
                 ],
             ],
@@ -324,7 +341,8 @@ class plgAcymPost extends acymPlugin
         $imagePath = '';
         $imageId = get_post_thumbnail_id($tag->id);
         if (!empty($imageId)) {
-            $imagePath = get_the_post_thumbnail_url($tag->id);
+            if (empty($tag->size)) $tag->size = 'full';
+            $imagePath = get_the_post_thumbnail_url($tag->id, $tag->size);
         }
         $varFields['{image}'] = $imagePath;
         $varFields['{picthtml}'] = '<img class="content_main_image" alt="" src="'.$imagePath.'">';

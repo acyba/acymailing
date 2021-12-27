@@ -18,31 +18,31 @@ acym_addScript(false, ACYM_JS.'deactivate.min.js');
 			<ul id="acym_deactivate_modal_list">
 				<li>
 					<label for="acym_deactivate_modal_list_reason1">
-						<input id="acym_deactivate_modal_list_reason1" type="radio" value="<?php echo acym_escape(acym_translation('ACYM_FOUND_BETTER_PLUGIN')); ?>" name="reason">
+						<input id="acym_deactivate_modal_list_reason1" type="radio" value="ACYM_FOUND_BETTER_PLUGIN" name="reason">
                         <?php echo acym_translation('ACYM_FOUND_BETTER_PLUGIN'); ?>
 					</label>
 				</li>
 				<li>
 					<label for="acym_deactivate_modal_list_reason2">
-						<input id="acym_deactivate_modal_list_reason2" type="radio" value="<?php echo acym_escape(acym_translation('ACYM_NO_NEEDED')); ?>" name="reason">
+						<input id="acym_deactivate_modal_list_reason2" type="radio" value="ACYM_NO_NEEDED" name="reason">
                         <?php echo acym_translation('ACYM_NO_NEEDED'); ?>
 					</label>
 				</li>
 				<li>
 					<label for="acym_deactivate_modal_list_reason3">
-						<input id="acym_deactivate_modal_list_reason3" type="radio" value="<?php echo acym_escape(acym_translation('ACYM_PLUGIN_NOT_WORKING')); ?>" name="reason">
+						<input id="acym_deactivate_modal_list_reason3" type="radio" value="ACYM_PLUGIN_NOT_WORKING" name="reason">
                         <?php echo acym_translation('ACYM_PLUGIN_NOT_WORKING'); ?>
 					</label>
 				</li>
 				<li>
 					<label for="acym_deactivate_modal_list_reason4">
-						<input id="acym_deactivate_modal_list_reason4" type="radio" value="<?php echo acym_escape(acym_translation('ACYM_TEMPORARY_DEACTIVATION')); ?>" name="reason">
+						<input id="acym_deactivate_modal_list_reason4" type="radio" value="ACYM_TEMPORARY_DEACTIVATION" name="reason">
                         <?php echo acym_translation('ACYM_TEMPORARY_DEACTIVATION'); ?>
 					</label>
 				</li>
 				<li>
 					<label for="acym_deactivate_modal_list_otherReason">
-						<input id="acym_deactivate_modal_list_otherReason" type="radio" value="<?php echo acym_escape(acym_translation('ACYM_OTHER')); ?>" name="reason">
+						<input id="acym_deactivate_modal_list_otherReason" type="radio" value="ACYM_OTHER" name="reason">
                         <?php echo acym_translation('ACYM_OTHER'); ?>
 						<textarea id="acym_feedback_otherReason" name="otherReasonText" rows="5" cols="50"></textarea>
 					</label>

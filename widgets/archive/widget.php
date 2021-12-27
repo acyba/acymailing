@@ -108,7 +108,7 @@ class acym_archive_widget extends WP_Widget
             'popup' => isset($instance['popup']) ? $instance['popup'] : '1',
             'displayUserListOnly' => isset($instance['displayUserListOnly']) ? $instance['displayUserListOnly'] : '1',
             'nbNewslettersPerPage' => isset($instance['nbNewslettersPerPage']) ? $instance['nbNewslettersPerPage'] : '10',
-            'paramsCMS' => ['widget_id' => $args['widget_id']],
+            'paramsCMS' => ['widget_id' => $args['widget_id'], 'suffix' => ''],
             'search' => $search,
         ];
 

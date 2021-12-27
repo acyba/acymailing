@@ -55,7 +55,7 @@ function acym_prepareAjaxURL($url)
     return htmlspecialchars_decode(acym_route(acym_addPageParam($url, true)));
 }
 
-function acym_frontendLink($link, $complete = true)
+function acym_frontendLink($link, $complete = true, $sef = true)
 {
     return acym_rootURI().acym_addPageParam($link, true, true);
 }

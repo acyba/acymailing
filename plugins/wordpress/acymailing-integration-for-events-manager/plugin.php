@@ -183,6 +183,7 @@ class plgAcymEventsmanager extends acymPlugin
                     'ID' => 'ACYM_DATE_CREATED',
                     'startdate.meta_value' => 'ACYM_DATE',
                     'post_title' => 'ACYM_TITLE',
+                    'menu_order' => 'ACYM_MENU_ORDER',
                     'rand' => 'ACYM_RANDOM',
                 ],
                 'default' => 'post_date',
