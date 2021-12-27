@@ -375,7 +375,7 @@ class plgAcymEventbooking extends acymPlugin
     {
         acym_loadLanguageFile('com_eventbooking', JPATH_SITE, $this->emailLanguage);
 
-        $query = 'SELECT event.*, location.*, location.name AS location_name FROM `#__eb_events` AS event ';
+        $query = 'SELECT location.*, event.*, location.name AS location_name FROM `#__eb_events` AS event ';
         $query .= 'LEFT JOIN `#__eb_locations` AS location ON event.location_id = location.id ';
         $query .= 'WHERE event.id = '.intval($tag->id);
 

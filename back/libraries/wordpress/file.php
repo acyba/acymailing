@@ -9,19 +9,19 @@ function acym_fileGetContent($url, $timeout = 10)
     ob_start();
     $data = '';
 
-    if (strpos($url, 'http') === 0 && class_exists('WP_Http') && method_exists('WP_Http', 'request')) {
-        $args = ['timeout' => $timeout];
-        $request = new WP_Http();
-        $data = $request->request($url, $args);
-        $data = (empty($data) || !is_array($data) || empty($data['body'])) ? '' : $data['body'];
-    }
-
-    if (empty($data) && function_exists('file_get_contents')) {
+    if (function_exists('file_get_contents')) {
         if (!empty($timeout)) {
             ini_set('default_socket_timeout', $timeout);
         }
         $streamContext = stream_context_create(['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]]);
         $data = file_get_contents($url, false, $streamContext);
+    }
+
+    if (empty($data) && strpos($url, 'http') === 0 && class_exists('WP_Http') && method_exists('WP_Http', 'request')) {
+        $args = ['timeout' => $timeout];
+        $request = new WP_Http();
+        $data = $request->request($url, $args);
+        $data = (empty($data) || !is_array($data) || empty($data['body'])) ? '' : $data['body'];
     }
 
     if (empty($data) && function_exists('fopen') && function_exists('stream_get_contents')) {

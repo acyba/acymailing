@@ -12,7 +12,16 @@ function acym_fileGetContent($url, $timeout = 10)
     ob_start();
     // use the Joomla way first
     $data = '';
-    if (class_exists('JHttpFactory') && method_exists('JHttpFactory', 'getHttp')) {
+
+    if (function_exists('file_get_contents')) {
+        if (!empty($timeout)) {
+            ini_set('default_socket_timeout', $timeout);
+        }
+        $streamContext = stream_context_create(['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]]);
+        $data = file_get_contents($url, false, $streamContext);
+    }
+
+    if (empty($data) && class_exists('JHttpFactory') && method_exists('JHttpFactory', 'getHttp')) {
         $http = JHttpFactory::getHttp();
         try {
             $response = $http->get($url, [], $timeout);
@@ -40,14 +49,6 @@ function acym_fileGetContent($url, $timeout = 10)
             echo curl_error($conn);
         }
         curl_close($conn);
-    }
-
-    if (empty($data) && function_exists('file_get_contents')) {
-        if (!empty($timeout)) {
-            ini_set('default_socket_timeout', $timeout);
-        }
-        $streamContext = stream_context_create(['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]]);
-        $data = file_get_contents($url, false, $streamContext);
     }
 
     if (empty($data) && function_exists('fopen') && function_exists('stream_get_contents')) {

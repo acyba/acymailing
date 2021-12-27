@@ -477,6 +477,11 @@ class QueueClass extends acymClass
             $automationHelper->where[] = '`us`.`user_id` IS NULL';
         }
 
+        // Do not count the disabled user for the resend counter on summary
+        if (!is_null($onlyNew)) {
+            $automationHelper->where[] = '`user`.`active` = 1';
+        }
+
         $segmentsController = new SegmentsController();
         $automationHelper->removeFlag();
 

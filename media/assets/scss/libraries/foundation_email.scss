@@ -18,6 +18,21 @@
     border: none;
     padding: 0;
 
+
+    * {
+        -ms-text-size-adjust: 100%;
+    }
+
+    table,
+    td {
+        mso-table-lspace: 0pt !important;
+        mso-table-rspace: 0pt !important;
+    }
+
+    img {
+        -ms-interpolation-mode: bicubic;
+    }
+
     p, p span, h1, h2, h3, h4, h5, h6, a {
         mso-line-height-rule: exactly;
     }

@@ -842,7 +842,7 @@ class acymPlugin extends acymObject
         }
     }
 
-    protected function finalizeLink($link)
+    protected function finalizeLink($link, $sef = true)
     {
         if (acym_isPluginActive('languagefilter')) {
             if (strpos($link, 'lang=') === false && !empty($this->emailLanguage)) {
@@ -856,7 +856,7 @@ class acymPlugin extends acymObject
             }
         }
 
-        return acym_frontendLink($link, false);
+        return acym_frontendLink($link, false, $sef);
     }
 
     protected function handleCustomFields($tag, &$customFields)

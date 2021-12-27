@@ -783,6 +783,24 @@ class plgAcymSubscription extends acymPlugin
         $actions['acy_list']->option .= '<div class="intext_select_automation cell">';
         $actions['acy_list']->option .= acym_select($lists, 'acym_action[actions][__and__][acy_list][list_id]', null, 'class="acym__select"');
         $actions['acy_list']->option .= '</div>';
+
+        $actions['subscribe_followup'] = new stdClass();
+        $actions['subscribe_followup']->name = acym_translation('ACYM_SUBSCRIBE_FOLLOW_UP');
+
+        $followupClass = new FollowupClass();
+        $allListFollowups = $followupClass->getAll();
+
+        $actions['subscribe_followup']->option = '<div class="intext_select_automation cell">'.acym_select(
+                $allListFollowups,
+                'acym_action[actions][__and__][subscribe_followup][followup_id]',
+                null,
+                [
+                    'class' => 'acym__select',
+                    'data-placeholder' => (!empty($listFollowups) ? acym_translation('ACYM_SELECT_FOLLOWUP', true) : acym_translation('ACYM_FOLLOWUP_NOT_FOUND', true)),
+                ],
+                'id',
+                'name'
+            ).'</div>';
     }
 
     private function _processConditionAcyLists(&$query, &$options, $num)
@@ -892,6 +910,46 @@ class plgAcymSubscription extends acymPlugin
         return acym_translationSprintf('ACYM_ACTION_LIST_'.strtoupper($action['list_actions']), $nbAffected);
     }
 
+    public function onAcymProcessAction_subscribe_followup(&$query, &$action)
+    {
+        $followupClass = new FollowupClass();
+        $followup = $followupClass->getOneById($action['followup_id']);
+        if (!empty($followup)) {
+
+            $queryToProcess = 'INSERT IGNORE #__acym_user_has_list (`user_id`, `list_id`, `status`, `subscription_date`) ('.$query->getQuery(
+                    [
+                        'user.id',
+                        $followup->list_id,
+                        '1',
+                        acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s')),
+                    ]
+                ).') ON DUPLICATE KEY UPDATE status = 1';
+
+            $nbAffected = acym_query($queryToProcess);
+
+            $followups = $followupClass->getFollowupsWithMailsInfoByIds($action['followup_id']);
+            foreach ($followups as $mails) {
+                foreach ($mails as $mail) {
+                    $sendDate = time() + (intval($mail->delay) * intval($mail->delay_unit));
+                    $sendDate = acym_escapeDB(acym_date($sendDate, 'Y-m-d H:i:s', false));
+                    $queryToProcess = 'INSERT IGNORE #__acym_queue (`mail_id`, `user_id`, `sending_date`, `priority`, `try`) ('.$query->getQuery(
+                            [
+                                $mail->mail_id,
+                                'user.id',
+                                $sendDate,
+                                $this->config->get('priority_newsletter', 3),
+                                0,
+                            ]
+                        ).')';
+
+                    acym_query($queryToProcess);
+                }
+            }
+
+            return acym_translationSprintf('ACYM_ACTION_LIST_SUB', $nbAffected);
+        }
+    }
+
     private function _summaryDate($automation, $finalText)
     {
         if (!empty($automation['date-min']) || !empty($automation['date-max'])) {
@@ -988,6 +1046,16 @@ class plgAcymSubscription extends acymPlugin
             } else {
                 $automationAction = acym_translationSprintf('ACYM_ACTION_LIST_SUMMARY', acym_translation($automationAction['acy_list']['list_actions']), $list->name);
             }
+        }
+
+        if (!empty($automationAction['subscribe_followup'])) {
+            $followupClass = new FollowupClass();
+            $followup = $followupClass->getOneById($automationAction['subscribe_followup']['followup_id']);
+            $automationAction = (!empty($followup)
+                ? acym_translationSprintf('ACYM_ACTION_SUBSCRIBE_FOLLOWUP_SUMMARY', $followup->name)
+                : acym_translation(
+                    'ACYM_FOLLOWUP_NOT_FOUND'
+                ));
         }
     }
 

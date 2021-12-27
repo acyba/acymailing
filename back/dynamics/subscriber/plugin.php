@@ -602,6 +602,8 @@ class plgAcymSubscriber extends acymPlugin
         //We generate the new mail if it's a template
         $mail = $mailClass->getOneById($action['mail_id']);
 
+        if (empty($mail)) return '';
+
         if ($mailClass::TYPE_AUTOMATION != $mail->type) {
             unset($mail->id);
             $mail->type = $mailClass::TYPE_AUTOMATION;

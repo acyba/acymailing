@@ -4,6 +4,10 @@
 #acym_deactivate_modal_dashicons_container {
     text-align: right;
     width: 50%;
+
+    .dashicons-no-alt {
+        cursor: pointer;
+    }
 }
 
 .acym_deactivate_modal_title_container {

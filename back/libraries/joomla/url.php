@@ -31,13 +31,13 @@ function acym_prepareAjaxURL($url)
     return htmlspecialchars_decode(acym_completeLink($url, true));
 }
 
-function acym_frontendLink($link, $complete = true)
+function acym_frontendLink($link, $complete = true, $sef = true)
 {
     if ($complete) {
         $link = 'index.php?option='.ACYM_COMPONENT.'&ctrl='.$link;
     }
 
-    if (ACYM_J39 && strpos($link, 'ctrl=cron') === false && strpos($link, 'ctrl=fronturl') === false) {
+    if ($sef && ACYM_J39 && strpos($link, 'ctrl=cron') === false && strpos($link, 'ctrl=fronturl') === false) {
         $sh404SEF = acym_isExtensionActive('com_sh404sef') && defined('SH404SEF_IS_RUNNING') && SH404SEF_IS_RUNNING == 1;
         if ($sh404SEF && class_exists('Sh404sefHelperGeneral') && method_exists('Sh404sefHelperGeneral', 'getSefFromNonSef')) {
             // sh404 generates a PHP notice when the content language is missing in Joomla

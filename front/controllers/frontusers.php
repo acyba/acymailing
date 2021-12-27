@@ -162,7 +162,7 @@ class FrontusersController extends UsersController
             echo '{"message":"'.acym_translation($message, true).'","type":"'.$type.'","code":"1"}';
         } else {
             acym_header('Content-type:text/html; charset=utf-8');
-            echo "<script>alert(\"".acym_translation($message, true)."\"); window.history.go(-1);</script>";
+            echo '<script>alert("'.acym_translation($message, true).'"); window.history.go(-1);</script>';
         }
         exit;
     }

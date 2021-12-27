@@ -1512,7 +1512,11 @@ class CampaignsController extends acymController
 
         $data['automatic'] = [
             'isAuto' => $campaign->isAuto,
-            'text' => empty($textToDisplay) ? '' : acym_translation('ACYM_THIS_WILL_GENERATE_CAMPAIGN_AUTOMATICALLY').' '.acym_strtolower($textToDisplay[key($textToDisplay)]),
+            'text' => empty($textToDisplay)
+                ? ''
+                : acym_translation('ACYM_THIS_WILL_GENERATE_CAMPAIGN_AUTOMATICALLY').' '.acym_strtolower(
+                    $textToDisplay[$textToDisplay['trigger_type']]
+                ),
             'startDate' => $startDate,
         ];
         $data['campaignInformation'] = $campaign;
@@ -2255,6 +2259,7 @@ class CampaignsController extends acymController
         foreach ($URLs[2] as $oneURL) {
             if (in_array($oneURL, $processed)) continue;
             if (0 === strpos($oneURL, 'mailto:')) continue;
+            if (0 === strpos($oneURL, 'tel:')) continue;
             if (strlen($oneURL) > 1 && (0 === strpos($oneURL, '#') || false !== strpos($oneURL, 'unsubscribe'))) continue;
 
             $processed[] = $oneURL;
