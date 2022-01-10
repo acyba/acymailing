@@ -122,7 +122,7 @@ class plgAcymWoocommerce extends acymPlugin
         $this->prepareWPCategories('product_cat');
 
         $this->tagvalues = acym_loadObjectList(
-            'SELECT term.term_id, term.`name`
+            'SELECT tax.term_taxonomy_id, term.`name`
 			FROM #__terms AS term
 			JOIN #__term_taxonomy AS tax ON term.term_id = tax.term_id
 			WHERE tax.taxonomy = "product_tag"
@@ -1974,7 +1974,7 @@ class plgAcymWoocommerce extends acymPlugin
             self::MAILTYPE.'_status' => $status,
         ];
     }
-    
+
     public function onAcymSendCampaignSpecial($campaign, &$filters, &$pluginIsExisting)
     {
         if ($campaign->sending_type != self::MAILTYPE) return;

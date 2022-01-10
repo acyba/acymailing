@@ -264,12 +264,15 @@ All at {param4}
                 "\r\n\r\n",
                 'Username: %s',
                 "\r\n\r\n",
-                'If this was a mistake, just ignore this email and nothing will happen.',
+                'If this was a mistake, ignore this email and nothing will happen.',
                 "\r\n\r\n",
                 'To reset your password, visit the following address:',
                 "\r\n\r\n",
                 '%s',
-                "\r\n",
+                "\r\n\r\n",
+                'This password reset request originated from the IP address %s.',
+                "\r\n\r\n",
+
             ],
             'new_subject' => '[{param1}] Password Reset',
             'new_body' => 'Someone has requested a password reset for the following account:
@@ -278,11 +281,14 @@ All at {param4}
 <br>
 <br>Username: {param3}
 <br>
-<br>If this was a mistake, just ignore this email and nothing will happen.
+<br>If this was a mistake, ignore this email and nothing will happen.
 <br>
 <br>To reset your password, visit the following address:
 <br>
-<br>{param4}',
+<br>{param4}
+<br>
+<br>This password reset request originated from the IP address {param5}.',
+
             'description' => 'ACYM_OVERRIDE_DESC_RESET_PASSWORD',
             'source' => 'wordpress',
         ],
@@ -570,6 +576,10 @@ function acym_getOverrideParamsByName($name)
             'param4' => [
                 'nicename' => acym_translation('ACYM_LINK_RESET_PASSWORD'),
                 'description' => acym_translation('ACYM_LINK_RESET_PASSWORD_OVERRIDE_DESC'),
+            ],
+            'param5' => [
+                'nicename' => acym_translation('ACYM_IP_ADDRESS'),
+                'description' => acym_translation('ACYM_IP_ADDRESS_OVERRIDE_DESC'),
             ],
         ],
         'wp-userResetEmailRequest' => [

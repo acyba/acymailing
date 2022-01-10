@@ -336,6 +336,9 @@ class CampaignsController extends acymController
         // End pagination
         if (empty($class)) {
             $data['allStatusFilter'] = $this->getCountStatusFilter($matchingCampaigns['total'], $data['campaign_type']);
+            if ('campaigns_auto' === $data['campaign_type'] && 'generated' === $data['status']) {
+                $data['allStatusFilter']->all = $campaignClass->getCountCampaignType($campaignClass::SENDING_TYPE_AUTO);
+            }
             $totalElement = empty($status) ? $data['allStatusFilter']->all : $data['allStatusFilter']->$status;
             $data['statusAuto'] = $campaignClass::SENDING_TYPE_AUTO;
         } else {
@@ -1783,7 +1786,7 @@ class CampaignsController extends acymController
      * @param $allCampaigns
      * @param $type
      *
-     * @return stdClass
+     * @return \stdClass
      */
     public function getCountStatusFilter($allCampaigns, $type)
     {

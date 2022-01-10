@@ -33,9 +33,10 @@ if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN) && is_writable(ACYM_NEW_FEATURES
 }
 
 $needToMigrate = $config->get('migration') == 0 && acym_existsAcyMailing59() && acym_getVar('string', 'task') != 'migrationDone';
-
-if ((($needToMigrate || $config->get('walk_through') == 1) && !acym_isNoTemplate()) && $ctrl != 'dynamics') {
+$forceDashboard = ($needToMigrate || $config->get('walk_through') == 1) && !acym_isNoTemplate() && $ctrl !== 'dynamics';
+if ($forceDashboard) {
     $ctrl = 'dashboard';
+    acym_setVar('ctrl', $ctrl);
 }
 
 $controllerNamespace = 'AcyMailing\\Controllers\\'.ucfirst($ctrl).'Controller';
@@ -62,6 +63,11 @@ if (empty($task)) {
 if (file_exists(ACYM_BACK.'extensions')) {
     $updateHelper = new UpdateHelper();
     $updateHelper->installExtensions(false);
+}
+
+if ($forceDashboard && !method_exists($controller, $task)) {
+    $task = 'listing';
+    acym_setVar('task', $task);
 }
 
 $controller->call($task);

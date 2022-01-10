@@ -123,7 +123,7 @@ class CampaignClass extends acymClass
         ];
 
         if ($settings['element_tab'] == 'campaigns_auto') {
-            $statusRequests['generated'] = 'campaign.sending_type = '.acym_escapeDB(self::SENDING_TYPE_NOW).' AND campaign.parent_id  > 0';
+            $statusRequests['generated'] = 'campaign.sending_type = '.acym_escapeDB(self::SENDING_TYPE_NOW).' AND campaign.parent_id > 0';
         }
 
         if (empty($settings['status'])) $settings['status'] = 'all';
@@ -993,5 +993,12 @@ class CampaignClass extends acymClass
         if ($onlyActives) $query .= ' AND campaign.active = 1';
 
         return $this->decode(acym_loadObjectList($query), false);
+    }
+
+    public function getCountCampaignType($type)
+    {
+        if (empty($type)) return 0;
+
+        return acym_loadResult('SELECT COUNT(*) FROM #__acym_campaign WHERE sending_type = '.acym_escapeDB($type));
     }
 }

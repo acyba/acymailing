@@ -461,7 +461,11 @@ class ListClass extends acymClass
             $list->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
         }
 
-        if (!empty($list->translation) && is_array($list->translation)) $list->translation = json_encode($list->translation);
+        if (!empty($list->translation) && is_array($list->translation)) {
+            $list->translation = json_encode($list->translation);
+        } else {
+            $list->translation = '';
+        }
 
         foreach ($list as $oneAttribute => $value) {
             if (empty($value)) continue;

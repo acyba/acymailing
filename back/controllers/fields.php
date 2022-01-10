@@ -63,21 +63,35 @@ class FieldsController extends acymController
             $field->value = json_decode($field->value);
             $field->fieldDB = empty($field->option->fieldDB) ? new \stdClass() : json_decode($field->option->fieldDB);
             if (!in_array($id, [1, 2, $languageFieldId]) && !empty($field->fieldDB->table)) {
-                $tables = acym_loadResultArray('SHOW TABLES FROM `'.acym_secureDBColumn($field->fieldDB->database).'`');
-                $field->fieldDB->tables = [];
-                foreach ($tables as $one) {
-                    $field->fieldDB->tables[$one] = $one;
+                $databaseExists = acym_loadResult('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '.acym_escapeDB($field->fieldDB->database));
+                if (!empty($databaseExists)) {
+                    $tables = acym_loadResultArray('SHOW TABLES FROM `'.acym_secureDBColumn($field->fieldDB->database).'`');
+                    $field->fieldDB->tables = [];
+                    foreach ($tables as $one) {
+                        $field->fieldDB->tables[$one] = $one;
+                    }
+                    if (empty($field->fieldDB->table)) {
+                        $columns = [];
+                    } else {
+                        $tables = acym_loadResultArray(
+                            'SELECT table_name 
+                            FROM information_schema.tables 
+                            WHERE table_schema = '.acym_escapeDB($field->fieldDB->database)
+                        );
+                        if (in_array($field->fieldDB->table, $tables)) {
+                            $columns = acym_loadResultArray(
+                                'SHOW COLUMNS FROM '.acym_secureDBColumn($field->fieldDB->table).' FROM '.acym_secureDBColumn($field->fieldDB->database)
+                            );
+                        } else {
+                            $columns = [];
+                        }
+                    }
+                    $field->fieldDB->columns = [];
+                    foreach ($columns as $one) {
+                        $field->fieldDB->columns[$one] = $one;
+                    }
+                    array_unshift($field->fieldDB->columns, acym_translation('ACYM_CHOOSE_COLUMN'));
                 }
-                $columns = empty($field->fieldDB->table)
-                    ? []
-                    : acym_loadResultArray(
-                        'SHOW COLUMNS FROM '.acym_secureDBColumn($field->fieldDB->table).' FROM '.acym_secureDBColumn($field->fieldDB->database)
-                    );
-                $field->fieldDB->columns = [];
-                foreach ($columns as $one) {
-                    $field->fieldDB->columns[$one] = $one;
-                }
-                array_unshift($field->fieldDB->columns, acym_translation('ACYM_CHOOSE_COLUMN'));
             }
             //DONT ERASE PLEASE
             //$field->display = json_decode($field->option->display);

@@ -748,7 +748,8 @@ class PluginHelper extends acymObject
 
             preg_match('#src="([^"]+)"#Uis', $format->imagePath, $matches);
             if (!empty($matches[1])) $format->imagePath = $matches[1];
-            $image = '<img class="content_main_image" alt="" src="'.$format->imagePath.'" '.$style.' />';
+            $altImage = !empty($format->altImage) ? $format->altImage : '';
+            $image = '<img class="content_main_image" alt="'.acym_escape($altImage).'" src="'.$format->imagePath.'" '.$style.' />';
 
             if (!empty($format->imageCaption) && !in_array($format->tag->format, ['TITLE_IMG', 'TITLE_IMG_RIGHT'])) {
                 $image .= '<p class="content_main_image_caption">'.acym_escape($format->imageCaption).'</p>';

@@ -23,6 +23,15 @@ function readyFunction($) {
         if (entity[column] === null) {
             return false;
         }
+
+        if (typeof entity[column] === 'number') {
+            return entity[column].toString().toLowerCase().indexOf(search.toLowerCase()) !== -1;
+        }
+
+        if (entity[column].toLowerCase().indexOf('acymicon-circle') !== -1) {
+            return false;
+        }
+
         return entity[column].toLowerCase().indexOf(search.toLowerCase()) !== -1;
     }).indexOf(true) !== -1);
 

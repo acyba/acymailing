@@ -29,6 +29,38 @@ class plgAcymSurvey extends acymPlugin
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/logo_128px.png';
 
         $this->installed = acym_isExtensionActive('com_communitysurveys');
+        if ($this->installed) {
+            $this->initCustomView();
+
+            $this->settings = [
+                'custom_view' => [
+                    'type' => 'custom_view',
+                    'tags' => array_merge($this->replaceOptions, $this->elementOptions),
+                ],
+            ];
+        } else {
+            $this->settings = [
+                'not_installed' => '1',
+            ];
+        }
+    }
+
+    public function initElementOptionsCustomView()
+    {
+        $this->elementOptions = [];
+        $element = acym_loadObject('SELECT * FROM #__survey_surveys LIMIT 1');
+        if (empty($element)) return;
+        foreach ($element as $key => $value) {
+            $this->elementOptions[$key] = [$key];
+        }
+    }
+
+    public function initReplaceOptionsCustomView()
+    {
+        $this->replaceOptions = [
+            'link' => ['ACYM_LINK'],
+            'readmore' => ['ACYM_READ_MORE'],
+        ];
     }
 
     public function getPossibleIntegrations()
@@ -212,16 +244,27 @@ class plgAcymSurvey extends acymPlugin
         foreach ($extractedTags as $shortcode => $oneTag) {
             if (isset($tags[$shortcode])) continue;
 
-            // The current user hasn't any account created on the site (only an AcyMailing user)
-            if (empty($user->cms_id)) {
-                $tags[$shortcode] = '';
-                continue;
-            }
-
             $invitee = new stdClass();
-            $invitee->id = (int)$user->cms_id;
-            $users = [$invitee];
-            $responseModel->createSurveyKeys($oneTag->id, 1, true, true, $users);
+            if (empty($user->cms_id)) {
+                // The current user hasn't any account created on the site (only an AcyMailing user)
+                $contactId = acym_loadResult('SELECT id FROM #__survey_contacts WHERE email = '.acym_escapeDB($user->email));
+                if (empty($contactId)) {
+                    // Add it as a contact if it doesn't exist yet
+                    $contact = new stdClass();
+                    $contact->name = $user->name;
+                    $contact->email = $user->email;
+                    $contact->created_by = acym_currentUserId();
+                    $contactId = acym_insertObject('#__survey_contacts', $contact);
+                }
+
+                $invitee->id = $contactId;
+                $users = [$invitee];
+                $responseModel->createSurveyKeys($oneTag->id, 1, true, true, $users, true);
+            } else {
+                $invitee->id = $user->cms_id;
+                $users = [$invitee];
+                $responseModel->createSurveyKeys($oneTag->id, 1, true, true, $users);
+            }
 
             $tags[$shortcode] = $users[0]->url;
         }

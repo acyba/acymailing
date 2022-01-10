@@ -13,10 +13,10 @@ function acym_addScript($raw, $script, $type = 'text/javascript', $defer = false
     } elseif ($defer || $async || $needTagScript) {
         echo '<script type="'.$type.'" src="'.$script.'"'.($async ? ' async' : '').($defer ? ' defer' : '').'></script>';
     } else {
-        wp_enqueue_script('script'.$scriptNumber, $script, $deps);
+        wp_enqueue_script('acym_script'.$scriptNumber, $script, $deps);
     }
 
-    return 'script'.$scriptNumber;
+    return 'acym_script'.$scriptNumber;
 }
 
 function acym_addStyle($raw, $style, $type = 'text/css', $media = null, $attribs = [])

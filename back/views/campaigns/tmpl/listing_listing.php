@@ -13,7 +13,7 @@
                 <?php
                 if ($data['campaign_type'] == 'campaigns_auto') {
                     $options = [
-                        '' => ['ACYM_ALL', $data['allStatusFilter']->all],
+                        '' => ['ACYM_AUTOMATICS_CAMPAIGNS', $data['allStatusFilter']->all],
                         'generated' => [
                             'ACYM_GENERATED',
                             $data['allStatusFilter']->generated,

@@ -93,6 +93,15 @@ define(
                 'downloadlink' => 'https://wordpress.org/plugins/acymailing-custom-headers/',
             ],
             (object)[
+                'name' => 'Easy Digital Downloads',
+                'description' => '- Insert digital downloads and generate coupons in your emails',
+                'image' => 'easydigitaldownloads.png',
+                'level' => 'starter',
+                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/easydigitaldownloads',
+                'category' => 'E-commerce solutions',
+                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-easydigitaldownloads/',
+            ],
+            (object)[
                 'name' => 'Events Manager',
                 'description' => '- Add events from Events Manager to your emails.<br />- Filter users on events participation.',
                 'image' => 'eventsmanager.png',

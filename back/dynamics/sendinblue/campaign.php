@@ -31,7 +31,7 @@ class SendinblueCampaign extends SendinblueClass
                 'listIds' => [$listIdSendinblue],
             ],
             'footer' => '<span style="display: none !important;">{here}</span>',
-            'inlineImageActivation' => empty($this->config->get('embed_images', 0)) ? false : true,
+            'inlineImageActivation' => !empty($this->config->get('embed_images', 0)),
         ];
 
         $this->callApiSendingMethod('emailCampaigns', $data, $this->headers, 'POST');
@@ -49,8 +49,7 @@ class SendinblueCampaign extends SendinblueClass
         $response = $this->callApiSendingMethod(
             plgAcymSendinblue::SENDING_METHOD_API_URL.'emailCampaigns?status=sent&limit=500&offset=0&sort=desc',
             [],
-            $this->headers,
-            'GET'
+            $this->headers
         );
 
         if (empty($response['campaigns'])) return true;

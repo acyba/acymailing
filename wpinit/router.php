@@ -158,9 +158,9 @@ class acyRouter
             acym_setVar('task', $task);
         }
 
-        $needToMigrate = $config->get('migration') == 0 && acym_existsAcyMailing59() && acym_getVar('string', 'task') != 'migrationDone';
-
-        if ((($needToMigrate || $config->get('walk_through') == 1) && !(defined('DOING_AJAX') && DOING_AJAX)) && 'dynamics' != $ctrl) {
+        $needToMigrate = $config->get('migration') == 0 && acym_existsAcyMailing59() && acym_getVar('string', 'task') !== 'migrationDone';
+        $forceDashboard = ($needToMigrate || $config->get('walk_through') == 1) && !(defined('DOING_AJAX') && DOING_AJAX) && 'dynamics' !== $ctrl;
+        if ($forceDashboard) {
             $ctrl = 'dashboard';
             acym_setVar('ctrl', $ctrl);
         }
@@ -187,7 +187,7 @@ class acyRouter
             return;
         }
 
-        if ($task != 'edit' && !(defined('DOING_AJAX') && DOING_AJAX)) {
+        if (acym_isAdmin() && $task != 'edit' && !(defined('DOING_AJAX') && DOING_AJAX)) {
             $pluginClass = new PluginClass();
             $installedPlugins = $pluginClass->getAll('title');
             $newPlugins = json_decode(ACYM_AVAILABLE_PLUGINS);
@@ -199,9 +199,9 @@ class acyRouter
                     acym_translationSprintf(
                         'ACYM_NEW_PLUGIN_FORMAT',
                         $onePlugin->name,
-                        '<a target="_blank" href="'.$onePlugin->downloadlink.'">wordpress.org</a>'
+                        '<a target="_blank" style="color: #00a5ff;" href="'.$onePlugin->downloadlink.'">'.acym_translation('ACYM_CLICK_HERE').'</a>'
                     ),
-                    'info'
+                    'error'
                 );
             }
         }
@@ -209,6 +209,11 @@ class acyRouter
         $controller = new $controllerNamespace();
         if (empty($task)) {
             $task = acym_getVar('cmd', 'defaulttask', $controller->defaulttask);
+        }
+
+        if ($forceDashboard && !method_exists($controller, $task)) {
+            $task = 'listing';
+            acym_setVar('task', $task);
         }
 
         $controller->call($task);

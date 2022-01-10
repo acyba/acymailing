@@ -1,7 +1,13 @@
 #acym__wysid__template {
     @import 'foundation-emails/util/util',
-    'foundation-emails/global',
-    'foundation-emails/components/normalize',
+    'foundation-emails/global';
+
+    // The gutter is the padding on left of the first cell and the right of the last cell of a grid.
+    // By default it's 16px but we set it to 0 to have exact dimensions (with a row of 3 images the gutter messed with their height for example)
+    // The padding is handled separately with the Blocks options
+    $global-gutter: 0;
+
+    @import 'foundation-emails/components/normalize',
     'foundation-emails/grid/grid',
     'foundation-emails/grid/block-grid',
     'foundation-emails/components/alignment',
