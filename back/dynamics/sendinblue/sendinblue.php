@@ -20,11 +20,17 @@ class SendinblueClass extends acymPlugin
 
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
         if (!empty($response['error_curl'])) {
-            if (!$backtrace[0]['file'] && !empty($backtrace[1]['function'])) $this->plugin->errors[] = $backtrace[0]['file'].': '.$backtrace[1]['function'];
+            if (!$backtrace[0]['file'] && !empty($backtrace[1]['function'])) {
+                $this->plugin->errors[] = $backtrace[0]['file'].': '.$backtrace[1]['function'];
+            }
             $this->plugin->errors[] = $response['error_curl'];
-        } elseif (!empty($response['message']) && strpos($response['message'], 'Contact already in list') === false) {
-            if (!$backtrace[0]['file'] && !empty($backtrace[1]['function'])) $this->plugin->errors[] = $backtrace[0]['file'].': '.$backtrace[1]['function'];
-            $this->plugin->errors[] = $response['message'];
+        } elseif (!empty($response['message'])) {
+            if (strpos($response['message'], 'Contact already in list') === false) {
+                if (!$backtrace[0]['file'] && !empty($backtrace[1]['function'])) {
+                    $this->plugin->errors[] = $backtrace[0]['file'].': '.$backtrace[1]['function'];
+                }
+                $this->plugin->errors[] = $response['message'];
+            }
             /*
              * Any API call
              * code: unauthorized

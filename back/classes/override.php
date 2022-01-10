@@ -103,6 +103,7 @@ class OverrideClass extends acymClass
      */
     public function getMailByBaseContent($subject, $body)
     {
+        $translatepressIsActive = acym_isExtensionActive('translatepress-multilingual/index.php');
         $activeOverrides = $this->getActiveOverrides('name');
 
         foreach ($activeOverrides as $oneOverride) {
@@ -118,9 +119,14 @@ class OverrideClass extends acymClass
                 $oneOverride->$identifier = '';
                 foreach ($decodedValue as $partialTrad) {
                     $oneOverride->$identifier .= acym_translation($partialTrad, false, true, '');
-                    if ($oneOverride->source == 'woocommerce') $oneOverride->$identifier = __($oneOverride->$identifier, 'woocommerce');
+                    if ($oneOverride->source == 'woocommerce') {
+                        $oneOverride->$identifier = __($oneOverride->$identifier, 'woocommerce');
+                        if ($translatepressIsActive) {
+                            $oneOverride->$identifier = preg_replace('/#!trpst#trp-gettext data-trpgettextoriginal=\d+#!trpen#/i', '', $oneOverride->$identifier);
+                            $oneOverride->$identifier = preg_replace('/#!trpst#\/trp-gettext#!trpen#/i', '', $oneOverride->$identifier);
+                        }
+                    }
                 }
-
 
                 // Replace the %s / %1$s by (.*) to get the params from the email content
                 // So: User %1$s registered to the site %2$s
@@ -137,7 +143,6 @@ class OverrideClass extends acymClass
                 );
 
                 $oneOverride->$identifier = str_replace('&amp;', '&', $oneOverride->$identifier);
-
                 $matches = preg_match('/'.trim($oneOverride->$identifier).'/', $$part, $params) === 1 && $matches;
 
                 if (empty($parameters)) {
@@ -155,6 +160,16 @@ class OverrideClass extends acymClass
             // We found the override
             $mailClass = new MailClass();
             $mail = $mailClass->getOneById($oneOverride->mail_id);
+
+            if ($oneOverride->source == 'woocommerce' && $translatepressIsActive) {
+                $subjectTranslated = $params[0];
+                for ($i = 1 ; $i < count($params) ; $i++) {
+                    $pattern = '/'.$params[$i].'/i';
+                    $param = '{param'.$i.'}';
+                    $subjectTranslated = preg_replace($pattern, $param, $subjectTranslated);
+                }
+                $mail->subject = $subjectTranslated;
+            }
 
             // Include the found parameters
             $mail->parameters = $parameters;

@@ -27,17 +27,6 @@ class acyMenu
         // Everyone in WordPress can read, the real test is made bellow
         $capability = 'read';
 
-        // For the front ajax
-        //TODO: remove this in September 2021
-        add_submenu_page(
-            null,
-            'front',
-            'front',
-            $capability,
-            ACYM_COMPONENT.'_front',
-            [$this->router, 'frontRouter']
-        );
-
         // Make sure the user is allowed to see admin features
         $config = acym_config();
         $allowedGroups = explode(',', $config->get('wp_access', 'administrator'));

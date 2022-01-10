@@ -62,4 +62,9 @@ class CronController extends acymController
 
         exit;
     }
+
+    public function checkTaskFront($task = '')
+    {
+        parent::checkTaskFront($this->defaulttask);
+    }
 }

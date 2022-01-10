@@ -402,6 +402,7 @@ class plgAcymArticle extends acymPlugin
         $imageCaption = '';
         $contentText = '';
         $customFields = [];
+        $altImage = '';
 
         $varFields['{title}'] = $element->title;
         if (in_array('title', $tag->display)) $title = $varFields['{title}'];
@@ -417,8 +418,8 @@ class plgAcymArticle extends acymPlugin
             $pictVar = in_array('intro', $tag->display) || empty($images['image_fulltext']) ? 'image_intro' : 'image_fulltext';
             if (!empty($images[$pictVar])) {
                 $imagePath = acym_rootURI().$images[$pictVar];
-                $altImage = empty($images['image_intro_alt']) ? 'image' : $images['image_intro_alt'];
-                $varFields['{picthtml}'] = '<img alt="'.$altImage.'" class="content_main_image" src="'.acym_escape($imagePath).'" />';
+                $altImage = empty($images[$pictVar.'_alt']) ? 'image' : $images[$pictVar.'_alt'];
+                $varFields['{picthtml}'] = '<img alt="'.acym_escape($altImage).'" class="content_main_image" src="'.acym_escape($imagePath).'" />';
 
                 if (!empty($tag->caption)) {
                     $imageCaption = $varFields['{'.$pictVar.'_caption}'];
@@ -439,6 +440,8 @@ class plgAcymArticle extends acymPlugin
 
         $varFields['{full}'] = $element->fulltext;
         if (in_array('full', $tag->display)) $contentText .= $varFields['{full}'];
+
+        $contentText = $this->cleanExtensionContent($contentText);
 
         if (empty($element->created_by_alias) && empty($element->authorname)) {
             $varFields['{author}'] = '';
@@ -487,6 +490,7 @@ class plgAcymArticle extends acymPlugin
         $format->description = $contentText;
         $format->link = empty($tag->clickable) ? '' : $link;
         $format->customFields = $customFields;
+        $format->altImage = $altImage;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 
         $categoryTitle = '';
@@ -499,5 +503,10 @@ class plgAcymArticle extends acymPlugin
         }
 
         return $categoryTitle.$this->finalizeElementFormat($result, $tag, $varFields);
+    }
+
+    protected function cleanExtensionContent($text)
+    {
+        return preg_replace('#\{igallery[^}]+\}#Uis', '', $text);
     }
 }

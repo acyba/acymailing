@@ -61,17 +61,6 @@ class FieldClass extends acymClass
         return acym_loadResult('SELECT COUNT(id) FROM #__acym_field');
     }
 
-    /**
-     * @return array
-     *
-     * @deprecated use getAll instead
-     */
-    public function getAllfields()
-    {
-        //TODO Remove this method in January 2022, the wp plugin acymailing-automation-export used it in a previous version
-        return acym_loadObjectList('SELECT * FROM #__acym_field', 'id');
-    }
-
     public function getAllFieldsForUser()
     {
         $query = 'SELECT * FROM #__acym_field WHERE id NOT IN (1, 2) ORDER BY `ordering` ASC';

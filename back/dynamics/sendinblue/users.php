@@ -59,9 +59,16 @@ class SendinblueUsers extends SendinblueClass
             'type' => 'text',
         ];
 
-        $attribute = $this->getAttributeName($mailId);
+        $attributeName = $this->getAttributeName($mailId);
 
-        $this->callApiSendingMethod('contacts/attributes/normal/'.$attribute, $data, $this->headers, 'POST');
+        $existingAttributes = $this->config->get('sendinblue_attributes', '{}');
+        $existingAttributes = json_decode($existingAttributes, true);
+
+        if (empty($existingAttributes[$attributeName])) {
+            $this->callApiSendingMethod('contacts/attributes/normal/'.$attributeName, $data, $this->headers, 'POST');
+            $existingAttributes[$attributeName] = true;
+            $this->config->save(['sendinblue_attributes' => json_encode($existingAttributes)]);
+        }
     }
 
     public function addUserToList($email, $mailId, &$warnings)
@@ -108,6 +115,15 @@ class SendinblueUsers extends SendinblueClass
     public function deleteAttribute($mailId)
     {
         $this->callApiSendingMethod(plgAcymSendinblue::SENDING_METHOD_API_URL.'contacts/attributes/normal/'.$this->getAttributeName($mailId), [], $this->headers, 'DELETE');
+
+        $existingAttributes = $this->config->get('sendinblue_attributes', '{}');
+        $existingAttributes = json_decode($existingAttributes, true);
+        $attributeName = $this->getAttributeName($mailId);
+
+        if (!empty($existingAttributes[$attributeName])) {
+            unset($existingAttributes[$attributeName]);
+            $this->config->save(['sendinblue_attributes' => json_encode($existingAttributes)]);
+        }
     }
 
     public function synchronizeExistingUsers()

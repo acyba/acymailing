@@ -439,11 +439,13 @@ class acymPlugin extends acymObject
             $selected = explode('-', $this->defaultValues->id);
         }
         foreach ($this->tagvalues as $oneTag) {
-            if (empty($oneTag->term_id)) continue;
+            if (empty($oneTag->term_taxonomy_id)) continue;
 
             $class = 'cell grid-x acym__row__no-listing acym__listing__row__popup';
-            if (in_array($oneTag->term_id, $selected)) $class .= ' selected_row';
-            $listing .= '<div class="'.$class.'" data-id="'.intval($oneTag->term_id).'" onclick="applyContent'.acym_escape($this->name).'_tags('.intval($oneTag->term_id).', this);">
+            if (in_array($oneTag->term_taxonomy_id, $selected)) $class .= ' selected_row';
+            $listing .= '<div class="'.$class.'" data-id="'.intval($oneTag->term_taxonomy_id).'" onclick="applyContent'.acym_escape($this->name).'_tags('.intval(
+                    $oneTag->term_taxonomy_id
+                ).', this);">
                         <div class="cell medium-5">'.acym_escape($oneTag->name).'</div>
                     </div>';
         }

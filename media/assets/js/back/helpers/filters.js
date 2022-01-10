@@ -7,7 +7,7 @@ const acym_helperFilter = {
             if (!task) task = 'trigger';
 
             let url = ACYM_AJAX_URL + '&ctrl=' + ctrl + '&task=' + task + '&id=' + encodeURIComponent(value);
-
+            
             let dataParams = $field.attr('data-params');
             let decodedParams = acym_helper.parseJson(dataParams);
             url += '&' + jQuery.param(decodedParams);
@@ -145,12 +145,13 @@ const acym_helperFilter = {
         if (undefined === paramsToggle) return true;
 
         paramsToggle = acym_helper.parseJson(paramsToggle);
+        paramsToggle.forEach((paramToggle) => {
+            let $blockToToggle = $toggle.closest(`.${parentClass}`).find(`.${paramToggle.class}`);
 
-        let $blockToToggle = $toggle.closest(`.${parentClass}`).find(`.${paramsToggle.class}`);
-
-        acym_helperFilter.toggleBlock($toggle, $blockToToggle, paramsToggle);
-        $toggle.on('change', function () {
-            acym_helperFilter.toggleBlock($toggle, $blockToToggle, paramsToggle);
+            acym_helperFilter.toggleBlock($toggle, $blockToToggle, paramToggle);
+            $toggle.on('change', function () {
+                acym_helperFilter.toggleBlock($toggle, $blockToToggle, paramToggle);
+            });
         });
     },
     toggleBlock: function ($toggle, $blockToToggle, paramsToggle) {
