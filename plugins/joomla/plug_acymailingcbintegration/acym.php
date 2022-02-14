@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright      Copyright (C) 2009-2021 ACYBA SAS - All rights reserved.
+ * @copyright      Copyright (C) 2009-2022 ACYBA SAS - All rights reserved.
  * @license        GNU/GPLv3 https://www.gnu.org/licenses/gpl-3.0.html
  */
 
@@ -266,14 +266,14 @@ class getAcymTab extends cbTabHandler
             if ('edition' === $mode) {
                 $return .= '<td class="acym_list_status">'.acym_boolean(
                         'acymcb[list]['.$listId.']',
-                        !empty($userLists[$listId]) && '1' === $userLists[$listId]->status
+                        !empty($userLists[$listId]) && '1' === (string)($userLists[$listId]->status)
                     ).'</td>';
             }
             $return .= '<td class="acym_list_name">'.$allLists[$listId]->name.'</td>';
             $return .= '</tr>';
             $k = 1 - $k;
         }
-
+        
         $return .= '</table>';
 
         return $return;

@@ -173,7 +173,6 @@ jQuery(document).ready(function ($) {
                     totalCallWhereWeAre = 0;
                     batchToDo = Math.ceil(response / (insertPerCall * callsPerBatch));
                     totalCallsToDo = Math.ceil(response / insertPerCall);
-                    let error = false;
                     doOneBatchAjaxCalls(element, ajaxUrls, elements);
                 }
             }

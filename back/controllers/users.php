@@ -3,6 +3,7 @@
 namespace AcyMailing\Controllers;
 
 use AcyMailing\Classes\FieldClass;
+use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\HistoryClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailpoetClass;
@@ -74,9 +75,7 @@ class UsersController extends acymController
                 $data['lists'],
                 'users_list',
                 $data['list'],
-                ['class' => 'acym__select'],
-                'id',
-                'name'
+                ['class' => 'acym__select']
             )
         );
         $toolbarHelper->addOptionSelect(
@@ -115,7 +114,8 @@ class UsersController extends acymController
             [
                 'class' => 'button button-secondary disabled cell medium-6 large-shrink',
                 'id' => 'acym__users__listing__button--add-to-list',
-            ]);
+            ]
+        );
         $toolbarHelper->addOtherContent($otherContent);
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit'], 'user-plus', true);
 
@@ -130,12 +130,28 @@ class UsersController extends acymController
         $data['list_status'] = $this->getVarFiltersListing('string', 'list_status', 'sub');
         $data['segment'] = $this->getVarFiltersListing('int', 'segment', 0);
 
+        $followupClass = new FollowupClass();
         $listClass = new ListClass();
-        $data['lists'] = $listClass->getAll('id');
-        $defaultList = new \stdClass();
-        $defaultList->id = 0;
-        $defaultList->name = acym_translation('ACYM_SELECT_A_LIST');
-        array_unshift($data['lists'], $defaultList);
+        $lists = $listClass->getAll('id');
+        uasort(
+            $lists,
+            function ($a, $b) {
+                return strtolower($a->name) > strtolower($b->name) ? 1 : -1;
+            }
+        );
+
+        // This keeps keys
+        $data['lists'] = [0 => acym_translation('ACYM_SELECT_A_LIST')];
+        foreach ($lists as $oneList) {
+            if ($oneList->type === $listClass::LIST_TYPE_FRONT) continue;
+            if ($oneList->type === $listClass::LIST_TYPE_FOLLOWUP) {
+                $followup = $followupClass->getOneByListId($oneList->id);
+                if (empty($followup)) continue;
+                $oneList->name = $followup->display_name;
+            }
+
+            $data['lists'][$oneList->id] = $oneList->name;
+        }
 
         $data['list_statuses'] = [
             'sub' => acym_translation('ACYM_SUBSCRIBED'),

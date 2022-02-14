@@ -437,7 +437,7 @@ class UserClass extends acymClass
             $groupCondition = '`list`.`access` LIKE "%,'.implode(',%" OR `list`.`access` LIKE "%,', $userGroups).',%"';
             $query .= ' AND (`list`.`cms_user_id` = '.intval($creatorId).' OR '.$groupCondition.')';
         }
-        $query .= ' ORDER BY `userlist`.`status` DESC';
+        $query .= ' ORDER BY `userlist`.`status` DESC, `list`.`id` ASC';
 
         return acym_loadObjectList($query);
     }

@@ -326,6 +326,7 @@ function acym_getJSMessages()
         'ACYM_CUSTOM_FIELDS',
         'ACYM_CUSTOM_VIEW_EDITOR_DESC',
         'ACYM_PREVIEW_CUSTOM_VIEW',
+        'ACYM_ORGANIZER',
     ];
 
     foreach ($keysToLoad as $oneKey) {

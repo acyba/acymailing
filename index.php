@@ -5,7 +5,7 @@ Description: Manage your contact lists and send newsletters from your site.
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 7.7.4
+Version: 7.7.5
 Text Domain: acymailing
 Domain Path: /language
 */
@@ -81,6 +81,7 @@ class acymailingLoader
             include_once __DIR__.DS.'wpinit'.DS.'usersynch.php';
             include_once __DIR__.DS.'wpinit'.DS.'message.php';
             include_once __DIR__.DS.'wpinit'.DS.'elementor.php';
+            include_once __DIR__.DS.'wpinit'.DS.'beaver.php';
             include_once __DIR__.DS.'wpinit'.DS.'wprocket.php';
             include_once __DIR__.DS.'wpinit'.DS.'addons.php';
             include_once __DIR__.DS.'wpinit'.DS.'forms.php';

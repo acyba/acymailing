@@ -347,7 +347,7 @@ class FieldClass extends acymClass
         return parent::delete($elements);
     }
 
-    public function displayField($field, $defaultValue, $size, $valuesArray, $displayOutside = true, $displayFront = false, $user = null, $display = 1, $displayIf = '')
+    public function displayField($field, $defaultValue, $size, $valuesArray, $displayOutside = true, $displayFront = false, $user = null, $display = 1, $displayIf = '', $userClasses = "")
     {
         $isCoreField = $field->core == 1;
 
@@ -463,13 +463,13 @@ class FieldClass extends acymClass
 
         if ($field->id == 1) {
             $nameAttribute = ' name="user[name]"';
-            $inputTmp = '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.$readonly.' type="text" class="cell">';
+            $inputTmp = '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.$readonly.' type="text" class="cell '.$userClasses.'"'.'>';
             if (!empty($readonly)) $inputTmp = acym_tooltip($inputTmp, acym_translation('ACYM_CF_EDITION_BLOCKED'));
             $return .= $inputTmp;
         } elseif ($field->id == 2) {
             $nameAttribute = ' name="user[email]"';
             $uniqueId = 'email_field_'.rand(100, 900);
-            $inputTmp = '<input id="'.$uniqueId.'" '.$nameAttribute.$placeholder.$value.$authorizedContent.$style.$maxCharacters.$readonly.' required type="email" class="cell acym__user__edit__email" '.($displayFront && $cmsUser
+            $inputTmp = '<input id="'.$uniqueId.'" '.$nameAttribute.$placeholder.$value.$authorizedContent.$style.$maxCharacters.$readonly.' required type="email" class="cell acym__user__edit__email '.$userClasses.'"'.($displayFront && $cmsUser
                     ? 'disabled' : '').'>';
             if (!empty($readonly)) $inputTmp = acym_tooltip($inputTmp, acym_translation('ACYM_CF_EDITION_BLOCKED'));
             $return .= $inputTmp;
@@ -485,7 +485,7 @@ class FieldClass extends acymClass
                 $this->getLanguagesForDropdown(),
                 'user[language]',
                 empty($defaultValue) ? acym_getLanguageTag() : $defaultValue,
-                'class="acym__select"'.$style.$required.$readonly
+                'class="acym__select '.$userClasses.'"'.$style.$required.$readonly
             );
             if (!empty($readonly)) $selectTmp = acym_tooltip($selectTmp, acym_translation('ACYM_CF_EDITION_BLOCKED'));
             $return .= $selectTmp;
@@ -517,7 +517,7 @@ class FieldClass extends acymClass
                     $checked = !empty($defaultValue) && in_array($key, $defaultValue) ? 'checked' : '';
                     $return .= '<label><input '.$required.' type="checkbox" name="'.$name.'['.acym_escape($key).']" value="'.acym_escape(
                             $key
-                        ).'" '.$checked.'> '.$oneValue.'</label>';
+                        ).'" '.$checked.(!empty($userClasses) ? ' class="'.$userClasses.'"' : '').'> '.$oneValue.'</label>';
                 }
             } else {
                 if (!empty($defaultValue) && !is_object($defaultValue)) {
@@ -542,12 +542,17 @@ class FieldClass extends acymClass
                 }
             }
         } elseif ($field->type === 'single_dropdown') {
-            $return .= acym_select($valuesArray, $name, empty($defaultValue) ? '' : $defaultValue, 'class="acym__custom__fields__select__form acym__select"'.$style.$required);
+            $return .= acym_select(
+                $valuesArray,
+                $name,
+                empty($defaultValue) ? '' : $defaultValue,
+                'class="acym__custom__fields__select__form acym__select '.$userClasses.'"'.$style.$required
+            );
         } elseif ($field->type === 'multiple_dropdown') {
             $defaultValue = is_array($defaultValue) ? $defaultValue : explode(',', $defaultValue);
 
             $attributes = [
-                'class' => 'acym__custom__fields__select__multiple__form acym__select',
+                'class' => 'acym__custom__fields__select__multiple__form acym__select '.$userClasses,
                 'style' => $size,
             ];
             if ($field->required) $attributes['data-required'] = $displayFront ? acym_escape($requiredJson) : $requiredJson;
@@ -555,7 +560,7 @@ class FieldClass extends acymClass
             $return .= acym_selectMultiple($valuesArray, $name, empty($defaultValue) ? [] : $defaultValue, $attributes);
         } elseif ($field->type === 'date') {
             $attributes = [
-                'class' => 'acym__custom__fields__select__form acym__select',
+                'class' => 'acym__custom__fields__select__form acym__select '.$userClasses,
                 'acym-field-type' => 'date',
             ];
             if (!empty($required)) {
@@ -583,7 +588,9 @@ class FieldClass extends acymClass
             $return .= '<div class="cell large-5 medium-4 padding-right-1">';
             $return .= acym_generateCountryNumber($name.'[code]', $indicator);
             $return .= '</div>';
-            $return .= '<input '.$placeholder.$required.$style.$maxCharacters.' class="cell large-7 medium-8" type="tel" name="'.$name.'[phone]" value="'.acym_escape($number).'">';
+            $return .= '<input '.$placeholder.$required.$style.$maxCharacters.' class="cell large-7 medium-8 '.$userClasses.'"'.' type="tel" name="'.$name.'[phone]" value="'.acym_escape(
+                    $number
+                ).'">';
             if ($displayOutside) $return .= '</div>';
         } elseif ($field->type === 'custom_text') {
             $return .= $field->option->custom_text;

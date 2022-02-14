@@ -425,6 +425,7 @@ class plgAcymK2 extends acymPlugin
         $format->afterTitle = $afterTitle;
         $format->afterArticle = $afterArticle;
         $format->imagePath = $imagePath;
+        $format->altImage = $title;
         $format->description = $contentText;
         $format->link = empty($tag->clickable) ? '' : $link;
         $format->customFields = $customFields;

@@ -241,7 +241,7 @@ class MailerHelper extends acyPHPMailer
             $this->Body,
             $bcc,
             $attachments,
-            $this->mailId,
+            $this->id,
         ];
         acym_trigger('onAcymSendEmail', $data);
 
@@ -380,7 +380,7 @@ class MailerHelper extends acyPHPMailer
         $externalSending = false;
 
         $mailClass = new MailClass();
-        $isTransactional = $this->isTest || $this->isSpamTest || (!empty($this->defaultMail[$this->mailId]) && $mailClass->isTransactionalMail($this->defaultMail[$this->mailId]));
+        $isTransactional = $this->isTest || $this->isSpamTest || (!empty($this->defaultMail[$this->id]) && $mailClass->isTransactionalMail($this->defaultMail[$this->id]));
 
         acym_trigger('onAcymProcessQueueExternalSendingCampaign', [&$externalSending, $isTransactional]);
 
@@ -390,7 +390,7 @@ class MailerHelper extends acyPHPMailer
         if (ACYM_PRODUCTION) {
             if ($externalSending) {
                 $result = true;
-                acym_trigger('onAcymRegisterReceiverContentAndList', [&$result, $this->Body, $this->receiverEmail, $this->mailId, &$warnings]);
+                acym_trigger('onAcymRegisterReceiverContentAndList', [&$result, $this->Body, $this->receiverEmail, $this->id, &$warnings]);
             } else {
                 ob_start();
                 $result = parent::send();
@@ -538,7 +538,7 @@ class MailerHelper extends acyPHPMailer
 
         $this->loadUrlAndStyle($mailId);
 
-        $this->mailId = $mailId;
+        $this->id = $mailId;
 
         return $this->defaultMail[$mailId];
     }
@@ -914,8 +914,6 @@ class MailerHelper extends acyPHPMailer
         if (!$fromStat && !in_array($this->type, $mailClass::TYPES_WITH_STATS)) return;
 
         $urlClass = new UrlClass();
-        if ($urlClass === null) return;
-
         $urls = [];
 
         $trackingSystemExternalWebsite = $this->config->get('trackingsystemexternalwebsite', 1);

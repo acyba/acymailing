@@ -352,7 +352,7 @@ class QueueClass extends acymClass
 
         if ($this->config->get('require_confirmation', 1) == 1) {
             $mailClass = new MailClass();
-            $query .= ' AND (user.confirmed = 1 OR mail.type = '.acym_escapeDB($mailClass::TYPE_NOTIFICATION).')';
+            $query .= ' AND (user.confirmed = 1 OR mail.type = '.acym_escapeDB($mailClass::TYPE_NOTIFICATION).' OR mail.name LIKE "%confirm%")';
         }
 
         if (!empty($this->emailtypes)) {

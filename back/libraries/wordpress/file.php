@@ -9,7 +9,9 @@ function acym_fileGetContent($url, $timeout = 10)
     ob_start();
     $data = '';
 
-    if (function_exists('file_get_contents')) {
+    $allowUrlFopen = ini_get('allow_url_fopen');
+
+    if (function_exists('file_get_contents') && (!empty($allowUrlFopen) || strpos($url, 'http') !== 0)) {
         if (!empty($timeout)) {
             ini_set('default_socket_timeout', $timeout);
         }

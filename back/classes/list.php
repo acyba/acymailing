@@ -174,7 +174,9 @@ class ListClass extends acymClass
     {
         $list = parent::getOneById($id);
 
-        $list->translation = empty($list->translation) ? [] : json_decode($list->translation, true);
+        if (!empty($list)) {
+            $list->translation = empty($list->translation) ? [] : json_decode($list->translation, true);
+        }
 
         return $list;
     }
@@ -461,8 +463,8 @@ class ListClass extends acymClass
             $list->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
         }
 
-        if (!empty($list->translation) && is_array($list->translation)) {
-            $list->translation = json_encode($list->translation);
+        if (!empty($list->translation)) {
+            if (is_array($list->translation)) $list->translation = json_encode($list->translation);
         } else {
             $list->translation = '';
         }

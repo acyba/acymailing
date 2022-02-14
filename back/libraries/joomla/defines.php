@@ -60,5 +60,11 @@ define('ACYM_AVAILABLE_PLUGINS', json_encode([]));
 
 function acym_rootURI($pathonly = false, $path = null)
 {
-    return JURI::root($pathonly, $path);
+    $url = JURI::root($pathonly, $path);
+    $mysitesGuruPos = strpos($url, '/plugins/system/bfnetwork');
+    if ($mysitesGuruPos !== false) {
+        $url = substr($url, 0, $mysitesGuruPos);
+    }
+
+    return $url;
 }

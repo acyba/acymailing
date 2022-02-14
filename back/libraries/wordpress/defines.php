@@ -99,7 +99,16 @@ define(
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/easydigitaldownloads',
                 'category' => 'E-commerce solutions',
-                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-easydigitaldownloads/',
+                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-easy-digital-downloads/',
+            ],
+            (object)[
+                'name' => 'EventOn',
+                'description' => '- Add events from Events Manager to your emails.',
+                'image' => 'eventon.png',
+                'level' => 'starter',
+                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/eventon',
+                'category' => 'Events management',
+                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-eventon/',
             ],
             (object)[
                 'name' => 'Events Manager',

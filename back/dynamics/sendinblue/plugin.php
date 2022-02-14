@@ -108,9 +108,9 @@ class plgAcymSendinblue extends acymPlugin
         $this->users->createUser($user);
     }
 
-    public function onAcymBeforeUserImport($user)
+    public function onAcymUserImport($users)
     {
-        $this->users->createUser($user);
+        $this->users->importUsers($users);
     }
 
     public function onAcymBeforeUserDelete($users)
