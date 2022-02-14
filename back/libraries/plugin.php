@@ -138,7 +138,9 @@ class acymPlugin extends acymObject
         if (!empty($this->defaultValues->id) && $this->defaultValues->defaultPluginTab === $this->name) {
             $found = false;
             foreach ($rows as $oneRow) {
-                if ($oneRow->{$this->elementIdColumn} === $this->defaultValues->id) $found = true;
+                if (intval($oneRow->{$this->elementIdColumn}) === intval($this->defaultValues->id)) {
+                    $found = true;
+                }
             }
 
             if (!$found) {
@@ -372,17 +374,22 @@ class acymPlugin extends acymObject
                 $class = 'cell grid-x acym__row__no-listing acym__listing__row__popup';
                 if (in_array($row->{$options['id']}, $selected)) $class .= ' selected_row';
 
-                $listing .= '<div class="'.$class.'" data-id="'.intval($row->{$options['id']}).'" onclick="applyContent'.acym_escape($this->name).'('.intval(
-                        $row->{$options['id']}
-                    ).', this);">';
+                $listing .= '<div 
+                    class="'.$class.'" 
+                    data-id="'.acym_escape($row->{$options['id']}).'" 
+                    onclick="applyContent'.acym_escape($this->name).'(\''.acym_escape($row->{$options['id']}).'\', this);">';
 
                 foreach ($options['header'] as $column => $oneColumn) {
                     $value = $row->$column;
 
-                    if (!empty($oneColumn['type']) && $oneColumn['type'] == 'date') {
-                        if (!is_numeric($value) && $value != '0000-00-00 00:00:00') $value = strtotime($value);
-                        $tooltip = acym_date($value, acym_translation('ACYM_DATE_FORMAT_LC2'));
-                        $value = acym_tooltip(acym_date($value, acym_translation('ACYM_DATE_FORMAT_LC5')), $tooltip);
+                    if (!empty($oneColumn['type'])) {
+                        if ($oneColumn['type'] === 'date') {
+                            if (!is_numeric($value) && $value != '0000-00-00 00:00:00') $value = strtotime($value);
+                            $tooltip = acym_date($value, acym_translation('ACYM_DATE_FORMAT_LC2'));
+                            $value = acym_tooltip(acym_date($value, acym_translation('ACYM_DATE_FORMAT_LC5')), $tooltip);
+                        } elseif ($oneColumn['type'] === 'int') {
+                            $value = intval($value);
+                        }
                     }
 
                     $class = empty($oneColumn['class']) ? '' : ' '.$oneColumn['class'];
@@ -489,6 +496,19 @@ class acymPlugin extends acymObject
         $query .= ' LIMIT '.intval($parameter->max);
     }
 
+    protected function handleMin($elements, $parameter)
+    {
+        if (!empty($parameter->min) && count($elements) < $parameter->min) {
+            $this->generateCampaignResult->status = false;
+            $this->generateCampaignResult->message = acym_translationSprintf(
+                'ACYM_GENERATE_CAMPAIGN_NOT_ENOUGH_CONTENT',
+                $this->pluginDescription->name,
+                count($elements),
+                $parameter->min
+            );
+        }
+    }
+
     protected function getLastGenerated($mailId)
     {
         $campaignClass = new CampaignClass();
@@ -499,7 +519,7 @@ class acymPlugin extends acymObject
     /**
      * Returns the individual elements tags based on a query result
      *
-     * @param $elements
+     * @param $query
      * @param $parameter
      * @param $table
      *
@@ -512,15 +532,12 @@ class acymPlugin extends acymObject
 
         $elements = acym_loadResultArray($query);
 
-        if (!empty($parameter->min) && count($elements) < $parameter->min) {
-            $this->generateCampaignResult->status = false;
-            $this->generateCampaignResult->message = acym_translationSprintf(
-                'ACYM_GENERATE_CAMPAIGN_NOT_ENOUGH_CONTENT',
-                $this->pluginDescription->name,
-                count($elements),
-                $parameter->min
-            );
-        }
+        return $this->formatIndividualTags($elements, $parameter);
+    }
+
+    protected function formatIndividualTags($elements, $parameter)
+    {
+        $this->handleMin($elements, $parameter);
 
         if (empty($elements)) return '';
 
@@ -534,6 +551,13 @@ class acymPlugin extends acymObject
             return ob_get_clean();
         }
 
+        $arrayElements = $this->buildIndividualTags($elements, $parameter);
+
+        return $this->pluginHelper->getFormattedResult($arrayElements, $parameter);
+    }
+
+    protected function buildIndividualTags($elements, $parameter)
+    {
         $arrayElements = [];
         unset($parameter->id);
 
@@ -559,7 +583,7 @@ class acymPlugin extends acymObject
             $i++;
         }
 
-        return $this->pluginHelper->getFormattedResult($arrayElements, $parameter);
+        return $arrayElements;
     }
 
     /**
@@ -1330,7 +1354,9 @@ class acymPlugin extends acymObject
 
     public function initCustomView($customFields = false)
     {
-        $ctrl = acym_getVar('cmd', 'ctrl', str_replace(ACYM_COMPONENT.'_', '', acym_getVar('cmd', 'page')));
+        $page = acym_getVar('cmd', 'page');
+        if (is_array($page)) return;
+        $ctrl = acym_getVar('cmd', 'ctrl', str_replace(ACYM_COMPONENT.'_', '', $page));
         if (!in_array($ctrl, ['plugins', 'dynamics'])) return;
 
         $task = acym_getVar('cmd', 'task', 'installed');

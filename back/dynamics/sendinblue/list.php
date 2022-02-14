@@ -4,7 +4,7 @@ class SendinblueList extends SendinblueClass
 {
     var $headers;
 
-    public function getListExternalSendingMethod(&$listId, $mailId, $dontCreate = false)
+    public function getListExternalSendingMethod(&$listId, $mailId, $createIfNotExists = true)
     {
         $sendinblueLists = $this->config->get('list_sendinblue', '[]');
         $sendinblueLists = json_decode($sendinblueLists, true);
@@ -15,7 +15,7 @@ class SendinblueList extends SendinblueClass
             return;
         }
 
-        if ($dontCreate) return;
+        if (!$createIfNotExists) return;
 
         $data = [
             'name' => 'list_for_acym_mail_'.$mailId,
@@ -59,7 +59,7 @@ class SendinblueList extends SendinblueClass
     public function deleteList($mailId)
     {
         $listId = 0;
-        $this->getListExternalSendingMethod($listId, $mailId, true);
+        $this->getListExternalSendingMethod($listId, $mailId, false);
 
         if (empty($listId)) return false;
 

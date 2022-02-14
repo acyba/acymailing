@@ -664,6 +664,8 @@ class ImportHelper extends acymObject
             // Handle email column first to be able to use it with listids and listname
             $emailKey = array_search('email', $this->columns);
             $newUser->email = trim(strip_tags($data[$emailKey]), '\'" ');
+            // Remove all whitespace type
+            $newUser->email = preg_replace("/\s+/u", '', $newUser->email);
             if (!empty($newUser->email)) {
                 $newUser->email = acym_punycode($newUser->email);
             }
@@ -821,8 +823,8 @@ class ImportHelper extends acymObject
         $allemails = [];
         foreach ($users as $a => $oneUser) {
             $value = [];
-
             acym_trigger('onAcymBeforeUserImport', [&$oneUser]);
+
             foreach ($oneUser as $map => $oneValue) {
                 if ($map == 'customfields') continue;
 
@@ -848,6 +850,7 @@ class ImportHelper extends acymObject
             // Prepare import custom fields
             if (!empty($oneUser->customfields)) $customFieldsvalues[$oneUser->email] = $oneUser->customfields;
         }
+        acym_trigger('onAcymUserImport', [&$users]);
 
         $queryInsertUsers .= implode('),(', $values).')';
 

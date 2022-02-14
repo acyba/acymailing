@@ -33,8 +33,74 @@ class SendinblueUsers extends SendinblueClass
     {
         $userClass = new UserClass();
         $importedUsers = $userClass->getByColumnValue('source', $source);
-        foreach ($importedUsers as $oneUser) {
-            $this->createUser($oneUser);
+        $this->importUsers($importedUsers);
+    }
+
+    public function importUsers($users, $ajax = false)
+    {
+        $response = new stdClass();
+        $response->createdFolder = acym_createFolder(ACYM_TMP_FOLDER);
+
+        if (!$response->createdFolder) {
+            if ($ajax) {
+                acym_sendAjaxResponse(acym_translation('ACYM_ERROR_CREATING_EXPORT_FILE'), [], false);
+            } else {
+                acym_enqueueMessage(acym_translation('ACYM_ERROR_CREATING_EXPORT_FILE'), 'error');
+            }
+
+            return;
+        }
+
+        $filePath = ACYM_TMP_FOLDER.plgAcymSendinblue::SENDING_METHOD_ID.'.txt';
+        file_put_contents($filePath, "LASTNAME;FIRSTNAME;EMAIL\n");
+        $limit = 5000;
+        $buffer = '';
+
+        foreach ($users as $oneUser) {
+            $nameParts = explode(' ', $oneUser->name, 2);
+            $lastName = str_replace('"', '', empty($nameParts[1]) ? '' : $nameParts[1]);
+            $firstName = str_replace('"', '', $nameParts[0]);
+            $buffer .= '"'.$lastName.'";"'.$firstName.'";"'.$oneUser->email."\"\n";
+            $limit--;
+
+            if ($limit === 0) {
+                file_put_contents($filePath, $buffer, FILE_APPEND);
+                $limit = 5000;
+                $buffer = '';
+            }
+        }
+        if (!empty($buffer)) {
+            file_put_contents($filePath, $buffer, FILE_APPEND);
+        }
+
+        // Create folder (needed to import users to assign list)
+        $folderId = $this->list->getFolderId();
+
+        // Call API to import
+        $data = [
+            'fileUrl' => ACYM_TMP_URL.plgAcymSendinblue::SENDING_METHOD_ID.'.txt',
+            'newList' => [
+                'listName' => 'Import '.time(),
+                'folderId' => (int)$folderId,
+            ],
+            'updateExistingContacts' => true,
+        ];
+
+        $response->import = $this->callApiSendingMethod('contacts/import', $data, $this->headers, 'POST');
+
+        $success = false;
+        if (!empty($response->import['error_curl'])) {
+            $message = acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $response->import['error_curl']);
+        } elseif (!empty($response->import['code'])) {
+            $message = acym_translationSprintf('ACYM_API_RETURN_THIS_ERROR', $response->import['message']);
+        } else {
+            $message = acym_translation('ACYM_USERS_SUNCHRONIZED');
+            $success = true;
+        }
+        if ($ajax) {
+            acym_sendAjaxResponse($message, [], $success);
+        } else {
+            if (!$success) acym_enqueueMessage($message, 'error');
         }
     }
 
@@ -133,50 +199,6 @@ class SendinblueUsers extends SendinblueClass
         $users = $userClass->getAllSimpleData();
         if (empty($users)) acym_sendAjaxResponse(acym_translation('ACYM_NO_USER_TO_SYNCHRONIZE'));
 
-        $ret = acym_createFolder(ACYM_TMP_FOLDER);
-        if (!$ret) acym_sendAjaxResponse(acym_translation('ACYM_ERROR_CREATING_EXPORT_FILE'));
-
-        $filePath = ACYM_TMP_FOLDER.plgAcymSendinblue::SENDING_METHOD_ID.'.txt';
-        file_put_contents($filePath, "LASTNAME;FIRSTNAME;EMAIL\n");
-        $limit = 5000;
-        $buffer = '';
-        foreach ($users as $oneUser) {
-            $nameParts = explode(' ', $oneUser->name, 2);
-            $lastName = str_replace('"', '', empty($nameParts[1]) ? '' : $nameParts[1]);
-            $firstName = str_replace('"', '', $nameParts[0]);
-            $buffer .= '"'.$lastName.'";"'.$firstName.'";"'.$oneUser->email."\"\n";
-            $limit--;
-
-            if ($limit === 0) {
-                file_put_contents($filePath, $buffer, FILE_APPEND);
-                $limit = 5000;
-                $buffer = '';
-            }
-        }
-        if (!empty($buffer)) {
-            file_put_contents($filePath, $buffer, FILE_APPEND);
-        }
-
-        // Create folder (needed to import users to assign list)
-        $folderId = $this->list->getFolderId();
-
-        // Call API to import
-        $data = [
-            'fileUrl' => ACYM_TMP_URL.plgAcymSendinblue::SENDING_METHOD_ID.'.txt',
-            'newList' => [
-                'listName' => 'Import '.time(),
-                'folderId' => (int)$folderId,
-            ],
-            'updateExistingContacts' => true,
-        ];
-
-        $response = $this->callApiSendingMethod('contacts/import', $data, $this->headers, 'POST');
-        if (!empty($response['error_curl'])) {
-            acym_sendAjaxResponse(acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $response['error_curl']), [], false);
-        } elseif (!empty($response['code'])) {
-            acym_sendAjaxResponse(acym_translationSprintf('ACYM_API_RETURN_THIS_ERROR', $response['message']), [], false);
-        } else {
-            acym_sendAjaxResponse(acym_translation('ACYM_USERS_SUNCHRONIZED'));
-        }
+        $this->importUsers($users, true);
     }
 }

@@ -7,6 +7,10 @@
     z-index: 99999;
 }
 
+.c-datepicker *, .c-datepicker {
+    box-sizing: content-box;
+}
+
 #acym_wrapper {
     .acy_date_picker {
         cursor: pointer;

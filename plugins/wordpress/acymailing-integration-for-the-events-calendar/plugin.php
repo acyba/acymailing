@@ -162,12 +162,12 @@ class plgAcymTheeventscalendar extends acymPlugin
                 'name' => 'order',
                 'options' => [
                     'ID' => 'ACYM_DATE_CREATED',
-                    'post_date' => 'ACYM_DATE',
+                    'startdate.meta_value' => 'ACYM_DATE',
                     'post_title' => 'ACYM_TITLE',
                     'menu_order' => 'ACYM_MENU_ORDER',
                     'rand' => 'ACYM_RANDOM',
                 ],
-                'default' => 'post_date',
+                'default' => 'startdate.meta_value',
                 'defaultdir' => 'asc',
             ],
         ];

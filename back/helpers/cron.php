@@ -392,7 +392,7 @@ class CronHelper extends acymObject
         ob_start();
         file_put_contents(
             $reportPath,
-            $lr.$lr.'********************     '.acym_getDate(time()).'     ********************'.$lr.implode($lr, $this->messages),
+            $lr.$lr.'******************** '.acym_getDate(time()).' UTC ********************'.$lr.implode($lr, $this->messages),
             FILE_APPEND
         );
 

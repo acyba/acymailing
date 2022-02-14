@@ -351,7 +351,7 @@ class plgAcymEasydigitaldownloads extends acymPlugin
         $tabHelper->endTab();
 
         // Downloads in cart
-        $identifier = 'cart'.$this->name;
+        $identifier = esc_attr('cart'.$this->name);
         $tabHelper->startTab(
             acym_translation('ACYM_CART_DOWNLOADS'),
             !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab
@@ -388,32 +388,32 @@ class plgAcymEasydigitaldownloads extends acymPlugin
         ob_start();
         ?>
 		<div class="cell grid-x">
-			<label for="acym__easydigitaldownloads__<?php echo $partId; ?>__download__number<?php echo $endIdMin; ?>" class="cell medium-6">
+			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMin); ?>" class="cell medium-6">
                 <?php echo acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info('ACYM_MIN_NUMBER_OF_PRODUCTS_DESC'); ?>
 			</label>
 			<input type="number"
-				   id="acym__easydigitaldownloads__<?php echo $partId; ?>__download__number<?php echo $endIdMin; ?>"
+				   id="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMin); ?>"
 				   class="cell medium-6"
-				   value="<?php echo $this->defaultValues->min; ?>"
+				   value="<?php echo esc_attr($this->defaultValues->min); ?>"
 				   name="min"
-				   onchange="addAdditionalInfo<?php echo $identifier; ?>('min', this.value)">
+				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('min', this.value)">
 		</div>
 		<div class="cell grid-x">
-			<label for="acym__easydigitaldownloads__<?php echo $partId; ?>__download__number<?php echo $endIdMax; ?>" class="cell medium-6">
+			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMax); ?>" class="cell medium-6">
                 <?php echo acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info('ACYM_MAX_NUMBER_OF_PRODUCTS_DESC'); ?>
 			</label>
 			<input type="number"
-				   id="acym__easydigitaldownloads__<?php echo $partId; ?>__download__number<?php echo $endIdMax; ?>"
+				   id="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMax); ?>"
 				   class="cell medium-6"
-				   value="<?php echo $this->defaultValues->max; ?>"
+				   value="<?php echo esc_attr($this->defaultValues->max); ?>"
 				   name="max"
-				   onchange="addAdditionalInfo<?php echo $identifier; ?>('max', this.value)">
+				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('max', this.value)">
 		</div>
 		<div class="cell grid-x">
-			<label for="acym__easydigitaldownloads__<?php echo $partId; ?>__cat" class="cell medium-6">
+			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__cat" class="cell medium-6">
                 <?php echo acym_translation('ACYM_CATEGORY_FILTER').acym_info('ACYM_CATEGORY_FILTER_DESC'); ?>
 			</label>
-			<div class="cell medium-6 acym__easydigitaldownloads__<?php echo $partId; ?>__cat__container">
+			<div class="cell medium-6 acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__cat__container">
                 <?php echo acym_selectMultiple($this->catvalues, 'cat', $selectedArea, [
                     'id' => 'acym__easydigitaldownloads__'.$partId.'__cat',
                     'onchange' => '_selectedRows'.$identifier.' = {}
@@ -425,10 +425,10 @@ class plgAcymEasydigitaldownloads extends acymPlugin
 			</div>
 		</div>
 		<script type="text/javascript">
-            var _additionalInfo<?php echo $identifier; ?> = {};
+            var _additionalInfo<?php echo esc_attr($identifier); ?> = {};
             <?php
-            echo '_additionalInfo'.$identifier.'[\'min\']='.$this->defaultValues->min.';';
-            echo '_additionalInfo'.$identifier.'[\'max\']='.$this->defaultValues->max.';';
+            echo '_additionalInfo'.esc_attr($identifier).'[\'min\'] = '.intval($this->defaultValues->min).';';
+            echo '_additionalInfo'.esc_attr($identifier).'[\'max\'] = '.intval($this->defaultValues->max).';';
             ?>
 		</script>
         <?php
@@ -442,7 +442,7 @@ class plgAcymEasydigitaldownloads extends acymPlugin
                     'min_date',
                     empty($this->defaultValues->min_date) ? '' : $this->defaultValues->min_date,
                     'cell medium-6',
-                    'onchange="addAdditionalInfo'.$identifier.'(\'min_date\', this.value)"'
+                    'onchange="addAdditionalInfo'.esc_attr($identifier).'(\'min_date\', this.value)"'
                 ); ?>
 			</div>
             <?php

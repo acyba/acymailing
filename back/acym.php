@@ -51,7 +51,7 @@ if (empty($controller)) {
     return;
 }
 
-if ($ctrl === 'override' && !acym_isPluginActive('acymailoverride')) {
+if (acym_level(ACYM_ENTERPRISE) && $ctrl === 'override' && !acym_isPluginActive('acymailoverride')) {
     acym_enqueueMessage(acym_translation('ACYM_OVERRIDES_REQUIREMENT'), 'warning');
 }
 

@@ -196,6 +196,17 @@ class FollowupClass extends acymClass
         return $followup;
     }
 
+    public function getOneByListId($listId)
+    {
+        $followup = acym_loadObject('SELECT * FROM `#__acym_followup` WHERE `list_id` = '.intval($listId));
+
+        if (empty($followup)) return null;
+
+        if (!empty($followup->condition)) $followup->condition = json_decode($followup->condition, true);
+
+        return $followup;
+    }
+
     public function save($element)
     {
         if (!empty($element->condition) && is_array($element->condition)) $element->condition = json_encode($element->condition);
