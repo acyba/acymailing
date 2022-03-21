@@ -17,8 +17,16 @@ class SendinblueList extends SendinblueClass
 
         if (!$createIfNotExists) return;
 
+        $listId = $this->createList('list_for_acym_mail_'.$mailId);
+
+        $sendinblueLists[$mailId] = $listId;
+        $this->config->save(['list_sendinblue' => json_encode($sendinblueLists)]);
+    }
+
+    public function createList($name)
+    {
         $data = [
-            'name' => 'list_for_acym_mail_'.$mailId,
+            'name' => $name,
             'folderId' => intval($this->getFolderId()),
         ];
 
@@ -27,14 +35,11 @@ class SendinblueList extends SendinblueClass
         // The folder Id is saved in the config but the user removed it from Sendinblue, recreate a folder
         if (!empty($response['message']) && $response['message'] === 'Folder ID does not exist') {
             $this->config->save(['sendinblue_folder_id' => 0]);
-            $this->getListExternalSendingMethod($listId, $mailId);
 
-            return;
+            return $this->createList($name);
         }
 
-        $sendinblueLists[$mailId] = $response['id'];
-
-        $this->config->save(['list_sendinblue' => json_encode($sendinblueLists)]);
+        return $response['id'];
     }
 
     public function getFolderId()

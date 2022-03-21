@@ -6,6 +6,7 @@
         echo acym_listingActions(
             [
                 'deleteFollowup' => acym_translation('ACYM_DELETE'),
+                'duplicateFollowup' => acym_translation('ACYM_DUPLICATE'),
             ]
         );
         ?>
@@ -72,7 +73,8 @@
 					<div class="cell auto grid-x acym__listing__title acym__followup__title">
 						<a class="cell shrink" href="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&step=followupEmail&id='.intval($followup->id)); ?>">
 							<h6 class="acym_text_ellipsis">
-                                <?php echo empty($followup->name) ? '<i class="acym__color__orange acym__followup__listing__unnamed__icon acymicon-exclamation-triangle"></i> '.acym_translation(
+                                <?php echo empty($followup->name)
+                                    ? '<i class="acym__color__orange acym__followup__listing__unnamed__icon acymicon-exclamation-triangle"></i> '.acym_translation(
                                         'ACYM_UNNAMED_FOLLOWUP'
                                     ) : acym_escape($followup->name); ?>
 							</h6>
@@ -176,7 +178,8 @@
                     <?php } ?>
 					<div class="cell small-2 large-1 text-center">
                         <?php
-                        $class = $followup->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0' : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
+                        $class = $followup->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0'
+                            : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
                         echo '<i data-acy-table="followup" data-acy-field="active" data-acy-elementid="'.acym_escape($followup->id).'" class="acym_toggleable '.$class.'"></i>';
                         ?>
 					</div>

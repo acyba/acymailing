@@ -197,7 +197,7 @@ class FrontusersController extends UsersController
             }
         }
 
-        if (empty($currentUserid) && $this->config->get('captcha', 'none') !== 'none') {
+        if (empty($currentUserid) && $this->config->get('captcha', 'none') !== 'none' && acym_level(ACYM_ESSENTIAL)) {
             $captchaHelper = new CaptchaHelper();
             if (!$captchaHelper->check()) {
                 $this->displayMessage('ACYM_WRONG_CAPTCHA', $ajax);
@@ -362,7 +362,7 @@ class FrontusersController extends UsersController
 
         $currentUserid = acym_currentUserId();
         $user = $userClass->identify();
-        if (empty($user) && empty($currentUserid) && $this->config->get('captcha', 'none') !== 'none') {
+        if (empty($user) && empty($currentUserid) && $this->config->get('captcha', 'none') !== 'none' && acym_level(ACYM_ESSENTIAL)) {
             $captchaClass = new CaptchaHelper();
             if (!$captchaClass->check()) {
                 $this->displayMessage('ACYM_WRONG_CAPTCHA', $ajax);

@@ -15,7 +15,7 @@ if (!empty($visibleLists)) {
         $listsContent .= '
             <div class="onelist">
             	<input type="checkbox" class="acym_checkbox" name="subscription[]" id="acylist_'.$myListId.'_'.$formName.'" '.$check.' value="'.$myListId.'"/>
-                <label for="acylist_'.$myListId.'_'.$formName.'">'.$allLists[$myListId]->name.'</label>
+                <label for="acylist_'.$myListId.'_'.$formName.'">'.(!empty($allLists[$myListId]->display_name) ? $allLists[$myListId]->display_name : $allLists[$myListId]->name).'</label>
             </div>';
     }
     $listsContent .= '</div>';
@@ -53,7 +53,7 @@ if ($listPosition == 'before') echo $listsContent;
 
     if ($listPosition != 'before') echo $listsContent;
 
-    if (empty($identifiedUser->id) && $config->get('captcha', 'none') !== 'none') {
+    if (empty($identifiedUser->id) && $config->get('captcha', 'none') !== 'none' && acym_level(ACYM_ESSENTIAL)) {
         echo '<div class="onefield fieldacycaptcha" id="field_captcha_'.$formName.'">';
         $captcha = new CaptchaHelper();
         echo $captcha->display($formName);

@@ -1232,6 +1232,10 @@ class acymInstall
             $this->updateQuery('ALTER TABLE `#__acym_history` CHANGE `ip` `ip` VARCHAR(50)');
             $this->updateQuery('ALTER TABLE `#__acym_user` CHANGE `confirmation_ip` `confirmation_ip` VARCHAR(50)');
         }
+
+        if (version_compare($this->fromVersion, '7.7.6', '<')) {
+            $this->updateQuery('ALTER TABLE `#__acym_list` ADD `display_name` VARCHAR(255) NULL');
+        }
     }
 
     public function updateQuery($query)

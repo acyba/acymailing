@@ -28,6 +28,7 @@
 #acym_wrapper {
     @import "global/editor_wysid/global";
     @import "global/editor_wysid/fixFoundation";
+    @import "global/editor_wysid/fixTinyMCE";
     @import "global/editor_wysid/topToolbar";
 
     #acym__wysid__right {

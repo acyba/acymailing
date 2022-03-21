@@ -51,11 +51,201 @@ if (typeof submitAcymForm !== 'function') {
         grecaptcha.reset(grcID);
     }
 
+    function acym_resetInvalidClass() {
+        let invalidFields = document.querySelectorAll('#' + acyformName + ' .acym_invalid_field');
+        if (invalidFields.length !== 0) {
+            for (let i = 0 ; i < invalidFields.length ; i++) {
+                invalidFields[i].classList.remove('acym_invalid_field');
+            }
+        }
+
+        let errorZones = document.querySelectorAll('#' + acyformName + ' .acym__field__error__block');
+        if (errorZones.length !== 0) {
+            for (let i = 0 ; i < errorZones.length ; i++) {
+                errorZones[i].classList.remove('acym__field__error__block__active');
+            }
+        }
+    }
+
+    function acym_checkEmailField(varform, name, validation) {
+        let emailField = varform.elements[name];
+        if (emailField) {
+            if (emailField.value !== acymModule['EMAILCAPTION']) {
+                emailField.value = emailField.value.replace(/ /g, '');
+            }
+
+            let filter = acymModule['emailRegex'];
+            if (emailField.value === acymModule['EMAILCAPTION'] || !filter.test(emailField.value)) {
+                acymAddInvalidClass(emailField.name, validation, acymModule['VALID_EMAIL']);
+            }
+        }
+    }
+
+    function acym_handleRequiredRadio(validation) {
+        let requiredRadio = document.querySelectorAll('#' + acyformName + ' [type="radio"][data-required]');
+        if (requiredRadio.length === 0) return;
+
+        let lastName = '';
+        let checked = 0;
+        let required;
+        for (let i = 0 ; i < requiredRadio.length ; i++) {
+            required = JSON.parse(requiredRadio[i].getAttribute('data-required'));
+
+            if (lastName !== '' && lastName !== requiredRadio[i].getAttribute('name')) {
+                if (checked === 0) {
+                    let previousRequired = JSON.parse(requiredRadio[i - 1].getAttribute('data-required'));
+                    acymAddInvalidClass(lastName, validation, previousRequired.message);
+                } else {
+                    checked = 0;
+                }
+            }
+
+            if (requiredRadio[i].checked) {
+                checked++;
+            }
+            lastName = requiredRadio[i].getAttribute('name');
+        }
+
+        if (checked === 0) {
+            acymAddInvalidClass(lastName, validation, required.message);
+        }
+    }
+
+    function acym_handleRequiredCheckbox(validation) {
+        let requiredCheckbox = document.querySelectorAll('#' + acyformName + ' [type="checkbox"][data-required]');
+        if (requiredCheckbox.length === 0) return;
+
+        let lastName = '';
+        let checked = 0;
+        let required;
+        for (let i = 0 ; i < requiredCheckbox.length ; i++) {
+            required = JSON.parse(requiredCheckbox[i].getAttribute('data-required'));
+            let slicedName = requiredCheckbox[i].getAttribute('name').slice(0, requiredCheckbox[i].getAttribute('name').lastIndexOf('['));
+
+            if (lastName !== '' && lastName !== slicedName) {
+                if (checked === 0) {
+                    let previousRequired = JSON.parse(requiredCheckbox[i - 1].getAttribute('data-required'));
+                    acymAddInvalidClass(lastName, validation, previousRequired.message);
+                } else {
+                    checked = 0;
+                }
+            }
+
+            if (requiredCheckbox[i].checked) {
+                checked++;
+            }
+            lastName = slicedName;
+        }
+
+        if (checked === 0) {
+            acymAddInvalidClass(lastName, validation, required.message);
+        }
+    }
+
+    function acym_handleRequiredDate(validation) {
+        let requiredDate = document.querySelectorAll('#' + acyformName + ' [acym-field-type="date"][data-required]');
+        if (requiredDate.length === 0) return;
+
+        let lastName = '';
+        let checked = 0;
+        for (let i = 0 ; i < requiredDate.length ; i++) {
+            let currentField = requiredDate[i];
+            let required = JSON.parse(currentField.getAttribute('data-required'));
+            let slicedName = currentField.getAttribute('name').slice(0, currentField.getAttribute('name').lastIndexOf('['));
+
+            if (lastName !== '' && lastName !== slicedName) {
+                if (checked < 3) {
+                    checked = 0;
+                    let previousRequired = JSON.parse(requiredDate[i - 1].getAttribute('data-required'));
+                    acymAddInvalidClass(requiredDate[i - 1].name, validation, previousRequired.message);
+                } else if (checked > 0) {
+                    checked = 0;
+                }
+            }
+
+            if (currentField.value.length > 0) {
+                checked++;
+            } else {
+                acymAddInvalidClass(currentField.name, validation, required.message);
+            }
+            lastName = requiredDate[i].getAttribute('name').slice(0, requiredDate[i].getAttribute('name').lastIndexOf('['));
+        }
+    }
+
+    function acym_handleOtherRequiredFields(validation) {
+        let requiredFields = document.querySelectorAll('#'
+                                                       + acyformName
+                                                       + ' [data-required]:not([type="checkbox"]):not([type="radio"]):not([acym-field-type="date"])');
+        if (requiredFields.length === 0) return;
+
+        for (let i = 0 ; i < requiredFields.length ; i++) {
+            let required = JSON.parse(requiredFields[i].getAttribute('data-required'));
+            if (([
+                     'text',
+                     'textarea',
+                     'single_dropdown',
+                     'multiple_dropdown',
+                     'phone'
+                 ].indexOf(required.type) !== -1) && (requiredFields[i].value === '' || requiredFields[i].value == '0')) {
+                acymAddInvalidClass(requiredFields[i].name, validation, required.message);
+            }
+
+            if (required.type === 'file' && requiredFields[i].files.length === 0) {
+                acymAddInvalidClass(requiredFields[i].name, validation, required.message);
+            }
+        }
+    }
+
+    function acym_handleAuthorizedContent(validation) {
+        let authorizeContent = document.querySelectorAll('#' + acyformName + ' [data-authorized-content]');
+        if (authorizeContent.length === 0) return;
+
+        for (let i = 0 ; i < authorizeContent.length ; i++) {
+            let json = authorizeContent[i].getAttribute('data-authorized-content');
+            let authorized;
+            let defaultAuthorizeValue = [];
+            defaultAuthorizeValue.push(0);
+
+            // Duplicate our acym_helper.parseJSON here because we don't have access to it
+            try {
+                let begin = json.indexOf('{');
+                let beginBrackets = json.indexOf('[');
+
+                if ((!isNaN(begin) && begin > 0) && (!isNaN(beginBrackets) && beginBrackets > 0)) {
+                    json = json.substring(begin);
+                }
+
+                if (json !== undefined || json !== '') {
+                    authorized = JSON.parse(json);
+                } else {
+                    authorized = defaultAuthorizeValue;
+                }
+            } catch (error) {
+                authorized = defaultAuthorizeValue;
+                console.log(error.stack);
+            }
+
+            let reg = '';
+            if (authorized[0] === 'number') {
+                reg = /^[0-9]+$/;
+            } else if (authorized[0] === 'letters') {
+                reg = /^[a-zA-Z]+$/;
+            } else if (authorized[0] === 'numbers_letters') {
+                reg = /^[a-zA-Z0-9]+$/;
+            } else if (authorized[0] === 'regex') {
+                reg = new RegExp(authorized['regex']);
+            }
+
+            if (reg !== '' && authorizeContent[i].value.length > 0 && !reg.test(authorizeContent[i].value)) {
+                acymAddInvalidClass(authorizeContent[i].name, validation, authorized['message']);
+            }
+        }
+    }
+
     function acymSubmitSubForm() {
         let varform = document[acyformName];
+        let validation = {errors: 0};
         let filterEmail = acymModule['emailRegex'];
-        let errorMessages = '';
-        let i;
 
         // I don't understand this code, I guess it's useful
         if (!varform.elements) {
@@ -67,182 +257,15 @@ if (typeof submitAcymForm !== 'function') {
             }
         }
 
-        // Reset invalid CSS class
-        let invalidFields = document.querySelectorAll('#' + acyformName + ' .invalid');
-        if (invalidFields.length !== 0) {
-            for (i = 0 ; i < invalidFields.length ; i++) {
-                invalidFields[i].classList.remove('invalid');
-            }
-        }
+        acym_resetInvalidClass();
+        acym_checkEmailField(varform, 'user[email]', validation);
+        acym_handleRequiredRadio(validation);
+        acym_handleRequiredCheckbox(validation);
+        acym_handleRequiredDate(validation);
+        acym_handleOtherRequiredFields(validation);
+        acym_handleAuthorizedContent(validation);
 
-        // Make sure the entered email address is correct
-        let emailField = varform.elements['user[email]'];
-        if (emailField.value != acymModule['EMAILCAPTION']) emailField.value = emailField.value.replace(/ /g, '');
-        if (!emailField || emailField.value == acymModule['EMAILCAPTION'] || !filterEmail.test(emailField.value)) {
-            errorMessages = acymModule['VALID_EMAIL'];
-            emailField.classList.add('invalid');
-        }
-
-        //required fields
-        let lastName, checked, required, reg, previousRequired;
-        let requiredRadio = document.querySelectorAll('#' + acyformName + ' [type="radio"][data-required]');
-        if (requiredRadio.length > 0) {
-            lastName = '';
-            checked = 0;
-            for (i = 0 ; i < requiredRadio.length ; i++) {
-                required = JSON.parse(requiredRadio[i].getAttribute('data-required'));
-                if (lastName !== '' && lastName != requiredRadio[i].getAttribute('name') && checked === 0) {
-                    previousRequired = JSON.parse(requiredRadio[i - 1].getAttribute('data-required'));
-                    errorMessages += '\r\n' + previousRequired.message;
-                    acymAddInvalidClass(acyformName, lastName);
-                } else if (lastName !== '' && lastName != requiredRadio[i].getAttribute('name') && checked > 0) {
-                    checked = 0;
-                }
-                if (requiredRadio[i].checked) {
-                    checked++;
-                }
-                lastName = requiredRadio[i].getAttribute('name');
-            }
-            if (checked === 0) {
-                errorMessages += '\r\n' + required.message;
-                acymAddInvalidClass(acyformName, lastName);
-            }
-        }
-
-        let requiredCheckbox = document.querySelectorAll('#' + acyformName + ' [type="checkbox"][data-required]');
-        if (requiredCheckbox.length > 0) {
-            lastName = '';
-            checked = 0;
-            for (i = 0 ; i < requiredCheckbox.length ; i++) {
-                required = JSON.parse(requiredCheckbox[i].getAttribute('data-required'));
-                if (lastName !== '' && lastName != requiredCheckbox[i].getAttribute('name')
-                                                                      .slice(0, requiredCheckbox[i].getAttribute('name').lastIndexOf('[')) && checked === 0) {
-                    previousRequired = JSON.parse(requiredCheckbox[i - 1].getAttribute('data-required'));
-                    errorMessages += '\r\n' + previousRequired.message;
-                    acymAddInvalidClass(acyformName, lastName);
-                } else if (lastName
-                           !== ''
-                           && lastName
-                           != requiredCheckbox[i].getAttribute('name')
-                                                 .slice(0, requiredCheckbox[i].getAttribute('name').lastIndexOf('['))
-                           && checked
-                           > 0) {
-                    checked = 0;
-                }
-                if (requiredCheckbox[i].checked) {
-                    checked++;
-                }
-                lastName = requiredCheckbox[i].getAttribute('name').slice(0, requiredCheckbox[i].getAttribute('name').lastIndexOf('['));
-            }
-            if (checked === 0) {
-                errorMessages += '\r\n' + required.message;
-                acymAddInvalidClass(acyformName, lastName);
-            }
-        }
-
-        let requiredDate = document.querySelectorAll('#' + acyformName + ' [acym-field-type="date"][data-required]');
-        if (requiredDate.length != 0) {
-            lastName = '';
-            checked = 0;
-            let currentField;
-            for (i = 0 ; i < requiredDate.length ; i++) {
-                currentField = requiredDate[i];
-                required = JSON.parse(currentField.getAttribute('data-required'));
-                if (lastName
-                    !== ''
-                    && lastName
-                    != currentField.getAttribute('name').slice(0, currentField.getAttribute('name').lastIndexOf('['))
-                    && checked
-                    < 3) {
-                    checked = 0;
-                    previousRequired = JSON.parse(requiredDate[i - 1].getAttribute('data-required'));
-                    errorMessages += '\r\n' + previousRequired.message;
-                } else if (lastName !== '' && lastName != currentField.getAttribute('name')
-                                                                      .slice(0, currentField.getAttribute('name').lastIndexOf('[')) && checked > 0) {
-                    checked = 0;
-                }
-                if (currentField.value != '') {
-                    checked++;
-                } else {
-                    currentField.classList.add('invalid');
-                }
-                lastName = requiredDate[i].getAttribute('name').slice(0, requiredDate[i].getAttribute('name').lastIndexOf('['));
-            }
-            if (checked < 3) {
-                errorMessages += '\r\n' + required.message;
-            }
-        }
-
-        let requiredFields = document.querySelectorAll('#'
-                                                       + acyformName
-                                                       + ' [data-required]:not([type="checkbox"]):not([type="radio"]):not([acym-field-type="date"])');
-        if (requiredFields.length > 0) {
-            for (i = 0 ; i < requiredFields.length ; i++) {
-                required = JSON.parse(requiredFields[i].getAttribute('data-required'));
-                if (([
-                         'text',
-                         'textarea',
-                         'single_dropdown',
-                         'multiple_dropdown',
-                         'phone'
-                     ].indexOf(required.type) !== -1) && (requiredFields[i].value === '' || requiredFields[i].value == '0')) {
-                    errorMessages += '\r\n' + required.message;
-                    requiredFields[i].classList.add('invalid');
-                }
-
-                if (required.type === 'file' && requiredFields[i].files.length === 0) {
-                    errorMessages += '\r\n' + required.message;
-                    requiredFields[i].classList.add('invalid');
-                }
-            }
-        }
-
-        let authorizeContent = document.querySelectorAll('#' + acyformName + ' [data-authorized-content]');
-        if (authorizeContent.length > 0) {
-            for (i = 0 ; i < authorizeContent.length ; i++) {
-                let json = authorizeContent[i].getAttribute('data-authorized-content');
-                let authorized;
-                let defaultAuthorizeValue = [];
-                defaultAuthorizeValue.push(0);
-
-                try {
-                    let begin = json.indexOf('{');
-                    let beginBrackets = json.indexOf('[');
-
-                    if ((!isNaN(begin) && begin > 0) && (!isNaN(beginBrackets) && beginBrackets > 0)) {
-                        json = json.substring(begin);
-                    }
-
-                    if (json !== undefined || json !== '') {
-                        authorized = JSON.parse(json);
-                    } else {
-                        authorized = defaultAuthorizeValue;
-                    }
-                } catch (error) {
-                    authorized = defaultAuthorizeValue;
-                    console.log(error.stack);
-                }
-
-                reg = '';
-                if (authorized[0] === 'number') {
-                    reg = /^[0-9]+$/;
-                } else if (authorized[0] === 'letters') {
-                    reg = /^[a-zA-Z]+$/;
-                } else if (authorized[0] === 'numbers_letters') {
-                    reg = /^[a-zA-Z0-9]+$/;
-                } else if (authorized[0] === 'regex') {
-                    reg = new RegExp(authorized['regex']);
-                }
-
-                if (reg !== '' && authorizeContent[i].value.length > 0 && !reg.test(authorizeContent[i].value)) {
-                    authorizeContent[i].classList.add('invalid');
-                    errorMessages += '\r\n' + authorized['message'];
-                }
-            }
-        }
-
-        if (errorMessages.length > 0) {
-            alert(errorMessages);
+        if (validation.errors > 0) {
             return false;
         }
 
@@ -251,7 +274,7 @@ if (typeof submitAcymForm !== 'function') {
             let listschecked = false;
             let allLists = varform.elements['subscription[]'];
             if (allLists && (typeof allLists.value == 'undefined' || allLists.value.length === 0)) {
-                for (b = 0 ; b < allLists.length ; b++) {
+                for (let b = 0 ; b < allLists.length ; b++) {
                     if (allLists[b].checked) listschecked = true;
                 }
                 if (!listschecked) {
@@ -294,7 +317,7 @@ if (typeof submitAcymForm !== 'function') {
         }
 
         // Set the form's task field to subscribe / unsubscribe
-        taskField = varform.task;
+        let taskField = varform.task;
         taskField.value = acytask;
 
         // If no ajax, submit the form
@@ -340,11 +363,23 @@ if (typeof submitAcymForm !== 'function') {
         return false;
     }
 
-    function acymAddInvalidClass(formName, elemName) {
-        let elToInvalidate = document.querySelectorAll('#' + formName + ' [name^="' + elemName + '"]');
+    function acymAddInvalidClass(elemName, validation, message) {
+        let elToInvalidate = document.querySelectorAll('#' + acyformName + ' [name^="' + elemName + '"]');
         for (let i = 0 ; i < elToInvalidate.length ; i++) {
-            elToInvalidate[i].classList.add('invalid');
+            elToInvalidate[i].classList.add('acym_invalid_field');
         }
+
+        if (message.length > 0) {
+            let container = elToInvalidate[0].closest('.onefield');
+            if (container && container.length !== 0) {
+                let errorZone = container.querySelector('.acym__field__error__block');
+                errorZone.innerText = message;
+                errorZone.classList.add('acym__field__error__block__active');
+            }
+        }
+
+        validation.errors++;
+
         return true;
     }
 

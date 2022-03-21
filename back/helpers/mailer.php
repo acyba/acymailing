@@ -241,7 +241,7 @@ class MailerHelper extends acyPHPMailer
             $this->Body,
             $bcc,
             $attachments,
-            $this->id,
+            empty($this->id) ? null : $this->id,
         ];
         acym_trigger('onAcymSendEmail', $data);
 
@@ -484,7 +484,13 @@ class MailerHelper extends acyPHPMailer
 
         global $acymLanguages;
         if (!acym_isMultilingual()) {
-            if (empty($this->defaultMail[$mailId])) $this->defaultMail[$mailId] = $mailClass->getOneByName($mailId, true);
+            if (empty($this->defaultMail[$mailId])) {
+                $this->defaultMail[$mailId] = $mailClass->getOneByName($mailId, true);
+
+                if (!empty($this->defaultMail[$mailId]->id)) {
+                    $this->defaultMail[$this->defaultMail[$mailId]->id] = $this->defaultMail[$mailId];
+                }
+            }
         } elseif (empty($this->overrideEmailToSend)) {
             $defaultLanguage = $this->config->get('multilingual_default', ACYM_DEFAULT_LANGUAGE);
             $mails = $mailClass->getMultilingualMails($mailId);
@@ -926,7 +932,7 @@ class MailerHelper extends acyPHPMailer
             $campaignClass = new CampaignClass();
             $campaign = $campaignClass->getOneCampaignByMailId($mailId);
 
-            $utmCampaign = acym_getAlias($mail->subject);
+            $utmCampaign = substr(acym_getAlias($mail->subject), 0, 30);
         }
 
         preg_match_all('#<[^>]* href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:|tel:)([^"]+)"#Ui', $this->body, $results);

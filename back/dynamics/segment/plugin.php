@@ -77,7 +77,7 @@ class plgAcymSegment extends acymPlugin
 
     public function onAcymDeclareSummary_filters(&$automation)
     {
-        if (!array_key_exists('acy_segment', $automation)) return;
+        if(empty($automation['acy_segment'])) return;
         $oneSegment = (new SegmentClass())->getOneById($automation['acy_segment']['id']);
         $automation = acym_translationSprintf('ACYM_FILTER_ACY_SEGMENT_SUMMARY', $oneSegment->name);
     }

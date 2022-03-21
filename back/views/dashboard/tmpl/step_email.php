@@ -3,7 +3,7 @@
 	<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_WE_ARE_GOING_TO_CONFIGURE_ACY_SIMPLE_TEST'); ?></p>
 	<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_HERE_IT_LOOKS_FEEL_FREE_TO_MODIFY'); ?></p>
 </div>
-<div class="cell grid-x margin-top-3">
+<div class="cell grid-x">
 	<input type="hidden" name="mail[id]" value="<?php echo acym_escape($data['mail']->id); ?>" />
 	<input type="hidden" name="id" value="<?php echo acym_escape($data['mail']->id); ?>" />
 	<input type="hidden" id="acym__mail__edit__editor__social__icons" value="<?php echo empty($data['social_icons']) ? '{}' : acym_escape($data['social_icons']); ?>">

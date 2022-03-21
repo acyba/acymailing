@@ -9,6 +9,13 @@ if (!empty($data['translation_languages'])) {
 		</label>
 	</div>
 	<div class="cell">
+		<label>
+            <?php echo acym_translation('ACYM_DISPLAY_NAME').acym_info('ACYM_LIST_DISPLAY_NAME_DESC'); ?>
+			<input name="list[display_name]" type="text" value="<?php echo acym_escape($data['listInformation']->display_name); ?>">
+		</label>
+	</div>
+
+	<div class="cell">
 		<label><?php echo acym_translation('ACYM_DESCRIPTION'); ?></label>
 		<textarea name="list[description]"><?php echo acym_escape($data['listInformation']->description); ?></textarea>
 	</div>

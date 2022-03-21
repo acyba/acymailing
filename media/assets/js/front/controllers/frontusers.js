@@ -18,7 +18,7 @@ function initUser() {
             let hiddenInputs = document.getElementsByClassName('listsub-dropdown');
             for (let i = 0 ; i < hiddenInputs.length ; i++) {
                 hiddenInputs[i].value = '0';
-                if (hiddenInputs[i].name == 'data[listsub][' + selectedListId + '][status]') {
+                if (hiddenInputs[i].name === 'data[listsub][' + selectedListId + '][status]') {
                     hiddenInputs[i].value = '1';
                 }
             }
@@ -53,116 +53,20 @@ function initUser() {
 
 function acym_checkChangeForm() {
     let varform = document[acyformName];
-    let emailField = varform.elements['data[user][email]'];
-    if (emailField) {
-        if (emailField.value != acymModule['EMAILCAPTION']) {
-            emailField.value = emailField.value.replace(/ /g, '');
-        }
+    let validation = {errors: 0};
 
-        let filter = acymModule['emailRegex'];
-        if (!emailField || (emailField.value == acymModule['EMAILCAPTION']) || !filter.test(emailField.value)) {
-            alert(acymModule['VALID_EMAIL']);
-            emailField.className = emailField.className + ' invalid';
-            return false;
-        }
-    }
+    acym_resetInvalidClass();
 
-    //required fields
-    let lastName, checked, i, required, reg;
-    let requiredRadio = document.querySelectorAll('#' + acyformName + ' [type="radio"][data-required]');
-    if (requiredRadio.length > 0) {
-        lastName = '';
-        checked = 0;
-        for (i = 0 ; i < requiredRadio.length ; i++) {
-            required = JSON.parse(requiredRadio[i].getAttribute('data-required'));
-            if (lastName !== '' && lastName != requiredRadio[i].getAttribute('name') && checked == 0) {
-                required = JSON.parse(requiredRadio[i - 1].getAttribute('data-required'));
-                alert(required.message);
-                return false;
-            } else if (lastName !== '' && lastName != requiredRadio[i].getAttribute('name') && checked > 0) {
-                checked = 0;
-            }
-            if (requiredRadio[i].checked) {
-                checked++;
-            }
-            lastName = requiredRadio[i].getAttribute('name');
-        }
-        if (checked === 0) {
-            alert(required.message);
-            return false;
-        }
-    }
+    acym_checkEmailField(varform, 'data[user][email]', validation);
+    acym_checkEmailField(varform, 'user[email]', validation);
+    acym_handleRequiredRadio(validation);
+    acym_handleRequiredCheckbox(validation);
+    acym_handleRequiredDate(validation);
+    acym_handleOtherRequiredFields(validation);
+    acym_handleAuthorizedContent(validation);
 
-    let requiredCheckbox = document.querySelectorAll('#' + acyformName + ' [type="checkbox"][data-required]');
-    if (requiredCheckbox.length > 0) {
-        lastName = '';
-        checked = 0;
-        for (i = 0 ; i < requiredCheckbox.length ; i++) {
-            required = JSON.parse(requiredCheckbox[i].getAttribute('data-required'));
-            if (lastName !== '' && lastName != requiredCheckbox[i].getAttribute('name') && checked == 0) {
-                required = JSON.parse(requiredCheckbox[i - 1].getAttribute('data-required'));
-                alert(required.message);
-                return false;
-            } else if (lastName !== '' && lastName != requiredCheckbox[i].getAttribute('name') && checked > 0) {
-                checked = 0;
-            }
-            if (requiredCheckbox[i].checked) {
-                checked++;
-            }
-            lastName = requiredCheckbox[i].getAttribute('name');
-        }
-        if (checked === 0) {
-            alert(required.message);
-            return false;
-        }
-    }
-
-    let requiredFields = document.querySelectorAll('#' + acyformName + ' [data-required]');
-    if (requiredFields.length > 0) {
-        for (i = 0 ; i < requiredFields.length ; i++) {
-            required = JSON.parse(requiredFields[i].getAttribute('data-required'));
-            if ((required.type
-                 === 'text'
-                 || required.type
-                 === 'textarea'
-                 || required.type
-                 === 'single_dropdown'
-                 || required.type
-                 === 'multiple_dropdown'
-                 || required.type
-                 === 'phone'
-                 || required.type
-                 === 'file') && requiredFields[i].value === '') {
-                alert(required.message);
-                return false;
-            } else if (required.type === 'file' && requiredFields[i].files.length === 0) {
-                alert(required.message);
-                return false;
-            }
-        }
-    }
-
-
-    let authorizeContent = document.querySelectorAll('[data-authorized-content]');
-    if (authorizeContent.length > 0) {
-        for (i = 0 ; i < authorizeContent.length ; i++) {
-            let authorized = JSON.parse(authorizeContent[i].getAttribute('data-authorized-content'));
-            reg = '';
-            if (authorized[0] === 'number') {
-                reg = /^[0-9]+$/;
-            } else if (authorized[0] === 'letters') {
-                reg = /^[a-zA-Z]+$/;
-            } else if (authorized[0] === 'numbers_letters') {
-                reg = /^[a-zA-Z0-9]+$/;
-            } else if (authorized[0] === 'regex') {
-                reg = new RegExp(authorized['regex']);
-            }
-
-            if (reg != '' && !reg.test(authorizeContent[i].value)) {
-                alert(authorized['message']);
-                return false;
-            }
-        }
+    if (validation.errors > 0) {
+        return false;
     }
 
     let formData = new FormData(varform);

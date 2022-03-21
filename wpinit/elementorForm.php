@@ -99,6 +99,12 @@ class ElementorForm extends \ElementorPro\Modules\Forms\Classes\Action_Base
         $newUser->email = $data[$settings['acym_emailField']];
         $newUser->creation_date = date('Y-m-d H:i:s');
         $newUser->confirmed = $settings['acym_confirmUsers'] === 'yes';
+
+        $user = $userClass->getOneByEmail($newUser->email);
+        if (!empty($user)) {
+            $newUser->id = $user->id;
+        }
+
         $userId = $userClass->save($newUser);
 
         if (!empty($settings['acym_selectLists'])) {

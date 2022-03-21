@@ -60,10 +60,7 @@ const acym_editorWysidWordpress = {
                                + acym_helper.escape(attachment.alt)
                                + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;"/>';
                     if (attachment.caption !== undefined && attachment.caption.length > 0) {
-                        content += '<div class="acym__wysid__media_caption" '
-                                   + 'style="width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display:block;">'
-                                   + acym_helper.escape(attachment.caption)
-                                   + '</div>';
+                        content += acym_editorWysidContextModal.getImageCaptionDiv(attachment.caption);
                     }
                     if ($link.length > 0) content += '</a>';
                     content += '</div>';

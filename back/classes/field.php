@@ -347,8 +347,18 @@ class FieldClass extends acymClass
         return parent::delete($elements);
     }
 
-    public function displayField($field, $defaultValue, $size, $valuesArray, $displayOutside = true, $displayFront = false, $user = null, $display = 1, $displayIf = '', $userClasses = "")
-    {
+    public function displayField(
+        $field,
+        $defaultValue,
+        $size,
+        $valuesArray,
+        $displayOutside = true,
+        $displayFront = false,
+        $user = null,
+        $display = 1,
+        $displayIf = '',
+        $userClasses = ""
+    ) {
         $isCoreField = $field->core == 1;
 
         if (!$isCoreField && !acym_level(ACYM_ENTERPRISE)) return '';
@@ -423,16 +433,12 @@ class FieldClass extends acymClass
             } else {
                 $field->option->authorized_content->message = $field->option->error_message_invalid;
             }
-            $authorizedContent = ' data-authorized-content="'.acym_escape(json_encode($field->option->authorized_content)).'"';
+            $authorizedContent = ' data-authorized-content="'.acym_escape($field->option->authorized_content).'"';
         }
 
         $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
         $style = empty($size) ? '' : ' style="'.$size.'"';
-        $messageRequired = empty($field->option->error_message)
-            ? acym_translationSprintf('ACYM_DEFAULT_REQUIRED_MESSAGE', $field->name)
-            : acym_translation(
-                $field->option->error_message
-            );
+        $messageRequired = empty($field->option->error_message) ? '' : acym_translation($field->option->error_message);
         $requiredJson = json_encode(['type' => $field->type, 'message' => $messageRequired]);
         $required = $field->required ? ' data-required="'.acym_escape($requiredJson).'"' : '';
         $placeholder = '';
@@ -596,7 +602,6 @@ class FieldClass extends acymClass
             $return .= $field->option->custom_text;
         }
 
-
         $labelTypes = ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file', 'language'];
         if ($displayOutside && (in_array($field->id, [1, 2]) || in_array($field->type, $labelTypes))) {
             $return .= '</label>';
@@ -604,6 +609,8 @@ class FieldClass extends acymClass
         if ($displayOutside && in_array($field->type, ['date', 'radio', 'checkbox'])) {
             $return .= '</div>';
         }
+
+        $return .= '<div class="acym__field__error__block" data-acym-field-id="'.intval($field->id).'"></div>';
 
         return $return;
     }

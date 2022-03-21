@@ -17,7 +17,6 @@ class acymController extends acymObject
     var $urlFrontMenu = '';
     var $sessionName = '';
     var $taskCalled = '';
-    var $preventCallTask = false;
     protected $menuClass = '';
 
     public function __construct()
@@ -85,8 +84,6 @@ class acymController extends acymObject
 
     public function call($task)
     {
-        if ($this->preventCallTask) return;
-
         // If not authorized, display message and redirect to dashboard
         if (!in_array($task, ['countResultsTotal', 'countGlobalBySegmentId', 'countResults']) && strpos($task, 'Ajax') === false && !acym_isAllowed($this->name, $task)) {
             acym_enqueueMessage(acym_translation('ACYM_ACCESS_DENIED'), 'warning');

@@ -129,6 +129,7 @@ class ListsController extends acymController
             $listInformation = new \stdClass();
             $listInformation->id = '';
             $listInformation->name = '';
+            $listInformation->frontLabel = '';
             $listInformation->description = '';
             $listInformation->active = 1;
             $listInformation->visible = 1;

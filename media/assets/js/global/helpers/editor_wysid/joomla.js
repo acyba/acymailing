@@ -102,10 +102,7 @@ const acym_editorWysidJoomla = {
                            + acym_helper.escape(title)
                            + '" hspace="0"/>';
                 if (valueCaption !== undefined && valueCaption.length > 0) {
-                    content += '<div class="acym__wysid__media_caption" '
-                               + 'style="width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display:block;">'
-                               + acym_helper.escape(valueCaption)
-                               + '</div>';
+                    content += acym_editorWysidContextModal.getImageCaptionDiv(valueCaption);
                 }
                 if ($link.length > 0) content += '</a>';
                 content += '</div>';
@@ -138,7 +135,7 @@ const acym_editorWysidJoomla = {
             // 2 - Get selected image(s)
             let imagesUrls = [];
 
-            // When selecting a images from the grid view
+            // When selecting images from the grid view
             $modalUi.contents().find('.media-browser-grid .media-browser-item.selected .media-browser-image .media-browser-item-info').each(function () {
                 imagesUrls.push(folderPath + jQuery(this).text().trim());
             });
@@ -152,7 +149,10 @@ const acym_editorWysidJoomla = {
                 });
             }
 
-            acym_editorWysidJoomla.validateMediaSelection(rows, imagesUrls, '', '', '');
+            let altValue = jQuery('#acym__wysid__context__image__alt').val();
+            let valueTitle = jQuery('#acym__wysid__context__image__title').val();
+            let valueCaption = jQuery('#acym__wysid__context__image__caption').val();
+            acym_editorWysidJoomla.validateMediaSelection(rows, imagesUrls, altValue, valueTitle, valueCaption);
         });
 
         // Joomla 3
@@ -166,7 +166,7 @@ const acym_editorWysidJoomla = {
             let valueCaption = $modalUi.contents().find('#f_caption').val();
             let imagesUrls = [];
             if (!acym_helper.empty(urlImg)) {
-                if (urlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER) || urlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER_IMAGES)){
+                if (urlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER) || urlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER_IMAGES)) {
                     urlImg = ACYM_JOOMLA_MEDIA_IMAGE + urlImg;
                 }
                 imagesUrls.push(urlImg);

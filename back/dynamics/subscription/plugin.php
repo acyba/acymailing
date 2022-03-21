@@ -430,7 +430,7 @@ class plgAcymSubscription extends acymPlugin
                 if ($onesub->status < 1 || empty($onesub->active)) {
                     continue;
                 }
-                $lists[] = $onesub->name;
+                $lists[] = (!empty($onesub->display_name) ? $onesub->display_name : $onesub->name);
             }
         }
 
@@ -488,7 +488,7 @@ class plgAcymSubscription extends acymPlugin
 
         $this->_loadlist($listid);
 
-        return @$this->listsinfo[$listid]->name;
+        return !empty($this->listsinfo[$listid]->display_name) ? $this->listsinfo[$listid]->display_name : @$this->listsinfo[$listid]->name;
     }
 
     private function listdescription(&$email, &$user, &$parameter)

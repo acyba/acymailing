@@ -6,8 +6,8 @@ use AcyMailing\Classes\MailClass;
 
 class AcymRouter extends AcymRouterBase
 {
-    private $pagesNotSef = [];
-    private $paramsNotSef = [];
+    private $pagesNotSef;
+    private $paramsNotSef;
     private $separator = '-';
 
     public function __construct($app = null, $menu = null)

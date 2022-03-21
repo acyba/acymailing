@@ -99,6 +99,14 @@ class UserClass extends acymClass
                 );
                 foreach ($results['elements'] as $key => $oneElement) {
                     if (empty($results['elements'][$key]->cms_id)) continue;
+                    // Clean cms link on subscribers where CMS user no longer exists
+                    if (empty($userNames[$results['elements'][$key]->cms_id])) {
+                        $oneUser = $this->getOneById($results['elements'][$key]->id);
+                        $oneUser->cms_id = 0;
+                        $this->save($oneUser);
+                        $results['elements'][$key]->cms_id = 0;
+                        continue;
+                    }
                     $results['elements'][$key]->cms_username = $userNames[$results['elements'][$key]->cms_id]->cms_username;
                 }
             }
@@ -274,7 +282,7 @@ class UserClass extends acymClass
                 }
             }
         }
-        
+
         $where = '';
         $join = '';
         foreach ($automationHelpers as $index => $automationHelper) {
@@ -357,7 +365,7 @@ class UserClass extends acymClass
      */
     public function getUserSubscriptionById($userId, $key = 'id', $includeManagement = false, $visible = false, $needTranslation = false, $sortBySubscription = false)
     {
-        $query = 'SELECT list.id, list.translation, list.name, list.color, list.active, list.visible, list.description, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
+        $query = 'SELECT list.id, list.translation, list.name, list.display_name, list.color, list.active, list.visible, list.description, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
                 FROM #__acym_list AS list 
                 JOIN #__acym_user_has_list AS userlist 
                     ON list.id = userlist.list_id 

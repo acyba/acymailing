@@ -94,7 +94,10 @@ const acym_editorWysidMultilingual = {
     storeCurrentValues: function (saveStep = false) {
         // Make sure we're in a multilingual context
         let currentSubject = jQuery('input[name="mail[subject]"]').val();
-        if (acym_helper.empty(currentSubject)) return true;
+        if (!acym_helperModal.isMultilingualEdition) return true;
+        if (jQuery('#acym__wysid__edit__multilingual__creation').hasClass('is-hidden') && acym_helper.empty(currentSubject)) {
+            return true;
+        }
 
         jQuery('img[acym-data-lang="' + this.currentLanguage + '"]')
             .closest('.acym__wysid__edit__languages__selection')

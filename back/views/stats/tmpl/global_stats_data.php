@@ -95,9 +95,9 @@
             <?php } ?>
 		</div>
 		<div class="cell grid-x acym__content acym__stats__pie__chart">
-			<h2 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_OPENING_PLATFORMS') ?></h2>
+			<h2 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_OPENING_PLATFORMS'); ?></h2>
             <?php if (empty($data['devices'])) { ?>
-				<h4 class="cell acym__subtitle__stats text-center"><b><?php echo acym_translation('ACYM_EMAIL_NOT_OPEN_EXAMPLE_STATS') ?></b></h4>
+				<h4 class="cell acym__subtitle__stats text-center"><b><?php echo acym_translation('ACYM_EMAIL_NOT_OPEN_EXAMPLE_STATS'); ?></b></h4>
 				<div class="cell large-3 hide-for-small-only hide-for-medium-only"></div>
 				<div class="acym__stats__pie__one-chart cell large-3 medium-6">
                     <?php echo $data['example_devices_chart']; ?>
@@ -122,7 +122,7 @@
                 <?php echo acym_translation('ACYM_OPEN_TIME_CHART').acym_info('ACYM_OPEN_TIME_CHART_DESC'); ?>
 			</h2>
             <?php if ($data['empty_open']) { ?>
-				<h4 class="cell acym__subtitle__stats text-center"><b><?php echo acym_translation('ACYM_EMAIL_NOT_OPEN_EXAMPLE_STATS') ?></b></h4>
+				<h4 class="cell acym__subtitle__stats text-center"><b><?php echo acym_translation('ACYM_EMAIL_NOT_OPEN_EXAMPLE_STATS'); ?></b></h4>
             <?php } ?>
 			<div class="cell grid-x" id="acym__stats__global__open-time">
 				<input type="hidden" id="acym__stats__global__open-time__data" value="<?php echo acym_escape(json_encode($data['openTime'])); ?>">

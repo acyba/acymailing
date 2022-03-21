@@ -475,12 +475,11 @@ class plgAcymHikashop extends acymPlugin
                 $where[] = 'b.`product_created` >= '.acym_escapeDB($parameter->min_publish);
             }
 
-            if (!empty($parameter->filter) && !empty($email->params['lastgenerateddate'])) {
-                $condition = 'b.`product_created` > '.acym_escapeDB($email->params['lastgenerateddate']);
-                if ($parameter->filter == 'modify') {
-                    $condition .= ' OR b.`product_modified` > '.acym_escapeDB($email->params['lastgenerateddate']);
+            if (!empty($parameter->onlynew)) {
+                $lastGenerated = $this->getLastGenerated($email->id);
+                if (!empty($lastGenerated)) {
+                    $where[] = 'b.`product_created` > '.acym_escapeDB($lastGenerated);
                 }
-                $where[] = $condition;
             }
 
             $query .= ' WHERE ('.implode(') AND (', $where).')';
@@ -1314,10 +1313,12 @@ class plgAcymHikashop extends acymPlugin
     {
         if ($trigger == self::FOLLOWTRIGGER) {
             $orderStatus = acym_loadObjectList('SELECT `orderstatus_id` AS value, `orderstatus_name` AS text FROM #__hikashop_orderstatus ORDER BY `orderstatus_name`');
-            $multiselectOrderStatus = acym_selectMultiple($orderStatus,
+            $multiselectOrderStatus = acym_selectMultiple(
+                $orderStatus,
                 'followup[condition][order_status]',
                 !empty($followup->condition) && !empty($followup->condition['order_status']) ? $followup->condition['order_status'] : [],
-                ['class' => 'acym__select']);
+                ['class' => 'acym__select']
+            );
             $multiselectOrderStatus = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectOrderStatus.'</span>';
             $statusOrderStatus = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
                     $statusArray,

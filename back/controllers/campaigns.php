@@ -1419,6 +1419,51 @@ class CampaignsController extends acymController
         }
     }
 
+    public function duplicateFollowup()
+    {
+        //We get the id of follow-ups checked
+        $followupsSelected = acym_getVar('int', 'elements_checked');
+
+        $followupClass = new FollowupClass();
+        $mailClass = new MailClass();
+
+        foreach ($followupsSelected as $oneFollowup) {
+            // Duplicate the follow-up + list associated
+            $followUp = $followupClass->getOneByIdWithMails($oneFollowup);
+            $followupEmails = $followUp->mails;
+
+            unset($followUp->id, $followUp->creation_date, $followUp->list_id, $followUp->mails);
+            $followUp->name .= '_copy';
+            $followUp->active = 0;
+            $newfollowUpId = $followupClass->save($followUp);
+            if (empty($newfollowUpId)) {
+                acym_enqueueMessage(acym_translation('ACYM_FOLLOWUP_DUPLICATE_ERROR'), 'error');
+                $this->listing();
+
+                return;
+            }
+            $followUp->id = $newfollowUpId;
+
+            // Duplicate emails of the follow-up and attach them to the new followup
+            foreach ($followupEmails as $oneEmail) {
+                $mail = $mailClass->getOneById($oneEmail->id);
+                unset($mail->id, $mail->creation_date, $mail->creator_id, $mail->autosave);
+                $newMailId = $mailClass->save($mail);
+                if (empty($newMailId)) {
+                    acym_enqueueMessage(acym_translation('ACYM_FOLLOWUP_DUPLICATE_ERROR'), 'error');
+                    continue;
+                }
+                $followupData = [
+                    'id' => $newfollowUpId,
+                    'delay' => $oneEmail->delay,
+                    'delay_unit' => $oneEmail->delay_unit,
+                ];
+                $followupClass->saveDelaySettings($followupData, $newMailId);
+            }
+        }
+        $this->listing();
+    }
+
     /**
      * Needed for the steps system
      */
@@ -1662,6 +1707,7 @@ class CampaignsController extends acymController
             $currentCampaign = $campaignClass->getOneById($campaignId);
             $currentCampaign->sending_params['resendTarget'] = $resendTarget;
             $campaign->sending_params = $currentCampaign->sending_params;
+            acym_trigger('onAcymResendCampaign', [$currentCampaign->mail_id]);
         }
 
         $resultSave = $campaignClass->save($campaign);
@@ -1895,6 +1941,7 @@ class CampaignsController extends acymController
                 $currentCampaign = $campaignClass->getOneById($campaignID);
                 $currentCampaign->sending_params['resendTarget'] = $resendTarget;
                 $campaignClass->save($currentCampaign);
+                acym_trigger('onAcymResendCampaign', [$currentCampaign->mail_id]);
             }
 
             $status = $campaignClass->send($campaignID);

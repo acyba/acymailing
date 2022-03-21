@@ -17,7 +17,7 @@ $formName = acym_getModuleFormName();
 		  method="post"
 		  name="<?php echo $formName; ?>"
 		  id="<?php echo $formName; ?>"
-		  onsubmit="this.querySelector('input[type=submit]').click(); return false;">
+		  onsubmit="this.querySelector('input[type=submit]').click(); return false;" novalidate>
 		<fieldset class="adminform acy_user_info">
 			<legend><span><?php echo acym_translation('ACYM_USER_INFORMATION'); ?></span></legend>
 			<div id="acyuserinfo">
@@ -122,7 +122,7 @@ $formName = acym_getModuleFormName();
                                     ['id' => 'status'.$k++],
                                     true
                                 ).'</div>
-                                    <div class="list_name">'.$row->name.'</div>
+                                    <div class="list_name">'.(!empty($row->display_name) ? $row->display_name : $row->name).'</div>
                                 </div>';
                         }
                     } else {
@@ -135,7 +135,7 @@ $formName = acym_getModuleFormName();
                             }
 
                             $value = 0;
-                            $dropdownOpts[] = acym_selectOption($row->id, $row->name);
+                            $dropdownOpts[] = acym_selectOption($row->id, (!empty($row->display_name) ? $row->display_name : $row->name));
                             if ($row->status == 1) {
                                 $value = 1;
                                 $selectedIndex = $k;

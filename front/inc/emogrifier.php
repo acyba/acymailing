@@ -1768,7 +1768,7 @@ class acymEmogrifier
      * @throws \RuntimeException
      */
     public function handleXpathQueryWarnings( // @codingStandardsIgnoreLine
-        $type, $message, $file, $line, array $context
+        $type, $message, $file, $line, array $context = []
     ) {
         $selector = '';
         if (isset($context['cssRule']['selector'])) {

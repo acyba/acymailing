@@ -8,7 +8,7 @@ $userClass = new UserClass();
 $identifiedUser = $userClass->getOneByEmail($currentUserEmail);
 $config = acym_config();
 
-if (empty($identifiedUser) && $config->get('captcha', 'none') !== 'none') {
+if (empty($identifiedUser) && $config->get('captcha', 'none') !== 'none' && acym_level(ACYM_ESSENTIAL)) {
     echo '<div class="onefield fieldacycaptcha" id="field_captcha_'.$form->form_tag_name.'">';
     $captcha = new CaptchaHelper();
     echo $captcha->display($form->form_tag_name);

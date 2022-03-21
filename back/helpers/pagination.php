@@ -29,9 +29,19 @@ class PaginationHelper extends acymObject
 
         $class = $dynamics ? ' margin-bottom-1' : '';
 
+        if (acym_isAdmin() || ACYM_CMS === 'joomla') {
+            $classNavigationContainer = 'shrink grid-margin-x';
+            $classNavigation = 'small-auto medium-shrink';
+            $classDisplayNumber = 'shrink';
+        } else {
+            $classNavigationContainer = '';
+            $classNavigation = '';
+            $classDisplayNumber = 'align-center';
+        }
+
         $pagination = '<div class="pagination text-center cell grid-x'.$class.'" role="navigation" aria-label="Pagination">
-                        <div class="cell shrink margin-auto grid-x grid-margin-x align-center">
-                            <div class="small-auto medium-shrink pagination_container cell grid-x acym_vcenter align-center">';
+                        <div class="cell '.$classNavigationContainer.' margin-auto grid-x align-center">
+                            <div class="'.$classNavigation.' pagination_container cell grid-x acym_vcenter align-center">';
 
         // Turbo first button
         if (!$dynamics) {
@@ -47,7 +57,8 @@ class PaginationHelper extends acymObject
         $pagination .= '"><i class="acymicon-play_arrow rotate180deg pagination__i"></i></div>';
 
         $pagination .= '<div class="cell shrink pagination_border_left"></div>';
-        $pagination .= '<input type="number" name="'.$name.'" min="1" max="'.(empty($nbPages) ? 1 : $nbPages).'" value="'.$this->page.'" class="cell shrink pagination_input" id="acym_pagination'.$suffix.'">';
+        $pagination .= '<input type="number" name="'.$name.'" min="1" max="'.(empty($nbPages) ? 1
+                : $nbPages).'" value="'.$this->page.'" class="cell shrink pagination_input" id="acym_pagination'.$suffix.'">';
         $pagination .= '<p class="cell shrink pagination_text">'.acym_translation('ACYM_OUT_OF').' '.$nbPages.'</p>';
         $pagination .= '<div class="cell shrink pagination_border_right"></div>';
 
@@ -84,7 +95,7 @@ class PaginationHelper extends acymObject
                 '100' => '100',
                 '200' => '200',
             ];
-            $pagination .= '<div class="cell shrink grid-x acym_vcenter acym__pagination__pagenb">';
+            $pagination .= '<div class="cell '.$classDisplayNumber.' grid-x acym_vcenter acym__pagination__pagenb">';
 
             $paginationNumberEntries = '<div class="acym__select__pagination">'.acym_select(
                     $nbPagesOptions,
@@ -106,37 +117,6 @@ class PaginationHelper extends acymObject
     public function displayAjax($dynamics = false)
     {
         return $this->display('', '__ajax', $dynamics);
-    }
-
-    public function displayFront()
-    {
-        $nbPages = ceil($this->total / $this->nbPerPage);
-
-        $pagination = '';
-
-        if ($nbPages < 2) {
-            return $pagination;
-        }
-
-        $nextPage = $this->page + 1;
-        $previousPage = $this->page - 1;
-
-
-        $pagination .= '<div class="acym__front__pagination">';
-
-        if ($this->page != 1) {
-            $pagination .= '<span class="acym__front__pagination__element" onclick="acym_changePageFront(1)"><</span>';
-            $pagination .= '<span class="acym__front__pagination__element" onclick="acym_changePageFront('.$previousPage.')">'.$previousPage.'</span>';
-        }
-        $pagination .= '<b>'.$this->page.'</b>';
-        if ($this->page != $nbPages) {
-            $pagination .= '<span class="acym__front__pagination__element" onclick="acym_changePageFront('.$nextPage.')">'.$nextPage.'</span>';
-            $pagination .= '<span class="acym__front__pagination__element" onclick="acym_changePageFront('.$nbPages.')">></span>';
-        }
-
-        $pagination .= '</div>';
-
-        return $pagination;
     }
 
     public function getListLimit()

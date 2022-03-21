@@ -159,4 +159,10 @@ class plgAcymSendinblue extends acymPlugin
 
         $this->users->synchronizeExistingUsers();
     }
+
+    public function onAcymResendCampaign($mailId)
+    {
+        if ($this->config->get('mailer_method') != self::SENDING_METHOD_ID) return true;
+        $this->users->removeUserFromList($mailId);
+    }
 }

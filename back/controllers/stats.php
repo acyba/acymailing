@@ -19,6 +19,7 @@ class StatsController extends acymController
     var $selectedMailIds = [];
     var $multiLanguageMailAdded = [];
     var $generatedMailAdded = [];
+    var $defaulttask = 'globalStats';
 
     public function __construct()
     {
@@ -28,12 +29,18 @@ class StatsController extends acymController
         $this->loadScripts = [
             'all' => ['datepicker', 'thumbnail'],
         ];
-        acym_session();
-        if (acym_getVar('string', 'ctrl', 'dashboard') != 'dashboard' && acym_getVar('string', 'task', '') != 'setDataForChartLine') $this->storeAndGetTask();
     }
 
-    private function storeAndGetTask()
+    public function call($task)
     {
+        $task = $this->storeAndGetTask($task);
+        parent::call($task);
+    }
+
+    private function storeAndGetTask($task)
+    {
+        acym_session();
+
         $tasksToStore = [
             'globalStats',
             'detailedStats',
@@ -43,34 +50,22 @@ class StatsController extends acymController
         ];
 
         if ($this->taskCalled == 'listing' && empty($_SESSION['stats_task'])) {
-            $this->globalStats();
-            $this->preventCallTask = true;
-
-            return true;
+            return 'globalStats';
         }
 
         if ((empty($this->taskCalled) || $this->taskCalled == 'listing') && !empty($_SESSION['stats_task']) && in_array($_SESSION['stats_task'], $tasksToStore)) {
-            $this->{$_SESSION['stats_task']}();
-            $this->preventCallTask = true;
-
-            return true;
+            return $_SESSION['stats_task'];
         }
 
         if (!empty($this->taskCalled) && !in_array($this->taskCalled, $tasksToStore) && method_exists($this, $this->taskCalled)) {
-            $this->{$this->taskCalled}();
-            $this->preventCallTask = true;
+            return $this->taskCalled;
         } elseif (!empty($this->taskCalled) && $this->taskCalled != 'listing' && in_array($this->taskCalled, $tasksToStore)) {
             $_SESSION['stats_task'] = $this->taskCalled;
+            return $task;
         } elseif (!empty($_SESSION['stats_task']) && method_exists($this, $_SESSION['stats_task'])) {
-            $this->{$_SESSION['stats_task']}();
-            $this->preventCallTask = true;
-
-            return true;
+            return $_SESSION['stats_task'];
         } else {
-            $this->{$this->defaulttask}();
-            $this->preventCallTask = true;
-
-            return true;
+            return $this->defaulttask;
         }
     }
 
@@ -104,7 +99,7 @@ class StatsController extends acymController
         if ($needMailId && empty($data['selectedMailid'])) {
             $this->globalStats();
 
-            return;
+            return false;
         }
 
         $mailStatClass = new MailStatClass();
@@ -142,6 +137,8 @@ class StatsController extends acymController
         }
 
         acym_arrayToInteger($this->selectedMailIds);
+
+        return true;
     }
 
     public function globalStats()
@@ -186,7 +183,7 @@ class StatsController extends acymController
 
         $data = [];
 
-        $this->prepareDefaultPageInfo($data, true);
+        if(!$this->prepareDefaultPageInfo($data, true)) return;
 
         $this->prepareClickStats($data);
         if (acym_isMultilingual() && count($this->selectedMailIds) == 1) $this->prepareMultilingualMails($data);
@@ -201,7 +198,7 @@ class StatsController extends acymController
 
         $data = [];
 
-        $this->prepareDefaultPageInfo($data, true);
+        if(!$this->prepareDefaultPageInfo($data, true)) return;
 
         $this->prepareLinksDetailsListing($data);
         if (acym_isMultilingual() && count($this->selectedMailIds) == 1) $this->prepareMultilingualMails($data);
@@ -216,7 +213,7 @@ class StatsController extends acymController
 
         $data = [];
 
-        $this->prepareDefaultPageInfo($data, true);
+        if(!$this->prepareDefaultPageInfo($data, true)) return;
 
         $this->prepareUserLinksDetailsListing($data);
         if (acym_isMultilingual() && count($this->selectedMailIds) == 1) $this->prepareMultilingualMails($data);
@@ -266,7 +263,7 @@ class StatsController extends acymController
 
     public function exportUserLinksDetails()
     {
-        $this->prepareDefaultPageInfo($data, true);
+        if(!$this->prepareDefaultPageInfo($data, true)) return;
 
         $this->prepareUserLinksDetailsListing($data);
         $exportHelper = new ExportHelper();
@@ -327,7 +324,7 @@ class StatsController extends acymController
 
     public function exportLinksDetails()
     {
-        $this->prepareDefaultPageInfo($data, true);
+        if(!$this->prepareDefaultPageInfo($data, true)) return;
 
         $this->prepareLinksDetailsListing($data);
         $exportHelper = new ExportHelper();
@@ -411,7 +408,10 @@ class StatsController extends acymController
         $allLanguages = acym_getLanguages();
 
         foreach ($translatedEmails as $email) {
-            if (!empty($email->language)) $data['emailTranslations'][$email->id] = empty($allLanguages[$email->language]) ? $email->language : $allLanguages[$email->language]->name;
+            if (!empty($email->language)) {
+                $data['emailTranslations'][$email->id] = empty($allLanguages[$email->language]) ? $email->language
+                    : $allLanguages[$email->language]->name;
+            }
         }
     }
 
@@ -708,10 +708,18 @@ class StatsController extends acymController
         $newEnd = acym_date(acym_getVar('string', 'end'), 'Y-m-d H:i:s');
         $mailIds = acym_getVar('int', 'id');
 
-        $mailClass = new MailClass();
-        if (!empty($mailIds)) $mailIds = $mailClass->getAutomaticMailIds($mailIds);
+        if (empty($mailIds)) {
+            $mailIds = [];
+        }
 
-        if (!empty($mailIds) && !is_array($mailIds)) $mailIds = [$mailIds];
+        $mailClass = new MailClass();
+        if (!empty($mailIds)) {
+            $mailIds = $mailClass->getAutomaticMailIds($mailIds);
+        }
+
+        if (!empty($mailIds) && !is_array($mailIds)) {
+            $mailIds = [$mailIds];
+        }
 
         if ($newStart >= $newEnd) {
             echo 'error';
@@ -719,7 +727,6 @@ class StatsController extends acymController
         }
 
         $statsCampaignSelected = new \stdClass();
-
         $this->prepareLineChart($statsCampaignSelected, $mailIds, $newStart, $newEnd);
 
         echo @acym_lineChart('', $statsCampaignSelected->month, $statsCampaignSelected->day, $statsCampaignSelected->hour, true);

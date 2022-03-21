@@ -100,11 +100,11 @@ const acym_editorWysidContextModal = {
                 jQuery(this).off('change').on('change', function (event) {
                     $table.css('padding-' + jQuery(this).attr('data-block-padding'), jQuery(this).val() + 'px');
                     if (jQuery(this).attr('data-block-padding') === 'top' || jQuery(this).attr('data-block-padding') === 'bottom') {
-                        $selector.css(
-                            'height',
-                            $table.height() + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, '')) + parseInt($table.css('padding-bottom')
-                                                                                                                            .replace(/[^-\d\.]/g, '')) + 'px'
-                        );
+                        $selector.css('height', $table.height()
+                                                + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, ''))
+                                                + parseInt($table.css('padding-bottom')
+                                                                 .replace(/[^-\d\.]/g, ''))
+                                                + 'px');
                     }
                 });
             });
@@ -171,15 +171,19 @@ const acym_editorWysidContextModal = {
         });
     },
     setImageContextModal: function ($img) {
-        jQuery('.acym__wysid__media__inserted--selected').removeClass('acym__wysid__media__inserted--selected');
+        let insertedImage = jQuery('.acym__wysid__media__inserted--selected');
+        insertedImage.removeClass('acym__wysid__media__inserted--selected');
         $img.addClass('acym__wysid__media__inserted--selected');
         let $contextImage = jQuery('#acym__wysid__context__image');
         let $alignments = jQuery('.acym__wysid__context__image__align');
         let $linkInput = jQuery('#acym__wysid__context__image__link');
         let $urlInput = jQuery('#acym__wysid__context__image__url');
+        let $altInput = jQuery('#acym__wysid__context__image__alt');
+        let $titleInput = jQuery('#acym__wysid__context__image__title');
+        let $captionInput = jQuery('#acym__wysid__context__image__caption');
 
         $alignments.css('background-color', 'inherit');
-        jQuery('[data-float="' + jQuery('.acym__wysid__media__inserted--selected').css('float') + '"]').css('background-color', '');
+        jQuery('[data-float="' + insertedImage.css('float') + '"]').css('background-color', '');
 
         $alignments.each(function () {
             jQuery(this).off('click').on('click', function () {
@@ -194,10 +198,10 @@ const acym_editorWysidContextModal = {
             });
         });
 
-        let $aTag = jQuery('.acym__wysid__media__inserted--selected').closest('.acym__wysid__link__image');
+        let $aTag = $img.closest('.acym__wysid__link__image');
 
         $linkInput.val($aTag.length > 0 ? $aTag.attr('href') : '');
-        $urlInput.val(jQuery('.acym__wysid__media__inserted--selected').attr('src'));
+        $urlInput.val($img.attr('src'));
 
         jQuery('#acym__wysid__context__image__change').off('click').on('click', function () {
             let $selectedImg = jQuery('.acym__wysid__media__inserted--selected');
@@ -212,19 +216,54 @@ const acym_editorWysidContextModal = {
             jQuery('.acym__wysid__media__inserted--selected').attr('src', this.value);
         });
 
-        $linkInput.off('keyup').on('keyup', function () {
-            let $link = jQuery('.acym__wysid__media__inserted--selected').closest('.acym__wysid__link__image');
-            if ($link.length > 0 && jQuery(this).val() === '') {
-                $link.replaceWith(jQuery('.acym__wysid__media__inserted--selected')[0].outerHTML);
-            } else if ($link.length === 0 && jQuery(this).val() === '') {
-                return true;
-            }
-            if ($link.length === 0) {
-                jQuery('.acym__wysid__media__inserted--selected')
-                    .replaceWith('<a href="' + jQuery(this).val() + '" target="_blank" class="acym__wysid__link__image">' + jQuery(
-                        '.acym__wysid__media__inserted--selected')[0].outerHTML + '</a>');
+        // Joomla 4
+        if ($altInput.length !== 0) {
+            $altInput.val($img.attr('alt'));
+            $altInput.off('keyup').on('keyup', function () {
+                jQuery('.acym__wysid__media__inserted--selected').attr('alt', this.value);
+            });
+
+            $titleInput.val($img.attr('title'));
+            $titleInput.off('keyup').on('keyup', function () {
+                jQuery('.acym__wysid__media__inserted--selected').attr('title', this.value);
+            });
+
+            let $captionElement = $img.closest('div').find('.acym__wysid__media_caption');
+            if ($captionElement.length === 1) {
+                $captionInput.val($captionElement.text());
             } else {
-                $link.attr('href', jQuery(this).val());
+                $captionInput.val('');
+            }
+            $captionInput.off('keyup').on('keyup', function () {
+                let $selectedImg = jQuery('.acym__wysid__media__inserted--selected');
+                let $captionElement = $selectedImg.closest('div').find('.acym__wysid__media_caption');
+                if (this.value.length > 0) {
+                    if ($captionElement.length === 1) {
+                        $captionElement.text(this.value);
+                    } else {
+                        $selectedImg.closest('div').append(acym_editorWysidContextModal.getImageCaptionDiv(this.value));
+                    }
+                } else if ($captionElement.length === 1) {
+                    $captionElement.remove();
+                }
+            });
+        }
+
+        $linkInput.off('keyup').on('keyup', function () {
+            let $selectedImg = jQuery('.acym__wysid__media__inserted--selected');
+            let $link = $selectedImg.closest('.acym__wysid__link__image');
+            if (this.value.length > 0) {
+                if ($link.length === 1) {
+                    $link.attr('href', this.value);
+                } else {
+                    $selectedImg.replaceWith('<a href="'
+                                             + this.value
+                                             + '" target="_blank" class="acym__wysid__link__image">'
+                                             + $selectedImg.prop('outerHTML')
+                                             + '</a>');
+                }
+            } else if ($link.length === 1) {
+                $link.replaceWith($selectedImg.prop('outerHTML'));
             }
         });
 
@@ -247,6 +286,12 @@ const acym_editorWysidContextModal = {
             acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
             acym_editorWysidVersioning.setUndoAndAutoSave();
         });
+    },
+    getImageCaptionDiv: function (valueCaption) {
+        return '<div class="acym__wysid__media_caption" '
+               + 'style="width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display:block;">'
+               + acym_helper.escape(valueCaption)
+               + '</div>';
     },
     setTextContextOptions: function () {
         jQuery('.acym__wysid__tinymce--text').off('click').on('click', function (event) {

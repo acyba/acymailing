@@ -320,9 +320,35 @@
 				   id="acym__wysid__context__image__url"
 				   placeholder="https://www.example.com/image.png"
 				   class="cell small-9">
-			<button type="button" class="cell shrink button button-secondary margin-top-1" id="acym__wysid__context__image__change"><?php echo acym_translation(
-                    'ACYM_MEDIA_MANAGE'
-                ); ?></button>
+            <?php if ('joomla' === ACYM_CMS && ACYM_J40) { ?>
+				<label for="acym__wysid__context__image__alt" class="cell small-3">
+                    <?php echo acym_translation('ACYM_IMAGE_ALT').acym_info('ACYM_IMAGE_ALT_DESCRIPTION'); ?>
+				</label>
+				<input type="text"
+					   name="image_alt"
+					   value=""
+					   id="acym__wysid__context__image__alt"
+					   class="cell small-9">
+				<label for="acym__wysid__context__image__title" class="cell small-3">
+                    <?php echo acym_translation('ACYM_IMAGE_TITLE').acym_info('ACYM_IMAGE_TITLE_DESCRIPTION'); ?>
+				</label>
+				<input type="text"
+					   name="image_title"
+					   value=""
+					   id="acym__wysid__context__image__title"
+					   class="cell small-9">
+				<label for="acym__wysid__context__image__caption" class="cell small-3">
+                    <?php echo acym_translation('ACYM_CAPTION'); ?>
+				</label>
+				<input type="text"
+					   name="image_caption"
+					   value=""
+					   id="acym__wysid__context__image__caption"
+					   class="cell small-9">
+            <?php } ?>
+			<button type="button" class="cell shrink button button-secondary margin-top-1" id="acym__wysid__context__image__change">
+                <?php echo acym_translation('ACYM_MEDIA_MANAGE'); ?>
+			</button>
 		</div>
 		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
             <?php echo acym_translation('ACYM_LINK'); ?><i class="acymicon-keyboard_arrow_up"></i>

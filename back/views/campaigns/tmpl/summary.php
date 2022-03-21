@@ -133,7 +133,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 					</div>
                     <?php if (!empty($data['segment'])) { ?>
 						<div class="cell grid-x acym__campaign__summary__section margin-top-1">
-							<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SEGMENT') ?></h5>
+							<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SEGMENT'); ?></h5>
 							<div class="cell auto acym__campaign__summary__modify">
 								<a href="<?php echo acym_completeLink(
                                     $campaignController.'&task=edit&step=segment&edition=1&id='.intval($data['campaignInformation']->id)
@@ -192,7 +192,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 						<p class="cell large-2 medium-3"><b><?php echo acym_translation('ACYM_TRACKING'); ?>:</b></p>
 						<p class="cell auto"><?php echo acym_translation(
                                 $data['campaignInformation']->tracking ? 'ACYM_THIS_CAMPAIGN_BEING_TRACKED' : 'ACYM_THIS_CAMPAIGN_NOT_BEING_TRACKED'
-                            ) ?></p>
+                            ); ?></p>
 					</div>
 				</div>
 				<div class="cell grid-x acym__campaign__summary__bottom-controls acym__campaign__summary__section">
