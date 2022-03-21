@@ -96,7 +96,7 @@ const acym_helperListing = {
                     confirmMessage = ACYM_JS_TXT.ACYM_ARE_YOU_SURE;
             }
 
-            if ('duplicate' == action || acym_helper.confirm(confirmMessage)) {
+            if ('duplicate' == action || 'duplicateFollowup' == action || acym_helper.confirm(confirmMessage)) {
                 let form = jQuery(this).closest('#acym_form');
                 let ctrl = jQuery(this).attr('data-ctrl');
                 if (ctrl !== undefined) {

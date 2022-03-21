@@ -213,3 +213,42 @@ div.modal {
     opacity: 0.8;
     filter: alpha(opacity=80);
 }
+
+.acym_invalid_field {
+    border: 1px solid #9d261d !important;
+    background: #f2dede !important;
+}
+
+.acym__field__error__block {
+    display: none;
+}
+
+.onefield {
+    position: relative;
+
+    .acym__field__error__block {
+        position: absolute;
+        width: 170px;
+        background-color: #ffffff;
+        padding: 5px 10px;
+        border: 1px solid #333333;
+        border-radius: 3px;
+        z-index: 10;
+    }
+
+    &:hover {
+        .acym__field__error__block__active {
+            display: block;
+        }
+    }
+}
+
+.acym__subscription__form__footer {
+    .onefield {
+        &:hover {
+            .acym__field__error__block__active {
+                bottom: calc(100% + 10px);
+            }
+        }
+    }
+}

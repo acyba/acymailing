@@ -24,82 +24,81 @@
 		</div>
 	</div>
 <?php } ?>
-
-<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
-	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_CAPTCHA'); ?></div>
-	<div class="grid-x grid-margin-x margin-y">
-		<div class="cell medium-6 grid-x">
-			<label class="cell large-3" for="security_key">
-                <?php echo acym_translation('ACYM_CONFIGURATION_CAPTCHA').acym_info('ACYM_CAPTCHA_DESC'); ?>
-			</label>
-			<div class="cell large-9">
-                <?php
-                $captchaOptions = array_replace(
-                    [
-                        'none' => acym_translation('ACYM_NONE'),
-                        'acym_ireCaptcha' => acym_translation('ACYM_CAPTCHA_INVISIBLE'),
-                    ],
-                    acym_getCmsCaptcha()
-                );
-                echo acym_select(
-                    $captchaOptions,
-                    'config[captcha]',
-                    $this->config->get('captcha', 'none'),
-                    [
+<?php if (!empty($data['labelDropdownCaptcha']) && isset($data['level']) && isset($data['captchaOptions'])) { ?>
+	<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
+		<div class="acym__title acym__title__secondary"><?php echo $data['labelDropdownCaptcha'] ?></div>
+		<div class="grid-x grid-margin-x margin-y">
+			<div class="cell medium-6 grid-x">
+				<label class="cell large-3" for="security_key">
+                    <?php echo acym_translation('ACYM_CONFIGURATION_CAPTCHA').acym_info('ACYM_CAPTCHA_DESC'); ?>
+				</label>
+				<div class="cell large-9">
+                    <?php
+                    $attribs = [
                         'class' => 'acym__select',
                         'data-toggle-select' => '{"acym_ireCaptcha":".acym__config__captcha__recaptcha"}',
-                    ]
-                );
-                ?>
+                    ];
+                    // To disable Captcha dropdown
+                    if (!$data['level']) $attribs['disabled'] = '';
+
+                    echo acym_select(
+                        $data['captchaOptions'],
+                        'config[captcha]',
+                        $this->config->get('captcha', 'none'),
+                        $attribs
+                    );
+                    ?>
+				</div>
 			</div>
-		</div>
-		<div class="cell medium-6 grid-x">
-			<label class="cell large-3" for="security_key">
-                <?php echo acym_translation('ACYM_SECURITY_KEY').acym_info('ACYM_SECURITY_KEY_DESC'); ?>
-			</label>
-			<input class="cell large-9" id="security_key" type="text" name="config[security_key]" value="<?php echo acym_escape($this->config->get('security_key')); ?>" />
-		</div>
-		<div class="cell medium-6 grid-x acym__config__captcha__recaptcha">
-			<label class="cell large-3" for="recaptcha_sitekey">
-                <?php
-                echo acym_translation('ACYM_SITE_KEY');
-                echo acym_tooltip(
-                    '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
-                    acym_translation('ACYM_RECAPTCHA_KEY_DESC'),
-                    'acym__tooltip__info',
-                    '',
-                    'https://www.google.com/recaptcha/admin'
-                );
-                ?>
-			</label>
-			<input class="cell large-9"
-				   id="recaptcha_sitekey"
-				   type="text"
-				   name="config[recaptcha_sitekey]"
-				   value="<?php echo acym_escape($this->config->get('recaptcha_sitekey')); ?>" />
-		</div>
-		<div class="cell medium-6 grid-x acym__config__captcha__recaptcha">
-			<label class="cell large-3" for="recaptcha_secretkey">
-                <?php
-                echo acym_translation('ACYM_SECRET_KEY');
-                echo acym_tooltip(
-                    '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
-                    acym_translation('ACYM_RECAPTCHA_KEY_DESC'),
-                    'acym__tooltip__info',
-                    '',
-                    'https://www.google.com/recaptcha/admin'
-                );
-                ?>
-			</label>
-			<input class="cell large-9"
-				   id="recaptcha_secretkey"
-				   type="text"
-				   name="config[recaptcha_secretkey]"
-				   value="<?php echo acym_escape($this->config->get('recaptcha_secretkey')); ?>" />
+            <?php if ($data['level']) { ?>
+				<div class="cell medium-6 grid-x">
+					<label class="cell large-3" for="security_key">
+                        <?php echo acym_translation('ACYM_SECURITY_KEY').acym_info('ACYM_SECURITY_KEY_DESC'); ?>
+					</label>
+					<input class="cell large-9" id="security_key" type="text" name="config[security_key]" value="<?php echo acym_escape($this->config->get('security_key')); ?>" />
+				</div>
+				<div class="cell medium-6 grid-x acym__config__captcha__recaptcha">
+					<label class="cell large-3" for="recaptcha_sitekey">
+                        <?php
+                        echo acym_translation('ACYM_SITE_KEY');
+                        echo acym_tooltip(
+                            '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+                            acym_translation('ACYM_RECAPTCHA_KEY_DESC'),
+                            'acym__tooltip__info',
+                            '',
+                            'https://www.google.com/recaptcha/admin'
+                        );
+                        ?>
+					</label>
+					<input class="cell large-9"
+						   id="recaptcha_sitekey"
+						   type="text"
+						   name="config[recaptcha_sitekey]"
+						   value="<?php echo acym_escape($this->config->get('recaptcha_sitekey')); ?>" />
+				</div>
+				<div class="cell medium-6 grid-x acym__config__captcha__recaptcha">
+					<label class="cell large-3" for="recaptcha_secretkey">
+                        <?php
+                        echo acym_translation('ACYM_SECRET_KEY');
+                        echo acym_tooltip(
+                            '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+                            acym_translation('ACYM_RECAPTCHA_KEY_DESC'),
+                            'acym__tooltip__info',
+                            '',
+                            'https://www.google.com/recaptcha/admin'
+                        );
+                        ?>
+					</label>
+					<input class="cell large-9"
+						   id="recaptcha_secretkey"
+						   type="text"
+						   name="config[recaptcha_secretkey]"
+						   value="<?php echo acym_escape($this->config->get('recaptcha_secretkey')); ?>" />
+				</div>
+            <?php } ?>
 		</div>
 	</div>
-</div>
-
+<?php } ?>
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
 	<div class="acym__title acym__title__secondary grid-x">
         <?php echo acym_translation('ACYM_EMAIL_VERIFICATION'); ?>

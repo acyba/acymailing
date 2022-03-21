@@ -237,6 +237,24 @@ class ConfigurationController extends acymController
     {
         $data['acychecker_installed'] = acym_isAcyCheckerInstalled();
         $data['acychecker_get_link'] = ACYM_ACYCHECKER_WEBSITE.'?utm_source=acymailing_plugin&utm_campaign=get_acychecker&utm_medium=button_configuration_security';
+
+        $data['level'] = acym_level(ACYM_ESSENTIAL);
+        $data['labelDropdownCaptcha'] = acym_translation('ACYM_CONFIGURATION_CAPTCHA');
+
+        $captchaOptions = array_replace(
+            [
+                'none' => acym_translation('ACYM_NONE'),
+                'acym_ireCaptcha' => acym_translation('ACYM_CAPTCHA_INVISIBLE'),
+            ],
+            acym_getCmsCaptcha()
+        );
+
+        $data['captchaOptions'] = $captchaOptions;
+
+        if (!acym_level(ACYM_ESSENTIAL)) {
+            $data['labelDropdownCaptcha'] .= ' '.acym_translation('ACYM_PRO_VERSION_ONLY');
+            $data['captchaOptions'] = [];
+        }
     }
 
     private function prepareDataTab(&$data)
@@ -1009,7 +1027,7 @@ class ConfigurationController extends acymController
         return true;
     }
 
-    private function attachLicenseOnUpdateMe($licenseKey = null)
+    public function attachLicenseOnUpdateMe($licenseKey = null)
     {
         //__START__demo_
         if (!ACYM_PRODUCTION) {
@@ -1217,7 +1235,7 @@ class ConfigurationController extends acymController
         return $result;
     }
 
-    private function displayMessage($message)
+    public function displayMessage($message, $ajax = false)
     {
         $correspondences = [
             'WEBSITE_NOT_FOUND' => ['message' => 'ACYM_WEBSITE_NOT_FOUND', 'type' => 'error'],
@@ -1235,17 +1253,32 @@ class ConfigurationController extends acymController
             'CRON_NOT_SAVED' => ['message' => 'ACYM_AUTOMATIC_SEND_PROCESS_NOT_ENABLED', 'type' => 'error'],
         ];
 
-        if (empty($message) || empty($correspondences[$message])) {
-            acym_enqueueMessage(acym_translation('ACYM_ERROR_ON_CALL_ACYBA_WEBSITE'), 'error');
+        if (!$ajax) {
+            if (empty($message) || empty($correspondences[$message])) {
+                acym_enqueueMessage(acym_translation('ACYM_ERROR_ON_CALL_ACYBA_WEBSITE'), 'error');
 
-            if (!empty($message)) acym_enqueueMessage(acym_translationSprintf('ACYM_CURL_ERROR_MESSAGE', $message), 'error');
+                if (!empty($message)) acym_enqueueMessage(acym_translationSprintf('ACYM_CURL_ERROR_MESSAGE', $message), 'error');
 
-            return false;
+                return false;
+            }
+
+            acym_enqueueMessage(acym_translation($correspondences[$message]['message']), $correspondences[$message]['type']);
+
+            return $correspondences[$message]['type'] == 'info';
+        } else {
+            if (empty($message) || empty($correspondences[$message])) {
+                $response = ['message' => acym_translation('ACYM_ERROR_ON_CALL_ACYBA_WEBSITE'), 'type' => 'error'];
+
+                if (!empty($message)) $response['message'] = acym_translationSprintf('ACYM_CURL_ERROR_MESSAGE', $message);
+
+                return $response;
+            }
+
+            $response = $correspondences[$message];
+            $response['message'] = acym_translation($response['message']);
+
+            return $response;
         }
-
-        acym_enqueueMessage(acym_translation($correspondences[$message]['message']), $correspondences[$message]['type']);
-
-        return $correspondences[$message]['type'] == 'info';
     }
 
     public function multilingual()

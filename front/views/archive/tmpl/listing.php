@@ -41,7 +41,7 @@
                     ).'</p>';
             }
 
-            echo $data['pagination']->displayFront();
+            echo $data['pagination']->display('archive');
             acym_formOptions(true, 'listing', null, '', false);
             ?>
 

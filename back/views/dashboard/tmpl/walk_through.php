@@ -7,9 +7,9 @@
 					<h2 class="acym__walkthrough__title__subwelcome cell"><?php echo acym_translation('ACYM_WALK_THROUGH_STEPS_TO_GET_STARTED'); ?></h2>
 				</div>
             <?php } ?>
-			<div class="cell xlarge-3 medium-1"></div>
+			<div class="cell xxlarge-3 xlarge-2 medium-1"></div>
 
-			<div class="acym__content cell text-center grid-x xlarge-6 medium-10 small-12 acym__walkthrough__content text-center align-center">
+			<div class="acym__content cell text-center grid-x xxlarge-6 xlarge-8 medium-10 small-12 acym__walkthrough__content text-center align-center">
                 <?php if ('subscribe' !== $data['step']) { ?>
 					<span class="acy_button_submit acym__color__dark-gray"
 						  id="acym__walkthrough__skip"

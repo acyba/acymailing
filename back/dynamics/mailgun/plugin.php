@@ -41,7 +41,7 @@ class plgAcymMailgun extends acymPlugin
 				<label class="cell large-3 medium-4 margin-right-1">
                     <?php
                     echo acym_translationSprintf('ACYM_SENDING_METHOD_API_REGION', self::SENDING_METHOD_NAME);
-                    echo acym_info(acym_translationSprintf('ACYM_SENDING_METHOD_API_REGION_DESC', self::SENDING_METHOD_NAME)) ?>
+                    echo acym_info(acym_translationSprintf('ACYM_SENDING_METHOD_API_REGION_DESC', self::SENDING_METHOD_NAME)); ?>
 				</label>
                 <?php
                 echo acym_radio(

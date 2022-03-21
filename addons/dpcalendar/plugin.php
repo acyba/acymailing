@@ -460,7 +460,7 @@ class plgAcymDpcalendar extends acymPlugin
         if (!empty($element->url)) $varFields['{url}'] = '<a target="_blank" href="'.$element->url.'">'.$element->url.'</a>';
         if (in_array('url', $tag->display) && !empty($element->url)) {
             $customFields[] = [
-                $varFields['{url}'] = '',
+                $varFields['{url}'],
                 acym_translation('ACYM_URL'),
             ];
         }

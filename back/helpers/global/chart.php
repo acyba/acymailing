@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Deprecated see acym_lineChart
- */
-function acym_line_chart($id, $dataMonth, $dataDay, $dataHour)
-{
-    return acym_lineChart($id, $dataMonth, $dataDay, $dataHour);
-}
-
 function acym_lineChart($id, $dataMonth, $dataDay, $dataHour, $ajax = false)
 {
     acym_initializeChart();
@@ -192,7 +184,7 @@ function acym_lineChart($id, $dataMonth, $dataDay, $dataHour, $ajax = false)
                     	for	(var i = 0; i < chartLineLabels.length; i++){
                     		chartLineLabels[i].getElementsByTagName("span")[0].style.textDecoration = "none";
                     	}
-                        if(by == "month"){
+                        if(by === "month"){
                             var labels = ["'.acym_translation('ACYM_SENT').'", '.implode(',', $month).'];
                             var dataOpen = ["0", '.implode(',', $openMonth).'];
                             var dataClick = ["0", '.implode(',', $clickMonth).'];

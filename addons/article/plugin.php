@@ -23,6 +23,7 @@ class plgAcymArticle extends acymPlugin
                 'intro' => ['ACYM_INTRO_TEXT', true],
                 'full' => ['ACYM_FULL_TEXT', false],
                 'cat' => ['ACYM_CATEGORY', false],
+                'tags' => ['ACYM_TAGS', false],
                 'author' => ['ACYM_AUTHOR', false],
                 'publishing' => ['ACYM_PUBLISHING_DATE', false],
                 'readmore' => ['ACYM_READ_MORE', false],
@@ -44,6 +45,11 @@ class plgAcymArticle extends acymPlugin
                         'author' => 'ACYM_ONLY_AUTHORS_ELEMENTS',
                         'hide' => 'ACYM_DONT_SHOW',
                     ],
+                ],
+                'itemid' => [
+                    'type' => 'text',
+                    'label' => 'ACYM_MENU_ID',
+                    'value' => '',
                 ],
             ];
         }
@@ -191,6 +197,12 @@ class plgAcymArticle extends acymPlugin
                 'name' => 'language',
             ],
             [
+                'title' => 'ACYM_ONLY_FEATURED',
+                'type' => 'boolean',
+                'name' => 'featured',
+                'default' => false,
+            ],
+            [
                 'title' => 'ACYM_ORDER_BY',
                 'type' => 'select',
                 'name' => 'order',
@@ -327,6 +339,10 @@ class plgAcymArticle extends acymPlugin
                 $where[] = 'element.`publish_up` >= '.acym_escapeDB($parameter->min_publish);
             }
 
+            if (!empty($parameter->featured)) {
+                $where[] = 'element.featured = 1';
+            }
+
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);
                 if (!empty($lastGenerated)) {
@@ -392,7 +408,14 @@ class plgAcymArticle extends acymPlugin
             $link = ContentHelperRoute::getArticleRoute($completeId, $element->catid, $this->getLanguage($element->language, true));
         }
 
-        $link = $this->finalizeLink($link, $element->access === '1' && $element->category_access === '1');
+        $link = $this->finalizeLink($link, intval($element->access) === 1 && intval($element->category_access) === 1);
+
+        //Get the related menu item if specified
+        $menuId = $this->getParam('itemid');
+        if (!empty($menuId)) {
+            $link .= (strpos($link, '?') ? '&' : '?').'Itemid='.intval($menuId);
+        }
+
         $varFields['{link}'] = $link;
 
         $title = '';
@@ -469,6 +492,27 @@ class plgAcymArticle extends acymPlugin
             $customFields[] = [
                 $varFields['{cat}'],
                 acym_translation('ACYM_CATEGORY'),
+            ];
+        }
+
+        $tags = acym_loadObjectList(
+            'SELECT tags.id, tags.title, tags.alias 
+            FROM #__tags AS tags 
+            JOIN #__contentitem_tag_map AS map ON tags.id = map.tag_id  
+            WHERE map.type_alias = "com_content.article"
+                  AND map.content_item_id = '.intval($tag->id)
+        );
+        foreach ($tags as $i => $oneTag) {
+            $tags[$i] = '<a href="'.$this->finalizeLink('index.php?option=com_tags&view=tag&id='.$oneTag->id.':'.$oneTag->alias).'" target="_blank">'.acym_escape(
+                    $oneTag->title
+                ).'</a>';
+        }
+        $varFields['{tags}'] = implode(', ', $tags);
+
+        if (in_array('tags', $tag->display) && !empty($varFields['{tags}'])) {
+            $customFields[] = [
+                $varFields['{tags}'],
+                acym_translation('ACYM_TAGS'),
             ];
         }
 

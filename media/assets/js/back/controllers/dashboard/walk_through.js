@@ -1,5 +1,7 @@
 jQuery(document).ready(function ($) {
     function Init() {
+        attachLicence();
+        activateCron();
         setSendingMethodSwitch();
         setReplyToInformation();
         setSubscribeUser();
@@ -150,6 +152,68 @@ jQuery(document).ready(function ($) {
                 e.preventDefault();
                 return false;
             }
+        });
+    }
+
+    function attachLicence() {
+        $('#acym__walk_through_license__button__license').on('click', function () {
+            let $iconWait = jQuery('#acym__walkthrough__step_license__wait_attach_license_icon');
+            $iconWait.removeClass('is-hidden');
+
+            const data = {
+                ctrl: 'dashboard',
+                task: 'stepLicenseAttachLicense',
+                licenseKey: jQuery('#acym__configuration__license-key').val()
+            };
+
+            acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+                let labelLicenseStatus = document.getElementById('acym__walk_through_license__licenseStatus');
+
+                if (!response.error) {
+                    $('#acym__walk_through_license__button__cron').removeAttr('disabled');
+                    $('.acym__tooltip_button__cron').css('display', 'none');
+                    labelLicenseStatus.innerHTML = ACYM_JS_TXT.ACYM_LICENSE_ACTIVATED;
+                    labelLicenseStatus.classList.add('acym__color__green');
+                    labelLicenseStatus.classList.remove('acym__color__red');
+                } else {
+                    labelLicenseStatus.innerHTML = response.message;
+                    labelLicenseStatus.classList.remove('acym__color__green');
+                    labelLicenseStatus.classList.add('acym__color__red');
+                }
+                $iconWait.addClass('is-hidden');
+            });
+        });
+    }
+
+    function activateCron() {
+        $('#acym__walk_through_license__button__cron').on('click', function () {
+            if (jQuery('#acym__walk_through_license__button__cron').attr('disabled') === 'disabled') {
+                return;
+            }
+
+            let $iconWait = jQuery('#acym__walkthrough__step_license__wait_active_cron_icon');
+            $iconWait.removeClass('is-hidden');
+
+            const data = {
+                ctrl: 'dashboard',
+                task: 'stepLicenseActivateCron',
+                licenseKey: jQuery('#acym__configuration__license-key').val()
+            };
+
+            acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+                let cronStatus = document.getElementById('acym__walk_through_license__cron_label');
+
+                if (!response.error) {
+                    cronStatus.innerHTML = ACYM_JS_TXT.ACYM_ACTIVATED;
+                    cronStatus.classList.add('acym__color__green');
+                    cronStatus.classList.remove('acym__color__red');
+                } else {
+                    cronStatus.innerHTML = response.message;
+                    cronStatus.classList.remove('acym__color__green');
+                    cronStatus.classList.add('acym__color__red');
+                }
+                $iconWait.addClass('is-hidden');
+            });
         });
     }
 });

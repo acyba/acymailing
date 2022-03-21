@@ -44,7 +44,7 @@ if (!empty($data['languages'])) {
             echo '<ul>';
             foreach ($data['subscriptions'] as $list) {
                 if (empty($list->visible)) continue;
-                echo '<li><input style="display: inline-block" id="list__'.$list->id.'" type="checkbox" name="lists['.$list->id.']" '.(empty($list->status) ? '' : 'checked').'><label style="display: inline-block" for="list__'.$list->id.'">'.$list->name.'</label></li>';
+                echo '<li><input style="display: inline-block" id="list__'.$list->id.'" type="checkbox" name="lists['.$list->id.']" '.(empty($list->status) ? '' : 'checked').'><label style="display: inline-block" for="list__'.$list->id.'">'.(!empty($list->display_name) ? $list->display_name : $list->name).'</label></li>';
             }
             echo '</ul>';
             ?>

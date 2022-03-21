@@ -124,7 +124,7 @@ jQuery(document).ready(function ($) {
         let url = ACYM_AJAX_URL + '&ctrl=stats&task=setDataForChartLine&start=' + start + '&end=' + end + '&id=' + $('#mail_id').val();
 
         $.post(url, function (response) {
-            if (response == 'error') {
+            if (response === 'error') {
                 acym_helperNotification.addNotification(ACYM_JS_TXT.ACYM_STATS_START_DATE_LOWER, 'warning');
             } else {
                 $('#acym__stats__chart__line__canvas').html(response);

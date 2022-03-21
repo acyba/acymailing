@@ -5,7 +5,7 @@ Description: Insert events in your emails and filter users attending your events
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 1.7
+Version: 1.8
 */
 
 use AcyMailing\Classes\PluginClass;

@@ -44,22 +44,24 @@ const acym_helperSelectionMultilingual = {
         if (this.translation[this.currentLanguage] === undefined && code !== this.mainLanguage) {
             this.translation[this.currentLanguage] = {
                 name: '',
+                display_name: '',
                 description: ''
             };
         }
 
         let name = code === this.mainLanguage ? this.mainParams.name : this.translation[this.currentLanguage].name;
         let description = code === this.mainLanguage ? this.mainParams.description : this.translation[this.currentLanguage].description;
+        let frontLabel = code === this.mainLanguage ? this.mainParams.display_name : this.translation[this.currentLanguage].display_name;
 
         jQuery('[name="list[name]"]').val(name);
+        jQuery('[name="list[display_name]"]').val(frontLabel);
         jQuery('[name="list[description]"]').val(description);
     },
     updateTranslation_list() {
-        jQuery('[name="list[name]"], [name="list[description]"]').off('keyup').on('keyup', function () {
+        jQuery('[name="list[name]"], [name="list[description]"], [name="list[display_name]"]').off('keyup').on('keyup', function () {
             let mainLanguage = acym_helperSelectionMultilingual.mainLanguage === acym_helperSelectionMultilingual.currentLanguage;
-
-            let column = jQuery(this).attr('name') === 'list[name]' ? 'name' : 'description';
-
+            let name = jQuery(this).attr('name');
+            let column = name.substring(name.indexOf('[') + 1, name.lastIndexOf(']'));
             if (mainLanguage) {
                 acym_helperSelectionMultilingual.mainParams[column] = jQuery(this).val();
             } else {
@@ -71,6 +73,7 @@ const acym_helperSelectionMultilingual = {
     setMainParams_list: function () {
         this.mainParams.name = jQuery('[name="list[name]"]').val();
         this.mainParams.description = jQuery('[name="list[description]"]').val();
+        this.mainParams.display_name = jQuery('[name="list[display_name]"]').val();
     },
     setMainParams_field: function () {
         this.mainParams.name = jQuery('[name="field[name]"]').val();

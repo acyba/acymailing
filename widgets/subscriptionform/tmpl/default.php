@@ -16,7 +16,7 @@ if (!empty($visibleLists)) {
                 <tr>
                     <td>
                     	<input type="checkbox" class="acym_checkbox" name="subscription[]" id="acylist_'.$myListId.'_'.$formName.'" '.$check.' value="'.$myListId.'"/>
-                        <label for="acylist_'.$myListId.'_'.$formName.'">'.$allLists[$myListId]->name.'</label>
+                        <label for="acylist_'.$myListId.'_'.$formName.'">'.(!empty($allLists[$myListId]->display_name) ? $allLists[$myListId]->display_name : $allLists[$myListId]->name).'</label>
                     </td>
                 </tr>';
     }
@@ -49,7 +49,7 @@ if ($listPosition == 'before') echo $listsContent;
                 }
             }
             $size = empty($field->option->size) ? '' : 'width:'.$field->option->size.'px';
-            echo '<td class="acyfield_'.$field->id.' acyfield_'.$field->type.'">';
+            echo '<td class="onefield acyfield_'.$field->id.' acyfield_'.$field->type.'">';
             echo $fieldClass->displayField($field, $field->default_value, $size, $valuesArray, $displayOutside, true, $identifiedUser);
             echo '</td>';
             if (!$displayInline) echo '</tr><tr>';
@@ -60,7 +60,7 @@ if ($listPosition == 'before') echo $listsContent;
             if (!$displayInline) echo '</tr><tr>';
         }
 
-        if (empty($identifiedUser->id) && $config->get('captcha', 'none') !== 'none') {
+        if (empty($identifiedUser->id) && $config->get('captcha', 'none') !== 'none' && acym_level(ACYM_ESSENTIAL)) {
             echo '<td class="captchakeymodule" '.($displayOutside && !$displayInline ? 'colspan="2"' : '').'>';
             $captcha = new CaptchaHelper();
             echo $captcha->display($formName);

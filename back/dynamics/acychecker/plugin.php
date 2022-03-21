@@ -40,13 +40,43 @@ class plgAcymAcychecker extends acymPlugin
                 $registrationIntegrations[] = 'acymailing';
             }
 
+            $verificationOptions = [
+                'email_verification_non_existing' => 'invalid_smtp',
+                'email_verification_disposable' => 'disposable',
+                'email_verification_free' => 'free_domain',
+                'email_verification_role' => 'role_based',
+                'email_verification_acceptall' => 'accept_all',
+                'email_checkdomain' => 'domain_not_exists',
+            ];
             $registrationConditions = [];
-            if (!empty($formData['email_verification_non_existing'])) $registrationConditions[] = 'invalid_smtp';
-            if (!empty($formData['email_verification_disposable'])) $registrationConditions[] = 'disposable';
-            if (!empty($formData['email_verification_free'])) $registrationConditions[] = 'free_domain';
-            if (!empty($formData['email_verification_role'])) $registrationConditions[] = 'role_based';
-            if (!empty($formData['email_verification_acceptall'])) $registrationConditions[] = 'accept_all';
-            if (!empty($formData['email_checkdomain'])) $registrationConditions[] = 'domain_not_exists';
+            $newConfig = [];
+            $acy5installed = false;
+            if (ACYM_CMS === 'joomla') {
+                if (acym_isExtensionActive('com_acymailing')) {
+                    include_once rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_acymailing'.DS.'helpers'.DS.'helper.php';
+                    $acy5installed = true;
+                }
+            } else {
+                if (acym_isExtensionActive('acymailing5/index.php')) {
+                    include_once WP_PLUGIN_DIR.DS.'acymailing5'.DS.'back'.DS.'helpers'.DS.'helper.php';
+                    $acy5installed = true;
+                }
+            }
+            if ($acy5installed) {
+                $acym5Config = acymailing_config();
+            }
+
+            foreach ($verificationOptions as $acymOption => $acycOption) {
+                if (!empty($formData[$acymOption])) {
+                    $registrationConditions[] = $acycOption;
+                    $newConfig[$acymOption] = 1;
+                } else {
+                    $newConfig[$acymOption] = 0;
+                }
+            }
+            if ($acy5installed) {
+                $acym5Config->save($newConfig);
+            }
 
             $cteConfig->save(
                 [

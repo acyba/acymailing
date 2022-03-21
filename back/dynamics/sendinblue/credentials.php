@@ -61,7 +61,7 @@ class SendinblueCredentials extends SendinblueClass
 				</div>
                 <?php if (!$this->plugin->isLogFileEmpty()) { ?>
 					<div class="cell grid-x margin-top-1 acym__sending__methods__log">
-						<a href="<?php echo acym_completeLink('configuration&task=downloadLogFile&filename='.urlencode($this->plugin->logFilename)) ?>"
+						<a href="<?php echo acym_completeLink('configuration&task=downloadLogFile&filename='.urlencode($this->plugin->logFilename)); ?>"
 						   target="_blank"
 						   class="cell shrink button button-secondary">
                             <?php echo acym_translation('ACYM_DOWNLOAD_LOG_FILE'); ?>
@@ -77,7 +77,7 @@ class SendinblueCredentials extends SendinblueClass
                             $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency', 2592000),//one month
                             4
                         )
-                    ) ?>
+                    ); ?>
 				</div>
 			</div>
 		</div>

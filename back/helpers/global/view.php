@@ -41,6 +41,10 @@ function acym_loadAssets($ctrl, $task)
         var ACYM_SOCIAL_MEDIA = "'.addslashes(ACYM_SOCIAL_MEDIA).'";'
     );
 
+    //TODO get rid of the defer option on all these scripts to make sure jquery is loaded on front and fix the js errors
+    // We added this defer to make sure the raw js above is loaded first, use a dependency instead.
+    acym_addScript(false, ACYM_JS.'helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'helpers.min.js'), 'text/javascript', true);
+
     if ($ctrl !== 'archive') {
         acym_addScript(
             false,
@@ -55,7 +59,6 @@ function acym_loadAssets($ctrl, $task)
     }
 
     // Include JS
-    acym_addScript(false, ACYM_JS.'helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'helpers.min.js'), 'text/javascript', true);
     if ('back' == $scope) acym_addScript(false, ACYM_JS.$scope.'_helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_helpers.min.js'), 'text/javascript', true);
     acym_addScript(false, ACYM_JS.'global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'global.min.js'), 'text/javascript', true);
     acym_addScript(false, ACYM_JS.$scope.'_global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_global.min.js'), 'text/javascript', true);
@@ -92,6 +95,10 @@ function acym_getJSMessages()
     $msg .= '"defaultMsg": "'.acym_translation('ACYM_DEFAULT_VALIDATION_ERROR', true).'"';
 
     $keysToLoad = [
+        'ACYM_ACTIVATED',
+        'ACYM_DEACTIVATED',
+        'ACYM_NOT_ENABLED_YET',
+        'ACYM_LICENSE_ACTIVATED',
         'ACYM_SELECT_FIELD',
         'ACYM_NO_FIELD_AVAILABLE',
         'ACYM_SUBMIT_AND_DEACTIVATE',

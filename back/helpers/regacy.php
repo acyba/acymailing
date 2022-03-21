@@ -86,7 +86,10 @@ class RegacyHelper extends acymObject
         $this->lists = [];
 
         foreach ($visibleLists as $oneListId) {
-            $this->lists[$oneListId] = ['name' => $allLists[$oneListId]->name, 'checked' => in_array($oneListId, $checkedLists)];
+            $this->lists[$oneListId] = [
+                'name' => !empty($allLists[$oneListId]->display_name) ? $allLists[$oneListId]->display_name : $allLists[$oneListId]->name,
+                'checked' => in_array($oneListId, $checkedLists),
+            ];
         }
 
         if ('joomla' === ACYM_CMS || !empty($options['formatted'])) $this->_formatResults();

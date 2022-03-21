@@ -25,7 +25,6 @@ class acym_archive_widget extends WP_Widget
 
         $params = [
             'title' => 'See all newsletters',
-            'nbNewslettersPerPage' => '10',
             'lists' => '',
             'popup' => '1',
             'displayUserListOnly' => '1',
@@ -54,12 +53,6 @@ class acym_archive_widget extends WP_Widget
         echo '<div class="acyblock">';
         echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('title').'">'.acym_translation('ACYM_TITLE').'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" value="'.$params['title'].'" /></p>';
-
-        echo '<p><label class="acyWPconfig"> '.acym_translation('ACYM_WIDGET_CAMPAIGN_NUMBER_PER_PAGE').'</label>
-           '.acym_translationSprintf(
-                'ACYM_X_NEWSLETTERS_PER_PAGE',
-                '<input class="tiny-text" type="number" min="1"  max="20" name="'.$this->get_field_name('nbNewslettersPerPage').'" value="'.$params['nbNewslettersPerPage'].'">'
-            ).'</p>';
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_LISTS_ARCHIVE').'">'.acym_translation('ACYM_LISTS').'</label>';
         echo acym_selectMultiple(
@@ -93,7 +86,7 @@ class acym_archive_widget extends WP_Widget
         echo $args['before_widget'];
 
         if (!isset($instance['title'])) $instance['title'] = '';
-        $title = apply_filters('widget_title', $instance['title']);
+        $title = apply_filters('widget_title', $instance['title'], $instance, $args['widget_id']);
         if (!empty($title)) {
             echo $args['before_title'].$title.$args['after_title'];
         }
@@ -107,7 +100,6 @@ class acym_archive_widget extends WP_Widget
             'listsSent' => isset($instance['lists']) ? $instance['lists'] : [],
             'popup' => isset($instance['popup']) ? $instance['popup'] : '1',
             'displayUserListOnly' => isset($instance['displayUserListOnly']) ? $instance['displayUserListOnly'] : '1',
-            'nbNewslettersPerPage' => isset($instance['nbNewslettersPerPage']) ? $instance['nbNewslettersPerPage'] : '10',
             'paramsCMS' => ['widget_id' => $args['widget_id'], 'suffix' => ''],
             'search' => $search,
         ];

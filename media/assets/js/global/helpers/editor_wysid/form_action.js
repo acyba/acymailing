@@ -15,7 +15,7 @@ const acym_editorWysidFormAction = {
         let $warning = jQuery('#acym__wysid__warning__thumbnail');
         if (!$warning.is(':visible')) {
             let heightOverlay = window.innerHeight - jQuery('#acym__wysid__top-toolbar').offset().top - jQuery('#acym__wysid__wrap').height();
-            jQuery('#acym__wysid__warning__thumbnail').css('bottom', '-' + heightOverlay + 'px').toggle();
+            $warning.css('bottom', '-' + heightOverlay + 'px').toggle();
         }
         let $template = jQuery('#acym__wysid__template');
         $template.css({
@@ -58,6 +58,7 @@ const acym_editorWysidFormAction = {
             }
         });
 
+        $template.find('.acym__wysid__tinymce--image br[data-mce-bogus]').remove();
         if (!sendTest && !saveAsTmpl) {
             jQuery('.mce-edit-focus').removeClass('mce-edit-focus');
             $template.find('[name^="mce_"]').remove();

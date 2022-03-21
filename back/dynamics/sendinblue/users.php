@@ -38,6 +38,9 @@ class SendinblueUsers extends SendinblueClass
 
     public function importUsers($users, $ajax = false)
     {
+        $sendingMethod = $this->config->get('mailer_method', 'phpmail');
+        if ($sendingMethod != plgAcymSendinblue::SENDING_METHOD_ID) return;
+
         $response = new stdClass();
         $response->createdFolder = acym_createFolder(ACYM_TMP_FOLDER);
 
@@ -73,16 +76,16 @@ class SendinblueUsers extends SendinblueClass
             file_put_contents($filePath, $buffer, FILE_APPEND);
         }
 
-        // Create folder (needed to import users to assign list)
-        $folderId = $this->list->getFolderId();
+        static $listId = null;
+
+        if (empty($listId)) {
+            $listId = $this->list->createList('Import '.time());
+        }
 
         // Call API to import
         $data = [
             'fileUrl' => ACYM_TMP_URL.plgAcymSendinblue::SENDING_METHOD_ID.'.txt',
-            'newList' => [
-                'listName' => 'Import '.time(),
-                'folderId' => (int)$folderId,
-            ],
+            'listIds' => [$listId],
             'updateExistingContacts' => true,
         ];
 
@@ -157,6 +160,16 @@ class SendinblueUsers extends SendinblueClass
         }
 
         return $success || $alreadyInList;
+    }
+
+    public function removeUserFromList($mailId)
+    {
+        $listId = 0;
+        $this->list->getListExternalSendingMethod($listId, $mailId);
+
+        if (empty($listId)) return;
+
+        $this->callApiSendingMethod('contacts/lists/'.$listId.'/contacts/remove', ['all' => true], $this->headers, 'POST');
     }
 
     public function addAttributeToUser($email, $htmlContent, $mailId)

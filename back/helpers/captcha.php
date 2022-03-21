@@ -8,6 +8,8 @@ class CaptchaHelper extends acymObject
 {
     public function display($formName = '', $loadJsModule = false)
     {
+        if (!acym_level(ACYM_ESSENTIAL)) return '';
+
         $captchaPluginName = $this->config->get('captcha', 'none');
         if ($captchaPluginName === 'none') return '';
 
@@ -33,6 +35,8 @@ class CaptchaHelper extends acymObject
 
     public function check()
     {
+        if (!acym_level(ACYM_ESSENTIAL)) return true;
+
         $captchaPluginName = $this->config->get('captcha', 'none');
         if ($captchaPluginName === 'none') return true;
 

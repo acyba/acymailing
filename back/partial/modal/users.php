@@ -1,4 +1,4 @@
-<div class="cell grid-x acym__modal__users__summary" acym-data-query="<?php echo acym_escape(json_encode($dataModal)) ?>">
+<div class="cell grid-x acym__modal__users__summary" acym-data-query="<?php echo acym_escape(json_encode($dataModal)); ?>">
 	<h2 class="cell shrink acym__title"><?php echo acym_translation('ACYM_SELECTED_SUBSCRIBER'); ?></h2>
 	<div class="cell grid-x acym__modal__users__summary__actions margin-top-1 margin-bottom-1">
 		<input type="text" class="cell" placeholder="<?php echo acym_translation('ACYM_SEARCH'); ?>" v-model="search">

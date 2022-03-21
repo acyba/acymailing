@@ -391,6 +391,9 @@ class ImportHelper extends acymObject
     private function _createUploadFolder()
     {
         $folderPath = acym_cleanPath(ACYM_ROOT.trim(html_entity_decode(str_replace('/', DS, ACYM_MEDIA_FOLDER).DS.'import'))).DS;
+        if ('wordpress' === ACYM_CMS) {
+            $folderPath = acym_cleanPath(WP_PLUGIN_DIR.DS.ACYM_COMPONENT.DS.'media'.DS.'import').DS;
+        }
         if (!is_dir($folderPath)) {
             acym_createDir($folderPath, true, true);
         }

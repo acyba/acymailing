@@ -121,8 +121,8 @@ class acym_profile_widget extends WP_Widget
 
         echo $args['before_widget'];
 
-        if(!isset($instance['title'])) $instance['title'] = '';
-        $title = apply_filters('widget_title', $instance['title']);
+        if (!isset($instance['title'])) $instance['title'] = '';
+        $title = apply_filters('widget_title', $instance['title'], $instance, $args['widget_id']);
         if (!empty($title)) {
             echo $args['before_title'].$title.$args['after_title'];
         }

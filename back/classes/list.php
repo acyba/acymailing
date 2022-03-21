@@ -511,7 +511,7 @@ class ListClass extends acymClass
         return $listsToReturn;
     }
 
-    public function getAllForSelect($emptyFirst = true, $userFrontID = 0, $needTranslation = false)
+    public function getAllForSelect($emptyFirst = true, $userFrontID = 0, $needTranslation = false, $needFrontLabel = false)
     {
         $groupCondition = '';
         if (!empty($userFrontID)) {
@@ -530,7 +530,7 @@ class ListClass extends acymClass
         if ($emptyFirst) $return[''] = acym_translation('ACYM_SELECT_A_LIST');
 
         foreach ($lists as $key => $list) {
-            $return[$key] = $list->name;
+            $return[$key] = $needFrontLabel && !empty($list->display_name) ? $list->display_name : $list->name;
         }
 
         return $return;

@@ -3,7 +3,7 @@
 function acym_escape($text)
 {
     if (is_array($text) || is_object($text)) {
-        $text = json_encode($text);
+        $text = str_replace('\\', '\\\\', json_encode($text));
     }
 
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');

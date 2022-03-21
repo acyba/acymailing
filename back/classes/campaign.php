@@ -710,7 +710,7 @@ class CampaignClass extends acymClass
         return acym_loadObjectList($query);
     }
 
-    public function getLastNewsletters($params)
+    public function getLastNewsletters(&$params)
     {
         $mailClass = new MailClass();
 
@@ -749,7 +749,9 @@ class CampaignClass extends acymClass
         }
 
         $query .= $where;
-
+        $return = [];
+        $return['count'] = acym_loadResult($queryCountSelect.$query.') AS r ');
+        
         // Make sure we display campaigns only once
         $endQuerySelect = 'GROUP BY mail.id ';
         $endQuerySelect .= 'ORDER BY campaign.sending_date DESC';
@@ -764,6 +766,10 @@ class CampaignClass extends acymClass
                 $limit = $page * $numberPerPage > $lastNewsletters ? fmod($lastNewsletters, $numberPerPage) : $numberPerPage;
             } else {
                 $limit = $numberPerPage;
+                $nbTotalPage = ceil($return['count'] / $numberPerPage);
+                if ($params['page'] > $nbTotalPage) {
+                    $params['page'] = 1;
+                }
             }
 
             $offset = ($params['page'] - 1) * $numberPerPage;
@@ -774,9 +780,7 @@ class CampaignClass extends acymClass
             $endQuerySelect .= ' LIMIT '.intval($limit);
         }
 
-        $return = [];
 
-        $return['count'] = acym_loadResult($queryCountSelect.$query.') AS r ');
         $return['matchingNewsletters'] = $this->decode(acym_loadObjectList($querySelect.$query.$endQuerySelect));
 
         if (isset($params['language']) && !empty($return['matchingNewsletters'])) {

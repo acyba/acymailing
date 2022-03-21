@@ -17,8 +17,6 @@
         $workflow = $data['workflowHelper'];
         $this->isMailSelected($data['selectedMailid'], empty($data['no_click_map']));
         echo $workflow->displayTabs($this->tabs, 'userClickDetails');
-        ?>
-        <?php
         include acym_getView('stats', 'user_links_details_listing', true);
         ?>
 	</div>

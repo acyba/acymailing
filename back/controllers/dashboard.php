@@ -70,8 +70,8 @@ class DashboardController extends acymController
 
     public function saveStepSubscribe()
     {
-        $this->_saveWalkthrough(['step' => 'stepEmail']);
-        $this->stepEmail();
+        $this->_saveWalkthrough(['step' => 'stepLicense']);
+        $this->stepLicense();
     }
 
     public function stepEmail()
@@ -222,6 +222,88 @@ class DashboardController extends acymController
         $nextStep = 'stepPhpmail';
 
         $this->_saveWalkthrough(['step' => $nextStep, 'list_id' => $listId]);
+        $this->$nextStep();
+    }
+
+    public function stepLicense()
+    {
+        acym_setVar('layout', 'walk_through');
+        $licenseKey = $this->config->get('license_key', '');
+
+        if (!empty($licenseKey) || !acym_level(ACYM_ESSENTIAL)) {
+            // Go to next step
+            $this->passStepLicence();
+
+            return;
+        }
+
+        $data = [
+            'step' => 'license',
+            'version' => $this->config->get('version', ''),
+            'level' => $this->config->get('level', ''),
+        ];
+
+        parent::display($data);
+    }
+
+    //Function called in Ajax that's why we exit
+    public function stepLicenseAttachLicense()
+    {
+        $licenseKey = acym_getVar('string', 'licenseKey', '');
+
+        if (empty($licenseKey)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_LICENSE_NOT_FOUND'), [], false);
+        }
+
+        $this->config->save(['license_key' => $licenseKey]);
+
+        $configurationController = new ConfigurationController();
+        $return = $configurationController->attachLicenseOnUpdateMe($licenseKey);
+
+        if ($return['success'] === false) {
+            $this->config->save(['license_key' => '']);
+        }
+
+        $return['message'] = $configurationController->displayMessage($return['message'], true);
+        $ajaxSuccess = $return['message']['type'] !== 'error';
+
+        acym_sendAjaxResponse($return['message']['message'], [], $ajaxSuccess);
+    }
+
+    //Function called in Ajax that's why we exit
+    public function stepLicenseActivateCron()
+    {
+        $licenseKey = acym_getVar('string', 'licenseKey', '');
+
+        if (empty($licenseKey)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_LICENSE_NOT_FOUND'), [], false);
+        }
+
+        $url = ACYM_UPDATEMEURL.'launcher&task=activateCron';
+
+        $fields = [
+            'domain' => ACYM_LIVE,
+            'license_key' => $licenseKey,
+            'cms' => ACYM_CMS,
+            'frequency' => 900,
+            'level' => $this->config->get('level', ''),
+            'url_version' => 'secured',
+        ];
+
+        $result = acym_makeCurlCall($url, $fields);
+        if ($result['type'] !== 'error') $this->config->save(['active_cron' => 1]);
+
+        $configurationController = new ConfigurationController();
+        $result['message'] = $configurationController->displayMessage($result['message'], true);
+        $success = $result['type'] !== 'error';
+
+        acym_sendAjaxResponse($result['message']['message'], [], $success);
+    }
+
+    public function passStepLicence()
+    {
+        $nextStep = 'stepEmail';
+        $this->_saveWalkthrough(['step' => $nextStep]);
         $this->$nextStep();
     }
 
