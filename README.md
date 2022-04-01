@@ -48,4 +48,3 @@ gulp default
 
 This gulp task allows you to synchronize the AcyMailing folder on your WordPress and Joomla website.  
 This means each time you make a modification on the source code then it will be applied on your test websites.
-
