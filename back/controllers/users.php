@@ -981,8 +981,8 @@ class UsersController extends acymController
             return;
         }
 
+        $existingUser = $this->currentClass->getOneByEmail($user->email);
         if (empty($userId)) {
-            $existingUser = $this->currentClass->getOneByEmail($user->email);
             if (!empty($existingUser) && acym_isAdmin()) {
                 acym_enqueueMessage(acym_translationSprintf('ACYM_X_ALREADY_EXIST', $user->email), 'error');
 
@@ -997,7 +997,6 @@ class UsersController extends acymController
             }
             acym_setVar('id', $userId);
         } else {
-            $existingUser = $this->currentClass->getOneByEmail($user->email);
             if (!empty($existingUser) && $existingUser->id != $userId) {
                 acym_enqueueMessage(acym_translationSprintf('ACYM_X_ALREADY_EXIST', $user->email), 'error');
                 $this->edit();

@@ -1110,9 +1110,13 @@ class PluginHelper extends acymObject
                 if (!isset($option['default'])) $option['default'] = '';
                 $class = empty($option['class']) ? 'acym_plugin_text_field' : $option['class'];
                 $placeholder = empty($option['placeholder']) ? '' : ' placeholder="'.acym_escape($option['placeholder']).'"';
-                $currentOption .= '<input type="text" name="'.$option['name'].$suffix.'" id="'.$option['name'].$suffix.'" onchange="'.$updateFunction.'();" value="'.acym_escape(
-                        $option['default']
-                    ).'" class="'.acym_escape($class).'" '.$placeholder.'/>';
+                $currentOption .= '<input 
+                    type="text" 
+                    name="'.$option['name'].$suffix.'" 
+                    id="'.$option['name'].$suffix.'" 
+                    onchange="'.$updateFunction.'();" 
+                    value="'.acym_escape($option['default']).'" 
+                    class="'.acym_escape($class).'" '.$placeholder.'/>';
                 $jsOptionsMerge[] = 'otherinfo += "| '.$option['name'].':" + jQuery(\'input[name="'.$option['name'].$suffix.'"]\').val();';
             } elseif ($option['type'] === 'number') {
                 $min = empty($option['min']) ? '' : ' min="'.$option['min'].'"';

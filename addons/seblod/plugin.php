@@ -5,6 +5,9 @@ use AcyMailing\Helpers\TabHelper;
 
 class plgAcymSeblod extends acymPlugin
 {
+    private $addedCss;
+    private $itemId;
+
     public function __construct()
     {
         parent::__construct();
@@ -59,7 +62,6 @@ class plgAcymSeblod extends acymPlugin
 
     public function initCustomOptionsCustomView()
     {
-        $this->displayOptions = [];
         $this->displayOptions = [
             'title' => ['ACYM_TITLE', true],
             'introtext' => ['ACYM_INTRO_TEXT', true],
@@ -130,13 +132,15 @@ class plgAcymSeblod extends acymPlugin
         $identifier = $this->name;
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
+        $allMenus = acym_getAllPages();
+        array_unshift($allMenus, acym_translation('ACYM_SELECT'));
+
         $displayOptions = [
             [
-                'title' => 'ACYM_FIELDS_TO_DISPLAY',
+                'title' => 'ACYM_DISPLAY',
                 'type' => 'checkbox',
-                'name' => 'displays',
+                'name' => 'display',
                 'options' => $this->displayOptions,
-                'separator' => '; ',
             ],
             [
                 'title' => 'ACYM_CLICKABLE_TITLE',
@@ -148,6 +152,13 @@ class plgAcymSeblod extends acymPlugin
                 'title' => 'ACYM_DISPLAY_PICTURES',
                 'type' => 'pictures',
                 'name' => 'pictures',
+                'caption' => true,
+            ],
+            [
+                'title' => 'ACYM_MENU_ID',
+                'type' => 'select',
+                'name' => 'itemId',
+                'options' => $allMenus,
             ],
         ];
 
@@ -212,7 +223,7 @@ class plgAcymSeblod extends acymPlugin
         parent::prepareListing();
 
         if (!empty($this->pageInfo->filter_cat)) {
-            $filters[] = 'a.catid = '.intval($this->pageInfo->filter_cat);
+            $this->filters[] = 'a.catid = '.intval($this->pageInfo->filter_cat);
         }
 
         $rows = $this->getElements();
@@ -267,61 +278,55 @@ class plgAcymSeblod extends acymPlugin
 
         acym_loadLanguageFile('com_cck_default', JPATH_SITE);
 
-        $this->addedcss = false;
+        $this->addedCss = false;
 
         return true;
     }
 
     public function replaceIndividualContent($tag)
     {
-        if (!empty($tag->displays)) {
-            $tag->displays = explode(';', $tag->displays);
-        } else {
-            $tag->displays = ['title'];
-        }
-
-        foreach ($tag->displays as $i => $oneField) {
-            $tag->displays[$i] = trim($oneField);
-        }
-        //2 : Load the Seblod article
-        $query = 'SELECT a.*,b.alias AS catalias,c.name AS username FROM #__content AS a ';
+        $query = 'SELECT a.*, b.alias AS catalias, c.name AS username FROM #__content AS a ';
         $query .= 'JOIN #__categories AS b ON a.catid = b.id ';
         $query .= 'LEFT JOIN #__users AS c ON a.created_by = c.id ';
         $query .= 'WHERE a.id = '.intval($tag->id);
-        $article = acym_loadObject($query);
-        $result = '';
         $varFields = [];
 
+        $article = $this->initIndividualContent($tag, $query);
+
         //In case of we could not load the article for any reason
-        if (empty($article)) {
-            if (acym_isAdmin()) {
-                acym_enqueueMessage('The article "'.$tag->id.'" could not be loaded', 'notice');
-            }
+        if (empty($article)) return '';
 
-            return $result;
-        }
-
-        $link = 'index.php?option=com_content&view=article&id='.$article->id.'&catid='.$article->catid.$this->itemId;
+        $link = 'index.php?option=com_content&view=article&id='.$article->id.'&catid='.$article->catid;
+        $link .= empty($tag->itemId) ? $this->itemId : '&Itemid='.intval($tag->itemId);
         $link = $this->finalizeLink($link);
         $varFields['{link}'] = $link;
-        $resultTitle = $article->title;
-        $created = '';
-        //create a clickable title or a simple title
-        if (in_array('title', $tag->displays)) {
-            if (!empty($tag->clickable)) {
-                $resultTitle = '<a href="'.$link.'" target="_blank" >'.$resultTitle.'</a>';
-            }
-            $resultTitle = '<tr><td colspan="2"><h2 class="acym_title">'.$resultTitle.'</h2></td></tr>';
-        }
+
+        $title = '';
+        $afterTitle = '';
+        $afterArticle = '';
+        $imagePath = '';
+        $imageCaption = '';
+        $contentText = '';
+        $customFields = [];
+        $altImage = '';
+
+        $varFields['{title}'] = $article->title;
+        if (in_array('title', $tag->display)) $title = $varFields['{title}'];
+
         $varFields['{created}'] = acym_getDate(acym_getTime($article->created), acym_translation('ACYM_DATE_FORMAT_LC1'));
-        if (in_array('created', $tag->displays)) {
-            $created = '<tr><td>'.acym_translation('ACYM_DATE_CREATED').' : </td><td>'.$varFields['{created}'].'</td></tr>';
+        if (in_array('created', $tag->display)) {
+            $customFields[] = [
+                $varFields['{created}'],
+                acym_translation('ACYM_DATE_CREATED'),
+            ];
         }
 
-        $pubdate = '';
         $varFields['{pubdate}'] = acym_getDate(acym_getTime($article->publish_up), acym_translation('ACYM_DATE_FORMAT_LC1'));
-        if (in_array('pubdate', $tag->displays)) {
-            $pubdate = '<tr><td>'.acym_translation('ACYM_PUBLISHING_DATE').' : </td><td>'.$varFields['{pubdate}'].'</td></tr>';
+        if (in_array('pubdate', $tag->display)) {
+            $customFields[] = [
+                $varFields['{pubdate}'],
+                acym_translation('ACYM_PUBLISHING_DATE'),
+            ];
         }
 
         $answer = [];
@@ -333,53 +338,67 @@ class plgAcymSeblod extends acymPlugin
             }
         }
 
-        $description = '';
+        $varFields['{picthtml}'] = '';
+        if (!empty($article->images)) {
+            $images = json_decode($article->images, true);
+            if (!empty($images['image_intro_caption'])) $varFields['{image_intro_caption}'] = $images['image_intro_caption'];
+            if (!empty($images['image_fulltext_caption'])) $varFields['{image_fulltext_caption}'] = $images['image_fulltext_caption'];
 
-        if (in_array('image', $tag->displays) && !empty($article->images) && !empty($tag->pict)) {
-            $images = json_decode($article->images);
-            $pictVar = 'image_intro';
-            if (empty($images->$pictVar)) {
-                $pictVar = 'image_fulltext';
-            }
-            if (!empty($images->$pictVar)) {
-                $varFields['{picthtml}'] = '<img style="float:left;padding-right:10px;padding-bottom:10px;" alt="" border="0" src="'.acym_rootURI().$images->$pictVar.'" />';
-                $result .= $varFields['{picthtml}'];
+            $pictVar = in_array('introtext', $tag->display) || empty($images['image_fulltext']) ? 'image_intro' : 'image_fulltext';
+            if (!empty($images[$pictVar])) {
+                $imagePath = acym_rootURI().$images[$pictVar];
+                $altImage = empty($images[$pictVar.'_alt']) ? 'image' : $images[$pictVar.'_alt'];
+                $varFields['{picthtml}'] = '<img alt="'.acym_escape($altImage).'" class="content_main_image" src="'.acym_escape($imagePath).'" />';
+                if (!empty($tag->caption)) {
+                    $imageCaption = $varFields['{'.$pictVar.'_caption}'];
+                }
             }
         }
 
+        if (!in_array('image', $tag->display)) {
+            $imagePath = '';
+            $imageCaption = '';
+        }
 
         $varFields['{introtext}'] = !empty($answer['introtext']) ? $answer['introtext'] : '';
-        if (in_array('introtext', $tag->displays) && !empty($answer['introtext'])) {
-            $description .= '<tr><td colspan="2">'.$answer['introtext'].'</td></tr>';
-        }
+        if (in_array('introtext', $tag->display)) $contentText .= $varFields['{introtext}'];
 
         $varFields['{fulltext}'] = !empty($answer['fulltext']) ? $answer['fulltext'] : '';
-        if (in_array('fulltext', $tag->displays) && !empty($answer['fulltext'])) {
-            $description .= '<tr><td colspan="2">'.$answer['fulltext'].'</td></tr>';
+        if (in_array('fulltext', $tag->display)) $contentText .= $varFields['{fulltext}'];
+
+        //if there are parameters from seblod in the description, we do not display it
+        if (strlen(strip_tags($contentText)) < 3) {
+            $contentText = '';
         }
+
         //this is the description
         $article->text = $article->introtext.$article->fulltext;
 
         $params = [];
         $acyCCK = new AcyplgContentCCK();
-        $acyCCK->acyDisplays = $tag->displays;
+        $acyCCK->acyDisplays = $tag->display;
         $acyCCK->onContentPrepare('com_content.article', $article, $params, 0);
 
         foreach ($article as $fieldName => $oneField) {
             $varFields['{'.$fieldName.'}'] = $oneField;
         }
 
-        $result .= $article->text;
+        $afterArticle .= $article->text;
 
-        //if there are parameters from seblod in the description, we do not display it
-        if (strlen(strip_tags($description)) < 3) {
-            $description = '';
-        }
+        $format = new stdClass();
+        $format->tag = $tag;
+        $format->title = $title;
+        $format->afterTitle = $afterTitle;
+        $format->afterArticle = $afterArticle;
+        $format->imagePath = $imagePath;
+        $format->imageCaption = $imageCaption;
+        $format->description = $contentText;
+        $format->link = empty($tag->clickable) ? '' : $link;
+        $format->customFields = $customFields;
+        $format->altImage = $altImage;
+        $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 
-        //we add all informations in a table
-        $result = '<div class="acym_content" style="clear:both"><table cellspacing="0" cellpadding="5" border="0" style="width:100%;">'.$resultTitle.$description.$created.$pubdate.'<tr><td colspan="2">'.$result.'</td></tr></table></div>';
         $result = preg_replace('#administrator/#', '', $result);
-
         $result = str_replace('&nbsp;', ' ', $result);
         $result = preg_replace(
             '#<iframe[^>]*(http[^"]*embed/)([^"]*)[^<]*</iframe>#',
@@ -388,37 +407,21 @@ class plgAcymSeblod extends acymPlugin
         );
         $result = str_replace('/embed/', '/watch?v=', $result);
 
-        //if the user created a custom template
-        if (!empty($tag->tmpl) && file_exists(ACYM_MEDIA.'plugins'.DS.'seblod_'.$tag->tmpl.'.php')) {
-            ob_start();
-            require ACYM_MEDIA.'plugins'.DS.'seblod_'.$tag->tmpl.'.php';
-            $result = ob_get_clean();
-            $result = str_replace(array_keys($varFields), $varFields, $result);
-        } elseif (file_exists(ACYM_MEDIA.'plugins'.DS.'seblod.php')) {
-            ob_start();
-            require ACYM_MEDIA.'plugins'.DS.'seblod.php';
-            $result = ob_get_clean();
-            $result = str_replace(array_keys($varFields), $varFields, $result);
-        }
-
-
-        if (!$this->addedcss) {
+        if (!$this->addedCss) {
             $result .= '<style type="text/css">
-							div.cck_value, div.cck_label {
-								vertical-align: top;
-								display: inline-block;
-							}
-
-							div.cck_label {
-								min-width: 50px;
-							}
-							</style>';
-            $this->addedcss = true;
+        					div.cck_value, div.cck_label {
+        						vertical-align: top;
+        						display: inline-block;
+        					}
+        
+        					div.cck_label {
+        						min-width: 50px;
+        					}
+        					</style>';
+            $this->addedCss = true;
         }
 
-        $result = $this->pluginHelper->managePicts($tag, $result);
-
-        return $result;
+        return $this->finalizeElementFormat($result, $tag, $varFields);
     }
 
     public function generateByCategory(&$email)

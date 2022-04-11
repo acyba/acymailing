@@ -195,7 +195,7 @@ define(
                 'name' => 'Universal filter',
                 'description' => '- Filter AcyMailing subscribers based on any data from your database<br />- Filter users based on email addresses in a specified text',
                 'image' => 'universalfilter.png',
-                'level' => 'starter',
+                'level' => 'enterprise',
                 'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/universal-filter',
                 'category' => 'User management',
                 'downloadlink' => 'https://wordpress.org/plugins/acymailing-universal-filter/',

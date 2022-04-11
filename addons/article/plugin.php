@@ -220,6 +220,13 @@ class plgAcymArticle extends acymPlugin
                 'name' => 'groupbycat',
                 'default' => false,
             ],
+            [
+                'title' => 'ACYM_META_KEYWORDS',
+                'tooltip' => 'ACYM_META_KEYWORDS_DESC',
+                'type' => 'text',
+                'name' => 'keywords',
+                'class' => ' ',
+            ],
         ];
         $this->autoContentOptions($catOptions);
 
@@ -352,6 +359,15 @@ class plgAcymArticle extends acymPlugin
 
             if (!empty($parameter->language) && $parameter->language !== 'any') {
                 $where[] = 'element.language IN ("*", '.acym_escapeDB($parameter->language).')';
+            }
+
+            if (!empty($parameter->keywords)) {
+                $keywords = explode(',', $parameter->keywords);
+                $conditionsMetaKeywords = [];
+                foreach ($keywords as $oneKeyword) {
+                    $conditionsMetaKeywords[] = 'element.metakey LIKE '.acym_escapeDB('%'.$oneKeyword.'%');
+                }
+                $where[] = '('.implode(' OR ', $conditionsMetaKeywords).')';
             }
 
             $query .= ' WHERE ('.implode(') AND (', $where).')';

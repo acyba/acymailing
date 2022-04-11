@@ -1245,7 +1245,7 @@ class plgAcymHikashop extends acymPlugin
 
         // Trigger the automation
         $userClass = new UserClass();
-        $user = $userClass->getOneByEmail($hikaUser->email);
+        $user = $userClass->getOneByEmail(!empty($hikaUser->email) ? $hikaUser->email : $hikaUser->user_email);
         if (empty($user->id)) return;
 
         //We get the order status id

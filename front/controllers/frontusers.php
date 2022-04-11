@@ -457,6 +457,11 @@ class FrontusersController extends UsersController
 
     public function unsubscribeAll()
     {
+        $userClass = new UserClass();
+        if ($userClass->identify(true, 'user_id', 'user_key') === false) {
+            $this->displayMessage('ACYM_USER_NOT_FOUND', false);
+        }
+
         $this->unsubscribeAllInner();
         $this->redirectUnsubWorked();
     }
@@ -464,6 +469,9 @@ class FrontusersController extends UsersController
     public function saveSubscriptions()
     {
         $userClass = new UserClass();
+        if ($userClass->identify(true, 'user_id', 'user_key') === false) {
+            $this->displayMessage('ACYM_USER_NOT_FOUND', false);
+        }
 
         //get the user
         $user = $this->getUserFromUnsubPage();
@@ -486,7 +494,7 @@ class FrontusersController extends UsersController
         $listsToUnsub = [];
         foreach ($userSubscriptions as $subscription) {
             // The list wasn't displayed || the user checked the list || the user isn't subscribed
-            if ($subscription->visible === '0' || in_array($subscription->id, $listsChecked) || $subscription->status !== '1') continue;
+            if (intval($subscription->visible) === 0 || in_array($subscription->id, $listsChecked) || intval($subscription->status) !== 1) continue;
 
             $listsToUnsub[] = $subscription->id;
         }
@@ -792,7 +800,7 @@ class FrontusersController extends UsersController
         $allfields = $fieldClass->getFieldsByID($values->fields);
         $fields = [];
         foreach ($allfields as $field) {
-            if ($field->active === '0') continue;
+            if (intval($field->active) === 0) continue;
             $fields[$field->id] = $field;
         }
         $values->fields = $fields;

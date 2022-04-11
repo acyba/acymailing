@@ -271,7 +271,7 @@ class ConfigurationController extends acymController
     /**
      * Check database integrity
      */
-    public function checkDB($returnMode = '')
+    public function checkDB($returnMode = '', $fromConfiguration = true)
     {
         $messagesNoHtml = [];
 
@@ -518,37 +518,39 @@ class ConfigurationController extends acymController
         }
 
         // Clean the duplicates in the acym_url table, caused by a bug before the 12/04/19
-        $urlClass = new UrlClass();
-        $duplicatedUrls = $urlClass->getDuplicatedUrls();
+        if ($fromConfiguration) {
+            $urlClass = new UrlClass();
+            $duplicatedUrls = $urlClass->getDuplicatedUrls();
 
-        if (!empty($duplicatedUrls)) {
-            $time = time();
-            $interrupted = false;
-            $messagesNoHtml[] = ['error' => false, 'color' => 'blue', 'msg' => acym_translation('ACYM_CHECKDB_DUPLICATED_URLS')];
+            if (!empty($duplicatedUrls)) {
+                $time = time();
+                $interrupted = false;
+                $messagesNoHtml[] = ['error' => false, 'color' => 'blue', 'msg' => acym_translation('ACYM_CHECKDB_DUPLICATED_URLS')];
 
-            // Make sure we don't reach the max execution time
-            $maxexecutiontime = intval($this->config->get('max_execution_time'));
-            if (empty($maxexecutiontime) || $maxexecutiontime - 20 < 20) {
-                $maxexecutiontime = 20;
-            } else {
-                $maxexecutiontime -= 20;
-            }
-
-            acym_increasePerf();
-            while (!empty($duplicatedUrls)) {
-                $urlClass->delete($duplicatedUrls);
-
-                if (time() - $time > $maxexecutiontime) {
-                    $interrupted = true;
-                    break;
+                // Make sure we don't reach the max execution time
+                $maxexecutiontime = intval($this->config->get('max_execution_time'));
+                if (empty($maxexecutiontime) || $maxexecutiontime - 20 < 20) {
+                    $maxexecutiontime = 20;
+                } else {
+                    $maxexecutiontime -= 20;
                 }
 
-                $duplicatedUrls = $urlClass->getDuplicatedUrls();
-            }
-            if (empty($interrupted)) {
-                $messagesNoHtml[] = ['error' => false, 'color' => 'green', 'msg' => acym_translation('ACYM_CHECKDB_DUPLICATED_URLS_SUCCESS')];
-            } else {
-                $messagesNoHtml[] = ['error' => false, 'color' => 'blue', 'msg' => acym_translation('ACYM_CHECKDB_DUPLICATED_URLS_REMAINING')];
+                acym_increasePerf();
+                while (!empty($duplicatedUrls)) {
+                    $urlClass->delete($duplicatedUrls);
+
+                    if (time() - $time > $maxexecutiontime) {
+                        $interrupted = true;
+                        break;
+                    }
+
+                    $duplicatedUrls = $urlClass->getDuplicatedUrls();
+                }
+                if (empty($interrupted)) {
+                    $messagesNoHtml[] = ['error' => false, 'color' => 'green', 'msg' => acym_translation('ACYM_CHECKDB_DUPLICATED_URLS_SUCCESS')];
+                } else {
+                    $messagesNoHtml[] = ['error' => false, 'color' => 'blue', 'msg' => acym_translation('ACYM_CHECKDB_DUPLICATED_URLS_REMAINING')];
+                }
             }
         }
 

@@ -1393,4 +1393,19 @@ class acymPlugin extends acymObject
     {
         $installed = $this->installed;
     }
+
+    protected function getLinkTranslated($link)
+    {
+        if (empty($this->emailLanguage)) return $link;
+        if (!acym_isMultilingual()) return $link;
+
+        $translationTool = $this->config->get('translate_content', 'no');
+        if ($translationTool !== 'wpml') return $link;
+
+        if (!acym_isExtensionActive('sitepress-multilingual-cms/sitepress.php')) return $link;
+
+        $languageCode = substr($this->emailLanguage, 0, 2);
+
+        return apply_filters('wpml_permalink', $link, $languageCode);
+    }
 }

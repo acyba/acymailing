@@ -534,7 +534,7 @@ class FormClass extends acymClass
         $allFields = $fieldClass->getAll();
         $fields = [];
         foreach ($allFields as $field) {
-            if ($field->id == 2 || $field->active === '0') continue;
+            if ($field->id == 2 || intval($field->active) === 0) continue;
             $fields[$field->id] = acym_translation($field->name);
         }
         foreach ($options as $key => $value) {

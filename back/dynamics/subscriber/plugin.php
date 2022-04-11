@@ -82,7 +82,7 @@ class plgAcymSubscriber extends acymPlugin
 
         foreach ($customFields as $one) {
             $descriptions[$one->namekey] = acym_translation('ACYM_CUSTOM_FIELD');
-            $fields[] = $one->namekey;
+            $fields[] = $one;
         }
 
         $descriptions['id'] = acym_translation('ACYM_USER_ID');
@@ -124,19 +124,21 @@ class plgAcymSubscriber extends acymPlugin
 				</div>';
         }
 
-        foreach ($fields as $fieldname) {
-            if (empty($descriptions[$fieldname])) {
+        foreach ($fields as $field) {
+			$fieldKey = is_object($field) ? $field->namekey : $field;
+			$fieldName = is_object($field) ? acym_translation($field->name) : $field;
+            if (empty($descriptions[$fieldKey])) {
                 continue;
             }
 
             $type = '';
-            if (in_array($fieldname, ['creation_date', 'open_date', 'date_click', 'send_date'])) {
+            if (in_array($fieldKey, ['creation_date', 'open_date', 'date_click', 'send_date'])) {
                 $type = '|type:time';
             }
 
-            echo '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeSubscriberTag(\''.$fieldname.$type.'\', jQuery(this));">
-                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escape($fieldname).'</div>
-                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escape($descriptions[$fieldname]).'</div>
+            echo '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeSubscriberTag(\''.$fieldKey.$type.'\', jQuery(this));">
+                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escape($fieldName).'</div>
+                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.acym_escape($descriptions[$fieldKey]).'</div>
                      </div>';
         }
 

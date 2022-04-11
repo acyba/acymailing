@@ -402,7 +402,7 @@ class QueueHelper extends acymObject
         $userStatClass = new UserStatClass();
         $mailStatClass = new MailStatClass();
 
-        $time = acym_date("now", 'Y-m-d H:i:s');
+        $time = acym_date('now', 'Y-m-d H:i:s');
 
         foreach ($statsAdd as $mailId => $infos) {
 
@@ -421,7 +421,7 @@ class QueueHelper extends acymObject
                     $userStat['sent'] = $status ? 1 : 0;
                     $userStat['statusSending'] = $status;
 
-                    $userStatClass->save($userStat);
+                    $userStatClass->save($userStat, true);
                 }
             }
 

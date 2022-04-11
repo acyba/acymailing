@@ -5,7 +5,7 @@ Description: Manage your contact lists and send newsletters from your site.
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 7.7.6
+Version: 7.8.0
 Text Domain: acymailing
 Domain Path: /language
 */

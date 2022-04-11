@@ -33,7 +33,7 @@ class UserStatClass extends acymClass
         'android' => 'Android',
     ];
 
-    public function save($userStat)
+    public function save($userStat, $overrideSendDate = false)
     {
         $column = [];
         $valueColumn = [];
@@ -59,6 +59,10 @@ class UserStatClass extends acymClass
 
         if (!empty($userStat['statusSending'])) {
             $onDuplicate[] = $userStat['statusSending'] == 0 ? 'fail = fail + 1' : 'sent = sent + 1';
+        }
+
+        if ($overrideSendDate && !empty($userStat['send_date'])) {
+            $onDuplicate[] = 'send_date = '.acym_escapeDB($userStat['send_date']);
         }
 
         if (!empty($userStat['open'])) {

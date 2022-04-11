@@ -23,19 +23,21 @@ class FronturlController extends acymController
         $mailid = acym_getVar('int', 'mailid');
         $userid = acym_getVar('int', 'userid');
 
-        $mailStatClass = new MailStatClass();
-        $userStatClass = new UserStatClass();
         $urlClass = new UrlClass();
         $urlObject = $urlClass->getOneUrlById($urlid);
 
         if (empty($urlObject->id)) {
-            return acym_raiseError(404, acym_translation('ACYM_PAGE_NOT_FOUND'));
+            acym_raiseError(404, acym_translation('ACYM_PAGE_NOT_FOUND'));
         }
 
-        // Avoid issue with table constraint if the mail has been removed before the click
         $mailClass = new MailClass();
         $mail = $mailClass->getOneById($mailid);
-        if (empty($mail)) {
+
+        $userStatClass = new UserStatClass();
+        $userStat = $userStatClass->getOneByMailAndUserId($mailid, $userid);
+
+        // The mail has been deleted, or we didn't send this email to this user, something is wrong
+        if (empty($mail) || empty($userStat)) {
             $urlObject->url = preg_replace(
                 [
                     '#&idU=[0-9]+#Uis',
@@ -48,7 +50,6 @@ class FronturlController extends acymController
             acym_redirect($urlObject->url);
         }
 
-        $urlClickClass = new UrlClickClass();
         if (!acym_isRobot()) {
             $urlClick = [
                 'mail_id' => $mailid,
@@ -57,8 +58,8 @@ class FronturlController extends acymController
                 'user_id' => $userid,
                 'date_click' => acym_date('now', 'Y-m-d H:i:s'),
             ];
+            $urlClickClass = new UrlClickClass();
             $urlClickClass->save($urlClick);
-            $userStat = $userStatClass->getOneByMailAndUserId($mailid, $userid);
             if (empty($userStat->open)) {
                 $userStatToInsert = [];
                 $userStatToInsert['user_id'] = $userid;
@@ -71,6 +72,8 @@ class FronturlController extends acymController
                 $mailStatToInsert['open_unique'] = 1;
                 $mailStatToInsert['open_total'] = 1;
                 $userStatClass->save($userStatToInsert);
+
+                $mailStatClass = new MailStatClass();
                 $mailStatClass->save($mailStatToInsert);
             }
         }

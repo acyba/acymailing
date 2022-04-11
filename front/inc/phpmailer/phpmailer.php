@@ -5,7 +5,7 @@
  * PHPMailer - PHP email creation and transport class.
  * PHP Version 5.5.
  *
- * @see https://github.com/PHPMailer/PHPMailer/ The PHPMailer GitHub project
+ * @see       https://github.com/PHPMailer/PHPMailer/ The PHPMailer GitHub project
  *
  * @author    Marcus Bointon (Synchro/coolbru) <phpmailer@synchromedia.co.uk>
  * @author    Jim Jagielski (jimjag) <jimjag@gmail.com>
@@ -361,9 +361,9 @@ class acyPHPMailer
     public $AuthType = '';
 
     /**
-     * An instance of the PHPMailer OAuth class.
+     * An implementation of the PHPMailer OAuthTokenProvider interface.
      *
-     * @var OAuth
+     * @var OAuthTokenProvider
      */
     protected $oauth;
 
@@ -753,7 +753,7 @@ class acyPHPMailer
      *
      * @var string
      */
-    const VERSION = '6.5.1';
+    const VERSION = '6.6.0';
 
     /**
      * Error severity: message only, continue processing.
@@ -829,7 +829,7 @@ class acyPHPMailer
     public function __construct($exceptions = null)
     {
         if (null !== $exceptions) {
-            $this->exceptions = (bool) $exceptions;
+            $this->exceptions = (bool)$exceptions;
         }
         //Pick an appropriate debug output format automatically
         $this->Debugoutput = (strpos(PHP_SAPI, 'cli') !== false ? 'echo' : 'html');
@@ -868,7 +868,7 @@ class acyPHPMailer
         }
         //Calling mail() with null params breaks
         $this->edebug('Sending with mail()');
-        $this->edebug('Sendmail path: ' . ini_get('sendmail_path'));
+        $this->edebug('Sendmail path: '.ini_get('sendmail_path'));
         $this->edebug("Envelope sender: {$this->Sender}");
         $this->edebug("To: {$to}");
         $this->edebug("Subject: {$subject}");
@@ -879,7 +879,8 @@ class acyPHPMailer
             $this->edebug("Additional params: {$params}");
             $result = @mail($to, $subject, $body, $header, $params);
         }
-        $this->edebug('Result: ' . ($result ? 'true' : 'false'));
+        $this->edebug('Result: '.($result ? 'true' : 'false'));
+
         return $result;
     }
 
@@ -887,10 +888,11 @@ class acyPHPMailer
      * Output debugging info via a user-defined method.
      * Only generates output if debug output is enabled.
      *
-     * @see PHPMailer::$Debugoutput
+     * @param string $str
+     *
      * @see PHPMailer::$SMTPDebug
      *
-     * @param string $str
+     * @see PHPMailer::$Debugoutput
      */
     protected function edebug($str)
     {
@@ -931,7 +933,7 @@ class acyPHPMailer
                 "\t",
                     //Trim trailing space
                 trim(
-                    //Indent for readability, except for trailing break
+                //Indent for readability, except for trailing break
                     str_replace(
                         "\n",
                         "\n                   \t                  ",
@@ -1008,9 +1010,9 @@ class acyPHPMailer
      * @param string $address The email address to send to
      * @param string $name
      *
+     * @return bool true on success, false if address already used or invalid in some way
      * @throws Exception
      *
-     * @return bool true on success, false if address already used or invalid in some way
      */
     public function addAddress($address, $name = '')
     {
@@ -1023,9 +1025,9 @@ class acyPHPMailer
      * @param string $address The email address to send to
      * @param string $name
      *
+     * @return bool true on success, false if address already used or invalid in some way
      * @throws Exception
      *
-     * @return bool true on success, false if address already used or invalid in some way
      */
     public function addCC($address, $name = '')
     {
@@ -1038,9 +1040,9 @@ class acyPHPMailer
      * @param string $address The email address to send to
      * @param string $name
      *
+     * @return bool true on success, false if address already used or invalid in some way
      * @throws Exception
      *
-     * @return bool true on success, false if address already used or invalid in some way
      */
     public function addBCC($address, $name = '')
     {
@@ -1053,9 +1055,9 @@ class acyPHPMailer
      * @param string $address The email address to reply to
      * @param string $name
      *
+     * @return bool true on success, false if address already used or invalid in some way
      * @throws Exception
      *
-     * @return bool true on success, false if address already used or invalid in some way
      */
     public function addReplyTo($address, $name = '')
     {
@@ -1072,9 +1074,9 @@ class acyPHPMailer
      * @param string $address The email address to send, resp. to reply to
      * @param string $name
      *
+     * @return bool true on success, false if address already used or invalid in some way
      * @throws Exception
      *
-     * @return bool true on success, false if address already used or invalid in some way
      */
     protected function addOrEnqueueAnAddress($kind, $address, $name)
     {
@@ -1127,9 +1129,9 @@ class acyPHPMailer
      * @param string $address The email address to send, resp. to reply to
      * @param string $name
      *
+     * @return bool true on success, false if address already used or invalid in some way
      * @throws Exception
      *
-     * @return bool true on success, false if address already used or invalid in some way
      */
     protected function addAnAddress($kind, $address, $name = '')
     {
@@ -1188,6 +1190,7 @@ class acyPHPMailer
      *
      * @param string $addrstr The address list string
      * @param bool   $useimap Whether to use the IMAP extension to parse the list
+     * @param string $charset The charset to use when decoding the address list string.
      *
      * @return array
      */
@@ -1202,7 +1205,7 @@ class acyPHPMailer
             foreach ($list as $address) {
                 if (
                     '.SYNTAX-ERROR.' !== $address->host &&
-                    static::validateAddress($address->mailbox . '@' . $address->host)
+                    static::validateAddress($address->mailbox.'@'.$address->host)
                 ) {
                     //Decode the name part if it's present and encoded
                     if (
@@ -1222,7 +1225,7 @@ class acyPHPMailer
 
                     $addresses[] = [
                         'name' => (property_exists($address, 'personal') ? $address->personal : ''),
-                        'address' => $address->mailbox . '@' . $address->host,
+                        'address' => $address->mailbox.'@'.$address->host,
                     ];
                 }
             }
@@ -1274,11 +1277,11 @@ class acyPHPMailer
      *
      * @param string $address
      * @param string $name
-     * @param bool   $auto    Whether to also set the Sender address, defaults to true
-     *
-     * @throws Exception
+     * @param bool   $auto Whether to also set the Sender address, defaults to true
      *
      * @return bool
+     * @throws Exception
+     *
      */
     public function setFrom($address, $name = '', $auto = true)
     {
@@ -1289,7 +1292,7 @@ class acyPHPMailer
         if (
             (false === $pos)
             || ((!$this->has8bitChars(substr($address, ++$pos)) || !static::idnSupported())
-            && !static::validateAddress($address))
+                && !static::validateAddress($address))
         ) {
             $error_message = sprintf(
                 '%s (From): %s',
@@ -1382,15 +1385,15 @@ class acyPHPMailer
                  * @copyright 2009-2010 Michael Rushton
                  * Feel free to use and redistribute this code. But please keep this copyright notice.
                  */
-                return (bool) preg_match(
-                    '/^(?!(?>(?1)"?(?>\\\[ -~]|[^"])"?(?1)){255,})(?!(?>(?1)"?(?>\\\[ -~]|[^"])"?(?1)){65,}@)' .
-                    '((?>(?>(?>((?>(?>(?>\x0D\x0A)?[\t ])+|(?>[\t ]*\x0D\x0A)?[\t ]+)?)(\((?>(?2)' .
-                    '(?>[\x01-\x08\x0B\x0C\x0E-\'*-\[\]-\x7F]|\\\[\x00-\x7F]|(?3)))*(?2)\)))+(?2))|(?2))?)' .
-                    '([!#-\'*+\/-9=?^-~-]+|"(?>(?2)(?>[\x01-\x08\x0B\x0C\x0E-!#-\[\]-\x7F]|\\\[\x00-\x7F]))*' .
-                    '(?2)")(?>(?1)\.(?1)(?4))*(?1)@(?!(?1)[a-z0-9-]{64,})(?1)(?>([a-z0-9](?>[a-z0-9-]*[a-z0-9])?)' .
-                    '(?>(?1)\.(?!(?1)[a-z0-9-]{64,})(?1)(?5)){0,126}|\[(?:(?>IPv6:(?>([a-f0-9]{1,4})(?>:(?6)){7}' .
-                    '|(?!(?:.*[a-f0-9][:\]]){8,})((?6)(?>:(?6)){0,6})?::(?7)?))|(?>(?>IPv6:(?>(?6)(?>:(?6)){5}:' .
-                    '|(?!(?:.*[a-f0-9]:){6,})(?8)?::(?>((?6)(?>:(?6)){0,4}):)?))?(25[0-5]|2[0-4][0-9]|1[0-9]{2}' .
+                return (bool)preg_match(
+                    '/^(?!(?>(?1)"?(?>\\\[ -~]|[^"])"?(?1)){255,})(?!(?>(?1)"?(?>\\\[ -~]|[^"])"?(?1)){65,}@)'.
+                    '((?>(?>(?>((?>(?>(?>\x0D\x0A)?[\t ])+|(?>[\t ]*\x0D\x0A)?[\t ]+)?)(\((?>(?2)'.
+                    '(?>[\x01-\x08\x0B\x0C\x0E-\'*-\[\]-\x7F]|\\\[\x00-\x7F]|(?3)))*(?2)\)))+(?2))|(?2))?)'.
+                    '([!#-\'*+\/-9=?^-~-]+|"(?>(?2)(?>[\x01-\x08\x0B\x0C\x0E-!#-\[\]-\x7F]|\\\[\x00-\x7F]))*'.
+                    '(?2)")(?>(?1)\.(?1)(?4))*(?1)@(?!(?1)[a-z0-9-]{64,})(?1)(?>([a-z0-9](?>[a-z0-9-]*[a-z0-9])?)'.
+                    '(?>(?1)\.(?!(?1)[a-z0-9-]{64,})(?1)(?5)){0,126}|\[(?:(?>IPv6:(?>([a-f0-9]{1,4})(?>:(?6)){7}'.
+                    '|(?!(?:.*[a-f0-9][:\]]){8,})((?6)(?>:(?6)){0,6})?::(?7)?))|(?>(?>IPv6:(?>(?6)(?>:(?6)){5}:'.
+                    '|(?!(?:.*[a-f0-9]:){6,})(?8)?::(?>((?6)(?>:(?6)){0,4}):)?))?(25[0-5]|2[0-4][0-9]|1[0-9]{2}'.
                     '|[1-9]?[0-9])(?>\.(?9)){3}))\])(?1)$/isD',
                     $address
                 );
@@ -1400,8 +1403,8 @@ class acyPHPMailer
                  *
                  * @see https://html.spec.whatwg.org/#e-mail-state-(type=email)
                  */
-                return (bool) preg_match(
-                    '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}' .
+                return (bool)preg_match(
+                    '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}'.
                     '[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/sD',
                     $address
                 );
@@ -1430,11 +1433,11 @@ class acyPHPMailer
      * - Conversion to punycode is impossible (e.g. required PHP functions are not available)
      *   or fails for any reason (e.g. domain contains characters not allowed in an IDN).
      *
-     * @see PHPMailer::$CharSet
-     *
      * @param string $address The email address to convert
      *
      * @return string The encoded address in ASCII form
+     * @see PHPMailer::$CharSet
+     *
      */
     public function punyencodeAddress($address)
     {
@@ -1454,7 +1457,12 @@ class acyPHPMailer
                 $errorcode = 0;
                 if (defined('INTL_IDNA_VARIANT_UTS46')) {
                     //Use the current punycode standard (appeared in PHP 7.2)
-                    $punycode = idn_to_ascii($domain, $errorcode, \INTL_IDNA_VARIANT_UTS46);
+                    $punycode = idn_to_ascii(
+                        $domain,
+                        \IDNA_DEFAULT | \IDNA_USE_STD3_RULES | \IDNA_CHECK_BIDI |
+                        \IDNA_CHECK_CONTEXTJ | \IDNA_NONTRANSITIONAL_TO_ASCII,
+                        \INTL_IDNA_VARIANT_UTS46
+                    );
                 } elseif (defined('INTL_IDNA_VARIANT_2003')) {
                     //Fall back to this old, deprecated/removed encoding
                     $punycode = idn_to_ascii($domain, $errorcode, \INTL_IDNA_VARIANT_2003);
@@ -1463,7 +1471,7 @@ class acyPHPMailer
                     $punycode = idn_to_ascii($domain, $errorcode);
                 }
                 if (false !== $punycode) {
-                    return substr($address, 0, $pos) . $punycode;
+                    return substr($address, 0, $pos).$punycode;
                 }
             }
         }
@@ -1475,9 +1483,9 @@ class acyPHPMailer
      * Create a message and send it.
      * Uses the sending method specified by $Mailer.
      *
+     * @return bool false on error - See the ErrorInfo property for details of the error
      * @throws Exception
      *
-     * @return bool false on error - See the ErrorInfo property for details of the error
      */
     public function send()
     {
@@ -1501,9 +1509,9 @@ class acyPHPMailer
     /**
      * Prepare a message for sending.
      *
+     * @return bool
      * @throws Exception
      *
-     * @return bool
      */
     public function preSend()
     {
@@ -1613,12 +1621,12 @@ class acyPHPMailer
                 )
             ) {
                 $header_dkim = $this->DKIM_Add(
-                    $this->MIMEHeader . $this->mailHeader,
+                    $this->MIMEHeader.$this->mailHeader,
                     $this->encodeHeader($this->secureHeader($this->Subject)),
                     $this->MIMEBody
                 );
-                $this->MIMEHeader = static::stripTrailingWSP($this->MIMEHeader) . static::$LE .
-                    static::normalizeBreaks($header_dkim) . static::$LE;
+                $this->MIMEHeader = static::stripTrailingWSP($this->MIMEHeader).static::$LE.
+                    static::normalizeBreaks($header_dkim).static::$LE;
             }
 
             return true;
@@ -1635,9 +1643,9 @@ class acyPHPMailer
     /**
      * Actually send a message via the selected mechanism.
      *
+     * @return bool
      * @throws Exception
      *
-     * @return bool
      */
     public function postSend()
     {
@@ -1652,7 +1660,7 @@ class acyPHPMailer
                 case 'mail':
                     return $this->mailSend($this->MIMEHeader, $this->MIMEBody);
                 default:
-                    $sendMethod = $this->Mailer . 'Send';
+                    $sendMethod = $this->Mailer.'Send';
                     if (method_exists($this, $sendMethod)) {
                         return $this->$sendMethod($this->MIMEHeader, $this->MIMEBody);
                     }
@@ -1676,14 +1684,14 @@ class acyPHPMailer
     /**
      * Send mail using the $Sendmail program.
      *
-     * @see PHPMailer::$Sendmail
-     *
      * @param string $header The message headers
      * @param string $body   The message body
      *
+     * @return bool
      * @throws Exception
      *
-     * @return bool
+     * @see PHPMailer::$Sendmail
+     *
      */
     protected function sendmailSend($header, $body)
     {
@@ -1692,7 +1700,7 @@ class acyPHPMailer
         } else {
             $this->edebug('Sending with sendmail');
         }
-        $header = static::stripTrailingWSP($header) . static::$LE . static::$LE;
+        $header = static::stripTrailingWSP($header).static::$LE.static::$LE;
         //This sets the SMTP envelope sender which gets turned into a return-path header by the receiver
         //A space after `-f` is optional, but there is a long history of its presence
         //causing problems, so we don't use one
@@ -1700,7 +1708,10 @@ class acyPHPMailer
         //Sendmail docs: http://www.sendmail.org/~ca/email/man/sendmail.html
         //Qmail docs: http://www.qmail.org/man/man8/qmail-inject.html
         //Example problem: https://www.drupal.org/node/1057954
-        if (empty($this->Sender) && !empty(ini_get('sendmail_from'))) {
+
+        //PHP 5.6 workaround
+        $sendmail_from_value = ini_get('sendmail_from');
+        if (empty($this->Sender) && !empty($sendmail_from_value)) {
             //PHP config has a sender address we can use
             $this->Sender = ini_get('sendmail_from');
         }
@@ -1721,23 +1732,23 @@ class acyPHPMailer
         }
 
         $sendmail = sprintf($sendmailFmt, escapeshellcmd($this->Sendmail), $this->Sender);
-        $this->edebug('Sendmail path: ' . $this->Sendmail);
-        $this->edebug('Sendmail command: ' . $sendmail);
-        $this->edebug('Envelope sender: ' . $this->Sender);
+        $this->edebug('Sendmail path: '.$this->Sendmail);
+        $this->edebug('Sendmail command: '.$sendmail);
+        $this->edebug('Envelope sender: '.$this->Sender);
         $this->edebug("Headers: {$header}");
 
         if ($this->SingleTo) {
             foreach ($this->SingleToArray as $toAddr) {
                 $mail = @popen($sendmail, 'w');
                 if (!$mail) {
-                    throw new Exception($this->lang('execute') . $this->Sendmail, self::STOP_CRITICAL);
+                    throw new Exception($this->lang('execute').$this->Sendmail, self::STOP_CRITICAL);
                 }
                 $this->edebug("To: {$toAddr}");
-                fwrite($mail, 'To: ' . $toAddr . "\n");
+                fwrite($mail, 'To: '.$toAddr."\n");
                 fwrite($mail, $header);
                 fwrite($mail, $body);
                 $result = pclose($mail);
-                $addrinfo = static::parseAddresses($toAddr, true, $this->charSet);
+                $addrinfo = static::parseAddresses($toAddr, true, $this->CharSet);
                 $this->doCallback(
                     ($result === 0),
                     [[$addrinfo['address'], $addrinfo['name']]],
@@ -1748,15 +1759,15 @@ class acyPHPMailer
                     $this->From,
                     []
                 );
-                $this->edebug("Result: " . ($result === 0 ? 'true' : 'false'));
+                $this->edebug("Result: ".($result === 0 ? 'true' : 'false'));
                 if (0 !== $result) {
-                    throw new Exception($this->lang('execute') . $this->Sendmail, self::STOP_CRITICAL);
+                    throw new Exception($this->lang('execute').$this->Sendmail, self::STOP_CRITICAL);
                 }
             }
         } else {
             $mail = @popen($sendmail, 'w');
             if (!$mail) {
-                throw new Exception($this->lang('execute') . $this->Sendmail, self::STOP_CRITICAL);
+                throw new Exception($this->lang('execute').$this->Sendmail, self::STOP_CRITICAL);
             }
             fwrite($mail, $header);
             fwrite($mail, $body);
@@ -1771,9 +1782,9 @@ class acyPHPMailer
                 $this->From,
                 []
             );
-            $this->edebug("Result: " . ($result === 0 ? 'true' : 'false'));
+            $this->edebug("Result: ".($result === 0 ? 'true' : 'false'));
             if (0 !== $result) {
-                throw new Exception($this->lang('execute') . $this->Sendmail, self::STOP_CRITICAL);
+                throw new Exception($this->lang('execute').$this->Sendmail, self::STOP_CRITICAL);
             }
         }
 
@@ -1792,7 +1803,13 @@ class acyPHPMailer
      */
     protected static function isShellSafe($string)
     {
-        //Future-proof
+        //It's not possible to use shell commands safely (which includes the mail() function) without escapeshellarg,
+        //but some hosting providers disable it, creating a security problem that we don't want to have to deal with,
+        //so we don't.
+        if (!function_exists('escapeshellarg') || !function_exists('escapeshellcmd')) {
+            return false;
+        }
+
         if (
             escapeshellcmd($string) !== $string
             || !in_array(escapeshellarg($string), ["'$string'", "\"$string\""])
@@ -1802,7 +1819,7 @@ class acyPHPMailer
 
         $length = strlen($string);
 
-        for ($i = 0; $i < $length; ++$i) {
+        for ($i = 0 ; $i < $length ; ++$i) {
             $c = $string[$i];
 
             //All other characters have a special meaning in at least one common shell, including = and +.
@@ -1848,7 +1865,8 @@ class acyPHPMailer
         if (strpos($path, '\\\\') !== 0) {
             $readable = $readable && is_readable($path);
         }
-        return  $readable;
+
+        return $readable;
     }
 
     /**
@@ -1865,7 +1883,7 @@ class acyPHPMailer
      */
     protected function mailSend($header, $body)
     {
-        $header = static::stripTrailingWSP($header) . static::$LE . static::$LE;
+        $header = static::stripTrailingWSP($header).static::$LE.static::$LE;
 
         $toArr = [];
         foreach ($this->to as $toaddr) {
@@ -1882,7 +1900,10 @@ class acyPHPMailer
         //Qmail docs: http://www.qmail.org/man/man8/qmail-inject.html
         //Example problem: https://www.drupal.org/node/1057954
         //CVE-2016-10033, CVE-2016-10045: Don't pass -f if characters will be escaped.
-        if (empty($this->Sender) && !empty(ini_get('sendmail_from'))) {
+
+        //PHP 5.6 workaround
+        $sendmail_from_value = ini_get('sendmail_from');
+        if (empty($this->Sender) && !empty($sendmail_from_value)) {
             //PHP config has a sender address we can use
             $this->Sender = ini_get('sendmail_from');
         }
@@ -1897,7 +1918,7 @@ class acyPHPMailer
         if ($this->SingleTo && count($toArr) > 1) {
             foreach ($toArr as $toAddr) {
                 $result = $this->mailPassthru($toAddr, $this->Subject, $body, $header, $params);
-                $addrinfo = static::parseAddresses($toAddr, true, $this->charSet);
+                $addrinfo = static::parseAddresses($toAddr, true, $this->CharSet);
                 $this->doCallback(
                     $result,
                     [[$addrinfo['address'], $addrinfo['name']]],
@@ -1955,20 +1976,20 @@ class acyPHPMailer
      * Send mail via SMTP.
      * Returns false if there is a bad MAIL FROM, RCPT, or DATA input.
      *
-     * @see PHPMailer::setSMTPInstance() to use a different class.
-     *
-     * @uses \PHPMailer\PHPMailer\SMTP
-     *
      * @param string $header The message headers
      * @param string $body   The message body
      *
+     * @return bool
      * @throws Exception
      *
-     * @return bool
+     * @see  PHPMailer::setSMTPInstance() to use a different class.
+     *
+     * @uses \PHPMailer\PHPMailer\SMTP
+     *
      */
     protected function smtpSend($header, $body)
     {
-        $header = static::stripTrailingWSP($header) . static::$LE . static::$LE;
+        $header = static::stripTrailingWSP($header).static::$LE.static::$LE;
         $bad_rcpt = [];
         if (!$this->smtpConnect($this->SMTPOptions)) {
             throw new Exception($this->lang('smtp_connect_failed'), self::STOP_CRITICAL);
@@ -1980,7 +2001,7 @@ class acyPHPMailer
             $smtp_from = $this->Sender;
         }
         if (!$this->smtp->mail($smtp_from)) {
-            $this->setError($this->lang('from_failed') . $smtp_from . ' : ' . implode(',', $this->smtp->getError()));
+            $this->setError($this->lang('from_failed').$smtp_from.' : '.implode(',', $this->smtp->getError()));
             throw new Exception($this->ErrorInfo, self::STOP_CRITICAL);
         }
 
@@ -2001,7 +2022,7 @@ class acyPHPMailer
         }
 
         //Only send the DATA command if we have viable recipients
-        if ((count($this->all_recipients) > count($bad_rcpt)) && !$this->smtp->data($header . $body)) {
+        if ((count($this->all_recipients) > count($bad_rcpt)) && !$this->smtp->data($header.$body)) {
             throw new Exception($this->lang('data_not_accepted'), self::STOP_CRITICAL);
         }
 
@@ -2031,14 +2052,16 @@ class acyPHPMailer
         if (count($bad_rcpt) > 0) {
             $errstr = '';
             foreach ($bad_rcpt as $bad) {
-                $errstr .= $bad['to'] . ': ' . $bad['error'].', ';
+                $errstr .= $bad['to'].': '.$bad['error'].', ';
             }
             $errstr = rtrim($errstr, ', ');
-			$errorTmp = $this->smtp->getError();
-			$errorLbl = empty($errorTmp) ? $this->Lang('recipients_failed') : implode(', ',$errorTmp);
-			$this->setError($errorLbl . ' (' . $errstr . ') ');
-			// Avoid the nested MAIL command error
-			$this->smtp->Reset();
+
+            $errorTmp = $this->smtp->getError();
+            $errorLbl = empty($errorTmp) ? $this->Lang('recipients_failed') : implode(', ', $errorTmp);
+            $this->setError($errorLbl.' ('.$errstr.') ');
+
+            // Avoid the nested MAIL command error
+            $this->smtp->Reset();
             throw new Exception($this->ErrorInfo);
         }
 
@@ -2051,11 +2074,11 @@ class acyPHPMailer
      *
      * @param array $options An array of options compatible with stream_context_create()
      *
+     * @return bool
      * @throws Exception
      *
      * @uses \PHPMailer\PHPMailer\SMTP
      *
-     * @return bool
      */
     public function smtpConnect($options = null)
     {
@@ -2089,7 +2112,7 @@ class acyPHPMailer
                     $hostinfo
                 )
             ) {
-                $this->edebug($this->lang('invalid_hostentry') . ' ' . trim($hostentry));
+                $this->edebug($this->lang('invalid_hostentry').' '.trim($hostentry));
                 //Not a valid host entry
                 continue;
             }
@@ -2101,7 +2124,7 @@ class acyPHPMailer
 
             //Check the host name is a valid name or IP address before trying to use it
             if (!static::isValidHost($hostinfo[2])) {
-                $this->edebug($this->lang('invalid_host') . ' ' . $hostinfo[2]);
+                $this->edebug($this->lang('invalid_host').' '.$hostinfo[2]);
                 continue;
             }
             $prefix = '';
@@ -2121,7 +2144,7 @@ class acyPHPMailer
             if (static::ENCRYPTION_STARTTLS === $secure || static::ENCRYPTION_SMTPS === $secure) {
                 //Check for an OpenSSL constant rather than using extension_loaded, which is sometimes disabled
                 if (!$sslext) {
-                    throw new Exception($this->lang('extension_missing') . 'openssl', self::STOP_CRITICAL);
+                    throw new Exception($this->lang('extension_missing').'openssl', self::STOP_CRITICAL);
                 }
             }
             $host = $hostinfo[2];
@@ -2132,9 +2155,9 @@ class acyPHPMailer
                 $hostinfo[3] > 0 &&
                 $hostinfo[3] < 65536
             ) {
-                $port = (int) $hostinfo[3];
+                $port = (int)$hostinfo[3];
             }
-            if ($this->smtp->connect($prefix . $host, $port, $this->Timeout, $options)) {
+            if ($this->smtp->connect($prefix.$host, $port, $this->Timeout, $options)) {
                 try {
                     if ($this->Helo) {
                         $hello = $this->Helo;
@@ -2152,7 +2175,8 @@ class acyPHPMailer
                     }
                     if ($tls) {
                         if (!$this->smtp->startTLS()) {
-                            throw new Exception($this->lang('connect_host'));
+                            $message = $this->getSmtpErrorMessage('connect_host');
+                            throw new Exception($message);
                         }
                         //We must resend EHLO after TLS negotiation
                         $this->smtp->hello($hello);
@@ -2166,7 +2190,7 @@ class acyPHPMailer
                         )
                     ) {
                         $errorTmp = $this->smtp->getError();
-                        $errorLbl = empty($errorTmp) ? $this->Lang('authenticate') : implode(', ',$errorTmp);
+                        $errorLbl = empty($errorTmp) ? $this->Lang('authenticate') : implode(', ', $errorTmp);
                         throw new Exception($errorLbl);
                     }
 
@@ -2184,6 +2208,10 @@ class acyPHPMailer
         //As we've caught all exceptions, just report whatever the last one was
         if ($this->exceptions && null !== $lastexception) {
             throw $lastexception;
+        } elseif ($this->exceptions) {
+            // no exception was thrown, likely $this->smtp->connect() failed
+            $message = $this->getSmtpErrorMessage('connect_host');
+            throw new Exception($message);
         }
 
         return false;
@@ -2207,7 +2235,7 @@ class acyPHPMailer
      * @param string $langcode  ISO 639-1 2-character language code (e.g. French is "fr")
      *                          Optionally, the language code can be enhanced with a 4-character
      *                          script annotation and/or a 2-character country annotation.
-     * @param string $lang_path Path to the language file directory, with trailing separator (slash).D
+     * @param string $lang_path Path to the language file directory, with trailing separator (slash)
      *                          Do not set this from user input!
      *
      * @return bool Returns true if the requested language was loaded, false otherwise.
@@ -2233,8 +2261,8 @@ class acyPHPMailer
         //Define full set of translatable strings in English
         $PHPMAILER_LANG = [
             'authenticate' => 'SMTP Error: Could not authenticate.',
-            'buggy_php' => 'Your version of PHP is affected by a bug that may result in corrupted messages.' .
-                ' To fix it, switch to sending using SMTP, disable the mail.add_x_header option in' .
+            'buggy_php' => 'Your version of PHP is affected by a bug that may result in corrupted messages.'.
+                ' To fix it, switch to sending using SMTP, disable the mail.add_x_header option in'.
                 ' your php.ini, switch to MacOS or Linux, or upgrade your PHP to version 7.0.17+ or 7.1.3+.',
             'connect_host' => 'SMTP Error: Could not connect to SMTP host.',
             'data_not_accepted' => 'SMTP Error: data not accepted.',
@@ -2263,12 +2291,12 @@ class acyPHPMailer
         ];
         if (empty($lang_path)) {
             //Calculate an absolute path so it can work if CWD is not here
-            $lang_path = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR;
+            $lang_path = dirname(__DIR__).DIRECTORY_SEPARATOR.'language'.DIRECTORY_SEPARATOR;
         }
 
         //Validate $langcode
         $foundlang = true;
-        $langcode  = strtolower($langcode);
+        $langcode = strtolower($langcode);
         if (
             !preg_match('/^(?P<lang>[a-z]{2})(?P<script>_[a-z]{4})?(?P<country>_[a-z]{2})?$/', $langcode, $matches)
             && $langcode !== 'en'
@@ -2281,20 +2309,20 @@ class acyPHPMailer
         if ('en' !== $langcode) {
             $langcodes = [];
             if (!empty($matches['script']) && !empty($matches['country'])) {
-                $langcodes[] = $matches['lang'] . $matches['script'] . $matches['country'];
+                $langcodes[] = $matches['lang'].$matches['script'].$matches['country'];
             }
             if (!empty($matches['country'])) {
-                $langcodes[] = $matches['lang'] . $matches['country'];
+                $langcodes[] = $matches['lang'].$matches['country'];
             }
             if (!empty($matches['script'])) {
-                $langcodes[] = $matches['lang'] . $matches['script'];
+                $langcodes[] = $matches['lang'].$matches['script'];
             }
             $langcodes[] = $matches['lang'];
 
             //Try and find a readable language file for the requested language.
             $foundFile = false;
             foreach ($langcodes as $code) {
-                $lang_file = $lang_path . 'phpmailer.lang-' . $code . '.php';
+                $lang_file = $lang_path.'phpmailer.lang-'.$code.'.php';
                 if (static::fileIsAccessible($lang_file)) {
                     $foundFile = true;
                     break;
@@ -2363,7 +2391,7 @@ class acyPHPMailer
             $addresses[] = $this->addrFormat($address);
         }
 
-        return $type . ': ' . implode(', ', $addresses) . static::$LE;
+        return $type.': '.implode(', ', $addresses).static::$LE;
     }
 
     /**
@@ -2380,8 +2408,8 @@ class acyPHPMailer
             return $this->secureHeader($addr[0]);
         }
 
-        return $this->encodeHeader($this->secureHeader($addr[1]), 'phrase') .
-            ' <' . $this->secureHeader($addr[0]) . '>';
+        return $this->encodeHeader($this->secureHeader($addr[1]), 'phrase').
+            ' <'.$this->secureHeader($addr[0]).'>';
     }
 
     /**
@@ -2438,10 +2466,10 @@ class acyPHPMailer
                             }
                             $part = substr($word, 0, $len);
                             $word = substr($word, $len);
-                            $buf .= ' ' . $part;
-                            $message .= $buf . sprintf('=%s', static::$LE);
+                            $buf .= ' '.$part;
+                            $message .= $buf.sprintf('=%s', static::$LE);
                         } else {
-                            $message .= $buf . $soft_break;
+                            $message .= $buf.$soft_break;
                         }
                         $buf = '';
                     }
@@ -2458,10 +2486,10 @@ class acyPHPMailer
                             $len -= 2;
                         }
                         $part = substr($word, 0, $len);
-                        $word = (string) substr($word, $len);
+                        $word = (string)substr($word, $len);
 
                         if ($word !== '') {
-                            $message .= $part . sprintf('=%s', static::$LE);
+                            $message .= $part.sprintf('=%s', static::$LE);
                         } else {
                             $buf = $part;
                         }
@@ -2474,13 +2502,13 @@ class acyPHPMailer
                     $buf .= $word;
 
                     if ('' !== $buf_o && strlen($buf) > $length) {
-                        $message .= $buf_o . $soft_break;
+                        $message .= $buf_o.$soft_break;
                         $buf = $word;
                     }
                 }
                 $firstword = false;
             }
-            $message .= $buf . static::$LE;
+            $message .= $buf.static::$LE;
         }
 
         return $message;
@@ -2613,10 +2641,10 @@ class acyPHPMailer
         if (
             '' !== $this->MessageID &&
             preg_match(
-                '/^<((([a-z\d!#$%&\'*+\/=?^_`{|}~-]+(\.[a-z\d!#$%&\'*+\/=?^_`{|}~-]+)*)' .
-                '|("(([\x01-\x08\x0B\x0C\x0E-\x1F\x7F]|[\x21\x23-\x5B\x5D-\x7E])' .
-                '|(\\[\x01-\x09\x0B\x0C\x0E-\x7F]))*"))@(([a-z\d!#$%&\'*+\/=?^_`{|}~-]+' .
-                '(\.[a-z\d!#$%&\'*+\/=?^_`{|}~-]+)*)|(\[(([\x01-\x08\x0B\x0C\x0E-\x1F\x7F]' .
+                '/^<((([a-z\d!#$%&\'*+\/=?^_`{|}~-]+(\.[a-z\d!#$%&\'*+\/=?^_`{|}~-]+)*)'.
+                '|("(([\x01-\x08\x0B\x0C\x0E-\x1F\x7F]|[\x21\x23-\x5B\x5D-\x7E])'.
+                '|(\\[\x01-\x09\x0B\x0C\x0E-\x7F]))*"))@(([a-z\d!#$%&\'*+\/=?^_`{|}~-]+'.
+                '(\.[a-z\d!#$%&\'*+\/=?^_`{|}~-]+)*)|(\[(([\x01-\x08\x0B\x0C\x0E-\x1F\x7F]'.
                 '|[\x21-\x5A\x5E-\x7E])|(\\[\x01-\x09\x0B\x0C\x0E-\x7F]))*\])))>$/Di',
                 $this->MessageID
             )
@@ -2630,19 +2658,18 @@ class acyPHPMailer
             $result .= $this->headerLine('X-Priority', $this->Priority);
         }
         if ('' === $this->XMailer) {
+            //Empty string for default X-Mailer header
             $result .= $this->headerLine(
                 'X-Mailer',
-                'PHPMailer ' . self::VERSION . ' (https://github.com/PHPMailer/PHPMailer)'
+                'PHPMailer '.self::VERSION.' (https://github.com/PHPMailer/PHPMailer)'
             );
-        } else {
-            $myXmailer = trim($this->XMailer);
-            if ($myXmailer) {
-                $result .= $this->headerLine('X-Mailer', $myXmailer);
-            }
-        }
+        } elseif (is_string($this->XMailer) && trim($this->XMailer) !== '') {
+            //Some string
+            $result .= $this->headerLine('X-Mailer', trim($this->XMailer));
+        } //Other values result in no X-Mailer header
 
         if ('' !== $this->ConfirmReadingTo) {
-            $result .= $this->headerLine('Disposition-Notification-To', '<' . $this->ConfirmReadingTo . '>');
+            $result .= $this->headerLine('Disposition-Notification-To', '<'.$this->ConfirmReadingTo.'>');
         }
 
         //Add custom headers
@@ -2671,24 +2698,24 @@ class acyPHPMailer
         $ismultipart = true;
         switch ($this->message_type) {
             case 'inline':
-                $result .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED . ';');
-                $result .= $this->textLine(' boundary="' . $this->boundary[1] . '"');
+                $result .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED.';');
+                $result .= $this->textLine(' boundary="'.$this->boundary[1].'"');
                 break;
             case 'attach':
             case 'inline_attach':
             case 'alt_attach':
             case 'alt_inline_attach':
-                $result .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_MIXED . ';');
-                $result .= $this->textLine(' boundary="' . $this->boundary[1] . '"');
+                $result .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_MIXED.';');
+                $result .= $this->textLine(' boundary="'.$this->boundary[1].'"');
                 break;
             case 'alt':
             case 'alt_inline':
-                $result .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_ALTERNATIVE . ';');
-                $result .= $this->textLine(' boundary="' . $this->boundary[1] . '"');
+                $result .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_ALTERNATIVE.';');
+                $result .= $this->textLine(' boundary="'.$this->boundary[1].'"');
                 break;
             default:
                 //Catches case 'plain': and case '':
-                $result .= $this->textLine('Content-Type: ' . $this->ContentType . '; charset=' . $this->CharSet);
+                $result .= $this->textLine('Content-Type: '.$this->ContentType.'; charset='.$this->CharSet);
                 $ismultipart = false;
                 break;
         }
@@ -2713,14 +2740,14 @@ class acyPHPMailer
      * Includes complete headers and body.
      * Only valid post preSend().
      *
+     * @return string
      * @see PHPMailer::preSend()
      *
-     * @return string
      */
     public function getSentMIMEMessage()
     {
-        return static::stripTrailingWSP($this->MIMEHeader . $this->mailHeader) .
-            static::$LE . static::$LE . $this->MIMEBody;
+        return static::stripTrailingWSP($this->MIMEHeader.$this->mailHeader).
+            static::$LE.static::$LE.$this->MIMEBody;
     }
 
     /**
@@ -2745,7 +2772,7 @@ class acyPHPMailer
         if ($bytes === '') {
             //We failed to produce a proper random string, so make do.
             //Use a hash to force the length to the same as the other methods
-            $bytes = hash('sha256', uniqid((string) mt_rand(), true), true);
+            $bytes = hash('sha256', uniqid((string)mt_rand(), true), true);
         }
 
         //We don't care about messing up base64 format here, just want a random string
@@ -2756,21 +2783,21 @@ class acyPHPMailer
      * Assemble the message body.
      * Returns an empty string on failure.
      *
+     * @return string The assembled message body
      * @throws Exception
      *
-     * @return string The assembled message body
      */
     public function createBody()
     {
         $body = '';
         //Create unique IDs and preset boundaries
         $this->uniqueid = $this->generateId();
-        $this->boundary[1] = 'b1_' . $this->uniqueid;
-        $this->boundary[2] = 'b2_' . $this->uniqueid;
-        $this->boundary[3] = 'b3_' . $this->uniqueid;
+        $this->boundary[1] = 'b1_'.$this->uniqueid;
+        $this->boundary[2] = 'b2_'.$this->uniqueid;
+        $this->boundary[3] = 'b3_'.$this->uniqueid;
 
         if ($this->sign_key_file) {
-            $body .= $this->getMailMIME() . static::$LE;
+            $body .= $this->getMailMIME().static::$LE;
         }
 
         $this->setWordWrap();
@@ -2803,7 +2830,7 @@ class acyPHPMailer
             $altBodyEncoding = static::ENCODING_QUOTED_PRINTABLE;
         }
         //Use this as a preamble in all multipart message types
-        $mimepre = 'This is a multi-part message in MIME format.' . static::$LE . static::$LE;
+        $mimepre = 'This is a multi-part message in MIME format.'.static::$LE.static::$LE;
         switch ($this->message_type) {
             case 'inline':
                 $body .= $mimepre;
@@ -2821,10 +2848,10 @@ class acyPHPMailer
                 break;
             case 'inline_attach':
                 $body .= $mimepre;
-                $body .= $this->textLine('--' . $this->boundary[1]);
-                $body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED . ';');
-                $body .= $this->textLine(' boundary="' . $this->boundary[2] . '";');
-                $body .= $this->textLine(' type="' . static::CONTENT_TYPE_TEXT_HTML . '"');
+                $body .= $this->textLine('--'.$this->boundary[1]);
+                $body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED.';');
+                $body .= $this->textLine(' boundary="'.$this->boundary[2].'";');
+                $body .= $this->textLine(' type="'.static::CONTENT_TYPE_TEXT_HTML.'"');
                 $body .= static::$LE;
                 $body .= $this->getBoundary($this->boundary[2], $bodyCharSet, '', $bodyEncoding);
                 $body .= $this->encodeString($this->Body, $bodyEncoding);
@@ -2854,7 +2881,7 @@ class acyPHPMailer
                 if (!empty($this->Ical)) {
                     $method = static::ICAL_METHOD_REQUEST;
                     foreach (static::$IcalMethods as $imethod) {
-                        if (stripos($this->Ical, 'METHOD:' . $imethod) !== false) {
+                        if (stripos($this->Ical, 'METHOD:'.$imethod) !== false) {
                             $method = $imethod;
                             break;
                         }
@@ -2862,7 +2889,7 @@ class acyPHPMailer
                     $body .= $this->getBoundary(
                         $this->boundary[1],
                         '',
-                        static::CONTENT_TYPE_TEXT_CALENDAR . '; method=' . $method,
+                        static::CONTENT_TYPE_TEXT_CALENDAR.'; method='.$method,
                         ''
                     );
                     $body .= $this->encodeString($this->Ical, $this->Encoding);
@@ -2880,10 +2907,10 @@ class acyPHPMailer
                 );
                 $body .= $this->encodeString($this->AltBody, $altBodyEncoding);
                 $body .= static::$LE;
-                $body .= $this->textLine('--' . $this->boundary[1]);
-                $body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED . ';');
-                $body .= $this->textLine(' boundary="' . $this->boundary[2] . '";');
-                $body .= $this->textLine(' type="' . static::CONTENT_TYPE_TEXT_HTML . '"');
+                $body .= $this->textLine('--'.$this->boundary[1]);
+                $body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED.';');
+                $body .= $this->textLine(' boundary="'.$this->boundary[2].'";');
+                $body .= $this->textLine(' type="'.static::CONTENT_TYPE_TEXT_HTML.'"');
                 $body .= static::$LE;
                 $body .= $this->getBoundary(
                     $this->boundary[2],
@@ -2899,9 +2926,9 @@ class acyPHPMailer
                 break;
             case 'alt_attach':
                 $body .= $mimepre;
-                $body .= $this->textLine('--' . $this->boundary[1]);
-                $body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_ALTERNATIVE . ';');
-                $body .= $this->textLine(' boundary="' . $this->boundary[2] . '"');
+                $body .= $this->textLine('--'.$this->boundary[1]);
+                $body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_ALTERNATIVE.';');
+                $body .= $this->textLine(' boundary="'.$this->boundary[2].'"');
                 $body .= static::$LE;
                 $body .= $this->getBoundary(
                     $this->boundary[2],
@@ -2922,7 +2949,7 @@ class acyPHPMailer
                 if (!empty($this->Ical)) {
                     $method = static::ICAL_METHOD_REQUEST;
                     foreach (static::$IcalMethods as $imethod) {
-                        if (stripos($this->Ical, 'METHOD:' . $imethod) !== false) {
+                        if (stripos($this->Ical, 'METHOD:'.$imethod) !== false) {
                             $method = $imethod;
                             break;
                         }
@@ -2930,7 +2957,7 @@ class acyPHPMailer
                     $body .= $this->getBoundary(
                         $this->boundary[2],
                         '',
-                        static::CONTENT_TYPE_TEXT_CALENDAR . '; method=' . $method,
+                        static::CONTENT_TYPE_TEXT_CALENDAR.'; method='.$method,
                         ''
                     );
                     $body .= $this->encodeString($this->Ical, $this->Encoding);
@@ -2941,9 +2968,9 @@ class acyPHPMailer
                 break;
             case 'alt_inline_attach':
                 $body .= $mimepre;
-                $body .= $this->textLine('--' . $this->boundary[1]);
-                $body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_ALTERNATIVE . ';');
-                $body .= $this->textLine(' boundary="' . $this->boundary[2] . '"');
+                $body .= $this->textLine('--'.$this->boundary[1]);
+                $body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_ALTERNATIVE.';');
+                $body .= $this->textLine(' boundary="'.$this->boundary[2].'"');
                 $body .= static::$LE;
                 $body .= $this->getBoundary(
                     $this->boundary[2],
@@ -2953,10 +2980,10 @@ class acyPHPMailer
                 );
                 $body .= $this->encodeString($this->AltBody, $altBodyEncoding);
                 $body .= static::$LE;
-                $body .= $this->textLine('--' . $this->boundary[2]);
-                $body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED . ';');
-                $body .= $this->textLine(' boundary="' . $this->boundary[3] . '";');
-                $body .= $this->textLine(' type="' . static::CONTENT_TYPE_TEXT_HTML . '"');
+                $body .= $this->textLine('--'.$this->boundary[2]);
+                $body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED.';');
+                $body .= $this->textLine(' boundary="'.$this->boundary[3].'";');
+                $body .= $this->textLine(' type="'.static::CONTENT_TYPE_TEXT_HTML.'"');
                 $body .= static::$LE;
                 $body .= $this->getBoundary(
                     $this->boundary[3],
@@ -2988,7 +3015,7 @@ class acyPHPMailer
         } elseif ($this->sign_key_file) {
             try {
                 if (!defined('PKCS7_TEXT')) {
-                    throw new Exception($this->lang('extension_missing') . 'openssl');
+                    throw new Exception($this->lang('extension_missing').'openssl');
                 }
 
                 $file = tempnam(sys_get_temp_dir(), 'srcsign');
@@ -3000,16 +3027,16 @@ class acyPHPMailer
                     $sign = @openssl_pkcs7_sign(
                         $file,
                         $signed,
-                        'file://' . realpath($this->sign_cert_file),
-                        ['file://' . realpath($this->sign_key_file), $this->sign_key_pass],
+                        'file://'.realpath($this->sign_cert_file),
+                        ['file://'.realpath($this->sign_key_file), $this->sign_key_pass],
                         []
                     );
                 } else {
                     $sign = @openssl_pkcs7_sign(
                         $file,
                         $signed,
-                        'file://' . realpath($this->sign_cert_file),
-                        ['file://' . realpath($this->sign_key_file), $this->sign_key_pass],
+                        'file://'.realpath($this->sign_cert_file),
+                        ['file://'.realpath($this->sign_key_file), $this->sign_key_pass],
                         [],
                         PKCS7_DETACHED,
                         $this->sign_extracerts_file
@@ -3022,11 +3049,11 @@ class acyPHPMailer
                     @unlink($signed);
                     //The message returned by openssl contains both headers and body, so need to split them up
                     $parts = explode("\n\n", $body, 2);
-                    $this->MIMEHeader .= $parts[0] . static::$LE . static::$LE;
+                    $this->MIMEHeader .= $parts[0].static::$LE.static::$LE;
                     $body = $parts[1];
                 } else {
                     @unlink($signed);
-                    throw new Exception($this->lang('signing') . openssl_error_string());
+                    throw new Exception($this->lang('signing').openssl_error_string());
                 }
             } catch (Exception $exc) {
                 $body = '';
@@ -3061,7 +3088,7 @@ class acyPHPMailer
         if ('' === $encoding) {
             $encoding = $this->Encoding;
         }
-        $result .= $this->textLine('--' . $boundary);
+        $result .= $this->textLine('--'.$boundary);
         $result .= sprintf('Content-Type: %s; charset=%s', $contentType, $charSet);
         $result .= static::$LE;
         //RFC1341 part 5 says 7bit is assumed if not specified
@@ -3082,7 +3109,7 @@ class acyPHPMailer
      */
     protected function endBoundary($boundary)
     {
-        return static::$LE . '--' . $boundary . '--' . static::$LE;
+        return static::$LE.'--'.$boundary.'--'.static::$LE;
     }
 
     /**
@@ -3118,7 +3145,7 @@ class acyPHPMailer
      */
     public function headerLine($name, $value)
     {
-        return $name . ': ' . $value . static::$LE;
+        return $name.': '.$value.static::$LE;
     }
 
     /**
@@ -3130,7 +3157,7 @@ class acyPHPMailer
      */
     public function textLine($value)
     {
-        return $value . static::$LE;
+        return $value.static::$LE;
     }
 
     /**
@@ -3146,9 +3173,9 @@ class acyPHPMailer
      * @param string $type        MIME type, e.g. `image/jpeg`; determined automatically from $path if not specified
      * @param string $disposition Disposition to use
      *
+     * @return bool
      * @throws Exception
      *
-     * @return bool
      */
     public function addAttachment(
         $path,
@@ -3159,7 +3186,7 @@ class acyPHPMailer
     ) {
         try {
             if (!static::fileIsAccessible($path)) {
-                throw new Exception($this->lang('file_access') . $path, self::STOP_CONTINUE);
+                throw new Exception($this->lang('file_access').$path, self::STOP_CONTINUE);
             }
 
             //If a MIME type is not specified, try to work it out from the file name
@@ -3167,12 +3194,12 @@ class acyPHPMailer
                 $type = static::filenameToType($path);
             }
 
-            $filename = (string) static::mb_pathinfo($path, PATHINFO_BASENAME);
+            $filename = (string)static::mb_pathinfo($path, PATHINFO_BASENAME);
             if ('' === $name) {
                 $name = $filename;
             }
             if (!$this->validateEncoding($encoding)) {
-                throw new Exception($this->lang('encoding') . $encoding);
+                throw new Exception($this->lang('encoding').$encoding);
             }
 
             $this->attachment[] = [
@@ -3215,9 +3242,9 @@ class acyPHPMailer
      * @param string $disposition_type
      * @param string $boundary
      *
+     * @return string
      * @throws Exception
      *
-     * @return string
      */
     protected function attachAll($disposition_type, $boundary)
     {
@@ -3277,8 +3304,8 @@ class acyPHPMailer
                 }
 
                 //Only set Content-IDs on inline attachments
-                if ((string) $cid !== '' && $disposition === 'inline') {
-                    $mime[] = 'Content-ID: <' . $this->encodeHeader($this->secureHeader($cid)) . '>' . static::$LE;
+                if ((string)$cid !== '' && $disposition === 'inline') {
+                    $mime[] = 'Content-ID: <'.$this->encodeHeader($this->secureHeader($cid)).'>'.static::$LE;
                 }
 
                 //Allow for bypassing the Content-Disposition header
@@ -3289,13 +3316,13 @@ class acyPHPMailer
                             'Content-Disposition: %s; filename=%s%s',
                             $disposition,
                             static::quotedString($encoded_name),
-                            static::$LE . static::$LE
+                            static::$LE.static::$LE
                         );
                     } else {
                         $mime[] = sprintf(
                             'Content-Disposition: %s%s',
                             $disposition,
-                            static::$LE . static::$LE
+                            static::$LE.static::$LE
                         );
                     }
                 } else {
@@ -3333,11 +3360,11 @@ class acyPHPMailer
     {
         try {
             if (!static::fileIsAccessible($path)) {
-                throw new Exception($this->lang('file_open') . $path, self::STOP_CONTINUE);
+                throw new Exception($this->lang('file_open').$path, self::STOP_CONTINUE);
             }
             $file_buffer = file_get_contents($path);
             if (false === $file_buffer) {
-                throw new Exception($this->lang('file_open') . $path, self::STOP_CONTINUE);
+                throw new Exception($this->lang('file_open').$path, self::STOP_CONTINUE);
             }
             $file_buffer = $this->encodeString($file_buffer, $encoding);
 
@@ -3360,9 +3387,9 @@ class acyPHPMailer
      * @param string $str      The text to encode
      * @param string $encoding The encoding to use; one of 'base64', '7bit', '8bit', 'binary', 'quoted-printable'
      *
+     * @return string
      * @throws Exception
      *
-     * @return string
      */
     public function encodeString($str, $encoding = self::ENCODING_BASE64)
     {
@@ -3390,9 +3417,9 @@ class acyPHPMailer
                 $encoded = $this->encodeQP($str);
                 break;
             default:
-                $this->setError($this->lang('encoding') . $encoding);
+                $this->setError($this->lang('encoding').$encoding);
                 if ($this->exceptions) {
-                    throw new Exception($this->lang('encoding') . $encoding);
+                    throw new Exception($this->lang('encoding').$encoding);
                 }
                 break;
         }
@@ -3477,13 +3504,13 @@ class acyPHPMailer
                     $maxlen -= $maxlen % 4;
                     $encoded = trim(chunk_split($encoded, $maxlen, "\n"));
                 }
-                $encoded = preg_replace('/^(.*)$/m', ' =?' . $charset . "?$encoding?\\1?=", $encoded);
+                $encoded = preg_replace('/^(.*)$/m', ' =?'.$charset."?$encoding?\\1?=", $encoded);
                 break;
             case 'Q':
                 $encoded = $this->encodeQ($str, $position);
                 $encoded = $this->wrapText($encoded, $maxlen, true);
-                $encoded = str_replace('=' . static::$LE, "\n", trim($encoded));
-                $encoded = preg_replace('/^(.*)$/m', ' =?' . $charset . "?$encoding?\\1?=", $encoded);
+                $encoded = str_replace('='.static::$LE, "\n", trim($encoded));
+                $encoded = preg_replace('/^(.*)$/m', ' =?'.$charset."?$encoding?\\1?=", $encoded);
                 break;
             default:
                 return $str;
@@ -3518,7 +3545,7 @@ class acyPHPMailer
      */
     public function has8bitChars($text)
     {
-        return (bool) preg_match('/[\x80-\xFF]/', $text);
+        return (bool)preg_match('/[\x80-\xFF]/', $text);
     }
 
     /**
@@ -3535,7 +3562,7 @@ class acyPHPMailer
      */
     public function base64EncodeWrapMB($str, $linebreak = null)
     {
-        $start = '=?' . $this->CharSet . '?B?';
+        $start = '=?'.$this->CharSet.'?B?';
         $end = '?=';
         $encoded = '';
         if (null === $linebreak) {
@@ -3551,7 +3578,7 @@ class acyPHPMailer
         $avgLength = floor($length * $ratio * .75);
 
         $offset = 0;
-        for ($i = 0; $i < $mb_length; $i += $offset) {
+        for ($i = 0 ; $i < $mb_length ; $i += $offset) {
             $lookBack = 0;
             do {
                 $offset = $avgLength - $lookBack;
@@ -3559,7 +3586,7 @@ class acyPHPMailer
                 $chunk = base64_encode($chunk);
                 ++$lookBack;
             } while (strlen($chunk) > $length);
-            $encoded .= $chunk . $linebreak;
+            $encoded .= $chunk.$linebreak;
         }
 
         //Chomp the last linefeed
@@ -3611,7 +3638,7 @@ class acyPHPMailer
             default:
                 //RFC 2047 section 5.1
                 //Replace every high ascii, control, =, ? and _ characters
-                $pattern = '\000-\011\013\014\016-\037\075\077\137\177-\377' . $pattern;
+                $pattern = '\000-\011\013\014\016-\037\075\077\137\177-\377'.$pattern;
                 break;
         }
         $matches = [];
@@ -3624,7 +3651,7 @@ class acyPHPMailer
                 array_unshift($matches[0], '=');
             }
             foreach (array_unique($matches[0]) as $char) {
-                $encoded = str_replace($char, '=' . sprintf('%02X', ord($char)), $encoded);
+                $encoded = str_replace($char, '='.sprintf('%02X', ord($char)), $encoded);
             }
         }
         //Replace spaces with _ (more readable than =20)
@@ -3643,9 +3670,9 @@ class acyPHPMailer
      * @param string $type        File extension (MIME) type
      * @param string $disposition Disposition to use
      *
+     * @return bool True on successfully adding an attachment
      * @throws Exception
      *
-     * @return bool True on successfully adding an attachment
      */
     public function addStringAttachment(
         $string,
@@ -3661,7 +3688,7 @@ class acyPHPMailer
             }
 
             if (!$this->validateEncoding($encoding)) {
-                throw new Exception($this->lang('encoding') . $encoding);
+                throw new Exception($this->lang('encoding').$encoding);
             }
 
             //Append to $attachment array
@@ -3705,9 +3732,9 @@ class acyPHPMailer
      * @param string $type        File MIME type
      * @param string $disposition Disposition to use
      *
+     * @return bool True on successfully adding an attachment
      * @throws Exception
      *
-     * @return bool True on successfully adding an attachment
      */
     public function addEmbeddedImage(
         $path,
@@ -3719,7 +3746,7 @@ class acyPHPMailer
     ) {
         try {
             if (!static::fileIsAccessible($path)) {
-                throw new Exception($this->lang('file_access') . $path, self::STOP_CONTINUE);
+                throw new Exception($this->lang('file_access').$path, self::STOP_CONTINUE);
             }
 
             //If a MIME type is not specified, try to work it out from the file name
@@ -3728,10 +3755,10 @@ class acyPHPMailer
             }
 
             if (!$this->validateEncoding($encoding)) {
-                throw new Exception($this->lang('encoding') . $encoding);
+                throw new Exception($this->lang('encoding').$encoding);
             }
 
-            $filename = (string) static::mb_pathinfo($path, PATHINFO_BASENAME);
+            $filename = (string)static::mb_pathinfo($path, PATHINFO_BASENAME);
             if ('' === $name) {
                 $name = $filename;
             }
@@ -3775,9 +3802,9 @@ class acyPHPMailer
      * @param string $type        MIME type - will be used in preference to any automatically derived type
      * @param string $disposition Disposition to use
      *
+     * @return bool True on successfully adding an attachment
      * @throws Exception
      *
-     * @return bool True on successfully adding an attachment
      */
     public function addStringEmbeddedImage(
         $string,
@@ -3794,7 +3821,7 @@ class acyPHPMailer
             }
 
             if (!$this->validateEncoding($encoding)) {
-                throw new Exception($this->lang('encoding') . $encoding);
+                throw new Exception($this->lang('encoding').$encoding);
             }
 
             //Append to $attachment array
@@ -4002,15 +4029,15 @@ class acyPHPMailer
         if ('smtp' === $this->Mailer && null !== $this->smtp) {
             $lasterror = $this->smtp->getError();
             if (!empty($lasterror['error'])) {
-                $msg .= $this->lang('smtp_error') . $lasterror['error'];
+                $msg .= $this->lang('smtp_error').$lasterror['error'];
                 if (!empty($lasterror['detail'])) {
-                    $msg .= ' ' . $this->lang('smtp_detail') . $lasterror['detail'];
+                    $msg .= ' '.$this->lang('smtp_detail').$lasterror['detail'];
                 }
                 if (!empty($lasterror['smtp_code'])) {
-                    $msg .= ' ' . $this->lang('smtp_code') . $lasterror['smtp_code'];
+                    $msg .= ' '.$this->lang('smtp_code').$lasterror['smtp_code'];
                 }
                 if (!empty($lasterror['smtp_code_ex'])) {
-                    $msg .= ' ' . $this->lang('smtp_code_ex') . $lasterror['smtp_code_ex'];
+                    $msg .= ' '.$this->lang('smtp_code_ex').$lasterror['smtp_code_ex'];
                 }
             }
         }
@@ -4085,7 +4112,7 @@ class acyPHPMailer
             //Is it a valid IPv4 address?
             return filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false;
         }
-        if (filter_var('http://' . $host, FILTER_VALIDATE_URL) !== false) {
+        if (filter_var('http://'.$host, FILTER_VALIDATE_URL) !== false) {
             //Is it a syntactically valid hostname?
             return true;
         }
@@ -4111,7 +4138,7 @@ class acyPHPMailer
                 //Include a link to troubleshooting docs on SMTP connection failure.
                 //This is by far the biggest cause of support questions
                 //but it's usually not PHPMailer's fault.
-                return $this->language[$key] . ' https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting';
+                return $this->language[$key].' https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting';
             }
 
             return $this->language[$key];
@@ -4119,6 +4146,27 @@ class acyPHPMailer
 
         //Return the key as a fallback
         return $key;
+    }
+
+    /**
+     * Build an error message starting with a generic one and adding details if possible.
+     *
+     * @param string $base_key
+     *
+     * @return string
+     */
+    private function getSmtpErrorMessage($base_key)
+    {
+        $message = $this->lang($base_key);
+        $error = $this->smtp->getError();
+        if (!empty($error['error'])) {
+            $message .= ' '.$error['error'];
+            if (!empty($error['detail'])) {
+                $message .= ' '.$error['detail'];
+            }
+        }
+
+        return $message;
     }
 
     /**
@@ -4150,7 +4198,7 @@ class acyPHPMailer
         $name = trim($name);
         $value = (null === $value) ? '' : trim($value);
         //Ensure name is not empty, and that neither name nor value contain line breaks
-        if (empty($name) || strpbrk($name . $value, "\r\n") !== false) {
+        if (empty($name) || strpbrk($name.$value, "\r\n") !== false) {
             if ($this->exceptions) {
                 throw new Exception($this->lang('invalid_header'));
             }
@@ -4187,6 +4235,7 @@ class acyPHPMailer
      * @param string        $basedir  Absolute path to a base directory to prepend to relative paths to images
      * @param bool|callable $advanced Whether to use the internal HTML to text converter
      *                                or your own custom converter
+     *
      * @return string The transformed message body
      *
      * @throws Exception
@@ -4216,20 +4265,20 @@ class acyPHPMailer
                     }
                     //Hash the decoded data, not the URL, so that the same data-URI image used in multiple places
                     //will only be embedded once, even if it used a different encoding
-                    $cid = substr(hash('sha256', $data), 0, 32) . '@phpmailer.0'; //RFC2392 S 2
+                    $cid = substr(hash('sha256', $data), 0, 32).'@phpmailer.0'; //RFC2392 S 2
 
                     if (!$this->cidExists($cid)) {
                         $this->addStringEmbeddedImage(
                             $data,
                             $cid,
-                            'embed' . $imgindex,
+                            'embed'.$imgindex,
                             static::ENCODING_BASE64,
                             $match[1]
                         );
                     }
                     $message = str_replace(
                         $images[0][$imgindex],
-                        $images[1][$imgindex] . '="cid:' . $cid . '"',
+                        $images[1][$imgindex].'="cid:'.$cid.'"',
                         $message
                     );
                     continue;
@@ -4250,7 +4299,7 @@ class acyPHPMailer
                         $directory = '';
                     }
                     //RFC2392 S 2
-                    $cid = substr(hash('sha256', $url), 0, 32) . '@phpmailer.0';
+                    $cid = substr(hash('sha256', $url), 0, 32).'@phpmailer.0';
                     if (strlen($basedir) > 1 && '/' !== substr($basedir, -1)) {
                         $basedir .= '/';
                     }
@@ -4259,16 +4308,16 @@ class acyPHPMailer
                     }
                     if (
                         $this->addEmbeddedImage(
-                            $basedir . $directory . $filename,
+                            $basedir.$directory.$filename,
                             $cid,
                             $filename,
                             static::ENCODING_BASE64,
-                            static::_mime_types((string) static::mb_pathinfo($filename, PATHINFO_EXTENSION))
+                            static::_mime_types((string)static::mb_pathinfo($filename, PATHINFO_EXTENSION))
                         )
                     ) {
                         $message = preg_replace(
-                            '/' . $images[1][$imgindex] . '=["\']' . preg_quote($url, '/') . '["\']/Ui',
-                            $images[1][$imgindex] . '="cid:' . $cid . '"',
+                            '/'.$images[1][$imgindex].'=["\']'.preg_quote($url, '/').'["\']/Ui',
+                            $images[1][$imgindex].'="cid:'.$cid.'"',
                             $message
                         );
                     }
@@ -4281,7 +4330,7 @@ class acyPHPMailer
         $this->AltBody = static::normalizeBreaks($this->html2text($message, $advanced));
         if (!$this->alternativeExists()) {
             $this->AltBody = 'This is an HTML-only message. To view it, activate HTML in your email application.'
-                . static::$LE;
+                .static::$LE;
         }
 
         return $this->Body;
@@ -4544,7 +4593,7 @@ class acyPHPMailer
 
             return true;
         }
-        $this->setError($this->lang('variable_set') . $name);
+        $this->setError($this->lang('variable_set').$name);
 
         return false;
     }
@@ -4645,12 +4694,12 @@ class acyPHPMailer
     {
         $line = '';
         $len = strlen($txt);
-        for ($i = 0; $i < $len; ++$i) {
+        for ($i = 0 ; $i < $len ; ++$i) {
             $ord = ord($txt[$i]);
             if (((0x21 <= $ord) && ($ord <= 0x3A)) || $ord === 0x3C || ((0x3E <= $ord) && ($ord <= 0x7E))) {
                 $line .= $txt[$i];
             } else {
-                $line .= '=' . sprintf('%02X', $ord);
+                $line .= '='.sprintf('%02X', $ord);
             }
         }
 
@@ -4662,21 +4711,23 @@ class acyPHPMailer
      *
      * @param string $signHeader
      *
+     * @return string The DKIM signature value
      * @throws Exception
      *
-     * @return string The DKIM signature value
      */
     public function DKIM_Sign($signHeader)
     {
         if (!defined('PKCS7_TEXT')) {
             if ($this->exceptions) {
-                throw new Exception($this->lang('extension_missing') . 'openssl');
+                throw new Exception($this->lang('extension_missing').'openssl');
             }
 
             return '';
         }
-        $privKeyStr = !empty($this->DKIM_private_string) ?
-            $this->DKIM_private_string :
+        $privKeyStr = !empty($this->DKIM_private_string)
+            ?
+            $this->DKIM_private_string
+            :
             file_get_contents($this->DKIM_private);
         if ('' !== $this->DKIM_passphrase) {
             $privKey = openssl_pkey_get_private($privKeyStr, $this->DKIM_passphrase);
@@ -4735,7 +4786,7 @@ class acyPHPMailer
             //But then says to delete space before and after the colon.
             //Net result is the same as trimming both ends of the value.
             //By elimination, the same applies to the field name
-            $lines[$key] = trim($heading, " \t") . ':' . trim($value, " \t");
+            $lines[$key] = trim($heading, " \t").':'.trim($value, " \t");
         }
 
         return implode(self::CRLF, $lines);
@@ -4761,7 +4812,7 @@ class acyPHPMailer
         $body = static::normalizeBreaks($body, self::CRLF);
 
         //Reduce multiple trailing line breaks to a single one
-        return static::stripTrailingWSP($body) . self::CRLF;
+        return static::stripTrailingWSP($body).self::CRLF;
     }
 
     /**
@@ -4771,9 +4822,9 @@ class acyPHPMailer
      * @param string $subject      Subject
      * @param string $body         Body
      *
+     * @return string
      * @throws Exception
      *
-     * @return string
      */
     public function DKIM_Add($headers_line, $subject, $body)
     {
@@ -4796,7 +4847,7 @@ class acyPHPMailer
             'x-mailer',
         ];
         if (stripos($headers_line, 'Subject') === false) {
-            $headers_line .= 'Subject: ' . $subject . static::$LE;
+            $headers_line .= 'Subject: '.$subject.static::$LE;
         }
         $headerLines = explode(static::$LE, $headers_line);
         $currentHeaderLabel = '';
@@ -4815,7 +4866,7 @@ class acyPHPMailer
                 $currentHeaderValue = $matches[2];
             } elseif (preg_match('/^[ \t]+(.*)$/', $headerLine, $matches)) {
                 //This is a folded continuation of the current header, so unfold it
-                $currentHeaderValue .= ' ' . $matches[1];
+                $currentHeaderValue .= ' '.$matches[1];
             }
             ++$headerLineIndex;
             if ($headerLineIndex >= $headerLineCount) {
@@ -4830,9 +4881,9 @@ class acyPHPMailer
             //Is this header one that must be included in the DKIM signature?
             if (in_array(strtolower($header['label']), $autoSignHeaders, true)) {
                 $headersToSignKeys[] = $header['label'];
-                $headersToSign[] = $header['label'] . ': ' . $header['value'];
+                $headersToSign[] = $header['label'].': '.$header['value'];
                 if ($this->DKIM_copyHeaderFields) {
-                    $copiedHeaders[] = $header['label'] . ':' . //Note no space after this, as per RFC
+                    $copiedHeaders[] = $header['label'].':'. //Note no space after this, as per RFC
                         str_replace('|', '=7C', $this->DKIM_QP($header['value']));
                 }
                 continue;
@@ -4843,9 +4894,9 @@ class acyPHPMailer
                 foreach ($this->CustomHeader as $customHeader) {
                     if ($customHeader[0] === $header['label']) {
                         $headersToSignKeys[] = $header['label'];
-                        $headersToSign[] = $header['label'] . ': ' . $header['value'];
+                        $headersToSign[] = $header['label'].': '.$header['value'];
                         if ($this->DKIM_copyHeaderFields) {
-                            $copiedHeaders[] = $header['label'] . ':' . //Note no space after this, as per RFC
+                            $copiedHeaders[] = $header['label'].':'. //Note no space after this, as per RFC
                                 str_replace('|', '=7C', $this->DKIM_QP($header['value']));
                         }
                         //Skip straight to the next header
@@ -4861,54 +4912,54 @@ class acyPHPMailer
             $first = true;
             foreach ($copiedHeaders as $copiedHeader) {
                 if (!$first) {
-                    $copiedHeaderFields .= static::$LE . ' |';
+                    $copiedHeaderFields .= static::$LE.' |';
                 }
                 //Fold long values
                 if (strlen($copiedHeader) > self::STD_LINE_LENGTH - 3) {
                     $copiedHeaderFields .= substr(
-                        chunk_split($copiedHeader, self::STD_LINE_LENGTH - 3, static::$LE . self::FWS),
+                        chunk_split($copiedHeader, self::STD_LINE_LENGTH - 3, static::$LE.self::FWS),
                         0,
-                        -strlen(static::$LE . self::FWS)
+                        -strlen(static::$LE.self::FWS)
                     );
                 } else {
                     $copiedHeaderFields .= $copiedHeader;
                 }
                 $first = false;
             }
-            $copiedHeaderFields .= ';' . static::$LE;
+            $copiedHeaderFields .= ';'.static::$LE;
         }
-        $headerKeys = ' h=' . implode(':', $headersToSignKeys) . ';' . static::$LE;
+        $headerKeys = ' h='.implode(':', $headersToSignKeys).';'.static::$LE;
         $headerValues = implode(static::$LE, $headersToSign);
         $body = $this->DKIM_BodyC($body);
         //Base64 of packed binary SHA-256 hash of body
         $DKIMb64 = base64_encode(pack('H*', hash('sha256', $body)));
         $ident = '';
         if ('' !== $this->DKIM_identity) {
-            $ident = ' i=' . $this->DKIM_identity . ';' . static::$LE;
+            $ident = ' i='.$this->DKIM_identity.';'.static::$LE;
         }
         //The DKIM-Signature header is included in the signature *except for* the value of the `b` tag
         //which is appended after calculating the signature
         //https://tools.ietf.org/html/rfc6376#section-3.5
-        $dkimSignatureHeader = 'DKIM-Signature: v=1;' .
-            ' d=' . $this->DKIM_domain . ';' .
-            ' s=' . $this->DKIM_selector . ';' . static::$LE .
-            ' a=' . $DKIMsignatureType . ';' .
-            ' q=' . $DKIMquery . ';' .
-            ' t=' . $DKIMtime . ';' .
-            ' c=' . $DKIMcanonicalization . ';' . static::$LE .
-            $headerKeys .
-            $ident .
-            $copiedHeaderFields .
-            ' bh=' . $DKIMb64 . ';' . static::$LE .
+        $dkimSignatureHeader = 'DKIM-Signature: v=1;'.
+            ' d='.$this->DKIM_domain.';'.
+            ' s='.$this->DKIM_selector.';'.static::$LE.
+            ' a='.$DKIMsignatureType.';'.
+            ' q='.$DKIMquery.';'.
+            ' t='.$DKIMtime.';'.
+            ' c='.$DKIMcanonicalization.';'.static::$LE.
+            $headerKeys.
+            $ident.
+            $copiedHeaderFields.
+            ' bh='.$DKIMb64.';'.static::$LE.
             ' b=';
         //Canonicalize the set of headers
         $canonicalizedHeaders = $this->DKIM_HeaderC(
-            $headerValues . static::$LE . $dkimSignatureHeader
+            $headerValues.static::$LE.$dkimSignatureHeader
         );
         $signature = $this->DKIM_Sign($canonicalizedHeaders);
-        $signature = trim(chunk_split($signature, self::STD_LINE_LENGTH - 3, static::$LE . self::FWS));
+        $signature = trim(chunk_split($signature, self::STD_LINE_LENGTH - 3, static::$LE.self::FWS));
 
-        return static::normalizeBreaks($dkimSignatureHeader . $signature);
+        return static::normalizeBreaks($dkimSignatureHeader.$signature);
     }
 
     /**
@@ -4921,7 +4972,7 @@ class acyPHPMailer
      */
     public static function hasLineLongerThanMax($str)
     {
-        return (bool) preg_match('/^(.{' . (self::MAX_LINE_LENGTH + strlen(static::$LE)) . ',})/m', $str);
+        return (bool)preg_match('/^(.{'.(self::MAX_LINE_LENGTH + strlen(static::$LE)).',})/m', $str);
     }
 
     /**
@@ -4939,7 +4990,7 @@ class acyPHPMailer
         if (preg_match('/[ ()<>@,;:"\/\[\]?=]/', $str)) {
             //If the string contains any of these chars, it must be double-quoted
             //and any double quotes must be escaped with a backslash
-            return '"' . str_replace('"', '\\"', $str) . '"';
+            return '"'.str_replace('"', '\\"', $str).'"';
         }
 
         //Return the string untouched, it doesn't need quoting
@@ -5021,9 +5072,9 @@ class acyPHPMailer
     }
 
     /**
-     * Get the OAuth instance.
+     * Get the OAuthTokenProvider instance.
      *
-     * @return OAuth
+     * @return OAuthTokenProvider
      */
     public function getOAuth()
     {
@@ -5031,9 +5082,9 @@ class acyPHPMailer
     }
 
     /**
-     * Set an OAuth instance.
+     * Set an OAuthTokenProvider instance.
      */
-    public function setOAuth(OAuth $oauth)
+    public function setOAuth(OAuthTokenProvider $oauth)
     {
         $this->oauth = $oauth;
     }

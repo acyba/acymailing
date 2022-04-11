@@ -178,8 +178,6 @@ class ArchiveController extends acymController
 
         $data = $this->getDataForArchive($viewParams);
 
-        acym_addScript(false, ACYM_JS.'front/frontarchive.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'front'.DS.'frontarchive.min.js'));
-
         parent::display($data);
     }
 

@@ -141,7 +141,7 @@ class plgAcymEasysocial extends acymPlugin
 
         require_once JPATH_ADMINISTRATOR.'/components/com_easysocial/includes/foundry.php';
         acym_loadLanguageFile('com_easysocial', JPATH_SITE);
-        $receiver = Foundry::user($user->cms_id);
+        $receiver = Foundry::user(empty($user->cms_id) ? 0 : $user->cms_id);
         $sender = Foundry::user($email->creator_id);
 
         $tags = [];

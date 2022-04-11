@@ -345,18 +345,18 @@ class plgAcymTheeventscalendar extends acymPlugin
         $varFields['{simpleenddate}'] = '';
         $varFields['{simplestartdate}'] = '';
         $varFields['{date}'] = '';
-        if (!empty($properties['_EventStartDateUTC']->value)) {
+
+        if (!empty($properties['_EventStartDate']->value)) {
             $allday = !empty($properties['_EventAllDay']->value) && $properties['_EventAllDay']->value === 'yes';
+            $startDate = $properties['_EventStartDate']->value;
+            $endDate = empty($properties['_EventEndDate']->value) ? '' : $properties['_EventEndDate']->value;
 
-            $startDate = $properties['_EventStartDateUTC']->value;
-            $endDate = empty($properties['_EventEndDateUTC']->value) ? '' : $properties['_EventEndDateUTC']->value;
 
+            $varFields['{startdate}'] = acym_date($startDate, acym_translation('ACYM_DATE_FORMAT_LC2'), false);
+            $varFields['{enddate}'] = acym_date($endDate, acym_translation('ACYM_DATE_FORMAT_LC2'), false);
 
-            $varFields['{startdate}'] = acym_date($startDate, acym_translation('ACYM_DATE_FORMAT_LC2'));
-            $varFields['{enddate}'] = acym_date($endDate, acym_translation('ACYM_DATE_FORMAT_LC2'));
-
-            $varFields['{simplestartdate}'] = acym_date($startDate, acym_translation('ACYM_DATE_FORMAT_LC1'));
-            $varFields['{simpleenddate}'] = acym_date($endDate, acym_translation('ACYM_DATE_FORMAT_LC1'));
+            $varFields['{simplestartdate}'] = acym_date($startDate, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
+            $varFields['{simpleenddate}'] = acym_date($endDate, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
 
             $varFields['{date}'] = $allday ? $varFields['{simplestartdate}'] : $varFields['{startdate}'];
             if (!empty($endDate) && $startDate !== $endDate) {
@@ -364,7 +364,7 @@ class plgAcymTheeventscalendar extends acymPlugin
                     $endDateDisplay = $varFields['{simpleenddate}'];
                 } else {
                     if ($varFields['{simplestartdate}'] === $varFields['{simpleenddate}']) {
-                        $endDateDisplay = acym_date($endDate, 'H:i');
+                        $endDateDisplay = acym_date($endDate, 'H:i', false);
                     } else {
                         $endDateDisplay = $varFields['{enddate}'];
                     }
@@ -421,7 +421,8 @@ class plgAcymTheeventscalendar extends acymPlugin
             ];
         }
 
-        $varFields['{website}'] = empty($properties['_EventURL']->value) ? '' : '<a target="_blank" href="'.$properties['_EventURL']->value.'">'.$properties['_EventURL']->value.'</a>';
+        $varFields['{website}'] = empty($properties['_EventURL']->value) ? ''
+            : '<a target="_blank" href="'.$properties['_EventURL']->value.'">'.$properties['_EventURL']->value.'</a>';
         if (in_array('website', $tag->display) && !empty($properties['_EventURL']->value)) {
             $customFields[] = [
                 $varFields['{website}'],

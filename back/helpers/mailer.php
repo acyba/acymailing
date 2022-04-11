@@ -23,8 +23,6 @@ class MailerHelper extends acyPHPMailer
     public $XMailer = ' ';
 
     // We remove default values
-    public $From = '';
-    public $FromName = '';
     public $SMTPAutoTLS = false;
 
     var $encodingHelper;
@@ -34,6 +32,7 @@ class MailerHelper extends acyPHPMailer
 
     var $report = true;
     var $alreadyCheckedAddresses = false;
+	var $errorNumber = 0;
     //Error number which induct a new try soon
     var $errorNewTry = [1, 6];
     var $autoAddUser = false;
@@ -892,7 +891,6 @@ class MailerHelper extends acyPHPMailer
         }
     }
 
-
     public function statPicture($mailId, $userId)
     {
         $pictureLink = acym_frontendLink('frontstats&task=openStats&id='.$mailId.'&userid='.$userId);
@@ -1114,14 +1112,13 @@ class MailerHelper extends acyPHPMailer
     }
 
     /**
-     * Function to embed the images
+     * @throws Exception
      */
     protected function embedImages()
     {
         preg_match_all('/(src|background)=[\'|"]([^"\']*)[\'|"]/Ui', $this->Body, $images);
         $result = true;
 
-        //No picture...
         if (empty($images[2])) {
             return $result;
         }
@@ -1145,11 +1142,16 @@ class MailerHelper extends acyPHPMailer
             if (isset($allimages[$url])) {
                 continue;
             }
+
+            // Don't embed images with a controller, most likely the stats picture
+            if (strpos($url, 'ctrl=') !== false) {
+                continue;
+            }
+
             $allimages[$url] = 1;
 
-            //We convert the url into local directory
+            // We convert the url into local directory
             $path = $url;
-            //We are nice guys... sometimes users use www. or not... so we convert both, same thing for httpS or http
             $base = str_replace(['http://www.', 'https://www.', 'http://', 'https://'], '', ACYM_LIVE);
             $replacements = ['https://www.'.$base, 'http://www.'.$base, 'https://'.$base, 'http://'.$base];
             foreach ($replacements as $oneReplacement) {
@@ -1159,8 +1161,11 @@ class MailerHelper extends acyPHPMailer
                 $path = str_replace([$oneReplacement, '/'], [ACYM_ROOT, DS], urldecode($url));
                 break;
             }
+            $path = $this->removeAdditionalParams($path);
 
             $filename = str_replace(['%', ' '], '_', basename($url));
+            $filename = $this->removeAdditionalParams($filename);
+
             $md5 = md5($filename);
             $cid = 'cid:'.$md5;
             $fileParts = explode(".", $filename);
@@ -1168,21 +1173,30 @@ class MailerHelper extends acyPHPMailer
                 continue;
             }
             $ext = strtolower($fileParts[1]);
-            //We only embed image files
+            // We only embed image files
             if (!isset($mimetypes[$ext])) {
                 continue;
             }
-            $mimeType = $mimetypes[$ext];
-            //We only change the url if we were able to embed the image.
-            //Otherwise we return false and display a warning
-            if ($this->addEmbeddedImage($path, $md5, $filename, 'base64', $mimeType)) {
-                $this->Body = preg_replace("/".preg_quote($images[0][$i], '/')."/Ui", $images[1][$i]."=\"".$cid."\"", $this->Body);
+
+            // We only change the url if we were able to embed the image.
+            if ($this->addEmbeddedImage($path, $md5, $filename, 'base64', $mimetypes[$ext])) {
+                $this->Body = preg_replace('/'.preg_quote($images[0][$i], '/').'/Ui', $images[1][$i].'="'.$cid.'"', $this->Body);
             } else {
                 $result = false;
             }
         }
 
         return $result;
+    }
+
+    private function removeAdditionalParams($url)
+    {
+        $additionalParamsPos = strpos($url, '?');
+        if (!empty($additionalParamsPos)) {
+            $url = substr($url, 0, $additionalParamsPos);
+        }
+
+        return $url;
     }
 
     public function cleanText($text)
@@ -1365,7 +1379,6 @@ class MailerHelper extends acyPHPMailer
 
     public function setFrom($email, $name = '', $auto = false)
     {
-
         if (!empty($email)) {
             $this->From = $this->cleanText($email);
         }
@@ -1386,9 +1399,6 @@ class MailerHelper extends acyPHPMailer
         }
     }
 
-    /**
-     * Override of the phpMailer function GetMailMIME()
-     */
     public function getMailMIME()
     {
         $result = parent::getMailMIME();

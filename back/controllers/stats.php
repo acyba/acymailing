@@ -69,22 +69,6 @@ class StatsController extends acymController
         }
     }
 
-    public function saveSendingStatUser($userId, $mailId, $sendDate = null)
-    {
-        $userStatClass = new UserStatClass();
-
-        if ($sendDate == null) {
-            $sendDate = acym_date();
-        }
-
-        $userStat = new \stdClass();
-        $userStat->mail_id = $mailId;
-        $userStat->user_id = $userId;
-        $userStat->send_date = $sendDate;
-
-        $userStatClass->save($userStat);
-    }
-
     public function prepareDefaultPageInfo(&$data, $needMailId = false)
     {
         $data['workflowHelper'] = new WorkflowHelper();

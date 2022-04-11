@@ -2,7 +2,7 @@
     <?php
     if (!empty($data['allFields'])) {
         foreach ($data['allFields'] as $field) {
-            if ($field->active === '0') continue;
+            if (intval($field->active) === 0) continue;
             echo $field->html;
         }
     }

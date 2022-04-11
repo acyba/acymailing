@@ -165,7 +165,7 @@ class ImportHelper extends acymObject
                 foreach ($groups as $i => $oneGroup) {
                     $groups[$i] = acym_escapeDB('%'.strlen($oneGroup).':"'.$oneGroup.'"%');
                 }
-                $query .= ' WHERE `meta`.`meta_value` LIKE ('.implode(' OR `meta`.`meta_value` LIKE ', $groups).')';
+                $query .= ' WHERE `meta`.`meta_value` LIKE '.implode(' OR `meta`.`meta_value` LIKE ', $groups);
             }
         }
 

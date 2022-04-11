@@ -179,6 +179,7 @@ class plgAcymPage extends acymPlugin
         $varFields = $this->getCustomLayoutVars($element);
 
         $link = get_permalink($element->ID);
+        $link = $this->getLinkTranslated($link);
         $varFields['{link}'] = $link;
 
         $title = '';

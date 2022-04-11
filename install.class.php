@@ -165,6 +165,7 @@ class acymInstall
         $allPref['active_cron'] = 0;
         $allPref['multilingual'] = 0;
 
+        $allPref['delete_stats_enabled'] = 1;
         $allPref['delete_stats'] = 31104000;
 
         $allPref['display_built_by'] = acym_level(ACYM_ESSENTIAL) ? 0 : 1;
@@ -1260,7 +1261,7 @@ class acymInstall
     public function checkDB()
     {
         $configController = new ConfigurationController();
-        $messages = $configController->checkDB('report');
+        $messages = $configController->checkDB('report', false);
 
         if (empty($messages)) return;
 

@@ -267,7 +267,7 @@ class FieldClass extends acymClass
         $values = acym_loadObjectList($query);
         $fieldsTypeWithInField = ['radio', 'checkbox', 'single_dropdown', 'multiple_dropdown'];
         foreach ($values as $one) {
-            if ($one->active === '0') continue;
+            if (intval($one->active) === 0) continue;
 
             if (!in_array($one->type, $fieldsTypeWithInField)) {
                 if ($one->type === 'phone') {
@@ -425,7 +425,7 @@ class FieldClass extends acymClass
 
         $field->name = acym_translation($field->name);
 
-        if (empty((array)$field->option)) {
+        if (empty((array)$field->option) || !isset($field->option->authorized_content)) {
             $authorizedContent = '';
         } else {
             if (empty($field->option->error_message_invalid)) {

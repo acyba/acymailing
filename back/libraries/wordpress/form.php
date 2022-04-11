@@ -156,7 +156,7 @@ function acym_renderForm($params, $args = [])
     $allFields = $fieldClass->getFieldsByID($allFields);
     $fields = [];
     foreach ($allFields as $field) {
-        if ($field->active === '0') continue;
+        if (intval($field->active) === 0) continue;
         $fields[$field->id] = $field;
     }
 

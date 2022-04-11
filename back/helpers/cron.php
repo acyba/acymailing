@@ -301,10 +301,10 @@ class CronHelper extends acymObject
 
         // Step 11: Delete data
         if (!in_array('delete_history', $this->skip) && $this->isDailyCron()) {
-            $userStatsClass = new UserStatClass();
+            $userStatClass = new UserStatClass();
             $userClass = new UserClass();
 
-            $userDetailedStatsDeleted = $userStatsClass->deleteDetailedStatsPeriod();
+            $userDetailedStatsDeleted = $userStatClass->deleteDetailedStatsPeriod();
             $userHistoryDeleted = $userClass->deleteHistoryPeriod();
             if (!empty($userDetailedStatsDeleted['message'])) {
                 $this->messages[] = $userDetailedStatsDeleted['message'];

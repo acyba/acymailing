@@ -485,10 +485,10 @@ class UserClass extends acymClass
      *
      * @return mixed the identified user or false
      */
-    public function identify($onlyValue = false)
+    public function identify($onlyValue = false, $idName = null, $keyName = null)
     {
-        $id = acym_getVar('int', 'id', 0);
-        $key = acym_getVar('string', 'key', '');
+        $id = acym_getVar('int', empty($idName) ? 'id' : $idName, 0);
+        $key = acym_getVar('string', empty($keyName) ? 'key' : $keyName, '');
 
         if (empty($id) || empty($key)) {
             //Check if the user is not already in the session...
@@ -599,6 +599,9 @@ class UserClass extends acymClass
 
         foreach ($userIds as $id) {
             $userStat = $userStatClass->getOneByMailAndUserId($mailId, $id);
+            // We didn't send this email to this user, something is wrong
+            if (empty($userStat)) continue;
+
             $newUserStat = [
                 'mail_id' => $mailId,
                 'user_id' => $id,
@@ -1068,15 +1071,11 @@ class UserClass extends acymClass
         if (!empty($myuser->confirmed)) return false;
 
         $mailerHelper = new MailerHelper();
-
         $mailerHelper->checkConfirmField = false;
         $mailerHelper->checkEnabled = false;
         $mailerHelper->report = $this->config->get('confirm_message', 0);
 
-        $alias = 'acy_confirm';
-        //TODO: take the first available confirmation email from the subscribed lists (if any, else take the default one)
-
-        $this->confirmationSentSuccess = $mailerHelper->sendOne($alias, $myuser);
+        $this->confirmationSentSuccess = $mailerHelper->sendOne('acy_confirm', $myuser);
         $this->confirmationSentError = $mailerHelper->reportMessage;
     }
 
@@ -1419,7 +1418,7 @@ class UserClass extends acymClass
         $subscription = [''];
         foreach ($rawSubscription as $listId => $listData) {
             $currentList = $listData->name.' => ';
-            if ($listData->status === '1') {
+            if (intval($listData->status) === 1) {
                 $currentList .= acym_translation('ACYM_SUBSCRIBED').' - '.$listData->subscription_date;
             } else {
                 $currentList .= acym_translation('ACYM_UNSUBSCRIBED').' - '.$listData->unsubscribe_date;

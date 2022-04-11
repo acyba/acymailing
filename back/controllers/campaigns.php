@@ -70,7 +70,7 @@ class CampaignsController extends acymController
 
         if ((empty($currentTask) || !in_array($currentTask, $taskToStore)) && !empty($_SESSION[$variableName])) {
             $taskToGo = is_array($_SESSION[$variableName]) ? $_SESSION[$variableName]['task'].'&type='.$_SESSION[$variableName]['type'] : $_SESSION[$variableName];
-            $link = $isFrontJoomla ? acym_frontendLink('frontcampaigns&task='.$taskToGo) : acym_completeLink('campaigns&task='.$taskToGo, false, true);
+            $link = acym_completeLink(($isFrontJoomla ? 'front' : '').'campaigns&task='.$taskToGo, false, true);
             acym_redirect($link);
         } else {
             if (empty($currentTask) || !in_array($currentTask, $taskToStore)) $currentTask = 'campaigns';
@@ -498,7 +498,7 @@ class CampaignsController extends acymController
         );
 
         // Ask the user if he wants to add the new email to the queue for the users that already triggered the followup
-        if ($followup->active === '1') {
+        if (intval($followup->active) === 1) {
             $newlyCreatedEmail = acym_getVar('int', 'newEmailId');
             if (!empty($newlyCreatedEmail)) {
                 $numberOfSubscribers = $followupClass->getNumberSubscribersByListId($followup->list_id, true);

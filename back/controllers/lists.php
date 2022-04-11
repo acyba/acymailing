@@ -143,6 +143,7 @@ class ListsController extends acymController
             $listInformation->access = [];
             $listInformation->tracking = 1;
             $listInformation->translation = [];
+            $listInformation->display_name = '';
 
             $this->breadcrumb[acym_translation('ACYM_NEW_LIST')] = acym_completeLink('lists&task=settings');
         } else {

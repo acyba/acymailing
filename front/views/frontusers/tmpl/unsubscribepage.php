@@ -67,6 +67,7 @@ if (!empty($data['languages'])) {
 	</fieldset>
     <?php acym_formOptions(); ?>
 	<input type="hidden" name="user_id" value="<?php echo $data['user']->id; ?>">
+	<input type="hidden" name="user_key" value="<?php echo acym_escape($data['user']->key); ?>">
 	<input type="hidden" name="mail_id" value="<?php echo $data['mail_id']; ?>">
 </form>
 <?php if ('wordpress' == ACYM_CMS) exit; ?>

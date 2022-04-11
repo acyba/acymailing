@@ -105,7 +105,7 @@ function acym_mainURL(&$link)
 
 function acym_currentURL()
 {
-    $url = isset($_SERVER['HTTPS']) ? 'https' : 'http';
+    $url = isset($_SERVER['HTTPS']) || !empty($_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS']) ? 'https' : 'http';
     $url .= '://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 
     return $url;

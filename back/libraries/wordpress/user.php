@@ -38,7 +38,7 @@ function acym_getGroups()
         $newGroup->id = $key;
         $newGroup->value = $key;
         $newGroup->parent_id = 0;
-        $newGroup->text = $group['name'];
+        $newGroup->text = translate_user_role($group['name']);
         $groups[$key] = $newGroup;
     }
 

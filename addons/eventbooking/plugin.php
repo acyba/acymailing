@@ -15,11 +15,12 @@ class plgAcymEventbooking extends acymPlugin
         $this->installed = acym_isExtensionActive('com_eventbooking');
         $this->rootCategoryId = 0;
 
-        $this->pluginDescription->name = 'Event Booking';
+        $this->pluginDescription->name = 'Events Booking';
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.png';
 
         if ($this->installed) {
             acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
+            acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR);
             $this->displayOptions = [
                 'eb_title' => [acym_translation('EB_TITLE'), true],
                 'eb_price' => [acym_translation('EB_PRICE'), true],
@@ -113,6 +114,7 @@ class plgAcymEventbooking extends acymPlugin
         $this->defaultValues = $defaultValues;
 
         acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
+        acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR);
         $this->categories = acym_loadObjectList('SELECT `id`, `parent` AS `parent_id`, `name` AS `title` FROM `#__eb_categories` WHERE published = 1', 'id');
 
         $tabHelper = new TabHelper();
@@ -145,7 +147,7 @@ class plgAcymEventbooking extends acymPlugin
         ];
 
         if (file_exists(JPATH_ROOT.DS.'components'.DS.'com_eventbooking'.DS.'fields.xml')) {
-            $xml = JFactory::getXML(JPATH_ROOT.'/components/com_eventbooking/fields.xml');
+            $xml = simplexml_load_file(JPATH_ROOT.'/components/com_eventbooking/fields.xml');
             if (!empty($xml->fields)) {
                 $fields = $xml->fields->fieldset->children();
                 $customFields = [];
@@ -293,10 +295,11 @@ class plgAcymEventbooking extends acymPlugin
     {
         // Load the eventbooking data
         acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
+        acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR);
 
         // We need the helper to format the price
         if (!include_once JPATH_ROOT.'/components/com_eventbooking/helper/helper.php') {
-            if (acym_isAdmin()) acym_enqueueMessage('Could not load the Event Booking helper', 'notice');
+            if (acym_isAdmin()) acym_enqueueMessage('Could not load the Events Booking helper', 'notice');
 
             return false;
         }
@@ -374,6 +377,7 @@ class plgAcymEventbooking extends acymPlugin
     public function replaceIndividualContent($tag)
     {
         acym_loadLanguageFile('com_eventbooking', JPATH_SITE, $this->emailLanguage);
+        acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR, $this->emailLanguage);
 
         $query = 'SELECT location.*, event.*, location.name AS location_name FROM `#__eb_events` AS event ';
         $query .= 'LEFT JOIN `#__eb_locations` AS location ON event.location_id = location.id ';
@@ -445,9 +449,9 @@ class plgAcymEventbooking extends acymPlugin
 
         foreach ($categories as $i => $oneCat) {
             $categories[$i] =
-                '<a href="index.php?option=com_eventbooking&view=category&id='.$oneCat->id.'">'.acym_escape(
-                    !empty($oneCat->$languageMethod) ? $oneCat->$languageMethod : $oneCat->name.'</a>'
-                );
+                '<a target="_blank" href="index.php?option=com_eventbooking&view=category&id='.$oneCat->id.'">'.acym_escape(
+                    !empty($oneCat->$languageMethod) ? $oneCat->$languageMethod : $oneCat->name
+                ).'</a>';
         }
         $varFields['{cats}'] = implode(', ', $categories);
         if (in_array('cats', $tag->display)) {
@@ -553,7 +557,7 @@ class plgAcymEventbooking extends acymPlugin
         // Load the fields and their values
         if (!file_exists(JPATH_ROOT.DS.'components'.DS.'com_eventbooking'.DS.'fields.xml')) return $result;
 
-        $xml = JFactory::getXML(JPATH_ROOT.'/components/com_eventbooking/fields.xml');
+        $xml = simplexml_load_file(JPATH_ROOT.'/components/com_eventbooking/fields.xml');
         $fields = $xml->fields->fieldset->children();
         $params = new JRegistry();
         $params->loadString($customFields, 'INI');
@@ -612,9 +616,10 @@ class plgAcymEventbooking extends acymPlugin
     public function onAcymDeclareConditions(&$conditions)
     {
         acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
+        acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR);
 
         $conditions['user']['ebregistration'] = new stdClass();
-        $conditions['user']['ebregistration']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'Event Booking', acym_translation('EB_REGISTRANTS'));
+        $conditions['user']['ebregistration']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'Events Booking', acym_translation('EB_REGISTRANTS'));
         $conditions['user']['ebregistration']->option = '<div class="cell grid-x grid-margin-x">';
 
         $conditions['user']['ebregistration']->option .= '<div class="intext_select_automation cell">';
@@ -716,6 +721,7 @@ class plgAcymEventbooking extends acymPlugin
     {
         if (!empty($automationCondition['ebregistration'])) {
             acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
+            acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR);
 
             if (empty($automationCondition['ebregistration']['event'])) {
                 $event = acym_translation('ACYM_ANY_EVENT');
