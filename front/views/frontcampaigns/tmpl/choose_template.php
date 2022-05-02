@@ -52,7 +52,11 @@
 						<div class="cell acym__templates__pic text-center">
 							<img src="<?php echo acym_getMailThumbnail($oneTemplate->thumbnail); ?>" alt="<?php echo acym_escape($oneTemplate->name); ?>" />
                             <?php
-                            echo '<div class="acym__templates__choose__ribbon '.($oneTemplate->drag_editor ? 'acyeditor' : 'htmleditor').'">'.($oneTemplate->drag_editor ? 'AcyEditor' : 'HTML Editor').'</div>';
+                            if ($oneTemplate->drag_editor) {
+                                echo '<div class="acym__templates__choose__ribbon acyeditor">'.acym_translation('ACYM_DD_EDITOR').'</div>';
+                            } else {
+                                echo '<div class="acym__templates__choose__ribbon htmleditor">'.acym_translation('ACYM_HTML_EDITOR').'</div>';
+                            }
                             ?>
 						</div>
 						<div class="cell grid-x acym__templates__footer text-center">

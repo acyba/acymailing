@@ -1,2 +1,15 @@
 @import "../../settings";
-@import "../../back/campaigns/edit_email";
+
+#acym_wrapper {
+    #acym__wysid__template {
+        i.acym__wysid__row__toolbox__actions.acym__wysid__row__toolbox__save {
+            display: none !important;
+        }
+    }
+
+    .acym__wysid__row__element--new:hover {
+        i.acymicon-delete {
+            display: none !important;
+        }
+    }
+}

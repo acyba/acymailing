@@ -15,6 +15,10 @@
         echo '<div class="onefield fieldacy'.$field->id.' acyfield_'.$field->type.'" id="field_'.$field->id.'">';
         echo $form->fieldClass->displayField($field, $field->default_value, $size, $field->valuesArray, $form->fields_options['display_mode'] == 'outside', true);
         echo '</div>';
+
+        if ($field->id == 2 && $config->get('email_confirmation')) {
+            echo $form->fieldClass->setEmailConfirmationField($form->fields_options['display_mode'] == 'outside', $size);
+        }
     }
     if ($form->lists_options['display_position'] == 'after') {
         if ($form->type == 'popup' && !empty($form->message_options['text']) && $form->message_options['position'] == 'before-lists') {

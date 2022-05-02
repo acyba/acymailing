@@ -1,10 +1,10 @@
 <div id="acym__wysid__right__toolbar__design" class="cell grid-y acym__wysid__right__toolbar--menu">
 	<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
-		<?php echo acym_translation('ACYM_BLOCKS'); ?>
+        <?php echo acym_translation('ACYM_ZONES'); ?>
 		<i class="acymicon-keyboard_arrow_up"></i>
-		<?php echo acym_info('ACYM_INTRO_DRAG_BLOCKS'); ?>
+        <?php echo acym_info('ACYM_INTRO_DRAG_ZONE'); ?>
 	</p>
-	<div class="acym__wysid__context__modal__container grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__blocks">
+	<div class="acym__wysid__context__modal__container grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__zones">
 		<div class="cell acym__wysid__row__element--new acym__wysid__row__element--new--1 ui-draggable ui-draggable-handle">
 			<svg version="1.1" x="0px" y="0px" viewBox="0 0 80.8 81" style="enable-background:new 0 0 80.8 81;" xml:space="preserve">
                                     <rect class="acym__wysid__row__element__type" width="80.8" height="100"></rect>
@@ -46,11 +46,11 @@
 	</div>
 
 	<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
-		<?php echo acym_translation('ACYM_CONTENTS'); ?>
+        <?php echo acym_translation('ACYM_BLOCKS'); ?>
 		<i class="acymicon-keyboard_arrow_up"></i>
-		<?php echo acym_info('ACYM_INTRO_DRAG_CONTENT'); ?>
+        <?php echo acym_info('ACYM_INTRO_DRAG_BLOCK'); ?>
 	</p>
-	<div class="grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__contents acym__wysid__context__modal__container">
+	<div class="acym__wysid__context__modal__container grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__blocks">
 		<div class="grid-x cell acym__wysid__column__element--new acym__wysid__column__element--new--title ui-draggable ui-draggable-handle">
 			<i class="cell acymicon-title"></i>
 			<div class="cell"><?php echo acym_translation('ACYM_TITLE'); ?></div>
@@ -106,5 +106,26 @@
 			<i class="cell acymicon-more_horiz"></i>
 			<div class="cell"><?php echo acym_translation('ACYM_SEPARATOR'); ?></div>
 		</div>
+	</div>
+
+	<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
+        <?php echo acym_translation('ACYM_SAVED_ZONES'); ?>
+		<i class="acymicon-keyboard_arrow_up"></i>
+        <?php echo acym_info('ACYM_SAVED_ZONES_DESC'); ?>
+	</p>
+	<div class="acym__wysid__context__modal__container grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__saved_zones">
+		<?php
+        if (empty($data['custom_zones'])) {
+            echo '<div id="custom_zones_none_message" class="margin-left-1 margin-right-1">'.acym_translation('ACYM_NO_CUSTOM_ZONE').'</div>';
+        } else {
+            foreach ($data['custom_zones'] as $oneZone) {
+                echo '<div class="grid-x cell acym__wysid__row__element--new ui-draggable ui-draggable-handle" data-acym-zone-id="'.$oneZone->id.'">';
+				echo '<i class="acymicon-delete"></i>';
+                echo '<i class="cell acymicon-dashboard"></i>';
+                echo '<div class="cell">'.$oneZone->name.'</div>';
+                echo '</div>';
+            }
+        }
+        ?>
 	</div>
 </div>

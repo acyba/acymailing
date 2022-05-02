@@ -309,43 +309,53 @@
 				</div>
 			</div>
 		</div>
+		<div class="cell grid-x">
+			<label class="cell small-3"><?php echo acym_translation('ACYM_WIDTH'); ?></label>
+			<div class="cell auto grid-x">
+				<input class="intext_input acym_context_image_size_input" id="acym__wysid__context__image__width" name="contextImageWidth" type="number" />
+			</div>
+		</div>
+		<div class="cell grid-x">
+			<label class="cell small-3"><?php echo acym_translation('ACYM_HEIGHT'); ?></label>
+			<div class="cell auto grid-x">
+				<input class="intext_input acym_context_image_size_input" id="acym__wysid__context__image__height" name="contextImageHeight" type="number" />
+			</div>
+		</div>
 		<p class="cell acym__wysid__right__toolbar__p__open acym__wysid__right__toolbar__p acym__title">
             <?php echo acym_translation('ACYM_IMAGE_URL'); ?><i class="acymicon-keyboard_arrow_up"></i>
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container align-center">
-			<label for="acym__wysid__context__image__url" class="cell small-3"><?php echo acym_translation('ACYM_URL'); ?></label>
+			<label for="acym__wysid__context__image__url" class="cell small-4"><?php echo acym_translation('ACYM_URL'); ?></label>
 			<input type="text"
 				   name="image_url"
 				   value=""
 				   id="acym__wysid__context__image__url"
 				   placeholder="https://www.example.com/image.png"
-				   class="cell small-9">
-            <?php if ('joomla' === ACYM_CMS && ACYM_J40) { ?>
-				<label for="acym__wysid__context__image__alt" class="cell small-3">
-                    <?php echo acym_translation('ACYM_IMAGE_ALT').acym_info('ACYM_IMAGE_ALT_DESCRIPTION'); ?>
-				</label>
-				<input type="text"
-					   name="image_alt"
-					   value=""
-					   id="acym__wysid__context__image__alt"
-					   class="cell small-9">
-				<label for="acym__wysid__context__image__title" class="cell small-3">
-                    <?php echo acym_translation('ACYM_IMAGE_TITLE').acym_info('ACYM_IMAGE_TITLE_DESCRIPTION'); ?>
-				</label>
-				<input type="text"
-					   name="image_title"
-					   value=""
-					   id="acym__wysid__context__image__title"
-					   class="cell small-9">
-				<label for="acym__wysid__context__image__caption" class="cell small-3">
-                    <?php echo acym_translation('ACYM_CAPTION'); ?>
-				</label>
-				<input type="text"
-					   name="image_caption"
-					   value=""
-					   id="acym__wysid__context__image__caption"
-					   class="cell small-9">
-            <?php } ?>
+				   class="cell small-8">
+			<label for="acym__wysid__context__image__alt" class="cell small-4">
+                <?php echo acym_translation('ACYM_IMAGE_ALT').acym_info('ACYM_IMAGE_ALT_DESCRIPTION'); ?>
+			</label>
+			<input type="text"
+				   name="image_alt"
+				   value=""
+				   id="acym__wysid__context__image__alt"
+				   class="cell small-8">
+			<label for="acym__wysid__context__image__title" class="cell small-4">
+                <?php echo acym_translation('ACYM_IMAGE_TITLE').acym_info('ACYM_IMAGE_TITLE_DESCRIPTION'); ?>
+			</label>
+			<input type="text"
+				   name="image_title"
+				   value=""
+				   id="acym__wysid__context__image__title"
+				   class="cell small-8">
+			<label for="acym__wysid__context__image__caption" class="cell small-4">
+                <?php echo acym_translation('ACYM_CAPTION'); ?>
+			</label>
+			<input type="text"
+				   name="image_caption"
+				   value=""
+				   id="acym__wysid__context__image__caption"
+				   class="cell small-8">
 			<button type="button" class="cell shrink button button-secondary margin-top-1" id="acym__wysid__context__image__change">
                 <?php echo acym_translation('ACYM_MEDIA_MANAGE'); ?>
 			</button>
@@ -354,8 +364,8 @@
             <?php echo acym_translation('ACYM_LINK'); ?><i class="acymicon-keyboard_arrow_up"></i>
 		</p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
-			<label for="acym__wysid__context__image__link" class="cell small-3"><?php echo acym_translation('ACYM_LINK'); ?></label>
-			<input type="text" name="image_link" value="" id="acym__wysid__context__image__link" placeholder="https://www.example.com" class="cell auto">
+			<label for="acym__wysid__context__image__link" class="cell small-4"><?php echo acym_translation('ACYM_LINK'); ?></label>
+			<input type="text" name="image_link" value="" id="acym__wysid__context__image__link" placeholder="https://www.example.com" class="cell small-8">
 		</div>
 	</div>
 	<div id="acym__wysid__context__separator" class="grid-x padding-1 acym__wysid__context__modal" style="display: none">

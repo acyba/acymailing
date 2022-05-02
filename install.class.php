@@ -46,7 +46,6 @@ class acymInstall
 
         $allPref['level'] = $this->level;
         $allPref['version'] = $this->version;
-        $allPref['smtp_port'] = '';
 
         $allPref['from_name'] = acym_getCMSConfig('fromname');
         $allPref['from_email'] = acym_getCMSConfig('mailfrom');
@@ -1236,6 +1235,27 @@ class acymInstall
 
         if (version_compare($this->fromVersion, '7.7.6', '<')) {
             $this->updateQuery('ALTER TABLE `#__acym_list` ADD `display_name` VARCHAR(255) NULL');
+        }
+
+        if (version_compare($this->fromVersion, '7.8.1', '<')) {
+            $this->updateQuery('ALTER TABLE `#__acym_form` ADD `display_options` TEXT');
+            $popupDelays = acym_loadObjectList('SELECT id, delay FROM #__acym_form WHERE `type` = "popup"', 'id');
+            if (!empty($popupDelays)) {
+                foreach ($popupDelays as $formId => $formDelay) {
+                    $newData = json_encode(['delay' => (int)$formDelay->delay, 'scroll' => 0]);
+                    $this->updateQuery('UPDATE `#__acym_form` SET  display_options = '.acym_escapeDB($newData).' WHERE id = '.(int)$formId);
+                }
+            }
+            $this->updateQuery('ALTER TABLE `#__acym_form` DROP `delay`');
+
+            $this->updateQuery(
+                'CREATE TABLE IF NOT EXISTS `#__acym_custom_zone` (
+                    `id` INT NOT NULL AUTO_INCREMENT,
+                    `name` VARCHAR(255) NOT NULL,
+                    `content` TEXT NOT NULL,
+                    PRIMARY KEY (`id`)
+                )'
+            );
         }
     }
 

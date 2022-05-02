@@ -81,6 +81,7 @@ function uninstallAcym()
     <?php
 
     $tables = [
+        'custom_zone',
         'mail_override',
         'followup_has_mail',
         'followup',

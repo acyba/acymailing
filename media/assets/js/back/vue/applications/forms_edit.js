@@ -104,6 +104,16 @@ jQuery(document).ready(function ($) {
                     }
                     this.fillIframe(res.data.html);
                 });
+            },
+            cleanValues() {
+                if (undefined !== this.form.display_options) {
+                    if (this.form.display_options.scroll > 100) {
+                        this.form.display_options.scroll = 100;
+                    }
+                    if (this.form.display_options.scroll < 0) {
+                        this.form.display_options.scroll = 0;
+                    }
+                }
             }
         },
         watch: {
@@ -111,6 +121,7 @@ jQuery(document).ready(function ($) {
                 handler() {
                     $('.acym__forms__menu__container').off('scroll');
                     clearTimeout(timeout);
+                    this.cleanValues();
                     let stopReloading = false;
                     for (let i = 0 ; i < this.noReloading.length ; i++) {
                         if (this.noReloading[i].indexOf('.') === -1) {

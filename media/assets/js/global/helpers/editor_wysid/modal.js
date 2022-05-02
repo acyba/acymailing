@@ -1,19 +1,21 @@
 const acym_editorWysidModal = {
     setModalWindowWYSID: function () {
         jQuery('.acym__wysid__modal--close').click(function () {
-            jQuery('.acym__wysid__modal').hide();
-            if (acym_helperEditorWysid.$focusElement.length && acym_helperEditorWysid.$focusElement.prop('tagName') != 'TR') {
+            let modal = jQuery('.acym__wysid__modal');
+            modal.hide();
+            modal.removeClass('acym__wysid__modal__tiny');
+            if (acym_helperEditorWysid.$focusElement.length && acym_helperEditorWysid.$focusElement.prop('tagName') !== 'TABLE') {
                 acym_helperEditorWysid.$focusElement.replaceWith('');
             }
             acym_helperEditorWysid.checkForEmptyTbodyWYSID();
         });
 
-        if (ACYM_CMS == 'joomla') {
+        if (ACYM_CMS === 'joomla') {
             jQuery('.acym__wysid__modal__joomla-image--close').click(function () {
                 jQuery('#acym__wysid__modal__joomla-image').hide();
                 if (acym_helperEditorWysid.$focusElement.length
                     && acym_helperEditorWysid.$focusElement.prop('tagName')
-                    != 'TR'
+                    !== 'TR'
                     && !acym_helperEditorWysid.$focusElement.hasClass('acym__wysid__template__content')) {
                     acym_helperEditorWysid.$focusElement.replaceWith('');
                 }
@@ -29,7 +31,7 @@ const acym_editorWysidModal = {
                 let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_mails&ctrl=' + acym_helper.ctrlMails + '&task=getMailContent&from=' + jQuery(this).attr('id');
 
                 jQuery.post(ajaxUrl, function (response) {
-                    if (response == 'error') {
+                    if (response === 'error') {
                         alert(ACYM_JS_TXT.ACYM_ERROR);
                         return false;
                     }

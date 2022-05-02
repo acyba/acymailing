@@ -63,6 +63,17 @@ class acyRouter
         }
         add_action('admin_print_scripts-toplevel_page_acymailing_dashboard', [$this, 'disableJsBreakingPages']);
         add_action('admin_print_styles-toplevel_page_acymailing_dashboard', [$this, 'removeCssBreakingPages']);
+        add_action('wp_enqueue_media', [$this, 'protectAcyMailingPages'], 100);
+    }
+
+    public function protectAcyMailingPages()
+    {
+        // Make sure we're on an AcyMailing page
+        $page = isset($_REQUEST['page']) ? sanitize_text_field(wp_unslash($_REQUEST['page'])) : '';
+        if (empty($page) || strpos($page, 'acymailing_') === false) return;
+
+        wp_dequeue_script('responsive-lightbox-admin-select2');
+        wp_dequeue_style('responsive-lightbox-admin-select2');
     }
 
     public function waitHeaders()
@@ -83,7 +94,6 @@ class acyRouter
 
         // Remove theme loading select2 which breaks select2 in vueJS
         wp_dequeue_script('select2.js');
-        wp_dequeue_script('select2_js');
 
         // The "Checkout Field Manager for WooCommerce" plugin breaks the js on every pages
         wp_dequeue_script('checkout_fields_js');

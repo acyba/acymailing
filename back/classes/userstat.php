@@ -121,12 +121,10 @@ class UserStatClass extends acymClass
     {
         $mailClass = new MailClass();
 
-        $query = 'SELECT us.*, m.name, m.subject, u.email, u.name AS username, c.id as campaign_id, c.parent_id, SUM(click) AS total_click 
+        $query = 'SELECT us.*, m.name, m.subject, m.parent_id, u.email, u.name AS username 
                     FROM #__acym_user_stat AS us
                     LEFT JOIN #__acym_user AS u ON us.user_id = u.id
-                    INNER JOIN #__acym_mail AS m ON us.mail_id = m.id
-                    LEFT JOIN #__acym_campaign AS c ON m.id = c.mail_id
-                    LEFT JOIN #__acym_url_click AS url_click ON url_click.mail_id = m.id AND url_click.user_id = us.user_id';
+                    INNER JOIN #__acym_mail AS m ON us.mail_id = m.id';
         $queryCount = 'SELECT COUNT(*) FROM #__acym_user_stat as us
                         LEFT JOIN #__acym_user AS u ON us.user_id = u.id
                         INNER JOIN #__acym_mail AS m ON us.mail_id = m.id';
@@ -148,15 +146,11 @@ class UserStatClass extends acymClass
             $queryCount .= ' WHERE ('.implode(') AND (', $where).')';
         }
 
-        $query .= ' GROUP BY us.mail_id, us.user_id';
-
         if (!empty($settings['ordering']) && !empty($settings['ordering_sort_order'])) {
             if (in_array($settings['ordering'], ['email', 'name'])) {
                 $table = 'u';
-            } elseif ($settings['ordering'] == 'subject') {
+            } elseif ($settings['ordering'] === 'subject') {
                 $table = 'm';
-            } elseif ($settings['ordering'] == 'click') {
-                $table = 'url_click';
             } else {
                 $table = 'us';
             }
@@ -166,13 +160,13 @@ class UserStatClass extends acymClass
         $mails = acym_loadObjectList($query, '', $settings['offset'], $settings['detailedStatsPerPage']);
 
         if (!empty($mails)) {
-            $mailIds = [];
-            foreach ($mails as $mail) {
-                if (!in_array($mail->mail_id, $mailIds)) $mailIds[] = $mail->mail_id;
-            }
-
-            $trackingSales = [];
             if (acym_isTrackingSalesActive()) {
+                $mailIds = [];
+                foreach ($mails as $mail) {
+                    if (!in_array($mail->mail_id, $mailIds)) $mailIds[] = $mail->mail_id;
+                }
+
+                $trackingSales = [];
                 $trackingSalesDB = acym_loadObjectList(
                     'SELECT SUM(tracking_sale) as sale, currency, mail_id, user_id FROM #__acym_user_stat WHERE mail_id IN ('.implode(
                         ',',
@@ -184,11 +178,35 @@ class UserStatClass extends acymClass
                 }
             }
 
+            $totalClicksForMails = [];
+            $campaignsForMails = [];
             foreach ($mails as $key => $mail) {
+                // Add tracked income amount
                 if (!empty($trackingSales[$mail->mail_id.'-'.$mail->user_id])) {
                     acym_trigger('getCurrency', [&$mails[$key]->currency]);
                     $mails[$key]->sales = $trackingSales[$mail->mail_id.'-'.$mail->user_id]->sale;
                 }
+
+                // Add total clicks
+                if (!isset($totalClicksForMails[$mail->mail_id])) {
+                    $totalClicksForMails[$mail->mail_id] = acym_loadObjectList(
+                        'SELECT SUM(click) AS nbClicks, user_id
+                        FROM #__acym_url_click 
+                        WHERE mail_id = '.intval($mail->mail_id).' 
+                        GROUP BY user_id',
+                        'user_id'
+                    );
+                }
+                $mails[$key]->total_click = empty($totalClicksForMails[$mail->mail_id][$mail->user_id]) ? 0 : $totalClicksForMails[$mail->mail_id][$mail->user_id]->nbClicks;
+
+                // Handle multilingual
+                $mainMailId = empty($mail->parent_id) ? $mail->mail_id : $mail->parent_id;
+                if (!isset($campaignsForMails[$mainMailId])) {
+                    $campaignsForMails[$mainMailId] = acym_loadObject('SELECT id AS campaign_id, parent_id FROM #__acym_campaign WHERE mail_id = '.intval($mainMailId));
+                }
+
+                $mails[$key]->campaign_id = empty($campaignsForMails[$mainMailId]) ? 0 : $campaignsForMails[$mainMailId]->campaign_id;
+                $mails[$key]->parent_id = empty($campaignsForMails[$mainMailId]) ? 0 : $campaignsForMails[$mainMailId]->parent_id;
             }
         }
 

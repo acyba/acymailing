@@ -1,5 +1,11 @@
 const acym_editorWysidToolbox = {
     setRefreshAfterToolbox: function () {
+        jQuery('.acym__wysid__row__toolbox__save').off('click').on('click', function (e) {
+            e.stopPropagation();
+            acym_helperEditorWysid.$focusElement = jQuery(this).closest('.acym__wysid__row__element');
+            acym_editorWysidNewContent.addCustomZoneWYSID();
+        });
+
         jQuery('.acym__wysid__row__toolbox__copy').unbind('click').click(function () {
             let duplication = jQuery(this).closest('.acym__wysid__row__element').clone();
             acym_helperBlockSeparator.changeIdOnduplicate(duplication)

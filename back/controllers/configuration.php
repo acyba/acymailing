@@ -1347,7 +1347,7 @@ class ConfigurationController extends acymController
         acym_trigger('onAcymSynchronizeExistingUsers', [$sendingMethod]);
     }
 
-    function downloadLogFile()
+    function seeLogs()
     {
         $filename = acym_getVar('string', 'filename');
 
@@ -1368,13 +1368,10 @@ class ConfigurationController extends acymController
         }
 
         if (ACYM_CMS === 'wordpress') @ob_get_clean();
+
         $final = acym_fileGetContent($reportPath);
-        if (substr($filename, -4) === '.txt') {
-            $filename = substr($filename, 0, strlen($filename) - 4);
-        }
-        $exportHelper = new ExportHelper();
-        $exportHelper->setDownloadHeaders($filename, 'txt');
-        echo $final;
+        echo nl2br($final);
+
         exit;
     }
 

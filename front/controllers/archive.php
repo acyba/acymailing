@@ -217,6 +217,11 @@ class ArchiveController extends acymController
         $returnLastNewsletters = $campaignClass->getLastNewsletters($params);
         $pagination->setStatus($returnLastNewsletters['count'], $params['page'], $params['numberPerPage']);
 
+        $disableButtons = '';
+        if (isset($viewParams['disableButtons'])) {
+            $disableButtons = $viewParams['disableButtons'];
+        }
+
         return [
             'newsletters' => $returnLastNewsletters['matchingNewsletters'],
             'paramsCMS' => $viewParams['paramsCMS'],
@@ -226,6 +231,7 @@ class ArchiveController extends acymController
             'displayUserListOnly' => '1' === $viewParams['displayUserListOnly'],
             'search' => $viewParams['search'],
             'actionUrl' => acym_currentURL(),
+            'disableButtons' => $disableButtons,
         ];
     }
 }

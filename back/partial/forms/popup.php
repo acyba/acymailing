@@ -1,4 +1,12 @@
-<div id="acym_fulldiv_<?php echo $form->form_tag_name; ?>" class="acym__subscription__form__popup__overlay acym__subscription__form-erase">
+<?php
+$hideForScroll = '';
+if (isset($form->display_option['scroll']) && $form->display_option['scroll'] != 0) {
+    $hideForScroll = 'style="display: none;"';
+}
+?>
+<div id="acym_fulldiv_<?php echo $form->form_tag_name; ?>"
+	 class="acym__subscription__form__popup__overlay acym__subscription__form-erase"
+    <?php echo $hideForScroll; ?>>
 	<div class="acym__subscription__form__popup">
 		<p class="acym__subscription__form__popup__close">X</p>
         <?php
@@ -113,6 +121,7 @@
 	}
 
 	<?php }?>
+
 </style>
 <?php if (!$edition) { ?>
 	<script type="text/javascript">
@@ -133,12 +142,52 @@
             acym_closePopupform<?php echo $form->form_tag_name;?>(event.target.closest('.acym__subscription__form__popup__overlay'));
         });
 
+        let delayDisplay = parseInt(<?php echo $form->display_options['delay'];?>);
+        let scrollPercentLimit = parseInt(<?php echo $form->display_options['scroll']; ?>);
+        let windowSize;
+        let browserHeight;
+        let delayRemaining = false;
+        if (delayDisplay > 0) {
+            delayRemaining = true;
+        }
+        let scrollRemaining = false;
+        if (scrollPercentLimit > 0) {
+            scrollRemaining = true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            windowSize = document.getElementsByTagName('body')[0].clientHeight;
+            browserHeight = document.documentElement.clientHeight;
+            if (windowSize <= browserHeight && !delayRemaining) {
+                scrollRemaining = false;
+                let acym_popupForm = document.querySelector('.acym__subscription__form__popup__overlay');
+                acym_popupForm.style.display = 'inline';
+            }
+        });
+
+        function displayAcymPopupForm() {
+            let scrollPercent = Math.round((window.scrollY) / (windowSize - browserHeight) * 100);
+            if (scrollPercent >= scrollPercentLimit) {
+                scrollRemaining = false;
+                window.removeEventListener('scroll', displayAcymPopupForm);
+                if (!delayRemaining) {
+                    let acym_popupForm = document.querySelector('.acym__subscription__form__popup__overlay');
+                    acym_popupForm.style.display = 'inline';
+                }
+            }
+        }
+
+        window.addEventListener('scroll', displayAcymPopupForm);
+
         setTimeout(function () {
             let acym_popupForm = document.querySelector('.acym__subscription__form__popup__overlay');
             if (acym_popupForm !== null) {
-                acym_popupForm.style.display = 'inline';
+                delayRemaining = false;
+                if (!scrollRemaining) {
+                    acym_popupForm.style.display = 'inline';
+                }
             }
-        }, <?php echo $form->delay * 1000;?>);
+        }, <?php echo $form->display_options['delay'] * 1000;?>);
 
 	</script>
 <?php } ?>

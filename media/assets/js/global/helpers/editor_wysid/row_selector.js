@@ -48,6 +48,7 @@ const acym_editorWysidRowSelector = {
                     );
                 let contentToolbox = '<div  class="acym__wysid__row__toolbox">';
                 contentToolbox += '<i class="acymicon-pencil acym__wysid__row__toolbox__edit acym__wysid__row__toolbox__actions"></i>';
+                contentToolbox += '<i class="acymicon-floppy-o acym__wysid__row__toolbox__save acym__wysid__row__toolbox__actions"></i>';
                 contentToolbox += '<i class="acymicon-content_copy acym__wysid__row__toolbox__copy acym__wysid__row__toolbox__actions"></i>';
                 contentToolbox += '<i class="acymicon-arrows acym__wysid__row__element__toolbox__move acym__wysid__row__toolbox__actions"></i>';
                 contentToolbox += '<i class="acymicon-delete acym__wysid__row__toolbox__actions acym__wysid__row__toolbox__delete__row"></i>';

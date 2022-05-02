@@ -899,7 +899,7 @@ class MailClass extends acymClass
         $newConfig->numberThumbnail = $thumbNb;
         $this->config->save($newConfig);
 
-        $newTemplate->drag_editor = 0;
+        $newTemplate->drag_editor = strpos($newTemplate->body, 'acym__wysid__template__content') !== false ? 1 : 0;
         $newTemplate->type = $this::TYPE_TEMPLATE;
         $newTemplate->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
 

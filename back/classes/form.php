@@ -135,6 +135,12 @@ class FormClass extends acymClass
         $newForm->creation_date = acym_date('now', 'Y-m-d H:i:s');
         $newForm->active = 1;
         $newForm->type = $type;
+        if ($type == self::SUB_FORM_TYPE_POPUP) {
+            $newForm->display_options = [
+                'delay' => 0,
+                'scroll' => 0,
+            ];
+        }
         $newForm->lists_options = [
             'automatic_subscribe' => [],
             'displayed' => [],
@@ -638,6 +644,38 @@ class FormClass extends acymClass
         return $return;
     }
 
+    private function prepareMenuHtmlSettings_display_options($optionName, $options)
+    {
+        $return = [
+            'title' => acym_translation('ACYM_DISPLAY'),
+        ];
+
+        foreach ($options as $key => $value) {
+            $id = 'form_'.$optionName.'_'.$key;
+            $vModel = 'form.'.$optionName.'.'.$key;
+            $unit = '';
+            $max = '';
+
+            $return['render'][$key] = '<label class="cell" for="'.$id.'">';
+            if ($key === 'delay') {
+                $return['render'][$key] .= acym_translation('ACYM_DELAY').acym_info('ACYM_DELAY_DESC');
+                $unit = acym_translation('ACYM_SECONDS');
+            } elseif ($key === 'scroll') {
+                $return['render'][$key] .= acym_translation('ACYM_SCROLL').acym_info('ACYM_SCROLL_DESC');
+                $unit = '%';
+                $max = 'max="100"';
+            }
+            $return['render'][$key] .= '</label>';
+
+            $return['render'][$key] .= '<div class="cell grid-x acym_vcenter">
+                <input min="0" '.$max.' type="number" class="cell medium-3 margin-right-1" v-model="'.$vModel.'" id="'.$id.'">
+                <span class="cell shrink">'.$unit.'</span>
+            </div>';
+        }
+
+        return $return;
+    }
+
     public function renderForm($form, $edition = false)
     {
         acym_initModule();
@@ -675,7 +713,6 @@ class FormClass extends acymClass
         $form->formClass = $this;
 
         $formFieldRender = ACYM_PARTIAL.'forms'.DS.$form->type.'.php';
-
         if (!file_exists($formFieldRender)) return '';
 
         ob_start();

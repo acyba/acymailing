@@ -124,20 +124,32 @@ class SendinblueUsers extends SendinblueClass
 
     public function createAttribute($mailId)
     {
-        $data = [
-            'type' => 'text',
-        ];
-
-        $attributeName = $this->getAttributeName($mailId);
-
         $existingAttributes = $this->config->get('sendinblue_attributes', '{}');
         $existingAttributes = json_decode($existingAttributes, true);
 
-        if (empty($existingAttributes[$attributeName])) {
-            $this->callApiSendingMethod('contacts/attributes/normal/'.$attributeName, $data, $this->headers, 'POST');
-            $existingAttributes[$attributeName] = true;
+        $subjectAttributeName = $this->getSubjectAttributeName($mailId);
+        $contentAttributeName = $this->getAttributeName($mailId);
+
+        $added = $this->addAttribute($existingAttributes, $subjectAttributeName);
+        $added = $this->addAttribute($existingAttributes, $contentAttributeName) || $added;
+
+        if ($added) {
             $this->config->save(['sendinblue_attributes' => json_encode($existingAttributes)]);
         }
+    }
+
+    private function addAttribute(&$existingAttributes, $attributeName)
+    {
+        if (!empty($existingAttributes[$attributeName])) return false;
+        $this->callApiSendingMethod(
+            'contacts/attributes/normal/'.$attributeName,
+            ['type' => 'text'],
+            $this->headers,
+            'POST'
+        );
+        $existingAttributes[$attributeName] = true;
+
+        return true;
     }
 
     public function addUserToList($email, $mailId, &$warnings)
@@ -172,13 +184,21 @@ class SendinblueUsers extends SendinblueClass
         $this->callApiSendingMethod('contacts/lists/'.$listId.'/contacts/remove', ['all' => true], $this->headers, 'POST');
     }
 
-    public function addAttributeToUser($email, $htmlContent, $mailId)
+    public function addAttributeToUser($email, $subjectContent, $htmlContent, $mailId)
     {
-        $attribute = $this->getAttributeName($mailId);
+        $subjectAttribute = $this->getSubjectAttributeName($mailId);
+        $contentAttribute = $this->getAttributeName($mailId);
+
+        if (strpos($htmlContent, 'acym__wysid__template') === false || strpos($htmlContent, '<body') === false) {
+            $personalContent = $htmlContent;
+        } else {
+            $personalContent = preg_replace('#^.*<body[^>]*>(.*)</body>.*$#Uis', '$1', $htmlContent);
+        }
 
         $data = [
             'attributes' => [
-                $attribute => $htmlContent,
+                $subjectAttribute => $subjectContent,
+                $contentAttribute => $personalContent,
             ],
             'email' => $email,
             'updateEnabled' => true,
@@ -191,18 +211,36 @@ class SendinblueUsers extends SendinblueClass
         return 'HTML_CONTENT_'.$mailId;
     }
 
+    public function getSubjectAttributeName($mailId)
+    {
+        return 'SUBJECT_'.$mailId;
+    }
+
     public function deleteAttribute($mailId)
     {
-        $this->callApiSendingMethod(plgAcymSendinblue::SENDING_METHOD_API_URL.'contacts/attributes/normal/'.$this->getAttributeName($mailId), [], $this->headers, 'DELETE');
+        $subjectAttributeName = $this->getSubjectAttributeName($mailId);
+        $contentAttributeName = $this->getAttributeName($mailId);
 
         $existingAttributes = $this->config->get('sendinblue_attributes', '{}');
         $existingAttributes = json_decode($existingAttributes, true);
-        $attributeName = $this->getAttributeName($mailId);
 
-        if (!empty($existingAttributes[$attributeName])) {
-            unset($existingAttributes[$attributeName]);
+        $removedAnAttribute = $this->removeAttribute($existingAttributes, $subjectAttributeName);
+        $removedAnAttribute = $this->removeAttribute($existingAttributes, $contentAttributeName) || $removedAnAttribute;
+
+        if ($removedAnAttribute) {
             $this->config->save(['sendinblue_attributes' => json_encode($existingAttributes)]);
         }
+    }
+
+    private function removeAttribute(&$existingAttributes, $attributeName)
+    {
+        $this->callApiSendingMethod(plgAcymSendinblue::SENDING_METHOD_API_URL.'contacts/attributes/normal/'.$attributeName, [], $this->headers, 'DELETE');
+
+        if (empty($existingAttributes[$attributeName])) return false;
+
+        unset($existingAttributes[$attributeName]);
+
+        return true;
     }
 
     public function synchronizeExistingUsers()

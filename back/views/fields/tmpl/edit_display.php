@@ -11,7 +11,7 @@
         'margin-0'
     ); ?>
 </div>
-<?php if (empty($data['field']->core)) { ?>
+<?php if (empty($data['field']->core) || $data['field']->type === 'language') { ?>
 	<div class="cell grid-x large-12 margin-top-1">
         <?php echo acym_switch(
             'field[backend_listing]',

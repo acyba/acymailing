@@ -1633,7 +1633,6 @@ class plgAcymWoocommerce extends acymPlugin
 
     public function acym_displayTrackingMessage(&$message)
     {
-
         $remindme = json_decode($this->config->get('remindme', '[]'), true);
 
         if ($this->getParam('track', 0) != 1 && acym_isExtensionActive('woocommerce/woocommerce.php') && acym_isAdmin() && ACYM_CMS == 'wordpress' && !in_array(

@@ -180,6 +180,17 @@
             );
             ?>
 		</div>
+		<div class="cell medium-6 grid-x">
+            <?php
+            echo acym_switch(
+                'config[email_confirmation]',
+                $this->config->get('email_confirmation'),
+                acym_translation('ACYM_ENABLE_EMAIL_CONFIRMATION_FOR_SUBSCRIPTION_FORM').acym_info('ACYM_ENABLE_EMAIL_CONFIRMATION_FOR_SUBSCRIPTION_FORM_DESC'),
+                [],
+                'xlarge-9 large-6 small-9'
+            );
+            ?>
+		</div>
 		<div class="cell grid-x acychecker_ad">
 			<div class="cell ">
 				<h6>

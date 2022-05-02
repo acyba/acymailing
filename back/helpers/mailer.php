@@ -389,7 +389,7 @@ class MailerHelper extends acyPHPMailer
         if (ACYM_PRODUCTION) {
             if ($externalSending) {
                 $result = true;
-                acym_trigger('onAcymRegisterReceiverContentAndList', [&$result, $this->Body, $this->receiverEmail, $this->id, &$warnings]);
+                acym_trigger('onAcymRegisterReceiverContentAndList', [&$result, $this->Subject, $this->Body, $this->receiverEmail, $this->id, &$warnings]);
             } else {
                 ob_start();
                 $result = parent::send();
@@ -893,7 +893,7 @@ class MailerHelper extends acyPHPMailer
 
     public function statPicture($mailId, $userId)
     {
-        $pictureLink = acym_frontendLink('frontstats&task=openStats&id='.$mailId.'&userid='.$userId);
+        $pictureLink = acym_frontendLink('frontstats&task=openStats&id='.$mailId.'&userid='.$userId, true, false);
 
         //we will add the stat picture...
         //We use some parameters so that we can define another height/width and even change the blank image into something else...

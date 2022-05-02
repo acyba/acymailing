@@ -160,6 +160,37 @@ class CronHelper extends acymObject
         }
 
         // Step 5: We send the queued emails that are ready
+        // Get send time limitation
+        $fromHour = $this->config->get('queue_send_from_hour', '00');
+        $fromMinute = $this->config->get('queue_send_from_minute', '00');
+        $toHour = $this->config->get('queue_send_to_hour', '23');
+        $toMinute = $this->config->get('queue_send_to_minute', '59');
+        if ($fromHour != '00' || $fromMinute != '00' || $toHour != '23' || $toMinute != '59') {
+            // The day it is currently based on the timezone specified in the CMS configuration
+            $dayBasedOnCMSTimezone = acym_date('now', 'Y-m-d');
+            // The UTC timestamp of the current day based on the CMS timezone, at the specified hour
+            $fromBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$fromHour.':'.$fromMinute);
+            $toBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate($dayBasedOnCMSTimezone.' '.$toHour.':'.$toMinute);
+            $time = time();
+            // In case we want to send during the night and the FROM is superior to the TO (from 8pm to 4am), we should change the day of ones of the limits
+            if ($fromBasedOnCMSTimezoneAtSpecifiedHour > $toBasedOnCMSTimezoneAtSpecifiedHour) {
+                // TO becomes tomorrow as we are not passed midnight
+                if ($time > $fromBasedOnCMSTimezoneAtSpecifiedHour) {
+                    $toBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate(acym_date('tomorrow', 'Y-m-d').' '.$toHour.':'.$toMinute);
+                } elseif ($time < $toBasedOnCMSTimezoneAtSpecifiedHour) {
+                    // FROM becomes yesterday as we are passed midnight
+                    $fromBasedOnCMSTimezoneAtSpecifiedHour = acym_getTimeFromCMSDate(acym_date('yesterday', 'Y-m-d').' '.$fromHour.':'.$fromMinute);
+                }
+            }
+            if ($time < $fromBasedOnCMSTimezoneAtSpecifiedHour || $time > $toBasedOnCMSTimezoneAtSpecifiedHour) {
+                $this->skip[] = 'send';
+            }
+        }
+        // Don't send on week-ends
+        $dayOfWeek = acym_date('now', 'N');
+        if ($this->config->get('queue_stop_weekend', 0) && $dayOfWeek >= 6) {
+            $this->skip[] = 'send';
+        }
         if ($this->config->get('queue_type') != 'manual' && !in_array('send', $this->skip)) {
             $this->multiCron();
             $queueHelper = new QueueHelper();

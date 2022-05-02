@@ -33,7 +33,7 @@ function acym_baseURI($pathonly = false)
 
 function acym_rootURI($pathonly = false, $path = 'siteurl')
 {
-    return get_option($path).'/';
+    return rtrim(site_url(), '/').'/';
 }
 
 function acym_completeLink($link, $popup = false, $redirect = false, $forceNoPopup = false)

@@ -36,15 +36,6 @@
                 );
                 ?>
 			</div>
-            <?php if ($data['form']->type == 'popup') { ?>
-				<div class="cell medium-6 grid-x acym_vcenter">
-					<label for="acym__forms__information__delay" class="cell large-4 medium-6">
-                        <?php echo acym_translation('ACYM_DELAY').acym_info('ACYM_DELAY_DESC'); ?>
-					</label>
-					<input required type="number" name="form[delay]" id="acym__forms__information__delay" class="cell large-2 medium-4 small-auto" v-model="form.delay">
-					<span class="margin-left-1"><?php echo acym_translation('ACYM_SECONDS'); ?></span>
-				</div>
-            <?php } ?>
             <?php
             if ($data['form']->type == 'shortcode') {
                 echo '<div class="cell grid-x acym_vcenter">';

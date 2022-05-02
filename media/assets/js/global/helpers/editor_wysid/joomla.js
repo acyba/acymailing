@@ -83,8 +83,10 @@ const acym_editorWysidJoomla = {
 
                 let alt = '';
                 let title = '';
+                let caption = '';
                 if (altValue !== undefined) alt = altValue;
                 if (valueTitle !== undefined) title = valueTitle;
+                if (valueCaption !== undefined) caption = valueCaption;
                 let classImage = parseInt(i) === 0 ? 'acym__wysid__media__inserted--selected' : '';
 
                 content += '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
@@ -101,16 +103,25 @@ const acym_editorWysidJoomla = {
                            + '" title="'
                            + acym_helper.escape(title)
                            + '" hspace="0"/>';
-                if (valueCaption !== undefined && valueCaption.length > 0) {
-                    content += acym_editorWysidContextModal.getImageCaptionDiv(valueCaption);
+                if (caption.length > 0) {
+                    content += acym_editorWysidContextModal.getImageCaptionDiv(caption);
                 }
                 if ($link.length > 0) content += '</a>';
                 content += '</div>';
                 content += '</div>';
                 content += '</td>';
                 content += '</tr>';
+
+                jQuery('#acym__wysid__context__image__alt').val(alt);
+                jQuery('#acym__wysid__context__image__title').val(title);
+                jQuery('#acym__wysid__context__image__caption').val(caption);
             }
             acym_helperEditorWysid.$focusElement.replaceWith(content);
+
+            let imgSelected = jQuery('.acym__wysid__media__inserted--selected');
+            jQuery('#acym__wysid__context__image__width').val(imgSelected.width());
+            jQuery('#acym__wysid__context__image__height').val(imgSelected.height());
+
         }
 
         // Close the image selection modal

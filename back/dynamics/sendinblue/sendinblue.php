@@ -31,6 +31,10 @@ class SendinblueClass extends acymPlugin
                 }
                 $this->plugin->errors[] = $response['message'];
             }
+
+            if (strpos($response['message'], 'Your account is under validation.') !== false) {
+                $this->config->save(['sendinblue_validation' => 1]);
+            }
             /*
              * Any API call
              * code: unauthorized
@@ -55,6 +59,9 @@ class SendinblueClass extends acymPlugin
              * Create list
              * code: document_not_found
              * message: Folder ID does not exist
+             *
+             * Campaign creation
+             * message: Your account is under validation. You can not create another campaign.
              */
         }
 

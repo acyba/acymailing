@@ -49,6 +49,10 @@ if ($listPosition == 'before') echo $listsContent;
         echo '<div class="onefield fieldacy'.$field->id.' acyfield_'.$field->type.'" id="field_'.$field->id.'">';
         echo $fieldClass->displayField($field, $field->default_value, $size, $valuesArray, $displayOutside, true, $identifiedUser);
         echo '</div>';
+
+        if ($field->id == 2 && $config->get('email_confirmation')) {
+            echo $fieldClass->setEmailConfirmationField($displayOutside, $size);
+        }
     }
 
     if ($listPosition != 'before') echo $listsContent;

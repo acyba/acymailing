@@ -56,7 +56,9 @@ const acym_editorWysidNewContent = {
         content += '<td class="large-12 acym__wysid__column__element__td">';
 
         content += '<div style="text-align: center;box-sizing: inherit;">';
-        content += '<a class="acym__wysid__column__element__button acym__wysid__content-no-settings-style" style="background-color: #222222; color: white; padding: 25px 30px; max-width: 100%; overflow: unset; border: 1px solid white; text-overflow: ellipsis; text-align: center; text-decoration: none; word-break: break-word;display: inline-block; box-shadow: none;font-family: Arial; font-size: 14px; cursor: pointer; line-height: 1; border-radius: 0" href="#" target="_blank">'+ACYM_JS_TXT.ACYM_BUTTON+'</a>';
+        content += '<a class="acym__wysid__column__element__button acym__wysid__content-no-settings-style" style="background-color: #222222; color: white; padding: 25px 30px; max-width: 100%; overflow: unset; border: 1px solid white; text-overflow: ellipsis; text-align: center; text-decoration: none; word-break: break-word;display: inline-block; box-shadow: none; font-family: Arial; font-size: 14px; cursor: pointer; line-height: 1; border-radius: 0" href="#" target="_blank">'
+                   + ACYM_JS_TXT.ACYM_BUTTON
+                   + '</a>';
         content += '</div>';
 
         content += '</td>';
@@ -114,6 +116,12 @@ const acym_editorWysidNewContent = {
         acym_editorWysidNewContent.setModalGiphyWYSID();
         jQuery('#acym__wysid__modal').css('display', 'inherit');
         acym_helperEditorWysid.setColumnRefreshUiWYSID();
+    },
+    addCustomZoneWYSID: function () {
+        acym_editorWysidNewContent.setModalCustomZoneWYSID();
+        let modal = jQuery('#acym__wysid__modal');
+        modal.addClass('acym__wysid__modal__tiny');
+        modal.css('display', 'inherit');
     },
     addSeparatorWysid: function (ui) {
         let content = '<tr class="acym__wysid__column__element acym__wysid__column__element__separator cursor-pointer" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
@@ -186,9 +194,7 @@ const acym_editorWysidNewContent = {
         jQuery('#acym__wysid__modal__ui__display').html(content);
 
         content = '<div class="grid-container"><div class="cell grid-x align-right grid-padding-x">';
-        content += '<button class="button" type="button" id="acym__wysid__modal__giphy--insert" disabled="disabled">'
-                   + ACYM_JS_TXT.ACYM_INSERT_GIF
-                   + '</button>';
+        content += '<button class="button" type="button" id="acym__wysid__modal__giphy--insert" disabled="disabled">' + ACYM_JS_TXT.ACYM_INSERT + '</button>';
         content += '</div></div>';
         jQuery('#acym__wysid__modal__ui__search').html(content);
 
@@ -219,7 +225,7 @@ const acym_editorWysidNewContent = {
         content += '</div>';
 
         content += '<div class="small-4 medium-2 cell">';
-        content += '<button type="button" id="acym__wysid__modal__video__load" class="button primary expanded " href="#">Load</button>';
+        content += '<button type="button" id="acym__wysid__modal__video__load" class="button primary expanded ">' + ACYM_JS_TXT.ACYM_LOAD + '</button>';
         content += '</div>';
 
         content += '</div>';
@@ -243,7 +249,9 @@ const acym_editorWysidNewContent = {
         content += '<div class="small-8 medium-10 cell"></div>';
 
         content += '<div class="small-4 medium-2 cell">';
-        content += '<button type="button" id="acym__wysid__modal__video__insert" class="button primary expanded disabled" href="#">Insert</button>';
+        content += '<button type="button" id="acym__wysid__modal__video__insert" class="button primary expanded disabled">'
+                   + ACYM_JS_TXT.ACYM_INSERT
+                   + '</button>';
         content += '</div>';
 
         content += '</div>';
@@ -320,6 +328,73 @@ const acym_editorWysidNewContent = {
             if (code == 13 || code == 188 || code == 186) {
                 $loadBtn.click();
             }
+        });
+    },
+    setModalCustomZoneWYSID: function () {
+        let content = '<div class="grid-x text-center margin-y">';
+        content += '<div class="cell">' + ACYM_JS_TXT.ACYM_NEW_CUSTOM_ZONE + '</div>';
+        content += '<div class="cell">' + ACYM_JS_TXT.ACYM_ZONE_SAVE_TEXT + '</div>';
+        content += '<div class="cell"><input id="custom_zone_name" type="text" placeholder="' + ACYM_JS_TXT.ACYM_ZONE_NAME + '" value="" /></div>';
+        content += '<div class="cell">';
+        content += '<button class="button" type="button" id="custom_zone_cancel">' + ACYM_JS_TXT.ACYM_CANCEL + '</button>';
+        content += '<button class="button margin-left-1" id="custom_zone_save" type="button" disabled="disabled">' + ACYM_JS_TXT.ACYM_SAVE;
+        content += '<i id="custom_zone_save_spinner" class="acymicon-circle-o-notch acymicon-spin"></i>' + '</button>';
+        content += '</div>';
+        content += '</div>';
+
+        jQuery('#acym__wysid__modal__ui__display').html(content);
+        jQuery('#acym__wysid__modal__ui__fields').html('');
+        jQuery('#acym__wysid__modal__ui__search').html('');
+
+        jQuery('#custom_zone_name').on('keyup', function () {
+            let $saveButton = jQuery('#custom_zone_save');
+            if (jQuery(this).val().length === 0) {
+                $saveButton.attr('disabled', 'true');
+            } else {
+                $saveButton.removeAttr('disabled');
+            }
+        });
+
+        jQuery('#custom_zone_cancel').click(function () {
+            let modal = jQuery('.acym__wysid__modal');
+            modal.hide();
+            modal.removeClass('acym__wysid__modal__tiny');
+        });
+
+        jQuery('#custom_zone_save').click(function () {
+            let spinner = jQuery('#custom_zone_save_spinner');
+            spinner.css('display', 'inline-block');
+
+            const data = {
+                ctrl: 'zones',
+                task: 'save',
+                name: jQuery('#custom_zone_name').val(),
+                content: acym_helperEditorWysid.$focusElement.prop('outerHTML')
+            };
+
+            acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+                if (response.error) {
+                    acym_editorWysidNotifications.addEditorNotification({
+                        'message': '<div class="cell auto acym__autosave__notification">' + response.message + '</div>',
+                        'level': 'error'
+                    }, 3000, true);
+                } else {
+                    let newZone = '<div class="grid-x cell acym__wysid__row__element--new ui-draggable ui-draggable-handle" data-acym-zone-id="'
+                                  + response.data.id
+                                  + '">';
+                    newZone += '<i class="acymicon-delete"></i>';
+                    newZone += '<i class="cell acymicon-dashboard"></i>';
+                    newZone += '<div class="cell">' + data.name + '</div>';
+                    newZone += '</div>';
+
+                    jQuery('#custom_zones_none_message').hide();
+                    jQuery('.acym__wysid__right__toolbar__saved_zones').append(newZone);
+                    acym_editorWysidDragDrop.setNewRowElementDraggableWYSID();
+                }
+
+                spinner.css('display', 'none');
+                jQuery('#custom_zone_cancel').click();
+            });
         });
     }
 };

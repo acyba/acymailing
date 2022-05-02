@@ -15,8 +15,13 @@
                 } else {
                     ?>
 					<input type="text" name="acym_search" value="<?php echo acym_escape($data['search']); ?>">
-                <?php } ?>
-				<button class="button btn btn-primary subbutton"><?php echo acym_translation('ACYM_SEARCH'); ?></button>
+                <?php }
+                $disableSearch = '';
+                if (isset($data['disableButtons']) && $data['disableButtons']) {
+                    $disableSearch = 'disabled';
+                }
+                ?>
+				<button class="button btn btn-primary subbutton" <?php echo $disableSearch; ?>><?php echo acym_translation('ACYM_SEARCH'); ?></button>
 			</div>
 
             <?php

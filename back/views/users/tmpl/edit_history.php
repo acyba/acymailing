@@ -100,7 +100,11 @@
                                 <?php echo acym_escape($oneHistory->ip); ?>
 							</div>
 							<div class="cell small-6 medium-2">
-                                <?php echo acym_translation('ACYM_ACTION_'.strtoupper(acym_escape($oneHistory->action))); ?>
+                                <?php
+                                $langKey = 'ACYM_ACTION_'.strtoupper($oneHistory->action);
+                                $translation = acym_translation($langKey);
+                                echo $translation === $langKey ? $oneHistory->action : $translation;
+                                ?>
 							</div>
 							<div class="cell small-6 medium-3">
                                 <?php if (!empty($oneHistory->data)) echo $oneHistory->data; ?>

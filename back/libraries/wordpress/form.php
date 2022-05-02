@@ -3,6 +3,8 @@
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\UserClass;
+use AcyMailing\FrontControllers\FrontusersController;
+use AcyMailing\FrontControllers\ArchiveController;
 
 function acym_formToken()
 {
@@ -332,6 +334,99 @@ function acym_renderForm($params, $args = [])
     $return .= ob_get_clean();
 
     if (!empty($args['after_widget'])) $return .= $args['after_widget'];
+
+    return $return;
+}
+
+function acym_renderFormProfile($params, $args = [])
+{
+    acym_initModule($params);
+
+    if (!is_array($params->get('listsdropdown', '0'))) {
+        $listDropdown = $params->get('listsdropdown', '0');
+    } else {
+        $listDropdown = $params->get('listsdropdown')[0];
+    }
+
+    $instance = [
+        'title' => $params->get('title', ''),
+        'lists' => $params->get('lists'),
+        'listschecked' => $params->get('listschecked'),
+        'dropdown' => $listDropdown,
+        'hiddenlists' => $params->get('hiddenlists'),
+        'fields' => $params->get('fields'),
+        'introtext' => $params->get('introtext', ''),
+        'posttext' => $params->get('posttext', ''),
+        'source' => $params->get('source', ''),
+    ];
+
+    $title = apply_filters('widget_title', $instance['title']);
+    if (!empty($title)) $title = '<span class="gamma widget-title">'.$title.'</span>';
+    $return = $title;
+
+    ob_start();
+    acym_setVar('page', ACYM_COMPONENT.'_front');
+
+    $userController = new FrontusersController();
+    $data = $userController->prepareParams((object)$instance);
+    $data['disableButtons'] = !empty($args['disableButtons']) || acym_isAdmin();
+
+    if (empty($data['user']->language)) {
+        $cmsUserLanguage = acym_getCmsUserLanguage();
+        $data['user']->language = empty($cmsUserLanguage) ? acym_getLanguageTag() : $cmsUserLanguage;
+    }
+
+    acym_setVar('layout', 'profile');
+    $userController->display($data);
+    $return .= ob_get_clean();
+
+    return $return;
+}
+
+function acym_renderFormArchive($params, $args = [])
+{
+    acym_initModule($params);
+
+    if (!is_array($params->get('popup', '1'))) {
+        $popup = $params->get('popup', '1');
+    } else {
+        $popup = $params->get('popup')[0];
+    }
+    if (!is_array($params->get('displayUserListOnly', '1'))) {
+        $displayUserListOnly = $params->get('displayUserListOnly', '1');
+    } else {
+        $displayUserListOnly = $params->get('displayUserListOnly')[0];
+    }
+
+    $instance = [
+        'title' => $params->get('title', ''),
+        'lists' => $params->get('lists'),
+        'popup' => $popup,
+        'displayUserListOnly' => $displayUserListOnly,
+    ];
+
+    $title = apply_filters('widget_title', $instance['title']);
+    if (!empty($title)) $title = '<span class="gamma widget-title">'.$title.'</span>';
+    $return = $title;
+    ob_start();
+    acym_setVar('page', 'front');
+    $searchs = acym_getVar('array', 'acym_search', []);
+    $search = '';
+    if (!empty($searchs[0])) $search = $searchs[0];
+    $disableButtons = !empty($args['disableButtons']) || acym_isAdmin();
+    $viewParams = [
+        'listsSent' => isset($instance['lists']) ? $instance['lists'] : [],
+        'popup' => isset($instance['popup']) ? $instance['popup'] : '1',
+        'displayUserListOnly' => isset($instance['displayUserListOnly']) ? $instance['displayUserListOnly'] : '1',
+        'paramsCMS' => ['widget_id' => 0, 'suffix' => ''],
+        'search' => $search,
+        'disableButtons' => $disableButtons,
+    ];
+
+    $archiveController = new ArchiveController();
+    $archiveController->showArchive($viewParams);
+
+    $return .= ob_get_clean();
 
     return $return;
 }

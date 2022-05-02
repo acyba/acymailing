@@ -104,7 +104,7 @@ const acym_helperEditorWysid = {
         }
 
         $wysidRows.each(function () {
-            if (jQuery(this).children().length == 0) {
+            if (jQuery(this).children().length === 0) {
                 jQuery('.acym__wysid__row').append('<div id="acym__wysid__row__temp_div"></div>');
                 acym_editorWysidNewRow.addRow1WYSID(jQuery('#acym__wysid__row__temp_div'));
                 acym_editorWysidRowSelector.setRowSelector();
@@ -118,7 +118,7 @@ const acym_helperEditorWysid = {
             }
         });
         jQuery('.acym__wysid__column tbody').each(function () {
-            jQuery(this).children().length == 0 ? jQuery(this)
+            jQuery(this).children().length === 0 ? jQuery(this)
                 .css({
                     'min-height': '75px',
                     'display': 'block'
@@ -177,7 +177,7 @@ const acym_helperEditorWysid = {
                     .attr('id');
 
                 jQuery.post(ajaxUrl, function (response) {
-                    if (response == 'error') {
+                    if (response === 'error') {
                         alert(ACYM_JS_TXT.ACYM_ERROR);
                         return false;
                     }

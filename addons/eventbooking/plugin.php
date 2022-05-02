@@ -513,16 +513,16 @@ class plgAcymEventbooking extends acymPlugin
         $varFields['{indiv}'] = [];
         if (in_array('indiv', $tag->display)) {
             $reglink = acym_frontendLink('index.php?option=com_eventbooking&task=register.individual_registration&event_id='.$tag->id, false);
-            $varFields['{individualregbutton}'] = '<a class="event_registration eb_indivreg" href="'.$reglink.'" target="_blank" >'.acym_translation(
+            $varFields['{individualregbutton}'] = '<a class="event_registration eb_indivreg" href="'.$reglink.'" target="_blank">'.acym_translation(
                     'EB_REGISTER_INDIVIDUAL'
                 ).'</a> ';
-            $varFields['{indiv}'][] = $varFields['{individualregbutton}'];
+            $customFields[] = [$varFields['{individualregbutton}']];
         }
 
         if (in_array('group', $tag->display)) {
             $reglink = acym_frontendLink('index.php?option=com_eventbooking&task=register.group_registration&event_id='.$tag->id, false);
-            $varFields['{groupregbutton}'] = '<a class="event_registration eb_groupreg" href="'.$reglink.'" target="_blank" >'.acym_translation('EB_REGISTER_GROUP').'</a> ';
-            $varFields['{indiv}'][] = $varFields['{groupregbutton}'];
+            $varFields['{groupregbutton}'] = '<a class="event_registration eb_groupreg" href="'.$reglink.'" target="_blank">'.acym_translation('EB_REGISTER_GROUP').'</a> ';
+            $customFields[] = [$varFields['{groupregbutton}']];
         }
         $varFields['{indiv}'] = implode(' ', $varFields['{indiv}']);
         if (in_array('indiv', $tag->display) || in_array('group', $tag->display)) {

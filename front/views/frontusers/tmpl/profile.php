@@ -48,6 +48,11 @@ $formName = acym_getModuleFormName();
 
                     echo $data['fieldClass']->displayField($field, $field->default_value, $size, $valuesArray, true, true, $data['user']);
                     echo '</span>';
+
+                    $config = acym_config();
+                    if ($field->id == 2 && $config->get('email_confirmation')) {
+                        echo $data['fieldClass']->setEmailConfirmationField(true, $size, 'span', false);
+                    }
                 }
                 ?>
 			</div>
@@ -174,6 +179,12 @@ $formName = acym_getModuleFormName();
 
         // Form params
         acym_formOptions(true, 'savechanges', null, 'frontusers');
+
+        if (isset($data['disableButtons']) && $data['disableButtons']) {
+            $actionClick = 'return true';
+        } else {
+            $actionClick = 'return submitAcymForm(\'savechanges\',\''.$formName.'\', \'acym_checkChangeForm\');';
+        }
         ?>
 
 		<input type="hidden" name="hiddenlists" value="<?php echo implode(',', $data['hiddenlists']); ?>" />
@@ -186,7 +197,7 @@ $formName = acym_getModuleFormName();
 		<p class="acymodifybutton">
 			<input class="btn btn-primary"
 				   type="submit"
-				   onclick="return submitAcymForm('savechanges', '<?php echo $formName; ?>', 'acym_checkChangeForm');"
+				   onclick="<?php echo $actionClick; ?>"
 				   value="<?php echo acym_escape(acym_translation(empty($data['user']->id) ? 'ACYM_SUBSCRIBE' : 'ACYM_SAVE_CHANGES')); ?>" />
 		</p>
 	</form>

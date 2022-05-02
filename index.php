@@ -5,7 +5,7 @@ Description: Manage your contact lists and send newsletters from your site.
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 7.8.0
+Version: 7.8.1
 Text Domain: acymailing
 Domain Path: /language
 */
@@ -51,6 +51,7 @@ class acymailingLoader
         remove_action('plugins_loaded', 'mailchimp_on_all_plugins_loaded', 12);
         remove_action('plugins_loaded', '_imagify_init');
         remove_action('plugins_loaded', 'plugins_loaded_wps_hide_login_plugin');
+        remove_action('plugins_loaded', ['WPAS_Gas', 'get_instance'], 11);
     }
 
     public function initWidgets()

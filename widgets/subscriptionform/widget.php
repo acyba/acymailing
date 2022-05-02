@@ -124,42 +124,42 @@ class acym_subscriptionform_widget extends WP_Widget
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_AUTO_SUBSCRIBE_TO_DESC').'">'.acym_translation('ACYM_AUTO_SUBSCRIBE_TO').'</label>';
         echo acym_selectMultiple(
-            $lists,
-            $this->get_field_name('hiddenlists'),
-            explode(',', $params['hiddenlists']),
-            [
-                'class' => 'acym_simple_select2',
-                'id' => $this->get_field_id('hiddenlists'),
-            ],
-            'id',
-            'name'
-        ).'</p>';
+                $lists,
+                $this->get_field_name('hiddenlists'),
+                explode(',', $params['hiddenlists']),
+                [
+                    'class' => 'acym_simple_select2',
+                    'id' => $this->get_field_id('hiddenlists'),
+                ],
+                'id',
+                'name'
+            ).'</p>';
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_DISPLAYED_LISTS_DESC').'">'.acym_translation('ACYM_DISPLAYED_LISTS').'</label>';
         echo acym_selectMultiple(
-            $lists,
-            $this->get_field_name('displists'),
-            explode(',', $params['displists']),
-            [
-                'class' => 'acym_simple_select2',
-                'id' => $this->get_field_id('displists'),
-            ],
-            'id',
-            'name'
-        ).'</p>';
+                $lists,
+                $this->get_field_name('displists'),
+                explode(',', $params['displists']),
+                [
+                    'class' => 'acym_simple_select2',
+                    'id' => $this->get_field_id('displists'),
+                ],
+                'id',
+                'name'
+            ).'</p>';
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_LISTS_CHECKED_DEFAULT_DESC').'">'.acym_translation('ACYM_LISTS_CHECKED_DEFAULT').'</label>';
         echo acym_selectMultiple(
-            $lists,
-            $this->get_field_name('listschecked'),
-            explode(',', $params['listschecked']),
-            [
-                'class' => 'acym_simple_select2',
-                'id' => $this->get_field_id('listschecked'),
-            ],
-            'id',
-            'name'
-        ).'</p>';
+                $lists,
+                $this->get_field_name('listschecked'),
+                explode(',', $params['listschecked']),
+                [
+                    'class' => 'acym_simple_select2',
+                    'id' => $this->get_field_id('listschecked'),
+                ],
+                'id',
+                'name'
+            ).'</p>';
 
         $options = [];
         $options[] = acym_selectOption('before', 'ACYM_BEFORE_FIELDS');
@@ -179,14 +179,14 @@ class acym_subscriptionform_widget extends WP_Widget
 
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_FIELDS_TO_DISPLAY_DESC').'">'.acym_translation('ACYM_FIELDS_TO_DISPLAY').'</label>';
         echo acym_selectMultiple(
-            $fields,
-            $this->get_field_name('fields'),
-            explode(',', $params['fields']),
-            [
-                'class' => 'acym_simple_select2',
-                'id' => $this->get_field_id('fields'),
-            ]
-        ).'</p>';
+                $fields,
+                $this->get_field_name('fields'),
+                explode(',', $params['fields']),
+                [
+                    'class' => 'acym_simple_select2',
+                    'id' => $this->get_field_id('fields'),
+                ]
+            ).'</p>';
 
         $options = [];
         $options[] = acym_selectOption('1', 'ACYM_TEXT_INSIDE');

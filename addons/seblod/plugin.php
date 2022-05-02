@@ -78,7 +78,8 @@ class plgAcymSeblod extends acymPlugin
                         AND (a.storage LIKE "custom" 
                             OR a.storage_table LIKE "#__cck_store_item_content" 
                             OR a.storage_field LIKE "introtext" 
-                            OR a.folder = 1) 
+                            OR a.folder = 1
+                            OR a.folder > 400) 
                     ORDER BY a.title';
         $customFields = acym_loadObjectList($query);
 
@@ -133,7 +134,7 @@ class plgAcymSeblod extends acymPlugin
         $tabHelper->startTab(acym_translation('ACYM_ONE_BY_ONE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
         $allMenus = acym_getAllPages();
-        array_unshift($allMenus, acym_translation('ACYM_SELECT'));
+        $allMenus = [0 => acym_translation('ACYM_SELECT')] + $allMenus;
 
         $displayOptions = [
             [

@@ -49,10 +49,15 @@ if ($listPosition == 'before') echo $listsContent;
                 }
             }
             $size = empty($field->option->size) ? '' : 'width:'.$field->option->size.'px';
+
             echo '<td class="onefield acyfield_'.$field->id.' acyfield_'.$field->type.'">';
             echo $fieldClass->displayField($field, $field->default_value, $size, $valuesArray, $displayOutside, true, $identifiedUser);
             echo '</td>';
             if (!$displayInline) echo '</tr><tr>';
+
+            if ($field->id == 2 && $config->get('email_confirmation')) {
+                echo $fieldClass->setEmailConfirmationField($displayOutside, $size, 'td', $displayInline);
+            }
         }
 
         if ($listPosition != 'before') {

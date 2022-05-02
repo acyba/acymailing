@@ -157,7 +157,7 @@ const acym_editorWysidGiphy = {
             let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
             content += '<td class="large-12 acym__wysid__column__element__td">';
             content += '<div class="acym__wysid__tinymce--image">';
-            content += '<img class="acym__wysid__media__inserted acym__wysid__media__inserted--focus acym__wysid__media__giphy" src="'
+            content += '<img alt="" class="acym__wysid__media__inserted acym__wysid__media__inserted--focus acym__wysid__media__giphy" src="'
                        + $selectedImg.attr('data-full-res-src')
                        + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;"/>';
             content += '</div>';

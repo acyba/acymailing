@@ -105,6 +105,13 @@ class plgSystemAcymtriggers extends JPlugin
         acym_trigger('onAfterOrderUpdate', [&$order], 'plgAcymHikashop');
     }
 
+    public function onAfterCartSave(&$element)
+    {
+        if (!$this->initAcy()) return;
+
+        acym_trigger('onAfterCartSave', [&$element], 'plgAcymHikashop');
+    }
+
     public function onBeforeCompileHead()
     {
         // Don't show forms in popup iframes

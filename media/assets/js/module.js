@@ -1,6 +1,8 @@
 if (typeof submitAcymForm !== 'function') {
     var acytask, acyformName, acysubmitting;
 
+    blockPasteEvent();
+
     function submitAcymForm(newtask, newformName, submitFunction) {
         if (typeof acysubmitting !== 'undefined' && acysubmitting !== undefined && acysubmitting === newformName) return;
 
@@ -77,6 +79,16 @@ if (typeof submitAcymForm !== 'function') {
             let filter = acymModule['emailRegex'];
             if (emailField.value === acymModule['EMAILCAPTION'] || !filter.test(emailField.value)) {
                 acymAddInvalidClass(emailField.name, validation, acymModule['VALID_EMAIL']);
+            }
+        }
+    }
+
+    function acym_checkEmailConfirmationField(varform, name, validation) {
+        let emailField = varform.elements['user[email]'];
+        let emailConfirmationField = varform.elements[name];
+        if (emailConfirmationField) {
+            if (emailField.value !== emailConfirmationField.value) {
+                acymAddInvalidClass(name, validation, acymModule['VALID_EMAIL_CONFIRMATION']);
             }
         }
     }
@@ -259,6 +271,7 @@ if (typeof submitAcymForm !== 'function') {
 
         acym_resetInvalidClass();
         acym_checkEmailField(varform, 'user[email]', validation);
+        acym_checkEmailConfirmationField(varform, 'user[email_confirmation]', validation);
         acym_handleRequiredRadio(validation);
         acym_handleRequiredCheckbox(validation);
         acym_handleRequiredDate(validation);
@@ -330,6 +343,7 @@ if (typeof submitAcymForm !== 'function') {
 
         let form = document.getElementById(acyformName);
         let formData = new FormData(form);
+
         // Change the acyba form's opacity to show we are doing stuff
         form.className += ' acym_module_loading';
         form.style.filter = 'alpha(opacity=50)';
@@ -459,5 +473,14 @@ if (typeof submitAcymForm !== 'function') {
                 fulldiv.remove();
             }, 2000);
         }
+    }
+
+    function blockPasteEvent() {
+        let emailConfirmationFields = document.querySelectorAll('input[name="user[email_confirmation]"]');
+        emailConfirmationFields.forEach(emailConfirmationField => {
+            emailConfirmationField.addEventListener('paste', event => {
+                event.preventDefault();
+            });
+        });
     }
 }

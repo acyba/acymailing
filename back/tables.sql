@@ -572,10 +572,10 @@ CREATE TABLE IF NOT EXISTS `#__acym_form` (
 	`image_options` LONGTEXT,
 	`termspolicy_options` LONGTEXT,
 	`cookie` VARCHAR(30),
-	`delay` SMALLINT(10),
 	`pages` TEXT,
 	`redirection_options` TEXT,
 	`message_options` TEXT,
+	`display_options` TEXT,
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB
@@ -667,6 +667,20 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail_override` (
 			REFERENCES `#__acym_mail`(`id`)
 			ON DELETE NO ACTION
 			ON UPDATE NO ACTION
+)
+	ENGINE = InnoDB
+	/*!40100
+	DEFAULT CHARACTER SET utf8
+	COLLATE utf8_general_ci*/;
+
+-- -----------------------------------------------------
+-- Table `#__acym_mail_override`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `#__acym_custom_zone` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(255) NOT NULL,
+	`content` TEXT NOT NULL,
+	PRIMARY KEY(`id`)
 )
 	ENGINE = InnoDB
 	/*!40100

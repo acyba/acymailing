@@ -47,6 +47,7 @@ class StatsController extends acymController
             'clickMap',
             'linksDetails',
             'userClickDetails',
+            'statsByList',
         ];
 
         if ($this->taskCalled == 'listing' && empty($_SESSION['stats_task'])) {
@@ -61,6 +62,7 @@ class StatsController extends acymController
             return $this->taskCalled;
         } elseif (!empty($this->taskCalled) && $this->taskCalled != 'listing' && in_array($this->taskCalled, $tasksToStore)) {
             $_SESSION['stats_task'] = $this->taskCalled;
+
             return $task;
         } elseif (!empty($_SESSION['stats_task']) && method_exists($this, $_SESSION['stats_task'])) {
             return $_SESSION['stats_task'];
@@ -167,7 +169,7 @@ class StatsController extends acymController
 
         $data = [];
 
-        if(!$this->prepareDefaultPageInfo($data, true)) return;
+        if (!$this->prepareDefaultPageInfo($data, true)) return;
 
         $this->prepareClickStats($data);
         if (acym_isMultilingual() && count($this->selectedMailIds) == 1) $this->prepareMultilingualMails($data);
@@ -182,7 +184,7 @@ class StatsController extends acymController
 
         $data = [];
 
-        if(!$this->prepareDefaultPageInfo($data, true)) return;
+        if (!$this->prepareDefaultPageInfo($data, true)) return;
 
         $this->prepareLinksDetailsListing($data);
         if (acym_isMultilingual() && count($this->selectedMailIds) == 1) $this->prepareMultilingualMails($data);
@@ -197,7 +199,7 @@ class StatsController extends acymController
 
         $data = [];
 
-        if(!$this->prepareDefaultPageInfo($data, true)) return;
+        if (!$this->prepareDefaultPageInfo($data, true)) return;
 
         $this->prepareUserLinksDetailsListing($data);
         if (acym_isMultilingual() && count($this->selectedMailIds) == 1) $this->prepareMultilingualMails($data);
@@ -247,7 +249,7 @@ class StatsController extends acymController
 
     public function exportUserLinksDetails()
     {
-        if(!$this->prepareDefaultPageInfo($data, true)) return;
+        if (!$this->prepareDefaultPageInfo($data, true)) return;
 
         $this->prepareUserLinksDetailsListing($data);
         $exportHelper = new ExportHelper();
@@ -308,7 +310,7 @@ class StatsController extends acymController
 
     public function exportLinksDetails()
     {
-        if(!$this->prepareDefaultPageInfo($data, true)) return;
+        if (!$this->prepareDefaultPageInfo($data, true)) return;
 
         $this->prepareLinksDetailsListing($data);
         $exportHelper = new ExportHelper();
@@ -416,10 +418,10 @@ class StatsController extends acymController
         $matchingDetailedStats = $userStatClass->getDetailedStats(
             [
                 'ordering' => $data['ordering'],
+                'ordering_sort_order' => $data['orderingSortOrder'],
                 'search' => $data['search'],
                 'detailedStatsPerPage' => $detailedStatsPerPage,
                 'offset' => ($page - 1) * $detailedStatsPerPage,
-                'ordering_sort_order' => $data['orderingSortOrder'],
                 'mail_ids' => $this->selectedMailIds,
             ]
         );
@@ -959,5 +961,111 @@ class StatsController extends acymController
         $data['openTime'] = $stats;
 
         return true;
+    }
+
+    public function prepareStatByList(&$data)
+    {
+        $mailid = (count(array_unique($data['selectedMailid'])) != 1) ? 0 : $data['selectedMailid'][0];
+
+        if (empty($mailid)) {
+            return;
+        }
+
+        $mailSelected = $this->getVarFiltersListing('int', 'mail_id_language', $mailid);
+
+        $mailClass = new MailClass();
+        $mail = $mailClass->getOneById($mailSelected);
+        $mainMailId = empty($mail->parent_id) ? $mail->id : $mail->parent_id;
+
+        $data['lists'] = [];
+        $data['emailsSent'] = [];
+        $data['emailsOpen'] = [];
+        $data['bounces'] = [];
+        $data['unsubscribed'] = [];
+        $data['click'] = [];
+        $data['listsStats'] = [];
+        $data['userPerList'] = [];
+
+        // get lists from the selected campaign
+        $query = 'SELECT l.id, l.name, l.color FROM #__acym_list l';
+        $query .= ' JOIN #__acym_mail_has_list ml on l.id = ml.list_id';
+        $query .= ' WHERE ml.mail_id = '.$mainMailId;
+
+        $data['lists'] = acym_loadObjectList($query, 'id');
+        $listIds = implode(',', array_keys($data['lists']));
+
+        if (!empty($listIds)) {
+            //get nbSent, nbOpen, nbBounce, nbUnsubscribe
+            $query = 'SELECT ul.list_id, SUM(us.sent) as nbSent, SUM(us.open) as nbOpen, SUM(us.bounce) as nbBounce, SUM(us.unsubscribe) as nbUnsub from #__acym_user_has_list ul';
+            $query .= ' JOIN #__acym_user_stat us on ul.user_id = us.user_id';
+            $query .= ' WHERE ul.list_id in ('.$listIds.') AND us.mail_id = '.$mailSelected;
+            $query .= ' GROUP BY ul.list_id;';
+            $data['listsStats'] = acym_loadObjectList($query, 'list_id');
+
+            //get nbClick
+            $query = 'SELECT ul.list_id, COUNT(uc.click) as nbClick';
+            $query .= ' FROM #__acym_user_has_list ul ';
+            $query .= ' JOIN #__acym_url_click uc on ul.user_id =  uc.user_id';
+            $query .= ' WHERE ul.list_id in ('.$listIds.') AND uc.mail_id = '.$mailSelected;
+            $query .= ' GROUP BY ul.list_id;';
+
+            $data['nbClick'] = acym_loadObjectList($query, 'list_id');
+
+            //get nbUser per list
+            $query = 'SELECT ul.list_id, COUNT(ul.user_id) as nbUser';
+            $query .= ' FROM #__acym_user_has_list ul';
+            $query .= ' JOIN #__acym_user_stat us ON ul.user_id = us.user_id';
+            $query .= ' WHERE ul.list_id in ('.$listIds.') AND us.mail_id = '.$mailSelected;
+            $query .= ' GROUP BY ul.list_id;';
+
+            $data['userPerList'] = acym_loadObjectList($query, 'list_id');
+        }
+
+        //format data for barChart
+        foreach ($data['listsStats'] as $listId => $item) {
+            $data['emailsSent'][$listId] = [
+                'label' => $data['lists'][$listId]->name,
+                'value' => $item->nbSent,
+                'color' => $data['lists'][$listId]->color,
+            ];
+            $data['emailsOpen'][$listId] = [
+                'label' => $data['lists'][$listId]->name,
+                'value' => round(($item->nbOpen * 100) / $item->nbSent),
+                'color' => $data['lists'][$listId]->color,
+            ];
+            $data['bounces'][$listId] = [
+                'label' => $data['lists'][$listId]->name,
+                'value' => round(($item->nbBounce * 100) / $item->nbSent),
+                'color' => $data['lists'][$listId]->color,
+            ];
+            $data['unsubscribed'][$listId] = [
+                'label' => $data['lists'][$listId]->name,
+                'value' => round(($item->nbUnsub * 100) / $item->nbSent),
+                'color' => $data['lists'][$listId]->color,
+            ];
+        }
+
+        foreach ($data['userPerList'] as $listId => $item) {
+            $nbUser = $item->nbUser;
+            // we can't provide lists and their colors if there is no click,
+            // so we initialize the values with $data['lists'] to display lists with no click rather than nothing
+            $data['click'][$listId] = ['label' => $data['lists'][$listId]->name, 'value' => 0, 'color' => $data['lists'][$listId]->color];
+
+            if ($nbUser > 0 && !empty($data['nbClick'][$listId]->nbClick)) {
+                $data['click'][$listId]['value'] = round(($data['nbClick'][$listId]->nbClick * 100) / $nbUser);
+            }
+        }
+    }
+
+    public function statsByList()
+    {
+        acym_setVar('layout', 'stats_by_list');
+
+        $data = [];
+        if (!$this->prepareDefaultPageInfo($data, true)) return;
+        $this->prepareStatByList($data);
+        if (acym_isMultilingual() && count($this->selectedMailIds) == 1) $this->prepareMultilingualMails($data);
+        $this->prepareMailFilter($data);
+        parent::display($data);
     }
 }

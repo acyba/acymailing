@@ -4,6 +4,8 @@ namespace AcyMailing\Helpers;
 
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\FieldClass;
+use AcyMailing\Classes\FollowupClass;
+use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Libraries\acymObject;
 
@@ -279,24 +281,10 @@ class MigrationHelper extends acymObject
 
         $query = 'REPLACE INTO #__acym_configuration VALUES '.implode(',', $valuesToInsert).';';
 
-        try {
-            $result = acym_query($query);
-        } catch (\Exception $e) {
-            $this->errors[] = $e->getMessage();
-
-            return false;
-        }
-
-        if ($result === null) {
-            $this->errors[] = acym_getDBError();
-
-            return false;
-        } else {
-            return $result;
-        }
+        return $this->_insertQuery($query);
     }
 
-    private function _insertQuery($queryInsert, $result)
+    private function _insertQuery($queryInsert, $result = 0)
     {
         try {
             $resultQuery = acym_query($queryInsert);
@@ -602,11 +590,6 @@ class MigrationHelper extends acymObject
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
 
-        $result = 0;
-        $idsMigratedMails = [];
-
-        $migrateMailStats = empty($params['migrateMailStats']) ? 0 : 1;
-
         $queryGetMails = 'SELECT mail.`mailid`,
                                 mail.`created`, 
                                 mail.`type`, 
@@ -620,6 +603,7 @@ class MigrationHelper extends acymObject
                                 mail.`tempid`, 
                                 mail.`senddate`, 
                                 mail.`published`, 
+                                mail.`attach`, 
                                 template.`stylesheet`, 
                                 template.`styles` 
                         FROM #__acymailing_mail mail 
@@ -633,6 +617,9 @@ class MigrationHelper extends acymObject
 
         $mailsToInsert = [];
         $campaignsToInsert = [];
+        $followupsToInsert = [];
+        $followupsCreated = [];
+        $followupClass = new FollowupClass();
 
         foreach ($mails as $oneMail) {
             if (empty($oneMail->mailid)) {
@@ -646,8 +633,10 @@ class MigrationHelper extends acymObject
                 case 'unsub':
                     $mailType = $mailClass::TYPE_UNSUBSCRIBE;
                     break;
-                case 'news':
                 case 'followup':
+                    $mailType = $mailClass::TYPE_FOLLOWUP;
+                    break;
+                case 'news':
                     $mailType = $mailClass::TYPE_STANDARD;
                     break;
                 default:
@@ -655,7 +644,7 @@ class MigrationHelper extends acymObject
                     break;
             }
 
-            if ($mailType == 'invalid') {
+            if ($mailType === 'invalid') {
                 continue;
             }
 
@@ -692,12 +681,38 @@ class MigrationHelper extends acymObject
                 'bcc' => acym_escapeDB($oneMail->bccaddresses),
                 'stylesheet' => acym_escapeDB($mailStylesheet),
                 'creator_id' => empty($oneMail->userid) ? acym_currentUserId() : intval($oneMail->userid),
+                'attachments' => [],
             ];
 
-            $mail = $mailClass->encode([$mail])[0];
+            if (!empty($oneMail->attach)) {
+                $attachments = unserialize($oneMail->attach);
+                foreach ($attachments as $oneAttachment) {
+                    $fileName = substr($oneAttachment->filename, strrpos($oneAttachment->filename, DS));
+                    $v7Location = acym_getFilesFolder().$fileName;
 
-            //TODO: handle the smart-nl migration
-            if ($mailType == $mailClass::TYPE_STANDARD) {
+                    // if the file doesn't exist, don't add it
+                    $v5Path = acym_cleanPath(ACYM_ROOT.DS.$oneAttachment->filename);
+                    if (!file_exists($v5Path)) continue;
+
+                    // copy the file to the v7 files location
+                    $v7Path = acym_cleanPath(ACYM_ROOT.DS.$v7Location);
+                    if (!file_exists($v7Path)) {
+                        acym_copyFile($v5Path, $v7Path);
+                    }
+
+                    // add the attachment to the new mail entry
+                    $mail['attachments'][] = (object)[
+                        'filename' => $v7Location,
+                        'size' => $oneAttachment->size,
+                    ];
+                }
+            }
+            $mail['attachments'] = acym_escapeDB(json_encode($mail['attachments']));
+
+            $mail = $mailClass->encode($mail);
+
+            // Create the related campaign
+            if ($mailType === $mailClass::TYPE_STANDARD) {
                 $stats = acym_loadResult('SELECT COUNT(mailid) FROM #__acymailing_stats WHERE mailid = '.intval($oneMail->mailid));
                 $isSent = !empty($stats);
 
@@ -713,90 +728,114 @@ class MigrationHelper extends acymObject
                 $campaignsToInsert[] = '('.implode(', ', $campaign).')';
             }
 
-            $mailsToInsert[] = '('.implode(', ', $mail).')';
+            // Create the related follow-up
+            if ($mailType === $mailClass::TYPE_FOLLOWUP) {
+                $v5Campaign = acym_loadObject(
+                    'SELECT l.listid, l.published, l.name 
+                    FROM #__acymailing_listmail AS lm
+                    JOIN #__acymailing_list AS l ON l.listid = lm.listid
+                    WHERE mailid = '.intval($oneMail->mailid)
+                );
 
+                // If the followup campaign doesn't exist, create it
+                if (empty($followupsCreated[$v5Campaign->listid])) {
+                    $followupListIds = acym_loadResultArray('SELECT listid FROM #__acymailing_listcampaign WHERE campaignid = '.intval($v5Campaign->listid));
+                    $followupCampaign = new \stdClass();
+                    $followupCampaign->name = $v5Campaign->name;
+                    $followupCampaign->display_name = $v5Campaign->name;
+                    $followupCampaign->creation_date = acym_date('now', 'Y-m-d H:i:s');
+                    $followupCampaign->trigger = 'user_subscribe';
+                    $followupCampaign->condition = [
+                        'lists_status' => 'is',
+                        'lists' => $followupListIds,
+                        'segments_status' => '',
+                    ];
+                    $followupCampaign->active = $v5Campaign->published;
+                    $followupCampaign->send_once = 1;
+                    $followupCampaign->list_id = $v5Campaign->listid;
 
-            if ($migrateMailStats) {
-                $idsMigratedMails[] = $oneMail->mailid;
+                    $followupsCreated[$v5Campaign->listid] = $followupClass->save($followupCampaign);
+                }
+
+                $delay = $oneMail->senddate;
+                if (empty($delay)) {
+                    $unit = 60;
+                } elseif ($delay % 2628000 === 0) {
+                    $unit = 2628000;
+                } elseif ($delay % 604800 === 0) {
+                    $unit = 604800;
+                } elseif ($delay % 86400 === 0) {
+                    $unit = 86400;
+                } elseif ($delay % 3600 === 0) {
+                    $unit = 3600;
+                } else {
+                    $unit = 60;
+                }
+                $delay = $delay / $unit;
+
+                $followup = [
+                    'mail_id' => intval($oneMail->mailid),
+                    'followup_id' => intval($followupsCreated[$v5Campaign->listid]),
+                    'delay' => intval($delay),
+                    'delay_unit' => intval($unit),
+                ];
+
+                $followupsToInsert[] = '('.implode(', ', $followup).')';
             }
+
+            $mailsToInsert[] = '('.implode(', ', $mail).')';
         }
 
         if (empty($mailsToInsert)) {
             return true;
         }
 
-        $queryMailsInsert = 'INSERT INTO #__acym_mail (`id`, `name`, `creation_date`, `drag_editor`, `type`, `body`, `subject`, `from_name`, `from_email`, `reply_to_name`, `reply_to_email`, `bcc`, `stylesheet`, `creator_id`) VALUES '.implode(
-                ',',
-                $mailsToInsert
-            ).';';
-
-        try {
-            $resultMail = acym_query($queryMailsInsert);
-        } catch (\Exception $e) {
-            $this->errors[] = $e->getMessage();
-
+        $queryMailsInsert = 'INSERT INTO #__acym_mail ('.implode(', ', array_keys($mail)).') VALUES '.implode(',', $mailsToInsert).';';
+        $resultMail = $this->_insertQuery($queryMailsInsert);
+        if ($resultMail === false) {
             return false;
-        }
-
-        if ($resultMail === null) {
-            $this->errors[] = acym_getDBError();
-
-            return false;
-        } else {
-            $result += $resultMail;
         }
 
         if (!empty($campaignsToInsert)) {
-            $queryCampaignInsert = 'INSERT IGNORE INTO #__acym_campaign (`sending_date`, `draft`, `active`, `mail_id`, `sending_type`, `sent`) VALUES '.implode(
-                    ',',
-                    $campaignsToInsert
-                ).';';
-
-            try {
-                $resultCampaign = acym_query($queryCampaignInsert);
-            } catch (\Exception $e) {
-                $this->errors[] = $e->getMessage();
-
-                return false;
-            }
-
-            if ($resultCampaign === null) {
-                $this->errors[] = acym_getDBError();
-
+            $queryCampaignInsert = 'INSERT IGNORE INTO #__acym_campaign ('.implode(', ', array_keys($campaign)).') VALUES '.implode(',', $campaignsToInsert).';';
+            if ($this->_insertQuery($queryCampaignInsert) === false) {
                 return false;
             }
         }
 
-        return $result;
+        if (!empty($followupsToInsert)) {
+            $queryInsert = 'INSERT IGNORE INTO #__acym_followup_has_mail ('.implode(', ', array_keys($followup)).') VALUES '.implode(',', $followupsToInsert).';';
+            if ($this->_insertQuery($queryInsert) === false) {
+                return false;
+            }
+        }
+
+        return $resultMail;
     }
 
     public function migrateLists($params = [])
     {
-        $result = 0;
-
-        $queryGetLists = 'SELECT `listid`, `name`, `published`, `visible`, `color`, `userid` FROM #__acymailing_list LIMIT '.intval($params['currentElement']).', '.intval(
-                $params['insertPerCalls']
-            );
-
-        $lists = acym_loadObjectList($queryGetLists);
+        $lists = acym_loadObjectList(
+            'SELECT `listid`, `name`, `published`, `visible`, `color`, `userid`, `type`, `description` 
+            FROM #__acymailing_list 
+            LIMIT '.intval($params['currentElement']).', '.intval($params['insertPerCalls'])
+        );
 
         $listsToInsert = [];
+        $listClass = new ListClass();
 
         foreach ($lists as $oneList) {
-            if (empty($oneList->listid)) {
-                continue;
-            }
-
             $list = [
                 'id' => intval($oneList->listid),
                 'name' => acym_escapeDB($oneList->name),
-                'active' => empty($oneList->published) ? 0 : 1,
+                'active' => $oneList->type === 'campaign' ? 1 : (empty($oneList->published) ? 0 : 1),
                 'visible' => acym_escapeDB($oneList->visible),
                 'clean' => 0,
                 'color' => acym_escapeDB($oneList->color),
                 'creation_date' => acym_escapeDB(acym_date('now', 'Y-m-d H:i:s')),
                 'cms_user_id' => empty($oneList->userid) ? acym_currentUserId() : intval($oneList->userid),
-                'description' => acym_escapeDB('')
+                'description' => acym_escapeDB($oneList->description),
+                'type' => acym_escapeDB($oneList->type === 'campaign' ? $listClass::LIST_TYPE_FOLLOWUP : $listClass::LIST_TYPE_STANDARD),
             ];
 
             $listsToInsert[] = '('.implode(', ', $list).')';
@@ -806,9 +845,9 @@ class MigrationHelper extends acymObject
             return true;
         }
 
-        $queryInsert = 'INSERT INTO #__acym_list (`id`, `name`, `active`, `visible`, `clean`, `color`, `creation_date`, `cms_user_id`, `description`) VALUES '.implode(',', $listsToInsert).';';
+        $queryInsert = 'INSERT INTO #__acym_list ('.implode(', ', array_keys($list)).') VALUES '.implode(',', $listsToInsert).';';
 
-        return $this->_insertQuery($queryInsert, $result);
+        return $this->_insertQuery($queryInsert, 0);
     }
 
     public function migrateUsers($params = [])
@@ -1098,8 +1137,6 @@ class MigrationHelper extends acymObject
         return $this->_insertQuery($queryInsert, $result);
     }
 
-    //Pour l'instant on  veut pas l'utiliser, mais elle est là si jamais
-
     //public function migrateUserStats()
     //{
     //    $queryGetUserStats = 'SELECT `subid`, `mailid`, `senddate`, `fail`, `sent`, `open`, `opendate` FROM #__acymailing_userstats';
@@ -1132,7 +1169,6 @@ class MigrationHelper extends acymObject
     //
     //    return !empty($result);
     //}
-
 
     private function cleanFieldsTable()
     {

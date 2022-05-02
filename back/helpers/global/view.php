@@ -177,7 +177,6 @@ function acym_getJSMessages()
         'ACYM_ASSIGN_COLUMN_TO_FIELD',
         'ACYM_SEARCH_FOR_GIFS',
         'ACYM_NO_RESULTS_FOUND',
-        'ACYM_INSERT_GIF',
         'ACYM_SEARCH_GIFS',
         'ACYM_COULD_NOT_LOAD_GIF_TRY_FEW_MINUTES',
         'ACYM_GIPHY_LOW_RES_TEXT',
@@ -334,6 +333,18 @@ function acym_getJSMessages()
         'ACYM_CUSTOM_VIEW_EDITOR_DESC',
         'ACYM_PREVIEW_CUSTOM_VIEW',
         'ACYM_ORGANIZER',
+        'ACYM_ACYMAILING_PROFILE_FORM',
+        'ACYM_VISIBLE_LISTS',
+        'ACYM_DROPDOWN_LISTS',
+        'ACYM_ACYMAILING_ARCHIVE_FORM',
+        'ACYM_ARCHIVE_POPUP',
+        'ACYM_ARCHIVE_ONLY_USER_LIST',
+        'ACYM_ZONE_NAME',
+        'ACYM_ZONE_SAVE_TEXT',
+        'ACYM_NEW_CUSTOM_ZONE',
+        'ACYM_INSERT',
+        'ACYM_LOAD',
+        'ACYM_CONFIRM_DELETION_ZONE',
     ];
 
     foreach ($keysToLoad as $oneKey) {

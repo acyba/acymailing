@@ -42,9 +42,13 @@
 				<i class="acymicon-edit"></i>
                 <?php
                 $ctrl = acym_getVar('string', 'ctrl');
-                echo acym_translation(
-                    in_array(acym_getVar('string', 'ctrl'), ['campaigns', 'frontcampaigns']) ? 'ACYM_EDIT_MAIL' : ($this->walkThrough ? 'ACYM_EDIT' : 'ACYM_EDIT_TEMPLATE')
-                );
+                if (in_array(acym_getVar('string', 'ctrl'), ['campaigns', 'frontcampaigns']) || !empty(acym_getVar('cmd', 'notification'))) {
+                    echo acym_translation('ACYM_EDIT_MAIL');
+                } elseif ($this->walkThrough) {
+                    echo acym_translation('ACYM_EDIT');
+                } else {
+                    echo acym_translation('ACYM_EDIT_TEMPLATE');
+                }
                 ?>
 			</button>
 			<div class="cell medium-auto hide-for-small-only"></div>

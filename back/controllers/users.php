@@ -486,7 +486,7 @@ class UsersController extends acymController
 
             // Keep this code, search for data-display-optional for more info
             //$displayIf = empty($one->option->display) ? '' : 'data-display-optional="'.acym_escape($one->option->display).'"';
-
+            
             $valuesArray = [];
             if (!empty($one->value)) {
                 foreach ($one->value as $value) {

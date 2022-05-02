@@ -29,6 +29,29 @@ const acym_editorWysidDragDrop = {
                 jQuery('.acym__wysid__row__element').off('mouseenter mouseleave');
             }
         });
+
+        jQuery('.acym__wysid__row__element--new .acymicon-delete').off('click').on('click', function () {
+            if (acym_helper.confirm(ACYM_JS_TXT.ACYM_CONFIRM_DELETION_ZONE)) {
+                let customZone = jQuery(this).closest('.acym__wysid__row__element--new');
+
+                const data = {
+                    ctrl: 'zones',
+                    task: 'delete',
+                    zoneId: customZone.attr('data-acym-zone-id')
+                };
+
+                acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+                    if (response.error) {
+                        acym_editorWysidNotifications.addEditorNotification({
+                            'message': '<div class="cell auto acym__autosave__notification">' + response.message + '</div>',
+                            'level': 'error'
+                        }, 3000, true);
+                    } else {
+                        customZone.remove();
+                    }
+                });
+            }
+        });
     },
     setRowElementSortableWYSID: function () {
         jQuery('.acym__wysid__row').sortable({
@@ -53,16 +76,21 @@ const acym_editorWysidDragDrop = {
 
                 //Test the item that was dropped for replace it with the desired content
                 let $item = ui.item;
-                $item.hasClass('acym__wysid__row__element--new--1') ? acym_editorWysidNewRow.addRow1WYSID($item) : $item.hasClass(
-                    'acym__wysid__row__element--new--2') ? acym_editorWysidNewRow.addRow2WYSID($item) : $item.hasClass('acym__wysid__row__element--new--3')
-                                                                                                        ? acym_editorWysidNewRow.addRow3WYSID($item)
-                                                                                                        : $item.hasClass('acym__wysid__row__element--new--4')
-                                                                                                          ? acym_editorWysidNewRow.addRow4WYSID($item)
-                                                                                                          : $item.hasClass('acym__wysid__row__element--new--5')
-                                                                                                            ? acym_editorWysidNewRow.addRow5WYSID($item)
-                                                                                                            : $item.hasClass('acym__wysid__row__element--new--6')
-                                                                                                              ? acym_editorWysidNewRow.addRow6WYSID($item)
-                                                                                                              : true;
+                if ($item.hasClass('acym__wysid__row__element--new--1')) {
+                    acym_editorWysidNewRow.addRow1WYSID($item);
+                } else if ($item.hasClass('acym__wysid__row__element--new--2')) {
+                    acym_editorWysidNewRow.addRow2WYSID($item);
+                } else if ($item.hasClass('acym__wysid__row__element--new--3')) {
+                    acym_editorWysidNewRow.addRow3WYSID($item);
+                } else if ($item.hasClass('acym__wysid__row__element--new--4')) {
+                    acym_editorWysidNewRow.addRow4WYSID($item);
+                } else if ($item.hasClass('acym__wysid__row__element--new--5')) {
+                    acym_editorWysidNewRow.addRow5WYSID($item);
+                } else if ($item.hasClass('acym__wysid__row__element--new--6')) {
+                    acym_editorWysidNewRow.addRow6WYSID($item);
+                } else if ($item.attr('data-acym-zone-id').length > 0) {
+                    acym_editorWysidNewRow.addCustomRow($item);
+                }
 
                 acym_editorWysidDragDrop.setColumnSortableWYSID();
                 acym_helperEditorWysid.checkForEmptyTbodyWYSID();

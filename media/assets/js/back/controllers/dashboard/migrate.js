@@ -3,7 +3,7 @@ jQuery(document).ready(function ($) {
     let batchWhereWeAre = 0;//At which batch we are
     let totalCallsToDo = 0;//At which call we are on total
     let totalCallWhereWeAre = 0;//At which call we are on total
-    let insertPerCall = 500; //We insert 20 element per call
+    let insertPerCall = 500; //We insert 500 element per call
     let callsPerBatch = 10;//we do 10 calls at times
     let numberOfElementToMigrate = 0;
     let percentageOfElement = 0;
@@ -14,7 +14,6 @@ jQuery(document).ready(function ($) {
         setDisableCheckboxesMigration();
         setOnClickMigrateButton();
         setOnClickMigrateFromErrorButton();
-        //randomGif(); //We keep for after
     }
 
     Init();
@@ -111,6 +110,14 @@ jQuery(document).ready(function ($) {
         let error = false;
         let ajaxCalls = [];
         let asyncClear = '';
+
+        // Avoid memory limit on newsletter migration
+        if (element === 'mails') {
+            insertPerCall = 50;
+        } else {
+            insertPerCall = 500;
+        }
+
         for (let i = 0 ; i < callsPerBatch ; i++) {
             if (totalCallWhereWeAre > totalCallsToDo) break;//If we did all the element
             let currentElement = totalCallWhereWeAre * insertPerCall;
@@ -140,7 +147,10 @@ jQuery(document).ready(function ($) {
             if (batchWhereWeAre === batchToDo) {
                 afterAjaxCall(error, element, ajaxUrls, elements, asyncClear);
             } else {
-                doOneBatchAjaxCalls(element, ajaxUrls, elements);
+                // Prevent ddos protection from triggering
+                setTimeout(function () {
+                    doOneBatchAjaxCalls(element, ajaxUrls, elements);
+                }, 2000);
             }
         });
         return true;
@@ -204,21 +214,5 @@ jQuery(document).ready(function ($) {
             $('#acym__migrate__result__error__message').html(asyncClear);
             $('#acym__migrate__result__error').show();
         }
-    }
-
-    function randomGif() {
-        const giphy = {
-            baseURL: 'https://api.giphy.com/v1/gifs/',
-            key: 'rLgg3ulcXQFtjFxwMqgP85ZNXXMpsK3D',
-            tag: 'fail',
-            type: 'random'
-        };
-        let xhr = $.get(giphy.baseURL + giphy.type + '?api_key=' + giphy.key + '&tag=' + giphy.tag);
-        xhr.done(function (data) {
-            $('#acym__migration__gif').attr('src', data.data.image_original_url);
-            setTimeout(function () {
-                randomGif();
-            }, 5000);
-        });
     }
 });

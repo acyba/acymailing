@@ -98,7 +98,7 @@
             }
         }
 
-        .acym__wysid__right__toolbar__contents .ui-draggable-handle div {
+        .acym__wysid__right__toolbar__blocks .ui-draggable-handle div {
             font-size: 12px;
         }
 
@@ -218,7 +218,6 @@
             }
 
             svg {
-
                 height: 100%;
             }
 
@@ -231,6 +230,35 @@
                 padding: 16px 5px;
                 margin: 0 0 5px 0;
                 width: 100%;
+            }
+        }
+
+        .acym__wysid__right__toolbar__saved_zones {
+            .acym__wysid__row__element--new {
+                font-size: 12px;
+                position: relative;
+
+                i.acymicon-dashboard {
+                    color: map-get($editor-wysid-palette, primary-ui);
+                    transform: rotate(90deg);
+                }
+
+                i.acymicon-delete {
+                    display: none;
+
+                    color: $alert-color;
+                    cursor: pointer;
+
+                    position: absolute;
+                    right: 5px;
+                    top: 5px;
+                }
+
+                &:hover {
+                    i.acymicon-delete {
+                        display: inline;
+                    }
+                }
             }
         }
 

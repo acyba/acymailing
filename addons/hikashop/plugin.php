@@ -38,6 +38,14 @@ class plgAcymHikashop extends acymPlugin
 
             $this->initCustomView();
 
+            $frontData = [
+                'all' => 'ACYM_ALL_ELEMENTS',
+                'hide' => 'ACYM_DONT_SHOW',
+            ];
+            if (acym_isExtensionActive('com_hikamarket')) {
+                $frontData['user'] = 'ACYM_DISPLAY_OWN_USER_PRODUCTS';
+            }
+
             $this->settings = [
                 'custom_view' => [
                     'type' => 'custom_view',
@@ -47,10 +55,7 @@ class plgAcymHikashop extends acymPlugin
                     'type' => 'select',
                     'label' => 'ACYM_FRONT_ACCESS',
                     'value' => 'all',
-                    'data' => [
-                        'all' => 'ACYM_ALL_ELEMENTS',
-                        'hide' => 'ACYM_DONT_SHOW',
-                    ],
+                    'data' => $frontData,
                 ],
                 'vat' => [
                     'type' => 'switch',
@@ -193,6 +198,25 @@ class plgAcymHikashop extends acymPlugin
                 ],
             ],
         ];
+
+        // Add parameter for the HikaMarket vendor
+        if (acym_isExtensionActive('com_hikamarket') && !acym_isAdmin() && $this->getParam('front', 'all') === 'user') {
+            $vendorId = acym_loadResult(
+                'SELECT v.vendor_id FROM #__hikashop_user AS u JOIN #__hikamarket_vendor AS v ON u.user_id = v.vendor_admin_id WHERE u.user_cms_id = '.acym_currentUserId()
+            );
+            if (empty($vendorId)) {
+                $vendorId = '-1';
+            }
+            $extraOption = [
+                'title' => '',
+                'type' => 'custom',
+                'name' => 'hikamarketuser',
+                'output' => '',
+                'js' => 'otherinfo += "| vendorid:'.(int)$vendorId.'";',
+            ];
+            $catOptions[] = $extraOption;
+        }
+
         $this->autoContentOptions($catOptions);
 
         $this->autoCampaignOptions($catOptions);
@@ -385,6 +409,13 @@ class plgAcymHikashop extends acymPlugin
             $this->filters[] = 'b.category_id IN ('.implode(', ', $categories).')';
         }
 
+        // Hikamarket: only display product from the vendor
+        $currentUserId = acym_currentUserId();
+        if (!acym_isAdmin() && acym_isExtensionActive('com_hikamarket') && $this->getParam('front', 'all') === 'user') {
+            $this->query .= ' JOIN #__hikamarket_vendor AS hv ON a.product_vendor_id = hv.vendor_id ';
+            $this->query .= ' JOIN #__hikashop_user as hu ON hv.vendor_admin_id = hu.user_id AND hu.user_cms_id = '.(int)$currentUserId;
+        }
+
         $listingOptions = [
             'header' => [
                 'product_name' => [
@@ -480,6 +511,10 @@ class plgAcymHikashop extends acymPlugin
                 if (!empty($lastGenerated)) {
                     $where[] = 'b.`product_created` > '.acym_escapeDB($lastGenerated);
                 }
+            }
+
+            if (acym_isExtensionActive('com_hikamarket') && !empty($parameter->vendorid)) {
+                $where[] = 'b.product_vendor_id = '.(int)$parameter->vendorid;
             }
 
             $query .= ' WHERE ('.implode(') AND (', $where).')';
@@ -926,6 +961,40 @@ class plgAcymHikashop extends acymPlugin
         exit;
     }
 
+    public function searchVendor()
+    {
+        $ids = $this->getIdsSelectAjax();
+        if (!empty($ids)) {
+            $value = '';
+            $elements = acym_loadObjectList('SELECT `vendor_name` AS name, `vendor_id` AS id FROM #__hikamarket_vendor WHERE `vendor_id` IN ("'.implode('","', $ids).'")');
+
+            $value = [];
+            if (!empty($elements)) {
+                foreach ($elements as $element) {
+                    $value[] = [
+                        'text' => $element->name,
+                        'value' => $element->id,
+                    ];
+                }
+            }
+            echo json_encode($value);
+            exit;
+        }
+
+        $return = [];
+        $search = acym_getVar('string', 'search', '');
+        $elements = acym_loadObjectList(
+            'SELECT `vendor_id`, `vendor_name` FROM `#__hikamarket_vendor` WHERE `vendor_name` LIKE '.acym_escapeDB('%'.$search.'%').' ORDER BY `vendor_name`'
+        );
+
+        foreach ($elements as $oneElement) {
+            $return[] = [$oneElement->vendor_id, $oneElement->vendor_name];
+        }
+
+        echo json_encode($return);
+        exit;
+    }
+
     public function onAcymDeclareConditions(&$conditions)
     {
         $categories = [
@@ -963,6 +1032,23 @@ class plgAcymHikashop extends acymPlugin
             'class="acym__select"'
         );
         $conditions['user']['hikapurchased']->option .= '</div>';
+
+        // Filter on vendor
+        if (acym_isExtensionActive('com_hikamarket')) {
+            $conditions['user']['hikapurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_FROM').'</div>';
+            $conditions['user']['hikapurchased']->option .= '<div class="intext_select_automation cell">';
+            $ajaxParams = json_encode([
+                'plugin' => __CLASS__,
+                'trigger' => 'searchVendor',
+            ]);
+            $conditions['user']['hikapurchased']->option .= acym_select(
+                [],
+                'acym_condition[conditions][__numor__][__numand__][hikapurchased][vendor]',
+                null,
+                'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_ANY_VENDOR', true).'" data-params="'.acym_escape($ajaxParams).'"'
+            );
+            $conditions['user']['hikapurchased']->option .= '</div>';
+        }
 
         $conditions['user']['hikapurchased']->option .= '</div>';
 
@@ -1006,6 +1092,25 @@ class plgAcymHikashop extends acymPlugin
         );
         $conditions['user']['hikareminder']->option .= '</div>';
         $conditions['user']['hikareminder']->option .= '</div>';
+
+        $conditions['user']['hikawishlist'] = new stdClass();
+        $conditions['user']['hikawishlist']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'HikaShop', acym_translation('ACYM_WISHLIST'));
+        $conditions['user']['hikawishlist']->option = '<div class="intext_select_automation cell">';
+        $conditions['user']['hikawishlist']->option .= acym_select(
+            [],
+            'acym_condition[conditions][__numor__][__numand__][hikawishlist][product]',
+            null,
+            'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_ANY_PRODUCT', true).'"  data-params="'.acym_escape($ajaxParams).'"'
+        );
+        $conditions['user']['hikawishlist']->option .= '</div>';
+        $conditions['user']['hikawishlist']->option .= '<div class="intext_select_automation cell">';
+        $conditions['user']['hikawishlist']->option .= acym_select(
+            $categories,
+            'acym_condition[conditions][__numor__][__numand__][hikawishlist][category]',
+            'any',
+            'class="acym__select"'
+        );
+        $conditions['user']['hikawishlist']->option .= '</div>';
     }
 
     public function onAcymProcessCondition_hikapurchased(&$query, $options, $num, &$conditionNotValid)
@@ -1048,6 +1153,16 @@ class plgAcymHikashop extends acymPlugin
             $query->join['hikapurchased_order_cat'.$num] = '#__hikashop_product_category AS hikapc'.$num.' ON hikaop'.$num.'.product_id = hikapc'.$num.'.product_id';
             $query->where[] = 'hikapc'.$num.'.category_id = '.intval($options['category']);
         }
+
+        // Filter on the vendor (Hikamarket)
+        // Don't applly if there is a filter on a product
+        if (acym_isExtensionActive('com_hikamarket') && empty($options['product']) && !empty($options['vendor'])) {
+            if (empty($query->join['hikapurchased_order_product'.$num])) {
+                $query->join['hikapurchased_order_product'.$num] = '#__hikashop_order_product AS hikaop'.$num.' ON order'.$num.'.order_id = hikaop'.$num.'.order_id';
+            }
+            $query->join['hikapurchased_product'.$num] = '#__hikashop_product AS hikap'.$num.' ON hikaop'.$num.'.product_id = hikap'.$num.'.product_id';
+            $query->where[] = 'hikap'.$num.'.product_vendor_id = '.(int)$options['vendor'];
+        }
     }
 
     public function onAcymProcessCondition_hikareminder(&$query, $options, $num, &$conditionNotValid)
@@ -1083,6 +1198,32 @@ class plgAcymHikashop extends acymPlugin
         }
     }
 
+    public function onAcymProcessCondition_hikawishlist(&$query, $options, $num, &$conditionNotValid)
+    {
+        $this->processConditionFilter_hikawishlist($query, $options, $num);
+        $affectedRows = $query->count();
+        if (empty($affectedRows)) $conditionNotValid++;
+    }
+
+    private function processConditionFilter_hikawishlist(&$query, $options, $num)
+    {
+        if (!include_once rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php') return;
+
+        $query->join['hikawishlist_hika_user'.$num] = '#__hikashop_user AS hika_user'.$num.' ON user.email = hika_user'.$num.'.user_email';
+        $query->join['hikawishlist_cart'.$num] = '#__hikashop_cart AS hika_cart'.$num.' ON hika_user'.$num.'.user_id = hika_cart'.$num.'.user_id';
+
+        $query->where[] = 'hika_cart'.$num.'.cart_type = "wishlist"';
+
+        if (!empty($options['product'])) {
+            $query->join['hikawishlist_cart_product'.$num] = '#__hikashop_cart_product AS hika_cart_product'.$num.' ON hika_cart'.$num.'.cart_id = hika_cart_product'.$num.'.cart_id';
+            $query->where[] = 'hika_cart_product'.$num.'.product_id = '.intval($options['product']);
+        } elseif (!empty($options['category']) && $options['category'] !== 'any') {
+            $query->join['hikawishlist_cart_product'.$num] = '#__hikashop_cart_product AS hika_cart_product'.$num.' ON hika_cart'.$num.'.cart_id = hika_cart_product'.$num.'.cart_id';
+            $query->join['hikawishlist_cat'.$num] = '#__hikashop_product_category AS hikapc'.$num.' ON hika_cart_product'.$num.'.product_id = hikapc'.$num.'.product_id';
+            $query->where[] = 'hikapc'.$num.'.category_id = '.intval($options['category']);
+        }
+    }
+
     public function onAcymDeclareSummary_conditions(&$automationCondition)
     {
         $this->summaryConditionFilters($automationCondition);
@@ -1103,6 +1244,16 @@ class plgAcymHikashop extends acymPlugin
             ) : $cats[$automationCondition['hikapurchased']['category']]->category_name;
 
             $finalText = acym_translationSprintf('ACYM_CONDITION_PURCHASED', $product, $category);
+
+            if (acym_isExtensionActive('com_hikamarket') && empty($automationCondition['hikapurchased']['product'])) {
+                $finalText .= ' '.acym_translation('ACYM_FROM').' ';
+                if (empty($automationCondition['hikapurchased']['vendor'])) {
+                    $finalText .= acym_translation('ACYM_ANY_VENDOR');
+                } else {
+                    $vendorName = acym_loadResult('SELECT vendor_name FROM #__hikamarket_vendor WHERE vendor_id = '.(int)$automationCondition['hikapurchased']['vendor']);
+                    $finalText .= $vendorName;
+                }
+            }
 
             $dates = [];
             if (!empty($automationCondition['hikapurchased']['datemin'])) {
@@ -1138,6 +1289,24 @@ class plgAcymHikashop extends acymPlugin
                 $orderStatuses[$automationCondition['hikareminder']['status']]->orderstatus_name
             );
         }
+
+        if (!empty($automationCondition['hikawishlist'])) {
+            if (!(empty($automationCondition['hikawishlist']['product']))) {
+                $product = acym_loadResult('SELECT `product_name` FROM #__hikashop_product WHERE product_id = '.acym_escapeDB($automationCondition['hikawishlist']['product']));
+            }
+            if (!(empty($automationCondition['hikawishlist']['category'])) && $automationCondition['hikawishlist']['category'] !== 'any') {
+                $cats = acym_loadObjectList('SELECT `category_id`, `category_name` FROM #__hikashop_category WHERE `category_type` = "product"', 'category_id');
+            }
+            $category = empty($cats[$automationCondition['hikawishlist']['category']]) ? acym_translation(
+                'ACYM_ANY_CATEGORY'
+            ) : $cats[$automationCondition['hikawishlist']['category']]->category_name;
+
+            $automationCondition = acym_translationSprintf(
+                'ACYM_WISH_LISTED',
+                !empty($product) ? $product : acym_translation('ACYM_ANY_PRODUCT'),
+                $category
+            );
+        }
     }
 
     public function onAcymDeclareFilters(&$filters)
@@ -1169,12 +1338,24 @@ class plgAcymHikashop extends acymPlugin
         $this->processConditionFilter_hikareminder($query, $options, $num);
     }
 
+    public function onAcymProcessFilterCount_hikawishlist(&$query, $options, $num)
+    {
+        $this->onAcymProcessFilter_hikawishlist($query, $options, $num);
+
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
+    }
+
+    public function onAcymProcessFilter_hikawishlist(&$query, $options, $num)
+    {
+        $this->processConditionFilter_hikawishlist($query, $options, $num);
+    }
+
     public function onAcymDeclareSummary_filters(&$automationFilter)
     {
         $this->summaryConditionFilters($automationFilter);
     }
 
-    // Add trigger configuration for Hikashop order status change
+    // Add trigger configuration for Hikashop order status change and wishlist
     public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
     {
         if (!include_once rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php') return;
@@ -1191,6 +1372,10 @@ class plgAcymHikashop extends acymPlugin
         $triggers['user']['hikashopNewOrder'] = new stdClass();
         $triggers['user']['hikashopNewOrder']->name = acym_translationSprintf('ACYM_X_NEW_ORDER', 'HikaShop');
         $triggers['user']['hikashopNewOrder']->option = '<input type="hidden" name="[triggers][user][hikashopNewOrder][hidden]" value="">';
+
+        $triggers['user']['hikashopWishlistUpdated'] = new stdClass();
+        $triggers['user']['hikashopWishlistUpdated']->name = acym_translationSprintf('ACYM_X_ADD_TO_WISHLIST', 'HikaShop');
+        $triggers['user']['hikashopWishlistUpdated']->option = '<input type="hidden" name="[triggers][user][hikashopWishlistUpdated][hidden]" value="">';
 
         $cats = [];
         foreach ($statusClass->categories as $category) {
@@ -1215,13 +1400,18 @@ class plgAcymHikashop extends acymPlugin
         $triggers = $step->triggers;
 
         if (!empty($triggers['hikashoporder']) && !empty($data['order'])) {
-            // Check order status in allowed statuses in the triggrer
+            // Check order status in allowed statuses in the trigger
             if (!empty($triggers['hikashoporder']) && in_array($data['order']->order_status, $triggers['hikashoporder']['status'])) {
                 $execute = true;
             }
         }
         if (!empty($triggers['hikashopNewOrder']) && !empty($data['order'])) {
             if ($data['order']->order_status == 'confirmed') {
+                $execute = true;
+            }
+        }
+        if (!empty($triggers['hikashopWishlistUpdated'])) {
+            if ($data['cart_type'] === 'wishlist') {
                 $execute = true;
             }
         }
@@ -1279,6 +1469,31 @@ class plgAcymHikashop extends acymPlugin
         ]);
     }
 
+    public function onAfterCartSave(&$element)
+    {
+        // Get Hikashop user from the cart
+        if (empty($element->user_id)) {
+            $class = hikashop_get('class.cart');
+            $old = $class->get($element->cart_id);
+            if (empty($old)) return;
+            $element->user_id = $old->user_id;
+        }
+
+        $hikaUserClass = hikashop_get('class.user');
+        $hikaUser = $hikaUserClass->get($element->user_id);
+        if (empty($hikaUser)) return;
+
+        $userClass = new UserClass();
+        $user = $userClass->getOneByEmail(!empty($hikaUser->email) ? $hikaUser->email : $hikaUser->user_email);
+        if (empty($user->id)) return;
+
+        $automationClass = new AutomationClass();
+        $automationClass->trigger('hikashopWishlistUpdated', [
+            'userId' => $user->id,
+            'cart_type' => $element->cart_type,
+        ]);
+    }
+
     // Build Hikashop trigger display for the summary
     public function onAcymDeclareSummary_triggers(&$automation)
     {
@@ -1289,6 +1504,9 @@ class plgAcymHikashop extends acymPlugin
         }
         if (isset($automation->triggers['hikashopNewOrder'])) {
             $automation->triggers['hikashopNewOrder'] = acym_translationSprintf('ACYM_X_NEW_ORDER', 'HikaShop');
+        }
+        if (isset($automation->triggers['hikashopWishlistUpdated'])) {
+            $automation->triggers['hikashopWishlistUpdated'] = acym_translationSprintf('ACYM_X_ADD_TO_WISHLIST', 'HikaShop');
         }
     }
 

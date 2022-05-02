@@ -321,6 +321,32 @@
     }
 }
 
+.acym__wysid__modal__tiny .acym__wysid__modal__ui {
+    max-width: 400px;
+    max-height: 200px;
+    margin-top: 200px;
+
+    #acym__wysid__modal__ui__display {
+        height: auto;
+
+        input {
+            max-width: 220px;
+            display: inline;
+        }
+
+        #custom_zone_save_spinner {
+            margin-left: 0.3rem;
+            margin-right: 0;
+            font-size: 10px;
+            display: none;
+        }
+    }
+}
+
+#inserted_custom_zone_spinner {
+    padding: 1rem;
+}
+
 @media screen and (max-width: 1023px) {
     .acym__wysid__modal__ui {
         width: calc(100% - 20px);

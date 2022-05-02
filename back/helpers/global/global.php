@@ -100,7 +100,7 @@ function acym_display($messages, $type = 'success', $close = true)
 
         echo '<div class="cell auto"><div>'.$message.'</div></div>';
 
-        if ($close) {
+        if ($close && strpos($message, 'acym__do__not__remindme') === false) {
             echo '<i data-id="'.acym_escape($id).'" class="cell shrink acym__message__close acymicon-remove"></i>';
         }
         echo '</div>';

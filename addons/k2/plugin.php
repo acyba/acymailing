@@ -88,7 +88,7 @@ class plgAcymK2 extends acymPlugin
 
     public function initElementOptionsCustomView()
     {
-        $query = 'SELECT item.* FROM #__k2_items AS item WHERE item.published = 1';
+        $query = 'SELECT item.* FROM #__k2_items AS item WHERE item.published = 1 AND item.trash = 0';
         $element = acym_loadObject($query);
         if (empty($element)) return;
         foreach ($element as $key => $value) {
@@ -211,6 +211,7 @@ class plgAcymK2 extends acymPlugin
         $this->query = 'FROM #__k2_items AS item ';
         $this->filters = [];
         $this->filters[] = 'item.published = 1';
+        $this->filters[] = 'item.trash = 0';
         $this->searchFields = ['item.id', 'item.title'];
         $this->pageInfo->order = 'item.id';
         $this->elementIdTable = 'item';
@@ -285,6 +286,7 @@ class plgAcymK2 extends acymPlugin
             }
 
             $where[] = 'element.published = 1';
+            $where[] = 'element.trash = 0';
             $where[] = '`publish_up` < '.acym_escapeDB(date('Y-m-d H:i:s', $time - date('Z')));
             $where[] = '`publish_down` > '.acym_escapeDB(date('Y-m-d H:i:s', $time - date('Z'))).' OR `publish_down` = 0';
             if (!empty($parameter->min_publish)) {
@@ -311,7 +313,7 @@ class plgAcymK2 extends acymPlugin
 
     public function replaceIndividualContent($tag)
     {
-        $query = 'SELECT item.* FROM #__k2_items AS item WHERE item.published = 1 AND item.id = '.intval($tag->id);
+        $query = 'SELECT item.* FROM #__k2_items AS item WHERE item.published = 1 AND item.trash = 0 AND item.id = '.intval($tag->id);
 
         $element = $this->initIndividualContent($tag, $query);
 

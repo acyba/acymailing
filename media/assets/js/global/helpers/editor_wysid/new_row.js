@@ -126,5 +126,29 @@ const acym_editorWysidNewRow = {
         jQuery(ui).replaceWith(content);
         acym_editorWysidVersioning.setUndoAndAutoSave();
         acym_helperEditorWysid.setColumnRefreshUiWYSID();
+    },
+    addCustomRow: function (ui) {
+        let zoneId = jQuery(ui).attr('data-acym-zone-id');
+        jQuery(ui).replaceWith('<i id="inserted_custom_zone_spinner" class="acymicon-circle-o-notch acymicon-spin"></i>');
+
+        const data = {
+            ctrl: ACYM_IS_ADMIN ? 'zones' : 'frontzones',
+            task: 'getForInsertion',
+            zoneId: zoneId
+        };
+
+        acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+            if (response.error) {
+                acym_editorWysidNotifications.addEditorNotification({
+                    'message': '<div class="cell auto acym__autosave__notification">' + response.message + '</div>',
+                    'level': 'error'
+                }, 3000, true);
+                jQuery('#inserted_custom_zone_spinner').replaceWith('');
+            } else {
+                jQuery('#inserted_custom_zone_spinner').replaceWith(response.data.content);
+                acym_helperEditorWysid.setColumnRefreshUiWYSID();
+                acym_editorWysidVersioning.setUndoAndAutoSave();
+            }
+        });
     }
 };

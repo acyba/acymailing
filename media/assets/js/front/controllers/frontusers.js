@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     acym_helperUser.setSubscribeUnsubscribeUser();
     acym_helperImport.initImport();
     initUser();
+    blockPasteEvent();
 });
 
 function initUser() {
@@ -64,6 +65,7 @@ function acym_checkChangeForm() {
     acym_handleRequiredDate(validation);
     acym_handleOtherRequiredFields(validation);
     acym_handleAuthorizedContent(validation);
+    acym_checkEmailConfirmationField(varform, 'user[email_confirmation]', validation);
 
     if (validation.errors > 0) {
         return false;
@@ -107,4 +109,23 @@ function acymSubmitForm(task, button) {
 
     taskField.value = task;
     submitButton.click();
+}
+
+function acym_checkEmailConfirmationField(varform, name, validation) {
+    let emailField = varform.elements['user[email]'];
+    let emailConfirmationField = varform.elements[name];
+    if (emailConfirmationField) {
+        if (emailField.value !== emailConfirmationField.value) {
+            acymAddInvalidClass(name, validation, acymModule['VALID_EMAIL_CONFIRMATION']);
+        }
+    }
+}
+
+function blockPasteEvent() {
+    let emailConfirmationFields = document.querySelectorAll('input[name="user[email_confirmation]"]');
+    emailConfirmationFields.forEach(emailConfirmationField => {
+        emailConfirmationField.addEventListener('paste', event => {
+            event.preventDefault();
+        });
+    });
 }

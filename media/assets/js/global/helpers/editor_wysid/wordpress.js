@@ -73,6 +73,10 @@ const acym_editorWysidWordpress = {
                         acym_helperEditorWysid.setColumnRefreshUiWYSID();
                         acym_editorWysidVersioning.setUndoAndAutoSave();
                     });
+
+                    jQuery('#acym__wysid__context__image__alt').val(attachment.alt);
+                    jQuery('#acym__wysid__context__image__title').val(attachment.title);
+                    jQuery('#acym__wysid__context__image__caption').val(attachment.caption);
                 }
             } else {
                 if (!rows) {

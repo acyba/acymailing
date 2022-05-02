@@ -377,7 +377,7 @@ class plgAcymIcagenda extends acymPlugin
 
         $varFields = $this->getCustomLayoutVars($element);
 
-        $link = 'index.php?option=com_icagenda&view=list&layout=event&id='.$tag->id.':'.$element->alias.'&date='.str_replace([' ', ':'], '-', substr($element->next, 0, 16));
+        $link = 'index.php?option=com_icagenda&view=event&id='.$tag->id.':'.$element->alias;
         $link = $this->finalizeLink($link);
 
         $varFields['{link}'] = $link;

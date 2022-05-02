@@ -246,9 +246,7 @@ function acym_getFilesFolder($ignoreVariables = false)
         $uploadFolder = str_replace('{userid}', acym_currentUserId(), $uploadFolder);
     }
 
-    $uploadFolder = acym_replaceGroupTags($uploadFolder);
-
-    return $uploadFolder;
+    return acym_replaceGroupTags($uploadFolder);
 }
 
 /**
@@ -642,8 +640,8 @@ function acym_uploadFile($src, $dest)
 function acym_copyFile($src, $dest, $path = null, $use_streams = false)
 {
     if ($path) {
-        $src = acym_cleanPath($path.'/'.$src);
-        $dest = acym_cleanPath($path.'/'.$dest);
+        $src = acym_cleanPath($path.DS.$src);
+        $dest = acym_cleanPath($path.DS.$dest);
     }
 
     if (!is_readable($src)) {

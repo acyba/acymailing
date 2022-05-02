@@ -806,8 +806,12 @@ class MailsController extends acymController
 
             $return .= '<img src="'.acym_escape(acym_getMailThumbnail($oneTemplate->thumbnail)).'" alt="template thumbnail"/>';
             if (!$automation || !empty($returnUrl)) $return .= '</a>';
-            $return .= '<div class="acym__templates__choose__ribbon '.($oneTemplate->drag_editor ? 'acyeditor' : 'htmleditor').'">'.($oneTemplate->drag_editor ? 'AcyEditor'
-                    : 'HTML Editor').'</div>';
+
+            if ($oneTemplate->drag_editor) {
+                $return .= '<div class="acym__templates__choose__ribbon acyeditor">'.acym_translation('ACYM_DD_EDITOR').'</div>';
+            } else {
+                $return .= '<div class="acym__templates__choose__ribbon htmleditor">'.acym_translation('ACYM_HTML_EDITOR').'</div>';
+            }
 
             if (strlen($oneTemplate->name) > 55) {
                 $oneTemplate->name = substr($oneTemplate->name, 0, 50).'...';

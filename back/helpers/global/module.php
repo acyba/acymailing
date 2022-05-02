@@ -41,6 +41,7 @@ function acym_initModule($params = null)
 			acymModule['NAME_MISSING'] = '".str_replace("'", "\'", acym_translation('ACYM_MISSING_NAME'))."';
 			acymModule['EMAILCAPTION'] = '".str_replace("'", "\'", $emailCaption)."';
 			acymModule['VALID_EMAIL'] = '".str_replace("'", "\'", acym_translation('ACYM_VALID_EMAIL'))."';
+			acymModule['VALID_EMAIL_CONFIRMATION'] = '".str_replace("'", "\'", acym_translation('ACYM_VALID_EMAIL_CONFIRMATION'))."';
 			acymModule['CAPTCHA_MISSING'] = '".str_replace("'", "\'", acym_translation('ACYM_WRONG_CAPTCHA'))."';
 			acymModule['NO_LIST_SELECTED'] = '".str_replace("'", "\'", acym_translation('ACYM_SELECT_LIST'))."';
 			acymModule['NO_LIST_SELECTED_UNSUB'] = '".str_replace("'", "\'", acym_translation('ACYM_SELECT_LIST_UNSUB'))."';

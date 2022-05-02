@@ -27,17 +27,30 @@ class SendinblueCredentials extends SendinblueClass
 
     public function getSendingMethodsHtmlSetting(&$data)
     {
+        $needValidation = $this->config->get('sendinblue_validation', 0);
+        $remindMe = json_decode($this->config->get('remindme', '[]'), true);
+
+        if (intval($needValidation) === 1 && !in_array('sendinblue_validation', $remindMe)) {
+            $docUrl = 'https://docs.acymailing.com/external-sending-method/sendinblue#my-account-needs-validation';
+
+            $message = acym_translation('ACYM_SENDINBLUE_VALIDATION_NEEDED');
+            $message .= '<br/><a href="'.$docUrl.'" target="_blank">'.$docUrl.'</a>';
+            $message .= ' <a href="#" class="acym__do__not__remindme acym__do__not__remindme__info" title="sendinblue_validation">';
+            $message .= acym_translation('ACYM_DO_NOT_REMIND_ME');
+            $message .= '</a>';
+
+            acym_enqueueMessage($message, 'info');
+        }
+
         $delayType = new DelayType();
-        $defaultApiKey = empty($data['tab']->config->values[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key']->value;
+        $defaultApiKey = empty($data['tab']->config->values[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key']) ? ''
+            : $data['tab']->config->values[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key']->value;
         ob_start();
         ?>
 		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings">
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 				<label class="cell shrink margin-right-1" for="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings_api-key">
-                    <?php echo acym_translationSprintf(
-                        'ACYM_SENDING_METHOD_API_KEY',
-                        plgAcymSendinblue::SENDING_METHOD_NAME
-                    ); ?>
+                    <?php echo acym_translationSprintf('ACYM_SENDING_METHOD_API_KEY', plgAcymSendinblue::SENDING_METHOD_NAME); ?>
 				</label>
                 <?php echo $this->getLinks(
                     'https://www.sendinblue.com/?tap_a=30591-fb13f0&tap_s=1371199-cf94c5',
@@ -61,11 +74,15 @@ class SendinblueCredentials extends SendinblueClass
 				</div>
                 <?php if (!$this->plugin->isLogFileEmpty()) { ?>
 					<div class="cell grid-x margin-top-1 acym__sending__methods__log">
-						<a href="<?php echo acym_completeLink('configuration&task=downloadLogFile&filename='.urlencode($this->plugin->logFilename)); ?>"
-						   target="_blank"
-						   class="cell shrink button button-secondary">
-                            <?php echo acym_translation('ACYM_DOWNLOAD_LOG_FILE'); ?>
-						</a>
+                        <?php
+                        echo acym_modal(
+                            acym_translation('ACYM_REPORT_SEE'),
+                            '',
+                            null,
+                            '',
+                            'class="button" data-ajax="true" data-iframe="&ctrl=configuration&task=seeLogs&filename='.$this->plugin->logFilename.'"'
+                        );
+                        ?>
 					</div>
                 <?php } ?>
 				<div class="cell grid-x margin-top-1 acym_vcenter acym__sending__methods__clean__data">
@@ -74,7 +91,7 @@ class SendinblueCredentials extends SendinblueClass
                         plgAcymSendinblue::SENDING_METHOD_NAME,
                         $delayType->display(
                             'config['.plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency]',
-                            $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency', 2592000),//one month
+                            $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency', 604800), // one week
                             4
                         )
                     ); ?>

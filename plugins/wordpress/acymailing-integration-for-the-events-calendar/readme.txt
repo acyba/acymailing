@@ -3,7 +3,7 @@ Contributors: acyba
 Tags: newsletter, integration, acymailing, events, the events calendar
 Requires at least: 4.7
 Tested up to: 5.9.3
-Stable tag: 1.9
+Stable tag: 2.0
 Requires PHP: 5.6.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
