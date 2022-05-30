@@ -51,6 +51,6 @@ const acym_helperPagination = {
     },
     initPagination: function () {
         jQuery('#acym_pagination').val(1);
-        jQuery('#acym_form').trigger('click');
+        jQuery('#acym_form').trigger('submit');
     }
 };

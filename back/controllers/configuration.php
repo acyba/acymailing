@@ -68,8 +68,14 @@ class ConfigurationController extends acymController
         $batchesNumber = $this->config->get('queue_batch_auto', 1);
         $emailsPerBatch = $this->config->get('queue_nbmail_auto', 70);
         $cronFrequency = $this->config->get('cron_frequency', 900);
-        if ($queueType !== 'manual' && ($batchesNumber > 4 || $emailsPerBatch > 300 || $cronFrequency < 300)) {
-            acym_enqueueMessage(acym_translation('ACYM_SEND_CONFIGURATION_WARNING'), 'warning');
+        if ($queueType !== 'manual') {
+            if (($batchesNumber > 1 || $cronFrequency < 900) && !function_exists('curl_multi_exec')) {
+                acym_enqueueMessage(acym_translation('ACYM_NEED_CURL_MULTI'), 'error');
+            }
+
+            if ($batchesNumber > 4 || $emailsPerBatch > 300 || $cronFrequency < 300) {
+                acym_enqueueMessage(acym_translation('ACYM_SEND_CONFIGURATION_WARNING'), 'warning');
+            }
         }
     }
 
