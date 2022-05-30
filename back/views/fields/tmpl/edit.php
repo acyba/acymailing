@@ -17,12 +17,10 @@ if (!empty($data['translation_languages'])) {
 			</div>
 
             <?php
-            $display = '';
-            if ($data['field']->id == $data['languageFieldId']) $display = 'style="display:none;"';
             $classes = 'cell xlarge-8 grid-x grid-margin-x margin-y margin-bottom-1';
             $classes .= ' acym__content acym__fields__edit__properties acym_center_baseline';
             ?>
-			<div class="<?php echo $classes; ?>" <?php echo $display; ?>>
+			<div class="<?php echo $classes; ?>">
                 <?php include acym_getView('fields', 'edit_content'); ?>
                 <?php include acym_getView('fields', 'edit_style'); ?>
                 <?php include acym_getView('fields', 'edit_values'); ?>

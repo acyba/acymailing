@@ -1533,9 +1533,16 @@ class plgAcymWoocommerce extends acymPlugin
 
         ?>
 		<div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
-			<div class="acym__title acym__title__secondary"><?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', 'WooCommerce')); ?></div>
+			<div class="cell grid-x acym__configuration__showmore-head">
+				<div class="acym__title acym__title__secondary cell auto margin-bottom-0">
+                    <?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', 'WooCommerce')); ?>
+				</div>
+				<div class="cell shrink">
+                    <?php echo acym_showMore('acym__configuration__subscription__integration-woocommerce'); ?>
+				</div>
+			</div>
 
-			<div class="grid-x margin-y">
+			<div id="acym__configuration__subscription__integration-woocommerce" class="grid-x margin-y" style="display:none;">
 				<div class="cell grid-x grid-margin-x">
                     <?php
                     $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', 'WooCommerce').acym_info('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC');

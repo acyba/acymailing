@@ -1,4 +1,5 @@
-<h2 class="cell acym__title acym__title__secondary margin-top-2 acym__fields__edit__section__title" id="acym__fields__edit__section__title--style">
+<?php $margin = $data['field']->id == $data['languageFieldId'] ? '' : 'margin-top-2'; ?>
+<h2 class="cell acym__title acym__title__secondary <?php echo $margin ?> acym__fields__edit__section__title" id="acym__fields__edit__section__title--style">
     <?php echo acym_translation('ACYM_FIELD_STYLE'); ?>
 </h2>
 

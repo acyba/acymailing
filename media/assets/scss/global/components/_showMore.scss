@@ -1,0 +1,14 @@
+.showmore label {
+    font-size: 16px;
+    color: $color-palette-cyan;
+    font-weight: 500;
+    -webkit-user-select: none;
+
+    i {
+        vertical-align: middle;
+    }
+}
+
+.acym__configuration__showmore-head, .acym__configuration__showmore-head label {
+    cursor: pointer;
+}

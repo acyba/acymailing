@@ -1,5 +1,5 @@
 const acym_editorWysidOutlook = {
-    setButtonOutlook: function ($element) {
+    getOutlookButton: function ($element) {
         let borderRadius;
         if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
             borderRadius = $element.css('borderBottomLeftRadius');
@@ -23,13 +23,17 @@ const acym_editorWysidOutlook = {
         let widthButton = Math.ceil($element.outerWidth()) + 'px';
         let heightButton = $element.css('height').replace(/[^-\d\.]/g, '') + 'px';
         let cssRoundrect = 'style="width: ' + widthButton + '; height:' + heightButton + ';v-text-anchor:middle;"';
-        let css = 'color :' + $element.css('color') + ';';
-        css += ' font-family:' + $element.css('font-family') + ';';
+        let css = 'font-family:' + $element.css('font-family') + ';';
         css += ' font-size:' + $element.css('font-size') + ';';
         css += ' font-weight:' + $element.css('font-weight') + ';';
-        let text = $element.html();
 
-        return '<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"'
+        let linkBorder = $element.css('border');
+        $element.css('border', 'none transparent');
+        let text = $element[0].outerHTML;
+        $element.css('border', linkBorder);
+
+        // See https://buttons.cm
+        return '<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"'
                + cssRoundrect
                + href
                + borderRadius
@@ -40,7 +44,7 @@ const acym_editorWysidOutlook = {
                + css
                + '">'
                + text
-               + '</center></v:roundrect><![endif]--><!--[if !mso]> -->';
+               + '</center></v:roundrect>';
     },
     setBackgroundOutlook: function ($table) {
         let start = '<!--[if gte mso 9]><v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width: '

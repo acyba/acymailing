@@ -82,7 +82,7 @@ const acym_helperBlockSeparator = {
             acym_helperBlockSeparator.releaseSVG();
             $separator.removeClass('separator_grabbed');
             acym_helperBlockSeparator.$container.find('.grid-visible').removeClass('grid-visible');
-            acym_editorWysidRowSelector.setRowSelector();
+            acym_editorWysidRowSelector.setZoneAndBlockOverlays();
         });
     },
     setRightBorder: function ($parent) {

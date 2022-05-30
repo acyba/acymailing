@@ -71,14 +71,13 @@ class FrontusersController extends UsersController
 
     protected function prepareUsersSubscriptions(&$data)
     {
-        $usersId = [];
-        foreach ($data['allUsers'] as $oneUser) {
-            $usersId[] = $oneUser->id;
-        }
-
         $subscriptions = [];
 
-        if (!empty($usersId)) {
+        if (!empty($data['allUsers'])) {
+            $usersId = [];
+            foreach ($data['allUsers'] as $oneUser) {
+                $usersId[] = $oneUser->id;
+            }
             $subscriptionsArray = $this->currentClass->getUsersSubscriptionsByIds($usersId, acym_currentUserId());
 
             foreach ($subscriptionsArray as $oneSubscription) {

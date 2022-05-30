@@ -370,6 +370,7 @@ class FieldClass extends acymClass
         $multipleDropdownClasses = !empty($userClasses['multiple_dropdown']) ? $userClasses['multiple_dropdown'] : '';
         $languageClasses = !empty($userClasses['language']) ? $userClasses['language'] : '';
 
+        $extraErrors = $this->config->get('extra_errors', '0');
         $isCoreField = $field->core == 1;
 
         if (!$isCoreField && !acym_level(ACYM_ENTERPRISE)) return '';
@@ -624,6 +625,10 @@ class FieldClass extends acymClass
         }
 
         $return .= '<div class="acym__field__error__block" data-acym-field-id="'.intval($field->id).'"></div>';
+        if ($displayFront && $extraErrors && !acym_isAdmin()) {
+            $return .= '<div class="acym__message__invalid__field acym__color__error" style="display: none;">';
+            $return .= '<i class="acymicon-times-circle acym__cross__invalid acym__color__error"></i>'.acym_translation('ACYM_THANKS_TO_FILL_IN_THIS_FIELD').'</div>';
+        }
 
         return $return;
     }
@@ -712,12 +717,17 @@ class FieldClass extends acymClass
         $name = acym_translation('ACYM_EMAIL_CONFIRMATION');
         $placeholder = !$displayOutside ? acym_translation('ACYM_EMAIL_CONFIRMATION') : '';
         $style = empty($size) ? '' : ' style="'.$size.'"';
+        $extraErrors = $this->config->get('extra_errors', '0');
 
 
         $return = '<'.$container.' class="onefield acym_email_confirmation_field acyfield_text">';
         if ($displayOutside) $return .= '<label class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.$name.'</div>';
         $return .= '<input id="'.$uniqueId.'" '.$style.' required type="email" class="cell acym__user__edit__email" name="user[email_confirmation]" placeholder="'.$placeholder.'">';
         $return .= '<div class="acym__field__error__block"></div>';
+        if ($extraErrors && !acym_isAdmin()) {
+            $return .= '<div class="acym__message__invalid__field acym__color__error" style="display: none;">';
+            $return .= '<i class="acymicon-times-circle acym__cross__invalid acym__color__error"></i>'.acym_translation('ACYM_THANKS_TO_FILL_IN_THIS_FIELD').'</div>';
+        }
         if ($displayOutside) $return .= '</label>';
         $return .= '</'.$container.'>';
 

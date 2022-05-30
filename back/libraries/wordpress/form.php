@@ -400,6 +400,7 @@ function acym_renderFormArchive($params, $args = [])
 
     $instance = [
         'title' => $params->get('title', ''),
+        'archiveNbNewslettersPerPage' => $params->get('archiveNbNewslettersPerPage', 20),
         'lists' => $params->get('lists'),
         'popup' => $popup,
         'displayUserListOnly' => $displayUserListOnly,
@@ -421,6 +422,7 @@ function acym_renderFormArchive($params, $args = [])
         'paramsCMS' => ['widget_id' => 0, 'suffix' => ''],
         'search' => $search,
         'disableButtons' => $disableButtons,
+        'nbNewslettersPerPage' => $instance['archiveNbNewslettersPerPage'],
     ];
 
     $archiveController = new ArchiveController();

@@ -75,6 +75,10 @@ input[type="checkbox"] {
     label {
         vertical-align: middle;
     }
+
+    .acym__disabled[type=radio] + label[for], i.acym__disabled {
+        cursor: $input-cursor-disabled;
+    }
 }
 
 .acym__label {

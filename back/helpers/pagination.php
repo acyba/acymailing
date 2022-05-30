@@ -33,10 +33,12 @@ class PaginationHelper extends acymObject
             $classNavigationContainer = 'shrink grid-margin-x';
             $classNavigation = 'small-auto medium-shrink';
             $classDisplayNumber = 'shrink';
+            $classPadding = 'pagination_padding ';
         } else {
             $classNavigationContainer = '';
             $classNavigation = '';
             $classDisplayNumber = 'align-center';
+            $classPadding = '';
         }
 
         $pagination = '<div class="pagination text-center cell grid-x'.$class.'" role="navigation" aria-label="Pagination">
@@ -45,14 +47,14 @@ class PaginationHelper extends acymObject
 
         // Turbo first button
         if (!$dynamics) {
-            $pagination .= '<div class="cell shrink pagination-turbo-left pagination_one_pagination ';
+            $pagination .= '<div class="cell shrink pagination-turbo-left pagination_one_pagination '.$classPadding;
             $pagination .= $this->page > 1 ? 'acym__pagination__page'.$suffix.'" page="1' : 'pagination_disabled';
             $pagination .= '"><i class="acymicon-play_arrow rotate180deg pagination__i"></i><i class="acymicon-play_arrow rotate180deg pagination__i"></i></div>';
             $pagination .= '<div class="cell shrink pagination_border_left"></div>';
         }
 
         // Previous button
-        $pagination .= '<div class="cell shrink pagination-previous pagination_one_pagination ';
+        $pagination .= '<div class="cell shrink pagination-previous pagination_one_pagination '.$classPadding;
         $pagination .= $this->page > 1 ? 'acym__pagination__page'.$suffix.'" page="'.($this->page - 1) : 'pagination_disabled';
         $pagination .= '"><i class="acymicon-play_arrow rotate180deg pagination__i"></i></div>';
 
@@ -71,12 +73,12 @@ class PaginationHelper extends acymObject
             $paramsTurboNext = 'pagination_disabled';
         }
 
-        $pagination .= '<div class="cell shrink pagination-next pagination_one_pagination '.$paramsNext.'"><i class="acymicon-play_arrow pagination__i"></i></div>';
+        $pagination .= '<div class="cell shrink pagination-next pagination_one_pagination '.$classPadding.$paramsNext.'"><i class="acymicon-play_arrow pagination__i"></i></div>';
 
         // Turbo last button
         if (!$dynamics) {
             $pagination .= '<div class="cell shrink pagination_border_right"></div>';
-            $pagination .= '<div class="cell shrink pagination-turbo-right pagination_one_pagination '.$paramsTurboNext.'">
+            $pagination .= '<div class="cell shrink pagination-turbo-right pagination_one_pagination '.$classPadding.$paramsTurboNext.'">
                                     <i class="acymicon-play_arrow pagination__i"></i>
                                     <i class="acymicon-play_arrow pagination__i"></i>
                                 </div>';
@@ -97,10 +99,11 @@ class PaginationHelper extends acymObject
             ];
             $pagination .= '<div class="cell '.$classDisplayNumber.' grid-x acym_vcenter acym__pagination__pagenb">';
 
+            $selectValue = $page === 'archive' ? $this->getListLimit($this->nbPerPage) : $this->getListLimit();
             $paginationNumberEntries = '<div class="acym__select__pagination">'.acym_select(
                     $nbPagesOptions,
                     'acym_pagination_element_per_page',
-                    $this->getListLimit(),
+                    $this->getClosest($selectValue, $nbPagesOptions),
                     ['class' => 'acym__select__pagination__dropdown']
                 ).'</div>';
 
@@ -119,12 +122,11 @@ class PaginationHelper extends acymObject
         return $this->display('', '__ajax', $dynamics);
     }
 
-    public function getListLimit()
+    public function getListLimit($default = 20)
     {
         $currentUserId = acym_currentUserId();
         if (empty($currentUserId)) $currentUserId = 0;
-
-        $currentConfig = $this->config->get('list_limit_'.$currentUserId, 20);
+        $currentConfig = $this->config->get('list_limit_'.$currentUserId, $default);
         $listLimitSelect = acym_getVar('int', 'acym_pagination_element_per_page', 0);
 
         if (!empty($listLimitSelect) && $listLimitSelect != $currentConfig) {
@@ -133,5 +135,17 @@ class PaginationHelper extends acymObject
         }
 
         return $currentConfig;
+    }
+
+    function getClosest($search, $arr)
+    {
+        $closest = null;
+        foreach ($arr as $item) {
+            if ($closest === null || abs($search - $closest) > abs($item - $search)) {
+                $closest = $item;
+            }
+        }
+
+        return $closest;
     }
 }

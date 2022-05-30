@@ -26,14 +26,16 @@
                         }
 
                         if (strlen($file) > 20) {
-                            $title = '<span class="cell acym__file__select__title" title="'.str_replace('"', '', $file).'">'.substr(rtrim($file, $ext), 0, 12).'...'.$ext.'</span>';
+                            $title = '<span class="cell acym__file__select__title" title="'.acym_escape($file).'">'.substr(rtrim($file, $ext), 0, 12).'...'.$ext.'</span>';
                         } else {
                             $title = '<span class="cell acym__file__select__title">'.$file.'</span>';
                         }
+
+                        $selected = $data['selectedFile'] === $file ? 'acym_clickme' : '';
                         ?>
 
 						<div class="cell acym__file__select__onepic text-center">
-							<a href="#" class="acym__file__select__add grid-x" mapdata="<?php echo acym_escape($file); ?>">
+							<a href="#" class="acym__file__select__add grid-x <?php echo $selected; ?>" mapdata="<?php echo acym_escape($file); ?>">
                                 <?php echo $title; ?>
 								<div class="cell">
 									<img src="<?php echo acym_escape($srcImg); ?>" alt="" />

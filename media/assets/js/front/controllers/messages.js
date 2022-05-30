@@ -33,12 +33,26 @@ function acymDisplayCallout(callout, i) {
 
 document.addEventListener('DOMContentLoaded', function () {
     let xhr = new XMLHttpRequest();
-    xhr.open('POST', ACYM_AJAX + '&page=acymailing_campaigns&page=acymailing_front&ctrl=frontusers&task=ajaxGetEnqueuedMessages');
+    xhr.open('POST', ACYM_AJAX + '&page=acymailing_front&ctrl=frontusers&task=ajaxGetEnqueuedMessages');
     xhr.onload = function () {
         if (xhr.status === 200) {
-            let response = JSON.parse(xhr.responseText);
+            let response = xhr.responseText;
 
-            if(response.data.messages.length === 0) return;
+            try {
+                let begin = response.indexOf('{');
+                let beginBrackets = response.indexOf('[');
+
+                if ((!isNaN(begin) && begin > 0) && (!isNaN(beginBrackets) && beginBrackets > 0)) {
+                    response = response.substring(begin);
+                }
+
+                if (response !== undefined || response !== '') response = JSON.parse(response);
+            } catch (error) {
+                console.log(error.stack);
+            }
+
+            if (!response || !response.data || !response.data.messages) return;
+            if (response.data.messages.length === 0) return;
 
             let acy_messages_container = document.createElement('div');
             acy_messages_container.innerHTML = response.data.messages;

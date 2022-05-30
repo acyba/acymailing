@@ -1,5 +1,5 @@
 const acym_editorWysidNewContent = {
-    addTitleWYSID: function (ui) {
+    addTitleWYSID: function () {
         let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
         content += '<td class="large-12 acym__wysid__column__element__td">';
 
@@ -9,11 +9,10 @@ const acym_editorWysidNewContent = {
 
         content += '</td>';
         content += '</tr>';
-        jQuery(ui).replaceWith(content);
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
-        acym_editorWysidVersioning.setUndoAndAutoSave();
+
+        return content;
     },
-    addTextWYSID: function (ui) {
+    addTextWYSID: function () {
         let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
         content += '<td class="large-12 acym__wysid__column__element__td">';
 
@@ -23,9 +22,34 @@ const acym_editorWysidNewContent = {
 
         content += '</td>';
         content += '</tr>';
-        jQuery(ui).replaceWith(content);
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
-        acym_editorWysidVersioning.setUndoAndAutoSave();
+
+        return content;
+    },
+    addButtonWYSID: function () {
+        let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
+        content += '<td class="large-12 acym__wysid__column__element__td">';
+
+        content += '<div style="text-align: center;box-sizing: inherit;">';
+        content += '<a class="acym__wysid__column__element__button acym__wysid__content-no-settings-style" style="background-color: #222222; color: white; padding: 25px 30px; max-width: 100%; overflow: unset; border: 1px solid white; text-overflow: ellipsis; text-align: center; text-decoration: none; word-break: break-word;display: inline-block; box-shadow: none; font-family: Arial; font-size: 14px; cursor: pointer; line-height: 1; border-radius: 0" href="#" target="_blank">'
+                   + ACYM_JS_TXT.ACYM_BUTTON
+                   + '</a>';
+        content += '</div>';
+
+        content += '</td>';
+        content += '</tr>';
+
+        return content;
+    },
+    addSpaceWYSID: function () {
+        let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
+        content += '<td class="large-12 acym__wysid__column__element__td" style="height: 50px">';
+
+        content += '<span class="acy-editor__space" style="display:block; padding: 0;margin: 0; height: 100%"></span>';
+
+        content += '</td>';
+        content += '</tr>';
+
+        return content;
     },
     addMediaWysid: function (ui) {
         let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
@@ -40,34 +64,32 @@ const acym_editorWysidNewContent = {
         content += '</td>';
         content += '</tr>';
         jQuery(ui).replaceWith(content);
+
         jQuery('.acym__wysid__media__inserted--focus img').off('load').on('load', function () {
             let $editor = jQuery(this).closest('.acym__wysid__media__inserted--focus');
             $editor.removeClass('acym__wysid__media__inserted--focus');
             acym_helperEditorWysid.setColumnRefreshUiWYSID();
-            acym_editorWysidVersioning.setUndoAndAutoSave();
+            acym_editorWysidTinymce.addTinyMceWYSID();
+            // This timeout is here to make sure tinyMCE is initialised on images
             setTimeout(() => {
-                $editor.find('img').click();
+                $editor.find('img').trigger('click');
                 document.querySelector('.acym__wysid__media__inserted--selected').click();
+                acym_editorWysidImage.setImageWidthHeightOnInsert();
+                acym_editorWysidTinymce.addTinyMceWYSID();
             }, 500);
         });
     },
-    addButtonWYSID: function (ui) {
-        let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
-        content += '<td class="large-12 acym__wysid__column__element__td">';
-
-        content += '<div style="text-align: center;box-sizing: inherit;">';
-        content += '<a class="acym__wysid__column__element__button acym__wysid__content-no-settings-style" style="background-color: #222222; color: white; padding: 25px 30px; max-width: 100%; overflow: unset; border: 1px solid white; text-overflow: ellipsis; text-align: center; text-decoration: none; word-break: break-word;display: inline-block; box-shadow: none; font-family: Arial; font-size: 14px; cursor: pointer; line-height: 1; border-radius: 0" href="#" target="_blank">'
-                   + ACYM_JS_TXT.ACYM_BUTTON
-                   + '</a>';
-        content += '</div>';
-
-        content += '</td>';
-        content += '</tr>';
-        jQuery(ui).replaceWith(content);
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
-        acym_editorWysidVersioning.setUndoAndAutoSave();
+    addVideoWYSID: function (ui) {
+        acym_helperEditorWysid.$focusElement = jQuery(ui);
+        acym_editorWysidNewContent.setModalVideoWYSID();
+        jQuery('#acym__wysid__modal').css('display', 'inherit');
     },
-    addFollowWYSID: function (ui) {
+    addGiphyWYSID: function (ui) {
+        acym_helperEditorWysid.$focusElement = jQuery(ui);
+        acym_editorWysidNewContent.setModalGiphyWYSID();
+        jQuery('#acym__wysid__modal').css('display', 'inherit');
+    },
+    addFollowWYSID: function () {
         let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
         content += '<td class="large-12 acym__wysid__column__element__td">';
         content += '<div style="text-align: center;">';
@@ -89,41 +111,10 @@ const acym_editorWysidNewContent = {
         content += '</div>';
         content += '</td>';
         content += '</tr>';
-        jQuery(ui).replaceWith(content);
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
-        acym_editorWysidVersioning.setUndoAndAutoSave();
-    },
-    addSpaceWYSID: function (ui) {
-        let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
-        content += '<td class="large-12 acym__wysid__column__element__td" style="height: 50px">';
 
-        content += '<span class="acy-editor__space" style="display:block; padding: 0;margin: 0; height: 100%"></span>';
-
-        content += '</td>';
-        content += '</tr>';
-        jQuery(ui).replaceWith(content);
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
-        acym_editorWysidVersioning.setUndoAndAutoSave();
+        return content;
     },
-    addVideoWYSID: function (ui) {
-        acym_helperEditorWysid.$focusElement = jQuery(ui);
-        acym_editorWysidNewContent.setModalVideoWYSID();
-        jQuery('#acym__wysid__modal').css('display', 'inherit');
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
-    },
-    addGiphyWYSID: function (ui) {
-        acym_helperEditorWysid.$focusElement = jQuery(ui);
-        acym_editorWysidNewContent.setModalGiphyWYSID();
-        jQuery('#acym__wysid__modal').css('display', 'inherit');
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
-    },
-    addCustomZoneWYSID: function () {
-        acym_editorWysidNewContent.setModalCustomZoneWYSID();
-        let modal = jQuery('#acym__wysid__modal');
-        modal.addClass('acym__wysid__modal__tiny');
-        modal.css('display', 'inherit');
-    },
-    addSeparatorWysid: function (ui) {
+    addSeparatorWysid: function () {
         let content = '<tr class="acym__wysid__column__element acym__wysid__column__element__separator cursor-pointer" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
         content += '<td class="large-12 acym__wysid__column__element__td">';
 
@@ -131,49 +122,14 @@ const acym_editorWysidNewContent = {
 
         content += '</td>';
         content += '</tr>';
-        jQuery(ui).replaceWith(content);
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
-        acym_editorWysidVersioning.setUndoAndAutoSave();
+
+        return content;
     },
-    addShareWYSID: function (ui) {
-        let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
-        content += '<td class="large-12 acym__wysid__column__element__td">';
-
-        content += '<div class="acym__wysid__column__element__share acym__wysid__column__element__share--add acy" style="text-align: center; margin-top: 10px; margin-bottom: 10px;">';
-
-        content += '<a style="display: inline-block" class="acym__wysid__column__element__share__social acym__wysid__column__element__share__facebook" href="'
-                   + acym_helperEditorWysid.socialMedia.facebook.link
-                   + '">';
-        content += '<img hspace="0" style="vertical-align: middle; width: 30px; display: inline; margin-right: 5px;" src="'
-                   + acym_helperEditorWysid.socialMedia.facebook.src
-                   + '" alt="'
-                   + acym_helperEditorWysid.socialMedia.facebook.src
-                   + '">';
-        content += '<span style="color: #303e46; vertical-align: middle; margin-right: 10px; font-size: 15px">'
-                   + acym_helperEditorWysid.socialMedia.facebook.text
-                   + '</span>';
-        content += '</a>';
-
-        content += '<a style="display: inline-block" class="acym__wysid__column__element__share__social acym__wysid__column__element__share__twitter" href="'
-                   + acym_helperEditorWysid.socialMedia.twitter.link
-                   + '">';
-        content += '<img hspace="0" style="vertical-align: middle; width: 30px; display: inline; margin-right: 5px;" src="'
-                   + acym_helperEditorWysid.socialMedia.twitter.src
-                   + '" alt="'
-                   + acym_helperEditorWysid.socialMedia.twitter.src
-                   + '">';
-        content += '<span style="color: #303e46; vertical-align: middle; margin-right: 10px; font-size: 15px">'
-                   + acym_helperEditorWysid.socialMedia.twitter.text
-                   + '</span>';
-        content += '</a>';
-
-        content += '</div>';
-
-        content += '</td>';
-        content += '</tr>';
-        jQuery(ui).replaceWith(content);
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
-        acym_editorWysidVersioning.setUndoAndAutoSave();
+    addCustomZoneWYSID: function () {
+        acym_editorWysidNewContent.setModalCustomZoneWYSID();
+        let modal = jQuery('#acym__wysid__modal');
+        modal.addClass('acym__wysid__modal__tiny');
+        modal.css('display', 'inherit');
     },
     setModalGiphyWYSID: function () {
         let content = '<div class="grid-container"><div class="cell grid-x align-center grid-padding-x">';
@@ -266,15 +222,21 @@ const acym_editorWysidNewContent = {
         $loadBtn.off('click').on('click', function () {
             let url = $searchInput.val();
 
-            $insertBtn.unbind('click').click(function () {
-                acym_helperEditorWysid.$focusElement.replaceWith(
-                    '<tr class="acym__wysid__column__element"><td class="large-12 acym__wysid__column__element__td"><div class="acym__wysid__tinymce--image"><p>'
-                    + $result.html()
-                    + '</p></div></td></tr>');
-                acym_editorWysidTinymce.addTinyMceWYSID();
+            $insertBtn.off('click').on('click', function () {
+                let insertedVideo = '<tr class="acym__wysid__column__element">'
+                                  + '<td class="large-12 acym__wysid__column__element__td">'
+                                  + '<div class="acym__wysid__tinymce--image">'
+                                  + '<div style="text-align: center" data-mce-style="text-align: center">'
+                                  + $result.html()
+                                  + '</div>'
+                                  + '</div>'
+                                  + '</td>'
+                                  + '</tr>';
+                acym_helperEditorWysid.$focusElement.replaceWith(insertedVideo);
                 jQuery('#acym__wysid__modal').css('display', 'none');
-                acym_editorWysidVersioning.setUndoAndAutoSave();
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
+                acym_editorWysidRowSelector.setZoneAndBlockOverlays();
+                acym_editorWysidTinymce.addTinyMceWYSID();
             });
 
             let youtubeId = url.match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/);
@@ -284,49 +246,45 @@ const acym_editorWysidNewContent = {
             if (youtubeId != null) {
                 $result.html('<a href="https://www.youtube.com/watch?v='
                              + youtubeId[1]
-                             + '" target="_blank"><img alt="" src="https://img.youtube.com/vi/'
+                             + '" target="_blank" class="acym__wysid__link__image"><img alt="" src="https://img.youtube.com/vi/'
                              + youtubeId[1]
                              + '/0.jpg" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block;margin-left: auto; margin-right: auto; float: none;"/></a>');
                 $insertBtn.removeClass('disabled');
             } else if (dailymotionId != null) {
-                if (dailymotionId !== null) {
-                    if (dailymotionId[4] !== undefined) {
-                        $result.html('<a href="https://www.dailymotion.com/video/'
-                                     + dailymotionId[4]
-                                     + '"><img alt="" src="https://www.dailymotion.com/thumbnail/video/'
-                                     + dailymotionId[4]
-                                     + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/></a>');
-                    } else {
-                        $result.html('<a href="https://www.dailymotion.com/video/'
-                                     + dailymotionId[2]
-                                     + '"><img alt="" src="https://www.dailymotion.com/thumbnail/video/'
-                                     + dailymotionId[2]
-                                     + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/></a>');
-                    }
+                if (dailymotionId[4] !== undefined) {
+                    $result.html('<a href="https://www.dailymotion.com/video/'
+                                 + dailymotionId[4]
+                                 + '" target="_blank" class="acym__wysid__link__image"><img alt="" src="https://www.dailymotion.com/thumbnail/video/'
+                                 + dailymotionId[4]
+                                 + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/></a>');
+                } else {
+                    $result.html('<a href="https://www.dailymotion.com/video/'
+                                 + dailymotionId[2]
+                                 + '" target="_blank" class="acym__wysid__link__image"><img alt="" src="https://www.dailymotion.com/thumbnail/video/'
+                                 + dailymotionId[2]
+                                 + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/></a>');
                 }
                 $insertBtn.removeClass('disabled');
             } else if (vimeoId != null) {
                 let script = document.createElement('script');
                 script.id = 'vimeothumb';
                 script.type = 'text/javascript';
-                script.src = 'https://vimeo.com/api/v2/video/' + vimeoId[5] + '.json?callback=showThumb';
+                script.src = 'https://vimeo.com/api/v2/video/' + vimeoId[5] + '.json?callback=showVimeoThumbnail';
                 jQuery('#acym__wysid__modal__video__search').before(script);
                 jQuery('#vimeothumb').remove();
-
             } else {
                 $result.html('<div class="acym__wysid__error_msg" style="text-align: center; margin-top: 100px;">' + ACYM_JS_TXT.ACYM_NON_VALID_URL + '</div>');
                 $insertBtn.addClass('disabled').off('click');
             }
-            $result.unbind('click').click(function (e) {
+            $result.off('click').on('click', function (e) {
                 e.preventDefault();
             });
         });
 
-        $searchInput.keyup(function (e) {
-            let code = e.which;
-            if (code == 13) e.preventDefault();
-            if (code == 13 || code == 188 || code == 186) {
-                $loadBtn.click();
+        $searchInput.off('keyup').on('keyup', function (e) {
+            if (e.key === 'Enter') e.preventDefault();
+            if (e.key === 'Enter' || e.key === ',' || e.key === ';') {
+                $loadBtn.trigger('click');
             }
         });
     },
@@ -355,13 +313,13 @@ const acym_editorWysidNewContent = {
             }
         });
 
-        jQuery('#custom_zone_cancel').click(function () {
+        jQuery('#custom_zone_cancel').on('click', function () {
             let modal = jQuery('.acym__wysid__modal');
             modal.hide();
             modal.removeClass('acym__wysid__modal__tiny');
         });
 
-        jQuery('#custom_zone_save').click(function () {
+        jQuery('#custom_zone_save').on('click', function () {
             let spinner = jQuery('#custom_zone_save_spinner');
             spinner.css('display', 'inline-block');
 
@@ -379,7 +337,7 @@ const acym_editorWysidNewContent = {
                         'level': 'error'
                     }, 3000, true);
                 } else {
-                    let newZone = '<div class="grid-x cell acym__wysid__row__element--new ui-draggable ui-draggable-handle" data-acym-zone-id="'
+                    let newZone = '<div class="grid-x cell acym__wysid__zone__element--new ui-draggable ui-draggable-handle" data-acym-zone-id="'
                                   + response.data.id
                                   + '">';
                     newZone += '<i class="acymicon-delete"></i>';
@@ -389,23 +347,23 @@ const acym_editorWysidNewContent = {
 
                     jQuery('#custom_zones_none_message').hide();
                     jQuery('.acym__wysid__right__toolbar__saved_zones').append(newZone);
-                    acym_editorWysidDragDrop.setNewRowElementDraggableWYSID();
+                    acym_editorWysidDragDrop.setNewZoneDraggable();
                 }
 
                 spinner.css('display', 'none');
-                jQuery('#custom_zone_cancel').click();
+                jQuery('#custom_zone_cancel').trigger('click');
             });
         });
     }
 };
 
-function showThumb(data) {
+function showVimeoThumbnail(data) {
     let thumbnail = 'https://i.vimeocdn.com/filter/overlay?src=' + encodeURIComponent(data[0].thumbnail_large);
     thumbnail += '&src=' + encodeURIComponent('https://f.vimeocdn.com/p/images/crawler_play.png');
 
     let styling = 'max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;';
 
-    let thumbWithLink = '<a href="https://vimeo.com/' + data[0].id + '">';
+    let thumbWithLink = '<a href="https://vimeo.com/' + data[0].id + '" target="_blank" class="acym__wysid__link__image">';
     thumbWithLink += '<img alt="" src="' + thumbnail + '" style="' + styling + '"/>';
     thumbWithLink += '</a>';
 

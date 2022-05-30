@@ -29,7 +29,7 @@
                 ?>
 				<div class="cell grid-x acym__content align-center">
 					<h2 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_EMAIL_STATISTICS'); ?></h2>
-					<div class="grid-x">
+					<div class="grid-x padding-top-3">
 						<div class="cell small-12 medium-6">
                             <?php echo acym_pieChart('', $data['emailsSent'], '', acym_translation('ACYM_EMAILS_SENT'), true, true); ?>
 						</div>

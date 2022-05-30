@@ -46,11 +46,11 @@ const acym_helperPagination = {
         }
 
         jQuery('#acym_pagination_element_per_page').on('change', () => {
-            jQuery('#formSubmit').click();
+            jQuery('#formSubmit').trigger('click');
         });
     },
     initPagination: function () {
         jQuery('#acym_pagination').val(1);
-        jQuery('#acym_form').submit();
+        jQuery('#acym_form').trigger('click');
     }
 };

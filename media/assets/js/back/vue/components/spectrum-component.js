@@ -23,7 +23,7 @@ jQuery(document).ready(function ($) {
         methods: {
             openSpectrum() {
                 console.log($('[name="' + this.name + '"]').next());
-                $('[name="' + this.name + '"]').next().click();
+                $('[name="' + this.name + '"]').next().trigger('click');
             }
         },
         destroyed: function () {

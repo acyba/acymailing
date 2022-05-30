@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'acymicon';
-    src: url('fonts/acymicon.eot?671w8c');
-    src: url('fonts/acymicon.eot?671w8c#iefix') format('embedded-opentype'),
-    url('fonts/acymicon.ttf?671w8c') format('truetype'),
-    url('fonts/acymicon.woff?671w8c') format('woff'),
-    url('fonts/acymicon.svg?671w8c#acymicon') format('svg');
+    src: url('fonts/acymicon.eot?ucorf2');
+    src: url('fonts/acymicon.eot?ucorf2#iefix') format('embedded-opentype'),
+    url('fonts/acymicon.ttf?ucorf2') format('truetype'),
+    url('fonts/acymicon.woff?ucorf2') format('woff'),
+    url('fonts/acymicon.svg?ucorf2#acymicon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -23,6 +23,14 @@
     /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+.acymicon-arrow-down:before {
+    content: "\e940";
+}
+
+.acymicon-arrow-up:before {
+    content: "\e941";
 }
 
 .acymicon-birthday-cake:before {

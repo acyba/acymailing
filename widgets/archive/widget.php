@@ -28,6 +28,7 @@ class acym_archive_widget extends WP_Widget
             'lists' => '',
             'popup' => '1',
             'displayUserListOnly' => '1',
+            'nbNewslettersPerPage' => '10',
         ];
 
         $listClass = new ListClass();
@@ -53,7 +54,24 @@ class acym_archive_widget extends WP_Widget
         echo '<div class="acyblock">';
         echo '<p><label class="acyWPconfig" for="'.$this->get_field_id('title').'">'.acym_translation('ACYM_TITLE').'</label>
 			<input type="text" class="widefat" id="'.$this->get_field_id('title').'" name="'.$this->get_field_name('title').'" value="'.$params['title'].'" /></p>';
-
+        echo '<p><label class="acyWPconfig"> '.acym_translation('ACYM_WIDGET_CAMPAIGN_NUMBER_PER_PAGE').'</label>
+           '.acym_translationSprintf(
+                'ACYM_X_NEWSLETTERS_PER_PAGE',
+                acym_select(
+                    [
+                        '5' => '5',
+                        '10' => '10',
+                        '15' => '15',
+                        '20' => '20',
+                        '30' => '30',
+                        '50' => '50',
+                        '100' => '100',
+                        '200' => '200',
+                    ],
+                    $this->get_field_name('nbNewslettersPerPage'),
+                    $params['nbNewslettersPerPage']
+                )
+            ).'</p>';
         echo '<p><label class="acyWPconfig" title="'.acym_translation('ACYM_LISTS_ARCHIVE').'">'.acym_translation('ACYM_LISTS').'</label>';
         echo acym_selectMultiple(
             $lists,
@@ -102,6 +120,7 @@ class acym_archive_widget extends WP_Widget
             'displayUserListOnly' => isset($instance['displayUserListOnly']) ? $instance['displayUserListOnly'] : '1',
             'paramsCMS' => ['widget_id' => $args['widget_id'], 'suffix' => ''],
             'search' => $search,
+            'nbNewslettersPerPage' => isset($instance['nbNewslettersPerPage']) ? $instance['nbNewslettersPerPage'] : '',
         ];
 
         $archiveController = new ArchiveController();

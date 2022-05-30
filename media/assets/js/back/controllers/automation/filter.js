@@ -224,21 +224,21 @@ jQuery(document).ready(function ($) {
             let $newElement = $(this).prev();
             $newElement.attr('data-filter-number', $inputOr.val());
             refreshFilterProcess();
-            $newElement.find('button[data-filter-type]').attr('data-filter-type', $(this).attr('data-filter-type')).click();
+            $newElement.find('button[data-filter-type]').attr('data-filter-type', $(this).attr('data-filter-type')).trigger('click');
             if ('classic' === $(this).attr('data-filter-type')) reloadGlobalCounter($newElement);
         });
     }
 
-    //TODO: Replace parent() by closest()
     function setDeleteFilter() {
         $('.acym__automation__delete__one__filter').off('click').on('click', function () {
+            $(this).closest('.acym__automation__one__filter').remove();
             let $groupFilter = $(this).closest('.acym__automation__group__filter');
-            $(this).parent().parent().remove();
             reloadGlobalCounter($groupFilter);
         });
         $('.acym__automation__delete__group__filter').off('click').on('click', function () {
-            $(this).parent().parent().prev().remove();
-            $(this).parent().parent().remove();
+            let $orBlock = $(this).closest('.acym__automation__group__filter');
+            $orBlock.prev().remove();
+            $orBlock.remove();
         });
     }
 
@@ -257,7 +257,7 @@ jQuery(document).ready(function ($) {
             if (numOR === 'type_filter') return true;
 
             // Create a new OR block if needed
-            if (or !== 0) $('.acym__automation__filters__or[data-filter-type="' + type + '"]').click();
+            if (or !== 0) $('.acym__automation__filters__or[data-filter-type="' + type + '"]').trigger('click');
 
             blockRebuilt = false;
             // Foreach filters in this OR block
@@ -267,7 +267,7 @@ jQuery(document).ready(function ($) {
                 if (and !== 0) {
                     $('.acym__automation__group__filter[data-filter-number="' + or + '"]')
                         .find('.acym__automation__add-filter[data-filter-type="' + type + '"]')
-                        .click();
+                        .trigger('click');
                 }
                 filterRebuilt = false;
                 $.each(oneFilter, function (filterName, filterOptions) {

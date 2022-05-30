@@ -744,7 +744,7 @@ class UserClass extends acymClass
         );
     }
 
-    public function delete($elements)
+    public function delete($elements, $fromAutomations = false)
     {
         if (!is_array($elements)) $elements = [$elements];
         acym_arrayToInteger($elements);
@@ -752,7 +752,7 @@ class UserClass extends acymClass
 
         if (empty($elements)) return 0;
 
-        if (acym_isAdmin() || 'delete' === $this->config->get('frontend_delete_button', 'delete')) {
+        if (acym_isAdmin() || $fromAutomations || 'delete' === $this->config->get('frontend_delete_button', 'delete')) {
             acym_query('DELETE FROM #__acym_user_has_list WHERE user_id IN ('.implode(',', $elements).')');
             acym_query('DELETE FROM #__acym_queue WHERE user_id IN ('.implode(',', $elements).')');
             acym_query('DELETE FROM #__acym_user_has_field WHERE user_id IN ('.implode(',', $elements).')');

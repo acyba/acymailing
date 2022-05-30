@@ -157,11 +157,13 @@ class ArchiveController extends acymController
         }
 
         // Initialize our own params then call the generic view
+        $nbNewslettersPerPage = $menuParams->get('archiveNbNewslettersPerPage', 10);
         $listsSent = $menuParams->get('lists', '');
         $popup = $menuParams->get('popup', '1');
         $displayUserListOnly = $menuParams->get('displayUserListOnly', '1');
 
         $viewParams = [
+            'nbNewslettersPerPage' => $nbNewslettersPerPage,
             'listsSent' => $listsSent,
             'popup' => $popup,
             'paramsCMS' => $paramsJoomla,
@@ -209,11 +211,11 @@ class ArchiveController extends acymController
             $params['displayUserListOnly'] = $viewParams['displayUserListOnly'];
         }
 
-        $params['page'] = $this->getVarFiltersListing('int', 'archive_pagination_page', 1);;
+        $params['page'] = $this->getVarFiltersListing('int', 'archive_pagination_page', 1);
         $campaignClass = new CampaignClass();
         $pagination = new PaginationHelper();
-        
-        $params['numberPerPage'] = $pagination->getListLimit();
+        $params['numberPerPage'] = $pagination->getListLimit($viewParams['nbNewslettersPerPage']);
+
         $returnLastNewsletters = $campaignClass->getLastNewsletters($params);
         $pagination->setStatus($returnLastNewsletters['count'], $params['page'], $params['numberPerPage']);
 

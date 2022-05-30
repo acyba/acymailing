@@ -5,6 +5,7 @@ const acym_helperToggle = {
         acym_helperToggle.setToggleGlobal();
         acym_helperToggle.setToggleCheckboxesGlobal();
         acym_helperToggle.setSelectToggle();
+        acym_helperToggle.setShowMore();
     },
     setToggleGlobal: function () {
         jQuery('.acym_toggleable').off('click').on('click', function () {
@@ -137,6 +138,15 @@ const acym_helperToggle = {
             }
         });
     },
+    setShowMore: function () {
+        let $showMore = jQuery('.acym__configuration__showmore-head');
+        $showMore.off('click').on('click', function () {
+            event.preventDefault();
+            jQuery('#' + jQuery(this).find('[data-toggle-showmore]').attr('data-toggle-showmore')).slideToggle();
+            jQuery(this).find('i').toggleClass('acymicon-keyboard_arrow_up acymicon-keyboard_arrow_down');
+            jQuery(this).find('.acym__title').toggleClass('margin-bottom-0');
+        });
+    },
     setToggleArrow: function () {
         jQuery('.acym__toggle__arrow .acym__toggle__arrow__trigger').off('click').on('click', function () {
 
@@ -154,13 +164,16 @@ const acym_helperToggle = {
         let $selectToggle = jQuery('[data-toggle-select]:not([data-toggle-select=""])');
         $selectToggle.on('change', function () {
             let association = acym_helper.parseJson(jQuery(this).attr('data-toggle-select'));
-
             let currentValue = jQuery(this).val();
             jQuery.each(association, function (value, element) {
-                if (value != currentValue) {
-                    jQuery(element).hide();
-                } else {
-                    jQuery(element).show();
+                jQuery(element).hide();
+            });
+            jQuery.each(association, function (value, element) {
+                if (currentValue === value) {
+                    let classes = association[value].split(',');
+                    jQuery.each(classes, function (value, element) {
+                        jQuery(element).show();
+                    });
                 }
             });
         }).trigger('change');

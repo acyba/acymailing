@@ -1,3 +1,5 @@
+@import "global/components/icomoon";
+
 div.acym_module_error {
     color: #400;
     background-color: #fdd;
@@ -233,7 +235,7 @@ div.modal {
         padding: 5px 10px;
         border: 1px solid #333333;
         border-radius: 3px;
-        z-index: 10;
+        z-index: 1000;
     }
 
     &:hover {
@@ -251,4 +253,26 @@ div.modal {
             }
         }
     }
+}
+
+.acym__color__error {
+    color: #9d261d;
+}
+
+.acym__message__invalid__field {
+    display: none;
+    font-size: 12px;
+}
+
+.acym__message__invalid__field__active {
+    display: block !important;
+}
+
+.acym__cross__invalid {
+    display: none;
+    padding-right: 3px;
+}
+
+.acym__cross__invalid__active {
+    display: inline;
 }

@@ -1,6 +1,5 @@
 @import "./../settings/_colors";
 
-
 #acym_deactivate_modal_dashicons_container {
     text-align: right;
     width: 50%;
@@ -29,6 +28,10 @@
     background: rgba(0, 0, 0, 0.6);
     vertical-align: middle;
 
+    #acym_feedback_contact_container_display {
+        display: none;
+    }
+
     .acym_deactivate_modal_dialog {
         background: transparent;
         position: absolute;
@@ -43,6 +46,11 @@
         background: $white;
         border: 0;
         padding: 10px;
+    }
+
+    #acym_deactivate_modal_body_container {
+        width: 90%;
+        margin: auto;
     }
 
     .acym_deactivate_modal_header {
@@ -66,6 +74,15 @@
     .acym_deactivate_modal_footer {
         border-top: $light-gray solid 1px;
         text-align: right
+    }
+
+    #acym_deactivate_modal_information_title, #acym_deactivate_modal_title {
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    #acym_feedback_contact_checkbox_container {
+        margin-top: 20px;
     }
 }
 
@@ -96,6 +113,7 @@
 }
 
 #acym_feedback_otherReason {
+    margin-top: 15px;
     width: 100%;
     display: none;
 }

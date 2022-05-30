@@ -1676,9 +1676,16 @@ class plgAcymHikashop extends acymPlugin
 
         ?>
 		<div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
-			<div class="acym__title acym__title__secondary"><?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', $this->pluginDescription->name)); ?></div>
+			<div class="cell grid-x acym__configuration__showmore-head">
+				<div class="acym__title acym__title__secondary cell auto margin-bottom-0">
+                    <?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', $this->pluginDescription->name)); ?>
+				</div>
+				<div class="cell shrink">
+                    <?php echo acym_showMore('acym__configuration__subscription__integration-hikashop'); ?>
+				</div>
+			</div>
 
-			<div class="grid-x">
+			<div id="acym__configuration__subscription__integration-hikashop" class="grid-x" style="display:none;">
 				<div class="cell grid-x grid-margin-x">
                     <?php
                     $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', $this->pluginDescription->name).acym_info(

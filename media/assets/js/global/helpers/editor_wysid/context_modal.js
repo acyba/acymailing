@@ -1,19 +1,40 @@
 const acym_editorWysidContextModal = {
-    clickedOnScrollbar: function (mouseX) {
+    clickedOnRightToolbar: function (event) {
         let $rightMenu = jQuery('#acym__wysid__right-toolbar');
         let offset = $rightMenu.offset();
         let left = Math.round(offset.left);
-        return offset.left <= mouseX && mouseX <= (left + $rightMenu.width());
+
+        let clickedBetweenLeftAndRightBorders = offset.left <= event.clientX && event.clientX <= (left + $rightMenu.width());
+        if (!clickedBetweenLeftAndRightBorders) return false;
+
+        let tabIds = [
+            'acym__wysid__right__toolbar__design__tab',
+            'acym__wysid__right__toolbar__settings__tab'
+        ];
+        let clickedElement = jQuery(event.target);
+        let clickedElementId = clickedElement.attr('id');
+        if (clickedElementId) {
+            // If the clicked element is one of the main tabs, return false
+            return tabIds.indexOf(clickedElementId) === -1;
+        }
+
+        // If we clicked on an icon of the main tabs, return false
+        if (clickedElement.closest('#acym__wysid__right__toolbar__design__tab').length === 1) return false;
+        if (clickedElement.closest('#acym__wysid__right__toolbar__settings__tab').length === 1) return false;
+
+        // We clicked between the left and right borders of the toolbar, and we didn't click on the design or settings tabs
+        return true;
     },
-    hideContextModal: function ($contextModal, $element) {
+    hideBlockOptions: function ($contextModal, $element) {
         $contextModal.hide();
         jQuery('.acym__wysid__right__toolbar__current-block__empty').show();
-        if ($element === undefined || !acym_editorWysidContextModal.isOpeningContextModal($element)) {
-            jQuery('#acym__wysid__right__toolbar__design__tab').click();
+        if ($element === undefined || !acym_editorWysidContextModal.isZoneOrBlock($element)) {
+            jQuery('#acym__wysid__right__toolbar__design__tab').trigger('click');
         }
     },
-    isOpeningContextModal: function ($element) {
-        let isOpening = false, classesOpeningContext = [
+    isZoneOrBlock: function ($element) {
+        let isOpening = false;
+        let classesOpeningContext = [
             'acymailing_content',
             'acym__wysid__tinymce--image',
             'acym__wysid__column__element__separator',
@@ -31,17 +52,16 @@ const acym_editorWysidContextModal = {
 
         return isOpening;
     },
-    showContextModal: function ($contextModal) {
+    showBlockOptions: function ($blockOptions) {
         jQuery('.acym__wysid__context__modal').hide();
-        jQuery('#acym__wysid__right__toolbar__block__tab').click();
-        $contextModal.show();
+        jQuery('#acym__wysid__right__toolbar__block__tab').trigger('click');
+        $blockOptions.show();
         jQuery('.acym__wysid__right__toolbar__current-block__empty').hide();
         jQuery('#acym__wysid__right__toolbar__current-block').off('mousedown').on('mousedown', function (event) {
             event.stopPropagation();
         });
-        acym_editorWysidToolbar.setRightToolbarWYSID();
     },
-    setBlockContextModalWYSID: function () {
+    setZoneOptions: function () {
         jQuery('.acym__wysid__row__selector').off('click').on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
@@ -72,7 +92,7 @@ const acym_editorWysidContextModal = {
             acym_editorWysidImage.addBackgroundImgToRows($table);
 
             if ($table.css('background-color') === 'transparent') {
-                jQuery('.acym__wysid__context__block__transparent__bg').click();
+                jQuery('.acym__wysid__context__block__transparent__bg').trigger('click');
             }
 
             jQuery('[name="transparent_background"]').next().off('change').on('change', function () {
@@ -91,7 +111,7 @@ const acym_editorWysidContextModal = {
             $idInput.val($table.attr('id'));
 
             $idInput.off('keyup').on('keyup', function (event) {
-                if (event.which === 32) event.preventDefault();
+                if (event.key === ' ') event.preventDefault();
                 $table.attr('id', jQuery(this).val());
             });
 
@@ -100,11 +120,11 @@ const acym_editorWysidContextModal = {
                 jQuery(this).off('change').on('change', function (event) {
                     $table.css('padding-' + jQuery(this).attr('data-block-padding'), jQuery(this).val() + 'px');
                     if (jQuery(this).attr('data-block-padding') === 'top' || jQuery(this).attr('data-block-padding') === 'bottom') {
-                        $selector.css(
-                            'height',
-                            $table.height() + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, '')) + parseInt($table.css('padding-bottom')
-                                                                                                                            .replace(/[^-\d\.]/g, '')) + 'px'
-                        );
+                        $selector.css('height', $table.height()
+                                                + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, ''))
+                                                + parseInt($table.css('padding-bottom')
+                                                                 .replace(/[^-\d\.]/g, ''))
+                                                + 'px');
                     }
                 });
             });
@@ -145,7 +165,7 @@ const acym_editorWysidContextModal = {
             });
 
             let $contextBlock = jQuery('#acym__wysid__context__block');
-            acym_editorWysidContextModal.showContextModal($contextBlock);
+            acym_editorWysidContextModal.showBlockOptions($contextBlock);
 
             $contextBlock.off('mousedown').on('mousedown', function (event) {
                 jQuery('.sp-container').addClass('sp-hidden').attr('style', '');
@@ -153,10 +173,9 @@ const acym_editorWysidContextModal = {
             });
 
             jQuery(window).off('mousedown').on('mousedown', function (event) {
-                if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextBlock)) return true;
+                if (acym_editorWysidContextModal.clickedOnRightToolbar(event)) return true;
                 let target = jQuery(event.target);
 
-                if (target.hasClass('acym__wysid__row__toolbox__edit')) return true;
                 if (target.hasClass('acym__wysid__row__selector')) return true;
                 if (jQuery('.sp-container').is(':visible')) return true;
                 if (target.closest('#acym__wysid__editor__source').length > 0) return true;
@@ -167,16 +186,16 @@ const acym_editorWysidContextModal = {
                 jQuery('.acym__wysid__row__element--focus').removeClass('acym__wysid__row__element--focus');
                 previousColor = '#ffffff';
                 jQuery(this).off('mousedown');
-                acym_editorWysidContextModal.hideContextModal($contextBlock, target);
+                acym_editorWysidContextModal.hideBlockOptions($contextBlock, target);
                 jQuery('.acym__wysid__context__modal__container--structure').hide();
                 if (!target.parent().hasClass('acym__wysid__tinymce--text')) {
-                    acym_helperEditorWysid.setColumnRefreshUiWYSID();
+                    acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
                 }
                 acym_editorWysidVersioning.setUndoAndAutoSave();
             });
         });
     },
-    setImageContextModal: function ($img) {
+    showImageOptions: function ($img) {
         let insertedImage = jQuery('.acym__wysid__media__inserted--selected');
         insertedImage.removeClass('acym__wysid__media__inserted--selected');
         $img.addClass('acym__wysid__media__inserted--selected');
@@ -220,7 +239,7 @@ const acym_editorWysidContextModal = {
             if ($selectedImg.hasClass('acym__wysid__media__giphy')) {
                 acym_editorWysidNewContent.addGiphyWYSID($selectedImg.closest('.acym__wysid__column__element'));
             } else {
-                acym_editorWysidImage.openMediaManage($selectedImg.closest('.acym__wysid__column__element'));
+                acym_editorWysidImage.openMediaManager($selectedImg.closest('.acym__wysid__column__element'));
             }
         });
 
@@ -276,18 +295,17 @@ const acym_editorWysidContextModal = {
             }
         });
 
-        acym_editorWysidContextModal.showContextModal($contextImage);
+        acym_editorWysidContextModal.showBlockOptions($contextImage);
 
         $contextImage.off('mousedown').on('mousedown', function (event) {
             event.stopPropagation();
         });
 
-        jQuery('.acym_context_image_size_input').on('keydown', function (event) {
+        jQuery('.acym_context_image_size_input').off('keydown').on('keydown', function (event) {
             if (event.key === ',' || event.key === '.') {
                 event.preventDefault();
             }
-        });
-        jQuery('.acym_context_image_size_input').on('input', function (event) {
+        }).off('input').on('input', function (event) {
             jQuery('.mce-resizehandle').css('display', 'none');
             let $imgSelected = jQuery('.acym__wysid__media__inserted--selected');
 
@@ -300,7 +318,7 @@ const acym_editorWysidContextModal = {
         });
 
         jQuery(window).off('mousedown').on('mousedown', function (event) {
-            if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextImage)) return true;
+            if (acym_editorWysidContextModal.clickedOnRightToolbar(event)) return true;
             if (jQuery(event.target).hasClass('acym__wysid__media__inserted')) return true;
             if (jQuery(event.target).closest('.media-modal').length > 0) return true;
 
@@ -308,9 +326,9 @@ const acym_editorWysidContextModal = {
             jQuery(this).off('mousedown');
             let time = new Date().getTime();
             if (time < acym_helperEditorWysid.timeClickImage + 100) acym_editorWysidImage.doubleClickImage($img);
-            acym_editorWysidContextModal.hideContextModal($contextImage, jQuery(event.target));
-            acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
-            acym_editorWysidVersioning.setUndoAndAutoSave();
+            acym_editorWysidContextModal.hideBlockOptions($contextImage, jQuery(event.target));
+            acym_helperEditorWysid.setColumnRefreshUiWYSID();
+            acym_editorWysidRowSelector.setZoneAndBlockOverlays();
         });
 
         jQuery(window).off('mouseup').on('mouseup', function (event) {
@@ -327,36 +345,30 @@ const acym_editorWysidContextModal = {
                + acym_helper.escape(valueCaption)
                + '</div>';
     },
-    setTextContextOptions: function () {
-        jQuery('.acym__wysid__tinymce--text').off('click').on('click', function (event) {
-            let $contextText = jQuery('#acym__wysid__context__text');
+    showTextOptions: function () {
+        let $contextText = jQuery('#acym__wysid__context__text');
 
-            // The context zone is already open
-            if ($contextText.is(':visible')) {
-                return true;
-            }
+        // The context zone is already open
+        if ($contextText.is(':visible')) {
+            return true;
+        }
 
-            acym_editorWysidContextModal.showContextModal($contextText);
+        acym_editorWysidContextModal.showBlockOptions($contextText);
 
-            let $text = jQuery(this);
-            let $tdParent = $text.closest('.acym__wysid__column__element__td');
+        jQuery(window).off('mousedown').on('mousedown', function (event) {
+            if (acym_editorWysidContextModal.clickedOnRightToolbar(event)) return true;
+            if (jQuery(event.target).closest('.acym__wysid__tinymce--text').length > 0) return true;
+            if (jQuery(event.target).closest('#acym__wysid__text__tinymce__editor').length > 0) return true;
+            if (jQuery(event.target).closest('.mce-floatpanel').length > 0) return true;
 
-            jQuery(window).off('mousedown').on('mousedown', function (event) {
-                if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextText)) return true;
-                if (jQuery(event.target).closest('.acym__wysid__tinymce--text').length > 0) return true;
-                if (jQuery(event.target).closest('#acym__wysid__text__tinymce__editor').length > 0) return true;
-                if (jQuery(event.target).closest('.mce-floatpanel').length > 0) return true;
-
-                // We clicked outside the text / editor options / dtext options so let's hide the dtext zone
-                jQuery(this).off('mousedown');
-                acym_editorWysidContextModal.hideContextModal($contextText, jQuery(event.target));
-                jQuery(window).unbind('click');
-                acym_helperEditorWysid.setColumnRefreshUiWYSID();
-                acym_editorWysidVersioning.setUndoAndAutoSave();
-            });
+            // We clicked outside the text / editor options / dtext options so let's hide the dtext zone
+            jQuery(this).off('mousedown');
+            acym_editorWysidContextModal.hideBlockOptions($contextText, jQuery(event.target));
+            jQuery(window).off('click');
+            acym_helperEditorWysid.setColumnRefreshUiWYSID();
         });
     },
-    setButtonContextModalWYSID: function () {
+    setButtonOptions: function () {
         jQuery('.acym__wysid__column__element__button').off('click').on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
@@ -530,7 +542,7 @@ const acym_editorWysidContextModal = {
                 || (document.getElementsByClassName('acym__wysid__column__element__button--focus')[0].style.width
                     !== '100%'
                     && $contextBtn.find('.switch-input').is(':checked'))) {
-                $contextBtn.find('.switch-paddle').click();
+                $contextBtn.find('.switch-paddle').trigger('click');
             }
 
             let $sliders = $contextBtn.find('.slider-handle');
@@ -582,7 +594,7 @@ const acym_editorWysidContextModal = {
 
             });
 
-            acym_editorWysidContextModal.showContextModal($contextBtn);
+            acym_editorWysidContextModal.showBlockOptions($contextBtn);
             acym_helperTooltip.setTooltip();
 
             $contextBtn.off('mousedown').on('mousedown', function (event) {
@@ -591,16 +603,14 @@ const acym_editorWysidContextModal = {
             });
 
             jQuery(window).on('mousedown', function (event) {
-                if (jQuery('.sp-container').is(':visible') || acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextBtn)) return;
-                jQuery(this).off('mousedown');
-                acym_editorWysidContextModal.hideContextModal($contextBtn, jQuery(event.target));
-                jQuery(window).unbind('click');
+                if (jQuery('.sp-container').is(':visible') || acym_editorWysidContextModal.clickedOnRightToolbar(event)) return;
+                jQuery(window).off('mousedown');
+                acym_editorWysidContextModal.hideBlockOptions($contextBtn, jQuery(event.target));
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
-                acym_editorWysidVersioning.setUndoAndAutoSave();
             });
         });
     },
-    setSpaceContextModalWYSID: function () {
+    setSpaceOptions: function () {
         jQuery('.acy-editor__space').off('click').on('click', function (event) {
             event.stopPropagation();
             jQuery('.acym__context__color__picker').remove();
@@ -609,7 +619,7 @@ const acym_editorWysidContextModal = {
             let $contextSpace = jQuery('#acym__wysid__context__space');
             let $slideHandler = $contextSpace.find('.slider-handle');
 
-            acym_editorWysidContextModal.showContextModal($contextSpace);
+            acym_editorWysidContextModal.showBlockOptions($contextSpace);
             let $tdParent = $space.closest('.acym__wysid__column__element__td');
 
             let heightSpace = $tdParent.css('height').replace(/[^-\d\.]/g, '');
@@ -627,7 +637,7 @@ const acym_editorWysidContextModal = {
 
             });
             $sliderSpace.off('changed.zf.slider').on('changed.zf.slider', function () {
-                acym_helperEditorWysid.setColumnRefreshUiWYSID();
+                acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
             });
 
             $contextSpace.off('mousedown').on('mousedown', function (event) {
@@ -636,24 +646,24 @@ const acym_editorWysidContextModal = {
             });
 
             jQuery(window).on('mousedown', function (event) {
-                if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextSpace)) return true;
+                if (acym_editorWysidContextModal.clickedOnRightToolbar(event)) return true;
                 $tdParent.css('height', jQuery('#sliderOutput1').val() + 'px');
-                jQuery(this).off('mousedown');
-                acym_editorWysidContextModal.hideContextModal($contextSpace, jQuery(event.target));
-                jQuery(window).unbind('click');
+                jQuery(window).off('mousedown');
+                acym_editorWysidContextModal.hideBlockOptions($contextSpace, jQuery(event.target));
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
-                acym_editorWysidVersioning.setUndoAndAutoSave();
             });
         });
     },
-    setFollowContextModalWYSID: function () {
+    setFollowOptions: function () {
         jQuery('.acym__wysid__column__element__follow').off('click').on('click', function (e) {
             e.stopPropagation();
+
+            let $selectSocialSelect = jQuery('#acym__wysid__context__follow__select');
 
             jQuery('.acym__wysid__column__element__follow--focus').removeClass('acym__wysid__column__element__follow--focus');
             jQuery(this).addClass('acym__wysid__column__element__follow--focus');
             jQuery('#acym__wysid__context__follow__list').empty();
-            jQuery('#acym__wysid__context__follow__select').html('<option></option>');
+            $selectSocialSelect.html('<option></option>');
             let firstSocial = jQuery('.acym__wysid__column__element__follow--focus img').eq(0);
 
             let contextWidth;
@@ -675,7 +685,6 @@ const acym_editorWysidContextModal = {
             jQuery('#acym__wysid__context__social__width').val(contextWidth);
 
             let socialNetworks = acym_helper.parseJson(ACYM_SOCIAL_MEDIA);
-            let $selectSocialSelect = jQuery('#acym__wysid__context__follow__select');
 
             for (let i = 0, l = socialNetworks.length ; i < l ; i++) {
                 let found = 0;
@@ -717,8 +726,8 @@ const acym_editorWysidContextModal = {
                             let $elementFollow = jQuery('.acym__wysid__column__element__follow--focus');
                             $elementFollow.find('.acym__wysid__column__element__follow__' + currentSocialNetwork).remove();
                             jQuery(this).closest('.acym__wysid__context__follow__list__item').remove();
-                            acym_editorWysidContextModal.setFollowContextModalWYSID();
-                            $elementFollow.click();
+                            acym_editorWysidContextModal.setFollowOptions();
+                            $elementFollow.trigger('click');
                         });
 
                         jQuery('.acym__wysid__context__button__link--' + currentSocialNetwork).off('change paste keyup').on('change paste keyupe', function () {
@@ -754,7 +763,7 @@ const acym_editorWysidContextModal = {
                 });
             });
 
-            acym_editorWysidContextModal.showContextModal($contextFollow);
+            acym_editorWysidContextModal.showBlockOptions($contextFollow);
 
             if (ACYM_IS_ADMIN) {
                 $selectSocialSelect.select2({
@@ -783,39 +792,39 @@ const acym_editorWysidContextModal = {
             });
 
             jQuery(window).on('mousedown', function (event) {
-                if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextFollow)) return true;
-                jQuery(this).off('mousedown');
-                acym_editorWysidContextModal.hideContextModal($contextFollow, jQuery(event.target));
-                jQuery(window).unbind('click');
+                if (acym_editorWysidContextModal.clickedOnRightToolbar(event)) return true;
+                jQuery(window).off('mousedown');
+                acym_editorWysidContextModal.hideBlockOptions($contextFollow, jQuery(event.target));
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
-                acym_editorWysidVersioning.setUndoAndAutoSave();
             });
 
             jQuery('#acym__wysid__context__social__width__slider').off('moved.zf.slider').on('moved.zf.slider', function () {
-                width = jQuery('#acym__wysid__context__social__width').val() <= 80 ? jQuery('#acym__wysid__context__social__width').val() >= 30 ? jQuery(
-                    '#acym__wysid__context__social__width').val() : 30 : 80;
-                jQuery('.acym__wysid__column__element__follow--focus img').css('width', width).attr('width', width);
+                let followIconsWidth = jQuery('#acym__wysid__context__social__width').val();
+                if (followIconsWidth > 80) followIconsWidth = 80;
+                if (followIconsWidth < 30) followIconsWidth = 30;
+
+                jQuery('.acym__wysid__column__element__follow--focus img').css('width', followIconsWidth).attr('width', followIconsWidth);
             });
         });
 
-        jQuery('.acym__wysid__column__element__follow a').unbind('click').click(function (event) {
+        jQuery('.acym__wysid__column__element__follow a').off('click').on('click', function (event) {
             event.preventDefault();
         });
     },
-    setPoweredByContextModal: function () {
+    setBuiltWithOptions: function () {
         jQuery('#acym__powered_by_acymailing').off('click').on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
 
             let $contextPoweredBy = jQuery('#acym__wysid__context__poweredby');
-            acym_editorWysidContextModal.showContextModal($contextPoweredBy);
+            acym_editorWysidContextModal.showBlockOptions($contextPoweredBy);
 
             jQuery(window).off('mousedown').on('mousedown', function (event) {
-                if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextPoweredBy)) return true;
+                if (acym_editorWysidContextModal.clickedOnRightToolbar(event)) return true;
                 if (event.target.title !== 'poweredby' && jQuery(event.target).children().children('[title="poweredby"]').length === 0) {
 
                     jQuery(this).off('mousedown');
-                    acym_editorWysidContextModal.hideContextModal($contextPoweredBy, jQuery(event.target));
+                    acym_editorWysidContextModal.hideBlockOptions($contextPoweredBy, jQuery(event.target));
                     jQuery('.acym__wysid__context__modal__container--structure').hide();
                     acym_editorWysidVersioning.setUndoAndAutoSave();
                 }
@@ -831,6 +840,7 @@ const acym_editorWysidContextModal = {
     },
     addContentFollowContext: function ($followContainer, selectedNetwork) {
         if ('' === selectedNetwork) return;
+
         let $contextSocial = jQuery('#acym__wysid__context__social__width');
         let width = $contextSocial.val() <= 80 ? $contextSocial.val() >= 30 ? $contextSocial.val() : 30 : 80;
         let content = '<a class="acym__wysid__column__element__follow__' + selectedNetwork + '" href="">';
@@ -845,10 +855,10 @@ const acym_editorWysidContextModal = {
                    + '">';
         content += '</a>';
         $followContainer.append(content);
-        acym_editorWysidContextModal.setFollowContextModalWYSID();
-        $followContainer.click();
+        acym_editorWysidContextModal.setFollowOptions();
+        $followContainer.trigger('click');
     },
-    setSeparatorContextModalWYSID: function () {
+    setSeparatorOptions: function () {
         jQuery('.acym__wysid__column__element__separator').off('click').on('click', function (e) {
             e.stopPropagation();
             jQuery('.acym__context__color__picker').remove();
@@ -869,10 +879,10 @@ const acym_editorWysidContextModal = {
             jQuery('[aria-controls="sliderOutput4"]').css('left', leftSlider4).next().css('width', leftSlider4);
 
             const $colorInput = jQuery('#acym__wysid__context__separator__color');
-            //We set the colors picker of the separator
+            //We set the color picker of the separator
             acym_editorWysidColorPicker.setColorPickerForContextModal($colorInput, 'border-bottom-color', $hr, $hr, 'border-bottom-color');
 
-            $colorInput.on('change', function () {
+            $colorInput.off('change').on('change', function () {
                 $hr.css('color', this.value);
             });
 
@@ -917,7 +927,7 @@ const acym_editorWysidContextModal = {
 
             let $contextSeparator = jQuery('#acym__wysid__context__separator');
 
-            acym_editorWysidContextModal.showContextModal($contextSeparator);
+            acym_editorWysidContextModal.showBlockOptions($contextSeparator);
 
             $contextSeparator.off('mousedown').on('mousedown', function (event) {
                 jQuery('.sp-container').addClass('sp-hidden').attr('style', '');
@@ -925,142 +935,12 @@ const acym_editorWysidContextModal = {
             });
 
             jQuery(window).on('mousedown', function (event) {
-                if (jQuery('.sp-container').is(':visible') || acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $contextSeparator)) return;
-                jQuery(this).off('mousedown');
-                acym_editorWysidContextModal.hideContextModal($contextSeparator, jQuery(event.target));
-                jQuery(window).off('click');
+                if (jQuery('.sp-container').is(':visible') || acym_editorWysidContextModal.clickedOnRightToolbar(event)) return;
+                jQuery(window).off('mousedown');
+                acym_editorWysidContextModal.hideBlockOptions($contextSeparator, jQuery(event.target));
                 $colorInput.off('change');
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
-                acym_editorWysidVersioning.setUndoAndAutoSave();
             });
         });
     }
 };
-
-// setShareContextModalWYSID: function () {
-//     jQuery('.acym__wysid__column__element__share').off('click').on('click', function (e) {
-//         e.stopPropagation();
-//         jQuery('.acym__context__color__picker').remove();
-//
-//         jQuery('.acym__wysid__column__element__share--focus').removeClass('acym__wysid__column__element__share--focus');
-//         jQuery(this).addClass('acym__wysid__column__element__share--focus');
-//         jQuery('#acym__wysid__context__share__list').empty();
-//         jQuery('#acym__wysid__context__share__select').html('<option></option>');
-//
-//         let firstSocial = jQuery('.acym__wysid__column__element__share--focus span').eq(0);
-//         let widthInputShare = jQuery('#acym__wysid__context__social__share__width');
-//         widthInputShare.attr('value', firstSocial.length ? firstSocial.css('font-size').replace(/[^-\d\.]/g, '') <= 40 ? firstSocial.css('font-size').replace(/[^-\d\.]/g, '') >= 15 ? firstSocial.eq(0).css('font-size').replace(/[^-\d\.]/g, '') : 15 : 40 : 20);
-//         jQuery('.acym__wysid__column__element__share--focus .acym__wysid__column__element__share__social span').css('font-size', widthInputShare.attr('value') + 'px');
-//         jQuery('.acym__wysid__column__element__share--focus .acym__wysid__column__element__share__social img').css('width', (parseInt(widthInputShare.attr('value')) + 15) + 'px');
-//
-//         let socialNetworks = [
-//             'facebook',
-//             'twitter',
-//             'linkedin',
-//             'pinterest',
-//         ];
-//         let socialNetworksAlreadyPut = [];
-//
-//         for (let i = 0, l = socialNetworks.length ; i < l ; i++) {
-//             let found = 0;
-//             jQuery('.acym__wysid__column__element__share--focus .acym__wysid__column__element__share__social').each(function (index) {
-//                 if (jQuery(this).attr('class').indexOf(socialNetworks[i]) != -1) {
-//                     let currentSocialNetwork = socialNetworks[i];
-//                     found = 1;
-//
-//                     let content = '<div id="acym__wysid__context__share__list__item" class="grid-x small-12 cell">';
-//                     content += '<div class="small-2 cell acym__wysid__context__share__list__item__' + currentSocialNetwork + '">';
-//                     content += '<img style="width: 35px;display: inline; margin-left: 10px;" src="' + socialMedia[currentSocialNetwork].src + '" alt="' + socialMedia[currentSocialNetwork].src + '"/>';
-//                     content += '</div>';
-//                     content += '<div class="small-8 cell">';
-//                     content += '<div class="input-group small-12 cell">';
-//                     content += '<input maxlength="15" id="acym__wysid__context__button__link" class="input-group-field acym__wysid__context__button__link--' + currentSocialNetwork + '" type="text" value="' + jQuery(this).children('span').html() + '">';
-//                     content += '</div>';
-//                     content += '</div>';
-//                     content += '<div class="auto cell">';
-//                     content += '<p class="acym__wysid__context__share__list__remove acym__wysid__context__share__list__remove--' + currentSocialNetwork + '" aria-hidden="true">×</p>';
-//                     content += '</div>';
-//                     content += '</div>';
-//                     jQuery('#acym__wysid__context__share__list').append(content);
-//                     jQuery('.acym__wysid__context__share__list__remove--' + currentSocialNetwork).off('click').on('click', function () {
-//                         let currentSocialNetworkToRemove = currentSocialNetwork;
-//                         jQuery('.acym__wysid__column__element__share--focus').find('.acym__wysid__column__element__share__' + currentSocialNetworkToRemove).remove();
-//                         setShareContextModalWYSID();
-//                         jQuery('.acym__wysid__column__element__share--focus').click();
-//                     });
-//
-//                     jQuery('.acym__wysid__context__button__link--' + currentSocialNetwork).off('change paste keyup').on('change paste keyup', function () {
-//                         let currentSocialNetworkChange = currentSocialNetwork;
-//                         jQuery(this).val().length > 15 ? jQuery(this).val(jQuery(this).val().substr(0, 15)) : jQuery('.acym__wysid__column__element__share--focus .acym__wysid__column__element__share__' + currentSocialNetworkChange + ' span').html(jQuery(this).val());
-//                     });
-//                 }
-//             });
-//             if (found == 0) {
-//                 jQuery('#acym__wysid__context__share__select').append(new Option('', socialNetworks[i], false, false)).trigger('change');
-//             }
-//         }
-//
-//         jQuery('.acym__wysid__column__element__share__social').off('click').on('click', function (e) {
-//             e.preventDefault();
-//         });
-//
-//         let share = jQuery(this).parent();
-//         let offset = share.offset();
-//         let height = share.innerHeight();
-//         let width = share.innerWidth();
-//         let contextShare = jQuery('#acym__wysid__context__share');
-//         let modalHeight = contextShare.innerHeight();
-//         let wpAdminBar = jQuery('#wpadminbar').innerHeight() + 5;
-//         let jAdminBar = jQuery('nav.navbar').innerHeight() + 5;
-//         let windowWidth = jQuery(window).width();
-//
-//         let top = ((offset.top - modalHeight) < wpAdminBar + jAdminBar) ? offset.top + height - wpAdminBar + 5 : offset.top - wpAdminBar - modalHeight;
-//
-//         contextShare.css({
-//             display: 'inherit',
-//             top: top,
-//             left: windowWidth > 800 ? (((offset.left - (jQuery('#adminmenuback').innerWidth())) + (width / 2)) - (contextShare.innerWidth() / 2)) : ((offset.left + (width / 2)) - (contextShare.innerWidth() / 2)),
-//         });
-//
-//
-//         jQuery('#acym__wysid__context__share__select').select2({
-//             minimumResultsForSearch: -1,
-//             placeholder: '+',
-//             selectOnClose: false,
-//             closeOnSelect: true,
-//             templateResult: shareFormatDataWYSID,
-//             templateSelection: shareFormatDataWYSID,
-//         });
-//
-//         contextShare.unbind('click').click(function (event) {
-//             event.stopPropagation();
-//         });
-//         jQuery(window).click(function () {
-//             contextShare.css({display: 'none'});
-//             jQuery(window).unbind('click');
-//         });
-//         jQuery('#acym__wysid__context__share__select').off('select2:select').on('select2:select', function (e) {
-//             let selectedNetwork = e.params.data.id;
-//
-//             socialNetworksAlreadyPut.push(selectedNetwork);
-//             let content = '<a style="display: inline-block" class="acym__wysid__column__element__share__social acym__wysid__column__element__share__' + selectedNetwork + '" href="' + socialMedia[selectedNetwork].link + '">';
-//             content += '<img style="vertical-align: middle; width: 30px; display: inline; margin-right: 5px;" src="' + socialMedia[selectedNetwork].src + '" alt="' + socialMedia[selectedNetwork].src + '">';
-//             content += '<span style="color: #303e46; vertical-align: middle; margin-right: 10px; font-size: 15px">' + socialMedia[selectedNetwork].text + '</span>';
-//             content += '</a>';
-//             jQuery('.acym__wysid__column__element__share--focus').append(content);
-//             let widthShare = widthInputShare.val() <= 40 ? widthInputShare.val() >= 15 ? widthInputShare.val() : 15 : 40;
-//             jQuery('.acym__wysid__column__element__share--focus .acym__wysid__column__element__share__social span').css('font-size', widthShare + 'px');
-//             jQuery('.acym__wysid__column__element__share--focus .acym__wysid__column__element__share__social img').css('width', (parseInt(widthShare) + 15) + 'px');
-//             setShareContextModalWYSID();
-//             jQuery('.acym__wysid__column__element__share--focus').click();
-//         });
-//         widthInputShare.off('change').on('change', function () {
-//             let widthShare = widthInputShare.val() <= 40 ? widthInputShare.val() >= 15 ? widthInputShare.val() : 15 : 40;
-//             jQuery('.acym__wysid__column__element__share--focus .acym__wysid__column__element__share__social span').css('font-size', widthShare + 'px');
-//             jQuery('.acym__wysid__column__element__share--focus .acym__wysid__column__element__share__social img').css('width', (parseInt(widthShare) + 15) + 'px');
-//         });
-//     });
-//     jQuery('.acym__wysid__column__element__share__social').off('click').on('click', function (e) {
-//         e.preventDefault();
-//     });
-// }

@@ -203,7 +203,7 @@
             }
         }
 
-        .acym__wysid__row__element--new {
+        .acym__wysid__zone__element--new {
             text-align: center;
             font-size: 40px;
             height: 66px;
@@ -234,7 +234,7 @@
         }
 
         .acym__wysid__right__toolbar__saved_zones {
-            .acym__wysid__row__element--new {
+            .acym__wysid__zone__element--new {
                 font-size: 12px;
                 position: relative;
 
@@ -262,7 +262,7 @@
             }
         }
 
-        .acym__wysid__column__element--new {
+        .acym__wysid__block__element--new {
             text-align: center;
             border-radius: $primary-radius;
             color: map-get($editor-wysid-palette, primary);

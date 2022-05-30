@@ -1323,9 +1323,7 @@ class BounceHelper extends acymObject
     public function getErrors()
     {
         $return = [];
-        if ($this->usePear) {
-            //TODO : get some errors from the pear interface?
-        } else {
+        if (!$this->usePear) {
             if (!function_exists('imap_alerts')) {
                 $return[] = 'The IMAP extension could not be loaded, please change your PHP configuration to enable it or use the pop3 method without imap extension';
 

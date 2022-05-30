@@ -43,6 +43,10 @@ class ConfigurationController extends acymController
         $this->prepareSecurity($data);
         $this->checkConfigMail();
         $this->prepareToolbar($data);
+        $this->prepareHoursMinutes($data);
+        //__START__starter_
+        $this->resetQueueProcess();
+        //__END__starter_
 
         //__START__wordpress_
         if (ACYM_CMS == 'wordpress' && acym_isExtensionActive('wp-mail-smtp/wp_mail_smtp.php')) {
@@ -245,6 +249,7 @@ class ConfigurationController extends acymController
             [
                 'none' => acym_translation('ACYM_NONE'),
                 'acym_ireCaptcha' => acym_translation('ACYM_CAPTCHA_INVISIBLE'),
+                'acym_reCaptcha_v3' => acym_translation('ACYM_CAPTCHA_V3'),
             ],
             acym_getCmsCaptcha()
         );
@@ -266,6 +271,28 @@ class ConfigurationController extends acymController
         if (!is_array($data['export_data_changes_fields'])) {
             $data['export_data_changes_fields'] = explode(',', $data['export_data_changes_fields']);
         }
+    }
+
+    private function prepareHoursMinutes(&$data)
+    {
+        $listHours = [];
+        for ($i = 0 ; $i < 24 ; $i++) {
+            $value = $i < 10 ? '0'.$i : $i;
+            $listHours[] = acym_selectOption($value, $value);
+        }
+        $listMinutes = [];
+        for ($i = 0 ; $i < 60 ; $i += 5) {
+            $value = $i < 10 ? '0'.$i : $i;
+            $listMinutes[] = acym_selectOption($value, $value);
+        }
+        $listAllMinutes = [];
+        for ($i = 0 ; $i < 60 ; $i++) {
+            $value = $i < 10 ? '0'.$i : $i;
+            $listAllMinutes[] = acym_selectOption($value, $value);
+        }
+        $data['listHours'] = $listHours;
+        $data['listMinutes'] = $listMinutes;
+        $data['listAllMinutes'] = $listAllMinutes;
     }
 
     /**
@@ -1422,4 +1449,13 @@ class ConfigurationController extends acymController
 
         exit;
     }
+
+    //__START__starter_
+    private function resetQueueProcess()
+    {
+        if (!acym_level(ACYM_ESSENTIAL) && $this->config->get('queue_type', 'manual') !== 'manual') {
+            $this->config->save(['queue_type' => 'manual']);
+        }
+    }
+    //__END__starter_
 }

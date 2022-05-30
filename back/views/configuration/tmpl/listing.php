@@ -8,7 +8,6 @@
             'queue' => 'ACYM_CONFIGURATION_QUEUE',
             'subscription' => 'ACYM_CONFIGURATION_SUBSCRIPTION',
             'license' => 'ACYM_LICENSE',
-            'interfaces' => 'ACYM_CONFIGURATION_INTERFACE',
             'bounce' => 'ACYM_BOUNCE_HANDLING',
             'data' => 'ACYM_CONFIGURATION_DATA_COLLECTION',
             'security' => 'ACYM_CONFIGURATION_SECURITY',

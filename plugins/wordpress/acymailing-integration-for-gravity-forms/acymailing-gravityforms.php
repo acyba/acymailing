@@ -5,7 +5,7 @@ Description: Adds the possibility to show AcyMailing lists on Gravity Forms
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 1.5
+Version: 1.6
 */
 
 use AcyMailing\Classes\PluginClass;

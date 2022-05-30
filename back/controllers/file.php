@@ -26,17 +26,14 @@ class FileController extends acymController
 
         $folders = acym_generateArborescence([$uploadFolderBase]);
 
-
         $uploadedFile = acym_getVar('array', 'uploadedFile', [], 'files');
+        $selectedFile = '';
         if (!empty($uploadedFile) && !empty($uploadedFile['name'])) {
             $uploaded = acym_importFile($uploadedFile, $uploadPath, false);
             if ($uploaded) {
-                // TODO : Select file and close popup
+                $selectedFile = $uploaded;
             }
         }
-
-        // TODO : delete file
-
 
         $allowedExtensions = explode(',', $this->config->get('allowed_files'));
         $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'ico', 'bmp', 'svg'];
@@ -56,6 +53,7 @@ class FileController extends acymController
             'allowedExtensions' => $allowedExtensions,
             'folders' => $folders,
             'fileTreeType' => new FileTreeType(),
+            'selectedFile' => $selectedFile
         ];
 
         parent::display($data);

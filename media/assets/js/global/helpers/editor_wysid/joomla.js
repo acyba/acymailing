@@ -23,8 +23,6 @@ const acym_editorWysidJoomla = {
                 acym_helperEditorWysid.$focusElement.replaceWith('');
             }
             acym_helperEditorWysid.setColumnRefreshUiWYSID();
-            acym_editorWysidVersioning.setUndoAndAutoSave();
-            acym_helperEditorWysid.checkForEmptyTbodyWYSID();
         }
     },
     validateMediaSelection: function (isRowBackgroundImage, imagesUrls, altValue, valueTitle, valueCaption) {
@@ -122,12 +120,13 @@ const acym_editorWysidJoomla = {
             jQuery('#acym__wysid__context__image__width').val(imgSelected.width());
             jQuery('#acym__wysid__context__image__height').val(imgSelected.height());
 
+            acym_editorWysidImage.setImageWidthHeightOnInsert();
+            acym_editorWysidTinymce.addTinyMceWYSID();
         }
 
         // Close the image selection modal
         jQuery('#acym__wysid__modal__joomla-image').hide();
         acym_helperEditorWysid.setColumnRefreshUiWYSID();
-        acym_editorWysidVersioning.setUndoAndAutoSave();
     },
     setInsertMediaJoomlaWYSID: function ($modalUi, rows) {
         // Joomla 4
@@ -136,7 +135,6 @@ const acym_editorWysidJoomla = {
         });
         jQuery('#acym__wysid__modal__joomla-image__ui__actions__select').off('click').on('click', function () {
             // 1 - Get current folder
-            let imageUrl;
             let folderPath = ACYM_ROOT_URI;
             $modalUi.contents().find('.media-breadcrumb-item a').each(function () {
                 folderPath += jQuery(this).text().trim() + '/';

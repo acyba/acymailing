@@ -269,9 +269,17 @@ class MailsController extends acymController
                 $mail->headers = '';
                 $mail->thumbnail = null;
                 $mail->links_language = '';
+                $mail->from_email = '';
+                $mail->from_name = '';
+                $mail->reply_to_email = '';
+                $mail->reply_to_name = '';
             } else {
                 $mail = $fromMail;
                 $mail->id = 0;
+                $mail->from_email = $fromMail->from_email;
+                $mail->from_name = $fromMail->from_name;
+                $mail->reply_to_email = $fromMail->reply_to_email;
+                $mail->reply_to_name = $fromMail->reply_to_name;
                 if (0 == $mail->drag_editor) {
                     $mail->editor = 'html';
                 } else {
@@ -314,6 +322,10 @@ class MailsController extends acymController
                 $mail->body = $fromMail->body;
                 $mail->stylesheet = $fromMail->stylesheet;
                 $mail->settings = $fromMail->settings;
+                $mail->from_email = $fromMail->from_email;
+                $mail->from_name = $fromMail->from_name;
+                $mail->reply_to_email = $fromMail->reply_to_email;
+                $mail->reply_to_name = $fromMail->reply_to_name;
             }
 
             if (!empty($followupId)) $followupClass->getDelaySettingToMail($mail, $followupId);

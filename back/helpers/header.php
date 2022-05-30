@@ -308,7 +308,14 @@ class HeaderHelper extends acymObject
                 ).'</p><div class="cell shrink cursor-pointer acym__header__notification__toolbox__remove text-right">'.acym_translation('ACYM_DELETE_ALL').'</div></div>';
             foreach ($notifications as $key => $notif) {
                 $fullMessageHover = $notif['message'];
-                if (strlen($notif['message']) > 150) $notif['message'] = substr($notif['message'], 0, 150).'...';
+
+                if (strlen($notif['message']) > 150) {
+                    $tag = new \stdClass();
+                    $tag->wrap = 150;
+
+                    $pluginHelperClass = new PluginHelper();
+                    $notif['message'] = $pluginHelperClass->wrapText($notif['message'], $tag);
+                }
                 $fullMessageHover = $fullMessageHover != $notif['message'] ? 'data-acym-full="'.acym_escape($fullMessageHover).'"' : '';
 
                 $logo = $notif['level'] == 'info' ? 'acymicon-bell' : ($notif['level'] == 'warning' ? 'acymicon-exclamation-triangle' : 'acymicon-exclamation-circle');
@@ -339,7 +346,7 @@ class HeaderHelper extends acymObject
         }
 
         $notif->message = str_replace('<br />', "\r\n", $notif->message);
-        $notif->message = strip_tags($notif->message);
+        $notif->message = strip_tags($notif->message, '<a>');
 
         // Prevent duplicated notifications
         foreach ($notifications as $key => $oneNotif) {

@@ -296,7 +296,7 @@ class acymPlugin extends acymObject
         ];
     }
 
-    protected function autoCampaignOptions(&$options)
+    protected function autoCampaignOptions(&$options, $modified = false)
     {
         if (empty($this->campaignId) && empty($this->campaignType)) {
             return;
@@ -317,14 +317,30 @@ class acymPlugin extends acymObject
             'section' => 'ACYM_AUTO_CAMPAIGNS_OPTIONS',
         ];
 
-        $options[] = [
-            'title' => 'ACYM_ONLY_NEWLY_CREATED',
-            'type' => 'boolean',
-            'name' => 'onlynew',
-            'default' => true,
-            'tooltip' => 'ACYM_ONLY_NEWLY_CREATED_DESC',
-            'section' => 'ACYM_AUTO_CAMPAIGNS_OPTIONS',
-        ];
+        if ($modified) {
+            $options[] = [
+                'title' => 'ACYM_DATE',
+                'type' => 'select',
+                'name' => 'datefilter',
+                'default' => 'onlynew',
+                'tooltip' => 'ACYM_ONLY_NEWLY_CREATED_DESC',
+                'options' => [
+                    '' => 'ACYM_NO_FILTER',
+                    'onlynew' => 'ACYM_ONLY_NEWLY_CREATED',
+                    'onlymodified' => 'ACYM_ONLY_NEWLY_MODIFIED',
+                ],
+                'section' => 'ACYM_AUTO_CAMPAIGNS_OPTIONS',
+            ];
+        } else {
+            $options[] = [
+                'title' => 'ACYM_ONLY_NEWLY_CREATED',
+                'type' => 'boolean',
+                'name' => 'onlynew',
+                'default' => true,
+                'tooltip' => 'ACYM_ONLY_NEWLY_CREATED_DESC',
+                'section' => 'ACYM_AUTO_CAMPAIGNS_OPTIONS',
+            ];
+        }
 
         $options[] = [
             'title' => 'ACYM_MIN_NB_ELEMENTS',

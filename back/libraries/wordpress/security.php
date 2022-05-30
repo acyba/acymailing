@@ -218,8 +218,8 @@ function acym_cmsPermission()
     asort($options);
 
     $option = '
-		<div class="cell medium-7 grid-x">
-			<label class="cell medium-6 small-9">'.acym_translation('ACYM_ACCESS').' '.acym_info('ACYM_ACCESS_DESC').'</label>
+		<div class="cell grid-x">
+			<label class="cell large-3 medium-5 small-9">'.acym_translation('ACYM_ACCESS').' '.acym_info('ACYM_ACCESS_DESC').'</label>
 			<div class="cell auto">';
 
     $option .= acym_selectMultiple(

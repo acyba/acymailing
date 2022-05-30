@@ -172,7 +172,9 @@ if (isset($form->display_option['scroll']) && $form->display_option['scroll'] !=
                 window.removeEventListener('scroll', displayAcymPopupForm);
                 if (!delayRemaining) {
                     let acym_popupForm = document.querySelector('.acym__subscription__form__popup__overlay');
-                    acym_popupForm.style.display = 'inline';
+                    if (acym_popupForm) {
+                        acym_popupForm.style.display = 'inline';
+                    }
                 }
             }
         }

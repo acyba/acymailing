@@ -26,6 +26,7 @@
         background-color: inherit;
         box-shadow: $listing-box-shadow;
         border-radius: 5px;
+        width: auto;
 
         #acym_pagination {
             max-width: 100px;
@@ -66,7 +67,6 @@
         .pagination_one_pagination {
             display: inline-block;
             border-radius: 5px;
-            padding: 5px 15px;
             margin-top: 1px;
 
             &:hover {
@@ -85,6 +85,10 @@
                     background-color: inherit;
                 }
             }
+        }
+
+        .pagination_padding {
+            padding: 5px 15px;
         }
 
         .pagination-turbo-right i:last-child {

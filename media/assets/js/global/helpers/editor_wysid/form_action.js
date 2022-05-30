@@ -11,14 +11,14 @@ const acym_editorWysidFormAction = {
             return acym_editorWysidFormAction._ajaxCall(controller, sendTest, saveAsTmpl);
         }
     },
-    saveTemplate: function (sendTest, saveAsTmpl) {
+    saveEmail: function (sendTest, saveAsTmpl) {
         let $warning = jQuery('#acym__wysid__warning__thumbnail');
         if (!$warning.is(':visible')) {
             let heightOverlay = window.innerHeight - jQuery('#acym__wysid__top-toolbar').offset().top - jQuery('#acym__wysid__wrap').height();
             $warning.css('bottom', '-' + heightOverlay + 'px').toggle();
         }
-        let $template = jQuery('#acym__wysid__template');
-        $template.css({
+        let $emailContent = jQuery('#acym__wysid__template');
+        $emailContent.css({
             'overflow': 'hidden',
             'overflow-y': 'auto'
         });
@@ -44,12 +44,12 @@ const acym_editorWysidFormAction = {
             }
         });
 
-        $template.find('.acym__wysid__column__element__td').css('outline-width', '0px');
-        $template.find('[contenteditable]').attr('contenteditable', 'false');
+        $emailContent.find('.acym__wysid__column__element__td').css('outline-width', '0px');
+        $emailContent.find('[contenteditable]').attr('contenteditable', 'false');
         jQuery('#acym__wysid__template a.acym__wysid__column__element__button').each(function () {
-            let buttonMicrosoft = acym_editorWysidOutlook.setButtonOutlook(jQuery(this));
-            jQuery(this).before(buttonMicrosoft);
-            jQuery(this).after('<!-- <![endif]-->');
+            let buttonMicrosoft = acym_editorWysidOutlook.getOutlookButton(jQuery(this));
+            jQuery(this).before('<!--[if mso]>' + buttonMicrosoft + '<![endif]--><!--[if !mso]>');
+            jQuery(this).after('<![endif]-->');
         });
 
         jQuery('#acym__wysid__template .acym__wysid__row__element').each(function () {
@@ -58,19 +58,21 @@ const acym_editorWysidFormAction = {
             }
         });
 
-        $template.find('.acym__wysid__tinymce--image br[data-mce-bogus]').remove();
+        $emailContent.find('.acym__wysid__tinymce--image br[data-mce-bogus]').remove();
         if (!sendTest && !saveAsTmpl) {
             jQuery('.mce-edit-focus').removeClass('mce-edit-focus');
-            $template.find('[name^="mce_"]').remove();
-            $template.find('#acym__wysid__default').remove();
+            $emailContent.find('[name^="mce_"]').remove();
+            $emailContent.find('#acym__wysid__default').remove();
         }
 
         if (saveAsTmpl) {
-            jQuery('.acym__wysid__hidden__save__content__template').val('<div id="acym__wysid__template" class="cell">' + $template.html() + '</div>');
+            jQuery('.acym__wysid__hidden__save__content__template').val('<div id="acym__wysid__template" class="cell">' + $emailContent.html() + '</div>');
             jQuery('.acym__wysid__hidden__save__settings__template').val(JSON.stringify(acym_helperEditorWysid.mailsSettings));
             jQuery('.acym__wysid__hidden__save__stylesheet__template').val(jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val());
         } else {
-            jQuery('.acym__wysid__hidden__save__content').val('<div id="acym__wysid__template" class="cell">' + $template.html() + '</div>').trigger('change');
+            jQuery('.acym__wysid__hidden__save__content')
+                .val('<div id="acym__wysid__template" class="cell">' + $emailContent.html() + '</div>')
+                .trigger('change');
             jQuery('.acym__wysid__hidden__save__settings').val(JSON.stringify(acym_helperEditorWysid.mailsSettings));
             jQuery('.acym__wysid__hidden__save__stylesheet').val(jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val());
         }
@@ -117,10 +119,13 @@ const acym_editorWysidFormAction = {
     },
     setSaveButtonWYSID: function () {
         jQuery('#acym__wysid__save__button').off('click').on('click', function () {
+            // Directly save the email
             if (jQuery('[name="ctrl"]').val().indexOf('campaigns') !== -1 || jQuery('#acym__mail__type').val() === 'followup') {
-                acym_editorWysidFormAction.saveTemplate(false, false);
+                acym_editorWysidFormAction.saveEmail(false, false);
                 return true;
             }
+
+            // Generate a thumbnail then save the email
             acym_editorWysidFormAction.setSaveTmpl(false);
         });
     },
@@ -141,14 +146,13 @@ const acym_editorWysidFormAction = {
                                       .then(function (dataUrl) {
                                           // Copy img content in hidden input
                                           jQuery('#editor_thumbnail').attr('value', dataUrl);
-                                          acym_editorWysidFormAction.saveTemplate(false, saveAsTmpl);
+                                          acym_editorWysidFormAction.saveEmail(false, saveAsTmpl);
                                       })
                                       .catch(function (err) {
                                           console.error('Error generating template thumbnail: ' + err);
-                                          acym_editorWysidFormAction.saveTemplate(false, saveAsTmpl);
+                                          acym_editorWysidFormAction.saveEmail(false, saveAsTmpl);
                                       });
         }, 10);
-
     },
     setThumbnailPreSave: function () {
         jQuery('#acym__wysid__template').css({
@@ -166,8 +170,10 @@ const acym_editorWysidFormAction = {
             return canvas.toDataURL('image/png');
         });
     },
-    setEditButtonWYSID: function () {
+    setOpenEditorButton: function () {
         jQuery('#acym__wysid__edit__button').off('click').on('click', function () {
+            let $editorContent = jQuery('#acym__wysid__template');
+
             if (jQuery('#acym__wysid .acym__wysid__template__content').css('background-image') !== 'none') {
                 jQuery('#acym__wysid__background-image__template-delete').hide();
             }
@@ -183,40 +189,63 @@ const acym_editorWysidFormAction = {
             }
             jQuery('#acym__wysid').css(acymWysidDivStyle);
             jQuery('#acym__wysid__edit').css('display', 'none');
-            if ('' !== jQuery('.acym__wysid__hidden__save__content').val()) {
-                jQuery('#acym__wysid__template').replaceWith(jQuery('.acym__wysid__hidden__save__content').val());
+
+            let savedContent = jQuery('.acym__wysid__hidden__save__content').val();
+            if (!acym_helper.empty(savedContent)) {
+                $editorContent.replaceWith(savedContent);
             }
-            acym_helperEditorWysid.saveSettings = jQuery('.acym__wysid__hidden__save__settings').val() !== '' ? jQuery('.acym__wysid__hidden__save__settings')
-                .val() : '';
+
+            let savedSettings = jQuery('.acym__wysid__hidden__save__settings').val();
+            acym_helperEditorWysid.saveSettings = acym_helper.empty(savedSettings) ? '' : savedSettings;
             acym_helperEditorWysid.mailsSettings = acym_helperEditorWysid.saveSettings === '' ? {} : acym_helper.parseJson(acym_helperEditorWysid.saveSettings);
-            if (jQuery('.acym__wysid__hidden__save__stylesheet').val() !== '') {
-                acym_helperEditorWysid.savedStylesheet = jQuery('.acym__wysid__hidden__save__stylesheet').val();
+
+            let savedStylesheet = jQuery('.acym__wysid__hidden__save__stylesheet').val();
+            if (!acym_helper.empty(savedStylesheet)) {
+                acym_helperEditorWysid.savedStylesheet = savedStylesheet;
                 jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val(acym_helperEditorWysid.savedStylesheet);
             }
-            let $images = jQuery('#acym__wysid #acym__wysid__template img');
+
+            let $images = $editorContent.find('img');
             let numberImages = $images.length;
 
+            // We apply the zone and block overlays after the images are loaded to make sure the height of these overlays is correct
             if (numberImages > 0) {
                 let countLoadedImages = 0;
                 $images.on('load', function () {
                     countLoadedImages++;
-                    if (numberImages === countLoadedImages) acym_editorWysidRowSelector.setRowSelector();
+                    if (numberImages === countLoadedImages) {
+                        acym_editorWysidRowSelector.setZoneAndBlockOverlays();
+                    }
                 });
             } else {
-                acym_editorWysidRowSelector.setRowSelector();
+                acym_editorWysidRowSelector.setZoneAndBlockOverlays();
             }
 
-            let $template = jQuery('#acym__wysid__template');
-            $template.find('[contenteditable]').attr('contenteditable', 'true');
-            $template.find('[id^="mce_"]').removeAttr('id');
+            let $emailContent = $editorContent;
+            $emailContent.find('[contenteditable]').attr('contenteditable', 'true');
+            $emailContent.find('[id^="mce_"]').removeAttr('id');
 
-            acym_helperEditorWysid.setColumnRefreshUiWYSID();
-            acym_helperEditorWysid.setInitFunctionsOnEdtionStart();
-            // When the edition starts, we reload the editor
-            acym_editorWysidVersioning.setUndoAndAutoSave(true);
+            acym_helperEditorWysid.setColumnRefreshUiWYSID(true, true);
 
             let $elementsToReload = jQuery('tr[data-dynamic]');
-            if ($elementsToReload.length > 0) acym_editorWysidDynamic.insertDContent('', $elementsToReload);
+            if ($elementsToReload.length > 0) {
+                acym_editorWysidDynamic.insertDContent('', $elementsToReload);
+            }
+
+            acym_editorWysidFontStyle.setSettingsModificationHandling();
+            acym_editorWysidImage.setImageWidthHeightOnInsert();
+            acym_helperEditorWysid.resizeEditorBasedOnPage();
+            acym_editorWysidColorPicker.setGeneralColorPickerWYSID();
+            acym_editorWysidContextModal.setButtonOptions();
+            acym_editorWysidContextModal.setSpaceOptions();
+            acym_editorWysidContextModal.setFollowOptions();
+            acym_editorWysidContextModal.setSeparatorOptions();
+            acym_editorWysidContextModal.setBuiltWithOptions();
+            acym_editorWysidFontStyle.applyCssOnAllElementTypesBasedOnSettings();
+            acym_editorWysidDynamic.setDTextActions();
+            acym_editorWysidDynamic.setDContentActions();
+            acym_editorWysidTinymce.addTinyMceWYSID();
+            acym_editorWysidRowSelector.setZoneAndBlockOverlays();
         });
     },
     setCancelButtonWYSID: function () {

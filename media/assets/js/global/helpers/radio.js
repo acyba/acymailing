@@ -2,7 +2,7 @@ const acym_helperRadio = {
     setRadioIconsGlobal: function () {
         jQuery('i.acym_radio_unchecked').on('click', function () {
             let $radio = jQuery('[for="' + jQuery(this).attr('data-radio') + '"]');
-            $radio.click();
+            $radio.trigger('click');
         });
 
         jQuery('.acym_radio_group > input[type="radio"]').off('change').on('change', function () {

@@ -68,7 +68,6 @@
                             'open' => acym_translation('ACYM_MAILS_OPEN'),
                             'open_date' => acym_translation('ACYM_OPEN_DATE'),
                             'sent' => acym_translation('ACYM_SENT'),
-                            'click' => acym_translation('ACYM_CLICK'),
                         ],
                         'detailed_stats',
                         $data['ordering']

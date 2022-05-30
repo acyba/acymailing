@@ -1,5 +1,5 @@
 const acym_editorWysidFontStyle = {
-    allTags: [
+    allHtmlElementTypes: [
         'p',
         'a',
         'span.acym_link',
@@ -11,105 +11,132 @@ const acym_editorWysidFontStyle = {
         'h5',
         'h6'
     ],
-    setAllHtmlElementStyleWYSID: function () {
-        this.allTags.map(tag => {
-            acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID(tag);
+    currentlySelectedType: 'p',
+    applyCssOnAllElementTypesBasedOnSettings: function () {
+        this.allHtmlElementTypes.map(oneHtmlElementType => {
+            acym_editorWysidFontStyle.applyCssOnElementsBasedOnSettings(oneHtmlElementType);
         });
-        jQuery('.acym__wysid__template__content')
-            .css('background-color', acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID('#acym__wysid__background-colorpicker', 'background-color'));
+        acym_editorWysidFontStyle.applyCssOnePropertyOnElementsBasedOnSettings('#acym__wysid__background-colorpicker', 'background-color');
     },
-    setAllSettingsOfHtmlElementWYSID: function (element) {
-        jQuery.each(acym_helperEditorWysid.defaultMailsSettings[element], function (property) {
-            jQuery('.acym__wysid__column__element ' + element + ':not(.acym__wysid__content-no-settings-style)')
-                .css(property, acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID(element, property));
+    applyCssOnElementsBasedOnSettings: function (oneHtmlElementType) {
+        jQuery.each(acym_helperEditorWysid.defaultMailsSettings[oneHtmlElementType], function (property) {
+            acym_editorWysidFontStyle.applyCssOnePropertyOnElementsBasedOnSettings(oneHtmlElementType, property);
         });
     },
-    getSettingsOfHtmlElementWYSID: function (element, property) {
-        return acym_helperEditorWysid.mailsSettings[element]
+    applyCssOnePropertyOnElementsBasedOnSettings: function (oneHtmlElementType, property) {
+        let selector = '';
+        if (oneHtmlElementType === '#acym__wysid__background-colorpicker') {
+            selector = '.acym__wysid__template__content';
+        } else {
+            selector = '.acym__wysid__column__element ' + oneHtmlElementType + ':not(.acym__wysid__content-no-settings-style)';
+        }
+
+        jQuery(selector).css(property, acym_editorWysidFontStyle.getPropertyOfOneType(oneHtmlElementType, property));
+    },
+    getPropertyOfOneType: function (oneHtmlElementType, property) {
+        return acym_helperEditorWysid.mailsSettings[oneHtmlElementType]
                !== undefined
-               && acym_helperEditorWysid.mailsSettings[element][property]
-               && acym_helperEditorWysid.mailsSettings[element][property]
-               !== undefined ? acym_helperEditorWysid.mailsSettings[element][property] : acym_helperEditorWysid.defaultMailsSettings[element][property];
+               && acym_helperEditorWysid.mailsSettings[oneHtmlElementType][property]
+               && acym_helperEditorWysid.mailsSettings[oneHtmlElementType][property]
+               !== undefined
+               ? acym_helperEditorWysid.mailsSettings[oneHtmlElementType][property]
+               : acym_helperEditorWysid.defaultMailsSettings[oneHtmlElementType][property];
     },
-    setSettingsElementStyle: function (element, property, value, override = true) {
-        acym_helperEditorWysid.mailsSettings[element] === undefined ? acym_helperEditorWysid.mailsSettings[element] = {} : true;
+    saveAndApplyPropertyOnOneType: function (oneHtmlElementType, property, value, override = true) {
+        if (acym_helperEditorWysid.mailsSettings[oneHtmlElementType] === undefined) {
+            acym_helperEditorWysid.mailsSettings[oneHtmlElementType] = {};
+        }
 
         if (!override
-            && !acym_helper.empty(acym_helperEditorWysid.mailsSettings[element].overridden)
-            && !acym_helper.empty(acym_helperEditorWysid.mailsSettings[element].overridden[property])) {
+            && !acym_helper.empty(acym_helperEditorWysid.mailsSettings[oneHtmlElementType].overridden)
+            && !acym_helper.empty(acym_helperEditorWysid.mailsSettings[oneHtmlElementType].overridden[property])) {
             return;
         }
 
-        acym_helperEditorWysid.mailsSettings[element][property] = value;
+        acym_helperEditorWysid.mailsSettings[oneHtmlElementType][property] = value;
         if (override) {
-            if (acym_helper.empty(acym_helperEditorWysid.mailsSettings[element].overridden)) {
-                acym_helperEditorWysid.mailsSettings[element].overridden = {};
+            if (acym_helper.empty(acym_helperEditorWysid.mailsSettings[oneHtmlElementType].overridden)) {
+                acym_helperEditorWysid.mailsSettings[oneHtmlElementType].overridden = {};
             }
-            acym_helperEditorWysid.mailsSettings[element].overridden[property] = true;
+            acym_helperEditorWysid.mailsSettings[oneHtmlElementType].overridden[property] = true;
         }
-        acym_editorWysidFontStyle.setAllHtmlElementStyleWYSID();
+
+        acym_editorWysidFontStyle.applyCssOnePropertyOnElementsBasedOnSettings(oneHtmlElementType, property);
     },
-    setSettingsWYSID: function () {
-        let $settingsBold = jQuery('#acym__wysid__right__toolbar__settings__bold');
-        let $settingsItalic = jQuery('#acym__wysid__right__toolbar__settings__italic');
-        let $currentFont = jQuery('#acym__wysid__right__toolbar__settings__font--select').val();
-        let $contentTemplate = jQuery('#acym__wysid .acym__wysid__template__content');
-        let $deleteBackgroundImage = jQuery('#acym__wysid__background-image__template-delete');
+    setDesignOptionValuesForSelectedType: function () {
         jQuery('#acym__wysid__right__toolbar__settings__font-family')
-            .val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-family'))
+            .val(acym_editorWysidFontStyle.getPropertyOfOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-family'))
             .trigger('change');
+
         jQuery('#acym__wysid__right__toolbar__settings__font-size')
-            .val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-size'))
+            .val(acym_editorWysidFontStyle.getPropertyOfOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-size'))
             .trigger('change');
 
-        $settingsBold.val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-weight') == 'bold' ? $settingsBold.addClass(
-            'acym__wysid__right__toolbar__settings__bold--selected') : $settingsBold.removeClass('acym__wysid__right__toolbar__settings__bold--selected'));
+        let $settingsBold = jQuery('#acym__wysid__right__toolbar__settings__bold');
+        if (acym_editorWysidFontStyle.getPropertyOfOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-weight') === 'bold') {
+            $settingsBold.addClass('acym__wysid__right__toolbar__settings__bold--selected');
+        } else {
+            $settingsBold.removeClass('acym__wysid__right__toolbar__settings__bold--selected');
+        }
 
-        $settingsItalic.val(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'font-style') == 'italic'
-                            ? $settingsItalic.addClass('acym__wysid__right__toolbar__settings__italic--selected')
-                            : $settingsItalic.removeClass('acym__wysid__right__toolbar__settings__italic--selected'));
+        let $settingsItalic = jQuery('#acym__wysid__right__toolbar__settings__italic');
+        if (acym_editorWysidFontStyle.getPropertyOfOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-style') === 'italic') {
+            $settingsItalic.addClass('acym__wysid__right__toolbar__settings__italic--selected');
+        } else {
+            $settingsItalic.removeClass('acym__wysid__right__toolbar__settings__italic--selected');
+        }
 
-        acym_editorWysidColorPicker.setSettingsColorPickerWYSID(acym_editorWysidFontStyle.getSettingsOfHtmlElementWYSID($currentFont, 'color'));
-        acym_editorWysidFontStyle.setAllSettingsOfHtmlElementWYSID($currentFont);
+        acym_editorWysidColorPicker.setSettingsColorPickerWYSID();
+    },
+    setSettingsModificationHandling: function () {
+        let selectedHtmlElementType = acym_editorWysidFontStyle.currentlySelectedType;
+        let $emailContentContainer = jQuery('#acym__wysid .acym__wysid__template__content');
+        let $deleteBackgroundImage = jQuery('#acym__wysid__background-image__template-delete');
+        let $inputPaddingTop = jQuery('#acym__wysid__padding__top__content');
+        let $inputPaddingBottom = jQuery('#acym__wysid__padding__bottom__content');
 
+        // Init template design options
         jQuery('#acym__wysid__background-image__template').off('click').on('click', function () {
-            acym_editorWysidImage.openMediaManage($contentTemplate, true);
+            acym_editorWysidImage.openMediaManager($emailContentContainer, true);
         });
 
-        if ($contentTemplate.css('background-image') !== 'none') $deleteBackgroundImage.css('display', 'flex');
+        if ($emailContentContainer.css('background-image') !== 'none') {
+            $deleteBackgroundImage.css('display', 'flex');
+        }
 
         $deleteBackgroundImage.off('click').on('click', function () {
-            $contentTemplate.css('background-image', 'none');
+            $emailContentContainer.css('background-image', 'none');
             jQuery(this).hide();
         });
 
-        let $inputPaddingTop = jQuery('#acym__wysid__padding__top__content');
-
-        $inputPaddingTop.val($contentTemplate.css('padding-top').replace(/[^-\d\.]/g, ''));
+        $inputPaddingTop.val($emailContentContainer.css('padding-top').replace(/[^-\d\.]/g, ''));
         $inputPaddingTop.off('change').on('change', function () {
-            $contentTemplate.css('padding-top', jQuery(this).val() + 'px');
+            $emailContentContainer.css('padding-top', jQuery(this).val() + 'px');
         });
 
-        let $inputPaddingBottom = jQuery('#acym__wysid__padding__bottom__content');
-
-        $inputPaddingBottom.val($contentTemplate.css('padding-bottom').replace(/[^-\d\.]/g, ''));
+        $inputPaddingBottom.val($emailContentContainer.css('padding-bottom').replace(/[^-\d\.]/g, ''));
         $inputPaddingBottom.off('change').on('change', function () {
-            $contentTemplate.css('padding-bottom', jQuery(this).val() + 'px');
+            $emailContentContainer.css('padding-bottom', jQuery(this).val() + 'px');
         });
 
+        acym_editorWysidFontStyle.initDefaultFont();
 
+        // Init design options
+        acym_editorWysidFontStyle.setDesignModificationHandling();
+        acym_editorWysidFontStyle.setDesignOptionValuesForSelectedType();
+        acym_editorWysidFontStyle.applyCssOnElementsBasedOnSettings(selectedHtmlElementType);
     },
-    setSettingsControlsWYSID: function () {
+    setDesignModificationHandling: function () {
         let $settingsBold = jQuery('#acym__wysid__right__toolbar__settings__bold');
         let $settingsItalic = jQuery('#acym__wysid__right__toolbar__settings__italic');
-        let $toolbarFont = jQuery('#acym__wysid__right__toolbar__settings__font--select');
 
-        $toolbarFont.on('change', function () {
-            acym_editorWysidFontStyle.setSettingsWYSID();
+        jQuery('#acym__wysid__right__toolbar__settings__font--select').on('change', function () {
+            acym_editorWysidFontStyle.currentlySelectedType = jQuery(this).val();
+            acym_editorWysidFontStyle.setDesignOptionValuesForSelectedType();
         });
 
         jQuery('#acym__wysid__right__toolbar__settings__font-family').off('select2:select').on('change select2:select', function (event) {
-            acym_editorWysidFontStyle.setSettingsElementStyle(jQuery('#acym__wysid__right__toolbar__settings__font--select').val(),
+            acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType(acym_editorWysidFontStyle.currentlySelectedType,
                 'font-family',
                 jQuery(this).val(),
                 event.type !== 'change'
@@ -117,36 +144,27 @@ const acym_editorWysidFontStyle = {
         });
 
         jQuery('#acym__wysid__right__toolbar__settings__font-size').on('change', function () {
-            acym_editorWysidFontStyle.setSettingsElementStyle(jQuery('#acym__wysid__right__toolbar__settings__font--select').val(),
-                'font-size',
-                jQuery(this).val()
-            );
+            acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-size', jQuery(this).val());
         });
 
-        $settingsBold.off('click').on('click', function () {
-            $settingsBold.hasClass('acym__wysid__right__toolbar__settings__bold--selected') ? $settingsBold.removeClass(
-                'acym__wysid__right__toolbar__settings__bold--selected') && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(),
-                'font-weight',
-                'normal'
-            ) : $settingsBold.addClass('acym__wysid__right__toolbar__settings__bold--selected')
-                && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(), 'font-weight', 'bold');
+        $settingsBold.off('click').off('click').on('click', function () {
+            if ($settingsBold.hasClass('acym__wysid__right__toolbar__settings__bold--selected')) {
+                $settingsBold.removeClass('acym__wysid__right__toolbar__settings__bold--selected');
+                acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-weight', 'normal');
+            } else {
+                $settingsBold.addClass('acym__wysid__right__toolbar__settings__bold--selected');
+                acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-weight', 'bold');
+            }
         });
 
-        $settingsItalic.off('click').on('click', function () {
-            $settingsItalic.hasClass('acym__wysid__right__toolbar__settings__italic--selected') ? $settingsItalic.removeClass(
-                'acym__wysid__right__toolbar__settings__italic--selected') && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(),
-                'font-style',
-                'normal'
-            ) : $settingsItalic.addClass('acym__wysid__right__toolbar__settings__italic--selected')
-                && acym_editorWysidFontStyle.setSettingsElementStyle($toolbarFont.val(), 'font-style', 'italic');
-        });
-    },
-    setApplyStylesheetSettings: function () {
-        jQuery('#acym__wysid__right__toolbar__settings__stylesheet__apply').off('click').on('click', function () {
-            let css = jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val();
-            jQuery('.acym__wysid__hidden__save__stylesheet').val(css);
-            jQuery('#acym__wysid__edit').append('<style id="acym__wysid__custom__style">' + acym_helperEditorWysid.parseTextToCss(css) + '</style>');
-            jQuery('#acym__wysid__right__toolbar__settings__stylesheet__modal').foundation('close');
+        $settingsItalic.off('click').off('click').on('click', function () {
+            if ($settingsItalic.hasClass('acym__wysid__right__toolbar__settings__italic--selected')) {
+                $settingsItalic.removeClass('acym__wysid__right__toolbar__settings__italic--selected');
+                acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-style', 'normal');
+            } else {
+                $settingsItalic.addClass('acym__wysid__right__toolbar__settings__italic--selected');
+                acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-style', 'italic');
+            }
         });
     },
     setOpenStylesheet: function () {
@@ -157,7 +175,15 @@ const acym_editorWysidFontStyle = {
     setCancelStylesheet: function () {
         jQuery('#acym__wysid__right__toolbar__settings__stylesheet__cancel').on('click', function () {
             jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val(acym_helperEditorWysid.stylesheetTemp);
-            jQuery('#acym__wysid__right__toolbar__settings__stylesheet__modal').foundation('close');
+            jQuery('#acym__wysid__right__toolbar__settings__stylesheet__modal .close-button').trigger('click');
+        });
+    },
+    setApplyStylesheetSettings: function () {
+        jQuery('#acym__wysid__right__toolbar__settings__stylesheet__apply').off('click').on('click', function () {
+            let css = jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val();
+            jQuery('.acym__wysid__hidden__save__stylesheet').val(css);
+            jQuery('#acym__wysid__edit').append('<style id="acym__wysid__custom__style">' + acym_helperEditorWysid.parseTextToCss(css) + '</style>');
+            jQuery('#acym__wysid__right__toolbar__settings__stylesheet__modal .close-button').trigger('click');
         });
     },
     setSocialIconImport: function () {
@@ -171,7 +197,7 @@ const acym_editorWysidFontStyle = {
         jQuery('.acym__wysid__social__icons__import__text').off('click').on('click', function () {
             let $this = jQuery(this);
             let $inputFile = $this.closest('.acym__wysid__right__toolbar__design__social__icons__one').find('input');
-            $inputFile.click();
+            $inputFile.trigger('click');
             $inputFile.off('change').on('change', function () {
                 let filename = jQuery(this).val().split('\\').pop();
                 $this.closest('.acym__wysid__right__toolbar__design__social__icons__one').find('.acym__wysid__social__icons__import__delete').remove();
@@ -234,8 +260,6 @@ const acym_editorWysidFontStyle = {
         });
     },
     initDefaultFont: function () {
-        let self = this;
-
         let savedFont = acym_helperEditorWysid.defaultMailsSettings.default['font-family'];
         if (!acym_helper.empty(acym_helperEditorWysid.mailsSettings.default)
             && !acym_helper.empty(acym_helperEditorWysid.mailsSettings.default['font-family'])) {
@@ -244,14 +268,14 @@ const acym_editorWysidFontStyle = {
 
         let $defaultFontSelect = jQuery('[name="default_font"]');
 
-        $defaultFontSelect.on('change', function (event) {
+        $defaultFontSelect.off('change').on('change', function (event) {
             let font = jQuery(this).val();
 
             if (acym_helper.empty(acym_helperEditorWysid.mailsSettings.default)) acym_helperEditorWysid.mailsSettings.default = {};
             acym_helperEditorWysid.mailsSettings.default['font-family'] = font;
 
-            self.allTags.map(tag => {
-                self.setSettingsElementStyle(tag, 'font-family', font, false);
+            acym_editorWysidFontStyle.allHtmlElementTypes.map(oneHtmlElementType => {
+                acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType(oneHtmlElementType, 'font-family', font, false);
             });
         });
 

@@ -12,8 +12,6 @@ const acym_editorWysidNewRow = {
         content += '</tbody>';
         content += '</table>';
         jQuery(ui).replaceWith(content);
-        acym_editorWysidVersioning.setUndoAndAutoSave();
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
     },
     addRow2WYSID: function (ui) {
         let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0" cellspacing="0" border="0">';
@@ -32,8 +30,6 @@ const acym_editorWysidNewRow = {
         content += '</tbody>';
         content += '</table>';
         jQuery(ui).replaceWith(content);
-        acym_editorWysidVersioning.setUndoAndAutoSave();
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
     },
     addRow3WYSID: function (ui) {
         let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0" cellspacing="0" border="0">';
@@ -56,8 +52,6 @@ const acym_editorWysidNewRow = {
         content += '</tbody>';
         content += '</table>';
         jQuery(ui).replaceWith(content);
-        acym_editorWysidVersioning.setUndoAndAutoSave();
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
     },
     addRow4WYSID: function (ui) {
         let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0" cellspacing="0" border="0">';
@@ -84,8 +78,6 @@ const acym_editorWysidNewRow = {
         content += '</tbody>';
         content += '</table>';
         jQuery(ui).replaceWith(content);
-        acym_editorWysidVersioning.setUndoAndAutoSave();
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
     },
     addRow5WYSID: function (ui) {
         let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0" cellspacing="0" border="0">';
@@ -104,8 +96,6 @@ const acym_editorWysidNewRow = {
         content += '</tbody>';
         content += '</table>';
         jQuery(ui).replaceWith(content);
-        acym_editorWysidVersioning.setUndoAndAutoSave();
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
     },
     addRow6WYSID: function (ui) {
         let content = '<table class="row acym__wysid__row__element" bgcolor="#ffffff" style="background-color: rgb(255, 255, 255);" cellpadding="0" cellspacing="0" border="0">';
@@ -124,8 +114,6 @@ const acym_editorWysidNewRow = {
         content += '</tbody>';
         content += '</table>';
         jQuery(ui).replaceWith(content);
-        acym_editorWysidVersioning.setUndoAndAutoSave();
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
     },
     addCustomRow: function (ui) {
         let zoneId = jQuery(ui).attr('data-acym-zone-id');
@@ -138,16 +126,32 @@ const acym_editorWysidNewRow = {
         };
 
         acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+            let spinnerInsertion = jQuery('#inserted_custom_zone_spinner');
             if (response.error) {
                 acym_editorWysidNotifications.addEditorNotification({
                     'message': '<div class="cell auto acym__autosave__notification">' + response.message + '</div>',
                     'level': 'error'
                 }, 3000, true);
-                jQuery('#inserted_custom_zone_spinner').replaceWith('');
+                spinnerInsertion.replaceWith('');
             } else {
-                jQuery('#inserted_custom_zone_spinner').replaceWith(response.data.content);
+                let $container = spinnerInsertion.parent();
+                spinnerInsertion.replaceWith(response.data.content);
+
+                // Make sure the DContents in the duplicated container have a different id
+                $container.find('tr[data-dynamic]').each(function () {
+                    jQuery(this).attr('id', acym_editorWysidDynamic.getUniqueId());
+                });
+
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
-                acym_editorWysidVersioning.setUndoAndAutoSave();
+                acym_editorWysidImage.setImageWidthHeightOnInsert();
+                acym_editorWysidContextModal.setButtonOptions();
+                acym_editorWysidContextModal.setSpaceOptions();
+                acym_editorWysidContextModal.setFollowOptions();
+                acym_editorWysidContextModal.setSeparatorOptions();
+                acym_editorWysidFontStyle.applyCssOnAllElementTypesBasedOnSettings();
+                acym_editorWysidDynamic.setDContentActions();
+                acym_editorWysidTinymce.addTinyMceWYSID();
+                acym_editorWysidRowSelector.setZoneAndBlockOverlays();
             }
         });
     }

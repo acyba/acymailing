@@ -40,7 +40,7 @@ const acym_helperCampaigns = {
         if (!jQuery('#acym__campaign__edit_email').length) return;
 
         if ('0' === jQuery('#acym__campaign__recipients__form__campaign').val()) {
-            jQuery('#acym__wysid__edit__button').click();
+            jQuery('#acym__wysid__edit__button').trigger('click');
         }
     },
     initAttachmentCampaigns: function () {

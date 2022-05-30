@@ -51,7 +51,9 @@ const acym_editorWysidWordpress = {
                     content += '<td class="large-12 acym__wysid__column__element__td">';
                     content += '<div class="acym__wysid__tinymce--image">';
                     content += '<div style="text-align: center" data-mce-style="text-align: center">';
-                    if ($link.length > 0) content += '<a href="' + $link.attr('href') + '" class="acym__wysid__link__image" target="_blank">';
+                    if ($link.length > 0) {
+                        content += '<a href="' + $link.attr('href') + '" class="acym__wysid__link__image" target="_blank">';
+                    }
                     content += '<img hspace="0" class="acym__wysid__media__inserted acym__wysid__media__inserted--focus acym__wysid__media__inserted--selected" src="'
                                + attachment.url
                                + '" title="'
@@ -62,16 +64,20 @@ const acym_editorWysidWordpress = {
                     if (attachment.caption !== undefined && attachment.caption.length > 0) {
                         content += acym_editorWysidContextModal.getImageCaptionDiv(attachment.caption);
                     }
-                    if ($link.length > 0) content += '</a>';
+                    if ($link.length > 0) {
+                        content += '</a>';
+                    }
                     content += '</div>';
                     content += '</div>';
                     content += '</td>';
                     content += '</tr>';
                     jQuery(ui).replaceWith(content);
+
                     jQuery('.acym__wysid__media__inserted--focus').on('load', function () {
                         jQuery(this).removeClass('acym__wysid__media__inserted--focus');
                         acym_helperEditorWysid.setColumnRefreshUiWYSID();
-                        acym_editorWysidVersioning.setUndoAndAutoSave();
+                        acym_editorWysidImage.setImageWidthHeightOnInsert();
+                        acym_editorWysidTinymce.addTinyMceWYSID();
                     });
 
                     jQuery('#acym__wysid__context__image__alt').val(attachment.alt);
@@ -82,15 +88,19 @@ const acym_editorWysidWordpress = {
                 if (!rows) {
                     jQuery(ui).replaceWith('');
                     acym_helperEditorWysid.setColumnRefreshUiWYSID();
-                    acym_editorWysidVersioning.setUndoAndAutoSave();
+                    acym_editorWysidImage.setImageWidthHeightOnInsert();
+                    acym_editorWysidTinymce.addTinyMceWYSID();
                 }
             }
         });
         file_frame.on('escape', function () {
             if (!rows) {
-                if (htmlUi.indexOf('insert_photo') !== -1) jQuery(ui).replaceWith('');
+                if (htmlUi.indexOf('insert_photo') !== -1) {
+                    jQuery(ui).replaceWith('');
+                }
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
-                acym_editorWysidVersioning.setUndoAndAutoSave();
+                acym_editorWysidImage.setImageWidthHeightOnInsert();
+                acym_editorWysidTinymce.addTinyMceWYSID();
             }
         });
         file_frame.open();

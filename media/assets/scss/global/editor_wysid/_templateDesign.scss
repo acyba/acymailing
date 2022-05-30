@@ -53,6 +53,7 @@
             cursor: pointer;
             user-select: none;
 
+
             &.acym__wysid__row__selector--focus {
                 outline: 2px solid $font-primary !important;
                 outline-offset: -2px;
@@ -145,6 +146,14 @@
         }
     }
 
+    .acym__wysid__row__selector.acym__wysid__row__selector--hidden {
+        display: none !important;
+    }
+
+    .acym__wysid__element__toolbox.acym__wysid__element__toolbox--hidden {
+        display: none !important;
+    }
+
     .acym__wysid__column {
         position: relative;
 
@@ -171,9 +180,9 @@
                 @supports (-webkit-marquee-repetition:infinite) and (object-fit:fill) {
                     top: initial !important;
                 }
-                min-width: 75px;
+                min-width: 120px;
                 margin-top: -28px;
-                left: calc(50% - 38px);
+                left: calc(50% - 60px);
                 display: inline-block;
                 padding: 3px;
                 background-color: map-get($editor-wysid-palette, primary-ui);;

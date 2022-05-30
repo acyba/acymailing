@@ -236,7 +236,7 @@ const acym_helperSegment = {
         jQuery.each(filters, function (numOR, oneORBlock) {
 
             // Create a new OR block if needed
-            if (or !== 0) jQuery('.acym__automation__filters__or').click();
+            if (or !== 0) jQuery('.acym__automation__filters__or').trigger('click');
 
             let and = 0;
             let lastFilterInOrBlock = Object.keys(oneORBlock).slice(-1)[0];
@@ -245,7 +245,7 @@ const acym_helperSegment = {
                 if (and !== 0) {
                     jQuery('.acym__segments__group__filter[data-filter-number="' + or + '"]')
                         .find('.acym__segments__add-filter[data-filter-type]')
-                        .click();
+                        .trigger('click');
                 }
 
                 acym_helperSegment.filterRebuilt = false;
@@ -298,7 +298,7 @@ const acym_helperSegment = {
             let $newElement = jQuery(this).prev();
             $newElement.find('.acym__segments__group__filter').attr('data-filter-number', $inputOr.val());
             acym_helperSegment.refreshFilterProcess();
-            $newElement.find('button[data-filter-type]').click();
+            $newElement.find('button[data-filter-type]').trigger('click');
             if ('classic' === jQuery(this).attr('data-filter-type')) acym_helperSegment.reloadGlobalCounter($newElement);
         });
     },

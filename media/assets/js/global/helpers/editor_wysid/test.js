@@ -3,9 +3,11 @@ const acym_editorWysidTest = {
         let $sendTestContainer = jQuery('#acym__wysid__send__test');
         let $rightToolbar = jQuery('#acym__wysid__right-toolbar');
         jQuery('#acym__wysid__test__button').off('click').on('click', function () {
+            // We open the "Send a test" box on the right and if the user clicks outside, we hide the box
             acym_editorWysidTest.toggleSendTestAndRightToolbar($sendTestContainer, $rightToolbar);
             jQuery(window).on('mousedown', function (event) {
                 if (jQuery(event.target).closest('#acym__wysid__send__test').length > 0) return true;
+                jQuery(window).off('mousedown');
                 acym_editorWysidTest.toggleSendTestAndRightToolbar($sendTestContainer, $rightToolbar);
             });
         });
@@ -29,18 +31,19 @@ const acym_editorWysidTest = {
             jQuery(this).attr('disabled', 'true');
             jQuery('.acym__wysid__send__test__icon').hide();
             jQuery('.acym__wysid__send__test__icon__loader').show();
-            if (jQuery('[name="ctrl"]').val().indexOf('campaigns') !== -1) {
-                acym_editorWysidFormAction.saveTemplate(true, false);
+            if (jQuery('[name="ctrl"]').val().indexOf('campaigns') !== -1 || jQuery('#acym__mail__type').val() === 'followup') {
+                acym_editorWysidFormAction.saveEmail(true, false);
                 return true;
             }
+
             acym_editorWysidFormAction.setThumbnailPreSave()
                                       .then(function (dataUrl) {
                                           // Copy img content in hidden input
                                           jQuery('#editor_thumbnail').attr('value', dataUrl);
-                                          acym_editorWysidFormAction.saveTemplate(true, false);
+                                          acym_editorWysidFormAction.saveEmail(true, false);
                                       })
                                       .catch(function (err) {
-                                          acym_editorWysidFormAction.saveTemplate(true, false);
+                                          acym_editorWysidFormAction.saveEmail(true, false);
                                           console.error('Error generating template thumbnail: ' + err);
                                       });
             return true;
@@ -69,8 +72,8 @@ const acym_editorWysidTest = {
             jQuery('.acym__wysid__send__test__icon').show();
             jQuery('.acym__wysid__send__test__icon__loader').hide();
             jQuery('#acym__wysid__send__test__button').removeAttr('disabled');
-            if (res.data.level === 'info') jQuery('.acym__wysid__send__test-close').click();
-            acym_helperEditorWysid.setColumnRefreshUiWYSID();
+            if (res.data.level === 'info') jQuery('.acym__wysid__send__test-close').trigger('click');
+            acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
         });
     }
 };

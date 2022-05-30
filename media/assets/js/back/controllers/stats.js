@@ -134,7 +134,7 @@ jQuery(document).ready(function ($) {
 
     function setSelect2Language() {
         $('.acym__stats__select__language').off('change').on('change', function () {
-            $('#formSubmit').click();
+            $('#formSubmit').trigger('click');
         });
     }
 

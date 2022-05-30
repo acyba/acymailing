@@ -2,6 +2,63 @@
 	<p class="cell medium-shrink acym__toggle__arrow__trigger"><?php echo acym_translation('ACYM_ADVANCED_OPTIONS'); ?> <i class="acymicon-keyboard_arrow_down"></i></p>
 	<div class="cell acym__toggle__arrow__contain">
 		<div class="grid-x grid-padding-x margin-y">
+            <?php if (!empty($data['mail']->type) && in_array(
+                    $data['mail']->type,
+                    [$data['mailClass']::TYPE_WELCOME, $data['mailClass']::TYPE_TEMPLATE, $data['mailClass']::TYPE_UNSUBSCRIBE, $data['mailClass']::TYPE_NOTIFICATION]
+                )) { ?>
+				<div class="cell xlarge-3 medium-6">
+					<label for="acym__mail__edit__from-name" class="cell">
+                        <?php
+                        echo acym_translation('ACYM_FROM_NAME');
+                        ?>
+					</label>
+					<input type="text"
+						   id="acym__mail__edit__from-name"
+						   class="cell"
+						   maxlength="100"
+						   value="<?php echo acym_escape($data['mail']->from_name); ?>"
+						   name="mail[from_name]">
+				</div>
+				<div class="cell xlarge-3 medium-6">
+					<label for="acym__mail__edit__from-email" class="cell">
+                        <?php
+                        echo acym_translation('ACYM_FROM_EMAIL');
+                        ?>
+					</label>
+					<input type="email"
+						   id="acym__mail__edit__from-email"
+						   class="cell"
+						   maxlength="100"
+						   value="<?php echo acym_escape($data['mail']->from_email); ?>"
+						   name="mail[from_email]">
+				</div>
+				<div class="cell xlarge-3 medium-6">
+					<label for="acym__mail__edit__replyto-name" class="cell">
+                        <?php
+                        echo acym_translation('ACYM_REPLYTO_NAME');
+                        ?>
+					</label>
+					<input type="text"
+						   id="acym__mail__edit__replyto-name"
+						   class="cell"
+						   maxlength="100"
+						   value="<?php echo acym_escape($data['mail']->reply_to_name); ?>"
+						   name="mail[reply_to_name]">
+				</div>
+				<div class="cell xlarge-3 medium-6">
+					<label for="acym__mail__edit__replyto-email" class="cell">
+                        <?php
+                        echo acym_translation('ACYM_REPLYTO_EMAIL');
+                        ?>
+					</label>
+					<input type="email"
+						   id="acym__mail__edit__replyto-email"
+						   class="cell"
+						   maxlength="100"
+						   value="<?php echo acym_escape($data['mail']->reply_to_email); ?>"
+						   name="mail[reply_to_email]">
+				</div>
+            <?php } ?>
             <?php if (empty($data['multilingual'])) { ?>
 				<div class="cell grid-x">
 					<div class="cell medium-shrink">

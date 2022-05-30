@@ -67,19 +67,18 @@ const acym_editorWysidColorPicker = {
             ],
             maxSelectionSize: 1,
             move: function (color) {
-                acym_editorWysidFontStyle.setSettingsElementStyle('#acym__wysid__background-colorpicker', 'background-color', color.toHexString());
+                acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType('#acym__wysid__background-colorpicker', 'background-color', color.toHexString());
             },
             change: function (color) {
-                acym_editorWysidFontStyle.setSettingsElementStyle('#acym__wysid__background-colorpicker', 'background-color', color.toHexString());
+                acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType('#acym__wysid__background-colorpicker', 'background-color', color.toHexString());
             }
         });
     },
-    setSettingsColorPickerWYSID: function (colorHex) {
-        let $colorPicker = jQuery('#acym__wysid__right__toolbar__settings__color');
-        let $element = jQuery('#acym__wysid__right__toolbar__settings__font--select').val();
+    setSettingsColorPickerWYSID: function () {
+        let selectedHtmlElementType = acym_editorWysidFontStyle.currentlySelectedType;
+        let colorHex = acym_editorWysidFontStyle.getPropertyOfOneType(selectedHtmlElementType, 'color');
 
-        $colorPicker.spectrum({
-
+        jQuery('#acym__wysid__right__toolbar__settings__color').spectrum({
             color: colorHex != '' ? colorHex : 'black',
             preferredFormat: 'hex',
             showButtons: false,
@@ -91,10 +90,10 @@ const acym_editorWysidColorPicker = {
             ],
             maxSelectionSize: 1,
             move: function (color) {
-                acym_editorWysidFontStyle.setSettingsElementStyle($element, 'color', color.toHexString());
+                acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType(selectedHtmlElementType, 'color', color.toHexString());
             },
             change: function (color) {
-                acym_editorWysidFontStyle.setSettingsElementStyle($element, 'color', color.toHexString());
+                acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType(selectedHtmlElementType, 'color', color.toHexString());
             }
         });
     }

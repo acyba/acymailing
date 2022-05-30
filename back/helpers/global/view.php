@@ -345,6 +345,7 @@ function acym_getJSMessages()
         'ACYM_INSERT',
         'ACYM_LOAD',
         'ACYM_CONFIRM_DELETION_ZONE',
+        'ACYM_WIDGET_CAMPAIGN_NUMBER_PER_PAGE',
     ];
 
     foreach ($keysToLoad as $oneKey) {

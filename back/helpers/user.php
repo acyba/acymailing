@@ -11,13 +11,13 @@ class UserHelper extends acymObject
     public function exportdata($id)
     {
         if (empty($id)) {
-            die('No user found');
+            die(acym_translation('ACYM_USER_NOT_FOUND'));
         }
 
         $userClass = new UserClass();
         $user = $userClass->getOneByIdWithCustomFields($id);
         if (empty($user)) {
-            die('No user found');
+            die(acym_translation('ACYM_USER_NOT_FOUND'));
         }
 
         //We display errors... it will be easier to fix if a client has an issue!
@@ -157,8 +157,11 @@ class UserHelper extends acymObject
 
         // Click statistics
         $clickStats = acym_loadObjectList(
-            'SELECT url.url, url_click.date_click FROM #__acym_url_click AS url_click JOIN #__acym_url AS url ON url.id = url_click.url_id WHERE url_click.user_id = '.intval($id)
-        ); //todo ip à ajouter
+            'SELECT url.url, url_click.date_click 
+            FROM #__acym_url_click AS url_click 
+            JOIN #__acym_url AS url ON url.id = url_click.url_id 
+            WHERE url_click.user_id = '.intval($id)
+        );
         if (!empty($clickStats)) {
             $dateFields = ['date_click'];
             $clickStatsNode = $xml->addChild('click_statistics');

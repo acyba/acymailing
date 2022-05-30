@@ -238,9 +238,11 @@ class plgAcymModerneventscalendar extends acymPlugin
             $varFields['{'.$name.'}'] = $property->value;
         }
 
+        $link = '';
         if (!empty($properties['mec_read_more'])) {
             $link = $properties['mec_read_more']->value;
-        } else {
+        }
+        if (empty($link)) {
             $link = get_permalink($element->ID);
         }
         $varFields['{link}'] = $link;

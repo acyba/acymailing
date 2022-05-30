@@ -17,9 +17,9 @@ const acym_helperSwitch = {
             $clickedType.parent().find('> .button:not("button-secondary")').addClass('button-secondary');
             $clickedType.removeClass('button-secondary');
 
-            jQuery('a[data-tab-identifier="' + $clickedType.attr('acym-button-switch-type').toLowerCase() + '"]').click();
+            jQuery('a[data-tab-identifier="' + $clickedType.attr('acym-button-switch-type').toLowerCase() + '"]').trigger('click');
         });
 
-        $switchButtons.first().click();
+        $switchButtons.first().trigger('click');
     }
 };

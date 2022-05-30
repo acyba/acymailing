@@ -15,7 +15,7 @@ const acym_editorWysidDynamic = {
 
         return uniqueId;
     },
-    endDContentInsertion: function ($focusedElement, shortcode, previewContent, plugin, initEdit, customView = false) {
+    endDContentInsertion: function ($focusedElement, shortcode, previewContent, plugin, customView = false) {
         let uniqueId = this.getUniqueId($focusedElement);
 
         shortcode = shortcode.replace(/"/g, '\\"');
@@ -54,10 +54,6 @@ const acym_editorWysidDynamic = {
 
         $focusedElement.replaceWith(insertedContent);
 
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
-        acym_editorWysidVersioning.setUndoAndAutoSave(initEdit);
-        acym_helperTooltip.setTooltip();
-
         acym_helperEditorWysid.$focusElement = jQuery('#' + uniqueId);
         acym_helperEditorWysid.$focusElement.find('.plugin_loader').css('display', 'none');
     },
@@ -77,7 +73,12 @@ const acym_editorWysidDynamic = {
         }
 
         if (0 === shortcode.length) {
-            acym_editorWysidDynamic.endDContentInsertion($focusedElement, shortcode, '', plugin, initEdit);
+            acym_editorWysidDynamic.endDContentInsertion($focusedElement, shortcode, '', plugin);
+
+            acym_helperEditorWysid.setColumnRefreshUiWYSID(true, initEdit);
+            acym_editorWysidRowSelector.setZoneAndBlockOverlays();
+            acym_helperTooltip.setTooltip();
+            acym_editorWysidDynamic.setDContentActions();
             return;
         }
 
@@ -109,27 +110,32 @@ const acym_editorWysidDynamic = {
                 preview = response.data.content;
                 customView = response.data.custom_view;
             }
-            acym_editorWysidDynamic.endDContentInsertion($focusedElement, shortcode, preview, plugin, initEdit, customView);
+            acym_editorWysidDynamic.endDContentInsertion($focusedElement, shortcode, preview, plugin, customView);
 
-            if ('undefined' !== typeof $elementsToLoop && $elementsToLoop.length > 0) acym_editorWysidDynamic.insertDContent('', $elementsToLoop);
+            if ('undefined' !== typeof $elementsToLoop && $elementsToLoop.length > 0) {
+                acym_editorWysidDynamic.insertDContent('', $elementsToLoop);
+            } else {
+                acym_helperEditorWysid.setColumnRefreshUiWYSID(true, initEdit);
+                acym_editorWysidRowSelector.setZoneAndBlockOverlays();
+                acym_helperTooltip.setTooltip();
+                acym_editorWysidFontStyle.applyCssOnAllElementTypesBasedOnSettings();
+                acym_editorWysidDynamic.setDContentActions();
+            }
         });
     },
-    openDContentModal: function (plugin, shortcode) {
-        let $pluginsContext = jQuery('#acym__wysid__context__plugins');
-        $pluginsContext.html('<i class="acymicon-circle-o-notch acymicon-spin centered_spinner text-center" style="margin-top: 2rem;"/>');
-        acym_editorWysidContextModal.showContextModal($pluginsContext);
+    openDContentOptions: function (plugin, shortcode) {
+        let $pluginsOptionsContainer = jQuery('#acym__wysid__context__plugins');
+        $pluginsOptionsContainer.html('<i class="acymicon-circle-o-notch acymicon-spin centered_spinner text-center" style="margin-top: 2rem;"/>');
+        acym_editorWysidContextModal.showBlockOptions($pluginsOptionsContainer);
 
         jQuery(window).on('mousedown', function (event) {
-            if (acym_editorWysidContextModal.clickedOnScrollbar(event.clientX, $pluginsContext)) return;
+            if (acym_editorWysidContextModal.clickedOnRightToolbar(event)) return;
             let $target = jQuery(event.target);
             if ($target.closest('.c-scrim').length || $target.closest('.c-datepicker--open').length) return false;
             if ($target.closest('tr[data-plugin]').length) return false;
 
-            jQuery(this).off('mousedown');
-            acym_editorWysidContextModal.hideContextModal($pluginsContext, $target);
-            jQuery(window).unbind('click');
-            acym_helperEditorWysid.setColumnRefreshUiWYSID();
-            acym_editorWysidVersioning.setUndoAndAutoSave();
+            jQuery(window).off('mousedown');
+            acym_editorWysidContextModal.hideBlockOptions($pluginsOptionsContainer, $target);
         });
 
         if ('undefined' === typeof shortcode || !shortcode || !shortcode.length) {
@@ -146,34 +152,49 @@ const acym_editorWysidDynamic = {
         ajaxURL += '&plugin=' + plugin;
         ajaxURL += '&shortcode=' + encodeURIComponent(shortcode);
         ajaxURL += '&campaignId=' + jQuery('#acym__campaign__recipients__form__campaign').val();
-        if (!acym_helper.empty(acym_editorWysidMultilingual)) ajaxURL += '&language=' + acym_editorWysidMultilingual.selectedLanguage;
+        if (!acym_helper.empty(acym_editorWysidMultilingual)) {
+            ajaxURL += '&language=' + acym_editorWysidMultilingual.selectedLanguage;
+        }
 
         let $campaignType = jQuery('[name="campaign_type"]');
-        if ($campaignType.length > 0) ajaxURL += '&campaign_type=' + $campaignType.val();
-
+        if ($campaignType.length > 0) {
+            ajaxURL += '&campaign_type=' + $campaignType.val();
+        }
 
         jQuery.ajax({
             url: ajaxURL,
             success: function (data) {
+                // Add the currently edited plugin type to use it when inserting the preview content
                 data += '<input type="hidden" id="currentPlugin" name="currentPlugin" value="' + plugin + '"/>';
-                $pluginsContext.html(data);
+                $pluginsOptionsContainer.html(data);
 
-                jQuery('#acym_pagination__ajax__load-more').val(1);
+                // We just added the options in the container, activate the needed JS on it
+
+                // Init radio button options
                 acym_helperRadio.setRadioIconsGlobal();
+                // Init search and category fields
                 acym_editorWysidDynamic.setPluginFilters();
+                // Init infinite scroll on content insertion
+                jQuery('#acym_pagination__ajax__load-more').val(1);
                 acym_editorWysidDynamic.setPluginPagination();
-                // Reload foundation for tabs in plugins popup
-                jQuery(document).foundation();
-                jQuery('.reveal-overlay').not('#acym_form .reveal-overlay').appendTo('#acym__wysid__context__plugins');
-                acym_editorWysidDynamic.selectFirstTab();
+                acym_editorWysidDynamic.setPluginTabs();
+                // Init date fields for event plugins or auto-campaigns
                 acym_helperDatePicker.setDatePickerGlobal();
-                acym_helperTooltip.setTooltip();
+                jQuery('.reveal-overlay').not('#acym_form .reveal-overlay').appendTo('#acym__wysid__context__plugins');
                 acym_helperDatePicker.setRSDateChoice();
+                // Init tooltips for auto-campaign and custom view options
+                acym_helperTooltip.setTooltip();
+                // Init the format buttons choices
                 acym_helper.setButtonRadio();
-                acym_editorWysidToolbar.setRightToolbarWYSID();
-                if (0 === shortcode.length) acym_editorWysidDynamic.insertDContent('');
+
+                // Handle custom view with vuejs
                 jQuery(document).trigger('acym_plugins_installed_loaded');
                 acym_editorWysidDynamic.setRefreshCustomViewChanged();
+
+                // We just dropped the block, display the default preview
+                if (0 === shortcode.length) {
+                    acym_editorWysidDynamic.insertDContent('');
+                }
             }
         });
     },
@@ -220,6 +241,7 @@ const acym_editorWysidDynamic = {
         ajaxUrl += '&plugin=' + jQuery('input[name="plugin"]').val();
 
 
+        // _selectedRows is modified by the add-ons directly
         if (typeof _selectedRows !== 'undefined') {
             let _ids = [];
             for (let key in _selectedRows) {
@@ -245,7 +267,7 @@ const acym_editorWysidDynamic = {
     setPluginPagination: function () {
         const $pluginListing = jQuery('#plugin_listing');
 
-        //If there is no more elements to show
+        // If there are no more elements to show
         if ($pluginListing.find('.acym__listing__empty__load-more').length > 0 || $pluginListing.find('.acym__listing__empty__search__modal').length > 0) {
             return true;
         }
@@ -257,7 +279,7 @@ const acym_editorWysidDynamic = {
 
             //if we reach the end we load more entities
             if (scrollDone >= scrollToDo) {
-                //once it's done we remove the event listiner on the scroll to prevent calling X times the urls
+                //once it's done we remove the event listener on the scroll to prevent calling X times the urls
                 jQuery(this).off('scroll');
 
                 //We add the spinner
@@ -273,25 +295,29 @@ const acym_editorWysidDynamic = {
             }
         });
     },
-    selectFirstTab: function () {
+    setPluginTabs: function () {
+        // Reload foundation for tabs in plugins popup
+        jQuery(document).foundation();
+
         jQuery('.tabs').each(function () {
             let identifier = jQuery(this).attr('id');
             let selectedTab = localStorage.getItem('acy' + identifier);
 
-            let $lastSelected = jQuery('#' + identifier).find('a[data-tab-identifier="' + selectedTab + '"]');
+            let $tabsContainer = jQuery('#' + identifier);
+            let $lastSelected = $tabsContainer.find('a[data-tab-identifier="' + selectedTab + '"]');
             if ($lastSelected.length) {
-                $lastSelected.click();
+                $lastSelected.trigger('click');
             } else {
-                let $defaultTab = jQuery('#' + identifier).find('a[data-selected="true"]');
+                let $defaultTab = $tabsContainer.find('a[data-selected="true"]');
                 if ($defaultTab.length) {
-                    $defaultTab.click();
+                    $defaultTab.trigger('click');
                 } else {
-                    jQuery('#' + identifier + ' .acym_tab:first').click();
+                    $tabsContainer.find('.acym_tab:first').trigger('click');
                 }
             }
         });
     },
-    setDynamicsActions: function () {
+    setDTextActions: function () {
         jQuery('.acym_dynamic').off('click').on('click', function (event) {
             let selection = window.getSelection();
             selection.removeAllRanges();
@@ -306,12 +332,12 @@ const acym_editorWysidDynamic = {
         jQuery('.acym_remove_dynamic').off('click').on('click', function () {
             jQuery(this).closest('span').remove();
             acym_helperEditorWysid.setColumnRefreshUiWYSID();
-            acym_editorWysidVersioning.setUndoAndAutoSave();
         });
-
+    },
+    setDContentActions: function () {
         jQuery('tr[data-dynamic]').off('click').on('click', function () {
             acym_helperEditorWysid.$focusElement = jQuery(this);
-            acym_editorWysidDynamic.openDContentModal(jQuery(this).attr('data-plugin'), jQuery(this).attr('data-dynamic'));
+            acym_editorWysidDynamic.openDContentOptions(jQuery(this).attr('data-plugin'), jQuery(this).attr('data-dynamic'));
         });
     },
     setTagPWordBreak: function () {
@@ -338,6 +364,7 @@ const acym_editorWysidDynamic = {
         });
     },
     setDTexts: function () {
+        // We hide the real tabs system and show an other one above
         jQuery('#dtext_options').hide();
     }
 };

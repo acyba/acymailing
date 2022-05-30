@@ -44,7 +44,7 @@
                 $ctrl = acym_getVar('string', 'ctrl');
                 if (in_array(acym_getVar('string', 'ctrl'), ['campaigns', 'frontcampaigns']) || !empty(acym_getVar('cmd', 'notification'))) {
                     echo acym_translation('ACYM_EDIT_MAIL');
-                } elseif ($this->walkThrough) {
+                } elseif ($this->walkThrough || !empty(acym_getVar('cmd', 'return'))) {
                     echo acym_translation('ACYM_EDIT');
                 } else {
                     echo acym_translation('ACYM_EDIT_TEMPLATE');

@@ -30,12 +30,12 @@ const acym_helperTab = {
 
         let $lastSelected = jQuery('#' + identifier).find('a[data-tab-identifier="' + selectedTab + '"]');
         if ($lastSelected.length && !$lastSelected.closest('.tabs-title').hasClass('tabs-title-empty')) {
-            $lastSelected.click();
+            $lastSelected.trigger('click');
         } else {
             let $tabs = jQuery('#' + identifier + ' .acym_tab');
             $tabs.each(function () {
                 if (!jQuery(this).closest('.tabs-title').hasClass('tabs-title-empty')) {
-                    jQuery(this).click();
+                    jQuery(this).trigger('click');
                     return false;
                 }
             });
@@ -44,7 +44,7 @@ const acym_helperTab = {
     reloadRadioButtons: function () {
         jQuery('i.acym_radio_unchecked').on('click', function () {
             let $radio = jQuery('#' + jQuery(this).attr('data-radio'));
-            $radio.click();
+            $radio.trigger('click');
         });
 
         jQuery('input[type="radio"]').on('change', function () {

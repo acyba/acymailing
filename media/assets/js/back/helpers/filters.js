@@ -51,7 +51,7 @@ const acym_helperFilter = {
         } else if ($field.is(':checkbox') && value == 1) {
             $field.prop('checked', true);
         } else if ($field.attr('data-switch') !== undefined && $field.val() != value) {
-            $field.closest('.medium-3').find('.cell.switch-label').click();
+            $field.closest('.medium-3').find('.cell.switch-label').trigger('click');
         }
 
         if ($field.attr('data-rs') !== undefined && value !== '') {

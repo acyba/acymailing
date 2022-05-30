@@ -92,7 +92,6 @@
                     $i = 0;
                     foreach ($data['campaignsScheduled'] as $campaign) {
                         $i++;
-                        //TODO gérer les sending
                         ?>
 						<div class="cell grid-x acym__dashboard__active-campaigns__one-campaign">
 							<a class="acym__dashboard__active-campaigns__one-campaign__title medium-4 small-12"

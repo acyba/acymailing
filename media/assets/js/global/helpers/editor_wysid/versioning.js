@@ -5,13 +5,16 @@ const acym_editorWysidVersioning = {
         jQuery('#acym__wysid__top-toolbar__keep').off('click').on('click', function () {
             jQuery('.acym__wysid__hidden__save__content').val(autoSaveWithTmplDiv);
             jQuery('#acym__wysid #acym__wysid__template').replaceWith(autoSaveWithTmplDiv);
-            acym_helperEditorWysid.setColumnRefreshUiWYSID();
-            jQuery('#acym__wysid__top-toolbar__notification__close').click();
+            // We just replaced the entire content, we need to reload the overlays and block actions
+            acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
+            jQuery('#acym__wysid__top-toolbar__notification__close').trigger('click');
         });
     },
     setUndoAndAutoSave: function (initEdit = false) {
         // If the user edits the email while the auto-saved message is still there, remove it
-        if (!initEdit && jQuery('.acym__autosave__notification').length) acym_editorWysidNotifications.hideNotification();
+        if (!initEdit && jQuery('.acym__autosave__notification').length) {
+            acym_editorWysidNotifications.hideNotification();
+        }
 
         let $templateVersion = jQuery('[id^="template_version_"]');
 
@@ -51,10 +54,12 @@ const acym_editorWysidVersioning = {
                         mailId: mailid
                     },
                     success: function (res) {
-
                     },
                     error: function () {
-                        console.log(ACYM_JS_TXT.ACYM_ERROR_SAVING);
+                        acym_editorWysidNotifications.addEditorNotification({
+                            'message': '<div class="cell auto acym__autosave__notification">' + ACYM_JS_TXT.ACYM_ERROR_SAVING + '</div>',
+                            'level': 'error'
+                        }, 3000, true);
                     }
                 });
             }
@@ -62,7 +67,8 @@ const acym_editorWysidVersioning = {
     },
     checkForUnsavedVersion: function () {
         let autoSave = jQuery('#editor_autoSave').val();
-        if (undefined != autoSave && '' != autoSave) {
+        // There is an unsaved version of this email, ask the user if we should use it instead
+        if (!acym_helper.empty(autoSave)) {
             acym_editorWysidNotifications.addEditorNotification({
                 'message': '<div class="cell auto acym__autosave__notification">' + ACYM_JS_TXT.ACYM_AUTOSAVE_USE + '</div>',
                 'level': 'info'
@@ -71,19 +77,17 @@ const acym_editorWysidVersioning = {
         }
     },
     setVersionControlCtrlZ: function () {
-        jQuery(document).keydown(function (e) {
-            if (jQuery('#acym__wysid__editor__source').height() > 0 || (undefined !== tinyMCE.focusedEditor && null !== tinyMCE.focusedEditor) || jQuery(
-                '#acym__wysid__context__button').is(':visible') || jQuery('#acym__wysid__context__follow').is(':visible') || jQuery(
-                '#acym__wysid__context__separator').is(':visible') || jQuery('#acym__wysid__context__share').is(':visible')) {
-                return;
-            }
-            if (e.which !== 90 || (!e.ctrlKey && !e.metaKey) || acym_helperEditorWysid.versionControl <= 0) return;
+        jQuery(document).on('keydown', function (e) {
+            // We check if the user just typed ctrl+z or cmd+z and that there is an existing previous version
+            if ((e.key !== 'z' && e.key !== 'Z') || (!e.ctrlKey && !e.metaKey)) return;
 
-            if (!e.shiftKey) {
-                acym_editorWysidVersioning.makeVersionControlChangement(true);
-            } else if (e.shiftKey) {
-                acym_editorWysidVersioning.makeVersionControlChangement(false);
-            }
+            if (undefined !== tinyMCE.focusedEditor && null !== tinyMCE.focusedEditor) return; // We're writing in a text block in the editor
+            if (jQuery('#acym__wysid__editor__source').height() > 0) return; // We're editing the source code of a zone
+            if (jQuery('#acym__wysid__context__button').is(':visible')) return; // We're editing the settings of a button block
+            if (jQuery('#acym__wysid__context__follow').is(':visible')) return; // We're editing the settings of a follow block
+            if (jQuery('#acym__wysid__context__separator').is(':visible')) return; // We're editing the settings of a separator block
+
+            acym_editorWysidVersioning.makeVersionControlChangement(!e.shiftKey);
         });
 
         jQuery('#acym__wysid__top-toolbar__undo').off('click').on('click', function () {
@@ -107,6 +111,19 @@ const acym_editorWysidVersioning = {
 
             jQuery('#acym__wysid__template').html(jQuery('#template_version_' + acym_helperEditorWysid.versionControl).val());
         }
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
+        // The actions below take some time, we hide the overlays just after replacing the content to avoid showing "broken" overlays for a split second
+        acym_editorWysidRowSelector.hideOverlays();
+
+        acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
+        acym_editorWysidImage.setImageWidthHeightOnInsert();
+        acym_editorWysidContextModal.setButtonOptions();
+        acym_editorWysidContextModal.setSpaceOptions();
+        acym_editorWysidContextModal.setFollowOptions();
+        acym_editorWysidContextModal.setSeparatorOptions();
+        acym_editorWysidContextModal.setBuiltWithOptions();
+        acym_editorWysidDynamic.setDTextActions();
+        acym_editorWysidDynamic.setDContentActions();
+        acym_editorWysidTinymce.addTinyMceWYSID();
+        acym_editorWysidRowSelector.setZoneAndBlockOverlays();
     }
 };

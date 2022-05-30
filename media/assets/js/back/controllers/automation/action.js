@@ -17,7 +17,7 @@ jQuery(document).ready(function ($) {
         // Foreach actions
         $.each(actions, function (numAND, oneAction) {
             // Create a new block if needed
-            if (and > 0) $('.acym__automation__add-action').click();
+            if (and > 0) $('.acym__automation__add-action').trigger('click');
 
             $.each(oneAction, function (actionName, actionOptions) {
                 // Select the action type in the correct dropdown

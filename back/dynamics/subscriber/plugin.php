@@ -515,7 +515,7 @@ class plgAcymSubscriber extends acymPlugin
         if ($action['action'] == 'delete') {
             $userClass = new UserClass();
             $usersToDelete = acym_loadResultArray($query->getQuery(['user.id']));
-            if (!empty($usersToDelete)) $userClass->delete($usersToDelete);
+            if (!empty($usersToDelete)) $userClass->delete($usersToDelete, true);
         } else {
             $fieldToUpdate = '';
             if ($action['action'] == 'confirm') $fieldToUpdate = 'confirmed = 1';

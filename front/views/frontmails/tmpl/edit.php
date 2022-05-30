@@ -20,7 +20,7 @@
         ?>
 		<div class="cell medium-auto">
 			<label>
-                <?php echo acym_translation($data['mail']->type == $data['mailClass']::TYPE_AUTOMATION ? 'ACYM_NAME' : 'ACYM_TEMPLATE_NAME'); ?>
+                <?php echo acym_translation('ACYM_NAME'); ?>
 				<input name="mail[name]" type="text" class="acy_required_field" value="<?php echo acym_escape($data['mail']->name); ?>" required>
 			</label>
 		</div>

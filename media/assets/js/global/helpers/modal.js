@@ -145,21 +145,21 @@ const acym_helperModal = {
         jQuery('input[name="mailchoose_search__ajax"]').off('keydown').on('keydown', function (event) {
             let searchList = jQuery(this);
             let searchValue = searchList.val();
-            if ((searchValue || event.which == 8) && searchValue != '' && searchValue.length >= 2) {
+            if ((searchValue || event.key === 'Backspace') && !acym_helper.empty(searchValue) && searchValue.length >= 2) {
                 clearTimeout(typingTimer);
                 typingTimer = setTimeout(function () {
                     jQuery('#acym_search_template_choose__ajax').attr('value', searchValue);
                     acym_helperModal.setAjaxAndResetPaginationStartFrom();
                 }, 1500);
             }
-            if (event.which == 13) {
+            if (event.key === 'Enter') {
                 event.preventDefault();
                 clearTimeout(typingTimer);
                 jQuery('#acym_search_template_choose__ajax').attr('value', searchValue);
                 acym_helperModal.setAjaxAndResetPaginationStartFrom();
                 return false;
             }
-            if (event.which == 8 && searchList.val() == '') {
+            if (event.key === 'Backspace' && searchList.val() == '') {
                 clearTimeout(typingTimer);
                 jQuery('#acym_search_template_choose__ajax').attr('value', '');
                 acym_helperModal.setAjaxAndResetPaginationStartFrom();
@@ -337,7 +337,7 @@ const acym_helperModal = {
         let $listsSearchInput = jQuery('#modal__pagination__search__lists');
 
         $inputSearch.off('keydown').on('keydown', function (e) {
-            if (e.which == 13) {
+            if (e.key === 'Enter') {
                 e.preventDefault();
                 acym_helperModal.setSearchLists(typingTimer);
             }
@@ -346,7 +346,7 @@ const acym_helperModal = {
         $inputSearch.off('keyup').on('keyup', function (event) {
             let searchList = jQuery(this);
             let searchValue = searchList.val();
-            if ((searchValue || event.which == 8) && searchValue != '' && searchValue.length >= 2) {
+            if ((searchValue || event.key === 'Backspace') && searchValue != '' && searchValue.length >= 2) {
                 jQuery('#modal__pagination__search__spinner').show();
                 $modalShowSelected.hide();
                 clearTimeout(typingTimer);
@@ -417,7 +417,7 @@ const acym_helperModal = {
         let $userSearchInput = jQuery('#modal__pagination__users__search__input');
 
         $inputSearch.off('keydown').on('keydown', function (e) {
-            if (e.which == 13) {
+            if (e.key === 'Enter') {
                 e.preventDefault();
                 acym_helperModal.setSearchUsers(typingTimer);
             }
@@ -425,7 +425,7 @@ const acym_helperModal = {
 
         $inputSearch.off('keyup').on('keyup', function (event) {
             let searchValue = jQuery(this).val();
-            if ((searchValue || event.which == 8) && searchValue != '' && searchValue.length >= 2) {
+            if ((searchValue || event.key === 'Backspace') && searchValue != '' && searchValue.length >= 2) {
                 jQuery('#modal__pagination__users__search__spinner').show();
                 $modalShowSelected.hide();
                 clearTimeout(typingTimer);

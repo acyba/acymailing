@@ -35,14 +35,14 @@ jQuery(document).ready(function ($) {
             if (numOR === 'type_condition') return true;
 
             // Create a new OR block if needed
-            if (or !== 0) $('.acym__automation__conditions__or[data-condition-type="' + type + '"]').click();
+            if (or !== 0) $('.acym__automation__conditions__or[data-condition-type="' + type + '"]').trigger('click');
             // Foreach conditions in this OR block
             $.each(oneORBlock, function (numAND, oneCondition) {
                 // Create a new AND block if needed
                 if (and !== 0) {
                     $('.acym__automation__group__condition[data-condition-number="' + or + '"]')
                         .find('.acym__automation__add-condition[data-condition-type="' + type + '"]')
-                        .click();
+                        .trigger('click');
                 }
 
                 $.each(oneCondition, function (conditionName, conditionOptions) {
@@ -179,18 +179,18 @@ jQuery(document).ready(function ($) {
             let $newElement = $(this).prev();
             $newElement.attr('data-condition-number', $inputOr.val());
             refreshConditionProcess();
-            $newElement.find('button[data-condition-type]').attr('data-condition-type', $(this).attr('data-condition-type')).click();
+            $newElement.find('button[data-condition-type]').attr('data-condition-type', $(this).attr('data-condition-type')).trigger('click');
         });
     }
 
-    //TODO: closest() instead of parent()
     function setDeleteCondition() {
         $('.acym__automation__delete__one__condition').off('click').on('click', function () {
-            $(this).parent().parent().remove();
+            $(this).closest('.acym__automation__one__condition').remove();
         });
         $('.acym__automation__delete__group__condition').off('click').on('click', function () {
-            $(this).parent().parent().prev().remove();
-            $(this).parent().parent().remove();
+            let $orBlock = $(this).closest('.acym__automation__group__condition');
+            $orBlock.prev().remove();
+            $orBlock.remove();
         });
     }
 

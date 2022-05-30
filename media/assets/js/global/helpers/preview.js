@@ -96,7 +96,7 @@ const acym_helperPreview = {
         jQuery('#acym__wysid__fullscreen__modal')
             .css('display', 'flex')
             .on('click', function () {
-                acym_helperEditorWysid.setColumnRefreshUiWYSID();
+                acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
                 jQuery(this).css('display', 'none');
             });
     },

@@ -4,6 +4,7 @@ use AcyMailing\Classes\UserClass;
 
 class SendinblueUsers extends SendinblueClass
 {
+    const MAX_USERS_IMPORT_NB = 5000;
     var $list;
 
     public function __construct(&$plugin, $headers, $list)
@@ -41,10 +42,7 @@ class SendinblueUsers extends SendinblueClass
         $sendingMethod = $this->config->get('mailer_method', 'phpmail');
         if ($sendingMethod != plgAcymSendinblue::SENDING_METHOD_ID) return;
 
-        $response = new stdClass();
-        $response->createdFolder = acym_createFolder(ACYM_TMP_FOLDER);
-
-        if (!$response->createdFolder) {
+        if (!acym_createFolder(ACYM_TMP_FOLDER)) {
             if ($ajax) {
                 acym_sendAjaxResponse(acym_translation('ACYM_ERROR_CREATING_EXPORT_FILE'), [], false);
             } else {
@@ -54,9 +52,16 @@ class SendinblueUsers extends SendinblueClass
             return;
         }
 
+        static $listId = null;
+
+        if (empty($listId)) {
+            $listId = $this->list->createList('Import '.time());
+        }
+
+        $this->errors = [];
         $filePath = ACYM_TMP_FOLDER.plgAcymSendinblue::SENDING_METHOD_ID.'.txt';
         file_put_contents($filePath, "LASTNAME;FIRSTNAME;EMAIL\n");
-        $limit = 5000;
+        $limit = self::MAX_USERS_IMPORT_NB;
         $buffer = '';
 
         foreach ($users as $oneUser) {
@@ -68,20 +73,34 @@ class SendinblueUsers extends SendinblueClass
 
             if ($limit === 0) {
                 file_put_contents($filePath, $buffer, FILE_APPEND);
-                $limit = 5000;
+                $this->sendUsers($listId);
+                file_put_contents($filePath, "LASTNAME;FIRSTNAME;EMAIL\n");
+                $limit = self::MAX_USERS_IMPORT_NB;
                 $buffer = '';
             }
         }
         if (!empty($buffer)) {
             file_put_contents($filePath, $buffer, FILE_APPEND);
+            $this->sendUsers($listId);
         }
 
-        static $listId = null;
-
-        if (empty($listId)) {
-            $listId = $this->list->createList('Import '.time());
+        if (empty($this->errors)) {
+            $message = acym_translation('ACYM_USERS_SUNCHRONIZED');
+            if ($ajax) {
+                acym_sendAjaxResponse($message);
+            }
+        } else {
+            $message = implode('<br />', $this->errors);
+            if ($ajax) {
+                acym_sendAjaxResponse($message, [], false);
+            } else {
+                acym_enqueueMessage($message, 'error');
+            }
         }
+    }
 
+    private function sendUsers($listId)
+    {
         // Call API to import
         $data = [
             'fileUrl' => ACYM_TMP_URL.plgAcymSendinblue::SENDING_METHOD_ID.'.txt',
@@ -89,21 +108,12 @@ class SendinblueUsers extends SendinblueClass
             'updateExistingContacts' => true,
         ];
 
-        $response->import = $this->callApiSendingMethod('contacts/import', $data, $this->headers, 'POST');
+        $response = $this->callApiSendingMethod('contacts/import', $data, $this->headers, 'POST');
 
-        $success = false;
-        if (!empty($response->import['error_curl'])) {
-            $message = acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $response->import['error_curl']);
-        } elseif (!empty($response->import['code'])) {
-            $message = acym_translationSprintf('ACYM_API_RETURN_THIS_ERROR', $response->import['message']);
-        } else {
-            $message = acym_translation('ACYM_USERS_SUNCHRONIZED');
-            $success = true;
-        }
-        if ($ajax) {
-            acym_sendAjaxResponse($message, [], $success);
-        } else {
-            if (!$success) acym_enqueueMessage($message, 'error');
+        if (!empty($response['error_curl'])) {
+            $this->errors[] = acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $response['error_curl']);
+        } elseif (!empty($response['code']) && !empty($response['message'])) {
+            $this->errors[] = acym_translationSprintf('ACYM_API_RETURN_THIS_ERROR', $response['message']);
         }
     }
 

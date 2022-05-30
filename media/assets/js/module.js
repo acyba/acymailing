@@ -13,32 +13,47 @@ if (typeof submitAcymForm !== 'function') {
         let recaptchaid = 'acym-captcha';
         if (newformName) recaptchaid = newformName + '-captcha';
 
-        let initInvisibleRecaptcha = document.querySelector('#' + recaptchaid + '[class="acyg-recaptcha"][data-size="invisible"]');
-        if (initInvisibleRecaptcha) initInvisibleRecaptcha.className = 'g-recaptcha';
+        let initRecaptcha = document.querySelector('#' + recaptchaid + '[class="acyg-recaptcha"][data-size="invisible"]');
+        if (!initRecaptcha || typeof grecaptcha != 'object') return window[submitFunction]();
+        if (initRecaptcha.getAttribute('data-captchaname') === 'acym_ireCaptcha') {
+            initRecaptcha.className = 'g-recaptcha';
+            let invisibleRecaptcha = document.querySelector('#' + recaptchaid + '[class="g-recaptcha"][data-size="invisible"]');
 
-        let invisibleRecaptcha = document.querySelector('#' + recaptchaid + '[class="g-recaptcha"][data-size="invisible"]');
+            if (!invisibleRecaptcha) return window[submitFunction]();
 
-        if (!invisibleRecaptcha || typeof grecaptcha != 'object') return window[submitFunction]();
+            let grcID = invisibleRecaptcha.getAttribute('grcID');
 
-        let grcID = invisibleRecaptcha.getAttribute('grcID');
+            if (!grcID) {
+                grcID = grecaptcha.render(recaptchaid, {
+                    'sitekey': invisibleRecaptcha.getAttribute('data-sitekey'),
+                    'callback': submitFunction,
+                    'size': 'invisible',
+                    'expired-callback': 'resetRecaptcha'
+                });
 
-        if (!grcID) {
-            grcID = grecaptcha.render(recaptchaid, {
-                'sitekey': invisibleRecaptcha.getAttribute('data-sitekey'),
-                'callback': submitFunction,
-                'size': 'invisible',
-                'expired-callback': 'resetRecaptcha'
-            });
+                invisibleRecaptcha.setAttribute('grcID', grcID);
+            }
 
-            invisibleRecaptcha.setAttribute('grcID', grcID);
-        }
-
-        let response = grecaptcha.getResponse(grcID);
-        if (response) {
-            return window[submitFunction]();
+            let response = grecaptcha.getResponse(grcID);
+            if (response) {
+                return window[submitFunction]();
+            } else {
+                grecaptcha.execute(grcID);
+                return false;
+            }
         } else {
-            grecaptcha.execute(grcID);
-            return false;
+            let captcha = document.getElementById(recaptchaid);
+            if (!captcha) return window[submitFunction]();
+            grecaptcha.ready(function () {
+                grecaptcha.execute(captcha.getAttribute('data-sitekey'), {action: 'submit'}).then(function (token) {
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'hidden');
+                    input.setAttribute('name', 'g-recaptcha-response');
+                    input.setAttribute('value', token);
+                    document.getElementById(newformName).appendChild(input);
+                    return window[submitFunction]();
+                });
+            });
         }
     }
 
@@ -67,6 +82,19 @@ if (typeof submitAcymForm !== 'function') {
                 errorZones[i].classList.remove('acym__field__error__block__active');
             }
         }
+
+        let displayedMessages = document.querySelectorAll('#' + acyformName + ' .acym__message__invalid__field');
+        if (displayedMessages.length !== 0) {
+            for (let i = 0 ; i < displayedMessages.length ; i++) {
+                displayedMessages[i].classList.remove('acym__message__invalid__field__active');
+            }
+        }
+        let displayedCross = document.querySelectorAll('#' + acyformName + ' .acym__cross__invalid');
+        if (displayedCross.length !== 0) {
+            for (let i = 0 ; i < displayedCross.length ; i++) {
+                displayedCross[i].classList.remove('acym__cross__invalid__active');
+            }
+        }
     }
 
     function acym_checkEmailField(varform, name, validation) {
@@ -87,7 +115,7 @@ if (typeof submitAcymForm !== 'function') {
         let emailField = varform.elements['user[email]'];
         let emailConfirmationField = varform.elements[name];
         if (emailConfirmationField) {
-            if (emailField.value !== emailConfirmationField.value) {
+            if (emailField.value !== emailConfirmationField.value || emailConfirmationField.value === '') {
                 acymAddInvalidClass(name, validation, acymModule['VALID_EMAIL_CONFIRMATION']);
             }
         }
@@ -366,9 +394,13 @@ if (typeof submitAcymForm !== 'function') {
             }
 
             if (xhr.status === 200) {
-                let response = JSON.parse(xhr.responseText);
-                message = response.message;
-                type = response.type;
+                try {
+                    let response = JSON.parse(xhr.responseText);
+                    message = response.message;
+                    type = response.type;
+                } catch {
+                    message = xhr.responseText;
+                }
             }
             acymDisplayAjaxResponse(message, type, acyformName);
         };
@@ -379,13 +411,17 @@ if (typeof submitAcymForm !== 'function') {
 
     function acymAddInvalidClass(elemName, validation, message) {
         let elToInvalidate = document.querySelectorAll('#' + acyformName + ' [name^="' + elemName + '"]');
+        let container = elToInvalidate[0].closest('.onefield');
         for (let i = 0 ; i < elToInvalidate.length ; i++) {
             elToInvalidate[i].classList.add('acym_invalid_field');
         }
 
-        if (message.length > 0) {
-            let container = elToInvalidate[0].closest('.onefield');
-            if (container && container.length !== 0) {
+        if (container && container.length !== 0) {
+            let displayMessage = container.querySelector('.acym__message__invalid__field');
+            let displayCross = container.querySelector('.acym__cross__invalid');
+            if (displayMessage) displayMessage.classList.add('acym__message__invalid__field__active');
+            if (displayCross) displayCross.classList.add('acym__cross__invalid__active');
+            if (message.length > 0) {
                 let errorZone = container.querySelector('.acym__field__error__block');
                 errorZone.innerText = message;
                 errorZone.classList.add('acym__field__error__block__active');

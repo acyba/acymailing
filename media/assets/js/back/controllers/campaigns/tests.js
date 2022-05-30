@@ -51,7 +51,7 @@ jQuery(document).ready(function ($) {
         });
 
         $('#acym_spam_test_details button').off('click').on('click', function () {
-            $('#check_spam').click();
+            $('#check_spam').trigger('click');
         });
     }
 

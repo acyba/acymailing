@@ -9,7 +9,7 @@ const acym_editorWysidImage = {
         });
     },
     doubleClickImage: function ($element) {
-        this.openMediaManage($element.closest('.acym__wysid__column__element'));
+        acym_editorWysidImage.openMediaManager($element.closest('.acym__wysid__column__element'));
     },
     addBackgroundImgToRows: function ($element) {
         let $deleteImage = jQuery('#acym__wysid__context__block__background-image__remove');
@@ -21,7 +21,7 @@ const acym_editorWysidImage = {
         }
 
         jQuery('#acym__wysid__context__block__background-image').off('click').on('click', function () {
-            acym_editorWysidImage.openMediaManage($element, true);
+            acym_editorWysidImage.openMediaManager($element, true);
         });
 
         $deleteImage.off('click').on('click', function () {
@@ -39,7 +39,7 @@ const acym_editorWysidImage = {
             }, 200);
         }
     },
-    openMediaManage: function (ui, rows) {
+    openMediaManager: function (ui, rows) {
         if (ACYM_CMS === 'wordpress') {
             acym_editorWysidWordpress.addMediaWPWYSID(ui, rows);
         } else {
@@ -47,7 +47,7 @@ const acym_editorWysidImage = {
         }
     },
     setChangeBuiltWithImage: function () {
-        jQuery('[name="acym__wysid__built-with__text__color"]').on('change', function () {
+        jQuery('[name="acym__wysid__built-with__text__color"]').off('change').on('change', function () {
             let $imageBuiltWith = jQuery('[title="poweredby"]');
             let selected = jQuery(this).val();
             let previous = selected === 'white' ? 'black' : 'white';

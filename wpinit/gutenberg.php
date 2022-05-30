@@ -267,6 +267,10 @@ class acyGutenberg
                         'type' => 'string',
                         'default' => 'See all newsletters',
                     ],
+                    'archiveNbNewslettersPerPage' => [
+                        'type' => 'string',
+                        'default' => '20',
+                    ],
                     'lists' => [
                         'type' => 'array',
                     ],

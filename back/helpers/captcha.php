@@ -15,19 +15,25 @@ class CaptchaHelper extends acymObject
 
         $id = empty($formName) ? 'acym-captcha' : $formName.'-captcha';
 
-        if ($captchaPluginName === 'acym_ireCaptcha') {
+        if ($captchaPluginName === 'acym_ireCaptcha' || $captchaPluginName === 'acym_reCaptcha_v3') {
             $pubkey = $this->config->get('recaptcha_sitekey', '');
             if (empty($pubkey)) return '';
 
             $return = '';
-            $jsScript = 'https://www.google.com/recaptcha/api.js?render=explicit&hl='.acym_getLanguageTag(true);
+            if ($captchaPluginName === 'acym_ireCaptcha') {
+                $jsScript = 'https://www.google.com/recaptcha/api.js?render=explicit&hl='.acym_getLanguageTag(true);
+            } else {
+                $jsScript = 'https://www.google.com/recaptcha/api.js?render='.acym_escape($pubkey);
+            }
             if ($loadJsModule) {
                 $return .= '<script src="'.$jsScript.'" type="text/javascript" defer async></script>';
             } else {
                 acym_addScript(false, $jsScript, 'text/javascript', true, true);
             }
 
-            return $return.'<div id="'.acym_escape($id).'" data-size="invisible" class="acyg-recaptcha" data-sitekey="'.acym_escape($pubkey).'"></div>';
+            return $return.'<div id="'.acym_escape($id).'" data-size="invisible" class="acyg-recaptcha" data-sitekey="'.acym_escape($pubkey).'"data-captchaname="'.acym_escape(
+                    $captchaPluginName
+                ).'"></div>';
         } else {
             return acym_loadCaptcha($captchaPluginName, $id);
         }
@@ -44,7 +50,7 @@ class CaptchaHelper extends acymObject
         $secKey = acym_getVar('string', 'seckey', 'none');
         if ($secKey == $this->config->get('security_key')) return true;
 
-        if ($captchaPluginName === 'acym_ireCaptcha') {
+        if ($captchaPluginName === 'acym_ireCaptcha' || $captchaPluginName === 'acym_reCaptcha_v3') {
             $privatekey = $this->config->get('recaptcha_secretkey', '');
             $response = acym_getVar('string', 'g-recaptcha-response', '');
             $remoteip = acym_getVar('string', 'REMOTE_ADDR', '', 'SERVER');
@@ -56,8 +62,13 @@ class CaptchaHelper extends acymObject
             $getResponse = acym_fileGetContent($url);
 
             $answers = json_decode($getResponse, true);
+            if ($captchaPluginName === 'acym_ireCaptcha') {
+                return (is_array($answers) && !empty($answers['success']) && trim($answers['success']) !== '');
+            } else {
+                $score = $this->config->get('recaptcha_score', 0.5);
 
-            return (is_array($answers) && !empty($answers['success']) && trim($answers['success']) !== '');
+                return (is_array($answers) && !empty($answers['success']) && trim($answers['success']) == true && ($answers['score']) >= $score);
+            }
         } else {
             return acym_checkCaptcha($captchaPluginName);
         }

@@ -23,7 +23,7 @@ jQuery(document).ready(function ($) {
                 $('[name="acym__queue__cancel__mail_id"]').val($(this).attr('mailid'));
                 $('[name="task"]').val('cancelSending');
 
-                $('#formSubmit').click();
+                $('#formSubmit').trigger('click');
             }
         });
     }
@@ -42,7 +42,7 @@ jQuery(document).ready(function ($) {
             $('[name="acym__queue__play_pause__active__new_value"]').val(active);
             $('[name="task"]').val('playPauseSending');
 
-            $('#formSubmit').click();
+            $('#formSubmit').trigger('click');
         });
     }
 

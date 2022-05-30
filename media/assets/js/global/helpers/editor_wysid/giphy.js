@@ -61,7 +61,7 @@ const acym_editorWysidGiphy = {
                 jQuery.each(res.data, function (index, value) {
                     let ratio = parseInt((columnWidth * 100) / parseInt(value.images.preview_gif.width)) / 100;
                     let height = parseInt(value.images.preview_gif.height * ratio);
-                    results += `<img class="acym__wysid__modal__giphy__results--img acym__wysid__modal__giphy__results--img--new" style="height: ${height}px" src="${value.images.preview_gif.url}" data-full-res-src="${value.images.downsized.url}">`;
+                    results += `<img alt="" class="acym__wysid__modal__giphy__results--img acym__wysid__modal__giphy__results--img--new" style="height: ${height}px" src="${value.images.preview_gif.url}" data-full-res-src="${value.images.downsized.url}">`;
                 });
 
                 //We append it and init masonry for them
@@ -129,7 +129,7 @@ const acym_editorWysidGiphy = {
 
             clearTimeout(acym_helperEditorWysid.typingTimerGiphy);
 
-            if (e.which === 13) {
+            if (e.key === 'Enter') {
                 acym_editorWysidGiphy.makeNewResearch(search);
             } else if (search.length >= 2) {
                 acym_helperEditorWysid.typingTimerGiphy = setTimeout(function () {
@@ -154,12 +154,15 @@ const acym_editorWysidGiphy = {
             const $selectedImg = jQuery('.acym__wysid__modal__giphy__results--img--selected');
             //if no selected image => out
             if ($selectedImg.length === 0) return false;
+
             let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
             content += '<td class="large-12 acym__wysid__column__element__td">';
             content += '<div class="acym__wysid__tinymce--image">';
+            content += '<div style="text-align: center" data-mce-style="text-align: center">';
             content += '<img alt="" class="acym__wysid__media__inserted acym__wysid__media__inserted--focus acym__wysid__media__giphy" src="'
                        + $selectedImg.attr('data-full-res-src')
                        + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;"/>';
+            content += '</div>';
             content += '</div>';
             content += '</td>';
             content += '</tr>';
@@ -171,7 +174,9 @@ const acym_editorWysidGiphy = {
             jQuery('.acym__wysid__media__inserted--focus').on('load', function () {
                 jQuery(this).removeClass('acym__wysid__media__inserted--focus');
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
-                acym_editorWysidVersioning.setUndoAndAutoSave();
+                acym_editorWysidRowSelector.setZoneAndBlockOverlays();
+                acym_editorWysidImage.setImageWidthHeightOnInsert();
+                acym_editorWysidTinymce.addTinyMceWYSID();
             });
         });
     }

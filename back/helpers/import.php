@@ -776,6 +776,11 @@ class ImportHelper extends acymObject
 
         $this->_insertUsers($importUsers, $timestamp);
 
+        acym_query('UPDATE #__acym_configuration SET `value` = '.intval($timestamp).' WHERE `name` = \'last_import\'');
+
+        // We could have imported empty values
+        acym_query('DELETE FROM #__acym_user_has_field WHERE `value` = ""');
+
         $countUsersAfterImport = $userClass->getCountTotalUsers();
         $this->totalInserted = $countUsersAfterImport - $countUsersBeforeImport;
 
@@ -824,21 +829,21 @@ class ImportHelper extends acymObject
         $values = [];
         $customFieldsvalues = [];
         $allemails = [];
-        foreach ($users as $a => $oneUser) {
+        foreach ($users as $oneUser) {
             $value = [];
             acym_trigger('onAcymBeforeUserImport', [&$oneUser]);
 
             foreach ($oneUser as $map => $oneValue) {
-                if ($map == 'customfields') continue;
+                if ($map === 'customfields') continue;
 
                 $oneValue = htmlspecialchars_decode($oneValue, ENT_QUOTES);
 
-                if ($map == 'active' && !empty($this->importblocked) && $this->importblocked == true) {
+                if ($map === 'active' && $this->importblocked) {
                     $value[] = 0;
                 } else {
-                    if ($map != 'id') {
+                    if ($map !== 'id') {
                         $oneValue = acym_escapeDB($oneValue);
-                        if ($map == 'email') $allemails[] = $oneValue;
+                        if ($map === 'email') $allemails[] = $oneValue;
                     } else {
                         $oneValue = intval($oneValue);
                     }
@@ -872,8 +877,6 @@ class ImportHelper extends acymObject
 
         acym_query($queryInsertUsers);
 
-        acym_query('UPDATE #__acym_configuration SET `value` = '.intval($timestamp).' WHERE `name` = \'last_import\'');
-
         $importedUsers = acym_loadObjectList('SELECT id, email FROM #__acym_user WHERE email IN ('.implode(',', $allemails).')', 'id');
 
         if (!empty($customFieldsvalues)) {
@@ -896,9 +899,6 @@ class ImportHelper extends acymObject
                     $queryInsertCustomFields .= ' ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)';
                 }
                 acym_query($queryInsertCustomFields);
-
-                // We could have imported empty values
-                acym_query('DELETE FROM #__acym_user_has_field WHERE `value` = ""');
             }
         }
 

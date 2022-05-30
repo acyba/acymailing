@@ -62,13 +62,18 @@ const acym_helperJoomla = {
         });
 
         jQuery('#acym__joomla__left-menu--show').off('click').on('click', function () {
-            !jQuery('.btn-navbar').hasClass('collapsed') ? ('.nav-collapse').css('height', '0px').removeClass('in') & jQuery('.btn-navbar')
-                .removeClass('collapsed') : true;
+            let $navButton = jQuery('.btn-navbar');
+            if (!$navButton.hasClass('collapsed')) {
+                jQuery('.nav-collapse').css('height', '0px').removeClass('in');
+                $navButton.removeClass('collapsed');
+            }
             $leftMenu.toggle();
         });
 
         jQuery(window).on('resize', function () {
-            if (window.innerWidth < 950 && !$leftMenu.hasClass('collapsed')) $buttonToggleLeftMenu.click();
+            if (window.innerWidth < 950 && !$leftMenu.hasClass('collapsed')) {
+                $buttonToggleLeftMenu.trigger('click');
+            }
             acym_helperJoomla.setWidthJoomlaContent();
         });
     }

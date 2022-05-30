@@ -129,18 +129,12 @@
 			<div class="cell hide-for-small-only medium-3"></div>
             <?php
             $dataStyleSheet = '<div class="grid-x acym__wysid__right__toolbar__settings__stylesheet">
-									<h6 class="acym__title acym__title__secondary cell text-center margin-top-1">'.acym_translation(
-                    'ACYM_HERE_PASTE_YOUR_STYLESHEET'
-                ).'</h6>
-									<textarea id="acym__wysid__right__toolbar__settings__stylesheet__textarea" class="margin-top-1 margin-bottom-1" rows="15"></textarea>
-									<button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__cancel" class="button cell medium-4">'.acym_translation(
-                    'ACYM_CANCEL'
-                ).'</button>
-									<div class="medium-4 cell"></div>
-									<button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__apply" class="button cell medium-4">'.acym_translation(
-                    'ACYM_LOAD_STYLESHEET'
-                ).'</button>
-							   </div>';
+				<h6 class="acym__title acym__title__secondary cell text-center margin-top-1">'.acym_translation('ACYM_HERE_PASTE_YOUR_STYLESHEET').'</h6>
+				<textarea id="acym__wysid__right__toolbar__settings__stylesheet__textarea" class="margin-top-1 margin-bottom-1" rows="15"></textarea>
+				<button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__cancel" class="button cell medium-4">'.acym_translation('ACYM_CANCEL').'</button>
+				<div class="medium-4 cell"></div>
+				<button type="button" id="acym__wysid__right__toolbar__settings__stylesheet__apply" class="button cell medium-4">'.acym_translation('ACYM_LOAD_STYLESHEET').'</button>
+		   </div>';
             echo acym_modal(
                 acym_translation('ACYM_CUSTOM_ADD_STYLESHEET'),
                 $dataStyleSheet,

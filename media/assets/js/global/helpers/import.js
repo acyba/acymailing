@@ -19,26 +19,26 @@ const acym_helperImport = {
         }
 
         jQuery('.acym__users__import__button').off('click').on('click', function () {
-            $submitButton.click();
+            $submitButton.trigger('click');
         });
 
         jQuery('#acym__users__import__skip__button').off('click').on('click', function () {
             jQuery('[name="acym__entity_select__selected"]').attr('value', '');
-            $submitButton.click();
+            $submitButton.trigger('click');
         });
     },
     setVerificationGenericImport: function () {
         let $submitButton = jQuery('#formSubmit');
         jQuery('.acym__users__import__generic__import__button').off('click').on('click', function () {
             if (acym_helperImport.verifyGenericImport()) {
-                $submitButton.click();
+                $submitButton.trigger('click');
             }
         });
 
         jQuery('#acym__users__generic__import__skip__button').off('click').on('click', function () {
             if (acym_helperImport.verifyGenericImport()) {
                 jQuery('[name="acym__entity_select__selected"]').attr('value', '');
-                $submitButton.click();
+                $submitButton.trigger('click');
             }
         });
     },
@@ -145,7 +145,7 @@ const acym_helperImport = {
             let $form = jQuery('#acym_form');
 
             $form.find('[name="import_from"]').val($from);
-            $form.find('#formSubmit').click();
+            $form.find('#formSubmit').trigger('click');
         });
     },
     setChangeCharset: function () {
@@ -229,7 +229,7 @@ const acym_helperImport = {
         }
 
         $field.keydown(function (event) {
-            if (event.keyCode === 13) {
+            if (event.key === 'Enter') {
                 event.preventDefault();
                 return false;
             }

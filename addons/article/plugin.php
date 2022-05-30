@@ -230,7 +230,7 @@ class plgAcymArticle extends acymPlugin
         ];
         $this->autoContentOptions($catOptions);
 
-        $this->autoCampaignOptions($catOptions);
+        $this->autoCampaignOptions($catOptions, true);
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
@@ -351,9 +351,16 @@ class plgAcymArticle extends acymPlugin
             }
 
             if (!empty($parameter->onlynew)) {
+                $parameter->datefilter = 'onlynew';
+            }
+            if (!empty($parameter->datefilter)) {
                 $lastGenerated = $this->getLastGenerated($email->id);
                 if (!empty($lastGenerated)) {
-                    $where[] = 'element.publish_up > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
+                    $condition = 'element.publish_up > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
+                    if ($parameter->datefilter === 'onlymodified') {
+                        $condition .= ' OR element.modified > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
+                    }
+                    $where[] = $condition;
                 }
             }
 

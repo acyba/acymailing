@@ -4,12 +4,14 @@ const acym_archiveBlock = {
     blockEditor: '',
     components: '',
     wpElement: '',
+    archiveNbNewslettersPerPage: [],
     lists: [],
     boolchoice: [],
     styleMultiselect: {
         'minHeight': '90px'
     },
     init: function (blocks, element, blockEditor, wpComponents) {
+        this.initArchiveNbNewslettersPerPage();
         this.initLists();
         this.initBool();
         this.wpElement = element;
@@ -19,6 +21,42 @@ const acym_archiveBlock = {
         this.components = wpComponents;
         this.registerBlock(blocks);
         this.initCategory(blocks);
+    },
+    initArchiveNbNewslettersPerPage: function () {
+        this.archiveNbNewslettersPerPage = [
+            {
+                label: '5',
+                value: 5
+            },
+            {
+                label: '10',
+                value: 10
+            },
+            {
+                label: '15',
+                value: 15
+            },
+            {
+                label: '20',
+                value: 20
+            },
+            {
+                label: '30',
+                value: 30
+            },
+            {
+                label: '50',
+                value: 50
+            },
+            {
+                label: '100',
+                value: 100
+            },
+            {
+                label: '200',
+                value: 200
+            }
+        ];
     },
     initLists: function () {
         for (let [value, label] of Object.entries(acym_lists_archive)) {
@@ -69,6 +107,7 @@ const acym_archiveBlock = {
                 initialOpen: true
             },
             self.textEdit(ACYM_JS_TXT.ACYM_TITLE, props, 'title'),
+            self.selectEdit(ACYM_JS_TXT.ACYM_WIDGET_CAMPAIGN_NUMBER_PER_PAGE, props, 'archiveNbNewslettersPerPage', 'archiveNbNewslettersPerPage'),
             self.selectEdit(ACYM_JS_TXT.ACYM_VISIBLE_LISTS, props, 'lists', 'lists', true),
             self.selectEdit(ACYM_JS_TXT.ACYM_ARCHIVE_POPUP, props, 'popup', 'boolchoice'),
             self.selectEdit(ACYM_JS_TXT.ACYM_ARCHIVE_ONLY_USER_LIST, props, 'displayUserListOnly', 'boolchoice')

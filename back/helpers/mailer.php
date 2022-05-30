@@ -760,7 +760,7 @@ class MailerHelper extends acyPHPMailer
                     $this->addAttachment($attachment->filename);
                 }
             } else {
-                $attachStringHTML = '<br /><fieldset><legend>'.acym_translation('ATTACHMENTS').'</legend><table>';
+                $attachStringHTML = '<br /><fieldset><legend>'.acym_translation('ACYM_ATTACHMENTS').'</legend><table>';
                 foreach ($this->defaultMail[$mailId]->attach as $attachment) {
                     $attachStringHTML .= '<tr><td><a href="'.$attachment->url.'" target="_blank">'.$attachment->name.'</a></td></tr>';
                 }

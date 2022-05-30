@@ -19,8 +19,10 @@ const acym_helperFile = {
             }
             jQuery('#' + mapId + 'selection', window.parent.document).html(mapData);
 
-            jQuery('#acym__campaign__email__' + mapId, window.parent.document).closest('.reveal-overlay').click();
+            jQuery('#acym__campaign__email__' + mapId, window.parent.document).closest('.reveal-overlay').trigger('click');
         });
+
+        jQuery('.acym__file__select__add.acym_clickme').trigger('click');
     },
     setDisplayFileTree: function () {
         // display folders tree view

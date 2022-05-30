@@ -1,7 +1,6 @@
 const acym_editorWysidTinymce = {
     addTinyMceWYSID: function () {
         tinymce.remove();
-
         tinymce.baseURL = ACYM_MEDIA_URL + 'js/tinymce';
 
         tinymce.init({
@@ -22,7 +21,7 @@ const acym_editorWysidTinymce = {
             lineheight_formats: '100% 110% 120% 130% 140% 150% 160% 170% 180% 190% 200% 210% 220% 230% 240%',
             toolbar: [
                 'undo redo formatselect fontselect fontsizeselect',
-                'alignmentsplit | listsplit lineheightselect | table',
+                'alignmentsplit | listsplit outdent indent lineheightselect | table',
                 'bold italic underline strikethrough removeformat | forecolor backcolor | link unlink | code'
             ],
             link_class_list: [
@@ -71,10 +70,14 @@ const acym_editorWysidTinymce = {
             preview_styles: false,
             block_formats: 'Paragraph=p;Heading 1=h1;Heading 2=h2;Heading 3=h3;Heading 4=h4;Heading 5=h5;Heading 6=h6',
             init_instance_callback: function (editor) {
-                acym_editorWysidDynamic.setDynamicsActions();
+                acym_editorWysidDynamic.setDTextActions();
                 editor.on('keydown', function (e) {
                     let currentText = jQuery(editor.getElement()).find('>:first-child');
-                    if (acym_editorWysidTinymce.isCurrentTextEmpty(currentText) && e.which === 8 && jQuery(editor.getElement()).children().length === 1) {
+                    if (acym_editorWysidTinymce.isCurrentTextEmpty(currentText)
+                        && e.key
+                        === 'Backspace'
+                        && jQuery(editor.getElement()).children().length
+                        === 1) {
                         e.preventDefault();
                         return true;
                     }
@@ -90,20 +93,22 @@ const acym_editorWysidTinymce = {
                     jQuery(editor.getElement()).trigger('click');
                 });
                 editor.on('click', function () {
-                    acym_editorWysidToolbox.setDeleteAlltoolbox();
+                    acym_editorWysidRowSelector.hideOverlays();
+                    acym_editorWysidContextModal.showTextOptions();
                 });
                 editor.off('change').on('change', function (e) {
                     if (e.lineheight !== undefined) {
                         let $element = jQuery(editor.getElement()).find('.acym__wysid__tinymce--text--placeholder, .acym__wysid__tinymce--title--placeholder');
                         $element.css('line-height', e.lineheight);
                     }
-                    acym_editorWysidFontStyle.setAllHtmlElementStyleWYSID();
+                    acym_editorWysidFontStyle.applyCssOnAllElementTypesBasedOnSettings();
                 });
                 editor.on('blur', function (e) {
                     let initialContent = e.target.startContent;
                     let finalContent = e.target.bodyElement.innerHTML;
                     if (initialContent !== finalContent) acym_editorWysidVersioning.setUndoAndAutoSave();
-                    acym_editorWysidRowSelector.setRowSelector();
+                    acym_editorWysidRowSelector.showOverlays();
+                    acym_editorWysidRowSelector.resizeZoneOverlays();
                     acym_editorWysidTinymce.checkForEmptyText();
                 });
                 editor.on('ExecCommand', function (e) {
@@ -209,9 +214,7 @@ const acym_editorWysidTinymce = {
                 });
             }
         });
-
         tinymce.execCommand('mceAddEditor', true, '');
-
 
         tinymce.init({
             selector: '.acym__wysid__tinymce--image',
@@ -233,43 +236,14 @@ const acym_editorWysidTinymce = {
                 editor.on('click', function (e) {
                     let $img = jQuery(editor.getElement()).find('img');
                     acym_helperEditorWysid.timeClickImage = new Date().getTime();
-                    acym_editorWysidToolbox.setDeleteAlltoolbox();
-                    acym_editorWysidContextModal.setImageContextModal($img);
+                    acym_editorWysidRowSelector.hideOverlays();
+                    acym_editorWysidContextModal.showImageOptions($img);
                 });
                 editor.on('blur', function () {
-                    acym_editorWysidRowSelector.setRowSelector();
+                    acym_editorWysidRowSelector.showOverlays();
                     acym_helperEditorWysid.removeBlankCharacters();
                 });
-            },
-            formats: {
-                alignleft: {
-                    selector: 'img',
-                    styles: {
-                        float: 'left',
-                        marginTop: '-10px',
-                        marginBottom: '10px'
-                    }
-                },
-                alignright: {
-                    selector: 'img',
-                    styles: {
-                        float: 'right',
-                        marginTop: '-10px',
-                        marginBottom: '10px'
-                    }
-                }
-            },
-            style_formats: [
-                {
-                    title: 'Align left',
-                    format: 'alignleft'
-                },
-                {
-                    title: 'Align right',
-                    format: 'alignright'
-                }
-            ],
-            themes: 'modern'
+            }
         });
         tinymce.execCommand('mceAddEditor', true, '');
     },
@@ -298,11 +272,11 @@ const acym_editorWysidTinymce = {
     },
     cleanForFirefox: function (currentArea, timerTotal) {
         let tinymceP = currentArea.find('>p');
-        if (tinymceP.length == 0 && timerTotal < 1000) {
+        if (tinymceP.length === 0 && timerTotal < 1000) {
             setTimeout(() => {
                 acym_editorWysidTinymce.cleanForFirefox(currentArea, timerTotal + 50);
             }, 50);
-        } else if (tinymceP.length == 1 && acym_editorWysidTinymce.isCurrentTextEmpty(tinymceP)) {
+        } else if (tinymceP.length === 1 && acym_editorWysidTinymce.isCurrentTextEmpty(tinymceP)) {
             tinymceP.remove();
         }
     }

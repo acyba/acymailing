@@ -95,7 +95,7 @@ const acym_helper = {
                 let evt = new MouseEvent('click');
                 document.querySelector('#formSubmit').dispatchEvent(evt);
             } else {
-                $buttonSubmit.click();
+                $buttonSubmit.trigger('click');
             }
         });
     },
@@ -131,7 +131,7 @@ const acym_helper = {
     },
     preventEnter: function () {
         jQuery('#acym_wrapper').on('keypress', ':input:not(textarea, input:text)', function (event) {
-            if (event.keyCode === 13 && !jQuery('[name$="_pagination_page"], [name="pagination_page_ajax"]').is(':visible')) {
+            if (event.key === 'Enter' && !jQuery('[name$="_pagination_page"], [name="pagination_page_ajax"]').is(':visible')) {
                 event.preventDefault();
                 return false;
             }

@@ -64,7 +64,7 @@ const acym_helperDatePicker = {
             }
 
             if ($input.val().indexOf('[time]') !== -1) {
-                $modal.find('[data-type="relative"]').click();
+                $modal.find('[data-type="relative"]').trigger('click');
                 let operator = $input.val().indexOf('-') !== -1 ? '-' : '+';
                 let splitValue = $input.val().split(operator);
 
@@ -87,7 +87,7 @@ const acym_helperDatePicker = {
                 $modal.find('.relativetype').val(timelapse).trigger('change');
                 $modal.find('.relativenumber').val(finalValuePopup).trigger('change');
             } else {
-                $modal.find('[data-type="specific"]').click();
+                $modal.find('[data-type="specific"]').trigger('click');
                 //We convert the unix time to a format the lib can understand
                 $modal.find('.acy_date_picker').val(moment.unix($input.val()).format('YYYY-MM-DD HH:mm'));
             }

@@ -69,9 +69,11 @@ class GF_Field_Acy extends GF_Field
             foreach ($this->acymDisplayedList as $listId) {
                 if (!empty($this->acymAutoSubList) && in_array($listId, $this->acymAutoSubList)) continue;
                 $checked = in_array($listId, $acymCheckedList) ? 'checked' : '';
+                $uniqueId = 'gform_acy_list_sub_'.$listId;
                 //this line allows to know if we are on the editor or the front-end
                 $isDisabled = $this->is_form_editor() ? 'disabled' : '';
-                $checkboxes .= '<input type="checkbox" name="acy_list_sub[]" value="'.$listId.'" '.$checked.' '.$isDisabled.'>'.$lists[$listId].'<br>';
+                $checkboxes .= '<input type="checkbox" id="'.$uniqueId.'" name="acy_list_sub[]" value="'.$listId.'" '.$checked.' '.$isDisabled.'>';
+                $checkboxes .= '<label for="'.$uniqueId.'">'.$lists[$listId].'</label> <br>';
             }
         }
 

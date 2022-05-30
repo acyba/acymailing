@@ -28,7 +28,7 @@ jQuery(document).ready(function ($) {
             },
             mounted: function () {
                 document.querySelector('.acym__list__settings__subscribers__search input[type="text"]').addEventListener('keydown', function (event) {
-                    if (event.keyCode == 13) {
+                    if (event.key === 'Enter') {
                         event.preventDefault();
                         return false;
                     }

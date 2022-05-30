@@ -222,7 +222,6 @@ class CampaignsController extends acymController
         $this->prepareListingClasses($data);
 
         $data['menuClass'] = $this->menuClass;
-
         parent::display($data);
     }
 
@@ -760,6 +759,10 @@ class CampaignsController extends acymController
             $data['mailInformation']->attachments = [];
             $data['mailInformation']->stylesheet = '';
             $data['mailInformation']->headers = '';
+            $data['mailInformation']->from_email = '';
+            $data['mailInformation']->from_name = '';
+            $data['mailInformation']->reply_to_email = '';
+            $data['mailInformation']->reply_to_name = '';
             $data['typeEditor'] = 'acyEditor';
         } elseif (!empty($mailId)) {
             $mail = $mailClass->getOneById($mailId);
@@ -775,6 +778,11 @@ class CampaignsController extends acymController
             $data['mailInformation']->headers = $mail->headers;
             $data['mailInformation']->attachments = empty($mail->attachments) ? [] : json_decode($mail->attachments);
             $data['mailInformation']->links_language = $mail->links_language;
+
+            $data['mailInformation']->from_email = $mail->from_email;
+            $data['mailInformation']->from_name = $mail->from_name;
+            $data['mailInformation']->reply_to_email = $mail->reply_to_email;
+            $data['mailInformation']->reply_to_name = $mail->reply_to_name;
 
             if ($checkAutosave) {
                 $data['mailInformation']->autosave = $mail->autosave;
@@ -1093,6 +1101,10 @@ class CampaignsController extends acymController
         $mail->settings = acym_getVar('string', 'editor_settings', '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->stylesheet = acym_getVar('string', 'editor_stylesheet', '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->headers = acym_getVar('string', 'editor_headers', '', 'REQUEST', ACYM_ALLOWRAW);
+        $mail->from_email = acym_getVar('string', 'from_email', '', 'REQUEST');
+        $mail->from_name = acym_getVar('string', 'from_name', '', 'REQUEST');
+        $mail->reply_to_email = acym_getVar('string', 'reply_to_email', '', 'REQUEST');
+        $mail->reply_to_name = acym_getVar('string', 'reply_to_name', '', 'REQUEST');
         $mail->drag_editor = strpos($mail->body, 'acym__wysid__template') === false ? 0 : 1;
         $mail->attachments = empty($mail->attachments) ? [] : json_decode($mail->attachments, true);
 
@@ -1881,47 +1893,45 @@ class CampaignsController extends acymController
         $campaignId = acym_getVar('int', 'id');
         $campaignClass = new CampaignClass();
 
-        if (!empty($campaignId)) {
-            $campaign = new \stdClass();
-            $campaign->id = $campaignId;
-            $campaign->active = 0;
-            $campaign->draft = 1;
+        if (empty($campaignId)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), [], false);
+        }
 
-            $campaignId = $campaignClass->save($campaign);
-            if (empty($campaignId)) {
-                echo 'error';
-                exit;
-            }
+        $campaign = new \stdClass();
+        $campaign->id = $campaignId;
+        $campaign->active = 0;
+        $campaign->draft = 1;
 
-            $campaigns = $campaignClass->getCampaignForDashboard();
+        $campaignId = $campaignClass->save($campaign);
+        if (empty($campaignId)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_CAMPAIGN_CANT_BE_SAVED'), [], false);
+        }
 
-            if (empty($campaigns)) {
-                echo '<h1 class="acym__dashboard__active-campaigns__none">'.acym_translation('ACYM_NONE_OF_YOUR_CAMPAIGN_SCHEDULED_GO_SCHEDULE_ONE').'</h1>';
-                exit;
-            }
+        $campaigns = $campaignClass->getCampaignForDashboard();
 
-            $echo = '';
+        if (empty($campaigns)) {
+            $result = '<h1 class="acym__dashboard__active-campaigns__none">'.acym_translation('ACYM_NONE_OF_YOUR_CAMPAIGN_SCHEDULED_GO_SCHEDULE_ONE').'</h1>';
+            acym_sendAjaxResponse('', ['content' => $result]);
+        }
 
-            foreach ($campaigns as $campaign) {
-                $echo .= '<div class="cell grid-x acym__dashboard__active-campaigns__one-campaign">
+        $result = '';
+
+        foreach ($campaigns as $campaign) {
+            $result .= '<div class="cell grid-x acym__dashboard__active-campaigns__one-campaign">
                         <a class="acym__dashboard__active-campaigns__one-campaign__title medium-4 small-12" href="'.acym_completeLink(
-                        'campaigns&task=edit&step=editEmail&id='
-                    ).$campaign->id.'">'.$campaign->name.'</a>
+                    'campaigns&task=edit&step=editEmail&id='
+                ).$campaign->id.'">'.$campaign->name.'</a>
                         <div class="acym__dashboard__active-campaigns__one-campaign__state medium-2 small-12 acym__background-color__blue text-center"><span>'.acym_translation(
-                        'ACYM_SCHEDULED'
-                    ).' : '.acym_getDate($campaign->sending_date, 'ACYM_DATE_FORMAT_LC3').'</span></div>
+                    'ACYM_SCHEDULED'
+                ).' : '.acym_getDate($campaign->sending_date, 'ACYM_DATE_FORMAT_LC3').'</span></div>
                         <div class="medium-6 small-12"><p id="'.$campaign->id.'" class="acym__dashboard__active-campaigns__one-campaign__action acym__color__dark-gray">'.acym_translation(
-                        'ACYM_CANCEL_SCHEDULING'
-                    ).'</p></div>
+                    'ACYM_CANCEL_SCHEDULING'
+                ).'</p></div>
                     </div>
                     <hr class="cell small-12">';
-            }
-            echo $echo;
-            exit;
-        } else {
-            echo 'error';
-            exit;
         }
+
+        acym_sendAjaxResponse('', ['content' => $result]);
     }
 
     public function addQueue()

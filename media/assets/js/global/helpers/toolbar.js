@@ -36,6 +36,6 @@ const acym_helperToolbar = {
             $input.val(statuses[status]);
         });
 
-        jQuery('#acym__toolbar__button-more-filters').click();
+        jQuery('#acym__toolbar__button-more-filters').trigger('click');
     }
 };

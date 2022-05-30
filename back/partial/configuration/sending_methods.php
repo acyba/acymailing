@@ -44,7 +44,7 @@
         $class = 'medium-8';
         echo '<div class="cell medium-2 hide-for-small-only"></div>';
     } ?>
-	<div class="cell <?php echo $class; ?> grid-x margin-top-2 text-left">
+	<div class="cell <?php echo $class; ?> grid-x text-left">
         <?php foreach ($data['sendingMethodsHtmlSettings'] as $html) {
             echo $html;
         } ?>

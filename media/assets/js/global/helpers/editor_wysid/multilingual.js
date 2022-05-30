@@ -85,7 +85,7 @@ const acym_editorWysidMultilingual = {
                 jQuery('#editor_content').val('');
                 acym_editorWysidMultilingual.forceReload = true;
                 let $currentFlag = jQuery('img[acym-data-lang="' + acym_editorWysidMultilingual.currentLanguage + '"]');
-                $currentFlag.click()
+                $currentFlag.trigger('click')
                             .closest('.acym__wysid__edit__languages__selection')
                             .removeClass('acym__wysid__edit__languages__selection-done');
             }
@@ -112,7 +112,7 @@ const acym_editorWysidMultilingual = {
         jQuery('input[name="multilingual[' + this.currentLanguage + '][stylesheet]"]').val(jQuery('#editor_stylesheet').val());
 
         if (saveStep) {
-            jQuery('img[acym-data-lang="main"]').click();
+            jQuery('img[acym-data-lang="main"]').trigger('click');
         }
 
         return true;
@@ -163,7 +163,7 @@ const acym_editorWysidMultilingual = {
                 acym_editorWysidMultilingual.switchLanguage(res.data.subject, res.data.preheader, res.data.body, '', res.data.settings, res.data.stylesheet);
                 acym_editorWysidMultilingual.showEdition();
 
-                jQuery(this).closest('#acym__template__choose__modal').find('.close-button').click();
+                jQuery(this).closest('#acym__template__choose__modal').find('.close-button').trigger('click');
                 $loader.css('display', 'none');
             });
         });

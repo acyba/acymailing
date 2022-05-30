@@ -5,6 +5,7 @@
 	</layout>
 	<fields name="params" addfieldpath="/components/com_acym/params">
 		<fieldset name="basic">
+			<field name="archiveNbNewslettersPerPage" type="archive" min="0" default="10" label="ACYM_WIDGET_CAMPAIGN_NUMBER_PER_PAGE"/>
 			<field name="lists" type="lists" default="" label="ACYM_LISTS" description="ACYM_LISTS_ARCHIVE"/>
 			<field name="popup" type="radio" default="1" label="ACYM_ARCHIVE_POPUP" description="ACYM_ARCHIVE_POPUP_DESC">
 				<option value="0">ACYM_NO</option>

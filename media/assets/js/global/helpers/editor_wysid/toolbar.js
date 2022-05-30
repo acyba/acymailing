@@ -22,6 +22,7 @@ const acym_editorWysidToolbar = {
         let $elementToHide = jQuery('#' + jQuery('.acym__wysid__right__toolbar__selected').attr('data-attr-show'));
         let $elementToShow = jQuery('#' + $clickedTab.attr('data-attr-show'));
         if ($elementToHide.attr('id') === $elementToShow.attr('id')) return;
+
         let $tabs = jQuery('.acym__wysid__right__toolbar__tabs');
         $tabs.removeClass('acym__wysid__right__toolbar__selected');
         let direction = {
@@ -43,7 +44,6 @@ const acym_editorWysidToolbar = {
         $clickedTab.addClass('acym__wysid__right__toolbar__selected');
         $elementToHide.hide('slide', {direction: direction.hide}, 75, function () {
             $elementToShow.show('slide', {direction: direction.show}, 75, function () {
-                acym_editorWysidToolbar.setRightToolbarWYSID();
             });
         });
     }

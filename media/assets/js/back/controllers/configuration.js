@@ -226,7 +226,7 @@ jQuery(document).ready(function ($) {
         let aclZone = $('#acym__configuration__acl__zone');
         $('#acym__configuration__acl__toggle').off('click').on('click', function () {
             aclZone.slideToggle();
-        }).click();
+        }).trigger('click');
 
         $('input[name^="config[acl_"]').on('change', function () {
             let aclName = $(this).attr('name');
@@ -254,7 +254,7 @@ jQuery(document).ready(function ($) {
         let $switchPaddle = $embedImageToggle.closest('.acym__configuration__mail__option').find('.switch-paddle');
 
         if (undefined !== params[$selectedCard.attr('id')] && !params[$selectedCard.attr('id')]) {
-            if (parseInt($embedImageToggle.val()) === 1) $switchLabel.click();
+            if (parseInt($embedImageToggle.val()) === 1) $switchLabel.trigger('click');
             $switchPaddle.addClass('disabled').attr('data-acym-tooltip', $info.find('.acym__tooltip__text ').html());
             $embedImageToggle.next().attr('disabled', 'true');
             $info.closest('.acym__tooltip__info').show();

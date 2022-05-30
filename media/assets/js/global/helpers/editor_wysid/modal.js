@@ -1,48 +1,37 @@
 const acym_editorWysidModal = {
     setModalWindowWYSID: function () {
-        jQuery('.acym__wysid__modal--close').click(function () {
+        // Modal used when saving custom zones or inserting GIFs / videos for example
+        jQuery('.acym__wysid__modal--close').on('click', function () {
             let modal = jQuery('.acym__wysid__modal');
             modal.hide();
             modal.removeClass('acym__wysid__modal__tiny');
-            if (acym_helperEditorWysid.$focusElement.length && acym_helperEditorWysid.$focusElement.prop('tagName') !== 'TABLE') {
+
+            // Don't remove the previous element if it's a TABLE => it's a zone we were saving but we closed the modal to abort
+            // Don't remove the previous element if it's a TR => it's a GIF we edited then closed the modal without replacing by a new GIF
+            if (acym_helperEditorWysid.$focusElement.length
+                && acym_helperEditorWysid.$focusElement.prop('tagName')
+                !== 'TABLE'
+                && acym_helperEditorWysid.$focusElement.prop('tagName')
+                !== 'TR') {
                 acym_helperEditorWysid.$focusElement.replaceWith('');
             }
-            acym_helperEditorWysid.checkForEmptyTbodyWYSID();
+            acym_editorWysidRowSelector.setZoneAndBlockOverlays();
+            acym_helperEditorWysid.addDefaultBlock();
         });
 
-        if (ACYM_CMS === 'joomla') {
-            jQuery('.acym__wysid__modal__joomla-image--close').click(function () {
-                jQuery('#acym__wysid__modal__joomla-image').hide();
-                if (acym_helperEditorWysid.$focusElement.length
-                    && acym_helperEditorWysid.$focusElement.prop('tagName')
-                    !== 'TR'
-                    && !acym_helperEditorWysid.$focusElement.hasClass('acym__wysid__template__content')) {
-                    acym_helperEditorWysid.$focusElement.replaceWith('');
-                }
-                acym_helperEditorWysid.checkForEmptyTbodyWYSID();
-            });
-        }
-    },
-    setSelectOneTemplate: function () {
-        jQuery('.acym__template__choose__ajax').off('DOMSubtreeModified').on('DOMSubtreeModified', function () {
-            jQuery('.acym__template__choose__list .acym__templates__oneTpl').off('click').on('click', function (e) {
-                e.preventDefault();
-                let thisLink = jQuery(this).find('a').attr('href');
-                let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_mails&ctrl=' + acym_helper.ctrlMails + '&task=getMailContent&from=' + jQuery(this).attr('id');
+        if (ACYM_CMS !== 'joomla') return;
 
-                jQuery.post(ajaxUrl, function (response) {
-                    if (response === 'error') {
-                        alert(ACYM_JS_TXT.ACYM_ERROR);
-                        return false;
-                    }
-
-                    window.location.href = thisLink;
-                    return false;
-                });
-            });
+        jQuery('.acym__wysid__modal__joomla-image--close').on('click', function () {
+            jQuery('#acym__wysid__modal__joomla-image').hide();
+            if (acym_helperEditorWysid.$focusElement.length
+                && acym_helperEditorWysid.$focusElement.prop('tagName')
+                !== 'TR'
+                && !acym_helperEditorWysid.$focusElement.hasClass('acym__wysid__template__content')) {
+                acym_helperEditorWysid.$focusElement.replaceWith('');
+            }
         });
     },
-    setDynamicsModal: function () {
+    setDTextInsertion: function () {
         let lastKnownRangeInEditor = null;
 
         jQuery('#insertButton').off('click').on('click', function () {
@@ -71,8 +60,8 @@ const acym_editorWysidModal = {
                 }
                 tinyMCE.activeEditor.selection.setContent(toInsert);
 
-                acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
-                acym_editorWysidVersioning.setUndoAndAutoSave();
+                acym_helperEditorWysid.setColumnRefreshUiWYSID();
+                acym_editorWysidDynamic.setDTextActions();
 
                 let dtext = document.getElementById('acymRangeId');
                 jQuery(dtext).attr('contenteditable', 'false');

@@ -51,7 +51,7 @@ jQuery(document).ready(function ($) {
             let ajaxUrl = AJAX_URL_UPDATEME + 'subscription&task=subscribe&email=' + emailUser + '&cms=' + ACYM_CMS;
 
             $.get(ajaxUrl);
-            $('.acy_button_submit').click();
+            $('.acy_button_submit').trigger('click');
         });
     }
 
@@ -85,8 +85,8 @@ jQuery(document).ready(function ($) {
         });
 
         $('#acym__walkthrough__list__new-address').on('keypress', function (e) {
-            if (13 === e.which) {
-                $('#acym__walkthrough__list__add').click();
+            if ('Enter' === e.key) {
+                $('#acym__walkthrough__list__add').trigger('click');
                 return false;
             }
         });
@@ -120,7 +120,7 @@ jQuery(document).ready(function ($) {
         $('#acym__walkthrough__skip__fail').off('click').on('click', function () {
             $('[required]').removeAttr('required');
             $('[type="email"]').attr('type', 'text');
-            $('#acym__walkthrough__skip').click();
+            $('#acym__walkthrough__skip').trigger('click');
         });
         $('.acym__walkthrough__fail__choice').off('click').on('click', function () {
             let $divToShow = $('.acym__walkthrough__fail__' + $(this).attr('data-show'));
@@ -148,7 +148,7 @@ jQuery(document).ready(function ($) {
 
     function setPreventSubmit() {
         $('.acym__walkthrough__fail__gmail input').off('keypress').on('keypress', function (e) {
-            if (e.keyCode == 13) {
+            if (e.key === 'Enter') {
                 e.preventDefault();
                 return false;
             }
