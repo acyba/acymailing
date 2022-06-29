@@ -51,6 +51,7 @@ class ArchiveController extends acymController
 
         acym_addMetadata('og:url', acym_frontendLink('archive&task=view&mailid='.$oneMail->id));
         acym_addMetadata('og:title', $oneMail->subject);
+        acym_setPageTitle($oneMail->subject);
 
         // We may use those two options later, if users ask for it
         if (!empty($oneMail->metadesc)) {
@@ -118,7 +119,7 @@ class ArchiveController extends acymController
         acym_includeHeaders();
         parent::display($data);
 
-        //We are forced to use exit because of WordPress that display a 0 if a exit isn't used
+        // We are forced to use exit because of WordPress that displays a 0 if an exit isn't used
         if ($isPopup || 'wordpress' === ACYM_CMS) exit;
     }
 

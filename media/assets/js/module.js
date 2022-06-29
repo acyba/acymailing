@@ -361,8 +361,17 @@ if (typeof submitAcymForm !== 'function') {
         let taskField = varform.task;
         taskField.value = acytask;
 
+        let formType = '';
+        if (undefined != varform.elements['acymformtype']) {
+            formType = varform.elements['acymformtype'].value;
+        }
+        let redirect = varform.elements['redirect'].value;
+
         // If no ajax, submit the form
-        if (!varform.elements['ajax'] || !varform.elements['ajax'].value || varform.elements['ajax'].value === '0' || varform.elements['ajax'].value === 0) {
+        if ('shortcode' == formType || !varform.elements['ajax'] || !varform.elements['ajax'].value || varform.elements['ajax'].value === '0' || varform.elements['ajax'].value === 0) {
+            if ('shortcode' == formType && '' == redirect) {
+                varform.elements['redirect'].value = window.location.href;
+            }
             acymApplyCookie(acyformName);
 
             varform.submit();

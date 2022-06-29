@@ -115,3 +115,18 @@ function acym_isLocalWebsite()
 {
     return strpos(ACYM_LIVE, 'localhost') !== false || strpos(ACYM_LIVE, '127.0.0.1') !== false;
 }
+
+function acym_internalUrlToPath($url)
+{
+    $base = str_replace(['http://www.', 'https://www.', 'http://', 'https://'], '', ACYM_LIVE);
+    $replacements = ['https://www.'.$base, 'http://www.'.$base, 'https://'.$base, 'http://'.$base];
+    foreach ($replacements as $oneReplacement) {
+        if (strpos($url, $oneReplacement) === false) {
+            continue;
+        }
+        $url = str_replace([$oneReplacement, '/'], [ACYM_ROOT, DS], urldecode($url));
+        break;
+    }
+
+    return $url;
+}

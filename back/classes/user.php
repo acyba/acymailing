@@ -561,7 +561,7 @@ class UserClass extends acymClass
                 $subscription->user_id = $userId;
                 $subscription->list_id = $oneListId;
                 $subscription->status = 1;
-                $subscription->subscription_date = date('Y-m-d H:i:s', time());
+                $subscription->subscription_date = date('Y-m-d H:i:s', time() - date('Z'));
 
                 if (empty($currentSubscription[$oneListId])) {
                     // The user isn't already subscribed, we subscribe him!
@@ -660,7 +660,7 @@ class UserClass extends acymClass
                 $subscription->user_id = $userId;
                 $subscription->list_id = $oneListId;
                 $subscription->status = 0;
-                $subscription->unsubscribe_date = date('Y-m-d H:i:s', time());
+                $subscription->unsubscribe_date = date('Y-m-d H:i:s', time() - date('Z'));
                 if (empty($currentSubscription[$oneListId])) {
                     // The user isn't already subscribed, we unsubscribe him directly
                     acym_insertObject('#__acym_user_has_list', $subscription);
@@ -828,11 +828,11 @@ class UserClass extends acymClass
 
             if (empty($user->key)) $user->key = acym_generateKey(14);
 
-            $user->creation_date = date('Y-m-d H:i:s', time());
+            $user->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
         } elseif (!empty($user->confirmed)) {
             $oldUser = $this->getOneByIdWithCustomFields($user->id);
             if (!empty($oldUser) && empty($oldUser['confirmed'])) {
-                $user->confirmation_date = date('Y-m-d H:i:s', time());
+                $user->confirmation_date = date('Y-m-d H:i:s', time() - date('Z'));
                 $user->confirmation_ip = acym_getIP();
 
                 acym_trigger('onAcymAfterUserConfirm', [&$user]);
@@ -1090,7 +1090,7 @@ class UserClass extends acymClass
         if (empty($user)) return;
 
         // We confirm the user and add the confirmation_date and confirmation_ip in the table.
-        $confirmDate = date('Y-m-d H:i:s', time());
+        $confirmDate = date('Y-m-d H:i:s', time() - date('Z'));
         $ip = acym_getIP();
         $query = 'UPDATE `#__acym_user`';
         $query .= ' SET `confirmed` = 1, `confirmation_date` = '.acym_escapeDB($confirmDate).', `confirmation_ip` = '.acym_escapeDB($ip);

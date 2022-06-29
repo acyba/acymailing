@@ -758,28 +758,29 @@ class PluginHelper extends acymObject
 
         // If TITLE_IMG, add the image to the title
         $result = '';
-        if ($format->tag->format == 'TITLE_IMG' || $format->tag->format == 'TITLE_IMG_RIGHT') {
+        if (in_array($format->tag->format, ['TITLE_IMG', 'TITLE_IMG_RIGHT'])) {
             $format->title = $image.$format->title;
             $image = '';
         }
 
-        if (!empty($format->link) && !empty($image)) {
+        if (!empty($format->link) && !empty($image) && !empty($format->tag->clickableimg)) {
             $image = '<a target="_blank" href="'.$format->link.'" '.$linkStyle.'>'.$image.'</a>';
         }
 
         // If the image should be displayed before the title, do it
-        if ($format->tag->format == 'TOP_IMG' && !empty($image)) {
+        if ($format->tag->format === 'TOP_IMG' && !empty($image)) {
             $result = $image;
             $image = '';
         }
 
         // If we want to keep the left/right column for the image, put the whole article in a table
         if (in_array($format->tag->format, ['COL_LEFT', 'COL_RIGHT'])) {
+            $maxWidth = empty($format->tag->maxwidth) ? '' : ' width: '.$format->tag->maxwidth.'px;';
             if (empty($image)) {
                 $format->tag->format = 'TOP_LEFT';
             } else {
-                $result = '<table><tr><td valign="middle" style="vertical-align: middle; padding-right: 7px;" class="acyleftcol">';
-                if ($format->tag->format == 'COL_LEFT') {
+                $result = '<table><tr><td valign="middle" style="vertical-align: middle; padding-right: 7px;'.$maxWidth.'" class="acyleftcol">';
+                if ($format->tag->format === 'COL_LEFT') {
                     $result .= $image.'</td><td valign="top" class="acyrightcol">';
                 }
             }
@@ -787,7 +788,7 @@ class PluginHelper extends acymObject
 
         // Display the title
         if (!empty($format->title)) {
-            if (!empty($format->link)) {
+            if (!empty($format->link) && !empty($format->tag->clickable)) {
                 if (empty($format->tag->type) || $format->tag->type !== 'title') {
                     $format->title = '<h2 class="acym_title">'.$format->title.'</h2>';
                 }
@@ -807,7 +808,9 @@ class PluginHelper extends acymObject
             $result .= $format->title;
         }
 
-        if (!empty($format->afterTitle)) $result .= $format->afterTitle;
+        if (!empty($format->afterTitle)) {
+            $result .= $format->afterTitle;
+        }
 
         if (!empty($format->description)) {
             $format->description = $this->wrapText($format->description, $format->tag);
@@ -835,8 +838,8 @@ class PluginHelper extends acymObject
                 $result .= $rowText.$format->description.$endRow;
             }
 
-            if ($format->tag->format == 'COL_RIGHT') {
-                $result .= '</td><td valign="middle" style="vertical-align: middle; padding-left: 7px;" class="acyrightcol">'.$image;
+            if ($format->tag->format === 'COL_RIGHT') {
+                $result .= '</td><td valign="middle" style="vertical-align: middle; padding-left: 7px;'.$maxWidth.'" class="acyrightcol">'.$image;
             }
             $result .= '</td></tr></table>';
         }

@@ -134,6 +134,12 @@ class plgAcymDocman extends acymPlugin
                     'default' => true,
                 ],
                 [
+                    'title' => 'ACYM_CLICKABLE_IMAGE',
+                    'type' => 'boolean',
+                    'name' => 'clickableimage',
+                    'default' => false,
+                ],
+                [
                     'title' => 'ACYM_TRUNCATE',
                     'type' => 'intextfield',
                     'isNumber' => 1,
@@ -374,7 +380,7 @@ class plgAcymDocman extends acymPlugin
         $format->title = $element->title;
         $format->description = $description;
         $format->customFields = $details;
-        $format->link = empty($tag->clickable) ? '' : $link;
+        $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $link;
         $format->imagePath = $imagePath;
         $format->afterArticle = $afterArticle;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';

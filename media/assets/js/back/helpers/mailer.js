@@ -108,5 +108,40 @@ const acym_helperMailer = {
                 $message.html(response.message);
             });
         });
+    },
+    dislayAuth2Params() {
+        let auth2Smtp = [
+            'smtp.gmail.com',
+            'smtp-mail.outlook.com',
+            'smtp.office365.com'
+        ];
+
+        let smtpHost = jQuery('#smtp_host');
+        let oauth2SendingParams = jQuery('.acym__oauth2_sending_params');
+        let defaultSendingParams = jQuery('.acym__default_auth_sending_params');
+
+        defaultSendingParams.show();
+        oauth2SendingParams.hide();
+
+        if (auth2Smtp.includes(smtpHost.val().trim())) {
+            oauth2SendingParams.show();
+            defaultSendingParams.hide();
+        }
+
+        smtpHost.on('keyup', function () {
+            let showOauth2SendingParams = false;
+            auth2Smtp.forEach(host => {
+                if (smtpHost.val().trim().includes(host)) {
+                    showOauth2SendingParams = true;
+                }
+            });
+            if (showOauth2SendingParams) {
+                oauth2SendingParams.show();
+                defaultSendingParams.hide();
+            } else {
+                defaultSendingParams.show();
+                oauth2SendingParams.hide();
+            }
+        });
     }
 };

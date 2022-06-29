@@ -105,7 +105,10 @@ class acymView extends acymObject
 
         acym_trigger('acym_displayTrackingMessage', [&$message], 'plgAcymWoocommerce');
 
-        if (acym_isAdmin()) acym_displayMessages();
+        if (acym_isAdmin()) {
+            acym_trigger('onAcymDisplayPage');
+            acym_displayMessages();
+        }
 
         include acym_getView($name, $view);
 

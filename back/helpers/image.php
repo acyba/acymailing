@@ -75,15 +75,7 @@ class ImageHelper extends acymObject
             $imageUrl = $path[1];
 
             //We are nice guys... sometimes users use www. or not... so we convert both, same thing for httpS or http
-            $base = str_replace(['http://www.', 'https://www.', 'http://', 'https://'], '', ACYM_LIVE);
-            $replacements = ['https://www.'.$base, 'http://www.'.$base, 'https://'.$base, 'http://'.$base];
-            foreach ($replacements as $oneReplacement) {
-                if (strpos($imageUrl, $oneReplacement) === false) {
-                    continue;
-                }
-                $imageUrl = str_replace([$oneReplacement, '/'], [ACYM_ROOT, DS], urldecode($imageUrl));
-                break;
-            }
+            $imageUrl = acym_internalUrlToPath($imageUrl);
 
             $newPicture = $this->generateThumbnail($imageUrl);
 

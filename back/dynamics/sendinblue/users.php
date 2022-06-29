@@ -109,6 +109,7 @@ class SendinblueUsers extends SendinblueClass
         ];
 
         $response = $this->callApiSendingMethod('contacts/import', $data, $this->headers, 'POST');
+        //TODO delete the import file to avoid leaking user data
 
         if (!empty($response['error_curl'])) {
             $this->errors[] = acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $response['error_curl']);

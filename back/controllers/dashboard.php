@@ -434,15 +434,7 @@ class DashboardController extends acymController
 
     public function saveStepFail()
     {
-        $choice = acym_getVar('cmd', 'choice', 'gmail');
-        if ('gmail' === $choice) {
-            $this->_saveGmailInformation();
-            $this->_sendFirstEmail();
-            $this->_saveWalkthrough(['step' => 'stepResult', 'step_fail' => true]);
-            $this->stepResult();
-        } else {
-            $this->_handleContactMe('stepFail');
-        }
+        $this->_handleContactMe('stepFail');
     }
 
     private function _handleContactMe($fromFunction)
@@ -690,44 +682,7 @@ class DashboardController extends acymController
 
         return true;
     }
-
-    /**
-     * Save Gmail address and Gmail password on creating email step in walkthrough
-     *
-     * @return bool
-     */
-    private function _saveGmailInformation()
-    {
-        $gmailAddress = acym_getVar('string', 'gmail_address', '');
-        $gmailPassword = acym_getVar('string', 'gmail_password', '');
-
-        if (empty($gmailAddress) || empty($gmailPassword)) {
-            acym_enqueueMessage(acym_translation('ACYM_EMPTY_ADDRESS_OR_PASSWORD'), 'error');
-
-            return false;
-        }
-
-        //We preset common information to make the walkthrough easier as possible!
-        $newSmtpConfiguration = [
-            'smtp_auth' => '1',
-            'smtp_host' => 'smtp.gmail.com',
-            'smtp_keepalive' => '1',
-            'smtp_port' => '465',
-            'smtp_secured' => 'ssl',
-            'smtp_username' => $gmailAddress,
-            'smtp_password' => $gmailPassword,
-            'mailer_method' => 'smtp',
-        ];
-
-        if (false === $this->config->save($newSmtpConfiguration)) {
-            acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING', 'error'));
-
-            return false;
-        }
-
-        return true;
-    }
-
+    
     /**
      * Send the first email
      *

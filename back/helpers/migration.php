@@ -668,12 +668,12 @@ class MigrationHelper extends acymObject
 
             $mail = [
                 'id' => intval($oneMail->mailid),
-                'name' => acym_escapeDB($oneMail->subject),
+                'name' => acym_escapeDB(utf8_encode($oneMail->subject)),
                 'creation_date' => acym_escapeDB(acym_date(empty($oneMail->created) ? 'now' : $oneMail->created, 'Y-m-d H:i:s')),
                 'drag_editor' => 0,
                 'type' => acym_escapeDB($mailType),
-                'body' => acym_escapeDB($oneMail->body),
-                'subject' => acym_escapeDB($oneMail->subject),
+                'body' => acym_escapeDB(utf8_encode($oneMail->body)),
+                'subject' => acym_escapeDB(utf8_encode($oneMail->subject)),
                 'from_name' => acym_escapeDB($oneMail->fromname),
                 'from_email' => acym_escapeDB($oneMail->fromemail),
                 'reply_to_name' => acym_escapeDB($oneMail->replyname),
@@ -708,8 +708,6 @@ class MigrationHelper extends acymObject
                 }
             }
             $mail['attachments'] = acym_escapeDB(json_encode($mail['attachments']));
-
-            $mail = $mailClass->encode($mail);
 
             // Create the related campaign
             if ($mailType === $mailClass::TYPE_STANDARD) {

@@ -354,7 +354,9 @@ class BounceHelper extends acymObject
                                 if (strpos($onePart, 'Content-Transfer-Encoding') !== false) {
                                     preg_match('#Content-Transfer-Encoding: (.+)#i', $onePart, $encoding);
                                     $encoding = trim($encoding[1]);
-                                    $content = mb_convert_encoding($content, 'UTF-8', $encoding);
+                                    if (!empty($encoding)) {
+                                        $content = mb_convert_encoding($content, 'UTF-8', $encoding);
+                                    }
                                 }
 
                                 if (strpos($onePart, "Content-Type: text/plain") !== false) {
@@ -1028,6 +1030,9 @@ class BounceHelper extends acymObject
 
         //Handle actions on the message itself
 
+        // We only delete the message if the forward didn't fail and the save in history succeeded
+        $donotdelete = false;
+
         if (in_array('save_message', $oneRule->action_message) && !empty($this->_message->userid) && !in_array('delete_user', $oneRule->action_user)) {
             //We have a userid, should we save the message in the database?
             $data = [];
@@ -1039,12 +1044,21 @@ class BounceHelper extends acymObject
             if (empty($this->_message->mailid)) {
                 $this->_message->mailid = 0;
             }
-            $this->historyClass->insert($this->_message->userid, 'bounce', $data, $this->_message->mailid);
-            $message .= ' | '.acym_translationSprintf('ACYM_BOUNCE_MESSAGE_SAVED', $this->_message->userid);
+            try {
+                $this->historyClass->insert($this->_message->userid, 'bounce', $data, $this->_message->mailid);
+                $message .= ' | '.acym_translationSprintf('ACYM_BOUNCE_MESSAGE_SAVED', $this->_message->userid);
+            } catch (\Exception $e) {
+                $message .= ' | '.acym_translation_sprintf(
+                        'ACYM_BOUNCE_SAVE_ERROR_USER_MAIL_RULE',
+                        $this->_message->userid,
+                        $this->_message->mailid,
+                        $oneRule->id,
+                        $e->getMessage()
+                    );
+                $donotdelete = true;
+            }
         }
 
-        //we only delete the message if the forward didn't fail
-        $donotdelete = false;
 
         //We don't forward the message if it's the same mailbox!
         if (!empty($oneRule->action_message['forward_to'])) {
@@ -1083,6 +1097,7 @@ class BounceHelper extends acymObject
                 $this->mailer->AddReplyTo(trim($this->_message->header->reply_to_email, '<> '), $this->_message->header->reply_to_name);
             }
 
+            $this->mailer->isBounceForward = true;
             if ($this->mailer->send()) {
                 $message .= ' | '.acym_translationSprintf('ACYM_FORWARDED_TO_X', $oneRule->action_message['forward_to']);
             } else {

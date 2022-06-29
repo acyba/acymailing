@@ -376,3 +376,7 @@ i.acymicon-circle {
         display: none !important;
     }
 }
+
+.deleteFastAction:hover {
+    color: map-get($foundation-palette, alert);
+}

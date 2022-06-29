@@ -21,6 +21,7 @@ class FrontmailsController extends MailsController
         $this->authorizedFrontTasks = [
             'autoSave',
             'setNewIconShare',
+            'delete',
             'edit',
             'setNewThumbnail',
             'getTemplateAjax',

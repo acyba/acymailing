@@ -77,14 +77,23 @@ const acym_helperListing = {
                 });
         }
 
-        jQuery('#listing_actions').off('change').on('change', function () {
+        function triggerAction() {
             let action = this.value;
+            let fastAction = false;
+            if (!action || action === '0') {
+                action = this.dataset.action;
+                fastAction = true;
+            }
             let confirmMessage = '';
             let deleteMessageComplete = jQuery('#acym__listing__action__delete-message').val();
 
             switch (action) {
                 case 'delete':
-                    confirmMessage = `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_DELETE} ${deleteMessageComplete}`;
+                    if (fastAction) {
+                        confirmMessage = `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_DELETE_ONE}`;
+                    } else {
+                        confirmMessage = `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_DELETE} ${deleteMessageComplete}`;
+                    }
                     break;
                 case 'setActive':
                     confirmMessage = ACYM_JS_TXT.ACYM_ARE_YOU_SURE_ACTIVE;
@@ -96,19 +105,29 @@ const acym_helperListing = {
                     confirmMessage = ACYM_JS_TXT.ACYM_ARE_YOU_SURE;
             }
 
-            if ('duplicate' == action || 'duplicateFollowup' == action || acym_helper.confirm(confirmMessage)) {
+            if ('duplicate' === action || 'duplicateFollowup' === action || 'export' === action || acym_helper.confirm(confirmMessage)) {
                 let form = jQuery(this).closest('#acym_form');
                 let ctrl = jQuery(this).attr('data-ctrl');
                 if (ctrl !== undefined) {
                     form.find('[name="return_listing"]').val(form.find('[name="ctrl"]').val());
                     form.find('[name="ctrl"]').val(ctrl);
                 }
-                form.find('[name="task"]').val(jQuery(this).val());
+                if (!jQuery(this).val() || jQuery(this).val() === '0') action = this.dataset.action;
+
+                form.find('[name="task"]').val(fastAction ? action : jQuery(this).val());
+                if (fastAction) {
+                    jQuery(':checkbox').prop('checked', false);
+                    let checkboxId = '#checkbox_' + this.dataset.acyElementid;
+                    jQuery(checkboxId).prop('checked', true);
+                }
                 form.submit();
             } else {
                 jQuery(this).val('0');
             }
-        });
+        }
+
+        jQuery('#listing_actions').off('change').on('change', triggerAction);
+        jQuery('.fastActions').on('click', triggerAction);
     },
     setCheckboxesActionsListings: function () {
         let listing_checkboxes = jQuery('[name="elements_checked[]"]');

@@ -103,8 +103,14 @@ class plgAcymRss extends acymPlugin
             [
                 'title' => 'ACYM_CLICKABLE_TITLE',
                 'type' => 'boolean',
-                'name' => 'link',
+                'name' => 'clickable',
                 'default' => true,
+            ],
+            [
+                'title' => 'ACYM_CLICKABLE_IMAGE',
+                'type' => 'boolean',
+                'name' => 'clickableimg',
+                'default' => false,
             ],
             [
                 'title' => 'ACYM_TRUNCATE',
@@ -223,7 +229,7 @@ class plgAcymRss extends acymPlugin
         $varFields['{title}'] = $oneFeed->title->__toString();
         if (in_array('title', $parameter->display)) $title = $varFields['{title}'];
         $varFields['{link}'] = strlen($oneFeed->link->__toString()) > 0 ? trim($oneFeed->link->__toString()) : '';
-        if (!empty($parameter->link) && strlen($oneFeed->link->__toString()) > 0) {
+        if (strlen($oneFeed->link->__toString()) > 0) {
             $link = $varFields['{link}'];
         }
 

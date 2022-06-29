@@ -95,7 +95,7 @@ class MailsController extends acymController
         $pagination->setStatus($matchingMails['total'], $page, $mailsPerPage);
 
         ob_start();
-        require acym_getView('mails', 'listing_import');
+        require acym_getView('mails', 'listing_import', true);
         $templateImportView = ob_get_clean();
 
         $tagClass = new TagClass();
@@ -248,7 +248,9 @@ class MailsController extends acymController
         $isAutomationAdmin = false;
         $fromMail = '';
 
-        if (!empty($fromId)) $fromMail = $mailClass->getOneById($fromId);
+        if (!empty($fromId)) {
+            $fromMail = $mailClass->getOneById($fromId);
+        }
 
         if ($type == 'automation_admin') {
             $type = $mailClass::TYPE_AUTOMATION;

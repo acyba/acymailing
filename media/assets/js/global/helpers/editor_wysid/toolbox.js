@@ -35,6 +35,7 @@ const acym_editorWysidToolbox = {
             });
 
             acym_helperEditorWysid.setColumnRefreshUiWYSID();
+            acym_editorWysidToolbox.setOverlayActions();
             acym_editorWysidContextModal.setButtonOptions();
             acym_editorWysidContextModal.setSpaceOptions();
             acym_editorWysidContextModal.setFollowOptions();
@@ -107,6 +108,7 @@ const acym_editorWysidToolbox = {
             }
             theClone.insertAfter($elementToClone);
             acym_helperEditorWysid.setColumnRefreshUiWYSID();
+            acym_editorWysidToolbox.setOverlayActions();
 
             if (theClone.find('.acym__wysid__column__element__button').length > 0) {
                 acym_editorWysidContextModal.setButtonOptions();

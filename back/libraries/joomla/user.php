@@ -52,7 +52,7 @@ function acym_getGroups()
 
 function acym_punycode($email, $method = 'emailToPunycode')
 {
-    if (empty($email) || version_compare(ACYM_CMSV, '3.1.2', '<')) {
+    if (empty($email) || acym_isPunycode($email) || version_compare(ACYM_CMSV, '3.1.2', '<')) {
         return $email;
     }
     $email = JStringPunycode::$method($email);

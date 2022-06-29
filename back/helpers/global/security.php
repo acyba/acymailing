@@ -6,6 +6,10 @@ function acym_escape($text)
         $text = str_replace('\\', '\\\\', json_encode($text));
     }
 
+    if (empty($text)) {
+        return $text;
+    }
+
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 }
 

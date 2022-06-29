@@ -357,7 +357,7 @@ class UpdateHelper extends acymObject
         $mailAutomation->type = $mailClass::TYPE_AUTOMATION;
         $mailAutomation->drag_editor = 1;
         $mailAutomation->creator_id = acym_currentUserId();
-        $mailAutomation->creation_date = date('Y-m-d H:i:s', time());
+        $mailAutomation->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
         $mailAutomation->name = acym_translation($info[$title]->emailTitle);
         $mailAutomation->subject = acym_translation($info[$title]->emailSubject);
         $mailAutomation->body = $this->getFormatedNotification($info[$title]->emailContent);
@@ -580,7 +580,7 @@ class UpdateHelper extends acymObject
                 $notif->settings = empty($oneNotif['settings']) ? '' : $oneNotif['settings'];
                 $notif->drag_editor = 1;
                 $notif->creator_id = acym_currentUserId();
-                $notif->creation_date = date('Y-m-d H:i:s', time());
+                $notif->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
                 $notif->name = $oneNotif['name'];
                 $notif->subject = $oneNotif['subject'];
                 $notif->body = $oneNotif['content'];
@@ -683,7 +683,7 @@ class UpdateHelper extends acymObject
 
             $mail = new \stdClass();
             $mail->name = $oneOverride['name'];
-            $mail->creation_date = date('Y-m-d H:i:s', time());
+            $mail->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
             $mail->type = $mailClass::TYPE_OVERRIDE;
             $mail->subject = $oneOverride['new_subject'];
             $mail->body = $this->getFormatedNotification($oneOverride['new_body']);

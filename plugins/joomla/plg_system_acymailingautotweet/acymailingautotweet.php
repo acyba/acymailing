@@ -89,7 +89,7 @@ class plgSystemAcymailingAutotweet extends PlgAutotweetBase
 
     private function getArchiveLink($email)
     {
-        $archiveLink = 'archive&task=view&id='.$email->id.'&'.acym_noTemplate(false);
+        $archiveLink = 'archive&task=view&id='.$email->id.'&'.acym_noTemplate();
         if (!empty($email->links_language)) {
             if (acym_isPluginActive('languagefilter')) {
                 $archiveLink .= '&lang='.substr($email->links_language, 0, strpos($email->links_language, '-'));

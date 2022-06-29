@@ -76,12 +76,17 @@
 				<div class="acym__listing__header__title cell hide-for-small-only medium-2 large-1 text-center">
                     <?php echo acym_translation('ACYM_STATUS'); ?>
 				</div>
+				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
+                    <?php echo acym_translation('ACYM_ACTIONS') ?>
+				</div>
 				<div class="acym__listing__header__title cell hide-for-small-only medium-shrink text-center acym__listing__id">
                     <?php echo acym_translation('ACYM_ID'); ?>
 				</div>
 			</div>
 		</div>
-        <?php foreach ($data['lists'] as $list) { ?>
+        <?php foreach ($data['lists'] as $list) {
+            $linkList = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=settings&id='.intval($list->id));
+            ?>
 			<div data-acy-elementid="<?php echo acym_escape($list->id); ?>" class="grid-x cell acym__listing__row">
 				<div class="medium-shrink small-1 cell">
 					<input id="checkbox_<?php echo acym_escape($list->id); ?>" type="checkbox" name="elements_checked[]" value="<?php echo acym_escape($list->id); ?>">
@@ -89,7 +94,7 @@
 				<div class="grid-x medium-auto small-11 cell acym__listing__title__container">
 					<div class="cell auto grid-x acym__listing__title">
 						<i class='cell shrink acymicon-circle' style="color:<?php echo acym_escape($list->color); ?>"></i>
-						<a class="cell auto" href="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=settings&id='.intval($list->id)); ?>">
+						<a class="cell auto" href="<?php echo $linkList; ?>">
                             <?php
                             echo '<h6 class="acym__listing__title__primary">'.acym_escape($list->name).'</h6>';
                             echo '<p class="acym__listing__title__secondary" title="'.acym_escape($list->description).'">'.acym_escape($list->description).'</p>';
@@ -143,6 +148,18 @@
                             );
                         }
                         ?>
+					</div>
+					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
+						<a href="<?php echo $linkList; ?>"><i class="acymicon-pencil" title="<?php echo acym_translation('ACYM_EDIT'); ?>"></i></a>
+						<a><i class="acymicon-download fastActions"
+							  data-action="export"
+							  data-ctrl="users"
+							  data-acy-elementid="<?php echo acym_escape($list->id); ?>"
+							  title="<?php echo acym_translation('ACYM_EXPORT'); ?>"></i></a>
+						<i class="cursor-pointer acymicon-trash-o fastActions deleteFastAction"
+						   data-action="delete"
+						   data-acy-elementid="<?php echo acym_escape($list->id); ?>"
+						   title="<?php echo acym_translation('ACYM_DELETE'); ?>"></i>
 					</div>
 					<div class="medium-shrink hide-for-small-only text-center acym__listing__id">
                         <?php echo acym_escape($list->id); ?>

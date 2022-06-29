@@ -125,8 +125,8 @@ class plgAcymSubscriber extends acymPlugin
         }
 
         foreach ($fields as $field) {
-			$fieldKey = is_object($field) ? $field->namekey : $field;
-			$fieldName = is_object($field) ? acym_translation($field->name) : $field;
+            $fieldKey = is_object($field) ? $field->namekey : $field;
+            $fieldName = is_object($field) ? acym_translation($field->name) : $field;
             if (empty($descriptions[$fieldKey])) {
                 continue;
             }
@@ -677,29 +677,59 @@ class plgAcymSubscriber extends acymPlugin
     {
         $segmentClass = new SegmentClass();
         foreach ($followups as $key => $followup) {
-            if (!empty($followup->condition['segments_status']) && !empty($followup->condition['segments'])) {
-                $segments = $segmentClass->getByIds($followup->condition['segments']);
-                if (empty($segments)) continue;
+            if (empty($followup->condition['segments_status']) || empty($followup->condition['segments'])) continue;
 
-                $automationHelper = new AutomationHelper();
+            $segments = $segmentClass->getByIds($followup->condition['segments']);
+            if (empty($segments)) continue;
 
+            $mustMatch = $followup->condition['segments_status'] === 'is';
+
+            if ($mustMatch) {
                 foreach ($segments as $segment) {
-                    foreach ($segment->filters as $and => $andValues) {
-                        $and = intval($and);
-                        foreach ($andValues as $filterName => $options) {
-                            acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelper, &$options, &$and]);
+                    $segmentMatched = false;
+                    foreach ($segment->filters as $orBlock) {
+                        if ($this->isUserMatchingOr($userId, $orBlock)) {
+                            $segmentMatched = true;
+                            // No need to test the other OR blocks since one matched
+                            break;
+                        }
+                    }
+
+                    // Must match all segments and the user didn't match a segment
+                    if (!$segmentMatched) {
+                        unset($followups[$key]);
+
+                        return;
+                    }
+                }
+            } else {
+                foreach ($segments as $segment) {
+                    foreach ($segment->filters as $orBlock) {
+                        // Must not match the segments and the user matched at least one OR of a segment
+                        if ($this->isUserMatchingOr($userId, $orBlock)) {
+                            unset($followups[$key]);
+
+                            return;
                         }
                     }
                 }
-
-                $automationHelper->where[] = 'user.id = '.intval($userId);
-
-                $user = acym_loadResult($automationHelper->getQuery(['user.id']));
-
-                $status = $followup->condition['segments_status'] == 'is';
-                if (($status && empty($user)) || (!$status && !empty($user))) unset($followups[$key]);
             }
         }
+    }
+
+    private function isUserMatchingOr($userId, $orBlock)
+    {
+        $automationHelper = new AutomationHelper();
+        $automationHelper->where[] = 'user.id = '.intval($userId);
+        foreach ($orBlock as $and => $andValues) {
+            $and = intval($and);
+            foreach ($andValues as $filterName => $options) {
+                acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelper, &$options, &$and]);
+            }
+        }
+        $userMatchingOr = acym_loadResult($automationHelper->getQuery(['user.id']));
+
+        return !empty($userMatchingOr);
     }
 
     public function onAcymAfterUserModify(&$user, &$oldUser)

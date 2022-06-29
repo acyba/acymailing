@@ -133,6 +133,12 @@ class plgAcymJevents extends acymPlugin
                 'default' => true,
             ],
             [
+                'title' => 'ACYM_CLICKABLE_IMAGE',
+                'type' => 'boolean',
+                'name' => 'clickableimg',
+                'default' => false,
+            ],
+            [
                 'title' => 'ACYM_READ_MORE',
                 'type' => 'boolean',
                 'name' => 'readmore',
@@ -168,31 +174,31 @@ class plgAcymJevents extends acymPlugin
             if (!empty($jevCFParams->params)) {
                 $template = json_decode($jevCFParams->params)->template;
             }
+
             if (!empty($template)) {
                 $xmlfile = JPATH_SITE.DS.'plugins'.DS.'jevents'.DS.'jevcustomfields'.DS.'customfields'.DS.'templates'.DS.$template;
                 if (file_exists($xmlfile)) {
                     $xml = simplexml_load_file($xmlfile);
                     $jevCf = $xml->xpath('//fields/fieldset/field');
-                }
-            }
 
-            if (!empty($jevCf)) {
-                $customField = [
-                    'title' => 'ACYM_FIELDS_TO_DISPLAY',
-                    'type' => 'checkbox',
-                    'name' => 'custom',
-                    'separator' => ', ',
-                    'options' => [],
-                ];
-                foreach ($jevCf as $oneParam) {
-                    $name = $oneParam->attributes()->name;
-                    $label = $oneParam->attributes()->label;
-                    if (!empty($name) && !empty($label)) {
-                        $customField['options'][$name] = [$label, false];
+                    $customField = [
+                        'title' => 'ACYM_FIELDS_TO_DISPLAY',
+                        'type' => 'checkbox',
+                        'name' => 'custom',
+                        'separator' => ', ',
+                        'options' => [],
+                    ];
+
+                    foreach ($jevCf as $oneParam) {
+                        $name = (string)$oneParam->attributes()->name;
+                        $label = (string)$oneParam->attributes()->label;
+                        if (!empty($name) && !empty($label)) {
+                            $customField['options'][$name] = [$label, false];
+                        }
                     }
-                }
 
-                $displayOptions[] = $customField;
+                    $displayOptions[] = $customField;
+                }
             }
         }
 
@@ -720,7 +726,10 @@ class plgAcymJevents extends acymPlugin
 
                         if (!empty($filesRow->{'filename'.$i})) {
                             $varFields['{filepath'.$i.'}'] = $this->imgFolder.$filesRow->{'filename'.$i};
-                            if (!empty($tag->pluginFields)) $files[] = '<a target="_blank" href="'.$varFields['{filepath'.$i.'}'].'">'.(empty($filesRow->{'filename'.$i}) ? : $filesRow->{'filetitle'.$i}).'</a>';
+                            if (!empty($tag->pluginFields)) {
+                                $files[] = '<a target="_blank" href="'.$varFields['{filepath'.$i.'}'].'">'.(empty($filesRow->{'filename'.$i})
+                                        ? : $filesRow->{'filetitle'.$i}).'</a>';
+                            }
                         }
                     }
                     if (!empty($files)) $afterArticle .= implode('<br />', $files);
@@ -767,7 +776,7 @@ class plgAcymJevents extends acymPlugin
         $format->afterArticle = $afterArticle;
         $format->imagePath = $imagePath;
         $format->description = $contentText;
-        $format->link = empty($tag->clickable) ? '' : $link;
+        $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $link;
         $format->customFields = $customFields;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 

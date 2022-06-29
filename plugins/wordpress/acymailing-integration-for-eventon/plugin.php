@@ -136,6 +136,12 @@ class plgAcymEventon extends acymPlugin
                 'default' => true,
             ],
             [
+                'title' => 'ACYM_CLICKABLE_IMAGE',
+                'type' => 'boolean',
+                'name' => 'clickableimg',
+                'default' => false,
+            ],
+            [
                 'title' => 'ACYM_TRUNCATE',
                 'type' => 'intextfield',
                 'isNumber' => 1,
@@ -305,7 +311,8 @@ class plgAcymEventon extends acymPlugin
             }
         }
 
-        usort($events,
+        usort(
+            $events,
             function ($a, $b) {
                 return $a->meta_value > $b->meta_value ? -1 : 1;
             }
@@ -425,7 +432,8 @@ class plgAcymEventon extends acymPlugin
                 $ordering[0] = 'meta_value';
             }
 
-            usort($elements,
+            usort(
+                $elements,
                 function ($a, $b) use ($ordering) {
                     $orderColumn = $ordering[0];
 
@@ -521,7 +529,10 @@ class plgAcymEventon extends acymPlugin
             $varFields['{'.$name.'}'] = $property->value;
         }
 
-        $link = get_permalink($element->ID);
+        $link = get_post_meta($tag->id, 'evcal_exlink', true);
+        if (empty($link)) {
+            $link = get_permalink($element->ID);
+        }
         $varFields['{link}'] = $link;
 
         $title = '';
@@ -691,7 +702,11 @@ class plgAcymEventon extends acymPlugin
             ];
         }
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'">
+        $readmoreLink = get_post_meta($tag->id, 'evcal_lmlink', true);
+        if (empty($readmoreLink)) {
+            $readmoreLink = $link;
+        }
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$readmoreLink.'">
                 <span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span>
             </a>';
         if ($tag->readmore === '1') $afterArticle .= $varFields['{readmore}'];
@@ -703,7 +718,7 @@ class plgAcymEventon extends acymPlugin
         $format->afterArticle = $afterArticle;
         $format->imagePath = $imagePath;
         $format->description = $contentText;
-        $format->link = empty($tag->clickable) ? '' : $link;
+        $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $link;
         $format->customFields = $customFields;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 

@@ -65,6 +65,12 @@ class plgAcymWoocommerce extends acymPlugin
                     'info' => 'ACYM_COOKIE_EXPIRATION_DESC',
                     'post_text' => acym_translation('ACYM_HOURS'),
                 ],
+                'remove_VAT' => [
+                    'type' => 'switch',
+                    'label' => 'ACYM_REMOVE_VAT',
+                    'value' => 0,
+                    'info' => 'ACYM_REMOVE_VAT_DESC',
+                ],
             ];
         } else {
             $this->settings = [
@@ -150,6 +156,12 @@ class plgAcymWoocommerce extends acymPlugin
                 'type' => 'boolean',
                 'name' => 'clickable',
                 'default' => true,
+            ],
+            [
+                'title' => 'ACYM_CLICKABLE_IMAGE',
+                'type' => 'boolean',
+                'name' => 'clickableimg',
+                'default' => false,
             ],
             [
                 'title' => 'ACYM_TRUNCATE',
@@ -327,6 +339,12 @@ class plgAcymWoocommerce extends acymPlugin
                 'type' => 'boolean',
                 'name' => 'clickable',
                 'default' => true,
+            ],
+            [
+                'title' => 'ACYM_CLICKABLE_IMAGE',
+                'type' => 'boolean',
+                'name' => 'clickableimg',
+                'default' => false,
             ],
             [
                 'title' => 'ACYM_TRUNCATE',
@@ -637,7 +655,7 @@ class plgAcymWoocommerce extends acymPlugin
         $format->afterArticle = '';
         $format->imagePath = $imagePath;
         $format->description = $contentText;
-        $format->link = empty($tag->clickable) ? '' : $link;
+        $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $link;
         $format->customFields = $customFields;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 
@@ -1686,7 +1704,12 @@ class plgAcymWoocommerce extends acymPlugin
         $currency = $order->get_currency();
         if (empty($currency)) return $result;
 
-        $total = (float)$order->get_total() - $order->get_total_tax() - $order->get_total_shipping() - $order->get_shipping_tax();
+        $total = (float)$order->get_total() - $order->get_total_shipping();
+
+        $removeVat = (int)($this->getParam('remove_VAT', 0));
+        if ($removeVat) {
+            $total -= (float)$order->get_total_tax();
+        }
 
         $this->saveTrackingWoocommerceMailStat($formattedCookie, $total, $currency);
         $this->saveTrackingWoocommerceUserStat($formattedCookie, $total, $currency);

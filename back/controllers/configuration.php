@@ -94,10 +94,8 @@ class ConfigurationController extends acymController
         acym_trigger('onAcymGetSendingMethodsHtmlSetting', [&$data]);
 
         $data['embedImage'] = [];
-        acym_trigger('onAcymSendingMethodEmbedImage', [&$data]);
-
         $data['embedAttachment'] = [];
-        acym_trigger('onAcymSendingMethodEmbedAttachment', [&$data]);
+        acym_trigger('onAcymSendingMethodOptions', [&$data]);
     }
 
     public function prepareToolbar(&$data)
@@ -1454,6 +1452,46 @@ class ConfigurationController extends acymController
         acym_deleteFile($filename.'.zip');
 
         exit;
+    }
+
+    public function loginForAuth2()
+    {
+        $auth2Smtp = [
+            'smtp.gmail.com' => [
+                'baseUrl' => 'https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&',
+                'scope' => 'https%3A%2F%2Fmail.google.com%2F',
+            ],
+            'smtp-mail.outlook.com' => [
+                'baseUrl' => 'https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?response_mode=query&',
+                'scope' => 'openid%20offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fmail.read%20https%3A%2F%2Foutlook.office.com%2FSMTP.Send',
+            ],
+            'smtp.office365.com' => [
+                'baseUrl' => 'https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?response_mode=query&',
+                'scope' => 'openid%20offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fmail.read%20https%3A%2F%2Foutlook.office.com%2FSMTP.Send',
+            ],
+        ];
+
+        $this->store();
+
+        $smtpHost = $this->config->get('smtp_host');
+        $clientId = $this->config->get('smtp_clientId');
+        $clientSecret = $this->config->get('smtp_secret');
+        $redirect_url = $this->config->get('smtp_redirectUrl');
+
+        if (empty($clientId) || empty($clientSecret) || empty($smtpHost) || !array_key_exists($smtpHost, $auth2Smtp)) {
+            $this->listing();
+
+            return;
+        }
+
+        $redirectLink = $auth2Smtp[$smtpHost]['baseUrl'];
+        $redirectLink .= 'client_id='.urlencode($clientId);
+        $redirectLink .= '&response_type=code';
+        $redirectLink .= '&redirect_uri='.urlencode($redirect_url);
+        $redirectLink .= '&scope='.$auth2Smtp[$smtpHost]['scope'];
+        $redirectLink .= '&state=acymailing';
+
+        acym_redirect($redirectLink);
     }
 
     //__START__starter_

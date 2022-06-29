@@ -20,6 +20,7 @@ jQuery(document).ready(function ($) {
         acym_helperSelectionMultilingual.init('configuration');
         resetSubmitButtons();
         setAllowedHostsMultipleSelect();
+        acym_helperMailer.dislayAuth2Params();
     }
 
     Configuration();

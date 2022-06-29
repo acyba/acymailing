@@ -17,7 +17,7 @@ class plgAcymSendmail extends acymPlugin
     {
         $data['sendingMethods'][self::SENDING_METHOD_ID] = [
             'name' => $this->pluginDescription->name,
-            'image' => ACYM_IMAGES.'mailers/phpmail.svg',
+            'image' => ACYM_IMAGES.'mailers/sendmail.png',
             'image_class' => 'acym__selection__card__image__smaller',
         ];
     }

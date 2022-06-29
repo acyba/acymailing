@@ -216,6 +216,12 @@ class plgAcymEasyprofile extends acymPlugin
                 'default' => true,
             ],
             [
+                'title' => 'ACYM_CLICKABLE_IMAGE',
+                'type' => 'boolean',
+                'name' => 'clickableimg',
+                'default' => false,
+            ],
+            [
                 'title' => 'ACYM_DISPLAY_PICTURES',
                 'type' => 'pictures',
                 'name' => 'pictures',
@@ -367,7 +373,7 @@ class plgAcymEasyprofile extends acymPlugin
         $format->afterArticle = $afterArticle;
         $format->imagePath = $imagePath;
         $format->description = $contentText;
-        $format->link = empty($tag->clickable) ? '' : $link;
+        $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $link;
         $format->customFields = $customFields;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 

@@ -1,10 +1,12 @@
 jQuery(document).ready(function ($) {
-    let batchToDo = 0;//total calls to do
-    let batchWhereWeAre = 0;//At which batch we are
-    let totalCallsToDo = 0;//At which call we are on total
-    let totalCallWhereWeAre = 0;//At which call we are on total
-    let insertPerCall = 500; //We insert 500 element per call
-    let callsPerBatch = 10;//we do 10 calls at times
+    let batchToDo = 0; //total calls to do
+    let batchWhereWeAre = 0; //At which batch we are
+    let totalCallsToDo = 0; //At which call we are on total
+    let totalCallWhereWeAre = 0; //At which call we are on total
+    let insertPerCall = 500; //We insert 500 elements per call
+    let mailsPerCall = 50; //We insert 50 mails per call because they are voluminous
+    let callsPerBatch = 10; //we do 10 ajax calls at a time
+    let delayBetweenBatches = 2000;
     let numberOfElementToMigrate = 0;
     let percentageOfElement = 0;
     let widthProgressBar = 0;
@@ -110,24 +112,23 @@ jQuery(document).ready(function ($) {
         let error = false;
         let ajaxCalls = [];
         let asyncClear = '';
+        let numberOfItemsToMigrate = insertPerCall;
 
         // Avoid memory limit on newsletter migration
         if (element === 'mails') {
-            insertPerCall = 50;
-        } else {
-            insertPerCall = 500;
+            numberOfItemsToMigrate = mailsPerCall;
         }
 
         for (let i = 0 ; i < callsPerBatch ; i++) {
             if (totalCallWhereWeAre > totalCallsToDo) break;//If we did all the element
-            let currentElement = totalCallWhereWeAre * insertPerCall;
+            let currentElement = totalCallWhereWeAre * numberOfItemsToMigrate;
             let ajax = $.post(ACYM_AJAX_URL
                               + '&ctrl=dashboard&task=migrate&element='
                               + element
                               + '&currentElement='
                               + currentElement
                               + '&insertPerCalls='
-                              + insertPerCall);
+                              + numberOfItemsToMigrate);
             ajaxCalls.push(ajax);
             totalCallWhereWeAre++;
         }
@@ -150,7 +151,7 @@ jQuery(document).ready(function ($) {
                 // Prevent ddos protection from triggering
                 setTimeout(function () {
                     doOneBatchAjaxCalls(element, ajaxUrls, elements);
-                }, 2000);
+                }, delayBetweenBatches);
             }
         });
         return true;
@@ -179,10 +180,16 @@ jQuery(document).ready(function ($) {
                 if (response.indexOf('ERROR') !== -1) {
                     afterAjaxCall(true, element, ajaxUrls, elements, response);
                 } else {
+                    let numberOfItemsToMigrate = insertPerCall;
+
+                    // Avoid memory limit on newsletter migration
+                    if (element === 'mails') {
+                        numberOfItemsToMigrate = mailsPerCall;
+                    }
                     batchWhereWeAre = 0;
                     totalCallWhereWeAre = 0;
-                    batchToDo = Math.ceil(response / (insertPerCall * callsPerBatch));
-                    totalCallsToDo = Math.ceil(response / insertPerCall);
+                    batchToDo = Math.ceil(response / (numberOfItemsToMigrate * callsPerBatch));
+                    totalCallsToDo = Math.ceil(response / numberOfItemsToMigrate);
                     doOneBatchAjaxCalls(element, ajaxUrls, elements);
                 }
             }

@@ -20,12 +20,12 @@
 							   value="<?php echo empty($data['followup']->name) ? '' : acym_escape($data['followup']->name); ?>">
 					</div>
 					<div class="cell grid-x acym_vcenter">
-						<label for="acym__followup__email__name" class="cell large-4 medium-5">
+						<label for="acym__followup__email__display_name" class="cell large-4 medium-5">
                             <?php echo acym_translation('ACYM_DISPLAY_NAME').acym_info('ACYM_DISPLAY_NAME_DESC'); ?>
 						</label>
 						<input required
 							   type="text"
-							   id="acym__followup__email__name"
+							   id="acym__followup__email__display_name"
 							   class="cell medium-6"
 							   name="followup[display_name]"
 							   value="<?php echo empty($data['followup']->display_name) ? '' : acym_escape($data['followup']->display_name); ?>">
@@ -111,11 +111,13 @@
 				</div>
 				<div class="cell medium-auto grid-x text-right">
 					<div class="cell medium-auto"></div>
-					<button data-task="save" data-step="listing" type="submit" class="cell button-secondary medium-shrink button margin-bottom-1 medium-margin-bottom-0 margin-right-1 acy_button_submit">
-						<?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
+					<button data-task="save"
+							type="submit"
+							class="cell button-secondary medium-shrink button margin-bottom-1 medium-margin-bottom-0 margin-right-1 acy_button_submit">
+                        <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
 					</button>
 					<button data-task="save" data-step="followupSummary" type="submit" class="cell medium-shrink button margin-bottom-0 acy_button_submit">
-						<?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?><i class="acymicon-chevron-right"></i>
+                        <?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?><i class="acymicon-chevron-right"></i>
 					</button>
 				</div>
 			</div>

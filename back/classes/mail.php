@@ -1300,14 +1300,25 @@ CONTENT;
 
     public function isTransactionalMail($mail)
     {
-        if ($mail->type == self::TYPE_STANDARD) return false;
+        if ($mail->type === self::TYPE_STANDARD) {
+            return false;
+        }
 
-        if ($mail->type == self::TYPE_AUTOMATION) {
-            $query = 'SELECT step.triggers FROM #__acym_step AS step
-                        JOIN #__acym_condition AS acym_condition ON acym_condition.step_id = step.id
-                        JOIN #__acym_action AS action ON action.condition_id = acym_condition.id AND action.actions LIKE '.acym_escapeDB('%"acy_add_queue":{"mail_id":"13"%');
+        if ($mail->type === self::TYPE_AUTOMATION) {
+            $conditionType = acym_loadResult(
+                'SELECT `condition`.conditions
+                FROM #__acym_action AS `action` 
+                JOIN #__acym_condition AS `condition` ON `action`.condition_id = `condition`.id 
+                WHERE `action`.actions LIKE '.acym_escapeDB('%"acy_add_queue":{"mail_id":"'.$mail->id.'"%')
+            );
 
-            return empty(acym_loadResult($query));
+            if (empty($conditionType)) {
+                return true;
+            }
+
+            $conditions = json_decode($conditionType, true);
+
+            return empty($conditions['type_condition']) || $conditions['type_condition'] === 'user';
         }
 
         return true;

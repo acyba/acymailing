@@ -33,7 +33,7 @@ function acym_getFormToken()
     return '_wpnonce='.$token;
 }
 
-function acym_noTemplate($component = true)
+function acym_noTemplate()
 {
     return 'noheader=1';
 }

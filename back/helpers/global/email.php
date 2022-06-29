@@ -74,3 +74,18 @@ function acym_isValidEmail($email, $extended = false)
 
     return true;
 }
+
+function acym_isPunycode($email)
+{
+    return strpos($email, '@xn--') !== false;
+}
+
+function acym_getDomain($email)
+{
+    if (!is_string($email)) return '';
+
+    $aPos = strrpos($email, '@');
+    if (empty($aPos)) return '';
+
+    return substr($email, $aPos + 1);
+}

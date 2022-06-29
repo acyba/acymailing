@@ -68,7 +68,7 @@ class ListsController extends acymController
         $toolbarHelper->addButton(
             acym_translation('ACYM_EXPORT').' (<span id="acym__lists__listing__number_to_export" data-default="0"></span>)',
             ['data-task' => 'export', 'type' => 'submit', 'data-ctrl' => 'users', 'id' => 'acym__list__export'],
-            'upload'
+            'download'
         );
         $toolbarHelper->addOtherContent('<input type="hidden" name="preselectList" value="1" />');
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'settings'], 'playlist_add', true);

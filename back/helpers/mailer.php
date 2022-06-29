@@ -5,6 +5,8 @@ namespace AcyMailing\Helpers;
 require_once ACYM_INC.'phpmailer'.DS.'exception.php';
 require_once ACYM_INC.'phpmailer'.DS.'smtp.php';
 require_once ACYM_INC.'phpmailer'.DS.'phpmailer.php';
+require_once ACYM_INC.'phpmailer'.DS.'OAuthTokenProvider.php';
+require_once ACYM_INC.'phpmailer'.DS.'OAuth.php';
 require_once ACYM_INC.'emogrifier.php';
 
 use AcyMailing\Classes\CampaignClass;
@@ -14,7 +16,9 @@ use AcyMailing\Classes\UrlClass;
 use AcyMailing\Classes\UserClass;
 use acyPHPMailer\Exception;
 use acyPHPMailer\SMTP;
+use acyPHPMailer\OAuth;
 use acyPHPMailer\acyPHPMailer;
+use acyPHPMailer\OAuthTokenProvider;
 use acymEmogrifier\acymEmogrifier;
 
 class MailerHelper extends acyPHPMailer
@@ -32,7 +36,7 @@ class MailerHelper extends acyPHPMailer
 
     var $report = true;
     var $alreadyCheckedAddresses = false;
-	var $errorNumber = 0;
+    var $errorNumber = 0;
     //Error number which induct a new try soon
     var $errorNewTry = [1, 6];
     var $autoAddUser = false;
@@ -69,6 +73,13 @@ class MailerHelper extends acyPHPMailer
 
     public $isTest = false;
     public $isSpamTest = false;
+    public $isBounceForward = false;
+
+    public $clientId = '';
+    public $clientSecret = '';
+    public $refreshToken = '';
+    public $oauthToken = '';
+    public $expiredIn = '';
 
     public function __construct()
     {
@@ -107,8 +118,35 @@ class MailerHelper extends acyPHPMailer
                 $this->Host .= ':'.$port;
             }
             $this->SMTPAuth = (bool)$this->config->get('smtp_auth', true);
+
             $this->Username = trim($this->config->get('smtp_username'));
-            $this->Password = trim($this->config->get('smtp_password'));
+
+            $hostName = explode(':', $this->Host)[0];
+            if (OAuth::hostRequireOauth($hostName)) {
+                $this->AuthType = 'XOAUTH2';
+
+                $this->clientSecret = trim($this->config->get('smtp_secret'));
+                $this->clientId = trim($this->config->get('smtp_clientId'));
+                $this->refreshToken = trim($this->config->get('smtp_refresh_token'));
+                $this->oauthToken = trim($this->config->get('smtp_token'));
+                $this->expiredIn = trim($this->config->get('smtp_token_expireIn'));
+
+                $oauth = new OAuth(
+                    [
+                        'userName' => $this->Username,
+                        'clientSecret' => $this->clientSecret,
+                        'oauthToken' => $this->oauthToken,
+                        'clientId' => $this->clientId,
+                        'refreshToken' => $this->refreshToken,
+                        'expiredIn' => $this->expiredIn,
+                        'host'=>$hostName
+                    ]
+                );
+                $this->setOAuth($oauth);
+            } else {
+                $this->Password = trim($this->config->get('smtp_password'));
+            }
+
             //SMTP Secure to connect to Gmail for example (tls)
             $this->SMTPSecure = trim((string)$this->config->get('smtp_secured'));
 
@@ -299,8 +337,9 @@ class MailerHelper extends acyPHPMailer
             $this->_addReplyTo($replyToEmail, $replyToName);
         }
 
-        //Embed images if there is images to embed...
-        if ((bool)$this->config->get('embed_images', 0) && $this->Mailer != 'elasticemail') {
+        // Embed images if there are images to embed
+        $shouldEmbed = $this->config->get('embed_images', 0);
+        if (intval($shouldEmbed) === 1 && $this->Mailer !== 'elasticemail') {
             $this->embedImages();
         }
 
@@ -379,7 +418,7 @@ class MailerHelper extends acyPHPMailer
         $externalSending = false;
 
         $mailClass = new MailClass();
-        $isTransactional = $this->isTest || $this->isSpamTest || (!empty($this->defaultMail[$this->id]) && $mailClass->isTransactionalMail($this->defaultMail[$this->id]));
+        $isTransactional = $this->isBounceForward || $this->isTest || $this->isSpamTest || (!empty($this->defaultMail[$this->id]) && $mailClass->isTransactionalMail($this->defaultMail[$this->id]));
 
         acym_trigger('onAcymProcessQueueExternalSendingCampaign', [&$externalSending, $isTransactional]);
 
@@ -1117,12 +1156,14 @@ class MailerHelper extends acyPHPMailer
     protected function embedImages()
     {
         preg_match_all('/(src|background)=[\'|"]([^"\']*)[\'|"]/Ui', $this->Body, $images);
-        $result = true;
 
         if (empty($images[2])) {
-            return $result;
+            return true;
         }
 
+        $embedSuccess = true;
+
+        //TODO maybe handle web pictures (.webp)
         $mimetypes = [
             'bmp' => 'image/bmp',
             'gif' => 'image/gif',
@@ -1134,12 +1175,12 @@ class MailerHelper extends acyPHPMailer
             'tif' => 'image/tiff',
         ];
 
-        $allimages = [];
+        $allImages = [];
 
         foreach ($images[2] as $i => $url) {
             //We don't add twice the same images otherwise there is a bug
             //and the picture is really attached but not in hidden base64
-            if (isset($allimages[$url])) {
+            if (isset($allImages[$url])) {
                 continue;
             }
 
@@ -1148,19 +1189,10 @@ class MailerHelper extends acyPHPMailer
                 continue;
             }
 
-            $allimages[$url] = 1;
+            $allImages[$url] = 1;
 
             // We convert the url into local directory
-            $path = $url;
-            $base = str_replace(['http://www.', 'https://www.', 'http://', 'https://'], '', ACYM_LIVE);
-            $replacements = ['https://www.'.$base, 'http://www.'.$base, 'https://'.$base, 'http://'.$base];
-            foreach ($replacements as $oneReplacement) {
-                if (strpos($url, $oneReplacement) === false) {
-                    continue;
-                }
-                $path = str_replace([$oneReplacement, '/'], [ACYM_ROOT, DS], urldecode($url));
-                break;
-            }
+            $path = acym_internalUrlToPath($url);
             $path = $this->removeAdditionalParams($path);
 
             $filename = str_replace(['%', ' '], '_', basename($url));
@@ -1182,11 +1214,11 @@ class MailerHelper extends acyPHPMailer
             if ($this->addEmbeddedImage($path, $md5, $filename, 'base64', $mimetypes[$ext])) {
                 $this->Body = preg_replace('/'.preg_quote($images[0][$i], '/').'/Ui', $images[1][$i].'="'.$cid.'"', $this->Body);
             } else {
-                $result = false;
+                $embedSuccess = false;
             }
         }
 
-        return $result;
+        return $embedSuccess;
     }
 
     private function removeAdditionalParams($url)

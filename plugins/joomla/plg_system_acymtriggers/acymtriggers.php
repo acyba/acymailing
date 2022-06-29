@@ -345,6 +345,14 @@ class plgSystemAcymtriggers extends JPlugin
 
         if (!$this->initAcy()) return true;
         acym_trigger('onRegacyAfterRoute', []);
+
+        if (empty($_GET['code']) || empty($_GET['state'])) {
+            return;
+        }
+
+        if ($_GET['state'] === 'acymailing') {
+            acym_redirect(acym_completeLink('configuration&code='.$_GET['code'], false, true));
+        }
     }
 
     // Trigger for hikashop user creation

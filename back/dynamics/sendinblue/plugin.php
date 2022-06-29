@@ -153,11 +153,6 @@ class plgAcymSendinblue extends acymPlugin
         return $this->campaign->cleanCampaigns();
     }
 
-    public function onAcymSendingMethodEmbedAttachment(&$data)
-    {
-        $data['embedAttachment'][self::SENDING_METHOD_ID] = false;
-    }
-
     public function onAcymSynchronizeExistingUsers($sendingMethod)
     {
         if ($sendingMethod !== self::SENDING_METHOD_ID) return;
@@ -169,5 +164,11 @@ class plgAcymSendinblue extends acymPlugin
     {
         if ($this->config->get('mailer_method') != self::SENDING_METHOD_ID) return;
         $this->users->removeUserFromList($mailId);
+    }
+
+    public function onAcymSendingMethodOptions(&$data)
+    {
+        $data['embedImage'][self::SENDING_METHOD_ID] = false;
+        $data['embedAttachment'][self::SENDING_METHOD_ID] = false;
     }
 }

@@ -26,7 +26,7 @@
 
             <?php
             foreach ($data['newsletters'] as $oneNewsletter) {
-                $archiveURL = acym_frontendLink('archive&task=view&id='.$oneNewsletter->id.'&'.acym_noTemplate(false));
+                $archiveURL = acym_frontendLink('archive&task=view&id='.$oneNewsletter->id.'&'.acym_noTemplate());
 
                 if ($data['popup']) {
                     $iframeClass = 'acym__modal__iframe';
@@ -40,10 +40,9 @@
                 } else {
                     echo '<p class="acym__front__archive__raw"><a href="'.$archiveURL.'" target="_blank">'.$oneNewsletter->subject.'</a></p>';
                 }
-                echo '<p class="acym__front__archive__newsletter_sending-date">'.acym_translation('ACYM_SENDING_DATE').' : '.acym_date(
-                        $oneNewsletter->sending_date,
-                        'd M Y'
-                    ).'</p>';
+                echo '<p class="acym__front__archive__newsletter_sending-date">';
+                echo acym_translation('ACYM_SENDING_DATE').' : '.acym_date($oneNewsletter->sending_date, 'd M Y');
+                echo '</p>';
             }
 
             echo $data['pagination']->display('archive');

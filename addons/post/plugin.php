@@ -95,7 +95,7 @@ class plgAcymPost extends acymPlugin
 
         $defaultSizes = ['thumbnail', 'medium', 'medium_large', 'large', 'post-thumbnail'];
         $imageFeaturedSize = ['full' => 'ACYM_ORIGINAL_IMAGE_RESOLUTION'];
-        
+
         foreach (wp_get_registered_image_subsizes() as $sizeName => $sizes) {
             if (in_array($sizeName, $defaultSizes) && (!empty($sizes['width']) || !empty($sizes['height']))) {
                 $imageFeaturedSize[$sizeName] = $sizes['width'].'x'.$sizes['height'].'px';
@@ -121,6 +121,12 @@ class plgAcymPost extends acymPlugin
                 'type' => 'boolean',
                 'name' => 'clickable',
                 'default' => true,
+            ],
+            [
+                'title' => 'ACYM_CLICKABLE_IMAGE',
+                'type' => 'boolean',
+                'name' => 'clickableimg',
+                'default' => false,
             ],
             [
                 'title' => 'ACYM_TRUNCATE',
@@ -387,7 +393,7 @@ class plgAcymPost extends acymPlugin
         $format->afterArticle = $afterArticle;
         $format->imagePath = $imagePath;
         $format->description = $contentText;
-        $format->link = empty($tag->clickable) ? '' : $link;
+        $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $link;
         $format->customFields = $customFields;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 

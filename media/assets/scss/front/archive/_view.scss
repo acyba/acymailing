@@ -1,17 +1,10 @@
-.archive_view {
-    .hideonline {
-        display: none !important;
-    }
-
-    .revealonline {
-        display: block !important;
-    }
-}
-
-.contentpane {
-    .archive_view {
-        .row {
-            margin-left: inherit;
+#acym_wrapper {
+    #archive_view {
+        #email_preview_iframe {
+            width: 100%;
+            display: block;
+            margin: auto;
+            border: none;
         }
     }
 }

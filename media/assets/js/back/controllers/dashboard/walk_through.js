@@ -8,12 +8,13 @@ jQuery(document).ready(function ($) {
         setWalkthroughList();
         setStepFailToggle();
         setChoiceWalkthroughResult();
-        setPreventSubmit();
         acym_helperEditorWysid.initEditor();
         acym_helperMailer.setTestCredentialsSendingMethods();
         acym_helperMailer.setButtonCopyFromPlugin();
         acym_helperMailer.setSynchroExistingUsers();
         acym_helperSelectionPage.setSelectionElement(true, false, undefined, '#acym__selection__button-select');
+        acym_helperMailer.dislayAuth2Params();
+        acym_helperMailer.loginForAuth2();
     }
 
     function setSendingMethodSwitch() {
@@ -122,20 +123,6 @@ jQuery(document).ready(function ($) {
             $('[type="email"]').attr('type', 'text');
             $('#acym__walkthrough__skip').trigger('click');
         });
-        $('.acym__walkthrough__fail__choice').off('click').on('click', function () {
-            let $divToShow = $('.acym__walkthrough__fail__' + $(this).attr('data-show'));
-            if ($divToShow.is(':visible')) return true;
-            $('.selected').removeClass('selected');
-            $(this).addClass('selected');
-            $('.acym__walkthrough__fail__toggle-div').hide();
-            $divToShow.show();
-            $('[name="choice"]').val($(this).attr('data-show'));
-            if ($('.acym__walkthrough__fail__contact').is(':visible')) {
-                $('[name="email"]').attr('required', 'true');
-            } else {
-                $('[name="email"]').removeAttr('required');
-            }
-        });
     }
 
     $.walkthroughList = function () {
@@ -145,15 +132,6 @@ jQuery(document).ready(function ($) {
         }
         return true;
     };
-
-    function setPreventSubmit() {
-        $('.acym__walkthrough__fail__gmail input').off('keypress').on('keypress', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                return false;
-            }
-        });
-    }
 
     function attachLicence() {
         $('#acym__walk_through_license__button__license').on('click', function () {

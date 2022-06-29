@@ -93,6 +93,9 @@
 					</div>
                 <?php } ?>
 				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
+                    <?php echo acym_translation('ACYM_ACTIONS') ?>
+				</div>
+				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
                     <?php echo acym_translation('ACYM_ID'); ?>
 				</div>
 			</div>
@@ -107,8 +110,10 @@
 				</div>
 				<div class="grid-x medium-auto small-11 cell acym__campaign__listing acym__listing__title__container">
 					<div class="cell medium-auto small-7 acym__listing__title acym__campaign__title">
-                        <?php $linkTask = 'generated' == $data['status'] ? 'summaryGenerated' : 'edit&step=editEmail'; ?>
-						<a class="cell auto" href="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.$linkTask.'&id='.intval($campaign->id)); ?>">
+                        <?php $linkTask = 'generated' == $data['status'] ? 'summaryGenerated' : 'edit&step=editEmail';
+                        $linkCampaign = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.$linkTask.'&id='.intval($campaign->id));
+                        ?>
+						<a class="cell auto" href="<?php echo $linkCampaign; ?>">
 							<h6 class='acym__listing__title__primary acym_text_ellipsis'>
                                 <?php echo acym_escape($campaign->name); ?>
 							</h6>
@@ -290,7 +295,25 @@
                             );
                             ?>
 						</div>
-                    <?php } ?>
+                        <?php
+                    } ?>
+					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
+						<a href="<?php echo $linkCampaign; ?>"><i class="acymicon-pencil" title="<?php echo acym_translation('ACYM_EDIT'); ?>"></i></a>
+						<a><i class="acymicon-content_copy fastActions"
+							  data-action="duplicate"
+							  data-acy-elementid="<?php echo acym_escape($campaign->id); ?>"
+							  title="<?php echo acym_translation('ACYM_DUPLICATE'); ?>"></i></a>
+                        <?php
+                        $isFront = !acym_isAdmin() && ACYM_CMS == 'joomla';
+                        if (!acym_escape($campaign->draft) && !$isFront) { ?>
+							<a href="<?php echo acym_completeLink('stats&mail_ids='.acym_escape($campaign->mail_id));
+                            ?>"><i class="acymicon-insert_chart" title="<?php echo acym_translation('ACYM_STATISTICS'); ?>"></i></a>
+                        <?php } ?>
+						<i class="cursor-pointer acymicon-trash-o fastActions deleteFastAction"
+						   data-action="delete"
+						   data-acy-elementid="<?php echo acym_escape($campaign->id); ?>"
+						   title="<?php echo acym_translation('ACYM_DELETE'); ?>"></i>
+					</div>
 					<h6 class="large-1 hide-for-medium-only hide-for-small-only cell text-center acym__listing__text acym__campaign__listing__id">
                         <?php echo acym_escape($campaign->id); ?>
 					</h6>

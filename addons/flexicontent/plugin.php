@@ -128,6 +128,12 @@ class plgAcymFlexicontent extends acymPlugin
                 'default' => true,
             ],
             [
+                'title' => 'ACYM_CLICKABLE_IMAGE',
+                'type' => 'boolean',
+                'name' => 'clickableimg',
+                'default' => false,
+            ],
+            [
                 'title' => 'ACYM_TRUNCATE',
                 'type' => 'intextfield',
                 'isNumber' => 1,
@@ -342,7 +348,7 @@ class plgAcymFlexicontent extends acymPlugin
         $link = 'index.php?option=com_flexicontent&view=item&cid='.$item->catid.'&id='.$tag->id.':'.$item->alias;
         $link = $this->finalizeLink($link);
         $varFields['{link}'] = $link;
-        $format->link = empty($tag->clickable) ? '' : $link;
+        $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $link;
 
         $format->afterArticle = '';
 

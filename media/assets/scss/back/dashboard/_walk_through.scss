@@ -135,19 +135,6 @@
             color: $font-primary;
         }
 
-        .acym__walkthrough__fail__choice {
-            font-size: .9rem;
-            font-weight: 600;
-            color: $medium-gray;
-            transition: color .2s ease;
-            cursor: pointer;
-            text-decoration: underline;
-
-            &.selected {
-                color: $primary-color;
-            }
-        }
-
         #acym__walkthrough__success__img {
             width: 250px;
         }

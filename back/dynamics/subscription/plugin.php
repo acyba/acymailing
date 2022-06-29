@@ -1072,7 +1072,7 @@ class plgAcymSubscription extends acymPlugin
     {
         foreach ($followups as $key => $followup) {
             if (!empty($followup->condition['lists_status']) && !empty($followup->condition['lists'])) {
-                $status = $followup->condition['lists_status'] == 'is';
+                $status = $followup->condition['lists_status'] === 'is';
                 if ($followup->trigger == self::FOLLOWTRIGGER) {
                     $user = false;
                     foreach ($followup->condition['lists'] as $list) {

@@ -604,7 +604,6 @@ class SMTP
                     return false;
                 }
                 $oauth = $OAuth->getOauth64();
-
                 //Start authentication
                 if (!$this->sendCommand('AUTH', 'AUTH XOAUTH2 '.$oauth, 235)) {
                     return false;

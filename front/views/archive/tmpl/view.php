@@ -1,7 +1,8 @@
-<div id="acyarchiveview">
+<div id="archive_view">
 	<h1 class="contentheading"><?php echo $data['mail']->subject; ?></h1>
 
-	<div class="newsletter_body" style="min-width:80%" id="newsletter_preview_area"><?php echo $data['mail']->body; ?></div>
+	<input type="hidden" id="archive_view__content" value="<?php echo acym_escape($data['mail']->body); ?>" />
+	<div style="min-width:80%" id="archive_view__preview"><?php echo $data['mail']->body; ?></div>
 
     <?php
     $attachments = json_decode($data['mail']->attachments);

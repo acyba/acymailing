@@ -6,6 +6,7 @@ class plgAcymSmtp extends acymPlugin
 {
     const SENDING_METHOD_ID = 'smtp';
     const SENDING_METHOD_NAME = 'SMTP';
+    const HOST_REQUIRED_AUTH_2 = ['smtp.gmail.com', 'smtp-mail.outlook.com', 'smtp.office365.com'];
 
     public function __construct()
     {
@@ -24,6 +25,12 @@ class plgAcymSmtp extends acymPlugin
 
     public function onAcymGetSendingMethodsHtmlSetting(&$data)
     {
+        $this->getAccessToken();
+        $smtpRedirectUrl = trim($this->config->get('smtp_redirectUrl'));
+        $redirectUrl = empty($smtpRedirectUrl) ? acym_baseURI() : $smtpRedirectUrl;
+
+        $link = ACYM_DOCUMENTATION.'setup/configuration/mail-configuration/set-up-oauth-2.0';
+
         ob_start();
         ?>
 		<div class="send_settings grid-x cell" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
@@ -68,7 +75,6 @@ class plgAcymSmtp extends acymPlugin
                     ?>
 				</div>
 			</div>
-
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
                 <?php
                 echo acym_switch(
@@ -80,7 +86,6 @@ class plgAcymSmtp extends acymPlugin
                 );
                 ?>
 			</div>
-
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
                 <?php
                 echo acym_switch(
@@ -100,13 +105,37 @@ class plgAcymSmtp extends acymPlugin
 					   name="config[smtp_username]"
 					   value="<?php echo acym_escape($this->config->get('smtp_username')); ?>">
 			</div>
-			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-				<label for="smtp_password" class="cell"><?php echo acym_translation('ACYM_SMTP_PASSWORD').acym_info('ACYM_SMTP_PASSWORD_DESC'); ?></label>
-				<input id="smtp_password"
-					   class="cell"
-					   type="text"
-					   name="config[smtp_password]"
-					   value="<?php echo str_repeat('*', strlen($this->config->get('smtp_password'))); ?>">
+			<div class="acym__default_auth_sending_params cell">
+				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings" id="oauthParams">
+					<label for="smtp_password" class="cell"><?php echo acym_translation('ACYM_SMTP_PASSWORD').acym_info('ACYM_SMTP_PASSWORD_DESC'); ?></label>
+					<input id="smtp_password"
+						   class="cell"
+						   type="text"
+						   name="config[smtp_password]"
+						   value="<?php echo str_repeat('*', strlen($this->config->get('smtp_password'))); ?>">
+				</div>
+			</div>
+			<div class="acym__oauth2_sending_params cell">
+				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
+					<label for="smtp_clientId" class="cell"><?php echo acym_externalLink('ACYM_SMTP_CLIENT_ID', $link, false, true, []); ?></label>
+					<input id="smtp_clientId" class="cell" type="text" name="config[smtp_clientId]" value="<?php echo acym_escape($this->config->get('smtp_clientId')); ?>">
+				</div>
+				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
+					<label for="smtp_secret" class="cell"><?php echo acym_externalLink('ACYM_SMTP_CLIENT_SECRET', $link, false, true, []); ?></label>
+					<input id="smtp_secret" class="cell" type="text" name="config[smtp_secret]" value="<?php echo acym_escape($this->config->get('smtp_secret')); ?>">
+				</div>
+				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
+					<label for="smtp_redirectUrl" class="cell"><?php echo acym_translation('ACYM_SMTP_REDIRECT_URL'); ?></label>
+					<input id="smtp_redirectUrl" class="cell" type="text" name="config[smtp_redirectUrl]" value="<?php echo acym_escape($redirectUrl); ?>" readonly>
+				</div>
+				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
+					<button acym-data-before="jQuery.acymConfigSave();"
+							data-task="loginForAuth2"
+							class="button acy_button_submit button-secondary margin-bottom-1"
+							id="smtp_account_login">
+                        <?php echo acym_translation('ACYM_LOGIN'); ?>
+					</button>
+				</div>
 			</div>
 		</div>
         <?php
@@ -134,5 +163,69 @@ class plgAcymSmtp extends acymPlugin
             $data['smtp_password'] = WPMailSMTP\Helpers\Crypto::decrypt($wpMailSmtpSetting['smtp']['pass']);
         }
         //__END__wordpress_
+    }
+
+    public function onAcymDisplayPage()
+    {
+        $mailerMethod = trim($this->config->get('mailer_method'));
+        if ($mailerMethod != self::SENDING_METHOD_ID) return;
+
+        $clientId = trim($this->config->get('smtp_clientId'));
+        $secret = trim($this->config->get('smtp_secret'));
+        $host = trim($this->config->get('smtp_host'));
+
+        $requireAuth = in_array($host, self::HOST_REQUIRED_AUTH_2);
+
+        if ((empty($clientId) || empty($secret)) && $requireAuth) {
+            $link = '<a class="acym_message_link" href="'.acym_completeLink('configuration#oauthParams').'">'.strtolower(acym_translation('ACYM_HERE')).'</a>';
+            acym_enqueueMessage(acym_translationSprintf('ACYM_SMTP_OAUTH_WARNING', $link), 'warning');
+        }
+    }
+
+    public function getAccessToken()
+    {
+        $code = acym_getVar('string', 'code');
+        $clientId = trim($this->config->get('smtp_clientId'));
+        $secret = trim($this->config->get('smtp_secret'));
+        $host = trim($this->config->get('smtp_host'));
+        $smtpRedirectUrl = trim($this->config->get('smtp_redirectUrl'));
+        $redirectUrl = empty($smtpRedirectUrl) ? acym_baseURI() : $smtpRedirectUrl;
+        $scope = '';
+
+        if (empty($clientId) || empty($secret) || empty($code)) {
+            return;
+        }
+
+        if ($host === 'smtp.gmail.com') {
+            $url = 'https://oauth2.googleapis.com/token';
+        } else {
+            $url = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token';
+            $scope = 'https://outlook.office.com/SMTP.Send';
+        }
+
+        $params = ['client_id' => $clientId, 'grant_type' => 'authorization_code', 'client_secret' => $secret, 'code' => $code, 'redirect_uri' => $redirectUrl];
+
+        if (!empty($scope)) {
+            $params['scope'] = $scope;
+        }
+
+        $response = acym_makeCurlCall($url, $params);
+
+        if (empty($response['error'])) {
+            $token = $response['token_type'].' '.$response['access_token'];
+            $expireIn = time() + (int)$response['expires_in'];
+
+            $config = ['smtp_token' => $token, 'smtp_token_expireIn' => $expireIn];
+
+            if (!empty($response['refresh_token'])) {
+                $config['smtp_refresh_token'] = $response['refresh_token'];
+            }
+
+            $this->config->save($config);
+
+            acym_enqueueMessage(acym_translation('ACYM_SMTP_OAUTH_OK'), 'info');
+        } else {
+            acym_enqueueMessage(acym_translationSprintf('ACYM_SMTP_OAUTH_ERROR', $response['error']), 'error', false);
+        }
     }
 }

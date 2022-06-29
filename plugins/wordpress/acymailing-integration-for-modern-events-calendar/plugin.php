@@ -54,7 +54,7 @@ class plgAcymModerneventscalendar extends acymPlugin
 
             if ($this->fullInstalled) {
                 $bookingIsOn = get_option('mec_options', []);
-                if ($bookingIsOn["settings"]["booking_status"]) {
+                if ($bookingIsOn['settings']['booking_status']) {
                     $this->displayOptions = array_merge($this->displayOptions, $diplayBookingOption);
                 }
             }
@@ -104,6 +104,12 @@ class plgAcymModerneventscalendar extends acymPlugin
                 'type' => 'boolean',
                 'name' => 'clickable',
                 'default' => true,
+            ],
+            [
+                'title' => 'ACYM_CLICKABLE_IMAGE',
+                'type' => 'boolean',
+                'name' => 'clickableimg',
+                'default' => false,
             ],
             [
                 'title' => 'ACYM_TRUNCATE',
@@ -334,21 +340,31 @@ class plgAcymModerneventscalendar extends acymPlugin
         $varFields['{locationlatlong}'] = '';
         $varFields['{locationurl}'] = '';
         if (!empty($properties['mec_location_id']->value)) {
+            $locationTerm = get_term($properties['mec_location_id']->value);
+            if (!empty($locationTerm)) {
+                $varFields['{locationname}'] = $locationTerm->name;
+                $varFields['{location}'] = $varFields['{locationname}'];
+            }
+
             $addressDetails = get_term_meta($properties['mec_location_id']->value);
-            $location = [];
             if (!empty($addressDetails['address'][0])) {
                 $varFields['{locationaddress}'] = $addressDetails['address'][0];
-                $location[] = $addressDetails['address'][0];
             }
             if (!empty($addressDetails['latitude'][0]) || !empty($addressDetails['longitude'][0])) {
                 $varFields['{locationlatlong}'] = $addressDetails['latitude'][0].','.$addressDetails['longitude'][0];
-                $location[] = $addressDetails['latitude'][0].','.$addressDetails['longitude'][0];
             }
             if (!empty($addressDetails['url'][0])) {
                 $varFields['{locationurl}'] = $addressDetails['url'][0];
-                $location[] = '<a href="'.$addressDetails['url'][0].'" target="_blank">'.$addressDetails['url'][0].'</a>';
             }
-            $varFields['{location}'] = implode('<br />', $location);
+
+            if (!empty($varFields['{locationurl}'])) {
+                $varFields['{location}'] = '<a href="'.$varFields['{locationurl}'].'" target="_blank">'.$varFields['{location}'].'</a>';
+            } elseif (!empty($varFields['{locationaddress}'])) {
+                $varFields['{location}'] = '<a href="https://maps.google.com/?q='.urlencode($varFields['{locationaddress}']).'" target="_blank">'.$varFields['{location}'].'</a>';
+            } elseif (!empty($varFields['{locationlatlong}'])) {
+                $varFields['{location}'] = '<a href="https://maps.google.com/?q='.urlencode($varFields['{locationlatlong}']).'" target="_blank">'.$varFields['{location}'].'</a>';
+            }
+
             if (in_array('location', $tag->display) && !empty($varFields['{location}'])) {
                 $customFields[] = [
                     $varFields['{location}'],
@@ -570,7 +586,7 @@ class plgAcymModerneventscalendar extends acymPlugin
         $format->afterArticle = $afterArticle;
         $format->imagePath = $imagePath;
         $format->description = $contentText;
-        $format->link = empty($tag->clickable) ? '' : $link;
+        $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $link;
         $format->customFields = $customFields;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 
@@ -637,7 +653,33 @@ class plgAcymModerneventscalendar extends acymPlugin
 
             $query .= ' WHERE ('.implode(') AND (', $where).')';
 
-            $this->tags[$oneTag] = $this->finalizeCategoryFormat($query, $parameter, 'post');
+            if (!empty($parameter->order)) {
+                $ordering = explode(',', $parameter->order);
+                if ($ordering[0] === 'rand') {
+                    $query .= ' ORDER BY rand()';
+                } else {
+                    $table = 'post.';
+                    $column = $ordering[0];
+
+                    if (strpos($column, '.') !== false) {
+                        $parts = explode('.', $column, 2);
+                        $table = acym_secureDBColumn($parts[0]).'.';
+                        $column = $parts[1];
+                    }
+
+                    if ($column === 'post_date') {
+                        $query .= ' ORDER BY startdate.meta_value '.acym_secureDBColumn(trim($ordering[1])).', starthour.meta_value '.acym_secureDBColumn(trim($ordering[1]));
+                    } else {
+                        $query .= ' ORDER BY '.$table.'`'.acym_secureDBColumn(trim($column)).'` '.acym_secureDBColumn(trim($ordering[1]));
+                    }
+                }
+            }
+
+            $this->handleMax($query, $parameter);
+
+            $elements = acym_loadResultArray($query);
+
+            $this->tags[$oneTag] = $this->formatIndividualTags($elements, $parameter);
         }
 
         return $this->generateCampaignResult;

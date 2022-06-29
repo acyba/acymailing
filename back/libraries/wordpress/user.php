@@ -47,7 +47,7 @@ function acym_getGroups()
 
 function acym_punycode($email, $method = 'emailToPunycode')
 {
-    if (empty($email)) {
+    if (empty($email) || acym_isPunycode($email)) {
         return $email;
     }
 

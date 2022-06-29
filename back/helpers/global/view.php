@@ -108,6 +108,7 @@ function acym_getJSMessages()
         'ACYM_INSERT_IMG_BAD_NAME',
         'ACYM_NON_VALID_URL',
         'ACYM_ARE_YOU_SURE_DELETE',
+        'ACYM_ARE_YOU_SURE_DELETE_ONE',
         'ACYM_ARE_YOU_SURE_ACTIVE',
         'ACYM_ARE_YOU_SURE_INACTIVE',
         'ACYM_SEARCH',
@@ -346,6 +347,9 @@ function acym_getJSMessages()
         'ACYM_LOAD',
         'ACYM_CONFIRM_DELETION_ZONE',
         'ACYM_WIDGET_CAMPAIGN_NUMBER_PER_PAGE',
+        'ACYM_OTHER_ORGANIZER',
+        'ACYM_OTHER_LOCATION',
+        'ACYM_NEXT_OCCURRENCES',
     ];
 
     foreach ($keysToLoad as $oneKey) {

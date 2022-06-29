@@ -109,7 +109,7 @@ class plgAcymOnline extends acymPlugin
                 $link .= 'id={subscriber:id}&key={subscriber:key}';
                 $link .= $this->getLanguage($email->links_language);
             } else {
-                $link = 'archive&task=view&id='.$email->id.'&userid={subscriber:id}-{subscriber:key}&'.acym_noTemplate(false);
+                $link = 'archive&task=view&id='.$email->id.'&userid={subscriber:id}-{subscriber:key}&'.acym_noTemplate();
                 $link .= $this->getLanguage($email->links_language);
                 if (!empty($email->key)) $link .= '&key='.$email->key;
                 $link = acym_frontendLink($link);

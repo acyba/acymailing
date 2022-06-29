@@ -4,7 +4,7 @@
 	<div class="cell margin-bottom-1 acym__listing__actions grid-x">
         <?php
         $actions = ['delete' => acym_translation('ACYM_DELETE')];
-        echo acym_listingActions($actions, '', 'mails');
+        echo acym_listingActions($actions, '', acym_isAdmin() ? 'mails' : 'frontmails');
         ?>
 	</div>
 	<div class="cell grid-x">

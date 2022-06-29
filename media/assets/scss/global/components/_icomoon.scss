@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'acymicon';
-    src: url('fonts/acymicon.eot?ucorf2');
-    src: url('fonts/acymicon.eot?ucorf2#iefix') format('embedded-opentype'),
-    url('fonts/acymicon.ttf?ucorf2') format('truetype'),
-    url('fonts/acymicon.woff?ucorf2') format('woff'),
-    url('fonts/acymicon.svg?ucorf2#acymicon') format('svg');
+    src: url('fonts/acymicon.eot?s25nxj');
+    src: url('fonts/acymicon.eot?s25nxj#iefix') format('embedded-opentype'),
+    url('fonts/acymicon.ttf?s25nxj') format('truetype'),
+    url('fonts/acymicon.woff?s25nxj') format('woff'),
+    url('fonts/acymicon.svg?s25nxj#acymicon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -25,36 +25,8 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.acymicon-arrow-down:before {
-    content: "\e940";
-}
-
-.acymicon-arrow-up:before {
-    content: "\e941";
-}
-
-.acymicon-birthday-cake:before {
-    content: "\e93f";
-}
-
-.acymicon-life-bouy:before {
-    content: "\e93a";
-}
-
-.acymicon-external-link:before {
-    content: "\e939";
-}
-
-.acymicon-chevrons:before {
-    content: "\e935";
-}
-
-.acymicon-puzzle-piece:before {
-    content: "\e934";
-}
-
-.acymicon-filter:before {
-    content: "\f0b0";
+.acymicon-binoculars:before {
+    content: "\e985";
 }
 
 .acymicon-user:before {
@@ -523,6 +495,38 @@
 
 .acymicon-address-book-o:before {
     content: "\f2ba";
+}
+
+.acymicon-arrow-down:before {
+    content: "\e940";
+}
+
+.acymicon-arrow-up:before {
+    content: "\e941";
+}
+
+.acymicon-birthday-cake:before {
+    content: "\e93f";
+}
+
+.acymicon-life-bouy:before {
+    content: "\e93a";
+}
+
+.acymicon-external-link:before {
+    content: "\e939";
+}
+
+.acymicon-chevrons:before {
+    content: "\e935";
+}
+
+.acymicon-puzzle-piece:before {
+    content: "\e934";
+}
+
+.acymicon-filter:before {
+    content: "\f0b0";
 }
 
 .acymicon-vertical_align_bottom:before {

@@ -516,7 +516,7 @@ class ListClass extends acymClass
         $groupCondition = '';
         if (!empty($userFrontID)) {
             $userGroups = acym_getGroupsByUser($userFrontID);
-            $groupCondition = ' AND (access LIKE "%,'.implode(',%" OR access LIKE "%,', $userGroups).',%")';
+            $groupCondition = ' AND (cms_user_id = '.intval($userFrontID).' OR (access LIKE "%,'.implode(',%" OR access LIKE "%,', $userGroups).',%"))';
         }
 
         $lists = acym_loadObjectList('SELECT * FROM #__acym_list WHERE type = '.acym_escapeDB(self::LIST_TYPE_STANDARD).$groupCondition, 'id');

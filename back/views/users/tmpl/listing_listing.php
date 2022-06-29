@@ -78,6 +78,9 @@
 				<div class="cell medium-1 small-5 small-text-right medium-text-center acym__listing__header__title">
                     <?php echo acym_translation('ACYM_STATUS'); ?>
 				</div>
+				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
+                    <?php echo acym_translation('ACYM_ACTIONS') ?>
+				</div>
 				<div class="cell medium-shrink hide-for-small-only text-center acym__listing__header__title acym__listing__id">
                     <?php echo acym_translation('ACYM_ID'); ?>
 				</div>
@@ -85,6 +88,7 @@
 		</div>
         <?php
         foreach ($data['allUsers'] as $user) {
+            $linkUser = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&id='.$user->id);
             ?>
 			<div class="grid-x cell acym__listing__row">
 				<div class="medium-shrink small-1 cell">
@@ -92,7 +96,7 @@
 				</div>
 				<div class="grid-x medium-auto small-11 cell acym__listing__title__container">
 					<div class="grid-x cell small-9 medium-4 xlarge-3 acym__listing__title">
-						<a class="cell auto" href="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&id='.$user->id); ?>">
+						<a class="cell auto" href="<?php echo $linkUser; ?>">
 							<div><?php echo acym_escape($user->email); ?></div>
 						</a>
 					</div>
@@ -196,6 +200,17 @@
                             );
                         }
                         ?>
+					</div>
+					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
+						<a href="<?php echo $linkUser; ?>"><i class="acymicon-pencil" title="<?php echo acym_translation('ACYM_EDIT'); ?>"></i></a>
+						<a><i class="acymicon-download fastActions"
+							  data-action="export"
+							  data-acy-elementid="<?php echo acym_escape($user->id); ?>"
+							  title="<?php echo acym_translation('ACYM_EXPORT'); ?>"></i></a>
+						<i class="cursor-pointer acymicon-trash-o fastActions deleteFastAction"
+						   data-action="delete"
+						   data-acy-elementid="<?php echo acym_escape($user->id); ?>"
+						   title="<?php echo acym_translation('ACYM_DELETE'); ?>"></i>
 					</div>
 					<div class="text-center medium-shrink hide-for-small-only acym__listing__text acym__listing__id"><?php echo acym_escape($user->id); ?></div>
 				</div>

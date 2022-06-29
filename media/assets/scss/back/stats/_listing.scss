@@ -52,6 +52,12 @@
             .select2-selection__clear {
                 display: none;
             }
+
+            li.select2-selection__choice {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 95%;
+            }
         }
 
         #acym_stats_global {

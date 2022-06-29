@@ -84,10 +84,8 @@ class plgAcymContactform7 extends acymPlugin
 
         if (!empty($submitted)) return '';
 
-        $this->loadCSS('acymcontactform', false, ACYM_PLUGINS_URL.'/'.basename(__DIR__));
+        $style = '<link rel="stylesheet" href="'.ACYM_PLUGINS_URL.'/'.basename(__DIR__).DS.'css'.DS.'acymcontactform.css" type="text/css">';
         $this->loadJavascript('acymcontactform', false, ACYM_PLUGINS_URL.'/'.basename(__DIR__));
-
-        if (empty($tag->name)) return '';
 
         $class = wpcf7_form_controls_class($tag->type);
         $tagName = $tag->name;
@@ -121,7 +119,7 @@ class plgAcymContactform7 extends acymPlugin
             'acymSubmitUrl' => $acymSubmitUrl,
         ];
 
-        return $this->includeView('acymsubDisplay', $data, __DIR__);
+        return $style.$this->includeView('acymsubDisplay', $data, __DIR__);
     }
 
     protected function prepareLists($values)

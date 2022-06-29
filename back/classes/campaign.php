@@ -927,6 +927,7 @@ class CampaignClass extends acymClass
     {
         $mailId = $newMail->id;
         unset($newMail->id);
+        $newMail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
         $newMail->name .= ' #'.$generatedMail;
 
         $mailClass = new MailClass();

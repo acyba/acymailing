@@ -193,7 +193,7 @@ class ImportHelper extends acymObject
         }
 
         $query = 'INSERT IGNORE INTO #__acym_user_has_list (`user_id`,`list_id`,`status`,`subscription_date`) ';
-        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time())).' 
+        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time() - date('Z'))).' 
                     FROM #__acym_list AS list, #__acym_user AS user ';
         $conditions = [];
         $conditions[] = 'list.`id` IN ('.implode(',', $listsSubscribe).')';
@@ -308,7 +308,7 @@ class ImportHelper extends acymObject
         }
 
         $query = 'INSERT IGNORE INTO #__acym_user_has_list (`user_id`,`list_id`,`status`,`subscription_date`) ';
-        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time())).' 
+        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time() - date('Z'))).' 
                     FROM #__acym_list AS list, #__acym_user AS user 
                     WHERE list.`id` IN ('.implode(',', $listsSubscribe).') 
                         AND user.`email` IN (SELECT '.acym_secureDBColumn($select['`email`']).' FROM '.acym_secureDBColumn($table).')';
@@ -367,7 +367,7 @@ class ImportHelper extends acymObject
         }
 
         $query = 'INSERT IGNORE INTO #__acym_user_has_list (`user_id`,`list_id`,`status`,`subscription_date`) ';
-        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time())).'
+        $query .= 'SELECT user.`id`, list.`id`, 1, '.acym_escapeDB(date('Y-m-d H:i:s', time() - date('Z'))).'
                     FROM #__acym_list AS list, #__acym_user AS user ';
         $conditions = [];
         $conditions[] = 'list.`id` IN ('.implode(',', $listsSubscribe).')';
@@ -1052,7 +1052,7 @@ class ImportHelper extends acymObject
         //All users are known as : $this->allSubid
         if (empty($this->allSubid)) return true;
 
-        $subdate = date('Y-m-d H:i:s', time());
+        $subdate = date('Y-m-d H:i:s', time() - date('Z'));
 
         $listClass = new ListClass();
         $lists = $this->getImportedLists();

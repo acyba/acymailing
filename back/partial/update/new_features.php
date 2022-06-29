@@ -5,7 +5,7 @@
 			<img src="<?php echo ACYM_IMAGES.'splashscreen/header_airplane.png'; ?>" alt="planes" class="acym__splashcreen__header__planes">
 			<div class="cell auto"></div>
 			<div class="cell medium-6 grid-x grid-margin-y">
-				<h1 class="cell">AcyMailing 7.8 has arrived 🎉</h1>
+				<h1 class="cell">AcyMailing 7.9 has arrived 🎉</h1>
 				<p class="cell">Features and improvements come in your plugin, find out what’s new!</p>
                 <?php
                 //__START__starter_
@@ -35,9 +35,10 @@
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_1.png'; ?>" alt="card_1_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">EventON Calendar integration</h4>
-					<p class="cell acym__splashcreen__body__card__text">EventON calendar is a plugin that allows users to schedule and organize events on WordPress. With this
-						integration, you can insert this plugin's events directly into your AcyMailing emails.</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Statistics by list</h4>
+					<p class="cell acym__splashcreen__body__card__text">
+						Access the statistics, choose the email you just sent and get access to "Statistics per list" to see the efficiency of your newsletter based on your lists.
+					</p>
 				</div>
 				<div class="cell medium-4 acym__splashcreen__body__card grid-x">
 					<div class="cell grid-x align-center">
@@ -45,9 +46,11 @@
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_2.png'; ?>" alt="card_2_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">EasySocial integration</h4>
-					<p class="cell acym__splashcreen__body__card__text">EasySocial allows you to transform your website into a social media-like website. You can now use the
-						EasySocial information about your users for segmentation, insert events in your emails, filter your users on their profile type and much more!</p>
+					<h4 class="cell acym__splashcreen__body__card__title">Reusable zones in the editor</h4>
+					<p class="cell acym__splashcreen__body__card__text">
+						You can now save zones along with their blocks, and reuse them in other emails! Save time designing your newsletters by clicking the save button at the
+						top-right of a zone.
+					</p>
 				</div>
 				<div class="cell medium-4 acym__splashcreen__body__card grid-x">
 					<div class="cell grid-x align-center">
@@ -55,10 +58,10 @@
 							<img src="<?php echo ACYM_IMAGES.'splashscreen/card_3.png'; ?>" alt="card_3_image">
 						</div>
 					</div>
-					<h4 class="cell acym__splashcreen__body__card__title">Rename your lists for your audience</h4>
-					<p class="cell acym__splashcreen__body__card__text">You can now name a list easing your personal organization without your audience being able to see it.
-						For example: You can name a list on your dashboard "Weekly news subscribers" and your users will see a different name on the subscription forms, like
-						"Latest News".
+					<h4 class="cell acym__splashcreen__body__card__title">Pop-up activated by scroll</h4>
+					<p class="cell acym__splashcreen__body__card__text">
+						You can now program your pop-up subscription forms to appear after the users scrolled x% of your page! A nice way to increase your subscription rate by
+						making sure that users are interested in your content.
 					</p>
 				</div>
 			</div>
@@ -74,9 +77,11 @@
 							</div>
 						</div>
 						<div class="cell auto grid-x">
-							<h2 class="cell acym__splashcreen__body__middle__right__title">Mass subscribe users to follow-ups</h2>
-							<p class="cell acym__splashcreen__body__middle__right__text">A new action is now available in the automations, allowing you to subscribe filtered users
-								to an existing follow-up campaign</p>
+							<h2 class="cell acym__splashcreen__body__middle__right__title">Design your emails faster</h2>
+							<p class="cell acym__splashcreen__body__middle__right__text">
+								Our drag&drop editor is now 5.5 times faster than the previous version! It is more fluid and with new functionalities, we really wanted to improve
+								your experience on AcyMailing!
+							</p>
 						</div>
 					</div>
 				</div>
@@ -87,17 +92,20 @@
 					<div class="cell margin-bottom-1 text-center">
 						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_1.png'; ?>" alt="">
 					</div>
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Brand new templates</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">New templates are available by default in AcyMailing. Discover brand new themes and
-						inspiration, to improve your content and your campaigns.</p>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Rename your lists for your audience</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">
+						You can now name a list easing your personal organization without your audience being able to see it.
+						For example: You can name a list on your dashboard "Weekly news subscribers" and your users will see "Latest News" on your subscription forms.
+					</p>
 				</div>
 				<div class="cell medium-6 acym__splashcreen__body__end__card">
 					<div class="cell margin-bottom-1 text-center">
 						<img src="<?php echo ACYM_IMAGES.'splashscreen/end_card_2.png'; ?>" alt="">
 					</div>
-					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Filter your users by segment</h2>
-					<p class="cell text-center acym__splashcreen__body__end__card__text">A new feature has been added to your subscribers listing to refine your search. Get to know
-						your audience better, and visualize the population of your segments better.</p>
+					<h2 class="cell text-center acym__splashcreen__body__end__card__title">Mass subscribe users to follow-ups</h2>
+					<p class="cell text-center acym__splashcreen__body__end__card__text">
+						A new action is now available in the automations, allowing you to subscribe filtered users to an existing follow-up campaign
+					</p>
 				</div>
 			</div>
 		</div>

@@ -210,6 +210,12 @@ class plgAcymVirtuemart extends acymPlugin
                     'default' => true,
                 ],
                 [
+                    'title' => 'ACYM_CLICKABLE_IMAGE',
+                    'type' => 'boolean',
+                    'name' => 'clickableimg',
+                    'default' => false,
+                ],
+                [
                     'title' => 'ACYM_TRUNCATE',
                     'type' => 'intextfield',
                     'isNumber' => 1,
@@ -683,7 +689,7 @@ class plgAcymVirtuemart extends acymPlugin
         $format->afterArticle = $afterArticle;
         $format->imagePath = $imagePath;
         $format->description = $contentText;
-        $format->link = empty($tag->clickable) ? '' : $link;
+        $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $link;
         $format->customFields = $customFields;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 

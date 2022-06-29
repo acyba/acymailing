@@ -569,7 +569,7 @@ class CampaignsController extends acymController
             $followup = new \stdClass();
             $followup->name = '';
             $followup->display_name = '';
-            $followup->creation_date = date('Y-m-d H:i:s', time());
+            $followup->creation_date = date('Y-m-d H:i:s', time() - date('Z'));
             $followup->trigger = $trigger;
             $followup->condition = json_encode($followupData['condition']);
             $followup->active = 0;
@@ -626,16 +626,17 @@ class CampaignsController extends acymController
                 'unsubscribe_email_link' => acym_completeLink('mails&task=edit&type='.$mailClass::TYPE_UNSUBSCRIBE.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
             ];
         } else {
-            $returnUrl = urlencode(base64_encode(acym_frontendLink('frontcampaigns')));
+            global $Itemid;
+            $itemId = empty($Itemid) ? '' : '&Itemid='.$Itemid;
+            $returnUrl = urlencode(base64_encode(acym_frontendLink('frontcampaigns'.$itemId)));
+
+            $welcomeUnsub = '&list_id={dataid}&type_editor=acyEditor'.$itemId.'&return='.$returnUrl;
             $data = [
                 'lists' => $listClass->getAllForSelect(true, acym_currentUserId()),
-                'campaign_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=now'),
-                'campaign_auto_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=auto'),
-                'campaign_scheduled_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'),
-                'welcome_email_link' => acym_frontendLink('frontmails&task=edit&type='.$mailClass::TYPE_WELCOME.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
-                'unsubscribe_email_link' => acym_frontendLink(
-                    'frontmails&task=edit&type='.$mailClass::TYPE_UNSUBSCRIBE.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl
-                ),
+                'campaign_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=now'.$itemId),
+                'campaign_scheduled_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'.$itemId),
+                'welcome_email_link' => acym_frontendLink('frontmails&task=edit&type='.$mailClass::TYPE_WELCOME.$welcomeUnsub),
+                'unsubscribe_email_link' => acym_frontendLink('frontmails&task=edit&type='.$mailClass::TYPE_UNSUBSCRIBE.$welcomeUnsub),
             ];
         }
         $data['menuClass'] = $this->menuClass;
@@ -646,7 +647,7 @@ class CampaignsController extends acymController
     private function prepareSegmentDisplay(&$data, $sendingParams)
     {
         $data['menuClass'] = $this->menuClass;
-        $data['displaySegmentTab'] = empty($sendingParams) ? false : array_key_exists('segment', $sendingParams);
+        $data['displaySegmentTab'] = !empty($sendingParams) && array_key_exists('segment', $sendingParams);
     }
 
     public function chooseTemplate()
