@@ -365,7 +365,11 @@ if (typeof submitAcymForm !== 'function') {
         if (undefined != varform.elements['acymformtype']) {
             formType = varform.elements['acymformtype'].value;
         }
-        let redirect = varform.elements['redirect'].value;
+
+        let redirect = '';
+        if (undefined != varform.elements['redirect']) {
+            redirect = varform.elements['redirect'].value;
+        }
 
         // If no ajax, submit the form
         if ('shortcode' == formType || !varform.elements['ajax'] || !varform.elements['ajax'].value || varform.elements['ajax'].value === '0' || varform.elements['ajax'].value === 0) {

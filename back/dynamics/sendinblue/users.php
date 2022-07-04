@@ -18,7 +18,9 @@ class SendinblueUsers extends SendinblueClass
         $sendingMethod = $this->config->get('mailer_method', 'phpmail');
         if ($sendingMethod != plgAcymSendinblue::SENDING_METHOD_ID) return;
 
-        $nameParts = explode(' ', $user->name, 2);
+        $userName = empty($user->name) ? '' : $user->name;
+
+        $nameParts = explode(' ', $userName, 2);
         $userData = [
             'email' => $user->email,
             'attributes' => [
