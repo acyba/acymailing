@@ -116,9 +116,15 @@ const acym_helperMailer = {
             'smtp.office365.com'
         ];
 
+        let outlookSmtp = [
+            'smtp-mail.outlook.com',
+            'smtp.office365.com'
+        ];
+
         let smtpHost = jQuery('#smtp_host');
         let oauth2SendingParams = jQuery('.acym__oauth2_sending_params');
         let defaultSendingParams = jQuery('.acym__default_auth_sending_params');
+        let tenantContainer = jQuery('#smtp_tenant_container');
 
         defaultSendingParams.show();
         oauth2SendingParams.hide();
@@ -128,20 +134,25 @@ const acym_helperMailer = {
             defaultSendingParams.hide();
         }
 
+        if (!outlookSmtp.includes(smtpHost.val().trim())) {
+            tenantContainer.hide();
+        }
+
         smtpHost.on('keyup', function () {
-            let showOauth2SendingParams = false;
-            auth2Smtp.forEach(host => {
-                if (smtpHost.val().trim().includes(host)) {
-                    showOauth2SendingParams = true;
-                }
-            });
-            if (showOauth2SendingParams) {
+            if (auth2Smtp.includes(smtpHost.val().trim())) {
                 oauth2SendingParams.show();
                 defaultSendingParams.hide();
             } else {
                 defaultSendingParams.show();
                 oauth2SendingParams.hide();
             }
+
+            if (outlookSmtp.includes(smtpHost.val().trim())) {
+                tenantContainer.show();
+            } else {
+                tenantContainer.hide();
+            }
         });
+
     }
 };

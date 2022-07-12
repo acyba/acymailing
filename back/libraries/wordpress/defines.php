@@ -156,8 +156,8 @@ define(
                 'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-modern-events-calendar/',
             ],
             (object)[
-                'name' => 'RSS content',
-                'description' => '- Insert content in your emails from an RSS link',
+                'name' => 'RSS and Atom feeds',
+                'description' => '- Insert content in your emails from an RSS feed<br />- Insert content in your emails from an Atom feed',
                 'image' => 'rss.png',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/rss-feed',

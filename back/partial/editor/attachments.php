@@ -10,10 +10,6 @@ if (!empty($data['mailInformation'])) $data['mail'] = $data['mailInformation'];
 
             $onlyFilename = end($onlyFilename);
 
-            if (strlen($onlyFilename) > 40) {
-                $onlyFilename = substr($onlyFilename, 0, 15)."...".substr($onlyFilename, strlen($onlyFilename) - 15);
-            }
-
             echo '<div class="acym__listing__row cell grid-x" id="acym__campaigns__attach__del'.$i.'">';
 
             echo acym_tooltip(

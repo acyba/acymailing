@@ -7,7 +7,7 @@ class plgAcymRss extends acymPlugin
     public function __construct()
     {
         parent::__construct();
-        $this->pluginDescription->name = 'RSS';
+        $this->pluginDescription->name = 'RSS and Atom feeds';
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.svg';
 
         if ($this->installed) {
@@ -174,23 +174,44 @@ class plgAcymRss extends acymPlugin
             }
 
             $resultfeeds = [];
-            foreach ($rssDoc->channel->item as $oneFeed) {
-                if (count($resultfeeds) >= $maxArticle) break;
+            if (empty($rssDoc->channel)) {
+                foreach ($rssDoc->entry as $oneFeed) {
+                    if (count($resultfeeds) >= $maxArticle) break;
 
-                if (!empty($oneFeed->pubDate)) {
-                    $date = str_replace('&apos;', "'", $oneFeed->pubDate->__toString());
-                    $date = strtotime($date);
+                    if (!empty($oneFeed->published)) {
+                        $date = str_replace('&apos;', "'", $oneFeed->published->__toString());
+                        $date = strtotime($date);
 
-                    if (!empty($parameter->min_publish) && $date < $parameter->min_publish) {
-                        break;
+                        if (!empty($parameter->min_publish) && $date < $parameter->min_publish) {
+                            break;
+                        }
+
+                        if (!empty($lastGenerated) && $date < $lastGenerated) {
+                            break;
+                        }
                     }
 
-                    if (!empty($lastGenerated) && $date < $lastGenerated) {
-                        break;
-                    }
+                    $resultfeeds[] = $this->getItemView($oneFeed, $parameter, 'ATOM');
                 }
+            } else {
+                foreach ($rssDoc->channel->item as $oneFeed) {
+                    if (count($resultfeeds) >= $maxArticle) break;
 
-                $resultfeeds[] = $this->getItemView($oneFeed, $parameter);
+                    if (!empty($oneFeed->pubDate)) {
+                        $date = str_replace('&apos;', "'", $oneFeed->pubDate->__toString());
+                        $date = strtotime($date);
+
+                        if (!empty($parameter->min_publish) && $date < $parameter->min_publish) {
+                            break;
+                        }
+
+                        if (!empty($lastGenerated) && $date < $lastGenerated) {
+                            break;
+                        }
+                    }
+
+                    $resultfeeds[] = $this->getItemView($oneFeed, $parameter, 'RSS');
+                }
             }
 
             if (!empty($parameter->min) && count($resultfeeds) < $parameter->min) {
@@ -216,7 +237,7 @@ class plgAcymRss extends acymPlugin
         return $this->generateCampaignResult;
     }
 
-    public function getItemView($oneFeed, $parameter)
+    public function getItemView($oneFeed, $parameter, $type)
     {
         $title = '';
         $afterTitle = '';
@@ -227,66 +248,105 @@ class plgAcymRss extends acymPlugin
         $customFields = [];
 
         $varFields['{title}'] = $oneFeed->title->__toString();
-        if (in_array('title', $parameter->display)) $title = $varFields['{title}'];
+        if (in_array('title', $parameter->display)) {
+            $title = $varFields['{title}'];
+        }
+
         $varFields['{link}'] = strlen($oneFeed->link->__toString()) > 0 ? trim($oneFeed->link->__toString()) : '';
-        if (strlen($oneFeed->link->__toString()) > 0) {
+        if (!empty($varFields['{link}'])) {
             $link = $varFields['{link}'];
         }
 
         $varFields['{enclosure}'] = '';
-        if ($oneFeed->enclosure) {
-            $url = $oneFeed->enclosure['url']->__toString();
-            $extension = acym_fileGetExt($url);
-            if (in_array($extension, ['jpg', 'gif', 'png', 'jpeg'])) {
-                $imagePath = $url;
-            }
-            $varFields['{enclosure}'] = $imagePath;
+        $varFields['{picthtml}'] = '';
 
-            if (!in_array('enclosure', $parameter->display)) $imagePath = '';
+        if ($type === 'RSS') {
+            if ($oneFeed->enclosure && !empty($oneFeed->enclosure['url'])) {
+                $url = $oneFeed->enclosure['url']->__toString();
+                $extension = acym_fileGetExt($url);
+                if (in_array($extension, ['jpg', 'gif', 'png', 'jpeg'])) {
+                    $imagePath = $url;
+                }
+            }
+        } else {
+            $namespaces = $oneFeed->getNamespaces(true);
+            if (!empty($namespaces['media'])) {
+                $media = $oneFeed->children($namespaces['media']);
+                if (!empty($media) && $media->group && $media->group->thumbnail) {
+                    $attributes = $media->group->thumbnail->attributes();
+                    if (!empty($attributes) && $attributes->url) {
+                        $imagePath = $media->group->thumbnail->attributes()->url->__toString();
+                    }
+                }
+            }
+        }
+        if (!empty($imagePath)) {
+            $varFields['{enclosure}'] = $imagePath;
+            $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
+            if (!in_array('enclosure', $parameter->display)) {
+                $imagePath = '';
+            }
         }
 
-        $varFields['{desc}'] = $oneFeed->description ? $oneFeed->description->__toString() : '';
-        if (in_array('desc', $parameter->display) && $oneFeed->description) {
+        if ($type === 'RSS') {
+            $varFields['{desc}'] = $oneFeed->description ? $oneFeed->description->__toString() : '';
+        } else {
+            $varFields['{desc}'] = $oneFeed->summary ? $oneFeed->summary->__toString() : ($oneFeed->content ? $oneFeed->content->__toString() : '');
+            if (empty($varFields['{desc}'])) {
+                $namespaces = $oneFeed->getNamespaces(true);
+                if (!empty($namespaces['media'])) {
+                    $media = $oneFeed->children($namespaces['media']);
+                    if (!empty($media) && $media->group && $media->group->description) {
+                        $varFields['{desc}'] = $media->group->description->__toString();
+                    }
+                }
+            }
+        }
+
+        if (in_array('desc', $parameter->display) && !empty($varFields['{desc}'])) {
             $contentText = $varFields['{desc}'];
         }
 
-        $varFields = array_merge(
-            $varFields,
-            [
-                '{picthtml}' => '<img alt="" src="'.$imagePath.'">',
-                '{authors}' => '',
-                '{date}' => '',
-            ]
-        );
+        $varFields['{authors}'] = '';
+        $varFields['{date}'] = '';
 
-        $dcTags = $oneFeed->children('http://purl.org/dc/elements/1.1/');
-        $authors = $oneFeed->children('author');
-        if (strlen($authors->__toString()) == 0) {
-            $authors = $dcTags->creator;
-        } else {
-            $authors = $oneFeed->creator;
-        }
-        if (strlen($authors->__toString()) > 0) {
-            $textAuthors = [];
-            foreach ($authors as $oneAuthor) {
-                $textAuthors[] = $oneAuthor->__toString();
+        if ($type === 'RSS') {
+            $dcTags = $oneFeed->children('http://purl.org/dc/elements/1.1/');
+            $authors = $oneFeed->children('author');
+            if (strlen($authors->__toString()) == 0) {
+                $authors = $dcTags->creator;
+            } else {
+                $authors = $oneFeed->creator;
             }
-            $varFields['{authors}'] = $textAuthors;
-        }
-        if (in_array('author', $parameter->display)) {
 
+            if (strlen($authors->__toString()) > 0) {
+                $textAuthors = [];
+                foreach ($authors as $oneAuthor) {
+                    $textAuthors[] = $oneAuthor->__toString();
+                }
+                $varFields['{authors}'] = $textAuthors;
+            }
+        } else {
+            if ($oneFeed->author && $oneFeed->author->name) {
+                $varFields['{authors}'] = $oneFeed->author->name->__toString();
+            }
+        }
+
+        if (in_array('author', $parameter->display) && !empty($varFields['{authors}'])) {
             $customFields[] = [
                 $varFields['{authors}'],
                 acym_translation('ACYM_AUTHOR'),
             ];
         }
 
-        if ($oneFeed->pubDate) {
-            $date = str_replace('&apos;', "'", $oneFeed->pubDate->__toString());
+        $publishField = $type === 'RSS' ? 'pubDate' : 'published';
+        if ($oneFeed->$publishField) {
+            $date = str_replace('&apos;', "'", $oneFeed->$publishField->__toString());
             $date = acym_date(strtotime($date), 'ACYM_DATE_FORMAT_LC1');
             $varFields['{date}'] = $date;
         }
-        if (in_array('date', $parameter->display) && $oneFeed->pubDate) {
+
+        if (in_array('date', $parameter->display) && !empty($varFields['{date}'])) {
             $customFields[] = [
                 $varFields['{date}'],
                 acym_translation('ACYM_PUBLISHING_DATE'),

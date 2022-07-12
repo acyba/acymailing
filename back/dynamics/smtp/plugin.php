@@ -117,12 +117,35 @@ class plgAcymSmtp extends acymPlugin
 			</div>
 			<div class="acym__oauth2_sending_params cell">
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-					<label for="smtp_clientId" class="cell"><?php echo acym_externalLink('ACYM_SMTP_CLIENT_ID', $link, false, true, []); ?></label>
+					<label for="smtp_clientId" class="cell"><?php echo acym_externalLink('ACYM_SMTP_CLIENT_ID', $link, false); ?></label>
 					<input id="smtp_clientId" class="cell" type="text" name="config[smtp_clientId]" value="<?php echo acym_escape($this->config->get('smtp_clientId')); ?>">
 				</div>
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-					<label for="smtp_secret" class="cell"><?php echo acym_externalLink('ACYM_SMTP_CLIENT_SECRET', $link, false, true, []); ?></label>
+					<label for="smtp_secret" class="cell"><?php echo acym_externalLink('ACYM_SMTP_CLIENT_SECRET', $link, false); ?></label>
 					<input id="smtp_secret" class="cell" type="text" name="config[smtp_secret]" value="<?php echo acym_escape($this->config->get('smtp_secret')); ?>">
+				</div>
+				<div id="smtp_tenant_container" class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
+					<label for="smtp_tenant" class="cell"><?php echo acym_externalLink('ACYM_TENANT', $link, false); ?></label>
+                    <?php
+                    $valuesArray = [
+                        'consumers' => 'ACYM_MICROSOFT_ACCOUNTS',
+                        'common' => 'ACYM_ANY_ACCOUNT_TYPE',
+                        'organizations' => 'ACYM_ORGANIZATIONS',
+                    ];
+                    $value = $this->config->get('smtp_tenant');
+                    echo acym_select(
+                        $valuesArray,
+                        'config[smtp_tenant]',
+                        empty($value) ? 'consumers' : $value,
+                        [
+                            'class' => 'acym__select',
+                        ],
+                        '',
+                        '',
+                        '',
+                        true
+                    );
+                    ?>
 				</div>
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 					<label for="smtp_redirectUrl" class="cell"><?php echo acym_translation('ACYM_SMTP_REDIRECT_URL'); ?></label>
@@ -199,7 +222,11 @@ class plgAcymSmtp extends acymPlugin
         if ($host === 'smtp.gmail.com') {
             $url = 'https://oauth2.googleapis.com/token';
         } else {
-            $url = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token';
+            $tenant = trim($this->config->get('smtp_tenant'));
+            if (empty($tenant)) {
+                acym_enqueueMessage(acym_translation('ACYM_TENANT_FIELD_IS_MISSING'), 'error');
+            }
+            $url = 'https://login.microsoftonline.com/'.$tenant.'/oauth2/v2.0/token';
             $scope = 'https://outlook.office.com/SMTP.Send';
         }
 

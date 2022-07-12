@@ -149,7 +149,6 @@ function acym_getJSMessages()
         'ACYM_ERROR_SAVING',
         'ACYM_LOADING_ERROR',
         'ACYM_AT_LEAST_ONE_USER',
-        'ACYM_ERROR_SAVING',
         'ACYM_NO_DCONTENT_TEXT',
         'ACYM_PREVIEW',
         'ACYM_PREVIEW_DESC',

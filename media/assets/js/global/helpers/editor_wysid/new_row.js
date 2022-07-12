@@ -135,7 +135,8 @@ const acym_editorWysidNewRow = {
                 spinnerInsertion.replaceWith('');
             } else {
                 let $container = spinnerInsertion.parent();
-                spinnerInsertion.replaceWith(response.data.content);
+                // We do a base64_decode on the encoded content
+                spinnerInsertion.replaceWith(atob(response.data.content));
 
                 // Make sure the DContents in the duplicated container have a different id
                 $container.find('tr[data-dynamic]').each(function () {

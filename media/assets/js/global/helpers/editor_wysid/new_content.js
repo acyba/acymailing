@@ -290,7 +290,7 @@ const acym_editorWysidNewContent = {
     },
     setModalCustomZoneWYSID: function () {
         let content = '<div class="grid-x text-center margin-y">';
-        content += '<div class="cell">' + ACYM_JS_TXT.ACYM_NEW_CUSTOM_ZONE + '</div>';
+        content += '<h5 class="cell">' + ACYM_JS_TXT.ACYM_NEW_CUSTOM_ZONE + '</h5>';
         content += '<div class="cell">' + ACYM_JS_TXT.ACYM_ZONE_SAVE_TEXT + '</div>';
         content += '<div class="cell"><input id="custom_zone_name" type="text" placeholder="' + ACYM_JS_TXT.ACYM_ZONE_NAME + '" value="" /></div>';
         content += '<div class="cell">';

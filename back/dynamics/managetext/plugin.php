@@ -250,7 +250,8 @@ class plgAcymManagetext extends acymPlugin
                 }
 
                 $tags[$oneTag] = '';
-                $val = trim(strtolower($operators[3]));
+                $val = strtolower(trim($operators[3]));
+                $prop = strip_tags($prop);
                 //We can hanlde several propositions in one if it contains ; such as {if:category=34;214;53}...
                 if ($operators[2] == '=' && ($prop == $val || in_array($prop, explode(';', $val)) || in_array($val, explode(';', $prop)))) {
                     $tags[$oneTag] = $allresults[3][$i];

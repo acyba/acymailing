@@ -22,7 +22,7 @@ class ZonesController extends acymController
         $zoneClass = new ZoneClass();
 
         $existingZone = $zoneClass->getOneByName($zone->name);
-        if(!empty($existingZone)){
+        if (!empty($existingZone)) {
             acym_sendAjaxResponse(acym_translation('ACYM_FAILED_CUSTOM_ZONE_SAVE_EXISTING'), [], false);
         }
 
@@ -56,7 +56,8 @@ class ZonesController extends acymController
     {
         $zoneData = $this->getZoneData();
 
-        acym_sendAjaxResponse('', ['content' => $zoneData['zone']->content]);
+        // We encode the data in case it has corrupted characters breaking the json response
+        acym_sendAjaxResponse('', ['content' => base64_encode($zoneData['zone']->content)]);
     }
 
     public function delete()

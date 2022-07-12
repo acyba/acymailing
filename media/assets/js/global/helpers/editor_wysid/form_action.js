@@ -113,6 +113,9 @@ const acym_editorWysidFormAction = {
                 jQuery('#acym__wysid__warning__thumbnail').toggle();
             }
             jQuery('#acym__wysid__save__button').removeAttr('disabled');
+            acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
+            acym_editorWysidTinymce.addTinyMceWYSID();
+            acym_editorWysidRowSelector.setZoneAndBlockOverlays();
         }).fail(function (jqXHR, textStatus) {
             alert('Request failed: ' + textStatus);
         });

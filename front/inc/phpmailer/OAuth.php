@@ -39,7 +39,11 @@ class OAuth implements OAuthTokenProvider
         if ($this->host === 'smtp.gmail.com') {
             $url = 'https://oauth2.googleapis.com/token';
         } else {
-            $url = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token';
+            $tenant = $config->get('smtp_tenant');
+            if (empty($tenant)) {
+                acym_enqueueMessage(acym_translation('ACYM_TENANT_FIELD_IS_MISSING'), 'error');
+            }
+            $url = 'https://login.microsoftonline.com/'.$tenant.'/oauth2/v2.0/token';
         }
 
         $response = acym_makeCurlCall(
@@ -84,7 +88,8 @@ class OAuth implements OAuthTokenProvider
         return $expired;
     }
 
-    static function hostRequireOauth($host){
-        return in_array($host,self::HOST_REQUIRED_AUTH_2);
+    static function hostRequireOauth($host)
+    {
+        return in_array($host, self::HOST_REQUIRED_AUTH_2);
     }
 }

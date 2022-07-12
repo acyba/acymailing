@@ -1257,6 +1257,16 @@ class acymInstall
                 )'
             );
         }
+
+        if (version_compare($this->fromVersion, '7.9.2', '<')) {
+            $zones = acym_loadObjectList('SELECT `id`, `content` FROM #__acym_custom_zone');
+            if (!empty($zones)) {
+                foreach ($zones as $oneZone) {
+                    $oneZone->content = base64_encode(utf8_decode($oneZone->content));
+                    $this->updateQuery('UPDATE `#__acym_custom_zone` SET `content` = '.acym_escapeDB($oneZone->content).' WHERE `id` = '.intval($oneZone->id));
+                }
+            }
+        }
     }
 
     public function updateQuery($query)

@@ -81,9 +81,6 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 
                             $onlyFilename = end($onlyFilename);
 
-                            if (strlen($onlyFilename) > 40) {
-                                $onlyFilename = substr($onlyFilename, 0, 15)."...".substr($onlyFilename, strlen($onlyFilename) - 15);
-                            }
                             echo acym_tooltip(
                                 '<div class="cell" data-toggle="path_attachment_'.$key.'">'.$onlyFilename.'</div>',
                                 $oneAttachment->filename,

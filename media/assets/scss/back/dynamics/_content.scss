@@ -2,6 +2,10 @@
     #acym__wysid__context__plugins {
         font-size: 0.8rem;
 
+        input[type="checkbox"] {
+            vertical-align: middle;
+        }
+
         label {
             font-size: 0.8rem;
         }

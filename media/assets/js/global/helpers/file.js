@@ -13,10 +13,6 @@ const acym_helperFile = {
 
             jQuery('#' + mapId, window.parent.document).val(currentPath + '/' + mapData);
             jQuery('#' + mapId + 'suppr', window.parent.document).css('display', '');
-
-            if (mapData.length > 30) {
-                mapData = mapData.substr(0, 12) + '...' + mapData.substr(mapData.length - 12);
-            }
             jQuery('#' + mapId + 'selection', window.parent.document).html(mapData);
 
             jQuery('#acym__campaign__email__' + mapId, window.parent.document).closest('.reveal-overlay').trigger('click');

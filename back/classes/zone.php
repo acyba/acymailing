@@ -13,7 +13,7 @@ class ZoneClass extends acymClass
     {
         $element = clone $element;
         $element->name = strip_tags($element->name);
-        $element->content = utf8_encode($element->content);
+        $element->content = base64_encode($element->content);
 
         return parent::save($element);
     }
@@ -36,7 +36,7 @@ class ZoneClass extends acymClass
     {
         if (empty($element->content)) return $element;
 
-        $element->content = utf8_decode($element->content);
+        $element->content = base64_decode($element->content);
 
         return $element;
     }

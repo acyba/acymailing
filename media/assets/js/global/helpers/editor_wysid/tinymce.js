@@ -222,7 +222,7 @@ const acym_editorWysidTinymce = {
             menubar: false,
             plugins: 'image nonbreaking',
             toolbar: [],
-            relative_urls: false,
+            relative_urls: true,
             remove_script_host: false,
             image_class_list: [
                 {

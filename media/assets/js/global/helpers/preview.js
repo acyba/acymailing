@@ -97,6 +97,9 @@ const acym_helperPreview = {
             .css('display', 'flex')
             .on('click', function () {
                 acym_helperEditorWysid.setColumnRefreshUiWYSID(false);
+                acym_editorWysidTinymce.addTinyMceWYSID();
+                acym_editorWysidRowSelector.setZoneAndBlockOverlays();
+
                 jQuery(this).css('display', 'none');
             });
     },

@@ -1462,11 +1462,11 @@ class ConfigurationController extends acymController
                 'scope' => 'https%3A%2F%2Fmail.google.com%2F',
             ],
             'smtp-mail.outlook.com' => [
-                'baseUrl' => 'https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?response_mode=query&',
+                'baseUrl' => 'https://login.microsoftonline.com/%s/oauth2/v2.0/authorize?response_mode=query&',
                 'scope' => 'openid%20offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fmail.read%20https%3A%2F%2Foutlook.office.com%2FSMTP.Send',
             ],
             'smtp.office365.com' => [
-                'baseUrl' => 'https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?response_mode=query&',
+                'baseUrl' => 'https://login.microsoftonline.com/%s/oauth2/v2.0/authorize?response_mode=query&',
                 'scope' => 'openid%20offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fmail.read%20https%3A%2F%2Foutlook.office.com%2FSMTP.Send',
             ],
         ];
@@ -1482,6 +1482,17 @@ class ConfigurationController extends acymController
             $this->listing();
 
             return;
+        }
+
+        if (in_array($smtpHost, ['smtp.office365.com', 'smtp-mail.outlook.com'])) {
+            $tenant = $this->config->get('smtp_tenant');
+            if(empty($tenant)){
+                acym_enqueueMessage(acym_translation('ACYM_TENANT_FIELD_IS_MISSING'), 'error');
+                $this->listing();
+
+                return;
+            }
+            $auth2Smtp[$smtpHost]['baseUrl'] = sprintf($auth2Smtp[$smtpHost]['baseUrl'], $tenant);
         }
 
         $redirectLink = $auth2Smtp[$smtpHost]['baseUrl'];
