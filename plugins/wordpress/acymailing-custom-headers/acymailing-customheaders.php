@@ -5,7 +5,7 @@ Description: Add custom email headers to the emails sent with AcyMailing.
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 1.2
+Version: 1.3
 */
 
 use AcyMailing\Classes\PluginClass;

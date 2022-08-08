@@ -14,6 +14,20 @@
 			</div>
 		</div>
 		<div class="grid-x margin-bottom-1 small-12 cell">
+			<label for="acym__wysid__maincolor-colorpicker1" class="cell large-6 small-9" for="acym__wysid__maincolor-colorpicker1">
+                <?php echo acym_translation('ACYM_MAIN_COLORS').acym_info('ACYM_MAIN_COLORS_DESC'); ?>
+			</label>
+			<div class="small-1 cell" style="margin:auto 0;">
+				<input type="text" id="acym__wysid__maincolor-colorpicker1" class="cell medium-shrink small-4" />
+			</div>
+			<div class="small-1 cell" style="margin:auto 0;">
+				<input type="text" id="acym__wysid__maincolor-colorpicker2" class="cell medium-shrink small-4" />
+			</div>
+			<div class="small-1 cell" style="margin:auto 0;">
+				<input type="text" id="acym__wysid__maincolor-colorpicker3" class="cell medium-shrink small-4" />
+			</div>
+		</div>
+		<div class="grid-x margin-bottom-1 small-12 cell">
 			<label class="middle large-6 cell" for="acym__wysid__padding__top__content"><?php echo acym_translation('ACYM_MARGIN_TOP_CONTENT'); ?></label>
 			<div class="cell large-6">
 				<input type="number" min="0" value="20" id="acym__wysid__padding__top__content" class="cell small-4">

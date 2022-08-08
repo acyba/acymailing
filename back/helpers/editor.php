@@ -359,4 +359,20 @@ class EditorHelper extends acymObject
 
         return $styles;
     }
+
+    private function getDefaultColors()
+    {
+        $mailSettings = new \stdClass();
+        if (isset($this->data['mail']->mail_settings) && !empty($this->data['mail']->mail_settings)) {
+            $mailSettings = json_decode($this->data['mail']->mail_settings, false);
+        } elseif (isset($this->data['mailInformation']->mail_settings) && !empty($this->data['mailInformation']->mail_settings)) {
+            $mailSettings = json_decode($this->data['mailInformation']->mail_settings, false);
+        }
+
+        if (!empty($mailSettings->mainColors)) {
+            return $mailSettings->mainColors;
+        }
+
+        return '';
+    }
 }

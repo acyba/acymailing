@@ -105,7 +105,7 @@ class QueueClass extends acymClass
                     WHERE ml.mail_id = '.intval($mailId),
                     'id'
                 );
-                if ($isMultilingual && !empty($oneMail->campaign)) {
+                if ($isMultilingual) {
                     if (empty($campaignRecipientsMultilingual[$oneMail->campaign])) {
                         $listIds = array_keys($results['elements'][$i]->lists);
                         acym_arrayToInteger($listIds);
@@ -125,7 +125,7 @@ class QueueClass extends acymClass
                         }
                         $automationHelper->groupBy = 'mail_id';
                         $campaignRecipientsMultilingual[$oneMail->campaign] = acym_loadObjectList(
-                            $automationHelper->getQuery(['COUNT(DISTINCT user_list.`user_id`) AS elements', 'IF(mail.id IS NULL, '.intval($mailId).', `mail`.`id`) as mail_id']),
+                            $automationHelper->getQuery(['COUNT(DISTINCT user_list.`user_id`) AS elements', 'IF(mail.id IS NULL, '.intval($mailId).', `mail`.`id`) AS mail_id']),
                             'mail_id'
                         );
                     }
@@ -510,6 +510,8 @@ class QueueClass extends acymClass
     public function queue($mail)
     {
         $automationHelper = $this->getMailReceivers($mail);
+        // Only queue enabled users
+        $automationHelper->where[] = '`user`.`active` = 1';
 
         $priority = $this->config->get('priority_newsletter', 3);
         $select = [intval($mail->id), 'userlist.user_id', acym_escapeDB($mail->sending_date), intval($priority), '0'];

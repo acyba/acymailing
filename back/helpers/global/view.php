@@ -349,6 +349,7 @@ function acym_getJSMessages()
         'ACYM_OTHER_ORGANIZER',
         'ACYM_OTHER_LOCATION',
         'ACYM_NEXT_OCCURRENCES',
+        'ACYM_CONDITIONS_AND_FILTERS_WILL_BE_DELETED',
     ];
 
     foreach ($keysToLoad as $oneKey) {

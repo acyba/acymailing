@@ -5,6 +5,7 @@
   "main": "gulpfile.js",
   "dependencies": {
     "@babel/polyfill": "7.7.0",
+    "axios": "^0.27.2",
     "dateformat": "^3.0.3",
     "fs": "^0.0.1-security",
     "gulp": "^4.0.2",
@@ -24,7 +25,8 @@
     "gulp-rename": "^1.4.0",
     "gulp-replace": "^1.0.0",
     "gulp-run-command": "0.0.10",
-    "gulp-tar": "^2.1.0"
+    "gulp-tar": "^2.1.0",
+    "node-cron": "^3.0.1"
   },
   "devDependencies": {
     "@babel/cli": "7.7.5",

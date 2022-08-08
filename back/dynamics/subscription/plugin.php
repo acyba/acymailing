@@ -51,13 +51,13 @@ class plgAcymSubscription extends acymPlugin
         $others['subscribe'] = ['name' => acym_translation('ACYM_SUBSCRIBE_LINK'), 'default' => 'ACYM_SUBSCRIBE'];
 
         ?>
-		<script language="javascript" type="text/javascript">
+		<script type="text/javascript">
             var openedLists = false;
             var selectedSubscriptionDText = '';
 
             function changeSubscriptionTag(tagName) {
                 selectedSubscriptionDText = tagName;
-                defaultText = [];
+                let defaultText = [];
                 <?php
                 foreach ($others as $tagname => $tag) {
                     echo 'defaultText["'.$tagname.'"] = "'.acym_translation($tag['default'], true).'";';

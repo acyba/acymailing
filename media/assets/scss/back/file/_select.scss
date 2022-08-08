@@ -13,6 +13,35 @@
             padding: 2rem;
             margin: 1rem;
 
+            #acym__file__select__area__switch {
+                button {
+                    padding: 5px;
+                    border: 1px solid #8a8a8a;
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: whitesmoke;
+                    }
+
+                    &:active {
+                        background-color: lightgrey;
+                    }
+                }
+            }
+
+            #acym__file__select__area__list .acym__file__select__add {
+                padding: 5px;
+                word-break: break-word;
+
+                &:hover {
+                    background-color: whitesmoke;
+                }
+
+                &:active {
+                    background-color: lightgrey;
+                }
+            }
+
             .acym__file__select__onepic {
                 padding: 2rem;
                 border-radius: 1px;

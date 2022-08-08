@@ -2,7 +2,7 @@
 
 use AcyMailing\Classes\ListClass;
 
-class JFormFieldLists extends JFormField
+class JFormFieldLists extends acym_JFormField
 {
     var $type = 'lists';
 

@@ -87,11 +87,11 @@ class plgAcymAutomationexport extends acymPlugin
         if (empty($action['custom'])) $action['custom'] = [];
 
         acym_increasePerf();
-        $query = 'DISTINCT user.`id`';
+        $select = ['user.`id`'];
         foreach ($action['core'] as $oneField) {
-            $query .= ', user.`'.acym_secureDBColumn($oneField).'`';
+            $select[] = 'user.`'.acym_secureDBColumn($oneField).'`';
         }
-        $query = $cquery->getQuery([$query]);
+        $query = $cquery->getQuery($select);
 
         $exportHelper = new ExportHelper();
         $realSeparators = ['comma' => ',', 'semicol' => ';'];

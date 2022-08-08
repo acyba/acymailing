@@ -117,7 +117,9 @@
                                             <?php
                                             $percentageSent = 0;
                                             if (!empty($row->nbqueued) && $row->iscampaign) {
-                                                if (!empty($row->recipients)) $percentageSent = 100 - ceil($row->nbqueued * 100 / $row->recipients);
+                                                if (!empty($row->recipients)){
+													$percentageSent = 100 - ceil($row->nbqueued * 100 / $row->recipients);
+                                                }
                                                 echo '<div class="progress_bar_left" style="width: '.$percentageSent.'%;"></div>';
                                             }
                                             ?>

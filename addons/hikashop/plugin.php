@@ -1837,8 +1837,10 @@ class plgAcymHikashop extends acymPlugin
     public function onAfterHikashopUserCreate($formData, $listData, $element)
     {
         $config = acym_config();
+        $autoLists = explode(',', $config->get('hikashop_autolists', ''));
+        $listsToSubscribe = array_merge($listData, $autoLists);
         if (!$config->get('hikashop_sub', 0) || acym_isAdmin()) return;
-        if (empty($element->user_email) || empty($listData)) return;
+        if (empty($element->user_email) || empty($listsToSubscribe)) return;
 
         // Get existing AcyMailing user or create one
         $userClass = new UserClass();
@@ -1859,9 +1861,6 @@ class plgAcymHikashop extends acymPlugin
         if (empty($user->id)) return;
 
         // Subscribe the user
-        $autoLists = explode(',', $config->get('hikashop_autolists', ''));
-        $listsToSubscribe = array_merge($listData, $autoLists);
-        if (empty($listsToSubscribe)) return;
         $userClass->subscribe($user->id, $listsToSubscribe);
     }
 }

@@ -12,13 +12,16 @@
 	   id="editor_stylesheet_template"
 	   name="editor_stylesheet_template"
 	   value="<?php echo acym_escape($wysidStylesheet); ?>" />
-<?php $wysidSettings = $this->getWYSIDSettings(); ?>
+<?php $wysidSettings = $this->getWYSIDSettings();
+$mainColors = $this->getDefaultColors(); ?>
 <input type="hidden" class="acym__wysid__hidden__save__settings" id="editor_settings" name="editor_settings" value="<?php echo acym_escape($wysidSettings); ?>" />
 <input type="hidden"
 	   class="acym__wysid__hidden__save__settings__template"
 	   id="editor_settings_template"
 	   name="editor_settings_template"
 	   value="<?php echo acym_escape($wysidSettings); ?>" />
+<input type="hidden" class="acym__wysid__hidden__save__colors" id="main_colors" name="main_colors" value="<?php echo acym_escape($mainColors); ?>" />
+<input type="hidden" class="acym__wysid__hidden__save__colors__template" id="main_colors_template" name="main_colors_template" value="<?php echo acym_escape($mainColors); ?>" />
 <input type="hidden" id="acym__wysid__session--lifetime" name="acym_session_lifetime" value="<?php echo acym_escape(ini_get('session.gc_maxlifetime')); ?>" />
 <input type="hidden" class="acym__wysid__hidden__mailId" id="editor_mailid" name="editor_autoSave" value="<?php echo intval($this->mailId); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__auto" id="editor_autoSave" value="<?php echo acym_escape($this->autoSave); ?>">

@@ -27,6 +27,15 @@ class ActionClass extends acymClass
         );
     }
 
+    public function getOneByConditionId($id)
+    {
+        return acym_loadObject(
+            'SELECT `action`.* 
+            FROM #__acym_action AS `action` 
+            WHERE `action`.`condition_id` = '.intval($id)
+        );
+    }
+
     public function getAllActionsIdByConditionsId($elements)
     {
         acym_arrayToInteger($elements);

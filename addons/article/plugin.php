@@ -216,6 +216,7 @@ class plgAcymArticle extends acymPlugin
                     'id' => 'ACYM_ID',
                     'publish_up' => 'ACYM_PUBLISHING_DATE',
                     'modified' => 'ACYM_MODIFICATION_DATE',
+                    'ordering' => 'ACYM_ORDERING',
                     'title' => 'ACYM_TITLE',
                     'rand' => 'ACYM_RANDOM',
                 ],
@@ -330,7 +331,9 @@ class plgAcymArticle extends acymPlugin
         foreach ($tags as $oneTag => $parameter) {
             if (isset($this->tags[$oneTag])) continue;
 
-            $query = 'SELECT DISTINCT element.`id` FROM #__content AS element ';
+            $query = 'SELECT DISTINCT element.`id` 
+                    FROM #__content AS element 
+                    LEFT JOIN #__categories AS category ON element.catid = category.id ';
 
             $where = [];
 
@@ -390,6 +393,29 @@ class plgAcymArticle extends acymPlugin
         }
 
         return $this->generateCampaignResult;
+    }
+
+    protected function handleOrderBy(&$query, $parameter, $table = null)
+    {
+        if (empty($parameter->order)) return;
+
+        $ordering = explode(',', $parameter->order);
+        if ($ordering[0] === 'rand') {
+            $query .= ' ORDER BY rand()';
+        } elseif ($ordering[0] === 'ordering') {
+            $query .= ' ORDER BY category.`title` '.acym_secureDBColumn(trim($ordering[1])).', element.`ordering` '.acym_secureDBColumn(trim($ordering[1]));
+        } else {
+            $table = null === $table ? '' : $table.'.';
+            $column = $ordering[0];
+
+            if (strpos($column, '.') !== false) {
+                $parts = explode('.', $column, 2);
+                $table = acym_secureDBColumn($parts[0]).'.';
+                $column = $parts[1];
+            }
+
+            $query .= ' ORDER BY '.$table.'`'.acym_secureDBColumn(trim($column)).'` '.acym_secureDBColumn(trim($ordering[1]));
+        }
     }
 
     protected function groupByCategory($elements)

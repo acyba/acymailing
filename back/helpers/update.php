@@ -333,15 +333,15 @@ class UpdateHelper extends acymObject
         ];
 
         $newAutomation = new \stdClass();
-        $newAutomation->name = $title;
-        $newAutomation->description = $info[$title]->desc;
+        $newAutomation->name = acym_translation($title);
+        $newAutomation->description = acym_translation($info[$title]->desc);
         $newAutomation->active = 0;
         $newAutomation->admin = 1;
         $newAutomation->id = $automationClass->save($newAutomation);
         if (empty($newAutomation->id)) return false;
 
         $newStep = new \stdClass();
-        $newStep->name = 'ACYM_ADMIN_USER_CREATE';
+        $newStep->name = acym_translation($title);
         $newStep->triggers = $info[$title]->triggers;
         $newStep->automation_id = $newAutomation->id;
         $newStep->id = $stepClass->save($newStep);

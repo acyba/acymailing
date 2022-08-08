@@ -1,4 +1,5 @@
 jQuery(document).ready(function ($) {
+    const previousTypeTrigger = $('#acym__automation__trigger__type__input').val();
 
     function Init() {
         setDescriptionButton();
@@ -9,6 +10,7 @@ jQuery(document).ready(function ($) {
         setDroppableTriggers('action');
         setDeleteTrigger('action');
         setElementTrigger('action');
+        setTriggerChanged();
     }
 
     Init();
@@ -28,7 +30,7 @@ jQuery(document).ready(function ($) {
 
     function setChooseTrigger() {
         $('#acym__automation__info__choose__trigger__type p').off('click').on('click', function () {
-            $('#acym__automation__trigger__type__input').val($(this).attr('data-trigger-type'));
+            $('#acym__automation__trigger__type__input').val($(this).attr('data-trigger-type')).trigger('change');
             $('.selected-trigger').removeClass('selected-trigger');
             $(this).addClass('selected-trigger');
             $('.acym__automation__info__choose__trigger').hide();
@@ -123,6 +125,16 @@ jQuery(document).ready(function ($) {
             $container.remove();
 
             setDroppableTriggers(type);
+        });
+    }
+
+    function setTriggerChanged() {
+        $('#acym__automation__trigger__type__input').on('change', function () {
+            if (previousTypeTrigger === 'user' && $(this).val() === 'classic') {
+                $(`[data-task='saveInfo']`).attr('data-confirmation-message', 'ACYM_CONDITIONS_AND_FILTERS_WILL_BE_DELETED');
+            } else {
+                $(`[data-task='saveInfo']`).removeAttr('data-confirmation-message');
+            }
         });
     }
 });

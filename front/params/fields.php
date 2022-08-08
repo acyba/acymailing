@@ -2,7 +2,7 @@
 
 use AcyMailing\Classes\FieldClass;
 
-class JFormFieldFields extends JFormField
+class JFormFieldFields extends acym_JFormField
 {
     var $type = 'fields';
 

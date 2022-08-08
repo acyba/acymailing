@@ -323,7 +323,7 @@ class SegmentsController extends acymController
 
         $automationHelper->limit = intval($offset).', '.intval($limit);
 
-        $users = acym_loadObjectList($automationHelper->getQuery(['user.email, user.name, user.id']), 'id');
+        $users = acym_loadObjectList($automationHelper->getQuery(['user.email', 'user.name', 'user.id']), 'id');
 
         acym_sendAjaxResponse('', ['users' => $users]);
     }

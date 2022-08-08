@@ -14,7 +14,7 @@
 <style>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__shortcode{
 		height: <?php echo $form->style_options['size']['height'];?>px;
-		width: <?php echo $form->style_options['size']['width'];?>px;
+		max-width: <?php echo $form->style_options['size']['width'];?>px;
 		background-color: <?php echo $form->style_options['background_color'];?>;
 		color: <?php echo $form->style_options['text_color'];?> !important;
 		padding: .5rem;

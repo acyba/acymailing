@@ -1267,6 +1267,21 @@ class acymInstall
                 }
             }
         }
+
+        if (version_compare($this->fromVersion, '7.9.3', '<')) {
+            $automationClass = new AutomationClass();
+            $automations = $automationClass->getAll();
+            if (!empty($automations)) {
+                foreach ($automations as $oneAutomation) {
+                    $translated = acym_translation($oneAutomation->name);
+                    if ($translated === $oneAutomation->name) continue;
+
+                    $oneAutomation->name = $translated;
+                    $oneAutomation->description = acym_translation($oneAutomation->description);
+                    $automationClass->save($oneAutomation);
+                }
+            }
+        }
     }
 
     public function updateQuery($query)

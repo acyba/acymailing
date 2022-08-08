@@ -3,7 +3,10 @@
 <?php } else { ?>
 	<div class="cell margin-bottom-1 acym__listing__actions grid-x">
         <?php
-        $actions = ['delete' => acym_translation('ACYM_DELETE'), 'duplicate' => acym_translation('ACYM_DUPLICATE')];
+        $actions = [
+            'duplicate' => acym_translation('ACYM_DUPLICATE'),
+            'delete' => acym_translation('ACYM_DELETE'),
+        ];
         echo acym_listingActions($actions);
         ?>
 	</div>

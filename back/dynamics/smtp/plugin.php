@@ -29,6 +29,9 @@ class plgAcymSmtp extends acymPlugin
         $smtpRedirectUrl = trim($this->config->get('smtp_redirectUrl'));
         $redirectUrl = empty($smtpRedirectUrl) ? acym_baseURI() : $smtpRedirectUrl;
 
+        $isWalkTrough = $this->config->get('walk_through',0);
+		$loginAttribute = !$isWalkTrough ? 'acym-data-before="jQuery.acymConfigSave();"' : '';
+
         $link = ACYM_DOCUMENTATION.'setup/configuration/mail-configuration/set-up-oauth-2.0';
 
         ob_start();
@@ -152,7 +155,7 @@ class plgAcymSmtp extends acymPlugin
 					<input id="smtp_redirectUrl" class="cell" type="text" name="config[smtp_redirectUrl]" value="<?php echo acym_escape($redirectUrl); ?>" readonly>
 				</div>
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
-					<button acym-data-before="jQuery.acymConfigSave();"
+					<button <?php echo $loginAttribute; ?>
 							data-task="loginForAuth2"
 							class="button acy_button_submit button-secondary margin-bottom-1"
 							id="smtp_account_login">

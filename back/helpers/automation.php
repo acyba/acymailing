@@ -19,7 +19,13 @@ class AutomationHelper extends acymObject
     public function getQuery($select = [])
     {
         $query = '';
-        if (!empty($select)) $query .= ' SELECT DISTINCT '.implode(',', $select);
+        if (!empty($select)) {
+            $query = ' SELECT ';
+            if (strpos($select[0], 'COUNT') === false) {
+                $query .= 'DISTINCT ';
+            }
+            $query .= implode(', ', $select);
+        }
         if (!empty($this->from)) $query .= ' FROM '.$this->from;
         if (!empty($this->join)) $query .= ' JOIN '.implode(' JOIN ', $this->join);
         if (!empty($this->leftjoin)) $query .= ' LEFT JOIN '.implode(' LEFT JOIN ', $this->leftjoin);

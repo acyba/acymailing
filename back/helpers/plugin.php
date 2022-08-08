@@ -1122,7 +1122,7 @@ class PluginHelper extends acymObject
                     class="'.acym_escape($class).'" '.$placeholder.'/>';
                 $jsOptionsMerge[] = 'otherinfo += "| '.$option['name'].':" + jQuery(\'input[name="'.$option['name'].$suffix.'"]\').val();';
             } elseif ($option['type'] === 'number') {
-                $min = empty($option['min']) ? '' : ' min="'.$option['min'].'"';
+                $min = empty($option['min']) ? ' min="0"' : ' min="'.$option['min'].'"';
                 $max = empty($option['max']) ? '' : ' max="'.$option['max'].'"';
                 $class = empty($option['class']) ? 'acym_plugin_text_field' : $option['class'];
                 $currentOption .= '<input type="number"'.$min.$max.' name="'.$option['name'].$suffix.'" id="'.$option['name'].$suffix.'" onchange="'.$updateFunction.'();" value="'.intval(
@@ -1264,8 +1264,7 @@ class PluginHelper extends acymObject
         }
 
         $output .= '
-            <script language="javascript" type="text/javascript">
-                <!--
+            <script type="text/javascript">
                 var _selectedRows'.$suffix.' = [];
                 var _selectedRows = [];
                 if("undefined" === typeof _additionalInfo'.$suffix.') {
@@ -1352,7 +1351,6 @@ class PluginHelper extends acymObject
                 	_additionalInfo'.$suffix.'[index] = value;
                 	'.$updateFunction.'();
                 }
-                //-->
             </script>';
 
         if ($type == 'individual') {

@@ -2,6 +2,7 @@ const acym_helperFile = {
     initFile: function () {
         acym_helperFile.setAttachment();
         acym_helperFile.setDisplayFileTree();
+        acym_helperFile.setSwitchView();
         acym_helperFile.setChangeFolder();
     },
     setAttachment: function () {
@@ -19,6 +20,13 @@ const acym_helperFile = {
         });
 
         jQuery('.acym__file__select__add.acym_clickme').trigger('click');
+    },
+    setSwitchView: function () {
+        jQuery('#acym__file__select__area__switch button').off('click').on('click', function () {
+            jQuery('#acym__file__select__area__switch button').toggleClass('is-hidden');
+            jQuery('#acym__file__select__area__grid').toggleClass('is-hidden');
+            jQuery('#acym__file__select__area__list').toggleClass('is-hidden');
+        });
     },
     setDisplayFileTree: function () {
         // display folders tree view

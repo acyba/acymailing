@@ -496,12 +496,11 @@ class FollowupClass extends acymClass
         $mailStatClass = new MailStatClass();
         $mailStat = $mailStatClass->getOneRowByMailId($mailId);
         $mailStatNew = new \stdClass();
+        $mailStatNew->mail_id = intval($mailId);
         if (empty($mailStat)) {
-            $mailStatNew->mail_id = intval($mailId);
             $mailStatNew->total_subscribers = 1;
             $mailStatNew->send_date = acym_date('now', 'Y-m-d H:i:s', false);
         } else {
-            $mailStatNew->mail_id = intval($mailId);
             $mailStatNew->total_subscribers = $mailStat->total_subscribers + 1;
         }
 

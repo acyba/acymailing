@@ -104,17 +104,37 @@ class AutomationController extends acymController
 
         $stepAutomationId = acym_getVar('int', 'stepAutomationId');
         $stepAutomation = acym_getVar('array', 'stepAutomation');
+        $typeTrigger = acym_getVar('string', 'type_trigger');
         $stepClass = new StepClass();
 
         if (!empty($automationId)) {
             $automation['id'] = $automationId;
         }
 
+        // if the automation already exists
         if (!empty($stepAutomationId)) {
             $stepAutomation['id'] = $stepAutomationId;
-        }
+            $conditionClass = new ConditionClass();
+            $actionClass = new ActionClass();
+            $condition = $conditionClass->getOneByStepId($stepAutomationId);
+            $step = $stepClass->getOneById($stepAutomationId);
 
-        $typeTrigger = acym_getVar('string', 'type_trigger');
+            // and the type_trigger has changed from "user" to "classic"
+            $triggerChanged = $typeTrigger === 'classic' && json_decode($step->triggers)->type_trigger === 'user';
+            if ($triggerChanged && !empty($condition)) {
+                $action = $actionClass->getOneByConditionId($condition->id);
+                // if conditions are set on "user", we reset conditions
+                if (json_decode($condition->conditions)->type_condition === 'user') {
+                    $condition->conditions = null;
+                    $conditionClass->save($condition);
+                }
+                // if actions filters are set on "user", we reset actions filters
+                if (!empty($action->filters) && json_decode($action->filters)->type_filter === 'user') {
+                    $action->filters = null;
+                    $actionClass->save($action);
+                }
+            }
+        }
 
         if (empty($automation['admin'])) {
             if (empty($automation['name'])) return false;
@@ -663,5 +683,71 @@ class AutomationController extends acymController
         $result = $query->count();
 
         acym_sendAjaxResponse(acym_translationSprintf('ACYM_SELECTED_USERS_TOTAL', $result));
+    }
+
+
+    public function duplicate()
+    {
+        acym_checkToken();
+
+        $automations = acym_getVar('int', 'elements_checked');
+
+        if (empty($automations)) {
+            $this->listing();
+
+            return;
+        }
+
+        $automationClass = new AutomationClass();
+        $stepClass = new StepClass();
+        $conditionClass = new ConditionClass();
+        $actionClass = new ActionClass();
+
+        foreach ($automations as $automationId) {
+            $automation = $automationClass->getOneById($automationId);
+            $step = $stepClass->getOneStepByAutomationId($automation->id);
+            $condition = $conditionClass->getOneByStepId($step->id);
+
+            unset($automation->id);
+            unset($step->id);
+
+            $automation->active = 0;
+            $automation->name .= '_copy';
+
+            $step->automation_id = $automationClass->save($automation);
+            $step->last_execution = '';
+            $step->next_execution = '';
+
+            $newStepId = $stepClass->save($step);
+
+            if (!empty($condition)) {
+                $action = $actionClass->getOneByConditionId($condition->id);
+
+                unset($condition->id);
+                $condition->step_id = $newStepId;
+                $newConditionId = $conditionClass->save($condition);
+
+                if (!empty($action)) {
+                    unset($action->id);
+                    $action->condition_id = $newConditionId;
+                    if (!empty($action->actions) && strpos($action->actions, 'acy_add_queue') !== false) {
+                        $action->actions = json_decode($action->actions, true);
+                        $mailClass = new MailClass();
+                        foreach ($action->actions as &$oneAction) {
+                            if (!empty($oneAction['acy_add_queue']['mail_id'])) {
+                                $newMail = $mailClass->duplicateMail($oneAction['acy_add_queue']['mail_id'], $mailClass::TYPE_AUTOMATION);
+                                if (!empty($newMail)) {
+                                    $oneAction['acy_add_queue']['mail_id'] = $newMail->id;
+                                }
+                            }
+                        }
+                        $action->actions = json_encode($action->actions);
+                    }
+                    $actionClass->save($action);
+                }
+            }
+        }
+
+        $this->listing();
     }
 }

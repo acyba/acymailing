@@ -7,7 +7,7 @@ function acydump($arg, $ajax = false, $indent = true, $htmlentities = false)
     ob_start();
     var_dump($arg);
     $result = ob_get_clean();
-    
+
     if ($ajax) {
         file_put_contents(ACYM_ROOT.'acydebug.txt', $result, FILE_APPEND);
     } else {
@@ -120,8 +120,7 @@ function acym_increasePerf()
 
 function acym_session()
 {
-    $sessionID = session_id();
-    if (empty($sessionID)) {
+    if (empty(session_id()) || session_status() !== PHP_SESSION_ACTIVE) {
         @session_start();
     }
 }

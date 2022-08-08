@@ -142,7 +142,7 @@ define(
                 'description' => '- Insert MemberPress custom fields in your emails<br />- Filter users based on their subscription<br />-Trigger automation when a user subscribe to a membership',
                 'image' => 'memberpress.png',
                 'level' => 'starter',
-                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/memberspress',
+                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/memberpress',
                 'category' => 'User management',
                 'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-memberpress/',
             ],

@@ -158,7 +158,7 @@ $formName = acym_getModuleFormName();
             <?php
         }
 
-        if (empty($data['user']->id) && $data['config']->get('captcha', 'none') !== 'none') {
+        if (empty($data['user']->id) && $data['config']->get('captcha', 'none') !== 'none' && !empty($data['captchaHelper'])) {
             echo '<div id="trcaptcha" class="acy_onefield">';
             echo $data['captchaHelper']->display($formName);
             echo '</div>';

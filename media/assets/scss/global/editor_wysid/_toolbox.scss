@@ -40,6 +40,12 @@
     background-color: map-get($editor-wysid-palette, primary-ui) !important;
 }
 
+.acym__wysid__row {
+    .acym__wysid__row__element--sortable {
+        display: none !important;
+    }
+}
+
 .acym__wysid__column {
     &.acym__wysid__column--drag-start {
         min-height: 75px;
@@ -47,6 +53,10 @@
         tbody {
             min-height: 75px;
         }
+    }
+
+    .acym__wysid__block__element--new, .acym__wysid__column__element__original--helper {
+        display: none !important;
     }
 
     //TODO maybe find a way to keep the same design but without moving the email content because of the 2px height

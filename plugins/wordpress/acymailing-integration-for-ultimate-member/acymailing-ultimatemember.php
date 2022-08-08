@@ -5,7 +5,7 @@ Description: Add AcyMailing lists on your Ultimate Member registration form
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 1.5
+Version: 1.6
 */
 
 use AcyMailing\Classes\PluginClass;

@@ -5,12 +5,12 @@ Description: Adds the possibility to show AcyMailing lists on Contact Form 7 for
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 1.5
+Version: 1.6
 */
 
 use AcyMailing\Classes\PluginClass;
 
-register_deactivation_hook(__FILE__, 'acym_integration_contactform7_remove');
+register_deactivation_hook(__FILE__, 'acym_integration_contactform7_disable');
 function acym_integration_contactform7_disable()
 {
     $vendorFolder = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'vendor';

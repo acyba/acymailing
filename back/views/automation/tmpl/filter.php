@@ -68,7 +68,7 @@
 			</p>
 			<div class="cell auto"></div>
 		</div>
-
+		
 		<div class="cell grid-x acym__automation__filter__container"
 			 id="acym__automation__filters__type__classic" <?php echo $data['type_filter'] == 'classic' ? '' : 'style="display:none;"'; ?>>
 			<input type="hidden" value="<?php echo acym_escape($data['classic_option']); ?>" id="acym__automation__filter__classic__options">

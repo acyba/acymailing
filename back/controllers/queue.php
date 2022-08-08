@@ -236,14 +236,12 @@ class QueueController extends acymController
         if (!empty($mailId)) {
             $hasStat = acym_loadResult('SELECT COUNT(*) FROM #__acym_user_stat WHERE mail_id = '.intval($mailId));
 
-            $result = [];
-
-            $result[] = acym_query('DELETE FROM #__acym_queue WHERE mail_id = '.intval($mailId));
-            $result[] = acym_query('UPDATE #__acym_mail_stat SET total_subscribers = sent WHERE mail_id = '.intval($mailId));
-            $result[] = acym_query('UPDATE #__acym_campaign SET active = 1 WHERE mail_id = '.intval($mailId));
+            acym_query('DELETE FROM #__acym_queue WHERE mail_id = '.intval($mailId));
+            acym_query('UPDATE #__acym_mail_stat SET total_subscribers = sent WHERE mail_id = '.intval($mailId));
+            acym_query('UPDATE #__acym_campaign SET active = 1 WHERE mail_id = '.intval($mailId));
             if (empty($hasStat)) {
-                $result[] = acym_query('UPDATE #__acym_campaign SET draft = "1", sent = "0", sending_date = NULL WHERE mail_id = '.intval($mailId));
-                $result[] = acym_query('DELETE FROM #__acym_mail_stat WHERE mail_id = '.intval($mailId));
+                acym_query('UPDATE #__acym_campaign SET draft = "1", sent = "0", sending_date = NULL WHERE mail_id = '.intval($mailId));
+                acym_query('DELETE FROM #__acym_mail_stat WHERE mail_id = '.intval($mailId));
             }
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_QUEUE_CANCEL_CAMPAIGN'), 'error');

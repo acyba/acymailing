@@ -1,6 +1,6 @@
 <?php
 
-class JFormFieldArchive extends JFormField
+class JFormFieldArchive extends acym_JFormField
 {
     var $type = 'archive';
 

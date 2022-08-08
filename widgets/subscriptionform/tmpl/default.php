@@ -16,7 +16,8 @@ if (!empty($visibleLists)) {
                 <tr>
                     <td>
                     	<input type="checkbox" class="acym_checkbox" name="subscription[]" id="acylist_'.$myListId.'_'.$formName.'" '.$check.' value="'.$myListId.'"/>
-                        <label for="acylist_'.$myListId.'_'.$formName.'">'.(!empty($allLists[$myListId]->display_name) ? $allLists[$myListId]->display_name : $allLists[$myListId]->name).'</label>
+                        <label for="acylist_'.$myListId.'_'.$formName.'">'.(!empty($allLists[$myListId]->display_name) ? $allLists[$myListId]->display_name
+                : $allLists[$myListId]->name).'</label>
                     </td>
                 </tr>';
     }
@@ -83,9 +84,7 @@ if ($listPosition == 'before') echo $listsContent;
 
 		<td <?php if ($displayOutside && !$displayInline) echo 'colspan="2"'; ?> class="acysubbuttons">
 			<noscript>
-				<div class="onefield fieldacycaptcha">
-                    <?php echo acym_translation('ACYM_NO_JAVASCRIPT'); ?>
-				</div>
+                <?php echo acym_translation('ACYM_NO_JAVASCRIPT'); ?>
 			</noscript>
             <?php
             $onclickSubscribe = 'try{ return submitAcymForm("subscribe","'.$formName.'", "acymSubmitSubForm"); }catch(err){alert("The form could not be submitted "+err);return false;}';

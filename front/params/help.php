@@ -1,6 +1,6 @@
 <?php
 
-class JFormFieldHelp extends JFormField
+class JFormFieldHelp extends acym_JFormField
 {
     var $type = 'help';
 

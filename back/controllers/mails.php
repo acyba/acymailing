@@ -530,6 +530,10 @@ class MailsController extends acymController
             }
             $mail->{$name} = $data;
         }
+        if (isset($mail->id)) {
+            $previousMail = $mailClass->getOneById($mail->id);
+        }
+
 
         if (!empty($multilingual)) {
             if (!empty($multilingual['main']['subject'])) $mail->subject = $multilingual['main']['subject'];
@@ -560,6 +564,7 @@ class MailsController extends acymController
         $inputNameBody = $saveAsTmpl ? 'editor_content_template' : 'editor_content';
         $inputNameSettings = $saveAsTmpl ? 'editor_settings_template' : 'editor_settings';
         $inputNameStylesheet = $saveAsTmpl ? 'editor_stylesheet_template' : 'editor_stylesheet';
+        $inputNameColors = $saveAsTmpl ? 'main_colors_template' : 'main_colors';
 
         $mail->tags = acym_getVar('array', 'template_tags', []);
         $mail->body = acym_getVar('string', $inputNameBody, '', 'REQUEST', ACYM_ALLOWRAW);
@@ -572,6 +577,14 @@ class MailsController extends acymController
         if (empty($mail->id)) {
             $mail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
         }
+
+        if (isset($previousMail) && !empty($previousMail->mail_settings)) {
+            $mailSettings = json_decode($previousMail->mail_settings, false);
+        } else {
+            $mailSettings = new \stdClass();
+        }
+        $mailSettings->mainColors = acym_getVar('string', $inputNameColors, '', 'REQUEST', ACYM_ALLOWRAW);
+        $mail->mail_settings = json_encode($mailSettings);
 
         // Use the thumbnail of the source mail if not modified
         if (!empty($fromId) && empty($mail->thumbnail) && !$fromAutomation) {
@@ -1078,33 +1091,9 @@ class MailsController extends acymController
             acym_sendAjaxResponse(acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_ID')), [], false);
         }
 
-        $mail = $mailClass->getOneById($mailId);
+        $newMail = $mailClass->duplicateMail($mailId, $mailClass::TYPE_AUTOMATION);
 
-        if (empty($mail)) {
-            acym_sendAjaxResponse(acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_EMAIL')), [], false);
-        }
-
-        $newMail = new \stdClass();
-        $newMail->name = $mail->name.'_copy';
-        $newMail->thumbnail = '';
-        $newMail->type = $mailClass::TYPE_AUTOMATION;
-        $newMail->drag_editor = $mail->drag_editor;
-        $newMail->body = $mail->body;
-        $newMail->subject = $mail->subject;
-        $newMail->from_name = $mail->from_name;
-        $newMail->from_email = $mail->from_email;
-        $newMail->reply_to_name = $mail->reply_to_name;
-        $newMail->reply_to_email = $mail->reply_to_email;
-        $newMail->bcc = $mail->bcc;
-        $newMail->settings = $mail->settings;
-        $newMail->stylesheet = $mail->stylesheet;
-        $newMail->attachments = $mail->attachments;
-        $newMail->headers = $mail->headers;
-        $newMail->preheader = $mail->preheader;
-
-        $newMail->id = $mailClass->save($newMail);
-
-        if (empty($newMail->id)) {
+        if (empty($newMail)) {
             acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_DUPLICATE_EMAIL'), [], false);
         }
 

@@ -283,31 +283,4 @@
             }
         }
     }
-
-    /* =============================================== Fix for firefox ============================================== */
-    @-moz-document url-prefix() {
-        .row:hover, .row:hover .acym__wysid__column, .acym__wysid__column__element:hover {
-            outline: none !important;
-            outline-offset: 0;
-        }
-
-        .row:hover .acym__wysid__column {
-            box-shadow: 0px 0px 0px 1px map-get($editor-wysid-palette, secondary-ui);
-        }
-
-        .acym__wysid__column__element:hover .acym__wysid__column__element__td {
-            outline: none !important;
-            box-shadow: 0px 0px 0px 1px map-get($editor-wysid-palette, primary-ui);
-        }
-
-        .row:hover:before {
-            content: '';
-            position: absolute;
-            box-shadow: 0px 0px 0px 2px map-get($editor-wysid-palette, primary-ui);
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-        }
-    }
 }

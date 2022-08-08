@@ -4,7 +4,8 @@ use AcyMailing\Classes\PluginClass;
 
 function acym_isExtensionActive($extension)
 {
-    return JComponentHelper::isEnabled($extension, true);
+    // Keep both to handle old Joomla 3 versions
+    return JComponentHelper::isInstalled($extension) && JComponentHelper::isEnabled($extension, true);
 }
 
 function acym_getPluginsPath($file, $dir)

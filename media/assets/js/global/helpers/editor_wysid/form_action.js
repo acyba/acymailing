@@ -65,16 +65,22 @@ const acym_editorWysidFormAction = {
             $emailContent.find('#acym__wysid__default').remove();
         }
 
+        let mainColor1 = jQuery('#acym__wysid__maincolor-colorpicker1').spectrum('get').toHexString();
+        let mainColor2 = jQuery('#acym__wysid__maincolor-colorpicker2').spectrum('get').toHexString();
+        let mainColor3 = jQuery('#acym__wysid__maincolor-colorpicker3').spectrum('get').toHexString();
+
         if (saveAsTmpl) {
             jQuery('.acym__wysid__hidden__save__content__template').val('<div id="acym__wysid__template" class="cell">' + $emailContent.html() + '</div>');
             jQuery('.acym__wysid__hidden__save__settings__template').val(JSON.stringify(acym_helperEditorWysid.mailsSettings));
             jQuery('.acym__wysid__hidden__save__stylesheet__template').val(jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val());
+            jQuery('.acym__wysid__hidden__save__colors__template').val(mainColor1 + ',' + mainColor2 + ',' + mainColor3);
         } else {
             jQuery('.acym__wysid__hidden__save__content')
                 .val('<div id="acym__wysid__template" class="cell">' + $emailContent.html() + '</div>')
                 .trigger('change');
             jQuery('.acym__wysid__hidden__save__settings').val(JSON.stringify(acym_helperEditorWysid.mailsSettings));
             jQuery('.acym__wysid__hidden__save__stylesheet').val(jQuery('#acym__wysid__right__toolbar__settings__stylesheet__textarea').val());
+            jQuery('.acym__wysid__hidden__save__colors').val(mainColor1 + ',' + mainColor2 + ',' + mainColor3);
         }
 
         return acym_editorWysidFormAction.saveAjaxMail(jQuery('[name="ctrl"]').val(), sendTest, saveAsTmpl);
@@ -235,6 +241,7 @@ const acym_editorWysidFormAction = {
                 acym_editorWysidDynamic.insertDContent('', $elementsToReload);
             }
 
+            acym_editorWysidColorPicker.setMainColorPickerWYSID();
             acym_editorWysidFontStyle.setSettingsModificationHandling();
             acym_editorWysidImage.setImageWidthHeightOnInsert();
             acym_helperEditorWysid.resizeEditorBasedOnPage();
@@ -258,6 +265,7 @@ const acym_editorWysidFormAction = {
             jQuery('#acym__wysid').css('display', 'none');
             jQuery('#acym__wysid__edit').css('display', '');
             jQuery('.acym__wysid__hidden__save__stylesheet').val(acym_helperEditorWysid.savedStylesheet);
+            jQuery('.acym__wysid__hidden__save__colors').val(acym_helperEditorWysid.savedColors);
         });
     }
 };

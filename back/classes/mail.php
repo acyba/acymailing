@@ -1082,11 +1082,10 @@ class MailClass extends acymClass
         $urlPoweredByImage = ACYM_IMAGES.'poweredby_black.png';
 
         $poweredByHTML = '<p id="acym__powered_by_acymailing">';
-        $poweredByHTML .= '<a href="https://www.acymailing.com/?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="blank">';
+        $poweredByHTML .= '<a href="'.ACYM_ACYMAILLING_WEBSITE.'?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="blank">';
         $poweredByHTML .= '<img alt="Email built with AcyMailing" height="40" width="199" style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;" src="'.$urlPoweredByImage.'"/>';
         $poweredByHTML .= '</a></p>';
-        $poweredByWYSID = <<<CONTENT
-<table id="acym__powered_by_acymailing" class="row" bgcolor="#ffffff" style="background-color: transparent" cellpadding="0" cellspacing="0" border="0">
+        $poweredByWYSID = '<table id="acym__powered_by_acymailing" class="row" bgcolor="#ffffff" style="background-color: transparent" cellpadding="0" cellspacing="0" border="0">
     <tbody bgcolor style="background-color: inherit;">
         <tr>
             <th class="small-12 medium-12 large-12 columns" valign="top" style="height: auto;">
@@ -1098,8 +1097,8 @@ class MailClass extends acymClass
                             <td class="large-12">
                                 <div style="position: relative;">
                                     <p style="word-break: break-word; text-align: center;">
-                                    <a href="https://www.acymailing.com/?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="_blank">
-                                        <img src="$urlPoweredByImage"
+                                    <a href="'.ACYM_ACYMAILLING_WEBSITE.'?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="_blank">
+                                        <img src="'.$urlPoweredByImage.'"
                                             title="poweredby" alt=""
                                             style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0px 5px; display: inline-block; margin-left: auto; margin-right: auto;"
                                             height="40" width="199">
@@ -1113,8 +1112,7 @@ class MailClass extends acymClass
             </th>
         </tr>
     </tbody>
-</table>
-CONTENT;
+</table>';
 
         if (!$isWysidEditor) {
             $mail->body = $mail->body.$poweredByHTML;
@@ -1357,5 +1355,36 @@ CONTENT;
         acym_arrayToInteger($multipleMailIds);
 
         return $multipleMailIds;
+    }
+
+    public function duplicateMail($mailId, $type = null)
+    {
+        $mail = $this->getOneById($mailId);
+
+        if (empty($mail)) {
+            return false;
+        }
+
+        $newMail = new \stdClass();
+        $newMail->name = $mail->name.'_copy';
+        $newMail->thumbnail = '';
+        $newMail->type = empty($type) ? $mail->type : $type;
+        $newMail->drag_editor = $mail->drag_editor;
+        $newMail->body = $mail->body;
+        $newMail->subject = $mail->subject;
+        $newMail->from_name = $mail->from_name;
+        $newMail->from_email = $mail->from_email;
+        $newMail->reply_to_name = $mail->reply_to_name;
+        $newMail->reply_to_email = $mail->reply_to_email;
+        $newMail->bcc = $mail->bcc;
+        $newMail->settings = $mail->settings;
+        $newMail->stylesheet = $mail->stylesheet;
+        $newMail->attachments = $mail->attachments;
+        $newMail->headers = $mail->headers;
+        $newMail->preheader = $mail->preheader;
+
+        $newMail->id = $this->save($newMail);
+
+        return $newMail;
     }
 }

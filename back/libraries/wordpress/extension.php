@@ -151,8 +151,3 @@ function acym_loadPlugins()
         $acymPlugins[$className] = $plugin;
     }
 }
-
-// Needed to display the fields in front / params
-class JFormField
-{
-}

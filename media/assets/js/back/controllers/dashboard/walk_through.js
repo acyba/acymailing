@@ -14,7 +14,6 @@ jQuery(document).ready(function ($) {
         acym_helperMailer.setSynchroExistingUsers();
         acym_helperSelectionPage.setSelectionElement(true, false, undefined, '#acym__selection__button-select');
         acym_helperMailer.dislayAuth2Params();
-        acym_helperMailer.loginForAuth2();
     }
 
     function setSendingMethodSwitch() {

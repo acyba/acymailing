@@ -739,6 +739,7 @@ class CampaignsController extends acymController
             $data['mailInformation']->settings = null;
             $data['mailInformation']->links_language = '';
             $data['mailInformation']->visible = 1;
+            $data['mailInformation']->mail_settings = null;
 
             $editLink .= '&from='.$mailId;
         } else {
@@ -764,6 +765,7 @@ class CampaignsController extends acymController
             $data['mailInformation']->from_name = '';
             $data['mailInformation']->reply_to_email = '';
             $data['mailInformation']->reply_to_name = '';
+            $data['mailInformation']->mail_settings = null;
             $data['typeEditor'] = 'acyEditor';
         } elseif (!empty($mailId)) {
             $mail = $mailClass->getOneById($mailId);
@@ -784,6 +786,7 @@ class CampaignsController extends acymController
             $data['mailInformation']->from_name = $mail->from_name;
             $data['mailInformation']->reply_to_email = $mail->reply_to_email;
             $data['mailInformation']->reply_to_name = $mail->reply_to_name;
+            $data['mailInformation']->mail_settings = $mail->mail_settings;
 
             if ($checkAutosave) {
                 $data['mailInformation']->autosave = $mail->autosave;
@@ -1108,6 +1111,15 @@ class CampaignsController extends acymController
         $mail->reply_to_name = acym_getVar('string', 'reply_to_name', '', 'REQUEST');
         $mail->drag_editor = strpos($mail->body, 'acym__wysid__template') === false ? 0 : 1;
         $mail->attachments = empty($mail->attachments) ? [] : json_decode($mail->attachments, true);
+
+        $mainColors = acym_getVar('string', 'main_colors', '', 'REQUEST', ACYM_ALLOWRAW);;
+        if (!empty($mail->mail_settings)) {
+            $mailSettings = json_decode($mail->mail_settings, false);
+        } else {
+            $mailSettings = new \stdClass();
+        }
+        $mailSettings->mainColors = $mainColors;
+        $mail->mail_settings = json_encode($mailSettings);
 
         $mail->tags = acym_getVar('array', 'template_tags', []);
 

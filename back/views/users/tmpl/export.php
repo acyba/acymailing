@@ -1,8 +1,5 @@
 <form id="acym_form" action="<?php echo acym_prepareAjaxURL(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm">
 	<div class="grid-x acym__content" id="acym__users__export">
-		<!--<div class="cell grid-x align-right margin-bottom-1">-->
-		<!--	<h5 class="cell auto font-bold">--><?php //echo acym_translation('ACYM_EXPORT'); ?><!--</h5>-->
-		<!--</div>-->
 		<div class="cell grid-x grid-margin-x">
 			<div class="cell acym_area medium-6 acym__content">
 				<div class="acym__title"><?php echo acym_translation('ACYM_FIELDS_TO_EXPORT'); ?></div>

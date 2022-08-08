@@ -75,10 +75,8 @@ if ($listPosition == 'before') echo $listsContent;
 </div>
 
 <p class="acysubbuttons">
-	<noscript>
-<div class="onefield fieldacycaptcha">
+<noscript>
     <?php echo acym_translation('ACYM_NO_JAVASCRIPT'); ?>
-</div>
 </noscript>
 <?php
 $onclickSubscribe = 'try{ return submitAcymForm("subscribe","'.$formName.'", "acymSubmitSubForm"); }catch(err){alert("The form could not be submitted "+err);return false;}';

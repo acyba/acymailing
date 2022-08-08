@@ -4,9 +4,9 @@
 		<div class="cell acym__listing__actions margin-bottom-1 grid-x">
             <?php
             $actions = [
-                'delete' => acym_translation('ACYM_DELETE'),
                 'setActive' => acym_translation('ACYM_ENABLE'),
                 'setInactive' => acym_translation('ACYM_DISABLE'),
+                'delete' => acym_translation('ACYM_DELETE'),
             ];
             echo acym_listingActions($actions, acym_translation('ACYM_DELETE_CUSTOM_FIELDS_TYPE_DATE'));
             ?>

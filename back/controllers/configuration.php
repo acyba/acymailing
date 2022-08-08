@@ -704,7 +704,7 @@ class ConfigurationController extends acymController
                         $this->displayMessage($resultAttachLicenseOnUpdateMe['message']);
                     }
                 } else {
-                    // If we remove a key, we try to inlink it
+                    // If we remove a key, we try to unlink it
                     $resultUnlinkLicenseOnUpdateMe = $this->unlinkLicenseOnUpdateMe($licenseKeyBeforeSave);
 
                     if (!empty($resultUnlinkLicenseOnUpdateMe['message'])) {
@@ -1486,7 +1486,7 @@ class ConfigurationController extends acymController
 
         if (in_array($smtpHost, ['smtp.office365.com', 'smtp-mail.outlook.com'])) {
             $tenant = $this->config->get('smtp_tenant');
-            if(empty($tenant)){
+            if (empty($tenant)) {
                 acym_enqueueMessage(acym_translation('ACYM_TENANT_FIELD_IS_MISSING'), 'error');
                 $this->listing();
 

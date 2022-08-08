@@ -1,6 +1,6 @@
 <?php
 
-class JFormFieldArticle extends JFormField
+class JFormFieldArticle extends acym_JFormField
 {
     var $type = 'article';
 

@@ -18,7 +18,10 @@ class plgAcymOnline extends acymPlugin
     public function textPopup()
     {
         $others = [];
-        $others['readonline'] = ['default' => acym_translation('ACYM_VIEW_ONLINE', true), 'desc' => acym_translation('ACYM_VIEW_ONLINE_DESC')];
+        $others['readonline'] = [
+            'default' => acym_translation('ACYM_VIEW_ONLINE', true),
+            'desc' => acym_translation('ACYM_VIEW_ONLINE_DESC'),
+        ];
         if (ACYM_CMS == 'joomla') {
             $profilePage = acym_getPageLink('view=frontusers&layout=profile');
             $others['modify_profile'] = [
@@ -30,12 +33,12 @@ class plgAcymOnline extends acymPlugin
         }
 
         ?>
-		<script language="javascript" type="text/javascript">
-            var selectedOnlineDText = '';
+		<script type="text/javascript">
+            let selectedOnlineDText = '';
 
             function changeOnlineTag(tagName) {
                 selectedOnlineDText = tagName;
-                defaultText = [];
+                let defaultText = [];
                 <?php
                 foreach ($others as $tagname => $tag) {
                     echo 'defaultText["'.$tagname.'"] = "'.$tag['default'].'";';
@@ -44,20 +47,46 @@ class plgAcymOnline extends acymPlugin
                 jQuery('#tr_' + tagName).addClass('selected_row');
                 document.getElementById('acym__popup__online__tagtext').value = defaultText[tagName];
 
+                <?php if (ACYM_CMS == 'joomla') { ?>
+                if (selectedOnlineDText === 'readonline') {
+                    jQuery('#acym__popup__online__theme__option').removeClass('is-hidden');
+                } else {
+                    jQuery('#acym__popup__online__theme__option').addClass('is-hidden');
+                }
+                <?php } ?>
+
                 setOnlineTag();
             }
 
             function setOnlineTag() {
-                var tag = '{' + selectedOnlineDText + '}' + document.getElementById('acym__popup__online__tagtext').value + '{/' + selectedOnlineDText + '}';
-                setTag(tag, jQuery('#tr_' + selectedOnlineDText));
+                // The value of the hidden input for the switch is changed after the onchange event is called...
+                setTimeout(function () {
+                    let themeOption = '';
+                    if (selectedOnlineDText === 'readonline') {
+                        let themeInput = document.querySelector('input[name="acym__popup__online__theme"]');
+                        themeOption = '|theme:' + (themeInput && themeInput.value === '1' ? '1' : '0');
+                    }
+                    let tag = '{' + selectedOnlineDText + themeOption + '}' + document.getElementById('acym__popup__online__tagtext').value + '{/' + selectedOnlineDText + '}';
+                    setTag(tag, jQuery('#tr_' + selectedOnlineDText));
+                }, 50);
             }
 		</script>
 
 		<div class="acym__popup__listing text-center grid-x">
 			<div class="grid-x medium-12 cell acym__row__no-listing text-left">
-				<div class="grid-x cell medium-5 small-12 acym__listing__title acym__listing__title__dynamics">
+				<div class="grid-x cell">
 					<label class="small-3" style="line-height: 40px;" for="acym__popup__online__tagtext"><?php echo acym_translation('ACYM_TEXT'); ?>: </label>
 					<input class="small-9" type="text" name="tagtext" id="acym__popup__online__tagtext" onchange="setOnlineTag();">
+				</div>
+				<div class="grid-x cell margin-top-1 margin-bottom-1 is-hidden" id="acym__popup__online__theme__option">
+                    <?php
+                    echo acym_switch(
+                        'acym__popup__online__theme',
+                        false,
+                        acym_translation('ACYM_OPEN_IN_SITE'),
+                        ['onchange' => 'setOnlineTag();']
+                    );
+                    ?>
 				</div>
 				<div class="medium-auto"></div>
 			</div>
@@ -93,7 +122,7 @@ class plgAcymOnline extends acymPlugin
         if (empty($email->body)) return;
 
         // Parenthesis like (?:xxxx) are not stored in $results, so only (.*) is taken into account, in $results[1]
-        $match = '#(?:{|%7B)(readonline|modify_profile)(?:}|%7D)(.*)(?:{|%7B)/(readonline|modify_profile)(?:}|%7D)#Uis';
+        $match = '#(?:{|%7B)(modify_profile|readonline(?:\|[^}]+)?)(?:}|%7D)(.*)(?:{|%7B)/(readonline|modify_profile)(?:}|%7D)#Uis';
         $results = [];
         $found = preg_match_all($match, $email->body, $results);
 
@@ -109,9 +138,14 @@ class plgAcymOnline extends acymPlugin
                 $link .= 'id={subscriber:id}&key={subscriber:key}';
                 $link .= $this->getLanguage($email->links_language);
             } else {
-                $link = 'archive&task=view&id='.$email->id.'&userid={subscriber:id}-{subscriber:key}&'.acym_noTemplate();
+                $link = 'archive&task=view&id='.$email->id.'&userid={subscriber:id}-{subscriber:key}';
+                if (strpos($results[1][$i], 'theme:1') === false) {
+                    $link .= '&'.acym_noTemplate();
+                }
+                if (!empty($email->key)) {
+                    $link .= '&key='.$email->key;
+                }
                 $link .= $this->getLanguage($email->links_language);
-                if (!empty($email->key)) $link .= '&key='.$email->key;
                 $link = acym_frontendLink($link);
             }
 

@@ -42,7 +42,7 @@ function acym_getArticleURL($id, $popup, $text)
 
 function acym_articleSelectionPage()
 {
-    return 'admin-ajax.php?action=acymailing_router&page=acymailing_configuration&ctrl=configuration&task=getarticles&'.acym_getFormToken();
+    return admin_url('admin-ajax.php').'?action=acymailing_router&page=acymailing_configuration&ctrl=configuration&task=getarticles&'.acym_getFormToken();
 }
 
 function acym_getPageOverride($ctrl, $view)

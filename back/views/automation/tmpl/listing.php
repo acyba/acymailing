@@ -13,14 +13,14 @@
 				<div class="medium-4"></div>
 				<div class="medium-4 cell grid-x grid-margin-x align-center">
 					<div class="medium-shrink cell">
-						<button type="button" class="button button-secondary acy_button_submit" data-task="edit" data-step="action"><?php echo acym_translation(
-                                'ACYM_NEW_MASS_ACTION'
-                            ); ?></button>
+						<button type="button" class="button button-secondary acy_button_submit" data-task="edit" data-step="action">
+                            <?php echo acym_translation('ACYM_NEW_MASS_ACTION'); ?>
+						</button>
 					</div>
 					<div class="medium-shrink cell">
-						<button type="button" class="button acy_button_submit" data-task="edit" data-step="info"><?php echo acym_translation(
-                                'ACYM_CREATE_AUTOMATION'
-                            ); ?></button>
+						<button type="button" class="button acy_button_submit" data-task="edit" data-step="info">
+                            <?php echo acym_translation('ACYM_CREATE_AUTOMATION'); ?>
+						</button>
 					</div>
 				</div>
 			</div>
@@ -32,9 +32,10 @@
 					<div class="grid-x acym__listing__actions cell margin-bottom-1">
                         <?php
                         $actions = [
-                            'delete' => acym_translation('ACYM_DELETE'),
                             'setActive' => acym_translation('ACYM_ENABLE'),
                             'setInactive' => acym_translation('ACYM_DISABLE'),
+                            'duplicate' => acym_translation('ACYM_DUPLICATE'),
+                            'delete' => acym_translation('ACYM_DELETE'),
                         ];
                         echo acym_listingActions($actions, acym_translation('ACYM_BE_CAREFUL_THIS_DELETE_ELEMENTS_LINKED_AUTOMATION'));
                         ?>
@@ -113,7 +114,8 @@
 								<div class="xxlarge-2 small-3 cell acym__listing__controls grid-x">
 									<div class="text-center cell">
                                         <?php
-                                        $class = $automation->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0' : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
+                                        $class = $automation->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0'
+                                            : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
                                         echo '<i data-acy-table="automation" data-acy-field="active" data-acy-elementid="'.acym_escape(
                                                 $automation->id
                                             ).'" class="acym_toggleable '.$class.'"></i>';

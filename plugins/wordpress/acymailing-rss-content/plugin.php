@@ -255,15 +255,19 @@ class plgAcymRss extends acymPlugin
             $title = $varFields['{title}'];
         }
 
-        $varFields['{link}'] = strlen($oneFeed->link->__toString()) > 0 ? trim($oneFeed->link->__toString()) : '';
-        if (!empty($varFields['{link}'])) {
-            $link = $varFields['{link}'];
-        }
-
+        $varFields['{link}'] = '';
         $varFields['{enclosure}'] = '';
         $varFields['{picthtml}'] = '';
 
         if ($type === 'RSS') {
+            if (strlen($oneFeed->link->__toString()) > 0) {
+                $varFields['{link}'] = trim($oneFeed->link->__toString());
+            }
+
+            if (!empty($varFields['{link}'])) {
+                $link = $varFields['{link}'];
+            }
+
             if ($oneFeed->enclosure && !empty($oneFeed->enclosure['url'])) {
                 $url = $oneFeed->enclosure['url']->__toString();
                 $extension = acym_fileGetExt($url);
@@ -272,6 +276,13 @@ class plgAcymRss extends acymPlugin
                 }
             }
         } else {
+            if (!empty($oneFeed->link->attributes()->href) && !empty($oneFeed->link->attributes()->href->__toString())) {
+                $varFields['{link}'] = trim($oneFeed->link->attributes()->href->__toString());
+            }
+            if (!empty($varFields['{link}'])) {
+                $link = $varFields['{link}'];
+            }
+
             $namespaces = $oneFeed->getNamespaces(true);
             if (!empty($namespaces['media'])) {
                 $media = $oneFeed->children($namespaces['media']);

@@ -256,6 +256,7 @@ const acym_helperEditorWysid = {
     mailsSettings: {},
     stylesheetTemp: '',
     savedStylesheet: jQuery('.acym__wysid__hidden__save__stylesheet').val(),
+    savedColors: jQuery('.acym__wysid__hidden__save__colors').val(),
     clicking: false,
     $resizingElement: '',
     versionControl: 0,

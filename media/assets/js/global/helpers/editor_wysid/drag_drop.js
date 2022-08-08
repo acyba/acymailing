@@ -1,11 +1,14 @@
 const acym_editorWysidDragDrop = {
+    currentTimeout: null,
+    instance: null,
+    autoScrollInterval: null,
     setNewZoneDraggable: function () {
         jQuery('.acym__wysid__zone__element--new').draggable({
             cursor: 'move', //Cursor appearance during drag
-            helper: 'clone', //Clone the element that has been dragged instead of directly dragging it
+            helper: 'clone', //Clone the element that has been dragged instead of directly dragging it,
             cursorAt: {
-                top: 12,
-                left: 40
+                top: 20,
+                left: 50
             }, //Cursor position when you start to drag an element
             connectToSortable104: '.acym__wysid__row', //Allows the drag element to be dropped onto this sortable
             revertDuration: 300,
@@ -52,7 +55,7 @@ const acym_editorWysidDragDrop = {
         jQuery('.acym__wysid__row').sortable({
             axis: 'y', //If defined, the items can be dragged only horizontally or vertically
             cursorAt: {top: 20}, //Cursor position when you start to drag an element
-            scroll: false, //If set to true, the page scrolls when coming to an edge
+            scroll: true, //If set to true, the page scrolls when coming to an edge
             placeholder: 'acym__wysid__row__element--placeholder', //A class name that gets applied to the otherwise white space
             handle: '.acym__wysid__row__element__toolbox__move', //Restricts sort start click to this element
             forcePlaceholderSize: true, //Forces the placeholder to have a size
@@ -87,6 +90,9 @@ const acym_editorWysidDragDrop = {
                 }
                 acym_editorWysidRowSelector.setZoneAndBlockOverlays();
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
+            },
+            receive: function (event, ui) {
+                ui.helper.remove();
             }
         });
     },
@@ -127,7 +133,7 @@ const acym_editorWysidDragDrop = {
     },
     setBlocksSortable: function () {
         jQuery('.acym__wysid__column tbody').sortable({
-            scroll: false, //If set to true, the page scrolls when coming to an edge
+            scroll: true, //If set to true, the page scrolls when coming to an edge
             handle: '.acym__wysid__column__element__toolbox__move', //Restricts sort start click to this element
             placeholder: 'acym__wysid__column__element--placeholder', //A class name that gets applied to the otherwise white space
             forcePlaceholderSize: true, //Forces the placeholder to have a size
@@ -222,7 +228,10 @@ const acym_editorWysidDragDrop = {
                 if (!ui.item.hasClass('acym__wysid__block__element--new')) {
                     // We then remove the original block
                     ui.item.remove();
+                    jQuery('.acym__wysid__column__element--helper').remove();
                     acym_editorWysidRowSelector.showOverlays();
+                } else {
+                    ui.helper.remove();
                 }
             }
         });
@@ -298,22 +307,18 @@ const acym_editorWysidDragDrop = {
         });
     },
     setFixJquerySortableWYSID: function () {
-        let instance;
         let uiSortable;
 
         jQuery.ui.plugin.add('draggable', 'connectToSortable104', {
             start: function (event, ui, draggable) {
-                instance = jQuery(this).data('ui-draggable');
-                uiSortable = jQuery.extend({}, ui, {
-                    item: instance.element
-                });
-                instance.sortables = [];
+                acym_editorWysidDragDrop.instance = jQuery(this).data('ui-draggable');
+                acym_editorWysidDragDrop.instance.sortables = [];
 
                 jQuery(draggable.options.connectToSortable104).each(function () {
                     let sortable = jQuery(this).sortable('instance');
                     if (!sortable || sortable.options.disabled) return;
 
-                    instance.sortables.push({
+                    acym_editorWysidDragDrop.instance.sortables.push({
                         instance: sortable,
                         shouldRevert: sortable.options.revert
                     });
@@ -322,26 +327,30 @@ const acym_editorWysidDragDrop = {
                     sortable.refreshPositions();
                     sortable._trigger('activate', event, uiSortable);
                 });
+
+                acym_editorWysidDragDrop.refreshSortablesInstances(draggable, uiSortable);
             },
             drag: function (event, ui, draggable) {
+                acym_editorWysidDragDrop.handleAutoScroll(event);
+
                 let that = this;
 
                 // instance.sortables = an array of the zones that currently exist in the email
-                jQuery.each(instance.sortables, function () {
+                jQuery.each(acym_editorWysidDragDrop.instance.sortables, function () {
                     let innermostIntersecting = false;
                     let thisSortable = this;
 
                     //Copy over some variables to allow calling the sortable's native _intersectsWith
-                    this.instance.positionAbs = instance.positionAbs;
-                    this.instance.helperProportions = instance.helperProportions;
-                    this.instance.offset.click = instance.offset.click;
+                    this.instance.positionAbs = acym_editorWysidDragDrop.instance.positionAbs;
+                    this.instance.helperProportions = acym_editorWysidDragDrop.instance.helperProportions;
+                    this.instance.offset.click = acym_editorWysidDragDrop.instance.offset.click;
 
                     if (this.instance._intersectsWith(this.instance.containerCache)) {
                         innermostIntersecting = true;
-                        jQuery.each(instance.sortables, function () {
-                            this.instance.positionAbs = instance.positionAbs;
-                            this.instance.helperProportions = instance.helperProportions;
-                            this.instance.offset.click = instance.offset.click;
+                        jQuery.each(acym_editorWysidDragDrop.instance.sortables, function () {
+                            this.instance.positionAbs = acym_editorWysidDragDrop.instance.positionAbs;
+                            this.instance.helperProportions = acym_editorWysidDragDrop.instance.helperProportions;
+                            this.instance.offset.click = acym_editorWysidDragDrop.instance.offset.click;
                             if (this
                                 !== thisSortable
                                 && this.instance._intersectsWith(this.instance.containerCache)
@@ -362,26 +371,23 @@ const acym_editorWysidDragDrop = {
                             this.instance.currentItem = jQuery(that).clone().removeAttr('id').appendTo(this.instance.element).data('ui-sortable-item', true);
                             //Store helper option to later restore it
                             this.instance.options._helper = this.instance.options.helper;
-                            this.instance.options.helper = function () {
-                                return ui.helper[0];
-                            };
 
                             event.target = this.instance.currentItem[0];
                             this.instance._mouseCapture(event, true);
                             this.instance._mouseStart(event, true, true);
 
                             //Because the browser event is way off the new appended portlet, we modify a couple of variables to reflect the changes
-                            this.instance.offset.click.top = instance.offset.click.top;
-                            this.instance.offset.click.left = instance.offset.click.left;
-                            this.instance.offset.parent.top -= instance.offset.parent.top - this.instance.offset.parent.top;
-                            this.instance.offset.parent.left -= instance.offset.parent.left - this.instance.offset.parent.left;
+                            this.instance.offset.click.top = acym_editorWysidDragDrop.instance.offset.click.top;
+                            this.instance.offset.click.left = acym_editorWysidDragDrop.instance.offset.click.left;
+                            this.instance.offset.parent.top -= acym_editorWysidDragDrop.instance.offset.parent.top - this.instance.offset.parent.top;
+                            this.instance.offset.parent.left -= acym_editorWysidDragDrop.instance.offset.parent.left - this.instance.offset.parent.left;
 
-                            instance._trigger('toSortable', event);
+                            acym_editorWysidDragDrop.instance._trigger('toSortable', event);
                             //draggable revert needs that
-                            instance.dropped = this.instance.element;
+                            acym_editorWysidDragDrop.instance.dropped = this.instance.element;
                             //hack so receive/update callbacks work (mostly)
-                            instance.currentItem = instance.element;
-                            this.instance.fromOutside = instance;
+                            acym_editorWysidDragDrop.instance.currentItem = acym_editorWysidDragDrop.instance.element;
+                            this.instance.fromOutside = acym_editorWysidDragDrop.instance;
                         }
 
                         //Provided we did all the previous steps, we can fire the drag event of the sortable on every draggable drag, when it intersects with the sortable
@@ -411,20 +417,22 @@ const acym_editorWysidDragDrop = {
                             this.instance.placeholder.remove();
                         }
 
-                        instance._trigger('fromSortable', event);
+                        acym_editorWysidDragDrop.instance._trigger('fromSortable', event);
                         //draggable revert needs that
-                        instance.dropped = false;
+                        acym_editorWysidDragDrop.instance.dropped = false;
                     }
                 });
             },
             stop: function (event, ui, draggable) {
+                acym_editorWysidDragDrop.stopAutoScroll();
+
                 //If we are still over the sortable, we fake the stop event of the sortable, but also remove helper
-                jQuery.each(instance.sortables, function () {
+                jQuery.each(acym_editorWysidDragDrop.instance.sortables, function () {
                     if (this.instance.isOver) {
                         this.instance.isOver = 0;
 
                         // Don't remove the helper in the draggable instance
-                        instance.cancelHelperRemoval = true;
+                        acym_editorWysidDragDrop.instance.cancelHelperRemoval = true;
                         // Remove it in the sortable instance (so sortable plugins like revert still work)
                         this.instance.cancelHelperRemoval = false;
 
@@ -439,7 +447,7 @@ const acym_editorWysidDragDrop = {
                         this.instance.options.helper = this.instance.options._helper;
 
                         // If the helper has been the original item, restore properties in the sortable
-                        if (instance.options.helper === 'original') {
+                        if (acym_editorWysidDragDrop.instance.options.helper === 'original') {
                             this.instance.currentItem.css({
                                 top: 'auto',
                                 left: 'auto'
@@ -452,6 +460,75 @@ const acym_editorWysidDragDrop = {
                     }
                 });
             }
+        });
+    },
+    handleAutoScroll: function (event) {
+        let editorContainer = document.getElementById('acym__wysid__template');
+        let containerPositionOnScreen = editorContainer.getBoundingClientRect();
+        let editorTop = containerPositionOnScreen.top;
+        let editorBottom = containerPositionOnScreen.bottom;
+
+        let scrollTopLimit = ((editorBottom - editorTop) / 10) + editorTop;
+        let scrollBottomLimit = ((editorBottom - editorTop) / 10) * 9 + editorTop;
+
+        let mouseVerticalPositionOnScreen = event.clientY;
+        if (mouseVerticalPositionOnScreen > editorTop && mouseVerticalPositionOnScreen < scrollTopLimit) {
+            if (!acym_editorWysidDragDrop.autoScrollInterval) {
+                acym_editorWysidDragDrop.autoScrollInterval = setInterval(function () {
+                    if (editorContainer.scrollTop === 0) {
+                        acym_editorWysidDragDrop.stopAutoScroll();
+                        return;
+                    }
+                    editorContainer
+                        .scrollBy({
+                            left: 0,
+                            top: -50,
+                            behavior: 'smooth'
+                        });
+                }, 100);
+            }
+        } else if (mouseVerticalPositionOnScreen < editorBottom && mouseVerticalPositionOnScreen > scrollBottomLimit) {
+            if (!acym_editorWysidDragDrop.autoScrollInterval) {
+                acym_editorWysidDragDrop.autoScrollInterval = setInterval(function () {
+                    if (editorContainer.offsetHeight + editorContainer.scrollTop >= editorContainer.scrollHeight) {
+                        acym_editorWysidDragDrop.stopAutoScroll();
+                        return;
+                    }
+                    editorContainer
+                        .scrollBy({
+                            left: 0,
+                            top: 50,
+                            behavior: 'smooth'
+                        });
+                }, 100);
+            }
+        } else {
+            acym_editorWysidDragDrop.stopAutoScroll();
+        }
+    },
+    stopAutoScroll: function () {
+        clearInterval(acym_editorWysidDragDrop.autoScrollInterval);
+        acym_editorWysidDragDrop.autoScrollInterval = null;
+    },
+    refreshSortablesInstances: function (draggable, uiSortable) {
+        jQuery('#acym__wysid__template').off('scroll').on('scroll', () => {
+            // We add a timeout to reload when the user finished scrolling
+            clearTimeout(acym_editorWysidDragDrop.currentTimeout);
+            acym_editorWysidDragDrop.currentTimeout = setTimeout(function () {
+                jQuery(draggable.options.connectToSortable104).each(function () {
+                    const sortable = jQuery(this).sortable('instance');
+                    if (!sortable || sortable.options.disabled) return;
+
+                    acym_editorWysidDragDrop.instance.sortables.push({
+                        instance: sortable,
+                        shouldRevert: sortable.options.revert
+                    });
+                    // Call the sortable's refreshPositions at drag start to refresh the containerCache since the sortable container cache is used in drag
+                    // and needs to be up to date (this will ensure it's initialised as well as being kept in step with any changes that might have happened on the page).
+                    sortable.refreshPositions();
+                    sortable._trigger('activate', event, uiSortable);
+                });
+            }, 100);
         });
     }
 };

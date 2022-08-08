@@ -18,8 +18,16 @@ class plgAcymEasydigitaldownloads extends acymPlugin
         $this->pluginDescription->category = 'Content management';
         $this->pluginDescription->features = '[]';
         $this->pluginDescription->description = '- Insert digital downloads and generate coupons in your emails';
-
-
+        $this->isOldDatabaseVersion = false;
+        if (is_admin()) {
+            if (!function_exists('get_plugin_data')) {
+                require_once(ABSPATH.'wp-admin/includes/plugin.php');
+            }
+            if (acym_isExtensionActive('easy-digital-downloads/easy-digital-downloads.php')) {
+                $plugin_data = get_plugin_data(ABSPATH.'wp-content/plugins/easy-digital-downloads/easy-digital-downloads.php');
+                $this->isOldDatabaseVersion = version_compare($plugin_data['Version'], '3.0.0', '<');
+            }
+        }
         if ($this->installed) {
             $this->displayOptions = [
                 'title' => ['ACYM_TITLE', true],
@@ -134,7 +142,7 @@ class plgAcymEasydigitaldownloads extends acymPlugin
                 'default' => true,
             ],
             [
-                'title' => 'ACYM_CLICKABLE_FALSE',
+                'title' => 'ACYM_CLICKABLE_IMAGE',
                 'type' => 'boolean',
                 'name' => 'clickableimg',
                 'default' => false,
@@ -224,6 +232,7 @@ class plgAcymEasydigitaldownloads extends acymPlugin
                 'type' => 'number',
                 'name' => 'amount',
                 'default' => '0',
+                'min' => '0',
             ],
             [
                 'title' => __('Download Requirements', 'easydigitaldownloads'),
@@ -274,12 +283,14 @@ class plgAcymEasydigitaldownloads extends acymPlugin
                 'type' => 'number',
                 'name' => 'maxUses',
                 'default' => '',
+                'min' => '0',
             ],
             [
                 'title' => __('Minimum amount', 'easydigitaldownloads'),
                 'type' => 'number',
                 'name' => 'minAmount',
                 'default' => '',
+                'min' => '0',
             ],
             [
                 'title' => __('Use once per customer', 'easydigitaldownloads'),
@@ -294,13 +305,13 @@ class plgAcymEasydigitaldownloads extends acymPlugin
         // Script to show more inputs if requirements are selected
         echo '<script type="text/javascript">
 		// no declaration semantics because if we use them, 
-		// javascript will redeclare this variables each time
+		// javascript will redeclare these variables each time
 		// while they are already existing (causing troubles)
 		// may exist a better solution ?
 			var requirements = document.getElementById("dlRequirementseasydigitaldownloads_coupon");
 			var condition = document.getElementById("conditioneasydigitaldownloads_coupon");
 			var global = document.getElementById("globaleasydigitaldownloads_coupon0");
-				
+            
 			checkRequirementsSelected()
 			requirements.onchange = checkRequirementsSelected;
 			
@@ -408,6 +419,7 @@ class plgAcymEasydigitaldownloads extends acymPlugin
 				   class="cell medium-6"
 				   value="<?php echo esc_attr($this->defaultValues->min); ?>"
 				   name="min"
+				   min="0"
 				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('min', this.value)">
 		</div>
 		<div class="cell grid-x">
@@ -419,6 +431,7 @@ class plgAcymEasydigitaldownloads extends acymPlugin
 				   class="cell medium-6"
 				   value="<?php echo esc_attr($this->defaultValues->max); ?>"
 				   name="max"
+				   min="0"
 				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('max', this.value)">
 		</div>
 		<div class="cell grid-x">
@@ -673,7 +686,6 @@ class plgAcymEasydigitaldownloads extends acymPlugin
         $tags = $this->pluginHelper->extractTags($email, 'last'.$this->name);
         $tags = array_merge($tags, $this->pluginHelper->extractTags($email, $this->name.'_tags'));
 
-
         $this->tags = [];
         foreach ($tags as $oneTag => $parameter) {
             $minAtO = isset($parameter->min) && $parameter->min == 0;
@@ -684,63 +696,78 @@ class plgAcymEasydigitaldownloads extends acymPlugin
                 $this->tags[$oneTag] = '_EMPTYSEND_';
                 continue;
             }
-            //We get the lastest payments
-            $dataQuery = [
-                'numberposts' => -1,
-                'meta_key' => '_edd_payment_customer_id',
-                'meta_value' => $user->cms_id,
-                // payment is a kind of list of download (like an order)
-                'post_type' => 'edd_payment',
-                // edd has not a function to know what are all status considered as paid
-                // So I put "publish" because it's the status "paid" for edd
-                // Maybe we can add more like "pending"
-                'post_status' => 'publish',
-                'meta_query' => [
-                    [
-                        'key' => '_edd_payment_customer_id',
-                        'value' => intval($user->cms_id),
-                        'compare' => '=',
+            if ($this->isOldDatabaseVersion) {
+                //We get the lastest payments
+                $dataQuery = [
+                    'numberposts' => -1,
+                    'meta_key' => '_edd_payment_customer_id',
+                    'meta_value' => $user->cms_id,
+                    // payment is a kind of list of download (like an order)
+                    'post_type' => 'edd_payment',
+                    // edd has not a function to know what are all status considered as paid
+                    // So I put "publish" because it's the status "paid" for edd
+                    // Maybe we can add more like "pending"
+                    'post_status' => 'publish',
+                    'meta_query' => [
+                        [
+                            'key' => '_edd_payment_customer_id',
+                            'value' => intval($user->cms_id),
+                            'compare' => '=',
+                        ],
                     ],
-                ],
-            ];
-            if (!empty($parameter->min_date)) {
-                $minDate = acym_replaceDate($parameter->min_date);
-                $dataQuery['date_query'] = [
-                    'after' => date('Y-m-d', $minDate),
                 ];
-            }
-            $customer_payments = get_posts($dataQuery);
 
-            if ($minAtO && empty($customer_payments)) {
-                $this->tags[$oneTag] = '_EMPTYSEND_';
-                continue;
-            }
-
-            if (empty($customer_payments)) {
-                $this->tags[$oneTag] = '';
-                continue;
-            }
-
-            //We get the downloads from the last payments
-            $download_ids = [];
-
-            foreach ($customer_payments as $customer_payment) {
-                $payment = new EDD_Payment($customer_payment->ID);
-                $downloads = $payment->downloads;
-                foreach ($downloads as $download) {
-                    $download_id = $download['id'];
-                    $download_ids[] = $download_id;
+                if (!empty($parameter->min_date)) {
+                    $minDate = acym_replaceDate($parameter->min_date);
+                    $dataQuery['date_query'] = [
+                        'after' => date('Y-m-d', $minDate),
+                    ];
                 }
+                $customer_payments = get_posts($dataQuery);
+
+                if ($minAtO && empty($customer_payments)) {
+                    $this->tags[$oneTag] = '_EMPTYSEND_';
+                    continue;
+                }
+
+                if (empty($customer_payments)) {
+                    $this->tags[$oneTag] = '';
+                    continue;
+                }
+
+                //We get the downloads from the last payments
+                $download_ids = [];
+
+                foreach ($customer_payments as $customer_payment) {
+                    $payment = new EDD_Payment($customer_payment->ID);
+                    $downloads = $payment->downloads;
+                    foreach ($downloads as $download) {
+                        $download_id = $download['id'];
+                        $download_ids[] = $download_id;
+                    }
+                }
+            } else {
+                $query =
+                    'SELECT DISTINCT item.product_id 
+					 FROM `#__edd_order_items` as item 
+    				 JOIN `#__edd_orders` as orders on item.order_id = orders.id 
+				 	 WHERE orders.user_id ='.$user->cms_id.' AND orders.status = '.acym_escapeDB('complete');
+
+                if (!empty($parameter->min_date)) {
+                    $query .= ' AND orders.date_completed >= '.acym_escapeDB($parameter->min_date);
+                }
+
+                $download_ids = acym_loadResultArray($query);
             }
 
             $query = 'SELECT DISTINCT download.`ID` FROM #__posts AS download ';
-            //We filters the downloads if we selected categories
+
+            //We filter the downloads if we selected categories
             if (!empty($parameter->id)) {
                 $selectedArea = $this->getSelectedArea($parameter);
                 if (!empty($selectedArea)) {
-                    $download_ids = array_unique($download_ids);
-                    $query .= ' JOIN #__term_relationships AS cat ON download.ID = cat.object_id 
-                    AND cat.term_taxonomy_id = '.implode(' OR cat.term_taxonomy_id = ', $selectedArea).'';
+                    $query .= ' JOIN #__term_relationships AS cat ON download.ID = cat.object_id
+                    AND (cat.term_taxonomy_id = '.implode(' OR cat.term_taxonomy_id = ', $selectedArea).')';
                 }
             }
 
@@ -910,41 +937,83 @@ class plgAcymEasydigitaldownloads extends acymPlugin
             ],
             $tag->code
         );
+        if ($this->isOldDatabaseVersion) {
+            $coupon = [
+                'post_title' => $tag->name,
+                'post_content' => '',
+                //edd discounts can have active or inactive status
+                'post_status' => 'active',
+                'post_author' => 1,
+                'post_type' => 'edd_discount',
+            ];
+
+            $couponId = wp_insert_post($coupon);
+
+            // Add Details
+            // Check if couponCode already existing ?
+            update_post_meta($couponId, '_edd_discount_code', $couponCode);
+            update_post_meta($couponId, '_edd_discount_name', $tag->name);
+            update_post_meta($couponId, '_edd_discount_status', 'active');
+            update_post_meta($couponId, '_edd_discount_uses', 0);
+
+            update_post_meta($couponId, '_edd_discount_max_uses', empty($tag->maxUses) ? '' : $tag->maxUses);
+            update_post_meta($couponId, '_edd_discount_amount', $tag->amount);
+            update_post_meta($couponId, '_edd_discount_start', empty($tag->startDate) ? '' : acym_date(acym_replaceDate($tag->startDate), 'Y-m-d'));
+            update_post_meta($couponId, '_edd_discount_expiration', empty($tag->endDate) ? '' : acym_date(acym_replaceDate($tag->endDate), 'Y-m-d'));
+
+            update_post_meta($couponId, '_edd_discount_type', $tag->type);
+            update_post_meta($couponId, '_edd_discount_min_price', empty($tag->minAmount) ? '' : $tag->minAmount);
+
+            update_post_meta($couponId, '_edd_discount_product_reqs', $this->cleanElements($tag->dlRequirements));
+            update_post_meta($couponId, '_edd_discount_product_condition', empty($tag->condition) ? 'all' : $tag->condition);
+            update_post_meta($couponId, '_edd_discount_is_not_global', empty($tag->global) ? false : $tag->global);
+
+            update_post_meta($couponId, '_edd_discount_excluded_products', $this->cleanElements($tag->excldownload));
+
+            update_post_meta($couponId, '_edd_discount_is_single_use', empty($tag->once) ? '' : $tag->once);
+        } else {
+            $discount = new stdClass();
+            $discount->name = $tag->name;
+            $discount->code = $couponCode;
+            $discount->status = 'active';
+            $discount->type = 'discount';
+            $discount->scope = empty($tag->global) ? 'not_global' : 'global';
+            $discount->amount_type = $tag->type;
+            $discount->amount = $tag->amount;
+            $discount->max_uses = empty($tag->maxUses) ? '' : $tag->maxUses;
+            $discount->once_per_customer = empty($tag->once) ? 0 : $tag->once;
+            $discount->min_charge_amount = empty($tag->minAmount) ? '' : $tag->minAmount;
+            $discount->start_date = empty($tag->startDate) ? '' : acym_date(acym_replaceDate($tag->startDate), 'Y-m-d H:i:s');
+            $discount->end_date = empty($tag->endDate) ? '' : acym_date(acym_replaceDate($tag->endDate), 'Y-m-d H:i:s');
+
+            $insertedDiscount = acym_insertObject('#__edd_adjustments', $discount);
+            if (!empty($insertedDiscount)) {
+                $meta = new stdClass();
+                foreach ($this->cleanElements($tag->dlRequirements) as $downloadId) {
+                    $meta->edd_adjustment_id = $insertedDiscount;
+                    $meta->meta_key = 'product_requirement';
+                    $meta->meta_value = $downloadId;
+
+                    acym_insertObject('#__edd_adjustmentmeta', $meta);
+                }
+                if (!empty($tag->condition)) {
+                    $meta->edd_adjustment_id = $insertedDiscount;
+                    $meta->meta_key = 'product_condition';
+                    $meta->meta_value = $tag->condition;
+
+                    acym_insertObject('#__edd_adjustmentmeta', $meta);
+                }
 
 
-        $coupon = [
-            'post_title' => $tag->name,
-            'post_content' => '',
-            //edd discounts can have active or inactive status
-            'post_status' => 'active',
-            'post_author' => 1,
-            'post_type' => 'edd_discount',
-        ];
+                foreach ($this->cleanElements($tag->excldownload) as $downloadId) {
+                    $meta->edd_adjustment_id = $insertedDiscount;
+                    $meta->meta_key = 'excluded_product';
+                    $meta->meta_value = $downloadId;
 
-        $couponId = wp_insert_post($coupon);
-
-        // Add Details
-        // Check if couponCode already existing ?
-        update_post_meta($couponId, '_edd_discount_code', $couponCode);
-        update_post_meta($couponId, '_edd_discount_name', $tag->name);
-        update_post_meta($couponId, '_edd_discount_status', 'active');
-        update_post_meta($couponId, '_edd_discount_uses', 0);
-
-        update_post_meta($couponId, '_edd_discount_max_uses', empty($tag->maxUses) ? '' : $tag->maxUses);
-        update_post_meta($couponId, '_edd_discount_amount', $tag->amount);
-        update_post_meta($couponId, '_edd_discount_start', empty($tag->startDate) ? '' : acym_date(acym_replaceDate($tag->startDate), 'Y-m-d'));
-        update_post_meta($couponId, '_edd_discount_expiration', empty($tag->endDate) ? '' : acym_date(acym_replaceDate($tag->endDate), 'Y-m-d'));
-
-        update_post_meta($couponId, '_edd_discount_type', $tag->type);
-        update_post_meta($couponId, '_edd_discount_min_price', empty($tag->minAmount) ? '' : $tag->minAmount);
-
-        update_post_meta($couponId, '_edd_discount_product_reqs', $this->cleanElements($tag->dlRequirements));
-        update_post_meta($couponId, '_edd_discount_product_condition', empty($tag->condition) ? 'all' : $tag->condition);
-        update_post_meta($couponId, '_edd_discount_is_not_global', empty($tag->global) ? false : $tag->global);
-
-        update_post_meta($couponId, '_edd_discount_excluded_products', $this->cleanElements($tag->excldownload));
-
-        update_post_meta($couponId, '_edd_discount_is_single_use', empty($tag->once) ? '' : $tag->once);
+                    acym_insertObject('#__edd_adjustmentmeta', $meta);
+                }
+            }
+        }
 
         return $couponCode;
     }

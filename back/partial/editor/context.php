@@ -502,7 +502,7 @@
 				<div class="cell text-center margin-bottom-1">
 					<a class="button button-secondary"
 					   target="_blank"
-					   href="https://www.acymailing.com/pricing/?utm_source=acymailing_plugin&utm_campaign=purchase&utm_medium=built_with_footer">
+					   href="<?php echo ACYM_ACYMAILLING_WEBSITE; ?>pricing/?utm_source=acymailing_plugin&utm_campaign=purchase&utm_medium=built_with_footer">
                         <?php echo acym_translation('ACYM_SEE_PRO_VERSION_FEATURES'); ?>
 					</a>
 				</div>

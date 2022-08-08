@@ -32,7 +32,8 @@ class plgAcymMailgun extends acymPlugin
             'us' => acym_translation('ACYM_US'),
             'eu' => acym_translation('ACYM_EU'),
         ];
-        $defaultDomain = empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_domain']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_domain']->value;
+        $defaultDomain = empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_domain']) ? ''
+            : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_domain']->value;
         $defaultApiKey = empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value;
         ob_start();
         ?>
@@ -72,7 +73,7 @@ class plgAcymMailgun extends acymPlugin
                     ); ?>
 				</label>
                 <?php echo $this->getLinks('https://signup.mailgun.com/new/signup', 'https://www.mailgun.com/pricing/'); ?>
-				<input type="text"
+				<input type="password"
 					   id="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-key"
 					   value="<?php echo empty($defaultApiKey) ? $this->config->get(self::SENDING_METHOD_ID.'_api_key') : $defaultApiKey; ?>"
 					   name="config[<?php echo self::SENDING_METHOD_ID; ?>_api_key]"
