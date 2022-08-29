@@ -48,4 +48,13 @@
             }
         }
     }
+
+    #acym__mail__edit__thumbnail, #acym__mail__edit__thumbnail--delete, #acym__mail__edit__thumbnail--file {
+        display: none;
+    }
+
+    #acym__mail__edit__thumbnail--delete, #acym__mail__edit__thumbnail--delete-saved {
+        font-size: 22px;
+        margin-left: 5px;
+    }
 }

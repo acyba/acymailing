@@ -6,7 +6,7 @@ use acyPHPMailer\OAuthTokenProvider;
 
 class OAuth implements OAuthTokenProvider
 {
-    const HOST_REQUIRED_AUTH_2 = ['smtp.gmail.com','smtp-mail.outlook.com','smtp.office365.com'];
+    const HOST_REQUIRED_AUTH_2 = ['smtp.gmail.com', 'smtp-mail.outlook.com', 'smtp.office365.com'];
 
     protected $oauthToken;
 
@@ -30,7 +30,7 @@ class OAuth implements OAuthTokenProvider
         $this->oauthToken = $options['oauthToken'];
         $this->oauthRefreshToken = $options['refreshToken'];
         $this->expiredIn = $options['expiredIn'];
-        $this->host = $options['host'];
+        $this->host = strtolower($options['host']);
     }
 
     protected function getToken()
@@ -90,6 +90,6 @@ class OAuth implements OAuthTokenProvider
 
     static function hostRequireOauth($host)
     {
-        return in_array($host, self::HOST_REQUIRED_AUTH_2);
+        return in_array(strtolower($host), self::HOST_REQUIRED_AUTH_2);
     }
 }

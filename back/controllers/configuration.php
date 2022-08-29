@@ -1473,7 +1473,7 @@ class ConfigurationController extends acymController
 
         $this->store();
 
-        $smtpHost = $this->config->get('smtp_host');
+        $smtpHost = strtolower($this->config->get('smtp_host'));
         $clientId = $this->config->get('smtp_clientId');
         $clientSecret = $this->config->get('smtp_secret');
         $redirect_url = $this->config->get('smtp_redirectUrl');

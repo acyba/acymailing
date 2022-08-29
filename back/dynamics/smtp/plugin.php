@@ -213,7 +213,7 @@ class plgAcymSmtp extends acymPlugin
         $code = acym_getVar('string', 'code');
         $clientId = trim($this->config->get('smtp_clientId'));
         $secret = trim($this->config->get('smtp_secret'));
-        $host = trim($this->config->get('smtp_host'));
+        $host = strtolower(trim($this->config->get('smtp_host')));
         $smtpRedirectUrl = trim($this->config->get('smtp_redirectUrl'));
         $redirectUrl = empty($smtpRedirectUrl) ? acym_baseURI() : $smtpRedirectUrl;
         $scope = '';

@@ -345,7 +345,7 @@ class plgSystemAcymtriggers extends JPlugin
 
         if (!$this->initAcy()) return true;
         acym_trigger('onRegacyAfterRoute', []);
-
+        
         if (empty($_GET['code']) || empty($_GET['state'])) {
             return;
         }

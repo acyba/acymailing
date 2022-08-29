@@ -5,7 +5,7 @@ Description: Adds editor and automation options for WooCommerce in AcyMailing
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 4.2
+Version: 4.3
 */
 
 use AcyMailing\Classes\PluginClass;

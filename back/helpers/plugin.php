@@ -1142,7 +1142,9 @@ class PluginHelper extends acymObject
             } elseif ($option['type'] === 'date') {
                 $relativeTime = '-';
                 if (!empty($option['relativeDate'])) $relativeTime = $option['relativeDate'];
-                if (!empty($option['default']) && !is_numeric($option['default'])) $option['default'] = strtotime($option['default']);
+                if (!empty($option['default']) && !is_numeric($option['default']) && false === strpos($option['default'], '[time]')) {
+                    $option['default'] = strtotime($option['default']);
+                }
                 $currentOption .= acym_dateField($option['name'].$suffix, $option['default'], '', ' onchange="'.$updateFunction.'();"', $relativeTime);
                 $jsOptionsMerge[] = 'otherinfo += "| '.$option['name'].':" + jQuery(\'input[name="'.$option['name'].$suffix.'"]\').val();';
             } elseif ($option['type'] === 'language') {

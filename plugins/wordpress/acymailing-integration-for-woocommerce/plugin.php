@@ -1009,12 +1009,18 @@ class plgAcymWoocommerce extends acymPlugin
 
         $return = [];
         $search = acym_getVar('string', 'search', '');
+        $variations = acym_getVar('boolean', 'variations', false);
+
+        $productType = ['product'];
+        if ($variations) {
+            $productType[] = 'product_variation';
+        }
 
         $search_results = new WP_Query([
             's' => $search,
             'post_status' => 'publish',
             'ignore_sticky_posts' => 1,
-            'post_type' => 'product',
+            'post_type' => $productType,
             'posts_per_page' => 20,
         ]);
 
@@ -1170,6 +1176,7 @@ class plgAcymWoocommerce extends acymPlugin
             $ajaxParams = json_encode([
                 'plugin' => 'plgAcymWoocommerce',
                 'trigger' => 'searchProduct',
+                'variations' => true,
             ]);
             $conditions['user']['woosubscription']->option .= acym_select(
                 [],
@@ -1199,6 +1206,19 @@ class plgAcymWoocommerce extends acymPlugin
             $conditions['user']['woosubscription']->option .= acym_select(
                 $subscriptionStatuses,
                 'acym_condition[conditions][__numor__][__numand__][woosubscription][status]',
+                'any',
+                'class="acym__select"'
+            );
+            $conditions['user']['woosubscription']->option .= '</div>';
+
+            $conditions['user']['woosubscription']->option .= '<div class="intext_select_automation cell">';
+            $conditions['user']['woosubscription']->option .= acym_select(
+                [
+                    'any' => acym_translation('ACYM_RENEWAL_TYPE'),
+                    'automatic' => acym_translation('ACYM_AUTO'),
+                    'manual' => acym_translation('ACYM_MANUAL'),
+                ],
+                'acym_condition[conditions][__numor__][__numand__][woosubscription][renewal_type]',
                 'any',
                 'class="acym__select"'
             );
@@ -1359,7 +1379,6 @@ class plgAcymWoocommerce extends acymPlugin
         	AND wcsuser'.$num.'.meta_value != 0 
         	AND wcsuser'.$num.'.meta_key = "_customer_user"';
 
-
         // Apply condition on product / category linked to the subscription
         if (!empty($options['product'])) {
             $query->join['woosubscription_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' 
@@ -1367,7 +1386,7 @@ class plgAcymWoocommerce extends acymPlugin
             	AND woooi'.$num.'.order_item_type = "line_item"';
             $query->join['woosubscription_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' 
             	ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id 
-            	AND woooim'.$num.'.meta_key = "_product_id" 
+            	AND woooim'.$num.'.meta_key IN ("_product_id", "_variation_id") 
             	AND woooim'.$num.'.meta_value = '.intval($options['product']);
         } elseif (!empty($options['category']) && $options['category'] != 'any') {
             $query->join['woosubscription_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' 
@@ -1382,6 +1401,12 @@ class plgAcymWoocommerce extends acymPlugin
             	AND termtax'.$num.'.term_id = '.intval($options['category']);
         }
 
+        if (!empty($options['renewal_type']) && in_array($options['renewal_type'], ['automatic', 'manual'])) {
+            $query->join['woosubscription_meta_renewal_type'.$num] = '#__postmeta AS wcs_renewal_type'.$num.' 
+				ON wcs_renewal_type'.$num.'.post_id = post'.$num.'.ID 
+				AND wcs_renewal_type'.$num.'.meta_key = "_requires_manual_renewal"
+				AND wcs_renewal_type'.$num.'.meta_value = "'.($options['renewal_type'] === 'manual' ? 'true' : 'false').'"';
+        }
 
         // Prepare date fields values
         $dateOptions = ['datemin', 'datemax', 'nextdatemin', 'nextdatemax', 'enddatemin', 'enddatemax'];

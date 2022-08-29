@@ -7,6 +7,8 @@ use AcyMailing\Classes\ZoneClass;
 
 class ZonesController extends acymController
 {
+    const ZONE_IMAGE_FOLDER = ACYM_UPLOAD_FOLDER.'zones'.DS;
+
     public function save()
     {
         acym_checkToken();
@@ -20,15 +22,29 @@ class ZonesController extends acymController
         }
 
         $zoneClass = new ZoneClass();
-
         $existingZone = $zoneClass->getOneByName($zone->name);
+
         if (!empty($existingZone)) {
             acym_sendAjaxResponse(acym_translation('ACYM_FAILED_CUSTOM_ZONE_SAVE_EXISTING'), [], false);
         }
 
-        $id = $zoneClass->save($zone);
+        $zone->id = $zoneClass->save($zone);
 
-        acym_sendAjaxResponse('', ['id' => $id]);
+        $dataResponse = ['id' => $zone->id];
+
+        if (!empty($_FILES['image']['name'])) {
+            $extension = pathinfo($_FILES['image']['name']);
+            $newPath = self::ZONE_IMAGE_FOLDER.$zone->id.'.'.$extension['extension'];
+
+            if (in_array($extension['extension'], acym_getImageFileExtensions()) && acym_uploadFile($_FILES['image']['tmp_name'], ACYM_ROOT.$newPath)) {
+                $zone->image = $newPath;
+                if ($zoneClass->save($zone)) {
+                    $dataResponse['image'] = acym_rootURI().$newPath;
+                }
+            }
+        }
+
+        acym_sendAjaxResponse('', $dataResponse);
     }
 
     private function getZoneData()
@@ -56,8 +72,7 @@ class ZonesController extends acymController
     {
         $zoneData = $this->getZoneData();
 
-        // We encode the data in case it has corrupted characters breaking the json response
-        acym_sendAjaxResponse('', ['content' => base64_encode($zoneData['zone']->content)]);
+        acym_sendAjaxResponse('', ['content' => $zoneData['zone']->content]);
     }
 
     public function delete()

@@ -1131,10 +1131,10 @@ class UserClass extends acymClass
         $user = get_object_vars($user);
 
         $fieldsValue = acym_loadObjectList(
-            'SELECT user_field.value as value, field.name as name 
-            FROM #__acym_user_has_field as user_field 
-            LEFT JOIN #__acym_field as field ON user_field.field_id = field.id 
-            WHERE user_field.user_id = '.intval($id),
+            'SELECT user_field.`value`, field.`name` 
+            FROM #__acym_user_has_field AS `user_field` 
+            LEFT JOIN #__acym_field AS `field` ON user_field.`field_id` = field.`id` 
+            WHERE user_field.`user_id` = '.intval($id),
             'name'
         );
 

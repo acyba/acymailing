@@ -38,8 +38,9 @@ class FrontusersController extends UsersController
             'savechanges',
             'exportdata',
             'ajaxGetEnqueuedMessages',
+            'listing',
         ];
-        $this->urlFrontMenu = 'index.php?option=com_acym&view=frontusers&layout=listing';
+        $this->urlFrontMenu = 'index.php?option=com_acym&view=frontusers&layout=profile';
         parent::__construct();
     }
 

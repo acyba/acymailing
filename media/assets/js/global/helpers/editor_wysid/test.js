@@ -35,11 +35,12 @@ const acym_editorWysidTest = {
                 acym_editorWysidFormAction.saveEmail(true, false);
                 return true;
             }
-
             acym_editorWysidFormAction.setThumbnailPreSave()
                                       .then(function (dataUrl) {
                                           // Copy img content in hidden input
-                                          jQuery('#editor_thumbnail').attr('value', dataUrl);
+                                          if (acym_editorWysidFormAction.needToGenerateThumbnail()) {
+                                              jQuery('#editor_thumbnail').attr('value', dataUrl);
+                                          }
                                           acym_editorWysidFormAction.saveEmail(true, false);
                                       })
                                       .catch(function (err) {

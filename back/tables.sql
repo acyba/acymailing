@@ -680,6 +680,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_custom_zone` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
 	`content` TEXT NOT NULL,
+	`image` VARCHAR(255) NULL,
 	PRIMARY KEY(`id`)
 )
 	ENGINE = InnoDB

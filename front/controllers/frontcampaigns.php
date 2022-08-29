@@ -25,12 +25,12 @@ class FrontcampaignsController extends CampaignsController
             'edit' => ['vue-applications' => ['entity_select'], 'editor-wysid'],
         ];
         $this->authorizedFrontTasks = [
+            'campaigns',
             'saveAsDraftCampaign',
             'addQueue',
             'save',
             'edit',
             'newEmail',
-            'campaigns',
             'welcome',
             'unsubscribe',
             'countNumberOfRecipients',
@@ -42,7 +42,7 @@ class FrontcampaignsController extends CampaignsController
             'delete',
             'deleteAttach',
         ];
-        $this->urlFrontMenu = 'index.php?option=com_acym&view=frontcampaigns&layout=listing';
+        $this->urlFrontMenu = 'index.php?option=com_acym&view=frontcampaigns&layout=campaigns';
         parent::__construct();
     }
 

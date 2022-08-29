@@ -224,14 +224,14 @@ const acym_editorWysidNewContent = {
 
             $insertBtn.off('click').on('click', function () {
                 let insertedVideo = '<tr class="acym__wysid__column__element">'
-                                  + '<td class="large-12 acym__wysid__column__element__td">'
-                                  + '<div class="acym__wysid__tinymce--image">'
-                                  + '<div style="text-align: center" data-mce-style="text-align: center">'
-                                  + $result.html()
-                                  + '</div>'
-                                  + '</div>'
-                                  + '</td>'
-                                  + '</tr>';
+                                    + '<td class="large-12 acym__wysid__column__element__td">'
+                                    + '<div class="acym__wysid__tinymce--image">'
+                                    + '<div style="text-align: center" data-mce-style="text-align: center">'
+                                    + $result.html()
+                                    + '</div>'
+                                    + '</div>'
+                                    + '</td>'
+                                    + '</tr>';
                 acym_helperEditorWysid.$focusElement.replaceWith(insertedVideo);
                 jQuery('#acym__wysid__modal').css('display', 'none');
                 acym_helperEditorWysid.setColumnRefreshUiWYSID();
@@ -289,16 +289,33 @@ const acym_editorWysidNewContent = {
         });
     },
     setModalCustomZoneWYSID: function () {
-        let content = '<div class="grid-x text-center margin-y">';
-        content += '<h5 class="cell">' + ACYM_JS_TXT.ACYM_NEW_CUSTOM_ZONE + '</h5>';
-        content += '<div class="cell">' + ACYM_JS_TXT.ACYM_ZONE_SAVE_TEXT + '</div>';
-        content += '<div class="cell"><input id="custom_zone_name" type="text" placeholder="' + ACYM_JS_TXT.ACYM_ZONE_NAME + '" value="" /></div>';
-        content += '<div class="cell">';
-        content += '<button class="button" type="button" id="custom_zone_cancel">' + ACYM_JS_TXT.ACYM_CANCEL + '</button>';
-        content += '<button class="button margin-left-1" id="custom_zone_save" type="button" disabled="disabled">' + ACYM_JS_TXT.ACYM_SAVE;
-        content += '<i id="custom_zone_save_spinner" class="acymicon-circle-o-notch acymicon-spin"></i>' + '</button>';
-        content += '</div>';
-        content += '</div>';
+        let content = `
+            <div class="grid-x margin-y">
+                <h5 class="cell text-center">${ACYM_JS_TXT.ACYM_NEW_CUSTOM_ZONE}</h5>
+                <div class="cell text-center">${ACYM_JS_TXT.ACYM_ZONE_SAVE_TEXT}</div>
+                <div class="cell grid-x margin-y">
+                    <label for="custom_zone_name" class="cell small-4 text-left">
+                        <span class="margin-left-2">${ACYM_JS_TXT.ACYM_ZONE_NAME}</span>
+                        <span class="acym__color__red">*</span>
+                    </label>
+                    <div class="cell small-8">
+                        <input id="custom_zone_name" type="text" value="" />
+                    </div>
+                    <label for="custom_zone_image" class="cell small-4 text-left">
+                        <span class="margin-left-2">${ACYM_JS_TXT.ACYM_IMAGE}</span>
+                    </label>
+                    <div class="cell small-8">
+                        <input id="custom_zone_image" type="file" value="" />
+                    </div>
+                </div>
+                <div class="cell text-center">
+                    <button class="button button-secondary" type="button" id="custom_zone_cancel">${ACYM_JS_TXT.ACYM_CANCEL}</button>
+                    <button class="button margin-left-1" id="custom_zone_save" type="button" disabled="disabled">
+                        ${ACYM_JS_TXT.ACYM_SAVE}
+                        <i id="custom_zone_save_spinner" class="acymicon-circle-o-notch acymicon-spin"></i>
+                    </button>
+                </div>
+            </div>`;
 
         jQuery('#acym__wysid__modal__ui__display').html(content);
         jQuery('#acym__wysid__modal__ui__fields').html('');
@@ -320,38 +337,65 @@ const acym_editorWysidNewContent = {
         });
 
         jQuery('#custom_zone_save').on('click', function () {
-            let spinner = jQuery('#custom_zone_save_spinner');
+            const spinner = jQuery('#custom_zone_save_spinner');
             spinner.css('display', 'inline-block');
 
-            const data = {
-                ctrl: 'zones',
-                task: 'save',
-                name: jQuery('#custom_zone_name').val(),
-                content: acym_helperEditorWysid.$focusElement.prop('outerHTML')
-            };
+            const newZoneName = jQuery('#custom_zone_name').val();
 
-            acym_helper.post(ACYM_AJAX_URL, data).then(response => {
-                if (response.error) {
-                    acym_editorWysidNotifications.addEditorNotification({
-                        'message': '<div class="cell auto acym__autosave__notification">' + response.message + '</div>',
-                        'level': 'error'
-                    }, 3000, true);
-                } else {
-                    let newZone = '<div class="grid-x cell acym__wysid__zone__element--new ui-draggable ui-draggable-handle" data-acym-zone-id="'
-                                  + response.data.id
-                                  + '">';
-                    newZone += '<i class="acymicon-delete"></i>';
-                    newZone += '<i class="cell acymicon-dashboard"></i>';
-                    newZone += '<div class="cell">' + data.name + '</div>';
-                    newZone += '</div>';
+            let zoneContent = acym_helperEditorWysid.$focusElement.prop('outerHTML');
+            // Remove the zone overlay
+            zoneContent = zoneContent.replace(/<div class="acym__wysid__row__selector"(.|\n)*?<tbody/, '<tbody');
+            // Remove the blocks overlay
+            zoneContent = zoneContent.replace(/<div class="acym__wysid__element__toolbox"(.|\n)*?<\/div>/g, '');
 
-                    jQuery('#custom_zones_none_message').hide();
-                    jQuery('.acym__wysid__right__toolbar__saved_zones').append(newZone);
-                    acym_editorWysidDragDrop.setNewZoneDraggable();
+            const formData = new FormData();
+            formData.append('ctrl', 'zones');
+            formData.append('task', 'save');
+            formData.append('name', newZoneName);
+            formData.append('content', zoneContent);
+
+            const selectedImages = jQuery('#custom_zone_image').prop('files');
+            if (selectedImages && selectedImages[0]) {
+                formData.append('image', selectedImages[0]);
+            }
+
+            jQuery.ajax({
+                url: ACYM_AJAX_URL,
+                dataType: 'text',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                type: 'post',
+                success: function (response) {
+                    response = acym_helper.parseJson(response);
+
+                    if (response.error) {
+                        acym_editorWysidNotifications.addEditorNotification({
+                            message: `<div class="cell auto acym__autosave__notification">${response.message}</div>`,
+                            level: 'error'
+                        }, 3000, true);
+                    } else {
+                        let newZone = `<div class="grid-x cell acym__wysid__zone__element--new ui-draggable ui-draggable-handle" data-acym-zone-id="${response.data.id}">
+                                            <i class="acymicon-delete"></i>`;
+
+                        if (response.data.image) {
+                            newZone += `<img class="cell saved_zone_image" alt="Logo custom zone" src="${response.data.image}" />`;
+                        } else {
+                            newZone += '<i class="cell acymicon-dashboard"></i>';
+                        }
+
+                        newZone += `<div class="cell">${newZoneName}</div>
+                                </div>`;
+
+                        jQuery('#custom_zones_none_message').hide();
+                        jQuery('.acym__wysid__right__toolbar__saved_zones').append(newZone);
+                        acym_editorWysidDragDrop.setNewZoneDraggable();
+                    }
+
+                    spinner.css('display', 'none');
+                    jQuery('#custom_zone_cancel').trigger('click');
                 }
-
-                spinner.css('display', 'none');
-                jQuery('#custom_zone_cancel').trigger('click');
             });
         });
     }

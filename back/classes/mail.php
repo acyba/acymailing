@@ -369,8 +369,7 @@ class MailClass extends acymClass
             $query = 'SELECT list.*
                     FROM #__acym_mail_has_list AS mailLists
                     JOIN #__acym_list AS list ON mailLists.list_id = list.id
-                    WHERE mailLists.mail_id = '.intval($id).'
-                    GROUP BY mailLists.list_id, mailLists.mail_id';
+                    WHERE mailLists.mail_id = '.intval($id);
         }
 
         return acym_loadObjectList($query, 'id');
@@ -406,7 +405,13 @@ class MailClass extends acymClass
         // Clean autosave value
         $mail->autosave = null;
 
-        if (empty($mail->thumbnail) || strpos($mail->thumbnail, 'data:image/png;base64') !== false) unset($mail->thumbnail);
+
+        // At this point $mail->thumbnail should be only a filename, so we don't want to override it with an empty string or an encoded image
+        // But we need to reset the thumbnail sometimes by setting the thumbnail to null
+        if (isset($mail->thumbnail) && ((empty($mail->thumbnail) && !is_null($mail->thumbnail)) || strpos($mail->thumbnail, 'data:image/png;base64') !== false)) {
+            unset($mail->thumbnail);
+        }
+
         if (!isset($mail->access)) $mail->access = '';
 
         foreach ($mail as $oneAttribute => $value) {
@@ -1099,7 +1104,7 @@ class MailClass extends acymClass
                                     <p style="word-break: break-word; text-align: center;">
                                     <a href="'.ACYM_ACYMAILLING_WEBSITE.'?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="_blank">
                                         <img src="'.$urlPoweredByImage.'"
-                                            title="poweredby" alt=""
+                                            title="poweredby" alt="Email built with AcyMailing"
                                             style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0px 5px; display: inline-block; margin-left: auto; margin-right: auto;"
                                             height="40" width="199">
                                     </a>

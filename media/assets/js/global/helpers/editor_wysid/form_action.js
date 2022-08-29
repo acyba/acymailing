@@ -1,4 +1,9 @@
 const acym_editorWysidFormAction = {
+    needToGenerateThumbnail: function () {
+        const $inputReset = jQuery('[name="custom_thumbnail_reset"]');
+
+        return !$inputReset.length || parseInt($inputReset.val()) === 1;
+    },
     saveAjaxMail: function (controller, sendTest, saveAsTmpl) {
         if (controller.indexOf('mails') !== -1 || saveAsTmpl) {
             return jQuery.when(acym_helperThumbnail.setAjaxSaveThumbnail()).done(function () {
@@ -154,7 +159,10 @@ const acym_editorWysidFormAction = {
             acym_editorWysidFormAction.setThumbnailPreSave()
                                       .then(function (dataUrl) {
                                           // Copy img content in hidden input
-                                          jQuery('#editor_thumbnail').attr('value', dataUrl);
+                                          console.log(acym_editorWysidFormAction.needToGenerateThumbnail());
+                                          if (acym_editorWysidFormAction.needToGenerateThumbnail()) {
+                                              jQuery('#editor_thumbnail').attr('value', dataUrl);
+                                          }
                                           acym_editorWysidFormAction.saveEmail(false, saveAsTmpl);
                                       })
                                       .catch(function (err) {
@@ -169,8 +177,10 @@ const acym_editorWysidFormAction = {
             'overflow-y': 'unset'
         });
 
-        let tmplheight = jQuery('.acym__wysid__template__content').height();
-        let node = document.getElementById('acym__wysid__template');
+        const tmplheight = jQuery('.acym__wysid__template__content').height();
+        const node = document.getElementById('acym__wysid__template');
+
+        jQuery('.acym__wysid__element__toolbox').remove();
 
         return html2canvas(node, {
             height: tmplheight,
@@ -202,6 +212,8 @@ const acym_editorWysidFormAction = {
             let savedContent = jQuery('.acym__wysid__hidden__save__content').val();
             if (!acym_helper.empty(savedContent)) {
                 $editorContent.replaceWith(savedContent);
+                // We need to reset the $editorContent nodes elements so the code below execute on the right nodes
+                $editorContent = jQuery('#acym__wysid__template');
             }
 
             let savedSettings = jQuery('.acym__wysid__hidden__save__settings').val();

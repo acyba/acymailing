@@ -1,9 +1,12 @@
 <?php
 
+use AcyMailing\Classes\UserClass;
 use AcyMailing\Libraries\acymPlugin;
 
 class plgAcymManagetext extends acymPlugin
 {
+    private $noIfStatementTags;
+
     public function replaceContent(&$email, $send = true)
     {
         $this->_replaceRandom($email);
@@ -16,12 +19,14 @@ class plgAcymManagetext extends acymPlugin
         $this->pluginHelper->cleanHtml($email->body);
         $this->pluginHelper->replaceVideos($email->body);
 
-        $this->removetext($email);
-        $this->ifstatement($email, $user);
+        $this->removeText($email);
+        $this->ifStatement($email, $user);
         $this->replaceConstant($email, $user);
     }
 
-    //Replace tags such as {const:CONTANT_NAME} or {trans:MY_TRANSLATION}
+    /**
+     * Replaces tags such as {const:CONSTANT_NAME} or {trans:MY_TRANSLATION}
+     */
     private function replaceConstant(&$email, $user)
     {
         //load the tags
@@ -49,9 +54,9 @@ class plgAcymManagetext extends acymPlugin
             }
             $tagValues = explode(':', $i);
             $type = ltrim($tagValues[0], '{');
-            if ($type == 'const') {
+            if ($type === 'const') {
                 $tagsReplaced[$i] = defined($val) ? constant($val) : 'Constant not defined : '.$val;
-            } elseif ($type == 'config') {
+            } elseif ($type === 'config') {
                 //We do not allow all config values... for now only sitename.
                 if ($val == 'sitename') {
                     $tagsReplaced[$i] = acym_getCMSConfig($val);
@@ -124,8 +129,7 @@ class plgAcymManagetext extends acymPlugin
         $this->pluginHelper->replaceTags($email, $tags, true);
     }
 
-
-    private function ifstatement(&$email, $user, $loop = 1)
+    private function ifStatement(&$email, $user, $loop = 1)
     {
         if (isset($this->noIfStatementTags[$email->id])) {
             return;
@@ -141,7 +145,6 @@ class plgAcymManagetext extends acymPlugin
             return;
         }
 
-        //Handle if statements...
         $match = '#{if:(((?!{if).)*)}(((?!{if).)*){/if}#Uis';
         $variables = ['subject', 'body', 'altbody', 'From', 'FromName', 'ReplyTo'];
         $found = false;
@@ -174,11 +177,13 @@ class plgAcymManagetext extends acymPlugin
             return;
         }
 
-        //Handles error messages
-        static $a = false;
+        // Handles error messages
+        static $alreadyHandled = false;
 
+        $userClass = new UserClass();
+        $acymUser = $userClass->getOneByIdWithCustomFields($user->id);
         $tags = [];
-        foreach ($results as $var => $allresults) {
+        foreach ($results as $allresults) {
             foreach ($allresults[0] as $i => $oneTag) {
                 //Don't need to process twice a tag we already have!
                 if (isset($tags[$oneTag])) {
@@ -200,24 +205,19 @@ class plgAcymManagetext extends acymPlugin
                 $field = trim($operators[1]);
                 $prop = '';
 
-                //Check operators.... if may be a:
-                //acym.field
-                //joomla.field
-                //...
                 $operatorsParts = explode('.', $operators[1]);
-                $operatorComp = 'acym';
+                $type = 'acym';
                 if (count($operatorsParts) > 1 && in_array($operatorsParts[0], ['acym', 'joomla', 'var'])) {
-                    $operatorComp = $operatorsParts[0];
+                    $type = $operatorsParts[0];
                     unset($operatorsParts[0]);
                     $field = implode('.', $operatorsParts);
                 }
 
-                //Handle Joomla fields first...
-                if ($operatorComp == 'joomla') {
+                // Handle Joomla fields first
+                if ($type === 'joomla') {
                     if (!empty($user->userid)) {
-                        if ($field == 'gid') {
-                            //$prop should be a list of group Ids separated by semi-colon so we will do an in_array if it's compared with =
-                            //We have a userid... lets load its groups then!
+                        if ($field === 'gid') {
+                            //We have an userid... lets load its groups then!
                             $prop = implode(';', acym_loadResultArray('SELECT group_id FROM #__user_usergroup_map WHERE user_id = '.intval($user->userid)));
                         } else {
                             //We need to load the value for that field...
@@ -225,45 +225,44 @@ class plgAcymManagetext extends acymPlugin
                             if (isset($juser->{$field})) {
                                 $prop = strtolower($juser->{$field});
                             } else {
-                                if ($isAdmin && !$a) {
-                                    acym_display('User variable not set : '.$field.' in '.$allresults[1][$i], 'error');
+                                if ($isAdmin && !$alreadyHandled) {
+                                    acym_enqueueMessage('User variable not set: '.$field.' in '.$allresults[1][$i], 'error');
                                 }
-                                $a = true;
+                                $alreadyHandled = true;
                             }
                         }
                     }
-                } elseif ($operatorComp == 'var') {
-                    //Static var to have a tag inside an if condition.
-                    //For example {if:var.{cbtag:name}=adrien}...{/if}
+                } elseif ($type === 'var') {
+                    // Static var to have a tag inside an if condition, for example {if:var.{cbtag:name}=adrien}...{/if}
                     $prop = strtolower($field);
                 } else {
-                    //AcyMailing fields...
-                    if (!isset($user->{$field})) {
-                        //We make sure to display it only once...
-                        if ($isAdmin && !$a) {
-                            acym_display('User variable not set : '.$field.' in '.$allresults[1][$i], 'error');
+                    // AcyMailing fields
+                    if (!isset($acymUser[$field])) {
+                        // We make sure to display it only once
+                        if ($isAdmin && !$alreadyHandled) {
+                            acym_enqueueMessage('User variable not set: '.$field.' in '.$allresults[1][$i], 'error');
                         }
-                        $a = true;
+                        $alreadyHandled = true;
                     } else {
-                        $prop = strtolower($user->{$field});
+                        $prop = strtolower($acymUser[$field]);
                     }
                 }
 
                 $tags[$oneTag] = '';
                 $val = strtolower(trim($operators[3]));
                 $prop = strip_tags($prop);
-                //We can hanlde several propositions in one if it contains ; such as {if:category=34;214;53}...
-                if ($operators[2] == '=' && ($prop == $val || in_array($prop, explode(';', $val)) || in_array($val, explode(';', $prop)))) {
+                //We can handle several propositions in one if it contains ; such as {if:category=34;214;53}...
+                if ($operators[2] === '=' && ($prop == $val || in_array($prop, explode(';', $val)) || in_array($val, explode(';', $prop)))) {
                     $tags[$oneTag] = $allresults[3][$i];
-                } elseif ($operators[2] == '!=' && $prop != $val) {
+                } elseif ($operators[2] === '!=' && $prop != $val) {
                     $tags[$oneTag] = $allresults[3][$i];
-                } elseif (($operators[2] == '>' || $operators[2] == '&gt;') && $prop > $val) {
+                } elseif (($operators[2] === '>' || $operators[2] === '&gt;') && $prop > $val) {
                     $tags[$oneTag] = $allresults[3][$i];
-                } elseif (($operators[2] == '<' || $operators[2] == '&lt;') && $prop < $val) {
+                } elseif (($operators[2] === '<' || $operators[2] === '&lt;') && $prop < $val) {
                     $tags[$oneTag] = $allresults[3][$i];
-                } elseif ($operators[2] == '~' && strpos($prop, $val) !== false) {
+                } elseif ($operators[2] === '~' && strpos($prop, $val) !== false) {
                     $tags[$oneTag] = $allresults[3][$i];
-                } elseif ($operators[2] == '!~' && strpos($prop, $val) === false) {
+                } elseif ($operators[2] === '!~' && strpos($prop, $val) === false) {
                     $tags[$oneTag] = $allresults[3][$i];
                 }
             }
@@ -271,15 +270,15 @@ class plgAcymManagetext extends acymPlugin
 
         $this->pluginHelper->replaceTags($email, $tags, true);
 
-        $this->ifstatement($email, $user, $loop + 1);
+        $this->ifStatement($email, $user, $loop + 1);
     }
 
-    private function removetext(&$email)
+    private function removeText(&$email)
     {
         //Remove text
-        $removetext = '{reg},{/reg},{pub},{/pub}';
-        if (!empty($removetext)) {
-            $removeArray = explode(',', trim($removetext, ' ,'));
+        $removeText = '{reg},{/reg},{pub},{/pub}';
+        if (!empty($removeText)) {
+            $removeArray = explode(',', trim($removeText, ' ,'));
             if (!empty($email->body)) {
                 $email->body = str_replace($removeArray, '', $email->body);
             }

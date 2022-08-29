@@ -234,5 +234,33 @@ const acym_helper = {
                 }
             }, 100);
         });
+    },
+    setKonami: function () {
+        const konamiCode = [
+            'ArrowUp',
+            'ArrowUp',
+            'ArrowDown',
+            'ArrowDown',
+            'ArrowLeft',
+            'ArrowRight',
+            'ArrowLeft',
+            'ArrowRight',
+            'b',
+            'a'
+        ];
+        let konamiCodePosition = 0;
+
+        jQuery(document).on('keydown', function (e) {
+            if (e.key === konamiCode[konamiCodePosition]) {
+                konamiCodePosition++;
+
+                if (konamiCodePosition === konamiCode.length) {
+                    jQuery('<style>* {animation: acy-spin 20s linear infinite;}</style>').appendTo('body');
+                    konamiCodePosition = 0;
+                }
+            } else {
+                konamiCodePosition = 0;
+            }
+        });
     }
 };

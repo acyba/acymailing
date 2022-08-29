@@ -72,6 +72,33 @@
 					<input id="acym__mail__edit__preheader" name="mail[preheader]" type="text" maxlength="255" value="<?php echo acym_escape($data['mail']->preheader); ?>">
 				</div>
             <?php } ?>
+            <?php if (!empty($data['mail']->type) && $data['mail']->type === $data['mailClass']::TYPE_TEMPLATE) { ?>
+				<div class="cell grid-x">
+					<div class="cell grid-x medium-6">
+						<label for="acym__mail__edit__thumbnail" class="cell shrink">
+                            <?php
+                            echo acym_translation('ACYM_EMAIL_CUSTOM_THUMBNAIL');
+                            echo acym_info('ACYM_EMAIL_CUSTOM_THUMBNAIL_DESC');
+                            ?>
+						</label>
+						<button class="cell shrink button button-secondary" type="button" id="acym__mail__edit__thumbnail--input">
+                            <?php echo acym_translation('ACYM_UPLOAD_IMAGE') ?>
+						</button>
+						<input id="acym__mail__edit__thumbnail" name="custom_thumbnail" type="file">
+						<span id="acym__mail__edit__thumbnail--file" class="cell shrink acym_vcenter margin-left-1"></span>
+						<button type="button" id="acym__mail__edit__thumbnail--delete" class="acymicon-close acym__color__red cursor-pointer acym_vcenter"></button>
+                        <?php if (strpos($data['mail']->thumbnail, '_custom_') !== false) { ?>
+							<div id="acym__mail__edit__thumbnail--saved" class="cell shrink grid-x">
+								<span id="acym__mail__edit__thumbnail--file-saved" class="cell shrink acym_vcenter margin-left-1">
+									<?php echo $data['mail']->thumbnail; ?>
+								</span>
+								<button type="button" id="acym__mail__edit__thumbnail--delete-saved" class="acymicon-close acym__color__red cursor-pointer acym_vcenter"></button>
+								<input type="hidden" name="custom_thumbnail_reset" value="0">
+							</div>
+                        <?php } ?>
+					</div>
+				</div>
+            <?php } ?>
             <?php if (empty($data['mail']->drag_editor)) { ?>
 				<div class="cell grid-x medium-6" id="acym__mail__edit__html__stylesheet__container">
 					<div class="cell medium-shrink">

@@ -159,7 +159,7 @@ class acymClass extends acymObject
         }
 
         if (empty($elements)) {
-            return 0;
+            return;
         }
 
         acym_arrayToInteger($elements);

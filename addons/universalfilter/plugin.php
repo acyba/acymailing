@@ -296,7 +296,7 @@ class plgAcymUniversalfilter extends acymPlugin
         // We need to connect to another database
         $conn = @mysqli_connect($options['conn_host'], $options['conn_login'], $options['conn_pwd'], $options['conn_db']);
         if (empty($conn)) {
-            $this->filterError($query, $options, acym_translation_sprintf('ACYM_ERROR_CONNECTING', $options['conn_host'].' '.$options['conn_db']).': '.mysqli_connect_error());
+            $this->filterError($query, $options, acym_translationSprintf('ACYM_ERROR_CONNECTING', $options['conn_host'].' '.$options['conn_db']).': '.mysqli_connect_error());
 
             return;
         }

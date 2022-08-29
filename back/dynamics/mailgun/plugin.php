@@ -73,7 +73,7 @@ class plgAcymMailgun extends acymPlugin
                     ); ?>
 				</label>
                 <?php echo $this->getLinks('https://signup.mailgun.com/new/signup', 'https://www.mailgun.com/pricing/'); ?>
-				<input type="password"
+				<input type="text"
 					   id="<?php echo self::SENDING_METHOD_ID; ?>_settings_api-key"
 					   value="<?php echo empty($defaultApiKey) ? $this->config->get(self::SENDING_METHOD_ID.'_api_key') : $defaultApiKey; ?>"
 					   name="config[<?php echo self::SENDING_METHOD_ID; ?>_api_key]"
@@ -91,18 +91,21 @@ class plgAcymMailgun extends acymPlugin
         if ($sendingMethod !== self::SENDING_METHOD_ID) return;
 
         $this->setSendingMethodApiUrl($credentials);
+        $headers = $this->getHeadersSendingMethod(self::SENDING_METHOD_ID);
         $authentication = $this->getAuthenticationSendingMethod(self::SENDING_METHOD_ID, $credentials);
-        $response = $this->callApiSendingMethod($this->sendingMethodApiUrl.'log', [], [], 'GET', $authentication);
+        $data = [
+            'from' => $this->config->get('from_email'),
+            'to' => acym_currentUserEmail(),
+            'subject' => 'Test email',
+            'html' => 'Test email body',
+            'o:testmode' => true,
+        ];
 
+        $response = $this->callApiSendingMethod($this->sendingMethodApiUrl.'messages', $data, $headers, 'POST', $authentication, true);
+
+        // If call didn't work, the response is always null
         if (empty($response)) {
-            $errorMsg = acym_translation('ACYM_NO_ANSWER');
-            acym_sendAjaxResponse(acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $errorMsg), [], false);
-        } elseif (!empty($response['error_curl'])) {
-            acym_sendAjaxResponse(acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $response['error_curl']), [], false);
-        } elseif (!empty($response['message']) && $response['message'] == 'Invalid private key') {
             acym_sendAjaxResponse(acym_translation('ACYM_AUTHENTICATION_FAILS_WITH_API_KEY'), [], false);
-        } elseif (!empty($response['message'])) {
-            acym_sendAjaxResponse(acym_translation('ACYM_AUTHENTICATION_FAILS_WITH_DOMAIN_REGION'), [], false);
         } else {
             acym_sendAjaxResponse(acym_translation('ACYM_API_KEY_CORRECT'));
         }

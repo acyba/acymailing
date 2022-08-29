@@ -1048,7 +1048,7 @@ class BounceHelper extends acymObject
                 $this->historyClass->insert($this->_message->userid, 'bounce', $data, $this->_message->mailid);
                 $message .= ' | '.acym_translationSprintf('ACYM_BOUNCE_MESSAGE_SAVED', $this->_message->userid);
             } catch (\Exception $e) {
-                $message .= ' | '.acym_translation_sprintf(
+                $message .= ' | '.acym_translationSprintf(
                         'ACYM_BOUNCE_SAVE_ERROR_USER_MAIL_RULE',
                         $this->_message->userid,
                         $this->_message->mailid,

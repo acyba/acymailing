@@ -122,6 +122,7 @@ const acym_helperMailer = {
         ];
 
         let smtpHost = jQuery('#smtp_host');
+        let smtpHostValue = smtpHost.val().toLowerCase().trim();
         let oauth2SendingParams = jQuery('.acym__oauth2_sending_params');
         let defaultSendingParams = jQuery('.acym__default_auth_sending_params');
         let tenantContainer = jQuery('#smtp_tenant_container');
@@ -129,17 +130,21 @@ const acym_helperMailer = {
         defaultSendingParams.show();
         oauth2SendingParams.hide();
 
-        if (auth2Smtp.includes(smtpHost.val().trim())) {
-            oauth2SendingParams.show();
-            defaultSendingParams.hide();
-        }
+        if (smtpHostValue) {
+            if (auth2Smtp.includes(smtpHostValue)) {
+                oauth2SendingParams.show();
+                defaultSendingParams.hide();
+            }
 
-        if (!outlookSmtp.includes(smtpHost.val().trim())) {
-            tenantContainer.hide();
+            if (!outlookSmtp.includes(smtpHostValue)) {
+                tenantContainer.hide();
+            }
         }
 
         smtpHost.on('keyup', function () {
-            if (auth2Smtp.includes(smtpHost.val().trim())) {
+            smtpHostValue = smtpHost.val().toLowerCase().trim();
+
+            if (auth2Smtp.includes(smtpHostValue)) {
                 oauth2SendingParams.show();
                 defaultSendingParams.hide();
             } else {
@@ -147,7 +152,7 @@ const acym_helperMailer = {
                 oauth2SendingParams.hide();
             }
 
-            if (outlookSmtp.includes(smtpHost.val().trim())) {
+            if (outlookSmtp.includes(smtpHostValue)) {
                 tenantContainer.show();
             } else {
                 tenantContainer.hide();

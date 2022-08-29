@@ -211,4 +211,16 @@ jQuery(document).ready(function ($) {
             });
         });
     }
+
+    $.cleanCondition = function () {
+        const conditionTypes = {};
+        $('.acym__automation__choose__condition').each((index, element) => {
+            conditionTypes[element.getAttribute('data-condition')] = $(`#acym__automation__conditions__type__${element.getAttribute('data-condition')}`);
+        });
+        const conditionTypeNotSelected = $('.acym__automation__choose__condition:not(.selected-condition)').attr('data-condition');
+
+        $(conditionTypes[conditionTypeNotSelected]).find('[name^="acym_condition"]').remove();
+
+        return true;
+    };
 });

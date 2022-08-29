@@ -1429,7 +1429,7 @@ class CampaignsController extends acymController
             $campaignId = $campaignClass->save($campaign);
 
             //We get the lists
-            $allLists = $campaignClass->getListsForCampaign($oldMailId);
+            $allLists = $campaignClass->getListsByMailId($oldMailId);
 
             $campaignClass->manageListsToCampaign($allLists, $idNewMail);
         }
@@ -2083,7 +2083,7 @@ class CampaignsController extends acymController
             'version' => 'enterprise',
         ];
         if (!acym_isAcyCheckerInstalled()) {
-            $lists = $campaignClass->getListsForCampaign($campaign->mail_id);
+            $lists = $campaignClass->getListsByMailId($campaign->mail_id);
             $listClass = new ListClass();
             $data['recipients'] = $listClass->getTotalSubCount($lists);
         }

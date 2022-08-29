@@ -238,6 +238,12 @@
                 font-size: 12px;
                 position: relative;
 
+                .saved_zone_image {
+                    max-height: 26px;
+                    max-width: 26px;
+                    margin: auto;
+                }
+
                 i.acymicon-dashboard {
                     color: map-get($editor-wysid-palette, primary-ui);
                     transform: rotate(90deg);

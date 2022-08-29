@@ -74,7 +74,7 @@ class acymView extends acymObject
         if ($outsideForm) {
             echo '<form id="acym_form" action="'.acym_completeLink(
                     acym_getVar('cmd', 'ctrl')
-                ).'" class="acym__form__mail__edit" method="post" name="acyForm" data-abide novalidate>';
+                ).'" class="acym__form__mail__edit" method="post" name="acyForm" data-abide novalidate enctype="multipart/form-data">';
         }
 
         // Open wrapper and display the header

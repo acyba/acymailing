@@ -52,4 +52,21 @@ class ZoneClass extends acymClass
 
         return $elements;
     }
+
+    public function delete($elements)
+    {
+        if (empty($elements)) return 0;
+        if (!is_array($elements)) {
+            $elements = [$elements];
+        }
+
+        foreach ($elements as $oneElementId) {
+            $zone = $this->getOneById($oneElementId);
+            if (!empty($zone->image) && file_exists(ACYM_ROOT.$zone->image)) {
+                unlink(ACYM_ROOT.$zone->image);
+            }
+        }
+
+        return parent::delete($elements);
+    }
 }

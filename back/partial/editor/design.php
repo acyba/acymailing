@@ -113,15 +113,19 @@
 		<i class="acymicon-keyboard_arrow_up"></i>
         <?php echo acym_info('ACYM_SAVED_ZONES_DESC'); ?>
 	</p>
-	<div class="acym__wysid__context__modal__container grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__saved_zones">
-		<?php
+	<div class="acym__wysid__context__modal__container grid-x grid-margin-x grid-margin-y cell xxlarge-up-3 large-up-2 medium-up-1 small-up-1 acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__saved_zones margin-bottom-2">
+        <?php
         if (empty($data['custom_zones'])) {
-            echo '<div id="custom_zones_none_message" class="margin-left-1 margin-right-1">'.acym_translation('ACYM_NO_CUSTOM_ZONE').'</div>';
+            echo '<div id="custom_zones_none_message" class="margin-horizontal-1 margin-bottom-1">'.acym_translation('ACYM_NO_CUSTOM_ZONE').'</div>';
         } else {
             foreach ($data['custom_zones'] as $oneZone) {
                 echo '<div class="grid-x cell acym__wysid__zone__element--new ui-draggable ui-draggable-handle" data-acym-zone-id="'.$oneZone->id.'">';
-				echo '<i class="acymicon-delete"></i>';
-                echo '<i class="cell acymicon-dashboard"></i>';
+                echo '<i class="acymicon-delete"></i>';
+                if (empty($oneZone->image)) {
+                    echo '<i class="cell acymicon-dashboard"></i>';
+                } else {
+                    echo '<img class="cell saved_zone_image" alt="Logo custom zone" src="'.acym_rootURI().$oneZone->image.'" />';
+                }
                 echo '<div class="cell">'.$oneZone->name.'</div>';
                 echo '</div>';
             }

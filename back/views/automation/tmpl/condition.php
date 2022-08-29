@@ -42,7 +42,7 @@
 		</div>
 
 		<h6 class="acym__title acym__title__secondary cell">
-			<?php echo acym_translation('ACYM_SELECT_YOUR_CONDITIONS').acym_info('ACYM_CONDITIONS_DESC'); ?>
+            <?php echo acym_translation('ACYM_SELECT_YOUR_CONDITIONS').acym_info('ACYM_CONDITIONS_DESC'); ?>
 		</h6>
 		<div class="cell grid-x grid-margin-x margin-bottom-2" <?php echo $data['type_trigger'] == 'classic' ? 'style="display: none;"' : ''; ?>>
 			<div class="cell auto"></div>
@@ -103,10 +103,19 @@
             <?php if (empty($data['id'])) { ?>
 				<div class="cell medium-auto grid-x grid-margin-x text-right">
 					<div class="cell auto"></div>
-					<button type="button" class="button button-secondary acy_button_submit medium-shrink cell" data-task="listing">
+					<button
+							type="button"
+							class="button button-secondary acy_button_submit medium-shrink cell"
+							data-task="listing"
+							data-condition="cleanCondition"
+					>
                         <?php echo acym_translation('ACYM_CANCEL'); ?>
 					</button>
-					<button type="button" class="button acy_button_submit medium-shrink cell" data-task="edit" data-step="setConditionMassAction">
+					<button type="button"
+							class="button acy_button_submit medium-shrink cell"
+							data-task="edit"
+							data-step="setConditionMassAction"
+							data-condition="cleanCondition">
                         <?php echo acym_translation('ACYM_SET_FILTERS'); ?>
 					</button>
 				</div>
@@ -119,8 +128,18 @@
 					<button type="button"
 							class="button button-secondary acy_button_submit medium-shrink medium-margin-bottom-0 margin-bottom-1 cell"
 							data-task="edit"
-							data-step="saveExitConditions"><?php echo acym_translation('ACYM_SAVE_EXIT'); ?></button>
-					<button type="button" class="button acy_button_submit medium-shrink cell" data-task="edit" data-step="saveConditions">
+							data-step="saveExitConditions"
+							data-condition="cleanCondition"
+					>
+                        <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
+					</button>
+					<button
+							type="button"
+							class="button acy_button_submit medium-shrink cell"
+							data-task="edit"
+							data-step="saveConditions"
+							data-condition="cleanCondition"
+					>
                         <?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?>
 					</button>
 				</div>

@@ -129,14 +129,13 @@ const acym_editorWysidNewRow = {
             let spinnerInsertion = jQuery('#inserted_custom_zone_spinner');
             if (response.error) {
                 acym_editorWysidNotifications.addEditorNotification({
-                    'message': '<div class="cell auto acym__autosave__notification">' + response.message + '</div>',
+                    'message': `<div class="cell auto acym__autosave__notification">${response.message}</div>`,
                     'level': 'error'
                 }, 3000, true);
                 spinnerInsertion.replaceWith('');
             } else {
                 let $container = spinnerInsertion.parent();
-                // We do a base64_decode on the encoded content
-                spinnerInsertion.replaceWith(atob(response.data.content));
+                spinnerInsertion.replaceWith(response.data.content);
 
                 // Make sure the DContents in the duplicated container have a different id
                 $container.find('tr[data-dynamic]').each(function () {

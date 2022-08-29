@@ -28,30 +28,22 @@ class acyElasticemail
      */
     private function uploadAttachment($filepath, $filename)
     {
-        if (!empty ($this->attachment[$filepath])) {
+        if (!empty($this->attachment[$filepath])) {
             return $this->attachment[$filepath];
         }
 
         $data = file_get_contents($filepath);
-        $header = 'PUT /attachments/upload?username='.urlencode($this->Username).'&api_key='.urlencode($this->Password).'&file='.urlencode($filename)." HTTP/1.0\r\n";
+        $header = 'PUT /v2/file/upload?apikey='.urlencode($this->Password).'&name='.urlencode($filename)." HTTP/1.0\r\n";
         $header .= "Host: api.elasticemail.com\r\n";
         $header .= "Connection: Keep-alive\r\n";
+        $header .= "Content-Disposition: inline\r\n";
         $header .= 'Content-Length: '.strlen($data)."\r\n\r\n";
         $info = $header.$data;
         $result = $this->sendinfo($info);
-        //We take the last value of the server's response which correspond of the file's ID.
-        $explodedResult = explode("\r\n", $result);
-        $res = end($explodedResult);
-        //If the ID is correct and we have no Errors
-        if (preg_match('#[^a-z0-9\-]#i', $res) || strpos($result, '200 OK') === false) {
-            $this->error = 'Error while uploading file : '.$res;
 
-            return false;
-        } else {
-            $this->attachment[$filepath] = $res;
+        $this->attachment[$filepath] = $result['data']['fileid'];
 
-            return $res;
-        }
+        return $result['data']['fileid'];
     }
 
     /* Function which permit to send an email based on the object's values.
@@ -63,58 +55,7 @@ class acyElasticemail
             return false;
         }
 
-        $data = 'username='.urlencode($this->Username);
-        $data .= '&api_key='.urlencode($this->Password);
-        $data .= '&referral='.urlencode('2f0447bb-173a-459d-ab1a-ab8cbebb9aab');
-        if (!empty($object->From)) {
-            $data .= '&from='.urlencode($object->From);
-        }
-        if (!empty($object->FromName)) {
-            $data .= '&from_name='.urlencode($object->FromName);
-        }
-
-        $to = array_merge($object->to, $object->cc, $object->bcc);
-        $data .= '&to=';
-        foreach ($to as $oneRecipient) {
-            $data .= urlencode($object->addrFormat($oneRecipient).';');
-        }
-        $data = trim($data, ';');
-
-        if (!empty($object->Subject)) {
-            $data .= '&subject='.urlencode($object->Subject);
-        }
-
-        if (!empty($object->ReplyTo)) {
-            $replyToTmp = reset($object->ReplyTo);
-            $data .= '&reply_to='.urlencode($replyToTmp[0]);
-            if (!empty($replyToTmp[1])) {
-                $data .= '&reply_to_name='.urlencode($replyToTmp[1]);
-            }
-        }
-
-        if (!empty($object->Sender)) {
-            $data .= '&sender='.urlencode($object->Sender);
-        }
-
-
-        //Do we have special headers?
-        if (!empty($object->CustomHeader)) {
-            $i = 1;
-            foreach ($object->CustomHeader as $oneHeader) {
-                $data .= '&header'.$i.'='.urlencode($oneHeader[0]).': '.urlencode($oneHeader[1]);
-                $i++;
-            }
-        }
-
-        //We set only quoted printable as others may not work with DKIM
-        if ($object->Encoding == 'quoted-printable') {
-            $data .= '&encodingtype=3';
-        }
-
-        $data .= '&body_html='.urlencode($object->Body);
-        if (!empty($object->AltBody)) {
-            $data .= '&body_text='.urlencode($object->AltBody);
-        }
+        $data = 'apikey='.urlencode($this->Password);
 
         if ($object->attachment) {
             $ArrayID = [];
@@ -128,15 +69,66 @@ class acyElasticemail
             $data .= '&attachments='.urlencode(implode(';', $ArrayID));
         }
 
+        $data .= '&bodyHtml='.urlencode($object->Body);
+        if (!empty($object->AltBody)) {
+            $data .= '&bodyText='.urlencode($object->AltBody);
+        }
+
         if (!empty($object->id)) {
             $data .= '&channel='.urlencode($object->id);
         }
+
+        //We set only quoted printable as others may not work with DKIM
+        if ($object->Encoding == 'quoted-printable') {
+            $data .= '&encodingType=3';
+        }
+
+        if (!empty($object->From)) {
+            $data .= '&from='.urlencode($object->From);
+        }
+        if (!empty($object->FromName)) {
+            $data .= '&fromName='.urlencode($object->FromName);
+        }
+
+        if (!empty($object->CustomHeader)) {
+            $i = 1;
+            $headers = [];
+            foreach ($object->CustomHeader as $oneHeader) {
+                $headers[] = 'headers_'.$i.'='.$oneHeader[0].': '.$oneHeader[1];
+                $i++;
+            }
+            $data .= '&headers='.urlencode(implode(',', $headers));
+        }
+
         $mailClass = new MailClass();
         if (!empty($object->type) && in_array($object->type, $mailClass::TYPES_TRANSACTIONAL)) {
             $data .= '&isTransactional=true';
         }
 
-        $header = "POST /mailer/send HTTP/1.0\r\n";
+        if (!empty($object->ReplyTo)) {
+            $replyToTmp = reset($object->ReplyTo);
+            $data .= '&replyTo='.urlencode($replyToTmp[0]);
+            if (!empty($replyToTmp[1])) {
+                $data .= '&replyToName='.urlencode($replyToTmp[1]);
+            }
+        }
+
+        if (!empty($object->Sender)) {
+            $data .= '&sender='.urlencode($object->Sender);
+        }
+
+        if (!empty($object->Subject)) {
+            $data .= '&subject='.urlencode($object->Subject);
+        }
+
+        $to = array_merge($object->to, $object->cc, $object->bcc);
+        $data .= '&to=';
+        foreach ($to as $oneRecipient) {
+            $data .= urlencode($object->addrFormat($oneRecipient).';');
+        }
+        $data = trim($data, ';');
+
+        $header = "POST /v2/email/send HTTP/1.0\r\n";
         $header .= "Host: api.elasticemail.com\r\n";
         $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
         $header .= "Connection: Keep-Alive\r\n";
@@ -144,13 +136,8 @@ class acyElasticemail
         $info = $header.$data;
         $result = $this->sendinfo($info);
 
-        //We take the last value of the server's response which correspond of the file's ID.
-        $explodedVar = explode("\r\n", $result);
-        $res = end($explodedVar);
-
-        //If the ID is correct and we have no Errors
-        if (strpos($result, '200 OK') === false || preg_match('#[^a-z0-9\-]#i', $res)) {
-            $this->error = $res;
+        if (empty($result['success'])) {
+            $this->error = $result;
 
             return false;
         } else {
@@ -160,21 +147,12 @@ class acyElasticemail
 
     function getCredits($object)
     {
-        $header = 'GET /mailer/account-details?username='.urlencode($this->Username).'&api_key='.urlencode($this->Password)." HTTP/1.0\r\n";
+        $header = 'GET /v2/account/load?apikey='.urlencode($this->Password)." HTTP/1.0\r\n";
         $header .= "Host: api.elasticemail.com\r\n";
         $header .= "Connection: Close\r\n\r\n";
         $result = $this->sendinfo($header);
-        if (!$result) {
-            return false;
-        }
 
-        if (preg_match('#<credit>(.*)</credit>#Ui', $result, $explodedResults)) {
-            return $explodedResults[1];
-        } else {
-            $this->error = $result;
-
-            return false;
-        }
+        return isset($result['Credit']) ? $result['Credit'] : false;
     }
 
     private function connect()
@@ -229,7 +207,20 @@ class acyElasticemail
             }
         }
 
-        return $res;
+        $answer = explode("\r\n\r\n", $res);
+        if (empty($answer[1])) {
+            return acym_translation('ACYM_ERROR');
+        }
+        $decodedAnswer = json_decode($answer[1], true);
+        if (empty($decodedAnswer)) {
+            return acym_translation('ACYM_ERROR');
+        }
+
+        if (empty($decodedAnswer['success'])) {
+            return acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $decodedAnswer['error']);
+        }
+
+        return $decodedAnswer;
     }
 
     function __destruct()

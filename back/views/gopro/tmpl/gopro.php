@@ -90,7 +90,7 @@
 		</div>
 		<div class="cell grid-x medium-5 acym__gopro__text">
 			<h3 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_EMAILS_OVERRIDE'); ?></h3>
-			<p><?php echo acym_translation_sprintf(
+			<p><?php echo acym_translationSprintf(
                     'ACYM_GOPRO_EMAILS_OVERRIDE',
                     ACYM_CMS_TITLE,
                     ACYM_CMS === "wordpress" ? 'WooCommerce' : 'Hikashop'
@@ -117,7 +117,7 @@
 			<div class="cell grid-x large-6">
 				<div class="cell large-1 small-2 text-center acym__gopro__footer__i"><i class="acymicon-cart-arrow-down"></i></div>
 				<h3 class="cell large-11 small-10">
-                    <?php echo acym_translation_sprintf('ACYM_GOPRO_ECOMMERCE_ABANDONED_CART', ACYM_CMS === "wordpress" ? 'WooCommerce' : 'Hikashop'); ?>
+                    <?php echo acym_translationSprintf('ACYM_GOPRO_ECOMMERCE_ABANDONED_CART', ACYM_CMS === "wordpress" ? 'WooCommerce' : 'Hikashop'); ?>
 				</h3>
 				<div class="cell large-1 small-2"></div>
 				<p class="cell large-11 small-10"><?php echo acym_translation('ACYM_GOPRO_ECOMMERCE_ABANDONED_CART_DESC'); ?></p>

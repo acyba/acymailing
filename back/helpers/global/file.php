@@ -760,3 +760,8 @@ function acym_fileNameValid($filename)
 
     return true;
 }
+
+function acym_getImageFileExtensions()
+{
+    return ['jpg', 'jpeg', 'png', 'gif', 'ico', 'bmp', 'svg'];
+}

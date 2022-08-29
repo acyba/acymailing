@@ -238,7 +238,6 @@ class QueueHelper extends acymObject
                 $queueDeleteOk = $this->_deleteQueue($queueDelete);
                 $queueDelete = [];
             } else {
-
                 $this->errorSend++;
 
                 $newtry = false;
@@ -272,7 +271,7 @@ class QueueHelper extends acymObject
                 }
             }
 
-            $messageOnScreen = '[ ID '.$oneQueue->mail_id.'] '.$mailHelper->reportMessage;
+            $messageOnScreen = '[ID '.$oneQueue->mail_id.'] '.$mailHelper->reportMessage;
             if (!empty($otherMessage)) {
                 $messageOnScreen .= ' => '.$otherMessage;
             }

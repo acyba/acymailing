@@ -572,7 +572,23 @@ class QueueClass extends acymClass
 
         if (empty($mail) || $mailClass->isTransactionalMail($mail)) return false;
 
-        $res = intval(acym_loadResult('SELECT COUNT(mail_id) FROM #__acym_queue WHERE mail_id = '.intval($mailId)));
+        $filters = [
+            '`queue`.`mail_id` = '.intval($mailId),
+            '`user`.`active` = 1',
+        ];
+        if ($this->config->get('require_confirmation')) {
+            $filters[] = '`user`.`confirmed` = 1';
+        }
+
+        $res = intval(
+            acym_loadResult(
+                'SELECT COUNT(`queue`.`mail_id`) 
+                FROM #__acym_queue AS `queue` 
+                JOIN #__acym_user AS `user` 
+                    ON `queue`.`user_id` = `user`.`id`
+                WHERE '.implode(' AND ', $filters)
+            )
+        );
 
         return empty($res);
     }

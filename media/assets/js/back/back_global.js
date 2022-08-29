@@ -1,6 +1,6 @@
-jQuery(document).ready(function ($) {
+jQuery(function ($) {
     function BackGlobal() {
-        $(document).foundation();
+        jQuery(document).foundation();
 
         acym_helper.setSubmitButtonGlobal();
         acym_helper.preventEnter();
@@ -29,6 +29,7 @@ jQuery(document).ready(function ($) {
         acym_helperModal.initModal();
         acym_helperDebugger.initDebugger();
         if (ACYM_CMS === 'joomla') acym_helperJoomla.setJoomlaLeftMenu();
+        acym_helper.setKonami();
     }
 
     BackGlobal();

@@ -39,7 +39,6 @@ class FileController extends acymController
         }
 
         $allowedExtensions = explode(',', $this->config->get('allowed_files'));
-        $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'ico', 'bmp', 'svg'];
         $displayType = acym_getVar('string', 'displayType', 'icons');
 
         $files = [];
@@ -52,7 +51,7 @@ class FileController extends acymController
             'uploadFolder' => $uploadFolder,
             'map' => $map,
             'displayType' => $displayType,
-            'imageExtensions' => $imageExtensions,
+            'imageExtensions' => acym_getImageFileExtensions(),
             'allowedExtensions' => $allowedExtensions,
             'folders' => $folders,
             'fileTreeType' => new FileTreeType(),

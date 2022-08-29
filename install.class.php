@@ -663,7 +663,7 @@ class acymInstall
                 $uploadedFiles = acym_getFiles($socialFilesFolder);
                 foreach ($uploadedFiles as $oneFile) {
                     $extension = acym_fileGetExt($oneFile);
-                    if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'ico', 'bmp', 'svg'])) {
+                    if (!in_array($extension, acym_getImageFileExtensions())) {
                         acym_deleteFile($socialFilesFolder.DS.$oneFile);
                     }
                 }
@@ -1281,6 +1281,10 @@ class acymInstall
                     $automationClass->save($oneAutomation);
                 }
             }
+        }
+
+        if (version_compare($this->fromVersion, '7.9.4', '<')) {
+            $this->updateQuery('ALTER TABLE `#__acym_custom_zone` ADD `image` VARCHAR(255) NULL');
         }
     }
 

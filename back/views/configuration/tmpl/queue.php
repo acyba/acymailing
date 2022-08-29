@@ -80,7 +80,7 @@
             $minutesFrom = acym_select($data['listAllMinutes'], 'config[queue_send_from_minute]', $this->config->get('queue_send_from_minute', '00'), 'class="intext_select"');
             $hoursTo = acym_select($data['listHours'], 'config[queue_send_to_hour]', $this->config->get('queue_send_to_hour', '23'), 'class="intext_select"');
             $minutesTo = acym_select($data['listAllMinutes'], 'config[queue_send_to_minute]', $this->config->get('queue_send_to_minute', '59'), 'class="intext_select"');
-            echo acym_translation_sprintf('ACYM_SEND_FROM_TO', $hoursFrom, $minutesFrom, $hoursTo, $minutesTo);
+            echo acym_translationSprintf('ACYM_SEND_FROM_TO', $hoursFrom, $minutesFrom, $hoursTo, $minutesTo);
             ?>
 		</div>
 		<div class="cell medium-3 automatic_only automatic_manual"></div>

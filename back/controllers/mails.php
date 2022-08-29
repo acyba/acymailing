@@ -578,6 +578,15 @@ class MailsController extends acymController
             $mail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
         }
 
+        if (acym_getVar('bool', 'custom_thumbnail_reset', false)) {
+            $mail->thumbnail = null;
+        }
+
+        $uploadedThumbnail = $this->setThumbnailFromInput();
+        if ($uploadedThumbnail) {
+            $mail->thumbnail = $uploadedThumbnail;
+        }
+
         if (isset($previousMail) && !empty($previousMail->mail_settings)) {
             $mailSettings = json_decode($previousMail->mail_settings, false);
         } else {
@@ -659,6 +668,34 @@ class MailsController extends acymController
 
             return false;
         }
+    }
+
+    protected function setThumbnailFromInput()
+    {
+        $thumbnailFile = acym_getVar('array', 'custom_thumbnail', [], 'FILES');
+        if (empty($thumbnailFile['name'])) {
+            return false;
+        }
+
+        $extension = acym_fileGetExt($thumbnailFile['name']);
+
+        $thumbNb = $this->config->get('numberThumbnail', 2);
+        $filename = 'thumbnail_custom_'.($thumbNb + 1).'.'.$extension;
+        $newConfig = new \stdClass();
+        $newConfig->numberThumbnail = $thumbNb + 1;
+        $this->config->save($newConfig);
+        $thumbnailFile['name'] = $filename;
+
+        ob_start();
+        $uploaded = acym_importFile($thumbnailFile, ACYM_UPLOAD_FOLDER_THUMBNAIL, true);
+        ob_end_clean();
+        if ($uploaded) {
+            return $uploaded;
+        }
+
+        acym_enqueueMessage(acym_translation('ACYM_UPLOADED_FILE_IS_NOT_IMAGE'), 'error');
+
+        return false;
     }
 
     public function setAttachmentToMail(&$mail)
@@ -1040,7 +1077,7 @@ class MailsController extends acymController
         $newPath = ACYM_UPLOAD_FOLDER.'socials'.DS.$socialName;
         $newPathComplete = $newPath.'.'.$extension['extension'];
 
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'ico', 'bmp', 'svg'];
+        $allowedExtensions = acym_getImageFileExtensions();
         if (!in_array($extension['extension'], $allowedExtensions)) {
             $errorMessage = acym_translationSprintf('ACYM_ACCEPTED_TYPE', $extension['extension'], implode(', ', $allowedExtensions));
         } elseif (empty($socialName) || !acym_uploadFile($_FILES['file']['tmp_name'], ACYM_ROOT.$newPathComplete)) {

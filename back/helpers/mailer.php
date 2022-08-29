@@ -418,7 +418,10 @@ class MailerHelper extends acyPHPMailer
         $externalSending = false;
 
         $mailClass = new MailClass();
-        $isTransactional = $this->isBounceForward || $this->isTest || $this->isSpamTest || (!empty($this->defaultMail[$this->id]) && $mailClass->isTransactionalMail($this->defaultMail[$this->id]));
+        $isTransactional = $this->isBounceForward || $this->isTest || $this->isSpamTest;
+        if(!empty($this->id) && !empty($this->defaultMail[$this->id]) && $mailClass->isTransactionalMail($this->defaultMail[$this->id])){
+            $isTransactional = true;
+        }
 
         acym_trigger('onAcymProcessQueueExternalSendingCampaign', [&$externalSending, $isTransactional]);
 

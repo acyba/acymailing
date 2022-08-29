@@ -342,7 +342,16 @@ class acymController extends acymObject
 
     public function checkTaskFront($task)
     {
-        if (!in_array($task, $this->authorizedFrontTasks)) {
+        $menuItemExist = true;
+        // if joomla, we search the menu we are currently trying to access
+        // if we don't find it with the url
+        // it means the user is not supposed to have access to it
+        if (ACYM_CMS === 'joomla' && !empty($this->urlFrontMenu)) {
+            $jsite = \JFactory::getApplication('site');
+            $menus = $jsite->getMenu();
+            $menuItemExist = !empty($menus->getItems('link', $this->urlFrontMenu));
+        }
+        if (!in_array($task, $this->authorizedFrontTasks) || !$menuItemExist) {
             acym_menuOnly($this->urlFrontMenu);
             $currentUserid = acym_currentUserId();
             if (empty($currentUserid)) {
