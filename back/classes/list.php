@@ -585,10 +585,11 @@ class ListClass extends acymClass
      *
      * @param $userID
      * @param $listIDs
+     * @param $forceFront
      */
-    public function sendWelcome($userID, $listIDs)
+    public function sendWelcome($userID, $listIDs, $forceFront = false)
     {
-        if (acym_isAdmin()) {
+        if (!$forceFront && acym_isAdmin()) {
             return;
         }
 

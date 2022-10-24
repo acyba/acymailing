@@ -171,6 +171,10 @@ class FormClass extends acymClass
             $newForm->style_options = [
                 'position' => 'image-top',
                 'background_color' => '#ffffff',
+                'background_image' => '',
+                'background_position' => 'center',
+                'background_size' => 'contain',
+                'background_repeat' => 'no-repeat',
                 'text_color' => '#000000',
                 'padding' => ['width' => '20', 'height' => '20'],
             ];
@@ -315,7 +319,7 @@ class FormClass extends acymClass
                 ];
                 $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BORDER_TYPE').'</label>';
                 $return['render'][$key] .= '<div class="cell auto">
-                                                <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape(json_encode($borderTypes)).'" v-model="'.$vModel.'"></select2>
+                                                <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape($borderTypes).'" v-model="'.$vModel.'"></select2>
                                             </div>';
             } elseif ($key == 'border_size') {
                 $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BORDER_SIZE').'</label>';
@@ -356,6 +360,43 @@ class FormClass extends acymClass
             } elseif ($key == 'background_color') {
                 $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BACKGROUND_COLOR').'</label>';
                 $return['render'][$key] .= '<spectrum :name="\''.$name.'\'" v-model="'.$vModel.'" :value="\''.$value.'\'">';
+            } elseif ($key == 'background_image') {
+                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BACKGROUND_IMAGE').'</label>';
+                $return['render'][$key] .= '<acym-media :value="'.$vModel.'" :text="imageText" v-on:change="'.$vModel.' = $event">';
+            } elseif ($key == 'background_position') {
+                $bgposition = [
+                    'center' => acym_translation('ACYM_CENTER'),
+                    'top' => acym_translation('ACYM_POSITION_TOP'),
+                    'right' => acym_translation('ACYM_RIGHT'),
+                    'right_bottom' => acym_translation('ACYM_POSITION_RIGHT_BOTTOM'),
+                    'right_top' => acym_translation('ACYM_POSITION_RIGHT_TOP'),
+                    'bottom' => acym_translation('ACYM_POSITION_BOTTOM'),
+                    'left' => acym_translation('ACYM_LEFT'),
+                    'left_top' => acym_translation('ACYM_POSITION_LEFT_TOP'),
+                    'left_bottom' => acym_translation('ACYM_POSITION_LEFT_BOTTOM'),
+                ];
+                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_POSITION').'</label>';
+                $return['render'][$key] .= '<div class="cell auto">
+                                                <select2 name="'.$name.'" value="'.$value.'" :options="'.acym_escape($bgposition).'" v-model="'.$vModel.'"></select2>
+                                            </div>';
+            } elseif ($key == 'background_size') {
+                $bgsize = [
+                    'contain' => acym_translation('ACYM_BG_CONTAIN'),
+                    'cover' => acym_translation('ACYM_BG_COVER'),
+                ];
+                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BACKGROUND_SIZE').'</label>';
+                $return['render'][$key] .= '<div class="cell auto">
+                                                <select2 name="'.$name.'" value="'.$value.'" :options="'.acym_escape($bgsize).'" v-model="'.$vModel.'"></select2>
+                                            </div>';
+            } elseif ($key == 'background_repeat') {
+                $bgrepeat = [
+                    'repeat' => acym_translation('ACYM_YES'),
+                    'no-repeat' => acym_translation('ACYM_NO'),
+                ];
+                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BACKGROUND_REPEAT').'</label>';
+                $return['render'][$key] .= '<div class="cell auto">
+                                                <select2 name="'.$name.'" value="'.$value.'" :options="'.acym_escape($bgrepeat).'" v-model="'.$vModel.'"></select2>
+                                            </div>';
             } elseif ($key == 'text_color') {
                 $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_TEXT_COLOR').'</label>';
                 $return['render'][$key] .= '<spectrum :name="\''.$name.'\'" v-model="'.$vModel.'" :value="\''.$value.'\'">';
@@ -471,7 +512,7 @@ class FormClass extends acymClass
                     'before-button' => acym_translation('ACYM_BEFORE_BUTTON'),
                 ];
                 $return['render'][$key] .= '<div class="cell">
-                                                <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape(json_encode($positions)).'" v-model="'.$vModel.'"></select2>
+                                                <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape($positions).'" v-model="'.$vModel.'"></select2>
                                             </div>';
             }
         }
@@ -493,15 +534,15 @@ class FormClass extends acymClass
             if ($key == 'automatic_subscribe') {
                 $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_AUTO_SUBSCRIBE_TO_DESC').'</label>';
                 $return['render'][$key] .= '<div class="cell">
-                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape(json_encode($value)).'\'" :options="'.acym_escape(
-                        json_encode($lists)
+                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape($value).'\'" :options="'.acym_escape(
+                        $lists
                     ).'" v-model="'.$vModel.'"></select2multiple>
                                             </div>';
             } elseif ($key == 'displayed') {
                 $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_DISPLAYED_LISTS').acym_info('ACYM_DISPLAYED_LISTS_DESC').'</label>';
                 $return['render'][$key] .= '<div class="cell">
-                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape(json_encode($value)).'\'" :options="'.acym_escape(
-                        json_encode($lists)
+                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape($value).'\'" :options="'.acym_escape(
+                        $lists
                     ).'" v-model="'.$vModel.'"></select2multiple>
                                             </div>';
             } elseif ($key == 'checked') {
@@ -509,8 +550,8 @@ class FormClass extends acymClass
                         'ACYM_LISTS_CHECKED_DEFAULT_DESC'
                     ).'</label>';
                 $return['render'][$key] .= '<div class="cell">
-                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape(json_encode($value)).'\'" :options="'.acym_escape(
-                        json_encode($lists)
+                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape($value).'\'" :options="'.acym_escape(
+                        $lists
                     ).'" v-model="'.$vModel.'"></select2multiple>
                                             </div>';
             } elseif ($key == 'display_position') {
@@ -521,7 +562,7 @@ class FormClass extends acymClass
                 $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_DISPLAY_LISTS').'</label>';
                 $return['render'][$key] .= '<div class="cell">
                                                 <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape(
-                        json_encode($displayPositions)
+                        $displayPositions
                     ).'" v-model="'.$vModel.'"></select2>
                                             </div>';
             }
@@ -549,8 +590,8 @@ class FormClass extends acymClass
             if ($key == 'displayed') {
                 $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_FIELDS_TO_DISPLAY').'</label>';
                 $return['render'][$key] .= '<div class="cell">
-                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape(json_encode($value)).'\'" :options="'.acym_escape(
-                        json_encode($fields)
+                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape($value).'\'" :options="'.acym_escape(
+                        $fields
                     ).'" v-model="'.$vModel.'"></select2multiple>
                                             </div>';
             } elseif ($key == 'display_mode') {
@@ -560,7 +601,7 @@ class FormClass extends acymClass
                 ];
                 $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_DISPLAY_FIELDS_LABEL').'</label>';
                 $return['render'][$key] .= '<div class="cell">
-                                                <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape(json_encode($displayModes)).'" v-model="'.$vModel.'"></select2>
+                                                <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape($displayModes).'" v-model="'.$vModel.'"></select2>
                                             </div>';
             }
         }

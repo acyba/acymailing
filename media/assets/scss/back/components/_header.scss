@@ -109,18 +109,28 @@
         }
     }
 
-    #acym_expiration {
-        font-weight: 600;
-
-        a:hover {
-            transition: .2s;
-            color: $alert-color !important;
-        }
-    }
-
     .check-version-area {
         font-size: 12px;
         line-height: 17px;
+
+        #acym_expiration {
+            font-weight: 600;
+
+            a:hover {
+                transition: .2s;
+                color: $alert-color !important;
+            }
+
+            .credits_remaining {
+                a {
+                    color: $dark-blue;
+
+                    &:hover {
+                        color: $blue !important;
+                    }
+                }
+            }
+        }
     }
 
     :root {

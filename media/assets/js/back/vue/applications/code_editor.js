@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
 
     if ($('#acym__wysid__edit__button').length > 0) {
 

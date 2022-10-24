@@ -25,7 +25,6 @@ function acym_query($query)
 function acym_loadObjectList($query, $key = '', $offset = null, $limit = null)
 {
     $acydb = acym_getGlobal('db');
-
     $acydb->setQuery($query, $offset, $limit);
 
     return $acydb->loadObjectList($key);
@@ -33,9 +32,7 @@ function acym_loadObjectList($query, $key = '', $offset = null, $limit = null)
 
 function acym_prepareQuery($query)
 {
-    $query = str_replace('#__', acym_getPrefix(), $query);
-
-    return $query;
+    return str_replace('#__', acym_getPrefix(), $query);
 }
 
 function acym_loadObject($query)
@@ -51,7 +48,6 @@ function acym_loadObject($query)
 function acym_loadResult($query)
 {
     $acydb = acym_getGlobal('db');
-
     $acydb->setQuery($query);
 
     return $acydb->loadResult();
@@ -59,12 +55,8 @@ function acym_loadResult($query)
 
 function acym_loadResultArray($query)
 {
-    if (is_string($query)) {
-        $acydb = acym_getGlobal('db');
-        $acydb->setQuery($query);
-    } else {
-        $acydb = $query;
-    }
+    $acydb = acym_getGlobal('db');
+    $acydb->setQuery($query);
 
     if (ACYM_J30) {
         return $acydb->loadColumn();

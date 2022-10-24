@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     const previousTypeTrigger = $('#acym__automation__trigger__type__input').val();
 
     function Init() {

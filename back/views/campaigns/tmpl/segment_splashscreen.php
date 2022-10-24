@@ -29,7 +29,7 @@
                     <?php echo acym_translation('ACYM_SEE_MORE'); ?>
 				</a>
 				<a target="_blank"
-				   href="<?php echo ACYM_ACYMAILLING_WEBSITE; ?>pricing?utm_source=acymailing_plugin&utm_medium=segment&utm_campaign=purchase"
+				   href="<?php echo ACYM_ACYMAILING_WEBSITE; ?>pricing?utm_source=acymailing_plugin&utm_medium=segment&utm_campaign=purchase"
 				   class="button cell shrink">
                     <?php echo acym_translation('ACYM_GET_ENTERPRISE_VERSION'); ?>
 				</a>

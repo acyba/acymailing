@@ -579,7 +579,9 @@ class CampaignClass extends acymClass
         $mailStat['total_subscribers'] += intval($result);
         $mailStat['send_date'] = $date;
 
-        if (!empty($mailStat['sent'])) unset($mailStat['sent']);
+        if (!empty($mailStat['sent'])) {
+            unset($mailStat['sent']);
+        }
 
         $mailStatClass->save($mailStat);
 

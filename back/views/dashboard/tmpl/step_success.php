@@ -5,7 +5,7 @@
 </div>
 
 <div class="cell margin-top-2 margin-bottom-3">
-	<p class="acym__walkthrough__text">
+	<p>
         <?php echo acym_translation('ACYM_WALK_SUCCESS_1'); ?><br />
         <?php echo acym_translation('ACYM_WALK_SUCCESS_2'); ?><br />
 	</p>

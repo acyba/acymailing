@@ -181,10 +181,17 @@ class plgAcymManagetext extends acymPlugin
         static $alreadyHandled = false;
 
         $userClass = new UserClass();
-        $acymUser = $userClass->getOneByIdWithCustomFields($user->id);
+        if (!empty($user->id)) {
+            $acymUser = $userClass->getOneByIdWithCustomFields($user->id);
+        }
         $tags = [];
         foreach ($results as $allresults) {
             foreach ($allresults[0] as $i => $oneTag) {
+                if (empty($user->id)) {
+                    $tags[$oneTag] = '';
+                    continue;
+                }
+
                 //Don't need to process twice a tag we already have!
                 if (isset($tags[$oneTag])) {
                     continue;

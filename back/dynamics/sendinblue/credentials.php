@@ -15,8 +15,9 @@ class SendinblueCredentials extends SendinblueClass
 
     public function getHeadersSendingMethod($sendingMethod, $credentials = [])
     {
-
-        if (empty($credentials)) $this->onAcymGetCredentialsSendingMethod($credentials, $sendingMethod);
+        if (empty($credentials)) {
+            $this->onAcymGetCredentialsSendingMethod($credentials, $sendingMethod);
+        }
 
         return [
             'api-key:'.$credentials[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key'],

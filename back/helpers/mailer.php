@@ -40,6 +40,7 @@ class MailerHelper extends acyPHPMailer
     //Error number which induct a new try soon
     var $errorNewTry = [1, 6];
     var $autoAddUser = false;
+    var $userCreationTriggers = true;
     var $reportMessage = '';
 
     // Should we track the sending of a	message (used for welcoming message)
@@ -139,7 +140,7 @@ class MailerHelper extends acyPHPMailer
                         'clientId' => $this->clientId,
                         'refreshToken' => $this->refreshToken,
                         'expiredIn' => $this->expiredIn,
-                        'host'=>$hostName
+                        'host' => $hostName,
                     ]
                 );
                 $this->setOAuth($oauth);
@@ -270,19 +271,17 @@ class MailerHelper extends acyPHPMailer
 
         $data = [
             &$response,
-            $this->externalMailer,
+            $this,
             ['email' => $this->to[0][0], 'name' => $this->to[0][1]],
-            $this->Subject,
             ['email' => $this->From, 'name' => $fromName],
             ['email' => $reply_to[0], 'name' => $reply_to[1]],
-            $this->Body,
             $bcc,
             $attachments,
             empty($this->id) ? null : $this->id,
         ];
         acym_trigger('onAcymSendEmail', $data);
 
-        if ($response['error']) {
+        if (!empty($response['error'])) {
             $this->setError($response['message']);
 
             return false;
@@ -387,6 +386,10 @@ class MailerHelper extends acyPHPMailer
             }
         }
 
+        if ($this->config->get('save_body') === '1') {
+            @file_put_contents(ACYM_ROOT.'acydebug_mail.html', $this->Body);
+        }
+
         //We will change the encoding format in case of its needed...
         //We always come from utf-8 to transform to something else!
         if (function_exists('mb_convert_encoding')) {
@@ -419,7 +422,7 @@ class MailerHelper extends acyPHPMailer
 
         $mailClass = new MailClass();
         $isTransactional = $this->isBounceForward || $this->isTest || $this->isSpamTest;
-        if(!empty($this->id) && !empty($this->defaultMail[$this->id]) && $mailClass->isTransactionalMail($this->defaultMail[$this->id])){
+        if (!empty($this->id) && !empty($this->defaultMail[$this->id]) && $mailClass->isTransactionalMail($this->defaultMail[$this->id])) {
             $isTransactional = true;
         }
 
@@ -550,7 +553,10 @@ class MailerHelper extends acyPHPMailer
                 } else {
                     $key = $this->userLanguage;
                 }
-                if (isset($mails[$key])) $this->defaultMail[$mailId] = $mails[$key];
+
+                if (isset($mails[$key])) {
+                    $this->defaultMail[$mailId] = $mails[$key];
+                }
             } else {
                 unset($this->defaultMail[$mailId]);
 
@@ -648,7 +654,7 @@ class MailerHelper extends acyPHPMailer
         $finalContent .= '<meta http-equiv="Content-Type" content="text/html; charset='.strtolower($this->config->get('charset')).'" />'."\n";
         $finalContent .= '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'."\n";
         $finalContent .= '<title>'.$mail->subject.'</title>'."\n";
-        //We add the CSS like that for gmail because it delete the tag style over 8000 char
+        //We add the CSS like that for gmail because it deletes the tag style over 8000 char
         $finalContent .= '<style type="text/css">'.implode('</style><style type="text/css">', $style).'</style>';
         $finalContent .= '<!--[if mso]><style type="text/css">#acym__wysid__template center > table { width: 580px; }</style><![endif]-->';
         $finalContent .= '<!--[if !mso]><style type="text/css">#acym__wysid__template center > table { width: 100%; }</style><![endif]-->';
@@ -689,6 +695,7 @@ class MailerHelper extends acyPHPMailer
                 $this->userClass->checkVisitor = false;
                 $this->userClass->sendConf = false;
                 acym_setVar('acy_source', 'When sending a test');
+                $this->userClass->triggers = $this->userCreationTriggers;
                 $userId = $this->userClass->save($newUser);
                 $receiver = $this->userClass->getOneById($userId);
             }

@@ -12,7 +12,7 @@ class plgAcymEventon extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'WordPress';
-        $this->installed = acym_isExtensionActive('eventON/eventon.php');
+        $this->installed = acym_isExtensionActive('eventON/eventon.php') || acym_isExtensionActive('eventon-lite/eventon.php');
         $this->rootCategoryId = 0;
 
         $this->pluginDescription->name = 'EventON';

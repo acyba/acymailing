@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     //All the elements needed for every custom fields
     let allElements = {
         text: [

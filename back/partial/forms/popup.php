@@ -8,7 +8,7 @@ if (isset($form->display_option['scroll']) && $form->display_option['scroll'] !=
 	 class="acym__subscription__form__popup__overlay acym__subscription__form-erase"
     <?php echo $hideForScroll; ?>>
 	<div class="acym__subscription__form__popup">
-		<p class="acym__subscription__form__popup__close">X</p>
+		<div class="acym__subscription__form__popup__close acymicon-remove"></div>
         <?php
         if ($edition) {
             echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';
@@ -69,11 +69,15 @@ if (isset($form->display_option['scroll']) && $form->display_option['scroll'] !=
 		padding: <?php echo $form->style_options['padding']['height'];?>px <?php echo $form->style_options['padding']['width'];?>px;
 		background-color: <?php echo $form->style_options['background_color'];?>;
 		color: <?php echo $form->style_options['text_color'];?> !important;
+		background-image: url("<?php echo $form->style_options['background_image']; ?>");
+		background-size: <?php echo $form->style_options['background_size']; ?>;
+		background-position: <?php echo str_replace('_', ' ', $form->style_options['background_position']); ?>;
+		background-repeat: <?php echo $form->style_options['background_repeat']; ?>;
 		z-index: 999999;
 		text-align: center;
 		display: flex;
 		justify-content: center;
-		align-items: center
+		align-items: center;
 	}
 
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__popup .responseContainer{
@@ -105,9 +109,12 @@ if (isset($form->display_option['scroll']) && $form->display_option['scroll'] !=
 		margin: 1rem 10px !important;
 	}
 
+	<?php if(!empty($form->message_options['color'])) { ?>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>#acym__subscription__form__popup-text{
-		color: <?php echo $form->message_options['color']?>;
+		color: <?php echo $form->message_options['color']; ?>;
 	}
+
+	<?php } ?>
 
 	<?php if (in_array($form->style_options['position'], ['image-right', 'image-left'])){?>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__popup <?php echo '#'.$form->form_tag_name;?>{

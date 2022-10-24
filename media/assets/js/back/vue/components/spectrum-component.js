@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     if (undefined === $.fn.select2) return;
 
     Vue.component('spectrum', {

@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     if ($('#acym__plugin__available__application').length > 0) {
 
         const remove = (array, pluginId) => array.filter((plugin) => plugin.id !== pluginId);

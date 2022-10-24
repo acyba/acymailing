@@ -296,7 +296,7 @@ class UpdateHelper extends acymObject
         return $display;
     }
 
-    private function _newAutomationAdmin($title)
+    private function newAutomationAdmin($title)
     {
         $automationClass = new AutomationClass();
         $stepClass = new StepClass();
@@ -338,20 +338,26 @@ class UpdateHelper extends acymObject
         $newAutomation->active = 0;
         $newAutomation->admin = 1;
         $newAutomation->id = $automationClass->save($newAutomation);
-        if (empty($newAutomation->id)) return false;
+        if (empty($newAutomation->id)) {
+            return;
+        }
 
         $newStep = new \stdClass();
         $newStep->name = acym_translation($title);
         $newStep->triggers = $info[$title]->triggers;
         $newStep->automation_id = $newAutomation->id;
         $newStep->id = $stepClass->save($newStep);
-        if (empty($newStep->id)) return false;
+        if (empty($newStep->id)) {
+            return;
+        }
 
         $newCondition = new \stdClass();
         $newCondition->step_id = $newStep->id;
         $newCondition->conditions = $info[$title]->conditions;
         $newCondition->id = $conditionClass->save($newCondition);
-        if (empty($newCondition->id)) return false;
+        if (empty($newCondition->id)) {
+            return;
+        }
 
         $mailAutomation = new \stdClass();
         $mailAutomation->type = $mailClass::TYPE_AUTOMATION;
@@ -363,7 +369,9 @@ class UpdateHelper extends acymObject
         $mailAutomation->body = $this->getFormatedNotification($info[$title]->emailContent);
 
         $mailAutomation->id = $mailClass->save($mailAutomation);
-        if (empty($mailAutomation->id)) return false;
+        if (empty($mailAutomation->id)) {
+            return;
+        }
 
         $newAction = new \stdClass();
         $newAction->condition_id = $newCondition->id;
@@ -371,21 +379,12 @@ class UpdateHelper extends acymObject
         $newAction->filters = '{"0":{"1":{"acy_field":{"field":"email","operator":"=","value":"'.acym_currentUserEmail().'"}}},"type_filter":"classic"}';
         $newAction->order = 1;
         $newAction->id = $actionClass->save($newAction);
-        if (empty($newAction->id)) return false;
     }
 
-    public function installAdminNotif()
+    public function installDefaultAutomations()
     {
-        $automationClass = new AutomationClass();
-        $automationAdmin = $automationClass->getAutomationsAdmin();
-
-        if (empty($automationAdmin['ACYM_ADMIN_USER_CREATE'])) {
-            $this->_newAutomationAdmin('ACYM_ADMIN_USER_CREATE');
-        }
-
-        if (empty($automationAdmin['ACYM_ADMIN_USER_MODIFICATION'])) {
-            $this->_newAutomationAdmin('ACYM_ADMIN_USER_MODIFICATION');
-        }
+        $this->newAutomationAdmin('ACYM_ADMIN_USER_CREATE');
+        $this->newAutomationAdmin('ACYM_ADMIN_USER_MODIFICATION');
     }
 
     public function installList()

@@ -15,7 +15,7 @@ class UpdateController extends acymController
         acym_sendAjaxResponse(
             '',
             [
-                'content' => $headerHelper->checkVersionArea(),
+                'content' => $headerHelper->checkVersionArea(true),
                 'lastcheck' => acym_date($lastLicenseCheck, 'Y/m/d H:i'),
             ]
         );

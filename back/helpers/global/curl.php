@@ -80,7 +80,8 @@ function acym_asyncCurlCall($urls)
         }
         curl_multi_close($mh);
     } catch (Exception $exception) {
-        $reportPath = $this->config->get('cron_savepath');
+        $config = acym_config();
+        $reportPath = $config->get('cron_savepath');
         if (!empty($reportPath)) {
             $reportPath = str_replace(['{year}', '{month}'], [date('Y'), date('m')], $reportPath);
             $reportPath = acym_cleanPath(ACYM_ROOT.trim(html_entity_decode($reportPath)));

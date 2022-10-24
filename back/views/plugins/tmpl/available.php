@@ -49,7 +49,7 @@
 										</button>
 										<div class="cell auto"></div>
 										<a target="_blank"
-										   href="<?php echo ACYM_ACYMAILLING_WEBSITE; ?>pricing"
+										   href="<?php echo ACYM_ACYMAILING_WEBSITE; ?>pricing"
 										   class="acym__plugins__button cell small-5 acym__plugins__button__purchase text-center button button-secondary">
                                             <?php echo acym_translation('ACYM_PURCHASE'); ?>
 											<i class="acymicon-cart-arrow-down"></i>

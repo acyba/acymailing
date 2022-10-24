@@ -33,8 +33,19 @@ if (!empty($data['languages'])) {
 	  onsubmit="this.querySelector('#acym__save');"
 	  class="acym_front_page acym_front_page__unsubscribe margin-top-2">
 	<fieldset>
-		<legend><?php echo acym_translation('ACYM_YOUR_NEWSLETTER_SUBSCRIPTIONS'); ?></legend>
-		<h2 class="margin-top-2 acym_front_page__unsubscribe__title"><?php echo acym_translation('ACYM_HERE_LISTS_YOU_ARE_SUBSCRIBED_TO'); ?></h2>
+		<legend>
+            <?php
+            $title = acym_escape($this->config->get('unsubscribe_title'));
+            if (!empty($title)) {
+                echo $title;
+            } else {
+                echo acym_translation('ACYM_YOUR_NEWSLETTER_SUBSCRIPTIONS');
+            }
+            ?>
+		</legend>
+		<h2 class="margin-top-2 acym_front_page__unsubscribe__title">
+            <?php echo acym_translation('ACYM_HERE_LISTS_YOU_ARE_SUBSCRIBED_TO'); ?>
+		</h2>
 		<div class="acym_front_page__unsubscribe__lists__container">
             <?php
             if (empty($data['subscriptions'])) {
@@ -44,7 +55,9 @@ if (!empty($data['languages'])) {
             echo '<ul>';
             foreach ($data['subscriptions'] as $list) {
                 if (empty($list->visible)) continue;
-                echo '<li><input style="display: inline-block" id="list__'.$list->id.'" type="checkbox" name="lists['.$list->id.']" '.(empty($list->status) ? '' : 'checked').'><label style="display: inline-block" for="list__'.$list->id.'">'.(!empty($list->display_name) ? $list->display_name : $list->name).'</label></li>';
+                echo '<li><input style="display: inline-block" id="list__'.$list->id.'" type="checkbox" name="lists['.$list->id.']" '.(empty($list->status) ? ''
+                        : 'checked').'><label style="display: inline-block" for="list__'.$list->id.'">'.(!empty($list->display_name) ? $list->display_name
+                        : $list->name).'</label></li>';
             }
             echo '</ul>';
             ?>

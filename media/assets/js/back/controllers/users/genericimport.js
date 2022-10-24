@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
 
     function Init() {
         $('.fieldAssignment').select2({theme: 'foundation'});

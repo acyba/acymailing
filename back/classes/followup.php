@@ -167,7 +167,8 @@ class FollowupClass extends acymClass
         return acym_loadResultArray(
             'SELECT `mail_id` 
             FROM #__acym_followup_has_mail 
-            WHERE `followup_id` IN ('.implode(', ', $followupIds).')'
+            WHERE `followup_id` IN ('.implode(', ', $followupIds).')
+            ORDER BY `delay`*`delay_unit` ASC'
         );
     }
 
@@ -455,13 +456,14 @@ class FollowupClass extends acymClass
         if (empty($followupToTrigger)) return false;
 
         foreach ($followupToTrigger as $key => $followup) {
-            if (!empty($followup->condition)) $followupToTrigger[$key]->condition = json_decode($followup->condition, true);
+            if (!empty($followup->condition)) {
+                $followupToTrigger[$key]->condition = json_decode($followup->condition, true);
+            }
         }
 
         acym_trigger('matchFollowupsConditions', [&$followupToTrigger, $userId, $params]);
 
         if (empty($followupToTrigger)) return false;
-
 
         $followupIds = $this->subscribeUserToFollowupList(array_keys($followupToTrigger), $userId);
 

@@ -11,7 +11,7 @@
  *
  * @return string The modal
  */
-function acym_modal($button, $data, $id = null, $attributesModal = '', $attributesButton = '', $isButton = true, $isLarge = true)
+function acym_modal($button, $data, $id = null, $attributesModal = '', $attributesButton = '', $isButton = true, $isLarge = true, $classesModal = '')
 {
     if (empty($id)) {
         $id = 'acymodal_'.rand(1000, 9000);
@@ -27,7 +27,7 @@ function acym_modal($button, $data, $id = null, $attributesModal = '', $attribut
     }
 
     $modal = $isButton ? '<button type="button" data-open="'.$id.'" '.$buttonParams.'>'.$button.'</button>' : $button;
-    $modal .= '<div class="reveal" '.($isLarge ? 'data-reveal-larger' : '').' id="'.$id.'" '.$attributesModal.' data-reveal>';
+    $modal .= '<div class="reveal '.$classesModal.'" '.($isLarge ? 'data-reveal-larger' : '').' id="'.$id.'" '.$attributesModal.' data-reveal>';
     $modal .= $data;
     $modal .= '<button class="close-button" data-close aria-label="Close reveal" type="button">';
     $modal .= '<span aria-hidden="true">&times;</span>';
@@ -145,7 +145,7 @@ function acym_frontModal($iframeSrc, $buttonText, $isButton, $identifier = null,
 	<div class="acym__modal" id="acym__modal__<?php echo $identifier; ?>" style="display: none;">
 		<div class="acym__modal__content">
 			<div class="acym__modal__close"><span>&times;</span></div>
-			<?php echo $additionalContent; ?>
+            <?php echo $additionalContent; ?>
 			<iframe class="<?php echo $iframeClass; ?>" src="<?php echo $iframeSrc; ?>"></iframe>
 		</div>
 	</div>

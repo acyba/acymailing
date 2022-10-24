@@ -44,7 +44,7 @@
                         <?php echo acym_radio(
                             [1 => acym_translation('ACYM_YES'), 0 => acym_translation('ACYM_NO')],
                             'add_segment_step',
-                            array_key_exists('segment', $data['currentCampaign']->sending_params) ? 1 : 0
+                            !empty($data['currentCampaign']->sending_params) && array_key_exists('segment', $data['currentCampaign']->sending_params) ? 1 : 0
                         ); ?>
 					</div>
 

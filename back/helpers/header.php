@@ -39,7 +39,7 @@ class HeaderHelper extends acymObject
         $lastNewsCheck = $this->config->get('last_news_check', 0);
         if ($lastNewsCheck < time() - 7200) {
             $context = stream_context_create(['http' => ['timeout' => 1]]);
-            $news = @file_get_contents(ACYM_ACYMAILLING_WEBSITE.'acymnews.xml', false, $context);
+            $news = @file_get_contents(ACYM_ACYMAILING_WEBSITE.'acymnews.xml', false, $context);
             $this->config->save(
                 [
                     'last_news_check' => time(),
@@ -127,7 +127,7 @@ class HeaderHelper extends acymObject
         return $header;
     }
 
-    public function checkVersionArea()
+    public function checkVersionArea($reloading = false)
     {
         $currentLevel = $this->config->get('level', '');
         $currentVersion = $this->config->get('version', '');
@@ -155,38 +155,39 @@ class HeaderHelper extends acymObject
 
         $version .= '</div></div>';
 
-        if (!acym_level(ACYM_ESSENTIAL) && ACYM_PRODUCTION) return $version;
-
-        //__START__production_
         $expirationDate = $this->config->get('expirationdate', 0);
-        if (empty($expirationDate) || $expirationDate == -1) return $version;
+        if ((empty($expirationDate) || $expirationDate == -1) && empty($this->config->get('acymailer_apikey', ''))) return $version;
 
         $version .= '<div id="acym_expiration" class="text-right cell">';
-        if ($expirationDate == -2) {
-            $version .= '<div class="acylicence_expired">
+        //__START__production_
+        if (acym_level(ACYM_ESSENTIAL) && ACYM_PRODUCTION) {
+            if ($expirationDate == -2) {
+                $version .= '<div class="acylicence_expired">
                             <a class="acy_attachlicence acymbuttons acym__color__red" href="'.ACYM_REDIRECT.'acymailing-assign" target="_blank">'.acym_translation(
-                    'ACYM_ATTACH_LICENCE'
-                ).'</a>
+                        'ACYM_ATTACH_LICENCE'
+                    ).'</a>
                         </div>';
-        } elseif ($expirationDate < time()) {
-            $version .= acym_tooltip(
-                '<span class="acy_subscriptionexpired acym__color__red">'.acym_translation('ACYM_SUBSCRIPTION_EXPIRED').'</span>',
-                acym_translation('ACYM_SUBSCRIPTION_EXPIRED_LINK'),
-                '',
-                '',
-                ACYM_REDIRECT.'renew-acymailing-'.$currentLevel
-            );
-        } else {
-            $version .= '<div class="acylicence_valid">
+            } elseif ($expirationDate < time()) {
+                $version .= acym_tooltip(
+                    '<span class="acy_subscriptionexpired acym__color__red">'.acym_translation('ACYM_SUBSCRIPTION_EXPIRED').'</span>',
+                    acym_translation('ACYM_SUBSCRIPTION_EXPIRED_LINK'),
+                    '',
+                    '',
+                    ACYM_REDIRECT.'renew-acymailing-'.$currentLevel
+                );
+            } else {
+                $version .= '<div class="acylicence_valid">
                             <span class="acy_subscriptionok acym__color__green">'.acym_translationSprintf(
-                    'ACYM_VALID_UNTIL',
-                    acym_getDate($expirationDate, acym_translation('ACYM_DATE_FORMAT_LC4'))
-                ).'</span>
+                        'ACYM_VALID_UNTIL',
+                        acym_getDate($expirationDate, acym_translation('ACYM_DATE_FORMAT_LC4'))
+                    ).'</span>
                         </div>';
+            }
         }
+        //__END__production_
 
         $creditRemainingSendingMethod = '';
-        acym_trigger('onAcymGetCreditRemainingSendingMethod', [&$creditRemainingSendingMethod]);
+        acym_trigger('onAcymGetCreditRemainingSendingMethod', [&$creditRemainingSendingMethod, $reloading]);
         if (!empty($creditRemainingSendingMethod)) {
             $version .= '<div class="acy_sending_method_credits">
                             <span>'.$creditRemainingSendingMethod.'</span>
@@ -196,7 +197,6 @@ class HeaderHelper extends acymObject
         $version .= '</div>';
 
         return $version;
-        //__END__production_
     }
 
     private function getCheckVersionButton()

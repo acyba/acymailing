@@ -12,7 +12,7 @@
 		<div class="margin-left-1 cell medium-auto hide-for-small-only">
             <?php echo acym_externalLink(
                 'ACYM_SEE_OUR_TEMPLATES_PACK',
-                ACYM_ACYMAILLING_WEBSITE.'pack-template-newsletter/?utm_source=acymailing_plugin&utm_campaign=purchase_templates_pack&utm_medium=button_template_listing'
+                ACYM_ACYMAILING_WEBSITE.'pack-template-newsletter/?utm_source=acymailing_plugin&utm_campaign=purchase_templates_pack&utm_medium=button_template_listing'
             ); ?>
 		</div>
 		<div class="grid-x cell auto">

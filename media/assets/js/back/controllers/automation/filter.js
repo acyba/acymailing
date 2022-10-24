@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     let filterRebuilt = true;
     let blockRebuilt = true;
     const ajaxCalls = {};

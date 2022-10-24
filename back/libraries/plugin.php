@@ -52,6 +52,7 @@ class acymPlugin extends acymObject
 
     var $logFilename = '';
     private $active;
+    public $responseCode;
 
     public function __construct()
     {
@@ -1097,7 +1098,7 @@ class acymPlugin extends acymObject
                                                 <i v-if="saving" class="acymicon-spin acymicon-circle-o-notch" style="margin-bottom: 0; line-height: 26px;"></i>
                                                 <span v-if="saved">{{ messageSaved }}</span>
                                             </div>
-                                            <button @click="save()" class="cell shrink button" type="button">'.acym_translation('ACYM_SAVE').'</button>
+                                            <button @click="save()" class="cell shrink button" type="button">'.acym_translation('ACYM_SAVE_NEW_CUSTOM_VIEW_VERSION').'</button>
                                         </div>
                                     </div>
                                 </div>';
@@ -1268,6 +1269,14 @@ class acymPlugin extends acymObject
 
     protected function callApiSendingMethod($url, $data = [], $headers = [], $type = 'GET', $authentication = [], $dataDecoded = false)
     {
+        if (!empty($headers) && empty($headers[0])) {
+            $newHeaders = [];
+            foreach ($headers as $key => $value) {
+                $newHeaders[] = $key.': '.$value;
+            }
+            $headers = $newHeaders;
+        }
+
         $curl = curl_init();
 
         $optionsArray = [
@@ -1279,6 +1288,8 @@ class acymPlugin extends acymObject
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => $type,
             CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
         ];
 
         if (empty($dataDecoded)) {
@@ -1298,7 +1309,7 @@ class acymPlugin extends acymObject
 
         $response = curl_exec($curl);
         $error = curl_error($curl);
-
+        $this->responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
         if ($error) {
@@ -1350,7 +1361,10 @@ class acymPlugin extends acymObject
 
     public function onAcymGetSendingMethodsSelected(&$data)
     {
-        if (ACYM_CMS == 'wordpress') $this->config->load();
+        if (ACYM_CMS == 'wordpress') {
+            $this->config->load();
+        }
+
         $mailerMethod = $this->config->get('mailer_method', 'phpmail');
         foreach ($data['sendingMethods'] as $key => $sendingMethod) {
             $data['sendingMethods'][$key]['selected'] = $key == $mailerMethod;

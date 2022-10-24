@@ -55,7 +55,7 @@ document.addEventListener('wpcf7submit', function (event) {
     }
 }, false);
 
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     jQuery('.tag-generator-panel [name="displayLists[]"], .tag-generator-panel [name="defaultLists[]"], .tag-generator-panel [name="autoLists[]"]')
         .on('change', function () {
             let displayLists = jQuery('.tag-generator-panel [name="displayLists[]"]').val();

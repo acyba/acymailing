@@ -217,6 +217,9 @@ class ExportHelper extends acymObject
                 $key = strpos($key, '.') !== false ? explode('.', $key) : $key;
                 if (is_array($key)) $key = $key[1];
                 $line = in_array($key, $valueNeedNumber) && empty($mailStat->{$key}) ? 0 : $mailStat->{$key};
+                if (is_null($line)) {
+                    $line = '';
+                }
                 $oneLine[] = htmlspecialchars($line, ENT_QUOTES, 'UTF-8');
             }
             //We delete the double quote so it won't break the CSV
@@ -277,9 +280,9 @@ class ExportHelper extends acymObject
 
         $start = 0;
         do {
-            try{
+            try {
                 $users = acym_loadObjectList($query.' LIMIT '.intval($start).', '.intval($nbExport), 'id');
-            }catch (\Exception $e){
+            } catch (\Exception $e) {
                 $users = false;
             }
             $start += $nbExport;

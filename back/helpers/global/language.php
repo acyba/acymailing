@@ -68,3 +68,16 @@ function acym_displayLanguageRadio($languages, $name, $translation, $info, $defa
 
     return $return;
 }
+
+/**
+ * Display the according translation
+ * Works like sprintf(), but accepts an array as an argument, instead of a list of arguments.
+ */
+function acym_translationVsprintf($key, $messageData, $isKey = true)
+{
+    if ($isKey) {
+        return vsprintf(acym_translation($key), $messageData);
+    } else {
+        return vsprintf($key, $messageData);
+    }
+}

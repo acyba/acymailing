@@ -13,6 +13,15 @@
                 'export_config'
             ); ?>
 		</div>
+		<div class="grid-x grid-margin-x margin-top-1">
+            <?php echo acym_switch(
+                'config[gdpr_delete]',
+                $this->config->get('gdpr_delete'),
+                acym_translation('ACYM_GDPR_DELETE_BUTTON'),
+                [],
+                'xlarge-3 medium-5 small-9'
+            ); ?>
+		</div>
 	</div>
 
 	<div class="cell margin-bottom-2">

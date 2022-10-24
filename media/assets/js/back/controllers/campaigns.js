@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     const ajaxUrl = ACYM_AJAX_URL + '&ctrl=dynamics&task=trigger';
 
     function Init() {

@@ -70,7 +70,7 @@ class DashboardController extends acymController
 
     public function saveStepSubscribe()
     {
-        $this->_saveWalkthrough(['step' => 'stepLicense']);
+        $this->saveWalkthrough(['step' => 'stepLicense']);
         $this->stepLicense();
     }
 
@@ -140,7 +140,7 @@ class DashboardController extends acymController
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
             $this->passWalkThrough();
         } else {
-            $this->_saveWalkthrough(['step' => 'stepList', 'mail_id' => $mailId]);
+            $this->saveWalkthrough(['step' => 'stepList', 'mail_id' => $mailId]);
             $this->stepList();
         }
     }
@@ -221,7 +221,11 @@ class DashboardController extends acymController
 
         $nextStep = 'stepPhpmail';
 
-        $this->_saveWalkthrough(['step' => $nextStep, 'list_id' => $listId]);
+        if (!empty($this->config->get('acymailer_apikey'))) {
+            $nextStep = 'stepAcyMailer';
+        }
+
+        $this->saveWalkthrough(['step' => $nextStep, 'list_id' => $listId]);
         $this->$nextStep();
     }
 
@@ -230,7 +234,7 @@ class DashboardController extends acymController
         acym_setVar('layout', 'walk_through');
         $licenseKey = $this->config->get('license_key', '');
 
-        if (!empty($licenseKey) || !acym_level(ACYM_ESSENTIAL)) {
+        if (!empty($licenseKey)) {
             // Go to next step
             $this->passStepLicence();
 
@@ -303,7 +307,7 @@ class DashboardController extends acymController
     public function passStepLicence()
     {
         $nextStep = 'stepEmail';
-        $this->_saveWalkthrough(['step' => $nextStep]);
+        $this->saveWalkthrough(['step' => $nextStep]);
         $this->$nextStep();
     }
 
@@ -316,12 +320,6 @@ class DashboardController extends acymController
             'userEmail' => $this->config->get('from_email', acym_currentUserEmail()),
             'siteName' => $this->config->get('from_name', acym_getCMSConfig('sitename')),
         ];
-
-        //__START__wordpress_
-        if (ACYM_CMS == 'wordpress' && acym_isExtensionActive('wp-mail-smtp/wp_mail_smtp.php')) {
-            $data['wp_mail_smtp_installed'] = true;
-        }
-        //__END__wordpress_
 
         $data['sendingMethods'] = [];
 
@@ -344,7 +342,7 @@ class DashboardController extends acymController
 
     public function saveStepPhpmail()
     {
-        if (!$this->_saveFrom()) {
+        if (!$this->saveFrom()) {
             $this->stepPhpmail();
 
             return;
@@ -360,13 +358,13 @@ class DashboardController extends acymController
             return;
         }
 
-        if (false === $this->_sendFirstEmail()) {
+        if (false === $this->sendFirstEmail()) {
             $this->stepPhpmail();
 
             return;
         }
 
-        $this->_saveWalkthrough(['step' => 'stepResult']);
+        $this->saveWalkthrough(['step' => 'stepResult']);
         $this->stepResult();
     }
 
@@ -390,7 +388,7 @@ class DashboardController extends acymController
         $stepFail = !empty($walkthroughParams['step_fail']) ? 'stepFaillocal' : 'stepFail';
 
         $nextStep = $result ? 'stepSuccess' : $stepFail;
-        $this->_saveWalkthrough(['step' => $nextStep]);
+        $this->saveWalkthrough(['step' => $nextStep]);
 
         $this->$nextStep();
     }
@@ -470,7 +468,7 @@ class DashboardController extends acymController
             acym_enqueueMessage(acym_translation('ACYM_SOMETHING_WENT_WRONG_CONTACT_ON_ACYBA'), 'error');
             $this->passWalkThrough();
         } else {
-            $this->_saveWalkthrough(['step' => 'stepSupport']);
+            $this->saveWalkthrough(['step' => 'stepSupport']);
             $this->stepSupport();
         }
     }
@@ -498,9 +496,24 @@ class DashboardController extends acymController
 
     public function passWalkThrough($page = '')
     {
-        if (empty($page)) $page = 'users&task=import';
-
         $newConfig = new \stdClass();
+
+        if (empty($page)) {
+            $page = 'users&task=import';
+        }
+
+        if (acym_getVar('cmd', 'skip') === 'acymailer') {
+            // If it's the SMTP method, we already copied the site's configuration
+            $mailMethod = acym_getCMSConfig('mailer', 'phpmail');
+            $data['sendingMethods'] = [];
+            acym_trigger('onAcymGetSendingMethods', [&$data]);
+            if (!in_array($mailMethod, array_keys($data['sendingMethods']))) {
+                $mailMethod = 'phpmail';
+            }
+            $newConfig->mailer_method = $mailMethod;
+            $page = 'configuration';
+        }
+
         $newConfig->walk_through = 0;
         $this->config->save($newConfig);
 
@@ -645,7 +658,7 @@ class DashboardController extends acymController
      *
      * @return bool
      */
-    private function _saveFrom()
+    private function saveFrom()
     {
         $fromName = acym_getVar('string', 'from_name', 'Test');
         $fromAddress = acym_getVar('string', 'from_address', 'test@test.com');
@@ -694,7 +707,7 @@ class DashboardController extends acymController
      *
      * @return bool
      */
-    private function _sendFirstEmail()
+    private function sendFirstEmail()
     {
         $walkthroughParams = json_decode($this->config->get('walkthrough_params', '[]'), true);
         $listClass = new ListClass();
@@ -730,12 +743,14 @@ class DashboardController extends acymController
             if ($mailerHelper->sendOne($firstMail->id, $subscriberId, true)) $nbSent++;
         }
 
-        if (!empty($mailerHelper->ErrorInfo)) $this->errorMailer = $mailerHelper->ErrorInfo;
+        if (!empty($mailerHelper->ErrorInfo)) {
+            $this->errorMailer = $mailerHelper->ErrorInfo;
+        }
 
         return $nbSent !== 0;
     }
 
-    private function _saveWalkthrough($params)
+    private function saveWalkthrough($params)
     {
         $newParams = json_decode($this->config->get('walkthrough_params', '[]'), true);
         foreach ($params as $key => $value) {
@@ -774,5 +789,59 @@ class DashboardController extends acymController
         acym_setVar('layout', 'acychecker');
 
         parent::display();
+    }
+
+    public function stepAcyMailer()
+    {
+        acym_setVar('layout', 'walk_through');
+
+        $spinner = '<i class="acymicon-circle-o-notch acymicon-spin"></i>';
+
+        $data = [
+            'step' => 'acymailer',
+            'userEmail' => $this->config->get('from_email', acym_currentUserEmail()),
+            'siteName' => $this->config->get('from_name', acym_getCMSConfig('sitename')),
+            'domain' => empty($_SERVER['HTTP_HOST']) ? '' : $_SERVER['HTTP_HOST'],
+            'CnameRecords' => [['name' => $spinner, 'value' => $spinner]],
+            'status' => 'PENDING',
+        ];
+
+        if (!empty($data['userEmail'])) {
+            $data['domain'] = acym_getDomain($data['userEmail']);
+        }
+
+        $data['sentDomains'] = $this->config->get('acymailer_domains', []);
+        if (!empty($data['sentDomains'])) {
+            $data['sentDomains'] = @json_decode($data['sentDomains'], true);
+        }
+
+        if (!empty($data['sentDomains'][$data['domain']]['CnameRecords'])) {
+            $data['CnameRecords'] = $data['sentDomains'][$data['domain']]['CnameRecords'];
+            $data['status'] = $data['sentDomains'][$data['domain']]['status'];
+        }
+
+        if (!empty($this->errorMailer)) {
+            $data['error'] = $this->errorMailer;
+        }
+
+        parent::display($data);
+    }
+
+    public function saveStepAcyMailer()
+    {
+        if (!$this->saveFrom()) {
+            $this->stepAcyMailer();
+
+            return;
+        }
+
+        if (false === $this->sendFirstEmail()) {
+            $this->stepAcyMailer();
+
+            return;
+        }
+
+        $this->saveWalkthrough(['step' => 'stepResult']);
+        $this->stepResult();
     }
 }

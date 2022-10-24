@@ -70,10 +70,10 @@ class plgAcymSendgrid extends acymPlugin
         }
     }
 
-    public function onAcymSendEmail(&$response, $sendingMethod, $to, $subject, $from, $reply_to, $body, $bcc = [], $attachments = [], $mailId = null)
+    public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $reply_to, $bcc = [], $attachments = [])
     {
         //https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html
-        if ($sendingMethod != self::SENDING_METHOD_ID) return;
+        if ($mailerHelper->externalMailer != self::SENDING_METHOD_ID) return;
         $headers = $this->getHeadersSendingMethod(self::SENDING_METHOD_ID);
         $headers[] = 'Content-Type: application/json';
         $data = [
@@ -84,7 +84,7 @@ class plgAcymSendgrid extends acymPlugin
                             'email' => $to['email'],
                         ],
                     ],
-                    'subject' => $subject,
+                    'subject' => $mailerHelper->Subject,
                 ],
             ],
             'from' => $from,
@@ -92,7 +92,7 @@ class plgAcymSendgrid extends acymPlugin
             'content' => [
                 [
                     'type' => 'text/html',
-                    'value' => $body,
+                    'value' => $mailerHelper->Body,
                 ],
             ],
         ];
@@ -129,7 +129,7 @@ class plgAcymSendgrid extends acymPlugin
         ];
     }
 
-    public function onAcymGetCreditRemainingSendingMethod(&$html)
+    public function onAcymGetCreditRemainingSendingMethod(&$html, $reloading = false)
     {
         $sendingMethod = $this->config->get('mailer_method', '');
         if (empty($sendingMethod) || $sendingMethod != self::SENDING_METHOD_ID) return;

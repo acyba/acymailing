@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function ($) {
     let timeout;
     let appVue = new Vue({
         'el': '#acym__forms',

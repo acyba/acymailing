@@ -169,6 +169,7 @@ class plgAcymTime extends acymPlugin
                     'first' => acym_translation('ACYM_FIRST'),
                     'second' => acym_translation('ACYM_SECOND'),
                     'third' => acym_translation('ACYM_THIRD'),
+                    'fourth' => acym_translation('ACYM_FOURTH'),
                     'last' => acym_translation('ACYM_LAST'),
                 ],
                 '[triggers][classic][on_day_month][number]',
@@ -441,6 +442,7 @@ class plgAcymTime extends acymPlugin
                 'first' => acym_translation('ACYM_FIRST'),
                 'second' => acym_translation('ACYM_SECOND'),
                 'third' => acym_translation('ACYM_THIRD'),
+                'fourth' => acym_translation('ACYM_FOURTH'),
                 'last' => acym_translation('ACYM_LAST'),
             ];
 

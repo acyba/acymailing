@@ -1,8 +1,8 @@
 <h2 class="cell acym__title text-center"><?php echo acym_translation('ACYM_WHATS_NEXT'); ?></h2>
 <div class="cell grid-x margin-top-2">
-	<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_SEEMS_SOMETHING_WENT_WRONG'); ?></p>
-	<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_DONT_WORRY_OUR_SUPPORT_WILL_TAKE_A_LOOK'); ?></p>
-	<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_SIMPLY_PROVIDE_US_EMAIL_WE_GET_BACK'); ?></p>
+	<p class="cell text-center"><?php echo acym_translation('ACYM_SEEMS_SOMETHING_WENT_WRONG'); ?></p>
+	<p class="cell text-center"><?php echo acym_translation('ACYM_DONT_WORRY_OUR_SUPPORT_WILL_TAKE_A_LOOK'); ?></p>
+	<p class="cell text-center"><?php echo acym_translation('ACYM_SIMPLY_PROVIDE_US_EMAIL_WE_GET_BACK'); ?></p>
 </div>
 <div class="cell grid-x margin-bottom-3">
 	<div class="cell auto hide-for-small-only"></div>

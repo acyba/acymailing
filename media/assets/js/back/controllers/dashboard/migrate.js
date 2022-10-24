@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     let batchToDo = 0; //total calls to do
     let batchWhereWeAre = 0; //At which batch we are
     let totalCallsToDo = 0; //At which call we are on total

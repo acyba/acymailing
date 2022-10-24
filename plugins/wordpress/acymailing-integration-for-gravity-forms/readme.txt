@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, newsletter form, acymailing, form, subscription, gravity forms
 Requires at least: 4.7
-Tested up to: 6.0.1
+Tested up to: 6.0.3
 Stable tag: 1.7
 Requires PHP: 5.6.0
 License: GPLv3

@@ -82,7 +82,7 @@
 	</div>
 
 	<div class="cell acym__configuration__mail-settings">
-		<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_MAIL').acym_info('ACYM_INTRO_MAIL_SETTINGS'); ?></div>
+		<div class="acym__title acym__title__secondary margin-top-3"><?php echo acym_translation('ACYM_CONFIGURATION_MAIL').acym_info('ACYM_INTRO_MAIL_SETTINGS'); ?></div>
         <?php include acym_getPartial('configuration', 'sending_methods'); ?>
 	</div>
 </div>

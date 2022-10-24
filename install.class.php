@@ -50,7 +50,8 @@ class acymInstall
         $allPref['from_name'] = acym_getCMSConfig('fromname');
         $allPref['from_email'] = acym_getCMSConfig('mailfrom');
         $allPref['bounce_email'] = acym_getCMSConfig('mailfrom');
-        $allPref['mailer_method'] = acym_getCMSConfig('mailer', 'phpmail');
+        $cmsMailer = acym_getCMSConfig('mailer', 'phpmail');
+        $allPref['mailer_method'] = $cmsMailer === 'mail' ? 'phpmail' : $cmsMailer;
         $allPref['sendmail_path'] = acym_getCMSConfig('sendmail');
         $smtpinfos = explode(':', acym_getCMSConfig('smtphost'));
         $allPref['smtp_port'] = acym_getCMSConfig('smtpport');
@@ -1285,6 +1286,13 @@ class acymInstall
 
         if (version_compare($this->fromVersion, '7.9.4', '<')) {
             $this->updateQuery('ALTER TABLE `#__acym_custom_zone` ADD `image` VARCHAR(255) NULL');
+        }
+
+        if (version_compare($this->fromVersion, '7.9.6', '<')) {
+            if (file_exists(ACYM_ADDONS_FOLDER_PATH.'couryeah')) {
+                unlink(ACYM_ADDONS_FOLDER_PATH.'couryeah');
+                $this->updateQuery('UPDATE #__acym_configuration SET `name` = "acymailer_domains" WHERE `name` = "couryeah_domains"');
+            }
         }
     }
 

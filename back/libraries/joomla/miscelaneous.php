@@ -98,10 +98,20 @@ function acym_isPluginActive($plugin, $family = 'system')
     return !empty($plugin);
 }
 
-function acym_menuOnly($link)
+function acym_menuOnly($links)
 {
     $menu = JFactory::getApplication('site')->getMenu()->getActive();
-    if (empty($menu) || $menu->link !== $link) {
+    $menuFound = false;
+    if (!empty($menu)) {
+        foreach ($links as $link) {
+            if ($menu->link == $link) {
+                $menuFound = true;
+                break;
+            }
+        }
+    }
+
+    if (!$menuFound) {
         acym_redirect(acym_rootURI(), 'ACYM_UNAUTHORIZED_ACCESS', 'error');
     }
 }

@@ -1,7 +1,7 @@
 <h2 class="acym__title text-center cell"><?php echo acym_translation('ACYM_YOUR_FIRST_EMAIL'); ?></h2>
 <div class="cell grid-x margin-top-1">
-	<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_WE_ARE_GOING_TO_CONFIGURE_ACY_SIMPLE_TEST'); ?></p>
-	<p class="cell text-center acym__walkthrough__text"><?php echo acym_translation('ACYM_HERE_IT_LOOKS_FEEL_FREE_TO_MODIFY'); ?></p>
+	<p class="cell text-center"><?php echo acym_translation('ACYM_WE_ARE_GOING_TO_CONFIGURE_ACY_SIMPLE_TEST'); ?></p>
+	<p class="cell text-center"><?php echo acym_translation('ACYM_HERE_IT_LOOKS_FEEL_FREE_TO_MODIFY'); ?></p>
 </div>
 <div class="cell grid-x">
 	<input type="hidden" name="mail[id]" value="<?php echo acym_escape($data['mail']->id); ?>" />

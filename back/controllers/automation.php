@@ -290,16 +290,11 @@ class AutomationController extends acymController
         }
 
         $automationID = acym_getVar('int', 'id');
-        $stepID = acym_getVar('int', 'id');
         $actionId = acym_getVar('int', 'actionId');
         $action = acym_getVar('array', 'acym_action');
         $actionClass = new ActionClass();
         $stepAutomationId = acym_getVar('int', 'stepAutomationId');
         $conditionId = acym_getVar('int', 'conditionId');
-
-        if (!empty($stepAutomationId)) {
-            $stepAutomation['id'] = $stepAutomationId;
-        }
 
         if ((!empty($conditionId))) {
             $action['condition_id'] = $conditionId;

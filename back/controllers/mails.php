@@ -857,6 +857,10 @@ class MailsController extends acymController
         if ($type == $mailClass::TYPE_FOLLOWUP) {
             $followup_id = acym_getVar('int', 'followup_id', 0);
         }
+        $listId = 0;
+        if (in_array($type, [$mailClass::TYPE_WELCOME, $mailClass::TYPE_UNSUBSCRIBE])) {
+            $listId = acym_getVar('int', 'list_id', 0);
+        }
         foreach ($matchingMails['elements'] as $oneTemplate) {
             $return .= '<div class="cell grid-x acym__templates__oneTpl acym__listing__block" id="'.acym_escape($oneTemplate->id).'">
                 <div class="cell acym__templates__pic text-center">';
@@ -864,6 +868,9 @@ class MailsController extends acymController
             $url = acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.intval($oneTemplate->id).$returnUrl.'&type='.$type.$id;
             if (!empty($followup_id)) {
                 $url .= '&followup_id='.$followup_id;
+            }
+            if (!empty($listId)) {
+                $url .= '&list_id='.$listId;
             }
             if (!empty($this->data['campaignInformation'])) $url .= '&id='.intval($this->data['campaignInformation']);
             if (!$automation || !empty($returnUrl)) $return .= '<a href="'.acym_completeLink($url, false, false, true).'">';

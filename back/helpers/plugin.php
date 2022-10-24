@@ -779,8 +779,9 @@ class PluginHelper extends acymObject
             if (empty($image)) {
                 $format->tag->format = 'TOP_LEFT';
             } else {
-                $result = '<table><tr><td valign="middle" style="vertical-align: middle; padding-right: 7px;'.$maxWidth.'" class="acyleftcol">';
+                $result = '<table><tr><td valign="middle" style="vertical-align: middle; padding-right: 7px;" class="acyleftcol">';
                 if ($format->tag->format === 'COL_LEFT') {
+                    $result = '<table><tr><td valign="middle" style="vertical-align: middle; padding-right: 7px; '.$maxWidth.'" class="acyleftcol">';
                     $result .= $image.'</td><td valign="top" class="acyrightcol">';
                 }
             }
@@ -839,7 +840,7 @@ class PluginHelper extends acymObject
             }
 
             if ($format->tag->format === 'COL_RIGHT') {
-                $result .= '</td><td valign="middle" style="vertical-align: middle; padding-left: 7px;'.$maxWidth.'" class="acyrightcol">'.$image;
+                $result .= '</td><td valign="middle" style="vertical-align: middle; padding-left: 7px; '.$maxWidth.'" class="acyrightcol">'.$image;
             }
             $result .= '</td></tr></table>';
         }

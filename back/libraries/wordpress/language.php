@@ -108,7 +108,6 @@ function acym_setLanguage($lang)
     return $previousLanguage;
 }
 
-
 /**
  * Display the according translation
  */

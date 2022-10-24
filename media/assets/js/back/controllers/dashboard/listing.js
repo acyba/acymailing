@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     function Init() {
         setActionButtonCampaigns();
         acym_helperStats.setLineChartOpenTimeWeek();

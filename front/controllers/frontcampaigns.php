@@ -42,7 +42,7 @@ class FrontcampaignsController extends CampaignsController
             'delete',
             'deleteAttach',
         ];
-        $this->urlFrontMenu = 'index.php?option=com_acym&view=frontcampaigns&layout=campaigns';
+        $this->urlsFrontMenu = ['index.php?option=com_acym&view=frontcampaigns&layout=campaigns', 'index.php?option=com_acym&view=frontcampaigns&layout=listing'];
         parent::__construct();
     }
 

@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     Vue.component('vue-switch', {
         props: [
             'plugin',

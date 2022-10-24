@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     function Init() {
         attachLicence();
         activateCron();
@@ -8,12 +8,17 @@ jQuery(document).ready(function ($) {
         setWalkthroughList();
         setStepFailToggle();
         setChoiceWalkthroughResult();
+        setDomainAutoAdd();
+        setDomainStatusReload();
         acym_helperEditorWysid.initEditor();
         acym_helperMailer.setTestCredentialsSendingMethods();
         acym_helperMailer.setButtonCopyFromPlugin();
         acym_helperMailer.setSynchroExistingUsers();
         acym_helperSelectionPage.setSelectionElement(true, false, undefined, '#acym__selection__button-select');
         acym_helperMailer.dislayAuth2Params();
+        acym_helperMailer.acymailerAddDomains();
+        acym_helperMailer.displayCnameRecord();
+        acym_helperMailer.deleteDomain();
     }
 
     function setSendingMethodSwitch() {
@@ -190,6 +195,106 @@ jQuery(document).ready(function ($) {
                     cronStatus.classList.add('acym__color__red');
                 }
                 $iconWait.addClass('is-hidden');
+            });
+        });
+    }
+
+    function setDomainAutoAdd() {
+        const $cnameContainer = jQuery('#acym__walkthrough__acymailer__domain__cname');
+        if ($cnameContainer.find('.acym__listing__row .acymicon-circle-o-notch').length === 0) {
+            return;
+        }
+
+        const domain = jQuery('#acym__walkthrough__acymailer__domain').val();
+        if (acym_helper.empty(domain)) {
+            return;
+        }
+
+        const $errorContainer = jQuery('#acym__configuration__acymailer__add__error');
+        $errorContainer.hide();
+
+        const data = {
+            oneDomain: domain,
+            ctrl: 'dynamics',
+            task: 'trigger',
+            plugin: 'plgAcymAcymailer',
+            trigger: 'ajaxAddDomain'
+        };
+
+        acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+            if (response.error) {
+                $cnameContainer.hide();
+                jQuery('#acym__configuration__acymailer__add__error__message').text(response.message);
+                $errorContainer.css('display', 'flex');
+                return;
+            }
+
+            jQuery('.acym__listing__row').hide();
+
+            response.data.cnameRecords.forEach(function (cname) {
+                $cnameContainer.append(`
+                    <div class="grid-x cell acym__listing__row">
+                        <div class="grid-x medium-6 cell">
+                            ${cname.name}
+                        </div>
+                        <div class="grid-x medium-6 cell">
+                            ${cname.value}
+                        </div>
+                    </div>`);
+            });
+        });
+    }
+
+    function setDomainStatusReload() {
+        jQuery('#acym__walkthrough__acymailer__domain_status_reload').off('click').on('click', function () {
+            const currentDomain = jQuery('#acym__walkthrough__acymailer__domain').val();
+            if (acym_helper.empty(currentDomain)) {
+                return;
+            }
+
+            const $statusContainer = jQuery('#acym__walkthrough__acymailer__domain_status');
+            $statusContainer.html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
+
+            acym_helper.get(ACYM_AJAX_URL, {
+                sendingMethod: 'acymailer',
+                ctrl: 'dynamics',
+                task: 'trigger',
+                plugin: 'plgAcymAcymailer',
+                trigger: 'ajaxCheckDomain'
+            }).then(response => {
+                if (response.error) {
+                    $statusContainer.text(response.message);
+                    return;
+                }
+
+                Object.entries(response.data.domains).forEach(([key, domain]) => {
+                    if (key !== currentDomain) {
+                        return;
+                    }
+
+                    let iconClass;
+                    let text;
+
+                    if (domain.status === 'SUCCESS') {
+                        iconClass = 'acymicon-check-circle acym__color__green';
+                        text = ACYM_JS_TXT.ACYM_WALK_ACYMAILER_STATUS_SUCCESS;
+                        jQuery('#acym__walkthrough__acymailer__domain_status_reload').parent().hide();
+                        jQuery('#acym__selection__button-select').removeAttr('disabled');
+                    } else if (domain.status === 'FAILED') {
+                        iconClass = 'acymicon-remove acym__color__red';
+                        text = ACYM_JS_TXT.ACYM_WALK_ACYMAILER_STATUS_FAIL;
+                        jQuery('#acym__walkthrough__acymailer__domain_status_reload').hide();
+                    } else {
+                        iconClass = 'acymicon-access_time acym__color__orange';
+                        text = ACYM_JS_TXT.ACYM_WALK_ACYMAILER_STATUS_WAIT;
+                    }
+
+                    $statusContainer.html(`<i class="${iconClass} padding-right-1"></i>${text}`);
+                });
+
+                if ($statusContainer.find('.acymicon-circle-o-notch').length > 0) {
+                    $statusContainer.html(ACYM_JS_TXT.ACYM_ERROR);
+                }
             });
         });
     }

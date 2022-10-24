@@ -111,10 +111,10 @@ class plgAcymMailgun extends acymPlugin
         }
     }
 
-    public function onAcymSendEmail(&$response, $sendingMethod, $to, $subject, $from, $reply_to, $body, $bcc = [], $attachments = [], $mailId = null)
+    public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $reply_to, $bcc = [], $attachments = [])
     {
         //https://documentation.mailgun.com/en/latest/user_manual.html#sending-via-api
-        if ($sendingMethod != self::SENDING_METHOD_ID) return;
+        if ($mailerHelper->externalMailer != self::SENDING_METHOD_ID) return;
 
         $this->setSendingMethodApiUrl();
         $headers = $this->getHeadersSendingMethod(self::SENDING_METHOD_ID);
@@ -128,8 +128,8 @@ class plgAcymMailgun extends acymPlugin
         $data = [
             'from' => $fromData,
             'to' => $toData,
-            'subject' => $subject,
-            'html' => $body,
+            'subject' => $mailerHelper->Subject,
+            'html' => $mailerHelper->Body,
         ];
         if (!empty($bcc)) $data['bcc'] = $bcc[0][0];
 

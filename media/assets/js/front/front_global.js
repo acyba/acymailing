@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     function acym_front() {
         if (ACYM_CONTROLLER !== 'archive') {
             jQuery(document).foundation();

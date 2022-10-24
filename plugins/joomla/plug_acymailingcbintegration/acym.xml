@@ -2,8 +2,8 @@
 <cbinstall type="plugin" version="1.0" method="upgrade" group="user">
 	<name>AcyMailing CB integration</name>
 	<creationDate>October 2019</creationDate>
-	<version>2.4.2</version>
-	<release>1.1.0</release>
+	<version>2.7.3</version>
+	<release>1.2.0</release>
 	<author>Acyba</author>
 	<authorEmail>dev@acyba.com</authorEmail>
 	<authorUrl>https://www.acymailing.com</authorUrl>

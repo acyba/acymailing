@@ -13,7 +13,7 @@ const acym_helperSelectionPage = {
             jQuery(this).addClass('acym__selection__card-selected');
 
             if (haveSettings) acym_helperSelectionPage.setDisplaySettings(this);
-            if (undefined !== callback) callback();
+            if (undefined !== callback) callback(this);
 
             if (undefined !== scrollElementSelector) {
                 document.querySelector(scrollElementSelector)

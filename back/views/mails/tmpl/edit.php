@@ -8,6 +8,9 @@
 			   value="<?php echo acym_escape($data['mail']->thumbnail); ?>" />
 		<input type="hidden" id="acym__mail__edit__editor__social__icons" value="<?php echo empty($data['social_icons']) ? '{}' : acym_escape($data['social_icons']); ?>">
 		<input type="hidden" id="acym__mail__type" name="mail[type]" value="<?php echo empty($data['mail']->type) ? $data['mailClass']::TYPE_STANDARD : $data['mail']->type; ?>">
+        <?php if (!empty($data['list_id'])) {
+            echo '<input type="hidden" id="acym__mail__list-id" name="mail[list_id]" value="'.$data['list_id'][0].'">';
+        } ?>
         <?php include acym_getView('mails', 'edit_actions'); ?>
 	</div>
 	<div class="cell grid-x grid-padding-x acym__editor__content__options margin-y">

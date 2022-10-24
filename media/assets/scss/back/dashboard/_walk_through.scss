@@ -5,6 +5,14 @@
             padding: 0;
         }
 
+        #acym__walkthrough__license {
+            #acym__walkthrough__step_license__pass {
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+
         #acym__walkthrough__phpmail {
             .acym__sending__methods__clean__data {
                 .select2-container {
@@ -125,10 +133,6 @@
             color: $dark-gray;
         }
 
-        .acym__walkthrough__text {
-            font-size: 1rem;
-        }
-
         .acym__walkthrough__fail__label {
             font-size: .9rem;
             font-weight: 600;
@@ -178,5 +182,54 @@
                 font-weight: 600;
             }
         }
+
+        .acym__sending__methods__choose {
+            .acym__configuration__sending__method-icon, .acym__sending__methods__validate_domain-delete, .acym__sending__methods__unverifiedDomain-icon {
+                font-size: 1.2em;
+
+                &.domain_selected {
+                    color: $color-palette-cyan;
+                }
+            }
+
+            .acym__acymailer__domain_containers {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .walkthrough__responsive {
+                width: 100%;
+                padding-top: 20px;
+            }
+
+            #acym__configuration__sending__method__cnameTable__container {
+                width: 100%;
+
+                .cname-name {
+                    cursor: pointer;
+                    padding-right: 3rem !important;
+                }
+
+                .cname-value {
+                    cursor: pointer;
+                }
+            }
+        }
+
+        #acym__walkthrough__acymailer {
+            #acym__walkthrough__acymailer__information {
+                font-size: 1.3rem;
+            }
+
+            #acym__walkthrough__acymailer__domain__cname {
+                box-shadow: $primary-box-shadow;
+            }
+        }
+
+        #acym__walkthrough__acymailer__cname__doc {
+            text-decoration: underline;
+        }
     }
 }
+
+

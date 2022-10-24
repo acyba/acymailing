@@ -5,7 +5,7 @@
                 <?php
                 echo acym_externalLink(
                     'ACYM_SEE_OUR_TEMPLATES_PACK',
-                    ACYM_ACYMAILLING_WEBSITE.'pack-template-newsletter/?utm_source=acymailing_plugin&utm_campaign=purchase_templates_pack&utm_medium=button_template_listing'
+                    ACYM_ACYMAILING_WEBSITE.'pack-template-newsletter/?utm_source=acymailing_plugin&utm_campaign=purchase_templates_pack&utm_medium=button_template_listing'
                 );
                 ?>
 			</div>

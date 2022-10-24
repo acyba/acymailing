@@ -13,7 +13,7 @@ class AclType extends acymObject
     {
         parent::__construct();
 
-        $this->groups = acym_getGroups();
+        $this->groups = acym_getGroups(true);
         unset($this->groups[ACYM_ADMIN_GROUP]);
 
         $this->choices[] = acym_selectOption('all', acym_translation('ACYM_ALL'));

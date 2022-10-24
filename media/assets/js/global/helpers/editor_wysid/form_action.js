@@ -159,7 +159,6 @@ const acym_editorWysidFormAction = {
             acym_editorWysidFormAction.setThumbnailPreSave()
                                       .then(function (dataUrl) {
                                           // Copy img content in hidden input
-                                          console.log(acym_editorWysidFormAction.needToGenerateThumbnail());
                                           if (acym_editorWysidFormAction.needToGenerateThumbnail()) {
                                               jQuery('#editor_thumbnail').attr('value', dataUrl);
                                           }
@@ -180,14 +179,29 @@ const acym_editorWysidFormAction = {
         const tmplheight = jQuery('.acym__wysid__template__content').height();
         const node = document.getElementById('acym__wysid__template');
 
+        // Change dtexts display for the thumbnail generation
+        const $dtextClose = jQuery('#acym__wysid__template .acym_remove_dynamic');
+        const $dtexts = jQuery('#acym__wysid__template .acym_dynamic');
+        $dtextClose.addClass('is-hidden');
+        $dtexts.addClass('acym_dynamic_thumbnail');
+        $dtexts.removeClass('acym_dynamic');
+
         jQuery('.acym__wysid__element__toolbox').remove();
 
-        return html2canvas(node, {
+        const thumbnail = html2canvas(node, {
             height: tmplheight,
             logging: false
         }).then(canvas => {
             return canvas.toDataURL('image/png');
         });
+
+        // Change back the dtexts
+        const $thumbnailModeDtexts = jQuery('#acym__wysid__template .acym_dynamic_thumbnail');
+        $dtextClose.removeClass('is-hidden');
+        $thumbnailModeDtexts.addClass('acym_dynamic');
+        $thumbnailModeDtexts.removeClass('acym_dynamic_thumbnail');
+
+        return thumbnail;
     },
     setOpenEditorButton: function () {
         jQuery('#acym__wysid__edit__button').off('click').on('click', function () {

@@ -1071,21 +1071,26 @@ class plgAcymSubscription extends acymPlugin
     public function matchFollowupsConditions(&$followups, $userId, $params)
     {
         foreach ($followups as $key => $followup) {
-            if (!empty($followup->condition['lists_status']) && !empty($followup->condition['lists'])) {
-                $status = $followup->condition['lists_status'] === 'is';
-                if ($followup->trigger == self::FOLLOWTRIGGER) {
-                    $user = false;
-                    foreach ($followup->condition['lists'] as $list) {
-                        if (in_array($list, $params['sub_lists'])) {
-                            $user = true;
-                            break;
-                        }
+            if (empty($followup->condition['lists_status']) || empty($followup->condition['lists'])) {
+                continue;
+            }
+
+            $status = $followup->condition['lists_status'] === 'is';
+            if ($followup->trigger === self::FOLLOWTRIGGER) {
+                $user = false;
+                foreach ($followup->condition['lists'] as $list) {
+                    if (in_array($list, $params['sub_lists'])) {
+                        $user = true;
+                        break;
                     }
-                } else {
-                    $lists = implode(',', $followup->condition['lists']);
-                    $user = acym_loadObject('SELECT * FROM #__acym_user_has_list WHERE user_id = '.intval($userId).' AND status = 1 AND list_id IN ('.$lists.')');
                 }
-                if (($status && empty($user)) || (!$status && !empty($user))) unset($followups[$key]);
+            } else {
+                $lists = implode(',', $followup->condition['lists']);
+                $user = acym_loadObject('SELECT * FROM #__acym_user_has_list WHERE user_id = '.intval($userId).' AND status = 1 AND list_id IN ('.$lists.')');
+            }
+
+            if (($status && empty($user)) || (!$status && !empty($user))) {
+                unset($followups[$key]);
             }
         }
     }

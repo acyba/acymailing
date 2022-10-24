@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function ($) {
 
     Vue.component('acym-media', {
         name: 'acym-media',
@@ -12,8 +12,10 @@ jQuery(document).ready(function ($) {
         },
         data: () => {
             if (ACYM_CMS === 'wordpress') return {joomlaIframe: ''};
+            const modalId = `acym__form__modal__joomla-image__container-${Math.floor(Math.random() * 1000)}`;
+            const iframeId = `acym__form__modal__joomla-image__ui__iframe-${Math.floor(Math.random() * 1000)}`;
 
-            let iframe = '<div id="acym__form__modal__joomla-image">';
+            let iframe = `<div id="${modalId}">`;
             iframe += '<div id="acym__form__modal__joomla-image__bg" class="acym__form__modal__joomla-image--close"></div>';
             iframe += '<div id="acym__form__modal__joomla-image__ui" class="float-center cell">';
 
@@ -22,14 +24,14 @@ jQuery(document).ready(function ($) {
                 url += '&amp;view=images';
             }
 
-            iframe += '<iframe id="acym__form__modal__joomla-image__ui__iframe" src="' + url + '" frameborder="0"></iframe>';
+            iframe += `<iframe id="${iframeId}" src="${url}" frameborder="0"></iframe>`;
 
             if (ACYM_J40) {
                 iframe += '<div class="cell grid-x align-right grid-margin-x">';
-                iframe += '<button id="acym__form__modal__joomla-image__ui__iframe__actions__select" type="button" class="button button-secondary cell shrink margin-bottom-0">';
+                iframe += '<button type="button" class="button button-secondary cell shrink margin-bottom-0 acym__form__modal__joomla-image__ui__iframe__actions__select">';
                 iframe += ACYM_JS_TXT.ACYM_SELECT;
                 iframe += '</button>';
-                iframe += '<button id="acym__form__modal__joomla-image__ui__iframe__actions__cancel" type="button" class="button button-secondary cell shrink margin-bottom-0">';
+                iframe += '<button type="button" class="button button-secondary cell shrink margin-bottom-0 acym__form__modal__joomla-image__ui__iframe__actions__cancel">';
                 iframe += ACYM_JS_TXT.ACYM_CANCEL;
                 iframe += '</button>';
                 iframe += '</div>';
@@ -37,7 +39,11 @@ jQuery(document).ready(function ($) {
 
             iframe += '</div></div>';
 
-            return {joomlaIframe: iframe};
+            return {
+                joomlaIframe: iframe,
+                modalId,
+                iframeId
+            };
         },
         methods: {
             openMedia() {
@@ -61,11 +67,11 @@ jQuery(document).ready(function ($) {
                 file_frame.open();
             },
             openMediaJoomla() {
-                jQuery('#acym__form__modal__joomla-image').css('display', 'inherit');
+                jQuery(`#${this.modalId}`).css('display', 'inherit');
             },
             initJoomlaModal() {
                 let vueComp = this;
-                let $modalUi = jQuery('#acym__form__modal__joomla-image__ui__iframe');
+                let $modalUi = jQuery(`#${this.iframeId}`);
                 let iframeHeight = '100%';
                 if (ACYM_J40) {
                     iframeHeight = 'calc(100% - 50px)';
@@ -74,25 +80,25 @@ jQuery(document).ready(function ($) {
                 $modalUi.contents().find('.chzn-container-single').attr('style', '').css('width', '150px');
                 $modalUi.on('load', function () {
                     jQuery('.acym__form__modal__joomla-image--close').on('click', function () {
-                        jQuery('#acym__form__modal__joomla-image').hide();
+                        jQuery(`#${vueComp.modalId}`).hide();
                     });
                     $modalUi.contents().find('.button-cancel').attr('onclick', '').off('click').on('click', function () {
-                        jQuery('#acym__form__modal__joomla-image').hide();
+                        jQuery(`#${vueComp.modalId}`).hide();
                     });
                     $modalUi.contents().find('.pull-right .btn-success, .pull-right .btn-primary').attr('onclick', '').off('click').on('click', function () {
                         let inputUrlImg = $modalUi.contents().find('#f_url').val();
                         if (inputUrlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER)) inputUrlImg = ACYM_JOOMLA_MEDIA_IMAGE + inputUrlImg;
                         vueComp.$emit('change', inputUrlImg);
-                        jQuery('#acym__form__modal__joomla-image').hide();
+                        jQuery(`#${vueComp.modalId}`).hide();
                     });
                 });
 
                 // Joomla 4 select/cancel buttons
-                jQuery('#acym__form__modal__joomla-image__ui__iframe__actions__cancel').off('click').on('click', function () {
-                    jQuery('#acym__form__modal__joomla-image').hide();
+                jQuery('.acym__form__modal__joomla-image__ui__iframe__actions__cancel').off('click').on('click', function () {
+                    jQuery(`#${vueComp.modalId}`).hide();
                 });
 
-                jQuery('#acym__form__modal__joomla-image__ui__iframe__actions__select').off('click').on('click', function () {
+                jQuery('.acym__form__modal__joomla-image__ui__iframe__actions__select').off('click').on('click', function () {
                     // 1 - Get current folder
                     let folderPath = ACYM_ROOT_URI;
                     $modalUi.contents().find('.media-breadcrumb-item a').each(function () {
@@ -103,9 +109,11 @@ jQuery(document).ready(function ($) {
                     let imagesUrls = [];
 
                     // When selecting a images from the grid view
-                    $modalUi.contents().find('.media-browser-grid .media-browser-item.selected .media-browser-image .media-browser-item-info').each(function () {
-                        imagesUrls.push(folderPath + jQuery(this).text().trim());
-                    });
+                    $modalUi.contents()
+                            .find('.media-browser-grid .media-browser-item.selected .media-browser-image .media-browser-item-info')
+                            .each(function () {
+                                imagesUrls.push(folderPath + jQuery(this).text().trim());
+                            });
 
                     // When selecting images from the list view instead of grid view
                     if (imagesUrls.length === 0) {
@@ -119,13 +127,13 @@ jQuery(document).ready(function ($) {
                     // 3 - Take the first image selected
                     let inputUrlImg = '';
 
-                    if(imagesUrls.length !== 0){
+                    if (imagesUrls.length !== 0) {
                         inputUrlImg = imagesUrls[0];
                     }
 
                     if (inputUrlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER)) inputUrlImg = ACYM_JOOMLA_MEDIA_IMAGE + inputUrlImg;
                     vueComp.$emit('change', inputUrlImg);
-                    jQuery('#acym__form__modal__joomla-image').hide();
+                    jQuery(`#${vueComp.modalId}`).hide();
                 });
             },
             removeImage() {

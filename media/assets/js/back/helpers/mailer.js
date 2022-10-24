@@ -34,7 +34,7 @@ const acym_helperMailer = {
                 } else {
                     classes = 'acymicon-check-circle acym__color__green';
                 }
-                $icon.removeClass('acymicon-circle-o-notch acymicon-spin');
+                $icon.removeClass('acymicon-circle-o-notch acymicon-spin acymicon-check-circle acymicon-times-circle');
                 $icon.addClass(classes);
 
                 $message.html(response.message);
@@ -104,7 +104,6 @@ const acym_helperMailer = {
                 }
                 $icon.removeClass('acymicon-circle-o-notch acymicon-spin');
                 $icon.addClass(classes);
-
                 $message.html(response.message);
             });
         });
@@ -122,7 +121,10 @@ const acym_helperMailer = {
         ];
 
         let smtpHost = jQuery('#smtp_host');
-        let smtpHostValue = smtpHost.val().toLowerCase().trim();
+        let smtpHostValue = smtpHost.val();
+        if (smtpHostValue) {
+            smtpHostValue = smtpHostValue.toLowerCase().trim();
+        }
         let oauth2SendingParams = jQuery('.acym__oauth2_sending_params');
         let defaultSendingParams = jQuery('.acym__default_auth_sending_params');
         let tenantContainer = jQuery('#smtp_tenant_container');
@@ -158,6 +160,176 @@ const acym_helperMailer = {
                 tenantContainer.hide();
             }
         });
+    },
+    acymailerAddDomains() {
+        const $errorContainer = jQuery('#acym__configuration__acymailer__add__error');
+        jQuery('#acym__configuration__sending__method-addDomain').off('click').on('click', function () {
+            $errorContainer.hide();
+            const domainValue = jQuery('#acymailer_domain').val().trim();
 
+            if (acym_helper.empty(domainValue)) return;
+
+            const data = {
+                oneDomain: domainValue,
+                ctrl: 'dynamics',
+                task: 'trigger',
+                plugin: 'plgAcymAcymailer',
+                trigger: 'ajaxAddDomain'
+            };
+
+            const loader = document.querySelector('#acym__configuration__sending__method_add_domain-wait');
+            loader.classList.remove('is-hidden');
+
+            acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+                if (response.error) {
+                    jQuery('#acym__acymailer__unverifiedDomains').hide();
+                    jQuery('#acym__configuration__acymailer__add__error__message').text(response.message);
+                    $errorContainer.css('display', 'flex');
+                    loader.classList.add('is-hidden');
+                    return;
+                }
+
+                location.reload();
+            });
+        });
+    },
+    displayCnameRecord() {
+        jQuery('#acym_wrapper').on('click', '.acym__sending__methods__unverifiedDomain-icon', function () {
+            const domainInput = jQuery(this)
+                .closest('.acym__sending__methods__container__oneUnverifiedDomain')
+                .find('.acym__sending__methods__unverifiedDomain');
+
+            const cnames = acym_helper.parseJson(domainInput[0].getAttribute('data-acym-cname'));
+            const $table = jQuery('#acym__configuration__sending__method__cnameTable__container');
+            const cnamesValue = document.querySelectorAll('.cname-value');
+            const cnamesName = document.querySelectorAll('.cname-name');
+
+            for (let index in cnames) {
+                cnamesValue[index].innerHTML = cnames[index].value;
+                cnamesName[index].innerHTML = cnames[index].name;
+            }
+
+            let $selectedDomain = jQuery('.domain_selected');
+            if ($selectedDomain.length === 0) {
+                // No domain was selected
+                $table.slideToggle();
+                jQuery(this).addClass('domain_selected');
+            } else if (jQuery(this).hasClass('domain_selected')) {
+                // We clicked on the selected domain
+                $table.slideToggle();
+                jQuery(this).removeClass('domain_selected');
+            } else {
+                // an other domain was selected
+                jQuery('.acym__sending__methods__unverifiedDomain-icon').removeClass('domain_selected');
+                jQuery(this).addClass('domain_selected');
+            }
+        });
+
+        // Auto-select the DNS values on click
+        jQuery('.cname-name, .cname-value').on('click', function () {
+            let range = document.createRange();
+            range.selectNode(this);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+        });
+    },
+    deleteDomain() {
+        jQuery('.acym__config__acymailer__domain--delete').off('click').on('click', function () {
+            if (!confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE)) {
+                return;
+            }
+            this.classList.remove('acymicon-delete');
+            this.classList.add('acymicon-circle-o-notch', 'acymicon-spin');
+            const domain = jQuery(this).attr('acym-data-domain').trim();
+            const data = {
+                oneDomain: domain,
+                ctrl: 'dynamics',
+                task: 'trigger',
+                plugin: 'plgAcymAcymailer',
+                trigger: 'onAcymDeleteDomain'
+            };
+
+            acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+                if (response.error) {
+                    this.classList.add('acymicon-delete');
+                    this.classList.remove('acymicon-circle-o-notch', 'acymicon-spin');
+                    acym_helperNotification.addNotification(response.message, 'error', true);
+                    return;
+                }
+                jQuery(this).closest('.acym__listing__row').remove();
+                if (!jQuery('.acym__config__acymailer__status__icon.acymicon-access_time').length) {
+                    jQuery('.acym__config__acymailer__warning').remove();
+                }
+            });
+        });
+    },
+    domainSuggestion() {
+        let listSuggestion = jQuery('#acym__acymailer__unverifiedDomains');
+        let input = jQuery('#acymailer_domain');
+        let suggestions = jQuery('.acym__acymailer__oneSuggestion');
+        let errorSpan = jQuery('#acymailer_domain_error');
+
+        listSuggestion.hide();
+
+        input.off('click').on('click', function () {
+            listSuggestion.toggle();
+            if (listSuggestion.is(':visible')) {
+                errorSpan.hide();
+            } else {
+                errorSpan.show();
+            }
+        });
+
+        jQuery.each(suggestions, function () {
+            jQuery(this).on('mouseenter', function () {
+                jQuery(this).addClass('acym__acymailer__suggestion_selected');
+            });
+            jQuery(this).on('mouseleave', function () {
+                jQuery(this).removeClass('acym__acymailer__suggestion_selected');
+            });
+
+            jQuery(this).off('click').on('click', function () {
+                input.val(jQuery(this).html().trim());
+                listSuggestion.hide();
+            });
+        });
+    },
+    updateStatus() {
+        jQuery('#acym__config__acymailer__update-domain-status').on('click', function () {
+            jQuery('.notValidated').replaceWith('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
+            acym_helper.get(ACYM_AJAX_URL, {
+                sendingMethod: this.getAttribute('sending-method-id'),
+                ctrl: 'dynamics',
+                task: 'trigger',
+                plugin: 'plgAcymAcymailer',
+                trigger: 'ajaxCheckDomain'
+            }).then(response => {
+                if (response.error) {
+                    acym_helperNotification.addNotification(response.message, 'error', true);
+                    return;
+                }
+
+                let iconClass = '';
+                let tooltip = '';
+                Object.entries(response.data.domains).forEach(([key, domain]) => {
+                    switch (domain.status) {
+                        case 'SUCCESS':
+                            iconClass = 'acymicon-check-circle acym__color__green';
+                            tooltip = ACYM_JS_TXT.ACYM_VALIDATED;
+                            break;
+                        case 'FAILED':
+                            iconClass = 'acymicon-remove acym__color__red notValidated';
+                            tooltip = ACYM_JS_TXT.ACYM_APPROVAL_FAILED;
+                            break;
+                        default:
+                            iconClass = 'acymicon-access_time acym__color__orange notValidated';
+                            tooltip = ACYM_JS_TXT.ACYM_PENDING;
+                    }
+                    const $currentDiv = jQuery(`div[acym-data-domain="${key}"]`);
+                    $currentDiv.find('.acymicon-spin').replaceWith('<i class="acym__config__acymailer__status__icon ' + iconClass + '"></i>');
+                    $currentDiv.find('.acym__tooltip__text').html(tooltip);
+                });
+            });
+        });
     }
 };

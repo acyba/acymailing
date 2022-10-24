@@ -129,6 +129,12 @@ class plgAcymPost extends acymPlugin
                 'default' => false,
             ],
             [
+                'title' => 'ACYM_REPLACE_SHORTCODES',
+                'type' => 'boolean',
+                'name' => 'replaceshortcode',
+                'default' => false,
+            ],
+            [
                 'title' => 'ACYM_TRUNCATE',
                 'type' => 'intextfield',
                 'isNumber' => 1,
@@ -358,6 +364,8 @@ class plgAcymPost extends acymPlugin
         $contentText = '';
         $varFields['{content}'] = $this->cleanExtensionContent($element->post_content);
         $varFields['{intro}'] = $this->cleanExtensionContent($this->getIntro($element->post_content));
+        $varFields['{content}'] = $tag->replaceshortcode ? do_shortcode($varFields['{content}']) : $varFields['{content}'];
+        $varFields['{intro}'] = $tag->replaceshortcode ? do_shortcode($varFields['{intro}']) : $varFields['{intro}'];
         if (in_array('content', $tag->display)) {
             $contentText .= $varFields['{content}'];
         } elseif (in_array('intro', $tag->display)) {

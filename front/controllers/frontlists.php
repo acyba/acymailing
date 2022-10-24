@@ -23,14 +23,18 @@ class FrontlistsController extends ListsController
                 $this->menuClass = $menuParams->get('pageclass_sfx', '');
             }
         }
+
+        $this->publicFrontTasks = [
+            'setAjaxListing',
+        ];
+
         $this->authorizedFrontTasks = [
             'countNumberOfRecipients',
             'ajaxCreateNewList',
             'loadMoreSubscribers',
-            'setAjaxListing',
             'listing',
         ];
-        $this->urlFrontMenu = 'index.php?option=com_acym&view=frontlists&layout=listing';
+        $this->urlsFrontMenu = ['index.php?option=com_acym&view=frontlists&layout=listing'];
         parent::__construct();
     }
 

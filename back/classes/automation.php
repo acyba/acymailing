@@ -272,7 +272,9 @@ class AutomationClass extends acymClass
         acym_arrayToInteger($ids);
 
         $query = 'SELECT * FROM #__acym_automation WHERE `admin` = 1';
-        if (!empty($ids)) $query .= ' AND `id` IN ('.implode(', ', $ids).')';
+        if (!empty($ids)) {
+            $query .= ' AND `id` IN ('.implode(', ', $ids).')';
+        }
 
         return acym_loadObjectList($query, 'name');
     }

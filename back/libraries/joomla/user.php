@@ -41,11 +41,18 @@ function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
     return $groups;
 }
 
-function acym_getGroups()
+function acym_getGroups($performance = false)
 {
+    $query = 'SELECT `groups`.*, `groups`.title AS text, `groups`.id AS `value` 
+        FROM #__usergroups AS `groups`';
+
+    if ($performance) {
+        $query .= ' ORDER BY value ASC
+        LIMIT 50';
+    }
+
     return acym_loadObjectList(
-        'SELECT `groups`.*, `groups`.title AS text, `groups`.id AS `value` 
-        FROM #__usergroups AS `groups`',
+        $query,
         'id'
     );
 }

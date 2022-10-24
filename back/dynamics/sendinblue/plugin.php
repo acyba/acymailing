@@ -50,7 +50,8 @@ class plgAcymSendinblue extends acymPlugin
         $data['sendingMethods'][self::SENDING_METHOD_ID] = [
             'name' => $this->pluginDescription->name,
             'image' => ACYM_IMAGES.'mailers/sendinblue.png',
-            'premium' => true,
+            'partner' => true,
+            'recommended' => true,
         ];
     }
 
@@ -64,12 +65,12 @@ class plgAcymSendinblue extends acymPlugin
         $this->credentials->testCredentialSendingMethod($sendingMethod, $credentials);
     }
 
-    public function onAcymSendEmail(&$response, $sendingMethod, $to, $subject, $from, $reply_to, $body, $bcc = [], $attachments = [], $mailId = null)
+    public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $reply_to, $bcc = [], $attachments = [])
     {
-        $this->transactional->sendTransactionalEmail($response, $sendingMethod, $to, $subject, $from, $reply_to, $body, $bcc = [], $attachments = []);
+        $this->transactional->sendTransactionalEmail($response, $mailerHelper->externalMailer, $to, $mailerHelper->Subject, $from, $reply_to, $mailerHelper->Body, $bcc, $attachments);
     }
 
-    public function onAcymGetCreditRemainingSendingMethod(&$html)
+    public function onAcymGetCreditRemainingSendingMethod(&$html, $reloading = false)
     {
         $this->credentials->getCreditRemainingSendingMethod($html);
     }

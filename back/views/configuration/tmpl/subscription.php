@@ -167,6 +167,17 @@
 					<div class="cell grid-x">
                         <?php
                         echo acym_switch(
+                            'config[unsubscribe_campaign_list_only]',
+                            $this->config->get('unsubscribe_campaign_list_only', 0),
+                            acym_translation('ACYM_CAMPAIGN_LIST_ONLY'),
+                            [],
+                            'xlarge-3 medium-5 small-9'
+                        );
+                        ?>
+					</div>
+					<div class="cell grid-x margin-top-1">
+                        <?php
+                        echo acym_switch(
                             'config[unsubpage_header]',
                             $this->config->get('unsubpage_header', 0),
                             acym_translation('ACYM_UNSUBSCRIBE_PAGE_HEADER'),
@@ -175,6 +186,15 @@
                         );
                         ?>
 					</div>
+					<label for="edit_unsubscribe_title" class="cell grid-x margin-bottom-1 margin-top-1">
+						<span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_UNSUBSCRIBE_PAGE_CHANGE'); ?></span>
+						<input id="edit_unsubscribe_title"
+							   class="cell xlarge-4 medium-auto margin-bottom-0"
+							   type="text"
+							   name="config[unsubscribe_title]"
+							   value="<?php echo acym_escape($this->config->get('unsubscribe_title')); ?>">
+						<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					</label>
 				</div>
 			</div>
 		</div>

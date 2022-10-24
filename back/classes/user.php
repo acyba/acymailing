@@ -24,6 +24,7 @@ class UserClass extends acymClass
     var $blockNotifications = false;
     var $subscribed = false;
     var $confirmationSentError;
+    var $triggers = true;
 
     // For integration, for example someone is activating user subscription on member ship pro on the joomla backend and he needs to send the confirmation emails
     var $forceConfAdmin = false;
@@ -363,13 +364,18 @@ class UserClass extends acymClass
      *
      * @return array
      */
-    public function getUserSubscriptionById($userId, $key = 'id', $includeManagement = false, $visible = false, $needTranslation = false, $sortBySubscription = false)
+    public function getUserSubscriptionById($userId, $key = 'id', $includeManagement = false, $visible = false, $needTranslation = false, $sortBySubscription = false, $mailId = 0, $campaignOnly = false)
     {
         $query = 'SELECT list.id, list.translation, list.name, list.display_name, list.color, list.active, list.visible, list.description, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
                 FROM #__acym_list AS list 
                 JOIN #__acym_user_has_list AS userlist 
-                    ON list.id = userlist.list_id 
-                WHERE userlist.user_id = '.intval($userId);
+                    ON list.id = userlist.list_id ' ;
+
+        if (!empty($mailId) && $campaignOnly){
+            $query .= 'JOIN #__acym_mail_has_list AS mail_list ON list.id = mail_list.list_id AND mail_list.mail_id = '.intval($mailId);
+        }
+
+        $query .= ' WHERE userlist.user_id = '.intval($userId);
 
         if (empty($includeManagement)) {
             $listClass = new ListClass();
@@ -517,7 +523,7 @@ class UserClass extends acymClass
         return false;
     }
 
-    public function subscribe($userIds, $addLists, $trigger = true)
+    public function subscribe($userIds, $addLists, $trigger = true, $forceFront = false)
     {
         if (empty($addLists)) return false;
 
@@ -577,10 +583,12 @@ class UserClass extends acymClass
 
             $historyClass->insert($userId, 'subscribed', [$historyData]);
 
-            if ($trigger) acym_trigger('onAcymAfterUserSubscribe', [&$user, &$subscribedLists]);
+            if ($trigger) {
+                acym_trigger('onAcymAfterUserSubscribe', [&$user, &$subscribedLists]);
+            }
 
             if (($confirmationRequired == 0 || $user->confirmed == 1) && $user->active == 1) {
-                $listClass->sendWelcome($userId, $subscribedLists);
+                $listClass->sendWelcome($userId, $subscribedLists, $forceFront);
             }
         }
 
@@ -835,7 +843,9 @@ class UserClass extends acymClass
                 $user->confirmation_date = date('Y-m-d H:i:s', time() - date('Z'));
                 $user->confirmation_ip = acym_getIP();
 
-                acym_trigger('onAcymAfterUserConfirm', [&$user]);
+                if ($this->triggers) {
+                    acym_trigger('onAcymAfterUserConfirm', [&$user]);
+                }
             }
         } else {
             $oldUser = $this->getOneByIdWithCustomFields($user->id);
@@ -874,21 +884,25 @@ class UserClass extends acymClass
                 );
                 if (!empty($userCmsID)) $user->cms_id = $userCmsID;
             }
-            $result = acym_trigger('onAcymBeforeUserCreate', [&$user]);
-            if (in_array(false, $result)) {
-                $acycheckerError = acym_getVar('string', 'acychecker_error');
-                if (!empty($acycheckerError)) {
-                    if ($ajax) {
-                        $this->errors[] = $acycheckerError;
-                    } else {
-                        acym_enqueueMessage($acycheckerError, 'error');
+            if ($this->triggers) {
+                $result = acym_trigger('onAcymBeforeUserCreate', [&$user]);
+                if (in_array(false, $result)) {
+                    $acycheckerError = acym_getVar('string', 'acychecker_error');
+                    if (!empty($acycheckerError)) {
+                        if ($ajax) {
+                            $this->errors[] = $acycheckerError;
+                        } else {
+                            acym_enqueueMessage($acycheckerError, 'error');
+                        }
                     }
-                }
 
-                return false;
+                    return false;
+                }
             }
         } else {
-            acym_trigger('onAcymBeforeUserModify', [&$user]);
+            if ($this->triggers) {
+                acym_trigger('onAcymBeforeUserModify', [&$user]);
+            }
         }
 
         $userID = parent::save($user);
@@ -902,10 +916,14 @@ class UserClass extends acymClass
         if (empty($user->id)) {
             $user->id = $userID;
             $historyClass->insert($user->id, 'created');
-            acym_trigger('onAcymAfterUserCreate', [&$user]);
+            if ($this->triggers) {
+                acym_trigger('onAcymAfterUserCreate', [&$user]);
+            }
         } else {
             $historyClass->insert($user->id, 'modified');
-            acym_trigger('onAcymAfterUserModify', [&$user, &$oldUser]);
+            if ($this->triggers) {
+                acym_trigger('onAcymAfterUserModify', [&$user, &$oldUser]);
+            }
         }
 
         $this->sendConfirmation($userID);
@@ -1128,6 +1146,9 @@ class UserClass extends acymClass
     public function getOneByIdWithCustomFields($id)
     {
         $user = $this->getOneById($id);
+        if (empty($user)) {
+            return [];
+        }
         $user = get_object_vars($user);
 
         $fieldsValue = acym_loadObjectList(
@@ -1506,7 +1527,7 @@ class UserClass extends acymClass
 
     public function addMissingKeys()
     {
-        $usersMissingKey = acym_loadResultArray('SELECT `id` FROM #__acym_user WHERE `key` IS NULL');
+        $usersMissingKey = acym_loadResultArray('SELECT `id` FROM #__acym_user WHERE `key` IS NULL OR `key` = ""');
         foreach ($usersMissingKey as $oneUserId) {
             acym_query('UPDATE #__acym_user SET `key` = '.acym_escapeDB(acym_generateKey(14)).' WHERE `id` = '.intval($oneUserId));
         }

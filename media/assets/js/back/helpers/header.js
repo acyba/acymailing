@@ -10,6 +10,7 @@ const acym_helperHeader = {
                 response = acym_helper.parseJson(response);
                 $checkVersionArea.html(response.data.content);
                 jQuery('#acym__check__version__last__check').html(response.data.lastcheck);
+                acym_helperTooltip.setTooltip();
             });
         });
 

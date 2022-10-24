@@ -43,13 +43,14 @@ class getAcymTab extends cbTabHandler
 
         $visibleListsArray = [];
         foreach ($allLists as $oneList) {
-            if ('1' === $oneList->active && '1' === $oneList->visible && in_array($oneList->id, $allvisiblelists)) {
+            if (1 === intval($oneList->active) && 1 === intval($oneList->visible) && in_array($oneList->id, $allvisiblelists)) {
                 $visibleListsArray[] = $oneList->id;
             }
         }
 
-        if (empty($visibleListsArray)) return $return;
-
+        if (empty($visibleListsArray)) {
+            return $return;
+        }
 
         // Checked lists by default
         $checkedLists = $this->getParam('listschecked', '');
@@ -82,8 +83,12 @@ class getAcymTab extends cbTabHandler
     {
         // Compatibility with CB profile pro
         if (file_exists(JPATH_SITE.DS.'components'.DS.'com_cbprofilepro')) {
-            if (!empty($_REQUEST['task']) && $_REQUEST['task'] == 'userdetails') return $this->getEditTab($tab, $cbUser, $ui); // Edit page
-            if (empty($cbUser->user_id) && empty($cbUser->id)) return $this->getDisplayRegistration($tab, $cbUser, $ui, ''); // Registration page
+            if (!empty($_REQUEST['task']) && $_REQUEST['task'] == 'userdetails') {
+                return $this->getEditTab($tab, $cbUser, $ui);
+            }
+            if (empty($cbUser->user_id) && empty($cbUser->id)) {
+                return $this->getDisplayRegistration($tab, $cbUser, $ui, '');
+            }
         }
 
         $currentUserid = acym_currentUserId();
@@ -273,7 +278,7 @@ class getAcymTab extends cbTabHandler
             $return .= '</tr>';
             $k = 1 - $k;
         }
-        
+
         $return .= '</table>';
 
         return $return;

@@ -812,8 +812,8 @@ class StatsController extends acymController
         $return = [];
         $search = acym_getVar('string', 'search', '');
 
-        $mailstatClass = new MailStatClass();
-        $mails = $mailstatClass->getAllMailsForStats($search);
+        $mailStatClass = new MailStatClass();
+        $mails = $mailStatClass->getAllMailsForStats($search);
 
         foreach ($mails as $oneMail) {
             $return[] = [$oneMail->id, $oneMail->name];
@@ -996,7 +996,7 @@ class StatsController extends acymController
 
         if (!empty($listIds)) {
             //get nbSent, nbOpen, nbBounce, nbUnsubscribe
-            $query = 'SELECT ul.list_id, SUM(us.sent) as nbSent, SUM(us.open) as nbOpen, SUM(us.bounce) as nbBounce, SUM(us.unsubscribe) as nbUnsub from #__acym_user_has_list ul';
+            $query = 'SELECT ul.list_id, SUM(us.sent) as nbSent, SUM(IF(us.open >= 1, 1, 0)) as nbOpen, SUM(us.bounce) as nbBounce, SUM(us.unsubscribe) as nbUnsub from #__acym_user_has_list ul';
             $query .= ' JOIN #__acym_user_stat us on ul.user_id = us.user_id';
             $query .= ' WHERE ul.list_id in ('.$listIds.') AND us.mail_id = '.$mailSelected;
             $query .= ' GROUP BY ul.list_id;';

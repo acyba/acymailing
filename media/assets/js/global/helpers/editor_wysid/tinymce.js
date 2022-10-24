@@ -24,6 +24,7 @@ const acym_editorWysidTinymce = {
                 'alignmentsplit | listsplit outdent indent lineheightselect | table',
                 'bold italic underline strikethrough removeformat | forecolor backcolor | link unlink | code'
             ],
+            default_link_target: '_blank',
             link_class_list: [
                 {
                     title: 'None',

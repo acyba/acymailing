@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     function summary() {
         acym_helperCampaigns.setClickFlagsSummary();
 

@@ -39,8 +39,12 @@ class CampaignsController extends acymController
             'summary' => ['vue-applications' => ['modal_users_summary']],
             'segment' => ['datepicker', 'vue-applications' => ['modal_users_summary']],
         ];
+
+        if (acym_isAdmin()) {
+            $this->stepContainerClass = 'xxlarge-9';
+        }
+
         acym_setVar('edition', '1');
-        if (acym_isAdmin()) $this->stepContainerClass = 'xxlarge-9';
         acym_header('X-XSS-Protection:0');
         $this->storeRedirectListing();
     }
@@ -1162,7 +1166,9 @@ class CampaignsController extends acymController
 
                 unset($mail->id);
                 $translationId = $mailClass->getTranslationId($mailID, $langCode);
-                if (!empty($translationId)) $mail->id = $translationId;
+                if (!empty($translationId)) {
+                    $mail->id = $translationId;
+                }
 
                 $mail->subject = $translation['subject'];
                 $mail->preheader = $translation['preview'];

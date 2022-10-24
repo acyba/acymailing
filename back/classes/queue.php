@@ -8,6 +8,8 @@ use AcyMailing\Libraries\acymClass;
 
 class QueueClass extends acymClass
 {
+    public $emailtypes;
+
     /**
      * Get users depending on filters (search, status, pagination)
      *
@@ -346,9 +348,13 @@ class QueueClass extends acymClass
         $query .= ' JOIN #__acym_user AS user ON queue.`user_id` = user.`id` ';
         $query .= ' JOIN #__acym_mail AS mail ON queue.`mail_id` = mail.`id` ';
         $query .= ' LEFT JOIN #__acym_campaign AS campaign ON campaign.`mail_id` = mail.`id` ';
-        $query .= ' WHERE queue.`sending_date` <= '.acym_escapeDB(
-                acym_date('now', 'Y-m-d H:i:s', false)
-            ).' AND (campaign.mail_id IS NULL OR (campaign.`active` = 1 AND campaign.`draft` = 0 AND user.active = 1))';
+        $query .= ' WHERE user.active = 1 
+                        AND queue.`sending_date` <= '.acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false)).' 
+                        AND (campaign.mail_id IS NULL 
+                            OR (campaign.`active` = 1 
+                                AND campaign.`draft` = 0
+                            )
+                        )';
 
         if ($this->config->get('require_confirmation', 1) == 1) {
             $mailClass = new MailClass();
@@ -359,15 +365,18 @@ class QueueClass extends acymClass
             foreach ($this->emailtypes as &$oneType) {
                 $oneType = acym_escapeDB($oneType);
             }
-            $query .= ' AND (mail.type = '.implode(' OR mail.type = ', $this->emailtypes).')';
+            $query .= ' AND mail.type IN ('.implode(', ', $this->emailtypes).')';
         }
+
         if (!empty($mailid)) {
             $query .= ' AND queue.`mail_id` = '.intval($mailid);
         }
+
         $query .= ' ORDER BY queue.`priority` ASC, queue.`sending_date` ASC, '.$order;
-        //You can add a "startqueue" parameter to the url so Acy will not load the first e-mails but will start directly with the 300 or 500 or...
+        // You can add a "startqueue" parameter to the url so Acy will not load the first e-mails but will start directly with the 300 or 500 or...
         $startqueue = acym_getVar('int', 'startqueue', 0);
         $query .= ' LIMIT '.intval($startqueue).','.intval($limit);
+
         try {
             $results = acym_loadObjectList($query);
         } catch (\Exception $e) {
@@ -375,7 +384,7 @@ class QueueClass extends acymClass
         }
 
         if ($results === null) {
-            //We got an issue here... maybe the table is crashed so we will repair it.
+            // We got an issue here... maybe the table is crashed so we will repair it.
             acym_query('REPAIR TABLE #__acym_queue, #__acym_user, #__acym_mail, #__acym_campaign');
         }
 
@@ -383,45 +392,17 @@ class QueueClass extends acymClass
             return [];
         }
 
+        // This comment doesn't make any sense
         //We update the first entry from the queue and change its sending_date with +1 so it does not get sent immediately after in case of we had an issue (a time out execution)...
         //That way e-mails which can't be sent will be sent at the end and we will be able to clean the queue and don't care about what's left in the queue any more
         //Also it will avoid the same user to receive messages again and again and again in case of there is a problem
-        if (!empty($results)) {
-            $firstElementQueued = reset($results);
-            acym_query(
-                'UPDATE #__acym_queue SET sending_date = DATE_ADD(sending_date, INTERVAL 1 SECOND) WHERE mail_id = '.intval($firstElementQueued->mail_id).' AND user_id = '.intval(
-                    $firstElementQueued->user_id
-                ).' LIMIT 1'
-            );
-        }
-
-        //We need to load users as well...
-        $userIds = [];
-        foreach ($results as $oneRes) {
-            //intval to make sure we load at least one value...
-            $userIds[$oneRes->user_id] = intval($oneRes->user_id);
-        }
-
-        //If we find users which have nothing to do in the queue, we will clean the queue table.
-        $cleanQueue = false;
-        if (!empty($userIds)) {
-            $allusers = acym_loadObjectList('SELECT * FROM #__acym_user WHERE id IN ('.implode(',', $userIds).')', 'id');
-            foreach ($results as $oneId => $oneRes) {
-                //We could not load the users ?
-                if (empty($allusers[$oneRes->user_id])) {
-                    $cleanQueue = true;
-                    continue;
-                }
-                foreach ($allusers[$oneRes->user_id] as $oneVar => $oneVal) {
-                    $results[$oneId]->$oneVar = $oneVal;
-                }
-            }
-        }
-
-        //We clean the queue... in case of we didn't find users in the table which are in the queue table
-        if ($cleanQueue) {
-            acym_query('DELETE queue.* FROM #__acym_queue AS queue LEFT JOIN #__acym_user AS user ON queue.user_id = user.id WHERE user.id IS NULL');
-        }
+        $firstElementQueued = reset($results);
+        acym_query(
+            'UPDATE #__acym_queue 
+            SET sending_date = DATE_ADD(sending_date, INTERVAL 1 SECOND) 
+            WHERE mail_id = '.intval($firstElementQueued->mail_id).' AND user_id = '.intval($firstElementQueued->user_id).' 
+            LIMIT 1'
+        );
 
         return $results;
     }

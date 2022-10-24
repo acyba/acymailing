@@ -3,7 +3,7 @@
 define('ACYM_NAME', 'AcyMailing');
 define('ACYM_DBPREFIX', '#__acym_');
 define('ACYM_LANGUAGE_FILE', 'com_acym');
-define('ACYM_ACYMAILLING_WEBSITE', 'https://www.acymailing.com/');
+define('ACYM_ACYMAILING_WEBSITE', 'https://www.acymailing.com/');
 define('ACYM_ACYCHECKER_WEBSITE', 'https://www.acychecker.com/');
 define('ACYM_UPDATEMEURL', 'https://www.acyba.com/index.php?option=com_updateme&nocache='.time().'&ctrl=');
 define('ACYM_SPAMURL', ACYM_UPDATEMEURL.'spamsystem&task=');

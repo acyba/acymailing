@@ -88,17 +88,17 @@ class plgAcymPostmark extends acymPlugin
         }
     }
 
-    public function onAcymSendEmail(&$response, $sendingMethod, $to, $subject, $from, $reply_to, $body, $bcc = [], $attachments = [], $mailId = null)
+    public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $reply_to, $bcc = [], $attachments = [])
     {
         //https://postmarkapp.com/developer/api/email-api
-        if ($sendingMethod != self::SENDING_METHOD_ID) return;
+        if ($mailerHelper->externalMailer != self::SENDING_METHOD_ID) return;
 
         $data = [
             'From' => $from['email'],
             'ReplyTo' => $reply_to['email'],
             'To' => $to['email'],
-            'Subject' => $subject,
-            'HtmlBody' => $body,
+            'Subject' => $mailerHelper->Subject,
+            'HtmlBody' => $mailerHelper->Body,
             'MessageStream' => 'outbound',
         ];
         if (!empty($bcc)) $data['Bcc'] = $bcc[0][0];
@@ -116,7 +116,8 @@ class plgAcymPostmark extends acymPlugin
         }
 
         // Handle the Stream ID
-        if (!empty($mailId)) {
+        if (!empty($mailerHelper->id)) {
+			$mailId = $mailerHelper->id;
             if (acym_isMultilingual()) {
                 $parentId = acym_loadResult('SELECT parent_id FROM `#__acym_mail` WHERE id = '.intval($mailId));
                 if (!empty($parentId)) $mailId = $parentId;
@@ -141,5 +142,4 @@ class plgAcymPostmark extends acymPlugin
             $response['error'] = false;
         }
     }
-
 }

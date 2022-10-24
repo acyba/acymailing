@@ -65,7 +65,7 @@
 				</a>
 				<a class="acym__dashboard__card__link"
                     <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>
-				   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=edit&step=filter'); ?>">
+				   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=edit&step=action'); ?>">
                     <?php echo acym_translation('ACYM_NEW_MASS_ACTION'); ?>
 				</a>
 			</div>

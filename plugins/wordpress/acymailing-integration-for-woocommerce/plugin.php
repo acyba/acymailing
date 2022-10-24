@@ -667,7 +667,7 @@ class plgAcymWoocommerce extends acymPlugin
         if (empty($user)) return;
         $this->_replaceCoupons($email, $user, $send);
         $generated = $this->replaceLastPurchased($email, $user, $send);
-        if ($generated === '') {
+        if ($generated === '' && (!isset($email->isTest) || $email->isTest !== true)) {
             return [
                 'send' => false,
                 'emogrifier' => false,
@@ -676,7 +676,7 @@ class plgAcymWoocommerce extends acymPlugin
         }
 
         $generatedCart = $this->replaceCart($email, $user, $send);
-        if ($generatedCart === '') {
+        if ($generatedCart === '' && (!isset($email->isTest) || $email->isTest !== true)) {
             return [
                 'send' => false,
                 'emogrifier' => false,

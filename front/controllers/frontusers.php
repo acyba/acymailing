@@ -26,7 +26,7 @@ class FrontusersController extends UsersController
             }
         }
 
-        $this->authorizedFrontTasks = [
+        $this->publicFrontTasks = [
             'subscribe',
             'unsubscribe',
             'unsubscribeAll',
@@ -34,13 +34,17 @@ class FrontusersController extends UsersController
             'unsubscribePage',
             'confirm',
             'profile',
-            'prepareParams',
             'savechanges',
+        ];
+
+        $this->authorizedFrontTasks = [
+            'prepareParams',
             'exportdata',
             'ajaxGetEnqueuedMessages',
             'listing',
+            'delete',
         ];
-        $this->urlFrontMenu = 'index.php?option=com_acym&view=frontusers&layout=profile';
+        $this->urlsFrontMenu = ['index.php?option=com_acym&view=frontusers&layout=listing', 'index.php?option=com_acym&view=frontusers&layout=profile'];
         parent::__construct();
     }
 
@@ -507,15 +511,18 @@ class FrontusersController extends UsersController
     {
         $userClass = new UserClass();
         $lang = acym_getVar('string', 'language', acym_getLanguageTag());
+        $mailId = acym_getVar('int', 'mail_id', 0);
+        $campaignListOnly = $this->config->get('unsubscribe_campaign_list_only', 0) === 1;
+
         if (ACYM_CMS === 'joomla' && !empty($_GET['language'])) $lang = $_GET['language'];
         acym_setLanguage($lang);
         acym_loadLanguage($lang);
 
-        $userSubscriptions = $userClass->getUserSubscriptionById($alreadyExists->id, 'id', false, false, true);
+        $userSubscriptions = $userClass->getUserSubscriptionById($alreadyExists->id, 'id', false, false, true, false, $mailId, $campaignListOnly);
 
         $data = [
             'user' => $alreadyExists,
-            'mail_id' => acym_getVar('int', 'mail_id', 0),
+            'mail_id' => $mailId,
             'subscriptions' => $userSubscriptions,
             'lang' => $lang,
         ];
@@ -862,6 +869,14 @@ class FrontusersController extends UsersController
 
         $userHelper = new UserHelper();
         $userHelper->exportdata($user->id);
+    }
+
+    public function delete()
+    {
+        acym_checkToken();
+        $userClass = new UserClass();
+        $user = $userClass->identify(true);
+        $userClass->delete($user->id);
     }
 
     public function apply($listing = false)

@@ -7,7 +7,7 @@
 			 @click="changeMenuActive('style')"
 			 :class="{'acym__forms__menu__switch__active': !isMenuSettingsActive}"><i class="acymicon-edit"></i></div>
 	</div>
-	<div class="cell grid-x acym__forms__menu__container" v-if="isMenuSettingsActive">
+	<div class="cell grid-x acym__forms__menu__container" v-show="isMenuSettingsActive">
         <?php foreach ($data['menu_render_settings'] as $options) {
             if (empty($options)) continue;
             ?>
@@ -17,7 +17,7 @@
             <?php } ?>
         <?php } ?>
 	</div>
-	<div class="cell grid-x acym__forms__menu__container" v-if="!isMenuSettingsActive">
+	<div class="cell grid-x acym__forms__menu__container" v-show="!isMenuSettingsActive">
         <?php foreach ($data['menu_render_style'] as $options) {
             if (empty($options)) continue;
             ?>

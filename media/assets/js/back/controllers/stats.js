@@ -27,7 +27,7 @@ jQuery(document).on('acy_preview_loaded', () => {
     acym_helperTooltip.setTooltip();
 });
 
-jQuery(document).ready(function ($) {
+jQuery(function($) {
 
     function stats() {
         setStartEndDate();

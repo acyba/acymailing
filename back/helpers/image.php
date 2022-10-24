@@ -81,7 +81,7 @@ class ImageHelper extends acymObject
 
             //Maybe we don't need to resize anything...
             if (!$newPicture) {
-                $newDimension = 'max-width:'.$this->maxWidth.'px;max-height:'.$this->maxHeight.'px;';
+                $newDimension = 'width:'.$this->maxWidth.'px;height:'.$this->maxHeight.'px;';
                 if (strpos($onepicture, 'style="') !== false) {
                     $replace[$onepicture] = preg_replace('#style="([^"]*)"#Uis', 'style="'.$newDimension.'$1"', $onepicture);
                 } else {

@@ -1,12 +1,12 @@
 <h2 class="cell acym__title text-center"><?php echo acym_translation('ACYM_FIRST_LIST'); ?></h2>
 <div class="cell margin-top-1 margin-bottom-2">
-	<p class="acym__walkthrough__text">
+	<p>
         <?php echo acym_translation('ACYM_TEST_LIST_TEXT_1'); ?><br />
         <?php echo acym_translation('ACYM_TEST_LIST_TEXT_2'); ?>
 	</p>
 </div>
 
-<div class="cell margin-top-2 text-center">
+<div class="cell text-center">
 	<table id="acym__walkthrough__list__receivers">
 		<tr>
 			<th colspan="2"><?php echo acym_translation('ACYM_TEST_LIST_RECEIVER'); ?></th>
@@ -28,6 +28,6 @@
 	</div>
 </div>
 
-<div class="cell text-center margin-top-3">
+<div class="cell text-center">
 	<button type="button" class="acy_button_submit button" data-task="saveStepList" data-condition="walkthroughList"><?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?></button>
 </div>

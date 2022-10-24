@@ -412,7 +412,9 @@ class MailClass extends acymClass
             unset($mail->thumbnail);
         }
 
-        if (!isset($mail->access)) $mail->access = '';
+        if (!isset($mail->access)) {
+            $mail->access = '';
+        }
 
         foreach ($mail as $oneAttribute => $value) {
             if (empty($value) || in_array($oneAttribute, ['thumbnail', 'settings'])) {
@@ -424,7 +426,9 @@ class MailClass extends acymClass
                 $mail->$oneAttribute = $value;
             }
 
-            if (is_array($value)) $mail->$oneAttribute = json_encode($value);
+            if (is_array($value)) {
+                $mail->$oneAttribute = json_encode($value);
+            }
 
             if (in_array($oneAttribute, ['body', 'headers'])) {
                 $mail->$oneAttribute = preg_replace('#<input[^>]*value="[^"]*"[^>]*>#Uis', '', $mail->$oneAttribute);
@@ -537,13 +541,13 @@ class MailClass extends acymClass
     }
 
     // Delete one attachment from a newsletter
-    public function deleteOneAttachment($mailid, $idAttachment)
+    public function deleteOneAttachment($mailId, $idAttachment)
     {
-        $mailid = intval($mailid);
-        if (empty($mailid)) {
+        $mailId = intval($mailId);
+        if (empty($mailId)) {
             return false;
         }
-        $mail = $this->getOneById($mailid);
+        $mail = $this->getOneById($mailId);
 
         $attachments = $mail->attachments;
         if (empty($attachments)) {
@@ -557,9 +561,9 @@ class MailClass extends acymClass
                 $newAttachments[] = $oneAttach;
             }
         }
-        $attachdb = json_encode($newAttachments);
+        $attachDb = json_encode($newAttachments);
 
-        return acym_query('UPDATE #__acym_mail SET attachments = '.acym_escapeDB($attachdb).' WHERE id = '.intval($mailid).' LIMIT 1');
+        return acym_query('UPDATE #__acym_mail SET attachments = '.acym_escapeDB($attachDb).' WHERE id = '.intval($mailId).' OR parent_id = '.intval($mailId));
     }
 
     public function createTemplateFile($id)
@@ -1087,7 +1091,7 @@ class MailClass extends acymClass
         $urlPoweredByImage = ACYM_IMAGES.'poweredby_black.png';
 
         $poweredByHTML = '<p id="acym__powered_by_acymailing">';
-        $poweredByHTML .= '<a href="'.ACYM_ACYMAILLING_WEBSITE.'?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="blank">';
+        $poweredByHTML .= '<a href="'.ACYM_ACYMAILING_WEBSITE.'?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="blank">';
         $poweredByHTML .= '<img alt="Email built with AcyMailing" height="40" width="199" style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;" src="'.$urlPoweredByImage.'"/>';
         $poweredByHTML .= '</a></p>';
         $poweredByWYSID = '<table id="acym__powered_by_acymailing" class="row" bgcolor="#ffffff" style="background-color: transparent" cellpadding="0" cellspacing="0" border="0">
@@ -1102,7 +1106,7 @@ class MailClass extends acymClass
                             <td class="large-12">
                                 <div style="position: relative;">
                                     <p style="word-break: break-word; text-align: center;">
-                                    <a href="'.ACYM_ACYMAILLING_WEBSITE.'?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="_blank">
+                                    <a href="'.ACYM_ACYMAILING_WEBSITE.'?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="_blank">
                                         <img src="'.$urlPoweredByImage.'"
                                             title="poweredby" alt="Email built with AcyMailing"
                                             style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0px 5px; display: inline-block; margin-left: auto; margin-right: auto;"

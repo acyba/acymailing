@@ -1,7 +1,11 @@
 <h2 class="cell acym__title text-center"><?php echo acym_translationSprintf('ACYM_WALKTHROUGH_LICENCE_TITLE', $data['level']); ?></h2>
 <div class="cell margin-top-1 align-center">
 	<div class="cell margin-bottom-2">
-		<p> <?php echo acym_translationSprintf('ACYM_ENTER_LICENSE_KEY_TO_ACTIVATE_ACYM_X_FEATURES', $data['level']); ?></p>
+        <?php if (!acym_level(ACYM_ESSENTIAL)) { ?>
+			<p> <?php echo acym_translationSprintf('ACYM_ENTER_LICENSE_KEY_IF_STARTER_ACYMAILER', $data['level']); ?></p>
+        <?php } else { ?>
+			<p> <?php echo acym_translationSprintf('ACYM_ENTER_LICENSE_KEY_TO_ACTIVATE_ACYM_X_FEATURES', $data['level']); ?></p>
+        <?php } ?>
 		<p> <?php echo '('.acym_externalLink('ACYM_FIND_YOUR_LICENSE', ACYM_REDIRECT.'subscription-page', true, true).')' ?></p>
 	</div>
 </div>
@@ -26,27 +30,34 @@
 		</button>
 		<i class="cell shrink acymicon-circle-o-notch acymicon-spin is-hidden" id="acym__walkthrough__step_license__wait_attach_license_icon"></i>
 	</div>
-	<div class="cell grid-x grid-margin-x margin-y acym_vcenter margin-top-2 padding-right-0">
-		<label class="cell small-5 large-3"><?php echo acym_translation('ACYM_AUTOMATED_TASKS').acym_info('ACYM_AUTOMATED_TASKS_DESC'); ?></label>
-		<div class="cell small-7 large-5 acym__color__red" id="acym__walk_through_license__cron_label"><?php echo acym_translation('ACYM_DEACTIVATED'); ?></div>
-        <?php
-        echo acym_tooltip(
-            '<a type="button" id="acym__walk_through_license__button__cron" class="grid-x align-center acym_vcenter button" disabled>'.
-            acym_translation('ACYM_ACTIVATE_IT')
-            .'</a>',
-            acym_translation('ACYM_ACTIVATE_IT_CRON_DESC'),
-            'cell shrink',
-            '',
-            '',
-            'acym__tooltip_button__cron'
-        );
-        ?>
-		<i class="cell shrink acymicon-circle-o-notch acymicon-spin is-hidden" id="acym__walkthrough__step_license__wait_active_cron_icon"></i>
-	</div>
+    <?php if (acym_level(ACYM_ESSENTIAL)) { ?>
+		<div class="cell grid-x grid-margin-x margin-y acym_vcenter margin-top-2 padding-right-0">
+			<label class="cell small-5 large-3"><?php echo acym_translation('ACYM_AUTOMATED_TASKS').acym_info('ACYM_AUTOMATED_TASKS_DESC'); ?></label>
+			<div class="cell small-7 large-5 acym__color__red" id="acym__walk_through_license__cron_label"><?php echo acym_translation('ACYM_DEACTIVATED'); ?></div>
+            <?php
+            echo acym_tooltip(
+                '<a type="button" id="acym__walk_through_license__button__cron" class="grid-x align-center acym_vcenter button" disabled>'.
+                acym_translation('ACYM_ACTIVATE_IT')
+                .'</a>',
+                acym_translation('ACYM_ACTIVATE_IT_CRON_DESC'),
+                'cell shrink',
+                '',
+                '',
+                'acym__tooltip_button__cron'
+            );
+            ?>
+			<i class="cell shrink acymicon-circle-o-notch acymicon-spin is-hidden" id="acym__walkthrough__step_license__wait_active_cron_icon"></i>
+		</div>
+    <?php } ?>
 </div>
 <div class="cell text-center margin-top-3">
 	<button type="button" id="acy_button_submit_stepLicense" class="acy_button_submit button" data-task="passStepLicence">
         <?php echo acym_translation('ACYM_CONTINUE'); ?>
 	</button>
+    <?php if (!acym_level(ACYM_ESSENTIAL)) { ?>
+		<button type="button" class="acy_button_submit cursor-pointer margin-left-1" id="acym__walkthrough__step_license__pass" data-task="passStepLicence">
+            <?php echo acym_translation('ACYM_DONT_USE_ACYMAILER'); ?>
+		</button>
+    <?php } ?>
 </div>
 

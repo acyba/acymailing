@@ -53,7 +53,9 @@ function installAcym()
     $updateHelper->installBackLanguages();
     $updateHelper->addUpdateSite();
     $updateHelper->installBounceRules();
-    $updateHelper->installAdminNotif();
+    if (!$installClass->update) {
+        $updateHelper->installDefaultAutomations();
+    }
     $updateHelper->installAddons();
     $updateHelper->installOverrideEmails();
 

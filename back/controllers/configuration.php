@@ -50,7 +50,6 @@ class ConfigurationController extends acymController
 
         //__START__wordpress_
         if (ACYM_CMS == 'wordpress' && acym_isExtensionActive('wp-mail-smtp/wp_mail_smtp.php')) {
-            $data['wp_mail_smtp_installed'] = true;
             $pluginClass = new acymPlugin();
             $data['button_copy_settings_from'] = $pluginClass->getCopySettingsButton($data, 'from_options', 'wp_mail_smtp');
         }
@@ -755,8 +754,8 @@ class ConfigurationController extends acymController
         if (!$result) {
             $sendingMethod = $this->config->get('mailer_method');
 
-            if ($sendingMethod == 'smtp') {
-                if ($this->config->get('smtp_secured') == 'ssl' && !function_exists('openssl_sign')) {
+            if ($sendingMethod === 'smtp') {
+                if ($this->config->get('smtp_secured') === 'ssl' && !function_exists('openssl_sign')) {
                     acym_enqueueMessage(acym_translation('ACYM_OPENSSL'), 'notice');
                 }
 
@@ -773,8 +772,11 @@ class ConfigurationController extends acymController
                 acym_enqueueMessage(acym_translation('ACYM_ADVICE_LOCALHOST'), 'notice');
             }
 
+            $creditsLeft = 10000;
+            acym_trigger('onAcymCreditsLeft', [&$creditsLeft]);
+
             $bounce = $this->config->get('bounce_email');
-            if (!empty($bounce) && !in_array($sendingMethod, ['smtp', 'elasticemail'])) {
+            if (!empty($creditsLeft) && !empty($bounce) && !in_array($sendingMethod, ['smtp', 'elasticemail'])) {
                 acym_enqueueMessage(acym_translationSprintf('ACYM_ADVICE_BOUNCE', '<b>'.$bounce.'</b>'), 'notice');
             }
         }
@@ -1069,6 +1071,7 @@ class ConfigurationController extends acymController
             return true;
         }
         //__END__demo_
+
         //We get the license key saved
         if (is_null($licenseKey)) {
             $licenseKey = $this->config->get('license_key', '');
@@ -1096,7 +1099,7 @@ class ConfigurationController extends acymController
 
         acym_checkVersion();
 
-        //If it's not the result well formated => don't save the license key and out
+        //If it's not the result well formatted => don't save the license key and out
         if (empty($resultAttach) || !empty($resultAttach['error'])) {
             $return['message'] = empty($resultAttach['error']) ? '' : $resultAttach['error'];
 
@@ -1111,6 +1114,8 @@ class ConfigurationController extends acymController
         }
 
         $return['success'] = true;
+
+        acym_trigger('onAcymAttachLicense', [&$licenseKey]);
 
         return $return;
     }
@@ -1166,7 +1171,7 @@ class ConfigurationController extends acymController
             return $return;
         }
 
-        if ($resultUnlink['type'] == 'error') {
+        if ($resultUnlink['type'] === 'error') {
             //If we can't retrieve the license, we set that the unlink is ok.
             //Example: if you don't have the license on acymailing.com, you need to unlink the license
             if ($resultUnlink['message'] == 'LICENSE_NOT_FOUND' || $resultUnlink['message'] == 'LICENSES_DONT_MATCH') {
@@ -1177,11 +1182,13 @@ class ConfigurationController extends acymController
             }
         }
 
-        if ($resultUnlink['type'] == 'info') {
+        if ($resultUnlink['type'] === 'info') {
             $return['success'] = true;
         }
 
         $return['message'] = $resultUnlink['message'];
+
+        acym_trigger('onAcymDetachLicense');
 
         return $return;
     }
@@ -1458,7 +1465,7 @@ class ConfigurationController extends acymController
     {
         $auth2Smtp = [
             'smtp.gmail.com' => [
-                'baseUrl' => 'https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&',
+                'baseUrl' => 'https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent&',
                 'scope' => 'https%3A%2F%2Fmail.google.com%2F',
             ],
             'smtp-mail.outlook.com' => [

@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function ($) {
     if ($('#requireConfirmation').length > 0) {
         let perScroll = 20, start = perScroll;
         let subPerCalls = 500;
@@ -17,6 +17,8 @@ jQuery(document).ready(function ($) {
             data: {
                 subscribed: [],
                 displayedSubscribers: [],
+                columnOrderSelected: '',
+                columnOrderSelectedCss: 'id',
                 busy: false,
                 listid: 0,
                 total: 0,
@@ -105,19 +107,44 @@ jQuery(document).ready(function ($) {
                     form.find('[name="task"]').attr('value', 'saveSubscribers');
                     form.submit();
                 },
-                sortOrdering(event) {
-                    let inputSortOrder = $('[name="users_ordering_sort_order"]');
-                    inputSortOrder.val(inputSortOrder.val() == 'asc' ? 'desc' : 'asc');
-                    $(event.target).toggleClass('acymicon-sort-amount-desc acymicon-sort-amount-asc');
-                    this.users_ordering_sort_order = inputSortOrder.val();
-                    this.getAgainSubscribers();
-                },
                 getAgainSubscribers() {
                     this.subscribed = [];
                     this.displayedSubscribers = [];
                     this.total = 0;
                     this.loading = true;
                     this.getAllSubscribers();
+                },
+                orderByTable(column) {
+                    //if the last sorted column is the same we want to sort, we sort the column in DESC and we empty 'columnOrderSelected'
+                    if (this.columnOrderSelected == column) {
+                        this.displayedSubscribers.sort((a, b) => {
+                            const nameA = String(a[this.columnOrderSelected]).toLowerCase();
+                            const nameB = String(b[this.columnOrderSelected]).toLowerCase();
+                            if (nameA > nameB) {
+                                return -1;
+                            } else if (nameA < nameB) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        });
+                        this.columnOrderSelected = '';
+                        return;
+                    }
+                    //else we sort the column in ASC and we save the sorted column in 'columnOrderSelected'
+                    this.columnOrderSelected = column;
+                    this.columnOrderSelectedCss = column;
+                    this.displayedSubscribers.sort((a, b) => {
+                        const nameA = String(a[this.columnOrderSelected]).toLowerCase();
+                        const nameB = String(b[this.columnOrderSelected]).toLowerCase();
+                        if (nameA < nameB) {
+                            return -1;
+                        } else if (nameA > nameB) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
+                    });
                 }
             },
             watch: {

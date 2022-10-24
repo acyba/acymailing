@@ -266,9 +266,9 @@ const acym_editorWysidFontStyle = {
             savedFont = acym_helperEditorWysid.mailsSettings.default['font-family'];
         }
 
-        let $defaultFontSelect = jQuery('[name="default_font"]');
+        const $defaultFontSelect = jQuery('[name="default_font"]');
 
-        $defaultFontSelect.off('change').on('change', function (event) {
+        $defaultFontSelect.on('change', function (event) {
             let font = jQuery(this).val();
 
             if (acym_helper.empty(acym_helperEditorWysid.mailsSettings.default)) acym_helperEditorWysid.mailsSettings.default = {};

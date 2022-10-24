@@ -31,7 +31,7 @@ class plgAcymEventbooking extends acymPlugin
                 'eb_short' => [acym_translation('EB_SHORT_DESCRIPTION'), true],
                 'eb_desc' => [acym_translation('EB_DESCRIPTION'), false],
                 'eb_cats' => [acym_translation('EB_CATEGORIES'), false],
-                'eb_location' => [acym_translation('EB_LOCATIONS'), true],
+                'eb_location' => [acym_translation('ACYM_LOCATION'), true],
                 'eb_capacity' => [acym_translation('EB_CAPACITY'), false],
                 'eb_regstart' => [acym_translation('EB_REGISTRATION_START_DATE'), false],
                 'eb_cut' => [acym_translation('EB_CUT_OFF_DATE'), false],
@@ -136,7 +136,7 @@ class plgAcymEventbooking extends acymPlugin
                     'short' => ['EB_SHORT_DESCRIPTION', true],
                     'desc' => ['EB_DESCRIPTION', false],
                     'cats' => ['EB_CATEGORIES', false],
-                    'location' => ['EB_LOCATIONS', true],
+                    'location' => ['ACYM_LOCATION', true],
                     'capacity' => ['EB_CAPACITY', false],
                     'regstart' => ['EB_REGISTRATION_START_DATE', false],
                     'cut' => ['EB_CUT_OFF_DATE', false],
@@ -441,7 +441,7 @@ class plgAcymEventbooking extends acymPlugin
         $languageName = !empty($element->$languageMethod) ? $element->$languageMethod : $element->location_name;
         if (!empty($element->location_id)) $varFields['{location}'] = '<a href="index.php?option=com_eventbooking&view=map&format=html&location_id='.$element->location_id.'">'.$languageName.'</a>';
         if (in_array('location', $tag->display) && !empty($element->location_id)) {
-            $customFields[] = [$varFields['{location}'], acym_translation('EB_LOCATION')];
+            $customFields[] = [$varFields['{location}'], acym_translation('ACYM_LOCATION')];
         }
 
 

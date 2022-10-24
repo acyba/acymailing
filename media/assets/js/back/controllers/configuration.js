@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(function($) {
     function Configuration() {
         setSendingMethodSwitchConfiguration();
         setCheckPortConfiguration();
@@ -15,12 +15,19 @@ jQuery(document).ready(function ($) {
         acym_helperMailer.setTestCredentialsSendingMethods();
         acym_helperMailer.setButtonCopyFromPlugin();
         acym_helperMailer.setSynchroExistingUsers();
-        acym_helperSelectionPage.setSelectionElement(true, true, setEmbedImageToggle);
+        acym_helperSelectionPage.setSelectionElement(true, true, callbackSendSettingsClicked);
         setEmbedImageToggle();
         acym_helperSelectionMultilingual.init('configuration');
         resetSubmitButtons();
         setAllowedHostsMultipleSelect();
         acym_helperMailer.dislayAuth2Params();
+        acym_helperMailer.acymailerAddDomains();
+        acym_helperMailer.displayCnameRecord();
+        acym_helperMailer.deleteDomain();
+        acym_helperMailer.domainSuggestion();
+        acym_helperMailer.updateStatus();
+        catchEnterAcymailerDomains();
+        activateAcymailer();
     }
 
     Configuration();
@@ -267,6 +274,17 @@ jQuery(document).ready(function ($) {
         acym_helperTooltip.setTooltip();
     }
 
+    function callbackSendSettingsClicked(element) {
+        const settings = document.querySelector(`#${element.id}_settings`);
+        if (settings) {
+            settings.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+        setEmbedImageToggle();
+    }
+
     function setEmbedImageToggle() {
         setOptionDisabled('acym__config__mail__embed__image__blocked', 'embed_images');
         setOptionDisabled('acym__config__mail__embed__attachment__blocked', 'embed_files');
@@ -303,6 +321,23 @@ jQuery(document).ready(function ($) {
                     text: term
                 };
             }
+        });
+    }
+
+    function catchEnterAcymailerDomains() {
+        $('#acymailer_domain').on('keypress', function (event) {
+            if (event.key !== 'Enter') {
+                return;
+            }
+            event.preventDefault();
+            $('#acym__configuration__sending__method-addDomain').trigger('click');
+        });
+    }
+
+    function activateAcymailer() {
+        jQuery('#acym__configuration__activate__acymailer').off('click').on('click', function () {
+            jQuery('[data-tab-identifier="mail_settings"]').trigger('click');
+            jQuery('#acymailer').trigger('click');
         });
     }
 });

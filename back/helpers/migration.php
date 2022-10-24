@@ -538,6 +538,9 @@ class MigrationHelper extends acymObject
                 }
                 if ('option' == $columnConnection[$key]) {
                     $options = unserialize($value);
+                    if (empty($options)) {
+                        continue;
+                    }
                     $newOption = new \stdClass();
                     foreach ($options as $keyOption => $option) {
                         if (!array_key_exists($keyOption, $optionConnection)) continue;
