@@ -5,7 +5,7 @@ Description: Insert events in your emails
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 1.3
+Version: 1.4
 */
 
 use AcyMailing\Classes\PluginClass;

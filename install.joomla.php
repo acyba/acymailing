@@ -34,28 +34,28 @@ function installAcym()
     $updateHelper->fromVersion = $installClass->fromVersion;
     $updateHelper->installList();
     $updateHelper->installNotifications();
-    // Only install the templates if it is the first install
+
+    if ($installClass->firstInstallation) {
+        $updateHelper->installTemplates();
+        $updateHelper->installDefaultAutomations();
+    }
+
     if (!$installClass->update) {
         $installClass->deleteNewSplashScreenInstall();
-        $updateHelper->installTemplates();
-    } else {
-        if (!empty($installClass->fromVersion)) {
-            $fromVersion = substr($installClass->fromVersion, 0, strrpos($installClass->fromVersion, '.'));
-            $toVersion = substr($installClass->version, 0, strrpos($installClass->version, '.'));
+    } elseif (!empty($installClass->fromVersion)) {
+        $fromVersion = substr($installClass->fromVersion, 0, strrpos($installClass->fromVersion, '.'));
+        $toVersion = substr($installClass->version, 0, strrpos($installClass->version, '.'));
 
-            if (version_compare($fromVersion, $toVersion, '=')) {
-                $installClass->deleteNewSplashScreenInstall();
-            }
+        if (version_compare($fromVersion, $toVersion, '=')) {
+            $installClass->deleteNewSplashScreenInstall();
         }
     }
+
     $updateHelper->installFields();
     $updateHelper->installLanguages();
     $updateHelper->installBackLanguages();
     $updateHelper->addUpdateSite();
     $updateHelper->installBounceRules();
-    if (!$installClass->update) {
-        $updateHelper->installDefaultAutomations();
-    }
     $updateHelper->installAddons();
     $updateHelper->installOverrideEmails();
 

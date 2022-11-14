@@ -61,7 +61,11 @@
                 '<input '.$disabledBatch.' class="intext_input" type="text" name="config[queue_batch_auto]" value="'.$valueBatch.'" />',
                 '<input class="intext_input" type="text" name="config[queue_nbmail_auto]" value="'.intval($this->config->get('queue_nbmail_auto')).'" />',
                 $delayHtml
-            ); ?>
+            );
+            if (isset($data['displayWarningOverload'])) {
+                echo acym_info('ACYM_AUTO_SEND_PROCESS_DESC', '', '', '', true);
+            }
+            ?>
 		</div>
 		<div class="cell medium-3 automatic_only automatic_manual"></div>
 		<div class="cell medium-9 automatic_only automatic_manual">

@@ -216,19 +216,37 @@ const acym_helperEditorWysid = {
     },
     parseTextToCss: function (text) {
         let css = '';
+        const imports = [...text.matchAll(/@import[^;]*;/gis)];
+        for (let imp in imports) {
+            css += imports[imp];
+            text = text.replace(imports[imp], '');
+        }
         jQuery.parsecss(text, function (e) {
             jQuery('#acym__wysid__custom__style').remove();
-            let stylesheetToApply = e;
-            for (let key in stylesheetToApply) {
-                let allCss = stylesheetToApply[key];
-                let prependClass = key.indexOf('#acym__wysid__template') !== -1 ? '' : '#acym__wysid__template .body ';
-                css += prependClass + key + '{';
-                for (let keyCss in allCss) {
-                    css += keyCss + ':' + allCss[keyCss] + ';';
-                }
-                css += '} ';
+            css += acym_helperEditorWysid.parsecssP(e);
+            const medias = [...text.matchAll(/@media[^{(]*(\([^{]*\))[^{]*{([^{}]*({[^}]*}[^{}]*)*[^{}]*)}/gis)];
+            for (let media in medias) {
+                css += '@media' + medias[media][1] + '{';
+                jQuery.parsecss(medias[media][2], function (ecss) {
+                    css += acym_helperEditorWysid.parsecssP(ecss);
+                });
+                css += '}';
             }
         });
+        return css;
+    },
+    parsecssP: function (e) {
+        let css = '';
+        let stylesheetToApply = e;
+        for (let key in stylesheetToApply) {
+            let allCss = stylesheetToApply[key];
+            let prependClass = key.indexOf('#acym__wysid__template') !== -1 ? '' : '#acym__wysid__template .body ';
+            css += prependClass + key + '{';
+            for (let keyCss in allCss) {
+                css += keyCss + ':' + allCss[keyCss] + ';';
+            }
+            css += '} ';
+        }
         return css;
     },
     preventSubmitEditor: function () {

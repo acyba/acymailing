@@ -79,9 +79,10 @@ class ImageHelper extends acymObject
 
             $newPicture = $this->generateThumbnail($imageUrl);
 
+            $newDimension = 'width:'.$this->maxWidth.'px;height:'.$this->maxHeight.'px;';
+
             //Maybe we don't need to resize anything...
             if (!$newPicture) {
-                $newDimension = 'width:'.$this->maxWidth.'px;height:'.$this->maxHeight.'px;';
                 if (strpos($onepicture, 'style="') !== false) {
                     $replace[$onepicture] = preg_replace('#style="([^"]*)"#Uis', 'style="'.$newDimension.'$1"', $onepicture);
                 } else {
@@ -108,6 +109,15 @@ class ImageHelper extends acymObject
             }
 
             $replace[$onepicture] = str_replace(array_keys($replaceImage), $replaceImage, $onepicture);
+
+            // Make sure that we resized the image
+            if (strpos($replace[$onepicture], 'width') === false) {
+                if (strpos($onepicture, 'style="') !== false) {
+                    $replace[$onepicture] = preg_replace('#style="([^"]*)"#Uis', 'style="'.$newDimension.'$1"', $onepicture);
+                } else {
+                    $replace[$onepicture] = ' style="'.$newDimension.'" '.$onepicture;
+                }
+            }
         }
 
         if (!empty($replace)) {

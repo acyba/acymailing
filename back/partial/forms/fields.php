@@ -3,12 +3,12 @@
     include acym_getPartial('forms', 'recaptcha');
     if ($form->lists_options['display_position'] == 'before') {
         if ($form->type == 'popup' && !empty($form->message_options['text']) && $form->message_options['position'] == 'before-lists') {
-            echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+            echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->message_options['text']).'</p>';
         }
         include acym_getPartial('forms', 'lists');
     }
     if ($form->type == 'popup' && !empty($form->message_options['text']) && $form->message_options['position'] == 'before-fields') {
-        echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+        echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->message_options['text']).'</p>';
     }
     foreach ($form->fields_options['displayed'] as $field) {
         $size = empty($field->option->size) ? '' : 'width:'.$field->option->size.'px';
@@ -22,7 +22,7 @@
     }
     if ($form->lists_options['display_position'] == 'after') {
         if ($form->type == 'popup' && !empty($form->message_options['text']) && $form->message_options['position'] == 'before-lists') {
-            echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+            echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->message_options['text']).'</p>';
         }
         include acym_getPartial('forms', 'lists');
     }

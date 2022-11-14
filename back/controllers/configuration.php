@@ -41,7 +41,7 @@ class ConfigurationController extends acymController
         $this->prepareClass($data);
         $this->prepareDataTab($data);
         $this->prepareSecurity($data);
-        $this->checkConfigMail();
+        $this->checkConfigMail($data);
         $this->prepareToolbar($data);
         $this->prepareHoursMinutes($data);
         //__START__starter_
@@ -61,7 +61,7 @@ class ConfigurationController extends acymController
         parent::display($data);
     }
 
-    private function checkConfigMail()
+    private function checkConfigMail(&$data)
     {
         $queueType = $this->config->get('queue_type');
         $batchesNumber = $this->config->get('queue_batch_auto', 1);
@@ -73,7 +73,13 @@ class ConfigurationController extends acymController
             }
 
             if ($batchesNumber > 4 || $emailsPerBatch > 300 || $cronFrequency < 300) {
-                acym_enqueueMessage(acym_translation('ACYM_SEND_CONFIGURATION_WARNING'), 'warning');
+                $text = acym_translation('ACYM_SEND_CONFIGURATION_WARNING');
+                $text .= '<p class="acym__do__not__remindme" title="sendoverload">'.acym_translation('ACYM_DO_NOT_REMIND_ME').'</p>';
+                acym_enqueueMessage($text, 'warning');
+                $remindme = json_decode($this->config->get('remindme', []), true);
+                if (in_array('sendoverload', $remindme)) {
+                    $data['displayWarningOverload'] = true;
+                }
             }
         }
     }

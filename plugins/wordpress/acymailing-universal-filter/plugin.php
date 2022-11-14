@@ -387,7 +387,7 @@ class plgAcymUniversalfilter extends acymPlugin
 
         $filters['import'] = new stdClass();
         $filters['import']->name = acym_translation('ACYM_IMPORT_DATABASE');
-        $filters['import']->option = '<div class="cell grid-x grid-margin-x margin-y">';
+        $filters['import']->option = '<div class="cell grid-x grid-margin-x margin-y acym__filter__nocount acym__filter__noseeuser">';
 
         $filters['import']->option .= '<div class="cell">';
         $filters['import']->option .= '<div class="acym__title acym__title__secondary">'.acym_translation('ACYM_IMPORT_DATABASE').'</div>';

@@ -1,9 +1,10 @@
-jQuery(function($) {
+jQuery(function ($) {
     let filterRebuilt = true;
     let blockRebuilt = true;
     const ajaxCalls = {};
     $.reloadCounters = function (element) {
         if (!filterRebuilt) return;
+        if ($(element).closest('.acym__nocount').length >= 1) return;
 
         let or = $(element).closest('.acym__automation__group__filter').attr('data-filter-number');
         let $or = $(element).closest('.acym__automation__group__filter');
@@ -91,6 +92,9 @@ jQuery(function($) {
             $(this).parent().parent().find('.acym__automation__inserted__filter').remove();
             let html = filters[selectedFilter].replace(/__numor__/g, $(this).closest('.acym__automation__group__filter').attr('data-filter-number'));
             html = html.replace(/__numand__/g, $inputAnd.val());
+            if (html.search('acym__filter__noseeuser') != false) {
+                seeUsersFilter = '';
+            }
             $(this)
                 .parent()
                 .after('<div data-and="'

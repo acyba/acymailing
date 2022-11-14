@@ -19,12 +19,15 @@ use AcyMailing\Helpers\UpdateHelper;
 
 class acymInstall
 {
-    var $cms = '{__CMS__}';
-    var $level = '{__LEVEL__}';
-    var $version = '{__VERSION__}';
-    var $update = false;
-    var $fromLevel = '';
-    var $fromVersion = '';
+    public $cms = '{__CMS__}';
+    public $level = '{__LEVEL__}';
+    public $version = '{__VERSION__}';
+    // If this is a real update between versions/editions
+    public $update = false;
+    // If this is the very first installation
+    public $firstInstallation = true;
+    public $fromLevel = '';
+    public $fromVersion = '';
 
     public function __construct()
     {
@@ -208,6 +211,10 @@ class acymInstall
             acym_display(isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200).'...', 'error');
 
             return false;
+        }
+
+        if (!empty($results['version'])) {
+            $this->firstInstallation = false;
         }
 
         if ($results['version']->value == $this->version && $results['level']->value == $this->level) {

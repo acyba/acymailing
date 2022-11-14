@@ -49,6 +49,15 @@
     a.acym_message_link {
         color: $blue;
     }
+
+    .acym__do__not__remindme {
+        font-size: 14px;
+        text-decoration: underline;
+        margin-left: 50px;
+        display: inline-block;
+        cursor: pointer;
+        float: right;
+    }
 }
 
 .warning-message {

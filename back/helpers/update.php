@@ -17,11 +17,12 @@ use AcyMailing\Libraries\acymObject;
 
 class UpdateHelper extends acymObject
 {
-    var $errors = [];
-
-    var $bounceVersion = 1;
-
     const FIRST_EMAIL_NAME_KEY = 'ACYM_FIRST_EMAIL_NAME';
+
+    private $bounceVersion = 1;
+    public $errors = [];
+    public $fromLevel;
+    public $fromVersion;
 
     public function installBounceRules()
     {

@@ -2,8 +2,8 @@
 Contributors: acyba
 Tags: newsletter, integration, acymailing, events, modern events calendar, filter, automations
 Requires at least: 4.7
-Tested up to: 6.0.3
-Stable tag: 2.1
+Tested up to: 6.1
+Stable tag: 2.2
 Requires PHP: 5.6.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html

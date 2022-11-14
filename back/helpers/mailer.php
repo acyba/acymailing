@@ -436,6 +436,7 @@ class MailerHelper extends acyPHPMailer
                 $result = true;
                 acym_trigger('onAcymRegisterReceiverContentAndList', [&$result, $this->Subject, $this->Body, $this->receiverEmail, $this->id, &$warnings]);
             } else {
+                acym_trigger('onAcymBeforeEmailSend', [&$this]);
                 ob_start();
                 $result = parent::send();
                 $warnings = ob_get_clean();
@@ -636,8 +637,8 @@ class MailerHelper extends acyPHPMailer
     {
         // We inline all the styles we previously get
         // Emogrifer deletes all the <style> tags in the body
-        $emogrifier = new acymEmogrifier($mail->body, implode('', $style));
-        $mail->body = $emogrifier->emogrifyBodyContent();
+        $emogrifier = @new acymEmogrifier($mail->body, implode('', $style));
+        $mail->body = @$emogrifier->emogrifyBodyContent();
 
         //We get all the media queries from all the CSS
         $style[] = $emogrifier->mediaCSS;
@@ -979,7 +980,7 @@ class MailerHelper extends acyPHPMailer
             $campaignClass = new CampaignClass();
             $campaign = $campaignClass->getOneCampaignByMailId($mailId);
 
-            $utmCampaign = substr(acym_getAlias($mail->subject), 0, 30);
+            $utmCampaign = acym_getAlias($mail->subject);
         }
 
         preg_match_all('#<[^>]* href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:|tel:)([^"]+)"#Ui', $this->body, $results);

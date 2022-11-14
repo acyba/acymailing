@@ -92,8 +92,14 @@ function acym_display($messages, $type = 'success', $close = true)
 {
     if (empty($messages)) return;
     if (!is_array($messages)) $messages = [$messages];
-
+    $config = acym_config();
+    $remindme = json_decode($config->get('remindme', '[]'), true);
     foreach ($messages as $id => $message) {
+        if (strpos($message, 'acym__do__not__remindme') !== false) {
+            preg_match('/title="(.*)"/Ui', $message, $matches);
+            if (in_array($matches[1], $remindme)) continue;
+        }
+
         echo '<div class="acym__message grid-x acym__message__'.$type.'">';
 
         if (is_array($message)) $message = implode('</div><div>', $message);

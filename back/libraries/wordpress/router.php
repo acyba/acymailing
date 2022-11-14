@@ -45,7 +45,6 @@ function acym_loadCmsScripts()
         var ACYM_AJAX_URL = "'.admin_url('admin-ajax.php').'?action='.ACYM_COMPONENT.'_router&'.acym_noTemplate().'&'.acym_getFormToken().'&nocache='.time().'";
         var ACYM_TOGGLE_URL = ACYM_AJAX_URL + "&page='.ACYM_COMPONENT.'_toggle&ctrl='.$toggleController.'";
         var ACYM_IS_ADMIN = '.(acym_isAdmin() ? 'true' : 'false').';
-
         if("undefined" === typeof icl_ajxloaderimg_src) var icl_ajxloaderimg_src = "";'
     );
 

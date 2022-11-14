@@ -76,6 +76,9 @@ class AcymRouter extends AcymRouterBase
                 $step = $query['step'];
                 unset($query['step']);
             }
+
+            unset($query['view']);
+            unset($query['layout']);
         } elseif (isset($query['view'])) {
             // Joomla builds menus like this
             $ctrl = $query['view'];

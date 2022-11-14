@@ -19,7 +19,9 @@ class acyMessage
         wp_enqueue_script('acy_front_messages_js', ACYM_JS.'front/messages.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'front'.DS.'messages.min.js'));
         wp_add_inline_script(
             'acy_front_messages_js',
-            'var ACYM_AJAX = "'.admin_url('admin-ajax.php').'?action='.ACYM_COMPONENT.'_router&'.acym_noTemplate().'&nocache='.time().'";',
+            'var ACYM_AJAX_START = "'.admin_url('admin-ajax.php').'";
+            var ACYM_AJAX_PARAMS = "?action='.ACYM_COMPONENT.'_router&'.acym_noTemplate().'&nocache='.time().'";
+            var ACYM_AJAX = ACYM_AJAX_START + ACYM_AJAX_PARAMS;',
             'before'
         );
     }

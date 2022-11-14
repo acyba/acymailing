@@ -18,20 +18,20 @@ if (isset($form->display_option['scroll']) && $form->display_option['scroll'] !=
         }
         if (in_array($form->style_options['position'], ['image-top', 'image-left'])) {
             if (!empty($form->message_options['text']) && $form->message_options['position'] == 'before-image') {
-                echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+                echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->message_options['text']).'</p>';
             }
             include acym_getPartial('forms', 'image');
         }
         echo '<div class="acym__subscription__form__popup__fields-button">';
         include acym_getPartial('forms', 'fields');
         if (!empty($form->message_options['text']) && $form->message_options['position'] == 'before-button') {
-            echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+            echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->message_options['text']).'</p>';
         }
         include acym_getPartial('forms', 'button');
         echo '</div>';
         if (in_array($form->style_options['position'], ['image-bottom', 'image-right'])) {
             if (!empty($form->message_options['text']) && $form->message_options['position'] == 'before-image') {
-                echo '<p id="acym__subscription__form__popup-text">'.$form->message_options['text'].'</p>';
+                echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->message_options['text']).'</p>';
             }
             include acym_getPartial('forms', 'image');
         }

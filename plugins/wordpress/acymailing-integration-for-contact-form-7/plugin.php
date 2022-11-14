@@ -98,7 +98,7 @@ class plgAcymContactform7 extends acymPlugin
         $class = $tag->get_class_option($class);
 
         $listClass = new ListClass();
-        $listNames = $listClass->getAllForSelect();
+        $listNames = $listClass->getAllForSelect(true, 0, true, true);
 
         $detailsLists = $this->prepareLists($tag->values);
 

@@ -5,6 +5,7 @@ define('ACYM_DBPREFIX', '#__acym_');
 define('ACYM_LANGUAGE_FILE', 'com_acym');
 define('ACYM_ACYMAILING_WEBSITE', 'https://www.acymailing.com/');
 define('ACYM_ACYCHECKER_WEBSITE', 'https://www.acychecker.com/');
+define('ACYM_YOURCRONTASK_IP', '178.23.155.153');
 define('ACYM_UPDATEMEURL', 'https://www.acyba.com/index.php?option=com_updateme&nocache='.time().'&ctrl=');
 define('ACYM_SPAMURL', ACYM_UPDATEMEURL.'spamsystem&task=');
 define('ACYM_HELPURL', ACYM_UPDATEMEURL.'doc&component='.ACYM_NAME.'&page=');

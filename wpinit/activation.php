@@ -93,24 +93,24 @@ class acyActivation
         $updateHelper->installBounceRules();
         $updateHelper->installList();
         $updateHelper->installNotifications();
-        // Only install the templates if it is the first install
-        if (!$installClass->update) {
-            $installClass->deleteNewSplashScreenInstall();
-            $updateHelper->installTemplates();
-        } else {
-            if (!empty($installClass->fromVersion)) {
-                $fromVersion = substr($installClass->fromVersion, 0, strrpos($installClass->fromVersion, '.'));
-                $toVersion = substr($installClass->version, 0, strrpos($installClass->version, '.'));
 
-                if (version_compare($fromVersion, $toVersion, '=')) {
-                    $installClass->deleteNewSplashScreenInstall();
-                }
-            }
-        }
-        $updateHelper->installFields();
-        if (!$installClass->update) {
+        if ($installClass->firstInstallation) {
+            $updateHelper->installTemplates();
             $updateHelper->installDefaultAutomations();
         }
+
+        if (!$installClass->update) {
+            $installClass->deleteNewSplashScreenInstall();
+        } elseif (!empty($installClass->fromVersion)) {
+            $fromVersion = substr($installClass->fromVersion, 0, strrpos($installClass->fromVersion, '.'));
+            $toVersion = substr($installClass->version, 0, strrpos($installClass->version, '.'));
+
+            if (version_compare($fromVersion, $toVersion, '=')) {
+                $installClass->deleteNewSplashScreenInstall();
+            }
+        }
+
+        $updateHelper->installFields();
         $updateHelper->installAddons();
         $updateHelper->installOverrideEmails();
 

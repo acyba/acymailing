@@ -2,8 +2,8 @@
 Contributors: acyba
 Tags: newsletter, newsletter form, acymailing, form, subscription, ultimate member
 Requires at least: 4.7
-Tested up to: 6.0.3
-Stable tag: 1.6
+Tested up to: 6.1
+Stable tag: 1.7
 Requires PHP: 5.6.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
