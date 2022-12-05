@@ -57,6 +57,9 @@
 	};
 
   $.parsecss = function(str, callback){
+    if (str === undefined) {
+        str = '';
+    }
     var ret = {};
 		str = munge(str).replace(/@(([^;`]|`[^b]|`b[^%])*(`b%)?);?/g, function(s,rule){
 			// @rules end with ; or a block, with the semicolon not being part of the rule but the closing brace (represented by `b%) is

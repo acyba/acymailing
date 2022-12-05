@@ -84,7 +84,7 @@ class BounceHelper extends acymObject
 
         if ($this->connectMethod == 'pear') {
             $this->usePear = true;
-            include_once ACYM_INC.'pear'.DS.'pop3.php';
+            include_once ACYM_LIBRARIES.'pear'.DS.'pop3.php';
 
             return true;
         }

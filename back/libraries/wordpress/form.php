@@ -99,8 +99,11 @@ function acym_head_wp()
 
     if (!empty($acymMetaData)) {
         foreach ($acymMetaData as $metadata) {
-            if (empty($metadata->data)) continue;
-            echo '<meta '.$metadata->name.'="'.acym_escape($metadata->meta).'" content="'.acym_escape($metadata->data).'"/>';
+            if (empty($metadata->data)) {
+                echo '<meta '.$metadata->name.'="'.acym_escape($metadata->meta).'"/>';
+            } else {
+                echo '<meta '.$metadata->name.'="'.acym_escape($metadata->meta).'" content="'.acym_escape($metadata->data).'"/>';
+            }
         }
     }
 

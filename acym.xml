@@ -22,7 +22,7 @@
 	<scriptfile>install.joomla.php</scriptfile>
 	<files folder="front">
 		<folder>controllers</folder>
-		<folder>inc</folder>
+		<folder>libraries</folder>
 		<folder>views</folder>
 		<folder>params</folder>
 		<folder>router</folder>

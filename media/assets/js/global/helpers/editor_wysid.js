@@ -226,6 +226,9 @@ const acym_helperEditorWysid = {
             css += acym_helperEditorWysid.parsecssP(e);
             const medias = [...text.matchAll(/@media[^{(]*(\([^{]*\))[^{]*{([^{}]*({[^}]*}[^{}]*)*[^{}]*)}/gis)];
             for (let media in medias) {
+                if (medias[media][2] === undefined) {
+                    continue;
+                }
                 css += '@media' + medias[media][1] + '{';
                 jQuery.parsecss(medias[media][2], function (ecss) {
                     css += acym_helperEditorWysid.parsecssP(ecss);

@@ -42,7 +42,7 @@ define('ACYM_UPLOADS_URL', WP_CONTENT_URL.'/uploads/'.ACYM_COMPONENT.'/');
 define('ACYM_OVERRIDES', ACYM_UPLOADS_PATH.'overrides'.DS);
 
 define('ACYM_LANGUAGE', ACYM_UPLOADS_PATH.'language'.DS);
-define('ACYM_INC', ACYM_FRONT.'inc'.DS);
+define('ACYM_LIBRARIES', ACYM_FRONT.'libraries'.DS);
 define('ACYM_UPLOAD_FOLDER', ACYM_WP_UPLOADS.'upload'.DS);
 define('ACYM_TEMPLATE', ACYM_UPLOADS_PATH.'templates'.DS);
 define('ACYM_TEMPLATE_URL', ACYM_UPLOADS_URL.'templates/');

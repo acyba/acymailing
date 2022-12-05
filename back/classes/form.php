@@ -135,6 +135,7 @@ class FormClass extends acymClass
         $newForm->creation_date = acym_date('now', 'Y-m-d H:i:s');
         $newForm->active = 1;
         $newForm->type = $type;
+
         if ($type == self::SUB_FORM_TYPE_POPUP) {
             $newForm->display_options = [
                 'delay' => 0,
@@ -200,7 +201,6 @@ class FormClass extends acymClass
             ];
         }
         $newForm->button_options = [
-            'text' => '',
             'background_color' => '#000000',
             'text_color' => '#ffffff',
             'border_color' => '#000000',
@@ -209,6 +209,7 @@ class FormClass extends acymClass
             'border_radius' => '0',
             'size' => ['height' => 10, 'width' => 20],
         ];
+
         if ($type == self::SUB_FORM_TYPE_POPUP) {
             $newForm->image_options = [
                 'url' => '',
@@ -219,8 +220,25 @@ class FormClass extends acymClass
         $newForm->pages = [];
         $newForm->redirection_options = [
             'after_subscription' => '',
-            'confirmation_message' => '',
         ];
+        $tempForm = new \stdClass();
+        $confirmationTempForm = new \stdClass();
+        if (acym_isMultilingual()) {
+            $allLanguages = new \stdClass();
+            foreach (acym_getMultilingualLanguages() as $key => $languages) {
+                $allLanguages->$key = '';
+            }
+            $tempForm->button_options['lang'] = $allLanguages;
+            $confirmationTempForm->redirection_options['langConfirm'] = $allLanguages;
+            $newForm->button_options = array_merge($tempForm->button_options, $newForm->button_options);
+            $newForm->redirection_options = array_merge($newForm->redirection_options, $confirmationTempForm->redirection_options);
+        } else {
+            $confirmationTempForm->redirection_options['confirmation_message'] = '';
+            $tempForm->button_options['text'] = '';
+            $newForm->button_options = array_merge($tempForm->button_options, $newForm->button_options);
+            $newForm->redirection_options = array_merge($newForm->redirection_options, $confirmationTempForm->redirection_options);
+        }
+
         $newForm->id = 0;
 
         return $newForm;
@@ -290,6 +308,18 @@ class FormClass extends acymClass
             'title' => acym_translation('ACYM_BUTTON'),
         ];
         $return['render'] = [];
+        $currentLanguage = '';
+        $allLangueKeyValue = new \stdClass();
+        if (acym_isMultilingual()) {
+            foreach (acym_getLanguages() as $key => $value) {
+                if ($key == acym_getLanguageTag()) {
+                    $currentLanguage = $key;
+                }
+            }
+            foreach (acym_getMultilingualLanguages() as $key => $languages) {
+                $allLangueKeyValue->$key = $languages->name;
+            }
+        }
         foreach ($options as $key => $value) {
             $name = 'form['.$optionName.']['.$key.']';
             $vModel = 'form.'.$optionName.'.'.$key;
@@ -297,6 +327,20 @@ class FormClass extends acymClass
                 $functionName = 'renderPosition_'.$type;
                 if (!method_exists($this, $functionName)) continue;
                 $return['render'][$key] = $this->$functionName($vModel);
+            } elseif ($key == 'lang') {
+                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_SUBSCRIBE_TEXT').'</label>';
+                $return['render'][$key] .= '<multi-language :languageforselect2="\''.acym_escape($allLangueKeyValue).'\'" :currentlangue="\''.acym_escape(
+                        $currentLanguage
+                    ).'\'" :place="\''.acym_escape(
+                        acym_translation('ACYM_SUBSCRIBE')
+                    ).'\'" :value="'.acym_escape(
+                        $value
+                    ).'" v-model="'.$vModel.'">';
+            } elseif ($key == 'text') {
+                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_SUBSCRIBE_TEXT').'</label>';
+                $return['render'][$key] .= '<input type="text" placeholder="'.acym_escape(
+                        acym_translation('ACYM_SUBSCRIBE')
+                    ).'" class="cell auto" v-model="'.$vModel.'" name="'.$name.'">';
             } elseif ($key == 'background_color') {
                 $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BACKGROUND_COLOR').'</label>';
                 $return['render'][$key] .= '<spectrum :name="\''.$name.'\'" v-model="'.$vModel.'" :value="\''.$value.'\'">';
@@ -332,11 +376,6 @@ class FormClass extends acymClass
                 $return['render'][$key] .= '<input type="number" class="cell medium-3 margin-right-0" v-model="'.$vModel.'.height'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span>';
                 $return['render'][$key] .= '<span>x</span>';
                 $return['render'][$key] .= '<input type="number" class="cell medium-3 margin-right-0" v-model="'.$vModel.'.width'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span>';
-            } elseif ($key == 'text') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_TEXT').'</label>';
-                $return['render'][$key] .= '<input type="text" placeholder="'.acym_escape(
-                        acym_translation('ACYM_SUBSCRIBE')
-                    ).'" class="cell auto" v-model="'.$vModel.'" name="'.$name.'">';
             }
         }
 
@@ -618,7 +657,6 @@ class FormClass extends acymClass
         foreach ($options as $key => $value) {
             $name = 'form['.$optionName.']['.$key.']';
             $vModel = 'form.'.$optionName.'.'.$key;
-
             if ($key == 'termscond') {
                 $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_TERMS_CONDITIONS').'</label>';
                 $return['render'][$key] .= '<div class="cell">
@@ -646,7 +684,6 @@ class FormClass extends acymClass
         foreach ($options as $key => $value) {
             $name = 'form['.$optionName.']['.$key.']';
             $vModel = 'form.'.$optionName.'.'.$key;
-
             if ($key == 'cookie_expiration') {
                 $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_COOKIE_EXPIRATION').'</label>';
                 $return['render'][$key] .= '<div class="cell grid-x acym_vcenter">
@@ -665,14 +702,34 @@ class FormClass extends acymClass
             'title' => acym_translation('ACYM_REDIRECTIONS'),
         ];
 
+        //duplicated TODO@joss: simplifier
+        $currentLanguage = '';
+        $allLangueKeyValue = new \stdClass();
+        if (acym_isMultilingual()) {
+            foreach (acym_getLanguages() as $key => $value) {
+                if ($key == acym_getLanguageTag()) {
+                    $currentLanguage = $key;
+                }
+            }
+            foreach (acym_getMultilingualLanguages() as $key => $languages) {
+                $allLangueKeyValue->$key = $languages->name;
+            }
+        }
+
         foreach ($options as $key => $value) {
             $id = 'form_'.$categoryName.'_'.$key;
             $vModel = 'form.'.$categoryName.'.'.$key;
-
             $return['render'][$key] = '<label class="cell" for="'.$id.'">';
             if ($key === 'after_subscription') {
                 $return['render'][$key] .= acym_translation('ACYM_AFTER_SUBSCRIPTION');
                 $return['render'][$key] .= acym_info('ACYM_REDIRECT_LINK_DESC');
+            } elseif ($key == 'langConfirm') {
+                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_CONFIRMATION_MESSAGE').acym_info('ACYM_CONFIRMATION_MESSAGE_DESC').'</label>';
+                $return['render'][$key] .= '<multi-language :languageforselect2="\''.acym_escape($allLangueKeyValue).'\'" :currentlangue="\''.acym_escape(
+                        $currentLanguage
+                    ).'\'"  :place="\''.acym_escape(acym_translation('ACYM_SUBSCRIBE')).'\'" :value="'.acym_escape(
+                        $value
+                    ).'" v-model="'.$vModel.'">';
             } elseif ($key === 'confirmation_message') {
                 $return['render'][$key] .= acym_translation('ACYM_CONFIRMATION_MESSAGE');
                 $return['render'][$key] .= acym_info('ACYM_CONFIRMATION_MESSAGE_DESC');
@@ -680,7 +737,6 @@ class FormClass extends acymClass
             $return['render'][$key] .= '</label>';
             $return['render'][$key] .= '<input type="text" class="cell" id="'.$id.'" v-model="'.$vModel.'">';
         }
-
 
         return $return;
     }

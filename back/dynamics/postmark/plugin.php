@@ -25,7 +25,7 @@ class plgAcymPostmark extends acymPlugin
 
     public function onAcymGetSendingMethodsHtmlSetting(&$data)
     {
-    	$defaultApiKey = empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value;
+        $defaultApiKey = empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value;
         ob_start();
         ?>
 		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
@@ -43,6 +43,15 @@ class plgAcymPostmark extends acymPlugin
 					   name="config[<?php echo self::SENDING_METHOD_ID; ?>_api_key]"
 					   class="cell margin-right-1 acym__configuration__mail__settings__text">
                 <?php echo $this->getTestCredentialsSendingMethodButton(self::SENDING_METHOD_ID); ?>
+			</div>
+			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
+				<label class="cell medium-6">
+                    <?php echo acym_translation('ACYM_POSTMARK_STREAM_ID').acym_info('ACYM_STREAM_ID_INFO'); ?>
+					<input type="text"
+						   class="cell auto"
+						   name="config[postmark_stream_id]"
+						   value="<?php echo acym_escape(empty($this->config->get('postmark_stream_id')) ? '' : $this->config->get('postmark_stream_id')); ?>">
+				</label>
 			</div>
 		</div>
         <?php
@@ -117,7 +126,7 @@ class plgAcymPostmark extends acymPlugin
 
         // Handle the Stream ID
         if (!empty($mailerHelper->id)) {
-			$mailId = $mailerHelper->id;
+            $mailId = $mailerHelper->id;
             if (acym_isMultilingual()) {
                 $parentId = acym_loadResult('SELECT parent_id FROM `#__acym_mail` WHERE id = '.intval($mailId));
                 if (!empty($parentId)) $mailId = $parentId;
@@ -128,6 +137,8 @@ class plgAcymPostmark extends acymPlugin
                 $sendParams = json_decode($sendParams, true);
                 if (!empty($sendParams['message_stream_id'])) {
                     $data['MessageStream'] = $sendParams['message_stream_id'];
+                } else {
+                    $data['MessageStream'] = $this->config->get('postmark_stream_id');
                 }
             }
         }

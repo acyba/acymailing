@@ -48,6 +48,7 @@ class acyRouter
             'lists',
             'mails',
             'override',
+            'queue',
             'segments',
             'stats',
             'users',

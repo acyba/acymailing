@@ -22,7 +22,6 @@ jQuery(function($) {
         },
         methods: {
             openSpectrum() {
-                console.log($('[name="' + this.name + '"]').next());
                 $('[name="' + this.name + '"]').next().trigger('click');
             }
         },

@@ -56,97 +56,112 @@ class acyGutenberg
             var acym_posts = '.json_encode($posts)
         );
 
+        $basicAttribute = [
+            'title' => [
+                'type' => 'string',
+                'default' => 'Receive our newsletters',
+            ],
+            'mode' => [
+                'type' => 'string',
+                'default' => 'tableless',
+            ],
+            'hiddenlists' => [
+                'type' => 'array',
+            ],
+            'displists' => [
+                'type' => 'array',
+            ],
+            'listschecked' => [
+                'type' => 'array',
+            ],
+            'listposition' => [
+                'type' => 'string',
+                'default' => 'before',
+            ],
+            'fields' => [
+                'type' => 'array',
+            ],
+            'textmode' => [
+                'type' => 'string',
+                'default' => '1',
+            ],
+            'termscontent' => [
+                'type' => 'string',
+                'default' => '',
+            ],
+            'privacypolicy' => [
+                'type' => 'string',
+                'default' => '',
+            ],
+            'unsub' => [
+                'type' => 'string',
+                'default' => '0',
+            ],
+            'unsubtext' => [
+                'type' => 'string',
+                'default' => 'Unsubscribe',
+            ],
+            'unsubredirect' => [
+                'type' => 'string',
+            ],
+            'successmode' => [
+                'type' => 'string',
+                'default' => 'replace',
+            ],
+
+            'redirect' => [
+                'type' => 'string',
+            ],
+            'userinfo' => [
+                'type' => 'string',
+                'default' => '1',
+            ],
+            'introtext' => [
+                'type' => 'string',
+            ],
+            'posttext' => [
+                'type' => 'string',
+            ],
+            'alignment' => [
+                'type' => 'string',
+                'default' => 'none',
+            ],
+            'source' => [
+                'type' => 'string',
+                'default' => 'gutenberg_subscription_form',
+            ],
+        ];
+        $moreAttributes = [];
+        if (acym_isMultilingual()) {
+            foreach (acym_getMultilingualLanguages() as &$language) {
+                $moreAttributes['subtext_'.$language->language] = ['type' => 'string', 'default' => 'Subscribe'];
+                $moreAttributes['subtextlogged_'.$language->language] = ['type' => 'string', 'default' => 'Subscribe'];
+                $moreAttributes['confirmation_message_'.$language->language] = ['type' => 'string', 'default' => ''];
+            }
+        } else {
+            $moreAttributes['subtext'] = [
+                'type' => 'string',
+                'default' => 'Subscribe',
+            ];
+            $moreAttributes['subtextlogged'] = [
+                'type' => 'string',
+                'default' => 'Subscribe',
+            ];
+            $moreAttributes['confirmation_message'] = [
+                'type' => 'string',
+                'default' => '',
+
+            ];
+        }
+        $attributes = array_merge($basicAttribute, $moreAttributes);
+
         register_block_type(
             'acymailing/subscription-form',
             [
                 'apiVersion' => 2,
                 'editor_script' => 'gutenberg-acymailing-subscription-form',
                 'render_callback' => [$this, 'renderCallback'],
-                'attributes' => [
-                    'title' => [
-                        'type' => 'string',
-                        'default' => 'Receive our newsletters',
-                    ],
-                    'mode' => [
-                        'type' => 'string',
-                        'default' => 'tableless',
-                    ],
-                    'hiddenlists' => [
-                        'type' => 'array',
-                    ],
-                    'displists' => [
-                        'type' => 'array',
-                    ],
-                    'listschecked' => [
-                        'type' => 'array',
-                    ],
-                    'listposition' => [
-                        'type' => 'string',
-                        'default' => 'before',
-                    ],
-                    'fields' => [
-                        'type' => 'array',
-                    ],
-                    'textmode' => [
-                        'type' => 'string',
-                        'default' => '1',
-                    ],
-                    'subtext' => [
-                        'type' => 'string',
-                        'default' => 'Subscribe',
-                    ],
-                    'subtextlogged' => [
-                        'type' => 'string',
-                        'default' => 'Subscribe',
-                    ],
-                    'termscontent' => [
-                        'type' => 'string',
-                        'default' => '',
-                    ],
-                    'privacypolicy' => [
-                        'type' => 'string',
-                        'default' => '',
-                    ],
-                    'unsub' => [
-                        'type' => 'string',
-                        'default' => '0',
-                    ],
-                    'unsubtext' => [
-                        'type' => 'string',
-                        'default' => 'Unsubscribe',
-                    ],
-                    'unsubredirect' => [
-                        'type' => 'string',
-                    ],
-                    'successmode' => [
-                        'type' => 'string',
-                        'default' => 'replace',
-                    ],
-                    'confirmation_message' => [
-                        'type' => 'string',
-                    ],
-                    'redirect' => [
-                        'type' => 'string',
-                    ],
-                    'userinfo' => [
-                        'type' => 'string',
-                        'default' => '1',
-                    ],
-                    'introtext' => [
-                        'type' => 'string',
-                    ],
-                    'posttext' => [
-                        'type' => 'string',
-                    ],
-                    'alignment' => [
-                        'type' => 'string',
-                        'default' => 'none',
-                    ],
-                    'source' => [
-                        'type' => 'string',
-                        'default' => 'gutenberg_subscription_form',
-                    ],
-                ],
+                'attributes' => $attributes,
             ]
         );
     }
@@ -167,6 +182,16 @@ class acyGutenberg
 
     public function renderCallback($block_attributes, $content)
     {
+        if (!array_key_exists('subtext', $block_attributes)) {
+            $moreBlockAttributes = [];
+            $currentLanguage = strtolower('subtext_'.acym_getLanguageTag());
+            $currentLanguageLogged = strtolower('subtextlogged_'.acym_getLanguageTag());
+            $confirmMessageLangue = strtolower('confirmation_message_'.acym_getLanguageTag());
+            $moreBlockAttributes['subtext'] = $block_attributes[$currentLanguage];
+            $moreBlockAttributes['subtextlogged'] = $block_attributes[$currentLanguageLogged];
+            $moreBlockAttributes['confirmation_message'] = $block_attributes[$confirmMessageLangue];
+            $block_attributes = array_merge($block_attributes, $moreBlockAttributes);
+        }
         $params = new acymParameter($block_attributes);
 
         return acym_renderForm(

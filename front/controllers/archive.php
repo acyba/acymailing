@@ -23,6 +23,7 @@ class ArchiveController extends acymController
     {
         // Index Follow meta tag
         acym_addMetadata('robots', 'noindex,nofollow');
+        acym_addMetadata('UTF-8', '', 'charset');
 
         $mailId = acym_getVar('int', 'id', 0);
 

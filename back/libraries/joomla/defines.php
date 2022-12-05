@@ -21,7 +21,7 @@ define('ACYM_CONTROLLER', ACYM_BACK.'controllers'.DS);
 define('ACYM_CONTROLLER_FRONT', ACYM_FRONT.'controllers'.DS);
 define('ACYM_MEDIA', ACYM_ROOT.'media'.DS.ACYM_COMPONENT.DS);
 define('ACYM_LANGUAGE', ACYM_ROOT.'language'.DS);
-define('ACYM_INC', ACYM_FRONT.'inc'.DS);
+define('ACYM_LIBRARIES', ACYM_FRONT.'libraries'.DS);
 
 define('ACYM_MEDIA_RELATIVE', 'media/'.ACYM_COMPONENT.'/');
 define('ACYM_MEDIA_URL', acym_rootURI().ACYM_MEDIA_RELATIVE);

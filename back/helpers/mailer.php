@@ -2,12 +2,12 @@
 
 namespace AcyMailing\Helpers;
 
-require_once ACYM_INC.'phpmailer'.DS.'exception.php';
-require_once ACYM_INC.'phpmailer'.DS.'smtp.php';
-require_once ACYM_INC.'phpmailer'.DS.'phpmailer.php';
-require_once ACYM_INC.'phpmailer'.DS.'OAuthTokenProvider.php';
-require_once ACYM_INC.'phpmailer'.DS.'OAuth.php';
-require_once ACYM_INC.'emogrifier.php';
+require_once ACYM_LIBRARIES.'phpmailer'.DS.'exception.php';
+require_once ACYM_LIBRARIES.'phpmailer'.DS.'smtp.php';
+require_once ACYM_LIBRARIES.'phpmailer'.DS.'phpmailer.php';
+require_once ACYM_LIBRARIES.'phpmailer'.DS.'OAuthTokenProvider.php';
+require_once ACYM_LIBRARIES.'phpmailer'.DS.'OAuth.php';
+require_once ACYM_LIBRARIES.'emogrifier.php';
 
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\MailClass;
@@ -176,7 +176,7 @@ class MailerHelper extends acyPHPMailer
                 $this->SMTPAuth = true;
             } else {
                 //REST API!
-                include_once ACYM_INC.'phpmailer'.DS.'elasticemail.php';
+                include_once ACYM_LIBRARIES.'phpmailer'.DS.'elasticemail.php';
                 $this->Mailer = 'elasticemail';
                 $this->{$this->Mailer} = new \acyElasticemail();
                 $this->{$this->Mailer}->Username = trim($this->config->get('elasticemail_username'));
@@ -292,8 +292,8 @@ class MailerHelper extends acyPHPMailer
 
     public function send()
     {
-        if (!file_exists(ACYM_INC.'phpmailer'.DS.'phpmailer.php')) {
-            $this->reportMessage = acym_translationSprintf('ACYM_X_FILE_MISSING', 'phpmailer', ACYM_INC.'phpmailer'.DS);
+        if (!file_exists(ACYM_LIBRARIES.'phpmailer'.DS.'phpmailer.php')) {
+            $this->reportMessage = acym_translationSprintf('ACYM_X_FILE_MISSING', 'phpmailer', ACYM_LIBRARIES.'phpmailer'.DS);
             if ($this->report) {
                 acym_enqueueMessage($this->reportMessage, 'error');
             }

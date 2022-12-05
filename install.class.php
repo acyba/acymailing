@@ -40,6 +40,20 @@ class acymInstall
         include_once $path.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
     }
 
+    public function installTables()
+    {
+        $queries = file_get_contents(ACYM_BACK.'tables.sql');
+        $tables = explode('CREATE TABLE IF NOT EXISTS', $queries);
+
+        foreach ($tables as $oneTable) {
+            $oneTable = trim($oneTable);
+            if (empty($oneTable)) {
+                continue;
+            }
+            acym_query('CREATE TABLE IF NOT EXISTS'.$oneTable);
+        }
+    }
+
     // Function to add all pref...
     public function addPref()
     {

@@ -7,7 +7,7 @@ class plgSystemAcymailoverride extends JPlugin
     public function __construct(&$subject, $config = [])
     {
         $ds = DIRECTORY_SEPARATOR;
-        $file = rtrim(JPATH_SITE, $ds).$ds.'components'.$ds.'com_acym'.$ds.'inc'.$ds.'override'.$ds.'mail.php';
+        $file = rtrim(JPATH_SITE, $ds).$ds.'components'.$ds.'com_acym'.$ds.'libraries'.$ds.'override'.$ds.'mail.php';
 
         try {
             if (file_exists($file)) require_once $file;

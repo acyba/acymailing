@@ -24,6 +24,7 @@ function installAcym()
     acym_increasePerf();
 
     $installClass = new acymInstall();
+    $installClass->installTables();
     $installClass->addPref();
     $installClass->updatePref();
     $installClass->updateSQL();
