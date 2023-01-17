@@ -259,8 +259,8 @@ const acym_helperSegment = {
 
                     let keys = Object.keys(filterOptions);
                     jQuery.each(keys, function (key) {
-                        let optionName = keys[key];
-                        let optionValue = filterOptions[keys[key]];
+                        const optionName = keys[key];
+                        const optionValue = filterOptions[keys[key]];
 
                         // Set the option values
                         let $optionField = jQuery('[name="acym_action[filters]['

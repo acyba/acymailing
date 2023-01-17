@@ -815,6 +815,81 @@ class MailsController extends acymController
         exit;
     }
 
+    public function ajaxCheckVideoUrl()
+    {
+        acym_checkToken();
+        $videoUrl = acym_getVar('string', 'url', '');
+
+        if (!acym_isValidUrl($videoUrl)) {
+            acym_sendAjaxResponse('', [], false);
+        }
+
+        $image = '';
+        $imageName = '';
+
+        $youtubeMatch = '';
+        $vimeoMatch = '';
+        $dailymotionMatch = '';
+
+        preg_match('/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/', $videoUrl, $youtubeMatch);
+        preg_match('/^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/', $videoUrl, $vimeoMatch);
+        preg_match('/^(?:(?:http|https):\/\/)?(?:www.)?(dailymotion\.com|dai\.ly)\/((video\/([^_]+))|(hub\/([^_]+)|([^\/_]+)))$/', $videoUrl, $dailymotionMatch);
+
+        if (!empty($youtubeMatch)) {
+            $image = 'https://img.youtube.com/vi/'.$youtubeMatch[1].'/0.jpg';
+            $imageName = $youtubeMatch[1];
+        } elseif (!empty($dailymotionMatch)) {
+            $dailymotionImage = $dailymotionMatch[4] ?? $dailymotionMatch[2];
+
+            $image = 'https://www.dailymotion.com/thumbnail/video/'.$dailymotionImage;
+            $imageName = $dailymotionMatch[2];
+        } elseif (!empty($vimeoMatch)) {
+            $image = unserialize(file_get_contents('https://vimeo.com/api/v2/video/'.$vimeoMatch[5].'.php'));
+            $image = $image[0]['thumbnail_large'];
+            $imageName = $vimeoMatch[5];
+        }
+
+        if (empty($image) || !acym_isValidUrl($image)) {
+            acym_sendAjaxResponse('', [], false);
+        }
+
+        acym_sendAjaxResponse('', ['new_image_name' => $this->saveVideoPreview($image, urlencode($imageName).'.jpg')]);
+    }
+
+    public function saveVideoPreview($image, $fileName): string
+    {
+        $imageVideo = imagecreatefromjpeg($image);
+        $playButton = @imagecreatefrompng(ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.'editor'.DS.'play_button.png');
+        if ($playButton === false) {
+            return $image;
+        }
+        $imageWidth = imagesx($imageVideo);
+        $imageHeight = imagesy($imageVideo);
+        $logoWidth = imagesx($playButton);
+        $logoHeight = imagesy($playButton);
+
+        $left = round(($imageWidth - $logoWidth) / 2);
+        $top = round(($imageHeight - $logoHeight) / 2);
+        imagecopy($imageVideo, $playButton, $left, $top, 0, 0, $logoWidth, $logoHeight);
+        imagepng($imageVideo, 'tmp.jpg', 9);
+
+        $input = imagecreatefrompng('tmp.jpg');
+        $output = imagecreatetruecolor($imageWidth, $imageHeight);
+        $white = imagecolorallocate($output, 255, 255, 255);
+
+        imagefilledrectangle($output, 0, 0, $imageWidth, $imageHeight, $white);
+        imagecopy($output, $input, 0, 0, 0, 0, $imageWidth, $imageHeight);
+
+        ob_start();
+        $status = imagejpeg($output, null, 95);
+        $imageContent = ob_get_clean();
+        if ($status && acym_writeFile(ACYM_ROOT.ACYM_UPLOAD_FOLDER.$fileName, $imageContent)) {
+            return ACYM_UPLOADS_URL.$fileName;
+        }
+
+        return '';
+    }
+
     public function getTemplateAjax()
     {
         $pagination = new PaginationHelper();

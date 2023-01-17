@@ -261,10 +261,13 @@ class FieldClass extends acymClass
         $conditions[] = 'user_field.user_id IN ('.implode(',', $userIds).')';
         $conditions[] = 'user_field.field_id IN ('.implode(',', $fieldIds).')';
 
-        if (!empty($conditions)) $query .= ' WHERE ('.implode(') AND (', $conditions).')';
+        if (!empty($conditions)) {
+            $query .= ' WHERE ('.implode(') AND (', $conditions).')';
+        }
 
         $fieldValues = [];
         $values = acym_loadObjectList($query);
+
         $fieldsTypeWithInField = ['radio', 'checkbox', 'single_dropdown', 'multiple_dropdown'];
         foreach ($values as $one) {
             if (intval($one->active) === 0) continue;
@@ -285,10 +288,32 @@ class FieldClass extends acymClass
                 }
             } else {
                 $defaultValues = json_decode($one->value, true);
-                foreach ($defaultValues as $oneValue) {
-                    if (!in_array($oneValue['value'], explode(',', $one->field_value))) continue;
-                    $fieldValues[$one->field_id.'-'.$one->user_id][] = $oneValue['title'];
+                $defaultValues = array_filter($defaultValues, function ($fieldOption) {
+                    return !empty($fieldOption['value']) || !empty($fieldOption['title']);
+                });
+
+                if (empty($defaultValues)) {
+                    // Options from database
+                    if (!empty($one->field_value)) {
+                        $fieldOptions = json_decode($one->option, true);
+                        if (!empty($fieldOptions['fieldDB'])) {
+                            $dbOptions = json_decode($fieldOptions['fieldDB'], true);
+                            if (!empty($dbOptions['database']) && !empty($dbOptions['table']) && !empty($dbOptions['value']) && !empty($dbOptions['title'])) {
+                                $query = 'SELECT '.acym_secureDBColumn($dbOptions['title']).' 
+                                            FROM '.acym_secureDBColumn($dbOptions['database']).'.'.acym_secureDBColumn($dbOptions['table']).' 
+                                            WHERE '.acym_secureDBColumn($dbOptions['value']).' = '.acym_escapeDB($one->field_value);
+                                $fieldValues[$one->field_id.'-'.$one->user_id][] = acym_loadResult($query);
+                            }
+                        }
+                    }
+                } else {
+                    // Classic options
+                    foreach ($defaultValues as $oneValue) {
+                        if (!in_array($oneValue['value'], explode(',', $one->field_value))) continue;
+                        $fieldValues[$one->field_id.'-'.$one->user_id][] = $oneValue['title'];
+                    }
                 }
+
                 if (!empty($fieldValues[$one->field_id.'-'.$one->user_id])) {
                     $fieldValues[$one->field_id.'-'.$one->user_id] = implode(', ', $fieldValues[$one->field_id.'-'.$one->user_id]);
                 }

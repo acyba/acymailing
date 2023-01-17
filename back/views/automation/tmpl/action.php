@@ -45,9 +45,9 @@
                     <?php echo acym_select($data['actionsOption'], 'action_name', null, 'class="acym__select acym__automation__actions__select"'); ?>
 				</div>
 			</div>
-			<button data-filter-type="" type="button" class="button-secondary button medium-shrink acym__automation__add-action margin-top-2"><?php echo acym_translation(
-                    'ACYM_ADD_ACTION'
-                ); ?></button>
+			<button data-filter-type="" type="button" class="button-secondary button medium-shrink acym__automation__add-action margin-top-2">
+				<?php echo acym_translation('ACYM_ADD_ACTION'); ?>
+			</button>
 		</div>
 		<div class="cell grid-x grid-margin-x margin-top-2">
             <?php if (empty($data['id'])) { ?>

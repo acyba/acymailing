@@ -38,16 +38,17 @@ define('ACYM_MEDIA', ACYM_FOLDER.'media'.DS);
 
 define('ACYM_WP_UPLOADS', basename(WP_CONTENT_DIR).DS.'uploads'.DS.ACYM_COMPONENT.DS);
 define('ACYM_UPLOADS_PATH', ACYM_ROOT.ACYM_WP_UPLOADS);
-define('ACYM_UPLOADS_URL', WP_CONTENT_URL.'/uploads/'.ACYM_COMPONENT.'/');
+define('ACYM_UPLOAD_FOLDER_URL', WP_CONTENT_URL.'/uploads/'.ACYM_COMPONENT.'/');
 define('ACYM_OVERRIDES', ACYM_UPLOADS_PATH.'overrides'.DS);
 
 define('ACYM_LANGUAGE', ACYM_UPLOADS_PATH.'language'.DS);
 define('ACYM_LIBRARIES', ACYM_FRONT.'libraries'.DS);
 define('ACYM_UPLOAD_FOLDER', ACYM_WP_UPLOADS.'upload'.DS);
 define('ACYM_TEMPLATE', ACYM_UPLOADS_PATH.'templates'.DS);
-define('ACYM_TEMPLATE_URL', ACYM_UPLOADS_URL.'templates/');
+define('ACYM_TEMPLATE_URL', ACYM_UPLOAD_FOLDER_URL.'templates/');
 define('ACYM_TMP_FOLDER', ACYM_UPLOADS_PATH.'tmp'.DS);
-define('ACYM_TMP_URL', ACYM_UPLOADS_URL.'tmp/');
+define('ACYM_TMP_URL', ACYM_UPLOAD_FOLDER_URL.'tmp/');
+define('ACYM_UPLOADS_URL', ACYM_UPLOAD_FOLDER_URL.'upload/');
 
 define('ACYM_PLUGINS_URL', plugins_url());
 define('ACYM_MEDIA_RELATIVE', str_replace(ACYM_ROOT, '', ACYM_MEDIA));
@@ -55,9 +56,9 @@ define('ACYM_MEDIA_URL', ACYM_PLUGINS_URL.'/'.ACYM_COMPONENT.'/media/');
 define('ACYM_IMAGES', ACYM_MEDIA_URL.'images/');
 define('ACYM_CSS', ACYM_MEDIA_URL.'css/');
 define('ACYM_JS', ACYM_MEDIA_URL.'js/');
-define('ACYM_TEMPLATE_THUMBNAILS', ACYM_UPLOADS_URL.'thumbnails/');
+define('ACYM_TEMPLATE_THUMBNAILS', ACYM_UPLOAD_FOLDER_URL.'thumbnails/');
 define('ACYM_CORE_DYNAMICS_URL', ACYM_PLUGINS_URL.'/'.ACYM_COMPONENT.'/back/dynamics/');
-define('ACYM_DYNAMICS_URL', ACYM_UPLOADS_URL.'addons/');
+define('ACYM_DYNAMICS_URL', ACYM_UPLOAD_FOLDER_URL.'addons/');
 define('ACYM_ADDONS_FOLDER_PATH', ACYM_UPLOADS_PATH.'addons'.DS);
 
 define('ACYM_MEDIA_FOLDER', str_replace([ABSPATH, ACYM_ROOT], '', WP_PLUGIN_DIR).'/'.ACYM_COMPONENT.'/media');
@@ -74,6 +75,15 @@ define(
     'ACYM_AVAILABLE_PLUGINS',
     json_encode(
         [
+            (object)[
+                'name' => 'Business Directory',
+                'description' => '- Insert individual listings in your emails<br />- Insert listings by category',
+                'image' => 'businessdirectory.png',
+                'level' => 'starter',
+                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/business-directory',
+                'category' => 'Content management',
+                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-business-directory/',
+            ],
             (object)[
                 'name' => 'Contact Form 7',
                 'description' => '- Add AcyMailing lists on contact forms',
@@ -190,6 +200,15 @@ define(
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/ultimate-member',
                 'category' => 'Subscription system',
                 'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-ultimate-member/',
+            ],
+            (object)[
+                'name' => 'Uncanny Automator',
+                'description' => '- Trigger recipes on AcyMailing subscriber creation/update<br />- Create new AcyMailing subscribers<br />- Subscribe users to lists<br />- Unsubscribe users from lists<br />- <br />- Update AcyMailing subscribers email addresses<br />- Create new tags<br />- Remove old tags',
+                'image' => 'uncannyautomator.png',
+                'level' => 'starter',
+                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/uncanny-automator',
+                'category' => 'User management',
+                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-uncanny-automator/',
             ],
             (object)[
                 'name' => 'Universal filter',

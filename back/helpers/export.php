@@ -198,6 +198,8 @@ class ExportHelper extends acymObject
     {
         $mailsStats = acym_loadObjectList($query);
         $mailClass = new MailClass();
+        // We don't want to decode the user's name
+        $mailClass->exceptKeysDecode = ['name'];
         $mailsStats = $mailClass->decode($mailsStats);
         $nbExport = $this->getExportLimit();
         acym_displayErrors();
@@ -318,7 +320,15 @@ class ExportHelper extends acymObject
                     );
 
                     foreach ($customFieldsToExport as $fieldID => $fieldName) {
-                        $data[] = empty($userCustomFields[$fieldID]) ? '' : $userCustomFields[$fieldID]->value;
+                        if (empty($userCustomFields[$fieldID])) {
+                            $data[] = '';
+                        } else {
+                            $data[] = acym_triggerCmsHook(
+                                'onUserExportFieldData',
+                                [$userCustomFields[$fieldID]->value, $fieldID, $fieldName],
+                                false
+                            );
+                        }
                     }
                     unset($userCustomFields);
                 }

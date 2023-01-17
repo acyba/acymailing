@@ -2384,6 +2384,25 @@ class plgAcymWoocommerce extends acymPlugin
                 'source' => self::MAIL_OVERRIDE_SOURCE_NAME,
             ],
             [
+                'name' => 'woo-customer_partially_refunded_order',
+                'base_subject' => [
+                    'Your {site_title} order #{order_number} has been partially refunded',
+                ],
+                'base_body' => '',
+                'new_subject' => 'Your {param1} order #{param2} has been partially refunded',
+                'new_body' => 'Hi {user_billing_full_name},
+			<br>
+			Your order on {param1} has been partially refunded. There are more details below for your reference:
+            <br>
+            {woocommerce_email_order_details}
+            <br>
+            {woocommerce_email_order_meta}
+            <br>
+            {woocommerce_email_customer_details}',
+                'description' => 'ACYM_WOO_CUSTOMER_PARTIALLY_REFUNDED_ORDER',
+                'source' => self::MAIL_OVERRIDE_SOURCE_NAME,
+            ],
+            [
                 'name' => 'woo-failed_order',
                 'base_subject' => [
                     '[{site_title}]: Order #{order_number} has failed',
@@ -2613,6 +2632,33 @@ class plgAcymWoocommerce extends acymPlugin
         ];
 
         $overridesParamsAll['woo-customer_refunded_order'] = [
+            'param1' => [
+                'nicename' => acym_translation('ACYM_SITE_NAME'),
+                'description' => acym_translation('ACYM_SITE_NAME_OVERRIDE_DESC'),
+            ],
+            'param2' => [
+                'nicename' => acym_translation('ACYM_ORDER_NUMBER'),
+                'description' => acym_translation('ACYM_ORDER_NUMBER_OVERRIDE_DESC'),
+            ],
+            'user_billing_full_name' => [
+                'nicename' => acym_translation('ACYM_USER_BILLING_FULL_NAME'),
+                'description' => acym_translation('ACYM_USER_BILLING_FULL_NAME_OVERRIDE_DESC'),
+            ],
+            'woocommerce_email_order_details' => [
+                'nicename' => acym_translation('ACYM_WOOCOMMERCE_EMAIL_ORDER_DETAILS'),
+                'description' => acym_translation('ACYM_WOOCOMMERCE_EMAIL_ORDER_DETAILS_OVERRIDE_DESC'),
+            ],
+            'woocommerce_email_order_meta' => [
+                'nicename' => acym_translation('ACYM_WOOCOMMERCE_EMAIL_ORDER_META'),
+                'description' => acym_translation('ACYM_WOOCOMMERCE_EMAIL_ORDER_META_OVERRIDE_DESC'),
+            ],
+            'woocommerce_email_customer_details' => [
+                'nicename' => acym_translation('ACYM_WOOCOMMERCE_EMAIL_CUSTOMER_DETAILS'),
+                'description' => acym_translation('ACYM_WOOCOMMERCE_EMAIL_CUSTOMER_DETAILS_OVERRIDE_DESC'),
+            ],
+        ];
+
+        $overridesParamsAll['woo-customer_partially_refunded_order'] = [
             'param1' => [
                 'nicename' => acym_translation('ACYM_SITE_NAME'),
                 'description' => acym_translation('ACYM_SITE_NAME_OVERRIDE_DESC'),

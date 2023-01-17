@@ -10,7 +10,6 @@ class ListClass extends acymClass
 {
     var $table = 'list';
     var $pkey = 'id';
-
     const LIST_TYPE_STANDARD = 'standard';
     const LIST_TYPE_FRONT = 'front';
     const LIST_TYPE_FOLLOWUP = 'followup';
@@ -475,9 +474,13 @@ class ListClass extends acymClass
             $list->$oneAttribute = strip_tags($value);
         }
 
-        if (empty($list->description)) $list->description = '';
+        if (empty($list->description)) {
+            $list->description = '';
+        }
 
-        if (!isset($list->access)) $list->access = '';
+        if (!isset($list->access) && empty($list->id)) {
+            $list->access = '';
+        }
 
         $listID = parent::save($list);
 

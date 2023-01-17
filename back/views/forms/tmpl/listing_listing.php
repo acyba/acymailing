@@ -20,7 +20,7 @@
                     'active' => ['ACYM_ACTIVE', $data['formsNumberPerStatus']['active']],
                     'inactive' => ['ACYM_INACTIVE', $data['formsNumberPerStatus']['inactive']],
                 ];
-                echo acym_filterStatus($options, $data["status"], 'forms_status');
+                echo acym_filterStatus($options, $data['status'], 'forms_status');
                 ?>
 			</div>
 			<div class="cell acym_listing_sort-by auto">
@@ -99,7 +99,8 @@
                     <?php } ?>
 					<div class="cell small-1 acym__listing__controls text-center">
                         <?php
-                        $class = $form->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0' : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
+                        $class = $form->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0'
+                            : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
                         echo '<i data-acy-table="form" data-acy-field="active" data-acy-elementid="'.acym_escape($form->id).'" class="acym_toggleable '.$class.'"></i>';
                         ?>
 					</div>

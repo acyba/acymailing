@@ -377,6 +377,7 @@ class plgAcymDocman extends acymPlugin
         }
 
         $format = new stdClass();
+        $format->tag = $tag;
         $format->title = $element->title;
         $format->description = $description;
         $format->customFields = $details;

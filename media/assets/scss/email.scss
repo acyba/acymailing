@@ -2,9 +2,22 @@
     .acymailing_content {
         margin-bottom: 10px;
 
-        *[valign="middle"] .content_main_image {
-            margin-left: auto !important;
-            margin-right: auto !important;
+        *[valign="middle"] {
+
+            // When the mail is sent we use this
+            @media only screen and (max-device-width: 479px) {
+                width: auto !important;
+            }
+
+            // On the preview of the email in the editor we use this
+            @media only screen and (max-width: 479px) {
+                width: auto !important;
+            }
+
+            .content_main_image {
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
         }
 
         .content_main_image_caption {

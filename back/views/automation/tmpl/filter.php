@@ -1,6 +1,6 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate>
 	<input type="hidden" name="id" value="<?php echo empty($data['id']) ? '' : intval($data['id']); ?>">
-	<input type="hidden" id="filters" value="<?php echo acym_escape($data['action']->filters); ?>">
+	<input type="hidden" id="filters" value="<?php echo acym_escape($data['action']->filters, false); ?>">
 	<input type="hidden" name="conditionId" id="conditionId" value="<?php echo empty($data['condition']->id) ? '' : intval($data['condition']->id); ?>">
 	<input type="hidden" name="stepAutomationId" value="<?php echo empty($data['step_automation_id']) ? '' : intval($data['step_automation_id']); ?>">
 	<input type="hidden" name="actionId" value="<?php echo empty($data['action']->id) ? '' : intval($data['action']->id); ?>">
@@ -68,7 +68,7 @@
 			</p>
 			<div class="cell auto"></div>
 		</div>
-		
+
 		<div class="cell grid-x acym__automation__filter__container"
 			 id="acym__automation__filters__type__classic" <?php echo $data['type_filter'] == 'classic' ? '' : 'style="display:none;"'; ?>>
 			<input type="hidden" value="<?php echo acym_escape($data['classic_option']); ?>" id="acym__automation__filter__classic__options">

@@ -220,7 +220,7 @@ const acym_editorWysidNewContent = {
         let $result = jQuery('#acym__wysid__modal__video__result');
 
         $loadBtn.off('click').on('click', function () {
-            let url = $searchInput.val();
+            const url = $searchInput.val();
 
             $insertBtn.off('click').on('click', function () {
                 let insertedVideo = '<tr class="acym__wysid__column__element">'
@@ -239,45 +239,25 @@ const acym_editorWysidNewContent = {
                 acym_editorWysidTinymce.addTinyMceWYSID();
             });
 
-            let youtubeId = url.match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/);
-            let dailymotionId = url.match(/^(?:(?:http|https):\/\/)?(?:www.)?(dailymotion\.com|dai\.ly)\/((video\/([^_]+))|(hub\/([^_]+)|([^\/_]+)))$/);
-            let vimeoId = url.match(/^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/);
+            $result.html(`<i class="acymicon-circle-o-notch acymicon-spin" id="acym__wysid__modal__video__spinner"></i>`);
 
-            if (youtubeId != null) {
-                $result.html('<a href="https://www.youtube.com/watch?v='
-                             + youtubeId[1]
-                             + '" target="_blank" class="acym__wysid__link__image"><img alt="" src="https://img.youtube.com/vi/'
-                             + youtubeId[1]
-                             + '/0.jpg" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block;margin-left: auto; margin-right: auto; float: none;"/></a>');
-                $insertBtn.removeClass('disabled');
-            } else if (dailymotionId != null) {
-                if (dailymotionId[4] !== undefined) {
-                    $result.html('<a href="https://www.dailymotion.com/video/'
-                                 + dailymotionId[4]
-                                 + '" target="_blank" class="acym__wysid__link__image"><img alt="" src="https://www.dailymotion.com/thumbnail/video/'
-                                 + dailymotionId[4]
-                                 + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/></a>');
+            const ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlMails + '&task=ajaxCheckVideoUrl';
+            acym_helper.post(ajaxUrl, {
+                'url': url
+            }).then(res => {
+                if (!res.data.new_image_name) {
+                    $result.html(`<div class="acym__wysid__error_msg" style="text-align: center; margin-top: 100px;">${ACYM_JS_TXT.ACYM_NON_VALID_URL}</div>`);
+                    $insertBtn.addClass('disabled').off('click');
                 } else {
-                    $result.html('<a href="https://www.dailymotion.com/video/'
-                                 + dailymotionId[2]
-                                 + '" target="_blank" class="acym__wysid__link__image"><img alt="" src="https://www.dailymotion.com/thumbnail/video/'
-                                 + dailymotionId[2]
-                                 + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/></a>');
+                    $result.html(`<a href="${url}" target="_blank" class="acym__wysid__link__image">
+                                    <img alt="" src="${res.data.new_image_name}" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/>
+                                </a>`);
+
+                    $result.off('click').on('click', function (e) {
+                        e.preventDefault();
+                    });
+                    $insertBtn.removeClass('disabled');
                 }
-                $insertBtn.removeClass('disabled');
-            } else if (vimeoId != null) {
-                let script = document.createElement('script');
-                script.id = 'vimeothumb';
-                script.type = 'text/javascript';
-                script.src = 'https://vimeo.com/api/v2/video/' + vimeoId[5] + '.json?callback=showVimeoThumbnail';
-                jQuery('#acym__wysid__modal__video__search').before(script);
-                jQuery('#vimeothumb').remove();
-            } else {
-                $result.html('<div class="acym__wysid__error_msg" style="text-align: center; margin-top: 100px;">' + ACYM_JS_TXT.ACYM_NON_VALID_URL + '</div>');
-                $insertBtn.addClass('disabled').off('click');
-            }
-            $result.off('click').on('click', function (e) {
-                e.preventDefault();
             });
         });
 

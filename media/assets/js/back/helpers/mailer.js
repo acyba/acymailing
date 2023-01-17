@@ -108,58 +108,55 @@ const acym_helperMailer = {
             });
         });
     },
-    dislayAuth2Params() {
-        let auth2Smtp = [
+    displayAuth2Params() {
+        const $smtpHost = jQuery('#smtp_host');
+        if ($smtpHost.length === 0) {
+            return;
+        }
+
+        const $connectionType = jQuery('#smtp_type');
+        $connectionType.on('change', function () {
+            acym_helperMailer.handleAuth2ParamsAppearance();
+        });
+
+        $smtpHost.on('keyup', function () {
+            acym_helperMailer.handleAuth2ParamsAppearance();
+        });
+
+        acym_helperMailer.handleAuth2ParamsAppearance();
+    },
+    handleAuth2ParamsAppearance() {
+        const auth2Smtp = [
             'smtp.gmail.com',
             'smtp-mail.outlook.com',
             'smtp.office365.com'
         ];
+        const $connectionTypeContainer = jQuery('#acym__sending__methods__one__settings__type');
+        const $passwordFieldContainer = jQuery('.acym__default_auth_sending_params');
+        const $oauth2FieldsContainer = jQuery('.acym__oauth2_sending_params');
+        const $tenantContainer = jQuery('#smtp_tenant_container');
+        const smtpHostValue = jQuery('#smtp_host').val().toLowerCase().trim();
 
-        let outlookSmtp = [
-            'smtp-mail.outlook.com',
-            'smtp.office365.com'
-        ];
+        // Not part of the OAuth compatible servers
+        if (!auth2Smtp.includes(smtpHostValue)) {
+            $connectionTypeContainer.hide();
+            $passwordFieldContainer.show();
+            $oauth2FieldsContainer.hide();
 
-        let smtpHost = jQuery('#smtp_host');
-        let smtpHostValue = smtpHost.val();
-        if (smtpHostValue) {
-            smtpHostValue = smtpHostValue.toLowerCase().trim();
-        }
-        let oauth2SendingParams = jQuery('.acym__oauth2_sending_params');
-        let defaultSendingParams = jQuery('.acym__default_auth_sending_params');
-        let tenantContainer = jQuery('#smtp_tenant_container');
-
-        defaultSendingParams.show();
-        oauth2SendingParams.hide();
-
-        if (smtpHostValue) {
-            if (auth2Smtp.includes(smtpHostValue)) {
-                oauth2SendingParams.show();
-                defaultSendingParams.hide();
-            }
-
-            if (!outlookSmtp.includes(smtpHostValue)) {
-                tenantContainer.hide();
-            }
+            return;
         }
 
-        smtpHost.on('keyup', function () {
-            smtpHostValue = smtpHost.val().toLowerCase().trim();
+        // Tenant only for Outlook
+        $tenantContainer.hide();
+        $connectionTypeContainer.show();
 
-            if (auth2Smtp.includes(smtpHostValue)) {
-                oauth2SendingParams.show();
-                defaultSendingParams.hide();
-            } else {
-                defaultSendingParams.show();
-                oauth2SendingParams.hide();
-            }
-
-            if (outlookSmtp.includes(smtpHostValue)) {
-                tenantContainer.show();
-            } else {
-                tenantContainer.hide();
-            }
-        });
+        if (jQuery('#smtp_type').val() === 'oauth') {
+            $passwordFieldContainer.hide();
+            $oauth2FieldsContainer.show();
+        } else {
+            $passwordFieldContainer.show();
+            $oauth2FieldsContainer.hide();
+        }
     },
     acymailerAddDomains() {
         const $errorContainer = jQuery('#acym__configuration__acymailer__add__error');

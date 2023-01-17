@@ -507,10 +507,12 @@ class plgAcymAcymailer extends acymPlugin
         if (!$this->checkSuccessCode($this->responseCode)) {
             acym_sendAjaxResponse(acym_translation('ACYM_ERROR_ON_CALL_ACYBA_WEBSITE').': '.$responseApi['message'], ['domains' => $domains], false);
         }
+
+        $errorDomains = [];
         foreach ($domains as $key => $oneDomain) {
             $domainName = $oneDomain['domain'];
             if (!array_key_exists($domainName, $responseApi['data']) || !is_array($responseApi['data'][$domainName])) {
-                acym_sendAjaxResponse(acym_translation('ACYM_ERROR_ON_CALL_ACYBA_WEBSITE').': '.$responseApi['data'][$domainName].': '.$domainName, [], false);
+                $errorDomains[] = acym_translation('ACYM_ERROR_ON_CALL_ACYBA_WEBSITE').': '.$responseApi['data'][$domainName].': '.$domainName;
                 continue;
             }
 
@@ -543,6 +545,10 @@ class plgAcymAcymailer extends acymPlugin
         }
 
         $this->config->save([self::SENDING_METHOD_ID.'_domains' => json_encode($domains)]);
+
+        if (!empty($errorDomains)) {
+            acym_sendAjaxResponse(implode(', ', $errorDomains), [], false);
+        }
 
         acym_sendAjaxResponse('', ['domains' => $domains]);
     }
@@ -602,7 +608,9 @@ class plgAcymAcymailer extends acymPlugin
     {
         $oneDomain = acym_getVar('string', 'oneDomain', '');
 
-        if (empty($oneDomain)) return;
+        if (empty($oneDomain)) {
+            return;
+        }
 
         $apikey = $this->config->get(self::SENDING_METHOD_ID.'_apikey');
         if (empty($apikey)) {
@@ -619,9 +627,18 @@ class plgAcymAcymailer extends acymPlugin
         if (!empty($responseApi['error_curl'])) {
             $message = acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $responseApi['error_curl']);
             acym_sendAjaxResponse($message, [], false);
-        } elseif (!empty($responseApi['message']) && $responseApi['message'] == 'Invalid private key') {
+        } elseif (!empty($responseApi['message']) && $responseApi['message'] === 'Invalid private key') {
             acym_sendAjaxResponse(acym_translation('ACYM_AUTHENTICATION_FAILS_WITH_API_KEY'), [], false);
-        } elseif (!$this->checkSuccessCode($this->responseCode)) {
+        } elseif (!$this->checkSuccessCode($this->responseCode) && (empty($responseApi['code']) || !in_array($responseApi['code'], [5, 4, 3]))) {
+            /*
+            We may ask the API for the deletion of a domain while:
+            - it already doesn't exist (error code 5)
+            - it doesn't belong to the current API key (error code 4)
+            - it isn't linked to this website (error code 3)
+
+            In all 3 cases, we don't want to keep this domain in the AcyMailing configuration, so we remove it and consider the deletion as a success
+            */
+
             $message = acym_translation('ACYM_ERROR_ON_CALL_ACYBA_WEBSITE').': '.$this->translate($responseApi);
             $logs = !empty($responseApi['logs']) ? $responseApi['logs'] : '';
             acym_sendAjaxResponse($message, ['logs' => $logs], false);

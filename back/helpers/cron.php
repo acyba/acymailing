@@ -5,6 +5,7 @@ namespace AcyMailing\Helpers;
 use AcyMailing\Classes\AutomationClass;
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\FollowupClass;
+use AcyMailing\Classes\MailboxClass;
 use AcyMailing\Classes\QueueClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\UserStatClass;
@@ -65,6 +66,7 @@ class CronHelper extends acymObject
                 'delete_history',
                 'clean_data_external_sending_method',
                 'clean_export_changes',
+                'mailbox_action',
             ];
         }
     }
@@ -330,7 +332,44 @@ class CronHelper extends acymObject
             }
         }
 
-        // Step 11: Delete data
+        // Step 11: mailbox actions
+        if (!in_array('mailbox_action', $this->skip) && acym_level(ACYM_ENTERPRISE)) {
+            $mailboxActionClass = new MailboxClass();
+            $mailboxes = $mailboxActionClass->getAllActiveReadyWithActions();
+
+            if (!empty($mailboxes)) {
+                $mailboxHelper = new MailboxHelper();
+                $mailboxHelper->report = false;
+                foreach ($mailboxes as $oneMailboxAction) {
+                    $this->processed = true;
+
+                    if (!$mailboxHelper->isConnectionValid($oneMailboxAction, false)) {
+                        $this->messages[] = acym_translationSprintf('ACYM_CONNECTION_FAILED_MAILBOX_X', $oneMailboxAction->id.'-'.$oneMailboxAction->name);
+                        $this->errorDetected = true;
+                        continue;
+                    }
+
+                    $nbMessages = $mailboxHelper->getNBMessages();
+                    if (!$nbMessages) {
+                        $this->messages[] = acym_translation('ACYM_NO_MESSAGE_IN_MAILBOX_X', $oneMailboxAction->id.'-'.$oneMailboxAction->name);
+                        $mailboxHelper->close();
+                        continue;
+                    }
+
+                    $mailboxHelper->handleAction();
+                    $mailboxHelper->close();
+
+
+                    // Update next trigger
+                    $oneMailboxAction->nextdate = time() + $oneMailboxAction->frequency;
+                    unset($oneMailboxAction->conditions);
+                    unset($oneMailboxAction->actions);
+                    $mailboxActionClass->save($oneMailboxAction);
+                }
+            }
+        }
+
+        // Step 12: Delete data
         if (!in_array('delete_history', $this->skip) && $this->isDailyCron()) {
             $userStatClass = new UserStatClass();
             $userClass = new UserClass();
@@ -347,12 +386,12 @@ class CronHelper extends acymObject
             }
         }
 
-        // Step 12: Clean data on external sending method
+        // Step 13: Clean data on external sending method
         if (!in_array('clean_data_external_sending_method', $this->skip) && $this->isDailyCron()) {
             acym_trigger('onAcymCleanDataExternalSendingMethod');
         }
 
-        // Step 13: Clean export changes
+        // Step 14: Clean export changes
         if (!in_array('clean_export_changes', $this->skip) && $this->isDailyCron()) {
             $exportHelper = new ExportHelper();
             $exportHelper->cleanExportChangesFile();

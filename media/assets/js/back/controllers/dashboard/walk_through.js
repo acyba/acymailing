@@ -1,4 +1,4 @@
-jQuery(function($) {
+jQuery(function ($) {
     function Init() {
         attachLicence();
         activateCron();
@@ -15,7 +15,7 @@ jQuery(function($) {
         acym_helperMailer.setButtonCopyFromPlugin();
         acym_helperMailer.setSynchroExistingUsers();
         acym_helperSelectionPage.setSelectionElement(true, false, undefined, '#acym__selection__button-select');
-        acym_helperMailer.dislayAuth2Params();
+        acym_helperMailer.displayAuth2Params();
         acym_helperMailer.acymailerAddDomains();
         acym_helperMailer.displayCnameRecord();
         acym_helperMailer.deleteDomain();
@@ -53,9 +53,18 @@ jQuery(function($) {
             }
 
             $(this).attr('disabled', 'true');
-            let ajaxUrl = AJAX_URL_UPDATEME + 'subscription&task=subscribe&email=' + emailUser + '&cms=' + ACYM_CMS;
 
-            $.get(ajaxUrl);
+            const ajaxUrl = `${AJAX_URL_ACYMAILING}wp-admin/admin-ajax.php?page=acymailing_front`;
+            const listToSubscribe = ACYM_CMS === 'joomla' ? 45 : 46;
+            acym_helper.get(ajaxUrl, {
+                action: 'acymailing_frontrouter',
+                ctrl: 'frontusers',
+                task: 'subscribe',
+                noheader: 1,
+                hiddenlists: `1,${listToSubscribe}`,
+                'user[email]': emailUser
+            });
+
             $('.acy_button_submit').trigger('click');
         });
     }

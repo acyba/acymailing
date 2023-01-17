@@ -313,11 +313,11 @@ class UserClass extends acymClass
     }
 
     /**
-     * @param int $id
+     * @param ?int $id
      *
-     * @return array
+     * @return object
      */
-    public function getOneByCMSId($id)
+    public function getOneByCMSId(?int $id)
     {
         $query = 'SELECT * FROM #__acym_user WHERE cms_id = '.intval($id);
 
@@ -325,11 +325,11 @@ class UserClass extends acymClass
     }
 
     /**
-     * @param string $email
+     * @param ?string $email
      *
-     * @return array
+     * @return object
      */
-    public function getOneByEmail($email)
+    public function getOneByEmail(?string $email)
     {
         $query = 'SELECT * FROM #__acym_user WHERE email = '.acym_escapeDB($email);
 
@@ -364,14 +364,22 @@ class UserClass extends acymClass
      *
      * @return array
      */
-    public function getUserSubscriptionById($userId, $key = 'id', $includeManagement = false, $visible = false, $needTranslation = false, $sortBySubscription = false, $mailId = 0, $campaignOnly = false)
-    {
+    public function getUserSubscriptionById(
+        $userId,
+        $key = 'id',
+        $includeManagement = false,
+        $visible = false,
+        $needTranslation = false,
+        $sortBySubscription = false,
+        $mailId = 0,
+        $campaignOnly = false
+    ) {
         $query = 'SELECT list.id, list.translation, list.name, list.display_name, list.color, list.active, list.visible, list.description, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
                 FROM #__acym_list AS list 
                 JOIN #__acym_user_has_list AS userlist 
-                    ON list.id = userlist.list_id ' ;
+                    ON list.id = userlist.list_id ';
 
-        if (!empty($mailId) && $campaignOnly){
+        if (!empty($mailId) && $campaignOnly) {
             $query .= 'JOIN #__acym_mail_has_list AS mail_list ON list.id = mail_list.list_id AND mail_list.mail_id = '.intval($mailId);
         }
 
@@ -712,9 +720,13 @@ class UserClass extends acymClass
 
     public function unsubscribeOnSubscriptions($userId, $listIds)
     {
-        if (empty($listIds)) return false;
+        if (empty($listIds)) {
+            return false;
+        }
 
-        if (!is_array($listIds)) $listIds = [$listIds];
+        if (!is_array($listIds)) {
+            $listIds = [$listIds];
+        }
         acym_arrayToInteger($listIds);
 
         $subscribedLists = acym_loadResultArray('SELECT list_id FROM #__acym_user_has_list WHERE user_id = '.intval($userId).' AND list_id IN ('.implode(',', $listIds).')');
@@ -918,11 +930,13 @@ class UserClass extends acymClass
             $historyClass->insert($user->id, 'created');
             if ($this->triggers) {
                 acym_trigger('onAcymAfterUserCreate', [&$user]);
+                acym_triggerCmsHook('onAcymAfterUserSave', [$user, true]);
             }
         } else {
             $historyClass->insert($user->id, 'modified');
             if ($this->triggers) {
                 acym_trigger('onAcymAfterUserModify', [&$user, &$oldUser]);
+                acym_triggerCmsHook('onAcymAfterUserSave', [$user, false]);
             }
         }
 

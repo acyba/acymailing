@@ -15,8 +15,8 @@ const acym_helper = {
         if (typeof json === 'object') return json;
 
         try {
-            let begin = json.indexOf('{');
-            let beginBrackets = json.indexOf('[');
+            const begin = json.indexOf('{');
+            const beginBrackets = json.indexOf('[');
 
             if ((!isNaN(begin) && begin > 0) && (!isNaN(beginBrackets) && beginBrackets > 0)) {
                 json = json.substring(begin);
@@ -205,7 +205,7 @@ const acym_helper = {
                          return res;
                      })
                      .fail((xhr, status, error) => {
-                         let response = {};
+                         const response = {};
                          response.error = true;
                          response.message = error;
                          response.data = [];

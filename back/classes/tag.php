@@ -52,7 +52,7 @@ class TagClass extends acymClass
      */
     public function getAllTagsByType($type)
     {
-        $query = 'SELECT `name` as value, `name` FROM #__acym_tag WHERE `type` = '.acym_escapeDB($type).' GROUP BY `name`';
+        $query = 'SELECT `name` AS value, `name` FROM #__acym_tag WHERE `type` = '.acym_escapeDB($type).' GROUP BY `name`';
 
         return acym_loadObjectList($query);
     }
@@ -89,5 +89,19 @@ class TagClass extends acymClass
         $query = 'SELECT * FROM #__acym_tag WHERE `type` = '.acym_escapeDB($type).' AND `id_element` IN ('.implode(',', $ids).')';
 
         return acym_loadObjectList($query);
+    }
+
+    public function getAllTagsForSelect()
+    {
+        return acym_loadObjectList(
+            'SELECT DISTINCT `name` 
+            FROM #__acym_tag 
+            ORDER BY `name` ASC'
+        );
+    }
+
+    public function deleteByName($name)
+    {
+        acym_query('DELETE FROM #__acym_tag WHERE name = '.acym_escapeDB($name));
     }
 }

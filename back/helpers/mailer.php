@@ -2,26 +2,18 @@
 
 namespace AcyMailing\Helpers;
 
-require_once ACYM_LIBRARIES.'phpmailer'.DS.'exception.php';
-require_once ACYM_LIBRARIES.'phpmailer'.DS.'smtp.php';
-require_once ACYM_LIBRARIES.'phpmailer'.DS.'phpmailer.php';
-require_once ACYM_LIBRARIES.'phpmailer'.DS.'OAuthTokenProvider.php';
-require_once ACYM_LIBRARIES.'phpmailer'.DS.'OAuth.php';
-require_once ACYM_LIBRARIES.'emogrifier.php';
 
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\OverrideClass;
 use AcyMailing\Classes\UrlClass;
 use AcyMailing\Classes\UserClass;
-use acyPHPMailer\Exception;
-use acyPHPMailer\SMTP;
-use acyPHPMailer\OAuth;
-use acyPHPMailer\acyPHPMailer;
-use acyPHPMailer\OAuthTokenProvider;
-use acymEmogrifier\acymEmogrifier;
+use AcyMailerPhp\Exception;
+use AcyMailerPhp\OAuth;
+use AcyMailerPhp\AcyMailerPhp;
+use Pelago\Emogrifier\CssInliner;
 
-class MailerHelper extends acyPHPMailer
+class MailerHelper extends AcyMailerPhp
 {
     // The DKIM fails when the X-Mailer is added and the user uses their own keys, it makes no sense D:
     public $XMailer = ' ';
@@ -107,23 +99,23 @@ class MailerHelper extends acyPHPMailer
         $mailerMethodConfig = $this->config->get('mailer_method', 'phpmail');
 
         // Default mailer is to use PHP's mail function
-        if ($mailerMethodConfig == 'smtp') {
+        if ($mailerMethodConfig === 'smtp') {
             $this->isSMTP();
             $this->Host = trim($this->config->get('smtp_host'));
             $port = $this->config->get('smtp_port');
             // 465 is default port for SSL
-            if (empty($port) && $this->config->get('smtp_secured') == 'ssl') {
+            if (empty($port) && $this->config->get('smtp_secured') === 'ssl') {
                 $port = 465;
             }
             if (!empty($port)) {
                 $this->Host .= ':'.$port;
             }
             $this->SMTPAuth = (bool)$this->config->get('smtp_auth', true);
-
             $this->Username = trim($this->config->get('smtp_username'));
-
+            $connectionType = $this->config->get('smtp_type');
             $hostName = explode(':', $this->Host)[0];
-            if (OAuth::hostRequireOauth($hostName)) {
+
+            if (OAuth::hostRequireOauth($hostName, $connectionType)) {
                 $this->AuthType = 'XOAUTH2';
 
                 $this->clientSecret = trim($this->config->get('smtp_secret'));
@@ -154,15 +146,15 @@ class MailerHelper extends acyPHPMailer
             if (empty($this->Sender)) {
                 $this->Sender = strpos($this->Username, '@') ? $this->Username : $this->config->get('from_email');
             }
-        } elseif ($mailerMethodConfig == 'sendmail') {
+        } elseif ($mailerMethodConfig === 'sendmail') {
             $this->isSendmail();
             $this->Sendmail = trim($this->config->get('sendmail_path'));
             if (empty($this->Sendmail)) {
                 $this->Sendmail = '/usr/sbin/sendmail';
             }
-        } elseif ($mailerMethodConfig == 'qmail') {
+        } elseif ($mailerMethodConfig === 'qmail') {
             $this->isQmail();
-        } elseif ($mailerMethodConfig == 'elasticemail') {
+        } elseif ($mailerMethodConfig === 'elasticemail') {
             $port = $this->config->get('elasticemail_port', 'rest');
             if (is_numeric($port)) {
                 $this->isSMTP();
@@ -176,13 +168,13 @@ class MailerHelper extends acyPHPMailer
                 $this->SMTPAuth = true;
             } else {
                 //REST API!
-                include_once ACYM_LIBRARIES.'phpmailer'.DS.'elasticemail.php';
+                include_once ACYM_LIBRARIES.'mailer'.DS.'elasticemail.php';
                 $this->Mailer = 'elasticemail';
                 $this->{$this->Mailer} = new \acyElasticemail();
                 $this->{$this->Mailer}->Username = trim($this->config->get('elasticemail_username'));
                 $this->{$this->Mailer}->Password = trim($this->config->get('elasticemail_password'));
             }
-        } elseif ($mailerMethodConfig == 'amazon') {
+        } elseif ($mailerMethodConfig === 'amazon') {
             $this->isSMTP();
             $amazonCredentials = [];
             acym_trigger('onAcymGetCredentialsSendingMethod', [&$amazonCredentials, 'amazon'], 'plgAcymAmazon');
@@ -292,8 +284,8 @@ class MailerHelper extends acyPHPMailer
 
     public function send()
     {
-        if (!file_exists(ACYM_LIBRARIES.'phpmailer'.DS.'phpmailer.php')) {
-            $this->reportMessage = acym_translationSprintf('ACYM_X_FILE_MISSING', 'phpmailer', ACYM_LIBRARIES.'phpmailer'.DS);
+        if (!file_exists(ACYM_LIBRARIES.'mailer'.DS.'mailer.php')) {
+            $this->reportMessage = acym_translationSprintf('ACYM_X_FILE_MISSING', 'mailer', ACYM_LIBRARIES.'mailer'.DS);
             if ($this->report) {
                 acym_enqueueMessage($this->reportMessage, 'error');
             }
@@ -637,14 +629,17 @@ class MailerHelper extends acyPHPMailer
     {
         // We inline all the styles we previously get
         // Emogrifer deletes all the <style> tags in the body
-        $emogrifier = @new acymEmogrifier($mail->body, implode('', $style));
-        $mail->body = @$emogrifier->emogrifyBodyContent();
+        global $emogrifiedMediaCSS;
+        $emogrifiedMediaCSS = '';
+        $mail->body = CssInliner::fromHtml($mail->body)->inlineCss(implode('', $style))->renderBodyContent();
 
         //We get all the media queries from all the CSS
-        $style[] = $emogrifier->mediaCSS;
+        $style[] = $emogrifiedMediaCSS;
 
         preg_match('@<[^>"t]*/body[^>]*>@', $mail->body, $matches);
-        if (empty($matches[0])) $mail->body = $mail->body.'</body>';
+        if (empty($matches[0])) {
+            $mail->body = $mail->body.'</body>';
+        }
 
         // We remove the foundation library because it's already inlined and we just need the media queries
         //By the way there are more than 23 000 char in foundation library
@@ -659,7 +654,9 @@ class MailerHelper extends acyPHPMailer
         $finalContent .= '<style type="text/css">'.implode('</style><style type="text/css">', $style).'</style>';
         $finalContent .= '<!--[if mso]><style type="text/css">#acym__wysid__template center > table { width: 580px; }</style><![endif]-->';
         $finalContent .= '<!--[if !mso]><style type="text/css">#acym__wysid__template center > table { width: 100%; }</style><![endif]-->';
-        if (!empty($mail->headers)) $finalContent .= $mail->headers;
+        if (!empty($mail->headers)) {
+            $finalContent .= $mail->headers;
+        }
         $finalContent .= '</head>'.$mail->body.'</html>';
 
         $mail->body = $finalContent;

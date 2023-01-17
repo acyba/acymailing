@@ -91,6 +91,7 @@ class plgAcymStatistics extends acymPlugin
             acym_selectOption('notsent', 'ACYM_NOTSENT'),
             acym_selectOption('bounced', 'ACYM_BOUNCED'),
             acym_selectOption('click_on_url', 'ACYM_CLICKED_ON_LINK'),
+            acym_selectOption('neveropen', 'ACYM_NEVER_OPEN'),
         ];
 
         $filters['statistics'] = new stdClass();
@@ -111,6 +112,10 @@ class plgAcymStatistics extends acymPlugin
                         [
                             'class' => 'acym__filter__stats_url',
                             'values' => ['click_on_url'],
+                        ],
+                        [
+                            'class' => 'acym__filter__stats_mail',
+                            'values' => ['opened', 'notopen', 'failed', 'sent', 'notsent', 'bounced', 'click_on_url'],
                         ],
                     ]
                 ),
@@ -154,7 +159,7 @@ class plgAcymStatistics extends acymPlugin
             });
         }";
 
-        $filters['statistics']->option .= '<div class="intext_select_automation cell">';
+        $filters['statistics']->option .= '<div class="intext_select_automation cell acym__filter__stats_mail">';
         $ajaxParams = json_encode(['plugin' => __CLASS__, 'trigger' => 'searchMail']);
         $filters['statistics']->option .= acym_select(
             [],
@@ -197,8 +202,16 @@ class plgAcymStatistics extends acymPlugin
 
     public function onAcymProcessFilter_statistics(&$query, $options, $num)
     {
+
+        $alias = '`stats'.$num.'`';
+        $urlClickAlias = '`urlClick'.$num.'`';
+
         if (empty($options['mail'])) {
-            acym_enqueueMessage(acym_translation('ACYM_EMAIL_NOT_FOUND'), 'warning');
+            if (!empty($options['status']) && $options['status'] === 'neveropen') {
+                $query->join[] = '(SELECT user_id , SUM(open) AS sumOpen FROM #__acym_user_stat GROUP BY user_id) AS '.$alias.' ON user.id = '.$alias.'.user_id AND '.$alias.'.sumOpen = 0';
+            } else {
+                acym_enqueueMessage(acym_translation('ACYM_EMAIL_NOT_FOUND'), 'warning');
+            }
 
             return;
         }
@@ -208,9 +221,6 @@ class plgAcymStatistics extends acymPlugin
 
             return;
         }
-
-        $alias = '`stats'.$num.'`';
-        $urlClickAlias = '`urlClick'.$num.'`';
 
         if ($options['status'] == 'click_on_url') {
             $query->join[] = '#__acym_url_click AS '.$urlClickAlias.' ON `user`.`id` = '.$urlClickAlias.'.`user_id`';
@@ -252,38 +262,41 @@ class plgAcymStatistics extends acymPlugin
             if (empty($automationFilter[$filterName])) continue;
             $status = acym_translation('ACYM_'.strtoupper($automationFilter[$filterName]['status']));
 
-            $delayType = new DelayType();
-            $time = empty($automationFilter[$filterName]['time']) ? '' : $delayType->get($automationFilter[$filterName]['time'], 3);
-
-            $mailClass = new MailClass();
-            $mail = $mailClass->getOneById(empty($automationFilter[$filterName]['mail']) ? 0 : $automationFilter[$filterName]['mail']);
-
-            if (empty($mail)) {
-                $automationFilter = acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_MAIL'));
-            } elseif ($time) {
-                $automationFilter = acym_translationSprintf(
-                    'ACYM_FILTER_STATISTICS_OPEN_TIME_SUMMARY',
-                    $status,
-                    $mail->subject,
-                    $mail->id,
-                    $time->value.' '.strtolower($time->typeText)
-                );
+            if ($status == "ACYM_NEVEROPEN") {
+                $automationFilter = acym_translation('ACYM_NEVER_OPEN_SUMMARY');
             } else {
-                $action = acym_translation('ACYM_STATUS');
-                if (!empty($automationFilter[$filterName]['urlId'])) {
-                    $action = strtolower(acym_translation('ACYM_CLICKED'));
-                    if ($automationFilter[$filterName]['urlId'] != -1) {
-                        $url = acym_loadObject(
-                            'SELECT `url`.`name` 
+                $delayType = new DelayType();
+                $time = empty($automationFilter[$filterName]['time']) ? '' : $delayType->get($automationFilter[$filterName]['time'], 3);
+
+                $mailClass = new MailClass();
+                $mail = $mailClass->getOneById(empty($automationFilter[$filterName]['mail']) ? 0 : $automationFilter[$filterName]['mail']);
+                if (empty($mail)) {
+                    $automationFilter = acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_MAIL'));
+                } elseif ($time) {
+                    $automationFilter = acym_translationSprintf(
+                        'ACYM_FILTER_STATISTICS_OPEN_TIME_SUMMARY',
+                        $status,
+                        $mail->subject,
+                        $mail->id,
+                        $time->value.' '.strtolower($time->typeText)
+                    );
+                } else {
+                    $action = acym_translation('ACYM_STATUS');
+                    if (!empty($automationFilter[$filterName]['urlId'])) {
+                        $action = strtolower(acym_translation('ACYM_CLICKED'));
+                        if ($automationFilter[$filterName]['urlId'] != -1) {
+                            $url = acym_loadObject(
+                                'SELECT `url`.`name` 
                             FROM #__acym_url AS `url`
                             WHERE `url`.`id` = '.intval($automationFilter[$filterName]['urlId'])
-                        );
-                        $status = $url->name;
-                    } else {
-                        $status = strtolower(acym_translation('ACYM_ANY_URL'));
+                            );
+                            $status = $url->name;
+                        } else {
+                            $status = strtolower(acym_translation('ACYM_ANY_URL'));
+                        }
                     }
+                    $automationFilter = acym_translationSprintf('ACYM_FILTER_STATISTICS_SUMMARY', $action, $status, $mail->subject, $mail->id);
                 }
-                $automationFilter = acym_translationSprintf('ACYM_FILTER_STATISTICS_SUMMARY', $action, $status, $mail->subject, $mail->id);
             }
         }
     }

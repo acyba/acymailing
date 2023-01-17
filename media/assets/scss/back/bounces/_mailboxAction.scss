@@ -1,0 +1,46 @@
+#acym_wrapper {
+    #acym__mailbox__edition {
+        .acym__mailbox__edition__configuration__test {
+            .acymicon-spin {
+                display: none;
+            }
+
+            #acym__mailbox__edition__configuration__test-icon {
+                display: none;
+                margin-left: .5rem;
+                font-size: 15px;
+            }
+        }
+
+        #delaytype1 + .select2 {
+            max-width: 120px;
+        }
+
+        #acym__mailbox__edition__information {
+            height: fit-content;
+        }
+
+        #acym__mailbox__edition__conditions_subject__regex input {
+            width: 200px;
+            display: inline-block;
+        }
+
+        .intext_select_mailbox {
+            width: 200px;
+            margin-top: 0;
+            display: inline-flex;
+
+            &.acym__small_select {
+                width: 90px;
+            }
+
+            & + .select2 {
+                margin-right: 5px;
+            }
+        }
+
+        .switch-paddle {
+            margin-left: 0;
+        }
+    }
+}

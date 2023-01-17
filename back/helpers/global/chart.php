@@ -415,11 +415,13 @@ function acym_pieChart($id, $data = [], $class = '', $topLabel = '', $cap = true
     $data = array_reverse($data, true);
     $position = 0;
     $cappedValue = 0;
+    $nbOther = 0;
     if ($perList) {
         foreach ($data as $itemId => $item) {
             if ($position > 9 && $cap) {
                 $cappedValue += (float)$item['value'];
                 unset($data[$itemId]);
+                $nbOther++;
                 continue;
             }
             $data[$itemId] = (float)$item['value'];
@@ -432,6 +434,7 @@ function acym_pieChart($id, $data = [], $class = '', $topLabel = '', $cap = true
             if ($position > 9 && $cap) {
                 $cappedValue += (float)$number;
                 unset($data[$label]);
+                $nbOther++;
                 continue;
             }
             $data[$label] = (float)$number;
@@ -442,6 +445,7 @@ function acym_pieChart($id, $data = [], $class = '', $topLabel = '', $cap = true
     }
 
     if ($cappedValue > 0) {
+        $cappedValue = $cappedValue / $nbOther;
         $data[acym_translation('ACYM_OTHER')] = $cappedValue;
         $allLabelsArray[] = acym_translation('ACYM_OTHER');
         $colors[] = acym_getChartColor($position);
@@ -533,10 +537,12 @@ function acym_barChart($id, $data = [], $class = '', $topLabel = '', $cap = true
     $data = array_reverse($data, true);
     $position = 0;
     $cappedValue = 0;
+    $nbOther = 0;
     foreach ($data as $itemId => $item) {
         if ($position > 9 && $cap) {
             $cappedValue += (float)$item['value'];
             unset($data[$itemId]);
+            $nbOther++;
             continue;
         }
         $data[$itemId] = (float)$item['value'];
@@ -546,6 +552,7 @@ function acym_barChart($id, $data = [], $class = '', $topLabel = '', $cap = true
     }
 
     if ($cappedValue > 0) {
+        $cappedValue = $cappedValue / $nbOther;
         $data[acym_translation('ACYM_OTHER')] = $cappedValue;
         $allLabelsArray[] = acym_translation('ACYM_OTHER');
         $colors[] = acym_getChartColor($position);

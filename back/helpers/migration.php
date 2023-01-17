@@ -6,13 +6,13 @@ use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailboxClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Libraries\acymObject;
 
 class MigrationHelper extends acymObject
 {
     private $errors = [];
-
 
     private $result = [
         'isOk' => true,
@@ -104,8 +104,14 @@ class MigrationHelper extends acymObject
 
     public function doBounceMigration()
     {
-
         $this->doElementMigration('bounce');
+
+        return $this->result;
+    }
+
+    public function doDistribMigration()
+    {
+        $this->doElementMigration('distrib');
 
         return $this->result;
     }
@@ -169,11 +175,6 @@ class MigrationHelper extends acymObject
             'require_confirmation' => 'require_confirmation',
         ];
 
-        //Features
-        $fieldsMatchFeatures = [
-
-        ];
-
         //Security
         $fieldsMatchSecurity = [
             'allowedfiles' => 'allowed_files',
@@ -183,12 +184,6 @@ class MigrationHelper extends acymObject
             'security_key' => 'security_key',
         ];
 
-        //Languages
-        $fieldsMatchLanguages = [
-
-        ];
-
-        //Rien pour l'instant
         $fieldsMatchNotUsed = [
             'allow_visitor' => 'allow_visitor',
             'confirm_redirect' => 'confirm_redirect',
@@ -236,20 +231,21 @@ class MigrationHelper extends acymObject
             $fieldsMatchMailSettings,
             $fieldsMatchQueueProcess,
             $fieldsMatchSubscription,
-            $fieldsMatchFeatures,
             $fieldsMatchSecurity,
-            $fieldsMatchLanguages,
             $fieldsMatchNotUsed,
             $fieldsMatchBounce
         );
 
-        $queryGetValuesPreviousVersion = 'SELECT `namekey`, `value` FROM #__acymailing_config WHERE `namekey` IN ("'.implode('","', array_keys($fieldsMatch)).'") LIMIT '.intval(
-                $params['currentElement']
-            ).', '.intval($params['insertPerCalls']);
+        $dataPrevious = acym_loadObjectList(
+            'SELECT `namekey`, `value` 
+            FROM #__acymailing_config 
+            WHERE `namekey` IN ("'.implode('","', array_keys($fieldsMatch)).'") 
+            LIMIT '.intval($params['currentElement']).', '.intval($params['insertPerCalls'])
+        );
 
-        $dataPrevious = acym_loadObjectList($queryGetValuesPreviousVersion);
-
-        if (empty($dataPrevious)) return true;
+        if (empty($dataPrevious)) {
+            return true;
+        }
 
         $valuesToInsert = [];
 
@@ -975,6 +971,122 @@ class MigrationHelper extends acymObject
         }
     }
 
+    public function migrateDistrib($params = [])
+    {
+        $distributionLists = acym_loadObjectList(
+            'SELECT * 
+            FROM #__acymailing_action 
+            LIMIT '.intval($params['currentElement']).', '.intval($params['insertPerCalls'])
+        );
+
+        if (empty($distributionLists)) {
+            return true;
+        }
+
+        $mailboxClass = new MailboxClass();
+        $listClass = new ListClass();
+        $standardLists = array_column($listClass->getAllWithoutManagement(), 'id');;
+        $groups = acym_getGroups();
+        foreach ($distributionLists as $oneDistributionList) {
+            $mailboxAction = new \stdClass();
+            $mailboxAction->name = $oneDistributionList->name;
+            $mailboxAction->active = $oneDistributionList->published;
+            $mailboxAction->frequency = $oneDistributionList->frequency;
+            $mailboxAction->description = $oneDistributionList->description;
+
+            $mailboxAction->server = $oneDistributionList->server;
+            $mailboxAction->username = $oneDistributionList->username;
+            $mailboxAction->password = $oneDistributionList->password;
+            $mailboxAction->connection_method = $oneDistributionList->connection_method;
+            $mailboxAction->secure_method = $oneDistributionList->secure_method;
+            $mailboxAction->port = $oneDistributionList->port;
+            $mailboxAction->self_signed = $oneDistributionList->self_signed;
+
+            $mailboxAction->delete_wrong_emails = $oneDistributionList->delete_wrong_emails;
+
+            $oneDistributionList->conditions = json_decode($oneDistributionList->conditions, true);
+            $mailboxAction->conditions = [
+                'sender' => '',
+                'specific' => '',
+                'groups' => '',
+                'lists' => '',
+                'subject' => '',
+                'subject_text' => '',
+                'subject_regex' => '',
+            ];
+
+            if ($oneDistributionList->conditions['sender'] === 'specific') {
+                $mailboxAction->conditions['sender'] = 'specific';
+                $mailboxAction->conditions['specific'] = $oneDistributionList->conditions['specific'];
+            } elseif ($oneDistributionList->conditions['sender'] === 'group') {
+                $mailboxAction->conditions['sender'] = 'groups';
+                if ($oneDistributionList->conditions['group'] === 'all') {
+                    $mailboxAction->conditions['groups'] = array_keys($groups);
+                } else {
+                    $mailboxAction->conditions['groups'] = $oneDistributionList->conditions['group'];
+                }
+            } elseif ($oneDistributionList->conditions['sender'] === 'list') {
+                $mailboxAction->conditions['sender'] = 'lists';
+                if ($oneDistributionList->conditions['listids'] === 'All') {
+                    $mailboxAction->conditions['lists'] = $standardLists;
+                } else {
+                    $mailboxAction->conditions['lists'] = $oneDistributionList->conditions['listids'];
+                }
+            }
+
+            if ($oneDistributionList->conditions['subject'] !== 'all') {
+                $mailboxAction->conditions['subject'] = $oneDistributionList->conditions['subject'];
+                $mailboxAction->conditions['subject_text'] = $oneDistributionList->conditions['subjectvalue'];
+            }
+
+            $mailboxAction->conditions['subject_remove'] = $oneDistributionList->conditions['removeSubject'];
+
+
+            $oneDistributionList->actions = json_decode($oneDistributionList->actions, true);
+            $mailboxAction->actions = [];
+
+            foreach ($oneDistributionList->actions as $oneAction) {
+                if ($oneAction['type'] === 'forward') {
+                    $mailboxAction->actions[] = [
+                        'forward_specific' => [
+                            'addresses' => $oneAction['forward'],
+                            'template_id' => $oneAction['template'],
+                        ],
+                    ];
+                } elseif ($oneAction['type'] === 'forwardlist') {
+                    $mailboxAction->actions[] = [
+                        'forward_list' => [
+                            'list_id' => $oneAction['list'],
+                            'template_id' => $oneAction['template'],
+                        ],
+                    ];
+                } elseif ($oneAction['type'] === 'subscribe') {
+                    $mailboxAction->actions[] = [
+                        'acy_list_subscribe' => [
+                            'list_id' => $oneAction['list'],
+                        ],
+                    ];
+                } elseif ($oneAction['type'] === 'unsubscribe') {
+                    $mailboxAction->actions[] = [
+                        'acy_list_unsubscribe' => [
+                            'list_id' => $oneAction['list'],
+                        ],
+                    ];
+                }
+            }
+
+            $mailboxAction->conditions = json_encode($mailboxAction->conditions);
+            $mailboxAction->actions = json_encode($mailboxAction->actions);
+
+            $mailboxAction->senderfrom = $oneDistributionList->senderfrom;
+            $mailboxAction->senderto = $oneDistributionList->senderto;
+
+            $mailboxClass->save($mailboxAction);
+        }
+
+        return true;
+    }
+
     public function migrateSubscriptions($params = [])
     {
         $result = 0;
@@ -1263,6 +1375,15 @@ class MigrationHelper extends acymObject
         return $this->_finalizeClean($queryClean);
     }
 
+    private function cleanDistribTable()
+    {
+        $queryClean = [
+            'DELETE FROM `#__acym_mailbox_action`',
+        ];
+
+        return $this->_finalizeClean($queryClean);
+    }
+
     public function doElementMigration($elementName, $params = [])
     {
         $functionName = 'migrate'.ucfirst($elementName);
@@ -1311,6 +1432,7 @@ class MigrationHelper extends acymObject
             'lists' => ['table' => 'list', 'where' => ''],
             'users' => ['table' => 'subscriber', 'where' => ''],
             'bounce' => ['table' => 'rules', 'where' => ''],
+            'distrib' => ['table' => 'action', 'where' => ''],
             'subscriptions' => ['table' => 'listsub', 'where' => ''],
             'mailhaslists' => ['table' => 'listmail', 'where' => ''],
             'mailstats' => ['table' => 'stats', 'where' => ''],
@@ -1321,26 +1443,32 @@ class MigrationHelper extends acymObject
 
         $this->doCleanTable($element);
 
-        if ('users_fields' == $element) {
+        if ('users_fields' === $element) {
             $fields = acym_loadResultArray(
                 'SELECT namekey FROM #__acymailing_fields WHERE `namekey` NOT IN ("name", "email", "html") AND `type` NOT IN ("customtext", "category", "gravatar")'
             );
             $columnUserTable = acym_getColumns('acymailing_subscriber', false);
 
-            $fieldToCkeck = [];
+            $fieldToCheck = [];
 
             foreach ($fields as $key => $field) {
-                if (in_array($field, $columnUserTable)) $fieldToCkeck[$key] = '`'.$field.'`';
+                if (in_array($field, $columnUserTable)) {
+                    $fieldToCheck[$key] = '`'.$field.'`';
+                }
             }
 
-            $connection[$element]['where'] = implode(' IS NOT NULL OR ', $fieldToCkeck);
-            if (!empty($fieldToCkeck)) $connection[$element]['where'] .= ' IS NOT NULL;';
+            $connection[$element]['where'] = implode(' IS NOT NULL OR ', $fieldToCheck);
+            if (!empty($fieldToCheck)) {
+                $connection[$element]['where'] .= ' IS NOT NULL;';
+            }
         }
 
-        $where = !empty($connection[$element]['where']) ? 'WHERE '.$connection[$element]['where'] : '';
+        $query = 'SELECT COUNT(*) FROM #__acymailing_'.$connection[$element]['table'];
+        if (!empty($connection[$element]['where'])) {
+            $query .= ' WHERE '.$connection[$element]['where'];
+        }
 
-
-        $this->result['count'] = acym_loadResult('SELECT COUNT(*) FROM #__acymailing_'.$connection[$element]['table'].' '.$where);
+        $this->result['count'] = acym_loadResult($query);
 
         return $this->result;
     }

@@ -173,18 +173,24 @@ function acym_checkVersion($ajax = false)
     return $newConfig->lastlicensecheck;
 }
 
-function acym_triggerCmsHook($method, $args = [])
+function acym_triggerCmsHook($method, $args = [], $isAction = true)
 {
     if (ACYM_J40) {
-        return JFactory::getApplication()->triggerEvent($method, $args);
+        $result = JFactory::getApplication()->triggerEvent($method, $args);
+    } else {
+        global $acydispatcher;
+        if ($acydispatcher === null) {
+            $acydispatcher = JDispatcher::getInstance();
+        }
+
+        $result = @$acydispatcher->trigger($method, $args);
     }
 
-    global $acydispatcher;
-    if ($acydispatcher === null) {
-        $acydispatcher = JDispatcher::getInstance();
+    if ($isAction) {
+        return $result;
+    } else {
+        return isset($result[0]) ? $result[0] : array_shift($args);
     }
-
-    return @$acydispatcher->trigger($method, $args);
 }
 
 function acym_getCmsCaptcha()

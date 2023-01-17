@@ -1,0 +1,29 @@
+#acym_wrapper {
+    .acym__bounce_rule__edit {
+        .acym__bounces__rules__cb label {
+            margin-top: 0 !important;
+        }
+
+        .acym__bounces__rules__cb label div {
+            margin-left: 0.5rem;
+        }
+
+        .acym__bounces__details__label .acym__label {
+            color: $font-primary;
+        }
+
+        .acym__bounces__summary {
+            label {
+                cursor: auto;
+            }
+
+            li {
+                color: $font-primary;
+            }
+        }
+    }
+
+    #acy_bounces_details span.acym__label {
+        color: $font-primary;
+    }
+}

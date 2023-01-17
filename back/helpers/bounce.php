@@ -43,6 +43,11 @@ class BounceHelper extends acymObject
     var $mod_security2 = false;
     //Number of ob_end_flush used in the process...
     var $obend = 0;
+    // Correspond to mailbox entity in database
+    public $action;
+    public $attachments = [];
+    private $inlineImages = [];
+
     private $allCharsets;
 
     private $ruleClass;
@@ -71,16 +76,29 @@ class BounceHelper extends acymObject
         $this->detectEmail = '/'.acym_getEmailRegex(false, true).'/i';
     }
 
-    public function init()
+    public function init($config = [])
     {
-        $this->server = $this->config->get('bounce_server');
-        $this->username = $this->config->get('bounce_username');
-        $this->password = $this->config->get('bounce_password');
-        $this->port = $this->config->get('bounce_port', '');
-        $this->connectMethod = $this->config->get('bounce_connection');
-        $this->secureMethod = $this->config->get('bounce_secured', '');
-        $this->selfSigned = $this->config->get('bounce_certif', false);
-        $this->timeout = $this->config->get('bounce_timeout');
+        if (empty($config)) {
+            $config = [
+                'server' => $this->config->get('bounce_server'),
+                'username' => $this->config->get('bounce_username'),
+                'password' => $this->config->get('bounce_password'),
+                'port' => $this->config->get('bounce_port', ''),
+                'connect_method' => $this->config->get('bounce_connection'),
+                'secure_method' => $this->config->get('bounce_secured', ''),
+                'self_signed' => $this->config->get('bounce_certif', false),
+                'timeout' => $this->config->get('bounce_timeout'),
+            ];
+        }
+
+        $this->server = $config['server'];
+        $this->username = $config['username'];
+        $this->password = $config['password'];
+        $this->port = $config['port'];
+        $this->connectMethod = $config['connect_method'];
+        $this->secureMethod = $config['secure_method'];
+        $this->selfSigned = $config['self_signed'];
+        $this->timeout = $config['timeout'];
 
         if ($this->connectMethod == 'pear') {
             $this->usePear = true;
@@ -237,8 +255,8 @@ class BounceHelper extends acymObject
         // Test if string contains '\'
         $email = trim($this->username);
         if (strpos($email, '\\') !== false) {
-            list($user, $authuser) = explode('\\', $email);
-            list($x, $domain) = explode('@', $user);
+            [$user, $authuser] = explode('\\', $email);
+            [$x, $domain] = explode('@', $user);
             $serverName .= '/authuser='.$user.'/user='.$authuser.'@'.$domain;
         }
 
@@ -262,7 +280,6 @@ class BounceHelper extends acymObject
                 acym_enqueueMessage($warnings, 'warning');
             }
         }
-
 
         return $this->mailbox ? true : false;
     }
@@ -312,16 +329,16 @@ class BounceHelper extends acymObject
         }
     }
 
-    private function decodeMessage()
+    public function decodeMessage($attachments = false)
     {
         if ($this->usePear) {
-            return $this->decodeMessagePear();
+            return $this->decodeMessagePear($attachments);
         } else {
-            return $this->decodeMessageImap();
+            return $this->decodeMessageImap($attachments);
         }
     }
 
-    private function decodeMessagePear()
+    private function decodeMessagePear($attachments)
     {
         $this->_message->headerinfo = $this->mailbox->getParsedHeaders($this->_message->messageNB);
         if (empty($this->_message->headerinfo['subject'])) {
@@ -400,24 +417,43 @@ class BounceHelper extends acymObject
                             $filename = $filename.'_('.$fileNumber.')';
                         }
 
-                        preg_match('#Content-ID: <([^>]+)>#i', $segment, $contentID);
-                        if (empty($contentID) || empty($contentID[1])) {
-                            continue;
-                        }
-                        $contentID = trim($contentID[1]);
-
-                        $data = trim(substr($segment, strpos($segment, "\r\n\r\n")));
-                        if (strpos($segment, 'Content-Transfer-Encoding: base64') !== false) {
-                            $data = base64_decode($data);
-                        }
-
-
-                        try {
-                            if (acym_writeFile($pathToUpload.$filename.'.'.$extension, $data)) {
-                                $inlineImages['cid:'.$contentID] = acym_rootURI().$uploadFolder.'/'.$filename.'.'.$extension;
+                        if ($attachments && preg_match("#Content-Disposition: attachment;#i", $segment) !== false) {
+                            $data = trim(substr($segment, strpos($segment, "\r\n\r\n")));
+                            if (strpos($segment, 'Content-Transfer-Encoding: base64') !== false) {
+                                $data = base64_decode($data);
                             }
-                        } catch (\Exception $e) {
-                            $this->display(acym_translationSprintf('ACYM_ERROR_UPLOAD_ATTACHMENT', $filename.'.'.$extension, $e->getMessage()), false);
+
+                            try {
+                                if (acym_writeFile($pathToUpload.$filename.'.'.$extension, $data)) {
+                                    $attachment = new \stdClass();
+                                    $attachment->filename = str_replace(DS, '/', trim($uploadFolder, '\\/')).'/'.$filename.'.'.$extension;
+                                    $attachment->size = filesize(ACYM_ROOT.$attachment->filename);
+                                    $this->attachments[] = $attachment;
+                                }
+                            } catch (\Exception $e) {
+                                $completeFilename = $filename.'.'.$extension;
+                                $this->display(acym_translationSprintf('ACYM_ERROR_UPLOADING_ATTACHMENT_X_TO_X', $completeFilename, $e->getMessage()), false);
+                            }
+                        } else {
+                            preg_match('#Content-ID: <([^>]+)>#i', $segment, $contentID);
+                            if (empty($contentID) || empty($contentID[1])) {
+                                continue;
+                            }
+                            $contentID = trim($contentID[1]);
+
+                            $data = trim(substr($segment, strpos($segment, "\r\n\r\n")));
+                            if (strpos($segment, 'Content-Transfer-Encoding: base64') !== false) {
+                                $data = base64_decode($data);
+                            }
+
+
+                            try {
+                                if (acym_writeFile($pathToUpload.$filename.'.'.$extension, $data)) {
+                                    $inlineImages['cid:'.$contentID] = acym_rootURI().$uploadFolder.'/'.$filename.'.'.$extension;
+                                }
+                            } catch (\Exception $e) {
+                                $this->display(acym_translationSprintf('ACYM_ERROR_UPLOAD_ATTACHMENT', $filename.'.'.$extension, $e->getMessage()), false);
+                            }
                         }
                     }
                 }
@@ -448,7 +484,7 @@ class BounceHelper extends acymObject
         return true;
     }
 
-    private function decodeMessageImap()
+    private function decodeMessageImap($attachments)
     {
         $this->_message->structure = imap_fetchstructure($this->mailbox, $this->_message->messageNB);
 
@@ -480,6 +516,17 @@ class BounceHelper extends acymObject
                     }
                     $this->_message->text .= $decodedContent."\n\n- - -\n\n";
                 }
+
+                // Only for mailbox actions
+                if (!empty($this->action) && $attachments) {
+                    if ((isset($onePart->parameters) && is_array($onePart->parameters)) || (isset($onePart->dparameters) && is_array($onePart->dparameters))) {
+                        $this->uploadAttachment($onePart, $num);
+                    } elseif (isset($onePart->parts) && is_array($onePart->parts)) {
+                        foreach ($onePart->parts as $num2 => $innerPart) {
+                            $this->uploadAttachment($innerPart, $num2);
+                        }
+                    }
+                }
             }
 
             if (!empty($this->action) && empty($this->_message->html)) {
@@ -507,6 +554,76 @@ class BounceHelper extends acymObject
         $this->decodeAddressImap('to');
 
         return true;
+    }
+
+    private function uploadAttachment($attachment, $num)
+    {
+        // It may be a real attachment, or an inline image
+        if (!isset($attachment->disposition) || (strtolower($attachment->disposition) !== 'attachment' && strtolower($attachment->disposition) !== 'inline')) {
+            return;
+        }
+
+        $name = empty($attachment->dparameters[0]->value) ? $attachment->parameters[0]->value : $attachment->dparameters[0]->value;
+        $filename = $this->decodeHeader($name);
+        $extensionPos = strrpos($filename, '.');
+
+        if ($extensionPos === false) {
+            foreach ($attachment->parameters as $key => $oneParam) {
+                if (strtolower($oneParam->attribute) == 'name') {
+                    $filename = $this->decodeHeader($attachment->parameters[$key]->value);
+                    $extensionPos = strrpos($filename, '.');
+                    break;
+                }
+            }
+        }
+
+        // No extension => no upload
+        if ($extensionPos === false) {
+            return;
+        }
+
+        // Upload only allowed extensions in the configuration
+        $extension = substr($filename, $extensionPos + 1);
+        if (!in_array(strtolower($extension), $this->allowed_extensions)) {
+            return;
+        }
+
+        // Make sure there is no double extension or space
+        $filename = preg_replace('#[^a-zA-Z0-9]#Uis', '_', substr($filename, 0, $extensionPos));
+
+        // Get the upload folder and create it if needed
+        $uploadFolder = str_replace(['/', '\\'], DS, acym_getFilesFolder());
+        $pathToUpload = ACYM_ROOT.trim($uploadFolder, DS).DS;
+
+        // Rename if needed
+        if (file_exists($pathToUpload.$filename.'.'.$extension)) {
+            $fileNumber = 1;
+            while (file_exists($pathToUpload.$filename.'_('.$fileNumber.').'.$extension)) {
+                $fileNumber++;
+            }
+            $filename = $filename.'_('.$fileNumber.')';
+        }
+
+        $data = $this->decodeContent(imap_fetchbody($this->mailbox, $this->_message->messageNB, $num), $attachment);
+
+        try {
+            if (acym_writeFile($pathToUpload.$filename.'.'.$extension, $data)) {
+                if (strtolower($attachment->disposition) !== 'attachment' && !empty($attachment->id) && in_array(
+                        strtolower($attachment->subtype),
+                        acym_getImageFileExtensions()
+                    )) {
+                    $this->inlineImages['cid:'.trim($attachment->id, '<>')] = acym_rootURI().$uploadFolder.'/'.$filename.'.'.$extension;
+                } else {
+                    $attachment = new \stdClass();
+                    $attachment->filename = str_replace(DS, '/', trim($uploadFolder, '\\/')).'/'.$filename.'.'.$extension;
+                    $attachment->size = filesize(ACYM_ROOT.$attachment->filename);
+                    $this->attachments[] = $attachment;
+                }
+            }
+        } catch (\Exception $e) {
+            $completeFilename = $filename.'.'.$extension;
+            $this->display(acym_translationSprintf('ACYM_ERROR_UPLOADING_ATTACHMENT_X_TO_X', $completeFilename, $e->getMessage()), false);
+        }
     }
 
     public function handleMessages()
@@ -595,7 +712,7 @@ class BounceHelper extends acymObject
             }
 
             if (empty($this->_message->subject)) {
-                $this->_message->subject = 'empty subject';
+                $this->_message->subject = '';
             }
 
             $this->_message->analyseText = $this->_message->html.' '.$this->_message->text;
@@ -1148,7 +1265,7 @@ class BounceHelper extends acymObject
      * @param boolean $success
      * @param string  $num
      */
-    private function display($message, $success = true, $num = '')
+    protected function display($message, $success = true, $num = '')
     {
         $this->messages[] = $message;
 
@@ -1171,7 +1288,7 @@ class BounceHelper extends acymObject
         }
     }
 
-    private function decodeHeader($input)
+    public function decodeHeader($input)
     {
         // Remove white space between encoded-words
         $input = preg_replace('/(=\?[^?]+\?(q|b)\?[^?]*\?=)(\s)+=\?/i', '\1=?', $input);

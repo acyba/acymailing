@@ -27,6 +27,7 @@ function acym_loadAssets($ctrl, $task)
     acym_addScript(
         true,
         'var AJAX_URL_UPDATEME = "'.ACYM_UPDATEMEURL.'";
+        var AJAX_URL_ACYMAILING = "'.ACYM_ACYMAILING_WEBSITE.'";
         var ACYM_MEDIA_URL = "'.ACYM_MEDIA_URL.'";
         var ACYM_CMS = "'.ACYM_CMS.'";
         var ACYM_J40 = '.(defined('ACYM_J40') && ACYM_J40 ? 'true' : 'false').';
@@ -59,7 +60,9 @@ function acym_loadAssets($ctrl, $task)
     }
 
     // Include JS
-    if ('back' == $scope) acym_addScript(false, ACYM_JS.$scope.'_helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_helpers.min.js'), 'text/javascript', true);
+    if ('back' == $scope) {
+        acym_addScript(false, ACYM_JS.$scope.'_helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_helpers.min.js'), 'text/javascript', true);
+    }
     acym_addScript(false, ACYM_JS.'global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'global.min.js'), 'text/javascript', true);
     acym_addScript(false, ACYM_JS.$scope.'_global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_global.min.js'), 'text/javascript', true);
 

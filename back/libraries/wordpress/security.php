@@ -241,11 +241,11 @@ function acym_checkVersion($ajax = false)
     return false;
 }
 
-function acym_triggerCmsHook($action, $args = [])
+function acym_triggerCmsHook($action, $args = [], $isAction = true)
 {
     array_unshift($args, $action);
 
-    return call_user_func_array('do_action', $args);
+    return call_user_func_array($isAction ? 'do_action' : 'apply_filters', $args);
 }
 
 function acym_getCmsCaptcha()

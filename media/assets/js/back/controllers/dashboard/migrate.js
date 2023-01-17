@@ -1,4 +1,4 @@
-jQuery(function($) {
+jQuery(function ($) {
     let batchToDo = 0; //total calls to do
     let batchWhereWeAre = 0; //At which batch we are
     let totalCallsToDo = 0; //At which call we are on total
@@ -62,7 +62,7 @@ jQuery(function($) {
         $('#acym__migrate__button').prop('disabled', true);
         $('.acym__migrate__option').prop('disabled', true);
 
-        let elementsToMigrate = {
+        const elementsToMigrate = {
             'config': $('#acym__migrate__config').is(':checked') && !$('#acym__migrate__config').hasClass('acym__migrate__migrate_with_success_element'),
             'bounce': $('#acym__migrate__bounce').is(':checked') && !$('#acym__migrate__bounce').hasClass('acym__migrate__migrate_with_success_element'),
             'lists': $('#acym__migrate__lists').is(':checked') && !$('#acym__migrate__lists').hasClass('acym__migrate__migrate_with_success_element'),
@@ -70,9 +70,9 @@ jQuery(function($) {
             'templates': $('#acym__migrate__templates').is(':checked') && !$('#acym__migrate__templates')
                 .hasClass('acym__migrate__migrate_with_success_element'),
             'fields': $('#acym__migrate__fields').is(':checked') && !$('#acym__migrate__fields').hasClass('acym__migrate__migrate_with_success_element'),
-            'users': $('#acym__migrate__users').is(':checked') && !$('#acym__migrate__users').hasClass('acym__migrate__migrate_with_success_element')
+            'users': $('#acym__migrate__users').is(':checked') && !$('#acym__migrate__users').hasClass('acym__migrate__migrate_with_success_element'),
+            'distrib': $('#acym__migrate__distrib').is(':checked') && !$('#acym__migrate__distrib').hasClass('acym__migrate__migrate_with_success_element')
         };
-
 
         elementsToMigrate['subscriptions'] = elementsToMigrate['users'] && elementsToMigrate['lists'];
         elementsToMigrate['users_fields'] = elementsToMigrate['users'] && elementsToMigrate['fields'];
@@ -81,17 +81,8 @@ jQuery(function($) {
         elementsToMigrate['mailhaslists'] = elementsToMigrate['mails'] && elementsToMigrate['lists'];
         elementsToMigrate['welcomeunsub'] = elementsToMigrate['mails'] && elementsToMigrate['lists'];
 
-        let ajaxUrls = [];
-        let elements = [];
-
-        let params = {
-            'migrateMails': elementsToMigrate['mails'] ? 1 : 0,
-            'migrateMailStats': $('#acym__migrate__mailstats').is(':checked') && !$('#acym__migrate__mailstats')
-                .hasClass('acym__migrate__migrate_with_success_element') ? 1 : 0,
-            'migrateMailHasLists': elementsToMigrate['mails'] && elementsToMigrate['lists'] ? 1 : 0,
-            'migrateLists': elementsToMigrate['lists'] ? 1 : 0
-        };
-
+        const ajaxUrls = [];
+        const elements = [];
 
         $.each(elementsToMigrate, function (key, val) {
             if (val === true) {

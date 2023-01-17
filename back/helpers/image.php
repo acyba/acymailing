@@ -79,7 +79,7 @@ class ImageHelper extends acymObject
 
             $newPicture = $this->generateThumbnail($imageUrl);
 
-            $newDimension = 'width:'.$this->maxWidth.'px;height:'.$this->maxHeight.'px;';
+            $newDimension = 'max-width:'.$this->maxWidth.'px;max-height:'.$this->maxHeight.'px;';
 
             //Maybe we don't need to resize anything...
             if (!$newPicture) {
@@ -113,9 +113,9 @@ class ImageHelper extends acymObject
             // Make sure that we resized the image
             if (strpos($replace[$onepicture], 'width') === false) {
                 if (strpos($onepicture, 'style="') !== false) {
-                    $replace[$onepicture] = preg_replace('#style="([^"]*)"#Uis', 'style="'.$newDimension.'$1"', $onepicture);
+                    $replace[$onepicture] = preg_replace('#style="([^"]*)"#Uis', 'style="'.$newDimension.'$1"', $replace[$onepicture]);
                 } else {
-                    $replace[$onepicture] = ' style="'.$newDimension.'" '.$onepicture;
+                    $replace[$onepicture] = ' style="'.$newDimension.'" '.$replace[$onepicture];
                 }
             }
         }
@@ -132,7 +132,7 @@ class ImageHelper extends acymObject
         $paramsPos = strpos($picturePath, '?');
         if ($paramsPos !== false) $picturePath = substr($picturePath, 0, $paramsPos);
 
-        list($currentwidth, $currentheight) = @getimagesize($picturePath);
+        [$currentwidth, $currentheight] = @getimagesize($picturePath);
         if (empty($currentwidth) || empty($currentheight)) {
             return false;
         }

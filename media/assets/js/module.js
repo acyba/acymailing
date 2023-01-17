@@ -494,7 +494,7 @@ if (typeof submitAcymForm !== 'function') {
         responseContainer.className += ' message_' + formName;
         responseContainer.className += ' slide_open';
 
-        if (successMode === 'replacetemp' || successMode === 'toptemp') {
+        if (type === 'success' && (successMode === 'replacetemp' || successMode === 'toptemp')) {
             setTimeout(() => {
                 responseContainer.remove();
                 form.style.filter = 'alpha(opacity=100)';
@@ -505,7 +505,9 @@ if (typeof submitAcymForm !== 'function') {
             }, 3000);
         }
 
-        acymApplyCookie(formName);
+        if (type === 'success') {
+            acymApplyCookie(formName);
+        }
     }
 
     function acymApplyCookie(formName) {

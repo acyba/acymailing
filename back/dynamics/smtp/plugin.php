@@ -6,7 +6,7 @@ class plgAcymSmtp extends acymPlugin
 {
     const SENDING_METHOD_ID = 'smtp';
     const SENDING_METHOD_NAME = 'SMTP';
-    const HOST_REQUIRED_AUTH_2 = ['smtp.gmail.com', 'smtp-mail.outlook.com', 'smtp.office365.com'];
+    const HOST_AUTH_2 = ['smtp.gmail.com', 'smtp-mail.outlook.com', 'smtp.office365.com'];
 
     public function __construct()
     {
@@ -29,8 +29,8 @@ class plgAcymSmtp extends acymPlugin
         $smtpRedirectUrl = trim($this->config->get('smtp_redirectUrl'));
         $redirectUrl = empty($smtpRedirectUrl) ? acym_baseURI() : $smtpRedirectUrl;
 
-        $isWalkTrough = $this->config->get('walk_through',0);
-		$loginAttribute = !$isWalkTrough ? 'acym-data-before="jQuery.acymConfigSave();"' : '';
+        $isWalkTrough = $this->config->get('walk_through', 0);
+        $loginAttribute = !$isWalkTrough ? 'acym-data-before="jQuery.acymConfigSave();"' : '';
 
         $link = ACYM_DOCUMENTATION.'setup/configuration/mail-configuration/set-up-oauth-2.0';
 
@@ -99,6 +99,29 @@ class plgAcymSmtp extends acymPlugin
                     'medium-4 small-9'
                 );
                 ?>
+			</div>
+			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings" id="acym__sending__methods__one__settings__type">
+				<label for="smtp_type" class="cell"><?php echo acym_translation('ACYM_CONNECTION_TYPE').acym_info('ACYM_CONNECTION_TYPE_DESC'); ?></label>
+				<div class="cell medium-2">
+                    <?php
+                    echo acym_select(
+                        [
+                            'oauth' => 'ACYM_WITH_OAUTH',
+                            'password' => 'ACYM_WITH_PASSWORD',
+                        ],
+                        'config[smtp_type]',
+                        $this->config->get('smtp_type', 'oauth'),
+                        [
+                            'class' => 'acym__select',
+                            'acym-data-infinite' => '',
+                        ],
+                        '',
+                        '',
+                        'smtp_type',
+						true
+                    );
+                    ?>
+				</div>
 			</div>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 				<label for="smtp_username" class="cell"><?php echo acym_translation('ACYM_SMTP_USERNAME').acym_info('ACYM_SMTP_USERNAME_DESC'); ?></label>
@@ -199,8 +222,12 @@ class plgAcymSmtp extends acymPlugin
         $clientId = trim($this->config->get('smtp_clientId'));
         $secret = trim($this->config->get('smtp_secret'));
         $host = trim($this->config->get('smtp_host'));
+        $connectionType = $this->config->get('smtp_type');
 
-        $requireAuth = in_array($host, self::HOST_REQUIRED_AUTH_2);
+		$requireAuth = false;
+		if(in_array($host, self::HOST_AUTH_2) && $connectionType !== 'password'){
+			$requireAuth = true;
+        }
 
         if ((empty($clientId) || empty($secret)) && $requireAuth) {
             $link = '<a class="acym_message_link" href="'.acym_completeLink('configuration#oauthParams').'">'.strtolower(acym_translation('ACYM_HERE')).'</a>';

@@ -1,5 +1,5 @@
 #acym_wrapper {
-    .acym__splashcreen__container {
+    .acym__splashscreen__container {
         box-shadow: -20px 32px 44px rgba(0, 0, 0, 0.03);
         border-radius: 23px;
         @media screen and (min-width: 1900px) {
@@ -14,7 +14,7 @@
             max-width: 80% !important;
         }
 
-        .acym__splashcreen__header {
+        .acym__splashscreen__header {
             background-repeat: no-repeat;
             position: relative;
             min-height: 350px;
@@ -29,9 +29,8 @@
                 position: absolute;
             }
 
-            .acym__splashcreen__header__astronaute {
-                max-width: 399px;
-                top: 0;
+            .acym__splashscreen__header__astronaut {
+                top: 26%;
                 left: -16%;
 
                 @media screen and (max-width: 950px) {
@@ -39,10 +38,15 @@
                 }
             }
 
-            .acym__splashcreen__header__planes {
-                max-width: 129px;
-                bottom: -13%;
-                left: 12%;
+            .acym__splashscreen__header__comet__top {
+                max-width: 100px;
+                left: 9%;
+            }
+
+            .acym__splashscreen__header__comet__bottom {
+                max-width: 100px;
+                bottom: 0;
+                left: 16%;
             }
 
             h1 {
@@ -64,28 +68,28 @@
             }
         }
 
-        .acym__splashcreen__body {
+        .acym__splashscreen__body {
             padding: 0 50px;
             @media screen and (max-width: 449px) {
                 padding: 0 15px;
             }
 
-            .acym__splashcreen__body__subtitle {
+            .acym__splashscreen__body__subtitle {
                 font-weight: 800;
                 font-size: 24px;
                 line-height: 39px;
                 color: $color-palette-dark-blue;
             }
 
-            .acym__splashcreen__body__title {
+            .acym__splashscreen__body__title {
                 font-weight: 800;
                 font-size: 25px;
                 line-height: 39px;
                 color: $black;
             }
 
-            .acym__splashcreen__body__card__container {
-                .acym__splashcreen__body__card {
+            .acym__splashscreen__body__card__container {
+                .acym__splashscreen__body__card {
                     box-shadow: -20px 32px 44px rgba(0, 0, 0, 0.03);
                     border-radius: 23px;
                     min-height: 100px;
@@ -99,26 +103,18 @@
                         margin-right: 0 !important;
                     }
 
-                    .acym__splashcreen__body__card__icon {
+                    .acym__splashscreen__body__card__icon {
                         width: 67px;
                         height: 67px;
-                        border-radius: 50%;
-                        background-color: #F0FAFF;
-
-                        //Do not erase that
-                        //img {
-                        //    width: 30px;
-                        //    height: 30px;
-                        //}
                     }
 
-                    .acym__splashcreen__body__card__title {
+                    .acym__splashscreen__body__card__title {
                         font-weight: 800;
                         font-size: 16px;
                         line-height: 25px;
                     }
 
-                    .acym__splashcreen__body__card__text {
+                    .acym__splashscreen__body__card__text {
                         font-size: 12px;
                         line-height: 19px;
                         color: #6D6D6D;
@@ -126,23 +122,20 @@
                 }
             }
 
-            .acym__splashcreen__body__middle {
+            .acym__splashscreen__body__middle {
                 padding: 20px;
 
-                .acym__splashcreen__body__middle__left {
+                .acym__splashscreen__body__middle__left {
                     align-content: center;
 
-                    .acym__splashcreen__body__middle__left__title {
+                    .acym__splashscreen__body__middle__left__title {
                         font-weight: 800;
                         font-size: 24px;
                         line-height: 39px;
                     }
                 }
 
-                .acym__splashcreen__body__middle__right {
-                    padding-left: 50px;
-                    position: relative;
-
+                .acym__splashscreen__body__middle__right {
                     &:after {
                         content: "";
                         position: absolute;
@@ -153,50 +146,55 @@
                         background-color: rgba(2, 10, 94, 0.34);
                     }
 
-                    .acym__splashcreen__body__middle__right__title {
+                    .acym__splashscreen__body__middle__right__title {
                         font-weight: 800;
                         font-size: 16px;
                         line-height: 25px;
                     }
 
-                    .acym__splashcreen__body__middle__right__text {
+                    .acym__splashscreen__body__middle__right__text {
                         font-size: 12px;
                         line-height: 20px;
                         color: #6D6D6D;
                     }
+
+                    img {
+                        max-width: 67px;
+                        max-height: 67px;
+                    }
                 }
             }
 
-            .acym__splashcreen__body__end {
-                .acym__splashcreen__body__end__card {
+            .acym__splashscreen__body__end {
+                .acym__splashscreen__body__end__card {
                     border-radius: 12px;
                     padding: 50px;
 
                     img {
-                        height: 100px;
-                        width: 100px;
+                        height: 67px;
+                        width: 67px;
                     }
 
-                    .acym__splashcreen__body__end__card__title {
+                    .acym__splashscreen__body__end__card__title {
                         font-weight: 800;
                         font-size: 16px;
                         line-height: 1.2;
                     }
 
-                    .acym__splashcreen__body__end__card__text {
+                    .acym__splashscreen__body__end__card__text {
                         font-size: 12px;
                         line-height: 19px;
                         text-align: center;
                         color: #6D6D6D;
                     }
 
-                    .acym__splashcreen__body__end__card__minicard {
+                    .acym__splashscreen__body__end__card__minicard {
                         border: 0.5px solid rgba(1, 8, 74, 0.08);
                         border-radius: 8px;
                         padding: 5px;
                         background-color: $white;
 
-                        .acym__splashcreen__body__end__card__minicard__title__text {
+                        .acym__splashscreen__body__end__card__minicard__title__text {
                             font-size: 10px;
                             line-height: 12px;
                             color: #6D6D6D;
@@ -206,7 +204,7 @@
             }
         }
 
-        .acym__splashcreen__footer {
+        .acym__splashscreen__footer {
             padding: 50px 10px;
             background-color: #010748;
             border-bottom-left-radius: 23px;

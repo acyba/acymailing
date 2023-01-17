@@ -91,6 +91,7 @@ class acymInstall
         $allPref['editor'] = 'codemirror';
         $allPref['multiple_part'] = '1';
         $allPref['smtp_host'] = $smtpinfos[0];
+        $allPref['smtp_type'] = 'oauth';
         if (isset($smtpinfos[1])) {
             $allPref['smtp_port'] = $smtpinfos[1];
         }
@@ -1314,6 +1315,39 @@ class acymInstall
                 unlink(ACYM_ADDONS_FOLDER_PATH.'couryeah');
                 $this->updateQuery('UPDATE #__acym_configuration SET `name` = "acymailer_domains" WHERE `name` = "couryeah_domains"');
             }
+        }
+
+        if (version_compare($this->fromVersion, '8.0.0', '<')) {
+            $secretKey = $config->get('smtp_secret');
+            $config->save(['smtp_type' => empty($secretKey) ? 'password' : 'oauth']);
+
+            $this->updateQuery(
+                'CREATE TABLE IF NOT EXISTS `#__acym_mailbox_action` (
+                            `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                            `name` varchar(255) DEFAULT NULL,
+                            `frequency` int(10) UNSIGNED NOT NULL DEFAULT 0,
+                            `nextdate` int(10) UNSIGNED NOT NULL DEFAULT 0,
+                            `description` text DEFAULT NULL,
+                            `server` varchar(255) NULL,
+                            `port` varchar(50) NULL,
+                            `connection_method` ENUM(\'imap\', \'pop3\', \'pear\') NULL,
+                            `secure_method` ENUM(\'ssl\', \'tls\') NULL,
+                            `self_signed` tinyint(4) NULL,
+                            `username` varchar(255) NULL,
+                            `password` varchar(50) NULL,
+                            `conditions` text DEFAULT NULL,
+                            `actions` text DEFAULT NULL,
+                            `report` text DEFAULT NULL,
+                            `delete_wrong_emails` tinyint(4) NOT NULL DEFAULT 0,
+                            `senderfrom` tinyint(4) NOT NULL DEFAULT 0,
+                            `senderto` tinyint(4) NOT NULL DEFAULT 0,
+                            `active` tinyint(4) NOT NULL DEFAULT 0,
+                            PRIMARY KEY (`id`),
+                            INDEX `index_#__acym_mailbox_action1`(`name` ASC)
+                        )
+                        	ENGINE = InnoDB
+                        	/*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;'
+            );
         }
     }
 

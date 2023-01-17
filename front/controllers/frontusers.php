@@ -456,7 +456,12 @@ class FrontusersController extends UsersController
     private function redirectUnsubWorked()
     {
         acym_enqueueMessage(acym_translation('ACYM_SUBSCRIPTION_UPDATED_OK'), 'success');
-        acym_redirect(acym_rootURI());
+        $redirect_url = $this->config->get('unsub_redirect_url', '');
+        if (!empty($redirect_url)) {
+            acym_redirect($redirect_url);
+        } else {
+            acym_redirect(acym_rootURI());
+        }
     }
 
     public function unsubscribeAll()

@@ -2,8 +2,8 @@
 
 use AcyMailing\Helpers\UpdateHelper;
 
-if (version_compare(PHP_VERSION, '5.6.0', '<')) {
-    echo '<p style="color:red">This version of AcyMailing requires at least PHP 5.6.0, it is time to upgrade the PHP version of your server!</p>';
+if (version_compare(PHP_VERSION, '7.2.0', '<')) {
+    echo '<p style="color:red">This version of AcyMailing requires at least PHP 7.2.0, it is time to upgrade the PHP version of your server!</p>';
     exit;
 }
 
@@ -84,6 +84,7 @@ function uninstallAcym()
     <?php
 
     $tables = [
+        'mailbox_action',
         'custom_zone',
         'mail_override',
         'followup_has_mail',

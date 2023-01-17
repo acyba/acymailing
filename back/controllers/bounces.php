@@ -3,29 +3,80 @@
 namespace AcyMailing\Controllers;
 
 use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\MailboxClass;
 use AcyMailing\Classes\RuleClass;
 use AcyMailing\Helpers\BounceHelper;
 use AcyMailing\Helpers\CronHelper;
+use AcyMailing\Helpers\MailboxHelper;
+use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Helpers\SplashscreenHelper;
 use AcyMailing\Helpers\ToolbarHelper;
 use AcyMailing\Helpers\UpdateHelper;
+use AcyMailing\Helpers\WorkflowHelper;
 use AcyMailing\Libraries\acymController;
+use AcyMailing\Types\DelayType;
 
 class BouncesController extends acymController
 {
+    private $runBounce = false;
+    private $mailboxReport = [];
+
     public function __construct()
     {
+        $this->defaulttask = 'bounces';
         parent::__construct();
-        $this->breadcrumb[acym_translation('ACYM_BOUNCE_HANDLING')] = acym_completeLink('bounces');
-        $this->currentClass = new RuleClass();
+        $this->breadcrumb[acym_translation('ACYM_MAILBOX_ACTIONS')] = acym_completeLink('bounces');
+        $this->storeRedirectListing();
     }
 
     public function listing()
     {
+        $this->storeRedirectListing(true);
+    }
+
+    public function storeRedirectListing($fromListing = false)
+    {
+        $variableName = 'ctrl_mailboxes_stored';
+        acym_session();
+        $taskToStore = [
+            '',
+            'bounces',
+            'mailboxes',
+        ];
+        $currentTask = acym_getVar('string', 'task', '');
+        if (!in_array($currentTask, $taskToStore) && !$fromListing) {
+            return;
+        }
+
+        if ((empty($currentTask) || !in_array($currentTask, $taskToStore)) && !empty($_SESSION[$variableName])) {
+            $taskToGo = is_array($_SESSION[$variableName]) ? $_SESSION[$variableName]['task'] : $_SESSION[$variableName];
+            $link = acym_completeLink('bounces&task='.$taskToGo, false, true);
+            if($this->runBounce){
+                $link .= '&runBounce=1';
+            }
+
+            acym_redirect($link);
+        } else {
+            if (empty($currentTask) || !in_array($currentTask, $taskToStore)) {
+                $currentTask = 'bounces';
+            }
+            $_SESSION[$variableName] = $currentTask;
+        }
+
+        $taskToCall = is_array($currentTask) ? $currentTask['task'] : $currentTask;
+        if ($fromListing && method_exists($this, $taskToCall)) {
+            $this->$taskToCall();
+        }
+    }
+
+    public function bounces()
+    {
+        $this->currentClass = new RuleClass();
         $splashscreenHelper = new SplashscreenHelper();
         $data = [];
 
 
+        $data['workflowHelper'] = new WorkflowHelper();
         if (!acym_level(ACYM_ENTERPRISE)) {
             acym_setVar('layout', 'splashscreen');
             $data['isEnterprise'] = false;
@@ -36,39 +87,44 @@ class BouncesController extends acymController
         parent::display($data);
     }
 
-    public function prepareToolbar(&$data)
+    public function prepareToolbar(&$data, $element = 'bounces')
     {
         $toolbarHelper = new ToolbarHelper();
-        $toolbarHelper->addButton('ACYM_CONFIGURE', ['data-task' => 'config', 'id' => 'acym__bounce__button__config', 'type' => 'button'], 'settings');
-        $toolbarHelper->addButton(
-            'ACYM_RESET_DEFAULT_RULES',
-            [
-                'data-task' => 'reinstall',
-                'type' => 'button',
-                'data-confirmation-message' => 'ACYM_ARE_YOU_SURE',
-            ],
-            'repeat'
-        );
-        $toolbarHelper->addButton('ACYM_RUN_BOUNCE_HANDLING', ['data-task' => 'test'], 'play_arrow');
-        $toolbarHelper->addButton('ACYM_CREATE', ['data-task' => 'edit', 'type' => 'submit'], 'add', true);
+        if ($element === 'bounces') {
+            $toolbarHelper->addButton('ACYM_CONFIGURE', ['data-task' => 'config', 'id' => 'acym__bounce__button__config', 'type' => 'button'], 'settings');
+            $toolbarHelper->addButton(
+                'ACYM_RESET_DEFAULT_RULES',
+                [
+                    'data-task' => 'reinstall',
+                    'type' => 'button',
+                    'data-confirmation-message' => 'ACYM_ARE_YOU_SURE',
+                ],
+                'repeat'
+            );
+            $toolbarHelper->addButton('ACYM_RUN_BOUNCE_HANDLING', ['data-task' => 'test'], 'play_arrow');
+            $toolbarHelper->addButton('ACYM_CREATE', ['data-task' => 'rule', 'type' => 'submit'], 'add', true);
+        } else {
+            $toolbarHelper = new ToolbarHelper();
+            $toolbarHelper->addSearchBar($data['search'], 'mailboxes_search', 'ACYM_SEARCH');
+            $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'mailboxAction'], 'add', true);
+            $data['toolbar'] = $toolbarHelper;
+        }
 
         $data['toolbar'] = $toolbarHelper;
     }
 
-    public function edit()
+    public function rule()
     {
         $ruleClass = new RuleClass();
-        acym_setVar("layout", "edit");
-        $ruleId = acym_getVar("int", "id", 0);
+        acym_setVar('layout', 'rule');
+        $ruleId = acym_getVar('int', 'id', 0);
         $listsClass = new ListClass();
-
-        $rule = "";
 
         if (!empty($ruleId)) {
             $rule = $ruleClass->getOneById($ruleId);
-            $this->breadcrumb[acym_translation($rule->name)] = acym_completeLink('bounces&task=edit&id='.$ruleId);
+            $this->breadcrumb[acym_translation($rule->name)] = acym_completeLink('bounces&task=rule&id='.$ruleId);
         } else {
-            $this->breadcrumb[acym_translation('ACYM_NEW')] = acym_completeLink('bounces&task=edit');
+            $this->breadcrumb[acym_translation('ACYM_NEW')] = acym_completeLink('bounces&task=rule');
             $rule = new \stdClass();
             $rule->name = '';
             $rule->active = 1;
@@ -81,30 +137,30 @@ class BouncesController extends acymController
         }
 
         $data = [
-            "id" => $ruleId,
-            "lists" => $listsClass->getAllWithIdName(),
-            "rule" => $rule,
+            'id' => $ruleId,
+            'lists' => $listsClass->getAllWithIdName(),
+            'rule' => $rule,
         ];
 
         parent::display($data);
     }
 
-    public function apply()
+    public function applyRule()
     {
-        $this->saveRule();
-        $this->edit();
+        $this->storeRule();
+        $this->rule();
     }
 
-    public function save()
+    public function saveRule()
     {
-        $this->saveRule();
+        $this->storeRule();
         $this->listing();
     }
 
     /**
      * Save the rule on click
      */
-    public function saveRule()
+    public function storeRule()
     {
         $rule = acym_getVar('array', 'bounce');
 
@@ -212,7 +268,7 @@ class BouncesController extends acymController
             $url = acym_completeLink('bounces&task=process&continuebounce=1', true, true);
             if (acym_getVar('int', 'continuebounce')) {
                 //We already started the bounce handling and we should resume it until the end...
-                echo '<script type="text/javascript" language="javascript">document.location.href=\''.$url.'\';</script>';
+                echo '<script type="text/javascript">document.location.href=\''.$url.'\';</script>';
             } else {
                 //We should propose to the user to resume the bounce process until the end...
                 echo '<div style="padding:20px;"><a href="'.$url.'">'.acym_translation('ACYM_CLICK_HANDLE_ALL_BOUNCES').'</a></div>';
@@ -262,7 +318,7 @@ class BouncesController extends acymController
     {
         acym_setVar('layout', 'chart');
 
-        return parent::display();
+        parent::display();
     }
 
     public function test()
@@ -283,7 +339,7 @@ class BouncesController extends acymController
 
         if ($bounceHelper->init()) {
             if ($bounceHelper->connect()) {
-                acym_setVar('run_bounce', true);
+                $this->runBounce = true;
             } else {
                 $errors = $bounceHelper->getErrors();
                 if (!empty($errors)) {
@@ -336,5 +392,288 @@ class BouncesController extends acymController
         $splashscreenHelper->setDisplaySplashscreenForViewName('bounces', 0);
 
         $this->listing();
+    }
+
+    private function prepareMailboxesActions(&$data)
+    {
+        if (empty($data['allMailboxes'])) {
+            return;
+        }
+
+        foreach ($data['allMailboxes'] as $key => $oneMailbox) {
+            $data['allMailboxes'][$key]->actionsRendered = [];
+
+            $actions = json_decode($oneMailbox->actions, true);
+            if (empty($actions)) {
+                continue;
+            }
+
+            // We build the actions to display in the listing
+            $actionsRendered = [];
+            foreach ($actions as $action) {
+                acym_trigger('onAcymMailboxActionSummaryListing', [&$action, &$actionsRendered]);
+            }
+
+            $data['allMailboxes'][$key]->actionsRendered = $actionsRendered;
+        }
+    }
+
+    public function prepareMailboxesListing(&$data)
+    {
+        // Prepare the pagination
+        $mailboxesPerPage = $data['pagination']->getListLimit();
+        $page = $this->getVarFiltersListing('int', 'mailboxes_pagination_page', 1);
+        $status = $data['status'];
+
+        // Get the matching mailboxes
+        $matchingMailboxes = $this->getMatchingElementsFromData(
+            [
+                'ordering' => $data['ordering'],
+                'search' => $data['search'],
+                'elementsPerPage' => $mailboxesPerPage,
+                'offset' => ($page - 1) * $mailboxesPerPage,
+                'ordering_sort_order' => $data['orderingSortOrder'],
+                'status' => $status,
+            ],
+            $status,
+            $page
+        );
+
+        // End pagination
+        $totalElement = $matchingMailboxes['total'];
+        $data['allStatusFilters'] = [
+            'all' => $matchingMailboxes['total']->total,
+            'active' => $matchingMailboxes['total']->totalActive,
+            'inactive' => $matchingMailboxes['total']->total - $matchingMailboxes['total']->totalActive,
+        ];
+        $data['pagination']->setStatus($totalElement->total, $page, $mailboxesPerPage);
+        $data['allMailboxes'] = $matchingMailboxes['elements'];
+    }
+
+    private function getAllParamsRequest(&$data)
+    {
+        $data['search'] = $this->getVarFiltersListing('string', 'mailboxes_search', '');
+        $data['status'] = $this->getVarFiltersListing('string', 'mailboxes_status', '');
+        $data['ordering'] = $this->getVarFiltersListing('string', 'mailboxes_ordering', 'id');
+        $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'mailboxes_ordering_sort_order', 'desc');
+    }
+
+    public function mailboxes()
+    {
+        acym_setVar('layout', 'mailboxes');
+        acym_setVar('task', 'mailboxes');
+        $this->currentClass = new MailboxClass();
+
+        $data = [
+            'element_to_display' => lcfirst(acym_translation('ACYM_MAILBOX_ACTION')),
+            'pagination' => new PaginationHelper(),
+            'workflowHelper' => new WorkflowHelper(),
+        ];
+        $this->getAllParamsRequest($data);
+        $this->prepareMailboxesListing($data);
+        $this->prepareMailboxesActions($data);
+        $this->prepareToolbar($data, 'mailboxes');
+
+        parent::display($data);
+    }
+
+    private function mailboxDoListingAction($action)
+    {
+        $mailboxClass = new MailboxClass();
+        if (!method_exists($mailboxClass, $action)) {
+            return;
+        }
+
+        $mailboxActionSelected = acym_getVar('int', 'elements_checked');
+
+        if (empty($mailboxActionSelected)) {
+            return;
+        }
+
+        $mailboxClass->$action($mailboxActionSelected);
+
+        $this->mailboxes();
+    }
+
+    public function duplicateMailboxAction()
+    {
+        $this->mailboxDoListingAction('duplicate');
+    }
+
+    public function deleteMailboxAction()
+    {
+        $this->mailboxDoListingAction('delete');
+    }
+
+    public function mailboxAction()
+    {
+        $mailboxClass = new MailboxClass();
+        acym_setVar('layout', 'mailbox_action');
+        $mailboxId = acym_getVar('int', 'mailboxId', 0);
+        $listsClass = new ListClass();
+
+        if (!empty($mailboxId)) {
+            $mailboxAction = $mailboxClass->getOneById($mailboxId);
+            $this->breadcrumb[acym_translation($mailboxAction->name)] = acym_completeLink('bounces&task=mailboxAction&mailboxId='.$mailboxId);
+        } else {
+            $this->breadcrumb[acym_translation('ACYM_NEW')] = acym_completeLink('bounces&task=mailboxAction');
+            $mailboxAction = new \stdClass();
+            $mailboxAction->name = '';
+            $mailboxAction->active = 0;
+            $mailboxAction->frequency = 900;
+            $mailboxAction->description = '';
+
+            $mailboxAction->server = '';
+            $mailboxAction->username = '';
+            $mailboxAction->password = '';
+            $mailboxAction->connection_method = 'imap';
+            $mailboxAction->secure_method = 'ssl';
+            $mailboxAction->port = '';
+            $mailboxAction->self_signed = 1;
+
+            $mailboxAction->delete_wrong_emails = 0;
+            $mailboxAction->conditions = [
+                'sender' => '',
+                'specific' => '',
+                'groups' => '',
+                'lists' => '',
+                'subject' => '',
+                'subject_text' => '',
+                'subject_regex' => '',
+                'subject_remove' => 1,
+            ];
+
+            $mailboxAction->actions = [];
+            $mailboxAction->senderfrom = 0;
+            $mailboxAction->senderto = 0;
+        }
+
+        if (empty($mailboxAction->conditions['groups'])) {
+            $mailboxAction->conditions['groups'] = [];
+        }
+
+        if (empty($mailboxAction->conditions['lists'])) {
+            $mailboxAction->conditions['lists'] = [];
+        }
+
+        acym_trigger('onAcymMailboxActionDefine', [&$actions]);
+
+        $actionOptions = ['' => acym_translation('ACYM_CHOOSE_ACTION')];
+        $actionParameters = '';
+
+        foreach ($actions as $key => $oneAction) {
+            $actionOptions[$key] = $oneAction->name;
+            $actionParameters .= '<div class="acym__mailbox__edition__action__one__parameters '.$key.' margin-top-1">'.$oneAction->option.'</div>';
+        }
+
+        $initialAction = acym_select(
+            $actionOptions,
+            'acym_action[__num__][action]',
+            '',
+            [
+                'class' => 'acym__select acym__mailbox__edition__action__one__choice',
+                'acym-data-infinite' => '',
+            ]
+        );
+        $initialAction .= $actionParameters;
+
+        $data = [
+            'mailboxId' => $mailboxId,
+            'mailboxAction' => $mailboxAction,
+            'delayType' => new DelayType(),
+            'groups' => acym_getGroups(),
+            'lists' => $listsClass->getAllWithIdName(),
+            'initialAction' => $initialAction,
+        ];
+
+        parent::display($data);
+    }
+
+    public function applyMailboxAction()
+    {
+        $this->storeMailboxAction();
+        $this->mailboxAction();
+    }
+
+    public function saveMailboxAction()
+    {
+        $this->storeMailboxAction();
+        $this->listing();
+    }
+
+    public function storeMailboxAction()
+    {
+        $mailbox = acym_getVar('array', 'mailbox', []);
+        $mailboxClass = new MailboxClass();
+        $mailboxObject = new \stdClass();
+
+        foreach ($mailbox as $column => $value) {
+            acym_secureDBColumn($column);
+            if (is_array($value) || is_object($value)) {
+                $mailboxObject->$column = json_encode($value);
+            } else {
+                $mailboxObject->$column = $value;
+            }
+        }
+
+        $actions = acym_getVar('array', 'acym_action', []);
+        $mailboxObject->actions = [];
+        foreach ($actions as $oneAction) {
+            if (empty($oneAction['action'])) {
+                continue;
+            }
+
+            $mailboxObject->actions[] = [$oneAction['action'] => $oneAction[$oneAction['action']]];
+        }
+        $mailboxObject->actions = json_encode($mailboxObject->actions);
+
+        if (!empty($mailboxObject->password) && trim($mailboxObject->password, '*') === '') {
+            unset($mailboxObject->password);
+        }
+
+        $mailboxId = $mailboxClass->save($mailboxObject);
+
+        if (empty($mailboxId)) {
+            acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
+        } else {
+            acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
+            acym_setVar('mailboxId', $mailboxId);
+        }
+    }
+
+    function exceptionsErrorHandler($severity, $message, $filename, $lineno)
+    {
+        $this->mailboxReport[] = $message.' in '.$filename.' on line '.$lineno;
+    }
+
+    public function testMailboxAction()
+    {
+        $mailbox = acym_getVar('array', 'mailbox', []);
+
+        if (empty($mailbox)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_NO_CONFIGURATION'), [], false);
+        }
+
+        $mailbox = (object)$mailbox;
+
+        // If this is not a new mailbox, we need to get the password from the database
+        if (!empty($mailbox->id)) {
+            $mailboxClass = new MailboxClass();
+            $mailboxFromDatabase = $mailboxClass->getOneById($mailbox->id);
+
+            // We check if the password has not changed
+            if ($mailbox->password === str_repeat('*', strlen($mailboxFromDatabase->password))) {
+                $mailbox->password = $mailboxFromDatabase->password;
+            }
+        }
+
+        set_error_handler([$this, 'exceptionsErrorHandler']);
+
+        $mailboxHelper = new MailboxHelper();
+        if ($mailboxHelper->isConnectionValid($mailbox)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_CONNECTION_SUCCESSFUL'));
+        } else {
+            acym_sendAjaxResponse(acym_translation('ACYM_CONNECTION_FAILED'), ['report' => $this->mailboxReport], false);
+        }
     }
 }

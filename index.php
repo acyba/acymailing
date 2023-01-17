@@ -1,14 +1,16 @@
 <?php
-/*
-Plugin Name: AcyMailing
-Description: Manage your contact lists and send newsletters from your site.
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 7.9.8
-Text Domain: acymailing
-Domain Path: /language
-*/
+/**
+ * Plugin Name: AcyMailing
+ * Description: Manage your contact lists and send newsletters from your site.
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 8.0.0
+ * Text Domain: acymailing
+ * Domain Path: /language
+ * Requires at least: 5.0
+ * Requires PHP: 7.2
+ */
 
 use AcyMailing\Init\acyActivation;
 

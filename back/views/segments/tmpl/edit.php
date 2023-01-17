@@ -1,7 +1,7 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acySegments" data-abide novalidate>
 	<input type="hidden" value="<?php echo acym_escape($data['filter_option']); ?>" id="acym__segments__edit__info__options">
 	<input type="hidden" value="<?php echo empty($data['segment']->id) ? '' : $data['segment']->id; ?>" name="id">
-	<input type="hidden" id="acym__segments__filters" value="<?php echo acym_escape(empty($data['segment']->filters) ? '' : $data['segment']->filters); ?>">
+	<input type="hidden" id="acym__segments__filters" value="<?php echo acym_escape(empty($data['segment']->filters) ? '' : $data['segment']->filters, false); ?>">
 	<input type="hidden" id="acym__segments__filters__count__and" value="0">
 	<div class="cell grid-x grid-margin-x acym__segments__edit__info acym__content margin-bottom-1 padding-bottom-0 margin-y margin-left-0">
 		<div class="cell large-4 medium-6 grid-x grid-margin-x acym_vcenter">

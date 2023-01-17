@@ -39,6 +39,7 @@ define('ACYM_ADDONS_FOLDER_PATH', ACYM_BACK.'dynamics'.DS);
 define('ACYM_MEDIA_FOLDER', 'media/'.ACYM_COMPONENT);
 define('ACYM_UPLOAD_FOLDER', ACYM_MEDIA_FOLDER.DS.'upload'.DS);
 define('ACYM_UPLOAD_FOLDER_THUMBNAIL', ACYM_MEDIA.'images'.DS.'thumbnails'.DS);
+define('ACYM_UPLOADS_URL', ACYM_MEDIA_URL.'upload/');
 
 define('ACYM_CUSTOM_PLUGIN_LAYOUT', ACYM_MEDIA.'plugins'.DS);
 define('ACYM_LOGS_FOLDER', ACYM_MEDIA_FOLDER.DS.'logs'.DS);

@@ -303,8 +303,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail_stat` (
 	`bounce_unique` MEDIUMINT(8) NOT NULL DEFAULT 0,
 	`bounce_details` LONGTEXT NULL,
 	`unsubscribe_total` INT NOT NULL DEFAULT 0,
-    `tracking_sale` FLOAT NULL,
-    `currency` VARCHAR(5) NULL,
+	`tracking_sale` FLOAT NULL,
+	`currency` VARCHAR(5) NULL,
 	PRIMARY KEY (`mail_id`),
 	CONSTRAINT `fk_#__acym_mail_stat1`
 		FOREIGN KEY (`mail_id`)
@@ -682,6 +682,37 @@ CREATE TABLE IF NOT EXISTS `#__acym_custom_zone` (
 	`content` TEXT NOT NULL,
 	`image` VARCHAR(255) NULL,
 	PRIMARY KEY(`id`)
+)
+	ENGINE = InnoDB
+	/*!40100
+	DEFAULT CHARACTER SET utf8
+	COLLATE utf8_general_ci*/;
+
+-- -----------------------------------------------------
+-- Table `#__acym_mailbox_action`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `#__acym_mailbox_action` (
+	`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` varchar(255) DEFAULT NULL,
+	`frequency` int(10) UNSIGNED NOT NULL DEFAULT 0,
+	`nextdate` int(10) UNSIGNED NOT NULL DEFAULT 0,
+	`description` text DEFAULT NULL,
+	`server` varchar(255) NULL,
+	`port` varchar(50) NULL,
+	`connection_method` ENUM('imap', 'pop3', 'pear') NULL,
+	`secure_method` ENUM('ssl', 'tls') NULL,
+	`self_signed` tinyint(4) NULL,
+	`username` varchar(255) NULL,
+	`password` varchar(50) NULL,
+	`conditions` text DEFAULT NULL,
+	`actions` text DEFAULT NULL,
+	`report` text DEFAULT NULL,
+	`delete_wrong_emails` tinyint(4) NOT NULL DEFAULT 0,
+	`senderfrom` tinyint(4) NOT NULL DEFAULT 0,
+	`senderto` tinyint(4) NOT NULL DEFAULT 0,
+	`active` tinyint(4) NOT NULL DEFAULT 0,
+	PRIMARY KEY (`id`),
+	INDEX `index_#__acym_mailbox_action1`(`name` ASC)
 )
 	ENGINE = InnoDB
 	/*!40100

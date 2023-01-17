@@ -22,6 +22,11 @@
 					<label for="acym__migrate__bounce"><?php echo acym_translation('ACYM_BOUNCE_HANDLING'); ?></label>
 					<span id="acym__migrate__result__bounce__check"></span>
 				</div>
+				<div class="cell acym__migrate__input__element">
+					<input type="checkbox" id="acym__migrate__distrib" name="migrate[distrib]" class="acym__migrate__option" />
+					<label for="acym__migrate__distrib"><?php echo acym_translation('ACYM_DISTRIBUTION_LISTS'); ?></label>
+					<span id="acym__migrate__result__distrib__check"></span>
+				</div>
             <?php } ?>
 			<div class="cell acym__migrate__input__element">
 				<input type="checkbox" id="acym__migrate__lists" name="migrate[lists]" class="acym__migrate__option" />

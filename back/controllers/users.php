@@ -710,7 +710,7 @@ class UsersController extends acymController
 
         // Get passed data and check if we have everything we need
         $usersToExport = acym_getVar('string', 'export_users-to-export', 'all');
-        $listsToExport = json_decode(acym_getVar('string', 'acym__entity_select__selected'));
+        $listsToExport = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
         if ($usersToExport == 'list' && empty($listsToExport)) {
             acym_enqueueMessage(acym_translation('ACYM_EXPORT_SELECT_LIST'), 'error');
 
@@ -876,7 +876,7 @@ class UsersController extends acymController
             return;
         }
 
-        $lists = json_decode(acym_getVar('string', 'acym__entity_select__selected'));
+        $lists = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
         if (!is_array($lists)) {
             $lists = (array)$lists;
         }
@@ -935,7 +935,7 @@ class UsersController extends acymController
     public function subscribeUser($returnOnEdit = true)
     {
         $userId = acym_getVar('int', 'id');
-        $lists = json_decode(acym_getVar('string', 'acym__entity_select__selected'));
+        $lists = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
 
         if (empty($userId)) {
             $this->listing();
@@ -961,8 +961,9 @@ class UsersController extends acymController
     {
         $userInformation = acym_getVar('array', 'user');
         $userId = acym_getVar('int', 'id');
-        $listsToAdd = json_decode(acym_getVar('string', 'acym__entity_select__selected'));
-        $listsToUnsub = json_decode(acym_getVar('string', 'acym__entity_select__unselected'));
+        $listsToAdd = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
+        $listsToUnsub = json_decode(acym_getVar('string', 'acym__entity_select__unselected', '{}'));
+
         $user = new \stdClass();
         $user->name = $userInformation['name'];
         $user->email = $userInformation['email'];
@@ -1007,8 +1008,12 @@ class UsersController extends acymController
             $this->currentClass->save($user, $customFields);
         }
 
-        if (!empty($listsToAdd)) $this->subscribeUser(false);
-        if (!empty($listsToUnsub)) $this->currentClass->unsubscribeOnSubscriptions($userId, $listsToUnsub);
+        if (!empty($listsToAdd)) {
+            $this->subscribeUser(false);
+        }
+        if (!empty($listsToUnsub)) {
+            $this->currentClass->unsubscribeOnSubscriptions($userId, $listsToUnsub);
+        }
 
         if ($listing) {
             $this->listing();
@@ -1035,7 +1040,7 @@ class UsersController extends acymController
 
     public function addToList()
     {
-        $listsSelected = json_decode(acym_getVar('string', 'acym__entity_select__selected', ''));
+        $listsSelected = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
         $userSelected = acym_getVar('array', 'elements_checked');
         foreach ($userSelected as $user) {
             $this->currentClass->subscribe($user, $listsSelected);

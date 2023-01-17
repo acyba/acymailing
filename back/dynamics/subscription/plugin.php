@@ -801,6 +801,22 @@ class plgAcymSubscription extends acymPlugin
                 'id',
                 'name'
             ).'</div>';
+
+        $actions['unsubscribe_followup'] = new stdClass();
+        $actions['unsubscribe_followup']->name = acym_translation('ACYM_UNSUBSCRIBE_FOLLOW_UP');
+        $actions['unsubscribe_followup']->option = '<div class="intext_select_automation cell">';
+        $actions['unsubscribe_followup']->option .= acym_select(
+            $allListFollowups,
+            'acym_action[actions][__and__][unsubscribe_followup][followup_id]',
+            null,
+            [
+                'class' => 'acym__select',
+                'data-placeholder' => acym_translation(empty($listFollowups) ? 'ACYM_FOLLOWUP_NOT_FOUND' : 'ACYM_SELECT_FOLLOWUP', true),
+            ],
+            'id',
+            'name'
+        );
+        $actions['unsubscribe_followup']->option .= '</div>';
     }
 
     private function _processConditionAcyLists(&$query, &$options, $num)
@@ -890,7 +906,7 @@ class plgAcymSubscription extends acymPlugin
 
     public function onAcymProcessAction_acy_list(&$query, $action)
     {
-        if ($action['list_actions'] == 'sub') {
+        if ($action['list_actions'] === 'sub') {
             $queryToProcess = 'INSERT IGNORE #__acym_user_has_list (`user_id`, `list_id`, `status`, `subscription_date`) ('.$query->getQuery(
                     [
                         'user.id',
@@ -899,9 +915,9 @@ class plgAcymSubscription extends acymPlugin
                         acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s')),
                     ]
                 ).') ON DUPLICATE KEY UPDATE status = 1';
-        } elseif ($action['list_actions'] == 'remove') {
+        } elseif ($action['list_actions'] === 'remove') {
             $queryToProcess = 'DELETE FROM #__acym_user_has_list WHERE list_id = '.intval($action['list_id']).' AND user_id IN ('.$query->getQuery(['user.id']).')';
-        } elseif ($action['list_actions'] == 'unsub') {
+        } elseif ($action['list_actions'] === 'unsub') {
             $queryToProcess = 'UPDATE #__acym_user_has_list SET status = 0 WHERE list_id = '.intval($action['list_id']).' AND user_id IN ('.$query->getQuery(['user.id']).')';
         }
 
@@ -914,40 +930,69 @@ class plgAcymSubscription extends acymPlugin
     {
         $followupClass = new FollowupClass();
         $followup = $followupClass->getOneById($action['followup_id']);
-        if (!empty($followup)) {
-
-            $queryToProcess = 'INSERT IGNORE #__acym_user_has_list (`user_id`, `list_id`, `status`, `subscription_date`) ('.$query->getQuery(
-                    [
-                        'user.id',
-                        $followup->list_id,
-                        '1',
-                        acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s')),
-                    ]
-                ).') ON DUPLICATE KEY UPDATE status = 1';
-
-            $nbAffected = acym_query($queryToProcess);
-
-            $followups = $followupClass->getFollowupsWithMailsInfoByIds($action['followup_id']);
-            foreach ($followups as $mails) {
-                foreach ($mails as $mail) {
-                    $sendDate = time() + (intval($mail->delay) * intval($mail->delay_unit));
-                    $sendDate = acym_escapeDB(acym_date($sendDate, 'Y-m-d H:i:s', false));
-                    $queryToProcess = 'INSERT IGNORE #__acym_queue (`mail_id`, `user_id`, `sending_date`, `priority`, `try`) ('.$query->getQuery(
-                            [
-                                $mail->mail_id,
-                                'user.id',
-                                $sendDate,
-                                $this->config->get('priority_newsletter', 3),
-                                0,
-                            ]
-                        ).')';
-
-                    acym_query($queryToProcess);
-                }
-            }
-
-            return acym_translationSprintf('ACYM_ACTION_LIST_SUB', $nbAffected);
+        if (empty($followup)) {
+            return '';
         }
+
+        $queryToProcess = 'INSERT IGNORE #__acym_user_has_list (`user_id`, `list_id`, `status`, `subscription_date`) ('.$query->getQuery(
+                [
+                    'user.id',
+                    $followup->list_id,
+                    '1',
+                    acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s')),
+                ]
+            ).') ON DUPLICATE KEY UPDATE status = 1';
+
+        $nbAffected = acym_query($queryToProcess);
+
+        $followups = $followupClass->getFollowupsWithMailsInfoByIds($action['followup_id']);
+        foreach ($followups as $mails) {
+            foreach ($mails as $mail) {
+                $sendDate = time() + (intval($mail->delay) * intval($mail->delay_unit));
+                $sendDate = acym_escapeDB(acym_date($sendDate, 'Y-m-d H:i:s', false));
+                $queryToProcess = 'INSERT IGNORE #__acym_queue (`mail_id`, `user_id`, `sending_date`, `priority`, `try`) ('.$query->getQuery(
+                        [
+                            $mail->mail_id,
+                            'user.id',
+                            $sendDate,
+                            $this->config->get('priority_newsletter', 3),
+                            0,
+                        ]
+                    ).')';
+
+                acym_query($queryToProcess);
+            }
+        }
+
+        return acym_translationSprintf('ACYM_ACTION_LIST_SUB', $nbAffected);
+    }
+
+    public function onAcymProcessAction_unsubscribe_followup(&$query, &$action)
+    {
+        $followupClass = new FollowupClass();
+        $followup = $followupClass->getOneById($action['followup_id']);
+        if (empty($followup)) {
+            return '';
+        }
+
+        $mailIds = $followupClass->getEmailsByIds($action['followup_id']);
+        if (!empty($mailIds)) {
+            acym_query(
+                'DELETE FROM #__acym_queue 
+				WHERE user_id IN ('.$query->getQuery(['user.id']).') 
+					AND mail_id IN ('.implode(',', $mailIds).')'
+            );
+        }
+
+        $unsubscribeDate = date('Y-m-d H:i:s', time() - date('Z'));
+        $nbAffected = acym_query(
+            'UPDATE #__acym_user_has_list 
+            SET `status` = 0, `unsubscribe_date` = '.acym_escapeDB($unsubscribeDate).'
+			WHERE list_id = '.intval($followup->list_id).' 
+				AND user_id IN ('.$query->getQuery(['user.id']).')'
+        );
+
+        return acym_translationSprintf('ACYM_ACTION_LIST_UNSUB', $nbAffected);
     }
 
     private function _summaryDate($automation, $finalText)
@@ -1051,11 +1096,17 @@ class plgAcymSubscription extends acymPlugin
         if (!empty($automationAction['subscribe_followup'])) {
             $followupClass = new FollowupClass();
             $followup = $followupClass->getOneById($automationAction['subscribe_followup']['followup_id']);
-            $automationAction = (!empty($followup)
+            $automationAction = !empty($followup)
                 ? acym_translationSprintf('ACYM_ACTION_SUBSCRIBE_FOLLOWUP_SUMMARY', $followup->name)
-                : acym_translation(
-                    'ACYM_FOLLOWUP_NOT_FOUND'
-                ));
+                : acym_translation('ACYM_FOLLOWUP_NOT_FOUND');
+        }
+
+        if (!empty($automationAction['unsubscribe_followup'])) {
+            $followupClass = new FollowupClass();
+            $followup = $followupClass->getOneById($automationAction['unsubscribe_followup']['followup_id']);
+            $automationAction = !empty($followup)
+                ? acym_translationSprintf('ACYM_ACTION_UNSUBSCRIBE_FOLLOWUP_SUMMARY', $followup->name)
+                : acym_translation('ACYM_FOLLOWUP_NOT_FOUND');
         }
     }
 
@@ -1126,5 +1177,127 @@ class plgAcymSubscription extends acymPlugin
         }
 
         return $this->userClass;
+    }
+
+    public function onAcymMailboxActionDefine(&$actions)
+    {
+        $listClass = new ListClass();
+        $lists = $listClass->getAllWithIdName();
+
+        $actions['acy_list_subscribe'] = new stdClass();
+        $actions['acy_list_subscribe']->name = acym_translation('ACYM_SUBSCRIBE_USER');
+        $actions['acy_list_subscribe']->option = '<div class="intext_select_mailbox cell">';
+        $actions['acy_list_subscribe']->option .= acym_select(
+            $lists,
+            'acym_action[__num__][acy_list_subscribe][list_id]',
+            null,
+            ['class' => 'acym__select']
+        );
+        $actions['acy_list_subscribe']->option .= '</div>';
+
+        $actions['acy_list_unsubscribe'] = new stdClass();
+        $actions['acy_list_unsubscribe']->name = acym_translation('ACYM_UNSUB_USER');
+        $actions['acy_list_unsubscribe']->option = '<div class="intext_select_mailbox cell">';
+        $actions['acy_list_unsubscribe']->option .= acym_select(
+            $lists,
+            'acym_action[__num__][acy_list_unsubscribe][list_id]',
+            null,
+            ['class' => 'acym__select']
+        );
+        $actions['acy_list_unsubscribe']->option .= '</div>';
+    }
+
+    public function onAcymMailboxActionSummaryListing(&$action, &$result)
+    {
+        $listClass = new ListClass();
+        if (!empty($action['acy_list_subscribe'])) {
+            $list = $listClass->getOneById($action['acy_list_subscribe']['list_id']);
+
+            if (empty($list)) {
+                return;
+            }
+
+            $result[] = acym_translationSprintf('ACYM_SUBSCRIBE_USER_X', $list->name);
+        }
+
+        if (!empty($action['acy_list_unsubscribe'])) {
+            $list = $listClass->getOneById($action['acy_list_unsubscribe']['list_id']);
+
+            if (empty($list)) {
+                return;
+            }
+
+            $result[] = acym_translationSprintf('ACYM_UNSUB_USER_X', $list->name);
+        }
+    }
+
+    public function onAcymMailboxAction_acy_list_subscribe(&$action, &$report, &$executedActions, $mailboxHelper)
+    {
+        $userClass = new UserClass();
+        $user = new \stdClass();
+        $user->email = $mailboxHelper->_message->header->from_email;
+        $userDatabase = $userClass->getOneByEmail($user->email);
+        if (empty($userDatabase->id)) {
+            $user->id = $userClass->save($user);
+            if (empty($user->id)) {
+                $report[] = [
+                    'message' => acym_translation('ACYM_ERROR_SAVING'),
+                    'success' => false,
+                ];
+                $executedActions = false;
+
+                return;
+            }
+        } else {
+            $user->id = $userDatabase->id;
+        }
+
+        $subscribed = $userClass->subscribe($user->id, $action['list_id']);
+
+        if (!$subscribed) {
+            $report[] = [
+                'message' => acym_translationSprintf('ACYM_COULD_NOT_SUBSCRIBE_TO_X', $action['list_id']),
+                'success' => false,
+            ];
+            $executedActions = false;
+
+            return;
+        }
+
+        $report[] = [
+            'message' => acym_translationSprintf('ACYM_SUBSCRIBE_USER_X', $action['list_id']),
+            'success' => true,
+        ];
+    }
+
+
+    public function onAcymMailboxAction_acy_list_unsubscribe(&$action, &$report, &$executedActions, $mailboxHelper)
+    {
+        $user = new \stdClass();
+        $user->email = $mailboxHelper->_message->header->from_email;
+
+        $userClass = new UserClass();
+        $userDatabase = $userClass->getOneByEmail($user->email);
+
+        if (empty($userDatabase->id)) {
+            $report[] = [
+                'message' => acym_translationSprintf('ACYM_SEND_ERROR_USER', $mailboxHelper->_message->header->from_email),
+                'success' => false,
+            ];
+
+            $executedActions = false;
+
+            return;
+        }
+        $affected = $userClass->unsubscribe($userDatabase->id, $action['list_id']);
+        $message = $affected
+            ? acym_translationSprintf('ACYM_UNSUB_USER_X_FROM_X', $userDatabase->email, $action['list_id'])
+            : acym_translationSprintf('ACYM_COULD_NOT_UNSUB_USER_X_FROM_X', $userDatabase->email, $action['list_id']);
+        $report[] = [
+            'message' => $message,
+            'success' => $affected,
+        ];
+
+        $executedActions = $affected;
     }
 }

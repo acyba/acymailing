@@ -296,8 +296,10 @@ class plgAcymTime extends acymPlugin
                     } else {
                         $nextExecutionDate[] = $dayBasedOnCMSTimezoneAtSpecifiedHour + 604800;
 
-                        // Current day is selected, the time is passed and it's the first trigger
-                        if (empty($step->last_execution) || acym_date($step->last_execution, 'Y-m-d') !== $dayBasedOnCMSTimezone) $execute = true;
+                        // Current day is selected, the time is passed, and it's the first trigger
+                        $lastExecutionIsNotToday = acym_date($step->last_execution, 'Y-m-d') !== $dayBasedOnCMSTimezone;
+                        $nextExecutionIsToday = acym_date($step->next_execution, 'Y-m-d') === $dayBasedOnCMSTimezone;
+                        if (empty($step->last_execution) || ($lastExecutionIsNotToday && $nextExecutionIsToday)) $execute = true;
                     }
                 } else {
                     $days = [
@@ -368,7 +370,7 @@ class plgAcymTime extends acymPlugin
                 $execute = true;
             } else {
                 if ($triggers['every']['type'] == 2628000) {
-                    $nextDate = new \DateTime(acym_date($step->last_execution, 'Y-m-d'), new \DateTimeZone('UTC'));
+                    $nextDate = new \DateTime(acym_date($step->last_execution, 'Y-m-d H:m:i'), new \DateTimeZone('UTC'));
                     $nextDate = $nextDate->add(new \DateInterval('P'.$triggers['every']['number'].'M'));
                     $nextDate = $nextDate->getTimestamp();
                 } else {

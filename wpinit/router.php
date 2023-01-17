@@ -182,6 +182,12 @@ class acyRouter
             if (empty($ctrl)) {
                 echo acym_translation('ACYM_PAGE_NOT_FOUND');
 
+                // For Google search console in the frontend to prevent from doing 404 errors
+                $noCache = acym_getVar('int', 'nocache', 0);
+                if (!empty($noCache)) {
+                    acym_redirect(acym_rootURI());
+                }
+
                 return;
             }
 

@@ -201,19 +201,21 @@ class FieldsController extends acymController
 
         $i = 0;
         $value = [];
-        $fieldValues = $field['value'];
-        foreach ($fieldValues['value'] as $one) {
-            if (empty($one) && $one != '0' && ($i != 0 || !in_array($field['type'], ['single_dropdown', 'multiple_dropdown']))) {
-                $i++;
-                continue;
-            }
+        $fieldValues = empty($field['value']) ? [] : $field['value'];
+        if (!empty($fieldValues['value'])) {
+            foreach ($fieldValues['value'] as $one) {
+                if (empty($one) && $one != '0' && ($i != 0 || !in_array($field['type'], ['single_dropdown', 'multiple_dropdown']))) {
+                    $i++;
+                    continue;
+                }
 
-            $value[$i] = [
-                'value' => $one,
-                'title' => $fieldValues['title'][$i],
-                'disabled' => $fieldValues['disabled'][$i],
-            ];
-            $i++;
+                $value[$i] = [
+                    'value' => $one,
+                    'title' => $fieldValues['title'][$i],
+                    'disabled' => $fieldValues['disabled'][$i],
+                ];
+                $i++;
+            }
         }
 
         $field['name'] = strip_tags($field['name'], '<i><b><strong>');

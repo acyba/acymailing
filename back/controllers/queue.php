@@ -75,7 +75,7 @@ class QueueController extends acymController
 
         $this->prepareToolbar($viewData);
 
-        $this->breadcrumb[acym_translation('ACYM_CAMPAIGNS')] = acym_completeLink('queue');
+        $this->breadcrumb[acym_translation('ACYM_MAILS')] = acym_completeLink('queue');
         parent::display($viewData);
     }
 

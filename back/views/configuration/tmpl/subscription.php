@@ -186,13 +186,22 @@
                         );
                         ?>
 					</div>
-					<label for="edit_unsubscribe_title" class="cell grid-x margin-bottom-1 margin-top-1">
+					<label for="acym__configuration__subscription__unsub-title" class="cell grid-x margin-bottom-1 margin-top-1">
 						<span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_UNSUBSCRIBE_PAGE_CHANGE'); ?></span>
-						<input id="edit_unsubscribe_title"
+						<input id="acym__configuration__subscription__unsub-title"
 							   class="cell xlarge-4 medium-auto margin-bottom-0"
 							   type="text"
 							   name="config[unsubscribe_title]"
-							   value="<?php echo acym_escape($this->config->get('unsubscribe_title')); ?>">
+							   value="<?php echo acym_escape($this->config->get('unsubscribe_title'), ''); ?>">
+						<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					</label>
+					<label for="acym__configuration__subscription__unsub-url" class="cell grid-x margin-bottom-1 margin-top-1">
+						<span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_REDIRECTION_URL'); ?></span>
+						<input id="acym__configuration__subscription__unsub-url"
+							   class="cell xlarge-4 medium-auto margin-bottom-0"
+							   type="text"
+							   name="config[unsub_redirect_url]"
+							   value="<?php echo acym_escape($this->config->get('unsub_redirect_url'), ''); ?>">
 						<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 					</label>
 				</div>

@@ -13,6 +13,8 @@ class MailClass extends acymClass
     var $pkey = 'id';
     var $templateNames = [];
 
+    public $exceptKeysDecode = [];
+
     const FIELDS_ENCODING = ['name', 'subject', 'body', 'autosave', 'preheader'];
 
     const TYPE_STANDARD = 'standard';
@@ -1049,6 +1051,10 @@ class MailClass extends acymClass
         if (!empty($mail)) {
             foreach (self::FIELDS_ENCODING as $oneField) {
 
+                if (in_array($oneField, $this->exceptKeysDecode)) {
+                    continue;
+                }
+
                 if (is_array($mail)) {
                     if (empty($mail[$oneField])) continue;
                     $value = &$mail[$oneField];
@@ -1395,5 +1401,17 @@ class MailClass extends acymClass
         $newMail->id = $this->save($newMail);
 
         return $newMail;
+    }
+
+    public function getTemplatesForMailboxAction()
+    {
+        return $this->decode(
+            acym_loadObjectList(
+                'SELECT `id`, `name` 
+                FROM #__acym_mail 
+                WHERE `type` = '.acym_escapeDB(self::TYPE_TEMPLATE).' 
+                    AND `body` LIKE '.acym_escapeDB('%'.utf8_encode('{emailcontent}').'%')
+            )
+        );
     }
 }

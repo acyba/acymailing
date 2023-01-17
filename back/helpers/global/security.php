@@ -1,9 +1,13 @@
 <?php
 
-function acym_escape($text)
+function acym_escape($text, $addSlashes = true)
 {
     if (is_array($text) || is_object($text)) {
-        $text = str_replace('\\', '\\\\', json_encode($text));
+        if ($addSlashes) {
+            $text = str_replace('\\', '\\\\', json_encode($text));
+        } else {
+            $text = json_encode($text);
+        }
     }
 
     if (empty($text)) {
@@ -16,7 +20,7 @@ function acym_escape($text)
 function acym_arrayToInteger(&$array)
 {
     if (is_array($array)) {
-        $array = array_map('intval', $array);
+        $array = @array_map('intval', $array);
     } else {
         $array = [];
     }

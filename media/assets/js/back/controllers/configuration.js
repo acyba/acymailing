@@ -20,7 +20,7 @@ jQuery(function($) {
         acym_helperSelectionMultilingual.init('configuration');
         resetSubmitButtons();
         setAllowedHostsMultipleSelect();
-        acym_helperMailer.dislayAuth2Params();
+        acym_helperMailer.displayAuth2Params();
         acym_helperMailer.acymailerAddDomains();
         acym_helperMailer.displayCnameRecord();
         acym_helperMailer.deleteDomain();

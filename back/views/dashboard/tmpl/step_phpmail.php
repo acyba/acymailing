@@ -31,7 +31,7 @@ include acym_getPartial('configuration', 'sending_methods');
 </div>
 <div class="cell medium-1 hide-for-small-only"></div>
 <div class="cell grid-x align-center margin-top-3">
-	<button disabled type="submit" class="acy_button_submit button" id="acym__selection__button-select" data-task="saveStepPhpmail">
+	<button <?php echo empty($this->config->get('mailer_method')) ? 'disabled' : ''; ?> type="submit" class="acy_button_submit button" id="acym__selection__button-select" data-task="saveStepPhpmail">
         <?php echo acym_translation('ACYM_SEND_TEST'); ?>
 	</button>
 </div>

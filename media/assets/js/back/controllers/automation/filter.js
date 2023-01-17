@@ -4,7 +4,7 @@ jQuery(function ($) {
     const ajaxCalls = {};
     $.reloadCounters = function (element) {
         if (!filterRebuilt) return;
-        if ($(element).closest('.acym__nocount').length >= 1) return;
+        if ($(element).closest('.acym__filter__nocount').length >= 1) return;
 
         let or = $(element).closest('.acym__automation__group__filter').attr('data-filter-number');
         let $or = $(element).closest('.acym__automation__group__filter');

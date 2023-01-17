@@ -15,6 +15,11 @@ class acymPlugin extends acymObject
     var $installed = true;
     var $pluginsPath = '';
 
+    // Used when the integrated content is a WordPress post
+    var $wpPostType = '';
+    var $wpCategoryType = '';
+    var $wpTagType = '';
+
     var $rootCategoryId = 1;
     var $categories;
     var $catvalues = [];

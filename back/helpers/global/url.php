@@ -130,3 +130,10 @@ function acym_internalUrlToPath($url)
 
     return $url;
 }
+
+function acym_isValidUrl($url): bool
+{
+    $headers = @get_headers($url);
+
+    return !empty($headers) && strpos($headers[0], '200');
+}
