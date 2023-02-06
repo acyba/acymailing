@@ -19,6 +19,10 @@ if (!empty($_SERVER['DOCUMENT_ROOT'])) {
         $acyAbsPath = $docRoot;
     }
 }
+// For WordPress bedrock
+if (defined('CONTENT_DIR') && substr($acyAbsPath, -3) === 'wp/') {
+    $acyAbsPath = substr($acyAbsPath, 0, -3);
+}
 define('ACYM_ROOT', rtrim($acyAbsPath, DS.'/').DS);
 define('ACYM_FOLDER', WP_PLUGIN_DIR.DS.ACYM_COMPONENT.DS);
 define('ACYM_WIDGETS', ACYM_FOLDER.'widgets'.DS);

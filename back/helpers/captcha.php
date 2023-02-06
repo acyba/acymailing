@@ -8,14 +8,18 @@ class CaptchaHelper extends acymObject
 {
     public function display($formName = '', $loadJsModule = false)
     {
-        if (!acym_level(ACYM_ESSENTIAL)) return '';
+        if (!acym_level(ACYM_ESSENTIAL)) {
+            return '';
+        }
 
         $captchaPluginName = $this->config->get('captcha', 'none');
-        if ($captchaPluginName === 'none') return '';
+        if ($captchaPluginName === 'none') {
+            return '';
+        }
 
         $id = empty($formName) ? 'acym-captcha' : $formName.'-captcha';
 
-        if ($captchaPluginName === 'acym_ireCaptcha' || $captchaPluginName === 'acym_reCaptcha_v3') {
+        if (in_array($captchaPluginName, ['acym_ireCaptcha', 'acym_reCaptcha_v3'])) {
             $pubkey = $this->config->get('recaptcha_sitekey', '');
             if (empty($pubkey)) return '';
 
@@ -34,6 +38,18 @@ class CaptchaHelper extends acymObject
             return $return.'<div id="'.acym_escape($id).'" data-size="invisible" class="acyg-recaptcha" data-sitekey="'.acym_escape($pubkey).'"data-captchaname="'.acym_escape(
                     $captchaPluginName
                 ).'"></div>';
+        } elseif ($captchaPluginName === 'acym_hcaptcha') {
+            $siteKey = $this->config->get('hcaptcha_sitekey');
+            $return = '<div class="h-captcha" data-sitekey="'.$siteKey.'"></div>';
+            $jsScript = 'https://js.hcaptcha.com/1/api.js';
+
+            if ($loadJsModule) {
+                $return .= '<script src="'.$jsScript.'" type="text/javascript" defer async></script>';
+            } else {
+                acym_addScript(false, $jsScript, 'text/javascript', true, true);
+            }
+
+            return $return;
         } else {
             return acym_loadCaptcha($captchaPluginName, $id);
         }
@@ -41,20 +57,28 @@ class CaptchaHelper extends acymObject
 
     public function check()
     {
-        if (!acym_level(ACYM_ESSENTIAL)) return true;
+        if (!acym_level(ACYM_ESSENTIAL)) {
+            return true;
+        }
 
         $captchaPluginName = $this->config->get('captcha', 'none');
-        if ($captchaPluginName === 'none') return true;
+        if ($captchaPluginName === 'none') {
+            return true;
+        }
 
         // The security key can be used for direct subscription links
         $secKey = acym_getVar('string', 'seckey', 'none');
-        if ($secKey == $this->config->get('security_key')) return true;
+        if ($secKey == $this->config->get('security_key')) {
+            return true;
+        }
 
         if ($captchaPluginName === 'acym_ireCaptcha' || $captchaPluginName === 'acym_reCaptcha_v3') {
             $privatekey = $this->config->get('recaptcha_secretkey', '');
             $response = acym_getVar('string', 'g-recaptcha-response', '');
             $remoteip = acym_getVar('string', 'REMOTE_ADDR', '', 'SERVER');
-            if (empty($privatekey) || $response === '' || empty($remoteip)) return false;
+            if (empty($privatekey) || $response === '' || empty($remoteip)) {
+                return false;
+            }
 
             $url = 'https://www.google.com/recaptcha/api/siteverify?secret='.urlencode(stripslashes($privatekey));
             $url .= '&remoteip='.urlencode(stripslashes($remoteip));
@@ -62,13 +86,30 @@ class CaptchaHelper extends acymObject
             $getResponse = acym_fileGetContent($url);
 
             $answers = json_decode($getResponse, true);
+
+            if (!is_array($answers) || empty($answers['success'])) {
+                return false;
+            }
+
             if ($captchaPluginName === 'acym_ireCaptcha') {
-                return (is_array($answers) && !empty($answers['success']) && trim($answers['success']) !== '');
+                return trim($answers['success']) !== '';
             } else {
                 $score = $this->config->get('recaptcha_score', 0.5);
 
-                return (is_array($answers) && !empty($answers['success']) && trim($answers['success']) == true && ($answers['score']) >= $score);
+                return trim($answers['success']) == true && $answers['score'] >= $score;
             }
+        } elseif ($captchaPluginName === 'acym_hcaptcha') {
+            $data = [
+                'secret' => $this->config->get('hcaptcha_secretkey'),
+                'response' => $_POST['h-captcha-response'],
+            ];
+
+            $responseData = acym_makeCurlCall(
+                'https://hcaptcha.com/siteverify',
+                $data
+            );
+
+            return !empty($responseData['success']);
         } else {
             return acym_checkCaptcha($captchaPluginName);
         }

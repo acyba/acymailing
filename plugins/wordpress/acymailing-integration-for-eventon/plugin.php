@@ -196,6 +196,11 @@ class plgAcymEventon extends acymPlugin
         echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
+
+        // Reload the categories for the listing
+        $this->prepareWPCategories('event_type_2');
+        $this->getCategoryFilter();
+
         $identifier = 'auto2'.$this->name;
         $tabHelper->startTab(__('Event Type 2', 'eventon'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
@@ -597,7 +602,7 @@ class plgAcymEventon extends acymPlugin
                 $endDateDisplay = $varFields['{simpleenddate}'];
             } else {
                 if ($varFields['{simplestartdate}'] === $varFields['{simpleenddate}']) {
-                    $endDateDisplay = acym_date($endDate, 'H:i');
+                    $endDateDisplay = acym_date($endDate, 'H:i', false);
                 } else {
                     $endDateDisplay = $varFields['{enddate}'];
                 }

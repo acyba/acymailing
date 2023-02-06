@@ -60,10 +60,16 @@
 								</div>
 								<div class="acym__plugins__card__params cell grid-x">
 									<div class="cell grid-x acym_vcenter acym__plugins__card__params__title-line">
-										<h2 class="cell medium-10 acym__plugins__card__params__title acym_text_ellipsis" :title="plugin.title">{{ plugin.title }}</h2>
-										<a target="_blank" :href="documentationUrl(plugin.folder_name)" class="acym__plugins__documentation cell medium-1">
-											<i class="acymicon-book"></i>
-										</a>
+										<h2 class="cell medium-9 acym__plugins__card__params__title acym_text_ellipsis" :title="plugin.title">{{ plugin.title }}</h2>
+										<div class="cell auto"></div>
+										<button v-show="plugin.uptodate == '0'" data-acym-tooltip="<?php echo acym_translation('ACYM_UPDATE'); ?>"
+												type="button"
+												class="acym__plugins__button shrink acym__plugins__button__update cell text-center"
+												@click="updatePlugin(plugin)">
+											<span v-show="!updating[plugin.id]"><i class="acymicon-exclamation-triangle"></i></span>
+											<span v-show="updating[plugin.id]"><?php echo acym_loaderLogo(); ?></span>
+										</button>
+
 										<i v-if="plugin.settings && plugin.settings!='not_installed'"
 										   @click="toggleSettings(plugin.folder_name)"
 										   class="acymicon-cog cell shrink acym__plugins__settings__toggle cursor-pointer"></i>
@@ -71,6 +77,9 @@
 										   class="acymicon-cog cell shrink acym__plugins__settings__toggle__blocked cursor-pointer acym__color__medium-gray acym__tooltip">
 											<span class="acym__tooltip__text"><?php echo acym_translation('ACYM_SETTINGS_AVAILABLE_INSTALLED_EXTENSION'); ?></span>
 										</i>
+										<a target="_blank" :href="documentationUrl(plugin.folder_name)" class="acym__plugins__documentation cell medium-1">
+											<i class="acymicon-book"></i>
+										</a>
 									</div>
 									<div ref="plugins" :class="isOverflown(index)" class="acym__plugins__card__params_desc cell" v-html="plugin.description"></div>
 
@@ -78,15 +87,6 @@
 										<div class="cell grid-x acym_vcenter medium-8">
 											<span class="cell shrink"><?php echo acym_translation('ACYM_ENABLED'); ?>:</span>
 											<vue-switch :plugin="plugin" :ischecked="isActivated(plugin.active)"></vue-switch>
-										</div>
-										<div class="cell grid-x acym_vcenter medium-4 align-right" v-show="plugin.uptodate === '0'">
-											<button data-acym-tooltip="<?php echo acym_translation('ACYM_UPDATE'); ?>"
-													type="button"
-													class="acym__plugins__button shrink acym__plugins__button__update cell text-center"
-													@click="updatePlugin(plugin)">
-												<span v-show="!updating[plugin.id]"><i class="acymicon-file_download"></i></span>
-												<span v-show="updating[plugin.id]"><?php echo acym_loaderLogo(); ?></span>
-											</button>
 										</div>
 									</div>
 								</div>

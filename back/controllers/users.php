@@ -10,6 +10,7 @@ use AcyMailing\Classes\MailpoetClass;
 use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\UserStatClass;
+use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Helpers\EncodingHelper;
 use AcyMailing\Helpers\EntitySelectHelper;
 use AcyMailing\Helpers\ExportHelper;
@@ -423,7 +424,7 @@ class UsersController extends acymController
                         $details .= $value.'<br />';
                         continue;
                     }
-                    list($part1, $part2) = explode('::', $value);
+                    [$part1, $part2] = explode('::', $value);
                     if (preg_match('#^[A-Z_]*$#', $part2)) $part2 = acym_translation($part2);
                     $details .= '<b>'.acym_escape(acym_translation($part1)).' : </b>'.acym_escape($part2).'<br />';
                 }
@@ -454,7 +455,7 @@ class UsersController extends acymController
                 $details = '<div><h5>'.acym_translation('ACYM_SOURCE').'</h5><br />';
                 foreach ($source as $value) {
                     if (!strpos($value, '::')) continue;
-                    list($part1, $part2) = explode('::', $value);
+                    [$part1, $part2] = explode('::', $value);
                     $details .= '<b>'.acym_escape($part1).' : </b>'.acym_escape($part2).'<br />';
                 }
                 $details .= '</div>';
@@ -656,6 +657,10 @@ class UsersController extends acymController
         $filtersListing['list'] = $this->getVarFiltersListing('int', 'users_list', 0);
         $filtersListing['list_status'] = $this->getVarFiltersListing('string', 'list_status', 'all');
 
+        $filtersSegment = $this->getVarFiltersListing('int', 'segment', 0);
+        $segmentClass = new SegmentClass();
+        $availableSegments = $segmentClass->getAllForSelect();
+
         $list = acym_getVar('int', 'users_list', 0);
         if (!empty($list)) {
             $preselectList = true;
@@ -688,11 +693,14 @@ class UsersController extends acymController
             'checkedElements' => $checkedElements,
             'fields' => $fields,
             'customfields' => $customFields,
+            'coreFields' => [1, 2, $fieldClass->getLanguageFieldId()],
             'isPreselectedList' => $preselectList,
             'entitySelect' => $entitySelect,
             'exportListStatus' => $filtersListing['list_status'],
             'encodingHelper' => $encodingHelper,
             'userClass' => $userClass,
+            'segments' => $availableSegments,
+            'preselectedSegment' => $filtersSegment,
         ];
 
         parent::display($data);
@@ -733,11 +741,7 @@ class UsersController extends acymController
         // Make sure the user selected fields and didn't inject something
         $fieldsToExport = acym_getVar('array', 'export_fields', []);
         if (empty($fieldsToExport)) {
-            if (!empty($selectedUsersArray)) {
-                acym_setVar('elements_checked', $selectedUsersArray);
-            } else {
-                acym_setVar('elements_checked', []);
-            }
+            acym_setVar('elements_checked', empty($selectedUsersArray) ? [] : $selectedUsersArray);
 
             return $this->exportError(acym_translation('ACYM_EXPORT_SELECT_FIELD'));
         }
@@ -747,24 +751,30 @@ class UsersController extends acymController
         $customFields = $fieldClass->getAll();
 
         $customFieldsToExport = [];
-
+        $specialFieldsToExport = [];
         foreach ($fieldsToExport as $i => $oneField) {
-            if (empty($customFields[$oneField])) continue;
-            $customFieldsToExport[$oneField] = $customFields[$oneField]->namekey;
-            unset($fieldsToExport[$i]);
+            if ($oneField === 'subscribe_date') {
+                $specialFieldsToExport[] = $oneField;
+                unset($fieldsToExport[$i]);
+            } elseif (!empty($customFields[$oneField])) {
+                $customFieldsToExport[$oneField] = $customFields[$oneField]->namekey;
+                unset($fieldsToExport[$i]);
+            }
         }
 
         $notAllowedFields = array_diff($fieldsToExport, $tableFields);
-        if (in_array('id', $fieldsToExport)) $notAllowedFields[] = 'id';
+        if (in_array('id', $fieldsToExport)) {
+            $notAllowedFields[] = 'id';
+        }
         if (!empty($notAllowedFields)) {
             return $this->exportError(acym_translationSprintf('ACYM_NOT_ALLOWED_FIELDS', implode(', ', $notAllowedFields), implode(', ', $tableFields)));
         }
 
         $charset = acym_getVar('string', 'export_charset', 'UTF-8');
-        $excelsecurity = acym_getVar('string', 'export_excelsecurity', 0);
+        $excelSecurity = acym_getVar('string', 'export_excelsecurity', 0);
         $separator = acym_getVar('string', 'export_separator', 'comma');
         $realSeparators = ['comma' => ',', 'semicol' => ';'];
-        if (!in_array($separator, ['comma', 'semicol'])) {
+        if (!in_array($separator, array_keys($realSeparators))) {
             $separator = 'comma';
         }
 
@@ -773,7 +783,7 @@ class UsersController extends acymController
         $newConfig = new \stdClass();
         $newConfig->export_separator = $separator;
         $newConfig->export_charset = $charset;
-        $newConfig->export_excelsecurity = $excelsecurity;
+        $newConfig->export_excelsecurity = $excelSecurity;
         $newConfig->export_fields = implode(',', array_merge($fieldsToExport, array_keys($customFieldsToExport)));
         if (empty($selectedUsers)) {
             $newConfig->export_lists = implode(',', $listsToExport);
@@ -787,23 +797,51 @@ class UsersController extends acymController
         $query = 'SELECT DISTINCT user.`id`, user.`'.implode('`, user.`', $fieldsToExport).'` FROM #__acym_user AS user';
 
         $where = [];
+        $flagSegment = 0;
 
         if (!empty($selectedUsersArray)) {
             acym_arrayToInteger($selectedUsersArray);
             $where[] = 'user.id IN ('.implode(',', $selectedUsersArray).')';
-        } elseif ($usersToExport == 'list' && !empty($listsToExport)) {
-            acym_arrayToInteger($listsToExport);
+        } else {
+            if ($usersToExport == 'list' && !empty($listsToExport)) {
+                acym_arrayToInteger($listsToExport);
 
-            $listJoin = '#__acym_user_has_list AS userlist ON userlist.user_id = user.id AND userlist.list_id IN ('.implode(',', $listsToExport).')';
+                $listJoin = '#__acym_user_has_list AS userlist ON userlist.user_id = user.id AND userlist.list_id IN ('.implode(',', $listsToExport).')';
 
-            if ($exportUsersType == 'none') {
-                $query .= ' LEFT JOIN '.$listJoin;
-                $where[] = 'userlist.status IS NULL';
-            } else {
-                $query .= ' JOIN '.$listJoin;
+                if ($exportUsersType == 'none') {
+                    $query .= ' LEFT JOIN '.$listJoin;
+                    $where[] = 'userlist.status IS NULL';
+                } else {
+                    $query .= ' JOIN '.$listJoin;
+                }
+                if ($exportUsersType == 'sub') $where[] = 'userlist.status = 1';
+                if ($exportUsersType == 'unsub') $where[] = 'userlist.status = 0';
             }
-            if ($exportUsersType == 'sub') $where[] = 'userlist.status = 1';
-            if ($exportUsersType == 'unsub') $where[] = 'userlist.status = 0';
+
+            $segmentChosen = acym_getVar('string', 'export_segment', '');
+            if ('' !== $segmentChosen) {
+                $segmentClass = new SegmentClass();
+                $segment = $segmentClass->getOneById($segmentChosen);
+                if (!empty($segment)) {
+                    $automationHelpers = [];
+                    foreach ($segment->filters as $or => $orValues) {
+                        if (empty($orValues)) continue;
+                        $automationHelpers[$or] = new AutomationHelper();
+                        foreach ($orValues as $and => $andValues) {
+                            $and = intval($and);
+                            foreach ($andValues as $filterName => $options) {
+                                acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelpers[$or], &$options, $and.'_'.$or]);
+                            }
+                        }
+                    }
+                    $flagSegment = SegmentsController::FLAG_EXPORT_USERS;
+                    foreach ($automationHelpers as $automationHelper) {
+                        $automationHelper->addFlag($flagSegment);
+                    }
+
+                    $where[] = 'user.automation LIKE "%a'.intval($flagSegment).'a%"';
+                }
+            }
         }
 
         $filtersListingSearch = $this->getVarFiltersListing('string', 'users_search', '');
@@ -826,11 +864,13 @@ class UsersController extends acymController
             }
         }
 
-        if (!empty($where)) $query .= ' WHERE ('.implode(') AND (', $where).')';
+        if (!empty($where)) {
+            $query .= ' WHERE ('.implode(') AND (', $where).')';
+        }
 
         // We have all we need for the export, prepare the headers for the download
         $exportHelper = new ExportHelper();
-        $exportHelper->exportCSV($query, $fieldsToExport, $customFieldsToExport, $realSeparators[$separator], $charset);
+        $exportHelper->exportCSV($query, $fieldsToExport, $customFieldsToExport, $specialFieldsToExport, $realSeparators[$separator], $charset, null, $flagSegment);
 
         exit;
     }

@@ -33,7 +33,13 @@ function acym_baseURI($pathonly = false)
 
 function acym_rootURI($pathonly = false, $path = 'siteurl')
 {
-    return rtrim(site_url(), '/').'/';
+    // For WordPress bedrock
+    $rootURI = rtrim(site_url(), '/').'/';
+    if (defined('CONTENT_DIR') && substr($rootURI, -3) === 'wp/') {
+        $rootURI = substr($rootURI, 0, -3);
+    }
+
+    return $rootURI;
 }
 
 function acym_completeLink($link, $popup = false, $redirect = false, $forceNoPopup = false)

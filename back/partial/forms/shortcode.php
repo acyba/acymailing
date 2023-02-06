@@ -13,10 +13,10 @@
 </div>
 <style>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__shortcode{
-		height: <?php echo $form->style_options['size']['height'];?>px;
-		max-width: <?php echo $form->style_options['size']['width'];?>px;
-		background-color: <?php echo $form->style_options['background_color'];?>;
-		color: <?php echo $form->style_options['text_color'];?> !important;
+		height: <?php echo $form->settings['style']['size']['height'];?>px;
+		max-width: <?php echo $form->settings['style']['size']['width'];?>px;
+		background-color: <?php echo $form->settings['style']['background_color'];?>;
+		color: <?php echo $form->settings['style']['text_color'];?> !important;
 		padding: .5rem;
 		text-align: center;
 		display: flex;
@@ -50,8 +50,8 @@
 		display: block;
 	}
 
-	<?php if (!empty($form->style_options['position']) && in_array($form->style_options['position'], ['image-right', 'image-left'])){?>
-	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__shortcode <?php echo '#'.$form->form_tag_name;?>{
+	<?php if (!empty($form->settings['style']['position']) && in_array($form->settings['style']['position'], ['image-right', 'image-left'])){ ?>
+	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__shortcode <?php echo '#'.$form->form_tag_name; ?>{
 		display: flex;
 		justify-content: center;
 		align-items: center
@@ -61,5 +61,5 @@
 		display: inline-block;
 	}
 
-	<?php }?>
+	<?php } ?>
 </style>

@@ -1111,17 +1111,14 @@ class CssInliner extends AbstractHtmlProcessor
      */
     protected function addStyleElementToDocument(string $css): void
     {
-        global $emogrifiedMediaCSS;
-        $emogrifiedMediaCSS = $css;
+        $domDocument = $this->getDomDocument();
+        $styleElement = $domDocument->createElement('style', $css);
+        $styleAttribute = $domDocument->createAttribute('type');
+        $styleAttribute->value = 'text/css';
+        $styleElement->appendChild($styleAttribute);
 
-        //$domDocument = $this->getDomDocument();
-        //$styleElement = $domDocument->createElement('style', $css);
-        //$styleAttribute = $domDocument->createAttribute('type');
-        //$styleAttribute->value = 'text/css';
-        //$styleElement->appendChild($styleAttribute);
-        //
-        //$headElement = $this->getHeadElement();
-        //$headElement->appendChild($styleElement);
+        $headElement = $this->getHeadElement();
+        $headElement->appendChild($styleElement);
     }
 
     /**

@@ -9,6 +9,7 @@ use AcyMailing\Classes\FormClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\MailStatClass;
+use AcyMailing\Classes\PluginClass;
 use AcyMailing\Classes\RuleClass;
 use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Controllers\ConfigurationController;
@@ -798,9 +799,9 @@ class acymInstall
             if (file_exists(ACYM_ADDONS_FOLDER_PATH.'Volumes')) {
                 $wrongAddons = acym_getFolders(ACYM_ADDONS_FOLDER_PATH.'Volumes'.DS.'workspace'.DS.'acymailing'.DS.'addons'.DS);
 
-                $pluginsController = new PluginsController();
+                $pluginClass = new PluginClass();
                 foreach ($wrongAddons as $oneGoneWrong) {
-                    $pluginsController->downloadUpload($oneGoneWrong, false);
+                    $pluginClass->downloadAddon($oneGoneWrong, false);
                 }
 
                 acym_deleteFolder(ACYM_ADDONS_FOLDER_PATH.'Volumes');
@@ -1348,6 +1349,46 @@ class acymInstall
                         	ENGINE = InnoDB
                         	/*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;'
             );
+        }
+
+        if (version_compare($this->fromVersion, '8.1.0', '<')) {
+            $this->updateQuery('ALTER TABLE `#__acym_form` ADD `settings` TEXT');
+            $this->updateQuery('ALTER TABLE `#__acym_form` ADD `display_languages` VARCHAR(255)');
+
+            $formClass = new FormClass();
+            $forms = $formClass->getAll();
+
+            foreach ($forms as $oneForm) {
+                $oneForm->settings = [];
+                foreach ($oneForm as $key => $value) {
+                    $optionsPos = strpos($key, '_options');
+                    if (empty($value) || ($key !== 'cookie' && $optionsPos === false)) {
+                        continue;
+                    }
+
+                    $category = $key === 'cookie' ? 'cookie' : substr($key, 0, $optionsPos);
+                    $oneForm->settings[$category] = json_decode($value, true);
+                }
+
+                $oneForm->settings = json_encode($oneForm->settings);
+                $formClass->save($oneForm);
+            }
+
+            $this->updateQuery(
+                'ALTER TABLE `#__acym_form` 
+                DROP `lists_options`, 
+                DROP `fields_options`, 
+                DROP `style_options`, 
+                DROP `button_options`, 
+                DROP `image_options`, 
+                DROP `termspolicy_options`, 
+                DROP `cookie`, 
+                DROP `redirection_options`, 
+                DROP `display_options`, 
+                DROP `message_options`'
+            );
+
+            $this->updateQuery('ALTER TABLE `#__acym_user` CHANGE `key` `key` VARCHAR(40) NULL');
         }
     }
 

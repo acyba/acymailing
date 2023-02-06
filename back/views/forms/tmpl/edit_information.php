@@ -36,6 +36,20 @@
                 );
                 ?>
 			</div>
+			<div class="cell medium-6 grid-x acym_vcenter">
+				<label for="acym__forms__available__language" class="cell medium-6 large-4">
+                    <?php echo acym_translation('ACYM_LANGUAGE_AVAILABLE').acym_info('ACYM_LANGUAGE_AVAILABLE_INFO'); ?>
+				</label>
+
+				<div class="cell medium-6">
+					<div class="cell medium-6">
+						<select2multiple v-model="form['display_languages']"
+										 :name="'form[display_languages]'"
+										 :value="<?php echo acym_escape(json_encode($data['form']->display_languages)); ?>"
+										 :options="<?php echo acym_escape(json_encode($data['all_languages'])); ?>"></select2multiple>
+					</div>
+				</div>
+			</div>
             <?php
             if ($data['form']->type == 'shortcode') {
                 echo '<div class="cell grid-x acym_vcenter">';

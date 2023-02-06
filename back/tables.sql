@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_user` (
 	`cms_id` INT NOT NULL DEFAULT 0,
 	`source` VARCHAR(255) NULL,
 	`confirmed` TINYINT(1) NOT NULL DEFAULT 0,
-	`key` VARCHAR(30) NULL,
+	`key` VARCHAR(40) NULL,
 	`automation` VARCHAR(50) NOT NULL DEFAULT '',
 	`confirmation_date` DATETIME DEFAULT NULL,
 	`confirmation_ip` VARCHAR(50) DEFAULT NULL,
@@ -565,17 +565,9 @@ CREATE TABLE IF NOT EXISTS `#__acym_form` (
 	`creation_date` DATETIME NOT NULL,
 	`active` TINYINT(1) NOT NULL DEFAULT 1,
 	`type` VARCHAR(20) NOT NULL,
-	`lists_options` LONGTEXT,
-	`fields_options` LONGTEXT,
-	`style_options` LONGTEXT,
-	`button_options` LONGTEXT,
-	`image_options` LONGTEXT,
-	`termspolicy_options` LONGTEXT,
-	`cookie` VARCHAR(30),
 	`pages` TEXT,
-	`redirection_options` TEXT,
-	`message_options` TEXT,
-	`display_options` TEXT,
+	`display_languages` VARCHAR(255),
+	`settings` TEXT,
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB

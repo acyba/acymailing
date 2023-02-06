@@ -315,8 +315,8 @@ function acym_date($time = 'now', $format = null, $useTz = true, $translate = tr
             return $date->format($format);
         }
     } else {
-        //use timezone
-        $cmsOffset = acym_getCMSConfig('offset');
+        //We replace the . with : WordPress give format like UTC+5.45, but we want something like UTC+5:45
+        $cmsOffset = str_replace('.', ':', acym_getCMSConfig('offset'));
 
         $timezone = new DateTimeZone($cmsOffset);
 

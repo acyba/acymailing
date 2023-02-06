@@ -12,6 +12,7 @@ class SegmentsController extends acymController
 {
 
     const FLAG_USERS = -1;
+    const FLAG_EXPORT_USERS = -2;
 
     public function __construct()
     {
@@ -118,8 +119,8 @@ class SegmentsController extends acymController
 
         if (!empty($segment) && !empty($segment['filters'])) {
             foreach ($segment['filters'] as $or => $orValues) {
-                $automationHelpers[$or] = new AutomationHelper();
                 if (empty($orValues)) continue;
+                $automationHelpers[$or] = new AutomationHelper();
                 foreach ($orValues as $and => $andValues) {
                     $and = intval($and);
                     foreach ($andValues as $filterName => $options) {
@@ -145,7 +146,7 @@ class SegmentsController extends acymController
                         ',',
                         $listsIds
                     ).') and user_list.status = 1 '.$join;
-                    $automationHelperBase->where[] = 'user.active = 1';
+                $automationHelperBase->where[] = 'user.active = 1';
             }
             $userIds = acym_loadResultArray($automationHelperBase->getQuery(['user.id']));
         } else {
@@ -221,8 +222,8 @@ class SegmentsController extends acymController
                 }
             }
             foreach ($segment->filters as $or => $orValues) {
-                $automationHelpers[$or] = new AutomationHelper();
                 if (empty($orValues)) continue;
+                $automationHelpers[$or] = new AutomationHelper();
                 foreach ($orValues as $and => $andValues) {
                     $and = intval($and);
                     foreach ($andValues as $filterName => $options) {

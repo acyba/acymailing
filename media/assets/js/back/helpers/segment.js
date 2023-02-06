@@ -303,14 +303,14 @@ const acym_helperSegment = {
         });
     },
     getSeeUserModalButton: function ($element, andValue) {
-        let idModal = `acym__segments__see-users__${andValue}`;
-        let $seeUserModalButton = jQuery('#acym__segment__see-users__example').clone();
-        let $seeUserModal = jQuery('#acym__segments__see-users').closest('.reveal-overlay').clone();
+        const idModal = `acym__segments__see-users__${andValue}`;
+        const $seeUserModalButton = jQuery('#acym__segment__see-users__example').clone();
+        const $seeUserModal = jQuery('#acym__segments__see-users').closest('.reveal-overlay').clone();
 
         $seeUserModalButton.find('[data-open="acym__segments__see-users"]').attr('data-open', idModal);
         $seeUserModal.find('#acym__segments__see-users').attr('id', idModal);
 
-        let dataSeeUserModal = {
+        const dataSeeUserModal = {
             ctrl: 'segments',
             task: 'usersSummary',
             and: andValue,
@@ -318,7 +318,7 @@ const acym_helperSegment = {
         };
         $seeUserModal.find('[acym-data-query]').attr('acym-data-query', JSON.stringify(dataSeeUserModal));
 
-        let seeUserModalHtml = $seeUserModalButton.html() + $seeUserModal[0].outerHTML;
+        const seeUserModalHtml = $seeUserModalButton.html() + $seeUserModal[0].outerHTML;
 
         return `<span class="cell shrink acym__segments__see-users">${seeUserModalHtml}</span>`;
     }

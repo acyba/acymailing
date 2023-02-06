@@ -98,7 +98,7 @@ jQuery(function ($) {
                     jQuery(`#${vueComp.modalId}`).hide();
                 });
 
-                jQuery('.acym__form__modal__joomla-image__ui__iframe__actions__select').off('click').on('click', function () {
+                jQuery('.acym__form__modal__joomla-image__ui__iframe__actions__select').on('click', function () {
                     // 1 - Get current folder
                     let folderPath = ACYM_ROOT_URI;
                     $modalUi.contents().find('.media-breadcrumb-item a').each(function () {

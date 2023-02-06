@@ -196,24 +196,25 @@ const acym_helper = {
                      });
     },
     post: function (url = ACYM_AJAX_URL, data = {}) {
-        return jQuery.post(url, data)
-                     .then(res => {
-                         if (typeof res !== 'object') res = this.parseJson(res);
+        const query = jQuery.post(url, data);
+        query.then(res => {
+            if (typeof res !== 'object') res = this.parseJson(res);
 
-                         if (res.error && !this.empty(res.message)) console.error(res.message);
+            if (res.error && !this.empty(res.message)) console.error(res.message);
 
-                         return res;
-                     })
-                     .fail((xhr, status, error) => {
-                         const response = {};
-                         response.error = true;
-                         response.message = error;
-                         response.data = [];
+            return res;
+        })
+             .fail((xhr, status, error) => {
+                 const response = {};
+                 response.error = true;
+                 response.message = error;
+                 response.data = [];
 
-                         console.error(`Error calling ${url}, responded with error ${status} ${error}`);
+                 console.error(`Error calling ${url}, responded with error ${status} ${error}`);
 
-                         return response;
-                     });
+                 return response;
+             });
+        return query;
     },
     sameArrays: function (array1, array2) {
         return array1.length === array2.length && array1.every(function (value, index) {

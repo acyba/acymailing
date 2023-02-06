@@ -90,11 +90,11 @@
                         ?>
 					</div>
 					<div class="cell auto hide-for-small-only">
-                        <?php echo array_key_exists($form->type, $data['formTypes']) ? acym_escape($data['formTypes'][$form->type]) : acym_escape($form->type); ?>
+                        <?php echo acym_escape(array_key_exists($form->type, $data['formTypes']) ? $data['formTypes'][$form->type] : $form->type); ?>
 					</div>
-                    <?php if (ACYM_CMS == 'wordpress') { ?>
+                    <?php if (ACYM_CMS === 'wordpress') { ?>
 						<div class="cell medium-2 hide-for-small-only">
-                            <?php echo $form->type == 'shortcode' ? '[acymailing_form_shortcode id="'.$form->id.'"]' : '-'; ?>
+                            <?php echo $form->type === $data['formClass']::SUB_FORM_TYPE_SHORTCODE ? '[acymailing_form_shortcode id="'.$form->id.'"]' : '-'; ?>
 						</div>
                     <?php } ?>
 					<div class="cell small-1 acym__listing__controls text-center">

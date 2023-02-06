@@ -101,6 +101,9 @@ class acyRouter
 
         // Fixed editor incompatibility
         wp_dequeue_script('wp-optimize-minify-admin-purge');
+
+        // Remove Happy Elementor Addons select2 which breaks select2
+        wp_dequeue_script('happy-elementor-addons-select2');
     }
 
     public function removeCssBreakingPages()
@@ -109,6 +112,7 @@ class acyRouter
         wp_dequeue_style('WP REST API Controller');
         wp_dequeue_style('wpml-select-2');
         wp_dequeue_style('swcfpc_admin_css');
+        wp_dequeue_style('happy-elementor-addons-select2');
     }
 
     public function frontRouter()

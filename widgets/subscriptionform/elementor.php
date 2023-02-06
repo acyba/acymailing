@@ -116,7 +116,7 @@ class acySubscriptionFormWidget extends \Elementor\Widget_Base
         return ['acymailing'];
     }
 
-    protected function _register_controls()
+    protected function register_controls()
     {
         $this->initParams();
 

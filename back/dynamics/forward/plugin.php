@@ -111,7 +111,7 @@ class plgAcymForward extends acymPlugin
 
         if (empty($action['template_id'])) {
             $newMail->name = acym_translationSprintf('ACYM_FORWARD_SUBJECT', $subject);
-            $newMail->body = $mailboxHelper->_message->html;
+            $newMail->body = empty($mailboxHelper->_message->html) ? $mailboxHelper->_message->text : $mailboxHelper->_message->html;
         } else {
             $mailClass = new MailClass();
             $newMail = $mailClass->getOneById($action['template_id']);

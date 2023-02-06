@@ -239,7 +239,7 @@ class ConfigurationController extends acymController
             'automation' => 'ACYM_AUTOAMTION',
             'queue' => 'ACYM_QUEUE',
             'plugins' => 'ACYM_ADD_ONS',
-            'bounces' => 'ACYM_BOUNCE_HANDLING',
+            'bounces' => 'ACYM_MAILBOX_ACTIONS',
             'stats' => 'ACYM_STATISTICS',
             'configuration' => 'ACYM_CONFIGURATION',
         ];
@@ -257,6 +257,7 @@ class ConfigurationController extends acymController
         $captchaOptions = array_replace(
             [
                 'none' => acym_translation('ACYM_NONE'),
+                'acym_hcaptcha' => acym_translation('ACYM_HCAPTCHA'),
                 'acym_ireCaptcha' => acym_translation('ACYM_CAPTCHA_INVISIBLE'),
                 'acym_reCaptcha_v3' => acym_translation('ACYM_CAPTCHA_V3'),
             ],

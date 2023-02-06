@@ -945,13 +945,10 @@ class ListClass extends acymClass
 
     public function getAll($key = null, $needTranslation = false)
     {
-        if (empty($key)) $key = $this->pkey;
+        $lists = parent::getAll($key);
 
-        $lists = acym_loadObjectList('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table), $key);
-
-        if (acym_isMultilingual() && $needTranslation) {
-            $listClass = new ListClass();
-            $lists = $listClass->getTranslatedNameDescription($lists);
+        if ($needTranslation && acym_isMultilingual()) {
+            $lists = $this->getTranslatedNameDescription($lists);
         }
 
         return $lists;

@@ -5,7 +5,7 @@ Description: Adds a new option in the AcyMailing automations to export the selec
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 1.8
+Version: 1.9
 */
 
 use AcyMailing\Classes\PluginClass;

@@ -8,12 +8,15 @@ jQuery(function ($) {
                 menuActive: 'settings',
                 loading: true,
                 noReloading: [
+                    'display_languages',
                     'name',
                     'pages',
                     'active',
-                    'delay',
-                    'redirection_options.after_subscription',
-                    'redirection_options.confirmation_message'
+                    'settings.display.delay',
+                    'settings.display.scroll',
+                    'settings.cookie.cookie_expiration',
+                    'settings.redirection.after_subscription',
+                    'settings.redirection.confirmation_message'
                 ],
                 oldForm: {}
             };
@@ -32,7 +35,7 @@ jQuery(function ($) {
                 return this.menuActive === 'settings';
             },
             imageText() {
-                return ACYM_JS_TXT[this.form.image_options.url === '' ? 'ACYM_SELECT' : 'ACYM_CHANGE'];
+                return ACYM_JS_TXT[this.form.settings.image.url === '' ? 'ACYM_SELECT' : 'ACYM_CHANGE'];
             }
         },
         methods: {
@@ -40,7 +43,7 @@ jQuery(function ($) {
                 this.menuActive = status;
             },
             selectPosition(position) {
-                this.form.style_options.position = position;
+                this.form.settings.style.position = position;
             },
             save(exit) {
                 if (this.form.name === '') {
@@ -49,10 +52,10 @@ jQuery(function ($) {
                 }
                 this.loading = true;
                 this.form.active = $('[name="form[active]"]').val();
-                let ajaxUrl = ACYM_AJAX_URL + '&ctrl=forms&task=saveAjax';
+
                 return $.ajax({
                     type: 'POST',
-                    url: ajaxUrl,
+                    url: ACYM_AJAX_URL + '&ctrl=forms&task=saveAjax',
                     dataType: 'json',
                     data: {
                         form: this.form
@@ -88,10 +91,9 @@ jQuery(function ($) {
             },
             getFormRender() {
                 this.loading = true;
-                let ajaxUrl = ACYM_AJAX_URL + '&ctrl=forms&task=updateFormPreview';
                 return $.ajax({
                     type: 'POST',
-                    url: ajaxUrl,
+                    url: ACYM_AJAX_URL + '&ctrl=forms&task=updateFormPreview',
                     dataType: 'json',
                     data: {
                         form: this.form
@@ -106,12 +108,12 @@ jQuery(function ($) {
                 });
             },
             cleanValues() {
-                if (undefined !== this.form.display_options) {
-                    if (this.form.display_options.scroll > 100) {
-                        this.form.display_options.scroll = 100;
+                if (undefined !== this.form.settings.display) {
+                    if (this.form.settings.display.scroll > 100) {
+                        this.form.settings.display.scroll = 100;
                     }
-                    if (this.form.display_options.scroll < 0) {
-                        this.form.display_options.scroll = 0;
+                    if (this.form.settings.display.scroll < 0) {
+                        this.form.settings.display.scroll = 0;
                     }
                 }
             }
@@ -123,9 +125,11 @@ jQuery(function ($) {
                     clearTimeout(timeout);
                     this.cleanValues();
                     let stopReloading = false;
+                    // Search which option has just been changed, and if it is one of the noReloading ones, don't refresh the form's preview
                     for (let i = 0 ; i < this.noReloading.length ; i++) {
                         if (this.noReloading[i].indexOf('.') === -1) {
                             if (this.noReloading[i] === 'pages') {
+                                // Special check for the pages option since it's a multi select
                                 if (!acym_helper.sameArrays(this.form[this.noReloading[i]], this.oldForm[this.noReloading[i]])) {
                                     stopReloading = true;
                                 }
@@ -134,7 +138,7 @@ jQuery(function ($) {
                             }
                         } else {
                             let noReloadingSplit = this.noReloading[i].split('.');
-                            if (this.form[noReloadingSplit[0]][noReloadingSplit[1]] !== this.oldForm[noReloadingSplit[0]][noReloadingSplit[1]]) {
+                            if (this.form[noReloadingSplit[0]][noReloadingSplit[1]][noReloadingSplit[2]] !== this.oldForm[noReloadingSplit[0]][noReloadingSplit[1]][noReloadingSplit[2]]) {
                                 stopReloading = true;
                             }
                         }

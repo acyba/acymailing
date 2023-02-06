@@ -4,7 +4,8 @@ function acym_getTimeOffsetCMS()
 {
     static $timeoffset = null;
     if ($timeoffset === null) {
-        $timeoffset = acym_getCMSConfig('offset');
+        //We replace the . with : WordPress give format like UTC+5.45, but we want something like UTC+5:45
+        $timeoffset = str_replace('.', ':', acym_getCMSConfig('offset'));
 
         if (!is_numeric($timeoffset)) {
             $timezone = new DateTimeZone($timeoffset);

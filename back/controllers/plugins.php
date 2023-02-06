@@ -87,39 +87,6 @@ class PluginsController extends acymController
         parent::display($data);
     }
 
-    public function downloadUpload($name, $ajax = true)
-    {
-        $urlDownload = ACYM_UPDATEMEURL.'download&task=download&dynamic='.$name.'&license_domain='.urlencode(rtrim(ACYM_LIVE, '/'));
-
-        $package = acym_fileGetContent($urlDownload);
-        if (strpos($package, 'error') !== false) {
-            $result = json_decode($package, true);
-            $error = $result['error'];
-            if (!empty($this->errors[$error])) $error = $this->errors[$error];
-
-            return $this->handleError($error, $ajax);
-        }
-
-        if (empty($package)) {
-            return $this->handleError('ACYM_ISSUE_WHILE_DOWNLOADING', $ajax);
-        }
-
-        $tmpZipDownload = ACYM_ADDONS_FOLDER_PATH.$name.'.zip';
-        if (!acym_writeFile($tmpZipDownload, $package)) {
-            return $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
-        }
-
-        if (!acym_extractArchive($tmpZipDownload, ACYM_ADDONS_FOLDER_PATH)) {
-            return $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
-        }
-
-        if (!unlink($tmpZipDownload)) {
-            return $this->handleError('ACYM_ERROR_FILE_DELETION', false);
-        }
-
-        return true;
-    }
-
     private function handleError($error, $ajax)
     {
         if ($ajax) {
@@ -142,19 +109,10 @@ class PluginsController extends acymController
     {
         $this->isLastestAcyMailingVersion();
 
-        $pluginClass = new PluginClass();
         $plugin = acym_getVar('array', 'plugin');
 
-        $this->downloadUpload($plugin['folder_name']);
-
-        $plugin['version'] = $plugin['latest_version'];
-
-        $pluginToSave = new \stdClass();
-        $pluginToSave->id = $plugin['id'];
-        $pluginToSave->version = $plugin['latest_version'];
-        $pluginToSave->uptodate = 1;
-
-        $id = $pluginClass->save($pluginToSave);
+        $pluginClass = new PluginClass();
+        $id = $pluginClass->updateAddon($plugin['folder_name']);
         if (!empty($id)) {
             acym_sendAjaxResponse(acym_translation('ACYM_ADD_ON_SUCCESSFULLY_UPDATED'));
         } else {
@@ -187,7 +145,7 @@ class PluginsController extends acymController
         }
         $plugin['file_name'] = str_replace('.zip', '', $plugin['file_name']);
 
-        $this->downloadUpload($plugin['file_name'], $ajax);
+        $pluginClass->downloadAddon($plugin['file_name'], $ajax);
 
         //We update the plugin info in DB
         $pluginToSave = new \stdClass();

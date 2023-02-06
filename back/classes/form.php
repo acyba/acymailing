@@ -2,47 +2,349 @@
 
 namespace AcyMailing\Classes;
 
-use AcyMailing\Helpers\FormPositionHelper;
 use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Libraries\acymClass;
 
 class FormClass extends acymClass
 {
-    var $table = 'form';
-    var $pkey = 'id';
-    var $positionHelper;
-    public $emptyModel;
-
     const SUB_FORM_TYPE_SHORTCODE = 'shortcode';
     const SUB_FORM_TYPE_POPUP = 'popup';
     const SUB_FORM_TYPE_HEADER = 'header';
     const SUB_FORM_TYPE_FOOTER = 'footer';
 
+    var $table = 'form';
+    var $pkey = 'id';
+    private $settings;
+
     public function __construct()
     {
         parent::__construct();
-        $this->positionHelper = new FormPositionHelper();
-        $this->emptyModel = $this->initEmptyForm(self::SUB_FORM_TYPE_FOOTER);
+
+        $listClass = new ListClass();
+        $lists = $listClass->getAllForSelect(false);
+
+        $fieldClass = new FieldClass();
+        $allFields = $fieldClass->getAll();
+        $fields = [];
+        foreach ($allFields as $field) {
+            if ($field->id == 2 || intval($field->active) === 0) continue;
+            $fields[$field->id] = acym_translation($field->name);
+        }
+
+        $this->settings = [
+            'options' => [
+                'display' => [
+                    'delay' => [
+                        'label' => 'ACYM_DELAY',
+                        'description' => 'ACYM_DELAY_DESC',
+                        'type' => 'number',
+                        'unit' => acym_translation('ACYM_SECONDS'),
+                        'default' => 0,
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP],
+                    ],
+                    'scroll' => [
+                        'label' => 'ACYM_SCROLL',
+                        'description' => 'ACYM_SCROLL_DESC',
+                        'type' => 'number',
+                        'unit' => '%',
+                        'max' => 100,
+                        'default' => 0,
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP],
+                    ],
+                ],
+                'lists' => [
+                    'automatic_subscribe' => [
+                        'label' => 'ACYM_AUTO_SUBSCRIBE_TO',
+                        'description' => 'ACYM_AUTO_SUBSCRIBE_TO_DESC',
+                        'type' => 'multiselect',
+                        'options' => $lists,
+                        'default' => [],
+                    ],
+                    'displayed' => [
+                        'label' => 'ACYM_DISPLAYED_LISTS',
+                        'description' => 'ACYM_DISPLAYED_LISTS_DESC',
+                        'type' => 'multiselect',
+                        'options' => $lists,
+                        'default' => [],
+                    ],
+                    'checked' => [
+                        'label' => 'ACYM_LISTS_CHECKED_DEFAULT',
+                        'description' => 'ACYM_LISTS_CHECKED_DEFAULT_DESC',
+                        'type' => 'multiselect',
+                        'options' => $lists,
+                        'default' => [],
+                    ],
+                    'display_position' => [
+                        'label' => 'ACYM_DISPLAY_LISTS',
+                        'type' => 'select',
+                        'options' => [
+                            'after' => acym_translation('ACYM_AFTER_FIELDS'),
+                            'before' => acym_translation('ACYM_BEFORE_FIELDS'),
+                        ],
+                        'default' => 'after',
+                    ],
+                ],
+                'fields' => [
+                    'displayed' => [
+                        'label' => 'ACYM_FIELDS_TO_DISPLAY',
+                        'type' => 'multiselect',
+                        'options' => $fields,
+                        'default' => [],
+                    ],
+                    'display_mode' => [
+                        'label' => 'ACYM_DISPLAY_FIELDS_LABEL',
+                        'type' => 'select',
+                        'options' => [
+                            'inside' => acym_translation('ACYM_TEXT_INSIDE'),
+                            'outside' => acym_translation('ACYM_TEXT_OUTSIDE'),
+                        ],
+                        'default' => 'inside',
+                    ],
+                ],
+                'termspolicy' => [
+                    'termscond' => [
+                        'label' => 'ACYM_TERMS_CONDITIONS',
+                        'type' => 'article',
+                        'default' => 0,
+                    ],
+                    'privacy' => [
+                        'label' => 'ACYM_PRIVACY_POLICY',
+                        'type' => 'article',
+                        'default' => 0,
+                    ],
+                ],
+                'message' => [
+                    'text' => [
+                        'label' => 'ACYM_CUSTOM_MESSAGE_DISPLAY',
+                        'type' => 'textarea',
+                        'default' => '',
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP],
+                    ],
+                    'position' => [
+                        'label' => 'ACYM_MESSAGE_POSITION',
+                        'type' => 'select',
+                        'options' => [
+                            'before-image' => acym_translation('ACYM_BEFORE_IMAGE'),
+                            'before-fields' => acym_translation('ACYM_BEFORE_FIELDS'),
+                            'before-lists' => acym_translation('ACYM_BEFORE_LISTS'),
+                            'before-button' => acym_translation('ACYM_BEFORE_BUTTON'),
+                        ],
+                        'default' => 'before-fields',
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP],
+                    ],
+                    'color' => [
+                        'label' => 'ACYM_COLOR',
+                        'type' => 'color',
+                        'default' => '#000000',
+                    ],
+                ],
+                'cookie' => [
+                    'cookie_expiration' => [
+                        'label' => 'ACYM_COOKIE_EXPIRATION',
+                        'type' => 'number',
+                        'min' => 1,
+                        'unit' => acym_translation('ACYM_DAYS'),
+                        'default' => 1,
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP, self::SUB_FORM_TYPE_HEADER, self::SUB_FORM_TYPE_FOOTER],
+                    ],
+                ],
+                'redirection' => [
+                    'after_subscription' => [
+                        'label' => 'ACYM_AFTER_SUBSCRIPTION',
+                        'description' => 'ACYM_REDIRECT_LINK_DESC',
+                        'type' => 'text',
+                        'default' => '',
+                    ],
+                    'confirmation_message' => [
+                        'label' => 'ACYM_CONFIRMATION_MESSAGE',
+                        'description' => 'ACYM_CONFIRMATION_MESSAGE_DESC',
+                        'type' => 'text',
+                        'default' => '',
+                    ],
+                ],
+            ],
+            'styles' => [
+                'image' => [
+                    'url' => [
+                        'label' => 'ACYM_CHOOSE_IMAGE',
+                        'type' => 'media',
+                        'default' => '',
+                    ],
+                    'size' => [
+                        'label' => 'ACYM_SIZE',
+                        'type' => 'dimensions',
+                        'default' => ['width' => 100, 'height' => 100],
+                    ],
+                ],
+                'button' => [
+                    'background_color' => [
+                        'label' => 'ACYM_BACKGROUND_COLOR',
+                        'type' => 'color',
+                        'default' => '#000000',
+                    ],
+                    'text_color' => [
+                        'label' => 'ACYM_TEXT_COLOR',
+                        'type' => 'color',
+                        'default' => '#ffffff',
+                    ],
+                    'border_color' => [
+                        'label' => 'ACYM_BORDER_COLOR',
+                        'type' => 'color',
+                        'default' => '#000000',
+                    ],
+                    'border_type' => [
+                        'label' => 'ACYM_BORDER_TYPE',
+                        'type' => 'select',
+                        'options' => [
+                            'solid' => acym_translation('ACYM_SOLID'),
+                            'dotted' => acym_translation('ACYM_DOTTED'),
+                            'dashed' => acym_translation('ACYM_DASHED'),
+                            'double' => acym_translation('ACYM_DOUBLE'),
+                            'groove' => acym_translation('ACYM_GROOVE'),
+                            'ridge' => acym_translation('ACYM_RIDGE'),
+                            'inset' => acym_translation('ACYM_INSET'),
+                            'outset' => acym_translation('ACYM_OUTSET'),
+                        ],
+                        'default' => 'solid',
+                    ],
+                    'border_size' => [
+                        'label' => 'ACYM_BORDER_SIZE',
+                        'type' => 'number',
+                        'default' => 0,
+                    ],
+                    'border_radius' => [
+                        'label' => 'ACYM_RADIUS',
+                        'type' => 'number',
+                        'default' => 0,
+                    ],
+                    'size' => [
+                        'label' => 'ACYM_SIZE',
+                        'type' => 'dimensions',
+                        'default' => ['width' => 20, 'height' => 10],
+                    ],
+                    'text' => [
+                        'label' => 'ACYM_SUBSCRIBE_TEXT',
+                        'type' => 'text',
+                        'placeholder' => acym_translation('ACYM_SUBSCRIBE'),
+                        'default' => '',
+                    ],
+                ],
+                'style' => [
+                    'position' => [
+                        'label' => 'ACYM_DISPLAY_FIELDS_LABEL',
+                        'type' => 'position',
+                        'default' => 'image-top',
+                        'allowed_types' => [self::SUB_FORM_TYPE_HEADER, self::SUB_FORM_TYPE_POPUP, self::SUB_FORM_TYPE_FOOTER],
+                    ],
+                    'background_color' => [
+                        'label' => 'ACYM_BACKGROUND_COLOR',
+                        'type' => 'color',
+                        'default' => '#ffffff',
+                    ],
+                    'background_image' => [
+                        'label' => 'ACYM_BACKGROUND_IMAGE',
+                        'type' => 'media',
+                        'default' => '',
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP],
+                    ],
+                    'background_position' => [
+                        'label' => 'ACYM_POSITION',
+                        'type' => 'select',
+                        'options' => [
+                            'center' => acym_translation('ACYM_CENTER'),
+                            'top' => acym_translation('ACYM_POSITION_TOP'),
+                            'right' => acym_translation('ACYM_RIGHT'),
+                            'right_bottom' => acym_translation('ACYM_POSITION_RIGHT_BOTTOM'),
+                            'right_top' => acym_translation('ACYM_POSITION_RIGHT_TOP'),
+                            'bottom' => acym_translation('ACYM_POSITION_BOTTOM'),
+                            'left' => acym_translation('ACYM_LEFT'),
+                            'left_top' => acym_translation('ACYM_POSITION_LEFT_TOP'),
+                            'left_bottom' => acym_translation('ACYM_POSITION_LEFT_BOTTOM'),
+                        ],
+                        'default' => 'center',
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP],
+                    ],
+                    'background_size' => [
+                        'label' => 'ACYM_BACKGROUND_SIZE',
+                        'type' => 'select',
+                        'options' => [
+                            'contain' => acym_translation('ACYM_BG_CONTAIN'),
+                            'cover' => acym_translation('ACYM_BG_COVER'),
+                        ],
+                        'default' => 'contain',
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP],
+                    ],
+                    'background_repeat' => [
+                        'label' => 'ACYM_BACKGROUND_REPEAT',
+                        'type' => 'select',
+                        'options' => [
+                            'repeat' => acym_translation('ACYM_YES'),
+                            'no-repeat' => acym_translation('ACYM_NO'),
+                        ],
+                        'default' => 'no-repeat',
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP],
+                    ],
+                    'text_color' => [
+                        'label' => 'ACYM_TEXT_COLOR',
+                        'type' => 'color',
+                        'default' => '#000000',
+                    ],
+                    'padding' => [
+                        'label' => 'ACYM_PADDING',
+                        'type' => 'dimensions',
+                        'default' => ['width' => 20, 'height' => 20],
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP],
+                    ],
+                    'size' => [
+                        'label' => 'ACYM_SIZE',
+                        'type' => 'dimensions',
+                        'units' => [
+                            self::SUB_FORM_TYPE_HEADER => ['width' => '%', 'height' => 'px'],
+                            self::SUB_FORM_TYPE_FOOTER => ['width' => '%', 'height' => 'px'],
+                        ],
+                        'default' => ['width' => 400, 'height' => 300],
+                        'allowed_types' => [self::SUB_FORM_TYPE_HEADER, self::SUB_FORM_TYPE_SHORTCODE, self::SUB_FORM_TYPE_FOOTER],
+                    ],
+                ],
+            ],
+        ];
+
+        if (acym_isMultilingual()) {
+            $languageTexts = [];
+            foreach (acym_getMultilingualLanguages() as $key => $languages) {
+                $languageTexts[$key] = '';
+            }
+            unset($this->settings['options']['redirection']['confirmation_message']);
+            $this->settings['options']['redirection']['langConfirm'] = [
+                'label' => 'ACYM_CONFIRMATION_MESSAGE',
+                'description' => 'ACYM_CONFIRMATION_MESSAGE_DESC',
+                'type' => 'language',
+                'default' => $languageTexts,
+            ];
+
+            unset($this->settings['styles']['button']['text']);
+            $this->settings['styles']['button']['lang'] = [
+                'label' => 'ACYM_SUBSCRIBE_TEXT',
+                'type' => 'language',
+                'default' => $languageTexts,
+            ];
+        }
     }
 
-    public function getConstPopup()
+    private function getSectionTranslations(): array
     {
-        return self::SUB_FORM_TYPE_POPUP;
-    }
-
-    public function getConstShortcode()
-    {
-        return self::SUB_FORM_TYPE_SHORTCODE;
-    }
-
-    public function getConstFooter()
-    {
-        return self::SUB_FORM_TYPE_FOOTER;
-    }
-
-    public function getConstHeader()
-    {
-        return self::SUB_FORM_TYPE_HEADER;
+        return [
+            'display' => 'ACYM_DISPLAY',
+            'lists' => 'ACYM_LISTS',
+            'fields' => 'ACYM_FIELDS',
+            'termspolicy' => 'ACYM_ARTICLE',
+            'cookie' => 'ACYM_COOKIE_SETTINGS',
+            'redirection' => 'ACYM_REDIRECTIONS',
+            'message' => 'ACYM_MESSAGE',
+            'image' => 'ACYM_IMAGE',
+            'button' => 'ACYM_BUTTON',
+            'style' => 'ACYM_STYLE',
+        ];
     }
 
     public function getMatchingElements($settings = [])
@@ -85,12 +387,7 @@ class FormClass extends acymClass
         return $results;
     }
 
-    /**
-     * @param string $typeConst
-     *
-     * @return array
-     */
-    public function getTranslatedTypes()
+    public function getTranslatedTypes(): array
     {
         return [
             self::SUB_FORM_TYPE_FOOTER => acym_translation('ACYM_FOOTER'),
@@ -104,12 +401,12 @@ class FormClass extends acymClass
     {
         $form = acym_loadObject('SELECT * FROM #__acym_form WHERE id = '.intval($id));
 
-        if (empty($form)) return $form;
-
-        foreach ($form as $key => $value) {
-            $value = json_decode($value, true);
-            if (json_last_error() === JSON_ERROR_NONE) $form->$key = $value;
+        if (empty($form)) {
+            return $form;
         }
+
+        $form->pages = json_decode($form->pages, true);
+        $form->settings = json_decode($form->settings, true);
 
         return $form;
     }
@@ -117,12 +414,9 @@ class FormClass extends acymClass
     public function getAllFormsToDisplay()
     {
         $forms = acym_loadObjectList('SELECT * FROM #__acym_form WHERE active = 1 AND type != '.acym_escapeDB(self::SUB_FORM_TYPE_SHORTCODE));
-        foreach ($forms as $key => $form) {
-            foreach ($form as $formKey => $value) {
-                $value = json_decode($value, true);
-                if (json_last_error() === JSON_ERROR_NONE) $form->$formKey = $value;
-            }
-            $forms[$key] = $form;
+        foreach ($forms as $form) {
+            $form->pages = json_decode($form->pages, true);
+            $form->settings = json_decode($form->settings, true);
         }
 
         return $forms;
@@ -131,669 +425,144 @@ class FormClass extends acymClass
     public function initEmptyForm($type)
     {
         $newForm = new \stdClass();
+        $newForm->id = 0;
         $newForm->name = '';
         $newForm->creation_date = acym_date('now', 'Y-m-d H:i:s');
         $newForm->active = 1;
         $newForm->type = $type;
+        $newForm->pages = ['all'];
+        $newForm->display_languages = ['all'];
 
-        if ($type == self::SUB_FORM_TYPE_POPUP) {
-            $newForm->display_options = [
-                'delay' => 0,
-                'scroll' => 0,
-            ];
-        }
-        $newForm->lists_options = [
-            'automatic_subscribe' => [],
-            'displayed' => [],
-            'checked' => [],
-            'display_position' => 'after',
-        ];
-        $newForm->fields_options = [
-            'displayed' => [],
-            'display_mode' => 'inside',
-        ];
-        $newForm->termspolicy_options = [
-            'termscond' => 0,
-            'privacy' => 0,
-        ];
-        if ($type == self::SUB_FORM_TYPE_POPUP) {
-            $newForm->message_options = [
-                'text' => '',
-                'position' => 'before-fields',
-                'color' => '#000000',
-            ];
-        }
-        if (in_array($type, [self::SUB_FORM_TYPE_FOOTER, self::SUB_FORM_TYPE_HEADER, self::SUB_FORM_TYPE_POPUP])) {
-            $newForm->cookie = [
-                'cookie_expiration' => 1,
-            ];
-        }
-        if ($type == self::SUB_FORM_TYPE_POPUP) {
-            $newForm->style_options = [
-                'position' => 'image-top',
-                'background_color' => '#ffffff',
-                'background_image' => '',
-                'background_position' => 'center',
-                'background_size' => 'contain',
-                'background_repeat' => 'no-repeat',
-                'text_color' => '#000000',
-                'padding' => ['width' => '20', 'height' => '20'],
-            ];
-        } elseif ($type == self::SUB_FORM_TYPE_HEADER) {
-            $newForm->style_options = [
-                'position' => 'button-left',
-                'background_color' => '#ffffff',
-                'text_color' => '#000000',
-                'size' => ['height' => '', 'width' => ''],
-            ];
-        } elseif ($type == self::SUB_FORM_TYPE_FOOTER) {
-            $newForm->style_options = [
-                'position' => 'button-left',
-                'background_color' => '#ffffff',
-                'text_color' => '#000000',
-                'size' => ['width' => '100%', 'height' => '50'],
-            ];
-        } else {
-            $newForm->style_options = [
-                'background_color' => '#ffffff',
-                'text_color' => '#000000',
-                'size' => ['width' => '400', 'height' => '300'],
-            ];
-        }
-        $newForm->button_options = [
-            'background_color' => '#000000',
-            'text_color' => '#ffffff',
-            'border_color' => '#000000',
-            'border_type' => 'solid',
-            'border_size' => '0',
-            'border_radius' => '0',
-            'size' => ['height' => 10, 'width' => 20],
-        ];
-
-        if ($type == self::SUB_FORM_TYPE_POPUP) {
-            $newForm->image_options = [
-                'url' => '',
-                'size' => ['width' => 100, 'height' => 100],
-            ];
-        }
-        $newForm->delay = 0;
-        $newForm->pages = [];
-        $newForm->redirection_options = [
-            'after_subscription' => '',
-        ];
-        $tempForm = new \stdClass();
-        $confirmationTempForm = new \stdClass();
-        if (acym_isMultilingual()) {
-            $allLanguages = new \stdClass();
-            foreach (acym_getMultilingualLanguages() as $key => $languages) {
-                $allLanguages->$key = '';
+        $newForm->settings = [];
+        foreach ($this->settings['options'] as $category => $options) {
+            foreach ($options as $name => $oneOption) {
+                $newForm->settings[$category][$name] = $oneOption['default'];
             }
-            $tempForm->button_options['lang'] = $allLanguages;
-            $confirmationTempForm->redirection_options['langConfirm'] = $allLanguages;
-            $newForm->button_options = array_merge($tempForm->button_options, $newForm->button_options);
-            $newForm->redirection_options = array_merge($newForm->redirection_options, $confirmationTempForm->redirection_options);
-        } else {
-            $confirmationTempForm->redirection_options['confirmation_message'] = '';
-            $tempForm->button_options['text'] = '';
-            $newForm->button_options = array_merge($tempForm->button_options, $newForm->button_options);
-            $newForm->redirection_options = array_merge($newForm->redirection_options, $confirmationTempForm->redirection_options);
+        }
+        foreach ($this->settings['styles'] as $category => $options) {
+            foreach ($options as $name => $oneOption) {
+                $newForm->settings[$category][$name] = $oneOption['default'];
+            }
         }
 
-        $newForm->id = 0;
+        if ($type === self::SUB_FORM_TYPE_HEADER) {
+            $newForm->settings['style']['position'] = 'button-left';
+            $newForm->settings['style']['size'] = ['height' => '', 'width' => ''];
+        } elseif ($type === self::SUB_FORM_TYPE_FOOTER) {
+            $newForm->settings['style']['position'] = 'button-left';
+            $newForm->settings['style']['size'] = ['width' => '100%', 'height' => '50'];
+        }
 
         return $newForm;
     }
 
-    public function prepareMenuHtmlSettings($form)
+    public function getFormWithMissingParams($formArray): \stdClass
     {
-        $htmlMenu = [];
-        foreach ($form as $key => $value) {
-            if (!$this->shouldHaveOption($form->type, $key)) continue;
-            $functionName = 'prepareMenuHtmlSettings_'.$key;
-            if (!empty($this->emptyModel->$key) && is_array($this->emptyModel->$key)) {
-                foreach ($this->emptyModel->$key as $oneOption => $defaultValue) {
-                    if (!isset($value[$oneOption])) $value[$oneOption] = $defaultValue;
-                }
+        if (!is_array($formArray)) {
+            $formArray = get_object_vars($formArray);
+        }
+
+        $form = new \stdClass();
+        $formEmpty = $this->initEmptyForm($formArray['type']);
+
+        if (!empty($formArray['id'])) {
+            $form->id = $formArray['id'];
+        }
+
+        foreach ($formEmpty as $key => $value) {
+            if ($key === 'settings') {
+                continue;
             }
-            if (method_exists($this, $functionName)) $htmlMenu[$key] = $this->$functionName($key, $value);
+
+            if (isset($formArray[$key])) {
+                $form->$key = $formArray[$key];
+            } else {
+                $form->$key = $value;
+            }
+        }
+
+        $form->settings = $formEmpty->settings;
+        foreach ($formArray['settings'] as $category => $options) {
+            foreach ($options as $optionName => $value) {
+                $form->settings[$category][$optionName] = $value;
+            }
+        }
+
+        return $form;
+    }
+
+    public function prepareMenuHtml($form, $type): array
+    {
+        $sections = $this->getSectionTranslations();
+        $htmlMenu = [];
+        foreach ($this->settings[$type] as $category => $options) {
+            $categoryOptions = [];
+            foreach ($options as $key => $option) {
+                if (!empty($option['allowed_types']) && !in_array($form->type, $option['allowed_types'])) {
+                    continue;
+                }
+
+                $id = 'form_'.$category.'_'.$key;
+                $name = 'form[settings]['.$category.']['.$key.']';
+                $vModel = 'form.settings.'.$category.'.'.$key;
+                $value = $form->settings[$category][$key] ?? $option['default'];
+
+                $label = '<label class="cell" for="'.$id.'">'.acym_translation($option['label']);
+                if (!empty($option['description'])) {
+                    $label .= acym_info($option['description']);
+                }
+                $label .= '</label>';
+
+                ob_start();
+                include acym_getPartial('fields', $option['type']);
+                $categoryOptions[$key] = $label.ob_get_clean();
+            }
+
+            if (!empty($categoryOptions)) {
+                $htmlMenu[] = [
+                    'title' => acym_translation($sections[$category]),
+                    'render' => $categoryOptions,
+                ];
+            }
         }
 
         return $htmlMenu;
-    }
-
-    private function shouldHaveOption($formType, $option)
-    {
-        if ($formType == self::SUB_FORM_TYPE_SHORTCODE && $option == 'cookie') return false;
-
-        return true;
-    }
-
-    public function prepareMenuHtmlStyle($form)
-    {
-        $htmlMenu = [];
-        foreach ($form as $key => $value) {
-            $functionName = 'prepareMenuHtmlStyle_'.$key;
-            if (method_exists($this, $functionName) && !empty($value)) $htmlMenu[$key] = $this->$functionName($key, $value, $form->type);
-        }
-
-        return $htmlMenu;
-    }
-
-    private function prepareMenuHtmlStyle_image_options($optionName, $options, $type)
-    {
-        $return = [
-            'title' => acym_translation('ACYM_IMAGE'),
-        ];
-
-        foreach ($options as $key => $value) {
-            $name = 'form['.$optionName.']['.$key.']';
-            $vModel = 'form.'.$optionName.'.'.$key;
-            if ($key == 'url') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_CHOOSE_IMAGE').'</label>';
-                $return['render'][$key] .= '<acym-media :value="'.$vModel.'" :text="imageText" v-on:change="'.$vModel.' = $event">';
-            } elseif ($key == 'size') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_SIZE').'</label>';
-                $return['render'][$key] .= '<input type="number" class="cell medium-3 margin-right-0" v-model="'.$vModel.'.height'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span>';
-                $return['render'][$key] .= '<span>x</span>';
-                $return['render'][$key] .= '<input type="number" class="cell medium-3 margin-right-0" v-model="'.$vModel.'.width'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span>';
-            }
-        }
-
-        return $return;
-    }
-
-    private function prepareMenuHtmlStyle_button_options($optionName, $options, $type)
-    {
-        $return = [
-            'title' => acym_translation('ACYM_BUTTON'),
-        ];
-        $return['render'] = [];
-        $currentLanguage = '';
-        $allLangueKeyValue = new \stdClass();
-        if (acym_isMultilingual()) {
-            foreach (acym_getLanguages() as $key => $value) {
-                if ($key == acym_getLanguageTag()) {
-                    $currentLanguage = $key;
-                }
-            }
-            foreach (acym_getMultilingualLanguages() as $key => $languages) {
-                $allLangueKeyValue->$key = $languages->name;
-            }
-        }
-        foreach ($options as $key => $value) {
-            $name = 'form['.$optionName.']['.$key.']';
-            $vModel = 'form.'.$optionName.'.'.$key;
-            if ($key == 'position') {
-                $functionName = 'renderPosition_'.$type;
-                if (!method_exists($this, $functionName)) continue;
-                $return['render'][$key] = $this->$functionName($vModel);
-            } elseif ($key == 'lang') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_SUBSCRIBE_TEXT').'</label>';
-                $return['render'][$key] .= '<multi-language :languageforselect2="\''.acym_escape($allLangueKeyValue).'\'" :currentlangue="\''.acym_escape(
-                        $currentLanguage
-                    ).'\'" :place="\''.acym_escape(
-                        acym_translation('ACYM_SUBSCRIBE')
-                    ).'\'" :value="'.acym_escape(
-                        $value
-                    ).'" v-model="'.$vModel.'">';
-            } elseif ($key == 'text') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_SUBSCRIBE_TEXT').'</label>';
-                $return['render'][$key] .= '<input type="text" placeholder="'.acym_escape(
-                        acym_translation('ACYM_SUBSCRIBE')
-                    ).'" class="cell auto" v-model="'.$vModel.'" name="'.$name.'">';
-            } elseif ($key == 'background_color') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BACKGROUND_COLOR').'</label>';
-                $return['render'][$key] .= '<spectrum :name="\''.$name.'\'" v-model="'.$vModel.'" :value="\''.$value.'\'">';
-            } elseif ($key == 'text_color') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_TEXT_COLOR').'</label>';
-                $return['render'][$key] .= '<spectrum :name="\''.$name.'\'" v-model="'.$vModel.'" :value="\''.$value.'\'">';
-            } elseif ($key == 'border_color') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BORDER_COLOR').'</label>';
-                $return['render'][$key] .= '<spectrum :name="\''.$name.'\'" v-model="'.$vModel.'" :value="\''.$value.'\'">';
-            } elseif ($key == 'border_type') {
-                $borderTypes = [
-                    'solid' => acym_translation('ACYM_SOLID'),
-                    'dotted' => acym_translation('ACYM_DOTTED'),
-                    'dashed' => acym_translation('ACYM_DASHED'),
-                    'double' => acym_translation('ACYM_DOUBLE'),
-                    'groove' => acym_translation('ACYM_GROOVE'),
-                    'ridge' => acym_translation('ACYM_RIDGE'),
-                    'inset' => acym_translation('ACYM_INSET'),
-                    'outset' => acym_translation('ACYM_OUTSET'),
-                ];
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BORDER_TYPE').'</label>';
-                $return['render'][$key] .= '<div class="cell auto">
-                                                <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape($borderTypes).'" v-model="'.$vModel.'"></select2>
-                                            </div>';
-            } elseif ($key == 'border_size') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BORDER_SIZE').'</label>';
-                $return['render'][$key] .= '<input type="number" class="cell medium-3" name="'.$name.'" v-model="'.$vModel.'">';
-            } elseif ($key == 'border_radius') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_RADIUS').'</label>';
-                $return['render'][$key] .= '<input type="number" class="cell medium-3" name="'.$name.'" v-model="'.$vModel.'">';
-            } elseif ($key == 'size') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_SIZE').'</label>';
-                $return['render'][$key] .= '<input type="number" class="cell medium-3 margin-right-0" v-model="'.$vModel.'.height'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span>';
-                $return['render'][$key] .= '<span>x</span>';
-                $return['render'][$key] .= '<input type="number" class="cell medium-3 margin-right-0" v-model="'.$vModel.'.width'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span>';
-            }
-        }
-
-        return $return;
-    }
-
-    private function prepareMenuHtmlStyle_style_options($optionName, $options, $type)
-    {
-        $typeTraduction = $this->getTranslatedTypes();
-        $return = [
-            'title' => $typeTraduction[$type],
-        ];
-        $return['render'] = [];
-        foreach ($options as $key => $value) {
-            $name = 'form['.$optionName.']['.$key.']';
-            $vModel = 'form.'.$optionName.'.'.$key;
-            if ($key == 'position') {
-                $functionName = 'renderPosition_'.$type;
-                if (!method_exists($this, $functionName)) continue;
-                $return['render'][$key] = $this->$functionName($vModel);
-            } elseif ($key == 'background_color') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BACKGROUND_COLOR').'</label>';
-                $return['render'][$key] .= '<spectrum :name="\''.$name.'\'" v-model="'.$vModel.'" :value="\''.$value.'\'">';
-            } elseif ($key == 'background_image') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BACKGROUND_IMAGE').'</label>';
-                $return['render'][$key] .= '<acym-media :value="'.$vModel.'" :text="imageText" v-on:change="'.$vModel.' = $event">';
-            } elseif ($key == 'background_position') {
-                $bgposition = [
-                    'center' => acym_translation('ACYM_CENTER'),
-                    'top' => acym_translation('ACYM_POSITION_TOP'),
-                    'right' => acym_translation('ACYM_RIGHT'),
-                    'right_bottom' => acym_translation('ACYM_POSITION_RIGHT_BOTTOM'),
-                    'right_top' => acym_translation('ACYM_POSITION_RIGHT_TOP'),
-                    'bottom' => acym_translation('ACYM_POSITION_BOTTOM'),
-                    'left' => acym_translation('ACYM_LEFT'),
-                    'left_top' => acym_translation('ACYM_POSITION_LEFT_TOP'),
-                    'left_bottom' => acym_translation('ACYM_POSITION_LEFT_BOTTOM'),
-                ];
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_POSITION').'</label>';
-                $return['render'][$key] .= '<div class="cell auto">
-                                                <select2 name="'.$name.'" value="'.$value.'" :options="'.acym_escape($bgposition).'" v-model="'.$vModel.'"></select2>
-                                            </div>';
-            } elseif ($key == 'background_size') {
-                $bgsize = [
-                    'contain' => acym_translation('ACYM_BG_CONTAIN'),
-                    'cover' => acym_translation('ACYM_BG_COVER'),
-                ];
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BACKGROUND_SIZE').'</label>';
-                $return['render'][$key] .= '<div class="cell auto">
-                                                <select2 name="'.$name.'" value="'.$value.'" :options="'.acym_escape($bgsize).'" v-model="'.$vModel.'"></select2>
-                                            </div>';
-            } elseif ($key == 'background_repeat') {
-                $bgrepeat = [
-                    'repeat' => acym_translation('ACYM_YES'),
-                    'no-repeat' => acym_translation('ACYM_NO'),
-                ];
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_BACKGROUND_REPEAT').'</label>';
-                $return['render'][$key] .= '<div class="cell auto">
-                                                <select2 name="'.$name.'" value="'.$value.'" :options="'.acym_escape($bgrepeat).'" v-model="'.$vModel.'"></select2>
-                                            </div>';
-            } elseif ($key == 'text_color') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_TEXT_COLOR').'</label>';
-                $return['render'][$key] .= '<spectrum :name="\''.$name.'\'" v-model="'.$vModel.'" :value="\''.$value.'\'">';
-            } elseif ($key == 'size') {
-                $functionName = 'renderSize_'.$type;
-                if (!method_exists($this, $functionName)) continue;
-                $return['render'][$key] = $this->$functionName($vModel);
-            } elseif ($key == 'padding') {
-                $functionName = 'renderPadding_'.$type;
-                if (!method_exists($this, $functionName)) continue;
-                $return['render'][$key] = $this->$functionName($vModel);
-            }
-        }
-
-        return $return;
-    }
-
-    private function prepareMenuHtmlStyle_message_options($optionName, $options, $type)
-    {
-        $return = [
-            'title' => acym_translation('ACYM_MESSAGE'),
-        ];
-        $return['render'] = [];
-        foreach ($options as $key => $value) {
-            $name = 'form['.$optionName.']['.$key.']';
-            $vModel = 'form.'.$optionName.'.'.$key;
-            if ($key == 'color') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_COLOR').'</label>';
-                $return['render'][$key] .= '<spectrum :name="\''.$name.'\'" v-model="'.$vModel.'" :value="\''.$value.'\'">';
-            }
-        }
-
-        return $return;
-    }
-
-    private function renderPosition_popup($vModel)
-    {
-        $html = '<label class="cell medium-4">'.acym_translation('ACYM_POSITION').'</label>';
-        $html .= $this->positionHelper->displayPositionButtons(['image-top', 'image-bottom', 'image-right', 'image-left'], $vModel);
-
-        return $html;
-    }
-
-    private function renderPosition_header($vModel)
-    {
-        $html = '<label class="cell medium-4">'.acym_translation('ACYM_POSITION').'</label>';
-        $html .= $this->positionHelper->displayPositionButtons(['button-left', 'button-right'], $vModel);
-
-        return $html;
-    }
-
-    private function renderPosition_footer($vModel)
-    {
-        $html = '<label class="cell medium-4">'.acym_translation('ACYM_POSITION').'</label>';
-        $html .= $this->positionHelper->displayPositionButtons(['button-left', 'button-right'], $vModel);
-
-        return $html;
-    }
-
-    private function renderSize_header($vModel)
-    {
-        $html = '<label class="cell medium-4">'.acym_translation('ACYM_SIZE').'</label>';
-        $html .= '<input type="number" min="0" max="100" class="cell medium-3 margin-right-0" v-model="'.$vModel.'.width'.'" placeholder="100"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">%</span>';
-        $html .= '<span>x</span>';
-        $html .= '<input type="number" min="0" class="cell medium-3 margin-right-0" v-model="'.$vModel.'.height'.'" placeholder="50"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span>';
-
-        return $html;
-    }
-
-    private function renderPadding_popup($vModel)
-    {
-        $html = '<label class="cell medium-4">'.acym_translation('ACYM_PADDING').'</label>';
-        $html .= '<input type="number" class="cell medium-3" v-model="'.$vModel.'.width'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span><span>x</span><input type="number" class="cell medium-3" v-model="'.$vModel.'.height'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span>';
-
-        return $html;
-    }
-
-    private function renderSize_shortcode($vModel)
-    {
-        $html = '<label class="cell medium-4">'.acym_translation('ACYM_SIZE').'</label>';
-        $html .= '<input type="number" class="cell medium-3" v-model="'.$vModel.'.width'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span><span>x</span><input type="number" class="cell medium-3" v-model="'.$vModel.'.height'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span>';
-
-        return $html;
-    }
-
-    private function renderSize_footer($vModel)
-    {
-        $html = '<label class="cell medium-4">'.acym_translation('ACYM_SIZE').'</label>';
-        $html .= '<div class="cell grid-x auto acym_vcenter"><span class="cell shrink acym__forms__menu__options__style__size__default margin-right-1">100%</span><span class="cell medium-1">x</span><input type="number" class="cell medium-3" v-model="'.$vModel.'.height'.'"><span class="cell shrink acym__forms__menu__options__style__size__default margin-left-0">px</span></div>';
-
-        return $html;
-    }
-
-    private function prepareMenuHtmlSettings_message_options($optionName, $options)
-    {
-        $return = [
-            'title' => acym_translation('ACYM_MESSAGE'),
-        ];
-        $return['render'] = [];
-
-        foreach ($options as $key => $value) {
-            $name = 'form['.$optionName.']['.$key.']';
-            $vModel = 'form.'.$optionName.'.'.$key;
-            if ($key == 'text') {
-                $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_CUSTOM_MESSAGE_DISPLAY').'</label>';
-                $return['render'][$key] .= '<textarea class="cell" name="'.$name.'" v-model="'.$vModel.'"></textarea>';
-            } elseif ($key == 'position') {
-                $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_MESSAGE_POSITION').'</label>';
-                $positions = [
-                    'before-image' => acym_translation('ACYM_BEFORE_IMAGE'),
-                    'before-fields' => acym_translation('ACYM_BEFORE_FIELDS'),
-                    'before-lists' => acym_translation('ACYM_BEFORE_LISTS'),
-                    'before-button' => acym_translation('ACYM_BEFORE_BUTTON'),
-                ];
-                $return['render'][$key] .= '<div class="cell">
-                                                <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape($positions).'" v-model="'.$vModel.'"></select2>
-                                            </div>';
-            }
-        }
-
-        return $return;
-    }
-
-    private function prepareMenuHtmlSettings_lists_options($optionName, $options)
-    {
-        $return = [
-            'title' => acym_translation('ACYM_LISTS'),
-        ];
-        $return['render'] = [];
-        $listClass = new ListClass();
-        $lists = $listClass->getAllForSelect(false);
-        foreach ($options as $key => $value) {
-            $name = 'form['.$optionName.']['.$key.']';
-            $vModel = 'form.'.$optionName.'.'.$key;
-            if ($key == 'automatic_subscribe') {
-                $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_AUTO_SUBSCRIBE_TO_DESC').'</label>';
-                $return['render'][$key] .= '<div class="cell">
-                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape($value).'\'" :options="'.acym_escape(
-                        $lists
-                    ).'" v-model="'.$vModel.'"></select2multiple>
-                                            </div>';
-            } elseif ($key == 'displayed') {
-                $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_DISPLAYED_LISTS').acym_info('ACYM_DISPLAYED_LISTS_DESC').'</label>';
-                $return['render'][$key] .= '<div class="cell">
-                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape($value).'\'" :options="'.acym_escape(
-                        $lists
-                    ).'" v-model="'.$vModel.'"></select2multiple>
-                                            </div>';
-            } elseif ($key == 'checked') {
-                $return['render'][$key] = '<label class="cell grid-x acym_vcenter">'.acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info(
-                        'ACYM_LISTS_CHECKED_DEFAULT_DESC'
-                    ).'</label>';
-                $return['render'][$key] .= '<div class="cell">
-                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape($value).'\'" :options="'.acym_escape(
-                        $lists
-                    ).'" v-model="'.$vModel.'"></select2multiple>
-                                            </div>';
-            } elseif ($key == 'display_position') {
-                $displayPositions = [
-                    'after' => acym_translation('ACYM_AFTER_FIELDS'),
-                    'before' => acym_translation('ACYM_BEFORE_FIELDS'),
-                ];
-                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_DISPLAY_LISTS').'</label>';
-                $return['render'][$key] .= '<div class="cell">
-                                                <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape(
-                        $displayPositions
-                    ).'" v-model="'.$vModel.'"></select2>
-                                            </div>';
-            }
-        }
-
-        return $return;
-    }
-
-    private function prepareMenuHtmlSettings_fields_options($optionName, $options)
-    {
-        $return = [
-            'title' => acym_translation('ACYM_FIELDS'),
-        ];
-        $return['render'] = [];
-        $fieldClass = new FieldClass();
-        $allFields = $fieldClass->getAll();
-        $fields = [];
-        foreach ($allFields as $field) {
-            if ($field->id == 2 || intval($field->active) === 0) continue;
-            $fields[$field->id] = acym_translation($field->name);
-        }
-        foreach ($options as $key => $value) {
-            $name = 'form['.$optionName.']['.$key.']';
-            $vModel = 'form.'.$optionName.'.'.$key;
-            if ($key == 'displayed') {
-                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_FIELDS_TO_DISPLAY').'</label>';
-                $return['render'][$key] .= '<div class="cell">
-                                                <select2multiple :name="\''.$name.'\'" :value="\''.acym_escape($value).'\'" :options="'.acym_escape(
-                        $fields
-                    ).'" v-model="'.$vModel.'"></select2multiple>
-                                            </div>';
-            } elseif ($key == 'display_mode') {
-                $displayModes = [
-                    'inside' => acym_translation('ACYM_TEXT_INSIDE'),
-                    'outside' => acym_translation('ACYM_TEXT_OUTSIDE'),
-                ];
-                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_DISPLAY_FIELDS_LABEL').'</label>';
-                $return['render'][$key] .= '<div class="cell">
-                                                <select2 :name="\''.$name.'\'" :value="\''.$value.'\'" :options="'.acym_escape($displayModes).'" v-model="'.$vModel.'"></select2>
-                                            </div>';
-            }
-        }
-
-        return $return;
-    }
-
-    private function prepareMenuHtmlSettings_termspolicy_options($optionName, $options)
-    {
-        $return = [
-            'title' => acym_translation('ACYM_ARTICLE'),
-        ];
-        $return['render'] = [];
-        foreach ($options as $key => $value) {
-            $name = 'form['.$optionName.']['.$key.']';
-            $vModel = 'form.'.$optionName.'.'.$key;
-            if ($key == 'termscond') {
-                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_TERMS_CONDITIONS').'</label>';
-                $return['render'][$key] .= '<div class="cell">
-                                                <select2ajax :name="\''.$name.'\'" :value="\''.$value.'\'" v-model="'.$vModel.'" :urlselected="\'&ctrl=forms&task=getArticlesById&article_id=\'" :ctrl="\'forms\'" :task="\'getArticles\'"></select2ajax>
-                                            </div>';
-            } elseif ($key == 'privacy') {
-                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_PRIVACY_POLICY').'</label>';
-                $return['render'][$key] .= '<div class="cell">
-                                                <select2ajax :name="\''.$name.'\'" :value="\''.$value.'\'" v-model="'.$vModel.'" :urlselected="\'&ctrl=forms&task=getArticlesById&article_id=\'" :ctrl="\'forms\'" :task="\'getArticles\'"></select2ajax>
-                                            </div>';
-            }
-        }
-
-        return $return;
-    }
-
-
-    private function prepareMenuHtmlSettings_cookie($optionName, $options)
-    {
-        if (empty($options)) return '';
-        $return = [
-            'title' => acym_translation('ACYM_COOKIE_SETTINGS'),
-        ];
-        $return['render'] = [];
-        foreach ($options as $key => $value) {
-            $name = 'form['.$optionName.']['.$key.']';
-            $vModel = 'form.'.$optionName.'.'.$key;
-            if ($key == 'cookie_expiration') {
-                $return['render'][$key] = '<label class="cell">'.acym_translation('ACYM_COOKIE_EXPIRATION').'</label>';
-                $return['render'][$key] .= '<div class="cell grid-x acym_vcenter">
-                                                <input min="1" type="number" class="cell medium-3 margin-right-1" v-model="'.$vModel.'">
-                                                <span class="cell shrink">'.acym_translation('ACYM_DAYS').'</span>
-                                            </div>';
-            }
-        }
-
-        return $return;
-    }
-
-    private function prepareMenuHtmlSettings_redirection_options($categoryName, $options)
-    {
-        $return = [
-            'title' => acym_translation('ACYM_REDIRECTIONS'),
-        ];
-
-        //duplicated TODO@joss: simplifier
-        $currentLanguage = '';
-        $allLangueKeyValue = new \stdClass();
-        if (acym_isMultilingual()) {
-            foreach (acym_getLanguages() as $key => $value) {
-                if ($key == acym_getLanguageTag()) {
-                    $currentLanguage = $key;
-                }
-            }
-            foreach (acym_getMultilingualLanguages() as $key => $languages) {
-                $allLangueKeyValue->$key = $languages->name;
-            }
-        }
-
-        foreach ($options as $key => $value) {
-            $id = 'form_'.$categoryName.'_'.$key;
-            $vModel = 'form.'.$categoryName.'.'.$key;
-            $return['render'][$key] = '<label class="cell" for="'.$id.'">';
-            if ($key === 'after_subscription') {
-                $return['render'][$key] .= acym_translation('ACYM_AFTER_SUBSCRIPTION');
-                $return['render'][$key] .= acym_info('ACYM_REDIRECT_LINK_DESC');
-            } elseif ($key == 'langConfirm') {
-                $return['render'][$key] = '<label class="cell medium-4">'.acym_translation('ACYM_CONFIRMATION_MESSAGE').acym_info('ACYM_CONFIRMATION_MESSAGE_DESC').'</label>';
-                $return['render'][$key] .= '<multi-language :languageforselect2="\''.acym_escape($allLangueKeyValue).'\'" :currentlangue="\''.acym_escape(
-                        $currentLanguage
-                    ).'\'"  :place="\''.acym_escape(acym_translation('ACYM_SUBSCRIBE')).'\'" :value="'.acym_escape(
-                        $value
-                    ).'" v-model="'.$vModel.'">';
-            } elseif ($key === 'confirmation_message') {
-                $return['render'][$key] .= acym_translation('ACYM_CONFIRMATION_MESSAGE');
-                $return['render'][$key] .= acym_info('ACYM_CONFIRMATION_MESSAGE_DESC');
-            }
-            $return['render'][$key] .= '</label>';
-            $return['render'][$key] .= '<input type="text" class="cell" id="'.$id.'" v-model="'.$vModel.'">';
-        }
-
-        return $return;
-    }
-
-    private function prepareMenuHtmlSettings_display_options($optionName, $options)
-    {
-        $return = [
-            'title' => acym_translation('ACYM_DISPLAY'),
-        ];
-
-        foreach ($options as $key => $value) {
-            $id = 'form_'.$optionName.'_'.$key;
-            $vModel = 'form.'.$optionName.'.'.$key;
-            $unit = '';
-            $max = '';
-
-            $return['render'][$key] = '<label class="cell" for="'.$id.'">';
-            if ($key === 'delay') {
-                $return['render'][$key] .= acym_translation('ACYM_DELAY').acym_info('ACYM_DELAY_DESC');
-                $unit = acym_translation('ACYM_SECONDS');
-            } elseif ($key === 'scroll') {
-                $return['render'][$key] .= acym_translation('ACYM_SCROLL').acym_info('ACYM_SCROLL_DESC');
-                $unit = '%';
-                $max = 'max="100"';
-            }
-            $return['render'][$key] .= '</label>';
-
-            $return['render'][$key] .= '<div class="cell grid-x acym_vcenter">
-                <input min="0" '.$max.' type="number" class="cell medium-3 margin-right-1" v-model="'.$vModel.'" id="'.$id.'">
-                <span class="cell shrink">'.$unit.'</span>
-            </div>';
-        }
-
-        return $return;
     }
 
     public function renderForm($form, $edition = false)
     {
+        if (!empty($form->display_languages) && !in_array('all', $form->display_languages) && !$edition) {
+            if (!in_array(acym_getLanguageTag(), $form->display_languages)) {
+                return;
+            }
+        }
+
         acym_initModule();
         $fieldClass = new FieldClass();
         $listClass = new ListClass();
-        $form->fields_options['displayed'][] = 2;
-        $form->fields_options['displayed'] = $fieldClass->getFieldsByID($form->fields_options['displayed']);
-        foreach ($form->fields_options['displayed'] as $key => $field) {
+
+        $form = $this->getFormWithMissingParams($form);
+
+        $form->settings['fields']['displayed'][] = 2;
+        $form->settings['fields']['displayed'] = $fieldClass->getFieldsByID($form->settings['fields']['displayed']);
+        foreach ($form->settings['fields']['displayed'] as $key => $field) {
             $field->option = json_decode($field->option);
             $fieldDB = empty($field->option->fieldDB) ? '' : json_decode($field->option->fieldDB);
             $field->value = empty($field->value) ? '' : json_decode($field->value);
             $valuesArray = [];
+
             if (!empty($field->value)) {
                 foreach ($field->value as $value) {
                     $valueTmp = new \stdClass();
                     $valueTmp->text = $value->title;
                     $valueTmp->value = $value->value;
-                    if ($value->disabled == 'y') $valueTmp->disable = true;
+                    if ($value->disabled == 'y') {
+                        $valueTmp->disable = true;
+                    }
                     $valuesArray[$value->value] = $valueTmp;
                 }
             }
+
             if (!empty($fieldDB) && !empty($fieldDB->value)) {
                 $fromDB = $fieldClass->getValueFromDB($fieldDB);
                 foreach ($fromDB as $value) {
@@ -801,7 +570,7 @@ class FormClass extends acymClass
                 }
             }
 
-            $form->fields_options['displayed'][$key]->valuesArray = $valuesArray;
+            $form->settings['fields']['displayed'][$key]->valuesArray = $valuesArray;
         }
         $form->fieldClass = $fieldClass;
         $form->lists = $listClass->getAllForSelect(false, 0, true, true);
@@ -809,8 +578,10 @@ class FormClass extends acymClass
         $form->form_tag_action = htmlspecialchars_decode(ACYM_CMS == 'wordpress' ? acym_frontendLink('frontusers') : acym_completeLink('frontusers', true, true));
         $form->formClass = $this;
 
-        $formFieldRender = ACYM_PARTIAL.'forms'.DS.$form->type.'.php';
+        $formFieldRender = acym_getPartial('forms', $form->type);
         if (!file_exists($formFieldRender)) return '';
+
+        acym_initModule();
 
         ob_start();
         include $formFieldRender;

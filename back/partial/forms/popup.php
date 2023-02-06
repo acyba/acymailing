@@ -1,6 +1,6 @@
 <?php
 $hideForScroll = '';
-if (isset($form->display_option['scroll']) && $form->display_option['scroll'] != 0) {
+if (!$edition && isset($form->settings['display']['scroll']) && $form->settings['display']['scroll'] != 0) {
     $hideForScroll = 'style="display: none;"';
 }
 ?>
@@ -13,25 +13,25 @@ if (isset($form->display_option['scroll']) && $form->display_option['scroll'] !=
         if ($edition) {
             echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';
         } else {
-            $cookieExpirationAttr = empty($form->cookie['cookie_expiration']) ? 'acym-data-cookie="1"' : 'acym-data-cookie="'.$form->cookie['cookie_expiration'].'"';
+            $cookieExpirationAttr = empty($form->settings['cookie']['cookie_expiration']) ? 'acym-data-cookie="1"' : 'acym-data-cookie="'.$form->settings['cookie']['cookie_expiration'].'"';
             echo '<form acym-data-id="'.$form->id.'" '.$cookieExpirationAttr.' action="'.$form->form_tag_action.'" id="'.$form->form_tag_name.'" name="'.$form->form_tag_name.'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acymSubmitSubForm\')">';
         }
-        if (in_array($form->style_options['position'], ['image-top', 'image-left'])) {
-            if (!empty($form->message_options['text']) && $form->message_options['position'] == 'before-image') {
-                echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->message_options['text']).'</p>';
+        if (in_array($form->settings['style']['position'], ['image-top', 'image-left'])) {
+            if (!empty($form->settings['message']['text']) && $form->settings['message']['position'] === 'before-image') {
+                echo '<p id="acym__subscription__form__popup-text">'.nl2br(acym_translation($form->settings['message']['text'])).'</p>';
             }
             include acym_getPartial('forms', 'image');
         }
         echo '<div class="acym__subscription__form__popup__fields-button">';
         include acym_getPartial('forms', 'fields');
-        if (!empty($form->message_options['text']) && $form->message_options['position'] == 'before-button') {
-            echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->message_options['text']).'</p>';
+        if (!empty($form->settings['message']['text']) && $form->settings['message']['position'] == 'before-button') {
+            echo '<p id="acym__subscription__form__popup-text">'.nl2br(acym_translation($form->settings['message']['text'])).'</p>';
         }
         include acym_getPartial('forms', 'button');
         echo '</div>';
-        if (in_array($form->style_options['position'], ['image-bottom', 'image-right'])) {
-            if (!empty($form->message_options['text']) && $form->message_options['position'] == 'before-image') {
-                echo '<p id="acym__subscription__form__popup-text">'.acym_translation($form->message_options['text']).'</p>';
+        if (in_array($form->settings['style']['position'], ['image-bottom', 'image-right'])) {
+            if (!empty($form->settings['message']['text']) && $form->settings['message']['position'] == 'before-image') {
+                echo '<p id="acym__subscription__form__popup-text">'.nl2br(acym_translation($form->settings['message']['text'])).'</p>';
             }
             include acym_getPartial('forms', 'image');
         }
@@ -66,13 +66,13 @@ if (isset($form->display_option['scroll']) && $form->display_option['scroll'] !=
 		left: 50%;
 		transform: translate(-50%, -50%);
 		top: 50%;
-		padding: <?php echo $form->style_options['padding']['height'];?>px <?php echo $form->style_options['padding']['width'];?>px;
-		background-color: <?php echo $form->style_options['background_color'];?>;
-		color: <?php echo $form->style_options['text_color'];?> !important;
-		background-image: url("<?php echo $form->style_options['background_image']; ?>");
-		background-size: <?php echo $form->style_options['background_size']; ?>;
-		background-position: <?php echo str_replace('_', ' ', $form->style_options['background_position']); ?>;
-		background-repeat: <?php echo $form->style_options['background_repeat']; ?>;
+		padding: <?php echo $form->settings['style']['padding']['height'];?>px <?php echo $form->settings['style']['padding']['width'];?>px;
+		background-color: <?php echo $form->settings['style']['background_color'];?>;
+		color: <?php echo $form->settings['style']['text_color'];?> !important;
+		background-image: url("<?php echo $form->settings['style']['background_image']; ?>");
+		background-size: <?php echo $form->settings['style']['background_size']; ?>;
+		background-position: <?php echo str_replace('_', ' ', $form->settings['style']['background_position']); ?>;
+		background-repeat: <?php echo $form->settings['style']['background_repeat']; ?>;
 		z-index: 999999;
 		text-align: center;
 		display: flex;
@@ -109,14 +109,14 @@ if (isset($form->display_option['scroll']) && $form->display_option['scroll'] !=
 		margin: 1rem 10px !important;
 	}
 
-	<?php if(!empty($form->message_options['color'])) { ?>
+	<?php if(!empty($form->settings['message']['color'])) { ?>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>#acym__subscription__form__popup-text{
-		color: <?php echo $form->message_options['color']; ?>;
+		color: <?php echo $form->settings['message']['color']; ?>;
 	}
 
 	<?php } ?>
 
-	<?php if (in_array($form->style_options['position'], ['image-right', 'image-left'])){?>
+	<?php if (in_array($form->settings['style']['position'], ['image-right', 'image-left'])){?>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__popup <?php echo '#'.$form->form_tag_name;?>{
 		display: flex;
 		justify-content: center;
@@ -136,21 +136,21 @@ if (isset($form->display_option['scroll']) && $form->display_option['scroll'] !=
             element.style.display = 'none';
 
             let exdate = new Date();
-            exdate.setDate(exdate.getDate() + <?php echo empty($form->cookie['cookie_expiration']) ? 1 : $form->cookie['cookie_expiration'];?>);
-            document.cookie = 'acym_form_<?php echo $form->id;?>=' + Date.now() + ';expires=' + exdate.toUTCString() + ';path=/';
+            exdate.setDate(exdate.getDate() + <?php echo empty($form->settings['cookie']['cookie_expiration']) ? 1 : $form->settings['cookie']['cookie_expiration'];?>);
+            document.cookie = 'acym_form_<?php echo $form->id; ?>=' + Date.now() + ';expires=' + exdate.toUTCString() + ';path=/';
         }
 
         document.querySelector('.acym__subscription__form__popup__overlay').addEventListener('click', function (event) {
             if (event.target.closest('.acym__subscription__form__popup') === null) {
-                acym_closePopupform<?php echo $form->form_tag_name;?>(this);
+                acym_closePopupform<?php echo $form->form_tag_name; ?>(this);
             }
         });
         document.querySelector('.acym__subscription__form__popup__close').addEventListener('click', function (event) {
-            acym_closePopupform<?php echo $form->form_tag_name;?>(event.target.closest('.acym__subscription__form__popup__overlay'));
+            acym_closePopupform<?php echo $form->form_tag_name; ?>(event.target.closest('.acym__subscription__form__popup__overlay'));
         });
 
-        let delayDisplay = parseInt(<?php echo $form->display_options['delay'];?>);
-        let scrollPercentLimit = parseInt(<?php echo $form->display_options['scroll']; ?>);
+        let delayDisplay = parseInt(<?php echo $form->settings['display']['delay']; ?>);
+        let scrollPercentLimit = parseInt(<?php echo $form->settings['display']['scroll']; ?>);
         let windowSize;
         let browserHeight;
         let delayRemaining = false;
@@ -196,7 +196,7 @@ if (isset($form->display_option['scroll']) && $form->display_option['scroll'] !=
                     acym_popupForm.style.display = 'inline';
                 }
             }
-        }, <?php echo $form->display_options['delay'] * 1000;?>);
+        }, <?php echo $form->settings['display']['delay'] * 1000; ?>);
 
 	</script>
 <?php } ?>

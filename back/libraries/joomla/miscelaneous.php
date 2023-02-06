@@ -47,7 +47,7 @@ function acym_isLeftMenuNecessary()
 function acym_getLeftMenu($name)
 {
     $pluginClass = new PluginClass();
-    $nbPluginNotUptodate = $pluginClass->getNotUptoDatePlugins();
+    $nbPluginNotUptodate = count($pluginClass->getNotUptoDatePlugins());
 
     $addOnsTitle = empty($nbPluginNotUptodate) ? 'ACYM_ADD_ONS' : acym_translationSprintf('ACYM_ADD_ONS_X', $nbPluginNotUptodate);
     $isCollapsed = empty($_COOKIE['menuJoomla']) ? '' : $_COOKIE['menuJoomla'];

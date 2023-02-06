@@ -234,5 +234,5 @@ function acym_checkCaptcha($captchaPluginName)
         return false;
     }
 
-    return isset($result[0]) ? $result[0] : false;
+    return $result[0] ?? false;
 }

@@ -11,10 +11,12 @@
                         <?php
                         $attribs = [
                             'class' => 'acym__select',
-                            'data-toggle-select' => '{"acym_ireCaptcha":".acym__config__captcha__recaptcha","acym_reCaptcha_v3":".acym__config__captcha__recaptcha, .acym__config__captcha__recaptcha_v3" }',
+                            'data-toggle-select' => '{"acym_ireCaptcha":".acym__config__captcha__recaptcha","acym_reCaptcha_v3":".acym__config__captcha__recaptcha, .acym__config__captcha__recaptcha_v3","acym_hcaptcha":".acym__config__captcha__hcaptcha" }',
                         ];
                         // To disable Captcha dropdown
-                        if (!$data['level']) $attribs['disabled'] = '';
+                        if (!$data['level']) {
+							$attribs['disabled'] = '';
+                        }
 
                         echo acym_select(
                             $data['captchaOptions'],
@@ -36,13 +38,53 @@
 							   name="config[security_key]"
 							   value="<?php echo acym_escape($this->config->get('security_key')); ?>" />
 					</div>
+
+					<div class="cell medium-6 grid-x acym__config__captcha__hcaptcha">
+						<label class="cell large-3" for="hcaptcha_sitekey">
+                            <?php
+                            echo acym_translation('ACYM_GENERAL_SITE_KEY');
+                            echo acym_tooltip(
+                                '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+                                acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
+                                'acym__tooltip__info',
+                                '',
+                                'https://dashboard.hcaptcha.com/sites/new'
+                            );
+                            ?>
+						</label>
+						<input class="cell large-9"
+							   id="hcaptcha_sitekey"
+							   type="text"
+							   name="config[hcaptcha_sitekey]"
+							   value="<?php echo acym_escape($this->config->get('hcaptcha_sitekey')); ?>" />
+					</div>
+					<div class="cell medium-6 grid-x acym__config__captcha__hcaptcha">
+						<label class="cell large-3" for="hcaptcha_secretkey">
+                            <?php
+                            echo acym_translation('ACYM_GENERAL_SECRET_KEY');
+                            echo acym_tooltip(
+                                '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+                                acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
+                                'acym__tooltip__info',
+                                '',
+                                'https://dashboard.hcaptcha.com/sites/new'
+                            );
+                            ?>
+						</label>
+						<input class="cell large-9"
+							   id="hcaptcha_secretkey"
+							   type="text"
+							   name="config[hcaptcha_secretkey]"
+							   value="<?php echo acym_escape($this->config->get('hcaptcha_secretkey')); ?>" />
+					</div>
+
 					<div class="cell medium-6 grid-x acym__config__captcha__recaptcha">
 						<label class="cell large-3" for="recaptcha_sitekey">
                             <?php
                             echo acym_translation('ACYM_SITE_KEY');
                             echo acym_tooltip(
                                 '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
-                                acym_translation('ACYM_RECAPTCHA_KEY_DESC'),
+                                acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
                                 'acym__tooltip__info',
                                 '',
                                 'https://www.google.com/recaptcha/admin'
@@ -61,7 +103,7 @@
                             echo acym_translation('ACYM_SECRET_KEY');
                             echo acym_tooltip(
                                 '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
-                                acym_translation('ACYM_RECAPTCHA_KEY_DESC'),
+                                acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
                                 'acym__tooltip__info',
                                 '',
                                 'https://www.google.com/recaptcha/admin'

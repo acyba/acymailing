@@ -517,7 +517,7 @@ class FrontusersController extends UsersController
         $userClass = new UserClass();
         $lang = acym_getVar('string', 'language', acym_getLanguageTag());
         $mailId = acym_getVar('int', 'mail_id', 0);
-        $campaignListOnly = $this->config->get('unsubscribe_campaign_list_only', 0) === 1;
+        $campaignListOnly = $this->config->get('unsubscribe_campaign_list_only', '0') === '1';
 
         if (ACYM_CMS === 'joomla' && !empty($_GET['language'])) $lang = $_GET['language'];
         acym_setLanguage($lang);
@@ -533,7 +533,11 @@ class FrontusersController extends UsersController
         ];
 
         if (acym_isMultilingual()) {
-            $allLanguages = acym_getLanguages();
+            $allLanguages = acym_getLanguages(false, true);
+            if ($this->config->get('unsubpage_languages_multi_only', '0') === '1') {
+                $allLanguages = acym_getMultilingualLanguages();
+            }
+
             $data['languages'] = [];
             foreach ($allLanguages as $key => $language) {
                 $data['languages'][$key] = $language->name;

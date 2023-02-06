@@ -40,6 +40,23 @@ const acym_editorWysidFormAction = {
                 .css('width', outerWidth);
         });
 
+        const attributesToRemove = [
+            'data-mce-style',
+            'data-mce-selected',
+            'data-mce-href',
+            'data-mce-src',
+            'data-mce-resize',
+            'data-mce-placeholder',
+            'data-mce-type',
+            'data-mce-fragment',
+            'data-mce-id',
+            'data-mce-style'
+        ];
+
+        attributesToRemove.forEach(function (attribute) {
+            jQuery(`#acym__wysid__template [${attribute}]`).removeAttr(attribute);
+        });
+
         jQuery('[id^="template_version_"]').remove();
 
         //We remove the comments

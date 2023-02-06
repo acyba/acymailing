@@ -29,18 +29,23 @@ class plgAcymAutomationexport extends acymPlugin
         $fields = array_merge($fields, $customFields);
 
         $defaultFields = explode(',', $this->config->get('export_fields', 'name,email'));
+        $coreFields = [1, 2, $fieldClass->getLanguageFieldId()];
 
         foreach ($fields as $field) {
             if (is_object($field)) {
                 $type = 'custom';
                 $fieldName = $field->name;
                 $fieldValue = $field->id;
-                if ($field->type == 'file' || in_array($field->id, [1, 2])) continue;
+                if ($field->type === 'file' || in_array($field->id, $coreFields)) {
+                    continue;
+                }
             } else {
                 $type = 'core';
                 $fieldName = $field;
                 $fieldValue = $fieldName;
-                if (in_array($fieldName, ['id', 'automation'])) continue;
+                if (in_array($fieldName, ['id', 'automation'])) {
+                    continue;
+                }
             }
 
             $checked = in_array($fieldValue, $defaultFields) ? 'checked="checked"' : '';
@@ -52,6 +57,13 @@ class plgAcymAutomationexport extends acymPlugin
             $actions['export']->option .= '<label for="checkbox__and___'.$fieldName.'">'.$fieldName.'</label>';
             $actions['export']->option .= '</div>';
         }
+
+        $checked = in_array('subscribe_date', $defaultFields) ? 'checked="checked"' : '';
+        $actions['export']->option .= '<div class="cell large-6 xlarge-3">';
+        $actions['export']->option .= '<input '.$checked.' id="checkbox__and___subscribe_date" type="checkbox" name="acym_action[actions][__and__][export][special][subscribe_date]" value="subscribe_date">';
+        $actions['export']->option .= '<label for="checkbox__and___subscribe_date">'.acym_translation('ACYM_SUBSCRIPTION_DATE').'</label>';
+        $actions['export']->option .= '</div>';
+
         $actions['export']->option .= '</div>';
 
         $actions['export']->option .= '<div class="cell medium-6 xlarge-3 grid-x margin-bottom-1">';
@@ -63,7 +75,7 @@ class plgAcymAutomationexport extends acymPlugin
                 ],
                 'acym_action[actions][__and__][export][separator]',
                 $this->config->get('export_separator', 'comma'),
-                'class="acym__select"'
+                ['class' => 'acym__select']
             ).'</div>';
         $actions['export']->option .= '</div>';
 
@@ -73,7 +85,7 @@ class plgAcymAutomationexport extends acymPlugin
         $actions['export']->option .= '<div class="cell">'.$encodingHelper->charsetField(
                 'acym_action[actions][__and__][export][charset]',
                 $this->config->get('export_charset', 'UTF-8'),
-                'class="acym__select"'
+                ['class' => 'acym__select']
             ).'</div>';
         $actions['export']->option .= '</div>';
 
@@ -91,10 +103,19 @@ class plgAcymAutomationexport extends acymPlugin
             $pathtolog = ACYM_ROOT.strftime($action['path']);
         }
 
-        if (empty($action['core']) && empty($action['custom'])) return '['.acym_translation('ACYM_EXPORT_SUBSCRIBERS').'] '.acym_translation('ACYM_EXPORT_SELECT_FIELD');
+        if (empty($action['core']) && empty($action['custom'])) {
+            return '['.acym_translation('ACYM_EXPORT_SUBSCRIBERS').'] '.acym_translation('ACYM_EXPORT_SELECT_FIELD');
+        }
 
-        if (empty($action['core'])) $action['core'] = [];
-        if (empty($action['custom'])) $action['custom'] = [];
+        if (empty($action['core'])) {
+            $action['core'] = [];
+        }
+        if (empty($action['custom'])) {
+            $action['custom'] = [];
+        }
+        if (empty($action['special'])) {
+            $action['special'] = [];
+        }
 
         acym_increasePerf();
         $select = ['user.`id`'];
@@ -105,7 +126,7 @@ class plgAcymAutomationexport extends acymPlugin
 
         $exportHelper = new ExportHelper();
         $realSeparators = ['comma' => ',', 'semicol' => ';'];
-        $error = $exportHelper->exportCSV($query, $action['core'], $action['custom'], $realSeparators[$action['separator']], $action['charset'], $pathtolog);
+        $error = $exportHelper->exportCSV($query, $action['core'], $action['custom'], $action['special'], $realSeparators[$action['separator']], $action['charset'], $pathtolog);
 
         if (empty($error)) {
             return acym_translationSprintf('ACYM_USERS_EXPORTED', $pathtolog);

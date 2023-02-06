@@ -1,11 +1,11 @@
 <?php
 $termsURL = acym_getArticleURL(
-    $form->termspolicy_options['termscond'],
+    $form->settings['termspolicy']['termscond'],
     0,
     'ACYM_TERMS_CONDITIONS'
 );
 $privacyURL = acym_getArticleURL(
-    $form->termspolicy_options['privacy'],
+    $form->settings['termspolicy']['privacy'],
     0,
     'ACYM_PRIVACY_POLICY'
 );

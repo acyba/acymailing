@@ -1,12 +1,12 @@
 <div class="acym__subscription__form__lists">
     <?php
-    foreach ($form->lists_options['displayed'] as $listId) {
-        if (!empty($form->lists_options['automatic_subscribe']) && in_array($listId, $form->lists_options['automatic_subscribe'])) continue;
-        $checked = !empty($form->lists_options['checked']) && in_array($listId, $form->lists_options['checked']) ? 'checked' : '';
+    foreach ($form->settings['lists']['displayed'] as $listId) {
+        if (!empty($form->settings['lists']['automatic_subscribe']) && in_array($listId, $form->settings['lists']['automatic_subscribe'])) continue;
+        $checked = !empty($form->settings['lists']['checked']) && in_array($listId, $form->settings['lists']['checked']) ? 'checked' : '';
         echo '<label><input type="checkbox" value="'.$listId.'" name="subscription[]" '.$checked.'>'.$form->lists[$listId].'</label>';
     }
 
-    $hiddenLists = empty($form->lists_options['automatic_subscribe']) ? '' : implode(',', $form->lists_options['automatic_subscribe']);
+    $hiddenLists = empty($form->settings['lists']['automatic_subscribe']) ? '' : implode(',', $form->settings['lists']['automatic_subscribe']);
     echo '<input type="hidden" name="hiddenlists" value="'.$hiddenLists.'">';
     ?>
 	<style>

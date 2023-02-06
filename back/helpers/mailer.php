@@ -11,7 +11,6 @@ use AcyMailing\Classes\UserClass;
 use AcyMailerPhp\Exception;
 use AcyMailerPhp\OAuth;
 use AcyMailerPhp\AcyMailerPhp;
-use Pelago\Emogrifier\CssInliner;
 
 class MailerHelper extends AcyMailerPhp
 {
@@ -631,7 +630,9 @@ class MailerHelper extends AcyMailerPhp
         // Emogrifer deletes all the <style> tags in the body
         global $emogrifiedMediaCSS;
         $emogrifiedMediaCSS = '';
-        $mail->body = CssInliner::fromHtml($mail->body)->inlineCss(implode('', $style))->renderBodyContent();
+        $mail->body = AcyCssInliner::fromHtml($mail->body)
+                                   ->inlineCss(implode('', $style))
+                                   ->renderBodyContent();
 
         //We get all the media queries from all the CSS
         $style[] = $emogrifiedMediaCSS;

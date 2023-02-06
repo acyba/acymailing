@@ -92,6 +92,8 @@ class plgAcymStatistics extends acymPlugin
             acym_selectOption('bounced', 'ACYM_BOUNCED'),
             acym_selectOption('click_on_url', 'ACYM_CLICKED_ON_LINK'),
             acym_selectOption('neveropen', 'ACYM_NEVER_OPEN'),
+            acym_selectOption('neverclicked', 'ACYM_NEVER_CLICKED'),
+            acym_selectOption('neversent', 'ACYM_NEVER_SENT'),
         ];
 
         $filters['statistics'] = new stdClass();
@@ -207,8 +209,20 @@ class plgAcymStatistics extends acymPlugin
         $urlClickAlias = '`urlClick'.$num.'`';
 
         if (empty($options['mail'])) {
-            if (!empty($options['status']) && $options['status'] === 'neveropen') {
-                $query->join[] = '(SELECT user_id , SUM(open) AS sumOpen FROM #__acym_user_stat GROUP BY user_id) AS '.$alias.' ON user.id = '.$alias.'.user_id AND '.$alias.'.sumOpen = 0';
+            if (!empty($options['status'])) {
+                switch ($options['status']) {
+                    case 'neveropen':
+                        $query->join[] = '(SELECT user_id , SUM(open) AS sumOpen FROM #__acym_user_stat GROUP BY user_id) AS '.$alias.' ON user.id = '.$alias.'.user_id AND '.$alias.'.sumOpen = 0';
+                        break;
+                    case 'neverclicked':
+                        $query->leftjoin[] = '#__acym_url_click AS '.$urlClickAlias.' ON user.id = '.$urlClickAlias.'.user_id';
+                        $query->where[] = $urlClickAlias.'.user_id IS NULL';
+                        break;
+                    case 'neversent':
+                        $query->leftjoin[] = '#__acym_user_stat AS '.$alias.' ON user.id = '.$alias.'.user_id';
+                        $query->where[] = $alias.'.user_id IS NULL';
+                        break;
+                }
             } else {
                 acym_enqueueMessage(acym_translation('ACYM_EMAIL_NOT_FOUND'), 'warning');
             }
@@ -262,8 +276,12 @@ class plgAcymStatistics extends acymPlugin
             if (empty($automationFilter[$filterName])) continue;
             $status = acym_translation('ACYM_'.strtoupper($automationFilter[$filterName]['status']));
 
-            if ($status == "ACYM_NEVEROPEN") {
+            if ($status == 'ACYM_NEVEROPEN') {
                 $automationFilter = acym_translation('ACYM_NEVER_OPEN_SUMMARY');
+            } elseif ($status == 'ACYM_NEVERCLICKED') {
+                $automationFilter = acym_translation('ACYM_NEVER_CLICKED_SUMMARY');
+            } elseif ($status == 'ACYM_NEVERSENT') {
+                $automationFilter = acym_translation('ACYM_NEVER_SENT_SUMMARY');
             } else {
                 $delayType = new DelayType();
                 $time = empty($automationFilter[$filterName]['time']) ? '' : $delayType->get($automationFilter[$filterName]['time'], 3);

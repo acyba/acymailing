@@ -12,13 +12,12 @@ class PluginClass extends acymClass
 
     public function getNotUptoDatePlugins()
     {
-        $testPluginTable = 'SHOW TABLES LIKE "%_acym_plugin"';
-        $result = acym_loadResult($testPluginTable);
-        if (empty($result)) return 0;
+        $result = acym_loadResult('SHOW TABLES LIKE "%_acym_plugin"');
+        if (empty($result)) {
+            return [];
+        }
 
-        $query = 'SELECT count(id) FROM #__acym_plugin WHERE uptodate = 0';
-
-        return acym_loadResult($query);
+        return acym_loadResultArray('SELECT folder_name FROM #__acym_plugin WHERE uptodate = 0');
     }
 
     public function getOneByFolderName($folderName)
@@ -94,5 +93,66 @@ class PluginClass extends acymClass
         if (empty($plugin)) return;
 
         parent::delete($plugin->id);
+    }
+
+    public function updateAddon($addon)
+    {
+        $plugin = $this->getOneByFolderName($addon);
+
+        if (empty($plugin)) {
+            return false;
+        }
+
+        $pluginClass = new PluginClass();
+        $pluginClass->downloadAddon($addon);
+
+        $pluginToSave = new \stdClass();
+        $pluginToSave->id = $plugin->id;
+        $pluginToSave->version = $plugin->latest_version;
+        $pluginToSave->uptodate = 1;
+
+        return $this->save($pluginToSave);
+    }
+
+    public function downloadAddon($name, $ajax = true)
+    {
+        $urlDownload = ACYM_UPDATEMEURL.'download&task=download&dynamic='.$name.'&license_domain='.urlencode(rtrim(ACYM_LIVE, '/'));
+
+        $package = acym_fileGetContent($urlDownload);
+        if (strpos($package, 'error') !== false) {
+            $result = json_decode($package, true);
+            $error = $result['error'];
+            if (!empty($this->errors[$error])) $error = $this->errors[$error];
+
+            return $this->handleError($error, $ajax);
+        }
+
+        if (empty($package)) {
+            return $this->handleError('ACYM_ISSUE_WHILE_DOWNLOADING', $ajax);
+        }
+
+        $tmpZipDownload = ACYM_ADDONS_FOLDER_PATH.$name.'.zip';
+        if (!acym_writeFile($tmpZipDownload, $package)) {
+            return $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
+        }
+
+        if (!acym_extractArchive($tmpZipDownload, ACYM_ADDONS_FOLDER_PATH)) {
+            return $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
+        }
+
+        if (!unlink($tmpZipDownload)) {
+            return $this->handleError('ACYM_ERROR_FILE_DELETION', false);
+        }
+
+        return true;
+    }
+
+    private function handleError($error, $ajax)
+    {
+        if ($ajax) {
+            acym_sendAjaxResponse(acym_translation($error), [], false);
+        } else {
+            return acym_translation($error);
+        }
     }
 }

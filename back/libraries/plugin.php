@@ -711,7 +711,6 @@ class acymPlugin extends acymObject
     /**
      * Handles the custom layouts and the pictures management
      *
-     * @param string $name    Name of the plugin used as identifier
      * @param string $result  What will be inserted in the email
      * @param object $options Selected options when inserting dcontent
      * @param array  $data    Data used as shortcodes in custom layouts

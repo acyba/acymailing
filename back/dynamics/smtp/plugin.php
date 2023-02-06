@@ -118,7 +118,7 @@ class plgAcymSmtp extends acymPlugin
                         '',
                         '',
                         'smtp_type',
-						true
+                        true
                     );
                     ?>
 				</div>
@@ -175,7 +175,7 @@ class plgAcymSmtp extends acymPlugin
 				</div>
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 					<label for="smtp_redirectUrl" class="cell"><?php echo acym_translation('ACYM_SMTP_REDIRECT_URL'); ?></label>
-					<input id="smtp_redirectUrl" class="cell" type="text" name="config[smtp_redirectUrl]" value="<?php echo acym_escape($redirectUrl); ?>" readonly>
+					<input id="smtp_redirectUrl" class="cell" type="text" name="config[smtp_redirectUrl]" value="<?php echo acym_escape($redirectUrl); ?>">
 				</div>
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 					<button <?php echo $loginAttribute; ?>
@@ -224,9 +224,9 @@ class plgAcymSmtp extends acymPlugin
         $host = trim($this->config->get('smtp_host'));
         $connectionType = $this->config->get('smtp_type');
 
-		$requireAuth = false;
-		if(in_array($host, self::HOST_AUTH_2) && $connectionType !== 'password'){
-			$requireAuth = true;
+        $requireAuth = false;
+        if (in_array($host, self::HOST_AUTH_2) && $connectionType !== 'password') {
+            $requireAuth = true;
         }
 
         if ((empty($clientId) || empty($secret)) && $requireAuth) {

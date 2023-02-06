@@ -59,6 +59,7 @@ function installAcym()
     $updateHelper->installBounceRules();
     $updateHelper->installAddons();
     $updateHelper->installOverrideEmails();
+    $updateHelper->updateAddons();
 
     $newConfig = new stdClass();
     $newConfig->installcomplete = 1;

@@ -10,8 +10,8 @@ const acym_userSummaryModal = {
     },
     getOpenModalEvent: function () {
         jQuery('.acym__modal__users__summary__container').off('open.zf.reveal').on('open.zf.reveal', function () {
-            let id = jQuery(this).attr('id');
-            let data = acym_helper.parseJson(jQuery(this).find('[acym-data-query]').attr('acym-data-query'));
+            const id = jQuery(this).attr('id');
+            const data = acym_helper.parseJson(jQuery(this).find('[acym-data-query]').attr('acym-data-query'));
             acym_userSummaryModal.setModalUsersSummary(`#${id}`, data);
         }).on('closed.zf.reveal', function () {
             let id = jQuery(this).attr('id');
@@ -44,14 +44,19 @@ const acym_userSummaryModal = {
                 listingLoading: true,
                 errorMessage: '',
                 search: '',
-                typingTimer: ''
+                typingTimer: '',
+                queryUsers: null
             },
             mounted: function () {
                 this.getUsers();
             },
             methods: {
                 getUsers() {
-                    let dataAjax = {
+                    if (this.queryUsers) {
+                        this.queryUsers.abort();
+                    }
+
+                    const dataAjax = {
                         offset: this.limit * this.scroll,
                         limit: this.limit,
                         modal_search: encodeURIComponent(this.search)
@@ -65,7 +70,9 @@ const acym_userSummaryModal = {
 
                     serializeData += linkAjaxEnd;
 
-                    acym_helper.post(linkAjax, serializeData).then(response => {
+
+                    this.queryUsers = acym_helper.post(linkAjax, serializeData);
+                    this.queryUsers.then(response => {
                         if (response.error) {
                             this.errorMessage = response.message;
                             this.listingError = true;

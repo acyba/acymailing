@@ -17,7 +17,7 @@
                     }
 
                     foreach ($data['customfields'] as $field) {
-                        if ($field->type == 'file' || in_array($field->id, [1, 2])) continue;
+                        if ($field->type == 'file' || in_array($field->id, $data['coreFields'])) continue;
 
                         $checked = in_array($field->id, $defaultFields) ? 'checked="checked"' : '';
                         $fieldName = $field->name;
@@ -25,6 +25,10 @@
                         echo '<input '.$checked.' id="checkbox_'.$fieldName.'" class="acym__users__export__export_fields" type="checkbox" name="export_fields[]" value="'.$field->id.'">
                         	<label for="checkbox_'.$fieldName.'">'.acym_translation($fieldName).'</label><br/>';
                     }
+
+                    $checked = in_array('subscribe_date', $defaultFields) ? 'checked="checked"' : '';
+                    echo '<input '.$checked.' id="checkbox_subscribe_date" class="acym__users__export__export_fields" type="checkbox" name="export_fields[]" value="subscribe_date">
+                        	<label for="checkbox_subscribe_date">'.acym_translation('ACYM_SUBSCRIPTION_DATE').'</label><br/>';
                     ?>
 				</div>
 				<div class="grid-x margin-bottom-1" id="userField_separator">
@@ -65,7 +69,7 @@
 				<div class="acym__title"><?php echo acym_translation('ACYM_SUBSCRIBERS_TO_EXPORT'); ?></div>
 				<p class="cell margin-bottom-1"><?php echo acym_translation('ACYM_WARNING_FILTERS_APPLIED_EXPORT'); ?></p>
                 <?php if (empty($data['checkedElements']) || $data['isPreselectedList']) { ?>
-					<fieldset id="acym__users__export__users-to-export" class="margin-bottom-1">
+					<fieldset id="acym__users__export__users-to-export">
                         <?php
                         echo acym_radio(
                             [
@@ -77,12 +81,9 @@
                         );
                         ?>
 					</fieldset>
-					<div id="acym__users__export__select_all" style="display: <?php echo $data['isPreselectedList'] ? 'none' : 'block'; ?>">
-                        <?php echo acym_translation('ACYM_ALL_SUBSCRIBER_WILL_BE_EXPORTED'); ?>
-					</div>
 					<div id="acym__users__export__select_lists" class="margin-bottom-1" style="display: <?php echo $data['isPreselectedList'] ? 'block' : 'none'; ?>">
                         <?php echo $data['entitySelect']; ?>
-						<div class="margin-bottom-1 margin-top-1">
+						<div class="margin-top-1">
                             <?php
                             echo acym_radio(
                                 [
@@ -93,6 +94,24 @@
                                 ],
                                 'export_list',
                                 $data['exportListStatus']
+                            );
+                            ?>
+						</div>
+					</div>
+					<div id="acym__users__export__segments" class="padding-top-1">
+                        <?php echo acym_translation('ACYM_FILTER_EXPORTED_SUBSCRIBERS_SEGMENT'); ?>
+					</div>
+					<div id="acym__users__export__select_segments" class="margin-bottom-1">
+						<div class="margin-bottom-1 margin-top-1">
+                            <?php
+                            echo acym_select(
+                                $data['segments'],
+                                'export_segment',
+                                $data['preselectedSegment'],
+                                [
+                                    'class' => 'acym__select',
+                                    'acym-data-infinite' => '',
+                                ]
                             );
                             ?>
 						</div>

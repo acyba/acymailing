@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Helpers;
 
+use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Libraries\acymObject;
 
@@ -244,7 +245,7 @@ class ExportHelper extends acymObject
         return '';
     }
 
-    public function exportCSV($query, $fieldsToExport, $customFieldsToExport, $separator = ',', $charset = 'UTF-8', $exportFile = null)
+    public function exportCSV($query, $fieldsToExport, $customFieldsToExport, $specialFieldsToExport, $separator = ',', $charset = 'UTF-8', $exportFile = null, $flagToRemove = 0)
     {
         $nbExport = $this->getExportLimit();
         acym_displayErrors();
@@ -258,6 +259,18 @@ class ExportHelper extends acymObject
 
         foreach ($allFieldsToExport as $key => $field) {
             $allFieldsToExport[$key] = $encodingClass->change($field, 'UTF-8', $charset);
+        }
+
+        if (in_array('subscribe_date', $specialFieldsToExport)) {
+            $listClass = new ListClass();
+            $lists = $listClass->getAll();
+            foreach ($lists as $oneList) {
+                if ($oneList->type === $listClass::LIST_TYPE_FRONT) {
+                    continue;
+                }
+
+                $allFieldsToExport[] = acym_translation('ACYM_SUBSCRIPTION_DATE').' '.acym_translation($oneList->name);
+            }
         }
 
         // This first line shows the column headers ("name", "email", etc...)
@@ -274,10 +287,24 @@ class ExportHelper extends acymObject
             if (!empty($folder[1]) && !file_exists($folder[1])) acym_createDir($folder[1]);
 
             $fp = fopen($exportFile, 'w');
-            if (false === $fp) return acym_translationSprintf('ACYM_FAIL_SAVE_FILE', $exportFile);
+            if (false === $fp) {
+                if ($flagToRemove !== 0) {
+                    $automationHelper = new AutomationHelper();
+                    $automationHelper->removeFlag($flagToRemove);
+                }
+
+                return acym_translationSprintf('ACYM_FAIL_SAVE_FILE', $exportFile);
+            }
 
             $error = fwrite($fp, $firstLine);
-            if (false === $error) return acym_translationSprintf('ACYM_UNWRITABLE_FILE', $exportFile);
+            if (false === $error) {
+                if ($flagToRemove !== 0) {
+                    $automationHelper = new AutomationHelper();
+                    $automationHelper->removeFlag($flagToRemove);
+                }
+
+                return acym_translationSprintf('ACYM_UNWRITABLE_FILE', $exportFile);
+            }
         }
 
         $start = 0;
@@ -296,7 +323,14 @@ class ExportHelper extends acymObject
                     echo $errorLine;
                 } else {
                     $error = fwrite($fp, $errorLine);
-                    if (false === $error) return acym_translationSprintf('ACYM_UNWRITABLE_FILE', $exportFile);
+                    if (false === $error) {
+                        if ($flagToRemove !== 0) {
+                            $automationHelper = new AutomationHelper();
+                            $automationHelper->removeFlag($flagToRemove);
+                        }
+
+                        return acym_translationSprintf('ACYM_UNWRITABLE_FILE', $exportFile);
+                    }
                 }
             }
 
@@ -333,6 +367,23 @@ class ExportHelper extends acymObject
                     unset($userCustomFields);
                 }
 
+                if (in_array('subscribe_date', $specialFieldsToExport)) {
+                    $userSubscriptions = acym_loadObjectList(
+                        'SELECT `list_id`, `subscription_date` 
+                        FROM #__acym_user_has_list 
+                        WHERE user_id = '.intval($userID),
+                        'list_id'
+                    );
+                    foreach ($lists as $oneList) {
+                        if ($oneList->type === $listClass::LIST_TYPE_FRONT) {
+                            continue;
+                        }
+
+                        $data[] = empty($userSubscriptions[$oneList->id]) ? '' : $userSubscriptions[$oneList->id]->subscription_date;
+                    }
+                    unset($userSubscriptions);
+                }
+
                 foreach ($data as &$oneData) {
                     if ($excelSecure == 1) {
                         $firstcharacter = substr($oneData, 0, 1);
@@ -352,12 +403,24 @@ class ExportHelper extends acymObject
                     echo $oneLine;
                 } else {
                     $error = fwrite($fp, $oneLine);
-                    if (false === $error) return acym_translationSprintf('ACYM_UNWRITABLE_FILE', $exportFile);
+                    if (false === $error) {
+                        if ($flagToRemove !== 0) {
+                            $automationHelper = new AutomationHelper();
+                            $automationHelper->removeFlag($flagToRemove);
+                        }
+
+                        return acym_translationSprintf('ACYM_UNWRITABLE_FILE', $exportFile);
+                    }
                 }
             }
 
             unset($users);
         } while (true);
+
+        if ($flagToRemove !== 0) {
+            $automationHelper = new AutomationHelper();
+            $automationHelper->removeFlag($flagToRemove);
+        }
 
         if (!empty($exportFile)) fclose($fp);
 

@@ -186,6 +186,19 @@
                         );
                         ?>
 					</div>
+                    <?php if (acym_isMultilingual()) { ?>
+						<div class="cell grid-x margin-top-1">
+                            <?php
+                            echo acym_switch(
+                                'config[unsubpage_languages_multi_only]',
+                                $this->config->get('unsubpage_languages_multi_only', 0),
+                                acym_translation('ACYM_UNSUBSCRIBE_USED_LANGUAGE').acym_info('ACYM_UNSUBSCRIBE_USED_LANGUAGE_DESC'),
+                                [],
+                                'xlarge-3 medium-5 small-9'
+                            );
+                            ?>
+						</div>
+                    <?php } ?>
 					<label for="acym__configuration__subscription__unsub-title" class="cell grid-x margin-bottom-1 margin-top-1">
 						<span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_UNSUBSCRIBE_PAGE_CHANGE'); ?></span>
 						<input id="acym__configuration__subscription__unsub-title"

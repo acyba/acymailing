@@ -326,12 +326,19 @@ class plgAcymPost extends acymPlugin
 
     public function replaceIndividualContent($tag)
     {
+        $allowedStatuses = ['publish'];
+        $allowedStatuses = acym_triggerCmsHook('onAcymPostInsertion', [$allowedStatuses], false);
+        if (empty($allowedStatuses) || !is_array($allowedStatuses)) {
+            $allowedStatuses = ['publish'];
+        }
+        $allowedStatuses = array_map('acym_escapeDB', $allowedStatuses);
+
         $query = 'SELECT post.*, `user`.`user_nicename`, `user`.`display_name` 
                     FROM #__posts AS post 
                     LEFT JOIN #__users AS `user` 
                         ON `user`.`ID` = `post`.`post_author` 
                     WHERE post.post_type = "post" 
-                        AND post.post_status = "publish"
+                        AND post.post_status IN ('.implode(', ', $allowedStatuses).')
                         AND post.ID = '.intval($tag->id);
 
         $element = $this->initIndividualContent($tag, $query);

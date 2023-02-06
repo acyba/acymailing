@@ -704,4 +704,15 @@ class UpdateHelper extends acymObject
             $overrideClass->save($override);
         }
     }
+
+    public function updateAddons()
+    {
+        acym_checkPluginsVersion();
+
+        $pluginClass = new PluginClass();
+        $pluginsToUpdate = $pluginClass->getNotUptoDatePlugins();
+        foreach ($pluginsToUpdate as $onePlugin) {
+            $pluginClass->updateAddon($onePlugin);
+        }
+    }
 }

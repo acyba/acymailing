@@ -146,8 +146,6 @@ const acym_helperMailer = {
             return;
         }
 
-        // Tenant only for Outlook
-        $tenantContainer.hide();
         $connectionTypeContainer.show();
 
         if (jQuery('#smtp_type').val() === 'oauth') {

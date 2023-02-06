@@ -74,7 +74,7 @@ class MailClass extends acymClass
         $queryCount .= $tagJoin;
 
         if (!empty($settings['search'])) {
-            $filters[] = 'mail.name LIKE '.acym_escapeDB('%'.$settings['search'].'%');
+            $filters[] = 'mail.name LIKE '.acym_escapeDB('%'.utf8_encode($settings['search']).'%');
         }
 
         if (!empty($settings['editor'])) {

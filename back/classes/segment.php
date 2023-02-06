@@ -54,7 +54,9 @@ class SegmentClass extends acymClass
     {
         $segment = parent::getOneById($id);
 
-        $segment->filters = empty($segment->filters) ? [] : json_decode($segment->filters, true);
+        if (!empty($segment)) {
+            $segment->filters = empty($segment->filters) ? [] : json_decode($segment->filters, true);
+        }
 
         return $segment;
     }

@@ -184,7 +184,7 @@ jQuery(function($) {
                 },
                 toggleUptodateCurrentApp(pluginId) {
                     this.allPlugins.map((plugin) => {
-                        if (plugin.id === pluginId) plugin.uptodate = plugin.uptodate === '1' ? '0' : '1';
+                        if (plugin.id === pluginId) plugin.uptodate = plugin.uptodate == '1' ? '0' : '1';
                     });
                     this.displayedPlugins = [...this.displayedPlugins];
                 },

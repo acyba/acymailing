@@ -140,6 +140,30 @@ $perspective: 600;
                     line-height: 28px;
                 }
 
+                .acym__plugins__button {
+                    cursor: pointer;
+
+                    &.acym__plugins__button__update {
+                        border-color: map-get($foundation-palette, warning);
+                        color: map-get($foundation-palette, warning);
+                        padding-right: 3px;
+
+                        span {
+                            color: map-get($foundation-palette, warning);
+                            transition: .2s ease-in-out;
+                        }
+
+                        .acym_loader_logo svg .acym__svg__loader {
+                            stroke: map-get($foundation-palette, warning);
+                        }
+
+                        i {
+                            font-size: 1.1rem;
+                            line-height: 28px;
+                        }
+                    }
+                }
+
                 .acym__plugins__card__actions {
                     margin: 0;
                     height: 100%;
@@ -197,19 +221,6 @@ $perspective: 600;
                             font-size: 1.3rem;
                             vertical-align: middle;
                             display: inline-block;
-                        }
-
-                        &.acym__plugins__button__update {
-                            border-color: map-get($foundation-palette, warning);
-                            color: map-get($foundation-palette, warning);
-
-                            span {
-                                color: map-get($foundation-palette, warning);
-                            }
-
-                            .acym_loader_logo svg .acym__svg__loader {
-                                stroke: map-get($foundation-palette, warning);
-                            }
                         }
 
                         span {

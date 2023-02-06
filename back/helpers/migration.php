@@ -406,7 +406,9 @@ class MigrationHelper extends acymObject
                 }
 
                 if ('birthday' == $fieldsV5[$fieldKey]->type && !empty($user->$fieldKey)) {
-                    $fieldImported[$fieldKey]->option = json_decode($fieldImported[$fieldKey]->option, true);
+                    if (!is_array($fieldImported[$fieldKey]->option)) {
+                        $fieldImported[$fieldKey]->option = json_decode($fieldImported[$fieldKey]->option, true);
+                    }
 
                     if (!empty($fieldImported[$fieldKey]->option['format'])) {
                         $birthdayValue = explode('/', $user->$fieldKey);
@@ -665,14 +667,16 @@ class MigrationHelper extends acymObject
                 }
             }
 
+            $subject = utf8_encode(substr($oneMail->subject, 0, 255));
+
             $mail = [
                 'id' => intval($oneMail->mailid),
-                'name' => acym_escapeDB(utf8_encode($oneMail->subject)),
+                'name' => acym_escapeDB($subject),
                 'creation_date' => acym_escapeDB(acym_date(empty($oneMail->created) ? 'now' : $oneMail->created, 'Y-m-d H:i:s')),
                 'drag_editor' => 0,
                 'type' => acym_escapeDB($mailType),
                 'body' => acym_escapeDB(utf8_encode($oneMail->body)),
-                'subject' => acym_escapeDB(utf8_encode($oneMail->subject)),
+                'subject' => acym_escapeDB($subject),
                 'from_name' => acym_escapeDB($oneMail->fromname),
                 'from_email' => acym_escapeDB($oneMail->fromemail),
                 'reply_to_name' => acym_escapeDB($oneMail->replyname),

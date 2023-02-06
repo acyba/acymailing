@@ -194,7 +194,7 @@ abstract class AbstractHtmlProcessor
      *
      * @return string
      */
-    private function removeSelfClosingTagsClosingTags(string $html): string
+    protected function removeSelfClosingTagsClosingTags(string $html): string
     {
         return \preg_replace('%</' . self::PHP_UNRECOGNIZED_VOID_TAGNAME_MATCHER . '>%', '', $html);
     }
@@ -208,7 +208,7 @@ abstract class AbstractHtmlProcessor
      *
      * @throws \RuntimeException
      */
-    private function getBodyElement(): \DOMElement
+    protected function getBodyElement(): \DOMElement
     {
         $node = $this->getDomDocument()->getElementsByTagName('body')->item(0);
         if (!$node instanceof \DOMElement) {
