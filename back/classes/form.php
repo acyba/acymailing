@@ -407,6 +407,7 @@ class FormClass extends acymClass
 
         $form->pages = json_decode($form->pages, true);
         $form->settings = json_decode($form->settings, true);
+        $form->display_languages = json_decode($form->display_languages, true);
 
         return $form;
     }
@@ -417,6 +418,7 @@ class FormClass extends acymClass
         foreach ($forms as $form) {
             $form->pages = json_decode($form->pages, true);
             $form->settings = json_decode($form->settings, true);
+            $form->display_languages = json_decode($form->display_languages, true);
         }
 
         return $forms;
@@ -533,7 +535,7 @@ class FormClass extends acymClass
     {
         if (!empty($form->display_languages) && !in_array('all', $form->display_languages) && !$edition) {
             if (!in_array(acym_getLanguageTag(), $form->display_languages)) {
-                return;
+                return '';
             }
         }
 

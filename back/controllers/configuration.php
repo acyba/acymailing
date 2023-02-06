@@ -5,7 +5,6 @@ namespace AcyMailing\Controllers;
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
-use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Classes\UrlClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\EncodingHelper;

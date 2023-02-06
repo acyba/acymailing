@@ -1390,6 +1390,19 @@ class acymInstall
 
             $this->updateQuery('ALTER TABLE `#__acym_user` CHANGE `key` `key` VARCHAR(40) NULL');
         }
+
+        if (version_compare($this->fromVersion, '8.1.1', '<')) {
+            $formClass = new FormClass();
+            $forms = $formClass->getAll();
+
+            foreach ($forms as $oneForm) {
+                if (!empty($oneForm->display_languages)) {
+                    continue;
+                }
+                $oneForm->display_languages = '["all"]';
+                $formClass->save($oneForm);
+            }
+        }
     }
 
     public function updateQuery($query)
