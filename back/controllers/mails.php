@@ -860,7 +860,7 @@ class MailsController extends acymController
     {
         $imageVideo = imagecreatefromjpeg($image);
         $playButton = @imagecreatefrompng(ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.'editor'.DS.'play_button.png');
-        if ($playButton === false) {
+        if ($playButton === false || $imageVideo === false) {
             return $image;
         }
         $imageWidth = imagesx($imageVideo);

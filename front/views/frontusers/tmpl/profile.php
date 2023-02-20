@@ -81,7 +81,7 @@ $formName = acym_getModuleFormName();
                                 ?>
 								<td id="acybutton_subscriber_delete_data">
 									<button class="btn button"
-											onclick="if(confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE + '\n' + ACYM_JS_TXT.ACYM_DELETE_MY_DATA_CONFIRM)){ this.form.task.value = 'delete'; this.form.submit(); } return false;">
+											onclick="if(confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE + '\n' + ACYM_JS_TXT.ACYM_DELETE_MY_DATA_CONFIRM)){ this.form.task.value = 'gdprDelete'; this.form.submit(); } return false;">
                                         <?php echo acym_translation('ACYM_DELETE_MY_DATA'); ?>
 									</button>
 								</td>

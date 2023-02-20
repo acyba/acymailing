@@ -7,7 +7,7 @@ class acyElementor
     public function __construct()
     {
         add_action('elementor/editor/before_enqueue_scripts', [$this, 'addAcyScriptElementor']);
-        add_action('elementor/widgets/widgets_registered', [$this, 'registerWidgets']);
+        add_action('elementor/widgets/register', [$this, 'registerWidgets']);
         add_action('elementor/elements/categories_registered', [$this, 'addWidgetCategories']);
         add_action('elementor_pro/init', [$this, 'addAcyFormAction']);
     }
@@ -23,7 +23,7 @@ class acyElementor
     public function registerWidgets()
     {
         include_once ACYM_WIDGETS.'subscriptionform'.DS.'elementor.php';
-        \Elementor\Plugin::instance()->widgets_manager->register_widget_type(new \acySubscriptionFormWidget());
+        \Elementor\Plugin::instance()->widgets_manager->register(new \acySubscriptionFormWidget());
     }
 
     public function addWidgetCategories($elements_manager)

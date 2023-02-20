@@ -125,7 +125,8 @@ class plgAcymForward extends acymPlugin
 
                 return;
             } else {
-                $newMail->body = str_replace('{emailcontent}', $mailboxHelper->_message->html, $newMail->body);
+                $content = empty($mailboxHelper->_message->html) ? $mailboxHelper->_message->text : $mailboxHelper->_message->html;
+                $newMail->body = str_replace('{emailcontent}', $content, $newMail->body);
             }
             unset($newMail->id);
         }

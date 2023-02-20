@@ -133,6 +133,11 @@ function acym_internalUrlToPath($url)
 
 function acym_isValidUrl($url): bool
 {
+    // If this option is not activated in the php.ini file, we return true because the function get_headers will not work
+    if (empty(ini_get('allow_url_fopen'))) {
+        return true;
+    }
+
     $headers = @get_headers($url);
 
     return !empty($headers) && strpos($headers[0], '200');

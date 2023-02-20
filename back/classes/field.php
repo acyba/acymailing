@@ -582,8 +582,10 @@ class FieldClass extends acymClass
                         $labelClass = '';
                         $attributes = 'checked '.$required;
                     }
-                    $return .= '<label '.$labelClass.'>'.$oneValue;
-                    $return .= '<input '.$attributes.' type="checkbox" name="'.$name.'['.acym_escape($key).']" class="acym__users__creation__fields__checkbox"></label>';
+                    $return .= '<label '.$labelClass.'>';
+                    $return .= '<input '.$attributes.' type="checkbox" name="'.$name.'['.acym_escape(
+                            $key
+                        ).']" class="acym__users__creation__fields__checkbox">'.$oneValue.'</label>';
                 }
             }
         } elseif ($field->type === 'single_dropdown') {

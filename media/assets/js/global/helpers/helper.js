@@ -195,26 +195,31 @@ const acym_helper = {
                          return error;
                      });
     },
-    post: function (url = ACYM_AJAX_URL, data = {}) {
+    post: function (url = ACYM_AJAX_URL, data = {}, needAbort = false) {
         const query = jQuery.post(url, data);
-        query.then(res => {
-            if (typeof res !== 'object') res = this.parseJson(res);
 
-            if (res.error && !this.empty(res.message)) console.error(res.message);
+        if (needAbort) {
+            query.then(acym_helper.parseJson).fail(acym_helper.handleErrors);
+            return query;
+        }
+        return query.then(acym_helper.parseResponse).fail(acym_helper.handleErrors);
+    },
+    parseResponse: function (response) {
+        if (typeof response !== 'object') response = acym_helper.parseJson(response);
 
-            return res;
-        })
-             .fail((xhr, status, error) => {
-                 const response = {};
-                 response.error = true;
-                 response.message = error;
-                 response.data = [];
+        if (response.error && !this.empty(response.message)) console.error(response.message);
 
-                 console.error(`Error calling ${url}, responded with error ${status} ${error}`);
+        return response;
+    },
+    handleErrors: function (xhr, status, error) {
+        const response = {};
+        response.error = true;
+        response.message = error;
+        response.data = [];
 
-                 return response;
-             });
-        return query;
+        console.error(`Ajax error, responded with error ${status} ${error}`);
+
+        return response;
     },
     sameArrays: function (array1, array2) {
         return array1.length === array2.length && array1.every(function (value, index) {

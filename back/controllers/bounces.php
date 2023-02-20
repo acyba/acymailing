@@ -465,7 +465,6 @@ class BouncesController extends acymController
         $this->currentClass = new MailboxClass();
 
         $data = [
-            'element_to_display' => lcfirst(acym_translation('ACYM_MAILBOX_ACTION')),
             'pagination' => new PaginationHelper(),
             'workflowHelper' => new WorkflowHelper(),
         ];

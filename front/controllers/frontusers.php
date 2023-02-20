@@ -43,6 +43,7 @@ class FrontusersController extends UsersController
             'ajaxGetEnqueuedMessages',
             'listing',
             'delete',
+            'gdprDelete',
         ];
         $this->urlsFrontMenu = ['index.php?option=com_acym&view=frontusers&layout=listing', 'index.php?option=com_acym&view=frontusers&layout=profile'];
         parent::__construct();
@@ -880,7 +881,7 @@ class FrontusersController extends UsersController
         $userHelper->exportdata($user->id);
     }
 
-    public function delete()
+    public function gdprDelete()
     {
         acym_checkToken();
         $userClass = new UserClass();

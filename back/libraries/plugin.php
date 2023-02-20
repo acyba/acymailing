@@ -134,9 +134,14 @@ class acymPlugin extends acymObject
     public function getElements()
     {
         $conditions = '';
+        if (!empty($this->filters)) {
+            $conditions = ' WHERE ('.implode(') AND (', $this->filters).')';
+        }
+
         $ordering = '';
-        if (!empty($this->filters)) $conditions = ' WHERE ('.implode(') AND (', $this->filters).')';
-        if (!empty($this->pageInfo->order)) $ordering = ' ORDER BY '.acym_secureDBColumn($this->pageInfo->order).' '.acym_secureDBColumn($this->pageInfo->orderdir);
+        if (!empty($this->pageInfo->order)) {
+            $ordering = ' ORDER BY '.acym_secureDBColumn($this->pageInfo->order).' '.acym_secureDBColumn($this->pageInfo->orderdir);
+        }
 
         $rows = acym_loadObjectList($this->querySelect.$this->query.$conditions.$ordering, '', $this->pageInfo->start, $this->pageInfo->limit);
         $this->pageInfo->total = acym_loadResult('SELECT COUNT(*) '.$this->query.$conditions.$ordering);
@@ -152,14 +157,16 @@ class acymPlugin extends acymObject
             if (!$found) {
                 $this->filters[] = $this->elementIdTable.'.'.$this->elementIdColumn.' = '.intval($this->defaultValues->id);
                 $row = acym_loadObject($this->querySelect.$this->query.$conditions);
-                if (!empty($row)) $rows[] = $row;
+                if (!empty($row)) {
+                    $rows[] = $row;
+                }
             }
         }
 
         return $rows;
     }
 
-    protected function getFilteringZone($categoryFilter = true)
+    protected function getFilteringZone($categoryFilter = true): string
     {
         $result = '<div class="grid-x" id="plugin_listing_filters">
                     <div class="cell medium-6">

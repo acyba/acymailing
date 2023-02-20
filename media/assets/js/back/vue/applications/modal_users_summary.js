@@ -71,7 +71,7 @@ const acym_userSummaryModal = {
                     serializeData += linkAjaxEnd;
 
 
-                    this.queryUsers = acym_helper.post(linkAjax, serializeData);
+                    this.queryUsers = acym_helper.post(linkAjax, serializeData, true);
                     this.queryUsers.then(response => {
                         if (response.error) {
                             this.errorMessage = response.message;
