@@ -434,6 +434,7 @@ class MailClass extends acymClass
 
             if (in_array($oneAttribute, ['body', 'headers'])) {
                 $mail->$oneAttribute = preg_replace('#<input[^>]*value="[^"]*"[^>]*>#Uis', '', $mail->$oneAttribute);
+                $mail->$oneAttribute = preg_replace('#<script.*</script>#Uis', '', $mail->$oneAttribute);
 
                 //Remove tinyMce content edit
                 $mail->$oneAttribute = str_replace(' contenteditable="true"', '', $mail->$oneAttribute);

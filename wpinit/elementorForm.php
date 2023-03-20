@@ -19,13 +19,14 @@ class ElementorForm extends \ElementorPro\Modules\Forms\Classes\Action_Base
 
     public function register_settings_section($widget)
     {
-        // Check if an id is provided because this function is called many times
-        // Sometimes there is no id (and not the rest: settings, form_fields,...)
-        // So when we try to access fields data that is not currently existing
-        // A fatal error appears
+        // Check if an id is provided because this function is called many times sometimes there is no id (and not the rest: settings, form_fields,...)
+        // So when we try to access fields data that is not currently existing a fatal error appears
         if ($widget->get_id()) {
             $fields = ['' => ''];
             foreach ($widget->get_data('settings')['form_fields'] as $field) {
+                if (!isset($field['custom_id']) || !isset($field['field_label'])) {
+                    continue;
+                }
                 $fields[$field['custom_id']] = $field['field_label'];
             }
 

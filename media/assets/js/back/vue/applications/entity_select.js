@@ -220,6 +220,9 @@ function readyFunction($) {
                     ajaxUrl += '&columns=' + this.columnsToDisplay.join(',') + joinColumn;
                     $.get(ajaxUrl, (res) => {
                         res = acym_helper.parseJson(res);
+                        if (!res) {
+                            return false;
+                        }
                         if (res.error) {
                             console.log(res.error);
                             return false;

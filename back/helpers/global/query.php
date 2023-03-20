@@ -6,17 +6,27 @@
  */
 function acym_getTables()
 {
-    return acym_loadResultArray('SHOW TABLES');
+    static $tables = null;
+    if (empty($tables)) {
+        $tables = acym_loadResultArray('SHOW TABLES');
+    }
+
+    return $tables;
 }
 
-function acym_getColumns($table, $acyTable = true, $addPrefix = true)
+function acym_getColumns(string $table, bool $acyTable = true, bool $addPrefix = true)
 {
     if ($addPrefix) {
         $prefix = $acyTable ? '#__acym_' : '#__';
         $table = $prefix.$table;
     }
 
-    return acym_loadResultArray('SHOW COLUMNS FROM '.acym_secureDBColumn($table));
+    static $columns = [];
+    if (empty($columns[$table])) {
+        $columns[$table] = acym_loadResultArray('SHOW COLUMNS FROM '.acym_secureDBColumn($table));
+    }
+
+    return $columns[$table];
 }
 
 function acym_secureDBColumn($fieldName)
@@ -45,11 +55,15 @@ function acym_getDatabases()
     return $databases;
 }
 
-function acym_addLimit(&$query, $limit = 1, $offset = null)
+function acym_addLimit(string &$query, int $limit = 1, ?int $offset = null)
 {
-    if (strpos($query, 'LIMIT ') !== false) return;
+    if (strpos($query, 'LIMIT ') !== false) {
+        return;
+    }
 
     $query .= ' LIMIT ';
-    if (!empty($offset)) $query .= intval($offset).',';
+    if (!empty($offset)) {
+        $query .= intval($offset).',';
+    }
     $query .= intval($limit);
 }

@@ -552,17 +552,25 @@ class ListClass extends acymClass
 
     public function getTranslatedNameDescription($lists)
     {
+        $currentLanguageTag = acym_getLanguageTag();
         foreach ($lists as $id => $list) {
             if (empty($list->translation)) continue;
 
             $list->translation = json_decode($list->translation, true);
-            if (!empty($list->translation[acym_getLanguageTag()]) && !empty($list->translation[acym_getLanguageTag()]['name'])) {
-                $lists[$id]->name = $list->translation[acym_getLanguageTag()]['name'];
+            if (!empty($list->translation[$currentLanguageTag])){
+                if (!empty($list->translation[$currentLanguageTag]['name'])) {
+                    $lists[$id]->name = $list->translation[$currentLanguageTag]['name'];
+                }
+
+                if (!empty($list->translation[$currentLanguageTag]['display_name'])) {
+                    $lists[$id]->display_name = $list->translation[$currentLanguageTag]['display_name'];
+                }
+
+                if (!empty($list->translation[$currentLanguageTag]['description'])) {
+                    $lists[$id]->description = $list->translation[$currentLanguageTag]['description'];
+                }
             }
 
-            if (!empty($list->translation[acym_getLanguageTag()]) && !empty($list->translation[acym_getLanguageTag()]['description'])) {
-                $lists[$id]->description = $list->translation[acym_getLanguageTag()]['description'];
-            }
         }
 
         return $lists;

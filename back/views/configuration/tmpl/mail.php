@@ -278,6 +278,7 @@
                 <?php
             } else {
                 if ($this->config->get('dkim', 0) == 1 && ($this->config->get('dkim_private', '') == '' || $this->config->get('dkim_public', '') == '')) {
+
                     //We need to load our JS file to load a new key
                     //So we also display the private hidden field there...
                     echo acym_translation('ACYM_DKIM_SAVE');

@@ -73,6 +73,7 @@ const acym_userSummaryModal = {
 
                     this.queryUsers = acym_helper.post(linkAjax, serializeData, true);
                     this.queryUsers.then(response => {
+                        response = acym_helper.parseJson(response);
                         if (response.error) {
                             this.errorMessage = response.message;
                             this.listingError = true;

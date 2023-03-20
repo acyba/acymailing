@@ -48,7 +48,7 @@ function acym_config($reload = false)
  */
 function acym_get($path)
 {
-    list($group, $class) = explode('.', $path);
+    [$group, $class] = explode('.', $path);
 
     $className = ucfirst($class).ucfirst(str_replace('_front', '', $group));
 
@@ -166,4 +166,32 @@ function acym_isAcyCheckerInstalled()
 function acydie($arg, $ajax = false, $indent = true)
 {
     die(acydump($arg, $ajax, $indent));
+}
+
+function acym_getErrorLogFilename($prefix = ''): string
+{
+    if (!empty($prefix)) {
+        $prefix .= '_';
+    }
+
+    return $prefix.'errors.log';
+}
+
+function acym_logError($message, $prefix = '')
+{
+    $reportPath = acym_getLogPath(acym_getErrorLogFilename($prefix), true);
+
+    $lr = "\r\n";
+    file_put_contents(
+        $reportPath,
+        $lr.acym_getDate(time()).': '.$message,
+        FILE_APPEND
+    );
+}
+
+function acym_isLogFileErrorExist($prefix = ''): bool
+{
+    $reportPath = acym_getLogPath(acym_getErrorLogFilename($prefix));
+
+    return file_exists($reportPath);
 }

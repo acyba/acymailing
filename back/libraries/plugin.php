@@ -718,9 +718,9 @@ class acymPlugin extends acymObject
     /**
      * Handles the custom layouts and the pictures management
      *
-     * @param string $result  What will be inserted in the email
+     * @param string $result What will be inserted in the email
      * @param object $options Selected options when inserting dcontent
-     * @param array  $data    Data used as shortcodes in custom layouts
+     * @param array  $data Data used as shortcodes in custom layouts
      *
      * @return string
      */
@@ -1384,23 +1384,16 @@ class acymPlugin extends acymObject
 
     public function errorCallback()
     {
-        $reportPath = acym_getLogPath($this->logFilename, true);
-
-        $lr = "\r\n";
-        file_put_contents(
-            $reportPath,
-            $lr.$lr.'********************     '.acym_getDate(time()).'     ********************'.$lr.implode($lr, $this->errors),
-            FILE_APPEND
-        );
+        foreach ($this->errors as $error) {
+            acym_logError($error, empty($this->name) ? get_class($this) : $this->name);
+        }
 
         $this->errors = [];
     }
 
-    public function isLogFileEmpty()
+    public function isLogFileEmpty(): bool
     {
-        $reportPath = acym_getLogPath($this->logFilename);
-
-        return !file_exists($reportPath);
+        return !acym_isLogFileErrorExist(empty($this->name) ? get_class($this) : $this->name);
     }
 
     public function initCustomView($customFields = false)
@@ -1455,5 +1448,19 @@ class acymPlugin extends acymObject
         $languageCode = substr($this->emailLanguage, 0, 2);
 
         return apply_filters('wpml_permalink', $link, $languageCode);
+    }
+
+    protected function autologin(string $link): string
+    {
+        $link .= (strpos($link, '?') ? '&' : '?').'user={usertag:username|urlencode}&passw={usertag:password|urlencode}';
+
+        return $link;
+    }
+
+    protected function replaceShortcode($content)
+    {
+        $content = do_shortcode($content);
+
+        return preg_replace('#<!-- wp:shortcode -->(.*)<!-- /wp:shortcode -->#Uis', '$1', $content);
     }
 }

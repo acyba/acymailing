@@ -1052,7 +1052,7 @@ class CampaignsController extends acymController
         $this->prepareSegmentDisplay($campaign, $campaign['currentCampaign']->sending_params);
         $this->prepareMultilingualOption($campaign);
 
-        return parent::display($campaign);
+        parent::display($campaign);
     }
 
     public function saveEditEmail($ajax = false)

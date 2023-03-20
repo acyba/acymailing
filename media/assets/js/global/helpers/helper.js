@@ -181,7 +181,7 @@ const acym_helper = {
                          if (!res) return res;
                          if (typeof res !== 'object') res = this.parseJson(res);
 
-                         if (res.error && !this.empty(res.message)) console.error(res.message);
+                         if (res.error && !acym_helper.empty(res.message)) console.error(res.message);
 
                          return res;
                      })
@@ -207,7 +207,7 @@ const acym_helper = {
     parseResponse: function (response) {
         if (typeof response !== 'object') response = acym_helper.parseJson(response);
 
-        if (response.error && !this.empty(response.message)) console.error(response.message);
+        if (response.error && !acym_helper.empty(response.message)) console.error(response.message);
 
         return response;
     },

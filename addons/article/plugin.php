@@ -188,6 +188,16 @@ class plgAcymArticle extends acymPlugin
             ]
         );
 
+        if (acym_isPluginActive('autologin')) {
+            $displayOptions[] = [
+                'title' => 'ACYM_AUTO_LOGIN',
+                'tooltip' => 'ACYM_AUTO_LOGIN_DESC',
+                'type' => 'boolean',
+                'name' => 'autologin',
+                'default' => false,
+            ];
+        }
+
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
         echo $this->displaySelectionZone($zoneContent);
         echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
@@ -471,6 +481,10 @@ class plgAcymArticle extends acymPlugin
             $link .= (strpos($link, '?') ? '&' : '?').'Itemid='.intval($menuId);
         }
 
+        if (!empty($tag->autologin)) {
+            $link = $this->autologin($link);
+        }
+
         $varFields['{link}'] = $link;
 
         $title = '';
@@ -483,7 +497,9 @@ class plgAcymArticle extends acymPlugin
         $altImage = '';
 
         $varFields['{title}'] = $element->title;
-        if (in_array('title', $tag->display)) $title = $varFields['{title}'];
+        if (in_array('title', $tag->display)) {
+            $title = $varFields['{title}'];
+        }
 
         $varFields['{picthtml}'] = '';
         $varFields['{image_intro_caption}'] = '';

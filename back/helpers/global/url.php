@@ -103,7 +103,7 @@ function acym_mainURL(&$link)
     return $mainurl;
 }
 
-function acym_currentURL()
+function acym_currentURL(): string
 {
     $url = isset($_SERVER['HTTPS']) || !empty($_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS']) ? 'https' : 'http';
     $url .= '://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
@@ -111,7 +111,7 @@ function acym_currentURL()
     return $url;
 }
 
-function acym_isLocalWebsite()
+function acym_isLocalWebsite(): bool
 {
     return strpos(ACYM_LIVE, 'localhost') !== false || strpos(ACYM_LIVE, '127.0.0.1') !== false;
 }
@@ -135,6 +135,10 @@ function acym_isValidUrl($url): bool
 {
     // If this option is not activated in the php.ini file, we return true because the function get_headers will not work
     if (empty(ini_get('allow_url_fopen'))) {
+        return true;
+    }
+    // If we detect youtu.be url, we don't check the headers because it's a redirection to a valid Url
+    if (strpos($url, 'youtu.be') !== false) {
         return true;
     }
 

@@ -39,7 +39,7 @@ function acym_trigger($method, $args = [], $plugin = null, $callbackOnePlugin = 
                 $onePlugin->errorCallback();
             }
         } catch (Exception $e) {
-
+            acym_logError('An error occurred when triggering the method '.$method.': '.$e->getMessage());
         }
     }
 

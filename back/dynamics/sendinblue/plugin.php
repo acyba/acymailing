@@ -50,7 +50,6 @@ class plgAcymSendinblue extends acymPlugin
         $data['sendingMethods'][self::SENDING_METHOD_ID] = [
             'name' => $this->pluginDescription->name,
             'image' => ACYM_IMAGES.'mailers/sendinblue.png',
-            'partner' => true,
             'recommended' => true,
         ];
     }

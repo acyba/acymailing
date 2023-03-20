@@ -207,6 +207,10 @@ class MailsController extends acymController
 
     public function edit()
     {
+        if (!acym_isAdmin()) {
+            acym_checkToken();
+        }
+
         $tempId = acym_getVar('int', 'id');
         $mailClass = $this->currentClass;
         $typeEditor = acym_getVar('string', 'type_editor');
@@ -597,8 +601,8 @@ class MailsController extends acymController
 
         // Use the thumbnail of the source mail if not modified
         if (!empty($fromId) && empty($mail->thumbnail) && !$fromAutomation) {
-            $thumbname = $this->setThumbnailFrom($fromId);
-            if (!empty($thumbname)) $mail->thumbnail = $thumbname;
+            $thumbnail = $this->setThumbnailFrom($fromId);
+            if (!empty($thumbnail)) $mail->thumbnail = $thumbnail;
         }
 
         if (empty($mail->name) && !in_array($mail->type, $mailClass::TYPES_NO_NAME) && empty($mail->id)) {

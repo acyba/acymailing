@@ -661,15 +661,9 @@ function acym_copyFile($src, $dest, $path = null, $use_streams = false)
 
 function acym_fileGetExt($file)
 {
-    $endPos = strpos($file, '?');
-    if (false !== $endPos) {
-        $file = substr($file, 0, $endPos);
-    }
+    $pathInfo = pathinfo($file);
 
-    $dot = strrpos($file, '.');
-    if (false === $dot) return '';
-
-    return substr($file, $dot + 1);
+    return empty($pathInfo['extension']) ? '' : strtolower($pathInfo['extension']);
 }
 
 function acym_cleanPath($path, $ds = DIRECTORY_SEPARATOR)

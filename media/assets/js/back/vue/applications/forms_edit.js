@@ -7,10 +7,14 @@ jQuery(function ($) {
                 form: acym_helper.parseJson($('#acym__form__structure').val()),
                 menuActive: 'settings',
                 loading: true,
+                noReloadingArrayFields: [
+                    'display_languages',
+                    'pages'
+                ],
                 noReloading: [
                     'display_languages',
-                    'name',
                     'pages',
+                    'name',
                     'active',
                     'settings.display.delay',
                     'settings.display.scroll',
@@ -128,7 +132,7 @@ jQuery(function ($) {
                     // Search which option has just been changed, and if it is one of the noReloading ones, don't refresh the form's preview
                     for (let i = 0 ; i < this.noReloading.length ; i++) {
                         if (this.noReloading[i].indexOf('.') === -1) {
-                            if (this.noReloading[i] === 'pages') {
+                            if (this.noReloadingArrayFields.includes(this.noReloading[i])) {
                                 // Special check for the pages option since it's a multi select
                                 if (!acym_helper.sameArrays(this.form[this.noReloading[i]], this.oldForm[this.noReloading[i]])) {
                                     stopReloading = true;
@@ -138,7 +142,8 @@ jQuery(function ($) {
                             }
                         } else {
                             let noReloadingSplit = this.noReloading[i].split('.');
-                            if (this.form[noReloadingSplit[0]][noReloadingSplit[1]][noReloadingSplit[2]] !== this.oldForm[noReloadingSplit[0]][noReloadingSplit[1]][noReloadingSplit[2]]) {
+                            if (this.form[noReloadingSplit[0]][noReloadingSplit[1]][noReloadingSplit[2]]
+                                !== this.oldForm[noReloadingSplit[0]][noReloadingSplit[1]][noReloadingSplit[2]]) {
                                 stopReloading = true;
                             }
                         }

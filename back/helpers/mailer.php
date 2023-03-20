@@ -424,7 +424,7 @@ class MailerHelper extends AcyMailerPhp
         //__START__production_
         if (ACYM_PRODUCTION) {
             if ($externalSending) {
-                $result = true;
+                $result = false;
                 acym_trigger('onAcymRegisterReceiverContentAndList', [&$result, $this->Subject, $this->Body, $this->receiverEmail, $this->id, &$warnings]);
             } else {
                 acym_trigger('onAcymBeforeEmailSend', [&$this]);

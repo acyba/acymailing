@@ -909,7 +909,7 @@ class PluginHelper extends acymObject
         return acym_absoluteURL($result);
     }
 
-    public function displayOptions($options, $dynamicIdentifier, $type = 'individual', $defaultValues = null)
+    public function displayOptions(array $options, string $dynamicIdentifier, string $type = 'individual', $defaultValues = null): string
     {
         $suffix = preg_replace('[^a-zA-Z0-9]', '_', $dynamicIdentifier);
         $updateFunction = 'updateDynamic'.$suffix;
@@ -927,11 +927,11 @@ class PluginHelper extends acymObject
             if (isset($defaultValues->{$option['name']})) $option['default'] = $defaultValues->{$option['name']};
 
             if ($option['type'] === 'pictures') {
-                $displayedPictures = isset($option['default']) ? $option['default'] : 'resized';
+                $displayedPictures = $option['default'] ?? 'resized';
                 if (isset($defaultValues->pict)) $displayedPictures = $defaultValues->pict;
                 $resizeDisplay = 'resized' === $displayedPictures ? '' : 'style="display: none;"';
-                $maxWidth = isset($defaultValues->maxwidth) ? $defaultValues->maxwidth : 150;
-                $maxHeight = isset($defaultValues->maxheight) ? $defaultValues->maxheight : 150;
+                $maxWidth = $defaultValues->maxwidth ?? 150;
+                $maxHeight = $defaultValues->maxheight ?? 150;
 
                 $valImages = [];
                 $valImages[] = acym_selectOption('1', 'ACYM_YES');
@@ -965,7 +965,7 @@ class PluginHelper extends acymObject
                             acym_selectOption('0', 'ACYM_NO'),
                         ],
                         'caption'.$suffix,
-                        isset($defaultValues->caption) ? $defaultValues->caption : '0',
+                        $defaultValues->caption ?? '0',
                         ['onclick' => $updateFunction.'();'],
                         ['containerClass' => 'cell large-7']
                     );
@@ -1047,7 +1047,7 @@ class PluginHelper extends acymObject
                 }
 
                 $default = empty($option['default']) ? null : $option['default'];
-                if (!empty($default) && strpos($default, ',')) list($default, $defaultOrder) = explode(',', $default);
+                if (!empty($default) && strpos($default, ',')) [$default, $defaultOrder] = explode(',', $default);
 
                 $attributes = [
                     'onchange' => $updateFunction.'();',

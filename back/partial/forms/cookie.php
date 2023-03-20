@@ -1,5 +1,7 @@
 <script type="text/javascript">
-    let acymCookies = document.cookie.split('; ');
+    if (acymCookies === undefined) {
+        var acymCookies = document.cookie.split('; ');
+    }
     if (acymCookies !== undefined && acymCookies.length > 0) {
         for (let i = 0 ; i < acymCookies.length ; i++) {
             if (acymCookies[i].indexOf('acym_form_<?php echo $form->id; ?>=') !== -1) {

@@ -213,8 +213,8 @@ class plgAcymPage extends acymPlugin
         $contentText = '';
         $varFields['{content}'] = $this->cleanExtensionContent($element->post_content);
         $varFields['{intro}'] = $this->cleanExtensionContent($this->getIntro($element->post_content));
-        $varFields['{content}'] = !empty($tag->replaceshortcode) ? do_shortcode($varFields['{content}']) : $varFields['{content}'];
-        $varFields['{intro}'] = !empty($tag->replaceshortcode) ? do_shortcode($varFields['{intro}']) : $varFields['{intro}'];
+        $varFields['{content}'] = !empty($tag->replaceshortcode) ? $this->replaceShortcode($varFields['{content}']) : $varFields['{content}'];
+        $varFields['{intro}'] = !empty($tag->replaceshortcode) ? $this->replaceShortcode($varFields['{intro}']) : $varFields['{intro}'];
         if (in_array('content', $tag->display)) {
             $contentText .= $varFields['{content}'];
         } elseif (in_array('intro', $tag->display)) {

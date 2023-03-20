@@ -18,7 +18,9 @@ class FileController extends acymController
         $warnings = '';
         $uploadFolderBase = acym_getFilesFolder();
         $currentFolder = acym_getVar('string', 'currentFolder', $uploadFolderBase);
-        if (strpos($currentFolder, $uploadFolderBase) !== 0) $currentFolder = $uploadFolderBase;
+        if (strpos($currentFolder, $uploadFolderBase) !== 0 || strpos($currentFolder, '..') !== false) {
+            $currentFolder = $uploadFolderBase;
+        }
 
         $uploadFolder = trim(str_replace('/', DS, trim($currentFolder)), DS);
         $uploadPath = acym_cleanPath(ACYM_ROOT.$uploadFolder);
@@ -56,7 +58,7 @@ class FileController extends acymController
             'folders' => $folders,
             'fileTreeType' => new FileTreeType(),
             'selectedFile' => $selectedFile,
-            'warnings' => $warnings
+            'warnings' => $warnings,
         ];
 
         parent::display($data);

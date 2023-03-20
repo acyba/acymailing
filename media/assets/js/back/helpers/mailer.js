@@ -126,10 +126,14 @@ const acym_helperMailer = {
         acym_helperMailer.handleAuth2ParamsAppearance();
     },
     handleAuth2ParamsAppearance() {
-        const auth2Smtp = [
-            'smtp.gmail.com',
+        const auth2SmtpMicrosoft = [
             'smtp-mail.outlook.com',
             'smtp.office365.com'
+        ];
+        const auth2SmtpGmail = ['smtp.gmail.com'];
+        const auth2Smtp = [
+            ...auth2SmtpGmail,
+            ...auth2SmtpMicrosoft
         ];
         const $connectionTypeContainer = jQuery('#acym__sending__methods__one__settings__type');
         const $passwordFieldContainer = jQuery('.acym__default_auth_sending_params');
@@ -151,6 +155,12 @@ const acym_helperMailer = {
         if (jQuery('#smtp_type').val() === 'oauth') {
             $passwordFieldContainer.hide();
             $oauth2FieldsContainer.show();
+
+            if (auth2SmtpMicrosoft.includes(smtpHostValue)) {
+                $tenantContainer.show();
+            } else {
+                $tenantContainer.hide();
+            }
         } else {
             $passwordFieldContainer.show();
             $oauth2FieldsContainer.hide();

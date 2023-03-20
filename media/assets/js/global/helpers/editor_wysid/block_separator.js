@@ -325,8 +325,8 @@ const acym_helperBlockSeparator = {
                 $input = jQuery($input);
                 let indexUp = index + 1;
                 let inputValue = Math.round($input.val() / 2);
-                style += `#${$parentTable.attr('id')} .acym__wysid__row__element__th__vertical__padding-${index}{padding-bottom: ${inputValue}px !important}`;
-                style += `#${$parentTable.attr('id')} .acym__wysid__row__element__th__vertical__padding-${indexUp}{padding-top: ${inputValue}px !important}`;
+                style += `[id="${$parentTable.attr('id')}"] .acym__wysid__row__element__th__vertical__padding-${index}{padding-bottom: ${inputValue}px !important}`;
+                style += `[id="${$parentTable.attr('id')}"] .acym__wysid__row__element__th__vertical__padding-${indexUp}{padding-top: ${inputValue}px !important}`;
             });
 
             $parentTable.prepend(`<style data-vertical-padding="${$parentTable.attr('id')}">

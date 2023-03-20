@@ -15,7 +15,7 @@
                         ];
                         // To disable Captcha dropdown
                         if (!$data['level']) {
-							$attribs['disabled'] = '';
+                            $attribs['disabled'] = '';
                         }
 
                         echo acym_select(
@@ -410,7 +410,7 @@
 			</div>
 		</div>
 
-		<div class="acym__configuration__check-database">
+		<div class="acym__configuration__check-database margin-bottom-2">
 			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_DB_MAINTENANCE'); ?></div>
 			<div class="grid-x grid-margin-x margin-y">
 				<div class="cell grid-x">
@@ -432,5 +432,26 @@
                 <?php } ?>
 			</div>
 		</div>
+
+        <?php if (acym_isLogFileErrorExist()) { ?>
+			<div class="acym__configuration__log">
+				<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_LOG_FILE'); ?></div>
+				<div class="grid-x grid-margin-x margin-y">
+					<div class="cell grid-x">
+						<div class="cell grid-x">
+                            <?php
+                            echo acym_modal(
+                                acym_translation('ACYM_REPORT_SEE'),
+                                '',
+                                null,
+                                '',
+                                'class="button button-secondary" data-ajax="true" data-iframe="&ctrl=configuration&task=seeLogs&filename='.acym_getErrorLogFilename().'"'
+                            );
+                            ?>
+						</div>
+					</div>
+				</div>
+			</div>
+        <?php } ?>
 	</div>
 </div>

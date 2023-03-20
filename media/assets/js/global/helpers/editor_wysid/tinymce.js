@@ -9,7 +9,7 @@ const acym_editorWysidTinymce = {
             selector: '.acym__wysid__tinymce--text',
             inline: true,
             menubar: false,
-            plugins: 'textcolor colorpicker lists link code noneditable lineheight table',
+            plugins: 'textcolor colorpicker lists link code noneditable lineheight table image',
             image_class_list: [
                 {
                     title: 'Responsive',
@@ -21,7 +21,7 @@ const acym_editorWysidTinymce = {
             lineheight_formats: '100% 110% 120% 130% 140% 150% 160% 170% 180% 190% 200% 210% 220% 230% 240%',
             toolbar: [
                 'undo redo formatselect fontselect fontsizeselect',
-                'alignmentsplit | listsplit outdent indent lineheightselect | table',
+                'alignmentsplit | listsplit outdent indent lineheightselect | table | image',
                 'bold italic underline strikethrough removeformat | forecolor backcolor | link unlink | code'
             ],
             default_link_target: '_blank',

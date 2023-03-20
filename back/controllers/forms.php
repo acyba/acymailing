@@ -188,6 +188,7 @@ class FormsController extends acymController
 
     public function saveAjax()
     {
+        acym_checkToken();
         $formArray = acym_getVar('array', 'form');
         if (empty($formArray)) {
             acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_GET_FORM_INFORMATION'), [], false);

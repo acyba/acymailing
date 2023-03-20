@@ -154,12 +154,15 @@ jQuery(function ($) {
                               }) => {
                            $loader.hide();
                            $result.html(message);
-                           if (error && !!data.report.length) {
-                               $result.attr('data-acym-tooltip', data.report.join('<br>'));
-                               acym_helperTooltip.setTooltip();
+                           if (error) {
+                               if (!!data.report.length) {
+                                   $result.attr('data-acym-tooltip', data.report.join('<br>'));
+                                   acym_helperTooltip.setTooltip();
+                               }
                                $iconResult.addClass('acymicon-times-circle acym__color__red');
+                           } else {
+                               $iconResult.addClass('acymicon-check-circle acym__color__green');
                            }
-                           $iconResult.addClass('acymicon-check-circle acym__color__green');
                            $iconResult.css('display', 'flex');
                        });
         });

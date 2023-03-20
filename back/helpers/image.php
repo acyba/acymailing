@@ -74,6 +74,9 @@ class ImageHelper extends acymObject
             }
             $imageUrl = $path[1];
 
+            //images paths on joomla 4 have some content like : #joomlaImage... , we delete it to get and resize the image without errors
+            $imageUrl = preg_replace('/#joomlaImage.*/', '', $imageUrl);
+
             //We are nice guys... sometimes users use www. or not... so we convert both, same thing for httpS or http
             $imageUrl = acym_internalUrlToPath($imageUrl);
 
@@ -190,6 +193,10 @@ class ImageHelper extends acymObject
                 break;
             default:
                 return false;
+        }
+
+        if (!$img) {
+            return false;
         }
 
         $thumb = ImageCreateTrueColor($newWidth, $newHeight);

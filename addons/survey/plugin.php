@@ -173,6 +173,7 @@ class plgAcymSurvey extends acymPlugin
         require_once JPATH_ROOT.'/components/com_communitysurveys/router.php';
         require_once JPATH_ROOT.'/components/com_communitysurveys/helpers/route.php';
         require_once JPATH_ROOT.'/components/com_communitysurveys/helpers/helper.php';
+        CJLib::import('corejoomla.framework.core');
 
         return true;
     }
@@ -201,13 +202,17 @@ class plgAcymSurvey extends acymPlugin
 
         $contentText = '';
         $varFields['{intro}'] = $element->description;
-        if (in_array('intro', $tag->display)) $contentText .= $varFields['{intro}'];
+        if (in_array('intro', $tag->display)) {
+            $contentText .= $varFields['{intro}'];
+        }
 
         $readMoreText = empty($tag->readmore) ? acym_translation('ACYM_READ_MORE') : $tag->readmore;
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
-                $readMoreText
-            ).'</span></a>';
-        if (in_array('readmore', $tag->display)) $afterTopic .= $varFields['{readmore}'];
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'">';
+        $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.acym_escape($readMoreText).'</span>';
+        $varFields['{readmore}'] .= '</a>';
+        if (in_array('readmore', $tag->display)) {
+            $afterTopic .= $varFields['{readmore}'];
+        }
 
         $format = new stdClass();
         $format->tag = $tag;
@@ -244,27 +249,16 @@ class plgAcymSurvey extends acymPlugin
         foreach ($extractedTags as $shortcode => $oneTag) {
             if (isset($tags[$shortcode])) continue;
 
-            $invitee = new stdClass();
+            // The current user hasn't any account created on the site (only an AcyMailing user)
             if (empty($user->cms_id)) {
-                // The current user hasn't any account created on the site (only an AcyMailing user)
-                $contactId = acym_loadResult('SELECT id FROM #__survey_contacts WHERE email = '.acym_escapeDB($user->email));
-                if (empty($contactId)) {
-                    // Add it as a contact if it doesn't exist yet
-                    $contact = new stdClass();
-                    $contact->name = $user->name;
-                    $contact->email = $user->email;
-                    $contact->created_by = acym_currentUserId();
-                    $contactId = acym_insertObject('#__survey_contacts', $contact);
-                }
-
-                $invitee->id = $contactId;
-                $users = [$invitee];
-                $responseModel->createSurveyKeys($oneTag->id, 1, true, true, $users, true);
-            } else {
-                $invitee->id = $user->cms_id;
-                $users = [$invitee];
-                $responseModel->createSurveyKeys($oneTag->id, 1, true, true, $users);
+                $tags[$shortcode] = '';
+                continue;
             }
+
+            $invitee = new stdClass();
+            $invitee->id = (int)$user->cms_id;
+            $users = [$invitee];
+            $responseModel->createSurveyKeys($oneTag->id, 1, true, true, $users);
 
             $tags[$shortcode] = $users[0]->url;
         }

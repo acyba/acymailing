@@ -5,7 +5,7 @@
     margin-right: 1px;
     background-color: $font-primary;
 
-    @media screen and (max-width: 1699px) {
+    @media screen and (max-width: 1900px) {
         & {
             height: 90px !important;
         }
@@ -21,7 +21,7 @@
             display: inline-block;
         }
 
-        @media screen and (max-width: 1699px) {
+        @media screen and (max-width: 1900px) {
             .mce-stack-layout-item {
                 display: block;
             }
