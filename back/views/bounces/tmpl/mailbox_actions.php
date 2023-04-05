@@ -4,7 +4,7 @@
 
 	<div class="cell grid-x margin-y">
 		<input type="hidden" id="acym__mailbox__edition__action__number" value="0">
-		<input type="hidden" id="acym__mailbox__edition__actions" value="<?php echo acym_escape($data['mailboxAction']->actions); ?>">
+		<input type="hidden" id="acym__mailbox__edition__actions" value="<?php echo acym_escape($data['mailboxActions']->actions); ?>">
 		<template id="acym__mailbox__edition__action__template">
 			<div class="acym__mailbox__edition__action__one cell grid-x" data-action-number="__num__">
 				<div class="acym__mailbox__edition__action__and cell grid-x margin-top-1">
@@ -34,7 +34,7 @@
         <?php
         echo acym_switch(
             'mailbox[senderfrom]',
-            $data['mailboxAction']->senderfrom,
+            $data['mailboxActions']->senderfrom,
             acym_translation('ACYM_SENDER_AS_FROM').acym_info('ACYM_SENDER_AS_FROM_DESC'),
             [],
             'medium-4 small-9'
@@ -45,7 +45,7 @@
         <?php
         echo acym_switch(
             'mailbox[senderto]',
-            $data['mailboxAction']->senderto,
+            $data['mailboxActions']->senderto,
             acym_translation('ACYM_SENDER_AS_REPLY_TO').acym_info('ACYM_SENDER_AS_REPLY_TO_DESC'),
             [],
             'medium-4 small-9'

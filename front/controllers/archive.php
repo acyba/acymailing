@@ -30,7 +30,6 @@ class ArchiveController extends acymController
         $isPopup = acym_getVar('int', 'is_popup', 0);
 
         $mailerHelper = new MailerHelper();
-        $mailerHelper->loadedToSend = false;
         $oneMail = $mailerHelper->load($mailId);
 
         if (empty($oneMail->id)) {

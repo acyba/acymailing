@@ -143,7 +143,7 @@
 						</div>
 						<div class="large-2 medium-3 small-4 cell acym__listing__detailed__stats__content">
                             <?php if (acym_isAllowed('users')) { ?>
-								<a href="<?php echo acym_completeLink('users&task=edit&id='.$detailed_stat->user_id); ?>"
+								<a href="<?php echo acym_completeLink('users&task=edit&userId='.$detailed_stat->user_id); ?>"
 								   class="acym__color__blue word-break"><?php echo $detailed_stat->email; ?></a>
                             <?php } else { ?>
                                 <?php echo $detailed_stat->email; ?>
@@ -151,7 +151,7 @@
 						</div>
 						<div class="xlarge-1 hide-for-large-only hide-for-medium-only hide-for-small-only cell acym__listing__header__title">
                             <?php if (acym_isAllowed('users')) { ?>
-								<a href="<?php echo acym_completeLink('users&task=edit&id='.$detailed_stat->user_id); ?>"
+								<a href="<?php echo acym_completeLink('users&task=edit&userId='.$detailed_stat->user_id); ?>"
 								   class="acym__color__blue word-break"><?php echo $detailed_stat->username; ?></a>
                             <?php } else { ?>
                                 <?php echo $detailed_stat->username; ?>

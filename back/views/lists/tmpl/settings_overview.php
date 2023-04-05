@@ -1,5 +1,5 @@
 <div class="cell grid-x acym__list__settings__tmpls acym__content">
-	<div class="cell grid-y medium-4 medium-margin-right-1 text-center acym__list__settings__subscriber__nb">
+	<div class="cell grid-y medium-4 text-center acym__list__settings__subscriber__nb">
 		<div class="cell small-2 acym__list__settings__tmpls__title grid-x align-center acym_vcenter">
 			<label>
                 <?php echo acym_translation('ACYM_SUBSCRIBERS'); ?>
@@ -48,7 +48,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="cell grid-y medium-4 medium-margin-right-1 acym__list__settings__tmpls__welcome">
+	<div class="cell grid-y medium-4 acym__list__settings__tmpls__welcome">
 		<div class="cell small-2 acym__list__settings__tmpls__title align-center acym_vcenter">
             <?php echo acym_tooltip(
                 '<label>'.acym_translation('ACYM_WELCOME_MAIL').'</label>',
@@ -103,7 +103,7 @@
             <?php } ?>
 		</div>
 	</div>
-	<div class="cell grid-y medium-4 medium-margin-right-1 acym__list__settings__tmpls__unsubscribe">
+	<div class="cell grid-y medium-4 acym__list__settings__tmpls__unsubscribe">
 		<div class="cell small-2 acym__list__settings__tmpls__title align-center acym_vcenter">
             <?php echo acym_tooltip(
                 '<label>'.acym_translation('ACYM_UNSUBSCRIBE_MAIL').'</label>',

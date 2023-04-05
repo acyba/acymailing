@@ -31,7 +31,7 @@ function acym_prepareAjaxURL($url)
     return htmlspecialchars_decode(acym_completeLink($url, true));
 }
 
-function acym_frontendLink($link, $complete = true, $sef = true)
+function acym_frontendLink(string $link, bool $complete = true, bool $sef = true)
 {
     if ($complete) {
         $link = 'index.php?option='.ACYM_COMPONENT.'&ctrl='.$link;

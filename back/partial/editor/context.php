@@ -522,6 +522,6 @@
 		</div>
     <?php } ?>
 
-	<div id="acym__wysid__context__plugins" class="grid-x padding-1 acym__wysid__context__modal margin-top-1" style="display: none">
+	<div id="acym__wysid__context__plugins" class="grid-x padding-1 acym__wysid__context__modal margin-top-1 padding-bottom-2" style="display: none">
 	</div>
 </div>

@@ -47,10 +47,12 @@ class FollowupsController extends acymController
                 $stats->subscribers = $stats->sent;
                 $campaignClass->getStatsCampaign($stats, $urlClickClass);
 
-                $thisMailStats['sent'] = $stats->sent;
-                $thisMailStats['open'] = $stats->open.'%';
-                $thisMailStats['click'] = $stats->click.'%';
-                $thisMailStats['income'] = round($stats->sale, 2).' '.$stats->currency;
+                $trackingSale = empty($stats->tracking_sale) ? 0 : round($stats->tracking_sale, 2);
+
+                $thisMailStats['sent'] = empty($stats->sent) ? '0' : $stats->sent;
+                $thisMailStats['open'] = empty($stats->open) ? '0%' : $stats->open.'%';
+                $thisMailStats['click'] = empty($stats->click) ? '0%' : $stats->click.'%';
+                $thisMailStats['income'] = $trackingSale.' '.$stats->currency;
             }
 
             $data[] = $thisMailStats;

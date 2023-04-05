@@ -14,6 +14,9 @@ class MailClass extends acymClass
     var $templateNames = [];
 
     public $exceptKeysDecode = [];
+    public $autosave;
+    public $access;
+    public $templateId;
 
     const FIELDS_ENCODING = ['name', 'subject', 'body', 'autosave', 'preheader'];
 
@@ -74,7 +77,7 @@ class MailClass extends acymClass
         $queryCount .= $tagJoin;
 
         if (!empty($settings['search'])) {
-            $filters[] = 'mail.name LIKE '.acym_escapeDB('%'.utf8_encode($settings['search']).'%');
+            $filters[] = 'mail.name LIKE '.acym_escapeDB('%'.acym_utf8Encode($settings['search']).'%');
         }
 
         if (!empty($settings['editor'])) {
@@ -249,7 +252,7 @@ class MailClass extends acymClass
      */
     public function getOneByName($name, $needTranslatedSettings = false, $onlyType = null)
     {
-        $query = 'SELECT * FROM #__acym_mail WHERE `parent_id` IS NULL AND `name` = '.acym_escapeDB(utf8_encode($name));
+        $query = 'SELECT * FROM #__acym_mail WHERE `parent_id` IS NULL AND `name` = '.acym_escapeDB(acym_utf8Encode($name));
         if (!empty($onlyType)) $query .= ' AND `type` = '.acym_escapeDB($onlyType);
 
         $mail = $this->decode(acym_loadObject($query));
@@ -950,13 +953,25 @@ class MailClass extends acymClass
                 }
             }
 
-            $mailSent = 0;
-
-            foreach ($userIds as $userId) {
-                if ($mailerHelper->sendOne($mail->id, $userId)) $mailSent++;
+            if (!empty($automationAdmin['user_id'])) {
+                $userClass = new UserClass();
+                $user = $userClass->getOneById($automationAdmin['user_id']);
+                if (!empty($user)) {
+                    $userField = $userClass->getAllUserFields($user);
+                    foreach ($userField as $map => $value) {
+                        $mailerHelper->addParam('user:'.$map, $value);
+                    }
+                }
             }
 
-            return $mailSent;
+            $emailsSent = 0;
+            foreach ($userIds as $userId) {
+                if ($mailerHelper->sendOne($mail->id, $userId)) {
+                    $emailsSent++;
+                }
+            }
+
+            return $emailsSent;
         }
 
         $result = acym_query(
@@ -1064,7 +1079,7 @@ class MailClass extends acymClass
                     $value = &$mail->$oneField;
                 }
 
-                $value = utf8_decode($value);
+                $value = acym_utf8Decode($value);
             }
         }
 
@@ -1188,7 +1203,7 @@ class MailClass extends acymClass
                     $value = &$mail->$oneField;
                 }
 
-                $value = utf8_encode($value);
+                $value = acym_utf8Encode($value);
             }
         }
 
@@ -1267,7 +1282,7 @@ class MailClass extends acymClass
      */
     public function getMultilingualMailsByName($parentName)
     {
-        $parentName = utf8_encode($parentName);
+        $parentName = acym_utf8Encode($parentName);
         $query = 'SELECT mail2.* FROM #__acym_mail AS mail LEFT JOIN #__acym_mail AS mail2 ON mail.id = mail2.parent_id OR mail2.id = mail.id WHERE mail.name = '.acym_escapeDB(
                 $parentName
             );
@@ -1312,30 +1327,9 @@ class MailClass extends acymClass
         return acym_loadResult('SELECT attachments FROM #__acym_mail WHERE id = '.intval($mailId));
     }
 
-    public function isTransactionalMail($mail)
+    public function isTransactionalMail($mail): bool
     {
-        if ($mail->type === self::TYPE_STANDARD) {
-            return false;
-        }
-
-        if ($mail->type === self::TYPE_AUTOMATION) {
-            $conditionType = acym_loadResult(
-                'SELECT `condition`.conditions
-                FROM #__acym_action AS `action` 
-                JOIN #__acym_condition AS `condition` ON `action`.condition_id = `condition`.id 
-                WHERE `action`.actions LIKE '.acym_escapeDB('%"acy_add_queue":{"mail_id":"'.$mail->id.'"%')
-            );
-
-            if (empty($conditionType)) {
-                return true;
-            }
-
-            $conditions = json_decode($conditionType, true);
-
-            return empty($conditions['type_condition']) || $conditions['type_condition'] === 'user';
-        }
-
-        return true;
+        return $mail->type !== self::TYPE_STANDARD;
     }
 
     public function getAutomaticMailIds($mailIds)
@@ -1411,7 +1405,7 @@ class MailClass extends acymClass
                 'SELECT `id`, `name` 
                 FROM #__acym_mail 
                 WHERE `type` = '.acym_escapeDB(self::TYPE_TEMPLATE).' 
-                    AND `body` LIKE '.acym_escapeDB('%'.utf8_encode('{emailcontent}').'%')
+                    AND `body` LIKE '.acym_escapeDB('%'.acym_utf8Encode('{emailcontent}').'%')
             )
         );
     }

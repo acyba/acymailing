@@ -13,7 +13,9 @@ class acyRouter
         // Back router
         add_action('wp_ajax_acymailing_router', [$this, 'router']);
         // Front router
-        if (!acym_isAdmin()) add_action('wp_loaded', [$this, 'frontRouter']);
+        if (!acym_isAdmin()) {
+            add_action('wp_loaded', [$this, 'frontRouter']);
+        }
 
         // Make sure we can redirect / download / modify headers if needed after some checks
         $pages = [

@@ -1,4 +1,4 @@
-<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" novalidate data-abide>
+<form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" novalidate data-abide-ignore>
     <?php $data['toolbar']->displayToolbar($data); ?>
 	<div class="grid-x acym__content acym__content__tab">
 

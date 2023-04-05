@@ -237,7 +237,7 @@ function acym_initializeChart()
     static $loaded = false;
 
     if (!$loaded) {
-        acym_addScript(false, ACYM_JS.'libraries/chart.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'chart.min.js'), 'text/javascript', false, false, true);
+        acym_addScript(false, ACYM_JS.'libraries/chart.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'chart.min.js'), ['defer' => false, 'needTagScript' => true]);
         $loaded = true;
     }
 }

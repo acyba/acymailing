@@ -32,6 +32,9 @@ class ImportHelper extends acymObject
     //Handle messages to say that X users have been subscribed to list Y
     var $subscribedUsers = [];
 
+    public $header;
+    public $separator;
+    public $columns;
 
     public function __construct()
     {

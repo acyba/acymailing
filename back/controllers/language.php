@@ -33,10 +33,8 @@ class LanguageController extends acymController
         if ($result) {
             acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
             //We update the picture from "add" to "edit"
-            acym_addScript(
-                true,
-                'let langIcon = window.top.document.getElementById("image'.$code.'"); langIcon.className = langIcon.className.replace("acymicon-add", "") + " acymicon-edit"'
-            );
+            $js = 'let langIcon = window.top.document.getElementById("image'.$code.'"); langIcon.className = langIcon.className.replace("acymicon-add", "") + " acymicon-edit"';
+            acym_addScript(true, $js);
 
             //Now we will also create a menu language file and save it
             $updateHelper = new UpdateHelper();
@@ -154,7 +152,7 @@ class LanguageController extends acymController
         $mailer->AddAddress('translate@acyba.com', 'Acyba Translation Team');
         $mailer->report = false;
 
-        $result = $mailer->Send();
+        $result = $mailer->send();
 
         if ($result) {
             acym_enqueueMessage(acym_translation('ACYM_THANK_YOU_SHARING').'<br>'.acym_translation('ACYM_MESSAGE_SENT'), 'success');

@@ -411,7 +411,6 @@ class CronHelper extends acymObject
         if (($sendreport == 2 && $this->processed) || $sendreport == 1 || ($sendreport == 3 && $this->errorDetected)) {
             $mailer->report = false;
             $mailer->autoAddUser = true;
-            $mailer->checkConfirmField = false;
             $mailer->addParam('report', implode('<br />', $this->messages));
             $mailer->addParam('mainreport', $this->mainmessage);
             $mailer->addParam('detailreport', implode('<br />', $this->detailMessages));

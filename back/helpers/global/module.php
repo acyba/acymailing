@@ -61,9 +61,11 @@ function acym_initModule($params = null)
         echo '<script type="text/javascript" src="'.ACYM_JS.'module.min.js?v='.$version.'"></script>';
         echo '<script type="text/javascript">'.$js.'</script>';
     } else {
-        if ($spellChecker) acym_addScript(false, ACYM_JS.'libraries/email-misspelled.min.js?v='.$version);
+        if ($spellChecker) {
+            acym_addScript(false, ACYM_JS.'libraries/email-misspelled.min.js?v='.$version);
+        }
         $scriptName = acym_addScript(false, ACYM_JS.'module.min.js?v='.$version);
-        acym_addScript(true, $js, 'text/javascript', false, false, false, ['script_name' => $scriptName]);
+        acym_addScript(true, $js, ['defer' => false, 'dependencies' => ['script_name' => $scriptName]]);
     }
 
     if ('wordpress' === ACYM_CMS && !in_array(acym_getVar('string', 'action'), ['elementor', 'elementor_ajax'])) {

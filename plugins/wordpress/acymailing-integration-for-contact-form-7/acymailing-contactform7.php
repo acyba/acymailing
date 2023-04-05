@@ -5,7 +5,7 @@ Description: Adds the possibility to show AcyMailing lists on Contact Form 7 for
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 1.9
+Version: 2.0
 */
 
 use AcyMailing\Classes\PluginClass;

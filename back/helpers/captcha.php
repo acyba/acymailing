@@ -32,7 +32,7 @@ class CaptchaHelper extends acymObject
             if ($loadJsModule) {
                 $return .= '<script src="'.$jsScript.'" type="text/javascript" defer async></script>';
             } else {
-                acym_addScript(false, $jsScript, 'text/javascript', true, true);
+                acym_addScript(false, $jsScript, ['defer' => true, 'async' => true]);
             }
 
             return $return.'<div id="'.acym_escape($id).'" data-size="invisible" class="acyg-recaptcha" data-sitekey="'.acym_escape($pubkey).'"data-captchaname="'.acym_escape(
@@ -46,7 +46,7 @@ class CaptchaHelper extends acymObject
             if ($loadJsModule) {
                 $return .= '<script src="'.$jsScript.'" type="text/javascript" defer async></script>';
             } else {
-                acym_addScript(false, $jsScript, 'text/javascript', true, true);
+                acym_addScript(false, $jsScript, ['defer' => true, 'async' => true]);
             }
 
             return $return;

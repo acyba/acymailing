@@ -47,6 +47,8 @@ class AcymRouter extends AcymRouterBase
             'welcomemailid',
             'unsubmailid',
             'type_editor',
+            'listId',
+            'userId',
         ];
     }
 
@@ -102,9 +104,9 @@ class AcymRouter extends AcymRouterBase
 
         if (empty($query)) return $segments;
 
-        if ($ctrl === 'frontlists' && !empty($query['id'])) {
-            $segments[] = $this->getListSEF($query['id']);
-            unset($query['id']);
+        if ($ctrl === 'frontlists' && !empty($query['listId'])) {
+            $segments[] = $this->getListSEF($query['listId']);
+            unset($query['listId']);
         }
 
         if ($ctrl === 'frontusers' && $task === 'unsubscribe' && !empty($query['mail_id'])) {
@@ -147,10 +149,10 @@ class AcymRouter extends AcymRouterBase
             }
 
             if (!isset($vars['ctrl'])) {
-                $vars['ctrl'] = isset($vars['view']) ? $vars['view'] : '';
+                $vars['ctrl'] = $vars['view'] ?? '';
             }
             if (!isset($vars['task'])) {
-                $vars['task'] = isset($vars['layout']) ? $vars['layout'] : '';
+                $vars['task'] = $vars['layout'] ?? '';
             }
             if (!isset($vars['step'])) $vars['step'] = '';
         }
@@ -162,40 +164,40 @@ class AcymRouter extends AcymRouterBase
             } elseif ($vars['ctrl'] === 'archive' && empty($vars['task'])) {
                 $vars['task'] = 'view';
                 $mail = array_shift($segments);
-                list($id, $alias) = explode($this->separator, $mail, 2);
+                [$id, $alias] = explode($this->separator, $mail, 2);
                 $vars['id'] = $id;
             }
         }
 
         if ($vars['ctrl'] === 'frontlists' && $vars['task'] === 'settings') {
             $list = array_shift($segments);
-            list($id, $alias) = explode($this->separator, $list, 2);
-            $vars['id'] = $id;
+            [$id, $alias] = explode($this->separator, $list, 2);
+            $vars['listId'] = $id;
         }
 
         if ($vars['ctrl'] === 'frontusers' && $vars['task'] === 'unsubscribe') {
             $mail = array_shift($segments);
-            list($id, $alias) = explode($this->separator, $mail, 2);
+            [$id, $alias] = explode($this->separator, $mail, 2);
             $vars['mail_id'] = $id;
         }
 
         if ($vars['ctrl'] === 'frontcampaigns' && $vars['task'] === 'edit' && !empty($segments)) {
             $campaign = array_shift($segments);
-            list($id, $alias) = explode($this->separator, $campaign, 2);
+            [$id, $alias] = explode($this->separator, $campaign, 2);
             $vars['id'] = $id;
         }
 
         foreach ($segments as $name) {
             if (strpos($name, $this->separator) === false) continue;
 
-            list($arg, $val) = explode($this->separator, $name, 2);
+            [$arg, $val] = explode($this->separator, $name, 2);
             $vars[$arg] = $val;
         }
 
         return $vars;
     }
 
-    private function getMailSEF($id)
+    private function getMailSEF($id): string
     {
         $mailClass = new MailClass();
         $mail = $mailClass->getOneById($id);
@@ -203,7 +205,7 @@ class AcymRouter extends AcymRouterBase
         return $id.$this->separator.acym_getAlias($mail->subject);
     }
 
-    private function getCampaignSEF($campaignId)
+    private function getCampaignSEF($campaignId): string
     {
         if (empty($campaignId) || !is_numeric($campaignId)) return '0'.$this->separator.'new';
 
@@ -213,7 +215,7 @@ class AcymRouter extends AcymRouterBase
         return $campaignId.$this->separator.acym_getAlias($campaign->subject);
     }
 
-    private function getListSEF($id)
+    private function getListSEF($id): string
     {
         $listClass = new ListClass();
         $list = $listClass->getOneById($id);

@@ -33,7 +33,7 @@ class plgSearchAcymailing extends JPlugin
         $words = $type === 'exact' ? [$text] : explode(' ', $text);
         $conditions = [];
         foreach ($words as $word) {
-            $word = acym_escapeDB('%'.utf8_encode($word).'%', false);
+            $word = acym_escapeDB('%'.acym_utf8Encode($word).'%', false);
             $subConditions = [];
             $subConditions[] = 'mail.subject LIKE '.$word;
             $subConditions[] = 'mail.body LIKE '.$word;

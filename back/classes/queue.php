@@ -546,7 +546,7 @@ class QueueClass extends acymClass
         );
     }
 
-    public function isSendingFinished($mailId)
+    public function isSendingFinished($mailId): bool
     {
         $mailClass = new MailClass();
         $mail = $mailClass->getOneById($mailId);

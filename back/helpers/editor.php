@@ -15,6 +15,7 @@ class EditorHelper extends acymObject
     var $cols = 100;
     var $rows = 30;
 
+    var $myEditor;
     var $editor = '';
     var $name = 'editor_content';
     var $settings = 'editor_settings';
@@ -31,6 +32,8 @@ class EditorHelper extends acymObject
     // Used in the d&d
     var $data = [];
     var $defaultTemplate = '';
+
+    public $autoSave;
 
     /**
      * Function to display the editor

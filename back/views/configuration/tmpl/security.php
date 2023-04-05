@@ -331,6 +331,7 @@
 					</div>
 				</div>
 				<div class="grid-x grid-margin-x" id="acym__configuration__acl__zone">
+					<input type="hidden" name="json_acl" id="json_acl" />
                     <?php foreach ($data['acl_advanced'] as $page => $title) { ?>
 						<div class="cell grid-x acym__configuration__acl__row">
 							<div class="cell large-3 margin-left-1">

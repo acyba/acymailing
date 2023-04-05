@@ -165,10 +165,11 @@ function acym_isAcyCheckerInstalled()
 
 function acydie($arg, $ajax = false, $indent = true)
 {
-    die(acydump($arg, $ajax, $indent));
+    acydump($arg, $ajax, $indent);
+    exit;
 }
 
-function acym_getErrorLogFilename($prefix = ''): string
+function acym_getErrorLogFilename(string $prefix = ''): string
 {
     if (!empty($prefix)) {
         $prefix .= '_';
@@ -177,7 +178,7 @@ function acym_getErrorLogFilename($prefix = ''): string
     return $prefix.'errors.log';
 }
 
-function acym_logError($message, $prefix = '')
+function acym_logError(string $message, string $prefix = '')
 {
     $reportPath = acym_getLogPath(acym_getErrorLogFilename($prefix), true);
 

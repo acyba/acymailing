@@ -576,29 +576,14 @@ class ListClass extends acymClass
         return $lists;
     }
 
-    public function setVisible($elements, $status)
-    {
-        if (!is_array($elements)) {
-            $elements = [$elements];
-        }
-
-        if (empty($elements)) {
-            return;
-        }
-
-        acym_arrayToInteger($elements);
-        $status = empty($status) ? 0 : 1;
-        acym_query('UPDATE #__acym_list SET visible = '.intval($status).' WHERE id IN ('.implode(',', $elements).')');
-    }
-
     /**
      * Sends the welcome emails attached to the specified lists
      *
-     * @param $userID
-     * @param $listIDs
-     * @param $forceFront
+     * @param int   $userID
+     * @param array $listIDs
+     * @param bool  $forceFront
      */
-    public function sendWelcome($userID, $listIDs, $forceFront = false)
+    public function sendWelcome(int $userID, array $listIDs, bool $forceFront = false)
     {
         if (!$forceFront && acym_isAdmin()) {
             return;

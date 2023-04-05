@@ -1,5 +1,5 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate>
-	<input type="hidden" name="mailbox[id]" value="<?php echo empty($data['mailboxAction']->id) ? '' : intval($data['mailboxAction']->id); ?>">
+	<input type="hidden" name="mailbox[id]" value="<?php echo empty($data['mailboxActions']->id) ? '' : intval($data['mailboxActions']->id); ?>">
 
 	<div id="acym__mailbox__edition" class="acym__content acym_area grid-x cell grid-margin-x margin-left-0">
 		<div class="cell grid-x text-right grid-margin-x margin-bottom-1 margin-y">

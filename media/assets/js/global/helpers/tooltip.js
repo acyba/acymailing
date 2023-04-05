@@ -60,9 +60,9 @@ const acym_helperTooltip = {
     setUserInfoLoadingHover: function () {
         jQuery('.acym__hover__user_info').off('mouseenter').on('mouseenter', function () {
             if (jQuery(this).find('.acymicon-spin').length > 0) {
-                let ajaxUrl = ACYM_AJAX_URL + '&ctrl=users&task=getUserInfo';
-                let data = {
-                    id: jQuery(this).attr('data-id')
+                const ajaxUrl = ACYM_AJAX_URL + '&ctrl=users&task=getUserInfoAjax';
+                const data = {
+                    userId: jQuery(this).attr('data-id')
                 };
 
                 acym_helper.get(ajaxUrl, data).then(response => {

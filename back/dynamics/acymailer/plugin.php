@@ -1,5 +1,6 @@
 <?php
 
+use AcyMailing\Classes\MailClass;
 use AcyMailing\Libraries\acymPlugin;
 
 class plgAcymAcymailer extends acymPlugin
@@ -188,11 +189,17 @@ class plgAcymAcymailer extends acymPlugin
 					<div class="grid-x acym__listing cell <?php echo empty($data['step']) ? 'large-9' : '' ?>">
 						<div class="grid-x cell acym__listing__header">
 							<div class="grid-x medium-auto small-11 cell acym__listing__header__title__container">
-								<div class="medium-8 cell acym__listing__header__title">
+								<div class="medium-auto cell acym__listing__header__title">
                                     <?php echo acym_translation('ACYM_DOMAIN_NAME'); ?>
 								</div>
 								<div class="medium-2 cell acym__listing__header__title text-center">
                                     <?php echo acym_translation('ACYM_STATUS'); ?>
+								</div>
+								<div class="medium-2 cell acym__listing__header__title text-center">
+                                    <?php echo acym_translation('ACYM_BOUNCE_RATE').acym_info('ACYM_BOUNCE_RATE_DESC'); ?>
+								</div>
+								<div class="medium-2 cell acym__listing__header__title text-center">
+                                    <?php echo acym_translation('ACYM_COMPLAINT_RATE').acym_info('ACYM_COMPLAINT_RATE_DESC'); ?>
 								</div>
 								<div class="medium-2 cell acym__listing__header__title text-center">
                                     <?php echo acym_translation('ACYM_ACTIONS'); ?>
@@ -206,7 +213,7 @@ class plgAcymAcymailer extends acymPlugin
                         <?php } else { ?>
                             <?php foreach ($domains as $domain) { ?>
 								<div acym-data-domain="<?php echo $domain['domain'] ?>" class="grid-x cell acym__listing__row">
-									<div class="grid-x medium-8 cell acym__listing__title__container">
+									<div class="grid-x medium-auto cell acym__listing__title__container">
                                         <?php echo $domain['domain']; ?>
 									</div>
 									<div class="grid-x medium-2 cell acym__listing__title__container align-center">
@@ -226,6 +233,12 @@ class plgAcymAcymailer extends acymPlugin
                                         }
                                         echo acym_tooltip('<i class="acym__config__acymailer__status__icon '.$iconClass.'"></i>', $tooltipText);
                                         ?>
+									</div>
+									<div class="grid-x medium-2 cell acym__listing__title__container align-center">
+                                        <?php echo empty($domain['bounce_rate']) ? '-' : round($domain['bounce_rate'], 2).'%'; ?>
+									</div>
+									<div class="grid-x medium-2 cell acym__listing__title__container align-center">
+                                        <?php echo empty($domain['complaint_rate']) ? '-' : round($domain['complaint_rate'], 2).'%'; ?>
 									</div>
 									<div class="grid-x medium-2 cell acym__listing__title__container align-center">
                                         <?php ob_start(); ?>
@@ -318,6 +331,14 @@ class plgAcymAcymailer extends acymPlugin
 									<span class="cell shrink" id="acym__configuration__acymailer__add__error__message"></span>
 								</div>
 							</div>
+							<div class="cell grid-x medium-6 large-8 acym_vcenter margin-top-1">
+								<p class="cell shrink"><?php echo acym_translation('ACYM_DO_NOT_KNOW_HOW_DO_IT'); ?> </p>
+								<a href="<?php echo ACYM_DOCUMENTATION; ?>external-sending-method/acymailing-sending-service#configure-the-sending-method"
+								   class="cell shrink acym__config__acymailer__cname__modal__link margin-left-1"
+								   target="_blank">
+                                    <?php echo acym_translation('ACYM_STEP_BY_STEP_GUIDE'); ?>
+								</a>
+							</div>
 						</div>
 					</div>
                     <?php if (!$this->isLogFileEmpty()) { ?>
@@ -386,6 +407,26 @@ class plgAcymAcymailer extends acymPlugin
         }
     }
 
+    private function updateDomainRates($domainsRates)
+    {
+        $domains = $this->config->get('acymailer_domains', []);
+
+        if (empty($domains)) {
+            return;
+        }
+
+        $domains = @json_decode($domains, true);
+
+        foreach ($domainsRates as $oneDomain => $oneRate) {
+            if (empty($domains[$oneDomain])) continue;
+            foreach ($oneRate as $rateKey => $rateValue) {
+                $domains[$oneDomain][$rateKey] = $rateValue;
+            }
+        }
+
+        $this->config->save([self::SENDING_METHOD_ID.'_domains' => json_encode($domains)]);
+    }
+
     public function onAcymProcessQueueExternalSendingCampaign(&$externalSending, $transactional = false)
     {
         if ($this->config->get('mailer_method') == self::SENDING_METHOD_ID) $externalSending = false;
@@ -393,12 +434,21 @@ class plgAcymAcymailer extends acymPlugin
 
     public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $replyTo, $bcc = [], $attachments = [])
     {
-        if ($mailerHelper->externalMailer != self::SENDING_METHOD_ID) return;
+        if ($mailerHelper->externalMailer != self::SENDING_METHOD_ID) {
+            return;
+        }
 
         $apikey = $this->config->get(self::SENDING_METHOD_ID.'_apikey');
         if (empty($apikey)) {
             $response['error'] = true;
             $response['message'] = acym_translation('ACYM_MISSING_API_KEY');
+
+            return;
+        }
+
+        if ($this->isUnsubscribeLinkMissing($mailerHelper)) {
+            $response['error'] = true;
+            $response['message'] = acym_translation('ACYM_MISSING_UNSUBSCRIBE_LINK');
 
             return;
         }
@@ -553,7 +603,7 @@ class plgAcymAcymailer extends acymPlugin
         acym_sendAjaxResponse('', ['domains' => $domains]);
     }
 
-    public function checkDomainsDNS($domains)
+    public function checkDomainsDNS($domains): array
     {
         $remainingDomains = [];
         foreach ($domains as $oneDomain) {
@@ -672,7 +722,7 @@ class plgAcymAcymailer extends acymPlugin
             acym_sendAjaxResponse(acym_translation('ACYM_MISSING_API_KEY'), [], false);
         }
 
-        $domainValidation = preg_match('/([\S\p{L}]+\.)+[\S\p{L}]{2,}/u', $oneDomain);
+        $domainValidation = preg_match('/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/u', $oneDomain);
         if (!$domainValidation) {
             $message = acym_translationSprintf('ACYM_THE_DOMAIN_X_IS_NOT_VALID', $oneDomain);
             acym_sendAjaxResponse($message, ['type' => 'DOMAIN_VALIDATION'], false);
@@ -734,9 +784,11 @@ class plgAcymAcymailer extends acymPlugin
         }
     }
 
-    public function getDomainsUnVerified()
+    public function getDomainsUnVerified(): array
     {
-        if ($this->config->get('mailer_method') !== self::SENDING_METHOD_ID) return [];
+        if ($this->config->get('mailer_method') !== self::SENDING_METHOD_ID) {
+            return [];
+        }
 
         // In Amazon SES, you must verify each identity used as a "From", "Source", "Sender", or "Return-Path" address.
         $allDomains = [];
@@ -765,7 +817,7 @@ class plgAcymAcymailer extends acymPlugin
         return array_diff($allDomains, $verifiedDomains);
     }
 
-    private function getVerifiedDomains()
+    private function getVerifiedDomains(): array
     {
         $verifiedDomains = [];
         $domainStatuses = json_decode($this->config->get(self::SENDING_METHOD_ID.'_domains', '[]'), true);
@@ -794,7 +846,7 @@ class plgAcymAcymailer extends acymPlugin
         }
     }
 
-    private function displayMessage($message)
+    private function displayMessage($message): string
     {
         $correspondances = [
             'AlreadyExistsException' => 'ACYM_DOMAIN_X_ALREADY_EXIST',
@@ -866,6 +918,10 @@ class plgAcymAcymailer extends acymPlugin
             self::SENDING_METHOD_ID.'_last_credits_check' => $time,
         ]);
 
+        if (!empty($response['domains'])) {
+            $this->updateDomainRates($response['domains']);
+        }
+
         return $response;
     }
 
@@ -896,7 +952,7 @@ class plgAcymAcymailer extends acymPlugin
         }
     }
 
-    private function checkSuccessCode($responseCode)
+    private function checkSuccessCode($responseCode): bool
     {
         // we can add more success response codes if needed but for now, that's all the success response codes the API can send
         $successCodes = [200, 201, 204];
@@ -958,5 +1014,42 @@ class plgAcymAcymailer extends acymPlugin
     public function onAcymDetachLicense()
     {
         $this->config->save([self::SENDING_METHOD_ID.'_apikey' => '']);
+    }
+
+    /**
+     * Emails not needing an unsubscribe link:
+     * - Sending a test from config, from campaign tab or from editor
+     * - Forwarding a bounce message
+     * - Sending a spam-test
+     * - Overriding website emails
+     * - Sending notification messages
+     * - Unsubscribe emails
+     * - Sending the walkthrough email
+     * - Forwarding an email to a specific address from mailbox actions
+     */
+    private function isUnsubscribeLinkMissing($mailerHelper): bool
+    {
+        if ($mailerHelper->isTest || $mailerHelper->isForward || $mailerHelper->isSpamTest) {
+            return false;
+        }
+
+        if (empty($mailerHelper->mail)) {
+            return false;
+        }
+
+        static $mailClass = null;
+        if ($mailClass === null) {
+            $mailClass = new MailClass();
+        }
+
+        if (in_array($mailerHelper->mail->type, [$mailClass::TYPE_NOTIFICATION, $mailClass::TYPE_OVERRIDE, $mailClass::TYPE_UNSUBSCRIBE, $mailClass::TYPE_TEMPLATE])) {
+            return false;
+        }
+
+        if (strpos($mailerHelper->mail->body, '{unsubscribe}') !== false || strpos($mailerHelper->mail->body, 'task=unsubscribe') !== false) {
+            return false;
+        }
+
+        return true;
     }
 }

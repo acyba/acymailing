@@ -55,6 +55,8 @@ class BounceHelper extends acymObject
     private $historyClass;
     private $encodingHelper;
 
+    public $allLists;
+
     public function __construct()
     {
         parent::__construct();
@@ -1214,7 +1216,7 @@ class BounceHelper extends acymObject
                 $this->mailer->AddReplyTo(trim($this->_message->header->reply_to_email, '<> '), $this->_message->header->reply_to_name);
             }
 
-            $this->mailer->isBounceForward = true;
+            $this->mailer->isForward = true;
             if ($this->mailer->send()) {
                 $message .= ' | '.acym_translationSprintf('ACYM_FORWARDED_TO_X', $oneRule->action_message['forward_to']);
             } else {

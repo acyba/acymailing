@@ -57,10 +57,10 @@ const acym_helperSegment = {
             this.globalAjaxCall = '';
         }
 
+        const exclude = jQuery('input[value="exclude"]:checked').length ? 1 : 0;
         let groupFilter = jQuery('.acym__segments__group__filter');
-        let ajaxUrlTotal = ACYM_AJAX_URL + '&page=acymailing_segments&ctrl=segments&task=countResultsTotal';
-        let ajaxData = groupFilter.closest('#acym_form').serialize() + '&page=acymailing_segments&ctrl=segments&task=countResultsTotal';
-
+        let ajaxUrlTotal = ACYM_AJAX_URL + '&page=acymailing_segments&ctrl=segments&task=countResultsTotal&exclude=' + exclude;
+        let ajaxData = groupFilter.closest('#acym_form').serialize() + '&page=acymailing_segments&ctrl=segments&task=countResultsTotal&exclude=' + exclude;
         $counterInput.html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
         this.globalAjaxCall = jQuery.post(ajaxUrlTotal, ajaxData)

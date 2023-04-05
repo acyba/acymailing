@@ -16,7 +16,7 @@
 		</div>
 
 		<input type="hidden" name="lists_already_add" id="acym__user__lists_already_add" value="<?php echo acym_escape(json_encode($data['subscriptionsIds'])); ?>">
-		<input type="hidden" name="id" value="<?php echo empty($data['user-information']->id) ? '' : acym_escape($data['user-information']->id); ?>">
+		<input type="hidden" name="userId" value="<?php echo empty($data['user-information']->id) ? '' : acym_escape($data['user-information']->id); ?>">
 		<input type="hidden" name="acy_source" value="Back-end" />
         <?php acym_formOptions(); ?>
 	</div>

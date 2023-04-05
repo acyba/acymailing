@@ -40,7 +40,7 @@ class FrontcampaignsController extends CampaignsController
             'stopScheduled',
             'duplicate',
             'delete',
-            'deleteAttach',
+            'deleteAttachmentAjax',
         ];
         $this->urlsFrontMenu = ['index.php?option=com_acym&view=frontcampaigns&layout=campaigns', 'index.php?option=com_acym&view=frontcampaigns&layout=listing'];
         parent::__construct();

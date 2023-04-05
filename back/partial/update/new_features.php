@@ -6,7 +6,7 @@
 			<img src="<?php echo ACYM_IMAGES.'splashscreen/header_comet_bottom.png'; ?>" alt="" class="acym__splashscreen__header__comet__bottom">
 			<div class="cell auto"></div>
 			<div class="cell medium-6 grid-x grid-margin-y">
-				<h1 class="cell">AcyMailing 8.0 is here 🎉</h1>
+				<h1 class="cell">AcyMailing 8 is here 🎉</h1>
 				<p class="cell">Features and improvements come in your plugin, find out what’s new!</p>
                 <?php
                 //__START__starter_

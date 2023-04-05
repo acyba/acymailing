@@ -843,7 +843,6 @@ class FrontusersController extends UsersController
         acym_checkRobots();
 
         $userClass = new UserClass();
-        $userClass->extendedEmailVerif = true;
 
 
         $status = $userClass->saveForm();

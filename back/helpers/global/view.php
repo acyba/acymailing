@@ -24,6 +24,7 @@ function acym_loadAssets($ctrl, $task)
     $scope = acym_isAdmin() ? 'back' : 'front';
     acym_loadCmsScripts();
 
+    // Include JS
     acym_addScript(
         true,
         'var AJAX_URL_UPDATEME = "'.ACYM_UPDATEMEURL.'";
@@ -42,40 +43,33 @@ function acym_loadAssets($ctrl, $task)
         var ACYM_SOCIAL_MEDIA = "'.addslashes(ACYM_SOCIAL_MEDIA).'";'
     );
 
-    //TODO get rid of the defer option on all these scripts to make sure jquery is loaded on front and fix the js errors
-    // We added this defer to make sure the raw js above is loaded first, use a dependency instead.
-    acym_addScript(false, ACYM_JS.'helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'helpers.min.js'), 'text/javascript', true);
+    acym_addScript(false, ACYM_JS.'helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'helpers.min.js'));
 
     if ($ctrl !== 'archive') {
-        acym_addScript(
-            false,
-            ACYM_JS.'libraries/foundation.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'foundation.min.js'),
-            'text/javascript',
-            true
-        );
+        acym_addScript(false, ACYM_JS.'libraries/foundation.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'foundation.min.js'));
     }
 
-    if ('back' === $scope) {
-        acym_addScript(false, ACYM_JS.'libraries/select2.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'select2.min.js'), 'text/javascript', true);
-    }
-
-    // Include JS
     if ('back' == $scope) {
-        acym_addScript(false, ACYM_JS.$scope.'_helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_helpers.min.js'), 'text/javascript', true);
+        acym_addScript(false, ACYM_JS.'libraries/select2.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'select2.min.js'));
+        acym_addScript(false, ACYM_JS.$scope.'_helpers.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_helpers.min.js'));
     }
-    acym_addScript(false, ACYM_JS.'global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'global.min.js'), 'text/javascript', true);
-    acym_addScript(false, ACYM_JS.$scope.'_global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_global.min.js'), 'text/javascript', true);
+    acym_addScript(false, ACYM_JS.'global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'global.min.js'));
+    acym_addScript(false, ACYM_JS.$scope.'_global.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.'_global.min.js'));
 
     if (file_exists(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.'.min.js')) {
-        acym_addScript(false, ACYM_JS.$scope.'/'.$ctrl.'.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.'.min.js'), 'text/javascript', true);
+        $params = [];
+        if ($ctrl === 'frontusers' && $task === 'unsubscribepage') {
+            $params['defer'] = true;
+        }
+        acym_addScript(false, ACYM_JS.$scope.'/'.$ctrl.'.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.'.min.js'), $params);
     }
     if (file_exists(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.DS.$task.'.min.js')) {
-        acym_addScript(false, ACYM_JS.$scope.'/'.$ctrl.'/'.$task.'.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.DS.$task.'.min.js'), 'text/javascript', true);
+        acym_addScript(false, ACYM_JS.$scope.'/'.$ctrl.'/'.$task.'.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.DS.$task.'.min.js'));
     }
 
+    // Include CSS
     acym_addStyle(false, ACYM_CSS.'global.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'global.min.css'));
 
-    // Include CSS
     if (!acym_isExcludedFrontView($ctrl, $task)) {
         acym_addStyle(false, ACYM_CSS.$scope.'_global.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.$scope.'_global.min.css'));
     }
@@ -87,7 +81,7 @@ function acym_loadAssets($ctrl, $task)
 
 /**
  * Get translated error message for JS form validation
- * @return string containing texts (js object formated)
+ * @return string containing texts (js object formatted)
  */
 function acym_getJSMessages()
 {

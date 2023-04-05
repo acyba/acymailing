@@ -9,6 +9,8 @@ use AcyMailing\Libraries\acymView;
  */
 class CampaignsViewCampaigns extends acymView
 {
+    public $followupSteps;
+
     public function __construct()
     {
         parent::__construct();

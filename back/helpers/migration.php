@@ -263,7 +263,7 @@ class MigrationHelper extends acymObject
                     break;
 
                 case 'mailer_method':
-                    $sending_platform = $value->value == 'smtp' || $value->value == 'elasticemail' ? 'external' : 'server';
+                    $sending_platform = $value->value == 'smtp' || $value->value === 'elasticemail' ? 'external' : 'server';
                     $valuesToInsert[] = '("sending_platform",'.acym_escapeDB($sending_platform).')';
                     break;
 
@@ -667,7 +667,7 @@ class MigrationHelper extends acymObject
                 }
             }
 
-            $subject = utf8_encode(substr($oneMail->subject, 0, 255));
+            $subject = acym_utf8Encode(substr($oneMail->subject, 0, 255));
 
             $mail = [
                 'id' => intval($oneMail->mailid),
@@ -675,7 +675,7 @@ class MigrationHelper extends acymObject
                 'creation_date' => acym_escapeDB(acym_date(empty($oneMail->created) ? 'now' : $oneMail->created, 'Y-m-d H:i:s')),
                 'drag_editor' => 0,
                 'type' => acym_escapeDB($mailType),
-                'body' => acym_escapeDB(utf8_encode($oneMail->body)),
+                'body' => acym_escapeDB(acym_utf8Encode($oneMail->body)),
                 'subject' => acym_escapeDB($subject),
                 'from_name' => acym_escapeDB($oneMail->fromname),
                 'from_email' => acym_escapeDB($oneMail->fromemail),

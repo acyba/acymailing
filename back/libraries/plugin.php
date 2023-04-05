@@ -93,7 +93,7 @@ class acymPlugin extends acymObject
             'wp_mail_smtp' => 'WP Mail SMTP',
         ];
 
-        $this->logFilename = (empty($this->name) ? get_class($this) : $this->name).'.txt';
+        $this->logFilename = acym_getErrorLogFilename(empty($this->name) ? get_class($this) : $this->name);
     }
 
     protected function displaySelectionZone($zoneContent)
@@ -906,7 +906,7 @@ class acymPlugin extends acymObject
         }
     }
 
-    protected function finalizeLink($link, $sef = true)
+    protected function finalizeLink(string $link, bool $sef = true): string
     {
         if (acym_isPluginActive('languagefilter')) {
             if (strpos($link, 'lang=') === false && !empty($this->emailLanguage)) {
@@ -1273,7 +1273,9 @@ class acymPlugin extends acymObject
 
     protected function cleanExtensionContent($text)
     {
-        if (!acym_isExtensionActive('classic-editor/classic-editor.php') || strpos($text, '<!-- wp:') !== false) return $text;
+        if (!acym_isExtensionActive('classic-editor/classic-editor.php') || strpos($text, '<!-- wp:') !== false) {
+            return $text;
+        }
 
         return nl2br($text);
     }

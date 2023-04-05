@@ -10,14 +10,17 @@ if (version_compare(PHP_VERSION, '7.2.0', '<')) {
 function installAcym()
 {
     try {
-        include_once(rtrim(
-                JPATH_ADMINISTRATOR,
-                DIRECTORY_SEPARATOR
-            ).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php');
+        $ds = DIRECTORY_SEPARATOR;
+        include_once rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
     } catch (Exception $e) {
         echo 'Initialization error, please re-install';
 
         return;
+    }
+
+	//TODO do better
+    if (!function_exists('acym_utf8Decode')) {
+        include_once ACYM_HELPER_GLOBAL.'utf8.php';
     }
 
     //First we increase the perfs so that we won't have any surprise.

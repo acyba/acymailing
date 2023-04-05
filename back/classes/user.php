@@ -29,6 +29,8 @@ class UserClass extends acymClass
     // For integration, for example someone is activating user subscription on member ship pro on the joomla backend and he needs to send the confirmation emails
     var $forceConfAdmin = false;
 
+    public $extendedEmailVerif;
+
     /**
      * Get users depending on filters (search, status, pagination)
      *
@@ -499,7 +501,7 @@ class UserClass extends acymClass
      *
      * @return mixed the identified user or false
      */
-    public function identify($onlyValue = false, $idName = null, $keyName = null)
+    public function identify(bool $onlyValue = false, $idName = null, $keyName = null)
     {
         $id = acym_getVar('int', empty($idName) ? 'id' : $idName, 0);
         $key = acym_getVar('string', empty($keyName) ? 'key' : $keyName, '');
@@ -877,13 +879,13 @@ class UserClass extends acymClass
 
             if (function_exists('mb_detect_encoding')) {
                 if (mb_detect_encoding($user->$oneAttribute, 'UTF-8', true) != 'UTF-8') {
-                    $user->$oneAttribute = utf8_encode($user->$oneAttribute);
+                    $user->$oneAttribute = acym_utf8Encode($user->$oneAttribute);
                 }
             } elseif (!preg_match(
                 '%^(?:[\x09\x0A\x0D\x20-\x7E]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})*$%xs',
                 $user->$oneAttribute
             )) {
-                $user->$oneAttribute = utf8_encode($user->$oneAttribute);
+                $user->$oneAttribute = acym_utf8Encode($user->$oneAttribute);
             }
         }
 
@@ -922,7 +924,9 @@ class UserClass extends acymClass
         // Save custom fields if there are any
         $fieldClass = new FieldClass();
         $fieldClass->store($userID, $customFields, $ajax);
-        if (!empty($fieldClass->errors)) $this->errors = array_merge($this->errors, $fieldClass->errors);
+        if (!empty($fieldClass->errors)) {
+            $this->errors = array_merge($this->errors, $fieldClass->errors);
+        }
 
         $historyClass = new HistoryClass();
         if (empty($user->id)) {
@@ -1103,8 +1107,6 @@ class UserClass extends acymClass
         if (!empty($myuser->confirmed)) return false;
 
         $mailerHelper = new MailerHelper();
-        $mailerHelper->checkConfirmField = false;
-        $mailerHelper->checkEnabled = false;
         $mailerHelper->report = $this->config->get('confirm_message', 0);
 
         $this->confirmationSentSuccess = $mailerHelper->sendOne('acy_confirm', $myuser);
@@ -1255,10 +1257,17 @@ class UserClass extends acymClass
                     $values = [];
                     foreach ($oneField->field_value as $oneFieldValue) {
                         foreach ($oneField->value as $oneValue) {
-                            if ($oneFieldValue['value'] == $oneValue) $values[] = $oneFieldValue['title'];
+                            if ($oneFieldValue['value'] == $oneValue) {
+                                $values[] = $oneFieldValue['title'];
+                            }
                         }
                     }
                     $oneField->value = implode(',', $values);
+                }
+            } elseif ($oneField->type === 'file') {
+                $oneField->value = json_decode($oneField->value);
+                if (!empty($oneField->value)) {
+                    $oneField->value = $oneField->value[0];
                 }
             }
             $user->{$oneField->namekey} = empty($oneField->value) ? '' : $oneField->value;

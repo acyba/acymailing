@@ -125,8 +125,8 @@ class plgAcymPostmark extends acymPlugin
         }
 
         // Handle the Stream ID
-        if (!empty($mailerHelper->id)) {
-            $mailId = $mailerHelper->id;
+        if (!empty($mailerHelper->mailId)) {
+            $mailId = $mailerHelper->mailId;
             if (acym_isMultilingual()) {
                 $parentId = acym_loadResult('SELECT parent_id FROM `#__acym_mail` WHERE id = '.intval($mailId));
                 if (!empty($parentId)) $mailId = $parentId;

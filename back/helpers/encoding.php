@@ -75,11 +75,11 @@ class EncodingHelper extends acymObject
         }
 
         if ($inputCharset == 'UTF-8' && $outputCharset == 'ISO-8859-1') {
-            return utf8_decode($data);
+            return acym_utf8Decode($data);
         }
 
         if ($inputCharset == 'ISO-8859-1' && $outputCharset == 'UTF-8') {
-            return utf8_encode($data);
+            return acym_utf8Encode($data);
         }
 
         return $data;

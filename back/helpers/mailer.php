@@ -20,33 +20,38 @@ class MailerHelper extends AcyMailerPhp
     // We remove default values
     public $SMTPAutoTLS = false;
 
-    var $encodingHelper;
-    var $editorHelper;
-    var $userClass;
-    var $config;
-
-    var $report = true;
-    var $alreadyCheckedAddresses = false;
-    var $errorNumber = 0;
-    //Error number which induct a new try soon
-    var $errorNewTry = [1, 6];
-    var $autoAddUser = false;
-    var $userCreationTriggers = true;
-    var $reportMessage = '';
-
-    // Should we track the sending of a	message (used for welcoming message)
-    var $trackEmail = false;
-
-    //External method name
-    var $externalMailer;
-
-    // We need those attributes to be public for our tag system
+    // We need these attributes to be public for our tag system
     public $to = [];
     public $cc = [];
     public $bcc = [];
     public $ReplyTo = [];
     public $attachment = [];
     public $CustomHeader = [];
+    public $Preheader;
+    public $replyname;
+    public $replyemail;
+    public $body;
+
+    private $encodingHelper;
+    private $editorHelper;
+    private $userClass;
+    private $mailClass;
+    public $config;
+
+    public $report = true;
+    public $alreadyCheckedAddresses = false;
+    public $errorNumber = 0;
+    //Error number which induct a new try soon
+    public $errorNewTry = [1, 6];
+    public $autoAddUser = false;
+    public $userCreationTriggers = true;
+    public $reportMessage = '';
+
+    // Should we track the sending of a	message (used for welcoming message)
+    public $trackEmail = false;
+
+    // Sending method used in the configuration
+    public $externalMailer;
 
     // To import custom stylesheet from user
     public $stylesheet = '';
@@ -55,23 +60,29 @@ class MailerHelper extends AcyMailerPhp
     // Used to store special dynamic text content
     public $parameters = [];
 
-    // Preset override email
-    public $overrideEmailToSend = '';
-
     public $userLanguage = '';
-
-    public $mailId;
     public $receiverEmail;
 
+    // Special send statuses
+    public $overrideEmailToSend = '';
     public $isTest = false;
     public $isSpamTest = false;
-    public $isBounceForward = false;
+    public $isForward = false;
 
+    // OAuth fields
     public $clientId = '';
     public $clientSecret = '';
     public $refreshToken = '';
     public $oauthToken = '';
     public $expiredIn = '';
+    public $mailId = null;
+    public $creator_id;
+    public $type;
+    public $links_language;
+    public $id = null;
+    public $mail = null;
+    // Mail objects with replaceContent ran
+    public $defaultMail = [];
 
     public function __construct()
     {
@@ -80,6 +91,7 @@ class MailerHelper extends AcyMailerPhp
         $this->encodingHelper = new EncodingHelper();
         $this->editorHelper = new EditorHelper();
         $this->userClass = new UserClass();
+        $this->mailClass = new MailClass();
         $this->config = acym_config();
         $this->setFrom($this->getSendSettings('from_email'), $this->getSendSettings('from_name'));
         $this->Sender = $this->cleanText($this->config->get('bounce_email'));
@@ -243,13 +255,8 @@ class MailerHelper extends AcyMailerPhp
 
     protected function externalSend($MIMEHeader, $MIMEBody)
     {
-        $reply_to = array_shift($this->ReplyTo);
-
-        $response = [];
-
         $fromName = empty($this->FromName) ? $this->config->get('from_name', '') : $this->FromName;
-
-        $bcc = !empty($this->bcc) ? $this->bcc : [];
+        $reply_to = array_shift($this->ReplyTo);
 
         $attachments = [];
         if (!empty($this->attachment) && $this->config->get('embed_files')) {
@@ -260,15 +267,15 @@ class MailerHelper extends AcyMailerPhp
             $attachments = $this->attachment;
         }
 
+        $response = [];
         $data = [
             &$response,
             $this,
             ['email' => $this->to[0][0], 'name' => $this->to[0][1]],
             ['email' => $this->From, 'name' => $fromName],
             ['email' => $reply_to[0], 'name' => $reply_to[1]],
-            $bcc,
+            !empty($this->bcc) ? $this->bcc : [],
             $attachments,
-            empty($this->id) ? null : $this->id,
         ];
         acym_trigger('onAcymSendEmail', $data);
 
@@ -389,14 +396,9 @@ class MailerHelper extends AcyMailerPhp
             $this->Body = str_replace(['&amp;', '&sigmaf;'], ['&', 'ς'], $this->Body);
         }
 
-        if ($this->CharSet != 'utf-8') {
+        if ($this->CharSet !== 'utf-8') {
             $this->Body = $this->encodingHelper->change($this->Body, 'UTF-8', $this->CharSet);
             $this->Subject = $this->encodingHelper->change($this->Subject, 'UTF-8', $this->CharSet);
-        }
-
-        //Let's do some referal if we send using elasticemail
-        if (strpos($this->Host, 'elasticemail')) {
-            $this->addCustomHeader('referral', '2f0447bb-173a-459d-ab1a-ab8cbebb9aab');
         }
 
         // These characters can break the send process, let's remove them from the subject
@@ -411,9 +413,8 @@ class MailerHelper extends AcyMailerPhp
 
         $externalSending = false;
 
-        $mailClass = new MailClass();
-        $isTransactional = $this->isBounceForward || $this->isTest || $this->isSpamTest;
-        if (!empty($this->id) && !empty($this->defaultMail[$this->id]) && $mailClass->isTransactionalMail($this->defaultMail[$this->id])) {
+        $isTransactional = $this->isForward || $this->isTest || $this->isSpamTest;
+        if (!empty($this->mailId) && !empty($this->defaultMail[$this->mailId]) && $this->mailClass->isTransactionalMail($this->defaultMail[$this->mailId])) {
             $isTransactional = true;
         }
 
@@ -425,7 +426,7 @@ class MailerHelper extends AcyMailerPhp
         if (ACYM_PRODUCTION) {
             if ($externalSending) {
                 $result = false;
-                acym_trigger('onAcymRegisterReceiverContentAndList', [&$result, $this->Subject, $this->Body, $this->receiverEmail, $this->id, &$warnings]);
+                acym_trigger('onAcymRegisterReceiverContentAndList', [&$result, $this->Subject, $this->Body, $this->receiverEmail, $this->mailId, &$warnings]);
             } else {
                 acym_trigger('onAcymBeforeEmailSend', [&$this]);
                 ob_start();
@@ -511,17 +512,16 @@ class MailerHelper extends AcyMailerPhp
 
     public function load($mailId, $user = null)
     {
-        $mailClass = new MailClass();
         if (!empty($this->overrideEmailToSend)) {
             $this->defaultMail[$mailId] = $this->overrideEmailToSend;
         } else {
-            $this->defaultMail[$mailId] = $mailClass->getOneById($mailId, true);
+            $this->defaultMail[$mailId] = $this->mailClass->getOneById($mailId, true);
         }
 
         global $acymLanguages;
         if (!acym_isMultilingual()) {
             if (empty($this->defaultMail[$mailId])) {
-                $this->defaultMail[$mailId] = $mailClass->getOneByName($mailId, true);
+                $this->defaultMail[$mailId] = $this->mailClass->getOneByName($mailId, true);
 
                 if (!empty($this->defaultMail[$mailId]->id)) {
                     $this->defaultMail[$this->defaultMail[$mailId]->id] = $this->defaultMail[$mailId];
@@ -529,9 +529,9 @@ class MailerHelper extends AcyMailerPhp
             }
         } elseif (empty($this->overrideEmailToSend)) {
             $defaultLanguage = $this->config->get('multilingual_default', ACYM_DEFAULT_LANGUAGE);
-            $mails = $mailClass->getMultilingualMails($mailId);
+            $mails = $this->mailClass->getMultilingualMails($mailId);
             if (empty($mails)) {
-                $mails = $mailClass->getMultilingualMailsByName($mailId);
+                $mails = $this->mailClass->getMultilingualMailsByName($mailId);
             }
 
             $this->userLanguage = $user != null && !empty($user->language) ? $user->language : $defaultLanguage;
@@ -579,11 +579,13 @@ class MailerHelper extends AcyMailerPhp
             }
         }
 
+
+        $this->mailId = $mailId;
+        $this->id = $this->mailId;
+        $this->mail = clone $this->defaultMail[$mailId];
         acym_trigger('replaceContent', [&$this->defaultMail[$mailId], true]);
 
         $this->loadUrlAndStyle($mailId);
-
-        $this->id = $mailId;
 
         return $this->defaultMail[$mailId];
     }
@@ -667,12 +669,10 @@ class MailerHelper extends AcyMailerPhp
     {
         if (empty($mailId) || empty($user) || !isset($user->tracking) || $user->tracking != 1) return false;
 
-        $mailClass = new MailClass();
-
-        $mail = $mailClass->getOneById($mailId);
+        $mail = $this->mailClass->getOneById($mailId);
         if (!empty($mail) && $mail->tracking != 1) return false;
 
-        $lists = $mailClass->getAllListsByMailIdAndUserId($mailId, $user->id);
+        $lists = $this->mailClass->getAllListsByMailIdAndUserId($mailId, $user->id);
 
         foreach ($lists as $list) {
             if ($list->tracking != 1) return false;
@@ -712,7 +712,7 @@ class MailerHelper extends AcyMailerPhp
     }
 
     /**
-     * @param $mailId   Int the Id of the acym_mail row
+     * @param $mailId   Mixed the Id or the name of the acym_mail row
      * @param $user     Mixed Can be the user Id, an email address or the user object
      * @param $isTest   Boolean If we send a test
      * @param $testNote String Message added at the top of the sent test
@@ -721,7 +721,7 @@ class MailerHelper extends AcyMailerPhp
      * @return bool
      * @throws Exception
      */
-    public function sendOne($mailId, $user, $isTest = false, $testNote = '', $clear = true)
+    public function sendOne($mailId, $user, bool $isTest = false, string $testNote = '', bool $clear = true)
     {
         if ($clear) {
             $this->clearAll();
@@ -753,12 +753,10 @@ class MailerHelper extends AcyMailerPhp
             return false;
         }
 
-        //Lets try to do something even cooler and specify a messageID instead which will be kept by most mail clients and in the feedback loop...
-        $this->MessageID = "<".preg_replace(
-                "|[^a-z0-9+_]|i",
-                '',
-                base64_encode(rand(0, 9999999))."AC".$receiver->id."Y".$this->defaultMail[$mailId]->id."BA".base64_encode(time().rand(0, 99999))
-            )."@".$this->serverHostname().">";
+        // Specify a messageID which will be kept by most mail clients and in the feedback loop
+        $subject = base64_encode(rand(0, 9999999)).'AC'.$receiver->id.'Y'.$this->defaultMail[$mailId]->id.'BA'.base64_encode(time().rand(0, 99999));
+        $this->MessageID = '<'.preg_replace('|[^a-z0-9+_]|i', '', $subject).'@'.$this->serverHostname().'>';
+        $this->addCustomHeader('Feedback-ID', $this->defaultMail[$mailId]->id.':'.$receiver->id.':'.$this->defaultMail[$mailId]->type.':'.base64_encode(ACYM_ROOT));
 
         // Set receiver name
         $addedName = '';
@@ -825,11 +823,8 @@ class MailerHelper extends AcyMailerPhp
 
         $preheader = '';
         if (!empty($this->Preheader)) {
-            $spacing = '';
+            $spacing = str_repeat('&nbsp;&zwnj;', 100);
 
-            for ($x = 0 ; $x < 100 ; $x++) {
-                $spacing .= '&nbsp;&zwnj;';
-            }
             $preheader = '<!--[if !mso 9]><!--><div style="visibility:hidden;mso-hide:all;font-size:0;color:transparent;height:0;line-height:0;max-height:0;max-width:0;opacity:0;overflow:hidden;">'.$this->Preheader.$spacing.'</div><!--<![endif]-->';
         }
 
@@ -857,17 +852,18 @@ class MailerHelper extends AcyMailerPhp
         $this->replyto = &$this->ReplyTo;
         $this->replyname = $this->defaultMail[$mailId]->reply_to_name;
         $this->replyemail = $this->defaultMail[$mailId]->reply_to_email;
-        $this->id = $this->defaultMail[$mailId]->id;
+        $this->mailId = $this->defaultMail[$mailId]->id;
+        $this->id = $this->mailId;
         $this->creator_id = $this->defaultMail[$mailId]->creator_id;
         $this->type = $this->defaultMail[$mailId]->type;
         $this->stylesheet = &$this->stylesheet;
         $this->links_language = $this->defaultMail[$mailId]->links_language;
 
         if (!$this->isTest && $this->canTrack($mailId, $receiver)) {
-            $this->statPicture($this->id, $receiver->id);
+            $this->statPicture($this->mailId, $receiver->id);
             $this->body = acym_absoluteURL($this->body);
-            $this->statClick($this->id, $receiver->id);
-            if (acym_isTrackingSalesActive()) $this->trackingSales($this->id, $receiver->id);
+            $this->statClick($this->mailId, $receiver->id);
+            if (acym_isTrackingSalesActive()) $this->trackingSales($this->mailId, $receiver->id);
         }
 
         $this->replaceParams();
@@ -908,7 +904,7 @@ class MailerHelper extends AcyMailerPhp
         if ($this->trackEmail) {
             $helperQueue = new QueueHelper();
             $statsAdd = [];
-            $statsAdd[$this->id][$status][] = $receiver->id;
+            $statsAdd[$this->mailId][$status][] = $receiver->id;
             $helperQueue->statsAdd($statsAdd);
             $this->trackEmail = false;
         }
@@ -962,8 +958,7 @@ class MailerHelper extends AcyMailerPhp
 
     public function statClick($mailId, $userid, $fromStat = false)
     {
-        $mailClass = new MailClass();
-        if (!$fromStat && !in_array($this->type, $mailClass::TYPES_WITH_STATS)) return;
+        if (!$fromStat && !in_array($this->type, $this->mailClass::TYPES_WITH_STATS)) return;
 
         $urlClass = new UrlClass();
         $urls = [];
@@ -973,8 +968,7 @@ class MailerHelper extends AcyMailerPhp
         if (false === strpos($trackingSystem, 'acymailing') && false === strpos($trackingSystem, 'google')) return;
 
         if (strpos($trackingSystem, 'google') !== false) {
-            $mailClass = new MailClass();
-            $mail = $mailClass->getOneById($mailId);
+            $mail = $this->mailClass->getOneById($mailId);
             $campaignClass = new CampaignClass();
             $campaign = $campaignClass->getOneCampaignByMailId($mailId);
 

@@ -61,7 +61,7 @@ class acymClass extends acymObject
     }
 
     /**
-     * @param $ids Ids of elements
+     * @param mixed $ids Ids of elements
      *
      * @return mixed
      */

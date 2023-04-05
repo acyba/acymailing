@@ -45,10 +45,12 @@ class SendinblueUsers extends SendinblueClass
         if ($sendingMethod != plgAcymSendinblue::SENDING_METHOD_ID) return;
 
         if (!acym_createFolder(ACYM_TMP_FOLDER)) {
+            $message = acym_translation('ACYM_ERROR_CREATING_EXPORT_FILE');
+            acym_logError($message, 'sendinblue');
             if ($ajax) {
-                acym_sendAjaxResponse(acym_translation('ACYM_ERROR_CREATING_EXPORT_FILE'), [], false);
+                acym_sendAjaxResponse($message, [], false);
             } else {
-                acym_enqueueMessage(acym_translation('ACYM_ERROR_CREATING_EXPORT_FILE'), 'error');
+                acym_enqueueMessage($message, 'error');
             }
 
             return;
@@ -88,11 +90,13 @@ class SendinblueUsers extends SendinblueClass
 
         if (empty($this->errors)) {
             $message = acym_translation('ACYM_USERS_SUNCHRONIZED');
+            acym_logError($message, 'sendinblue');
             if ($ajax) {
                 acym_sendAjaxResponse($message);
             }
         } else {
             $message = implode('<br />', $this->errors);
+            acym_logError($message, 'sendinblue');
             if ($ajax) {
                 acym_sendAjaxResponse($message, [], false);
             } else {
@@ -165,7 +169,7 @@ class SendinblueUsers extends SendinblueClass
         return true;
     }
 
-    public function addUserToList($email, $mailId, &$warnings)
+    public function addUserToList($email, $mailId, &$warnings): bool
     {
         $listId = 0;
         $this->list->getListExternalSendingMethod($listId, $mailId);
@@ -177,11 +181,20 @@ class SendinblueUsers extends SendinblueClass
         ];
 
         $response = $this->callApiSendingMethod('contacts/lists/'.$listId.'/contacts/add', $data, $this->headers, 'POST');
-        $success = !empty($response['contacts']) && !empty($response['contacts']['success']) && in_array($email, $response['contacts']['success']);
+        $success = !empty($response['contacts']['success']) && in_array($email, $response['contacts']['success']);
         $alreadyInList = !empty($response['message']) && strpos($response['message'], 'Contact already in list') !== false;
 
         if (!$success && !empty($response['message']) && !$alreadyInList) {
             $warnings .= $response['message'];
+            acym_logError('Error trying to add user '.$email.' to list '.$listId.' for mail ID '.$mailId.': '.$response['message'], 'sendinblue');
+        } else {
+            if ($success) {
+                //acym_logError('Successfully added user '.$email.' to list '.$listId.' for mail ID '.$mailId, 'sendinblue');
+            } elseif (!empty($response['message'])) {
+                acym_logError('Error trying to add user '.$email.' to list '.$listId.' for mail ID '.$mailId.': '.$response['message'], 'sendinblue');
+            } else {
+                acym_logError('Error trying to add user '.$email.' to list '.$listId.' for mail ID '.$mailId.' - unknown error: '.json_encode($response), 'sendinblue');
+            }
         }
 
         return $success || $alreadyInList;
@@ -261,7 +274,10 @@ class SendinblueUsers extends SendinblueClass
         // Generate file with user to import
         $userClass = new UserClass();
         $users = $userClass->getAllSimpleData();
-        if (empty($users)) acym_sendAjaxResponse(acym_translation('ACYM_NO_USER_TO_SYNCHRONIZE'));
+        if (empty($users)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_NO_USER_TO_SYNCHRONIZE'));
+            acym_logError(acym_translation('ACYM_NO_USER_TO_SYNCHRONIZE'), 'sendinblue');
+        }
 
         $this->importUsers($users, true);
     }

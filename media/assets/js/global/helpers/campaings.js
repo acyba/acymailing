@@ -76,7 +76,7 @@ const acym_helperCampaigns = {
                 }
             });
             let mailid = current.attr('data-mail');
-            jQuery.post(ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlCampaigns + '&task=deleteAttach&id=' + idRemove + '&mail=' + mailid, function (response) {
+            jQuery.post(ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlCampaigns + '&task=deleteAttachmentAjax&id=' + idRemove + '&mail=' + mailid, function (response) {
                 response = acym_helper.parseJson(response);
                 if (response.error) {
                     acym_helperCampaigns.setDisplayNotif(response.message, 'error');

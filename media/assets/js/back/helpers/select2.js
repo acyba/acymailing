@@ -118,7 +118,7 @@ const acym_helperSelect2 = {
         let $emailsField = jQuery('.acym__multiselect__email');
         let searchParams = {
             'ctrl': 'campaigns',
-            'task': 'searchTestReceivers'
+            'task': 'searchTestReceiversAjax'
         };
 
         $emailsField.select2({

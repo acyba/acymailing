@@ -20,7 +20,7 @@ const acym_helperBack = {
             });
         });
 
-        jQuery('.acym__do__not__remindme').on('click', function () {
+        jQuery('.acym__do__not__remindme, .acym__do__not__remindme__multilingual').on('click', function () {
             let identifier = jQuery(this).attr('title');
             jQuery('[data-news="' + identifier + '"]').remove();
             let ajaxUrl = ACYM_TOGGLE_URL + '&task=setDoNotRemindMe&value=' + encodeURIComponent(identifier);

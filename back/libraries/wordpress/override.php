@@ -142,7 +142,7 @@ All at {param7}
         [
             'name' => 'wp-adminNotifUserRequestConfirm',
             'base_subject' => [
-                '[%1$s] Action Confirmed: %2$s',
+                '[%1$s] Action.php Confirmed: %2$s',
             ],
             'base_body' => [
                 'Howdy,
@@ -160,7 +160,7 @@ Regards,
 All at ###SITENAME###
 ###SITEURL###',
             ],
-            'new_subject' => '[{param1}] Action Confirmed: {param2}',
+            'new_subject' => '[{param1}] Action.php Confirmed: {param2}',
             'new_body' => 'Howdy,
 <br>
 <br>
@@ -341,7 +341,7 @@ All at {param5}
         [
             'name' => 'wp-userRequestConfirmAction',
             'base_subject' => [
-                '[%1$s] Confirm Action: %2$s',
+                '[%1$s] Confirm Action.php: %2$s',
             ],
             'base_body' => [
                 'Howdy,
@@ -360,7 +360,7 @@ Regards,
 All at ###SITENAME###
 ###SITEURL###',
             ],
-            'new_subject' => '[{param1}] Confirm Action: {param2}',
+            'new_subject' => '[{param1}] Confirm Action.php: {param2}',
             'new_body' => 'Howdy,
 <br>
 <br>

@@ -33,17 +33,17 @@ function acym_getFormToken()
     return '_wpnonce='.$token;
 }
 
-function acym_noTemplate()
+function acym_noTemplate(): string
 {
     return 'noheader=1';
 }
 
-function acym_isNoTemplate()
+function acym_isNoTemplate(): bool
 {
     return acym_getVar('cmd', 'noheader') == '1';
 }
 
-function acym_setNoTemplate($status = true)
+function acym_setNoTemplate(bool $status = true)
 {
     if ($status) {
         acym_setVar('noheader', '1');
@@ -60,7 +60,7 @@ function acym_setNoTemplate($status = true)
  * @param string $currentCtrl
  * @param bool   $addPage
  */
-function acym_formOptions($token = true, $task = '', $currentStep = null, $currentCtrl = '', $addPage = true)
+function acym_formOptions(bool $token = true, string $task = '', string $currentStep = '', string $currentCtrl = '', bool $addPage = true)
 {
     if (!empty($currentStep)) {
         echo '<input type="hidden" name="step" value="'.$currentStep.'"/>';

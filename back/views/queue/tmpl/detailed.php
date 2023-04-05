@@ -49,7 +49,7 @@
 								</div>
 							</div>
 							<div class="cell large-4 medium-3">
-								<a href="<?php echo acym_completeLink('users&task=edit&id='.$row->user_id); ?>">
+								<a href="<?php echo acym_completeLink('users&task=edit&userId='.$row->user_id); ?>">
                                     <?php
                                     if (empty($row->user_name)) {
                                         echo $row->email;

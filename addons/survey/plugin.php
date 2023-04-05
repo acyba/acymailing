@@ -3,8 +3,8 @@
  * @package     corejoomla.site
  * @subpackage  com_communitysurveys
  *
- * @copyright   Copyright (C) 2009 - 2015 corejoomla.com. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2009 - 2023 shondalai.com. All rights reserved.
+ * @license     GNU General Public License version 2 or later
  */
 defined('_JEXEC') or die;
 
@@ -187,7 +187,9 @@ class plgAcymSurvey extends acymPlugin
 
         $element = $this->initIndividualContent($tag, $query);
 
-        if (empty($element)) return '';
+        if (empty($element)) {
+            return '';
+        }
 
         $varFields = $this->getCustomLayoutVars($element);
 
@@ -195,7 +197,9 @@ class plgAcymSurvey extends acymPlugin
         $varFields['{link}'] = $link;
 
         $title = '';
-        if (in_array('title', $tag->display)) $title = $element->title;
+        if (in_array('title', $tag->display)) {
+            $title = $element->title;
+        }
 
         $afterTitle = '';
         $afterTopic = '';
@@ -207,9 +211,11 @@ class plgAcymSurvey extends acymPlugin
         }
 
         $readMoreText = empty($tag->readmore) ? acym_translation('ACYM_READ_MORE') : $tag->readmore;
+
         $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'">';
         $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.acym_escape($readMoreText).'</span>';
         $varFields['{readmore}'] .= '</a>';
+
         if (in_array('readmore', $tag->display)) {
             $afterTopic .= $varFields['{readmore}'];
         }
@@ -233,13 +239,19 @@ class plgAcymSurvey extends acymPlugin
      * $email => The email object, if you need to modify something in this object, make sure to do it right...
      * $user  => The user object, you can then access to its data if you want to customize what you display
      * $send  => If this variable is true, the email will be sent, if it's false the email won't be sent (on the summary page for example)
+     *
+     * @since 1.0.0
      */
     public function replaceUserInformation(&$email, &$user, $send = true)
     {
-        if (!$send) return;
+        if (!$send) {
+            return;
+        }
 
         $extractedTags = $this->pluginHelper->extractTags($email, 'LOADSURVEY');
-        if (empty($extractedTags)) return;
+        if (empty($extractedTags)) {
+            return;
+        }
 
         // load survey urls
         JLoader::import('response', JPATH_ROOT.'/components/com_communitysurveys/models');
@@ -247,7 +259,9 @@ class plgAcymSurvey extends acymPlugin
 
         $tags = [];
         foreach ($extractedTags as $shortcode => $oneTag) {
-            if (isset($tags[$shortcode])) continue;
+            if (isset($tags[$shortcode])) {
+                continue;
+            }
 
             // The current user hasn't any account created on the site (only an AcyMailing user)
             if (empty($user->cms_id)) {

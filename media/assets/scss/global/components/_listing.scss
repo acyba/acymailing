@@ -109,6 +109,15 @@
             font-weight: 400;
             color: $white;
 
+            .acym__tooltip__info {
+                margin: 0 0 0 5px;
+
+                .acym__tooltip__info__icon {
+                    color: $white;
+                }
+
+            }
+
             &:first-child {
                 padding-left: 10px;
             }

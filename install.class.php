@@ -33,12 +33,13 @@ class acymInstall
     public function __construct()
     {
         $path = '';
+        $ds = DIRECTORY_SEPARATOR;
         if ($this->cms == 'Joomla') {
-            $path = rtrim(JPATH_ADMINISTRATOR, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym';
+            $path = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym';
         } elseif ($this->cms == 'WordPress') {
-            $path = rtrim(__DIR__, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'back';
+            $path = rtrim(__DIR__, $ds).$ds.'back';
         }
-        include_once $path.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
+        include_once $path.$ds.'helpers'.$ds.'helper.php';
     }
 
     public function installTables()
@@ -1286,7 +1287,7 @@ class acymInstall
             $zones = acym_loadObjectList('SELECT `id`, `content` FROM #__acym_custom_zone');
             if (!empty($zones)) {
                 foreach ($zones as $oneZone) {
-                    $oneZone->content = base64_encode(utf8_decode($oneZone->content));
+                    $oneZone->content = base64_encode(acym_utf8Decode($oneZone->content));
                     $this->updateQuery('UPDATE `#__acym_custom_zone` SET `content` = '.acym_escapeDB($oneZone->content).' WHERE `id` = '.intval($oneZone->id));
                 }
             }
@@ -1426,6 +1427,9 @@ class acymInstall
 
     public function checkDB()
     {
+        //TODO fix this, the trait Listing isn't found in the configuration controller.
+        // This is due to the way Joomla updates extensions, we need to do the same thing as we did for WordPress
+        return;
         $configController = new ConfigurationController();
         $messages = $configController->checkDB('report', false);
 

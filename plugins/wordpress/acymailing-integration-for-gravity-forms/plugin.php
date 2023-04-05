@@ -5,7 +5,7 @@ use AcyMailing\Classes\ListClass;
 
 class plgAcymGravityforms extends acymPlugin
 {
-    var $propertyLabels;
+    private $propertyLabels;
 
     public function __construct()
     {

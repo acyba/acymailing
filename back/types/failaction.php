@@ -7,11 +7,13 @@ use AcyMailing\Libraries\acymObject;
 
 class FailactionType extends acymObject
 {
+    public $values = [];
+    public $lists = [];
+
     public function __construct()
     {
         parent::__construct();
 
-        $this->values = [];
         $this->values[] = acym_selectOption('noaction', 'ACYM_DO_NOTHING');
         $this->values[] = acym_selectOption('remove', 'ACYM_REMOVE_SUB');
         $this->values[] = acym_selectOption('unsub', 'ACYM_UNSUB_USER');
@@ -21,7 +23,6 @@ class FailactionType extends acymObject
 
         $listClass = new ListClass();
         $lists = $listClass->getAll('name');
-        $this->lists = [];
         foreach ($lists as $oneList) {
             $this->lists[] = acym_selectOption($oneList->id, $oneList->name);
         }

@@ -53,10 +53,12 @@ class SendinblueCredentials extends SendinblueClass
 				<label class="cell shrink margin-right-1" for="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings_api-key">
                     <?php echo acym_translationSprintf('ACYM_SENDING_METHOD_API_KEY', plgAcymSendinblue::SENDING_METHOD_NAME); ?>
 				</label>
-                <?php echo $this->getLinks(
+                <?php
+                echo $this->getLinks(
                     'https://www.sendinblue.com/?tap_a=30591-fb13f0&tap_s=1371199-cf94c5',
                     'https://www.sendinblue.com/pricing/?tap_a=30591-fb13f0&tap_s=1371199-cf94c5'
-                ); ?>
+                );
+                ?>
 				<input type="text"
 					   id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings_api-key"
 					   value="<?php echo empty($defaultApiKey) ? $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_api_key') : $defaultApiKey; ?>"
@@ -81,7 +83,11 @@ class SendinblueCredentials extends SendinblueClass
                             '',
                             null,
                             '',
-                            'class="button" data-ajax="true" data-iframe="&ctrl=configuration&task=seeLogs&filename='.$this->plugin->logFilename.'"'
+                            [
+                                'class' => 'button',
+                                'data-ajax' => 'true',
+                                'data-iframe' => '&ctrl=configuration&task=seeLogs&filename='.$this->plugin->logFilename,
+                            ]
                         );
                         ?>
 					</div>
@@ -134,7 +140,7 @@ class SendinblueCredentials extends SendinblueClass
         $headers = $this->getHeadersSendingMethod(plgAcymSendinblue::SENDING_METHOD_ID);
         $response = $this->callApiSendingMethod('account', [], $headers);
 
-        if (!empty($response['code'])) {
+        if (!empty($response['code']) || empty($response['plan'])) {
             $html = acym_translationSprintf(
                 'ACYM_SENDING_METHOD_ERROR_WHILE_ACTION',
                 plgAcymSendinblue::SENDING_METHOD_NAME,

@@ -6,6 +6,8 @@ class JFormFieldLists extends acym_JFormField
 {
     var $type = 'lists';
 
+    public $value;
+
     public function getInput()
     {
         //__START__joomla_

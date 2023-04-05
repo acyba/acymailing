@@ -542,7 +542,7 @@ class AcyMailerPhp
     public $DKIM_private_string = '';
 
     /**
-     * Callback Action function name.
+     * Callback Action.php function name.
      *
      * The function that handles the result of the send email action.
      * It is called out by send() for each email sent.

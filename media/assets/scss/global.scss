@@ -28,3 +28,9 @@
 .is-hidden {
     display: none !important;
 }
+
+@media print, screen and (min-width: 40em) {
+    .medium-margin-right-1 {
+        margin-right: 1rem !important;
+    }
+}

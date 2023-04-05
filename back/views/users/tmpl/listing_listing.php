@@ -88,7 +88,7 @@
 		</div>
         <?php
         foreach ($data['allUsers'] as $user) {
-            $linkUser = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&id='.$user->id);
+            $linkUser = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&userId='.$user->id);
             ?>
 			<div class="grid-x cell acym__listing__row">
 				<div class="medium-shrink small-1 cell">
@@ -203,10 +203,12 @@
 					</div>
 					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
 						<a href="<?php echo $linkUser; ?>"><i class="acymicon-pencil" title="<?php echo acym_translation('ACYM_EDIT'); ?>"></i></a>
-						<a><i class="acymicon-download fastActions"
-							  data-action="export"
-							  data-acy-elementid="<?php echo acym_escape($user->id); ?>"
-							  title="<?php echo acym_translation('ACYM_EXPORT'); ?>"></i></a>
+                        <?php if (acym_isAdmin()) { ?>
+							<a><i class="acymicon-download fastActions"
+								  data-action="export"
+								  data-acy-elementid="<?php echo acym_escape($user->id); ?>"
+								  title="<?php echo acym_translation('ACYM_EXPORT'); ?>"></i></a>
+                        <?php } ?>
 						<i class="cursor-pointer acymicon-trash-o fastActions deleteFastAction"
 						   data-action="delete"
 						   data-acy-elementid="<?php echo acym_escape($user->id); ?>"

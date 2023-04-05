@@ -49,6 +49,7 @@ include_once ACYM_HELPER_GLOBAL.'multibyte.php';
 include_once ACYM_HELPER_GLOBAL.'query.php';
 include_once ACYM_HELPER_GLOBAL.'security.php';
 include_once ACYM_HELPER_GLOBAL.'url.php';
+include_once ACYM_HELPER_GLOBAL.'utf8.php';
 include_once ACYM_HELPER_GLOBAL.'version.php';
 include_once ACYM_HELPER_GLOBAL.'view.php';
 include_once ACYM_HELPER_GLOBAL.'log.php';

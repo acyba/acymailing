@@ -91,7 +91,8 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                 <?php } ?>
 				<div class="cell grid-x acym__campaign__summary__section">
 					<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary">
-						<b><?php echo acym_translation('ACYM_RECIPIENTS').' ('.$data['nbSubscribers'].' '.acym_translation('ACYM_SUBSCRIBERS').acym_info(
+						<b><?php
+                            echo acym_translation('ACYM_RECIPIENTS').' ('.$data['nbSubscribers'].' '.acym_translation('ACYM_SUBSCRIBERS').acym_info(
                                     'ACYM_SUMMARY_NUMBER_RECEIVERS_DESC'
                                 ).')'; ?></b>
 					</h5>
@@ -130,7 +131,16 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 					</div>
                     <?php if (!empty($data['segment'])) { ?>
 						<div class="cell grid-x acym__campaign__summary__section margin-top-1">
-							<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SEGMENT'); ?></h5>
+							<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary"><?php
+                                if (!empty($data['campaignInformation']->sending_params['segment']['invert'])) {
+                                    $segmentInformation = $data['campaignInformation']->sending_params['segment']['invert'] === 'exclude'
+                                        ? ' ('.acym_translation('ACYM_EXCLUDE').')'
+                                        : ' ('.acym_translation('ACYM_INCLUDE').')';
+                                } else {
+                                    $segmentInformation = ' ('.acym_translation('ACYM_INCLUDE').')';
+                                }
+                                echo acym_translation('ACYM_SEGMENT').$segmentInformation;
+                                ?></h5>
 							<div class="cell auto acym__campaign__summary__modify">
 								<a href="<?php echo acym_completeLink(
                                     $campaignController.'&task=edit&step=segment&edition=1&id='.intval($data['campaignInformation']->id)

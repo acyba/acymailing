@@ -1,43 +1,45 @@
 <?php
 
-function acym_addScript($raw, $script, $type = 'text/javascript', $defer = true, $async = false, $needTagScript = false, $deps = ['jquery'])
+function acym_addScript(bool $raw, string $script, array $params = []): string
 {
     $acyDocument = acym_getGlobal('doc');
 
     if ($raw) {
-        $acyDocument->addScriptDeclaration($script, $type);
+        $acyDocument->addScriptDeclaration($script, 'text/javascript');
     } else {
+        if (!isset($params['defer'])) {
+            $params['defer'] = true;
+        }
+
         if (ACYM_J37) {
             $attributes = [];
-            $attributes['type'] = $type;
-            if ($defer) $attributes['defer'] = 'defer';
-            if ($async) $attributes['async'] = 'async';
+            $attributes['type'] = 'text/javascript';
+            if (!empty($params['defer'])) {
+                $attributes['defer'] = 'defer';
+            }
+            if (!empty($params['async'])) {
+                $attributes['async'] = 'async';
+            }
             $acyDocument->addScript($script, [], $attributes);
         } else {
-            $acyDocument->addScript($script, $type, $defer, $async);
+            $acyDocument->addScript($script, 'text/javascript', !empty($params['defer']), !empty($params['async']));
         }
     }
 
     return 'acym_script';
 }
 
-function acym_addStyle($raw, $style, $type = 'text/css', $media = null, $attribs = [])
+function acym_addStyle(bool $raw, string $style)
 {
     $acyDocument = acym_getGlobal('doc');
 
     if ($raw) {
-        $acyDocument->addStyleDeclaration($style, $type);
+        $acyDocument->addStyleDeclaration($style, 'text/css');
     } else {
         if (ACYM_J37) {
-            $attributes = [];
-            $attributes['type'] = $type;
-            if ($media) $attributes['media'] = $media;
-            if (!empty($attribs)) {
-                $attributes = array_merge($attributes, $attribs);
-            }
-            $acyDocument->addStyleSheet($style, [], $attributes);
+            $acyDocument->addStyleSheet($style, [], ['type' => 'text/css']);
         } else {
-            $acyDocument->addStyleSheet($style, $type, $media, $attribs);
+            $acyDocument->addStyleSheet($style, 'text/css', null, []);
         }
     }
 }

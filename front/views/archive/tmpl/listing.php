@@ -46,7 +46,7 @@
             }
 
             echo $data['pagination']->display('archive');
-            acym_formOptions(true, 'listing', null, '', false);
+            acym_formOptions(true, 'listing', '', '', false);
             ?>
 
 			<input type="hidden" name="acym_front_page" id="acym__front__archive__next-page" value="1">

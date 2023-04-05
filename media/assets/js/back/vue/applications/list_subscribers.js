@@ -39,7 +39,7 @@ jQuery(function ($) {
                 let subscriberListingContainer = document.getElementById('acym__list__settings__subscribers__listing');
                 if (null !== subscriberListingContainer) subscriberListingContainer.style.display = 'flex';
                 this.subscribed = acym_helper.parseJson(document.getElementById('subscribers_subscribed').value);
-                this.listid = document.querySelector('[name="id"]').value;
+                this.listid = document.querySelector('[name="listId"]').value;
                 this.total = this.subscribed.length;
                 this.displayedSubscribers = this.subscribed.slice(0, start);
                 if (this.total < subPerCalls) {
@@ -65,7 +65,7 @@ jQuery(function ($) {
                           + this.total
                           + '&perCalls='
                           + subPerCalls
-                          + '&listid='
+                          + '&listId='
                           + this.listid
                           + '&orderBy='
                           + this.users_ordering

@@ -1,4 +1,4 @@
-jQuery(function($) {
+jQuery(function ($) {
     function Configuration() {
         setSendingMethodSwitchConfiguration();
         setCheckPortConfiguration();
@@ -205,29 +205,47 @@ jQuery(function($) {
             // Update delay fields (bounce and queue process)
             $('input[id^="delayvar"]').trigger('change');
 
-            // ACL handling
-            $('input[id^="config_acl_"][id$="custom"]').each(function () {
-                let checked = jQuery('input[name="' + jQuery(this).attr('name') + '"]:checked').val();
-                if (checked === 'custom') return;
-
-                jQuery(this).closest('.cell').find('div[id^="acl_"][id$="_container"]').remove();
-            });
 
             // Multilingual options
             let currentLanguages = $('#configmultilingual_languages').val();
             let previousLanguages = $('[name="previous_multilingual_languages"]').val();
-            if (acym_helper.empty(previousLanguages)) return true;
+            if (acym_helper.empty(previousLanguages)) {
+                compressAcl();
+                return true;
+            }
             previousLanguages = previousLanguages.split(',');
 
             let removedLanguages = acym_helper.empty(currentLanguages) ? previousLanguages : previousLanguages.filter(x => !currentLanguages.includes(x));
-            if (acym_helper.empty(removedLanguages)) return true;
+            if (acym_helper.empty(removedLanguages)) {
+                compressAcl();
+                return true;
+            }
 
             $.each(removedLanguages, function (key) {
                 removedLanguages[key] = $('#configmultilingual_default option[value="' + removedLanguages[key] + '"]').text();
             });
 
-            return acym_helper.confirm(acym_helper.sprintf(ACYM_JS_TXT.ACYM_REMOVE_LANG_CONFIRMATION, removedLanguages.join(', ')));
+            if (acym_helper.confirm(acym_helper.sprintf(ACYM_JS_TXT.ACYM_REMOVE_LANG_CONFIRMATION, removedLanguages.join(', ')))) {
+                compressAcl();
+                return true;
+            } else {
+                return false;
+            }
         };
+    }
+
+    function compressAcl() {
+        // ACL handling - reduce the number of submitted inputs
+        const selectedAcl = {};
+        $('input[id^="config_acl_"]').each(function () {
+            const name = jQuery(this).attr('name');
+            const $checked = jQuery('input[name="' + name + '"]:checked');
+            const aclCategory = name.replace('config[', '').replace(']', '');
+
+            selectedAcl[aclCategory] = $checked.val();
+        });
+        jQuery('input[name^="config[acl_"]').remove();
+        jQuery('#json_acl').val(JSON.stringify(selectedAcl));
     }
 
     function setAcl() {

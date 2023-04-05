@@ -28,12 +28,12 @@ function acym_getFormToken()
     return JUtility::getToken().'=1';
 }
 
-function acym_noTemplate()
+function acym_noTemplate(): string
 {
     return 'tmpl=component';
 }
 
-function acym_isNoTemplate()
+function acym_isNoTemplate(): bool
 {
     $tmpl = acym_getVar('cmd', 'tmpl');
 
@@ -54,8 +54,9 @@ function acym_setNoTemplate($status = true)
  * @param string $task
  * @param string $currentStep
  * @param string $currentCtrl
+ * @param bool   $addPage
  */
-function acym_formOptions($token = true, $task = '', $currentStep = null, $currentCtrl = '', $addPage = true)
+function acym_formOptions(bool $token = true, string $task = '', string $currentStep = '', string $currentCtrl = '', bool $addPage = true)
 {
     if (!empty($currentStep)) {
         echo '<input type="hidden" name="step" value="'.$currentStep.'"/>';

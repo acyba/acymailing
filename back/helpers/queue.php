@@ -32,6 +32,9 @@ class QueueHelper extends acymObject
     var $emailtypes = [];
     var $fromManual = false;
 
+    public $queueClass;
+    public $total;
+
     public function __construct()
     {
         parent::__construct();
@@ -211,7 +214,7 @@ class QueueHelper extends acymObject
             $currentMail++;
             $this->nbprocess++;
             if ($this->report) {
-                echo '<script type="text/javascript" language="javascript">setCounter('.$currentMail.')</script>';
+                echo '<script type="text/javascript">setCounter('.$currentMail.')</script>';
                 if (function_exists('ob_flush')) {
                     @ob_flush();
                 }

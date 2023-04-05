@@ -1,0 +1,116 @@
+<?php
+
+trait MemberpressInsertion
+{
+    public function dynamicText($mailId)
+    {
+        return $this->pluginDescription;
+    }
+
+    public function textPopup()
+    {
+        ?>
+
+		<script language="javascript" type="text/javascript">
+            <!--
+            function changeMemberPressTag(tagname, element) {
+                if (!tagname) return;
+                setTag('{<?php echo $this->name; ?>:' + tagname + '}', element);
+            }
+
+            -->
+		</script>
+
+        <?php
+        $fields = $this->getMeprCustomFields();
+
+        if (empty($fields)) {
+            echo '<h2 class="cell text-center acym__title__primary__color margin-top-2">'.acym_translationSprintf('ACYM_YOU_DONT_HAVE_PLUGIN_CUSTOM_FIELD', 'MemberPress').'</h2>';
+
+            return;
+        }
+
+        $text = '<div class="acym__popup__listing text-center grid-x">';
+
+        foreach ($fields as $key => $field) {
+            $text .= '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeMemberPressTag(\''.$field['field_key'].'\', jQuery(this));" >
+                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$field['field_name'].'</div>
+                        <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$field['field_type'].'</div>
+                     </div>';
+        }
+
+        $text .= '</div>';
+
+        echo $text;
+    }
+
+    public function replaceUserInformation(&$email, &$user, $send = true)
+    {
+        $extractedTags = $this->pluginHelper->extractTags($email, $this->name);
+        $fields = $this->getMeprCustomFields();
+        if (empty($extractedTags)) return;
+
+        $userCMS = empty($user->cms_id) ? [] : get_user_meta($user->cms_id);
+
+        $tags = [];
+        foreach ($extractedTags as $key => $tag) {
+            if (!empty($tags[$key])) continue;
+
+            if (empty($userCMS[$tag->id])) {
+                $finalValue = $fields[$tag->id]['default_value'];
+            } else {
+                $finalValue = $userCMS[$tag->id];
+            }
+
+            if (is_array($finalValue)) $finalValue = $finalValue[0];
+
+            $tags[$key] = $this->handleSerialize($finalValue, $fields[$tag->id]);
+        }
+
+        $this->pluginHelper->replaceTags($email, $tags);
+    }
+
+    private function handleSerialize($value, $field)
+    {
+        $valueUnserialize = unserialize($value);
+
+        if ($valueUnserialize !== false && !empty($field['options'])) {
+            $finalValue = [];
+            foreach ($field['options'] as $option) {
+                if (in_array($option['option_value'], $valueUnserialize)) $finalValue[] = $option['option_name'];
+            }
+            $finalValue = implode(', ', $finalValue);
+        } elseif ($valueUnserialize !== false) {
+            $finalValue = implode(', ', $valueUnserialize);
+        } elseif ($valueUnserialize === false && !empty($field['options'])) {
+            $finalValue = [];
+            foreach ($field['options'] as $option) {
+                if ($option['option_value'] == $value) $finalValue[] = $option['option_name'];
+            }
+            $finalValue = implode(', ', $finalValue);
+        } else {
+            $finalValue = $value;
+        }
+
+        return $finalValue;
+    }
+
+    private function getMeprCustomFields()
+    {
+        $meprOptions = acym_loadResult('SELECT option_value FROM `wp_options` WHERE option_name = "mepr_options"');
+
+        if (empty($meprOptions)) return [];
+
+        $meprOptions = unserialize($meprOptions);
+
+        if (empty($meprOptions['custom_fields'])) return [];
+
+        $return = [];
+
+        foreach ($meprOptions['custom_fields'] as $custom_field) {
+            $return[$custom_field['field_key']] = $custom_field;
+        }
+
+        return $return;
+    }
+}

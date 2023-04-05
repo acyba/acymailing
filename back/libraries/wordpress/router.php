@@ -1,30 +1,36 @@
 <?php
 
-function acym_addScript($raw, $script, $type = 'text/javascript', $defer = false, $async = false, $needTagScript = false, $deps = ['jquery'])
+function acym_addScript(bool $raw, string $script, array $params = []): string
 {
     static $scriptNumber = 0;
     $scriptNumber++;
-    if ($raw) {
-        if (!empty($deps['script_name'])) {
-            wp_add_inline_script($deps['script_name'], $script);
-        } else {
-            echo '<script type="'.$type.'">'.$script.'</script>';
-        }
-    } elseif ($defer || $async || $needTagScript) {
-        echo '<script type="'.$type.'" src="'.$script.'"'.($async ? ' async' : '').($defer ? ' defer' : '').'></script>';
-    } else {
-        wp_enqueue_script('acym_script'.$scriptNumber, $script, $deps);
+    $handle = 'acym_script'.$scriptNumber;
+
+    if (!isset($params['dependencies'])) {
+        $params['dependencies'] = ['jquery'];
     }
 
-    return 'acym_script'.$scriptNumber;
+    if ($raw) {
+        if (!empty($params['dependencies']['script_name'])) {
+            wp_add_inline_script($params['dependencies']['script_name'], $script);
+        } else {
+            echo '<script type="text/javascript">'.$script.'</script>';
+        }
+    } elseif (!empty($params['defer']) || !empty($params['async']) || !empty($params['needTagScript'])) {
+        echo '<script type="text/javascript" src="'.$script.'"'.(!empty($params['async']) ? ' async' : '').(!empty($params['defer']) ? ' defer' : '').'></script>';
+    } else {
+        wp_enqueue_script($handle, $script, $params['dependencies']);
+    }
+
+    return $handle;
 }
 
-function acym_addStyle($raw, $style, $type = 'text/css', $media = null, $attribs = [])
+function acym_addStyle(bool $raw, string $style)
 {
     if ($raw) {
-        echo '<style type="'.$type.'"'.(empty($media) ? '' : ' media="'.$media.'"').'>'.$style.'</style>';
+        echo '<style>'.$style.'</style>';
     } else {
-        echo '<link rel="stylesheet" href="'.$style.'" type="'.$type.'"'.(empty($media) ? '' : ' media="'.$media.'"').'>';
+        echo '<link rel="stylesheet" href="'.$style.'" type="text/css">';
     }
 }
 
@@ -33,7 +39,9 @@ function acym_prepareFrontViewDisplay($ctrl, $task)
     if (acym_isAdmin()) return;
 
     $config = acym_config();
-    if ($ctrl === 'frontusers' && $task === 'unsubscribepage' && $config->get('unsubpage_header', 0) == 1) get_header();
+    if ($ctrl === 'frontusers' && $task === 'unsubscribepage' && $config->get('unsubpage_header', 0) == 1) {
+        get_header();
+    }
 }
 
 function acym_loadCmsScripts()

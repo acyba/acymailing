@@ -23,8 +23,11 @@ class SendinblueClass extends acymPlugin
             if (!$backtrace[0]['file'] && !empty($backtrace[1]['function'])) {
                 $this->plugin->errors[] = $backtrace[0]['file'].': '.$backtrace[1]['function'];
             }
+            acym_logError('Error calling the URL '.$url.': '.$response['error_curl'], 'sendinblue');
             $this->plugin->errors[] = $response['error_curl'];
         } elseif (!empty($response['message'])) {
+            acym_logError('Error calling the URL '.$url.': '.$response['message'], 'sendinblue');
+
             if (strpos($response['message'], 'Contact already in list') === false) {
                 if (!$backtrace[0]['file'] && !empty($backtrace[1]['function'])) {
                     $this->plugin->errors[] = $backtrace[0]['file'].': '.$backtrace[1]['function'];

@@ -15,6 +15,7 @@ class AutomationHelper extends acymObject
     var $orderBy = '';
     var $groupBy = '';
     var $limit = '';
+    public $invert = false;
 
     public function getQuery($select = [])
     {
@@ -82,8 +83,7 @@ class AutomationHelper extends acymObject
     public function removeFlag($id = null)
     {
         if (is_null($id)) {
-            $segmentsController = new SegmentsController();
-            $id = $segmentsController::FLAG_USERS;
+            $id = SegmentsController::FLAG_USERS;
         }
         acym_query('UPDATE #__acym_user SET automation = REPLACE(automation, "a'.intval($id).'a", "") WHERE automation LIKE "%a'.intval($id).'a%"');
     }

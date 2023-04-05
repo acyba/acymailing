@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    acym_helperUser.setSubscribeUnsubscribeUser();
-    acym_helperImport.initImport();
     initUser();
     blockPasteEvent();
 });

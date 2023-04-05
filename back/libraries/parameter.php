@@ -4,6 +4,9 @@ namespace AcyMailing\Libraries;
 
 class acymParameter
 {
+    public $params;
+    public $paramObject;
+
     /**
      * acymParameter constructor.
      *

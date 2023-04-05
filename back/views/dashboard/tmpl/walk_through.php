@@ -20,5 +20,5 @@
 			</div>
 		</div>
 	</div>
-    <?php acym_formOptions(true, '', null, 'dashboard'); ?>
+    <?php acym_formOptions(true, '', '', 'dashboard'); ?>
 </form>

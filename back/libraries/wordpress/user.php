@@ -23,7 +23,7 @@ function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
     return $user->roles;
 }
 
-function acym_getGroups($performance = false)
+function acym_getGroups()
 {
     $roles = wp_roles();
     if (empty($roles->roles)) {

@@ -1,4 +1,4 @@
-jQuery(function($) {
+jQuery(function ($) {
     function Init() {
         acym_helperSegment.reloadGlobalCounter($('.acym__segments__select__classic__filter').closest('.acym__segments__group__filter'));
         acym_helperSegment.refreshFilterProcess();
@@ -10,8 +10,9 @@ jQuery(function($) {
     }
 
     function setActionOnSelectSegment() {
-        $('[name="segment_selected"]').on('change', function (e) {
-            if ($(this).val() !== '' && $('[name^="acym_action"]').length > 0) {
+        $('[name="segment_selected"], [name="invert"]').on('change', function (e) {
+            const segment = $('[name="segment_selected"]');
+            if (segment.val() !== '' && $('[name^="acym_action"]').length > 0) {
                 if (acym_helper.confirm(ACYM_JS_TXT.ACYM_IF_YOU_SELECT_SEGMENT_FILTERS_ERASE)) {
                     $('.acym__segments__one__filter__classic').each((index, element) => {
                         if (index === 0) {
@@ -22,15 +23,27 @@ jQuery(function($) {
                         }
                     });
                 } else {
-                    $(this).val('');
+                    segment.val('');
+                }
+            } else {
+                // If we click on the invert/exclude button, we don't want to reload the segment
+                if ($(this).attr('name') === 'invert') {
+                    acym_helperSegment.reloadGlobalCounter();
+                    return;
                 }
             }
 
             let $counterInput = jQuery('#acym__campaigns__segment__edit-user-count');
             $counterInput.html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
-            let ajaxUrl = ACYM_AJAX_URL + '&ctrl=segments&task=countGlobalBySegmentId&id=' + $(this).val() + '&lists=' + $('[name="list_selected"]').val();
-
+            const exclude = document.querySelector('input[value="exclude"]').checked ? 1 : 0;
+            let ajaxUrl = ACYM_AJAX_URL
+                          + '&ctrl=segments&task=countGlobalBySegmentId&id='
+                          + segment.val()
+                          + '&lists='
+                          + $('[name="list_selected"]').val()
+                          + '&exclude='
+                          + exclude;
             $.get(ajaxUrl, function (res) {
                 res = acym_helper.parseJson(res);
                 if (res.error) {

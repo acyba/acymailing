@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 8.3.0
+ * Version: 8.4.1
  * Text Domain: acymailing
  * Domain Path: /language
  * Requires at least: 5.0
@@ -58,7 +58,7 @@ class acymailingLoader
         remove_action('plugins_loaded', ['WPAS_Gas', 'get_instance'], 11);
     }
 
-    public function disableWpml()
+    public function disableWpml(): bool
     {
         if (!$this->isCurrentlyOnAcyPage() || !$this->loadAcyMailingLibrary()) {
             return true;
@@ -117,7 +117,7 @@ class acymailingLoader
         include_once __DIR__.DS.'wpinit'.DS.'Oauth.php';
     }
 
-    private function isCurrentlyOnAcyPage()
+    private function isCurrentlyOnAcyPage(): bool
     {
         // Make sure we're on an AcyMailing page
         $page = isset($_REQUEST['page']) ? sanitize_text_field(wp_unslash($_REQUEST['page'])) : '';

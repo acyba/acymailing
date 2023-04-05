@@ -40,6 +40,7 @@
 			</div>
 		</div>
 	</div>
+    <?php $columnWidthClass = acym_isAdmin() ? 'medium-2 large-2' : 'medium-1'; ?>
 	<div class="grid-x acym__listing acym__listing__view__list">
 		<div class="grid-x cell acym__listing__header">
 			<div class="medium-shrink small-1 cell">
@@ -49,11 +50,11 @@
 				<div class="acym__listing__header__title cell auto">
                     <?php echo acym_translation('ACYM_LIST'); ?>
 				</div>
-				<div class="acym__listing__header__title cell hide-for-small-only medium-2 large-2 text-center">
+				<div class="acym__listing__header__title cell hide-for-small-only <?php echo $columnWidthClass; ?> text-center">
                     <?php echo acym_isAdmin() ? acym_translation('ACYM_SUBSCRIBED') : acym_tooltip('<i class="acymicon-user-check"></i>', acym_translation('ACYM_SUBSCRIBED')); ?>
 				</div>
                 <?php if ($this->config->get('require_confirmation', 1) == 1) { ?>
-					<div class="acym__listing__header__title cell hide-for-small-only medium-2 large-2 text-center">
+					<div class="acym__listing__header__title cell hide-for-small-only <?php echo $columnWidthClass; ?> text-center">
                         <?php echo acym_isAdmin()
                             ? acym_translation('ACYM_NOT_CONFIRMED')
                             : acym_tooltip(
@@ -62,7 +63,7 @@
                             ); ?>
 					</div>
                 <?php } ?>
-				<div class="acym__listing__header__title cell hide-for-small-only medium-2 large-2 text-center">
+				<div class="acym__listing__header__title cell hide-for-small-only <?php echo $columnWidthClass; ?> text-center">
                     <?php echo acym_isAdmin()
                         ? acym_translation('ACYM_UNSUBSCRIBED')
                         : acym_tooltip(
@@ -70,7 +71,7 @@
                             acym_translation('ACYM_UNSUBSCRIBED')
                         ); ?>
 				</div>
-				<div class="acym__listing__header__title cell hide-for-small-only medium-2 large-2 text-center">
+				<div class="acym__listing__header__title cell hide-for-small-only <?php echo $columnWidthClass; ?> text-center">
                     <?php echo acym_isAdmin() ? acym_translation('ACYM_INACTIVE') : acym_tooltip('<i class="acymicon-remove"></i>', acym_translation('ACYM_INACTIVE')); ?>
 				</div>
 				<div class="acym__listing__header__title cell hide-for-small-only medium-2 large-1 text-center">
@@ -85,7 +86,7 @@
 			</div>
 		</div>
         <?php foreach ($data['lists'] as $list) {
-            $linkList = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=settings&id='.intval($list->id));
+            $linkList = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=settings&listId='.intval($list->id));
             ?>
 			<div data-acy-elementid="<?php echo acym_escape($list->id); ?>" class="grid-x cell acym__listing__row">
 				<div class="medium-shrink small-1 cell">
@@ -101,22 +102,22 @@
                             ?>
 						</a>
 					</div>
-					<div class="small-1 medium-2 large-2 text-center small-up-1 cell">
+					<div class="small-1 <?php echo $columnWidthClass; ?> text-center small-up-1 cell">
                         <?php echo $list->sendable_users;
                         $textEvolSub = ' <span class="acym__listing__evol-green">(+'.$list->newSub.')</span>';
                         if (!empty($list->newSub)) echo acym_tooltip($textEvolSub, acym_translation('ACYM_EVOL_SUB')); ?>
 					</div>
                     <?php if ($this->config->get('require_confirmation', 1) == 1) { ?>
-						<div class="small-1 medium-2 large-2 text-center small-up-1 cell">
+						<div class="small-1 <?php echo $columnWidthClass; ?> text-center small-up-1 cell">
                             <?php echo $list->unconfirmed_users; ?>
 						</div>
                     <?php } ?>
-					<div class="small-1 medium-2 large-2 text-center small-up-1 cell">
+					<div class="small-1 <?php echo $columnWidthClass; ?> text-center small-up-1 cell">
                         <?php echo $list->unsubscribed_users;
                         $textEvolUnsub = ' <span class="acym__listing__evol-red">(+'.$list->newUnsub.')</span>';
                         if (!empty($list->newUnsub)) echo acym_tooltip($textEvolUnsub, acym_translation('ACYM_EVOL_UNSUB')); ?>
 					</div>
-					<div class="small-1 medium-2 large-2 text-center small-up-1 cell">
+					<div class="small-1 <?php echo $columnWidthClass; ?> text-center small-up-1 cell">
                         <?php echo $list->inactive_users; ?>
 					</div>
 					<div class="cell small-1 medium-2 large-1 text-center acym__listing__controls acym__lists__controls">
@@ -151,11 +152,13 @@
 					</div>
 					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
 						<a href="<?php echo $linkList; ?>"><i class="acymicon-pencil" title="<?php echo acym_translation('ACYM_EDIT'); ?>"></i></a>
-						<a><i class="acymicon-download fastActions"
-							  data-action="export"
-							  data-ctrl="users"
-							  data-acy-elementid="<?php echo acym_escape($list->id); ?>"
-							  title="<?php echo acym_translation('ACYM_EXPORT'); ?>"></i></a>
+                        <?php if (acym_isAdmin()) { ?>
+							<a><i class="acymicon-download fastActions"
+								  data-action="export"
+								  data-ctrl="users"
+								  data-acy-elementid="<?php echo acym_escape($list->id); ?>"
+								  title="<?php echo acym_translation('ACYM_EXPORT'); ?>"></i></a>
+                        <?php } ?>
 						<i class="cursor-pointer acymicon-trash-o fastActions deleteFastAction"
 						   data-action="delete"
 						   data-acy-elementid="<?php echo acym_escape($list->id); ?>"

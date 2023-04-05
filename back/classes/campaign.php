@@ -96,7 +96,7 @@ class CampaignClass extends acymClass
         }
 
         if (!empty($settings['search'])) {
-            $filters[] = 'mail.name LIKE '.acym_escapeDB('%'.utf8_encode($settings['search']).'%');
+            $filters[] = 'mail.name LIKE '.acym_escapeDB('%'.acym_utf8Encode($settings['search']).'%');
         }
 
         if ($settings['status'] != 'generated') {
@@ -426,6 +426,7 @@ class CampaignClass extends acymClass
         }
 
         $automationHelperBase = new AutomationHelper();
+        $automationHelperBase->removeFlag(SegmentsController::FLAG_COUNT);
 
         $filters = $this->getFilterCampaign($campaign->sending_params);
 
@@ -439,9 +440,26 @@ class CampaignClass extends acymClass
                     acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelpers[$or], &$options, &$and]);
                 }
             }
+            if (!empty($campaign->sending_params['segment']['invert'])) {
+                if ($campaign->sending_params['segment']['invert'] === 'exclude') {
+                    $automationHelpers[$or]->invert = true;
+                }
+            }
+            $automationHelpers[$or]->addFlag(SegmentsController::FLAG_COUNT);
         }
 
+        $automationHelperBase = new AutomationHelper();
         $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
+
+        if (!empty($filters)) {
+            if (!empty($campaign->sending_params['segment']['invert'])) {
+                if ($campaign->sending_params['segment']['invert'] === 'exclude') {
+                    foreach ($automationHelpers as $or => $orValues) {
+                        $orValues->where = ['user.automation NOT LIKE "%a'.SegmentsController::FLAG_COUNT.'a%"'];
+                    }
+                }
+            }
+        }
 
         $userIds = [];
         if (empty($automationHelpers)) {
@@ -457,14 +475,12 @@ class CampaignClass extends acymClass
                         $listsIds
                     ).') and user_list.status = 1 '.$join;
                 $userIds = array_merge($userIds, acym_loadResultArray($automationHelper->getQuery(['user.id'])));
+                $automationHelper->removeFlag(SegmentsController::FLAG_COUNT);
             }
             $userIds = array_unique($userIds);
         }
 
-
-        $count = count($userIds);
-
-        return $count;
+        return count($userIds);
     }
 
     public function getFilterCampaign($sendingParams)
@@ -521,7 +537,34 @@ class CampaignClass extends acymClass
             if ($this->config->get('require_confirmation', 1) == 1) $conditions[] = '`user`.`confirmed` = 1';
 
             $automationHelper = new AutomationHelper();
+            $automationHelper->removeFlag(SegmentsController::FLAG_COUNT);
+
+            $automationHelpers = [];
+            foreach ($filters as $or => $orValues) {
+                $automationHelpers[$or] = new $automationHelper;
+                foreach ($orValues as $and => $andValues) {
+                    $and = intval($and);
+                    foreach ($andValues as $filterName => $options) {
+                        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelpers[$or], &$options, &$and]);
+                    }
+                }
+                if ($campaign->sending_params['segment']['invert'] === 'exclude') {
+                    $automationHelpers[$or]->invert = true;
+                }
+                $automationHelpers[$or]->addFlag(SegmentsController::FLAG_COUNT);
+            }
+
+            $automationHelper = new AutomationHelper();
             $automationHelper->join['ul'] = ' #__acym_user_has_list AS ul ON ul.user_id = user.id AND ul.list_id IN ('.implode(',', $lists).') AND ul.status = 1 ';
+
+            if (!empty($filters)) {
+                if ($campaign->sending_params['segment']['invert'] === 'exclude') {
+                    $conditions[] = 'user.automation NOT LIKE "%a'.SegmentsController::FLAG_COUNT.'a%"';
+                } else {
+                    $conditions[] = 'user.automation LIKE "%a'.SegmentsController::FLAG_COUNT.'a%"';
+                }
+            }
+
             if (acym_isMultilingual()) {
                 $select = ['IF(mail.id IS NULL, '.intval($campaign->mail_id).', `mail`.`id`)', 'ul.`user_id`', acym_escapeDB($date)];
                 $automationHelper->leftjoin['mail'] = '`#__acym_mail` AS mail ON `mail`.`language` = `user`.language AND `mail`.`parent_id` = '.intval($campaign->mail_id);
@@ -535,28 +578,9 @@ class CampaignClass extends acymClass
             }
 
             $automationHelper->where = $conditions;
-
-            $automationHelper->removeFlag();
-            $automationHelpers = [];
-            foreach ($filters as $or => $orValues) {
-                $automationHelpers[$or] = clone $automationHelper;
-                foreach ($orValues as $and => $andValues) {
-                    $and = intval($and);
-                    foreach ($andValues as $filterName => $options) {
-                        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelpers[$or], &$options, &$and]);
-                    }
-                }
-            }
-
-            if (empty($automationHelpers)) {
-                $insertQuery = 'INSERT IGNORE INTO `#__acym_queue` (`mail_id`, `user_id`, `sending_date`) '.$automationHelper->getQuery($select);
-                $result = acym_query($insertQuery);
-            } else {
-                foreach ($automationHelpers as $oneAutomationHelper) {
-                    $insertQuery = 'INSERT IGNORE INTO `#__acym_queue` (`mail_id`, `user_id`, `sending_date`) '.$oneAutomationHelper->getQuery($select);
-                    $result += acym_query($insertQuery);
-                }
-            }
+            $insertQuery = 'INSERT IGNORE INTO `#__acym_queue` (`mail_id`, `user_id`, `sending_date`) '.$automationHelper->getQuery($select);
+            $result = acym_query($insertQuery);
+            $automationHelper->removeFlag(SegmentsController::FLAG_COUNT);
         }
 
         if ($campaign->sending_type == self::SENDING_TYPE_NOW) {
@@ -746,7 +770,7 @@ class CampaignClass extends acymClass
 
         // If the user search for a newsletter
         if (isset($params['search'])) {
-            $search = acym_escapeDB('%'.utf8_encode($params['search']).'%');
+            $search = acym_escapeDB('%'.acym_utf8Encode($params['search']).'%');
             $where .= 'AND (mail.subject LIKE '.$search.' OR mail.body LIKE '.$search.')';
         }
 

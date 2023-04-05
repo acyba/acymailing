@@ -12,6 +12,9 @@ class acymView extends acymObject
     // Are we creating or editing an element
     var $edition = false;
 
+    public $tabs;
+    public $Itemid;
+
     public function __construct()
     {
         parent::__construct();
@@ -88,18 +91,17 @@ class acymView extends acymObject
         if (!empty($data['header'])) echo $data['header'];
 
         $remindme = json_decode($this->config->get('remindme', '[]'), true);
-        if (acym_isAdmin() && !in_array('multilingual', $remindme) && acym_level(ACYM_ESSENTIAL) && $this->config->get('multilingual', '0') === '0' && $this->config->get(
-                'walk_through',
-                0
-            ) == 0) {
-            if (count(acym_getLanguages(false, true)) > 1) {
-                $message = acym_translation('ACYM_MULTILINGUAL_OPTIONS_PROMPT');
-                $message .= ' <a id="acym__multilingual__reminder" href="'.acym_completeLink('configuration&task=multilingual').'">'.acym_translation('ACYM_YES').'</a>';
-                $message .= ' / <a href="#" class="acym__do__not__remindme" title="multilingual">'.acym_translation('ACYM_NO').'</a>';
-                acym_display($message, 'info', false);
-            } else {
-                $remindme[] = 'multilingual';
-                $this->config->save(['remindme' => json_encode($remindme)]);
+        if ($this->config->get('walk_through', 0) == 0) {
+            if (acym_isAdmin() && !in_array('multilingual', $remindme) && acym_level(ACYM_ESSENTIAL) && $this->config->get('multilingual', '0') === '0') {
+                if (count(acym_getLanguages(false, true)) > 1) {
+                    $message = acym_translation('ACYM_MULTILINGUAL_OPTIONS_PROMPT');
+                    $message .= ' <a id="acym__multilingual__reminder" href="'.acym_completeLink('configuration&task=multilingual').'">'.acym_translation('ACYM_YES').'</a>';
+                    $message .= ' / <a href="#" title="multilingual" class="acym__do__not__remindme__multilingual">'.acym_translation('ACYM_NO').'</a>';
+                    acym_display($message, 'info', false);
+                } else {
+                    $remindme[] = 'multilingual';
+                    $this->config->save(['remindme' => json_encode($remindme)]);
+                }
             }
         }
 

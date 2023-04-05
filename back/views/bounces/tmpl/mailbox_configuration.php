@@ -2,15 +2,15 @@
 	<span class="acym__content__title__light-blue"><?php echo acym_translation('ACYM_CONFIGURATION'); ?></span>
 	<label class="cell grid-x">
 		<span class="cell medium-4"><?php echo acym_translation('ACYM_SMTP_SERVER'); ?></span>
-		<input class="cell medium-6" type="text" name="mailbox[server]" value="<?php echo acym_escape($data['mailboxAction']->server); ?>">
+		<input class="cell medium-6" type="text" name="mailbox[server]" value="<?php echo acym_escape($data['mailboxActions']->server); ?>">
 	</label>
 	<label class="cell grid-x">
 		<span class="cell medium-4"><?php echo acym_translation('ACYM_SMTP_USERNAME'); ?></span>
-		<input class="cell medium-6" type="text" name="mailbox[username]" value="<?php echo acym_escape($data['mailboxAction']->username); ?>">
+		<input class="cell medium-6" type="text" name="mailbox[username]" value="<?php echo acym_escape($data['mailboxActions']->username); ?>">
 	</label>
 	<label class="cell grid-x">
 		<span class="cell medium-4"><?php echo acym_translation('ACYM_SMTP_PASSWORD'); ?></span>
-		<input class="cell medium-6" type="text" name="mailbox[password]" value="<?php echo str_repeat('*', strlen($data['mailboxAction']->password)); ?>">
+		<input class="cell medium-6" type="text" name="mailbox[password]" value="<?php echo str_repeat('*', strlen($data['mailboxActions']->password)); ?>">
 	</label>
 	<div class="cell grid-x">
 		<label class="cell medium-4"><?php echo acym_translation('ACYM_CONNECTION_METHOD').acym_info('ACYM_CONNECTION_METHOD_DESC'); ?></label>
@@ -24,7 +24,7 @@
                     'pear' => 'POP3 ('.acym_translation('ACYM_WITHOUT_IMAP_EXT').')',
                 ],
                 'mailbox[connection_method]',
-                $data['mailboxAction']->connection_method,
+                $data['mailboxActions']->connection_method,
                 [
                     'class' => 'acym__select',
                     'acym-data-infinite' => '',
@@ -44,7 +44,7 @@
                     'tls' => 'TLS',
                 ],
                 'mailbox[secure_method]',
-                $data['mailboxAction']->secure_method,
+                $data['mailboxActions']->secure_method,
                 [
                     'class' => 'acym__select',
                     'acym-data-infinite' => '',
@@ -58,13 +58,13 @@
 		<input class="cell medium-6"
 			   type="number"
 			   name="mailbox[port]"
-			   value="<?php echo acym_escape($data['mailboxAction']->port); ?>">
+			   value="<?php echo acym_escape($data['mailboxActions']->port); ?>">
 	</label>
 	<div class="cell grid-x">
         <?php
         echo acym_switch(
             'mailbox[self_signed]',
-            $data['mailboxAction']->self_signed,
+            $data['mailboxActions']->self_signed,
             acym_translation('ACYM_SELF_SIGNED_CERTIFICATE'),
             [],
             'small-9 medium-4'

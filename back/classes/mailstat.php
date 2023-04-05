@@ -139,7 +139,7 @@ class MailStatClass extends acymClass
         $querySearch = '';
 
         if (!empty($search)) {
-            $querySearch .= ' mail.name LIKE '.acym_escapeDB('%'.utf8_encode($search).'%').' ';
+            $querySearch .= ' mail.name LIKE '.acym_escapeDB('%'.acym_utf8Encode($search).'%').' ';
             $queryAutoCampaign .= ' WHERE '.$querySearch;
 
             $querySearch = ' AND '.$querySearch;

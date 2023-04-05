@@ -17,10 +17,12 @@ class WorkflowHelper extends acymObject
      * @param array   $steps       => array('task' => 'ACYM_TITLE_TAB'). It is set in the view.html.php
      * @param string  $currentStep => The current step, you shouldn't have anything to do for this
      * @param boolean $edition     => are we in editing mode or in creation mode?
+     * @param bool    $needTabs
+     * @param string  $linkParameters
      *
      * @return string
      */
-    public function display($steps, $currentStep, $edition = true, $needTabs = false, $linkParameters = '')
+    public function display($steps, $currentStep, $edition = true, $needTabs = false, $linkParameters = ''): string
     {
         $ctrl = acym_getVar('cmd', 'ctrl');
         $id = acym_getVar('int', 'id', 0);

@@ -7,6 +7,8 @@ class GF_Field_Acy extends GF_Field
 {
 
     public $type = 'acy';
+    public $failed_validation;
+    public $validation_message;
 
     /**
      * This function allows to customize the label in the editor of the field that we insert

@@ -41,18 +41,11 @@ function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
     return $groups;
 }
 
-function acym_getGroups($performance = false)
+function acym_getGroups()
 {
-    $query = 'SELECT `groups`.*, `groups`.title AS text, `groups`.id AS `value` 
-        FROM #__usergroups AS `groups`';
-
-    if ($performance) {
-        $query .= ' ORDER BY value ASC
-        LIMIT 50';
-    }
-
     return acym_loadObjectList(
-        $query,
+        'SELECT `groups`.*, `groups`.title AS text, `groups`.id AS `value` 
+        FROM #__usergroups AS `groups`',
         'id'
     );
 }
@@ -62,9 +55,8 @@ function acym_punycode($email, $method = 'emailToPunycode')
     if (empty($email) || acym_isPunycode($email) || version_compare(ACYM_CMSV, '3.1.2', '<')) {
         return $email;
     }
-    $email = JStringPunycode::$method($email);
 
-    return $email;
+    return JStringPunycode::$method($email);
 }
 
 function acym_currentUserId()
