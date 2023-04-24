@@ -215,7 +215,7 @@ class ArchiveController extends acymController
         $params['page'] = $this->getVarFiltersListing('int', 'archive_pagination_page', 1);
         $campaignClass = new CampaignClass();
         $pagination = new PaginationHelper();
-        $params['numberPerPage'] = $pagination->getListLimit($viewParams['nbNewslettersPerPage']);
+        $params['numberPerPage'] = $viewParams['nbNewslettersPerPage'];
 
         $returnLastNewsletters = $campaignClass->getLastNewsletters($params);
         $pagination->setStatus($returnLastNewsletters['count'], $params['page'], $params['numberPerPage']);

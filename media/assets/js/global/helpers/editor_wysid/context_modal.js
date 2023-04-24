@@ -843,7 +843,7 @@ const acym_editorWysidContextModal = {
 
         let $contextSocial = jQuery('#acym__wysid__context__social__width');
         let width = $contextSocial.val() <= 80 ? $contextSocial.val() >= 30 ? $contextSocial.val() : 30 : 80;
-        let content = '<a class="acym__wysid__column__element__follow__' + selectedNetwork + '" href="">';
+        let content = '<a class="acym__wysid__column__element__follow__' + selectedNetwork + '" href="" target="_blank">';
         content += '<img style="display: inline-block; max-width: 100%; height: auto; box-sizing: border-box; width: '
                    + width
                    + 'px; padding: 3px;" src="'

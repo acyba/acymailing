@@ -47,7 +47,7 @@ class SendinblueCampaign extends SendinblueClass
         $this->callApiSendingMethod('emailCampaigns', $data, $this->headers, 'POST');
     }
 
-    public function cleanCampaigns()
+    public function cleanCampaigns(): bool
     {
         $cleanFrequency = $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency', 2592000);
         $lastClean = $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_last_clean', 0);

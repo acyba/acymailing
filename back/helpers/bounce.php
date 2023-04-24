@@ -373,7 +373,8 @@ class BounceHelper extends acymObject
                                 if (strpos($onePart, 'Content-Transfer-Encoding') !== false) {
                                     preg_match('#Content-Transfer-Encoding: (.+)#i', $onePart, $encoding);
                                     $encoding = trim($encoding[1]);
-                                    if (!empty($encoding)) {
+                                    // Someone has an issue when the $encoding is equal to 'Content-Type:' only
+                                    if (!empty($encoding) && $encoding !== 'Content-Type:') {
                                         $content = mb_convert_encoding($content, 'UTF-8', $encoding);
                                     }
                                 }

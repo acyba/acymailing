@@ -22,7 +22,7 @@ class SendinblueUsers extends SendinblueClass
 
         $nameParts = explode(' ', $userName, 2);
         $userData = [
-            'email' => $user->email,
+            'email' => acym_strtolower($user->email),
             'attributes' => [
                 'LASTNAME' => empty($nameParts[1]) ? '' : $nameParts[1],
                 'FIRSTNAME' => $nameParts[0],
@@ -72,7 +72,7 @@ class SendinblueUsers extends SendinblueClass
             $nameParts = explode(' ', $oneUser->name, 2);
             $lastName = str_replace('"', '', empty($nameParts[1]) ? '' : $nameParts[1]);
             $firstName = str_replace('"', '', $nameParts[0]);
-            $buffer .= '"'.$lastName.'";"'.$firstName.'";"'.$oneUser->email."\"\n";
+            $buffer .= '"'.$lastName.'";"'.$firstName.'";"'.acym_strtolower($oneUser->email)."\"\n";
             $limit--;
 
             if ($limit === 0) {
@@ -135,7 +135,7 @@ class SendinblueUsers extends SendinblueClass
 
         foreach ($users as $oneUser) {
             $userToDelete = $userClass->getOneById($oneUser);
-            $this->callApiSendingMethod($deleteUrl.urlencode($userToDelete->email), [], $this->headers, 'DELETE');
+            $this->callApiSendingMethod($deleteUrl.urlencode(acym_strtolower($userToDelete->email)), [], $this->headers, 'DELETE');
         }
     }
 
@@ -155,7 +155,7 @@ class SendinblueUsers extends SendinblueClass
         }
     }
 
-    private function addAttribute(&$existingAttributes, $attributeName)
+    private function addAttribute(&$existingAttributes, $attributeName): bool
     {
         if (!empty($existingAttributes[$attributeName])) return false;
         $this->callApiSendingMethod(
@@ -176,6 +176,7 @@ class SendinblueUsers extends SendinblueClass
 
         if (empty($listId)) return false;
 
+        $email = acym_strtolower($email);
         $data = [
             'emails' => [$email],
         ];
@@ -188,12 +189,12 @@ class SendinblueUsers extends SendinblueClass
             $warnings .= $response['message'];
             acym_logError('Error trying to add user '.$email.' to list '.$listId.' for mail ID '.$mailId.': '.$response['message'], 'sendinblue');
         } else {
-            if ($success) {
-                //acym_logError('Successfully added user '.$email.' to list '.$listId.' for mail ID '.$mailId, 'sendinblue');
-            } elseif (!empty($response['message'])) {
-                acym_logError('Error trying to add user '.$email.' to list '.$listId.' for mail ID '.$mailId.': '.$response['message'], 'sendinblue');
-            } else {
-                acym_logError('Error trying to add user '.$email.' to list '.$listId.' for mail ID '.$mailId.' - unknown error: '.json_encode($response), 'sendinblue');
+            if (!$success) {
+                if (!empty($response['message'])) {
+                    acym_logError('Error trying to add user '.$email.' to list '.$listId.' for mail ID '.$mailId.': '.$response['message'], 'sendinblue');
+                } else {
+                    acym_logError('Error trying to add user '.$email.' to list '.$listId.' for mail ID '.$mailId.' - unknown error: '.json_encode($response), 'sendinblue');
+                }
             }
         }
 
@@ -226,18 +227,18 @@ class SendinblueUsers extends SendinblueClass
                 $subjectAttribute => $subjectContent,
                 $contentAttribute => $personalContent,
             ],
-            'email' => $email,
+            'email' => acym_strtolower($email),
             'updateEnabled' => true,
         ];
         $this->callApiSendingMethod('contacts', $data, $this->headers, 'POST');
     }
 
-    public function getAttributeName($mailId)
+    public function getAttributeName($mailId): string
     {
         return 'HTML_CONTENT_'.$mailId;
     }
 
-    public function getSubjectAttributeName($mailId)
+    public function getSubjectAttributeName($mailId): string
     {
         return 'SUBJECT_'.$mailId;
     }
@@ -258,7 +259,7 @@ class SendinblueUsers extends SendinblueClass
         }
     }
 
-    private function removeAttribute(&$existingAttributes, $attributeName)
+    private function removeAttribute(&$existingAttributes, $attributeName): bool
     {
         $this->callApiSendingMethod(plgAcymSendinblue::SENDING_METHOD_API_URL.'contacts/attributes/normal/'.$attributeName, [], $this->headers, 'DELETE');
 

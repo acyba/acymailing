@@ -41,6 +41,14 @@ class acyElasticemail
         $info = $header.$data;
         $result = $this->sendinfo($info);
 
+        if (!is_array($result)) {
+            $this->error = $result;
+            if (stripos($result, 'Access Denied')) {
+                $this->error = acym_translation('ACYM_ELASTICEMAIL_ATTACHMENT_ACL_ISSUE');
+            }
+
+            return false;
+        }
         $this->attachment[$filepath] = $result['data']['fileid'];
 
         return $result['data']['fileid'];

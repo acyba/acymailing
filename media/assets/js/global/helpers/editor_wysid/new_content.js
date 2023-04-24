@@ -95,13 +95,13 @@ const acym_editorWysidNewContent = {
         content += '<div style="text-align: center;">';
         content += '<p class="acym__wysid__column__element__follow" style="text-align: center; cursor: pointer; padding: 0;margin: 0;">';
 
-        content += '<a class="acym__wysid__column__element__follow__facebook" href="">';
+        content += '<a class="acym__wysid__column__element__follow__facebook" href="" target="_blank">';
         content += '<img hspace="0" style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="'
                    + acym_helperEditorWysid.socialMedia.facebook.src
                    + '" width="40" alt="facebook">';
         content += '</a>';
 
-        content += '<a class="acym__wysid__column__element__follow__twitter" href="">';
+        content += '<a class="acym__wysid__column__element__follow__twitter" href="" target="_blank">';
         content += '<img hspace="0" style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="'
                    + acym_helperEditorWysid.socialMedia.twitter.src
                    + '"  width="40" alt="twitter">';

@@ -311,8 +311,6 @@ trait Edition
 
         $data['before-save'] = $data['editor']->editor != 'acyEditor' ? '' : 'acym-data-before="acym_editorWysidMultilingual.storeCurrentValues(true);"';
 
-        $data['before-save'] = $data['editor']->editor != 'acyEditor' ? '' : 'acym-data-before="acym_editorWysidMultilingual.storeCurrentValues(true);"';
-
         $data['menuClass'] = $this->menuClass;
 
         parent::display($data);

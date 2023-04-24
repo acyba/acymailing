@@ -165,6 +165,7 @@ trait Actions
 
     public function confirmCampaign()
     {
+        $this->updateOpenAcymailerPopup();
         $campaignId = acym_getVar('int', 'id');
         $campaignSendingDate = acym_getVar('string', 'sending_date');
         $resendTarget = acym_getVar('cmd', 'resend_target', '');
@@ -196,6 +197,7 @@ trait Actions
 
     public function activeAutoCampaign()
     {
+        $this->updateOpenAcymailerPopup();
         $campaignId = acym_getVar('int', 'id');
         $campaignClass = new CampaignClass();
 
@@ -271,6 +273,7 @@ trait Actions
 
     public function addQueue()
     {
+        $this->updateOpenAcymailerPopup();
         acym_checkToken();
 
         $campaignID = acym_getVar('int', 'id', 0);
@@ -311,6 +314,13 @@ trait Actions
             acym_redirect(acym_completeLink('queue&task=campaigns', false, true));
         } else {
             $this->listing();
+        }
+    }
+
+    private function updateOpenAcymailerPopup()
+    {
+        if (acym_isAdmin() && $this->config->get('mailer_method') === 'acymailer' && $this->config->get('acymailer_popup', '0') === '0') {
+            $this->config->save(['acymailer_popup' => '1']);
         }
     }
 }

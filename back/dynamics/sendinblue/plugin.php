@@ -66,7 +66,17 @@ class plgAcymSendinblue extends acymPlugin
 
     public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $reply_to, $bcc = [], $attachments = [])
     {
-        $this->transactional->sendTransactionalEmail($response, $mailerHelper->externalMailer, $to, $mailerHelper->Subject, $from, $reply_to, $mailerHelper->Body, $bcc, $attachments);
+        $this->transactional->sendTransactionalEmail(
+            $response,
+            $mailerHelper->externalMailer,
+            $to,
+            $mailerHelper->Subject,
+            $from,
+            $reply_to,
+            $mailerHelper->Body,
+            $bcc,
+            $attachments
+        );
     }
 
     public function onAcymGetCreditRemainingSendingMethod(&$html, $reloading = false)
@@ -97,8 +107,10 @@ class plgAcymSendinblue extends acymPlugin
         if ($this->config->get('mailer_method') != self::SENDING_METHOD_ID) return;
 
         $result = $this->users->addUserToList($receiverEmail, $mailId, $warnings);
-        // The API returns null every time so we have no clue if this went well
-        $this->users->addAttributeToUser($receiverEmail, $subjectContent, $htmlContent, $mailId);
+        if ($result) {
+            // The API returns null every time so we have no clue if this went well
+            $this->users->addAttributeToUser($receiverEmail, $subjectContent, $htmlContent, $mailId);
+        }
     }
 
     public function onAcymAfterUserModify($user, &$oldUser)
@@ -121,7 +133,7 @@ class plgAcymSendinblue extends acymPlugin
         $this->users->deleteUsers($users);
     }
 
-    public function onAcymSendCampaignOnExternalSendingMethod($mailId, $content)
+    public function onAcymSendCampaignOnExternalSendingMethod($mailId, $content): bool
     {
         if ($this->config->get('mailer_method') != self::SENDING_METHOD_ID) return true;
 
@@ -146,7 +158,7 @@ class plgAcymSendinblue extends acymPlugin
         $this->users->createFromImportedSource($source);
     }
 
-    public function onAcymCleanDataExternalSendingMethod()
+    public function onAcymCleanDataExternalSendingMethod(): bool
     {
         if ($this->config->get('mailer_method') != self::SENDING_METHOD_ID) return true;
 

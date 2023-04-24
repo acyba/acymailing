@@ -13,7 +13,7 @@ class SendinblueCredentials extends SendinblueClass
         ];
     }
 
-    public function getHeadersSendingMethod($sendingMethod, $credentials = [])
+    public function getHeadersSendingMethod($sendingMethod, $credentials = []): array
     {
         if (empty($credentials)) {
             $this->onAcymGetCredentialsSendingMethod($credentials, $sendingMethod);

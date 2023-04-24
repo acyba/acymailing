@@ -39,9 +39,6 @@ class CronHelper extends acymObject
     var $startQueue = 0;
 
     // If we call the cron just to send a batch of emails
-    var $cronLastOnCron = 0;
-
-    // If we call the cron just to send a batch of emails
     var $externalSendingActivated = false;
     var $externalSendingRepeat = false;
     var $externalSendingNotFinished = false;
@@ -93,9 +90,6 @@ class CronHelper extends acymObject
 
         // Step 1: Check the last cron launched...
         $time = time();
-
-        //If we do not have run the cron we set it to yesterday so it will be trigger
-        $this->cronLastOnCron = $this->config->get('cron_last', $time - 86400);
 
         $firstMessage = acym_translationSprintf('ACYM_CRON_TRIGGERED', acym_date('now', 'd F Y H:i'));
         $this->messages[] = $firstMessage;
@@ -397,6 +391,11 @@ class CronHelper extends acymObject
             $exportHelper->cleanExportChangesFile();
         }
 
+        // Step 15: If it's a daily cron we update the last time it has been triggered
+        if ($this->isDailyCron()) {
+            $this->config->save(['cron_last_daily' => $time]);
+        }
+
         if ($this->externalSendingNotFinished) acym_makeCurlCall(acym_frontendLink('cron&external_sending_repeat=1'), [], [], true);
 
         return true;
@@ -509,7 +508,7 @@ class CronHelper extends acymObject
         $time = time();
 
         //If we do not have run the cron we set it to yesterday so it will be trigger
-        $lastCronDayBasedOnCMSTimezone = acym_date($this->cronLastOnCron, 'Y-m-d');
+        $lastCronDayBasedOnCMSTimezone = acym_date($this->config->get('cron_last_daily', $time - 86400), 'Y-m-d');
 
         return $time >= $dayBasedOnCMSTimezoneAtSpecifiedHour && $lastCronDayBasedOnCMSTimezone != $dayBasedOnCMSTimezone;
     }

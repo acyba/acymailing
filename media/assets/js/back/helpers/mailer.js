@@ -311,6 +311,11 @@ const acym_helperMailer = {
             }).then(response => {
                 if (response.error) {
                     acym_helperNotification.addNotification(response.message, 'error', true);
+
+                    const $currentDiv = jQuery(`div[acym-data-domain="${response.data['domain']}"]`);
+                    $currentDiv.parent().find('.acymicon-spin')
+                               .replaceWith('<i class="acym__config__acymailer__status__icon acymicon-remove acym__color__red notValidated"></i>');
+                    $currentDiv.find('.acym__tooltip__text').html(response.message);
                     return;
                 }
 

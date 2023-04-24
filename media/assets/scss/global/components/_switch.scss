@@ -5,8 +5,8 @@
 
     .switch-paddle {
         margin-left: 15px;
-        width: 50px;
-        height: 24px;
+        width: 40px;
+        height: 19px;
         font-size: .625rem;
         background: $color-palette-light-blue;
         border: 1px solid $color-palette-dark-blue;
@@ -18,8 +18,8 @@
         &:after {
             top: 2px;
             left: 2px;
-            width: 18px;
-            height: 18px;
+            width: 13px;
+            height: 13px;
             background: $color-palette-dark-blue;
         }
     }
@@ -29,7 +29,7 @@
 
         &:after {
             background: $white;
-            left: 28px;
+            left: 23px;
         }
     }
 }

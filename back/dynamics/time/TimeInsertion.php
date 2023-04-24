@@ -52,7 +52,7 @@ trait TimeInsertion
 
             $time = time();
             if (!empty($oneTag->senddate) && !empty($email->sending_date)) {
-                $time = $email->sending_date;
+                $time = strtotime($email->sending_date);
             }
             if (!empty($oneTag->add)) {
                 $time += intval($oneTag->add);

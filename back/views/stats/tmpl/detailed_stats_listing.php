@@ -133,7 +133,7 @@
                                     $link = acym_completeLink('campaigns&task=summaryGenerated&id='.$detailed_stat->campaign_id);
                                 }
 
-                                $name = '<a href="'.$link.'" class="word-break acym__color__blue">'.$detailed_stat->name.'</a>';
+                                $name = '<a href="'.$link.'" class="word-break acym__color__blue">'.$detailed_stat->subject.'</a>';
                             } else {
                                 $name = $detailed_stat->name;
                             }

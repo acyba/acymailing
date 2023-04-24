@@ -157,7 +157,7 @@ class QueueHelper extends acymObject
             if (!$this->mod_security2) {
                 @flush();
             }
-        }//endifreport
+        }
 
         $mailHelper = new MailerHelper();
         $mailHelper->report = false;
@@ -204,11 +204,14 @@ class QueueHelper extends acymObject
         }
 
         $sentEmails = [];
-        $emailFrequency = $this->fromManual ? 0 : $this->config->get('email_frequency', 0);
+        $emailFrequency = $this->fromManual ? 0 : intval($this->config->get('email_frequency', 0));
+        if ($emailFrequency < 0) {
+            $emailFrequency = 0;
+        }
 
         foreach ($queueElements as $oneQueue) {
-            if (!empty($emailFrequency) && intval($emailFrequency) > 0) {
-                sleep(intval($emailFrequency));
+            if (!empty($emailFrequency)) {
+                sleep($emailFrequency);
             }
 
             $currentMail++;
@@ -224,7 +227,12 @@ class QueueHelper extends acymObject
             }
 
             $this->triggerSentHook($oneQueue->mail_id);
-            $result = $mailHelper->sendOne($oneQueue->mail_id, $oneQueue->user_id);
+            try {
+                $result = $mailHelper->sendOne($oneQueue->mail_id, $oneQueue->user_id);
+            } catch (\Exception $e) {
+                $result = false;
+                $this->_display($e->getMessage(), 'error', $e->getCode());
+            }
 
             if (empty($sentEmails[$oneQueue->mail_id])) {
                 $sentEmails[$oneQueue->mail_id] = $mailHelper->Body;

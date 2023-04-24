@@ -870,7 +870,7 @@ class FrontusersController extends UsersController
         acym_checkToken();
 
         $userClass = new UserClass();
-        $user = $userClass->identify(true);
+        $user = $userClass->identify(true, 'userId', 'userKey');
 
         if (empty($user->id)) {
             acym_redirect(acym_rootURI());
@@ -884,7 +884,7 @@ class FrontusersController extends UsersController
     {
         acym_checkToken();
         $userClass = new UserClass();
-        $user = $userClass->identify(true);
+        $user = $userClass->identify(true, 'userId', 'userKey');
         $userClass->delete($user->id);
     }
 
@@ -922,7 +922,9 @@ class FrontusersController extends UsersController
                 $messages = [$messages];
             }
 
-            $output .= '<div class="acym_callout acym__callout__front__'.$type.'">'.implode(' ', $messages).'<div class="acym_callout_close">x</div></div>';
+            $output .= '<div class="acym_callout acym__callout__front__'.$type.'" role="alert">';
+            $output .= implode(' ', $messages);
+            $output .= '<button class="acym_callout_close" aria-label="'.acym_escape(acym_translation('ACYM_CLOSE_NOTIFICATION')).'">x</button></div>';
 
             unset($_SESSION['acymessage'.$type]);
         }

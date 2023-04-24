@@ -61,7 +61,7 @@ class SendinblueList extends SendinblueClass
         return $response['id'];
     }
 
-    public function deleteList($mailId)
+    public function deleteList($mailId): bool
     {
         $listId = 0;
         $this->getListExternalSendingMethod($listId, $mailId, false);

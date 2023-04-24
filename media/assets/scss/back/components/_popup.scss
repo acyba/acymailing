@@ -1,0 +1,22 @@
+#acym_wrapper {
+    #acym__template__import__reveal, #acym__acymailer__popup {
+        position: relative;
+        overflow: hidden;
+
+        #acym__template__import__image__spaceman {
+            position: absolute;
+            width: 40%;
+            bottom: -80px;
+            left: -14%;
+            z-index: -10;
+        }
+
+        #acym__template__import__image__smoke {
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            left: 0;
+            z-index: -10;
+        }
+    }
+}

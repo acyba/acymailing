@@ -298,7 +298,24 @@ class plgSystemAcymtriggers extends JPlugin
             $labelClass = empty($options['labelClass']) ? '' : $options['labelClass'];
             $valueClass = empty($options['valueClass']) ? '' : $options['valueClass'];
 
-            $formats = ['li' => ['li', 'li'], 'div' => ['div', 'div'], 'p' => ['div', 'div'], 'dd' => ['dt', 'div']];
+            $customHtmlElement = $config->get('regacy_customhtmlelement', '');
+
+            switch ($customHtmlElement) {
+                case 'li':
+                    $formats = ['li' => ['li', 'li']];
+                    break;
+                case 'div':
+                    $formats = ['div' => ['div', 'div']];
+                    break;
+                case 'p':
+                    $formats = ['p' => ['div', 'div']];
+                    break;
+                case 'dd':
+                    $formats = ['dd' => ['dt', 'div']];
+                    break;
+                default:
+                    $formats = ['li' => ['li', 'li'], 'div' => ['div', 'div'], 'p' => ['div', 'div'], 'dd' => ['dt', 'div']];
+            }
 
             for ($j = 0 ; $j < 2 ; $j++) {
                 foreach ($formats as $oneFormat => $dispall) {
@@ -345,7 +362,7 @@ class plgSystemAcymtriggers extends JPlugin
 
         if (!$this->initAcy()) return true;
         acym_trigger('onRegacyAfterRoute', []);
-        
+
         if (empty($_GET['code']) || empty($_GET['state'])) {
             return;
         }

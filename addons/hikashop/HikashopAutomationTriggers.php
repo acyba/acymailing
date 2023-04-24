@@ -9,16 +9,9 @@ trait HikashopAutomationTriggers
     // Add trigger configuration for Hikashop order status change and wishlist
     public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
     {
-        if (!include_once rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php') return;
-
-        $statusClass = hikashop_get('type.categorysub');
-        $statusClass->type = 'status';
-        $statusClass->load();
-
-        if (empty($statusClass->categories)) return;
-
-        $triggers['user']['hikashoporder'] = new stdClass();
-        $triggers['user']['hikashoporder']->name = acym_translationSprintf('ACYM_ORDER_STATUS_CHANGED', 'HikaShop', '');
+        if (!include_once rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php') {
+            return;
+        }
 
         $triggers['user']['hikashopNewOrder'] = new stdClass();
         $triggers['user']['hikashopNewOrder']->name = acym_translationSprintf('ACYM_X_NEW_ORDER', 'HikaShop');
@@ -28,36 +21,47 @@ trait HikashopAutomationTriggers
         $triggers['user']['hikashopWishlistUpdated']->name = acym_translationSprintf('ACYM_X_ADD_TO_WISHLIST', 'HikaShop');
         $triggers['user']['hikashopWishlistUpdated']->option = '<input type="hidden" name="[triggers][user][hikashopWishlistUpdated][hidden]" value="">';
 
+        $statusClass = hikashop_get('type.categorysub');
+        $statusClass->type = 'status';
+        $statusClass->load();
+
+        if (empty($statusClass->categories)) {
+            return;
+        }
+
         $cats = [];
         foreach ($statusClass->categories as $category) {
-            if (empty($category->value)) {
-                $val = str_replace(' ', '_', strtoupper($category->category_name));
-                $category->value = acym_translation($val);
-                if ($val == $category->value) {
-                    $category->value = $category->category_name;
-                }
-            }
-            $cats[$category->value] = $category->value;
+            $val = str_replace(' ', '_', strtoupper($category->category_name));
+            $cats[$category->category_namekey] = acym_translation($val);
         }
 
         $selectedValue = empty($defaultValues['hikashoporder']['status']) ? [] : $defaultValues['hikashoporder']['status'];
-        $triggers['user']['hikashoporder']->option = acym_selectMultiple($cats, '[triggers][user][hikashoporder][status]', $selectedValue, ['data-class' => 'acym__select']);
+
+        $triggers['user']['hikashoporder'] = new stdClass();
+        $triggers['user']['hikashoporder']->name = acym_translationSprintf('ACYM_ORDER_STATUS_CHANGED', 'HikaShop', '');
+        $triggers['user']['hikashoporder']->option = acym_selectMultiple(
+            $cats,
+            '[triggers][user][hikashoporder][status]',
+            $selectedValue,
+            ['data-class' => 'acym__select']
+        );
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)
     {
-        if (empty($data['userId'])) return;
+        if (empty($data['userId'])) {
+            return;
+        }
 
         $triggers = $step->triggers;
 
         if (!empty($triggers['hikashoporder']) && !empty($data['order'])) {
-            // Check order status in allowed statuses in the trigger
-            if (!empty($triggers['hikashoporder']) && in_array($data['order']->order_status, $triggers['hikashoporder']['status'])) {
+            if (in_array($data['order']->order_status, $triggers['hikashoporder']['status'])) {
                 $execute = true;
             }
         }
         if (!empty($triggers['hikashopNewOrder']) && !empty($data['order'])) {
-            if ($data['order']->order_status == 'confirmed') {
+            if ($data['order']->order_status === 'confirmed') {
                 $execute = true;
             }
         }
@@ -68,12 +72,14 @@ trait HikashopAutomationTriggers
         }
     }
 
-    // Trigger on Hikashop status change
+    // Trigger on HikaShop status change
     public function onAfterOrderUpdate(&$order)
     {
-        if (empty($order->order_id) || empty($order->order_status)) return;
+        if (empty($order->order_id) || empty($order->order_status)) {
+            return;
+        }
 
-        // Get Hikashop user from the order
+        // Get HikaShop user from the order
         if (empty($order->order_user_id)) {
             $class = hikashop_get('class.order');
             $old = $class->get($order->order_id);

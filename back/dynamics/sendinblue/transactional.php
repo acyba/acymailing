@@ -11,7 +11,7 @@ class SendinblueTransactional extends SendinblueClass
             'replyTo' => $reply_to,
             'to' => [
                 [
-                    'email' => $to['email'],
+                    'email' => acym_strtolower($to['email']),
                 ],
             ],
             'subject' => $subject,

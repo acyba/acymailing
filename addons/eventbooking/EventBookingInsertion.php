@@ -475,7 +475,7 @@ trait EventBookingInsertion
         }
         $varFields['{indiv}'] = implode(' ', $varFields['{indiv}']);
         if (in_array('indiv', $tag->display) || in_array('group', $tag->display)) {
-            $customFields[] = [implode(' ', $varFields['{indiv}'])];
+            $customFields[] = [$varFields['{indiv}']];
         }
 
         $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_translation(
