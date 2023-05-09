@@ -1040,7 +1040,7 @@ class UserClass extends acymClass
         if (empty($id)) return false;
 
         $formData = acym_getVar('array', 'data', []);
-        acym_setVar('id', $id);
+        acym_setVar('userId', $id);
 
         if (!acym_isAdmin()) {
             $hiddenlistsString = acym_getVar('string', 'hiddenlists', '');
