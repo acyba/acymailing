@@ -36,7 +36,7 @@ trait Available
 
         $pluginClass = new PluginClass();
         if (empty($pluginFromUpdate)) {
-            $this->isLastestAcyMailingVersion();
+            $this->isLatestAcyMailingVersion();
             $plugin = acym_getVar('array', 'plugin');
         } else {
             $urlDownload = ACYM_UPDATEMEURL.'integrationv6&task=getAllPlugin&cms='.ACYM_CMS;

@@ -31,14 +31,14 @@ trait SubscriptionFollowup
 
     public function getFollowupTriggers(&$triggers)
     {
-        $triggers[$this->subscribeTrigger] = acym_translation('ACYM_USER_SUBSCRIBE');
+        $triggers[$this->subscribeTrigger] = acym_translation('ACYM_USER_SUBSCRIBES');
     }
 
     public function getFollowupTriggerBlock(&$blocks)
     {
         $blocks[] = [
-            'name' => acym_translation('ACYM_USER_SUBSCRIBE'),
-            'description' => acym_translation('ACYM_USER_SUBSCRIBE_DESC'),
+            'name' => acym_translation('ACYM_USER_SUBSCRIBES'),
+            'description' => acym_translation('ACYM_USER_SUBSCRIBES_DESC'),
             'icon' => 'acymicon-user-check',
             'link' => acym_completeLink('campaigns&task=edit&step=followupCondition&trigger='.$this->subscribeTrigger),
             'level' => 2,

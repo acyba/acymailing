@@ -34,7 +34,7 @@ trait SubscriptionInsertion
         $others['subscribe'] = ['name' => acym_translation('ACYM_SUBSCRIBE_LINK'), 'default' => 'ACYM_SUBSCRIBE'];
 
         ?>
-		<script type="text/javascript">
+        <script type="text/javascript">
             var openedLists = false;
             var selectedSubscriptionDText = '';
 
@@ -81,7 +81,7 @@ trait SubscriptionInsertion
                     changeSubscriptionTag('subscribe');
                 });
             }
-		</script>
+        </script>
         <?php
 
         //Add an area where the user will be able to select another text to add
@@ -561,15 +561,15 @@ trait SubscriptionInsertion
 
         $lang = $this->getLanguage($email->links_language);
 
-        if ($parameters->id == 'confirm') {
+        if ($parameters->id === 'confirm') {
             // subscription confirmation link
-            $myLink = acym_frontendLink('frontusers&task=confirm&id={subscriber:id}&key={subscriber:key|urlencode}'.$lang);
+            $myLink = acym_frontendLink('frontusers&task=confirm&userId={subscriber:id}&userKey={subscriber:key|urlencode}'.$lang);
             if (empty($allresults[2][$i])) {
                 return $myLink;
             }
 
             return '<a target="_blank" href="'.$myLink.'"><span class="acym_confirm acym_link">'.$allresults[2][$i].'</span></a>';
-        } elseif ($parameters->id == 'subscribe') {
+        } elseif ($parameters->id === 'subscribe') {
             // direct subscription link
             if (empty($parameters->lists)) {
                 return acym_translation('ACYM_EXPORT_SELECT_LIST');
@@ -577,7 +577,9 @@ trait SubscriptionInsertion
             $lists = explode(',', $parameters->lists);
             acym_arrayToInteger($lists);
             $captchaKey = $this->config->get('captcha', 'none') !== 'none' ? '&seckey='.$this->config->get('security_key', '') : '';
-            $myLink = acym_frontendLink('frontusers&task=subscribe&hiddenlists='.implode(',', $lists).'&id={subscriber:id}&key={subscriber:key|urlencode}'.$lang.$captchaKey);
+            $myLink = acym_frontendLink(
+                'frontusers&task=subscribe&hiddenlists='.implode(',', $lists).'&userId={subscriber:id}&userKey={subscriber:key|urlencode}'.$lang.$captchaKey
+            );
             if (empty($allresults[2][$i])) {
                 return $myLink;
             }
@@ -587,9 +589,12 @@ trait SubscriptionInsertion
             // unsubscribe link
             $this->unsubscribeLink[$email->id] = true;
 
-            $myLink = 'frontusers&task=unsubscribe&id={subscriber:id}&key={subscriber:key|urlencode}'.$lang.'&mail_id='.$email->id;
-            if ($this->config->get('unsubpage_header') != 1) $myLink .= '&'.acym_noTemplate();
+            $myLink = 'frontusers&task=unsubscribe&userId={subscriber:id}&userKey={subscriber:key|urlencode}'.$lang.'&mail_id='.$email->id;
+            if ($this->config->get('unsubpage_header') != 1) {
+                $myLink .= '&'.acym_noTemplate();
+            }
             $myLink = acym_frontendLink($myLink);
+
             if (empty($allresults[2][$i])) {
                 return $myLink;
             }

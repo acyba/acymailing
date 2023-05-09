@@ -368,3 +368,7 @@ function acym_translateDate($date)
 
     return $date;
 }
+
+function acym_isDateValid($date) {
+    return $date !== '0000-00-00 00:00:00' && !empty($date);
+}

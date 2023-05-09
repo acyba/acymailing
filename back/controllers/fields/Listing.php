@@ -15,7 +15,7 @@ trait Listing
             acym_setVar('layout', 'splashscreen');
         }
 
-        return parent::display($data);
+        parent::display($data);
     }
 
     protected function prepareToolbar(&$data)
@@ -26,22 +26,18 @@ trait Listing
         $data['toolbar'] = $toolbarHelper;
     }
 
-    public function setOrdering()
+    public function ajaxSetOrdering()
     {
         $order = json_decode(acym_getVar('string', 'order'));
         $i = 1;
         $error = false;
         foreach ($order as $field) {
             $query = 'UPDATE #__acym_field SET `ordering` = '.intval($i).' WHERE `id` = '.intval($field);
-            $error = acym_query($query) >= 0 ? false : true;
+            $error = acym_query($query) < 0 || $error;
             $i++;
         }
-        if ($error) {
-            echo 'error';
-        } else {
-            echo 'updated';
-        }
-        exit;
+
+        acym_sendAjaxResponse('', [], !$error);
     }
 
     public function delete()

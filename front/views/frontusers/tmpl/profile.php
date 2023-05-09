@@ -33,7 +33,9 @@ $formName = acym_getModuleFormName();
                             $valueTmp = new stdClass();
                             $valueTmp->text = $value->title;
                             $valueTmp->value = $value->value;
-                            if ($value->disabled == 'y') $valueTmp->disable = true;
+                            if ($value->disabled == 'y') {
+								$valueTmp->disable = true;
+							}
                             $valuesArray[$value->value] = $valueTmp;
                         }
                     }
@@ -49,8 +51,7 @@ $formName = acym_getModuleFormName();
                     echo $data['fieldClass']->displayField($field, $field->default_value, $size, $valuesArray, true, true, $data['user']);
                     echo '</span>';
 
-                    $config = acym_config();
-                    if ($field->id == 2 && $config->get('email_confirmation')) {
+                    if ($field->id == 2 && $this->config->get('email_confirmation')) {
                         echo $data['fieldClass']->setEmailConfirmationField(true, $size, 'span', false);
                     }
                 }
@@ -63,7 +64,7 @@ $formName = acym_getModuleFormName();
             if (!empty($data['user']->id) && !(empty($exportButton) && empty($deleteButton))) {
                 ?>
 				<div id="acyuseractions">
-					<table cellpadding="0" cellspacing="0" border="0">
+					<table>
 						<tr>
                             <?php
                             if ($exportButton == 1) {

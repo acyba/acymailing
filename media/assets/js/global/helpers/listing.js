@@ -12,16 +12,19 @@ const acym_helperListing = {
             handle: '.acym__sortable__listing__handle',
             animation: 150,
             stop: function (event, ui) {
-                let list = jQuery('.acym__sortable__listing .acym__listing__row');
-                let ctrl = jQuery('.acym__sortable__listing').attr('data-sort-ctrl');
-                let order = [];
+                const list = jQuery('.acym__sortable__listing .acym__listing__row');
+                const ctrl = jQuery('.acym__sortable__listing').attr('data-sort-ctrl');
+                const order = [];
                 list.each(function (i) {
                     order.push(jQuery(this).attr('data-id-element'));
                 });
-                order = JSON.stringify(order);
-                let ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + ctrl + '&task=setOrdering&order=' + order;
-                jQuery.post(ajaxUrl, function (response) {
-                    if (response == 'error') {
+
+                acym_helper.post(ACYM_AJAX_URL, {
+                    ctrl: ctrl,
+                    task: 'ajaxSetOrdering',
+                    order: JSON.stringify(order)
+                }).then(response => {
+                    if (response.error) {
                         console.log('Error can\'t order these elements');
                     }
                 });

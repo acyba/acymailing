@@ -20,7 +20,7 @@
                     'active' => ['ACYM_ACTIVE', $data['segmentsNumberPerStatus']['active']],
                     'inactive' => ['ACYM_INACTIVE', $data['segmentsNumberPerStatus']['inactive']],
                 ];
-                echo acym_filterStatus($options, $data["status"], 'segments_status');
+                echo acym_filterStatus($options, $data['status'], 'segments_status');
                 ?>
 			</div>
 			<div class="cell acym_listing_sort-by auto">
@@ -64,7 +64,7 @@
 				</div>
 				<div class="grid-x medium-auto small-11 cell acym__listing__title__container">
 					<div class="grid-x large-4 medium-4 small-11 cell acym__listing__title">
-						<a class="cell" href="<?php echo acym_completeLink('segments&task=edit&id='.intval($segment->id)); ?>">
+						<a class="cell" href="<?php echo acym_completeLink('segments&task=edit&segmentId='.intval($segment->id)); ?>">
 							<h6 class="acym__listing__title__important"><?php echo acym_escape($segment->name); ?></h6>
 						</a>
 					</div>

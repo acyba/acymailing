@@ -137,7 +137,7 @@ class plgAcymArticle extends acymPlugin
                 FROM #__fields 
                 WHERE context = "com_content.article" 
                     AND state = 1 
-                ORDER BY title ASC'
+                ORDER BY ordering ASC, title ASC'
             );
 
             if (!empty($customFields)) {

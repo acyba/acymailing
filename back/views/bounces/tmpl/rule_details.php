@@ -1,4 +1,4 @@
-<div class="acym__content cell grid-x" id="acy_bounces_details" style="<?php echo !empty($data['id']) ? 'display: none;' : ''; ?>">
+<div class="acym__content cell grid-x" id="acy_bounces_details" style="<?php echo !empty($data['ruleId']) ? 'display: none;' : ''; ?>">
 	<div class="acym__title acym__title__secondary cell"><?php echo acym_translation('ACYM_BOUNCE_RULE_CONDITION'); ?></div>
 
 	<div class="cell grid-x large-6 padding-left-1">

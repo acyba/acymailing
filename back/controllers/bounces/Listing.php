@@ -22,7 +22,15 @@ trait Listing
     {
         $toolbarHelper = new ToolbarHelper();
         if ($element === 'bounces') {
-            $toolbarHelper->addButton('ACYM_CONFIGURE', ['data-task' => 'config', 'id' => 'acym__bounce__button__config', 'type' => 'button'], 'settings');
+            $toolbarHelper->addButton(
+                'ACYM_CONFIGURE',
+                [
+                    'data-task' => 'config',
+                    'id' => 'acym__bounce__button__config',
+                    'type' => 'button',
+                ],
+                'settings'
+            );
             $toolbarHelper->addButton(
                 'ACYM_RESET_DEFAULT_RULES',
                 [
@@ -71,22 +79,18 @@ trait Listing
     }
 
     // When one of the raw of the listing is moved we set the ordering
-    public function setOrdering()
+    public function ajaxSetOrdering()
     {
         $order = json_decode(acym_getVar('string', 'order'));
         $i = 1;
         $error = false;
         foreach ($order as $rule) {
             $query = 'UPDATE #__acym_rule SET `ordering` = '.intval($i).' WHERE `id` = '.intval($rule);
-            $error = acym_query($query) >= 0 ? false : true;
+            $error = acym_query($query) < 0 || $error;
             $i++;
         }
-        if ($error) {
-            echo 'error';
-        } else {
-            echo 'updated';
-        }
-        exit;
+
+        acym_sendAjaxResponse('', [], !$error);
     }
 
     // Click on the button Run Bounce Handling

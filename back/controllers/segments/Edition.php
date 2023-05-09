@@ -24,7 +24,7 @@ trait Edition
             $this->listing();
         } else {
             acym_enqueueMessage(acym_translation('ACYM_SEGMENT_WELL_SAVE'), 'success');
-            acym_setVar('id', $segmentId);
+            acym_setVar('segmentId', $segmentId);
             $this->edit();
         }
     }
@@ -38,17 +38,17 @@ trait Edition
 
     private function store()
     {
-        $id = acym_getVar('int', 'id');
+        $segmentId = acym_getVar('int', 'segmentId');
         $filters = acym_getVar('array', 'acym_action');
         $segmentRequest = acym_getVar('array', 'segment');
 
         $segmentClass = new SegmentClass();
 
-        if (empty($id)) {
+        if (empty($segmentId)) {
             $segment = new \stdClass();
             $segment->creation_date = acym_date('now', 'Y-m-d H:i:s');
         } else {
-            $segment = $segmentClass->getOneById($id);
+            $segment = $segmentClass->getOneById($segmentId);
             if (empty($segment)) return false;
         }
 

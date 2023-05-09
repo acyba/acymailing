@@ -1,4 +1,4 @@
-jQuery(function($) {
+jQuery(function ($) {
     //All the elements needed for every custom fields
     let allElements = {
         text: [
@@ -202,26 +202,36 @@ jQuery(function($) {
 
     function setDatabaseField() {
         $('select[name="fieldDB[database]"]').off('change').on('change', function () {
-            let ajaxUrl = ACYM_AJAX_URL + '&ctrl=fields&task=getTables&database=' + $(this).val();
-            $.post(ajaxUrl, function (response) {
-                let tables = acym_helper.parseJson(response);
-                $('select[name="fieldDB[table]"]').html('');
-                for (let i = 0 ; i < tables.length ; i++) {
-                    $('select[name="fieldDB[table]"]').append('<option value="' + tables[i] + '">' + tables[i] + '</option>');
+            acym_helper.post(ACYM_AJAX_URL, {
+                ctrl: 'fields',
+                task: 'ajaxGetTables',
+                database: $(this).val()
+            }).then(response => {
+                const $tableSelect = jQuery('select[name="fieldDB[table]"]');
+                $tableSelect.html('');
+
+                for (let i = 0 ; i < response.data.tables.length ; i++) {
+                    $tableSelect.append('<option value="' + response.data.tables[i] + '">' + response.data.tables[i] + '</option>');
                 }
             });
         });
+
         $('select[name="fieldDB[table]"]').off('change').on('change', function () {
-            let ajaxUrl = ACYM_AJAX_URL + '&ctrl=fields&task=setColumns&table=' + $(this).val() + '&database=' + $('select[name="fieldDB[database]"]').val();
-            $.post(ajaxUrl, function (response) {
-                let columns = acym_helper.parseJson(response);
-                $('.acym__fields__database__columns').html('');
-                for (let i = 0 ; i < columns.length ; i++) {
-                    let column = columns[i];
-                    if ('ACYM_CHOOSE_COLUMN' === columns[i]) {
-                        $('.acym__fields__database__columns').append('<option value="">' + ACYM_JS_TXT.ACYM_CHOOSE_COLUMN + '</option>');
+            acym_helper.post(ACYM_AJAX_URL, {
+                ctrl: 'fields',
+                task: 'ajaxGetColumns',
+                table: jQuery(this).val(),
+                database: jQuery('select[name="fieldDB[database]"]').val()
+            }).then(response => {
+                const $columnSelect = jQuery('.acym__fields__database__columns');
+                $columnSelect.html('');
+
+                for (let i = 0 ; i < response.data.columns.length ; i++) {
+                    let column = response.data.columns[i];
+                    if ('ACYM_CHOOSE_COLUMN' === response.data.columns[i]) {
+                        $columnSelect.append('<option value="">' + ACYM_JS_TXT.ACYM_CHOOSE_COLUMN + '</option>');
                     } else {
-                        $('.acym__fields__database__columns').append('<option value="' + column + '">' + column + '</option>');
+                        $columnSelect.append('<option value="' + column + '">' + column + '</option>');
                     }
                 }
             });

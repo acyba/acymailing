@@ -6,12 +6,16 @@
                 <h6 class="cell auto"><?php echo acym_escape($oneUnsubscription->name); ?></h6>
                 <span class="cell medium-auto">
 					<?php
-                    if (empty($oneUnsubscription->subscription_date) || $oneUnsubscription->subscription_date === '0000-00-00 00:00:00') {
+                    if (!acym_isDateValid($oneUnsubscription->subscription_date)) {
                         $subscriptionDate = acym_translation('ACYM_NEVER_SUBSCRIBED');
                     } else {
                         $subscriptionDate = acym_date(acym_getTime($oneUnsubscription->subscription_date), acym_translation('ACYM_DATE_FORMAT_LC2'));
                     }
-                    $unsubscribeDate = acym_date(acym_getTime($oneUnsubscription->unsubscribe_date), acym_translation('ACYM_DATE_FORMAT_LC2'));
+                    if (!acym_isDateValid($oneUnsubscription->unsubscribe_date)) {
+                        $unsubscribeDate = acym_translation('ACYM_INVALID_DATE');
+                    } else {
+                        $unsubscribeDate = acym_date(acym_getTime($oneUnsubscription->unsubscribe_date), acym_translation('ACYM_DATE_FORMAT_LC2'));
+                    }
                     echo acym_escape(acym_translationSprintf('ACYM_SUBSCRIPTION_DATES', $subscriptionDate, $unsubscribeDate));
                     ?>
 				</span>

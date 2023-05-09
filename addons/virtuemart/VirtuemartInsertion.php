@@ -262,6 +262,12 @@ trait VirtuemartInsertion
                 'default' => '0',
             ],
             [
+                'title' => 'ACYM_MAX_ATTEMPT',
+                'type' => 'number',
+                'name' => 'attempt',
+                'default' => '0',
+            ],
+            [
                 'title' => 'COM_VIRTUEMART_COUPON_START',
                 'type' => 'date',
                 'name' => 'start',
@@ -695,6 +701,7 @@ trait VirtuemartInsertion
             'coupon_type' => $tag->ctype,
             'coupon_value' => $tag->amount,
             'virtuemart_vendor_id' => $tag->vendor,
+            'virtuemart_coupon_max_attempt_per_user' => empty($tag->attempt) ? 0 : $tag->attempt,
         ];
 
         if (!empty($tag->min)) $coupon['coupon_value_valid'] = $tag->min;
@@ -704,6 +711,7 @@ trait VirtuemartInsertion
         foreach ($coupon as $column => $oneValue) {
             $coupon[$column] = acym_escapeDB($oneValue);
         }
+
         acym_query('INSERT INTO #__virtuemart_coupons ('.implode(',', array_keys($coupon)).') VALUES ('.implode(',', $coupon).')');
 
         return $couponCode;

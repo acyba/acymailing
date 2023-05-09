@@ -4,9 +4,11 @@ const acym_helperDatePicker = {
             let $inputDatePicker = jQuery(this);
             let needTranslate = undefined === $inputDatePicker.attr('data-acym-translate') || $inputDatePicker.attr('data-acym-translate') !== '0';
 
-            let $default = $inputDatePicker.val() ? moment($inputDatePicker.val(), 'YYYY-MM-DD HH:mm') : moment();
+            let $default = $inputDatePicker.val() ? moment($inputDatePicker.val(), needTranslate ? 'DD MMM YYYY HH:mm' : 'YYYY-MM-DD HH:mm') : moment();
 
-            new MaterialDatetimePicker({'default': $default}).on('submit', function (d) {
+            new MaterialDatetimePicker({
+                'default': $default
+            }).on('submit', function (d) {
                 $inputDatePicker.val(moment(d, 'MM-DD-YYYY').format(needTranslate ? 'DD MMM YYYY HH:mm' : 'YYYY-MM-DD HH:mm'));
                 $inputDatePicker.trigger('change');
                 $inputDatePicker.trigger('acy_change');

@@ -29,11 +29,11 @@ const acym_helperJoomla = {
         if ($buttonToggleLeftMenu.css('display') != 'none') {
             if ($leftMenu.hasClass('collapsed')) {
                 $textLeftMenu.hide();
-                $leftMenu.css({'width': '55px'});
+                $leftMenu.css({'width': '34px'});
                 $iTagforCollapse.removeClass('acymicon-keyboard_arrow_left').addClass('acymicon-keyboard_arrow_right');
             } else {
                 $textLeftMenu.show();
-                $leftMenu.css({'width': '260px'});
+                $leftMenu.css({'width': '210px'});
                 $iTagforCollapse.removeClass('acymicon-keyboard_arrow_right').addClass('acymicon-keyboard_arrow_left');
             }
 
@@ -43,13 +43,13 @@ const acym_helperJoomla = {
                 if ($leftMenu.hasClass('collapsed')) {
                     $leftMenu.removeClass('collapsed');
                     $textLeftMenu.show();
-                    $leftMenu.css({'width': '260px'});
+                    $leftMenu.css({'width': '210px'});
                     $iTagforCollapse.removeClass('acymicon-keyboard_arrow_right').addClass('acymicon-keyboard_arrow_left');
                     acym_helper.setCookie('menuJoomla', '', 365);
                 } else {
                     $leftMenu.addClass('collapsed');
                     $textLeftMenu.hide();
-                    $leftMenu.css({'width': '55px'});
+                    $leftMenu.css({'width': '34px'});
                     $iTagforCollapse.removeClass('acymicon-keyboard_arrow_left').addClass('acymicon-keyboard_arrow_right');
                     acym_helper.setCookie('menuJoomla', 'collapsed', 365);
                 }

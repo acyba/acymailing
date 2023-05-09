@@ -798,7 +798,18 @@ trait Edition
     {
         acym_checkToken();
         $contentThumbnail = acym_getVar('string', 'content', '');
-        $file = acym_getVar('string', 'thumbnail', '');
+        if (strpos($contentThumbnail, 'data:image/png') !== 0) {
+            acym_sendAjaxResponse('This file content is not allowed.', [], false);
+        }
+
+        $mailId = acym_getVar('int', 'id', 0);
+        if (!empty($mailId)) {
+            $mailClass = new MailClass();
+            $mail = $mailClass->getOneById($mailId);
+            if (!empty($mail)) {
+                $file = $mail->thumbnail;
+            }
+        }
 
         if (empty($file) || strpos($file, 'http') === 0) {
             $thumbNb = $this->config->get('numberThumbnail', 2);
@@ -809,13 +820,14 @@ trait Edition
         }
 
         $extension = acym_fileGetExt($file);
-        if (strpos($file, 'thumbnail_') === false || !in_array($extension, ['png', 'jpeg', 'jpg', 'gif'])) exit;
+        if (strpos($file, 'thumbnail_') === false || !in_array($extension, ['png', 'jpeg', 'jpg', 'gif'])) {
+            acym_sendAjaxResponse('This file name is not allowed.', [], false);
+        }
 
         acym_createFolder(ACYM_UPLOAD_FOLDER_THUMBNAIL);
         file_put_contents(ACYM_UPLOAD_FOLDER_THUMBNAIL.$file, base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $contentThumbnail)));
 
-        echo $file;
-        exit;
+        acym_sendAjaxResponse('', ['fileName' => $file]);
     }
 
     public function setNewIconShare()

@@ -38,7 +38,7 @@ jQuery(function ($) {
 
             const exclude = document.querySelector('input[value="exclude"]').checked ? 1 : 0;
             let ajaxUrl = ACYM_AJAX_URL
-                          + '&ctrl=segments&task=countGlobalBySegmentId&id='
+                          + '&ctrl=segments&task=countGlobalBySegmentId&segmentId='
                           + segment.val()
                           + '&lists='
                           + $('[name="list_selected"]').val()

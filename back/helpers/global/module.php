@@ -8,7 +8,7 @@ function acym_getModuleFormName()
     return 'formAcym'.rand(1000, 9999).$i++;
 }
 
-function acym_initModule($params = null)
+function acym_initModule($params = null, $loadJsInModule = false)
 {
     if (!file_exists(ACYM_ROOT.'plugins'.DS.'system'.DS.'modulesanywhere')) {
         static $loaded = false;
@@ -18,12 +18,10 @@ function acym_initModule($params = null)
         $loaded = true;
     }
 
-    $loadJsInModule = false;
-
     if (!is_null($params) && method_exists($params, 'get')) {
         $nameCaption = $params->get('nametext');
         $emailCaption = $params->get('emailtext');
-        $loadJsInModule = $params->get('includejs') == 'module';
+        $loadJsInModule = $params->get('includejs') === 'module';
     }
 
     if (empty($nameCaption)) {

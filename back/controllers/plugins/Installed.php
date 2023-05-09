@@ -77,7 +77,7 @@ trait Installed
         $this->installed();
     }
 
-    private function isLastestAcyMailingVersion()
+    private function isLatestAcyMailingVersion()
     {
         $currentVersion = $this->config->get('version', '');
         $latestVersion = $this->config->get('latestversion', '');
@@ -88,7 +88,7 @@ trait Installed
 
     public function update()
     {
-        $this->isLastestAcyMailingVersion();
+        $this->isLatestAcyMailingVersion();
 
         $plugin = acym_getVar('array', 'plugin');
 

@@ -211,11 +211,13 @@ class FrontusersController extends UsersController
 
         $formData = acym_getVar('array', 'user', [], '');
         $user = new \stdClass();
-        if (!empty($formData['email'])) $user->email = $formData['email'];
+        if (!empty($formData['email'])) {
+            $user->email = $formData['email'];
+        }
 
         $userClass = new UserClass();
         if (empty($user->email)) {
-            $connectedUser = $userClass->identify(true);
+            $connectedUser = $userClass->identify(true, 'userId', 'userKey');
             if (!empty($connectedUser->email)) {
                 $user->email = $connectedUser->email;
             }
@@ -236,8 +238,12 @@ class FrontusersController extends UsersController
 
         $isNew = empty($user->id);
         $result = $userClass->saveForm($ajax);
-        $user->id = acym_getVar('int', 'id');
-        if (!empty($userClass->errors)) $this->displayMessage(implode('<br /><br />', $userClass->errors), $ajax);
+        $user->id = acym_getVar('int', 'userId');
+
+        if (!empty($userClass->errors)) {
+            $this->displayMessage(implode('<br /><br />', $userClass->errors), $ajax);
+        }
+
         if ($result === false || empty($user->id)) {
             $this->displayMessage('ACYM_ERROR_SAVE_USER', $ajax);
         }
@@ -279,7 +285,9 @@ class FrontusersController extends UsersController
         }
 
         $msg = str_replace(array_keys($replace), $replace, acym_translation($msg));
-        if (!empty($extraMsg)) $msg = str_replace(array_keys($replace), $replace, acym_translation($extraMsg)).'<br />'.$msg;
+        if (!empty($extraMsg)) {
+            $msg = str_replace(array_keys($replace), $replace, acym_translation($extraMsg)).'<br />'.$msg;
+        }
 
         if ($ajax) {
             //Make sure the message has a valid format for Ajax... so the user can customize it the way he wants without breaking anything
@@ -303,7 +311,7 @@ class FrontusersController extends UsersController
     {
         $userClass = new UserClass();
         if ($this->config->get('allow_modif', 'data') === 'none') {
-            $currentUser = $userClass->identify(true);
+            $currentUser = $userClass->identify(true, 'userId', 'userKey');
             if (empty($currentUser->email)) {
                 $this->endUnsubscribe('ACYM_LOGIN', $ajax, 'error');
 
@@ -366,7 +374,7 @@ class FrontusersController extends UsersController
         }
 
         $currentUserid = acym_currentUserId();
-        $user = $userClass->identify();
+        $user = $userClass->identify(true, 'userId', 'userKey');
         if (empty($user) && empty($currentUserid) && $this->config->get('captcha', 'none') !== 'none' && acym_level(ACYM_ESSENTIAL)) {
             $captchaClass = new CaptchaHelper();
             if (!$captchaClass->check()) {
@@ -378,8 +386,9 @@ class FrontusersController extends UsersController
 
         if (empty($formData['email'])) {
             if (empty($user)) {
-                return false;
+                return;
             }
+
             if (!empty($user->email)) {
                 $email = $user->email;
             }
@@ -551,16 +560,18 @@ class FrontusersController extends UsersController
 
     public function confirm()
     {
-        if (acym_isRobot()) return false;
+        if (acym_isRobot()) {
+            return;
+        }
 
         // We identify the user
         $userClass = new UserClass();
-        $user = $userClass->identify();
+        $user = $userClass->identify(true, 'userId', 'userKey');
         if (empty($user)) {
             acym_enqueueMessage(acym_translation('ACYM_USER_NOT_FOUND'), 'error');
             acym_redirect(acym_rootURI());
 
-            return false;
+            return;
         }
 
         if ($this->config->get('confirmation_message', 1)) {
@@ -666,7 +677,7 @@ class FrontusersController extends UsersController
         parent::display($data);
     }
 
-    public function prepareParams($values)
+    public function prepareParams($values): array
     {
         if (!isset($values->lists)) {
             $values->lists = 'none';

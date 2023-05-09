@@ -5,7 +5,7 @@ if (!empty($data['translation_languages'])) {
 }
 ?>
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate>
-	<input type="hidden" name="id" value="<?php echo empty($data['field']->id) ? '' : intval($data['field']->id); ?>">
+	<input type="hidden" name="fieldId" value="<?php echo empty($data['field']->id) ? '' : intval($data['field']->id); ?>">
 	<input type="hidden" name="field[namekey]" value="<?php echo empty($data['field']->namekey) ? '' : acym_escape($data['field']->namekey); ?>">
 	<div id="acym__fields__edit" class="acym__content grid-x cell">
         <?php include acym_getView('fields', 'edit_actions'); ?>

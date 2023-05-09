@@ -531,7 +531,7 @@ class FormClass extends acymClass
         return $htmlMenu;
     }
 
-    public function renderForm($form, $edition = false)
+    public function renderForm($form, $edition = false, $isShortcode = false)
     {
         if (!empty($form->display_languages) && !in_array('all', $form->display_languages) && !$edition) {
             if (!in_array(acym_getLanguageTag(), $form->display_languages)) {
@@ -539,7 +539,7 @@ class FormClass extends acymClass
             }
         }
 
-        acym_initModule();
+        acym_initModule(null, $isShortcode);
         $fieldClass = new FieldClass();
         $listClass = new ListClass();
 
@@ -583,7 +583,7 @@ class FormClass extends acymClass
         $formFieldRender = acym_getPartial('forms', $form->type);
         if (!file_exists($formFieldRender)) return '';
 
-        acym_initModule();
+        acym_initModule(null, $isShortcode);
 
         ob_start();
         include $formFieldRender;

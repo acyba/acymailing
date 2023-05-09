@@ -10,11 +10,11 @@ trait Edition
     public function edit()
     {
         acym_setVar('layout', 'edit');
-        $id = acym_getVar('int', 'id');
+        $fieldId = acym_getVar('int', 'fieldId');
         $fieldClass = new FieldClass();
         $languageFieldId = $fieldClass->getLanguageFieldId();
 
-        if (empty($id)) {
+        if (empty($fieldId)) {
             $field = new \stdClass();
             $field->id = 0;
             $field->name = '';
@@ -31,11 +31,11 @@ trait Edition
             $field->access = 1;
             $field->fieldDB = new \stdClass();
         } else {
-            $field = $fieldClass->getOneById($id);
+            $field = $fieldClass->getOneById($fieldId);
             $field->option = json_decode($field->option);
             $field->value = json_decode($field->value);
             $field->fieldDB = empty($field->option->fieldDB) ? new \stdClass() : json_decode($field->option->fieldDB);
-            if (!in_array($id, [1, 2, $languageFieldId]) && !empty($field->fieldDB->table)) {
+            if (!in_array($fieldId, [1, 2, $languageFieldId]) && !empty($field->fieldDB->table)) {
                 $databaseExists = acym_loadResult('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '.acym_escapeDB($field->fieldDB->database));
                 if (!empty($databaseExists)) {
                     $tables = acym_loadResultArray('SHOW TABLES FROM `'.acym_secureDBColumn($field->fieldDB->database).'`');
@@ -70,8 +70,8 @@ trait Edition
             //$field->display = json_decode($field->option->display);
         }
 
-        if (!empty($id)) {
-            $this->breadcrumb[acym_escape(acym_translation($field->name))] = acym_completeLink('fields&task=edit&id='.$id);
+        if (!empty($fieldId)) {
+            $this->breadcrumb[acym_escape(acym_translation($field->name))] = acym_completeLink('fields&task=edit&fieldId='.$fieldId);
         } else {
             $this->breadcrumb[acym_translation('ACYM_NEW_CUSTOM_FIELD')] = acym_completeLink('fields&task=edit');
         }
@@ -110,23 +110,23 @@ trait Edition
         return parent::display($data);
     }
 
-    public function getTables()
+    public function ajaxGetTables()
     {
         $database = acym_getVar('string', 'database');
         $allTables = acym_loadResultArray('SHOW TABLES FROM '.$database);
-        echo json_encode($allTables);
-        exit;
+
+        acym_sendAjaxResponse('', ['tables' => $allTables]);
     }
 
-    public function setColumns()
+    public function ajaxGetColumns()
     {
         $table = acym_getVar('string', 'table');
         $database = acym_getVar('string', 'database');
-        $query = 'SHOW COLUMNS FROM '.$table.' FROM '.$database;
-        $columns = acym_loadResultArray($query);
+
+        $columns = acym_loadResultArray('SHOW COLUMNS FROM '.$table.' FROM '.$database);
         array_unshift($columns, 'ACYM_CHOOSE_COLUMN');
-        echo json_encode($columns);
-        exit;
+
+        acym_sendAjaxResponse('', ['columns' => $columns]);
     }
 
     public function apply()
@@ -145,10 +145,10 @@ trait Edition
     {
         $fieldClass = new FieldClass();
         $newField = $this->setFieldToSave();
-        $id = $fieldClass->save($newField);
-        if (!empty($id)) {
-            acym_setVar('id', $id);
-            acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
+        $fieldId = $fieldClass->save($newField);
+        if (!empty($fieldId)) {
+            acym_setVar('fieldId', $fieldId);
+            acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
         }
@@ -160,15 +160,17 @@ trait Edition
         $languageFieldId = $fieldClass->getLanguageFieldId();
         $field = acym_getVar('array', 'field');
         $fieldDB = json_encode(acym_getVar('array', 'fieldDB'));
-        $id = acym_getVar('int', 'id');
-        if (in_array($id, [2, $languageFieldId])) {
+        $fieldId = acym_getVar('int', 'fieldId');
+        if (in_array($fieldId, [2, $languageFieldId])) {
             $field['required'] = 1;
         }
-        if (empty($field['name'])) return false;
+        if (empty($field['name'])) {
+            return false;
+        }
 
-        if (in_array($id, [1, 2])) {
+        if (in_array($fieldId, [1, 2])) {
             $field['type'] = 'text';
-        } elseif ($id == $languageFieldId) {
+        } elseif ($fieldId == $languageFieldId) {
             $field['type'] = 'language';
         }
 
@@ -221,10 +223,10 @@ trait Edition
         $newField->backend_listing = $field['backend_listing'];
         $newField->access = 'all';
 
-        if (empty($id)) {
+        if (empty($fieldId)) {
             $newField->ordering = $fieldClass->getOrdering() + 1;
         } else {
-            $newField->id = $id;
+            $newField->id = $fieldId;
         }
 
         if (!empty($field['translation'])) {

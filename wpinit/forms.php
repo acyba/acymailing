@@ -68,7 +68,7 @@ class acyForms
 
         if (empty($form) || empty($form->active)) return;
 
-        return $formClass->renderForm($form);
+        return $formClass->renderForm($form, false, true);
     }
 }
 

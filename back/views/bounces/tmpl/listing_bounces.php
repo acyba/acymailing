@@ -77,7 +77,7 @@ if (acym_getVar('boolean', 'runBounce')) {
 					</div>
 					<div class="grid-x medium-auto small-11 cell acym__field__listing acym_vcenter">
 						<div class="medium-4 acym__listing__title">
-							<a href="<?php echo acym_completeLink('bounces&task=rule&id='.$oneRule->id); ?>" class="shrink">
+							<a href="<?php echo acym_completeLink('bounces&task=rule&ruleId='.$oneRule->id); ?>" class="shrink">
 								<h6 class="acym__listing__title__important"><?php echo acym_escape(acym_translation($oneRule->name)); ?></h6>
 							</a>
 						</div>

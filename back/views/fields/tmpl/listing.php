@@ -55,7 +55,7 @@
 						</div>
 						<div class="grid-x medium-auto small-8 cell acym__field__listing">
 							<div class="medium-4 small-7 cell acym__listing__title grid-x">
-								<a href="<?php echo acym_completeLink('fields&task=edit&id='.$field->id); ?>" class="cell auto">
+								<a href="<?php echo acym_completeLink('fields&task=edit&fieldId='.$field->id); ?>" class="cell auto">
 									<h6><?php echo acym_escape(acym_translation($field->name)); ?></h6>
 								</a>
 							</div>

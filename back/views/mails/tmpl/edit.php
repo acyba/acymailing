@@ -34,7 +34,6 @@
 </div>
 <input type="hidden" name="mail[id]" value="<?php echo acym_escape($data['mail']->id); ?>" />
 <input type="hidden" name="id" value="<?php echo acym_escape($data['mail']->id); ?>" />
-<input type="hidden" name="thumbnail" value="<?php echo empty($data['mail']->thumbnail) ? '' : acym_escape($data['mail']->thumbnail); ?>" />
 <?php
 acym_formOptions();
 

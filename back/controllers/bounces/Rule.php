@@ -11,12 +11,12 @@ trait Rule
     {
         $ruleClass = new RuleClass();
         acym_setVar('layout', 'rule');
-        $ruleId = acym_getVar('int', 'id', 0);
+        $ruleId = acym_getVar('int', 'ruleId', 0);
         $listsClass = new ListClass();
 
         if (!empty($ruleId)) {
             $rule = $ruleClass->getOneById($ruleId);
-            $this->breadcrumb[acym_translation($rule->name)] = acym_completeLink('bounces&task=rule&id='.$ruleId);
+            $this->breadcrumb[acym_translation($rule->name)] = acym_completeLink('bounces&task=rule&ruleId='.$ruleId);
         } else {
             $this->breadcrumb[acym_translation('ACYM_NEW')] = acym_completeLink('bounces&task=rule');
             $rule = new \stdClass();
@@ -31,7 +31,7 @@ trait Rule
         }
 
         $data = [
-            'id' => $ruleId,
+            'ruleId' => $ruleId,
             'lists' => $listsClass->getAllWithIdName(),
             'rule' => $rule,
         ];
@@ -94,7 +94,7 @@ trait Rule
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
         } else {
             acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
-            acym_setVar('id', $res);
+            acym_setVar('ruleId', $res);
         }
     }
 }

@@ -18,7 +18,7 @@ trait Listing
     private function prepareToolbar(&$data)
     {
         $toolbarHelper = new ToolbarHelper();
-        $toolbarHelper->addSearchBar($data['search'], 'segments_search', 'ACYM_SEARCH');
+        $toolbarHelper->addSearchBar($data['search'], 'segments_search');
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit'], 'add', true);
 
         $data['toolbar'] = $toolbarHelper;

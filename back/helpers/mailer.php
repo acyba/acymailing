@@ -1022,8 +1022,22 @@ class MailerHelper extends AcyMailerPhp
         }
 
         foreach ($results[1] as $i => $url) {
+            $urlsNotToTrack = [
+                'task=unsub',
+                'fonts.googleapis.com',
+            ];
+
+            $track = true;
+
+            foreach ($urlsNotToTrack as $urlNotToTrack) {
+                if (strpos($url, $urlNotToTrack)) {
+                    $track = false;
+                    break;
+                }
+            }
+
             //We don't track unsubscribe link
-            if (isset($urls[$results[0][$i]]) || strpos($url, 'task=unsub')) {
+            if (isset($urls[$results[0][$i]]) || !$track) {
                 continue;
             }
 

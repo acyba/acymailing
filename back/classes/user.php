@@ -26,10 +26,8 @@ class UserClass extends acymClass
     var $confirmationSentError;
     var $triggers = true;
 
-    // For integration, for example someone is activating user subscription on member ship pro on the joomla backend and he needs to send the confirmation emails
+    // For integration, for example someone is activating user subscription on membership pro on the joomla backend and he needs to send the confirmation emails
     var $forceConfAdmin = false;
-
-    public $extendedEmailVerif;
 
     /**
      * Get users depending on filters (search, status, pagination)
@@ -505,6 +503,11 @@ class UserClass extends acymClass
     {
         $id = acym_getVar('int', empty($idName) ? 'id' : $idName, 0);
         $key = acym_getVar('string', empty($keyName) ? 'key' : $keyName, '');
+
+        if (empty($id) && !empty($idName) && empty($key) && !empty($keyName)) {
+            $id = acym_getVar('int', 'id', 0);
+            $key = acym_getVar('int', 'key', 0);
+        }
 
         if (empty($id) || empty($key)) {
             //Check if the user is not already in the session...
@@ -1098,18 +1101,25 @@ class UserClass extends acymClass
 
     public function sendConfirmation($userID)
     {
-        if (!$this->forceConf && !$this->sendConf) return true;
+        if (!$this->forceConf && !$this->sendConf) {
+            return;
+        }
 
-        if ($this->config->get('require_confirmation', 1) != 1 || (acym_isAdmin() && !$this->forceConfAdmin)) return false;
+        if ($this->config->get('require_confirmation', 1) != 1 || (acym_isAdmin() && !$this->forceConfAdmin)) {
+            return;
+        }
 
-        $myuser = $this->getOneById($userID);
+        $myUser = $this->getOneById($userID);
 
-        if (!empty($myuser->confirmed)) return false;
+        if (!empty($myUser->confirmed)) {
+            return;
+        }
 
         $mailerHelper = new MailerHelper();
         $mailerHelper->report = $this->config->get('confirm_message', 0);
 
-        $this->confirmationSentSuccess = $mailerHelper->sendOne('acy_confirm', $myuser);
+        //TODO $mailerHelper->addParam('user:subscription', implode('<br/>', $subscription));
+        $this->confirmationSentSuccess = $mailerHelper->sendOne('acy_confirm', $myUser);
         $this->confirmationSentError = $mailerHelper->reportMessage;
     }
 
