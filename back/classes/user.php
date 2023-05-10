@@ -958,7 +958,7 @@ class UserClass extends acymClass
         $allowSubscriptionModifications = (bool)($this->config->get('allow_modif', 'data') != 'none') || $this->allowModif;
 
         $user = new \stdClass();
-        $connectedUser = $this->identify(true);
+        $connectedUser = $this->identify(true, 'userId', 'userKey');
 
         $userData = acym_getVar('array', 'user', []);
         if (!empty($userData)) {

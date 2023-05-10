@@ -291,47 +291,55 @@ class UserStatClass extends acymClass
 
     public function getOpenSourcesStats($mailIds = [])
     {
-        if (!is_array($mailIds)) $mailIds = [$mailIds];
+        if (!is_array($mailIds)) {
+            $mailIds = [$mailIds];
+        }
         acym_arrayToInteger($mailIds);
 
         $query = 'SELECT opened_with, COUNT(*) AS number FROM #__acym_user_stat WHERE `open` > 0';
-        if (!empty($mailIds)) $query .= ' AND mail_id IN ('.implode(',', $mailIds).')';
+        if (!empty($mailIds)) {
+            $query .= ' AND mail_id IN ('.implode(',', $mailIds).')';
+        }
         $query .= ' GROUP BY opened_with';
 
         return acym_loadObjectList($query);
     }
 
-    public function deleteDetailedStatsPeriod()
+    public function deleteDetailedStatsPeriod(): array
     {
-        if (empty($this->config->get('delete_stats_enabled', 0))) return;
-        $deleteOverSecond = $this->config->get('delete_stats', 31104000);
-        if (empty($deleteOverSecond)) return;
-        $date = acym_date(time() - $deleteOverSecond, 'Y-m-d H:i');
+        $shouldClearExpiredStats = $this->config->get('delete_stats_enabled', 0);
+        if (empty($shouldClearExpiredStats)) {
+            return [];
+        }
+
+        $deleteAfterXSeconds = $this->config->get('delete_stats', 31104000);
+        if (empty($deleteAfterXSeconds)) {
+            return [];
+        }
+
+        $date = acym_date(time() - $deleteAfterXSeconds, 'Y-m-d H:i');
 
         $queries = [
             '#__acym_user_stat' => 'DELETE FROM #__acym_user_stat WHERE send_date < '.acym_escapeDB($date),
             '#__acym_url_click' => 'DELETE FROM #__acym_url_click WHERE date_click < '.acym_escapeDB($date),
         ];
 
-        $message = '';
-
+        $messages = [];
         foreach ($queries as $table => $query) {
             try {
                 $status = acym_query($query);
-                $message .= empty($status)
-                    ? ''
-                    : acym_translationSprintf(
-                        'ACYM_DELETE_X_ROWS_TABLE_X',
-                        $status,
-                        strtolower(acym_translation('ACYM_USER_DETAILED_STATS')).'('.$table.')'
-                    );
+                if (!empty($status)) {
+                    $messages[] = acym_translationSprintf('ACYM_DELETE_X_ROWS_TABLE_X', $status, acym_translation('ACYM_USER_DETAILED_STATS').' ('.$table.')');
+                }
             } catch (\Exception $e) {
-                $message .= $e->getMessage();
+                $messages[] = $e->getMessage();
             }
-            $message .= "\r\n";
         }
 
+        if (empty($messages)) {
+            return [];
+        }
 
-        return ['message' => $message];
+        return ['message' => implode("\r\n", $messages)];
     }
 }

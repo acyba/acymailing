@@ -151,7 +151,10 @@ const acym_editorWysidFormAction = {
     setSaveButtonWYSID: function () {
         jQuery('#acym__wysid__save__button').off('click').on('click', function () {
             // Directly save the email
-            if (jQuery('[name="ctrl"]').val().indexOf('campaigns') !== -1 || jQuery('#acym__mail__type').val() === 'followup') {
+            if (jQuery('[name="ctrl"]').val().indexOf('campaigns') !== -1 || [
+                'followup',
+                'notification'
+            ].indexOf(jQuery('#acym__mail__type').val()) !== -1) {
                 acym_editorWysidFormAction.saveEmail(false, false);
                 return true;
             }

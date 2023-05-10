@@ -49,6 +49,7 @@ class AcymRouter extends AcymRouterBase
             'type_editor',
             'listId',
             'userId',
+            'userKey',
         ];
     }
 
