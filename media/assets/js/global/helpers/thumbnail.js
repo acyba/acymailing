@@ -32,8 +32,6 @@ const acym_helperThumbnail = {
             } else {
                 $editorThumbnail.val(response.data.fileName);
             }
-
-            location.reload();
         });
     }
 };

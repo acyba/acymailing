@@ -654,7 +654,7 @@ class MailerHelper extends AcyMailerPhp
         $finalContent .= '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'."\n";
         $finalContent .= '<title>'.$mail->subject.'</title>'."\n";
         //We add the CSS like that for gmail because it deletes the tag style over 8000 char
-        $finalContent .= '<style type="text/css">'.implode('</style><style type="text/css">', $style).'</style>';
+        $finalContent .= '<style>'.implode('</style><style>', $style).'</style>';
         $finalContent .= '<!--[if mso]><style type="text/css">#acym__wysid__template center > table { width: 580px; }</style><![endif]-->';
         $finalContent .= '<!--[if !mso]><style type="text/css">#acym__wysid__template center > table { width: 100%; }</style><![endif]-->';
         if (!empty($mail->headers)) {
@@ -665,7 +665,7 @@ class MailerHelper extends AcyMailerPhp
         $mail->body = $finalContent;
     }
 
-    private function canTrack($mailId, $user)
+    private function canTrack($mailId, $user): bool
     {
         if (empty($mailId) || empty($user) || !isset($user->tracking) || $user->tracking != 1) return false;
 

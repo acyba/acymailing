@@ -61,7 +61,7 @@ class FrontservicesController extends acymController
         $userClass->save($user);
 
         $historyClass = new HistoryClass();
-        $historyClass->insert($user->id, $action, ['Sendinblue'], $mailId);
+        $historyClass->insert($user->id, $action, ['Brevo'], $mailId);
 
         exit;
     }

@@ -55,8 +55,8 @@ class SendinblueCredentials extends SendinblueClass
 				</label>
                 <?php
                 echo $this->getLinks(
-                    'https://www.sendinblue.com/?tap_a=30591-fb13f0&tap_s=1371199-cf94c5',
-                    'https://www.sendinblue.com/pricing/?tap_a=30591-fb13f0&tap_s=1371199-cf94c5'
+                    'https://www.brevo.com/?tap_a=30591-fb13f0&tap_s=1371199-cf94c5',
+                    'https://www.brevo.com/pricing/?tap_a=30591-fb13f0&tap_s=1371199-cf94c5'
                 );
                 ?>
 				<input type="text"

@@ -6,8 +6,8 @@ use AcyMailing\Libraries\acymPlugin;
 class plgAcymSendinblue extends acymPlugin
 {
     const SENDING_METHOD_ID = 'sendinblue';
-    const SENDING_METHOD_NAME = 'Sendinblue';
-    const SENDING_METHOD_API_URL = 'https://api.sendinblue.com/v3/';
+    const SENDING_METHOD_NAME = 'Brevo';
+    const SENDING_METHOD_API_URL = 'https://api.brevo.com/v3/';
 
     private $credentials;
     private $integration;
@@ -21,7 +21,7 @@ class plgAcymSendinblue extends acymPlugin
     public function __construct()
     {
         parent::__construct();
-        $this->pluginDescription->name = 'Sendinblue';
+        $this->pluginDescription->name = self::SENDING_METHOD_NAME;
 
         include_once __DIR__.DS.'sendinblue.php';
         include_once __DIR__.DS.'credentials.php';
@@ -49,7 +49,7 @@ class plgAcymSendinblue extends acymPlugin
     {
         $data['sendingMethods'][self::SENDING_METHOD_ID] = [
             'name' => $this->pluginDescription->name,
-            'image' => ACYM_IMAGES.'mailers/sendinblue.png',
+            'image' => ACYM_IMAGES.'mailers/brevo.png',
             'recommended' => true,
         ];
     }

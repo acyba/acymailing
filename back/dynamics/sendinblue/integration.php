@@ -9,7 +9,7 @@ class SendinblueIntegration extends SendinblueClass
         //__START__wordpress_
         if (ACYM_CMS == 'wordpress' && $plugin == 'wp_mail_smtp') {
             $wpMailSmtpSetting = get_option('wp_mail_smtp', '');
-            if (empty($wpMailSmtpSetting) || empty($wpMailSmtpSetting['sendinblue']) || (!empty($wpMailSmtpSetting['sendinblue'] && empty($wpMailSmtpSetting['sendinblue']['api_key'])))) {
+            if (empty($wpMailSmtpSetting['sendinblue']['api_key'])) {
                 return;
             }
 

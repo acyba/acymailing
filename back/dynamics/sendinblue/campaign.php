@@ -17,8 +17,8 @@ class SendinblueCampaign extends SendinblueClass
 
     public function createNewCampaign($mail, $content)
     {
-        $listIdSendinblue = 0;
-        $this->list->getListExternalSendingMethod($listIdSendinblue, $mail->id);
+        $listIdBrevo = 0;
+        $this->list->getListExternalSendingMethod($listIdBrevo, $mail->id);
 
         $subjectAttribute = $this->user->getSubjectAttributeName($mail->id);
         $contentAttribute = $this->user->getAttributeName($mail->id);
@@ -38,7 +38,7 @@ class SendinblueCampaign extends SendinblueClass
             'subject' => '{{ contact.'.$this->user->getSubjectAttributeName($mail->id).' }}',
             'replyTo' => $this->sender->getReplyToEmail($mail),
             'recipients' => [
-                'listIds' => [$listIdSendinblue],
+                'listIds' => [$listIdBrevo],
             ],
             'footer' => '<span style="display: none !important;">{'.acym_translation('ACYM_UNSUBSCRIBE').'}</span>',
             'inlineImageActivation' => !empty($this->config->get('embed_images', 0)),
@@ -89,8 +89,8 @@ class SendinblueCampaign extends SendinblueClass
         return true;
     }
 
-    public function deleteCampaign($sendinblueCampaignId)
+    public function deleteCampaign($brevoCampaignId)
     {
-        $this->callApiSendingMethod(plgAcymSendinblue::SENDING_METHOD_API_URL.'emailCampaigns/'.$sendinblueCampaignId, [], $this->headers, 'DELETE');
+        $this->callApiSendingMethod(plgAcymSendinblue::SENDING_METHOD_API_URL.'emailCampaigns/'.$brevoCampaignId, [], $this->headers, 'DELETE');
     }
 }
