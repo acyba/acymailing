@@ -56,7 +56,7 @@
             $data['delay_unit'],
             'followup[delay_unit]',
             empty($data['mail']->delay_unit) ? $data['default_delay_unit'] : $data['mail']->delay_unit,
-            'class="acym__select"'
+            ['class' => 'acym__select']
         ).'</span>';
     echo acym_translationSprintf('ACYM_SEND_IT_X_X_AFTER_TRIGGER', $inputDelay, $selectDelayUnit);
     ?>

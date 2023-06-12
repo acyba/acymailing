@@ -116,7 +116,10 @@ trait HikashopSubscription
                             acym_getOptionRegacyPosition(),
                             'config[hikashop_regacy_listsposition]',
                             $this->config->get('hikashop_regacy_listsposition', 'password'),
-                            'class="acym__select" data-toggle-select="'.acym_escape('{"custom":"#acym__config__hikashop__regacy__custom-list-position"}').'"',
+                            [
+                                'class' => 'acym__select',
+                                'data-toggle-select' => '{"custom":"#acym__config__hikashop__regacy__custom-list-position"}',
+                            ],
                             'value',
                             'text',
                             'acym__config__hikashop-regacy-listsposition'

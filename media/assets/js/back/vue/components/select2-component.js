@@ -95,6 +95,8 @@ jQuery(function ($) {
                     //it allows to tells to the higher application that the value changed
                     vueComp.$emit('input', this.value);
                 });
+            const event = new Event(`select2-${this.name}`);
+            window.dispatchEvent(event);
         },
         watch: {
             options: function (options) {

@@ -215,22 +215,7 @@ trait Listing
     private function prepareAcl(&$data)
     {
         $data['acl'] = acym_cmsPermission();
-        $data['acl_advanced'] = [
-            'forms' => 'ACYM_SUBSCRIPTION_FORMS',
-            'users' => 'ACYM_SUBSCRIBERS',
-            'fields' => 'ACYM_CUSTOM_FIELDS',
-            'lists' => 'ACYM_LISTS',
-            'segments' => 'ACYM_SEGMENTS',
-            'campaigns' => 'ACYM_EMAILS',
-            'mails' => 'ACYM_TEMPLATES',
-            'override' => 'ACYM_EMAILS_OVERRIDE',
-            'automation' => 'ACYM_AUTOAMTION',
-            'queue' => 'ACYM_QUEUE',
-            'plugins' => 'ACYM_ADD_ONS',
-            'bounces' => 'ACYM_MAILBOX_ACTIONS',
-            'stats' => 'ACYM_STATISTICS',
-            'configuration' => 'ACYM_CONFIGURATION',
-        ];
+        $data['acl_advanced'] = acym_getPagesForAcl();
         $data['aclType'] = new AclType();
     }
 
@@ -319,13 +304,6 @@ trait Listing
         }
         //__END__demo_
 
-        if (ACYM_PRODUCTION) {
-            // Handle ACL
-            $selectedAcl = acym_getVar('string', 'json_acl', '{}');
-            $selectedAcl = json_decode($selectedAcl, true);
-            $formData = array_merge($formData, $selectedAcl);
-        }
-
         // Handle reset select2 fields
         $select2Fields = [
             'regacy_lists',
@@ -343,7 +321,18 @@ trait Listing
         ];
 
         foreach ($select2Fields as $oneField) {
-            $formData[$oneField] = !empty($formData[$oneField]) ? $formData[$oneField] : [];
+            if (empty($formData[$oneField])) {
+                $formData[$oneField] = [];
+            }
+        }
+
+        if (ACYM_PRODUCTION) {
+            $aclPages = array_keys(acym_getPagesForAcl());
+            foreach ($aclPages as $page) {
+                if (empty($formData['acl_'.$page])) {
+                    $formData['acl_'.$page] = ['all'];
+                }
+            }
         }
 
         $licenseKeyBeforeSave = $this->config->get('license_key');

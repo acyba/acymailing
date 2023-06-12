@@ -30,14 +30,14 @@ trait TimeAutomationTriggers
                 $hour,
                 '[triggers][classic][day][hour]',
                 empty($defaultValues['day']) ? date('H') : $defaultValues['day']['hour'],
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             ).'</div>';
         $triggers['classic']['day']->option .= '<div class="cell medium-shrink acym_vcenter">:</div>';
         $triggers['classic']['day']->option .= '<div class="cell medium-auto">'.acym_select(
                 $minutes,
                 '[triggers][classic][day][minutes]',
                 empty($defaultValues['day']) ? date('i') : $defaultValues['day']['minutes'],
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             ).'</div>';
         $triggers['classic']['day']->option .= '</div>';
 
@@ -67,13 +67,13 @@ trait TimeAutomationTriggers
                 $hour,
                 '[triggers][classic][weeks_on][hour]',
                 !isset($defaultValues['weeks_on']['hour']) ? $dailyHour : $defaultValues['weeks_on']['hour'],
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             ).'</div>',
             '<div class="margin-left-1 margin-right-1">'.acym_select(
                 $minutes,
                 '[triggers][classic][weeks_on][minutes]',
                 !isset($defaultValues['weeks_on']['minutes']) ? $dailyMinute : $defaultValues['weeks_on']['minutes'],
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             ).'</div>'
         );
         $triggers['classic']['weeks_on']->option .= '</div>';
@@ -93,13 +93,16 @@ trait TimeAutomationTriggers
                 ],
                 '[triggers][classic][on_day_month][number]',
                 empty($defaultValues['on_day_month']) ? null : $defaultValues['on_day_month']['number'],
-                'data-class="acym__select"'
+                ['data-class' => 'acym__select']
             ).'</div>';
         $triggers['classic']['on_day_month']->option .= '<div class="cell medium-4">'.acym_select(
                 $days,
                 '[triggers][classic][on_day_month][day]',
                 empty($defaultValues['on_day_month']) ? null : $defaultValues['on_day_month']['day'],
-                'data-class="acym__select" style="margin: 0 10px;"'
+                [
+                    'data-class' => 'acym__select',
+                    'style' => 'margin: 0 10px;',
+                ]
             ).'</div>';
         $triggers['classic']['on_day_month']->option .= '<div class="cell medium-4 acym_vcenter">'.acym_translation('ACYM_DAYOFMONTH').'</div>';
         $triggers['classic']['on_day_month']->option .= '<div class="cell acym_vcenter">';
@@ -109,13 +112,13 @@ trait TimeAutomationTriggers
                 $hour,
                 '[triggers][classic][on_day_month][hour]',
                 !isset($defaultValues['on_day_month']['hour']) ? $dailyHour : $defaultValues['on_day_month']['hour'],
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             ).'</div>',
             '<div class="margin-left-1 margin-right-1">'.acym_select(
                 $minutes,
                 '[triggers][classic][on_day_month][minutes]',
                 !isset($defaultValues['on_day_month']['minutes']) ? $dailyMinute : $defaultValues['on_day_month']['minutes'],
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             ).'</div>'
         );
         $triggers['classic']['on_day_month']->option .= '</div>';
@@ -140,7 +143,7 @@ trait TimeAutomationTriggers
                 $every,
                 '[triggers][classic][every][type]',
                 empty($defaultValues['every']) ? '604800' : $defaultValues['every']['type'],
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             ).'</div>';
         $triggers['classic']['every']->option .= '</div>';
     }

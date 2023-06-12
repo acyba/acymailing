@@ -2,7 +2,7 @@ jQuery(document).ready(readyFunction);
 
 function readyFunction($) {
     Vue.use(infiniteScroll);
-    let entityPerCalls = 500;
+    const entityPerCalls = 500;
     let entityNumber = 0;
     let allEntities = [];
     let allEntitiesSelected = [];
@@ -10,30 +10,32 @@ function readyFunction($) {
     let numberOfCalls = 0;
     let strokeProgression = 0;
 
-    let perScroll = 20, start = {
+    const perScroll = 20;
+    const start = {
         'available': perScroll,
         'selected': perScroll
     };
+
+    let timeoutSearch;
 
     //get all entities in a which aren't in b
     const diff = (a, b) => a.filter((i) => JSON.stringify(b).indexOf(JSON.stringify(i)) === -1);
 
     //search in array
-    const search = (array, search, columns) => array.filter((entity) => columns.map(function (column) {
-        if (entity[column] === null) {
-            return false;
-        }
+    const search = (array, search, columns) => {
+        search = search.toLowerCase();
+        return array.filter((entity) => columns.map(function (column) {
+            if (entity[column] === null) {
+                return false;
+            }
 
-        if (typeof entity[column] === 'number') {
-            return entity[column].toString().toLowerCase().indexOf(search.toLowerCase()) !== -1;
-        }
+            if (typeof entity[column] === 'number') {
+                return entity[column].toString().toLowerCase().includes(search);
+            }
 
-        if (entity[column].toLowerCase().indexOf('acymicon-circle') !== -1) {
-            return false;
-        }
-
-        return entity[column].toLowerCase().indexOf(search.toLowerCase()) !== -1;
-    }).indexOf(true) !== -1);
+            return entity[column].toLowerCase().includes(search);
+        }).includes(true));
+    };
 
     //remove from array
     const remove = (array, entityId) => array.filter((entity) => entity.id !== entityId);
@@ -172,17 +174,20 @@ function readyFunction($) {
                     }
                 },
                 doSearch(type) {
-                    if ('' === this[type + 'Search']) {
-                        this['displaySelectAll_' + type] = true;
-                        start[type] = perScroll;
-                        this['entitiesToDisplay_' + type] = this['entities' + type.charAt(0).toUpperCase() + type.slice(1)].slice(0, start[type]);
-                    } else {
-                        this['displaySelectAll_' + type] = false;
-                        this['entitiesToDisplay_' + type] = search(this['entities' + type.charAt(0).toUpperCase() + type.slice(1)],
-                            this[type + 'Search'],
-                            this.columnsToDisplay
-                        );
-                    }
+                    clearTimeout(timeoutSearch);
+                    timeoutSearch = setTimeout(() => {
+                        if ('' === this[type + 'Search']) {
+                            this['displaySelectAll_' + type] = true;
+                            start[type] = perScroll;
+                            this['entitiesToDisplay_' + type] = this['entities' + type.charAt(0).toUpperCase() + type.slice(1)].slice(0, start[type]);
+                        } else {
+                            this['displaySelectAll_' + type] = false;
+                            this['entitiesToDisplay_' + type] = search(this['entities' + type.charAt(0).toUpperCase() + type.slice(1)],
+                                this[type + 'Search'],
+                                this.columnsToDisplay
+                            );
+                        }
+                    }, 1000);
                 },
                 handleEntities(data) {
                     allEntities = allEntities.concat(data);

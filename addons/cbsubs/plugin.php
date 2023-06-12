@@ -38,7 +38,7 @@ class plgAcymCbsubs extends acymPlugin
             $allGroups,
             'acym_condition[conditions][__numor__][__numand__][cbsubs][plan]',
             '',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['cbsubs']->option .= '</div>';
 
@@ -56,7 +56,7 @@ class plgAcymCbsubs extends acymPlugin
             $statusCBSubs,
             'acym_condition[conditions][__numor__][__numand__][cbsubs][status]',
             '',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['cbsubs']->option .= '</div>';
 
@@ -71,7 +71,7 @@ class plgAcymCbsubs extends acymPlugin
             $autoRecurring,
             'acym_condition[conditions][__numor__][__numand__][cbsubs][recurring]',
             '',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['cbsubs']->option .= '</div>';
 

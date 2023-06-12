@@ -506,7 +506,7 @@ class UserClass extends acymClass
 
         if (empty($id) && !empty($idName) && empty($key) && !empty($keyName)) {
             $id = acym_getVar('int', 'id', 0);
-            $key = acym_getVar('int', 'key', 0);
+            $key = acym_getVar('string', 'key', 0);
         }
 
         if (empty($id) || empty($key)) {

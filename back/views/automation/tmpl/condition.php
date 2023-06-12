@@ -34,10 +34,30 @@
 				<i class="cell medium-shrink small-1 cursor-pointer acymicon-close acym__color__red acym__automation__delete__one__condition"></i>
 			</div>
 			<div class="medium-5 cell acym__automation__and__example__classic__select" style="display: none;">
-                <?php echo acym_select($data['classic_name'], 'conditions_name', null, 'class="acym__automation__select__classic__condition" data-class="acym__select"'); ?>
+                <?php
+                echo acym_select(
+                    $data['classic_name'],
+                    'conditions_name',
+                    null,
+                    [
+                        'class' => 'acym__automation__select__classic__condition',
+                        'data-class' => 'acym__select',
+                    ]
+                );
+                ?>
 			</div>
 			<div class="medium-5 cell acym__automation__and__example__user__select" style="display: none;">
-                <?php echo acym_select($data['user_name'], 'conditions_name', null, 'class="acym__automation__select__user__condition" data-class="acym__select"'); ?>
+                <?php
+                echo acym_select(
+                    $data['user_name'],
+                    'conditions_name',
+                    null,
+                    [
+                        'class' => 'acym__automation__select__user__condition',
+                        'data-class' => 'acym__select',
+                    ]
+                );
+                ?>
 			</div>
 		</div>
 
@@ -63,7 +83,14 @@
 			<div class="cell grid-x acym__content acym__automation__group__condition" data-condition-number="0">
 				<div class="cell grid-x acym__automation__one__condition acym__automation__one__condition__classic">
 					<div class="medium-5 cell">
-                        <?php echo acym_select($data['classic_name'], 'conditions_name', null, 'class="acym__select acym__automation__select__classic__condition"'); ?>
+                        <?php
+                        echo acym_select(
+                            $data['classic_name'],
+                            'conditions_name',
+                            null,
+                            ['class' => 'acym__select acym__automation__select__classic__condition']
+                        );
+                        ?>
 					</div>
 				</div>
 				<div class="cell grid-x margin-top-2">
@@ -84,7 +111,14 @@
 			<div class="cell grid-x acym__content acym__automation__group__condition" data-condition-number="0">
 				<div class="cell grid-x acym__automation__one__condition acym__automation__one__condition__user">
 					<div class="medium-5 cell">
-                        <?php echo acym_select($data['user_name'], 'conditions_name', null, 'class="acym__select acym__automation__select__user__condition"'); ?>
+                        <?php
+                        echo acym_select(
+                            $data['user_name'],
+                            'conditions_name',
+                            null,
+                            ['class' => 'acym__select acym__automation__select__user__condition']
+                        );
+                        ?>
 					</div>
 				</div>
 				<div class="cell grid-x margin-top-2">

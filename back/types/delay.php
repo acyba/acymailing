@@ -85,7 +85,10 @@ class DelayType extends acymObject
                 $this->values,
                 'delaytype'.$this->num,
                 $return->type,
-                'class="intext_select" onchange="'.$updateFunction.$this->onChange.'"',
+                [
+                    'class' => 'intext_select',
+                    'onchange' => $updateFunction.$this->onChange,
+                ],
                 'value',
                 'text',
                 'delaytype'.$this->num

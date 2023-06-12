@@ -27,7 +27,12 @@ trait PayplansAutomationConditions
         array_unshift($allPlans, $firstGroup);
 
         $conditions['user']['payplans']->option .= '<div class="intext_select_automation cell">';
-        $conditions['user']['payplans']->option .= acym_select($allPlans, 'acym_condition[conditions][__numor__][__numand__][payplans][plan]', '', 'class="acym__select"');
+        $conditions['user']['payplans']->option .= acym_select(
+            $allPlans,
+            'acym_condition[conditions][__numor__][__numand__][payplans][plan]',
+            '',
+            ['class' => 'acym__select']
+        );
         $conditions['user']['payplans']->option .= '</div>';
 
         $status = [];
@@ -37,7 +42,12 @@ trait PayplansAutomationConditions
         $status[] = acym_selectOption('1603', acym_translation('COM_PAYPLANS_STATUS_SUBSCRIPTION_EXPIRED'));
 
         $conditions['user']['payplans']->option .= '<div class="intext_select_automation cell">';
-        $conditions['user']['payplans']->option .= acym_select($status, 'acym_condition[conditions][__numor__][__numand__][payplans][status]', '', 'class="acym__select"');
+        $conditions['user']['payplans']->option .= acym_select(
+            $status,
+            'acym_condition[conditions][__numor__][__numand__][payplans][status]',
+            '',
+            ['class' => 'acym__select']
+        );
         $conditions['user']['payplans']->option .= '</div>';
 
 

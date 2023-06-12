@@ -44,6 +44,11 @@ class plgAcymEasyblog extends acymPlugin
                         'hide' => 'ACYM_DONT_SHOW',
                     ],
                 ],
+                'itemid' => [
+                    'type' => 'text',
+                    'label' => 'ACYM_MENU_ID',
+                    'value' => '',
+                ],
             ];
         } else {
             $this->settings = [

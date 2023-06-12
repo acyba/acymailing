@@ -42,7 +42,11 @@ class FailactionType extends acymObject
             $this->values,
             'config[bounce_action_'.$num.']',
             $value,
-            'class="intext_select" style="width: 200px;" onchange="updateSubAction(\''.$num.'\');"',
+            [
+                'class' => 'intext_select',
+                'style' => 'width: 200px;',
+                'onchange' => "updateSubAction('".$num."');",
+            ],
             'value',
             'text',
             'bounce_action_'.$num
@@ -55,7 +59,10 @@ class FailactionType extends acymObject
             $this->lists,
             'config[bounce_action_lists_'.$num.']',
             $this->config->get('bounce_action_lists_'.$num),
-            'class="intext_select" style="width: 200px;margin-left: 5px;"',
+            [
+                'class' => 'intext_select',
+                'style' => 'width: 200px;margin-left: 5px;',
+            ],
             'value',
             'text',
             str_replace(['[', ']'], ['_', ''], 'config[bounce_action_lists_'.$num.']')

@@ -98,7 +98,7 @@
                             $data['triggers_select'],
                             'acym_triggers',
                             empty($data['currentCampaign']->sending_params['trigger_type']) ? null : $data['currentCampaign']->sending_params['trigger_type'],
-                            'class="acym__select"'
+                            ['class' => 'acym__select']
                         );
                         ?>
 					</div>

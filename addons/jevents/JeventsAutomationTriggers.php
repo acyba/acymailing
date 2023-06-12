@@ -20,20 +20,20 @@ trait JeventsAutomationTriggers
                 $params['every'],
                 '[triggers][classic][jevents_reminder][time]',
                 empty($defaultValues['jevents_reminder']) ? '86400' : $defaultValues['jevents_reminder']['time'],
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             ).'</div></div>';
         $triggers['classic']['jevents_reminder']->option .= '<div class="grid-x cell grid-margin-x acym_vcenter margin-bottom-1"><div class="cell medium-shrink">'.acym_select(
                 $params['when'],
                 '[triggers][classic][jevents_reminder][when]',
                 empty($defaultValues['jevents_reminder']) ? 'before' : $defaultValues['jevents_reminder']['when'],
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             ).'</div>';
         $triggers['classic']['jevents_reminder']->option .= '<div class="cell medium-shrink">'.acym_translation('ACYM_AN_EVENT_IN').'</div>';
         $triggers['classic']['jevents_reminder']->option .= '<div class="cell medium-auto">'.acym_select(
                 $params['categories'],
                 '[triggers][classic][jevents_reminder][cat]',
                 empty($defaultValues['jevents_reminder']) ? '' : $defaultValues['jevents_reminder']['cat'],
-                'data-class="intext_select_larger intext_select acym__select"'
+                ['data-class' => 'intext_select_larger intext_select acym__select']
             ).'</div>';
         $triggers['classic']['jevents_reminder']->option .= '</div></div>';
     }

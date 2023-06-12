@@ -125,17 +125,7 @@
         }
 
         .acym__configuration__acl__row {
-            position: relative;
-
-            [id$="_container"]:after {
-                position: absolute;
-                content: "";
-                bottom: 1rem;
-                height: 1px;
-                width: 50%;
-                left: 25%;
-                background-color: lightgrey;
-            }
+            margin-top: 1rem;
         }
 
         #email_verification .button {
@@ -208,6 +198,11 @@
                 }
             }
         }
+    }
+
+    .acym__config__acymailer__rate-status__icon {
+        font-size: 15px;
+        margin-left: 10px;
     }
 
     .acym__acymailer__domain_containers {

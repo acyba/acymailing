@@ -19,7 +19,12 @@ trait EasyprofileAutomationConditions
         $operator = new OperatorType();
 
         $conditions['user']['epfield']->option = '<div class="intext_select_automation cell">';
-        $conditions['user']['epfield']->option .= acym_select($fields, 'acym_condition[conditions][__numor__][__numand__][epfield][field]', null, 'class="acym__select"');
+        $conditions['user']['epfield']->option .= acym_select(
+            $fields,
+            'acym_condition[conditions][__numor__][__numand__][epfield][field]',
+            null,
+            ['class' => 'acym__select']
+        );
         $conditions['user']['epfield']->option .= '</div>';
         $conditions['user']['epfield']->option .= '<div class="intext_select_automation cell">';
         $conditions['user']['epfield']->option .= $operator->display('acym_condition[conditions][__numor__][__numand__][epfield][operator]');

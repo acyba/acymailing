@@ -391,20 +391,18 @@ class FieldClass extends acymClass
         $checkboxClasses = !empty($userClasses['checkbox']) ? $userClasses['checkbox'] : '';
         $dateClasses = !empty($userClasses['date']) ? $userClasses['date'] : '';
         $phoneClasses = !empty($userClasses['phone']) ? $userClasses['phone'] : '';
-        $singleDropdownClasses = !empty($userClasses['single_dropdown']) ? $userClasses['single_dropdown'] : '';
         $multipleDropdownClasses = !empty($userClasses['multiple_dropdown']) ? $userClasses['multiple_dropdown'] : '';
-        $languageClasses = !empty($userClasses['language']) ? $userClasses['language'] : '';
 
         $extraErrors = $this->config->get('extra_errors', '0');
         $isCoreField = $field->core == 1;
 
         if (!$isCoreField && !acym_level(ACYM_ENTERPRISE)) return '';
 
-        $return = '';
-
         if ($display == 0 && acym_isAdmin() && acym_level(ACYM_ENTERPRISE) && !$isCoreField) return '';
 
         if ($display == 0 && !acym_isAdmin()) return '';
+
+        $return = '';
 
         $cmsUser = false;
         if ($displayFront && !empty($user->id)) {
@@ -473,11 +471,14 @@ class FieldClass extends acymClass
             $authorizedContent = ' data-authorized-content="'.acym_escape($field->option->authorized_content).'"';
         }
 
+        $attributesSelectField = [];
         $maxCharacters = empty($field->option->max_characters) ? '' : ' maxlength="'.$field->option->max_characters.'"';
-        $style = empty($size) ? '' : ' style="'.$size.'"';
-        $messageRequired = empty($field->option->error_message) ? '' : acym_translation($field->option->error_message);
-        $requiredJson = json_encode(['type' => $field->type, 'message' => $messageRequired]);
-        $required = $field->required ? ' data-required="'.acym_escape($requiredJson).'"' : '';
+        $style = '';
+        if (!empty($size)) {
+            $attributesSelectField['style'] = $size;
+            $style = ' style="'.$size.'"';
+        }
+
         $placeholder = '';
         if (!$displayOutside) $placeholder = ' placeholder="'.acym_escape($field->name).'"';
 
@@ -497,9 +498,18 @@ class FieldClass extends acymClass
             $return .= '<div '.$displayIf.' class="cell margin-top-1"><div class="acym__users__creation__fields__title">'.$field->name.'</div>';
         }
 
-        $readonly = '';
+        $messageRequired = empty($field->option->error_message) ? '' : acym_translation($field->option->error_message);
+        $requiredJson = json_encode(['type' => $field->type, 'message' => $messageRequired]);
+        $required = '';
+        if ($field->required) {
+            $required = ' data-required="'.acym_escape($requiredJson).'"';
+            $attributesSelectField['data-required'] = $requiredJson;
+        }
 
+        $readonly = '';
         if ($display == 0 && acym_isAdmin() && acym_level(ACYM_ENTERPRISE) && $isCoreField) {
+            $attributesSelectField['disabled'] = true;
+            unset($attributesSelectField['data-required']);
             $readonly = ' disabled ';
             $required = '';
         }
@@ -524,13 +534,20 @@ class FieldClass extends acymClass
                 $defaultValue = $user->language;
             }
 
+            $attributesSelectField['class'] = 'acym__select '.$allClasses;
+            if (!empty($userClasses['language'])) {
+                $attributesSelectField['class'] .= ' '.$userClasses['language'];
+            }
             $selectTmp = acym_select(
                 $this->getLanguagesForDropdown(),
                 'user[language]',
                 empty($defaultValue) ? acym_getLanguageTag() : $defaultValue,
-                'class="acym__select '.$allClasses.' '.$languageClasses.'"'.$style.$required.$readonly
+                $attributesSelectField
             );
-            if (!empty($readonly)) $selectTmp = acym_tooltip($selectTmp, acym_translation('ACYM_CF_EDITION_BLOCKED'));
+
+            if (!empty($readonly)) {
+                $selectTmp = acym_tooltip($selectTmp, acym_translation('ACYM_CF_EDITION_BLOCKED'));
+            }
             $return .= $selectTmp;
         } elseif ($field->type === 'text') {
             $return .= '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.' type="text">';
@@ -589,11 +606,15 @@ class FieldClass extends acymClass
                 }
             }
         } elseif ($field->type === 'single_dropdown') {
+            $attributesSelectField['class'] = 'acym__custom__fields__select__form acym__select '.$allClasses;
+            if (!empty($userClasses['single_dropdown'])) {
+                $attributesSelectField['class'] .= ' '.$userClasses['single_dropdown'];
+            }
             $return .= acym_select(
                 $valuesArray,
                 $name,
                 empty($defaultValue) ? '' : $defaultValue,
-                'class="acym__custom__fields__select__form acym__select '.$allClasses.' '.$singleDropdownClasses.'"'.$style.$required
+                $attributesSelectField
             );
         } elseif ($field->type === 'multiple_dropdown') {
             $defaultValue = is_array($defaultValue) ? $defaultValue : explode(',', $defaultValue);

@@ -35,7 +35,7 @@ class plgAcymContactform7 extends acymPlugin
         add_filter('wpcf7_validate_acymsub*', [$this, 'acymsubValidationFilter'], 10, 2);
 
         // Extra fonctions called directly from Contact form 7
-        include_once 'functions.php';
+        include_once __DIR__.DS.'functions.php';
     }
 
     // Add handler to display tag content in form

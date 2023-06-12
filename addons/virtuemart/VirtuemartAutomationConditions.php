@@ -30,7 +30,12 @@ trait VirtuemartAutomationConditions
             $conditions['user']['vmgroups']->option .= $operatorIn->display('acym_condition[conditions][__numor__][__numand__][vmgroups][type]');
             $conditions['user']['vmgroups']->option .= '</div>';
             $conditions['user']['vmgroups']->option .= '<div class="intext_select_automation cell">';
-            $conditions['user']['vmgroups']->option .= acym_select($groups, 'acym_condition[conditions][__numor__][__numand__][vmgroups][group]', null, 'class="acym__select"');
+            $conditions['user']['vmgroups']->option .= acym_select(
+                $groups,
+                'acym_condition[conditions][__numor__][__numand__][vmgroups][group]',
+                null,
+                ['class' => 'acym__select']
+            );
             $conditions['user']['vmgroups']->option .= '</div>';
         }
 
@@ -48,7 +53,7 @@ trait VirtuemartAutomationConditions
                 $fields,
                 'acym_condition[conditions][__numor__][__numand__][vmfield][field]',
                 null,
-                'class="acym__select acym__automation__conditions__fields__dropdown"'
+                ['class' => 'acym__select acym__automation__conditions__fields__dropdown']
             );
             $conditions['user']['vmfield']->option .= '</div>';
             $conditions['user']['vmfield']->option .= '<div class="intext_select_automation cell">';
@@ -93,7 +98,7 @@ trait VirtuemartAutomationConditions
                 $orderStatuses,
                 'acym_condition[conditions][__numor__][__numand__][vmreminder][status]',
                 '',
-                'class="acym__select"'
+                ['class' => 'acym__select']
             ).'</div>'
         );
         $conditions['user']['vmreminder']->option .= '<div class="intext_select_automation cell">';
@@ -101,7 +106,7 @@ trait VirtuemartAutomationConditions
             $paymentMethods,
             'acym_condition[conditions][__numor__][__numand__][vmreminder][payment]',
             '',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['vmreminder']->option .= '</div>';
         $conditions['user']['vmreminder']->option .= '</div>';
@@ -120,7 +125,11 @@ trait VirtuemartAutomationConditions
             [],
             'acym_condition[conditions][__numor__][__numand__][vmpurchased][product]',
             null,
-            'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_AT_LEAST_ONE_PRODUCT', true).'" data-params="'.acym_escape($ajaxParams).'"'
+            [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-placeholder' => acym_translation('ACYM_AT_LEAST_ONE_PRODUCT'),
+                'data-params' => $ajaxParams,
+            ]
         );
         $conditions['user']['vmpurchased']->option .= '</div>';
 
@@ -130,7 +139,11 @@ trait VirtuemartAutomationConditions
             [],
             'acym_condition[conditions][__numor__][__numand__][vmpurchased][category]',
             null,
-            'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_ANY_CATEGORY', true).'" data-params="'.acym_escape($ajaxParams).'"'
+            [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-placeholder' => acym_translation('ACYM_ANY_CATEGORY'),
+                'data-params' => $ajaxParams,
+            ]
         );
         $conditions['user']['vmpurchased']->option .= '</div>';
 
@@ -230,7 +243,7 @@ trait VirtuemartAutomationConditions
         $defaultGroups = acym_loadResultArray('SELECT `virtuemart_shoppergroup_id` FROM `#__virtuemart_shoppergroups` WHERE `default` > 0');
         if (empty($defaultGroups)) $defaultGroups = [0];
 
-        $join = '#__virtuemart_vmuser_shoppergroups AS vmgroup_'.$num.' ON user.cms_id = vmgroup_'.$num.'.virtuemart_user_id';
+        $join = '#__virtuemart_vmuser_shoppergroups AS vmgroup_'.$num.' ON user.cms_id = vmgroup_'.$num.'.virtuemart_user_id AND user.cms_id > 0';
         $where = 'vmgroup_'.$num.'.virtuemart_shoppergroup_id = '.intval($options['group']);
 
         if (empty($options['type']) || $options['type'] == 'in') {
@@ -263,7 +276,7 @@ trait VirtuemartAutomationConditions
 
     private function processConditionFilter_vmfield(&$query, $options, $num)
     {
-        $query->join['vmfield_user'] = '#__virtuemart_userinfos AS vmfield_user ON user.cms_id = vmfield_user.virtuemart_user_id';
+        $query->join['vmfield_user'] = '#__virtuemart_userinfos AS vmfield_user ON user.cms_id = vmfield_user.virtuemart_user_id AND user.cms_id > 0';
         $query->where[] = $query->convertQuery('vmfield_user', $options['field'], $options['operator'], $options['value']);
     }
 
@@ -300,7 +313,7 @@ trait VirtuemartAutomationConditions
         $order = '`vmorder_'.$num.'`';
         $orderItem = '`vmorderitem_'.$num.'`';
 
-        $query->join[$orderUser] = '`#__virtuemart_order_userinfos` AS '.$orderUser.' ON '.$orderUser.'.`email` = `user`.`email` OR '.$orderUser.'.`virtuemart_user_id` = `user`.`cms_id`';
+        $query->join[$orderUser] = '`#__virtuemart_order_userinfos` AS '.$orderUser.' ON '.$orderUser.'.`email` = `user`.`email` OR ('.$orderUser.'.`virtuemart_user_id` = `user`.`cms_id` AND `user`.`cms_id` > 0)';
         $query->join[$order] = '`#__virtuemart_orders` AS '.$order.' ON '.$order.'.`virtuemart_order_id` = '.$orderUser.'.`virtuemart_order_id`';
         $query->where[] = $order.'.`order_status` IN ("C", "F", "U")';
 

@@ -13,16 +13,22 @@ if (!empty($data['translation_languages'])) {
 	<input required type="text" name="field[name]" value="<?php echo empty($data['field']->name) ? '' : acym_escape($data['field']->name); ?>">
 </label>
 <label class="cell xlarge-12 large-6 margin-top-1">
-    <?php echo acym_translation('ACYM_FIELD_TYPE'); ?>
     <?php
+    echo acym_translation('ACYM_FIELD_TYPE');
+
+    $attributes = [
+        'acym-data-infinite' => true,
+        'class' => 'acym__fields__edit__select acym__select',
+    ];
+    if (!empty($data['field']->id) && in_array($data['field']->id, [1, 2, $data['languageFieldId']])) {
+        $attributes['disabled'] = true;
+    }
+
     echo acym_select(
         $data['fieldType'],
         'field[type]',
         $data['field']->type,
-        'acym-data-infinite class="acym__fields__edit__select acym__select"'.((!empty($data['field']->id) && in_array(
-                $data['field']->id,
-                [1, 2, $data['languageFieldId']]
-            )) ? 'disabled' : ''),
+        $attributes,
         'value',
         'name'
     );

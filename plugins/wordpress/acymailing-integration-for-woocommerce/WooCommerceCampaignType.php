@@ -5,6 +5,7 @@ use AcyMailing\Controllers\CampaignsController;
 trait WooCommerceCampaignType
 {
     private $mailType = 'woocommerce_cart';
+
     public function getNewEmailsTypeBlock(&$extraBlocks)
     {
         if (acym_isAdmin()) {
@@ -42,7 +43,12 @@ trait WooCommerceCampaignType
             $selectedtType = $sendingParams[$this->mailType.'_type'];
         }
         $timeSelect = '<div class="cell medium-2 margin-left-1 margin-right-1">';
-        $timeSelect .= acym_select($timeSelectOptions, 'acym_woocomerce_time_frame', $selectedtType, 'class="acym__select"');
+        $timeSelect .= acym_select(
+            $timeSelectOptions,
+            'acym_woocomerce_time_frame',
+            $selectedtType,
+            ['class' => 'acym__select']
+        );
         $timeSelect .= '</div>';
 
         $defaultNumber = 1;
@@ -57,7 +63,12 @@ trait WooCommerceCampaignType
             $selectedStatus = $sendingParams[$this->mailType.'_status'];
         }
         $inputStatus = '<div class="cell medium-2 margin-left-1 margin-right-1">';
-        $inputStatus .= acym_select($orderStatuses, 'acym_woocomerce_status', $selectedStatus, 'class="acym__select"');
+        $inputStatus .= acym_select(
+            $orderStatuses,
+            'acym_woocomerce_status',
+            $selectedStatus,
+            ['class' => 'acym__select']
+        );
         $inputStatus .= '</div>';
 
         $whenSettings = '<div class="cell grid-x acym_vcenter">';

@@ -45,7 +45,10 @@
                             ],
                             'field[value][disabled][]',
                             'n',
-                            'class="acym__fields__edit__select acym__select" acym-data-infinite ',
+                            [
+                                'class' => 'acym__fields__edit__select acym__select',
+                                'acym-data-infinite' => true,
+                            ],
                             'value',
                             'name'
                         ); ?>
@@ -72,7 +75,10 @@
                                 ],
                                 'field[value][disabled][]',
                                 $value->disabled,
-                                'class="acym__fields__edit__select acym__select" acym-data-infinite ',
+                                [
+                                    'class' => 'acym__fields__edit__select acym__select',
+                                    'acym-data-infinite' => true,
+                                ],
                                 'value',
                                 'name'
                             );
@@ -98,7 +104,10 @@
             $data['database'],
             'fieldDB[database]',
             empty($data['field']->fieldDB->database) ? '' : $data['field']->fieldDB->database,
-            'class="acym__fields__edit__select acym__select" acym-data-infinite ',
+            [
+                'class' => 'acym__fields__edit__select acym__select',
+                'acym-data-infinite' => true,
+            ],
             'value',
             'name'
         );
@@ -111,7 +120,10 @@
             empty($data['field']->fieldDB->tables) ? [] : $data['field']->fieldDB->tables,
             'fieldDB[table]',
             empty($data['field']->fieldDB->table) ? '' : $data['field']->fieldDB->table,
-            'class="acym__fields__edit__select acym__select" acym-data-infinite',
+            [
+                'class' => 'acym__fields__edit__select acym__select',
+                'acym-data-infinite' => true,
+            ],
             'value',
             'name'
         );
@@ -123,7 +135,10 @@
             empty($data['field']->fieldDB->columns) ? [] : $data['field']->fieldDB->columns,
             'fieldDB[value]',
             empty($data['field']->fieldDB->value) ? '' : $data['field']->fieldDB->value,
-            'class="acym__fields__edit__select acym__fields__database__columns acym__select" acym-data-infinite',
+            [
+                'class' => 'acym__fields__edit__select acym__fields__database__columns acym__select',
+                'acym-data-infinite' => true,
+            ],
             'value',
             'name'
         );
@@ -136,7 +151,10 @@
             empty($data['field']->fieldDB->columns) ? [] : $data['field']->fieldDB->columns,
             'fieldDB[title]',
             empty($data['field']->fieldDB->title) ? '' : $data['field']->fieldDB->title,
-            'class="acym__fields__edit__select acym__fields__database__columns acym__select" acym-data-infinite',
+            [
+                'class' => 'acym__fields__edit__select acym__fields__database__columns acym__select',
+                'acym-data-infinite' => true,
+            ],
             'value',
             'name'
         );
@@ -148,7 +166,10 @@
             empty($data['field']->fieldDB->columns) ? [] : $data['field']->fieldDB->columns,
             'fieldDB[where]',
             empty($data['field']->fieldDB->where) ? '' : $data['field']->fieldDB->where,
-            'class="acym__fields__edit__select acym__fields__database__columns acym__select" acym-data-infinite',
+            [
+                'class' => 'acym__fields__edit__select acym__fields__database__columns acym__select',
+                'acym-data-infinite' => true,
+            ],
             'value',
             'name'
         );
@@ -178,7 +199,10 @@
             empty($data['field']->fieldDB->columns) ? [] : $data['field']->fieldDB->columns,
             'fieldDB[order_by]',
             empty($data['field']->fieldDB->order_by) ? '' : $data['field']->fieldDB->order_by,
-            'class="acym__fields__edit__select acym__fields__database__columns acym__select" acym-data-infinite',
+            [
+                'class' => 'acym__fields__edit__select acym__fields__database__columns acym__select',
+                'acym-data-infinite' => true,
+            ],
             'value',
             'name'
         );
@@ -191,7 +215,10 @@
             ['asc' => 'ASC', 'desc' => 'DESC'],
             'fieldDB[sort_order]',
             empty($data['field']->fieldDB->sort_order) ? '' : $data['field']->fieldDB->sort_order,
-            'class="acym__fields__edit__select acym__select" acym-data-infinite',
+            [
+                'class' => 'acym__fields__edit__select acym__select',
+                'acym-data-infinite' => true,
+            ],
             'value',
             'name'
         );

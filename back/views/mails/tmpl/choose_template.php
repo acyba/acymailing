@@ -38,7 +38,7 @@
                     $data['allTags'],
                     'mailchoose_tag',
                     acym_escape($data["tag"]),
-                    'class="acym__choose_template__filter__tags acym__select"',
+                    ['class' => 'acym__choose_template__filter__tags acym__select'],
                     'value',
                     'name'
                 ); ?>

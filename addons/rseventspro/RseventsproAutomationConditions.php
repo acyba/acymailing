@@ -22,7 +22,7 @@ trait RseventsproAutomationConditions
             $status,
             'acym_condition[conditions][__numor__][__numand__][rseventspro][status]',
             '0',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['rseventspro']->option .= '</div>';
 

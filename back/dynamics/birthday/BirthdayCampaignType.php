@@ -7,7 +7,7 @@ use AcyMailing\Classes\FieldClass;
 trait BirthdayCampaignType
 {
     private $mailType = 'birthday';
-    
+
     public function getNewEmailsTypeBlock(&$extraBlocks)
     {
         if (acym_isAdmin()) {
@@ -51,7 +51,12 @@ trait BirthdayCampaignType
             $selectedtType = $sendingParams[$this->mailType.'_type'];
         }
         $timeSelect = '<div class="cell medium-2 margin-left-1 margin-right-1">';
-        $timeSelect .= acym_select($timeSelectOptions, 'acym_birthday_time_frame', $selectedtType, 'class="acym__select"');
+        $timeSelect .= acym_select(
+            $timeSelectOptions,
+            'acym_birthday_time_frame',
+            $selectedtType,
+            ['class' => 'acym__select']
+        );
         $timeSelect .= '</div>';
 
         $timeRelativeOptions = [
@@ -64,7 +69,12 @@ trait BirthdayCampaignType
             $selectedRelative = $sendingParams[$this->mailType.'_relative'];
         }
         $inputRelative = '<div class="cell medium-2 margin-left-1 margin-right-1">';
-        $inputRelative .= acym_select($timeRelativeOptions, 'acym_birthday_relative', $selectedRelative, 'class="acym__select"');
+        $inputRelative .= acym_select(
+            $timeRelativeOptions,
+            'acym_birthday_relative',
+            $selectedRelative,
+            ['class' => 'acym__select']
+        );
         $inputRelative .= '</div>';
 
         $whenSettings = '<div class="cell grid-x acym_vcenter">';
@@ -116,7 +126,12 @@ trait BirthdayCampaignType
         }
 
         $inputField = '<div class="cell medium-2 margin-left-1 margin-right-1" >';
-        $inputField .= acym_select($availablePlugins, 'acym_plugin_field', !empty($selectedPlugin) ? $selectedPlugin : '', 'class="acym__select"');
+        $inputField .= acym_select(
+            $availablePlugins,
+            'acym_plugin_field',
+            !empty($selectedPlugin) ? $selectedPlugin : '',
+            ['class' => 'acym__select']
+        );
         $inputField .= '</div><div class="cell medium-8"></div>';
 
         $additionalSettings = '<div class="cell grid-x acym_vcenter margin-left-3 margin-bottom-1" '.($onlyAcymailing ? 'style="display:none"' : '').'>';
@@ -130,7 +145,12 @@ trait BirthdayCampaignType
         }
 
         $inputField = '<div class="cell medium-2 margin-left-1 margin-right-1">';
-        $inputField .= acym_select($availableFields, 'acym_birthday_field', $selectedField, 'class="acym__select"');
+        $inputField .= acym_select(
+            $availableFields,
+            'acym_birthday_field',
+            $selectedField,
+            ['class' => 'acym__select']
+        );
         $inputField .= '</div><div class="cell medium-8"></div>';
 
         $additionalSettings .= '<div class="cell grid-x acym_vcenter margin-left-3 margin-bottom-1" id="acym_div_date_field"'.(empty($selectedPlugin) && !$onlyAcymailing

@@ -516,7 +516,12 @@
                         'black' => acym_translation('ACYM_BLACK'),
                         'white' => acym_translation('ACYM_WHITE'),
                     ];
-                    echo acym_select($brightness, 'acym__wysid__built-with__text__color', 'black', 'class="acym__select"'); ?>
+                    echo acym_select(
+                        $brightness,
+                        'acym__wysid__built-with__text__color',
+                        'black',
+                        ['class' => 'acym__select']
+                    ); ?>
 				</div>
 			</div>
 		</div>

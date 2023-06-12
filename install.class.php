@@ -1404,6 +1404,111 @@ class acymInstall
                 $formClass->save($oneForm);
             }
         }
+
+        if (version_compare($this->fromVersion, '8.5.0', '<')) {
+            $aclPages = [
+                'forms',
+                'users',
+                'fields',
+                'lists',
+                'segments',
+                'campaigns',
+                'mails',
+                'override',
+                'automation',
+                'queue',
+                'plugins',
+                'bounces',
+                'stats',
+                'configuration',
+            ];
+
+            $config = acym_config();
+            $groups = array_keys(acym_getGroups());
+
+            foreach ($aclPages as $page) {
+                $aclConfig = $config->get('acl_'.$page, 'all');
+
+                if ($aclConfig === 'all') {
+                    continue;
+                }
+
+                $groupsAuthorized = [];
+
+                foreach ($groups as $group) {
+                    if ($config->get('acl_'.$page.'_'.$group, 1) == 1) {
+                        $groupsAuthorized[] = $group;
+                    }
+                }
+
+                $config->save(['acl_'.$page => implode(',', $groupsAuthorized)]);
+            }
+
+            $queries = file_get_contents(ACYM_BACK.'tables.sql');
+            $tables = explode('CREATE TABLE IF NOT EXISTS ', $queries);
+            $tableNames = [];
+            $indexes = [];
+            $constraints = [];
+
+            foreach ($tables as $oneTable) {
+                if (strpos($oneTable, '`#__') !== 0) {
+                    continue;
+                }
+                $tableName = substr($oneTable, 1, strpos($oneTable, '`', 1) - 1);
+                $tableNames[] = $tableName;
+
+                $fields = explode("\n", $oneTable);
+                foreach ($fields as $key => $oneField) {
+                    $oneField = rtrim(trim($oneField), ',');
+                    if (strpos($oneField, 'INDEX') === 0) {
+                        $firstBackquotePos = strpos($oneField, '`');
+                        $indexName = substr($oneField, $firstBackquotePos + 1, strpos($oneField, '`', $firstBackquotePos + 1) - $firstBackquotePos - 1);
+
+                        $indexes[$tableName][$indexName] = $oneField;
+                    } elseif (strpos($oneField, 'FOREIGN KEY') !== false) {
+                        preg_match('/(#__fk.*)\`/Uis', $fields[$key - 1], $matchesConstraints);
+                        preg_match('/(#__.*)\`\(`(.*)`\)/Uis', $fields[$key + 1], $matchesTable);
+                        preg_match('/\`(.*)\`/Uis', $oneField, $matchesColumn);
+                        if (!empty($matchesConstraints) && !empty($matchesTable) && !empty($matchesColumn)) {
+                            if (empty($constraints[$tableName])) $constraints[$tableName] = [];
+                            $constraints[$tableName][$matchesConstraints[1]] = [
+                                'table' => $matchesTable[1],
+                                'column' => $matchesColumn[1],
+                                'table_column' => $matchesTable[2],
+                            ];
+                        }
+                    }
+                }
+            }
+
+            foreach ($tableNames as $tableName) {
+                if (!empty($indexes[$tableName])) {
+                    foreach ($indexes[$tableName] as $newName => $query) {
+                        $oldName = str_replace('#__index_', 'index_#__', $newName);
+                        preg_match('#\(.*\)#U', $query, $matches);
+                        try {
+                            acym_query('ALTER TABLE `'.$tableName.'` DROP INDEX `'.$oldName.'`, ADD INDEX `'.$newName.'`'.$matches[0]);
+                        } catch (\Exception $exception) {
+                            acym_logError('Error while renaming index '.$oldName.', with the error '.$exception->getMessage());
+                        }
+                    }
+                }
+
+                if (!empty($constraints[$tableName])) {
+                    acym_query('SET FOREIGN_KEY_CHECKS=0;');
+                    foreach ($constraints[$tableName] as $newName => $constraintInfo) {
+                        $oldName = str_replace('#__fk_', 'fk_#__', $newName);
+                        $query = 'ALTER TABLE '.$tableName.' DROP FOREIGN KEY `'.$oldName.'`,ADD CONSTRAINT `'.$newName.'` FOREIGN KEY (`'.$constraintInfo['column'].'`) REFERENCES `'.$constraintInfo['table'].'` (`'.$constraintInfo['table_column'].'`) ON DELETE NO ACTION ON UPDATE NO ACTION;';
+                        try {
+                            acym_query($query);
+                        } catch (\Exception $exception) {
+                            acym_logError('Error while renaming foreign key '.$oldName.', with the error '.$exception->getMessage());
+                        }
+                    }
+                    acym_query('SET FOREIGN_KEY_CHECKS=1;');
+                }
+            }
+        }
     }
 
     public function updateQuery($query)

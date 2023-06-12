@@ -17,7 +17,7 @@
                     ],
                     'export_type',
                     'charts',
-                    'class="acym__select"'
+                    ['class' => 'acym__select']
                 );
                 ?>
 			</div>

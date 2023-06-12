@@ -126,9 +126,14 @@ function acym_select($data, $name, $selected = null, $attribs = null, $optKey = 
     if (!empty($attribs)) {
         if (is_array($attribs)) {
             foreach ($attribs as $attribName => $attribValue) {
-                if (is_array($attribValue) || is_object($attribValue)) $attribValue = json_encode($attribValue);
+                if (is_array($attribValue) || is_object($attribValue)) {
+                    $attribValue = json_encode($attribValue);
+                }
                 $attribName = str_replace([' ', '"', "'"], '_', $attribName);
-                $attributes .= ' '.$attribName.'="'.acym_escape($attribValue).'"';
+                $attributes .= ' '.$attribName;
+                if ($attribValue !== true) {
+                    $attributes .= '="'.acym_escape($attribValue).'"';
+                }
             }
         } else {
             $attributes = $attribs;
@@ -801,7 +806,12 @@ function acym_generateCountryNumber($name, $defaultvalue = '')
         $countryCodeForSelect[$key] = '+'.$key.' ('.$one.')';
     }
 
-    return acym_select($countryCodeForSelect, $name, empty($defaultvalue) ? '' : $defaultvalue, 'class="acym__select__country acym__select"', 'value', 'text');
+    return acym_select(
+        $countryCodeForSelect,
+        $name,
+        empty($defaultvalue) ? '' : $defaultvalue,
+        ['class' => 'acym__select__country acym__select']
+    );
 }
 
 function acym_cancelButton($text = 'ACYM_CANCEL', $url = '', $class = 'button medium-6 large-shrink')

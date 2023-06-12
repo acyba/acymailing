@@ -19,10 +19,20 @@ trait SubscriptionAutomationActions
         $actions['acy_list'] = new stdClass();
         $actions['acy_list']->name = acym_translation('ACYM_ACYMAILING_LIST');
         $actions['acy_list']->option = '<div class="intext_select_automation cell">';
-        $actions['acy_list']->option .= acym_select($listActions, 'acym_action[actions][__and__][acy_list][list_actions]', null, 'class="acym__select"');
+        $actions['acy_list']->option .= acym_select(
+            $listActions,
+            'acym_action[actions][__and__][acy_list][list_actions]',
+            null,
+            ['class' => 'acym__select']
+        );
         $actions['acy_list']->option .= '</div>';
         $actions['acy_list']->option .= '<div class="intext_select_automation cell">';
-        $actions['acy_list']->option .= acym_select($lists, 'acym_action[actions][__and__][acy_list][list_id]', null, 'class="acym__select"');
+        $actions['acy_list']->option .= acym_select(
+            $lists,
+            'acym_action[actions][__and__][acy_list][list_id]',
+            null,
+            ['class' => 'acym__select']
+        );
         $actions['acy_list']->option .= '</div>';
 
         $actions['subscribe_followup'] = new stdClass();
@@ -86,7 +96,7 @@ trait SubscriptionAutomationActions
     {
         $followupClass = new FollowupClass();
         $followup = $followupClass->getOneById($action['followup_id']);
-        if (empty($followup)) {
+        if (empty($followup->active)) {
             return '';
         }
 

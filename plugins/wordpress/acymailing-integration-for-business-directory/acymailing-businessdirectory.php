@@ -5,7 +5,7 @@ Description: Adds editor options for Business Directory in AcyMailing
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 1.1
+Version: 1.2
 */
 
 use AcyMailing\Classes\PluginClass;

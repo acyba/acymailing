@@ -109,6 +109,30 @@ class plgAcymAcymailer extends acymPlugin
         <?php
     }
 
+    private function getRateColor($rate, $allowedRate, $warningRate)
+    {
+        if (empty($rate) || empty($allowedRate) || empty($warningRate)) {
+            return ['color' => '', 'icon' => ''];
+        }
+
+        if ($rate > $allowedRate) {
+            return [
+                'color' => 'acym__color__red',
+                'icon' => acym_tooltip('<i class="acym__config__acymailer__rate-status__icon acymicon-remove acym__color__red"></i>', acym_translation('ACYM_RATE_BLOCKED')),
+            ];
+        } elseif ($rate >= $warningRate) {
+            return [
+                'color' => 'acym__color__orange',
+                'icon' => acym_tooltip(
+                    '<i class="acym__config__acymailer__rate-status__icon acymicon-exclamation-triangle acym__color__orange"></i>',
+                    acym_translation('ACYM_RATE_WARNING')
+                ),
+            ];
+        }
+
+        return ['color' => '', 'icon' => ''];
+    }
+
     public function onAcymGetSendingMethodsHtmlSetting(&$data)
     {
         $licenseKey = $this->config->get('license_key');
@@ -234,11 +258,27 @@ class plgAcymAcymailer extends acymPlugin
                                         echo acym_tooltip('<i class="acym__config__acymailer__status__icon '.$iconClass.'"></i>', $tooltipText);
                                         ?>
                                     </div>
-                                    <div class="grid-x medium-2 cell acym__listing__title__container align-center">
-                                        <?php echo empty($domain['bounce_rate']) ? '-' : round($domain['bounce_rate'], 2).'%'; ?>
+                                    <?php
+                                    $bounceRateParams = $this->getRateColor(
+                                        empty($domain['bounce_rate']) ? 0 : $domain['bounce_rate'],
+                                        empty($domain['allowed_bounce_rate']) ? 0 : $domain['allowed_bounce_rate'],
+                                        empty($domain['warning_bounce_rate']) ? 0 : $domain['warning_bounce_rate']
+                                    );
+                                    $complaintRateParams = $this->getRateColor(
+                                        empty($domain['complaint_rate']) ? 0 : $domain['complaint_rate'],
+                                        empty($domain['allowed_complaint_rate']) ? 0 : $domain['allowed_complaint_rate'],
+                                        empty($domain['warning_complaint_rate']) ? 0 : $domain['warning_complaint_rate']
+                                    );
+                                    ?>
+                                    <div class="grid-x medium-2 cell acym__listing__title__container align-center <?php echo $bounceRateParams['color']; ?>">
+                                        <?php echo empty($domain['bounce_rate']) ? '-' : round($domain['bounce_rate'], 2).'%';
+                                        echo $bounceRateParams['icon'];
+                                        ?>
                                     </div>
-                                    <div class="grid-x medium-2 cell acym__listing__title__container align-center">
-                                        <?php echo empty($domain['complaint_rate']) ? '-' : round($domain['complaint_rate'], 2).'%'; ?>
+                                    <div class="grid-x medium-2 cell acym__listing__title__container align-center <?php echo $complaintRateParams['color']; ?>">
+                                        <?php echo empty($domain['complaint_rate']) ? '-' : round($domain['complaint_rate'], 2).'%';
+                                        echo $complaintRateParams['icon'];
+                                        ?>
                                     </div>
                                     <div class="grid-x medium-2 cell acym__listing__title__container align-center">
                                         <?php ob_start(); ?>
@@ -1060,7 +1100,9 @@ class plgAcymAcymailer extends acymPlugin
             return false;
         }
 
-        if (strpos($mailerHelper->mail->body, '{unsubscribe}') !== false || strpos($mailerHelper->mail->body, 'task=unsubscribe') !== false) {
+        if (strpos($mailerHelper->mail->body, '{unsubscribe}') !== false
+            || strpos($mailerHelper->mail->body, 'task=unsubscribe') !== false
+            || strpos($mailerHelper->mail->body, 'frontusers/unsubscribe') !== false) {
             return false;
         }
 

@@ -34,7 +34,7 @@ trait WooCommerceFollowup
                     $statusArray,
                     'followup[condition][order_status_status]',
                     !empty($followup->condition) ? $followup->condition['order_status_status'] : '',
-                    'class="acym__select"'
+                    ['class' => 'acym__select']
                 ).'</span>';;
             $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
@@ -60,7 +60,7 @@ trait WooCommerceFollowup
                     $statusArray,
                     'followup[condition][products_status]',
                     !empty($followup->condition) ? $followup->condition['products_status'] : '',
-                    'class="acym__select"'
+                    ['class' => 'acym__select']
                 ).'</span>';;
             $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
@@ -85,7 +85,7 @@ trait WooCommerceFollowup
                     $statusArray,
                     'followup[condition][categories_status]',
                     !empty($followup->condition) ? $followup->condition['categories_status'] : '',
-                    'class="acym__select"'
+                    ['class' => 'acym__select']
                 ).'</span>';;
             $additionalCondition['categories'] = acym_translationSprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
         }

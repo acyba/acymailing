@@ -385,8 +385,17 @@ trait Edition
         $mail->settings = acym_getVar('string', $inputNameSettings, '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->stylesheet = acym_getVar('string', $inputNameStylesheet, '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->headers = acym_getVar('string', 'editor_headers', '', 'REQUEST', ACYM_ALLOWRAW);
-        $mail->thumbnail = $fromAutomation ? '' : acym_getVar('string', 'editor_thumbnail', '', 'REQUEST', ACYM_ALLOWRAW);
         $mail->drag_editor = strpos($mail->body, 'acym__wysid__template') === false ? 0 : 1;
+
+        $mail->thumbnail = '';
+        if (!$fromAutomation) {
+            $thumbnailName = acym_getVar('string', 'editor_thumbnail', '', 'REQUEST', ACYM_ALLOWRAW);
+
+            if (preg_match('#^thumbnail_([0-9]*)\.png$#', $thumbnailName)) {
+                $mail->thumbnail = $thumbnailName;
+            }
+        }
+
         if ($fromAutomation) $mail->type = $mailClass::TYPE_AUTOMATION;
         if (empty($mail->id)) {
             $mail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);

@@ -39,10 +39,10 @@ acym_cmsLoaded();
 // $Id: POP3.php 295243 2010-02-18 22:05:20Z clockwerx $
 
 if (!class_exists('PEAR')) {
-    require_once 'pear.php';
+    require_once __DIR__.DS.'pear.php';
 }
 if (!class_exists('Net_Socket')) {
-    require_once 'socket.php';
+    require_once __DIR__.DS.'socket.php';
 }
 
 
@@ -164,8 +164,8 @@ class Net_POP3
         * Include the Auth_SASL package.  If the package is not available,
         * we disable the authentication methods that depend upon it.
         */
-        if (file_exists('Auth/SASL.php')) {
-            include_once 'Auth/SASL.php';
+        if (file_exists(__DIR__.DS.'Auth/SASL.php')) {
+            include_once __DIR__.DS.'Auth/SASL.php';
         }
         if (!class_exists('Auth_SASL')) {
             if ($this->_debug) {
@@ -191,7 +191,7 @@ class Net_POP3
      */
     function _raiseError($msg, $code = -1)
     {
-        include_once 'PEAR.php';
+        include_once __DIR__.DS.'pear.php';
 
         return PEAR::raiseError($msg, $code);
     }

@@ -48,7 +48,12 @@ trait BirthdayAutomationTriggers
                             <div class="cell medium-shrink" style="display: none">
                                 '.acym_translation('ACYM_SOURCE').' : ';
 
-        $option .= acym_select($sourceOptions, '[triggers][user][on_birthday][source]', $defaultSource, 'data-class="intext_select acym__select"');
+        $option .= acym_select(
+            $sourceOptions,
+            '[triggers][user][on_birthday][source]',
+            $defaultSource,
+            ['data-class' => 'intext_select acym__select']
+        );
         $option .= ' 
                             </div>
                         </div>';
@@ -67,20 +72,20 @@ trait BirthdayAutomationTriggers
                 $fieldsOption,
                 '[triggers][user][on_birthday][field]',
                 $defaultField,
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             );
 
             $hourSelector = acym_select(
                 $hour,
                 '[triggers][user][on_birthday][hour]',
                 $defaultBeforeHour,
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             );
             $minuteSelector = acym_select(
                 $minutes,
                 '[triggers][user][on_birthday][minutes]',
                 $defaultBeforeMinutes,
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             );
 
             $option .= '

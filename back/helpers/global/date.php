@@ -50,7 +50,7 @@ function acym_dateField($name, $value = '', $class = '', $attributes = '', $rela
         ],
         'relative_'.$name,
         null,
-        'class="acym__select relativetype"'
+        ['class' => 'acym__select relativetype']
     );
 
     $result .= '</div>
@@ -63,7 +63,7 @@ function acym_dateField($name, $value = '', $class = '', $attributes = '', $rela
         ],
         'relativewhen_'.$name,
         $relativeDefault,
-        'class="acym__select relativewhen"'
+        ['class' => 'acym__select relativewhen']
     );
     $result .= '</div>
             </div>';
@@ -369,6 +369,7 @@ function acym_translateDate($date)
     return $date;
 }
 
-function acym_isDateValid($date) {
+function acym_isDateValid($date)
+{
     return $date !== '0000-00-00 00:00:00' && !empty($date);
 }

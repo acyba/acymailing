@@ -27,7 +27,7 @@ trait SubscriptionAutomationFilters
             $list['type'],
             'acym_action[filters][__numor__][__numand__][acy_list][action]',
             null,
-            'class="intext_select_automation acym__select"'
+            ['class' => 'intext_select_automation acym__select']
         );
         $filters['acy_list']->option .= '</div>';
         $filters['acy_list']->option .= '<div class="intext_select_automation cell">';
@@ -35,7 +35,7 @@ trait SubscriptionAutomationFilters
             $list['lists'],
             'acym_action[filters][__numor__][__numand__][acy_list][list]',
             null,
-            'class="intext_select_automation acym__select"'
+            ['class' => 'intext_select_automation acym__select']
         );
         $filters['acy_list']->option .= '</div>';
         $filters['acy_list']->option .= '<br><div class="cell grid-x grid-margin-x">';
@@ -46,7 +46,7 @@ trait SubscriptionAutomationFilters
             $list['date'],
             'acym_action[filters][__numor__][__numand__][acy_list][date-type]',
             null,
-            'class="intext_select_automation acym__select cell"'
+            ['class' => 'intext_select_automation acym__select cell']
         );
         $filters['acy_list']->option .= '</div>';
         $filters['acy_list']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';

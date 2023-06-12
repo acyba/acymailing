@@ -383,13 +383,23 @@ function acym_listingActions($actions, $deleteMessage = '', $ctrl = '')
 
     $completeMessage = '<input id="acym__listing__action__delete-message" value="'.(empty($deleteMessage) ? '' : acym_escape($deleteMessage)).'" type="hidden">';
 
-    $attrCtrl = '';
+    $attributes = [
+        'class' => 'medium-shrink cell margin-right-1',
+    ];
     if (!empty($ctrl)) {
-        $attrCtrl = 'data-ctrl="'.$ctrl.'"';
+        $attributes['data-ctrl'] = $ctrl;
         $completeMessage .= ' <input type="hidden" name="return_listing">';
     }
 
-    return acym_select($actions, '', null, 'class="medium-shrink cell margin-right-1" '.$attrCtrl, 'value', 'text', 'listing_actions').$completeMessage;
+    return acym_select(
+            $actions,
+            '',
+            null,
+            $attributes,
+            'value',
+            'text',
+            'listing_actions'
+        ).$completeMessage;
 }
 
 /**

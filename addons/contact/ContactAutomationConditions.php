@@ -28,7 +28,7 @@ trait ContactAutomationConditions
             $categories,
             'acym_condition[conditions][__numor__][__numand__][contact][category]',
             null,
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['contact']->option .= '</div>';
     }

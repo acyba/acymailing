@@ -114,7 +114,10 @@ trait JeventsInsertion
             $customFields = [];
             foreach ($jevCf as $oneCustomField) {
                 if (!empty($oneCustomField->attributes()->name) && !empty($oneCustomField->attributes()->label)) {
-                    $customFields[$oneCustomField->attributes()->name] = [$oneCustomField->attributes()->label, false];
+                    $fieldName = (string)$oneCustomField->attributes()->name;
+                    $fieldLabel = (string)$oneCustomField->attributes()->label;
+
+                    $customFields[$fieldName] = [$fieldLabel, false];
                 }
             }
 

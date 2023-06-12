@@ -147,13 +147,13 @@ trait Followup
                     $statusArray,
                     'followup[condition][lists_status]',
                     !empty($followup->condition) && !empty($followup->condition['lists_status']) ? $followup->condition['lists_status'] : '',
-                    'class="acym__select"'
+                    ['class' => 'acym__select']
                 ).'</span>',
             'select_status_segments' => '<span class="cell xxlarge-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
                     $statusArray,
                     'followup[condition][segments_status]',
                     !empty($followup->condition) && !empty($followup->condition['segments_status']) ? $followup->condition['segments_status'] : '',
-                    'class="acym__select"'
+                    ['class' => 'acym__select']
                 ).'</span>',
             'lists_subscribe_translation' => $actualTrigger == 'user_subscribe' ? 'ACYM_FOLLOW_UP_CONDITION_USER_SUBSCRIBING' : 'ACYM_FOLLOW_UP_CONDITION_USER_SUBSCRIBE',
         ];

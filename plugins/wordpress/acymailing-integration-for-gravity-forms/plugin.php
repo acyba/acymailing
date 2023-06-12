@@ -27,7 +27,7 @@ class plgAcymGravityforms extends acymPlugin
 
     public function onAcymInitWordpressAddons()
     {
-        include_once 'customFieldGF.php';
+        include_once __DIR__.DS.'customFieldGF.php';
         add_action('gform_field_standard_settings', [$this, 'subscriptionFormSettings'], 10, 2);
         add_action('gform_editor_js', [$this, 'subscriptionFormScript']);
     }

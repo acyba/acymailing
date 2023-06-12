@@ -20,14 +20,14 @@ trait WooCommerceAutomationTriggers
                 $orderStatuses,
                 '[triggers][user][woocommerce_order_change][from]',
                 empty($defaultValues['woocommerce_order_change']['from']) ? 0 : $defaultValues['woocommerce_order_change']['from'],
-                'data-class="acym__select"'
+                ['data-class' => 'acym__select']
             ).'</div>';
         $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-shrink acym_vcenter">'.acym_translation('ACYM_TO').'</div>';
         $triggers['user']['woocommerce_order_change']->option .= '<div class="cell medium-4">'.acym_select(
                 $orderStatuses,
                 '[triggers][user][woocommerce_order_change][to]',
                 empty($defaultValues['woocommerce_order_change']['to']) ? 'wc-completed' : $defaultValues['woocommerce_order_change']['to'],
-                'data-class="acym__select"'
+                ['data-class' => 'acym__select']
             ).'</div>';
         $triggers['user']['woocommerce_order_change']->option .= '</div>';
     }

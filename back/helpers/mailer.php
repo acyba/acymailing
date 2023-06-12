@@ -806,13 +806,17 @@ class MailerHelper extends AcyMailerPhp
                     $this->addAttachment($attachment->filename);
                 }
             } else {
-                $attachStringHTML = '<br /><fieldset><legend>'.acym_translation('ACYM_ATTACHMENTS').'</legend><table>';
+                $attachStringHTML = '<fieldset><legend>'.acym_translation('ACYM_ATTACHMENTS').'</legend><table>';
                 foreach ($this->defaultMail[$mailId]->attach as $attachment) {
                     $attachStringHTML .= '<tr><td><a href="'.$attachment->url.'" target="_blank">'.$attachment->name.'</a></td></tr>';
                 }
                 $attachStringHTML .= '</table></fieldset>';
 
-                $this->Body .= $attachStringHTML;
+                if ($this->config->get('attachments_position', 'bottom') === 'top') {
+                    $this->Body = $attachStringHTML.'<br />'.$this->Body;
+                } else {
+                    $this->Body .= '<br />'.$attachStringHTML;
+                }
             }
         }
 
@@ -869,7 +873,7 @@ class MailerHelper extends AcyMailerPhp
         $this->replaceParams();
 
         // Sending a spam-test, use the current user instead
-        if (strpos($receiver->email, '@mailtester.acyba.com') !== false) {
+        if (strpos($receiver->email, '@mt.acyba.com') !== false) {
             $currentUser = $this->userClass->getOneByEmail(acym_currentUserEmail());
             if (empty($currentUser)) {
                 $currentUser = $receiver;

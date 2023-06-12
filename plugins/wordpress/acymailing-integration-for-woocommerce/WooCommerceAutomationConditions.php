@@ -27,7 +27,11 @@ trait WooCommerceAutomationConditions
             [],
             'acym_condition[conditions][__numor__][__numand__][woopurchased][product]',
             null,
-            'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_AT_LEAST_ONE_PRODUCT', true).'" data-params="'.acym_escape($ajaxParams).'"'
+            [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-placeholder' => acym_translation('ACYM_AT_LEAST_ONE_PRODUCT'),
+                'data-params' => $ajaxParams,
+            ]
         );
         $conditions['user']['woopurchased']->option .= '</div>';
 
@@ -36,7 +40,7 @@ trait WooCommerceAutomationConditions
             $categories,
             'acym_condition[conditions][__numor__][__numand__][woopurchased][category]',
             'any',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['woopurchased']->option .= '</div>';
 
@@ -69,7 +73,7 @@ trait WooCommerceAutomationConditions
                 $this->getOrderStatuses(),
                 'acym_condition[conditions][__numor__][__numand__][wooreminder][status]',
                 'wc-pending',
-                'class="acym__select"'
+                ['class' => 'acym__select']
             ).'</div>'
         );
         $conditions['user']['wooreminder']->option .= '<div class="intext_select_automation cell">';
@@ -77,7 +81,7 @@ trait WooCommerceAutomationConditions
             $paymentMethods,
             'acym_condition[conditions][__numor__][__numand__][wooreminder][payment]',
             'any',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['wooreminder']->option .= '</div>';
         $conditions['user']['wooreminder']->option .= '</div>';
@@ -102,7 +106,11 @@ trait WooCommerceAutomationConditions
                 [],
                 'acym_condition[conditions][__numor__][__numand__][woosubscription][product]',
                 null,
-                'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_ANY_PRODUCT', true).'" data-params="'.acym_escape($ajaxParams).'"'
+                [
+                    'class' => 'acym__select acym_select2_ajax',
+                    'data-placeholder' => acym_translation('ACYM_ANY_PRODUCT'),
+                    'data-params' => $ajaxParams,
+                ]
             );
             $conditions['user']['woosubscription']->option .= '</div>';
 
@@ -111,7 +119,7 @@ trait WooCommerceAutomationConditions
                 $categories,
                 'acym_condition[conditions][__numor__][__numand__][woosubscription][category]',
                 'any',
-                'class="acym__select"'
+                ['class' => 'acym__select']
             );
             $conditions['user']['woosubscription']->option .= '</div>';
 
@@ -127,7 +135,7 @@ trait WooCommerceAutomationConditions
                 $subscriptionStatuses,
                 'acym_condition[conditions][__numor__][__numand__][woosubscription][status]',
                 'any',
-                'class="acym__select"'
+                ['class' => 'acym__select']
             );
             $conditions['user']['woosubscription']->option .= '</div>';
 
@@ -140,7 +148,7 @@ trait WooCommerceAutomationConditions
                 ],
                 'acym_condition[conditions][__numor__][__numand__][woosubscription][renewal_type]',
                 'any',
-                'class="acym__select"'
+                ['class' => 'acym__select']
             );
             $conditions['user']['woosubscription']->option .= '</div>';
 

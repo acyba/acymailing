@@ -80,10 +80,30 @@
 		<div class="cell medium-3 automatic_only automatic_manual"></div>
 		<div class="cell medium-9 automatic_only automatic_manual acym_auto_send_time">
             <?php
-            $hoursFrom = acym_select($data['listHours'], 'config[queue_send_from_hour]', $this->config->get('queue_send_from_hour', '00'), 'class="intext_select"');
-            $minutesFrom = acym_select($data['listAllMinutes'], 'config[queue_send_from_minute]', $this->config->get('queue_send_from_minute', '00'), 'class="intext_select"');
-            $hoursTo = acym_select($data['listHours'], 'config[queue_send_to_hour]', $this->config->get('queue_send_to_hour', '23'), 'class="intext_select"');
-            $minutesTo = acym_select($data['listAllMinutes'], 'config[queue_send_to_minute]', $this->config->get('queue_send_to_minute', '59'), 'class="intext_select"');
+            $hoursFrom = acym_select(
+                $data['listHours'],
+                'config[queue_send_from_hour]',
+                $this->config->get('queue_send_from_hour', '00'),
+                ['class' => 'intext_select']
+            );
+            $minutesFrom = acym_select(
+                $data['listAllMinutes'],
+                'config[queue_send_from_minute]',
+                $this->config->get('queue_send_from_minute', '00'),
+                ['class' => 'intext_select']
+            );
+            $hoursTo = acym_select(
+                $data['listHours'],
+                'config[queue_send_to_hour]',
+                $this->config->get('queue_send_to_hour', '23'),
+                ['class' => 'intext_select']
+            );
+            $minutesTo = acym_select(
+                $data['listAllMinutes'],
+                'config[queue_send_to_minute]',
+                $this->config->get('queue_send_to_minute', '59'),
+                ['class' => 'intext_select']
+            );
             echo acym_translationSprintf('ACYM_SEND_FROM_TO', $hoursFrom, $minutesFrom, $hoursTo, $minutesTo);
             ?>
 		</div>
@@ -151,7 +171,7 @@
                     ],
                     'config[sendorder]',
                     $this->config->get('sendorder', 'user_id, ASC'),
-                    'class="acym__select"',
+                    ['class' => 'acym__select'],
                     'value',
                     'text',
                     'sendorderid'

@@ -1012,8 +1012,8 @@ class MigrationHelper extends acymObject
             $mailboxAction->conditions = [
                 'sender' => '',
                 'specific' => '',
-                'groups' => '',
-                'lists' => '',
+                'groups' => [],
+                'lists' => [],
                 'subject' => '',
                 'subject_text' => '',
                 'subject_regex' => '',
@@ -1034,7 +1034,8 @@ class MigrationHelper extends acymObject
                 if ($oneDistributionList->conditions['listids'] === 'All') {
                     $mailboxAction->conditions['lists'] = $standardLists;
                 } else {
-                    $mailboxAction->conditions['lists'] = $oneDistributionList->conditions['listids'];
+                    $mailboxAction->conditions['lists'] = is_array($oneDistributionList->conditions['listids']) ? $oneDistributionList->conditions['listids']
+                        : [$oneDistributionList->conditions['listids']];
                 }
             }
 

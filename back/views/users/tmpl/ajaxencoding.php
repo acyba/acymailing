@@ -232,9 +232,7 @@ $nbLines = count($this->lines);
                     $fieldAssignment,
                     'fieldAssignment'.$key,
                     $selectedField,
-                    'class="fieldAssignment"',
-                    'value',
-                    'text'
+                    ['class' => 'fieldAssignment']
                 ).'<br />';
         }
         echo '</tr>';

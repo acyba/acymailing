@@ -49,10 +49,30 @@
 				<i class="cell medium-shrink small-1 cursor-pointer acymicon-close acym__color__red acym__automation__delete__one__filter"></i>
 			</div>
 			<div class="medium-5 cell acym__automation__and__example__classic__select" style="display: none;">
-                <?php echo acym_select($data['classic_name'], 'filters_name', null, 'class="acym__automation__select__classic__filter" data-class="acym__select"'); ?>
+                <?php
+                echo acym_select(
+                    $data['classic_name'],
+                    'filters_name',
+                    null,
+                    [
+                        'class' => 'acym__automation__select__classic__filter',
+                        'data-class' => 'acym__select',
+                    ]
+                );
+                ?>
 			</div>
 			<div class="medium-5 cell acym__automation__and__example__user__select" style="display: none;">
-                <?php echo acym_select($data['classic_name'], 'filters_name', null, 'class="acym__automation__select__user__filter" data-class="acym__select"'); ?>
+                <?php
+                echo acym_select(
+                    $data['classic_name'],
+                    'filters_name',
+                    null,
+                    [
+                        'class' => 'acym__automation__select__user__filter',
+                        'data-class' => 'acym__select',
+                    ]
+                );
+                ?>
 			</div>
 		</div>
 
@@ -78,7 +98,12 @@
 				<div class="cell grid-x acym__automation__one__filter acym__automation__one__filter__classic">
 					<div class="medium-5 cell">
                         <?php
-                        echo acym_select($data['classic_name'], 'filters_name', null, 'class="acym__select acym__automation__select__classic__filter"');
+                        echo acym_select(
+                            $data['classic_name'],
+                            'filters_name',
+                            null,
+                            ['class' => 'acym__select acym__automation__select__classic__filter']
+                        );
                         ?>
 					</div>
 				</div>

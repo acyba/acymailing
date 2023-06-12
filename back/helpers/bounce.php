@@ -814,12 +814,12 @@ class BounceHelper extends acymObject
      */
     private function userActions()
     {
-
         if (!empty($this->deletedUsers)) {
             acym_arrayToInteger($this->deletedUsers);
             $this->userClass->delete($this->deletedUsers);
             $this->deletedUsers = [];
         }
+
         if (!empty($this->blockedUsers)) {
             acym_arrayToInteger($this->blockedUsers);
             $allUsersId = implode(',', $this->blockedUsers);

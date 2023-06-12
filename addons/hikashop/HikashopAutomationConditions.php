@@ -29,7 +29,11 @@ trait HikashopAutomationConditions
             [],
             'acym_condition[conditions][__numor__][__numand__][hikapurchased][product]',
             null,
-            'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_AT_LEAST_ONE_PRODUCT', true).'" data-params="'.acym_escape($ajaxParams).'"'
+            [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-placeholder' => acym_translation('ACYM_AT_LEAST_ONE_PRODUCT'),
+                'data-params' => $ajaxParams,
+            ]
         );
         $conditions['user']['hikapurchased']->option .= '</div>';
 
@@ -38,7 +42,7 @@ trait HikashopAutomationConditions
             $categories,
             'acym_condition[conditions][__numor__][__numand__][hikapurchased][category]',
             'any',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['hikapurchased']->option .= '</div>';
 
@@ -54,7 +58,11 @@ trait HikashopAutomationConditions
                 [],
                 'acym_condition[conditions][__numor__][__numand__][hikapurchased][vendor]',
                 null,
-                'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_ANY_VENDOR', true).'" data-params="'.acym_escape($ajaxParams).'"'
+                [
+                    'class' => 'acym__select acym_select2_ajax',
+                    'data-placeholder' => acym_translation('ACYM_ANY_VENDOR'),
+                    'data-params' => $ajaxParams,
+                ]
             );
             $conditions['user']['hikapurchased']->option .= '</div>';
         }
@@ -89,7 +97,7 @@ trait HikashopAutomationConditions
                 $orderStatuses,
                 'acym_condition[conditions][__numor__][__numand__][hikareminder][status]',
                 null,
-                'class="acym__select"'
+                ['class' => 'acym__select']
             ).'</div>'
         );
         $conditions['user']['hikareminder']->option .= '<div class="intext_select_automation cell">';
@@ -97,7 +105,7 @@ trait HikashopAutomationConditions
             $paymentMethods,
             'acym_condition[conditions][__numor__][__numand__][hikareminder][payment]',
             'any',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['hikareminder']->option .= '</div>';
         $conditions['user']['hikareminder']->option .= '</div>';
@@ -109,7 +117,11 @@ trait HikashopAutomationConditions
             [],
             'acym_condition[conditions][__numor__][__numand__][hikawishlist][product]',
             null,
-            'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_ANY_PRODUCT', true).'"  data-params="'.acym_escape($ajaxParams).'"'
+            [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-placeholder' => acym_translation('ACYM_ANY_PRODUCT'),
+                'data-params' => $ajaxParams,
+            ]
         );
         $conditions['user']['hikawishlist']->option .= '</div>';
         $conditions['user']['hikawishlist']->option .= '<div class="intext_select_automation cell">';
@@ -117,7 +129,7 @@ trait HikashopAutomationConditions
             $categories,
             'acym_condition[conditions][__numor__][__numand__][hikawishlist][category]',
             'any',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['hikawishlist']->option .= '</div>';
     }
@@ -229,9 +241,10 @@ trait HikashopAutomationConditions
         if (!empty($options['product'])) {
             $query->join['hikapurchased_order_product'.$num] = '#__hikashop_order_product AS hikaop'.$num.' ON order'.$num.'.order_id = hikaop'.$num.'.order_id';
             $query->where[] = 'hikaop'.$num.'.product_id = '.intval($options['product']);
-        } elseif (!empty($options['category']) && $options['category'] != 'any') {
+        } elseif (!empty($options['category']) && $options['category'] !== 'any') {
             $query->join['hikapurchased_order_product'.$num] = '#__hikashop_order_product AS hikaop'.$num.' ON order'.$num.'.order_id = hikaop'.$num.'.order_id';
-            $query->join['hikapurchased_order_cat'.$num] = '#__hikashop_product_category AS hikapc'.$num.' ON hikaop'.$num.'.product_id = hikapc'.$num.'.product_id';
+            $query->join['hikapurchased_product'.$num] = '#__hikashop_product AS hikap'.$num.' ON hikaop'.$num.'.product_id = hikap'.$num.'.product_id';
+            $query->join['hikapurchased_order_cat'.$num] = '#__hikashop_product_category AS hikapc'.$num.' ON hikap'.$num.'.product_id = hikapc'.$num.'.product_id OR hikap'.$num.'.product_parent_id = hikapc'.$num.'.product_id';
             $query->where[] = 'hikapc'.$num.'.category_id = '.intval($options['category']);
         }
 

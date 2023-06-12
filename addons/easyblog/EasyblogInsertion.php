@@ -283,6 +283,13 @@ trait EasyblogInsertion
         $varFields = $this->getCustomLayoutVars($element);
 
         $link = 'index.php?option=com_easyblog&view=entry&id='.$tag->id;
+
+        //Get the related menu item if specified
+        $menuId = $this->getParam('itemid');
+        if (!empty($menuId)) {
+            $link .= '&Itemid='.intval($menuId);
+        }
+
         $link = $this->finalizeLink($link);
         $varFields['{link}'] = $link;
 

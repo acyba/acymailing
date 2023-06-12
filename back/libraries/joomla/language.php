@@ -162,7 +162,7 @@ function acym_languageOption($emailLanguage, $name)
         $languages,
         $name,
         $emailLanguage,
-        'class="acym__select"',
+        ['class' => 'acym__select'],
         'language',
         'name'
     );

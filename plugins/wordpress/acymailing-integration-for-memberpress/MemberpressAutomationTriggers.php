@@ -44,7 +44,7 @@ trait MemberpressAutomationTriggers
                 $membership,
                 '[triggers][user][member_transaction_complete][membership]',
                 empty($defaultValues['member_transaction_complete']['membership']) ? 0 : $defaultValues['member_transaction_complete']['membership'],
-                'data-class="acym__select"'
+                ['data-class' => 'acym__select']
             ).'</div>';
         $triggers['user']['member_transaction_complete']->option .= '</div>';
     }

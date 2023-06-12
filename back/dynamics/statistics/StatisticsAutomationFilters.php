@@ -204,7 +204,6 @@ trait StatisticsAutomationFilters
 
     public function onAcymProcessFilter_statistics(&$query, $options, $num)
     {
-
         $alias = '`stats'.$num.'`';
         $urlClickAlias = '`urlClick'.$num.'`';
 

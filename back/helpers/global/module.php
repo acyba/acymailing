@@ -10,6 +10,10 @@ function acym_getModuleFormName()
 
 function acym_initModule($params = null, $loadJsInModule = false)
 {
+    if (acym_isAjax()) {
+        return;
+    }
+
     if (!file_exists(ACYM_ROOT.'plugins'.DS.'system'.DS.'modulesanywhere')) {
         static $loaded = false;
         if ($loaded) {

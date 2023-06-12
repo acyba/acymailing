@@ -33,7 +33,14 @@
 					<i class="cell medium-shrink small-1 cursor-pointer acymicon-close acym__color__red acym__automation__delete__one__action"></i>
 				</div>
 				<div class="medium-5 cell">
-                    <?php echo acym_select($data['actionsOption'], 'action_name', null, 'class="acym__automation__actions__select"'); ?>
+                    <?php
+                    echo acym_select(
+                        $data['actionsOption'],
+                        'action_name',
+                        null,
+                        ['class' => 'acym__automation__actions__select']
+                    );
+                    ?>
 				</div>
 			</div>
 		</div>
@@ -42,11 +49,16 @@
 		<div class="cell grid-x acym__content">
 			<div class="acym__automation__actions__one__action cell grid-x" data-action-number="0">
 				<div class="medium-5 cell">
-                    <?php echo acym_select($data['actionsOption'], 'action_name', null, 'class="acym__select acym__automation__actions__select"'); ?>
+                    <?php echo acym_select(
+                        $data['actionsOption'],
+                        'action_name',
+                        null,
+                        ['class' => 'acym__select acym__automation__actions__select']
+                    ); ?>
 				</div>
 			</div>
 			<button data-filter-type="" type="button" class="button-secondary button medium-shrink acym__automation__add-action margin-top-2">
-				<?php echo acym_translation('ACYM_ADD_ACTION'); ?>
+                <?php echo acym_translation('ACYM_ADD_ACTION'); ?>
 			</button>
 		</div>
 		<div class="cell grid-x grid-margin-x margin-top-2">

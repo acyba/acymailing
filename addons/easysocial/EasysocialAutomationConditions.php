@@ -29,7 +29,11 @@ trait EasysocialAutomationConditions
             [],
             'acym_condition[conditions][__numor__][__numand__][easysocialgroups][group]',
             null,
-            'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_ANY_GROUP', true).'" data-params="'.acym_escape($ajaxParams).'"'
+            [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-placeholder' => acym_translation('ACYM_ANY_GROUP'),
+                'data-params' => $ajaxParams,
+            ]
         );
         $conditions['user']['easysocialgroups']->option .= '</div>';
 
@@ -62,7 +66,11 @@ trait EasysocialAutomationConditions
             [],
             'acym_condition[conditions][__numor__][__numand__][easysocialprofiles][profile]',
             null,
-            'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_ANY_PROFILE', true).'" data-params="'.acym_escape($ajaxParams).'"'
+            [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-placeholder' => acym_translation('ACYM_ANY_PROFILE'),
+                'data-params' => $ajaxParams,
+            ]
         );
         $conditions['user']['easysocialprofiles']->option .= '</div>';
 
@@ -98,7 +106,10 @@ trait EasysocialAutomationConditions
             $allBadges,
             'acym_condition[conditions][__numor__][__numand__][easysocialbadge][badge]',
             null,
-            'class="acym__select" data-placeholder="'.acym_translation('ACYM_ANY_BADGE', true).'"',
+            [
+                'class' => 'acym__select',
+                'data-placeholder' => acym_translation('ACYM_ANY_BADGE'),
+            ],
             'id',
             'title'
         );
@@ -177,7 +188,11 @@ trait EasysocialAutomationConditions
             [],
             'acym_condition[conditions][__numor__][__numand__][easysocialevent][event]',
             null,
-            'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_ANY_EVENT', true).'" data-params="'.acym_escape($ajaxParams).'"'
+            [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-placeholder' => acym_translation('ACYM_ANY_EVENT'),
+                'data-params' => $ajaxParams,
+            ]
         );
         $conditions['user']['easysocialevent']->option .= '</div>';
 
@@ -191,7 +206,7 @@ trait EasysocialAutomationConditions
             $cats,
             'acym_condition[conditions][__numor__][__numand__][easysocialevent][category]',
             null,
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['easysocialevent']->option .= '</div>';
 
@@ -206,7 +221,7 @@ trait EasysocialAutomationConditions
             $state,
             'acym_condition[conditions][__numor__][__numand__][easysocialevent][status]',
             null,
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['easysocialevent']->option .= '</div>';
 

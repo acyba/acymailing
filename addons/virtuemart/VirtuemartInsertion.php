@@ -74,7 +74,9 @@ trait VirtuemartInsertion
         $this->categories = acym_loadObjectList(
             'SELECT cat.category_child_id AS id, cat.category_parent_id AS parent_id, cattrans.category_name AS title 
             FROM `#__virtuemart_category_categories` AS cat 
-            JOIN `#__virtuemart_categories_'.$this->lang.'` AS cattrans ON cat.category_child_id = cattrans.virtuemart_category_id'
+            JOIN `#__virtuemart_categories` AS category ON category.virtuemart_category_id = cat.id 
+            JOIN `#__virtuemart_categories_'.$this->lang.'` AS cattrans ON cat.category_child_id = cattrans.virtuemart_category_id
+            WHERE category.published = 1'
         );
 
         $tabHelper = new TabHelper();

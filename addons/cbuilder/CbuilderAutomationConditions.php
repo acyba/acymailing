@@ -46,7 +46,12 @@ trait CbuilderAutomationConditions
         $conditions['user']['cbfield'] = new stdClass();
         $conditions['user']['cbfield']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'Community Builder', acym_translation('ACYM_FIELDS'));
         $conditions['user']['cbfield']->option = '<div class="intext_select_automation cell">';
-        $conditions['user']['cbfield']->option .= acym_select($cbfields, 'acym_condition[conditions][__numor__][__numand__][cbfield][field]', null, 'class="acym__select"');
+        $conditions['user']['cbfield']->option .= acym_select(
+            $cbfields,
+            'acym_condition[conditions][__numor__][__numand__][cbfield][field]',
+            null,
+            ['class' => 'acym__select']
+        );
         $conditions['user']['cbfield']->option .= '</div>';
         $conditions['user']['cbfield']->option .= '<div class="intext_select_automation cell">';
         $conditions['user']['cbfield']->option .= $operator->display('acym_condition[conditions][__numor__][__numand__][cbfield][operator]');

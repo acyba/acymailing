@@ -219,7 +219,12 @@ class acymPlugin extends acymObject
             $this->subCategories[$oneCat->id] = $this->getSubCats($oneCat->id);
         }
 
-        return acym_select($this->catvalues, 'plugin_category', intval($filter_cat), 'class="plugin_category_select"');
+        return acym_select(
+            $this->catvalues,
+            'plugin_category',
+            intval($filter_cat),
+            ['class' => 'plugin_category_select']
+        );
     }
 
     private function getSubCats($categoryId)

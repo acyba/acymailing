@@ -1,11 +1,11 @@
 <div class="acym__content cell grid-x margin-bottom-1">
-	<span class="cell acym__content__title__light-blue"><?php echo acym_translation('ACYM_CONDITIONS'); ?></span>
-	<div class="cell grid-x large-6 margin-y">
-		<label class="cell medium-4">
+    <span class="cell acym__content__title__light-blue"><?php echo acym_translation('ACYM_CONDITIONS'); ?></span>
+    <div class="cell grid-x large-6 margin-y">
+        <label class="cell medium-4">
             <?php echo acym_translation('ACYM_ALLOWED_SENDER').acym_info('ACYM_ALLOWED_SENDER_DESC'); ?>
-		</label>
-		<div class="cell medium-7 grid-x margin-y">
-			<div class="cell">
+        </label>
+        <div class="cell medium-7 grid-x margin-y">
+            <div class="cell">
                 <?php
                 echo acym_select(
                     [
@@ -26,16 +26,16 @@
                     true
                 );
                 ?>
-			</div>
+            </div>
 
-			<div id="acym__mailbox__edition__conditions_user" class="cell">
-				<input name="mailbox[conditions][specific]"
-					   id="acym__mailbox__edition__conditions_sender__specific"
-					   class="acym__mailbox__edition__conditions_sender__option"
-					   type="text"
-					   placeholder="sender@example.com,other@example.com"
-					   value="<?php echo acym_escape($data['mailboxActions']->conditions['specific']); ?>">
-				<div id="acym__mailbox__edition__conditions_sender__groups" class="acym__mailbox__edition__conditions_sender__option">
+            <div id="acym__mailbox__edition__conditions_user" class="cell">
+                <input name="mailbox[conditions][specific]"
+                       id="acym__mailbox__edition__conditions_sender__specific"
+                       class="acym__mailbox__edition__conditions_sender__option"
+                       type="text"
+                       placeholder="sender@example.com,other@example.com"
+                       value="<?php echo acym_escape($data['mailboxActions']->conditions['specific']); ?>">
+                <div id="acym__mailbox__edition__conditions_sender__groups" class="acym__mailbox__edition__conditions_sender__option">
                     <?php
                     echo acym_selectMultiple(
                         $data['groups'],
@@ -47,9 +47,12 @@
                         ]
                     );
                     ?>
-				</div>
-				<div id="acym__mailbox__edition__conditions_sender__lists" class="acym__mailbox__edition__conditions_sender__option">
+                </div>
+                <div id="acym__mailbox__edition__conditions_sender__lists" class="acym__mailbox__edition__conditions_sender__option">
                     <?php
+                    if (!is_array($data['mailboxActions']->conditions['lists'])) {
+                        $data['mailboxActions']->conditions['lists'] = [$data['mailboxActions']->conditions['lists']];
+                    }
                     echo acym_selectMultiple(
                         $data['lists'],
                         'mailbox[conditions][lists]',
@@ -60,17 +63,17 @@
                         ]
                     );
                     ?>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="separator-center"></div>
-	<div class="cell grid-x large-6 margin-y">
-		<label class="cell medium-4">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="separator-center"></div>
+    <div class="cell grid-x large-6 margin-y">
+        <label class="cell medium-4">
             <?php echo acym_translation('ACYM_ALLOWED_SUBJECT').acym_info('ACYM_ALLOWED_SUBJECT_DESC'); ?>
-		</label>
-		<div class="cell medium-7 grid-x margin-y">
-			<div class="cell">
+        </label>
+        <div class="cell medium-7 grid-x margin-y">
+            <div class="cell">
                 <?php
                 echo acym_select(
                     [
@@ -92,21 +95,21 @@
                     true
                 );
                 ?>
-			</div>
+            </div>
 
-			<input name="mailbox[conditions][subject_text]"
-				   id="acym__mailbox__edition__conditions_subject__text"
-				   class="cell acym__mailbox__edition__conditions_subject__option"
-				   type="text"
-				   value="<?php echo acym_escape($data['mailboxActions']->conditions['subject_text']); ?>">
+            <input name="mailbox[conditions][subject_text]"
+                   id="acym__mailbox__edition__conditions_subject__text"
+                   class="cell acym__mailbox__edition__conditions_subject__option"
+                   type="text"
+                   value="<?php echo acym_escape($data['mailboxActions']->conditions['subject_text']); ?>">
 
-			<div id="acym__mailbox__edition__conditions_subject__regex" class="cell acym__mailbox__edition__conditions_subject__option">
-				# <input name="mailbox[conditions][subject_regex]"
-						 type="text"
-						 value="<?php echo acym_escape($data['mailboxActions']->conditions['subject_regex']); ?>"> #ims
-			</div>
-		</div>
-		<div class="cell grid-x acym__mailbox__edition__conditions_subject__option" id="acym__mailbox__edition__conditions_subject__remove">
+            <div id="acym__mailbox__edition__conditions_subject__regex" class="cell acym__mailbox__edition__conditions_subject__option">
+                # <input name="mailbox[conditions][subject_regex]"
+                         type="text"
+                         value="<?php echo acym_escape($data['mailboxActions']->conditions['subject_regex']); ?>"> #ims
+            </div>
+        </div>
+        <div class="cell grid-x acym__mailbox__edition__conditions_subject__option" id="acym__mailbox__edition__conditions_subject__remove">
             <?php
             echo acym_switch(
                 'mailbox[conditions][subject_remove]',
@@ -116,9 +119,9 @@
                 'medium-4 small-9'
             );
             ?>
-		</div>
-	</div>
-	<div class="cell grid-x margin-top-1">
+        </div>
+    </div>
+    <div class="cell grid-x margin-top-1">
         <?php
         echo acym_switch(
             'mailbox[delete_wrong_emails]',
@@ -128,5 +131,5 @@
             'large-2 medium-4 small-9'
         );
         ?>
-	</div>
+    </div>
 </div>

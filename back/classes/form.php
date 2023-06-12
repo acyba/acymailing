@@ -34,6 +34,24 @@ class FormClass extends acymClass
         $this->settings = [
             'options' => [
                 'display' => [
+                    'display_action' => [
+                        'label' => 'ACYM_DISPLAY_ON_CLICK',
+                        'description' => 'ACYM_DISPLAY_ON_CLICK_DESC',
+                        'type' => 'select',
+                        'options' => [
+                            'yes' => acym_translation('ACYM_YES'),
+                            'no' => acym_translation('ACYM_NO'),
+                        ],
+                        'default' => 'no',
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP],
+                    ],
+                    'button' => [
+                        'label' => 'ACYM_BUTTON_ID',
+                        'description' => 'ACYM_BUTTON_ID_DESC',
+                        'type' => 'text',
+                        'default' => '',
+                        'allowed_types' => [self::SUB_FORM_TYPE_POPUP],
+                    ],
                     'delay' => [
                         'label' => 'ACYM_DELAY',
                         'description' => 'ACYM_DELAY_DESC',

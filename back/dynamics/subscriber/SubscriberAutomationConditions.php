@@ -51,7 +51,10 @@ trait SubscriberAutomationConditions
                     $values,
                     '[conditions][__numor__][__numand__][acy_field][value]',
                     null,
-                    'class="acym__select acym__automation__conditions__fields__select" data-condition-field="'.intval($field->id).'"'
+                    [
+                        'class' => 'acym__select acym__automation__conditions__fields__select',
+                        'data-condition-field' => intval($field->id),
+                    ]
                 );
                 $customFieldValues[$field->id] .= '</div>';
             } elseif ('date' == $field->type) {
@@ -74,7 +77,7 @@ trait SubscriberAutomationConditions
             $fields,
             'acym_condition[conditions][__numor__][__numand__][acy_field][field]',
             null,
-            'class="acym__select acym__automation__conditions__fields__dropdown"'
+            ['class' => 'acym__select acym__automation__conditions__fields__dropdown']
         );
         $conditions['user']['acy_field']->option .= '</div>';
         $conditions['user']['acy_field']->option .= '<div class="intext_select_automation cell">';

@@ -34,7 +34,7 @@ trait MemberpressAutomationConditions
             $allGroups,
             'acym_condition[conditions][__numor__][__numand__][memberpress][membership]',
             '',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['memberpress']->option .= '</div>';
 
@@ -49,7 +49,7 @@ trait MemberpressAutomationConditions
             $activeMemberPress,
             'acym_condition[conditions][__numor__][__numand__][memberpress][active]',
             '',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['memberpress']->option .= '</div>';
 

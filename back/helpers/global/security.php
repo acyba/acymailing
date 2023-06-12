@@ -114,6 +114,8 @@ function acym_isAllowed($controller, $task = '')
     $globalAccess = $config->get('acl_'.$controller, 'all');
     if ($globalAccess === 'all') return true;
 
+    $globalAccess = explode(',', $globalAccess);
+
     $userId = acym_currentUserId();
     if (empty($userId)) return false;
 
@@ -123,8 +125,9 @@ function acym_isAllowed($controller, $task = '')
     foreach ($userGroups as $oneGroup) {
         if ($oneGroup === ACYM_ADMIN_GROUP) return true;
 
-        $groupAccess = $config->get('acl_'.$controller.'_'.$oneGroup, '1');
-        if ($groupAccess === '1') return true;
+        if (in_array($oneGroup, $globalAccess)) {
+            return true;
+        }
     }
 
     return false;

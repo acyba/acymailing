@@ -19,7 +19,7 @@
                 $data['allTags'],
                 'mailchoose_tag__ajax',
                 null,
-                'class="acym__templates__filter__tags__ajax acym__select"',
+                ['class' => 'acym__templates__filter__tags__ajax acym__select'],
                 'value',
                 'name'
             );

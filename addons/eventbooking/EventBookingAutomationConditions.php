@@ -29,7 +29,11 @@ trait EventBookingAutomationConditions
             [],
             'acym_condition[conditions][__numor__][__numand__][ebregistration][event]',
             null,
-            'class="acym__select acym_select2_ajax" data-placeholder="'.acym_translation('ACYM_ANY_EVENT', true).'" data-params="'.acym_escape($ajaxParams).'"'
+            [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-placeholder' => acym_translation('ACYM_ANY_EVENT'),
+                'data-params' => $ajaxParams,
+            ]
         );
         $conditions['user']['ebregistration']->option .= '</div>';
 
@@ -44,7 +48,7 @@ trait EventBookingAutomationConditions
             $status,
             'acym_condition[conditions][__numor__][__numand__][ebregistration][status]',
             '-1',
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['ebregistration']->option .= '</div>';
 

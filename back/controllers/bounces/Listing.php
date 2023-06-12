@@ -218,4 +218,22 @@ trait Listing
 
         $this->listing();
     }
+
+    public function setInactive()
+    {
+        $rulesSelected = acym_getVar('array', 'elements_checked');
+        $ruleClass = new RuleClass();
+        $ruleClass->setInactive($rulesSelected);
+
+        $this->listing();
+    }
+
+    public function setActive()
+    {
+        $rulesSelected = acym_getVar('array', 'elements_checked');
+        $ruleClass = new RuleClass();
+        $ruleClass->setActive($rulesSelected);
+
+        $this->listing();
+    }
 }

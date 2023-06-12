@@ -225,7 +225,10 @@ class acym_subscriptionform_widget extends WP_Widget
                 $options,
                 $this->get_field_name('termscontent'),
                 $params['termscontent'],
-                'class="acym_post_select2" title="'.acym_translation('ACYM_PRIVACY_POLICY', true).'"',
+                [
+                    'class' => 'acym_post_select2',
+                    'title' => acym_translation('ACYM_PRIVACY_POLICY'),
+                ],
                 'value',
                 'text',
                 $this->get_field_id('termscontent')
@@ -240,7 +243,10 @@ class acym_subscriptionform_widget extends WP_Widget
                 $options,
                 $this->get_field_name('privacypolicy'),
                 $params['privacypolicy'],
-                'class="acym_post_select2" title="'.acym_translation('ACYM_PRIVACY_POLICY', true).'"',
+                [
+                    'class' => 'acym_post_select2',
+                    'title' => acym_translation('ACYM_PRIVACY_POLICY'),
+                ],
                 'value',
                 'text',
                 $this->get_field_id('privacypolicy')

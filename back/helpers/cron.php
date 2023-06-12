@@ -345,7 +345,7 @@ class CronHelper extends acymObject
 
                     $nbMessages = $mailboxHelper->getNBMessages();
                     if (!$nbMessages) {
-                        $this->messages[] = acym_translation('ACYM_NO_MESSAGE_IN_MAILBOX_X', $oneMailboxAction->id.'-'.$oneMailboxAction->name);
+                        $this->messages[] = acym_translationSprintf('ACYM_NO_MESSAGE_IN_MAILBOX_X', $oneMailboxAction->id.'-'.$oneMailboxAction->name);
                         $mailboxHelper->close();
                         continue;
                     }

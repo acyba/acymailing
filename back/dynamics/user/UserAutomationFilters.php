@@ -20,7 +20,12 @@ trait UserAutomationFilters
         $filters['acy_group']->option .= $operatorIn->display('acym_action[filters][__numor__][__numand__][acy_group][in]');
         $filters['acy_group']->option .= '</div>';
         $filters['acy_group']->option .= '<div class="intext_select_automation cell">';
-        $filters['acy_group']->option .= acym_select($groups, 'acym_action[filters][__numor__][__numand__][acy_group][group]', null, 'class="acym__select"');
+        $filters['acy_group']->option .= acym_select(
+            $groups,
+            'acym_action[filters][__numor__][__numand__][acy_group][group]',
+            null,
+            ['class' => 'acym__select']
+        );
         $filters['acy_group']->option .= '</div>';
 
         if (ACYM_CMS == 'joomla') {
@@ -58,7 +63,12 @@ trait UserAutomationFilters
         $filters['acy_cmsfield'] = new stdClass();
         $filters['acy_cmsfield']->name = acym_translation('ACYM_ACCOUNT_USER_FIELD');
         $filters['acy_cmsfield']->option = '<div class="intext_select_automation cell">';
-        $filters['acy_cmsfield']->option .= acym_select($cmsFields, 'acym_action[filters][__numor__][__numand__][acy_cmsfield][field]', null, 'class="acym__select"');
+        $filters['acy_cmsfield']->option .= acym_select(
+            $cmsFields,
+            'acym_action[filters][__numor__][__numand__][acy_cmsfield][field]',
+            null,
+            ['class' => 'acym__select']
+        );
         $filters['acy_cmsfield']->option .= '</div>';
         $filters['acy_cmsfield']->option .= '<div class="intext_select_automation cell">';
         $filters['acy_cmsfield']->option .= $operator->display('acym_action[filters][__numor__][__numand__][acy_cmsfield][operator]');

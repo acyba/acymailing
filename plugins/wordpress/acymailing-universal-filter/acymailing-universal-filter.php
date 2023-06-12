@@ -5,7 +5,7 @@ Description: Adds two new filters in the AcyMailing automations to let you make 
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 2.0
+Version: 2.1
 */
 
 use AcyMailing\Classes\PluginClass;

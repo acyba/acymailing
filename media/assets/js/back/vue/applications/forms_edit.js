@@ -16,6 +16,7 @@ jQuery(function ($) {
                     'pages',
                     'name',
                     'active',
+                    'settings.display.display_action',
                     'settings.display.delay',
                     'settings.display.scroll',
                     'settings.cookie.cookie_expiration',

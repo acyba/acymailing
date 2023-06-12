@@ -66,7 +66,7 @@ trait SubscriberAutomationActions
                 $userActions,
                 'acym_action[actions][__and__][acy_user][action]',
                 null,
-                'class="acym__select"'
+                ['class' => 'acym__select']
             ).'</div>';
 
 
@@ -108,7 +108,10 @@ trait SubscriberAutomationActions
                     $values,
                     '[actions][__and__][acy_user_value][value]',
                     null,
-                    'class="acym__select acym__automation__actions__fields__select" data-action-field="'.$field->id.'"'
+                    [
+                        'class' => 'acym__select acym__automation__actions__fields__select',
+                        'data-action-field' => $field->id,
+                    ]
                 );
                 $customFieldValues[$field->id] .= '</div>';
             } elseif ('date' == $field->type) {
@@ -127,12 +130,12 @@ trait SubscriberAutomationActions
                 $userFields,
                 'acym_action[actions][__and__][acy_user_value][field]',
                 null,
-                'class="acym__select acym__automation__actions__fields__dropdown"'
+                ['class' => 'acym__select acym__automation__actions__fields__dropdown']
             ).'</div><div class="intext_select_automation cell">'.acym_select(
                 $userOperator,
                 'acym_action[actions][__and__][acy_user_value][operator]',
                 null,
-                'class="acym__select acym__automation__actions__operator__dropdown"'
+                ['class' => 'acym__select acym__automation__actions__operator__dropdown']
             ).'</div><input type="text" name="acym_action[actions][__and__][acy_user_value][value]" class="intext_input_automation cell acym__automation__one-field acym__automation__action__regular-field">';
         $actions['acy_user_value']->option .= implode(' ', $customFieldValues);
 
@@ -165,7 +168,12 @@ trait SubscriberAutomationActions
             [],
             'acym_action[actions][__and__][acy_remove_queue][mail_id]',
             null,
-            'class="acym_select2_ajax" data-min="0" data-placeholder="'.acym_translation('ACYM_SELECT_AN_EMAIL', true).'" data-params="'.acym_escape($ajaxParams).'"'
+            [
+                'class' => 'acym_select2_ajax',
+                'data-min' => 0,
+                'data-placeholder' => acym_translation('ACYM_SELECT_AN_EMAIL'),
+                'data-params' => $ajaxParams,
+            ]
         );
         $actions['acy_remove_queue']->option .= '</div>';
 

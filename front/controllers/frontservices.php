@@ -4,6 +4,7 @@ namespace AcyMailing\FrontControllers;
 
 use AcyMailing\Classes\HistoryClass;
 use AcyMailing\Classes\UserClass;
+use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Libraries\acymController;
 
 class FrontservicesController extends acymController
@@ -41,7 +42,7 @@ class FrontservicesController extends acymController
         $user = $userClass->getOneByEmail($data['email']);
         if (empty($user)) exit;
 
-        $action = empty($data['event']) ? 'sendinblue' : $data['event'];
+        $action = empty($data['event']) ? 'brevo' : $data['event'];
 
         // Get the related email id if there is one
         $mailId = 0;
@@ -53,6 +54,15 @@ class FrontservicesController extends acymController
                 acym_query('UPDATE #__acym_user_stat SET unsubscribe = unsubscribe + 1 WHERE user_id = '.intval($user->id).' AND mail_id = '.intval($mailId));
                 acym_query('UPDATE #__acym_mail_stat SET unsubscribe_total = unsubscribe_total + 1 WHERE mail_id = '.intval($mailId));
                 acym_query('UPDATE #__acym_user_has_list SET status = 0 WHERE user_id = '.intval($user->id));
+            }
+
+            if ($action === 'hard_bounce') {
+                $userStatClass = new UserStatClass();
+                $currentUserStats = $userStatClass->getOneByMailAndUserId($mailId, $user->id);
+                if ($currentUserStats->bounce < 1) {
+                    acym_query('UPDATE #__acym_mail_stat SET bounce_unique = bounce_unique + 1 WHERE mail_id = '.intval($mailId));
+                }
+                acym_query('UPDATE #__acym_user_stat SET bounce = bounce + 1 WHERE user_id = '.intval($user->id).' AND mail_id = '.intval($mailId));
             }
         }
 

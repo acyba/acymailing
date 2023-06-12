@@ -65,7 +65,12 @@
                     if (!empty($data['mail']->settings['default']['font-family'])) $defaultFont = $data['mail']->settings['default']['font-family'];
                 }
 
-                echo acym_select($fonts, 'default_font', $defaultFont, 'class="acym__select"');
+                echo acym_select(
+                    $fonts,
+                    'default_font',
+                    $defaultFont,
+                    ['class' => 'acym__select']
+                );
                 ?>
 			</div>
 

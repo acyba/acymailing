@@ -27,7 +27,7 @@ trait SubscriptionAutomationConditions
             $list['type'],
             'acym_condition[conditions][__numor__][__numand__][acy_list][action]',
             null,
-            'class="intext_select_automation acym__select"'
+            ['class' => 'intext_select_automation acym__select']
         );
         $conditions['user']['acy_list']->option .= '</div>';
         $conditions['user']['acy_list']->option .= '<div class="intext_select_automation cell">';
@@ -35,7 +35,7 @@ trait SubscriptionAutomationConditions
             $list['lists'],
             'acym_condition[conditions][__numor__][__numand__][acy_list][list]',
             null,
-            'class="intext_select_automation acym__select"'
+            ['class' => 'intext_select_automation acym__select']
         );
         $conditions['user']['acy_list']->option .= '</div>';
         $conditions['user']['acy_list']->option .= '<br><div class="cell grid-x grid-margin-x">';
@@ -46,7 +46,7 @@ trait SubscriptionAutomationConditions
             $list['date'],
             'acym_condition[conditions][__numor__][__numand__][acy_list][date-type]',
             null,
-            'class="intext_select_automation acym__select cell"'
+            ['class' => 'intext_select_automation acym__select cell']
         );
         $conditions['user']['acy_list']->option .= '</div>';
         $conditions['user']['acy_list']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';
@@ -60,7 +60,7 @@ trait SubscriptionAutomationConditions
             ['>' => acym_translation('ACYM_MORE_THAN'), '<' => acym_translation('ACYM_LESS_THAN'), '=' => acym_translation('ACYM_EXACTLY')],
             'acym_condition[conditions][__numor__][__numand__][acy_list_all][operator]',
             null,
-            'class="intext_select_automation acym__select"'
+            ['class' => 'intext_select_automation acym__select']
         );
         $conditions['classic']['acy_list_all']->option .= '</div>';
         $conditions['classic']['acy_list_all']->option .= '<input type="number" min="0" class="intext_input_automation cell" name="acym_condition[conditions][__numor__][__numand__][acy_list_all][number]">';
@@ -70,7 +70,7 @@ trait SubscriptionAutomationConditions
             $list['type'],
             'acym_condition[conditions][__numor__][__numand__][acy_list_all][action]',
             null,
-            'class="intext_select_automation acym__select"'
+            ['class' => 'intext_select_automation acym__select']
         );
         $conditions['classic']['acy_list_all']->option .= '</div>';
         $conditions['classic']['acy_list_all']->option .= '<div class="intext_select_automation cell">';
@@ -78,7 +78,7 @@ trait SubscriptionAutomationConditions
             $list['lists'],
             'acym_condition[conditions][__numor__][__numand__][acy_list_all][list]',
             null,
-            'class="intext_select_automation acym__select"'
+            ['class' => 'intext_select_automation acym__select']
         );
         $conditions['classic']['acy_list_all']->option .= '</div></div>';
         $conditions['classic']['acy_list_all']->option .= '<br><div class="cell grid-x grid-margin-x">';
@@ -89,7 +89,7 @@ trait SubscriptionAutomationConditions
             $list['date'],
             'acym_condition[conditions][__numor__][__numand__][acy_list_all][date-type]',
             null,
-            'class="intext_select_automation acym__select cell"'
+            ['class' => 'intext_select_automation acym__select cell']
         );
         $conditions['classic']['acy_list_all']->option .= '</div>';
         $conditions['classic']['acy_list_all']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 margin-left-1 margin-right-1"><</span>';

@@ -20,7 +20,12 @@ trait UserAutomationConditions
         $conditions['user']['acy_group']->option .= $operatorIn->display('acym_condition[conditions][__numor__][__numand__][acy_group][in]');
         $conditions['user']['acy_group']->option .= '</div>';
         $conditions['user']['acy_group']->option .= '<div class="intext_select_automation cell">';
-        $conditions['user']['acy_group']->option .= acym_select($groups, 'acym_condition[conditions][__numor__][__numand__][acy_group][group]', null, 'class="acym__select"');
+        $conditions['user']['acy_group']->option .= acym_select(
+            $groups,
+            'acym_condition[conditions][__numor__][__numand__][acy_group][group]',
+            null,
+            ['class' => 'acym__select']
+        );
         $conditions['user']['acy_group']->option .= '</div>';
 
         if (ACYM_CMS == 'joomla') {
@@ -66,7 +71,7 @@ trait UserAutomationConditions
             $cmsFields,
             'acym_condition[conditions][__numor__][__numand__][acy_cmsfield][field]',
             null,
-            'class="acym__select"'
+            ['class' => 'acym__select']
         );
         $conditions['user']['acy_cmsfield']->option .= '</div>';
         $conditions['user']['acy_cmsfield']->option .= '<div class="intext_select_automation cell">';
@@ -82,7 +87,7 @@ trait UserAutomationConditions
             ['=' => acym_translation('ACYM_EXACTLY'), '>' => acym_translation('ACYM_MORE_THAN'), '<' => acym_translation('ACYM_LESS_THAN')],
             'acym_condition[conditions][__numor__][__numand__][acy_totaluser][operator]',
             null,
-            'class="intext_select_automation acym__select"'
+            ['class' => 'intext_select_automation acym__select']
         );
         $conditions['classic']['acy_totaluser']->option .= '</div>';
         $conditions['classic']['acy_totaluser']->option .= '<input type="number" min="0" class="intext_input_automation cell" name="acym_condition[conditions][__numor__][__numand__][acy_totaluser][number]">';

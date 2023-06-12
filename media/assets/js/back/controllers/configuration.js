@@ -28,6 +28,8 @@ jQuery(function ($) {
         acym_helperMailer.updateStatus();
         catchEnterAcymailerDomains();
         activateAcymailer();
+        setAclMultiselect();
+        setAttachmentsPositionToggle();
     }
 
     Configuration();
@@ -210,14 +212,12 @@ jQuery(function ($) {
             let currentLanguages = $('#configmultilingual_languages').val();
             let previousLanguages = $('[name="previous_multilingual_languages"]').val();
             if (acym_helper.empty(previousLanguages)) {
-                compressAcl();
                 return true;
             }
             previousLanguages = previousLanguages.split(',');
 
             let removedLanguages = acym_helper.empty(currentLanguages) ? previousLanguages : previousLanguages.filter(x => !currentLanguages.includes(x));
             if (acym_helper.empty(removedLanguages)) {
-                compressAcl();
                 return true;
             }
 
@@ -226,7 +226,6 @@ jQuery(function ($) {
             });
 
             if (acym_helper.confirm(acym_helper.sprintf(ACYM_JS_TXT.ACYM_REMOVE_LANG_CONFIRMATION, removedLanguages.join(', ')))) {
-                compressAcl();
                 return true;
             } else {
                 return false;
@@ -234,37 +233,11 @@ jQuery(function ($) {
         };
     }
 
-    function compressAcl() {
-        // ACL handling - reduce the number of submitted inputs
-        const selectedAcl = {};
-        $('input[id^="config_acl_"]').each(function () {
-            const name = jQuery(this).attr('name');
-            const $checked = jQuery('input[name="' + name + '"]:checked');
-            const aclCategory = name.replace('config[', '').replace(']', '');
-
-            selectedAcl[aclCategory] = $checked.val();
-        });
-        jQuery('input[name^="config[acl_"]').remove();
-        jQuery('#json_acl').val(JSON.stringify(selectedAcl));
-    }
-
     function setAcl() {
         let aclZone = $('#acym__configuration__acl__zone');
         $('#acym__configuration__acl__toggle').off('click').on('click', function () {
             aclZone.slideToggle();
         }).trigger('click');
-
-        $('input[name^="config[acl_"]').on('change', function () {
-            let aclName = $(this).attr('name');
-            let $choicesContainer = $('#' + aclName.substring(7, aclName.length - 1) + '_container');
-            if (!$choicesContainer.length) return;
-
-            if ($('input[name="' + aclName + '"]:checked').val() === 'all') {
-                $choicesContainer.addClass('is-hidden');
-            } else {
-                $choicesContainer.removeClass('is-hidden');
-            }
-        });
     }
 
     function setOptionDisabled(paramsId, optionName) {
@@ -356,6 +329,46 @@ jQuery(function ($) {
         jQuery('#acym__configuration__activate__acymailer').off('click').on('click', function () {
             jQuery('[data-tab-identifier="mail_settings"]').trigger('click');
             jQuery('#acymailer').trigger('click');
+        });
+    }
+
+    function setAclMultiselect() {
+        const $allAclMultiselect = $('select[name^="config[acl_"]');
+        const aclValues = {};
+
+        const getPageFromName = name => name.slice(4, -2);
+
+        $allAclMultiselect.each(function () {
+            aclValues[getPageFromName($(this).attr('name'))] = $(this).val();
+        });
+
+        $allAclMultiselect.on('change', function () {
+            const page = getPageFromName($(this).attr('name'));
+            let newValue = $(this).val();
+            if (aclValues[page].includes('all') && $(this).val().includes('all') && $(this).val().length > 1) {
+                newValue = $(this).val().splice($(this).val().indexOf('all') - 1, 1);
+            } else if (!aclValues[page].includes('all') && $(this).val().includes('all')) {
+                newValue = ['all'];
+            } else if ($(this).val().length === 0) {
+                newValue = ['all'];
+            }
+
+            $(this).val(newValue).trigger('change.select2');
+            aclValues[page] = newValue;
+        });
+    }
+
+    function setAttachmentsPositionToggle() {
+        jQuery('[name="config[embed_files]"]').off('change').on('change', function () {
+            // The input hidden value is changed after the on change on itself, which doesn't make sense but it is the case
+            setTimeout(() => {
+                const $attachmentsPositionContainer = jQuery('#attachments_position');
+                if (jQuery(this).val() === '1') {
+                    $attachmentsPositionContainer.css('display', 'none');
+                } else {
+                    $attachmentsPositionContainer.css('display', '');
+                }
+            }, 10);
         });
     }
 });

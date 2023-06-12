@@ -54,7 +54,7 @@ trait Security
 
                     $indexes[$tableName][$indexName] = $oneField;
                 } elseif (strpos($oneField, 'FOREIGN KEY') !== false) {
-                    preg_match('/(fk.*)\`/Uis', $fields[$key - 1], $matchesConstraints);
+                    preg_match('/(#__fk.*)\`/Uis', $fields[$key - 1], $matchesConstraints);
                     preg_match('/(#__.*)\`\(`(.*)`\)/Uis', $fields[$key + 1], $matchesTable);
                     preg_match('/\`(.*)\`/Uis', $oneField, $matchesColumn);
                     if (!empty($matchesConstraints) && !empty($matchesTable) && !empty($matchesColumn)) {

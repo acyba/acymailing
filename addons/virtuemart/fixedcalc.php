@@ -7,9 +7,10 @@ class fixedCalculationHelper extends calculationHelper
     public function __construct($vendorId = 1, $countryId = 0, $stateId = 0)
     {
         $this->_db = JFactory::getDBO();
-        $this->_app = JFactory::getApplication();
-        //We store in UTC and use here of course also UTC
-        $jnow = JFactory::getDate();
+        $config = JFactory::getConfig();
+        $offset = $config->get('offset');
+
+        $jnow = JFactory::getDate($offset);
         $this->_now = $jnow->toSQL();
         $this->_nullDate = $this->_db->getNullDate();
 
@@ -18,11 +19,8 @@ class fixedCalculationHelper extends calculationHelper
         $this->_currencyDisplay = CurrencyDisplay::getInstance();
         $this->_debug = false;
 
-        if (!empty($this->_currencyDisplay->_vendorCurrency)) {
-            $this->vendorCurrency = $this->_currencyDisplay->_vendorCurrency;
-            $this->vendorCurrency_code_3 = $this->_currencyDisplay->_vendorCurrency_code_3;
-            $this->vendorCurrency_numeric = $this->_currencyDisplay->_vendorCurrency_numeric;
-        }
+        // This breaks the price calculation even if setShopperGroupIds is called later with another shopper group ID
+        //$this->setShopperGroupIds();
 
         $this->setCountryState($countryId, $stateId);
         $this->setVendorId($this->productVendorId);
@@ -35,8 +33,7 @@ class fixedCalculationHelper extends calculationHelper
 
         //round only with internal digits
         $this->_roundindig = VmConfig::get('roundindig', false);
-
-        self::$_instance = $this;
+        $this->optimisedCalcSql = VmConfig::get('optimisedCalcSql', true);
     }
 
     public function setCorrectShopperGroupIds($shoppergroups)

@@ -86,14 +86,15 @@ trait Actions
             unset($followUp->id, $followUp->creation_date, $followUp->list_id, $followUp->mails);
             $followUp->name .= '_copy';
             $followUp->active = 0;
-            $newfollowUpId = $followupClass->save($followUp);
-            if (empty($newfollowUpId)) {
+            $followUp->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
+            $newFollowUpId = $followupClass->save($followUp);
+            if (empty($newFollowUpId)) {
                 acym_enqueueMessage(acym_translation('ACYM_FOLLOWUP_DUPLICATE_ERROR'), 'error');
                 $this->listing();
 
                 return;
             }
-            $followUp->id = $newfollowUpId;
+            $followUp->id = $newFollowUpId;
 
             // Duplicate emails of the follow-up and attach them to the new followup
             foreach ($followupEmails as $oneEmail) {
@@ -105,7 +106,7 @@ trait Actions
                     continue;
                 }
                 $followupData = [
-                    'id' => $newfollowUpId,
+                    'id' => $newFollowUpId,
                     'delay' => $oneEmail->delay,
                     'delay_unit' => $oneEmail->delay_unit,
                 ];

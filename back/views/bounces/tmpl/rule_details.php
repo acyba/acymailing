@@ -60,7 +60,7 @@
                     $data['lists'],
                     'bounce[subscribe_user_list]',
                     (!empty($data['rule']) && !empty($data['rule']->action_user['subscribe_user_list'])) ? $data['rule']->action_user['subscribe_user_list'] : '',
-                    'class="acym__select shrink"'
+                    ['class' => 'acym__select shrink']
                 ).'</div>';
 
             $valuesActionUser = [

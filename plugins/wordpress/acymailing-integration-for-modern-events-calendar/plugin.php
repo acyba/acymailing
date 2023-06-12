@@ -61,7 +61,7 @@ class plgAcymModerneventscalendar extends acymPlugin
 
             if ($this->fullInstalled) {
                 $bookingIsOn = get_option('mec_options', []);
-                if ($bookingIsOn['settings']['booking_status']) {
+                if (!empty($bookingIsOn['settings']['booking_status'])) {
                     $this->displayOptions = array_merge($this->displayOptions, $diplayBookingOption);
                 }
             }

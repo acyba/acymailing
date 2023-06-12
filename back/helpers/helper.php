@@ -33,7 +33,9 @@ if (is_callable('date_default_timezone_set')) {
     date_default_timezone_set(@date_default_timezone_get());
 }
 
+include_once ACYM_HELPER_GLOBAL.'acl.php';
 include_once ACYM_HELPER_GLOBAL.'addon.php';
+include_once ACYM_HELPER_GLOBAL.'ajax.php';
 include_once ACYM_HELPER_GLOBAL.'chart.php';
 include_once ACYM_HELPER_GLOBAL.'curl.php';
 include_once ACYM_HELPER_GLOBAL.'date.php';

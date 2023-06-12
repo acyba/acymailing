@@ -812,11 +812,13 @@ class CampaignClass extends acymClass
         if (isset($params['language']) && !empty($return['matchingNewsletters'])) {
             $mailIds = array_column($return['matchingNewsletters'], 'id');
 
-            $translatedEmails = acym_loadObjectList(
-                'SELECT mail.* 
-                 FROM #__acym_mail AS mail 
-                 WHERE mail.parent_id IN ('.implode(',', $mailIds).') AND mail.language = '.acym_escapeDB($params['language']),
-                'parent_id'
+            $translatedEmails = $this->decode(
+                acym_loadObjectList(
+                    'SELECT mail.* 
+                    FROM #__acym_mail AS mail 
+                    WHERE mail.parent_id IN ('.implode(',', $mailIds).') AND mail.language = '.acym_escapeDB($params['language']),
+                    'parent_id'
+                )
             );
         }
 
@@ -825,7 +827,10 @@ class CampaignClass extends acymClass
         $user = $userClass->getOneByEmail($userEmail);
 
         foreach ($return['matchingNewsletters'] as $i => $oneNewsletter) {
-            if (isset($translatedEmails[$oneNewsletter->id])) $oneNewsletter = $translatedEmails[$oneNewsletter->id];
+            if (isset($translatedEmails[$oneNewsletter->id])) {
+                $translatedEmails[$oneNewsletter->id]->sending_date = $oneNewsletter->sending_date;
+                $oneNewsletter = $translatedEmails[$oneNewsletter->id];
+            }
             acym_trigger('replaceContent', [&$oneNewsletter, false]);
             acym_trigger('replaceUserInformation', [&$oneNewsletter, &$user, false]);
 

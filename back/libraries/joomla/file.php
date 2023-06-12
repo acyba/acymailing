@@ -18,7 +18,7 @@ function acym_fileGetContent($url, $timeout = 10)
             ini_set('default_socket_timeout', $timeout);
         }
         $streamContext = stream_context_create(['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]]);
-        $data = file_get_contents($url, false, $streamContext);
+        $data = @file_get_contents($url, false, $streamContext);
     }
 
     if (empty($data) && class_exists('JHttpFactory') && method_exists('JHttpFactory', 'getHttp')) {

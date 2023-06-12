@@ -21,20 +21,20 @@ trait EventBookingAutomationTriggers
                 $params['every'],
                 '[triggers][classic][eventbooking_reminder][time]',
                 empty($defaultValues['eventbooking_reminder']) ? '86400' : $defaultValues['eventbooking_reminder']['time'],
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             ).'</div></div>';
         $triggers['classic']['eventbooking_reminder']->option .= '<div class="grid-x cell grid-margin-x acym_vcenter margin-bottom-1"><div class="cell medium-shrink">'.acym_select(
                 $params['when'],
                 '[triggers][classic][eventbooking_reminder][when]',
                 empty($defaultValues['eventbooking_reminder']) ? 'before' : $defaultValues['eventbooking_reminder']['when'],
-                'data-class="intext_select acym__select"'
+                ['data-class' => 'intext_select acym__select']
             ).'</div>';
         $triggers['classic']['eventbooking_reminder']->option .= '<div class="cell medium-shrink">'.acym_translation('ACYM_AN_EVENT_IN').'</div>';
         $triggers['classic']['eventbooking_reminder']->option .= '<div class="cell medium-auto">'.acym_select(
                 $params['categories'],
                 '[triggers][classic][eventbooking_reminder][cat]',
                 empty($defaultValues['eventbooking_reminder']) ? '' : $defaultValues['eventbooking_reminder']['cat'],
-                'data-class="intext_select_larger intext_select acym__select"'
+                ['data-class' => 'intext_select_larger intext_select acym__select']
             ).'</div>';
         $triggers['classic']['eventbooking_reminder']->option .= '</div></div>';
     }
