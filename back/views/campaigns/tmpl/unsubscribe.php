@@ -19,4 +19,5 @@
         ?>
 	</div>
     <?php acym_formOptions(true, 'unsubscribe'); ?>
+	<input type="hidden" name="email_type" value="unsubscribe">
 </form>

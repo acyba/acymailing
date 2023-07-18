@@ -7,10 +7,12 @@ class JFormFieldHelp extends acym_JFormField
     public function getInput()
     {
         //__START__joomla_
-        $ds = DIRECTORY_SEPARATOR;
-        $helper = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
-        if ('{__CMS__}' === 'Joomla' && !include_once $helper) {
-            echo 'This extension cannot work without AcyMailing';
+        if ('{__CMS__}' === 'Joomla') {
+            $ds = DIRECTORY_SEPARATOR;
+            $helper = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
+            if (!include_once $helper) {
+                echo 'This extension cannot work without AcyMailing';
+            }
         }
         //__END__joomla_
 

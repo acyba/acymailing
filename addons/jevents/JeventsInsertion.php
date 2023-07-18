@@ -163,6 +163,13 @@ trait JeventsInsertion
                     'type' => 'pictures',
                     'name' => 'pictures',
                 ],
+                [
+                    'title' => 'ACYM_AUTO_LOGIN',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'type' => 'boolean',
+                    'name' => 'autologin',
+                    'default' => false,
+                ],
             ]
         );
 
@@ -472,7 +479,7 @@ trait JeventsInsertion
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);
                 if (!empty($lastGenerated)) {
-                    $where[] = 'rpt.startrepeat > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
+                    $where[] = 'ev.created > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
                 }
             }
 
@@ -510,7 +517,7 @@ trait JeventsInsertion
         $this->handleLocationComponent($element);
         $varFields = $this->getCustomLayoutVars($element);
         $this->handleDates($element, $varFields);
-        $this->handleLink($element, $varFields);
+        $this->handleLink($element, $varFields, $tag);
 
         // Needed transition for tags inserted before 8.4.0
         if (empty($tag->display)) {
@@ -658,7 +665,7 @@ trait JeventsInsertion
         $varFields['{date}'] = $date;
     }
 
-    private function handleLink($element, &$varFields)
+    private function handleLink($element, &$varFields, $tag)
     {
         $link = 'index.php?option=com_jevents&task=icalrepeat.detail&evid='.intval($element->rp_id);
         $areaCats = [];
@@ -702,7 +709,7 @@ trait JeventsInsertion
             $link .= '&Itemid='.intval($menuId);
         }
 
-        $varFields['{link}'] = $this->finalizeLink($link);
+        $varFields['{link}'] = $this->finalizeLink($link, $tag);
     }
 
     private function handleImages($tag, &$afterArticle, &$imagePath)

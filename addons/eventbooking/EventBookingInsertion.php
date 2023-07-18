@@ -136,6 +136,13 @@ trait EventBookingInsertion
                     'type' => 'pictures',
                     'name' => 'pictures',
                 ],
+                [
+                    'title' => 'ACYM_AUTO_LOGIN',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'type' => 'boolean',
+                    'name' => 'autologin',
+                    'default' => false,
+                ],
             ]
         );
 
@@ -304,7 +311,7 @@ trait EventBookingInsertion
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);
                 if (!empty($lastGenerated)) {
-                    $where[] = 'event.event_date > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
+                    $where[] = 'event.publish_up > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
                 }
             }
 
@@ -341,7 +348,7 @@ trait EventBookingInsertion
             $link .= '&Itemid='.intval($menuId);
         }
 
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
 
         $title = '';

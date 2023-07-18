@@ -22,6 +22,7 @@ trait ListEmails
         $this->prepareListingClasses($data);
 
         $data['menuClass'] = $this->menuClass;
+
         parent::display($data);
     }
 

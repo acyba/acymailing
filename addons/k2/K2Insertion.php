@@ -122,6 +122,13 @@ trait K2Insertion
                 'type' => 'pictures',
                 'name' => 'pictures',
             ],
+            [
+                'title' => 'ACYM_AUTO_LOGIN',
+                'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                'type' => 'boolean',
+                'name' => 'autologin',
+                'default' => false,
+            ],
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
@@ -286,7 +293,7 @@ trait K2Insertion
         $varFields = $this->getCustomLayoutVars($element);
 
         $link = K2HelperRoute::getItemRoute($element->id.':'.urlencode($element->alias), $element->catid);
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
 
         $title = '';
@@ -319,7 +326,7 @@ trait K2Insertion
 
         $customFields = [];
         $category = acym_loadObject('SELECT * FROM #__k2_categories WHERE id = '.intval($element->catid));
-        $linkCat = $this->finalizeLink('index.php?option=com_k2&view=itemlist&layout=category&task=category&id='.$category->id);
+        $linkCat = $this->finalizeLink('index.php?option=com_k2&view=itemlist&layout=category&task=category&id='.$category->id, $tag);
         $varFields['{cat}'] = '<a href="'.$linkCat.'" target="_blank">'.acym_escape($category->name).'</a>';
         if (in_array('cat', $tag->display)) {
             $customFields[] = [

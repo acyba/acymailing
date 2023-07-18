@@ -267,7 +267,7 @@ trait ForwardMailboxAction
             $newMail->from_name = strip_tags($mailboxHelper->decodeHeader($mailboxHelper->_message->header->from_name));
         }
 
-        if (!empty($this->action->senderto)) {
+        if (!empty($mailboxHelper->action->senderto)) {
             $newMail->reply_to_email = $mailboxHelper->decodeHeader($mailboxHelper->_message->header->from_email);
             $newMail->reply_to_name = strip_tags($mailboxHelper->decodeHeader($mailboxHelper->_message->header->from_name));
         }

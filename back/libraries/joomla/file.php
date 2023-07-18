@@ -52,11 +52,13 @@ function acym_fileGetContent($url, $timeout = 10)
     }
 
     if (empty($data) && function_exists('fopen') && function_exists('stream_get_contents')) {
-        $handle = fopen($url, "r");
-        if (!empty($timeout)) {
-            stream_set_timeout($handle, $timeout);
+        $handle = fopen($url, 'r');
+        if (!empty($handle)) {
+            if (!empty($timeout)) {
+                stream_set_timeout($handle, $timeout);
+            }
+            $data = stream_get_contents($handle);
         }
-        $data = stream_get_contents($handle);
     }
     $warnings = ob_get_clean();
 

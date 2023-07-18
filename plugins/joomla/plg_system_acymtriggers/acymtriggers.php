@@ -16,11 +16,12 @@ class plgSystemAcymtriggers extends JPlugin
     // Loads the Acy library
     public function initAcy()
     {
-        if (function_exists('acym_get')) return true;
-        $helperFile = rtrim(
-                JPATH_ADMINISTRATOR,
-                DIRECTORY_SEPARATOR
-            ).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
+        if (function_exists('acym_getVar')) {
+            return true;
+        }
+
+        $ds = DIRECTORY_SEPARATOR;
+        $helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
         if (!file_exists($helperFile) || !include_once $helperFile) return false;
 
         return true;
@@ -381,6 +382,67 @@ class plgSystemAcymtriggers extends JPlugin
         $listData = acym_getVar('array', 'hikashop_visible_lists_checked', []);
 
         acym_trigger('onAfterHikashopUserCreate', [$formData, $listData, $element]);
+    }
+
+    public function onAfterInitialise()
+    {
+        $this->handleCron();
+        $this->handleAutologin();
+    }
+
+    private function handleCron()
+    {
+    }
+
+    private function getAcyConf($conf)
+    {
+        static $db;
+        if (empty($db)) {
+            $db = JFactory::getDBO();
+        }
+
+        $db->setQuery('SELECT `value` FROM #__acym_configuration WHERE `name` = '.$db->quote($conf));
+
+        return $db->loadResult();
+    }
+
+    function handleAutologin()
+    {
+        $subId = $this->getVar('int', 'autoSubId');
+        $subKey = $this->getVar('string', 'subKey');
+
+        if (empty($subId) || empty($subKey)) {
+            return;
+        }
+
+        if (!$this->initAcy()) {
+            return;
+        }
+
+        $currentUrl = acym_currentURL();
+        $cleanedUrl = substr($currentUrl, 0, strpos($currentUrl, 'autoSubId') - 1);
+
+        $cmsId = acym_loadResult('SELECT `cms_id` FROM #__acym_user WHERE `id` = '.intval($subId).' AND `key` = '.acym_escapeDB($subKey));
+        if (empty($cmsId)) {
+            acym_redirect($cleanedUrl);
+
+            return;
+        }
+
+        $username = acym_loadResult('SELECT `username` FROM #__users WHERE `id` = '.intval($cmsId));
+        if (empty($username)) {
+            acym_redirect($cleanedUrl);
+
+            return;
+        }
+
+        acym_loadJoomlaPlugin('user');
+
+        $options = ['action' => 'core.login.site'];
+        $response = ['username' => $username];
+        acym_triggerCmsHook('onUserLogin', [$response, $options]);
+
+        acym_redirect($cleanedUrl);
     }
 
 }

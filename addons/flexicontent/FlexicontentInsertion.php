@@ -102,6 +102,13 @@ trait FlexicontentInsertion
                 'type' => 'pictures',
                 'name' => 'pictures',
             ],
+            [
+                'title' => 'ACYM_AUTO_LOGIN',
+                'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                'type' => 'boolean',
+                'name' => 'autologin',
+                'default' => false,
+            ],
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
@@ -302,7 +309,7 @@ trait FlexicontentInsertion
 
         $varFields = [];
         $link = 'index.php?option=com_flexicontent&view=item&cid='.$item->catid.'&id='.$tag->id.':'.$item->alias;
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
         $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $link;
 
@@ -344,7 +351,7 @@ trait FlexicontentInsertion
         $cats = [];
         foreach ($allCats as $key => $cat) {
             $link = 'index.php?option=com_flexicontent&view=category&layout=mcats&cids[0]='.$cat->id;
-            $link = $this->finalizeLink($link);
+            $link = $this->finalizeLink($link, $tag);
             $cats[] = '<a target="_blank" href="'.$link.'">'.$cat->title.'</a>';
         }
 

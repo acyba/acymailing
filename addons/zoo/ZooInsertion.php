@@ -130,6 +130,13 @@ trait ZooInsertion
                 'type' => 'pictures',
                 'name' => 'pictures',
             ],
+            [
+                'title' => 'ACYM_AUTO_LOGIN',
+                'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                'type' => 'boolean',
+                'name' => 'autologin',
+                'default' => false,
+            ],
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
@@ -322,7 +329,7 @@ trait ZooInsertion
         $element->elements = json_decode($element->elements, true);
 
         $link = 'index.php?option=com_zoo&task=item&item_id='.$tag->id;
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
 
         $title = '';

@@ -19,4 +19,5 @@
         ?>
 	</div>
     <?php acym_formOptions(true, 'welcome'); ?>
+	<input type="hidden" name="email_type" value="welcome">
 </form>

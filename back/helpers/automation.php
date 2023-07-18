@@ -8,16 +8,16 @@ use AcyMailing\Libraries\acymObject;
 
 class AutomationHelper extends acymObject
 {
-    var $from = ' `#__acym_user` AS `user`';
-    var $leftjoin = [];
-    var $join = [];
-    var $where = [];
-    var $orderBy = '';
-    var $groupBy = '';
-    var $limit = '';
+    public $from = ' `#__acym_user` AS `user`';
+    public $leftjoin = [];
+    public $join = [];
+    public $where = [];
+    public $orderBy = '';
+    public $groupBy = '';
+    public $limit = '';
     public $invert = false;
 
-    public function getQuery($select = [])
+    public function getQuery($select = []): string
     {
         $query = '';
         if (!empty($select)) {
@@ -40,7 +40,13 @@ class AutomationHelper extends acymObject
 
     public function count()
     {
-        return acym_loadResult($this->getQuery(['COUNT(DISTINCT user.id)']));
+        if (empty($this->limit)) {
+            return acym_loadResult($this->getQuery(['COUNT(DISTINCT user.id)']));
+        } else {
+            $result = acym_loadResult($this->getQuery(['COUNT(DISTINCT user.id)']));
+
+            return min($result, $this->limit);
+        }
     }
 
     /**
@@ -50,7 +56,7 @@ class AutomationHelper extends acymObject
      * @param Int     $id    automation id
      * @param boolean $reset if we reset the where for the segment count
      */
-    public function addFlag($id, $reset = false)
+    public function addFlag(int $id, bool $reset = false)
     {
         // In MySQL, the ORDER BY and LIMIT are not supported with "IN" or in UPDATE queries... If you know how to optimize it, feel free to do so
         if (!empty($this->orderBy) || !empty($this->limit)) {
@@ -80,11 +86,8 @@ class AutomationHelper extends acymObject
         $this->limit = '';
     }
 
-    public function removeFlag($id = null)
+    public function removeFlag(int $id)
     {
-        if (is_null($id)) {
-            $id = SegmentsController::FLAG_USERS;
-        }
         acym_query('UPDATE #__acym_user SET automation = REPLACE(automation, "a'.intval($id).'a", "") WHERE automation LIKE "%a'.intval($id).'a%"');
     }
 

@@ -19,4 +19,5 @@
         ?>
 	</div>
     <?php acym_formOptions(true, 'campaigns'); ?>
+	<input type="hidden" name="email_type" value="campaign">
 </form>

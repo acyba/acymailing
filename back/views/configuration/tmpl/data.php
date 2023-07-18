@@ -88,7 +88,7 @@
 			<div class="cell grid-x" id="delete_stats_enabled">
                 <?php
                 $delayTypeAuto = $data['typeDelay'];
-                echo $delayTypeAuto->display('config[delete_stats]', $this->config->get('delete_stats', 31104000), 4);
+                echo $delayTypeAuto->display('config[delete_stats]', $this->config->get('delete_stats', 86400 * 360), 4);
                 ?>
 			</div>
 		</div>
@@ -108,6 +108,29 @@
                 <?php
                 $delayTypeAuto = $data['typeDelay'];
                 echo $delayTypeAuto->display('config[delete_user_history]', $this->config->get('delete_user_history', 0), 4);
+                ?>
+			</div>
+		</div>
+		<div class="grid-x grid-margin-x margin-y margin-top-1">
+            <?php
+            echo acym_switch(
+                'config[delete_archive_history_enabled]',
+                $this->config->get('delete_archive_history_enabled', 1),
+                acym_translation('ACYM_DELETE_ARCHIVE_HISTORY_AFTER'),
+                [],
+                'xlarge-3 medium-5 small-9',
+                'auto',
+                '',
+                'delete_archive_history_enabled'
+            ); ?>
+			<div class="cell grid-x" id="delete_archive_history_enabled">
+                <?php
+                $delayTypeAuto = $data['typeDelay'];
+                echo $delayTypeAuto->display(
+                    'config[delete_archive_history_after]',
+                    $this->config->get('delete_archive_history_after', 86400 * 90),
+                    4
+                );
                 ?>
 			</div>
 		</div>

@@ -95,6 +95,13 @@ trait JcalproInsertion
                 'type' => 'pictures',
                 'name' => 'pictures',
             ],
+            [
+                'title' => 'ACYM_AUTO_LOGIN',
+                'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                'type' => 'boolean',
+                'name' => 'autologin',
+                'default' => false,
+            ],
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
@@ -275,7 +282,7 @@ trait JcalproInsertion
 
         $varFields = $this->getCustomLayoutVars($element);
         $link = 'index.php?option=com_jcalpro&view=event&id='.$tag->id;
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
 
         $title = '';

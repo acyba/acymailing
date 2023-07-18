@@ -116,6 +116,13 @@ trait SeblodInsertion
                 'caption' => true,
             ],
             [
+                'title' => 'ACYM_AUTO_LOGIN',
+                'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                'type' => 'boolean',
+                'name' => 'autologin',
+                'default' => false,
+            ],
+            [
                 'title' => 'ACYM_MENU_ID',
                 'type' => 'select',
                 'name' => 'itemId',
@@ -259,7 +266,7 @@ trait SeblodInsertion
 
         $link = 'index.php?option=com_content&view=article&id='.$article->id.'&catid='.$article->catid;
         $link .= empty($tag->itemId) ? $this->itemId : '&Itemid='.intval($tag->itemId);
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
 
         $title = '';

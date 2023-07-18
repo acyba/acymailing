@@ -71,6 +71,8 @@ class EditorHelper extends acymObject
             acym_setVar('mail_type', empty($data['mail']->type) ? '' : $data['mail']->type);
             acym_setVar('automation', $this->automation ? 1 : 0);
 
+            $saveThumbnail = $this->config->get('save_thumbnail', 1);
+
             include acym_getPartial('editor', 'editor_wysid');
         } else {
             // Outside of the Acy wrapper to prevent foundation from breaking the 100 different editors we could have here

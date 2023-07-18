@@ -1214,7 +1214,11 @@ class BounceHelper extends acymObject
             $this->mailer->Body .= print_r($this->_message->headerinfo, true);
             $replyAddress = trim(@$this->_message->header->reply_to_email, '<> ');
             if (!empty($replyAddress)) {
-                $this->mailer->AddReplyTo(trim($this->_message->header->reply_to_email, '<> '), $this->_message->header->reply_to_name);
+                if ($this->config->get('mailer_method') === \plgAcymAcymailer::SENDING_METHOD_ID) {
+                    $this->mailer->AddReplyTo($this->config->get('replyto_email'), $this->config->get('replyto_name'));
+                } else {
+                    $this->mailer->AddReplyTo(trim($this->_message->header->reply_to_email, '<> '), $this->_message->header->reply_to_name);
+                }
             }
 
             $this->mailer->isForward = true;

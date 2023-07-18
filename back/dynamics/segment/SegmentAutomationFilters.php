@@ -38,7 +38,7 @@ trait SegmentAutomationFilters
         return acym_translationSprintf('ACYM_SELECTED_USERS', $countUsers);
     }
 
-    public function onAcymProcessFilter_acy_segment(&$query, &$options, &$num)
+    public function onAcymProcessFilter_acy_segment(&$query, &$options, $num)
     {
         $oneSegment = (new SegmentClass())->getOneById($options['id']);
 
@@ -49,8 +49,8 @@ trait SegmentAutomationFilters
                 $automationHelpers[$or] = new AutomationHelper();
                 foreach ($orValues as $and => $andValues) {
                     $and = intval($and);
-                    foreach ($andValues as $filterName => $options) {
-                        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelpers[$or], &$options, $and.'_'.$or]);
+                    foreach ($andValues as $filterName => $filterOptions) {
+                        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelpers[$or], &$filterOptions, $and.'_'.$or]);
                     }
                 }
             }

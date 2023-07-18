@@ -34,8 +34,8 @@ $formName = acym_getModuleFormName();
                             $valueTmp->text = $value->title;
                             $valueTmp->value = $value->value;
                             if ($value->disabled == 'y') {
-								$valueTmp->disable = true;
-							}
+                                $valueTmp->disable = true;
+                            }
                             $valuesArray[$value->value] = $valueTmp;
                         }
                     }

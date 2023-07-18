@@ -5,16 +5,21 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 }
 ?>
 <div id="acym_fulldiv_<?php echo $form->form_tag_name; ?>"
-     class="acym__subscription__form__popup__overlay acym__subscription__form-erase"
+	 class="acym__subscription__form__popup__overlay acym__subscription__form-erase"
     <?php echo $hideForScroll; ?>>
-    <div class="acym__subscription__form__popup">
-        <div class="acym__subscription__form__popup__close acymicon-remove"></div>
+	<div class="acym__subscription__form__popup">
+		<div class="acym__subscription__form__popup__close acymicon-remove"></div>
         <?php
         if ($edition) {
             echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';
         } else {
-            $cookieExpirationAttr = empty($form->settings['cookie']['cookie_expiration']) ? 'acym-data-cookie="1"'
-                : 'acym-data-cookie="'.$form->settings['cookie']['cookie_expiration'].'"';
+            $isButton = $form->settings['display']['display_action'] === 'yes';
+            if ($isButton) {
+                $cookieExpirationAttr = 'acym-data-cookie="0"';
+            } else {
+                $cookieExpirationAttr = empty($form->settings['cookie']['cookie_expiration']) ? 'acym-data-cookie="1"'
+                    : 'acym-data-cookie="'.$form->settings['cookie']['cookie_expiration'].'"';
+            }
             echo '<form acym-data-id="'.$form->id.'" '.$cookieExpirationAttr.' action="'.$form->form_tag_action.'" id="'.$form->form_tag_name.'" name="'.$form->form_tag_name.'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acymSubmitSubForm\')">';
         }
         if (in_array($form->settings['style']['position'], ['image-top', 'image-left'])) {
@@ -38,8 +43,8 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
         }
         include acym_getPartial('forms', 'hidden_params');
         ?>
-        </form>
-    </div>
+		</form>
+	</div>
 </div>
 <style>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__popup__overlay{
@@ -110,14 +115,14 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 		margin: 1rem 10px !important;
 	}
 
-    <?php if(!empty($form->settings['message']['color'])) { ?>
+	<?php if(!empty($form->settings['message']['color'])) { ?>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>#acym__subscription__form__popup-text{
 		color: <?php echo $form->settings['message']['color']; ?>;
 	}
 
-    <?php } ?>
+	<?php } ?>
 
-    <?php if (in_array($form->settings['style']['position'], ['image-right', 'image-left'])){?>
+	<?php if (in_array($form->settings['style']['position'], ['image-right', 'image-left'])){?>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__popup <?php echo '#'.$form->form_tag_name;?>{
 		display: flex;
 		justify-content: center;
@@ -128,13 +133,13 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 		display: inline-block;
 	}
 
-    <?php }?>
+	<?php }?>
 
 </style>
 <?php if (!$edition) { ?>
-    <script type="text/javascript">
+	<script type="text/javascript">
         window.addEventListener('DOMContentLoaded', function () {
-            const isDisplayButton = <?php echo $form->settings['display']['display_action'] === 'yes' ? 'true' : 'false'; ?>;
+            const isDisplayButton = <?php echo $isButton ? 'true' : 'false'; ?>;
 
             function acym_closePopupform<?php echo $form->form_tag_name;?>(element) {
                 element.style.display = 'none';
@@ -147,18 +152,19 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
                 expirationDate.setDate(expirationDate.getDate() + <?php echo empty($form->settings['cookie']['cookie_expiration']) ? 1
                     : $form->settings['cookie']['cookie_expiration'];?>);
                 document.cookie = 'acym_form_<?php echo $form->id; ?>=' + Date.now() + ';expires=' + expirationDate.toUTCString() + ';path=/';
+
             }
 
-            document.querySelector('.acym__subscription__form__popup__overlay').addEventListener('click', function (event) {
+            document.querySelector('#acym_fulldiv_<?php echo $form->form_tag_name; ?>.acym__subscription__form__popup__overlay').addEventListener('click', function (event) {
                 if (event.target.closest('.acym__subscription__form__popup') === null) {
                     acym_closePopupform<?php echo $form->form_tag_name; ?>(this);
                 }
             });
-            document.querySelector('.acym__subscription__form__popup__close').addEventListener('click', function (event) {
+            document.querySelector('#acym_fulldiv_<?php echo $form->form_tag_name; ?> .acym__subscription__form__popup__close').addEventListener('click', function (event) {
                 acym_closePopupform<?php echo $form->form_tag_name; ?>(event.target.closest('.acym__subscription__form__popup__overlay'));
             });
 
-            const acym_popupForm = document.querySelector('.acym__subscription__form__popup__overlay');
+            const acym_popupForm = document.querySelector('#acym_fulldiv_<?php echo $form->form_tag_name; ?>.acym__subscription__form__popup__overlay');
 
             if (isDisplayButton) {
                 displayByButton();
@@ -228,6 +234,6 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
             };
 
         });
-    </script>
+	</script>
 <?php } ?>
 <?php if (!$edition) include acym_getPartial('forms', 'cookie'); ?>

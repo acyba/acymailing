@@ -155,7 +155,7 @@ class acymPlugin extends acymObject
             }
 
             if (!$found) {
-                $this->filters[] = $this->elementIdTable.'.'.$this->elementIdColumn.' = '.intval($this->defaultValues->id);
+                $conditions = ' WHERE '.$this->elementIdTable.'.'.$this->elementIdColumn.' = '.intval($this->defaultValues->id);
                 $row = acym_loadObject($this->querySelect.$this->query.$conditions);
                 if (!empty($row)) {
                     $rows[] = $row;
@@ -176,7 +176,9 @@ class acymPlugin extends acymObject
                         <div class="cell hide-for-small-only medium-auto"></div>
                         <div class="cell medium-shrink">';
 
-        if ($categoryFilter) $result .= $this->getCategoryFilter();
+        if ($categoryFilter) {
+            $result .= $this->getCategoryFilter();
+        }
 
         $result .= '</div>
                     </div>
@@ -911,7 +913,7 @@ class acymPlugin extends acymObject
         }
     }
 
-    protected function finalizeLink(string $link, bool $sef = true): string
+    protected function finalizeLink(string $link, object $tag, bool $sef = true): string
     {
         if (acym_isPluginActive('languagefilter')) {
             if (strpos($link, 'lang=') === false && !empty($this->emailLanguage)) {
@@ -923,6 +925,10 @@ class acymPlugin extends acymObject
                 $link .= strpos($link, '?') === false ? '?' : '&';
                 $link .= 'language='.$this->emailLanguage;
             }
+        }
+
+        if (!empty($tag->autologin)) {
+            $link .= (strpos($link, '?') ? '&' : '?').'autoSubId={subscriber:id}&subKey={subscriber:key|urlencode}';
         }
 
         return acym_frontendLink($link, false, $sef);
@@ -988,6 +994,10 @@ class acymPlugin extends acymObject
         $plugin->folder_name = $this->name;
         $plugin->settings = $this->settings;
         $this->generateSettings($plugin);
+
+        if (empty($plugin->settings['custom_view'])) {
+            return;
+        }
 
         $output .= '<p class="acym__wysid__right__toolbar__p acym__wysid__right__toolbar__p__open acym__title">';
         $output .= acym_translation('ACYM_ADDON_SETTINGS');
@@ -1455,13 +1465,6 @@ class acymPlugin extends acymObject
         $languageCode = substr($this->emailLanguage, 0, 2);
 
         return apply_filters('wpml_permalink', $link, $languageCode);
-    }
-
-    protected function autologin(string $link): string
-    {
-        $link .= (strpos($link, '?') ? '&' : '?').'user={usertag:username|urlencode}&passw={usertag:password|urlencode}';
-
-        return $link;
     }
 
     protected function replaceShortcode($content)

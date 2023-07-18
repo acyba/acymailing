@@ -185,18 +185,15 @@ class plgAcymArticle extends acymPlugin
                     'name' => 'pictures',
                     'caption' => true,
                 ],
+                [
+                    'title' => 'ACYM_AUTO_LOGIN',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'type' => 'boolean',
+                    'name' => 'autologin',
+                    'default' => false,
+                ],
             ]
         );
-
-        if (acym_isPluginActive('autologin')) {
-            $displayOptions[] = [
-                'title' => 'ACYM_AUTO_LOGIN',
-                'tooltip' => 'ACYM_AUTO_LOGIN_DESC',
-                'type' => 'boolean',
-                'name' => 'autologin',
-                'default' => false,
-            ];
-        }
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
         echo $this->displaySelectionZone($zoneContent);
@@ -473,16 +470,12 @@ class plgAcymArticle extends acymPlugin
             $link = ContentHelperRoute::getArticleRoute($completeId, $element->catid, $this->getLanguage($element->language, true));
         }
 
-        $link = $this->finalizeLink($link, intval($element->access) === 1 && intval($element->category_access) === 1);
+        $link = $this->finalizeLink($link, $tag, intval($element->access) === 1 && intval($element->category_access) === 1);
 
         //Get the related menu item if specified
         $menuId = $this->getParam('itemid');
         if (!empty($menuId)) {
             $link .= (strpos($link, '?') ? '&' : '?').'Itemid='.intval($menuId);
-        }
-
-        if (!empty($tag->autologin)) {
-            $link = $this->autologin($link);
         }
 
         $varFields['{link}'] = $link;
@@ -558,7 +551,9 @@ class plgAcymArticle extends acymPlugin
         }
 
         $category = acym_loadResult('SELECT title FROM #__categories WHERE id = '.intval($element->catid));
-        $varFields['{cat}'] = '<a href="'.$this->finalizeLink('index.php?option=com_content&view=category&id='.$element->catid).'" target="_blank">'.acym_escape($category).'</a>';
+        $varFields['{cat}'] = '<a href="'.$this->finalizeLink('index.php?option=com_content&view=category&id='.$element->catid, $tag).'" target="_blank">'.acym_escape(
+                $category
+            ).'</a>';
         if (in_array('cat', $tag->display)) {
             $customFields[] = [
                 $varFields['{cat}'],
@@ -574,7 +569,7 @@ class plgAcymArticle extends acymPlugin
                   AND map.content_item_id = '.intval($tag->id)
         );
         foreach ($tags as $i => $oneTag) {
-            $tags[$i] = '<a href="'.$this->finalizeLink('index.php?option=com_tags&view=tag&id='.$oneTag->id.':'.$oneTag->alias).'" target="_blank">'.acym_escape(
+            $tags[$i] = '<a href="'.$this->finalizeLink('index.php?option=com_tags&view=tag&id='.$oneTag->id.':'.$oneTag->alias, $tag).'" target="_blank">'.acym_escape(
                     $oneTag->title
                 ).'</a>';
         }
@@ -613,7 +608,7 @@ class plgAcymArticle extends acymPlugin
             $this->currentCategory = $element->catid;
 
             $categoryTitle = '<h1 class="acymailing_category_title">'.$element->category_title.'</h1>';
-            $categoryLink = $this->finalizeLink('index.php?option=com_content&view=category&id='.$element->catid);
+            $categoryLink = $this->finalizeLink('index.php?option=com_content&view=category&id='.$element->catid, $tag);
             $categoryTitle = '<a target="_blank" href="'.$categoryLink.'">'.$categoryTitle.'</a>';
         }
 

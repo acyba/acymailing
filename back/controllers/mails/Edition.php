@@ -66,7 +66,7 @@ trait Edition
             $fromMail = $mailClass->getOneById($fromId);
         }
 
-        if ($type == 'automation_admin') {
+        if ($type === 'automation_admin') {
             $type = $mailClass::TYPE_AUTOMATION;
             $isAutomationAdmin = true;
         }

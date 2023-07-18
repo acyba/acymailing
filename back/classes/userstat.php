@@ -312,7 +312,7 @@ class UserStatClass extends acymClass
             return [];
         }
 
-        $deleteAfterXSeconds = $this->config->get('delete_stats', 31104000);
+        $deleteAfterXSeconds = $this->config->get('delete_stats', 86400 * 360);
         if (empty($deleteAfterXSeconds)) {
             return [];
         }

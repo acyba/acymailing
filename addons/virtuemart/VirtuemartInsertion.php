@@ -160,6 +160,13 @@ trait VirtuemartInsertion
                     'type' => 'pictures',
                     'name' => 'pictures',
                 ],
+                [
+                    'title' => 'ACYM_AUTO_LOGIN',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'type' => 'boolean',
+                    'name' => 'autologin',
+                    'default' => false,
+                ],
             ]
         );
 
@@ -449,7 +456,7 @@ trait VirtuemartInsertion
         }
 
         $link = 'index.php?option=com_virtuemart&view=productdetails&virtuemart_product_id='.$element->virtuemart_product_id.'&virtuemart_category_id='.$element->virtuemart_category_id;
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
 
         $title = '';
@@ -495,7 +502,7 @@ trait VirtuemartInsertion
         $cats = [];
         if (!empty($categories)) {
             foreach ($categories as $oneCategory) {
-                $catUrl = $this->finalizeLink('index.php?option=com_virtuemart&view=category&virtuemart_category_id='.$oneCategory->virtuemart_category_id);
+                $catUrl = $this->finalizeLink('index.php?option=com_virtuemart&view=category&virtuemart_category_id='.$oneCategory->virtuemart_category_id, $tag);
                 $cats[] = '<a href="'.$catUrl.'" target="_blank">'.$oneCategory->category_name.'</a>';
             }
         }

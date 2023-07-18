@@ -35,10 +35,11 @@ trait TheEventsCalendarInsertion
 
     public function initElementOptionsCustomView()
     {
-        $query = 'SELECT post.*
-                    FROM #__posts AS post
-                    WHERE post.post_type = "tribe_events" 
-                        AND post.post_status = "publish"';
+        $query = 'SELECT post.*, occurrence.start_date, occurrence.start_date_utc, occurrence.end_date, occurrence.end_date_utc 
+                FROM #__tec_occurrences AS occurrence 
+                JOIN #__posts AS post ON post.ID = occurrence.post_id
+                WHERE post.post_type = "tribe_events" 
+                    AND post.post_status = "publish"';
         $element = acym_loadObject($query);
         if (empty($element)) return;
         foreach ($element as $key => $value) {
@@ -93,6 +94,13 @@ trait TheEventsCalendarInsertion
                 'type' => 'pictures',
                 'name' => 'pictures',
             ],
+            [
+                'title' => '',
+                'type' => 'custom',
+                'name' => 'version',
+                'output' => '',
+                'js' => 'otherinfo += "| version:2";',
+            ],
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
@@ -110,7 +118,7 @@ trait TheEventsCalendarInsertion
                 'name' => 'order',
                 'options' => [
                     'ID' => 'ACYM_DATE_CREATED',
-                    'startdate.meta_value' => 'ACYM_DATE',
+                    'start_date' => 'ACYM_DATE',
                     'post_title' => 'ACYM_TITLE',
                     'menu_order' => 'ACYM_MENU_ORDER',
                     'rand' => 'ACYM_RANDOM',
@@ -135,19 +143,19 @@ trait TheEventsCalendarInsertion
 
     public function prepareListing()
     {
-        $this->querySelect = 'SELECT post.ID, post.post_title, post.post_date, post.post_content ';
+        $this->querySelect = 'SELECT occurrence.occurrence_id, post.ID, post.post_title, occurrence.start_date, occurrence.start_date_utc ';
         $this->query = 'FROM #__posts AS post ';
+        $this->query .= 'JOIN #__tec_occurrences AS occurrence ON post.ID = occurrence.post_id ';
         $this->filters = [];
         $this->filters[] = 'post.post_type = "tribe_events"';
         $this->filters[] = 'post.post_status = "publish"';
         $this->searchFields = ['post.ID', 'post.post_title'];
-        $this->pageInfo->order = 'post.ID';
+        $this->pageInfo->order = 'occurrence.start_date';
         $this->elementIdTable = 'post';
         $this->elementIdColumn = 'ID';
 
         if ($this->getParam('hidepast', '1') === '1') {
-            $this->query .= 'JOIN #__postmeta AS startdate ON post.ID = startdate.post_id AND startdate.meta_key = "_EventStartDateUTC" ';
-            $this->filters[] = 'startdate.`meta_value` >= '.acym_escapeDB(date('Y-m-d H:i:s'));
+            $this->filters[] = 'occurrence.`start_date` >= '.acym_escapeDB(date('Y-m-d H:i:s'));
         }
 
         parent::prepareListing();
@@ -164,8 +172,8 @@ trait TheEventsCalendarInsertion
                     'label' => 'ACYM_TITLE',
                     'size' => '7',
                 ],
-                'post_date' => [
-                    'label' => 'ACYM_PUBLISHING_DATE',
+                'start_date_utc' => [
+                    'label' => 'ACYM_START_DATE',
                     'size' => '4',
                     'type' => 'date',
                 ],
@@ -175,7 +183,7 @@ trait TheEventsCalendarInsertion
                     'class' => 'text-center',
                 ],
             ],
-            'id' => 'ID',
+            'id' => 'occurrence_id',
             'rows' => $this->getElements(),
         ];
 
@@ -207,9 +215,9 @@ trait TheEventsCalendarInsertion
             }
             if (!empty($parameter->to)) $parameter->to = acym_date(acym_replaceDate($parameter->to), 'Y-m-d H:i:s');
 
-            $query = 'SELECT DISTINCT post.`ID` 
-                    FROM #__posts AS post 
-                    JOIN #__postmeta AS startdate ON post.ID = startdate.post_id AND startdate.meta_key = "_EventStartDateUTC" ';
+            $query = 'SELECT DISTINCT occurrence.occurrence_id 
+                    FROM #__tec_occurrences AS occurrence
+                    JOIN #__posts AS post ON post.ID = occurrence.post_id ';
 
             $where = [];
 
@@ -221,14 +229,16 @@ trait TheEventsCalendarInsertion
 
             $where[] = 'post.post_type = "tribe_events"';
             $where[] = 'post.post_status = "publish"';
-            $where[] = 'startdate.`meta_value` >= '.acym_escapeDB($parameter->from);
+            $where[] = 'occurrence.`start_date` >= '.acym_escapeDB($parameter->from);
 
-            if (!empty($parameter->to)) $where[] = 'startdate.meta_value <= '.acym_escapeDB($parameter->to).' AND startdate.meta_value != "0000-00-00 00:00:00"';
+            if (!empty($parameter->to)) {
+                $where[] = 'occurrence.`start_date` <= '.acym_escapeDB($parameter->to).' AND occurrence.`start_date` != "0000-00-00 00:00:00"';
+            }
 
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);
                 if (!empty($lastGenerated)) {
-                    $where[] = 'startdate.meta_value > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
+                    $where[] = 'post.`post_date` > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
                 }
             }
 
@@ -242,24 +252,35 @@ trait TheEventsCalendarInsertion
 
     public function replaceIndividualContent($tag)
     {
-        $query = 'SELECT post.*
-                    FROM #__posts AS post
-                    WHERE post.post_type = "tribe_events" 
-                        AND post.post_status = "publish"
-                        AND post.ID = '.intval($tag->id);
+        $columnId = empty($tag->version) ? 'post.ID' : 'occurrence.occurrence_id';
+        $query = 'SELECT post.*, occurrence.* 
+                FROM #__tec_occurrences AS occurrence 
+                JOIN #__posts AS post ON post.ID = occurrence.post_id
+                WHERE post.post_type = "tribe_events" 
+                    AND post.post_status = "publish"
+                    AND '.$columnId.' = '.intval($tag->id);
 
         $element = $this->initIndividualContent($tag, $query);
 
-        if (empty($element)) return '';
+        if (empty($element)) {
+            return '';
+        }
+
         $varFields = $this->getCustomLayoutVars($element);
 
-        $properties = acym_loadObjectList('SELECT meta_key, meta_value AS `value` FROM #__postmeta WHERE post_id = '.intval($tag->id), 'meta_key');
+        $properties = acym_loadObjectList('SELECT meta_key, meta_value AS `value` FROM #__postmeta WHERE post_id = '.intval($element->ID), 'meta_key');
         foreach ($properties as $name => $property) {
             $varFields['{'.$name.'}'] = $property->value;
         }
 
-        $link = get_permalink($element->ID);
-        $varFields['{link}'] = $link;
+        $eventPermalink = get_permalink($element->ID);
+        if (empty($element->has_recurrence)) {
+            $varFields['{link}'] = $eventPermalink;
+        } else {
+            $eventPermalink = substr($eventPermalink, 0, strlen($eventPermalink) - 11);
+            $occurrenceDate = substr($element->start_date_utc, 0, 10).'/';
+            $varFields['{link}'] = $eventPermalink.$occurrenceDate;
+        }
 
         $title = '';
         $afterTitle = '';
@@ -269,16 +290,19 @@ trait TheEventsCalendarInsertion
         $customFields = [];
 
         $varFields['{title}'] = $element->post_title;
-        if (in_array('title', $tag->display)) $title = $varFields['{title}'];
+        if (in_array('title', $tag->display)) {
+            $title = $varFields['{title}'];
+        }
 
-
-        $imageId = get_post_thumbnail_id($tag->id);
+        $imageId = get_post_thumbnail_id($element->ID);
         if (!empty($imageId)) {
-            $imagePath = get_the_post_thumbnail_url($tag->id);
+            $imagePath = get_the_post_thumbnail_url($element->ID);
         }
         $varFields['{image}'] = $imagePath;
         $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
-        if (!in_array('image', $tag->display)) $imagePath = '';
+        if (!in_array('image', $tag->display)) {
+            $imagePath = '';
+        }
 
         $varFields['{full}'] = $this->cleanExtensionContent($element->post_content);
         $varFields['{intro}'] = $this->cleanExtensionContent($this->getIntro($element->post_content));
@@ -288,40 +312,30 @@ trait TheEventsCalendarInsertion
             $contentText .= $varFields['{intro}'];
         }
 
-        $varFields['{startdate}'] = '';
-        $varFields['{enddate}'] = '';
-        $varFields['{simpleenddate}'] = '';
-        $varFields['{simplestartdate}'] = '';
-        $varFields['{date}'] = '';
+        $allday = !empty($properties['_EventAllDay']->value) && $properties['_EventAllDay']->value === 'yes';
 
-        if (!empty($properties['_EventStartDate']->value)) {
-            $allday = !empty($properties['_EventAllDay']->value) && $properties['_EventAllDay']->value === 'yes';
-            $startDate = $properties['_EventStartDate']->value;
-            $endDate = empty($properties['_EventEndDate']->value) ? '' : $properties['_EventEndDate']->value;
+        $varFields['{startdate}'] = acym_date($element->start_date, acym_translation('ACYM_DATE_FORMAT_LC2'), false);
+        $varFields['{enddate}'] = acym_date($element->end_date, acym_translation('ACYM_DATE_FORMAT_LC2'), false);
 
+        $varFields['{simplestartdate}'] = acym_date($element->start_date, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
+        $varFields['{simpleenddate}'] = acym_date($element->end_date, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
 
-            $varFields['{startdate}'] = acym_date($startDate, acym_translation('ACYM_DATE_FORMAT_LC2'), false);
-            $varFields['{enddate}'] = acym_date($endDate, acym_translation('ACYM_DATE_FORMAT_LC2'), false);
-
-            $varFields['{simplestartdate}'] = acym_date($startDate, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
-            $varFields['{simpleenddate}'] = acym_date($endDate, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
-
-            $varFields['{date}'] = $allday ? $varFields['{simplestartdate}'] : $varFields['{startdate}'];
-            if (!empty($endDate) && $startDate !== $endDate) {
-                if ($allday) {
-                    $endDateDisplay = $varFields['{simpleenddate}'];
+        $varFields['{date}'] = $allday ? $varFields['{simplestartdate}'] : $varFields['{startdate}'];
+        if (($allday && $varFields['{simplestartdate}'] !== $varFields['{simpleenddate}']) || (!$allday && $element->start_date !== $element->end_date)) {
+            if ($allday) {
+                $endDateDisplay = $varFields['{simpleenddate}'];
+            } else {
+                if ($varFields['{simplestartdate}'] === $varFields['{simpleenddate}']) {
+                    $endDateDisplay = acym_date($element->end_date, 'H:i', false);
                 } else {
-                    if ($varFields['{simplestartdate}'] === $varFields['{simpleenddate}']) {
-                        $endDateDisplay = acym_date($endDate, 'H:i', false);
-                    } else {
-                        $endDateDisplay = $varFields['{enddate}'];
-                    }
+                    $endDateDisplay = $varFields['{enddate}'];
                 }
-
-                $varFields['{date}'] .= ' - '.$endDateDisplay;
             }
+
+            $varFields['{date}'] .= ' - '.$endDateDisplay;
         }
-        if (in_array('date', $tag->display) && !empty($properties['_EventStartDateUTC']->value)) {
+
+        if (in_array('date', $tag->display)) {
             $customFields[] = [
                 $varFields['{date}'],
                 acym_translation('ACYM_DATE'),
@@ -352,16 +366,20 @@ trait TheEventsCalendarInsertion
             }
         }
 
-
-        $price = empty($properties['_EventCost']->value) ? 0 : $properties['_EventCost']->value;
-        $symbol = empty($properties['_EventCurrencySymbol']->value) ? '' : $properties['_EventCurrencySymbol']->value;
-
-        if (empty($properties['_EventCurrencyPosition']->value) || $properties['_EventCurrencyPosition']->value === 'suffix') {
-            $price .= $symbol;
+        if (empty($properties['_EventCost']->value)) {
+            $varFields['{price}'] = acym_translation('ACYM_FREE');
         } else {
-            $price = $symbol.$price;
+            $price = $properties['_EventCost']->value;
+            $symbol = empty($properties['_EventCurrencySymbol']->value) ? '' : $properties['_EventCurrencySymbol']->value;
+
+            if (empty($properties['_EventCurrencyPosition']->value) || $properties['_EventCurrencyPosition']->value === 'suffix') {
+                $price .= $symbol;
+            } else {
+                $price = $symbol.$price;
+            }
+            $varFields['{price}'] = $price;
         }
-        $varFields['{price}'] = $price;
+
         if (in_array('price', $tag->display)) {
             $customFields[] = [
                 $varFields['{price}'],
@@ -378,7 +396,7 @@ trait TheEventsCalendarInsertion
             ];
         }
 
-        $varFields['{cats}'] = get_the_term_list($tag->id, 'tribe_events_cat', '', ', ');
+        $varFields['{cats}'] = get_the_term_list($element->ID, 'tribe_events_cat', '', ', ');
         if (in_array('cats', $tag->display) && !empty($varFields['{cats}'])) {
             $customFields[] = [
                 $varFields['{cats}'],
@@ -386,7 +404,7 @@ trait TheEventsCalendarInsertion
             ];
         }
 
-        $varFields['{tags}'] = get_the_term_list($tag->id, 'post_tag', '', ', ');
+        $varFields['{tags}'] = get_the_term_list($element->ID, 'post_tag', '', ', ');
         if (in_array('tags', $tag->display) && !empty($varFields['{tags}'])) {
             $customFields[] = [
                 $varFields['{tags}'],
@@ -394,10 +412,13 @@ trait TheEventsCalendarInsertion
             ];
         }
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
-                acym_translation('ACYM_READ_MORE')
-            ).'</span></a>';
-        if ($tag->readmore === '1') $afterArticle .= $varFields['{readmore}'];
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$varFields['{link}'].'"><span class="acymailing_readmore">';
+        $varFields['{readmore}'] .= acym_translation('ACYM_READ_MORE');
+        $varFields['{readmore}'] .= '</span></a>';
+
+        if ($tag->readmore === '1') {
+            $afterArticle .= $varFields['{readmore}'];
+        }
 
         $format = new stdClass();
         $format->tag = $tag;
@@ -406,7 +427,7 @@ trait TheEventsCalendarInsertion
         $format->afterArticle = $afterArticle;
         $format->imagePath = $imagePath;
         $format->description = $contentText;
-        $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $link;
+        $format->link = empty($tag->clickable) && empty($tag->clickableimg) ? '' : $varFields['{link}'];
         $format->customFields = $customFields;
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 

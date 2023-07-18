@@ -44,12 +44,10 @@ class MailboxHelper extends BounceHelper
     {
         $this->action = $mailbox;
         if (!$this->buildConfigFromMailbox()) {
-
             return false;
         }
 
         if (!$this->init($this->mailboxConfig) || !$this->connect()) {
-
             return false;
         }
 

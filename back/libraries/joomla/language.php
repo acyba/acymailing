@@ -3,41 +3,6 @@
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Language;
 
-global $acyWPLangCodes;
-$acyWPLangCodes = [
-    'af' => 'af-ZA',
-    'ar' => 'ar-AA',
-    'as' => 'as-AS', // Not sure
-    'az' => 'az-AZ', // Not sure
-    'bo' => 'bo-BO', // Not sure
-    'ca' => 'ca-ES',
-    'cy' => 'cy-GB',
-    'el' => 'el-GR',
-    'eo' => 'eo-XX',
-    'et' => 'et-EE',
-    'eu' => 'eu-ES',
-    'fi' => 'fi-FI',
-    'gd' => 'gd-GD', // Not sure
-    'gu' => 'gu-GU', // Not sure
-    'hr' => 'hr-HR',
-    'hy' => 'hy-AM',
-    'ja' => 'ja-JP',
-    'kk' => 'kk-KK', // Not sure
-    'km' => 'km-KH',
-    'lo' => 'lo-LO', // Not sure
-    'lv' => 'lv-LV',
-    'mn' => 'mn-MN', // Not sure
-    'mr' => 'mr-MR', // Not sure
-    'ps' => 'ps-PS', // Not sure
-    'sq' => 'sq-AL',
-    'te' => 'te-TE',
-    'th' => 'th-TH',
-    'tl' => 'tl-TL', // Not sure
-    'uk' => 'uk-UA',
-    'ur' => 'ur-PK', // Not sure
-    'vi' => 'vi-VN',
-];
-
 global $acymLanguages;
 
 function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $textdomain = 'acymailing')

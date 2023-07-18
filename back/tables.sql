@@ -13,6 +13,9 @@ CREATE TABLE IF NOT EXISTS `#__acym_user` (
 	`confirmation_ip` VARCHAR(50) DEFAULT NULL,
 	`tracking` TINYINT(1) NOT NULL DEFAULT 1,
 	`language` VARCHAR(20) NOT NULL DEFAULT '',
+	`last_sent_date` DATETIME NULL,
+	`last_open_date` DATETIME NULL,
+	`last_click_date` DATETIME NULL,
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX `email_UNIQUE`(`email` ASC)
 )
@@ -705,6 +708,30 @@ CREATE TABLE IF NOT EXISTS `#__acym_mailbox_action` (
 	`active` tinyint(4) NOT NULL DEFAULT 0,
 	PRIMARY KEY (`id`),
 	INDEX `#__index_acym_mailbox_action1`(`name` ASC)
+)
+	ENGINE = InnoDB
+	/*!40100
+	DEFAULT CHARACTER SET utf8
+	COLLATE utf8_general_ci*/;
+
+-- -----------------------------------------------------
+-- Table `#__acym_mail_archive`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `#__acym_mail_archive` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`mail_id` INT NOT NULL,
+	`date` INT(10) UNSIGNED NOT NULL,
+	`body` LONGTEXT NOT NULL,
+	`subject` VARCHAR(255) NULL,
+	`settings` TEXT NULL,
+	`stylesheet` TEXT NULL,
+	`attachments` TEXT NULL,
+	PRIMARY KEY (`id`),
+	CONSTRAINT `#__fk_acym_mail_archive1`
+		FOREIGN KEY (`mail_id`)
+			REFERENCES `#__acym_mail`(`id`)
+			ON DELETE NO ACTION
+			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
 	/*!40100

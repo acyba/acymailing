@@ -22,6 +22,7 @@ trait BirthdayCampaignType
             'icon' => 'acymicon-calendar',
             'link' => $birthdayMailLink,
             'level' => 2,
+            'email_type' => $this->mailType,
         ];
     }
 

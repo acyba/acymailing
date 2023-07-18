@@ -162,7 +162,7 @@ class acymInstall
         $allPref['from_as_replyto'] = '1';
         $allPref['templates_installed'] = '0';
 
-        $allPref['bounceVersion'] = 1;
+        $allPref['bounceVersion'] = 2;
 
         $allPref['numberThumbnail'] = 2;
         $allPref['daily_hour'] = '12';
@@ -186,7 +186,8 @@ class acymInstall
         $allPref['multilingual'] = 0;
 
         $allPref['delete_stats_enabled'] = 1;
-        $allPref['delete_stats'] = 31104000;
+        $allPref['delete_stats'] = 86400 * 360;
+        $allPref['delete_archive_history_after'] = 86400 * 90;
 
         $allPref['display_built_by'] = acym_level(ACYM_ESSENTIAL) ? 0 : 1;
 
@@ -1508,6 +1509,59 @@ class acymInstall
                     acym_query('SET FOREIGN_KEY_CHECKS=1;');
                 }
             }
+        }
+
+        if (version_compare($this->fromVersion, '8.6.0', '<')) {
+            $ruleClass = new RuleClass();
+
+            $rule = new stdClass();
+            $rule->name = 'ACYM_SUPPRESSION_LIST';
+            $rule->ordering = 2;
+            $rule->regex = 'suppression list';
+            $rule->executed_on = '["body"]';
+            $rule->action_message = '["delete_message"]';
+            $rule->action_user = '["unsubscribe_user","block_user","empty_queue_user"]';
+            $rule->active = 1;
+            $rule->increment_stats = 1;
+            $rule->execute_action_after = 0;
+            $ruleClass->save($rule);
+
+            $rule = new stdClass();
+            $rule->name = 'ACYM_REJECTED';
+            $rule->ordering = 9;
+            $rule->regex = 'rejected *your *message|email *provider *rejected *it';
+            $rule->executed_on = '["body"]';
+            $rule->action_message = '["delete_message"]';
+            $rule->action_user = '[]';
+            $rule->active = 1;
+            $rule->increment_stats = 1;
+            $rule->execute_action_after = 0;
+            $ruleClass->save($rule);
+
+            $this->updateQuery('ALTER TABLE #__acym_user ADD COLUMN `last_sent_date` DATETIME NULL');
+            $this->updateQuery('ALTER TABLE #__acym_user ADD COLUMN `last_open_date` DATETIME NULL');
+            $this->updateQuery('ALTER TABLE #__acym_user ADD COLUMN `last_click_date` DATETIME NULL');
+
+            $this->updateQuery(
+                'CREATE TABLE IF NOT EXISTS `#__acym_mail_archive` (
+                    `id` INT NOT NULL AUTO_INCREMENT,
+                    `mail_id` INT NOT NULL,
+                    `date` INT(10) UNSIGNED NOT NULL,
+                    `body` LONGTEXT NOT NULL,
+                    `subject` VARCHAR(255) NULL,
+                    `settings` TEXT NULL,
+                    `stylesheet` TEXT NULL,
+                    `attachments` TEXT NULL,
+                    PRIMARY KEY (`id`),
+                    CONSTRAINT `#__fk_acym_mail_archive1`
+                        FOREIGN KEY (`mail_id`)
+                            REFERENCES `#__acym_mail`(`id`)
+                            ON DELETE NO ACTION
+                            ON UPDATE NO ACTION
+                )
+                    ENGINE = InnoDB
+                    /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;'
+            );
         }
     }
 

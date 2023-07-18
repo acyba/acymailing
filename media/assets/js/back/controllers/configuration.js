@@ -345,12 +345,18 @@ jQuery(function ($) {
         $allAclMultiselect.on('change', function () {
             const page = getPageFromName($(this).attr('name'));
             let newValue = $(this).val();
-            if (aclValues[page].includes('all') && $(this).val().includes('all') && $(this).val().length > 1) {
-                newValue = $(this).val().splice($(this).val().indexOf('all') - 1, 1);
-            } else if (!aclValues[page].includes('all') && $(this).val().includes('all')) {
+            if (newValue === null) {
+                newValue = [];
+            }
+
+            if (newValue.length === 0) {
                 newValue = ['all'];
-            } else if ($(this).val().length === 0) {
-                newValue = ['all'];
+            } else if (newValue.includes('all')) {
+                if (!aclValues[page].includes('all')) {
+                    newValue = ['all'];
+                } else if (newValue.length > 1) {
+                    newValue = newValue.splice(newValue.indexOf('all') - 1, 1);
+                }
             }
 
             $(this).val(newValue).trigger('change.select2');

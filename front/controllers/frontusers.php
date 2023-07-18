@@ -236,7 +236,6 @@ class FrontusersController extends UsersController
             $user->id = $alreadyExists->id;
         }
 
-        $isNew = empty($user->id);
         $result = $userClass->saveForm($ajax);
         $user->id = acym_getVar('int', 'userId');
 

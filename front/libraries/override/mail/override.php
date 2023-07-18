@@ -50,7 +50,7 @@ class jMail_acym extends PHPMailer
 
         // Send the email with AcyMailing if possible
         $ds = DIRECTORY_SEPARATOR;
-        if (include_once rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php') {
+        if (!empty($this->to[0][0]) && include_once rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php') {
             $mailerHelper = new MailerHelper();
             $success = $mailerHelper->overrideEmail($this->Subject, $this->Body, $this->to[0][0]);
         }
@@ -60,15 +60,12 @@ class jMail_acym extends PHPMailer
             return true;
         }
 
-
-        // Let Joomla send the email
-
-
-        if (($this->Mailer == 'mail') && !function_exists('mail')) {
-            return acym_raiseError(500, acym_translation('JLIB_MAIL_FUNCTION_DISABLED'));
+        if (!function_exists('mail') && $this->Mailer === 'mail') {
+            acym_raiseError(500, acym_translation('JLIB_MAIL_FUNCTION_DISABLED'));
         }
 
         try {
+            // We let the CMS send the email
             $result = parent::send();
         } catch (Exception $e) {
             $result = false;

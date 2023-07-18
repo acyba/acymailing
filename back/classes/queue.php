@@ -11,13 +11,12 @@ class QueueClass extends acymClass
     public $emailtypes;
 
     /**
-     * Get users depending on filters (search, status, pagination)
+     * Get campaigns depending on filters (search, status, pagination)
      *
      * @param $settings
      *
-     * @return mixed
+     * @return array|void
      */
-
     public function getMatchingCampaigns($settings)
     {
         $campaignClass = new CampaignClass();
@@ -167,7 +166,7 @@ class QueueClass extends acymClass
     }
 
     /**
-     * Get users depending on filters (search, status, pagination)
+     * Get mails depending on filters (search, status, pagination)
      *
      * @param $settings
      *
@@ -243,9 +242,9 @@ class QueueClass extends acymClass
 
         $nbQueue = [];
 
-        foreach ($mailReady as $mailid => $mail) {
-            $nbQueue[$mailid] = $this->queue($mail);
-            $this->messages[] = acym_translationSprintf('ACYM_ADDED_QUEUE_SCHEDULE', $nbQueue[$mailid], '<b>'.$mail->name.'</b>');
+        foreach ($mailReady as $mailId => $mail) {
+            $nbQueue[$mailId] = $this->queue($mail);
+            $this->messages[] = acym_translationSprintf('ACYM_ADDED_QUEUE_SCHEDULE', $nbQueue[$mailId], '<b>'.$mail->name.'</b>');
         }
 
         $mailIds = array_keys($mailReady);
@@ -298,7 +297,7 @@ class QueueClass extends acymClass
         $nbDeleted = 0;
         foreach ($elements as $one) {
             if (strpos($one, '_')) {
-                list($mailId, $userId) = explode('_', $one);
+                [$mailId, $userId] = explode('_', $one);
             } else {
                 $userId = $one;
             }
@@ -328,7 +327,7 @@ class QueueClass extends acymClass
         return $res;
     }
 
-    public function getReady($limit, $mailid = 0)
+    public function getReady($limit, $mailId = 0): array
     {
         if (empty($limit)) return [];
 
@@ -368,8 +367,8 @@ class QueueClass extends acymClass
             $query .= ' AND mail.type IN ('.implode(', ', $this->emailtypes).')';
         }
 
-        if (!empty($mailid)) {
-            $query .= ' AND queue.`mail_id` = '.intval($mailid);
+        if (!empty($mailId)) {
+            $query .= ' AND queue.`mail_id` = '.intval($mailId);
         }
 
         $query .= ' ORDER BY queue.`priority` ASC, queue.`sending_date` ASC, '.$order;
@@ -463,27 +462,30 @@ class QueueClass extends acymClass
             $automationHelper->where[] = '`user`.`active` = 1';
         }
 
-        $segmentsController = new SegmentsController();
-        $automationHelper->removeFlag();
+        $automationHelper->removeFlag(SegmentsController::FLAG_USERS);
 
-        if (empty($mail->filters)) {
-            $automationHelper->addFlag($segmentsController::FLAG_USERS, true);
-        } else {
+        if (!empty($mail->filters)) {
+            $isExcluded = !empty($sendingParams['segment']['invert']) && $sendingParams['segment']['invert'] === 'exclude';
+            $automationHelper->removeFlag(SegmentsController::FLAG_COUNT);
             // Handle potential segment
             foreach ($mail->filters as $or => $orValues) {
-                $automationHelperClone = clone $automationHelper;
+                $automationHelperSegment = new AutomationHelper();
                 foreach ($orValues as $and => $andValues) {
                     $and = intval($and);
                     foreach ($andValues as $filterName => $options) {
-                        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelperClone, &$options, &$and]);
+                        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelperSegment, &$options, &$and]);
                     }
                 }
-
-                $automationHelperClone->addFlag($segmentsController::FLAG_USERS);
+                $automationHelperSegment->invert = $isExcluded;
+                $automationHelperSegment->addFlag(SegmentsController::FLAG_COUNT);
             }
-        }
+            $notLike = '';
 
-        $automationHelper->where[] = 'user.automation LIKE "%a'.intval($segmentsController::FLAG_USERS).'a%"';
+            if ($isExcluded) {
+                $notLike = 'NOT ';
+            }
+            $automationHelper->where[] = 'user.automation '.$notLike.' LIKE "%a'.intval(SegmentsController::FLAG_COUNT).'a%"';
+        }
 
         return $automationHelper;
     }
@@ -498,7 +500,7 @@ class QueueClass extends acymClass
         $select = [intval($mail->id), 'userlist.user_id', acym_escapeDB($mail->sending_date), intval($priority), '0'];
         $inserted = acym_query('INSERT IGNORE INTO #__acym_queue '.$automationHelper->getQuery($select));
 
-        $automationHelper->removeFlag();
+        $automationHelper->removeFlag(SegmentsController::FLAG_COUNT);
 
         return $inserted;
     }

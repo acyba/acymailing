@@ -20,6 +20,7 @@ trait WooCommerceCampaignType
             'icon' => 'acymicon-cart-arrow-down',
             'link' => $woocomerceMailLink,
             'level' => 1,
+            'email_type' => $this->mailType,
         ];
     }
 

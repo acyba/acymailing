@@ -235,17 +235,25 @@ trait RseventsproInsertion
             } else {
                 $parameter->from = acym_date(acym_replaceDate($parameter->from), 'Y-m-d H:i:s');
             }
-            if (!empty($parameter->to)) $parameter->to = acym_date(acym_replaceDate($parameter->to), 'Y-m-d H:i:s');
+
+            if (!empty($parameter->to)) {
+                $parameter->to = acym_date(acym_replaceDate($parameter->to), 'Y-m-d H:i:s');
+            }
 
             $query = 'SELECT DISTINCT event.id FROM `#__rseventspro_events` AS event ';
 
             $where = [];
             $where[] = 'event.`published` = 1';
 
+            if (!empty($parameter->featured)) {
+                $where[] = 'event.`featured` = 1';
+            }
+
             $selectedArea = $this->getSelectedArea($parameter);
             if (!empty($selectedArea)) {
                 $query .= 'JOIN `#__rseventspro_taxonomy` AS cat ON event.id = cat.ide ';
                 $where[] = 'cat.id IN ('.implode(',', $selectedArea).')';
+                $where[] = 'cat.type = "category"';
             }
 
             if ((empty($parameter->mindelay) || substr($parameter->mindelay, 0, 1) != '-') && (empty($parameter->delay) || substr($parameter->delay, 0, 1) != '-')) {
@@ -270,11 +278,9 @@ trait RseventsproInsertion
             if (!empty($parameter->onlynew)) {
                 $lastGenerated = $this->getLastGenerated($email->id);
                 if (!empty($lastGenerated)) {
-                    $where[] = 'event.`start` > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
+                    $where[] = 'event.`created` > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false));
                 }
             }
-
-            if (!empty($parameter->featured)) $where[] = 'event.`featured` = 1';
 
             $query .= ' WHERE ('.implode(') AND (', $where).')';
 

@@ -51,7 +51,7 @@
 				<div class="acym__dashboard__card__picto__automation acym__dashboard__card__picto">
 					<i class="acymicon-cog acym__dashboard__card__icon__automation"></i>
 				</div>
-				<h1 class="acym__dashboard__card__title"><?php echo acym_translation('ACYM_AUTOAMTION'); ?></h1>
+				<h1 class="acym__dashboard__card__title"><?php echo acym_translation('ACYM_AUTOMATION'); ?></h1>
 				<hr class="cell small-10">
 				<a class="acym__dashboard__card__link"
                     <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>

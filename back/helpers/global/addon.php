@@ -22,7 +22,7 @@ function acym_trigger($method, $args = [], $plugin = null, $callbackOnePlugin = 
 
     $result = [];
     $listAddons = $acymPlugins;
-    if ($method == 'onAcymAddSettings') {
+    if ($method === 'onAcymAddSettings') {
         $listAddons = $acymAddonsForSettings;
     }
 

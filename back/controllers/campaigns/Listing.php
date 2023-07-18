@@ -51,7 +51,7 @@ trait Listing
 
     public function setTaskListing($task): bool
     {
-        if (!in_array($task, ['campaigns', 'campaigns_auto', 'welcome', 'unsubscribe',])) {
+        if (!in_array($task, ['campaigns', 'campaigns_auto', 'welcome', 'unsubscribe'])) {
             return false;
         }
 

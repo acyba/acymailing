@@ -108,6 +108,13 @@ trait HikashopInsertion
                 'type' => 'pictures',
                 'name' => 'pictures',
             ],
+            [
+                'title' => 'ACYM_AUTO_LOGIN',
+                'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                'type' => 'boolean',
+                'name' => 'autologin',
+                'default' => false,
+            ],
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
@@ -545,7 +552,7 @@ trait HikashopInsertion
         if (!empty($product->product_canonical)) {
             $link = $product->product_canonical;
         }
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
 
 

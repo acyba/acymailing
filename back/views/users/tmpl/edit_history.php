@@ -36,7 +36,8 @@
                     <?php foreach ($data['userMailHistory'] as $oneMailHistory) { ?>
 						<div class="grid-x cell text-center acym__listing__row grid-margin-x">
 							<div class="medium-4 cell acym__users__email__history__subject">
-                                <?php echo $oneMailHistory->subject; ?>
+								<a href="<?php echo acym_frontendLink('archive&task=view&id='.$oneMailHistory->id.'&'.acym_noTemplate()); ?>"
+								   target="_blank"><?php echo $oneMailHistory->subject; ?></a>
 							</div>
 							<div class="medium-2 cell">
                                 <?php echo empty($oneMailHistory->send_date) || '0000-00-00 00:00:00' == $oneMailHistory->send_date

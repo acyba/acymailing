@@ -3,6 +3,7 @@
 namespace AcyMailing\FrontControllers;
 
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\MailArchiveClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\EditorHelper;
 use AcyMailing\Helpers\MailerHelper;
@@ -26,47 +27,30 @@ class ArchiveController extends acymController
         acym_addMetadata('UTF-8', '', 'charset');
 
         $mailId = acym_getVar('int', 'id', 0);
-
         $isPopup = acym_getVar('int', 'is_popup', 0);
 
-        $mailerHelper = new MailerHelper();
-        $oneMail = $mailerHelper->load($mailId);
+        $mailArchiveClass = new MailArchiveClass();
+        $oneMail = $mailArchiveClass->getOneByMailId($mailId);
+        if (empty($oneMail)) {
+            $mailerHelper = new MailerHelper();
+            $oneMail = $mailerHelper->load($mailId);
+        }
 
-        if (empty($oneMail->id)) {
+        if (empty($oneMail)) {
             acym_raiseError(404, acym_translation('ACYM_EMAIL_NOT_FOUND'));
 
             return;
         }
 
-        //Set the meta for facebook picture...
-        //<meta property="og:image" content="path-to/mylogo.png" />
-        //1 : do we have a picture with id "pictshare" ?
-        //2 no? do we have the "pictshare" class then?
-        //3 no? let's take the first
-        if (preg_match('#<img[^>]*id="pictshare"[^>]*>#i', $oneMail->body, $pregres) && preg_match('#src="([^"]*)"#i', $pregres[0], $pict)) {
-            acym_addMetadata('og:image', $pict[1]);
-        } elseif (preg_match('#<img[^>]*class="[^"]*pictshare[^"]*"[^>]*>#i', $oneMail->body, $pregres) && preg_match('#src="([^"]*)"#i', $pregres[0], $pict)) {
-            acym_addMetadata('og:image', $pict[1]);
-        }
-
-        acym_addMetadata('og:url', acym_frontendLink('archive&task=view&mailid='.$oneMail->id));
+        acym_addMetadata('og:url', acym_frontendLink('archive&task=view&mailid='.$mailId));
         acym_addMetadata('og:title', $oneMail->subject);
         acym_setPageTitle($oneMail->subject);
 
-        // We may use those two options later, if users ask for it
-        if (!empty($oneMail->metadesc)) {
-            acym_addMetadata('og:description', $oneMail->metadesc);
-            acym_addMetadata('description', $oneMail->metadesc);
-        }
-        if (!empty($oneMail->metakey)) {
-            acym_addMetadata('keywords', $oneMail->metakey);
-        }
-
         // Replace the user Dtexts for the preview if the key/userid here
-        $userkeys = acym_getVar('string', 'userid', 0);
-        if (!empty($userkeys)) {
-            $userId = intval(substr($userkeys, 0, strpos($userkeys, '-')));
-            $userKey = substr($userkeys, strpos($userkeys, '-') + 1);
+        $userKeys = acym_getVar('string', 'userid', 0);
+        if (!empty($userKeys)) {
+            $userId = intval(substr($userKeys, 0, strpos($userKeys, '-')));
+            $userKey = substr($userKeys, strpos($userKeys, '-') + 1);
             $receiver = acym_loadObject('SELECT * FROM #__acym_user WHERE `id` = '.intval($userId).' AND `key` = '.acym_escapeDB($userKey));
         }
 

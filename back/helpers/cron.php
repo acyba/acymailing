@@ -5,6 +5,7 @@ namespace AcyMailing\Helpers;
 use AcyMailing\Classes\AutomationClass;
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\FollowupClass;
+use AcyMailing\Classes\MailArchiveClass;
 use AcyMailing\Classes\MailboxClass;
 use AcyMailing\Classes\QueueClass;
 use AcyMailing\Classes\UserClass;
@@ -366,16 +367,23 @@ class CronHelper extends acymObject
         // Step 12: Delete data
         if (!in_array('delete_history', $this->skip) && $this->isDailyCron()) {
             $userStatClass = new UserStatClass();
-            $userClass = new UserClass();
-
             $userDetailedStatsDeleted = $userStatClass->deleteDetailedStatsPeriod();
-            $userHistoryDeleted = $userClass->deleteHistoryPeriod();
             if (!empty($userDetailedStatsDeleted['message'])) {
                 $this->messages[] = $userDetailedStatsDeleted['message'];
                 $this->processed = true;
             }
+
+            $userClass = new UserClass();
+            $userHistoryDeleted = $userClass->deleteHistoryPeriod();
             if (!empty($userHistoryDeleted['message'])) {
                 $this->messages[] = $userHistoryDeleted['message'];
+                $this->processed = true;
+            }
+
+            $mailArchiveClass = new MailArchiveClass();
+            $archiveDeleted = $mailArchiveClass->deleteArchivePeriod();
+            if (!empty($archiveDeleted['message'])) {
+                $this->messages[] = $archiveDeleted['message'];
                 $this->processed = true;
             }
         }
@@ -424,7 +432,15 @@ class CronHelper extends acymObject
 
             if (!empty($receivers)) {
                 foreach ($receivers as $oneReceiver) {
-                    $mailer->sendOne('acy_report', $oneReceiver);
+                    if (empty($oneReceiver)) {
+                        continue;
+                    }
+
+                    try {
+                        $mailer->sendOne('acy_report', $oneReceiver);
+                    } catch (\Exception $e) {
+                        acym_logError('Error while sending the cron report to '.$oneReceiver.' : '.$e->getMessage());
+                    }
                 }
             }
         }

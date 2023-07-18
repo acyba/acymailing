@@ -94,6 +94,13 @@ trait JdownloadsInsertion
                 'type' => 'pictures',
                 'name' => 'pictures',
             ],
+            [
+                'title' => 'ACYM_AUTO_LOGIN',
+                'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                'type' => 'boolean',
+                'name' => 'autologin',
+                'default' => false,
+            ],
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
@@ -265,7 +272,7 @@ trait JdownloadsInsertion
         if (!empty($element->alias)) $completeId .= ':'.$element->alias;
 
         $link = 'index.php?option=com_jdownloads&view=download&id='.$completeId.'&catid='.intval($element->catid);
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
 
         $title = '';
@@ -361,7 +368,7 @@ trait JdownloadsInsertion
             ];
         }
 
-        $category = acym_loadResult('SELECT title FROM #__categories WHERE id = '.intval($element->catid));
+        $category = acym_loadResult('SELECT title FROM #__jdownloads_categories WHERE id = '.intval($element->catid));
         $varFields['{cat}'] = '<a href="index.php?option=com_jdownloads&view=category&catid='.$element->catid.'" target="_blank">'.$category.'</a>';
         if (in_array('cat', $tag->display) && !empty($element->catid)) {
             $customFields[] = [

@@ -1,5 +1,7 @@
 <?php
 
+use Joomla\CMS\Plugin\PluginHelper;
+
 function acym_getVar($type, $name, $default = null, $source = 'default', $mask = 0)
 {
     if (ACYM_J40) {
@@ -173,6 +175,15 @@ function acym_checkVersion($ajax = false)
     return $newConfig->lastlicensecheck;
 }
 
+function acym_loadJoomlaPlugin($family, $name = null)
+{
+    if (ACYM_J40) {
+        PluginHelper::importPlugin($family, $name);
+    } else {
+        JPluginHelper::importPlugin($family, $name);
+    }
+}
+
 function acym_triggerCmsHook($method, $args = [], $isAction = true)
 {
     if (ACYM_J40) {
@@ -189,7 +200,7 @@ function acym_triggerCmsHook($method, $args = [], $isAction = true)
     if ($isAction) {
         return $result;
     } else {
-        return isset($result[0]) ? $result[0] : array_shift($args);
+        return $result[0] ?? array_shift($args);
     }
 }
 

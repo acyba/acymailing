@@ -318,14 +318,17 @@ if (typeof submitAcymForm !== 'function') {
                 for (let b = 0 ; b < allLists.length ; b++) {
                     if (allLists[b].checked) listschecked = true;
                 }
-                if (!listschecked) {
-                    if (acytask !== 'unsubscribe') {
-                        alert(acymModule['NO_LIST_SELECTED']);
-                    } else {
-                        alert(acymModule['NO_LIST_SELECTED_UNSUB']);
-                    }
-                    return false;
+            } else if (allLists && allLists.checked) {
+                listschecked = true;
+            }
+
+            if (!listschecked) {
+                if (acytask !== 'unsubscribe') {
+                    alert(acymModule['NO_LIST_SELECTED']);
+                } else {
+                    alert(acymModule['NO_LIST_SELECTED_UNSUB']);
                 }
+                return false;
             }
         }
 
@@ -372,7 +375,14 @@ if (typeof submitAcymForm !== 'function') {
         }
 
         // If no ajax, submit the form
-        if ('shortcode' == formType || !varform.elements['ajax'] || !varform.elements['ajax'].value || varform.elements['ajax'].value === '0' || varform.elements['ajax'].value === 0) {
+        if ('shortcode'
+            == formType
+            || !varform.elements['ajax']
+            || !varform.elements['ajax'].value
+            || varform.elements['ajax'].value
+            === '0'
+            || varform.elements['ajax'].value
+            === 0) {
             if ('shortcode' == formType && '' == redirect) {
                 varform.elements['redirect'].value = window.location.href;
             }

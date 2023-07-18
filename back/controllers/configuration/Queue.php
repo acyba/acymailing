@@ -64,7 +64,7 @@ trait Queue
         if (file_exists($reportPath) && !is_dir($reportPath)) {
             try {
                 $lines = 5000;
-                $f = fopen($reportPath, "rb");
+                $f = fopen($reportPath, 'rb');
                 fseek($f, -1, SEEK_END);
                 if (fread($f, 1) != "\n") {
                     $lines -= 1;

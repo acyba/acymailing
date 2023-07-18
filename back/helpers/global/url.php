@@ -105,10 +105,10 @@ function acym_mainURL(&$link)
 
 function acym_currentURL(): string
 {
-    $url = isset($_SERVER['HTTPS']) || !empty($_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS']) ? 'https' : 'http';
-    $url .= '://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+    $protocol = isset($_SERVER['HTTPS']) || !empty($_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS']) ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? getenv('HTTP_HOST'));
 
-    return $url;
+    return $protocol.'://'.$host.$_SERVER['REQUEST_URI'];
 }
 
 function acym_isLocalWebsite(): bool

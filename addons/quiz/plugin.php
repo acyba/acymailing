@@ -147,6 +147,13 @@ class plgAcymQuiz extends acymPlugin
                     'text' => 'ACYM_TRUNCATE_AFTER',
                     'default' => 0,
                 ],
+                [
+                    'title' => 'ACYM_AUTO_LOGIN',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'type' => 'boolean',
+                    'name' => 'autologin',
+                    'default' => false,
+                ],
             ]
         );
 
@@ -308,7 +315,7 @@ class plgAcymQuiz extends acymPlugin
         if (!empty($element->alias)) $completeId .= ':'.$element->alias;
 
         $link = CommunityQuizHelperRoute::getQuizRoute($completeId, $element->catid, $this->getLanguage($element->language, true));
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
 
         $title = '';
@@ -331,7 +338,7 @@ class plgAcymQuiz extends acymPlugin
         }
 
         $category = acym_loadResult('SELECT title FROM #__categories WHERE id = '.intval($element->catid));
-        $varFields['{cat}'] = '<a href="'.$this->finalizeLink('index.php?option=com_communityquiz&view=category&id='.$element->catid).'" target="_blank">'.acym_escape(
+        $varFields['{cat}'] = '<a href="'.$this->finalizeLink('index.php?option=com_communityquiz&view=category&id='.$element->catid, $tag).'" target="_blank">'.acym_escape(
                 $category
             ).'</a>';
         if (in_array('cat', $tag->display)) {

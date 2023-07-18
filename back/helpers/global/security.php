@@ -108,23 +108,28 @@ function acym_noCache()
     acym_header('Expires: Wed, 17 Sep 1975 21:32:10 GMT');
 }
 
-function acym_isAllowed($controller, $task = '')
+function acym_isAllowed($controller, $task = ''): bool
 {
     $config = acym_config();
     $globalAccess = $config->get('acl_'.$controller, 'all');
-    if ($globalAccess === 'all') return true;
+    if ($globalAccess === 'all') {
+        return true;
+    }
 
     $globalAccess = explode(',', $globalAccess);
+    $globalAccess[] = ACYM_ADMIN_GROUP;
 
     $userId = acym_currentUserId();
-    if (empty($userId)) return false;
+    if (empty($userId)) {
+        return false;
+    }
 
     $userGroups = acym_getGroupsByUser($userId);
-    if (empty($userGroups)) return false;
+    if (empty($userGroups)) {
+        return false;
+    }
 
     foreach ($userGroups as $oneGroup) {
-        if ($oneGroup === ACYM_ADMIN_GROUP) return true;
-
         if (in_array($oneGroup, $globalAccess)) {
             return true;
         }

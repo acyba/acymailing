@@ -56,6 +56,7 @@ trait Edition
             ];
         }
         $data['menuClass'] = $this->menuClass;
+        $data['selectedType'] = acym_getVar('string', 'email_type', '');
 
         parent::display($data);
     }
@@ -848,6 +849,8 @@ trait Edition
 
         $segmentParams = $data['campaignInformation']->sending_params['segment'];
 
+        $isExcluded = !empty($segmentParams['invert']) && $segmentParams['invert'] === 'exclude';
+
         $segmentController = new SegmentsController();
 
         if (!empty($segmentParams['segment_id'])) {
@@ -856,12 +859,12 @@ trait Edition
 
             $data['segment'] = [
                 'name' => $segment->name,
-                'count' => $segmentController->countSegmentById($segment->id, $data['listsIds'], false),
+                'count' => $segmentController->countSegmentById($segment->id, $data['listsIds'], false, $isExcluded),
             ];
         } else {
             $data['segment'] = [
                 'name' => acym_translation('ACYM_YOUR_CUSTOM_SEGMENT'),
-                'count' => $segmentController->countSegmentByParams($segmentParams, $data['listsIds']),
+                'count' => $segmentController->countSegmentByParams($segmentParams, $data['listsIds'], $isExcluded),
             ];
         }
     }

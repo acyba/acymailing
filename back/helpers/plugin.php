@@ -290,6 +290,10 @@ class PluginHelper extends acymObject
                 continue;
             }
 
+            if (!ini_get('allow_url_fopen')) {
+                continue;
+            }
+
             $getfunction = '';
             switch ($extension) {
                 case 'gif':
@@ -924,7 +928,9 @@ class PluginHelper extends acymObject
             $currentLabel = $option['title'];
             $currentOption = '';
 
-            if (isset($defaultValues->{$option['name']})) $option['default'] = $defaultValues->{$option['name']};
+            if (isset($defaultValues->{$option['name']})) {
+                $option['default'] = $defaultValues->{$option['name']};
+            }
 
             if ($option['type'] === 'pictures') {
                 $displayedPictures = $option['default'] ?? 'resized';
@@ -1229,7 +1235,9 @@ class PluginHelper extends acymObject
                 continue;
             }
 
-            if (empty($option['section'])) $option['section'] = 'ACYM_OTHER_OPTIONS';
+            if (empty($option['section'])) {
+                $option['section'] = 'ACYM_OTHER_OPTIONS';
+            }
 
             $currentLabel = acym_translation($currentLabel);
             if (!empty($option['tooltip'])) {

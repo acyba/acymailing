@@ -92,13 +92,21 @@ function acym_loadPlugins()
     $plugins = $pluginClass->getAll('folder_name');
 
     foreach ($dynamics as $key => $oneDynamic) {
-        if (!empty($plugins[$oneDynamic]) && '0' === $plugins[$oneDynamic]->active) unset($dynamics[$key]);
-        if ('managetext' === $oneDynamic) unset($dynamics[$key]);
+        if (!empty($plugins[$oneDynamic]) && 0 === intval($plugins[$oneDynamic]->active)) {
+            unset($dynamics[$key]);
+        }
+
+        if ('managetext' === $oneDynamic) {
+            unset($dynamics[$key]);
+        }
     }
 
     $pluginsLoadedLast = ['tableofcontents'];
     foreach ($plugins as $pluginFolder => $onePlugin) {
-        if (in_array($pluginFolder, $dynamics) || '0' === $onePlugin->active) continue;
+        if (in_array($pluginFolder, $dynamics) || 0 === intval($onePlugin->active)) {
+            continue;
+        }
+
         if (in_array($pluginFolder, $pluginsLoadedLast)) {
             array_unshift($dynamicsLoadedLast, $pluginFolder);
         } else {
@@ -122,7 +130,9 @@ function acym_loadPlugins()
         $addonName = strtolower(substr($oneIntegration['className'], 7));
         $integrations[$addonName] = $oneIntegration;
 
-        if (!in_array($addonName, $dynamics)) $dynamics[] = $addonName;
+        if (!in_array($addonName, $dynamics)) {
+            $dynamics[] = $addonName;
+        }
     }
     $integrationsClasses = array_keys($integrations);
 
@@ -135,8 +145,13 @@ function acym_loadPlugins()
         $className = 'plgAcym'.ucfirst($oneDynamic);
 
         // Load the plugin
-        if (isset($acymPlugins[$className]) || !file_exists($dynamicFile) || (!class_exists($className) && !include_once $dynamicFile)) continue;
-        if (!class_exists($className)) continue;
+        if (isset($acymPlugins[$className]) || !file_exists($dynamicFile) || (!class_exists($className) && !include_once $dynamicFile)) {
+            continue;
+        }
+
+        if (!class_exists($className)) {
+            continue;
+        }
 
         $plugin = new $className();
 
@@ -145,8 +160,13 @@ function acym_loadPlugins()
         }
 
         // If it's for another CMS or if the related extension isn't installed, skip it
-        if (in_array($plugin->cms, ['all', '{__CMS__}'])) $acymAddonsForSettings[$className] = $plugin;
-        if (!in_array($plugin->cms, ['all', '{__CMS__}']) || !$plugin->installed) continue;
+        if (in_array($plugin->cms, ['all', '{__CMS__}'])) {
+            $acymAddonsForSettings[$className] = $plugin;
+        }
+
+        if (!in_array($plugin->cms, ['all', '{__CMS__}']) || !$plugin->installed) {
+            continue;
+        }
 
         $acymPlugins[$className] = $plugin;
     }

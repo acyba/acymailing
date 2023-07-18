@@ -183,7 +183,7 @@ class FieldClass extends acymClass
                 acym_enqueueMessage(acym_translationSprintf('ACYM_WRONG_FIELD_ID', $id), 'error');
                 continue;
             }
-            $fieldOptions = json_decode($field->option);
+            $fieldOptions = @json_decode(empty($field->option) ? '{}' : $field->option);
 
             if (is_array($value)) {
                 if (in_array($field->type, ['multiple_dropdown', 'radio', 'phone'])) {

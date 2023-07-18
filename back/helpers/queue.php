@@ -427,13 +427,14 @@ class QueueHelper extends acymObject
     public function statsAdd($statsAdd)
     {
         if (empty($statsAdd)) {
-            return true;
+            return;
         }
 
         $userStatClass = new UserStatClass();
         $mailStatClass = new MailStatClass();
 
-        $time = acym_date('now', 'Y-m-d H:i:s');
+        $currentDate = acym_date('now', 'Y-m-d H:i:s');
+        $subscriberIds = [];
 
         foreach ($statsAdd as $mailId => $infos) {
             $mailId = intval($mailId);
@@ -446,12 +447,16 @@ class QueueHelper extends acymObject
                     $userStat = [];
                     $userStat['user_id'] = $oneSubscriber;
                     $userStat['mail_id'] = $mailId;
-                    $userStat['send_date'] = $time;
+                    $userStat['send_date'] = $currentDate;
                     $userStat['fail'] = $status ? 0 : 1;
                     $userStat['sent'] = $status ? 1 : 0;
                     $userStat['statusSending'] = $status;
 
                     $userStatClass->save($userStat, true);
+
+                    if ($status) {
+                        $subscriberIds[] = $oneSubscriber;
+                    }
                 }
             }
 
@@ -466,7 +471,9 @@ class QueueHelper extends acymObject
             $mailStatClass->save($mailStat);
         }
 
-        return true;
+        if (!empty($subscriberIds)) {
+            acym_query('UPDATE `#__acym_user` SET `last_sent_date` = '.acym_escapeDB($currentDate).' WHERE `id` IN ('.implode(',', $subscriberIds).')');
+        }
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace AcyMailing\FrontControllers;
 
 use AcyMailing\Classes\MailStatClass;
+use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Libraries\acymController;
 
@@ -63,6 +64,13 @@ class FrontstatsController extends acymController
                 $userStatToInsert['opened_with'] = $openedWith;
 
                 $userStatClass->save($userStatToInsert);
+
+                $userClass = new UserClass();
+                $subscriber = $userClass->getOneById($userId);
+                if (!empty($subscriber)) {
+                    $subscriber->last_open_date = acym_date('now', 'Y-m-d H:i:s');
+                    $userClass->save($subscriber);
+                }
             }
         }
 

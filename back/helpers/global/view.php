@@ -353,6 +353,7 @@ function acym_getJSMessages()
         'ACYM_WALK_ACYMAILER_STATUS_SUCCESS',
         'ACYM_WALK_ACYMAILER_STATUS_FAIL',
         'ACYM_WALK_ACYMAILER_STATUS_WAIT',
+        'ACYM_ALWAYS',
     ];
 
     foreach ($keysToLoad as $oneKey) {

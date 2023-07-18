@@ -17,4 +17,5 @@
         ?>
 	</div>
     <?php acym_formOptions(true, 'followup'); ?>
+	<input type="hidden" name="email_type" value="followup">
 </form>

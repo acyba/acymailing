@@ -141,8 +141,8 @@ trait Edition
                     $automationHelper->where[] = 'user.active = 1';
                 }
                 $userIds = array_merge($userIds, acym_loadResultArray($automationHelper->getQuery(['user.id'])));
-                $automationHelper->removeFlag(self::FLAG_COUNT);
             }
+            $automationHelper->removeFlag(self::FLAG_COUNT);
         }
 
         return count(array_unique($userIds));

@@ -1,7 +1,7 @@
 <div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
-    <div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SUBSCRIPTION'); ?></div>
-    <div class="grid-x margin-y">
-        <div class="cell grid-x grid-margin-x">
+	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SUBSCRIPTION'); ?></div>
+	<div class="grid-x margin-y">
+		<div class="cell grid-x grid-margin-x">
             <?php echo acym_switch(
                 'config[allow_visitor]',
                 $this->config->get('allow_visitor'),
@@ -10,8 +10,8 @@
                 'xlarge-3 medium-5 small-9',
                 'auto'
             ); ?>
-        </div>
-        <div class="cell grid-x grid-margin-x">
+		</div>
+		<div class="cell grid-x grid-margin-x">
             <?php
             echo acym_switch(
                 'config[generate_name]',
@@ -22,8 +22,8 @@
                 'auto'
             );
             ?>
-        </div>
-        <div class="cell grid-x grid-margin-x">
+		</div>
+		<div class="cell grid-x grid-margin-x">
             <?php
             echo acym_switch(
                 'config[require_confirmation]',
@@ -36,36 +36,36 @@
                 'confirm_config'
             );
             ?>
-        </div>
-        <div class="cell grid-x" id="confirm_config">
-            <div class="cell grid-x">
-                <div class="cell xlarge-3 medium-5"></div>
-                <div class="cell medium-auto">
+		</div>
+		<div class="cell grid-x" id="confirm_config">
+			<div class="cell grid-x">
+				<div class="cell xlarge-3 medium-5"></div>
+				<div class="cell medium-auto">
                     <?php if (acym_isAllowed('mails')) { ?>
-                        <a class="button button-secondary margin-bottom-1"
-                           href="<?php echo acym_completeLink('mails&task=edit&notification=acy_confirm'); ?>">
+						<a class="button button-secondary margin-bottom-1"
+						   href="<?php echo acym_completeLink('mails&task=edit&notification=acy_confirm'); ?>">
                             <?php echo acym_translation('ACYM_EDIT_EMAIL'); ?>
-                        </a>
+						</a>
                     <?php } ?>
-                </div>
-            </div>
-            <label for="confirm_redirect" class="cell grid-x margin-bottom-1">
-                <span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_CONFIRMATION_REDIRECTION'); ?></span>
-                <input id="confirm_redirect"
-                       class="cell xlarge-4 medium-auto margin-bottom-0"
-                       type="text"
-                       name="config[confirm_redirect]"
-                       value="<?php echo acym_escape($this->config->get('confirm_redirect')); ?>">
-                <span class="cell large-auto hide-for-large-only hide-for-medium-only"></span>
-            </label>
-        </div>
-        <div class="cell medium-3">
+				</div>
+			</div>
+			<label for="confirm_redirect" class="cell grid-x margin-bottom-1">
+				<span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_CONFIRMATION_REDIRECTION'); ?></span>
+				<input id="confirm_redirect"
+					   class="cell xlarge-4 medium-auto margin-bottom-0"
+					   type="text"
+					   name="config[confirm_redirect]"
+					   value="<?php echo acym_escape($this->config->get('confirm_redirect')); ?>">
+				<span class="cell large-auto hide-for-large-only hide-for-medium-only"></span>
+			</label>
+		</div>
+		<div class="cell medium-3">
             <?php
             echo acym_translation('ACYM_ALLOW_MODIFICATION_UNAUTH');
             echo '&nbsp;'.acym_info('ACYM_ALLOW_MODIFICATION_DESC');
             ?>
-        </div>
-        <div class="cell medium-9">
+		</div>
+		<div class="cell medium-9">
             <?php
             $allowModif = [
                 'none' => acym_translation('ACYM_NO'),
@@ -74,8 +74,8 @@
             ];
             echo acym_radio($allowModif, 'config[allow_modif]', $this->config->get('allow_modif', 'data'));
             ?>
-        </div>
-        <div class="cell grid-x grid-margin-x">
+		</div>
+		<div class="cell grid-x grid-margin-x">
             <?php
             echo acym_switch(
                 'config[extra_errors]',
@@ -88,30 +88,30 @@
                 'extra_errors'
             );
             ?>
-        </div>
-    </div>
+		</div>
+	</div>
 </div>
 
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
-    <div class="cell grid-x acym__configuration__showmore-head">
-        <div class="acym__title acym__title__secondary cell auto margin-bottom-0"><?php echo acym_translation('ACYM_CONFIGURATION_ADVANCED'); ?></div>
-        <div class="cell shrink">
+	<div class="cell grid-x acym__configuration__showmore-head">
+		<div class="acym__title acym__title__secondary cell auto margin-bottom-0"><?php echo acym_translation('ACYM_CONFIGURATION_ADVANCED'); ?></div>
+		<div class="cell shrink">
             <?php echo acym_showMore('acym__configuration__subscription__notifications'); ?>
-        </div>
-    </div>
-    <div id="acym__configuration__subscription__notifications" style="display: none;">
-        <div class="cell margin-bottom-2 grid-x margin-y">
-            <div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_NOTIFICATIONS'); ?></div>
+		</div>
+	</div>
+	<div id="acym__configuration__subscription__notifications" style="display: none;">
+		<div class="cell margin-bottom-2 grid-x margin-y">
+			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_NOTIFICATIONS'); ?></div>
             <?php
             foreach ($data['notifications'] as $identifier => $notification) {
                 ?>
-                <div class="cell grid-x grid-margin-x">
-                    <div class="cell xlarge-3">
-                        <label for="acym__config__<?php echo acym_escape($identifier); ?>">
+				<div class="cell grid-x grid-margin-x">
+					<div class="cell xlarge-3">
+						<label for="acym__config__<?php echo acym_escape($identifier); ?>">
                             <?php echo acym_escape(acym_translation($notification['label'])); ?>
-                        </label>
-                    </div>
-                    <div class="cell xlarge-4 large-5 medium-6">
+						</label>
+					</div>
+					<div class="cell xlarge-4 large-5 medium-6">
                         <?php
                         $saved = explode(',', $this->config->get($identifier));
                         $selected = [];
@@ -131,25 +131,25 @@
                             ]
                         );
                         ?>
-                    </div>
-                    <div class="cell large-2 medium-4 shrink grid-x">
+					</div>
+					<div class="cell large-2 medium-4 shrink grid-x">
                         <?php if (acym_isAllowed('mails')) { ?>
-                            <a class="cell shrink button button-secondary acym__configuration__edit-email"
-                               href="<?php echo acym_completeLink('mails&task=edit&notification='.$identifier); ?>">
+							<a class="cell shrink button button-secondary acym__configuration__edit-email"
+							   href="<?php echo acym_completeLink('mails&task=edit&notification='.$identifier); ?>">
                                 <?php echo acym_translation('ACYM_EDIT_EMAIL'); ?>
-                            </a>
+							</a>
                         <?php } ?>
-                    </div>
-                    <div class="cell xxlarge-2 xlarge-1 hide-for-large-only medium-2 hide-for-small-only"></div>
-                </div>
+					</div>
+					<div class="cell xxlarge-2 xlarge-1 hide-for-large-only medium-2 hide-for-small-only"></div>
+				</div>
                 <?php
             }
             ?>
-        </div>
-        <div class="cell margin-bottom-2">
-            <div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_UNSUBSCRIBE_PAGE'); ?></div>
-            <div class="grid-x grid-margin-x margin-y">
-                <div class="cell grid-x margin-top-1 acym_vcenter">
+		</div>
+		<div class="cell margin-bottom-2">
+			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_UNSUBSCRIBE_PAGE'); ?></div>
+			<div class="grid-x grid-margin-x margin-y">
+				<div class="cell grid-x margin-top-1 acym_vcenter">
                     <?php
                     echo acym_switch(
                         'config[unsubscribe_page]',
@@ -162,9 +162,9 @@
                         'unsubpage_header'
                     );
                     ?>
-                </div>
-                <div class="cell grid-x margin-top-1" id="unsubpage_header">
-                    <div class="cell grid-x">
+				</div>
+				<div class="cell grid-x margin-top-1" id="unsubpage_header">
+					<div class="cell grid-x">
                         <?php
                         echo acym_switch(
                             'config[unsubscribe_campaign_list_only]',
@@ -174,8 +174,8 @@
                             'xlarge-3 medium-5 small-9'
                         );
                         ?>
-                    </div>
-                    <div class="cell grid-x margin-top-1">
+					</div>
+					<div class="cell grid-x margin-top-1">
                         <?php
                         echo acym_switch(
                             'config[unsubpage_header]',
@@ -185,9 +185,9 @@
                             'xlarge-3 medium-5 small-9'
                         );
                         ?>
-                    </div>
+					</div>
                     <?php if (acym_isMultilingual()) { ?>
-                        <div class="cell grid-x margin-top-1">
+						<div class="cell grid-x margin-top-1">
                             <?php
                             echo acym_switch(
                                 'config[unsubpage_languages_multi_only]',
@@ -197,41 +197,41 @@
                                 'xlarge-3 medium-5 small-9'
                             );
                             ?>
-                        </div>
+						</div>
                     <?php } ?>
-                    <label for="acym__configuration__subscription__unsub-title" class="cell grid-x margin-bottom-1 margin-top-1">
-                        <span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_UNSUBSCRIBE_PAGE_CHANGE'); ?></span>
-                        <input id="acym__configuration__subscription__unsub-title"
-                               class="cell xlarge-4 medium-auto margin-bottom-0"
-                               type="text"
-                               name="config[unsubscribe_title]"
-                               value="<?php echo acym_escape($this->config->get('unsubscribe_title'), ''); ?>">
-                        <div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
-                    </label>
-                    <label for="acym__configuration__subscription__unsub-url" class="cell grid-x margin-bottom-1 margin-top-1">
-                        <span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_REDIRECTION_URL'); ?></span>
-                        <input id="acym__configuration__subscription__unsub-url"
-                               class="cell xlarge-4 medium-auto margin-bottom-0"
-                               type="text"
-                               name="config[unsub_redirect_url]"
-                               value="<?php echo acym_escape($this->config->get('unsub_redirect_url'), ''); ?>">
-                        <div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
-                    </label>
-                </div>
-            </div>
-        </div>
-    </div>
+					<label for="acym__configuration__subscription__unsub-title" class="cell grid-x margin-bottom-1 margin-top-1">
+						<span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_UNSUBSCRIBE_PAGE_CHANGE'); ?></span>
+						<input id="acym__configuration__subscription__unsub-title"
+							   class="cell xlarge-4 medium-auto margin-bottom-0"
+							   type="text"
+							   name="config[unsubscribe_title]"
+							   value="<?php echo acym_escape($this->config->get('unsubscribe_title'), ''); ?>">
+						<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					</label>
+					<label for="acym__configuration__subscription__unsub-url" class="cell grid-x margin-bottom-1 margin-top-1">
+						<span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_REDIRECTION_URL'); ?></span>
+						<input id="acym__configuration__subscription__unsub-url"
+							   class="cell xlarge-4 medium-auto margin-bottom-0"
+							   type="text"
+							   name="config[unsub_redirect_url]"
+							   value="<?php echo acym_escape($this->config->get('unsub_redirect_url'), ''); ?>">
+						<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
-    <div class="cell grid-x acym__configuration__showmore-head">
-        <div class="acym__title acym__title__secondary cell auto margin-bottom-0">
+	<div class="cell grid-x acym__configuration__showmore-head">
+		<div class="acym__title acym__title__secondary cell auto margin-bottom-0">
             <?php echo acym_translationSprintf('ACYM_XX_INTEGRATION', ACYM_CMS_TITLE); ?>
-        </div>
-        <div class="cell shrink">
+		</div>
+		<div class="cell shrink">
             <?php echo acym_showMore('acym__configuration__subscription__integration-cms'); ?>
-        </div>
-    </div>
+		</div>
+	</div>
 
     <?php
     if (!acym_isPluginActive('acymtriggers')) {
@@ -239,9 +239,9 @@
     }
     ?>
 
-    <div id="acym__configuration__subscription__integration-cms" style="display:none;">
-        <div class="grid-x margin-y">
-            <div class="cell grid-x grid-margin-x">
+	<div id="acym__configuration__subscription__integration-cms" style="display:none;">
+		<div class="grid-x margin-y">
+			<div class="cell grid-x grid-margin-x">
                 <?php
                 echo acym_switch(
                     'config[regacy]',
@@ -254,9 +254,9 @@
                     'acym__config__regacy'
                 );
                 ?>
-            </div>
-            <div class="cell grid-x margin-y" id="acym__config__regacy">
-                <div class="cell grid-x grid-margin-x">
+			</div>
+			<div class="cell grid-x margin-y" id="acym__config__regacy">
+				<div class="cell grid-x grid-margin-x">
                     <?php
                     echo acym_switch(
                         'config[regacy_forceconf]',
@@ -269,8 +269,8 @@
                         'regforceconf_config'
                     );
                     ?>
-                </div>
-                <div class="cell grid-x grid-margin-x">
+				</div>
+				<div class="cell grid-x grid-margin-x">
                     <?php
                     echo acym_switch(
                         'config[regacy_delete]',
@@ -283,25 +283,25 @@
                         'regdelete_config'
                     );
                     ?>
-                </div>
+				</div>
 
                 <?php acym_trigger('onRegacyUseExternalPlugins', []); ?>
 
-                <div class="cell xlarge-3 medium-5">
-                    <label for="acym__config__regacy-text" title="<?php echo acym_escape(acym_translation('ACYM_SUBSCRIBE_CAPTION_DESC')); ?>">
+				<div class="cell xlarge-3 medium-5">
+					<label for="acym__config__regacy-text" title="<?php echo acym_escape(acym_translation('ACYM_SUBSCRIBE_CAPTION_DESC')); ?>">
                         <?php echo acym_escape(acym_translation('ACYM_SUBSCRIBE_CAPTION')); ?>
-                    </label>
-                </div>
-                <div class="cell xlarge-4 medium-7">
-                    <input type="text" name="config[regacy_text]" id="acym__config__regacy-text" value="<?php echo acym_escape($this->config->get('regacy_text')); ?>" />
-                </div>
-                <div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
-                <div class="cell xlarge-3 medium-5">
-                    <label for="acym__config__regacy-lists">
+					</label>
+				</div>
+				<div class="cell xlarge-4 medium-7">
+					<input type="text" name="config[regacy_text]" id="acym__config__regacy-text" value="<?php echo acym_escape($this->config->get('regacy_text')); ?>" />
+				</div>
+				<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+				<div class="cell xlarge-3 medium-5">
+					<label for="acym__config__regacy-lists">
                         <?php echo acym_translation('ACYM_DISPLAYED_LISTS').acym_info('ACYM_DISPLAYED_LISTS_DESC'); ?>
-                    </label>
-                </div>
-                <div class="cell xlarge-4 medium-7">
+					</label>
+				</div>
+				<div class="cell xlarge-4 medium-7">
                     <?php
                     echo acym_selectMultiple(
                         $data['lists'],
@@ -312,15 +312,15 @@
                         'name'
                     );
                     ?>
-                </div>
-                <div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+				</div>
+				<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 
-                <div class="cell xlarge-3 medium-5">
-                    <label for="acym__config__regacy-checkedlists">
+				<div class="cell xlarge-3 medium-5">
+					<label for="acym__config__regacy-checkedlists">
                         <?php echo acym_translation('ACYM_LISTS_CHECKED_DEFAULT').acym_info('ACYM_LISTS_CHECKED_DEFAULT_DESC'); ?>
-                    </label>
-                </div>
-                <div class="cell xlarge-4 medium-7">
+					</label>
+				</div>
+				<div class="cell xlarge-4 medium-7">
                     <?php
                     echo acym_selectMultiple(
                         $data['lists'],
@@ -331,15 +331,15 @@
                         'name'
                     );
                     ?>
-                </div>
-                <div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+				</div>
+				<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 
-                <div class="cell xlarge-3 medium-5">
-                    <label for="acym__config__regacy-autolists">
+				<div class="cell xlarge-3 medium-5">
+					<label for="acym__config__regacy-autolists">
                         <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_AUTO_SUBSCRIBE_TO_DESC'); ?>
-                    </label>
-                </div>
-                <div class="cell xlarge-4 medium-7">
+					</label>
+				</div>
+				<div class="cell xlarge-4 medium-7">
                     <?php
                     echo acym_selectMultiple(
                         $data['lists'],
@@ -350,45 +350,48 @@
                         'name'
                     );
                     ?>
-                </div>
-                <div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+				</div>
+				<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 
 
                 <?php
                 if ('joomla' === ACYM_CMS) {
                     ?>
-                    <div class="cell xlarge-3 medium-5">
-                        <label for="acym__config__regacy-listsposition">
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__regacy-listsposition">
                             <?php echo acym_escape(acym_translation('ACYM_LISTS_POSITION')); ?>
-                        </label>
-                    </div>
-                    <div class="cell xlarge-4 medium-7">
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
                         <?php
                         echo acym_select(
                             acym_getOptionRegacyPosition(),
                             'config[regacy_listsposition]',
                             $this->config->get('regacy_listsposition', 'password'),
-                            ['class' => 'acym__select', 'data-toggle-select' => acym_escape('{"custom":"#acym__config__regacy__custom-list-position"}')],
+                            [
+                                'class' => 'acym__select',
+                                'data-toggle-select' => '{"custom":"#acym__config__regacy__custom-list-position"}',
+                            ],
                             'value',
                             'text',
                             'acym__config__regacy-listsposition'
                         );
                         ?>
-                    </div>
-                    <div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 
-                    <div class="cell grid-x" id="acym__config__regacy__custom-list-position">
-                        <div class="cell xlarge-3 medium-5"></div>
-                        <div class="cell xlarge-4 medium-7">
-                            <input type="text" name="config[regacy_listspositioncustom]" value="<?php echo acym_escape($this->config->get('regacy_listspositioncustom')); ?>" />
-                        </div>
-                    </div>
-                    <div class="cell xlarge-3 medium-5">
-                        <label for="acym__config__regacy-listsposition">
+					<div class="cell grid-x" id="acym__config__regacy__custom-list-position">
+						<div class="cell xlarge-3 medium-5"></div>
+						<div class="cell xlarge-4 medium-7">
+							<input type="text" name="config[regacy_listspositioncustom]" value="<?php echo acym_escape($this->config->get('regacy_listspositioncustom')); ?>" />
+						</div>
+					</div>
+					<div class="cell xlarge-3 medium-5">
+						<label for="acym__config__regacy-listsposition">
                             <?php echo acym_escape(acym_translation('ACYM_HTML_REGISTRATION_FORM_STRUCTURE')).acym_info('ACYM_HTML_REGISTRATION_FORM_STRUCTURE_DESC'); ?>
-                        </label>
-                    </div>
-                    <div class="cell xlarge-4 medium-7">
+						</label>
+					</div>
+					<div class="cell xlarge-4 medium-7">
                         <?php
                         $customHtmlElement = [
                             acym_selectOption('', 'ACYM_AUTOMATIC'),
@@ -408,12 +411,12 @@
                             'acym__config__regacy-customhtmlelement'
                         );
                         ?>
-                    </div>
-                    <div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					</div>
+					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
                 <?php } ?>
-            </div>
-        </div>
-    </div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <!-- Integrations -->

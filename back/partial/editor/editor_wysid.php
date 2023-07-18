@@ -1,3 +1,4 @@
+<input type="hidden" id="save_thumbnail" value="<?php echo intval($saveThumbnail); ?>" />
 <input type="hidden" id="default_template" value="<?php echo acym_escape($this->defaultTemplate); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__content" id="editor_content" name="editor_content" value="" />
 <input type="hidden" class="acym__wysid__hidden__save__content__template" id="editor_content_template" name="editor_content_template" value="" />

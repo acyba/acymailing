@@ -33,8 +33,17 @@ function acym_baseURI($pathonly = false)
 
 function acym_rootURI($pathonly = false, $path = 'siteurl')
 {
-    // For WordPress bedrock
     $rootURI = rtrim(site_url(), '/').'/';
+
+    // For WPML
+    if (!acym_isAdmin()) {
+        $wpmlSiteUrl = apply_filters('wpml_home_url', $rootURI);
+        if ($wpmlSiteUrl !== $rootURI) {
+            $rootURI = rtrim($wpmlSiteUrl, '/').'/';
+        }
+    }
+
+    // For WordPress bedrock
     if (defined('CONTENT_DIR') && substr($rootURI, -3) === 'wp/') {
         $rootURI = substr($rootURI, 0, -3);
     }

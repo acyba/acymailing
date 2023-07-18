@@ -17,6 +17,7 @@
         }
         ?>
 	</div>
-	<input type="hidden" name="type" value="<?php echo empty($data['type']) ? '' : $data['type']; ?>">
     <?php acym_formOptions(true, 'specificListing'); ?>
+	<input type="hidden" name="type" value="<?php echo empty($data['type']) ? '' : $data['type']; ?>">
+	<input type="hidden" name="email_type" value="<?php echo empty($data['type']) ? '' : $data['type']; ?>">
 </form>

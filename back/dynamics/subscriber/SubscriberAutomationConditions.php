@@ -9,7 +9,6 @@ trait SubscriberAutomationConditions
     private function onAcymDeclareSummary_conditionsFilters(&$automation, $key)
     {
         if (!empty($automation['acy_field'])) {
-
             $usersColumns = acym_getColumns('user');
 
             if (!in_array($automation['acy_field']['field'], $usersColumns)) {
@@ -17,11 +16,17 @@ trait SubscriberAutomationConditions
                 $field = $fieldClass->getOneById($automation['acy_field']['field']);
                 $automation['acy_field']['field'] = $field->name;
             }
+
             $automation = acym_translationSprintf(
                 $key,
                 $automation['acy_field']['field'],
                 $automation['acy_field']['operator'],
                 $automation['acy_field']['value']
+            );
+        } elseif (!empty($automation['random'])) {
+            $automation = acym_translationSprintf(
+                'ACYM_RANDOMLY_SELECT_X_SUBSCRIBERS',
+                $automation['random']['number']
             );
         }
     }
@@ -117,7 +122,7 @@ trait SubscriberAutomationConditions
                 );
             $query->where[] = $query->convertQuery('userfield'.$num, 'value', $options['operator'], $options['value'], $type);
         } else {
-            if (in_array($options['field'], ['creation_date', 'confirmation_date'])) {
+            if (in_array($options['field'], ['creation_date', 'confirmation_date', 'last_sent_date', 'last_open_date', 'last_click_date'])) {
                 $options['value'] = acym_replaceDate($options['value']);
                 if (!is_numeric($options['value'])) {
                     $options['value'] = strtotime($options['value']);

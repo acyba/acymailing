@@ -1,6 +1,6 @@
 <?php
 
-function acym_getPagesForAcl()
+function acym_getPagesForAcl(): array
 {
     return [
         'forms' => 'ACYM_SUBSCRIPTION_FORMS',
@@ -11,7 +11,7 @@ function acym_getPagesForAcl()
         'campaigns' => 'ACYM_EMAILS',
         'mails' => 'ACYM_TEMPLATES',
         'override' => 'ACYM_EMAILS_OVERRIDE',
-        'automation' => 'ACYM_AUTOAMTION',
+        'automation' => 'ACYM_AUTOMATION',
         'queue' => 'ACYM_QUEUE',
         'plugins' => 'ACYM_ADD_ONS',
         'bounces' => 'ACYM_MAILBOX_ACTIONS',

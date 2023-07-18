@@ -25,8 +25,7 @@ const acym_helperSelectionPage = {
 
             if (configuration) return;
 
-            if ((jQuery(this).hasClass('acym__selection__select-card') && jQuery(this).find('.acym__selection__select-card__select').val() !== '') || !jQuery(
-                this).hasClass('acym__selection__select-card')) {
+            if (!jQuery(this).hasClass('acym__selection__select-card') || jQuery(this).find('.acym__selection__select-card__select').val() !== '') {
                 jQuery('#acym__selection__button-select').removeAttr('disabled');
             } else {
                 jQuery('#acym__selection__button-select').attr('disabled', 'true');

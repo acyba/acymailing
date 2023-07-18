@@ -19,7 +19,7 @@ class UpdateHelper extends acymObject
 {
     const FIRST_EMAIL_NAME_KEY = 'ACYM_FIRST_EMAIL_NAME';
 
-    private $bounceVersion = 1;
+    private $bounceVersion = 3;
     public $errors = [];
     public $fromLevel;
     public $fromVersion;
@@ -35,32 +35,34 @@ class UpdateHelper extends acymObject
         $from = $this->config->get('from_email');
 
         $forwardEmail = $replyTo != $bounce ? $replyTo : $from;
-        if (empty($forwardEmail)) $forwardEmail = acym_currentUserEmail();
+        if (empty($forwardEmail)) {
+            $forwardEmail = acym_currentUserEmail();
+        }
 
         $forwardEmail = str_replace('"', '', $forwardEmail);
 
         $query = "INSERT INTO `#__acym_rule` (`id`, `name`, `ordering`, `regex`, `executed_on`, `action_message`, `action_user`, `active`, `increment_stats`, `execute_action_after`) VALUES ";
         $query .= "(1, 'ACYM_LIST_UNSUBSCRIBE_HANDLING', 1, 'Please unsubscribe user ID \\\\d+', '[\"body\"]', '[\"delete_message\"]', '[\"unsubscribe_user\"]', 1, 0, 0),";
-        $query .= "(2, 'ACYM_ACTION_REQUIRED', 2, 'action *requ|verif', '[\"subject\"]', '{\"0\":\"delete_message\",\"1\":\"forward_message\",\"forward_to\":\"".$forwardEmail."\"}', '[]', 1, 0, 0),";
-        $query .= "(3, 'ACYM_ACKNOWLEDGMENT_RECEIPT_SUBJECT', 3, '(out|away) *(of|from)|vacation|holiday|absen|congés|recept|acknowledg|thank you for', '[\"subject\"]', '[\"delete_message\"]', '[]', 1, 0, 0),";
-        $query .= "(4, 'ACYM_FEEDBACK_LOOP', 4, 'feedback|staff@hotmail.com|complaints@.{0,15}email-abuse.amazonses.com|complaint about message', '[\"senderInfo\",\"subject\"]', '[\"save_message\",\"delete_message\"]', '[\"unsubscribe_user\"]', 1, 0, 0),";
-        $query .= "(5, 'ACYM_FEEDBACK_LOOP_BODY', 5, 'Feedback-Type.{1,5}abuse', '[\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"unsubscribe_user\"]', 1, 1, 0),";
-        $query .= "(6, 'ACYM_MAILBOX_FULL', 6, '((mailbox|mailfolder|storage|quota|space|inbox) *(is)? *(over)? *(exceeded|size|storage|allocation|full|quota|maxi))|status(-code)? *(:|=)? *5.2.2|quota-issue|not *enough.{1,20}space|((over|exceeded|full|exhausted) *(allowed)? *(mail|storage|quota))', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
-        $query .= "(7, 'ACYM_BLOCKED_GOOGLE_GROUPS', 7, 'message *rejected *by *Google *Groups', '[\"body\"]', '[\"delete_message\"]', '[]', 1, 1, 0),";
-        $query .= "(8, 'ACYM_MAILBOX_DOESNT_EXIST_1', 8, '(Invalid|no such|unknown|bad|des?activated|inactive|unrouteable) *(mail|destination|recipient|user|address|person)|bad-mailbox|inactive-mailbox|not listed in.{1,20}directory|RecipNotFound|(user|mailbox|address|recipients?|host|account|domain) *(is|has been)? *(error|disabled|failed|unknown|unavailable|not *(found|available)|.{1,30}inactiv)|no *mailbox *here|user does.?n.t have.{0,30}account', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
-        $query .= "(9, 'ACYM_MESSAGE_BLOCKED_RECIPIENTS', 9, 'blocked *by|block *list|look(ed)? *like *spam|spam-related|spam *detected| CXBL | CDRBL | IPBL | URLBL |(unacceptable|banned|offensive|filtered|blocked|unsolicited) *(content|message|e?-?mail)|service refused|(status(-code)?|554) *(:|=)? *5.7.1|administratively *denied|blacklisted *IP|policy *reasons|rejected.{1,10}spam|junkmail *rejected|throttling *constraints|exceeded.{1,10}max.{1,40}hour|comply with required standards|421 RP-00|550 SC-00|550 DY-00|550 OU-00', '[\"body\"]', '{\"0\":\"delete_message\",\"1\":\"forward_message\",\"forward_to\":\"".$forwardEmail."\"}', '[]', 1, 1, 0),";
-        $query .= "(10, 'ACYM_MAILBOX_DOESNT_EXIST_2', 10, 'status(-? ?code)? *(:|=)? *(550)? *5.(1.[1-6]|0.0|4.[0123467])|recipient *address *rejected|does *not *like *recipient|recipient *unknown *to *address', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
-        $query .= "(11, 'ACYM_DOMAIN_NOT_EXIST', 11, 'No.{1,10}MX *(record|host)|host *does *not *receive *any *mail|bad-domain|connection.{1,10}mail.{1,20}fail|domain.{1,10}not *exist|fail.{1,10}establish *connection', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
-        $query .= "(12, 'ACYM_TEMPORARY_FAILURES', 12, 'has.*been.*delayed|delayed *mail|message *delayed|message-expired|temporar(il)?y *(failure|unavailable|disable|offline|unable)|deferred|delayed *([0-9]*) *(hour|minut)|possible *mail *loop|too *many *hops|delivery *time *expired|Action.php: *delayed|status(-code)? *(:|=)? *4.4.6|will continue to be attempted|unable to deliver in.*Status: 4.4.7', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
-        $query .= "(13, 'ACYM_FAILED_PERM', 13, 'failed *permanently|permanent.{1,20}(failure|error)|not *accepting *(any)? *mail|does *not *exist|no *valid *route|delivery *failure', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
-        $query .= "(14, 'ACYM_ACKNOWLEDGMENT_RECEIPT_BODY', 14, 'vacances|holiday|vacation|absen|urlaub', '[\"body\"]', '[\"delete_message\"]', '[]', 1, 0, 0),";
-        $query .= "(15, 'ACYM_FINAL_RULE', 15, '.', '[\"senderInfo\",\"subject\"]', '{\"0\":\"delete_message\",\"1\":\"forward_message\",\"forward_to\":\"".$forwardEmail."\"}', '[]', 1, 1, 0);";
+        $query .= "(2, 'ACYM_SUPPRESSION_LIST', 2, 'suppression list', '[\"body\"]', '[\"delete_message\"]', '[\"unsubscribe_user\",\"block_user\",\"empty_queue_user\"]', 1, 1, 0),";
+        $query .= "(3, 'ACYM_ACTION_REQUIRED', 3, 'action *requ|verif', '[\"subject\"]', '{\"0\":\"delete_message\",\"1\":\"forward_message\",\"forward_to\":\"".$forwardEmail."\"}', '[]', 1, 0, 0),";
+        $query .= "(4, 'ACYM_ACKNOWLEDGMENT_RECEIPT_SUBJECT', 4, '(out|away) *(of|from)|vacation|vacanze|vacaciones|holiday|absen|congés|recept|acknowledg|thank you for|Auto *Response|Incident|Automati', '[\"subject\"]', '[\"delete_message\"]', '[]', 1, 0, 0),";
+        $query .= "(5, 'ACYM_FEEDBACK_LOOP', 5, 'feedback|staff@hotmail.com|complaints@.{0,15}email-abuse.amazonses.com|complaint about message', '[\"senderInfo\",\"subject\"]', '[\"save_message\",\"delete_message\"]', '[\"unsubscribe_user\"]', 1, 0, 0),";
+        $query .= "(6, 'ACYM_FEEDBACK_LOOP_BODY', 6, 'Feedback-Type.{1,5}abuse', '[\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"unsubscribe_user\"]', 1, 1, 0),";
+        $query .= "(7, 'ACYM_MAILBOX_FULL', 7, '((mailbox|mailfolder|storage|quota|space|inbox) *(is)? *(over)? *(exceeded|size|storage|allocation|full|quota|maxi))|status(-code)? *(:|=)? *5.2.2|quota-issue|not *enough.{1,20}space|((over|exceeded|full|exhausted) *(allowed)? *(mail|storage|quota))', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
+        $query .= "(8, 'ACYM_BLOCKED_GOOGLE_GROUPS', 8, 'message *rejected *by *Google *Groups', '[\"body\"]', '[\"delete_message\"]', '[]', 1, 1, 0),";
+        $query .= "(9, 'ACYM_REJECTED', 9, 'rejected *your *message|email *provider *rejected *it', '[\"body\"]', '[\"delete_message\"]', '[]', 1, 1, 0),";
+        $query .= "(10, 'ACYM_MAILBOX_DOESNT_EXIST_1', 10, '(Invalid|no such|unknown|bad|des?activated|inactive|unrouteable) *(mail|destination|recipient|user|address|person)|bad-mailbox|inactive-mailbox|not listed in.{1,20}directory|RecipNotFound|(user|mailbox|address|recipients?|host|account|domain) *(is|has been)? *(error|disabled|failed|unknown|unavailable|not *(found|available)|.{1,30}inactiv)|no *mailbox *here|user does.?n.t have.{0,30}account', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
+        $query .= "(11, 'ACYM_MESSAGE_BLOCKED_RECIPIENTS', 11, 'blocked *by|block *list|look(ed)? *like *spam|spam-related|spam *detected| CXBL | CDRBL | IPBL | URLBL |(unacceptable|banned|offensive|filtered|blocked|unsolicited) *(content|message|e?-?mail)|service refused|(status(-code)?|554) *(:|=)? *5.7.1|administratively *denied|blacklisted *IP|policy *reasons|rejected.{1,10}spam|junkmail *rejected|throttling *constraints|exceeded.{1,10}max.{1,40}hour|comply with required standards|421 RP-00|550 SC-00|550 DY-00|550 OU-00', '[\"body\"]', '{\"0\":\"delete_message\",\"1\":\"forward_message\",\"forward_to\":\"".$forwardEmail."\"}', '[]', 1, 1, 0),";
+        $query .= "(12, 'ACYM_MAILBOX_DOESNT_EXIST_2', 12, 'status(-? ?code)? *(:|=)? *(550)? *5.(1.[1-6]|0.0|4.[0123467])|recipient *address *rejected|does *not *like *recipient|recipient *unknown *to *address|email *account *that *you *tried *to *reach *is *disabled', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
+        $query .= "(13, 'ACYM_DOMAIN_NOT_EXIST', 13, 'No.{1,10}MX *(record|host)|host *does *not *receive *any *mail|bad-domain|connection.{1,10}mail.{1,20}fail|domain.{1,10}not *exist|fail.{1,10}establish *connection', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
+        $query .= "(14, 'ACYM_TEMPORARY_FAILURES', 14, 'has.*been.*delayed|delayed *mail|message *delayed|message-expired|temporar(il)?y *(failure|unavailable|disable|offline|unable)|deferred|delayed *([0-9]*) *(hour|minut)|possible *mail *loop|too *many *hops|delivery *time *expired|Action.php: *delayed|status(-code)? *(:|=)? *4.4.6|will continue to be attempted|unable to deliver in.*Status: 4.4.7', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
+        $query .= "(15, 'ACYM_FAILED_PERM', 15, 'failed *permanently|permanent.{1,20}(failure|error)|not *accepting *(any)? *mail|does *not *exist|no *valid *route|delivery *failure', '[\"subject\",\"body\"]', '[\"save_message\",\"delete_message\"]', '[\"block_user\"]', 1, 1, 0),";
+        $query .= "(16, 'ACYM_ACKNOWLEDGMENT_RECEIPT_BODY', 16, 'vacanc|holiday|vacation|absen|urlaub|ferie|feriado|vacanz|vacaciones|(out of|not in|outside)( *the)? *office', '[\"body\"]', '[\"delete_message\"]', '[]', 1, 0, 0),";
+        $query .= "(17, 'ACYM_FINAL_RULE', 17, '.', '[\"senderInfo\",\"subject\"]', '{\"0\":\"delete_message\",\"1\":\"forward_message\",\"forward_to\":\"".$forwardEmail."\"}', '[]', 1, 0, 0);";
 
         acym_query($query);
 
-        $newConfig = new \stdClass();
-        $newConfig->bounceVersion = $this->bounceVersion;
-        $this->config->save($newConfig);
+        $this->config->save(['bounceVersion' => $this->bounceVersion]);
     }
 
     //__START__joomla_

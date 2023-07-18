@@ -492,8 +492,14 @@ class CampaignClass extends acymClass
             } else {
                 $segmentClass = new SegmentClass();
                 $segment = $segmentClass->getOneById($sendingParams['segment']['segment_id']);
-                if (!empty($segment)) $filters = $segment->filters;
+                if (!empty($segment)) {
+                    $filters = $segment->filters;
+                } else {
+                    $filters = [];
+                }
             }
+        } else {
+            return [];
         }
 
         return $filters;
@@ -736,7 +742,7 @@ class CampaignClass extends acymClass
         return acym_loadObjectList($query);
     }
 
-    public function getLastNewsletters(&$params)
+    public function getLastNewsletters(&$params): array
     {
         $mailClass = new MailClass();
 
@@ -783,9 +789,9 @@ class CampaignClass extends acymClass
         $endQuerySelect .= 'ORDER BY campaign.sending_date DESC';
 
         // Init the pagination
-        $page = isset($params['page']) ? $params['page'] : 0;
-        $numberPerPage = isset($params['numberPerPage']) ? $params['numberPerPage'] : 0;
-        $lastNewsletters = isset($params['limit']) ? $params['limit'] : 0;
+        $page = $params['page'] ?? 0;
+        $numberPerPage = $params['numberPerPage'] ?? 0;
+        $lastNewsletters = $params['limit'] ?? 0;
 
         if (!empty($page) && !empty($numberPerPage)) {
             if (!empty($lastNewsletters)) {

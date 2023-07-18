@@ -4,6 +4,7 @@ namespace AcyMailing\Helpers;
 
 
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\MailArchiveClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\OverrideClass;
 use AcyMailing\Classes\UrlClass;
@@ -36,6 +37,7 @@ class MailerHelper extends AcyMailerPhp
     private $editorHelper;
     private $userClass;
     private $mailClass;
+    private $mailArchiveClass;
     public $config;
 
     public $report = true;
@@ -92,6 +94,7 @@ class MailerHelper extends AcyMailerPhp
         $this->editorHelper = new EditorHelper();
         $this->userClass = new UserClass();
         $this->mailClass = new MailClass();
+        $this->mailArchiveClass = new MailArchiveClass();
         $this->config = acym_config();
         $this->setFrom($this->getSendSettings('from_email'), $this->getSendSettings('from_name'));
         $this->Sender = $this->cleanText($this->config->get('bounce_email'));
@@ -512,6 +515,11 @@ class MailerHelper extends AcyMailerPhp
 
     public function load($mailId, $user = null)
     {
+        // If it's already loaded return the email
+        if (isset($this->defaultMail[$mailId])) {
+            return $this->defaultMail[$mailId];
+        }
+
         if (!empty($this->overrideEmailToSend)) {
             $this->defaultMail[$mailId] = $this->overrideEmailToSend;
         } else {
@@ -586,34 +594,72 @@ class MailerHelper extends AcyMailerPhp
         acym_trigger('replaceContent', [&$this->defaultMail[$mailId], true]);
 
         $this->loadUrlAndStyle($mailId);
+        if (!$this->isTest) {
+            $this->storeArchiveVersion($mailId);
+        }
 
         return $this->defaultMail[$mailId];
     }
 
-    private function getEmailStylesheet(&$mail)
+    private function storeArchiveVersion($mailId)
+    {
+        $mailId = intval($mailId);
+        if (empty($mailId) || $this->defaultMail[$mailId]->type !== $this->mailClass::TYPE_STANDARD) {
+            return;
+        }
+
+        $mailArchive = new \stdClass();
+
+        $alreadyExisting = $this->mailArchiveClass->getOneByMailId($mailId);
+        if (!empty($alreadyExisting)) {
+            $mailArchive->id = $alreadyExisting->id;
+        }
+
+        $mailArchive->mail_id = $mailId;
+        $mailArchive->date = time();
+        $mailArchive->body = $this->defaultMail[$mailId]->body;
+        $mailArchive->subject = $this->defaultMail[$mailId]->subject;
+        $mailArchive->settings = $this->defaultMail[$mailId]->settings;
+        $mailArchive->stylesheet = $this->defaultMail[$mailId]->stylesheet;
+        $mailArchive->attachments = $this->defaultMail[$mailId]->attachments;
+        $this->mailArchiveClass->save($mailArchive);
+    }
+
+    private function getEmailStylesheet(&$mail): array
     {
         static $foundationCSS = null;
-        $style = [];
         if (empty($foundationCSS)) {
             $foundationCSS = acym_fileGetContent(ACYM_MEDIA.'css'.DS.'libraries'.DS.'foundation_email.min.css');
             // Remove the #acym__wysid__template prefix, not needed in sent emails
             $foundationCSS = str_replace('#acym__wysid__template ', '', $foundationCSS);
         }
 
+        $style = [];
+
         // If this is a drag and drop mail we add foundation css for email
-        if (strpos($mail->body, 'acym__wysid__template') !== false) $style['foundation'] = $foundationCSS;
+        if (strpos($mail->body, 'acym__wysid__template') !== false) {
+            $style['foundation'] = $foundationCSS;
+        }
 
         static $emailFixes = null;
-        if (empty($emailFixes)) $emailFixes = acym_getEmailCssFixes();
+        if (empty($emailFixes)) {
+            $emailFixes = acym_getEmailCssFixes();
+        }
         $style[] = $emailFixes;
 
-        if (!empty($mail->stylesheet)) $style[] = $mail->stylesheet;
+        if (!empty($mail->stylesheet)) {
+            $style[] = $mail->stylesheet;
+        }
 
         $settingsStyles = $this->editorHelper->getSettingsStyle($mail->settings);
-        if (!empty($settingsStyles)) $style[] = $settingsStyles;
+        if (!empty($settingsStyles)) {
+            $style[] = $settingsStyles;
+        }
 
         preg_match('@<[^>"t]*body[^>]*>@', $mail->body, $matches);
-        if (empty($matches[0])) $mail->body = '<body yahoo="fix">'.$mail->body.'</body>';
+        if (empty($matches[0])) {
+            $mail->body = '<body yahoo="fix">'.$mail->body.'</body>';
+        }
 
         //We get all the content of the tag styles in the body
         $styleFoundInBody = preg_match_all('/<\s*style[^>]*>(.*?)<\s*\/\s*style>/s', $mail->body, $matches);
@@ -730,18 +776,6 @@ class MailerHelper extends AcyMailerPhp
         $receiver = $this->loadUser($user);
         $this->isTest = $isTest;
 
-        //Load the mail if it's not already loaded
-        if (!isset($this->defaultMail[$mailId]) && !$this->load($mailId, $receiver)) {
-            $this->reportMessage = 'Can not load the e-mail : '.acym_escape($mailId);
-            if ($this->report) {
-                acym_enqueueMessage($this->reportMessage, 'error');
-            }
-            $this->errorNumber = 2;
-
-            return false;
-        }
-
-
         if (empty($receiver->email)) {
             $this->reportMessage = acym_translationSprintf('ACYM_SEND_ERROR_USER', '<b><i>'.acym_escape($user).'</i></b>');
             if ($this->report) {
@@ -749,6 +783,17 @@ class MailerHelper extends AcyMailerPhp
             }
             //Error : user not found
             $this->errorNumber = 4;
+
+            return false;
+        }
+
+        // Load the mail with global tags replaced
+        if (!$this->load($mailId, $receiver)) {
+            $this->reportMessage = 'Can not load the e-mail : '.acym_escape($mailId);
+            if ($this->report) {
+                acym_enqueueMessage($this->reportMessage, 'error');
+            }
+            $this->errorNumber = 2;
 
             return false;
         }

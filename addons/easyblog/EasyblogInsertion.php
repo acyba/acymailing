@@ -118,6 +118,13 @@ trait EasyblogInsertion
                     'type' => 'pictures',
                     'name' => 'pictures',
                 ],
+                [
+                    'title' => 'ACYM_AUTO_LOGIN',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'type' => 'boolean',
+                    'name' => 'autologin',
+                    'default' => false,
+                ],
             ]
         );
 
@@ -290,7 +297,7 @@ trait EasyblogInsertion
             $link .= '&Itemid='.intval($menuId);
         }
 
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
         $varFields['{link}'] = $link;
 
         $title = '';
@@ -340,7 +347,7 @@ trait EasyblogInsertion
 
         $varFields['{cat}'] = [];
         foreach ($rawCategories as $category) {
-            $linkCat = $this->finalizeLink('index.php?option=com_easyblog&view=categories&layout=listings&id='.$category->id);
+            $linkCat = $this->finalizeLink('index.php?option=com_easyblog&view=categories&layout=listings&id='.$category->id, $tag);
             $varFields['{cat}'][] = '<a href="'.$linkCat.'" target="_blank">'.acym_escape($category->title).'</a>';
         }
         $varFields['{cat}'] = implode(', ', $varFields['{cat}']);

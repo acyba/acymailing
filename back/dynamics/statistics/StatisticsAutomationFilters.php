@@ -91,6 +91,7 @@ trait StatisticsAutomationFilters
             acym_selectOption('notsent', 'ACYM_NOTSENT'),
             acym_selectOption('bounced', 'ACYM_BOUNCED'),
             acym_selectOption('click_on_url', 'ACYM_CLICKED_ON_LINK'),
+            acym_selectOption('no_click_on_url', 'ACYM_NOT_CLICKED_ON_LINK'),
             acym_selectOption('neveropen', 'ACYM_NEVER_OPEN'),
             acym_selectOption('neverclicked', 'ACYM_NEVER_CLICKED'),
             acym_selectOption('neversent', 'ACYM_NEVER_SENT'),
@@ -113,11 +114,11 @@ trait StatisticsAutomationFilters
                         ],
                         [
                             'class' => 'acym__filter__stats_url',
-                            'values' => ['click_on_url'],
+                            'values' => ['click_on_url', 'no_click_on_url'],
                         ],
                         [
                             'class' => 'acym__filter__stats_mail',
-                            'values' => ['opened', 'notopen', 'failed', 'sent', 'notsent', 'bounced', 'click_on_url'],
+                            'values' => ['opened', 'notopen', 'failed', 'sent', 'notsent', 'bounced', 'click_on_url', 'no_click_on_url'],
                         ],
                     ]
                 ),
@@ -206,6 +207,7 @@ trait StatisticsAutomationFilters
     {
         $alias = '`stats'.$num.'`';
         $urlClickAlias = '`urlClick'.$num.'`';
+        $userStats = '`userStats'.$num.'`';
 
         if (empty($options['mail'])) {
             if (!empty($options['status'])) {
@@ -229,14 +231,21 @@ trait StatisticsAutomationFilters
             return;
         }
 
-        if (empty($options['status']) || !in_array($options['status'], ['opened', 'notopen', 'failed', 'bounced', 'notsent', 'sent', 'click_on_url'])) {
+        if (empty($options['status']) || !in_array($options['status'], ['opened', 'notopen', 'failed', 'bounced', 'notsent', 'sent', 'click_on_url', 'no_click_on_url'])) {
             acym_enqueueMessage(acym_translationSprintf('ACYM_UNKNOWN_OPERATOR', $options['status']), 'warning');
 
             return;
         }
 
         if ($options['status'] == 'click_on_url') {
-            $query->join[] = '#__acym_url_click AS '.$urlClickAlias.' ON `user`.`id` = '.$urlClickAlias.'.`user_id`';
+            $query->join[] = '#__acym_url_click AS '.$urlClickAlias.' ON `user`.`id` = '.$urlClickAlias.'.`user_id` AND '.$urlClickAlias.'.`mail_id` = '.intval($options['mail']);
+        } elseif ($options['status'] == 'no_click_on_url') {
+            $query->join[] = '#__acym_user_stat AS '.$userStats.' ON user.id = '.$userStats.'.`user_id` AND '.$userStats.'.`mail_id` = '.intval($options['mail']);
+            $leftjoin = '#__acym_url_click AS '.$urlClickAlias.' ON `user`.`id` = '.$urlClickAlias.'.`user_id` AND '.$urlClickAlias.'.`mail_id` = '.intval($options['mail']);
+            if ($options['urlId'] != '-1') {
+                $leftjoin .= ' AND '.$urlClickAlias.'.`url_id` = '.intval($options['urlId']);
+            }
+            $query->leftjoin[] = $leftjoin;
         } else {
             $query->leftjoin[] = '#__acym_user_stat AS '.$alias.' ON '.$alias.'.`user_id` = `user`.`id` AND '.$alias.'.`mail_id` = '.intval($options['mail']);
         }
@@ -255,6 +264,8 @@ trait StatisticsAutomationFilters
             $where = $alias.'.`user_id` IS NOT NULL';
         } elseif ($options['status'] == 'click_on_url' && !empty($options['urlId']) && $options['urlId'] != -1) {
             $where = $urlClickAlias.'.`url_id` = '.intval($options['urlId']);
+        } elseif ($options['status'] == 'no_click_on_url') {
+            $where = $urlClickAlias.'.`url_id` IS NULL';
         }
 
         if (!empty($where)) $query->where[] = $where;
@@ -300,7 +311,11 @@ trait StatisticsAutomationFilters
                 } else {
                     $action = acym_translation('ACYM_STATUS');
                     if (!empty($automationFilter[$filterName]['urlId'])) {
-                        $action = strtolower(acym_translation('ACYM_CLICKED'));
+                        if ($status == 'ACYM_NO_CLICK_ON_URL') {
+                            $action = strtolower(acym_translation('ACYM_NOT_CLICKED'));
+                        } else {
+                            $action = strtolower(acym_translation('ACYM_CLICKED'));
+                        }
                         if ($automationFilter[$filterName]['urlId'] != -1) {
                             $url = acym_loadObject(
                                 'SELECT `url`.`name` 

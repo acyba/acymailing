@@ -1066,7 +1066,6 @@ class MailClass extends acymClass
     {
         if (!empty($mail)) {
             foreach (self::FIELDS_ENCODING as $oneField) {
-
                 if (in_array($oneField, $this->exceptKeysDecode)) {
                     continue;
                 }
@@ -1194,7 +1193,6 @@ class MailClass extends acymClass
     {
         if (!empty($mail)) {
             foreach (self::FIELDS_ENCODING as $oneField) {
-
                 if (is_array($mail)) {
                     if (empty($mail[$oneField])) continue;
                     $value = &$mail[$oneField];

@@ -118,6 +118,13 @@ trait DpcalendarInsertion
                     'type' => 'pictures',
                     'name' => 'pictures',
                 ],
+                [
+                    'title' => 'ACYM_AUTO_LOGIN',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'type' => 'boolean',
+                    'name' => 'autologin',
+                    'default' => false,
+                ],
             ]
         );
 
@@ -293,7 +300,7 @@ trait DpcalendarInsertion
 
         $varFields = $this->getCustomLayoutVars($element);
         $link = 'index.php?option=com_dpcalendar&view=event&id='.$tag->id.'&calid='.$element->catid;
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
 
         $varFields['{link}'] = $link;
 

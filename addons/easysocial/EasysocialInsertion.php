@@ -247,6 +247,13 @@ trait EasysocialInsertion
                 'type' => 'pictures',
                 'name' => 'pictures',
             ],
+            [
+                'title' => 'ACYM_AUTO_LOGIN',
+                'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                'type' => 'boolean',
+                'name' => 'autologin',
+                'default' => false,
+            ],
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
@@ -430,7 +437,7 @@ trait EasysocialInsertion
 
         $varFields = $this->getCustomLayoutVars($element);
         $link = 'index.php?option=com_easysocial&view=events&layout=item&id='.$tag->id.':'.$element->alias;
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
 
         $varFields['{link}'] = $link;
 

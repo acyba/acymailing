@@ -143,6 +143,13 @@ trait IcagendaInsertion
                     'type' => 'pictures',
                     'name' => 'pictures',
                 ],
+                [
+                    'title' => 'ACYM_AUTO_LOGIN',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'type' => 'boolean',
+                    'name' => 'autologin',
+                    'default' => false,
+                ],
             ]
         );
 
@@ -320,7 +327,7 @@ trait IcagendaInsertion
         $varFields = $this->getCustomLayoutVars($element);
 
         $link = 'index.php?option=com_icagenda&view=event&id='.$tag->id.':'.$element->alias;
-        $link = $this->finalizeLink($link);
+        $link = $this->finalizeLink($link, $tag);
 
         $varFields['{link}'] = $link;
 
