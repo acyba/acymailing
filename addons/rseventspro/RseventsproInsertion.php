@@ -98,6 +98,13 @@ trait RseventsproInsertion
                     'type' => 'pictures',
                     'name' => 'pictures',
                 ],
+                [
+                    'title' => 'ACYM_AUTO_LOGIN',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'type' => 'boolean',
+                    'name' => 'autologin',
+                    'default' => false,
+                ],
             ]
         );
 
@@ -307,6 +314,9 @@ trait RseventsproInsertion
 
         $link = rseventsproHelper::route('index.php?option=com_rseventspro&layout=show&id='.rseventsproHelper::sef($element->id, $element->name).$language);
         $link = str_replace('/administrator/', '/', $link);
+        if (!empty($tag->autologin)) {
+            $link .= (strpos($link, '?') ? '&' : '?').'autoSubId={subscriber:id}&subKey={subscriber:key|urlencode}';
+        }
         $varFields['{link}'] = $link;
 
         $title = '';

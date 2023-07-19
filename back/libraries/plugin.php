@@ -913,7 +913,8 @@ class acymPlugin extends acymObject
         }
     }
 
-    protected function finalizeLink(string $link, object $tag, bool $sef = true): string
+    // Don't add types for $tag and $sef, for retro-compatibility
+    protected function finalizeLink(string $link, $tag = null, $sef = true): string
     {
         if (acym_isPluginActive('languagefilter')) {
             if (strpos($link, 'lang=') === false && !empty($this->emailLanguage)) {
@@ -929,6 +930,11 @@ class acymPlugin extends acymObject
 
         if (!empty($tag->autologin)) {
             $link .= (strpos($link, '?') ? '&' : '?').'autoSubId={subscriber:id}&subKey={subscriber:key|urlencode}';
+        }
+
+        // Retro-compatibility for add-on versions before the v8.6.0
+        if (is_bool($tag)) {
+            $sef = $tag;
         }
 
         return acym_frontendLink($link, false, $sef);
@@ -1250,8 +1256,8 @@ class acymPlugin extends acymObject
         $campaignClass = new CampaignClass();
 
         $tmpMails = [];
-        foreach ($specialMails as $i => $oneMail) {
-            if ($oneMail->sending_type == $mailType) {
+        foreach ($specialMails as $oneMail) {
+            if ($oneMail->sending_type === $mailType) {
                 $noNextTrigger = empty($oneMail->next_trigger);
                 $nextTriggerIsNow = date('m-d', $oneMail->next_trigger) == date('m-d', $dayBasedOnCMSTimezoneAtSpecifiedHour);
                 $nextTriggerIsInPast = $oneMail->next_trigger < $time;

@@ -494,12 +494,8 @@ class CampaignClass extends acymClass
                 $segment = $segmentClass->getOneById($sendingParams['segment']['segment_id']);
                 if (!empty($segment)) {
                     $filters = $segment->filters;
-                } else {
-                    $filters = [];
                 }
             }
-        } else {
-            return [];
         }
 
         return $filters;
@@ -554,7 +550,7 @@ class CampaignClass extends acymClass
                         acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelpers[$or], &$options, &$and]);
                     }
                 }
-                if ($campaign->sending_params['segment']['invert'] === 'exclude') {
+                if (!empty($campaign->sending_params['segment']['invert']) && $campaign->sending_params['segment']['invert'] === 'exclude') {
                     $automationHelpers[$or]->invert = true;
                 }
                 $automationHelpers[$or]->addFlag(SegmentsController::FLAG_COUNT);
@@ -564,7 +560,7 @@ class CampaignClass extends acymClass
             $automationHelper->join['ul'] = ' #__acym_user_has_list AS ul ON ul.user_id = user.id AND ul.list_id IN ('.implode(',', $lists).') AND ul.status = 1 ';
 
             if (!empty($filters)) {
-                if ($campaign->sending_params['segment']['invert'] === 'exclude') {
+                if (!empty($campaign->sending_params['segment']['invert']) && $campaign->sending_params['segment']['invert'] === 'exclude') {
                     $conditions[] = 'user.automation NOT LIKE "%a'.SegmentsController::FLAG_COUNT.'a%"';
                 } else {
                     $conditions[] = 'user.automation LIKE "%a'.SegmentsController::FLAG_COUNT.'a%"';

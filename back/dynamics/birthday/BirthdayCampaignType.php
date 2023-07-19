@@ -199,7 +199,7 @@ trait BirthdayCampaignType
                 'days' => $sendingTime,
                 'field' => $campaign->sending_params[$this->mailType.'_field'],
                 'relative' => $campaign->sending_params[$this->mailType.'_relative'],
-                'plugin' => isset($campaign->sending_params[$this->mailType.'_plugin']) ? $campaign->sending_params[$this->mailType.'_plugin'] : get_class($this),
+                'plugin' => $campaign->sending_params[$this->mailType.'_plugin'] ?? get_class($this),
             ],
         ];
 
@@ -255,7 +255,7 @@ trait BirthdayCampaignType
 
     public function onAcymCampaignAddFiltersSpecificListing(&$filters, $type)
     {
-        if ($type == $this->mailType) {
+        if ($type === $this->mailType) {
             $filters[] = 'campaign.sending_type = '.acym_escapeDB($this->mailType);
         }
     }

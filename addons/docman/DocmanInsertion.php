@@ -92,6 +92,13 @@ trait DocmanInsertion
                     'type' => 'pictures',
                     'name' => 'pictures',
                 ],
+                [
+                    'title' => 'ACYM_AUTO_LOGIN',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'type' => 'boolean',
+                    'name' => 'autologin',
+                    'default' => false,
+                ],
             ]
         );
 
@@ -251,7 +258,7 @@ trait DocmanInsertion
 
         //We set the link to download the document
         $linkDownload = 'index.php?option=com_docman&view=download&slug='.$element->slug.$itemId.'&category_slug='.$element->category_slug;
-        $linkDownload = acym_frontendLink($linkDownload, false);
+        $linkDownload = $this->finalizeLink($linkDownload, $tag);
         $varFields['{linkdownload}'] = $linkDownload;
 
         $details = [];
