@@ -84,6 +84,7 @@ class FronturlController extends acymController
             if (!empty($subscriber)) {
                 $subscriber->last_open_date = acym_date('now', 'Y-m-d H:i:s');
                 $subscriber->last_click_date = acym_date('now', 'Y-m-d H:i:s');
+                $userClass->triggers = false;
                 $userClass->save($subscriber);
             }
         }

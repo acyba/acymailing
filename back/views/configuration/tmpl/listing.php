@@ -4,10 +4,10 @@
 
         <?php
         $tabs = [
+            'license' => 'ACYM_LICENSE',
             'mail' => 'ACYM_CONFIGURATION_MAIL',
             'queue' => 'ACYM_CONFIGURATION_QUEUE',
             'subscription' => 'ACYM_CONFIGURATION_SUBSCRIPTION',
-            'license' => 'ACYM_LICENSE',
             'bounce' => 'ACYM_BOUNCE_HANDLING',
             'data' => 'ACYM_CONFIGURATION_DATA_COLLECTION',
             'security' => 'ACYM_CONFIGURATION_SECURITY',

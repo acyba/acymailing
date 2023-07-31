@@ -3,10 +3,8 @@ jQuery(function ($) {
         setSendingMethodSwitchConfiguration();
         setCheckPortConfiguration();
         setDKIMSelectConfiguration();
-        setTimeoutCheckConfiguration();
         setCheckDBConfiguration();
         setOnChangeAutomaticBounce();
-        setOrderWarning();
         setSelect2ChooseEmails();
         setAttachLicenseKey();
         setModifyCron();
@@ -30,17 +28,10 @@ jQuery(function ($) {
         activateAcymailer();
         setAclMultiselect();
         setAttachmentsPositionToggle();
+        setAutoSendingCounter();
     }
 
     Configuration();
-
-    function setOrderWarning() {
-        $('#sendorderid').on('change', function () {
-            if (this.value === 'rand') {
-                alert(ACYM_JS_TXT.ACYM_NO_RAND_FOR_MULTQUEUE);
-            }
-        });
-    }
 
     function setSendingMethodSwitchConfiguration() {
         let $method = $('input[name="config[mailer_method]"]');
@@ -72,22 +63,6 @@ jQuery(function ($) {
     function setDKIMSelectConfiguration() {
         $('.acym_autoselect').off('click').on('click', function () {
             this.select();
-        });
-    }
-
-    function setTimeoutCheckConfiguration() {
-        $('#timeoutcheck_action').off('click').on('click', function (e) {
-            e.preventDefault();
-
-            try {
-                $('#timeoutcheck').html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
-
-                $.get(ACYM_AJAX_URL + '&ctrl=configuration&task=detecttimeout', function (response) {
-                    $('#timeoutcheck').html('Done!');
-                });
-            } catch (err) {
-                alert(acym_helper.sprintf(ACYM_JS_TXT.ACYM_MAX_EXEC_TIME_GET_ERROR, err));
-            }
         });
     }
 
@@ -376,5 +351,34 @@ jQuery(function ($) {
                 }
             }, 10);
         });
+    }
+
+    function setAutoSendingCounter() {
+        jQuery('.auto_sending_input').on('change', function () {
+            const batchesNumber = parseInt(jQuery('[name="config[queue_batch_auto]"]').val());
+            const batchesSize = parseInt(jQuery('[name="config[queue_nbmail_auto]"]').val());
+            const secondsBetweenBatches = parseInt(jQuery('[name="config[cron_frequency]"]').val());
+            // When the frequency is set to 0 minutes we don't trigger the cron on page load, so we only have our 15 minutes cron + whatever cron the client set on their server
+            let frequency = secondsBetweenBatches === 0 ? 900 : secondsBetweenBatches;
+            const processTimeLimit = frequency > 600 ? 600 : frequency;
+            const waitAmount = parseInt(jQuery('[name="config[email_frequency]"]').val());
+
+            // We take 1 second for the average sending speed of an email
+            let timeForOneBatch = batchesSize;
+            if (waitAmount > 0) {
+                timeForOneBatch = batchesSize * (waitAmount + 1);
+            }
+
+            let emailsSentPerBatch = batchesSize;
+            if (timeForOneBatch > processTimeLimit) {
+                emailsSentPerBatch = batchesSize * processTimeLimit / timeForOneBatch;
+            }
+
+            const emailsSentPerHour = emailsSentPerBatch * batchesNumber * 3600 / frequency;
+            jQuery('#automatic_sending_speed_preview').html(parseInt(emailsSentPerHour));
+            jQuery('#automatic_sending_speed_no_wait').css('display', waitAmount > 0 && timeForOneBatch > processTimeLimit ? 'inline-block' : 'none');
+            jQuery('#automatic_sending_speed_too_much').css('display', waitAmount === 0 && timeForOneBatch > processTimeLimit ? 'inline-block' : 'none');
+            jQuery('#automatic_sending_speed_too_many_batches').css('display', batchesNumber > 5 ? 'inline-block' : 'none');
+        }).trigger('change');
     }
 });

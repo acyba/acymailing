@@ -505,6 +505,7 @@ class MailClass extends acymClass
         acym_query('DELETE FROM #__acym_url_click WHERE mail_id IN ('.implode(',', $elements).')');
         acym_query('DELETE FROM #__acym_mail_stat WHERE mail_id IN ('.implode(',', $elements).')');
         acym_query('DELETE FROM #__acym_followup_has_mail WHERE mail_id IN ('.implode(',', $elements).')');
+        acym_query('DELETE FROM #__acym_mail_archive WHERE mail_id IN ('.implode(',', $elements).')');
 
         $return = parent::delete($elements);
 

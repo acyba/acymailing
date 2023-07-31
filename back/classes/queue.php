@@ -331,18 +331,6 @@ class QueueClass extends acymClass
     {
         if (empty($limit)) return [];
 
-        $order = $this->config->get('sendorder');
-        if (empty($order)) {
-            $order = 'queue.`user_id` ASC';
-        } else {
-            if ($order == 'rand') {
-                $order = 'RAND()';
-            } else {
-                $ordering = explode(',', $order);
-                $order = 'queue.`'.acym_secureDBColumn(trim($ordering[0])).'` '.acym_secureDBColumn(trim($ordering[1]));
-            }
-        }
-
         $query = 'SELECT queue.* FROM #__acym_queue AS queue';
         $query .= ' JOIN #__acym_user AS user ON queue.`user_id` = user.`id` ';
         $query .= ' JOIN #__acym_mail AS mail ON queue.`mail_id` = mail.`id` ';
@@ -371,7 +359,7 @@ class QueueClass extends acymClass
             $query .= ' AND queue.`mail_id` = '.intval($mailId);
         }
 
-        $query .= ' ORDER BY queue.`priority` ASC, queue.`sending_date` ASC, '.$order;
+        $query .= ' ORDER BY queue.`priority` ASC, queue.`sending_date` ASC, queue.`user_id` ASC';
         // You can add a "startqueue" parameter to the url so Acy will not load the first e-mails but will start directly with the 300 or 500 or...
         $startqueue = acym_getVar('int', 'startqueue', 0);
         $query .= ' LIMIT '.intval($startqueue).','.intval($limit);

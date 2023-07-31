@@ -5,12 +5,14 @@ use AcyMailing\Libraries\acymPlugin;
 require_once __DIR__.DIRECTORY_SEPARATOR.'UserAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'UserAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'UserInsertion.php';
+require_once __DIR__.DIRECTORY_SEPARATOR.'UserBirthday.php';
 
 class plgAcymUser extends acymPlugin
 {
     use UserAutomationConditions;
     use UserAutomationFilters;
     use UserInsertion;
+    use UserBirthday;
 
     public function __construct()
     {

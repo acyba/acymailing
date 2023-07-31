@@ -108,10 +108,12 @@
                         echo acym_tooltip(
                             acym_date(
                                 $user->creation_date,
-                                acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC5'),
-                                false
+                                acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC5')
                             ),
-                            $user->creation_date
+                            acym_date(
+                                $user->creation_date,
+                                'Y-m-d H:i:s'
+                            )
                         );
                         ?>
 					</div>

@@ -113,4 +113,15 @@ trait UserAutomationFilters
             );
         }
     }
+
+    public function onAcymProcessFilter_birthday(&$query, $options, $num = null)
+    {
+        if ($options['plugin'] !== get_class($this) || ACYM_CMS !== 'joomla' || !ACYM_J37) return;
+
+        $dateToCheck = $this->processDateToCheck($options);
+
+        $query->join['j_fields'.$num] = '#__fields_values AS jf'.$num.' ON jf'.$num.'.item_id = user.cms_id';
+        $query->where[] = 'user.cms_id != 0 ';
+        $query->where[] = 'jf'.$num.'.value LIKE '.acym_escapeDB('%'.date_format($dateToCheck, '-m-d').'%');
+    }
 }

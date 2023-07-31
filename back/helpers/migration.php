@@ -167,7 +167,6 @@ class MigrationHelper extends acymObject
             'queue_pause' => 'queue_pause',
             'queue_try' => 'queue_try',
             'queue_type' => 'queue_type',
-            'sendorder' => 'sendorder',
         ];
 
         //Subscription

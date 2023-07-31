@@ -646,8 +646,6 @@ class UserClass extends acymClass
     {
         if (empty($lists)) return false;
 
-        $savingProfile = acym_getVar('int', 'acyprofile', 0);
-
         if (!is_array($userIds)) $userIds = [$userIds];
         if (!is_array($lists)) $lists = [$lists];
 
@@ -674,8 +672,8 @@ class UserClass extends acymClass
                 // The user is already unsubscribed
                 if (empty($oneListId) || !empty($currentlyUnsubscribed[$oneListId])) continue;
 
-                // If the user is saving its profile, don't unsubscribe from non-subscribed lists
-                if ($savingProfile === 1 && empty($currentlySubscribed[$oneListId])) continue;
+                // Don't unsubscribe from non-subscribed lists
+                if (empty($currentlySubscribed[$oneListId])) continue;
 
                 $subscription = new \stdClass();
                 $subscription->user_id = $userId;
@@ -1359,7 +1357,7 @@ class UserClass extends acymClass
         $currentSubscription = $this->getSubscriptionStatus($id);
 
         // In the Acy configuration, we can tell AcyMailing to automatically subscribe newly created users to some lists
-        $autoLists = $isnew ? $this->config->get('regacy_autolists') : '';
+        $autoLists = $isnew ? $this->config->get('regacy_autolists', '') : '';
         $autoLists = explode(',', $autoLists);
         acym_arrayToInteger($autoLists);
 
@@ -1367,7 +1365,7 @@ class UserClass extends acymClass
         $allLists = $listsClass->getAll();
 
         // The user can select some lists on the registration form
-        $visibleLists = acym_getVar('string', 'regacy_visible_lists');
+        $visibleLists = acym_getVar('string', 'regacy_visible_lists', '');
         $visibleLists = explode(',', $visibleLists);
         acym_arrayToInteger($visibleLists);
 

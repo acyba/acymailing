@@ -117,6 +117,9 @@ trait ForwardMailboxAction
                 ];
             }
         }
+
+        $mailClass = new MailClass();
+        $mailClass->delete($newMail->id);
     }
 
     public function onAcymMailboxAction_forward_list(&$action, &$report, &$executedActions, $mailboxHelper)
@@ -210,8 +213,6 @@ trait ForwardMailboxAction
 
     private function prepareForward($action, &$report, &$executedActions, $mailboxHelper)
     {
-        $newMail = new stdClass();
-
         if (!isset($action['template_id'])) {
             $executedActions = false;
             $report[] = [
@@ -219,7 +220,7 @@ trait ForwardMailboxAction
                 'success' => false,
             ];
 
-            return $newMail;
+            return false;
         }
 
         // We're going to forward the email, save its attachments and embed images
@@ -236,6 +237,7 @@ trait ForwardMailboxAction
             }
         }
 
+        $newMail = new stdClass();
         if (empty($action['template_id'])) {
             $newMail->name = acym_translationSprintf('ACYM_FORWARD_SUBJECT', $subject);
             $newMail->body = empty($mailboxHelper->_message->html) ? $mailboxHelper->_message->text : $mailboxHelper->_message->html;
@@ -250,7 +252,7 @@ trait ForwardMailboxAction
                     'success' => false,
                 ];
 
-                return;
+                return false;
             } else {
                 $content = empty($mailboxHelper->_message->html) ? $mailboxHelper->_message->text : $mailboxHelper->_message->html;
                 $newMail->body = str_replace('{emailcontent}', $content, $newMail->body);

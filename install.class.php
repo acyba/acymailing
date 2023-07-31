@@ -89,7 +89,7 @@ class acymInstall
         $allPref['word_wrapping'] = '150';
         $allPref['hostname'] = '';
         $allPref['embed_images'] = '0';
-        $allPref['embed_files'] = '1';
+        $allPref['embed_files'] = '0';
         $allPref['editor'] = 'codemirror';
         $allPref['multiple_part'] = '1';
         $allPref['smtp_host'] = $smtpinfos[0];
@@ -284,7 +284,7 @@ class acymInstall
                     PRIMARY KEY (`user_id`,`date`)
                 )'
             );
-            $this->updateQuery('ALTER TABLE #__acym_rule MODIFY `id` INT NOT NULL AUTO_INCREMENT');
+            $this->updateQuery('ALTER TABLE #__acym_rule CHANGE `id` `id` INT NOT NULL AUTO_INCREMENT');
             $this->updateQuery('ALTER TABLE #__acym_rule ADD COLUMN `increment_stats` TINYINT(3) NOT NULL');
             $this->updateQuery('ALTER TABLE #__acym_rule ADD COLUMN `execute_action_after` INT NOT NULL');
 
@@ -818,8 +818,8 @@ class acymInstall
             $this->updateQuery('ALTER TABLE #__acym_user_stat ADD `tracking_sale` FLOAT NULL');
             $this->updateQuery('ALTER TABLE #__acym_user_stat ADD `currency` VARCHAR(10) NULL');
             $this->updateQuery('ALTER TABLE #__acym_campaign ADD `visible` TINYINT(1) NOT NULL DEFAULT 1');
-            $this->updateQuery('ALTER TABLE #__acym_user MODIFY `language` VARCHAR(10) NOT NULL DEFAULT ""');
-            $this->updateQuery('ALTER TABLE #__acym_mail MODIFY `language` VARCHAR(10) NOT NULL DEFAULT ""');
+            $this->updateQuery('ALTER TABLE #__acym_user CHANGE `language` `language` VARCHAR(10) NOT NULL DEFAULT ""');
+            $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `language` `language` VARCHAR(10) NOT NULL DEFAULT ""');
             $this->updateQuery('ALTER TABLE `#__acym_mail` CHANGE `preheader` `preheader` TEXT NULL');
         }
 
@@ -1143,7 +1143,6 @@ class acymInstall
             $adminAutomations = $automationClass->getAutomationsAdmin();
 
             if (!empty($adminAutomations)) {
-                $mailClass = new MailClass();
                 foreach ($adminAutomations as $oneAutomation) {
                     $actions = $automationClass->getActionsByAutomationId($oneAutomation->id);
                     foreach ($actions as $oneAction) {
@@ -1250,7 +1249,7 @@ class acymInstall
                 }
             }
 
-            $this->updateQuery('ALTER TABLE #__acym_user CHANGE `automation` `automation` VARCHAR(50) NOT NULL DEFAULT \'\'');
+            $this->updateQuery('ALTER TABLE #__acym_user CHANGE `automation` `automation` VARCHAR(50) NOT NULL DEFAULT ""');
         }
 
         if (version_compare($this->fromVersion, '7.6.2', '<')) {
@@ -1562,6 +1561,25 @@ class acymInstall
                     ENGINE = InnoDB
                     /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;'
             );
+        }
+
+        if (version_compare($this->fromVersion, '8.6.2', '<')) {
+            $this->updateQuery('DELETE FROM #__acym_campaign WHERE mail_id IS NULL');
+
+            $mailsToClean = acym_loadResultArray(
+                'SELECT mail.id  
+                FROM `#__acym_mail` AS mail 
+                LEFT JOIN #__acym_campaign AS campaign 
+                    ON mail.id = campaign.mail_id
+                WHERE campaign.mail_id IS NULL
+                    AND mail.parent_id IS NULL
+                    AND mail.type = '.acym_escapeDB($mailClass::TYPE_STANDARD)
+            );
+
+            if (!empty($mailsToClean)) {
+                $this->updateQuery('DELETE FROM #__acym_mail_archive WHERE mail_id IN ('.implode(',', $mailsToClean).')');
+                $mailClass->delete($mailsToClean);
+            }
         }
     }
 

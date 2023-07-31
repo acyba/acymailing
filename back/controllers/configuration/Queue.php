@@ -4,25 +4,6 @@ namespace AcyMailing\Controllers\Configuration;
 
 trait Queue
 {
-    public function detecttimeout()
-    {
-        acym_query('REPLACE INTO `#__acym_configuration` (`name`,`value`) VALUES ("max_execution_time","5"), ("last_maxexec_check","'.time().'")');
-        //We try to extend it...
-        @ini_set('max_execution_time', 600);
-        @ignore_user_abort(true);
-        $i = 0;
-        //Max 8 minutes anyway...
-        while ($i < 480) {
-            sleep(8);
-            $i += 10;
-            acym_query('UPDATE `#__acym_configuration` SET `value` = "'.intval($i).'" WHERE `name` = "max_execution_time"');
-            acym_query('UPDATE `#__acym_configuration` SET `value` = "'.intval(time()).'" WHERE `name` = "last_maxexec_check"');
-            //We do that every 10 seconds...
-            sleep(2);
-        }
-        exit;
-    }
-
     public function deletereport()
     {
         $path = trim(html_entity_decode($this->config->get('cron_savepath')));

@@ -128,6 +128,8 @@ trait Security
             }
         }
 
+        $maxExecutionTime = intval(ini_get('max_execution_time'));
+
         //Add missing columns in tables
         foreach ($tableNames as $oneTableName) {
             if (empty($columnNames[$oneTableName])) continue;
@@ -267,18 +269,17 @@ trait Security
                 $messagesNoHtml[] = ['error' => false, 'color' => 'blue', 'msg' => acym_translation('ACYM_CHECKDB_DUPLICATED_URLS')];
 
                 // Make sure we don't reach the max execution time
-                $maxexecutiontime = intval($this->config->get('max_execution_time'));
-                if (empty($maxexecutiontime) || $maxexecutiontime - 20 < 20) {
-                    $maxexecutiontime = 20;
+                if (empty($maxExecutionTime) || $maxExecutionTime - 20 < 20) {
+                    $maxExecutionTime = 20;
                 } else {
-                    $maxexecutiontime -= 20;
+                    $maxExecutionTime -= 20;
                 }
 
                 acym_increasePerf();
                 while (!empty($duplicatedUrls)) {
                     $urlClass->delete($duplicatedUrls);
 
-                    if (time() - $time > $maxexecutiontime) {
+                    if (time() - $time > $maxExecutionTime) {
                         $interrupted = true;
                         break;
                     }

@@ -64,10 +64,6 @@ trait Listing
                 $text = acym_translation('ACYM_SEND_CONFIGURATION_WARNING');
                 $text .= '<p class="acym__do__not__remindme" title="sendoverload">'.acym_translation('ACYM_DO_NOT_REMIND_ME').'</p>';
                 acym_enqueueMessage($text, 'warning');
-                $remindme = json_decode($this->config->get('remindme', []), true);
-                if (in_array('sendoverload', $remindme)) {
-                    $data['displayWarningOverload'] = true;
-                }
             }
         }
     }

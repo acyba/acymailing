@@ -115,12 +115,13 @@ function acym_display($messages, $type = 'success', $close = true)
 
 function acym_increasePerf()
 {
-    //Do not add a memory increase here, it may break on some servers for security reasons.
-    //We increase the time... we should be able to run for as long as we want to, at least we try
-    @ini_set('max_execution_time', 600);
-    //It happens we execute big regex... we make sure we can do that!
-    //Default value is 100 000, we set it as 1 million
-    //That will be useful in many processes but we force it also when sending e-mails to avoid problems.
+    // Increase the max exec time to be able to handle long processes such as the send process
+    $maxExecutionTime = ini_get('max_execution_time');
+    if ($maxExecutionTime < 600) {
+        @ini_set('max_execution_time', 600);
+    }
+
+    // This is for big regex, the default value is 100 000
     @ini_set('pcre.backtrack_limit', 1000000);
 }
 

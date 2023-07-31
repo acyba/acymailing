@@ -13,7 +13,7 @@ class DelayType extends acymObject
     /**
      * type : 1 : minutes/hour/days/weeks ; 2 : minutes/hours ; 0 : seconds/minutes ; 3 : hours, day, week, months
      */
-    public function display($map, $value, $type = 1, $num = '', $inputClass = '')
+    public function display($map, $value, $type = 1, $num = '', $inputClass = '', $hiddenInputClass = '')
     {
         static $i = 0;
         $i++;
@@ -32,6 +32,7 @@ class DelayType extends acymObject
                 if(delaytype == "week"){ realValue = realValue*604800; }
                 if(delaytype == "month"){ realValue = realValue*2592000; }
                 delayvar.value = realValue;
+                delayvar.dispatchEvent(new Event("change"));
             }';
             $updateFunction = 'updateDelay'.$this->num.'();';
         } else {
@@ -78,8 +79,8 @@ class DelayType extends acymObject
 
 
         $return = $this->get($value, $type);
-        $delayValue = '<input class="intext_input '.$inputClass.'" onchange="'.$updateFunction.$this->onChange.'" type="number" id="delayvalue'.$this->num.'" value="'.$return->value.'" /> ';
-        $delayVar = '<input type="hidden" name="'.$map.'" id="delayvar'.$this->num.'" value="'.$value.'"/>';
+        $delayValue = '<input class="intext_input '.$inputClass.'" onchange="'.$updateFunction.$this->onChange.'" type="number" min="0" id="delayvalue'.$this->num.'" value="'.$return->value.'" /> ';
+        $delayVar = '<input class="'.$hiddenInputClass.'" type="hidden" name="'.$map.'" id="delayvar'.$this->num.'" value="'.$value.'"/>';
 
         return $delayValue.acym_select(
                 $this->values,

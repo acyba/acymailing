@@ -69,6 +69,7 @@ class FrontstatsController extends acymController
                 $subscriber = $userClass->getOneById($userId);
                 if (!empty($subscriber)) {
                     $subscriber->last_open_date = acym_date('now', 'Y-m-d H:i:s');
+                    $userClass->triggers = false;
                     $userClass->save($subscriber);
                 }
             }

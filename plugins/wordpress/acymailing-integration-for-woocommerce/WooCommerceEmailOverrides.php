@@ -633,9 +633,7 @@ trait WooCommerceEmailOverrides
             $dynamicText['{user_login}'] = $emailTypeClass->user_login;
             $dynamicText['{user_password}'] = $emailTypeClass->user_pass;
             $dynamicText['{my_account_link}'] = make_clickable(esc_url(wc_get_page_permalink('myaccount')));
-            $dynamicText['{link_reset_password}'] = esc_url(
-                add_query_arg(['key' => $emailTypeClass->reset_key, 'id' => $emailTypeClass->user_id], wc_get_endpoint_url('lost-password', '', wc_get_page_permalink('myaccount')))
-            );
+            $dynamicText['{link_reset_password}'] = add_query_arg(['key' => $emailTypeClass->reset_key, 'id' => $emailTypeClass->user_id], wc_get_endpoint_url('lost-password', '', wc_get_page_permalink('myaccount')));
         }
 
 

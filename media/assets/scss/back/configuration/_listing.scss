@@ -141,6 +141,11 @@
         .cname-name, .cname-value {
             cursor: pointer;
         }
+
+        #automatic_sending_speed_preview {
+            font-weight: bold;
+            color: $color-palette-cyan;
+        }
     }
 
     #delete_stats_enabled, #delete_user_history_enabled, #delete_archive_history_enabled {

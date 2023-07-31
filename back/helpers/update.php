@@ -74,7 +74,6 @@ class UpdateHelper extends acymObject
     {
         $newConfig = new \stdClass();
         $newConfig->website = ACYM_LIVE;
-        $newConfig->max_execution_time = 0;
         $this->config->save($newConfig);
 
         // Init extension information

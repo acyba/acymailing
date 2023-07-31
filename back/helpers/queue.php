@@ -59,11 +59,6 @@ class QueueHelper extends acymObject
             $timelimit = 600;
         }
 
-        $calculatedTimeout = $this->config->get('max_execution_time');
-        if (!empty($calculatedTimeout)) {
-            $timelimit = $calculatedTimeout;
-        }
-
         //4 seconds for security...
         if (!empty($timelimit)) {
             $this->stoptime = time() + $timelimit - 4;
