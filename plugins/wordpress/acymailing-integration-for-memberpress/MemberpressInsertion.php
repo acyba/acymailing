@@ -11,14 +11,11 @@ trait MemberpressInsertion
     {
         ?>
 
-		<script language="javascript" type="text/javascript">
-            <!--
+		<script type="text/javascript">
             function changeMemberPressTag(tagname, element) {
                 if (!tagname) return;
                 setTag('{<?php echo $this->name; ?>:' + tagname + '}', element);
             }
-
-            -->
 		</script>
 
         <?php

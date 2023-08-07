@@ -2,7 +2,7 @@
 <extension type="plugin" version="3.0" method="upgrade" group="user">
 	<name>AcyMailing CB Plugin</name>
 	<creationDate>October 2019</creationDate>
-	<version>1.2.0</version>
+	<version>1.3.0</version>
 	<author>Acyba</author>
 	<authorEmail>dev@acyba.com</authorEmail>
 	<authorUrl>https://www.acymailing.com</authorUrl>

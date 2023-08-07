@@ -102,7 +102,8 @@ class getAcymTab extends cbTabHandler
         $config = acym_config();
 
         // Display a confirmation link if needed
-        if ('0' === $acyUser->confirmed && '1' === $config->get('require_confirmation')) {
+        $requireConfirmation = $config->get('require_confirmation');
+        if (0 === intval($acyUser->confirmed) && 1 === intval($requireConfirmation)) {
             $myLink = acym_frontendLink('frontusers&task=confirm&id='.$acyUser->id.'&key='.urlencode($acyUser->key));
             acym_display('<a target="_blank" href="'.$myLink.'">'.acym_translation('ACYM_CONFIRM_SUBSCRIPTION').'</a>', 'warning');
         }
@@ -143,9 +144,18 @@ class getAcymTab extends cbTabHandler
             $acyUser->cms_id = $cbUser->id;
         }
 
-        if (isset($cbUser->confirmed)) $acyUser->confirmed = intval($cbUser->confirmed);
-        if (!empty($cbUser->block)) $acyUser->active = 0;
-        if ($this->getParam('enabled', 0) == 1) $acyUser->active = 1;
+        if (isset($cbUser->confirmed)) {
+            $acyUser->confirmed = intval($cbUser->confirmed);
+        }
+
+        if (!empty($cbUser->block)) {
+            $acyUser->active = 0;
+        }
+
+        $enabled = $this->getParam('enabled', 0);
+        if (intval($enabled) === 1) {
+            $acyUser->active = 1;
+        }
 
         $userClass = new UserClass();
         $userClass->checkVisitor = false;
@@ -170,7 +180,8 @@ class getAcymTab extends cbTabHandler
         $userClass->subscribe($acyUser->id, $addlists);
 
         // We should remove the user subscription if he unchecked some lists and already exists
-        if (0 == $this->getParam('updateonregister', 0) || empty($currentSubscription)) return;
+        $updateRegister = $this->getParam('updateonregister', 0);
+        if (0 === intval($updateRegister) || empty($currentSubscription)) return;
 
         $allvisiblelists = acym_getVar('string', 'visibleLists');
         $allvisiblelistsArray = explode(',', $allvisiblelists);
@@ -241,8 +252,8 @@ class getAcymTab extends cbTabHandler
         $visibleListsArray = [];
         $visibleLists = explode(',', $lists);
         foreach ($allLists as $listId => $oneList) {
-            if ('0' === $oneList->active || '0' === $oneList->visible || !in_array($listId, $visibleLists)) continue;
-            if ('profile' === $mode && (empty($userLists[$listId]) || '1' !== $userLists[$listId]->status)) continue;
+            if (0 === intval($oneList->active) || 0 === intval($oneList->visible) || !in_array($listId, $visibleLists)) continue;
+            if ('profile' === $mode && (empty($userLists[$listId]) || 1 !== intval($userLists[$listId]->status))) continue;
 
             $visibleListsArray[] = $listId;
         }
@@ -271,7 +282,7 @@ class getAcymTab extends cbTabHandler
             if ('edition' === $mode) {
                 $return .= '<td class="acym_list_status">'.acym_boolean(
                         'acymcb[list]['.$listId.']',
-                        !empty($userLists[$listId]) && '1' === (string)($userLists[$listId]->status)
+                        !empty($userLists[$listId]) && 1 === intval($userLists[$listId]->status)
                     ).'</td>';
             }
             $return .= '<td class="acym_list_name">'.$allLists[$listId]->name.'</td>';
@@ -301,7 +312,8 @@ class getAcymTab extends cbTabHandler
             }
 
             // Checking if user is confirmed in Acymailing
-            if ('0' === $acyUser->confirmed && '1' === $config->get('require_confirmation')) {
+            $requireConfirmation = $config->get('require_confirmation');
+            if (0 === intval($acyUser->confirmed) && 1 === intval($requireConfirmation)) {
                 $myLink = acym_frontendLink('frontusers&task=confirm&id='.$acyUser->id.'&key='.urlencode($acyUser->key));
                 acym_display('<a target="_blank" href="'.$myLink.'">'.acym_translation('ACYM_CONFIRM_SUBSCRIPTION').'</a>', 'warning');
             }

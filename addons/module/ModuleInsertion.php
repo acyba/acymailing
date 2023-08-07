@@ -103,11 +103,11 @@ trait ModuleInsertion
         $data = acym_fileGetContent($url);
 
         $decodedData = @json_decode($data, true);
-        if (empty($decodedData['output'])) {
+        if (empty($decodedData['data']['output'])) {
             return '';
         }
 
-        $moduleOutput = $decodedData['output'];
+        $moduleOutput = $decodedData['data']['output'];
         // Replace any occurrence of the loading URL in the inserted module by the homepage URL
         $temporaryUrl = str_replace(ACYM_LIVE, '', $url);
         $moduleOutput = str_replace([$temporaryUrl, str_replace('&', '&amp;', $temporaryUrl)], 'index.php', $moduleOutput);

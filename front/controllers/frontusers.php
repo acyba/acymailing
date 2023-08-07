@@ -264,10 +264,10 @@ class FrontusersController extends UsersController
                 $code = 7;
                 $msgtype = 'error';
             }
-            $extraMsg = acym_getVar('string', 'confirmation_message');
+            $extraMsg = acym_getVar('cmd', 'confirmation_message');
         } else {
             if ($userClass->subscribed) {
-                $msg = acym_getVar('string', 'confirmation_message');
+                $msg = acym_getVar('cmd', 'confirmation_message');
                 if (empty($msg)) $msg = 'ACYM_SUBSCRIPTION_OK';
                 $code = 3;
             } else {

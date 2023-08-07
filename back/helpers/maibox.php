@@ -89,7 +89,7 @@ class MailboxHelper extends BounceHelper
             }
         }
 
-        if ($conditions['sender'] == 'list' && !empty($conditions['lists'])) {
+        if ($conditions['sender'] == 'lists' && !empty($conditions['lists'])) {
             $userClass = new UserClass();
             $user = $userClass->getOneByEmail($fromEmail);
 

@@ -35,8 +35,9 @@ class plgAcymAcymailer extends acymPlugin
         22 => 'ACYM_EMAIL_SENT',
         23 => 'ACYM_INVALID_API_KEY',
         24 => 'ACYM_LICENSE_BLOCKED',
+        25 => 'ACYM_SEE_LOGS_FILE',
     ];
-    private $errorCodes = [0, 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24];
+    private $errorCodes = [0, 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25];
 
     public function __construct()
     {
@@ -526,8 +527,7 @@ class plgAcymAcymailer extends acymPlugin
             'POST'
         );
         if (!empty($result['logs'])) {
-            $js = 'jQuery(function() { console.log("'.acym_escape($result['logs']).'") });';
-            acym_addScript(true, $js);
+            acym_logError($result['logs'], self::SENDING_METHOD_ID);
         }
 
         if (!empty($responseMailer['error_curl'])) {
@@ -629,8 +629,7 @@ class plgAcymAcymailer extends acymPlugin
             );
 
             if (!empty($responseApi['data'][$domainName]['logs'])) {
-                $js = 'jQuery(function() { console.log("'.acym_escape($responseApi['data'][$domainName]['logs']).'") });';
-                acym_addScript(true, $js);
+                acym_logError($responseApi['data'][$domainName]['logs'], self::SENDING_METHOD_ID);
             }
         }
 
@@ -744,8 +743,11 @@ class plgAcymAcymailer extends acymPlugin
             */
 
             $message = acym_translation('ACYM_ERROR_ON_CALL_ACYBA_WEBSITE').': '.$this->translate($responseApi);
-            $logs = !empty($responseApi['logs']) ? $responseApi['logs'] : '';
-            acym_sendAjaxResponse($message, ['logs' => $logs], false);
+            if (!empty($responseApi['logs'])) {
+                acym_logError($responseApi['logs'], self::SENDING_METHOD_ID);
+            }
+
+            acym_sendAjaxResponse($message, [], false);
         } else {
             $field = self::SENDING_METHOD_ID.'_domains';
             $domains = json_decode($this->config->get($field, '[]'), true);

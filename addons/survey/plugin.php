@@ -46,24 +46,6 @@ class plgAcymSurvey extends acymPlugin
         }
     }
 
-    public function initElementOptionsCustomView()
-    {
-        $this->elementOptions = [];
-        $element = acym_loadObject('SELECT * FROM #__survey_surveys LIMIT 1');
-        if (empty($element)) return;
-        foreach ($element as $key => $value) {
-            $this->elementOptions[$key] = [$key];
-        }
-    }
-
-    public function initReplaceOptionsCustomView()
-    {
-        $this->replaceOptions = [
-            'link' => ['ACYM_LINK'],
-            'readmore' => ['ACYM_READ_MORE'],
-        ];
-    }
-
     public function getPossibleIntegrations()
     {
         return $this->pluginDescription;
@@ -179,6 +161,26 @@ class plgAcymSurvey extends acymPlugin
         return true;
     }
 
+    public function initElementOptionsCustomView()
+    {
+        $this->elementOptions = [];
+        $element = acym_loadObject('SELECT * FROM #__survey_surveys LIMIT 1');
+        if (empty($element)) {
+            return;
+        }
+        foreach ($element as $key => $value) {
+            $this->elementOptions[$key] = [$key];
+        }
+    }
+
+    public function initReplaceOptionsCustomView()
+    {
+        $this->replaceOptions = [
+            'link' => ['ACYM_LINK'],
+            'readmore' => ['ACYM_READ_MORE'],
+        ];
+    }
+
     public function replaceIndividualContent($tag)
     {
         $query = 'SELECT element.*
@@ -212,11 +214,8 @@ class plgAcymSurvey extends acymPlugin
         }
 
         $readMoreText = empty($tag->readmore) ? acym_translation('ACYM_READ_MORE') : $tag->readmore;
-
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'">';
-        $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.acym_escape($readMoreText).'</span>';
-        $varFields['{readmore}'] .= '</a>';
-
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'
+            .acym_escape($readMoreText).'</span></a>';
         if (in_array('readmore', $tag->display)) {
             $afterTopic .= $varFields['{readmore}'];
         }
@@ -261,12 +260,6 @@ class plgAcymSurvey extends acymPlugin
         $tags = [];
         foreach ($extractedTags as $shortcode => $oneTag) {
             if (isset($tags[$shortcode])) {
-                continue;
-            }
-
-            // The current user hasn't any account created on the site (only an AcyMailing user)
-            if (empty($user->cms_id)) {
-                $tags[$shortcode] = '';
                 continue;
             }
 
