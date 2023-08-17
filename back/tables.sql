@@ -547,7 +547,6 @@ CREATE TABLE IF NOT EXISTS `#__acym_plugin` (
 	`category` VARCHAR(100) NOT NULL,
 	`level` VARCHAR(50) NOT NULL,
 	`uptodate` INT NOT NULL,
-	`features` VARCHAR(255) NOT NULL,
 	`description` LONGTEXT NOT NULL,
 	`latest_version` VARCHAR(10) NOT NULL,
 	`settings` LONGTEXT NULL,

@@ -12,6 +12,13 @@ class plgAcymK2 extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'K2 Content',
+            'description' => '- Insert K2 items in your emails',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/k2-content',
+            'category' => 'Content management',
+            'level' => 'essential',
+        ];
         $this->installed = acym_isExtensionActive('com_k2');
 
         $this->pluginDescription->name = 'K2';

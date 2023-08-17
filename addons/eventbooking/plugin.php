@@ -18,6 +18,13 @@ class plgAcymEventbooking extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'Event Booking',
+            'description' => '- Insert events in your emails<br>- Filter your users based on their event registrations<br>- Trigger automations based on starting events',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/event-booking',
+            'category' => 'Events management',
+            'level' => 'starter',
+        ];
         $this->installed = acym_isExtensionActive('com_eventbooking');
         $this->rootCategoryId = 0;
 

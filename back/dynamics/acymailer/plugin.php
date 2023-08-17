@@ -183,7 +183,7 @@ class plgAcymAcymailer extends acymPlugin
 						<i class="acymicon-exclamation-triangle acym__color__orange"></i>
 						<span>
 							<?php
-                            $subscriptionsPage = ACYM_ACYMAILING_WEBSITE.'account/subscriptions?utm_source=acymailing_plugin&utm_medium=sendingmethod&utm_campaign=purchase';
+                            $subscriptionsPage = ACYM_ACYMAILING_WEBSITE.'account/license?utm_source=acymailing_plugin&utm_medium=sendingmethod&utm_campaign=purchase';
                             echo acym_translation('ACYM_API_KEY_NOT_ALLOWING_METHOD');
                             ?>
 							<a target="_blank" href="<?php echo $subscriptionsPage; ?>"><?php echo acym_translation('ACYM_SWITCH_MY_LICENSE'); ?></a>
@@ -943,17 +943,38 @@ class plgAcymAcymailer extends acymPlugin
             return;
         }
 
+        $unityTranslation = 'ACYM_CREDITS_REMAINING';
+        $creditsShowed = $response['remaining_credits'];
+
+        if (!empty($response['is_multisite'])) {
+            $fromEmail = $this->config->get('from_email', '');
+            // If the license is multisite we check and increment credits on the domain of the from email
+            $domain = explode('@', $fromEmail)[1];
+
+            if (empty($domain) || empty($response['domains'][$domain])) {
+                $html = acym_translation('ACYM_DOMAIN_FROM_EMAIL_NOT_VALID_ASS');
+            } else {
+                $domainData = $response['domains'][$domain];
+                if ($domainData['is_limited']) {
+                    $creditsShowed = $domainData['remaining_credits'];
+                } else {
+                    $creditsShowed = $domainData['credits_used'];
+                    $unityTranslation = 'ACYM_CREDITS_USED';
+                }
+            }
+        }
+
         $html = acym_translationSprintf(
             'ACYM_SENDING_METHOD_X_UNITY',
             self::SENDING_METHOD_NAME,
             acym_tooltip(
-                $response['remaining_credits'],
+                $creditsShowed,
                 acym_translation('ACYM_GET_MORE_CREDITS'),
                 'credits_remaining',
                 '',
                 ACYM_ACYMAILING_WEBSITE
             ),
-            '<span class="acym_not_bold">'.acym_translation('ACYM_CREDITS_REMAINING').'</span>'
+            '<span class="acym_not_bold">'.acym_translation($unityTranslation).'</span>'
         );
     }
 

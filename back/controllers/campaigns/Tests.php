@@ -6,6 +6,7 @@ use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\MailerHelper;
+use AcyMailing\Helpers\UpdatemeHelper;
 
 
 trait Tests
@@ -278,21 +279,20 @@ trait Tests
         } else {
             ob_start();
             $urlSite = trim(base64_encode(preg_replace('#https?://(www2?\.)?#i', '', ACYM_LIVE)), '=/');
-            $url = ACYM_SPAMURL.'spamTestSystem&component=acymailing&level='.strtolower($this->config->get('level', 'starter')).'&urlsite='.$urlSite;
-            $spamtestSystem = acym_fileGetContent($url, 30);
+            $level = strtolower($this->config->get('level', 'starter'));
+            $spamtestSystem = UpdatemeHelper::call('public/getSpamSystem?level='.$level.'&urlSite='.$urlSite);
             $warnings = ob_get_clean();
 
             // Could not load the information
             if (empty($spamtestSystem) || !empty($warnings)) {
                 $message = acym_translation('ACYM_ERROR_LOAD_FROM_ACYBA').(!empty($warnings) && acym_isDebug() ? $warnings : '');
             } else {
-                $decodedInformation = json_decode($spamtestSystem, true);
-                if (!empty($decodedInformation['messages']) || !empty($decodedInformation['error'])) {
-                    $msgError = empty($decodedInformation['messages']) ? '' : $decodedInformation['messages'].'<br />';
-                    $msgError .= empty($decodedInformation['error']) ? '' : $decodedInformation['error'];
+                if (!empty($spamtestSystem['messages']) || !empty($spamtestSystem['error'])) {
+                    $msgError = empty($spamtestSystem['messages']) ? '' : $spamtestSystem['messages'].'<br />';
+                    $msgError .= empty($spamtestSystem['error']) ? '' : $spamtestSystem['error'];
                     $message = $msgError;
                 } else {
-                    if (empty($decodedInformation['email'])) {
+                    if (empty($spamtestSystem['email'])) {
                         $message = acym_translation('ACYM_SPAMTEST_MISSING_EMAIL');
                     } else {
                         $mailerHelper = new MailerHelper();
@@ -301,15 +301,15 @@ trait Tests
                         //send a message to acy-WEBSITE-randnumber@mail-tester.com
                         $receiver = new \stdClass();
                         $receiver->id = 0;
-                        $receiver->email = $decodedInformation['email'];
-                        $receiver->name = $decodedInformation['name'];
+                        $receiver->email = $spamtestSystem['email'];
+                        $receiver->name = $spamtestSystem['name'];
                         $receiver->confirmed = 1;
                         $receiver->enabled = 1;
                         $mailerHelper->isSpamTest = true;
 
                         if ($mailerHelper->sendOne($campaign->mail_id, $receiver)) {
                             $success = true;
-                            $data['url'] = 'https://mailtester.acyba.com/'.(substr($decodedInformation['email'], 0, strpos($decodedInformation['email'], '@')));
+                            $data['url'] = 'https://mailtester.acyba.com/'.(substr($spamtestSystem['email'], 0, strpos($spamtestSystem['email'], '@')));
                             $data['lang'] = acym_getLanguageTag(true);
                         } else {
                             $message = $mailerHelper->reportMessage;

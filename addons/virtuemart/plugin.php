@@ -22,6 +22,13 @@ class plgAcymVirtuemart extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'VirtueMart',
+            'description' => '- Insert products in your emails<br>- Create and send personal coupons to your receivers<br>- Filter your users based on their VM fields<br>- Filter users based on their shopper groups<br>- Filter customers based on their purchases',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/virtuemart',
+            'category' => 'E-commerce solutions',
+            'level' => 'enterprise',
+        ];
         $this->installed = acym_isExtensionActive('com_virtuemart');
         if ($this->installed) {
             $params = JComponentHelper::getParams('com_languages');

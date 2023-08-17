@@ -264,6 +264,10 @@ trait Followup
 
     public function saveFollowupCondition()
     {
+        if (!acym_isAdmin()) {
+            die('Access denied for follow-ups');
+        }
+
         $id = acym_getVar('int', 'id', 0);
         $trigger = acym_getVar('string', 'trigger', '');
         $followupData = acym_getVar('array', 'followup', []);
@@ -292,6 +296,10 @@ trait Followup
 
     public function saveFollowupEmail($redirect = true)
     {
+        if (!acym_isAdmin()) {
+            die('Access denied for follow-ups');
+        }
+
         $id = acym_getVar('int', 'id', 0);
         $followupData = acym_getVar('array', 'followup', []);
         if (empty($id) || empty($followupData)) return false;

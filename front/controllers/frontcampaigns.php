@@ -2,6 +2,7 @@
 
 namespace AcyMailing\FrontControllers;
 
+use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Controllers\CampaignsController;
 use AcyMailing\Libraries\acymParameter;
 
@@ -9,9 +10,8 @@ class FrontcampaignsController extends CampaignsController
 {
     public function __construct()
     {
-        if (!acym_level(ACYM_ENTERPRISE)) {
-            acym_redirect(acym_rootURI(), 'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', 'warning');
-        }
+        parent::__construct();
+
         if (ACYM_CMS == 'joomla') {
             $menu = acym_getMenu();
             if (is_object($menu)) {
@@ -22,32 +22,86 @@ class FrontcampaignsController extends CampaignsController
         }
 
         $this->loadScripts = [
-            'edit' => ['vue-applications' => ['entity_select'], 'editor-wysid'],
+            'edit_email' => [
+                'vue-applications' => ['entity_select'],
+                'editor-wysid',
+            ],
+            'recipients' => [
+                'vue-applications' => ['entity_select'],
+            ],
+            'send_settings' => [
+                'editor-wysid',
+            ],
+            'summary' => [
+                'vue-applications' => ['modal_users_summary'],
+            ],
         ];
-        $this->authorizedFrontTasks = [
-            'campaigns',
-            'saveAsDraftCampaign',
-            'addQueue',
-            'save',
-            'edit',
-            'newEmail',
-            'welcome',
-            'unsubscribe',
-            'countNumberOfRecipients',
-            'editEmail',
-            'saveAjax',
-            'confirmCampaign',
-            'stopScheduled',
-            'duplicate',
-            'delete',
-            'deleteAttachmentAjax',
+
+        $this->allowedTasks = [
+            'index.php?option=com_acym&view=frontcampaigns&layout=campaigns' => [
+                'campaigns',
+                'newEmail',
+                'edit',
+                'save',
+                'saveAjax',
+                'deleteAttachmentAjax',
+                'countNumberOfRecipients',
+                'saveAsDraftCampaign',
+                'confirmCampaign',
+                'stopScheduled',
+                'duplicate',
+                'delete',
+                'welcome',
+                'unsubscribe',
+                'clearFilters',
+                'addQueue',
+            ],
         ];
-        $this->urlsFrontMenu = ['index.php?option=com_acym&view=frontcampaigns&layout=campaigns', 'index.php?option=com_acym&view=frontcampaigns&layout=listing'];
-        parent::__construct();
     }
 
     protected function setFrontEndParamsForTemplateChoose()
     {
         return acym_currentUserId();
+    }
+
+    public function delete()
+    {
+        acym_checkToken();
+        $ids = acym_getVar('array', 'elements_checked', []);
+
+        $initialNumberOfCampaigns = count($ids);
+
+        $campaignClass = new CampaignClass();
+        $campaignClass->onlyManageableCampaigns($ids);
+
+        if ($initialNumberOfCampaigns != count($ids)) {
+            die('Access denied for campaign deletion');
+        }
+
+        parent::delete();
+    }
+
+    public function edit()
+    {
+        $nextstep = acym_getVar('string', 'nextstep', '');
+        $step = acym_getVar('string', 'step', '');
+        if (empty($nextstep)) {
+            $nextstep = $step;
+        }
+
+        $allowedSteps = [
+            'listing',
+            'chooseTemplate',
+            'editEmail',
+            'recipients',
+            'sendSettings',
+            'summary',
+        ];
+
+        if (!in_array($nextstep, $allowedSteps)) {
+            die('Access denied for this campaign');
+        }
+
+        return parent::edit();
     }
 }

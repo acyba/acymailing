@@ -16,6 +16,13 @@ class plgAcymEasysocial extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'EasySocial',
+            'description' => '- Insert user information in emails<br>- Insert events in your emails<br>- Filter users on their profile type<br>- Filter users on their group<br>- Filter users on their badges<br>- Filter users on their fields<br>- Filter users attending events',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/easysocial',
+            'category' => 'User management',
+            'level' => 'starter',
+        ];
         $this->installed = acym_isExtensionActive('com_easysocial');
         $this->rootCategoryId = 0;
 

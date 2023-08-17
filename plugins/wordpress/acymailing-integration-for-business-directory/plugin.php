@@ -25,7 +25,6 @@ class plgAcymBusinessdirectory extends acymPlugin
         $this->pluginDescription->name = 'Business Directory';
         $this->pluginDescription->icon = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/icon.png';
         $this->pluginDescription->category = 'Content management';
-        $this->pluginDescription->features = '["content"]';
         $this->pluginDescription->description = '- Insert individual listings in your emails<br />- Insert listings by category';
 
         if ($this->installed) {

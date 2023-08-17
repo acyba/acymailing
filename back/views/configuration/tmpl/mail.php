@@ -316,45 +316,32 @@
 				</div>
                 <?php
             } else {
-                if ($this->config->get('dkim', 0) == 1 && ($this->config->get('dkim_private', '') == '' || $this->config->get('dkim_public', '') == '')) {
+                //Be compatible with what we used to have:
+                $publicKey = 'v=DKIM1;s=email;t=s;p='.trim($this->config->get('dkim_public', ''), '"');
 
-                    //We need to load our JS file to load a new key
-                    //So we also display the private hidden field there...
-                    echo acym_translation('ACYM_DKIM_SAVE');
-                    acym_addScript(false, ACYM_UPDATEMEURL.'generatedkim');
-                    ?>
-					<input type="hidden" id="dkim_private" name="config[dkim_private]" />
-					<input type="hidden" id="dkim_public" name="config[dkim_public]" />
-
-                    <?php
-                } else {
-                    //Be compatible with what we used to have:
-                    $publicKey = 'v=DKIM1;s=email;t=s;p='.trim($this->config->get('dkim_public', ''), '"');
-
-                    echo acym_translationSprintf(
-                        'ACYM_DKIM_CONFIGURE',
-                        '<input class="margin-bottom-0" type="text" id="dkim_domain" name="config[dkim_domain]" value="'.acym_escape($domain).'" />'
-                    );
-                    ?>
-					<div class="cell">
-                        <?php echo acym_translation('ACYM_DKIM_KEY'); ?>
-						<input id="dkim_key" class="acym_autoselect margin-bottom-0" type="text" readonly="readonly" value="acy._domainkey" />
-					</div>
-					<div class="cell">
-                        <?php echo acym_translation('ACYM_DKIM_VALUE'); ?>
-						<input id="dkim_value" class="acym_autoselect margin-bottom-0" type="text" readonly="readonly" value="<?php echo acym_escape($publicKey); ?>" />
-					</div>
-					<div class="cell">
-						<input type="checkbox" value="1" id="dkimletme" name="dkimletme" />
-						<label for="dkimletme"><?php echo acym_translation('ACYM_DKIM_LET_ME'); ?></label>
-					</div>
-                    <?php
-                }
+                echo acym_translationSprintf(
+                    'ACYM_DKIM_CONFIGURE',
+                    '<input class="margin-bottom-0" type="text" id="dkim_domain" name="config[dkim_domain]" value="'.acym_escape($domain).'" />'
+                );
+                ?>
+				<div class="cell">
+                    <?php echo acym_translation('ACYM_DKIM_KEY'); ?>
+					<input id="dkim_key" class="acym_autoselect margin-bottom-0" type="text" readonly="readonly" value="acy._domainkey" />
+				</div>
+				<div class="cell">
+                    <?php echo acym_translation('ACYM_DKIM_VALUE'); ?>
+					<input id="dkim_value" class="acym_autoselect margin-bottom-0" type="text" readonly="readonly" value="<?php echo acym_escape($publicKey); ?>" />
+				</div>
+				<div class="cell">
+					<input type="checkbox" value="1" id="dkimletme" name="dkimletme" />
+					<label for="dkimletme"><?php echo acym_translation('ACYM_DKIM_LET_ME'); ?></label>
+				</div>
+                <?php
             }
             ?>
 
 			<div class="cell">
-				<a class="button button-secondary margin-bottom-0 margin-top-1" target="_blank" href="<?php echo ACYM_HELPURL; ?>dkim">
+				<a class="button button-secondary margin-bottom-0 margin-top-1" target="_blank" href="https://docs.acymailing.com/setup/configuration/mail-configuration/dkim">
                     <?php echo acym_translation('ACYM_HELP'); ?>
 				</a>
 			</div>

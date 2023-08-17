@@ -18,7 +18,6 @@ class plgAcymEventon extends acymPlugin
         $this->pluginDescription->name = 'EventON';
         $this->pluginDescription->icon = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/icon.png';
         $this->pluginDescription->category = 'Events management';
-        $this->pluginDescription->features = '["content"]';
         $this->pluginDescription->description = '- Insert events in your emails';
 
         if ($this->installed) {

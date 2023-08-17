@@ -10,7 +10,10 @@ class ModuleloaderController extends acymController
     {
         parent::__construct();
         $this->setDefaultTask('loadAjax');
-        $this->authorizedFrontTasks = ['loadAjax'];
+
+        $this->publicFrontTasks = [
+            'loadAjax',
+        ];
     }
 
     public function loadAjax()

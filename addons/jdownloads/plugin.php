@@ -12,6 +12,13 @@ class plgAcymJdownloads extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'jDownloads',
+            'description' => '- Insert file descriptions in your emails',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/jdownloads',
+            'category' => 'Files management',
+            'level' => 'essential',
+        ];
         if (!defined('JPATH_ADMINISTRATOR') || !file_exists(rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_jdownloads'.DS)) {
             $this->installed = false;
         } else {

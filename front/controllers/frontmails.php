@@ -2,6 +2,7 @@
 
 namespace AcyMailing\FrontControllers;
 
+use AcyMailing\Classes\MailClass;
 use AcyMailing\Controllers\MailsController;
 use AcyMailing\Libraries\acymParameter;
 
@@ -9,7 +10,9 @@ class FrontmailsController extends MailsController
 {
     public function __construct()
     {
-        if (ACYM_CMS == 'joomla') {
+        parent::__construct();
+
+        if (ACYM_CMS === 'joomla') {
             $menu = acym_getMenu();
             if (is_object($menu)) {
                 $params = method_exists($menu, 'getParams') ? $menu->getParams() : $menu->params;
@@ -18,23 +21,35 @@ class FrontmailsController extends MailsController
             }
         }
 
-        $this->authorizedFrontTasks = [
-            'autoSave',
-            'setNewIconShare',
-            'delete',
-            'edit',
-            'setNewThumbnail',
-            'getTemplateAjax',
-            'apply',
-            'saveAjax',
-            'save',
-            'sendTest',
-            'getMailByIdAjax',
-        ];
         $this->loadScripts = [
             'edit' => ['editor-wysid'],
         ];
-        parent::__construct();
+
+        $this->allowedTasks = [
+            'index.php?option=com_acym&view=frontlists&layout=listing' => [
+                'autoSave',
+                'sendTest',
+                'getTemplateAjax',
+                'setNewIconShare',
+                'delete',
+                'saveAjax',
+                'save',
+                'getMailByIdAjax',
+                'apply',
+                'edit',
+            ],
+            'index.php?option=com_acym&view=frontcampaigns&layout=campaigns' => [
+                'autoSave',
+                'sendTest',
+                'getTemplateAjax',
+                'setNewIconShare',
+                'delete',
+                'edit',
+                'saveAjax',
+                'save',
+                'apply',
+            ],
+        ];
     }
 
     protected function setFrontEndParamsForTemplateChoose()
@@ -42,11 +57,17 @@ class FrontmailsController extends MailsController
         return acym_currentUserId();
     }
 
-    public function setNewIconShare()
+    public function delete()
     {
-        $menuFront = acym_loadObject('SELECT * FROM #__menu WHERE link LIKE "%index.php?option=com_acym&view=frontcampaigns%"');
-        if (empty($menuFront)) return;
+        $ids = acym_getVar('array', 'elements_checked', []);
 
-        parent::setNewIconShare();
+        $mailClass = new MailClass();
+        foreach ($ids as $id) {
+            if (!$mailClass->hasUserAccess($id)) {
+                die('Access denied for mail deletion');
+            }
+        }
+
+        parent::delete();
     }
 }

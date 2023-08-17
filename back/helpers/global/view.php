@@ -27,7 +27,8 @@ function acym_loadAssets($ctrl, $task)
     // Include JS
     acym_addScript(
         true,
-        'var AJAX_URL_UPDATEME = "'.ACYM_UPDATEMEURL.'";
+        'const ACYM_AVAILABLE_PLUGINS = "'.str_replace('"', '\"', ACYM_AVAILABLE_PLUGINS).'";
+        const ACYM_UPDATEME_API_URL = "'.ACYM_UPDATEME_API_URL.'";
         var AJAX_URL_ACYMAILING = "'.ACYM_ACYMAILING_WEBSITE.'";
         var ACYM_MEDIA_URL = "'.ACYM_MEDIA_URL.'";
         var ACYM_CMS = "'.ACYM_CMS.'";

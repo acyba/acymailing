@@ -25,8 +25,11 @@
 					<h3 class="acym__title__primary__color acym__middle_absolute__text text-center"><?php echo acym_translation('ACYM_CAMPAIGN_ALREADY_QUEUED'); ?></h3>
                 <?php }
                 $entityHelper = $data['entitySelectHelper'];
-
-                echo $entityHelper->entitySelect('list', ['join' => 'join_mail-'.$data['currentCampaign']->mail_id], $entityHelper->getColumnsForList('maillist.mail_id'));
+                echo $entityHelper->entitySelect(
+                    'list',
+                    ['join' => 'join_mail-'.$data['currentCampaign']->mail_id],
+                    $entityHelper->getColumnsForList('maillist.mail_id')
+                );
                 ?>
 				<div class="cell grid-x acym__campaign__recipients__total-recipients acym__content acym_vcenter">
 					<p class="cell shrink"><?php echo acym_translation('ACYM_CAMPAIGN_SENT_TO'); ?>&nbsp;</p>

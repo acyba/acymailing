@@ -12,6 +12,13 @@ class plgAcymTableofcontents extends acymPlugin
     public function __construct()
     {
         parent::__construct();
+        $this->addonDefinition = [
+            'name' => 'Table of contents generator',
+            'description' => '- Insert a dynamic table of contents in your emails based on their contents',
+            'documentation' => 'https://docs.acymailing.com/addons/all-cms-add-ons/table-of-contents-generator',
+            'category' => 'Content management',
+            'level' => 'essential',
+        ];
         $this->pluginDescription->name = 'Table of contents';
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.svg';
     }

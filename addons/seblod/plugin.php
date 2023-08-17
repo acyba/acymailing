@@ -15,6 +15,13 @@ class plgAcymSeblod extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'Seblod',
+            'description' => '- Insert Seblod articles in your emails',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/seblod',
+            'category' => 'User management',
+            'level' => 'starter',
+        ];
         $this->installed = acym_isExtensionActive('com_cck');
 
         $this->pluginDescription->name = 'Seblod';

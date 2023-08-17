@@ -6,12 +6,19 @@ require_once __DIR__.DIRECTORY_SEPARATOR.'ZooInsertion.php';
 
 class plgAcymZoo extends acymPlugin
 {
-	use ZooInsertion;
+    use ZooInsertion;
 
     public function __construct()
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'Zoo',
+            'description' => '- Insert Zoo content in your emails<br>- Insert content by category',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/zoo',
+            'category' => 'Content management',
+            'level' => 'starter',
+        ];
         $this->installed = acym_isExtensionActive('com_zoo');
         $this->rootCategoryId = 0;
 

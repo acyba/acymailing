@@ -7,6 +7,19 @@ use AcyMailing\Helpers\ExportHelper;
 
 class plgAcymAutomationexport extends acymPlugin
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'Export in automations',
+            'description' => '- Export the filtered users in the automations',
+            'documentation' => 'https://docs.acymailing.com/addons/all-cms-add-ons/automation-export-action',
+            'category' => 'User management',
+            'level' => 'enterprise',
+        ];
+    }
+
     public function onAcymDeclareActions(&$actions)
     {
         $actions['export'] = new stdClass();

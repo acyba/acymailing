@@ -19,6 +19,10 @@ trait Actions
         $mailClass = new MailClass();
         $campaignId = 0;
 
+        if (!acym_isAdmin()) {
+            $campaignClass->onlyManageableCampaigns($campaignsSelected);
+        }
+
         foreach ($campaignsSelected as $campaignSelected) {
             //we get the campaign
             $campaign = $campaignClass->getOneById($campaignSelected);
@@ -39,6 +43,7 @@ trait Actions
             unset($mail->id);
             $mail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
             $mail->name .= '_copy';
+            $mail->creator_id = acym_currentUserId();
             $idNewMail = $mailClass->save($mail);
 
             $translations = $mailClass->getTranslationsById($oldMailId, true);
@@ -147,6 +152,10 @@ trait Actions
         $campaignClass = new CampaignClass();
 
         if (!empty($campaignID)) {
+            if (!$campaignClass->hasUserAccess($campaignID)) {
+                die('Access denied for campaign send modification');
+            }
+
             $campaign = new stdClass();
             $campaign->id = $campaignID;
             $campaign->active = 0;
@@ -161,6 +170,7 @@ trait Actions
         } else {
             acym_enqueueMessage(acym_translation('ACYM_CAMPAIGN_CANT_BE_SAVED'), 'error');
         }
+
         $this->listing();
     }
 
@@ -171,6 +181,10 @@ trait Actions
         $campaignSendingDate = acym_getVar('string', 'sending_date');
         $resendTarget = acym_getVar('cmd', 'resend_target', '');
         $campaignClass = new CampaignClass();
+
+        if (!$campaignClass->hasUserAccess($campaignId)) {
+            die('Access denied for campaign confirmation');
+        }
 
         $campaign = new stdClass();
         $campaign->id = $campaignId;
@@ -224,6 +238,10 @@ trait Actions
         $campaignId = acym_getVar('int', 'id');
         $campaignClass = new CampaignClass();
 
+        if (!$campaignClass->hasUserAccess($campaignId)) {
+            die('Access denied for campaign draft save');
+        }
+
         $campaign = new stdClass();
         $campaign->id = $campaignId;
         $campaign->draft = 1;
@@ -274,15 +292,19 @@ trait Actions
 
     public function addQueue()
     {
-        $this->updateOpenAcymailerPopup();
         acym_checkToken();
+        $this->updateOpenAcymailerPopup();
 
+        $campaignClass = new CampaignClass();
         $campaignID = acym_getVar('int', 'id', 0);
 
         if (empty($campaignID)) {
             acym_enqueueMessage(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), 'error');
         } else {
-            $campaignClass = new CampaignClass();
+
+            if (!$campaignClass->hasUserAccess($campaignID)) {
+                die('Access denied to add campaign to the queue');
+            }
             $campaign = $campaignClass->getOneByIdWithMail($campaignID);
 
             $resendTarget = acym_getVar('cmd', 'resend_target', '');
@@ -320,7 +342,7 @@ trait Actions
 
     private function updateOpenAcymailerPopup()
     {
-        if (acym_isAdmin() && $this->config->get('mailer_method') === 'acymailer' && $this->config->get('acymailer_popup', '0') === '0') {
+        if (acym_isAdmin() && $this->config->get('mailer_method') === 'acymailer' && intval($this->config->get('acymailer_popup', 0)) === 0) {
             $this->config->save(['acymailer_popup' => '1']);
         }
     }

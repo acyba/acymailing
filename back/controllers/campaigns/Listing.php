@@ -111,7 +111,7 @@ trait Listing
         $toolbarHelper->addSearchBar($data['search'], 'campaigns_search');
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'newEmail'], 'add', true);
         $mailClass = new MailClass();
-        if (empty($data['campaign_type']) || $data['campaign_type'] !== $mailClass::TYPE_FOLLOWUP) {
+        if (acym_isAdmin() && (empty($data['campaign_type']) || $data['campaign_type'] !== $mailClass::TYPE_FOLLOWUP)) {
             $toolbarHelper->addFilterByTag($data, 'campaigns_tag', 'acym__campaigns__filter__tags acym__select');
         }
 
@@ -146,7 +146,7 @@ trait Listing
     {
         $this->getAllParamsRequest($data);
         $this->prepareEmailsListing($data, $data['campaign_type']);
-        if ($data['campaign_type'] == 'campaigns_auto') {
+        if ($data['campaign_type'] === 'campaigns_auto') {
             $this->getAutoCampaignsFrequency($data);
             $this->getIsPendingGenerated($data);
         }

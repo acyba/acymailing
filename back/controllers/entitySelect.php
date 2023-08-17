@@ -26,7 +26,9 @@ class EntitySelectController extends acymController
         $join = acym_getVar('string', 'join');
         $joinColumnGet = acym_getVar('string', 'join_table', '');
         $columnsToDisplay = explode(',', acym_getVar('string', 'columns', ''));
-        if (!empty($joinColumnGet)) $columnsToDisplay['join'] = $joinColumnGet;
+        if (!empty($joinColumnGet)) {
+            $columnsToDisplay['join'] = $joinColumnGet;
+        }
 
         $entityBack = $this->loadEntityBack($entity, $offset, $perCalls, $join, $columnsToDisplay);
         if (!empty($entityBack['error'])) {
@@ -36,7 +38,7 @@ class EntitySelectController extends acymController
         }
     }
 
-    public function loadEntityBack($entity, $offset, $perCalls, $join, $columnsToDisplay)
+    private function loadEntityBack($entity, $offset, $perCalls, $join, $columnsToDisplay): array
     {
         if (empty($entity) || (empty($offset) && 0 !== $offset) || empty($perCalls)) {
             return ['error' => acym_translation('ACYM_MISSING_PARAMETERS')];
@@ -50,9 +52,13 @@ class EntitySelectController extends acymController
         if (!empty($join)) $entityParams['join'] = $join;
         if (!empty($columnsToDisplay)) $entityParams['columns'] = $columnsToDisplay;
 
-        if ('list' == $entity) $entityParams['columns'][] = 'description';
+        if ('list' === $entity) {
+            $entityParams['columns'][] = 'description';
+        }
 
-        if (!acym_isAdmin()) $entityParams['creator_id'] = acym_currentUserId();
+        if (!acym_isAdmin()) {
+            $entityParams['creator_id'] = acym_currentUserId();
+        }
 
         $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($entity).'Class';
         $entityClass = new $namespaceClass;

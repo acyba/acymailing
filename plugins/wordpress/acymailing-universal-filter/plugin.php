@@ -13,7 +13,6 @@ class plgAcymUniversalfilter extends acymPlugin
 
         $this->pluginDescription->name = 'Universal filters in automations';
         $this->pluginDescription->category = 'User management';
-        $this->pluginDescription->features = '["automation"]';
         $this->pluginDescription->description = '- Filter AcyMailing subscribers based on any data from your database<br />- Filter users based on email addresses in a specified text';
     }
 

@@ -1,4 +1,4 @@
-jQuery(function($) {
+jQuery(function ($) {
     Vue.component('vue-switch', {
         props: [
             'plugin',
@@ -70,8 +70,7 @@ jQuery(function($) {
 
                         return false;
                     }
-                    let resPluginsSite = acym_helper.parseJson(document.getElementById('acym__plugins__all').value);
-                    this.allPlugins = resPluginsSite.elements;
+                    this.allPlugins = acym_helper.parseJson(document.getElementById('acym__plugins__all').value);
                     this.currentLevel = resConfig.data.value.toLowerCase();
                     this.resetDisplay();
                     if (this.displayedPlugins.length === 0) {
@@ -100,11 +99,6 @@ jQuery(function($) {
                     acym_helperDatePicker.setDatePickerGlobal();
                     acym_helperSelect2.setSelect2();
                     acym_helperInput.setMulticouple();
-                },
-                setShowSettings() {
-                    for (let plugin in this.allPlugins) {
-                        this.showSettings[this.allPlugins[plugin].id] = false;
-                    }
                 },
                 toggleSettings(folderName) {
                     let $cardToFlip = $('#acym__plugins__card__' + folderName);
@@ -176,12 +170,6 @@ jQuery(function($) {
                                && (plugin.folder_name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1);
                     });
                 },
-                toggleCurrentApp(pluginId) {
-                    this.allPlugins.map((plugin) => {
-                        if (plugin.id === pluginId) plugin.active = plugin.active === '1' ? '0' : '1';
-                    });
-                    this.displayedPlugins = [...this.displayedPlugins];
-                },
                 toggleUptodateCurrentApp(pluginId) {
                     this.allPlugins.map((plugin) => {
                         if (plugin.id === pluginId) plugin.uptodate = plugin.uptodate == '1' ? '0' : '1';
@@ -213,9 +201,6 @@ jQuery(function($) {
                         this.updating[this.allPlugins[plugin].id] = false;
                     }
                 },
-                transitionDelay(index) {
-                    return 'transition-delay: ' + (index * 0.1) + 's;';
-                },
                 isActivated(active) {
                     return active == 1 ? 'checked' : '';
                 },
@@ -224,16 +209,34 @@ jQuery(function($) {
                     this.fillDisplayPlugins();
                 },
                 imageUrl(pluginName, type) {
-                    if (type === 'CORE') {
-                        return ACYM_CORE_DYNAMICS_URL + pluginName + '/banner.png';
-                    } else if (type === 'PLUGIN') {
+                    if (type === 'PLUGIN') {
                         return ACYM_MEDIA_URL + 'images/plugins/' + pluginName + '.png';
                     } else {
-                        return AJAX_URL_UPDATEME + 'integrationv6&task=getImage&plugin=' + pluginName;
+                        return ACYM_CORE_DYNAMICS_URL + pluginName + '/banner.png';
                     }
                 },
-                documentationUrl(pluginName) {
-                    return AJAX_URL_UPDATEME + 'integrationv6&task=getDocumentation&plugin=' + pluginName;
+                documentationUrl(pluginName, type) {
+                    if ([
+                            'article',
+                            'page',
+                            'post'
+                        ].indexOf(pluginName) !== -1) {
+                        return 'https://docs.acymailing.com/addons/all-cms-add-ons/wordpress-posts-pages-and-joomla-articles';
+                    }
+
+                    if (pluginName === 'createuser') {
+                        return 'https://docs.acymailing.com/addons/all-cms-add-ons/create-user';
+                    }
+
+                    if (type === 'PLUGIN') {
+                        const pluginDefinitions = acym_helper.parseJson(ACYM_AVAILABLE_PLUGINS);
+                        const matchingPlugin = pluginDefinitions.find(plugin => plugin.file_name === pluginName);
+                        if (matchingPlugin) {
+                            return pluginDefinitions[i].documentation;
+                        }
+                    } else {
+                        return ACYM_UPDATEME_API_URL + 'public/addons/documentation?file_name=' + pluginName;
+                    }
                 },
                 isOverflown(index) {
                     if (this.$refs.plugins === undefined || this.$refs.plugins[index] === undefined) return '';

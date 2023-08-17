@@ -12,7 +12,6 @@ class plgAcymUltimatemember extends acymPlugin
 
         $this->pluginDescription->name = 'Ultimate Member';
         $this->pluginDescription->category = 'Subscription system';
-        $this->pluginDescription->features = '[]';
         $this->pluginDescription->description = '- Insert AcyMailing list on your Ultimate Member register form';
     }
 

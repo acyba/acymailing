@@ -13,7 +13,6 @@ class plgAcymAutomationexport extends acymPlugin
 
         $this->pluginDescription->name = 'Export in automations';
         $this->pluginDescription->category = 'User management';
-        $this->pluginDescription->features = '["automation"]';
         $this->pluginDescription->description = '- Export the filtered users in the automations';
     }
 

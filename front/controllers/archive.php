@@ -17,7 +17,12 @@ class ArchiveController extends acymController
     {
         parent::__construct();
         $this->setDefaultTask('view');
-        $this->authorizedFrontTasks = ['view', 'listing', 'showArchive', 'search'];
+
+        $this->publicFrontTasks = [
+            'view',
+            'showArchive',
+            'listing',
+        ];
     }
 
     public function view()

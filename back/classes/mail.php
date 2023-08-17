@@ -88,36 +88,40 @@ class MailClass extends acymClass
             }
         }
 
-        if (!empty($settings['automation']) || empty($settings['onlyStandard'])) {
-            $filters[] = 'mail.type != '.acym_escapeDB($this::TYPE_NOTIFICATION);
-            $filters[] = 'mail.type != '.acym_escapeDB($this::TYPE_OVERRIDE);
+        if (!empty($settings['gettingTemplates'])) {
+            $filters[] = 'mail.type = '.acym_escapeDB(self::TYPE_TEMPLATE);
         } else {
-            $filters[] = 'mail.type IN ('.acym_escapeDB($this::TYPE_STANDARD).', '.acym_escapeDB($this::TYPE_TEMPLATE).')';
+            if (!empty($settings['automation']) || empty($settings['onlyStandard'])) {
+                $filters[] = 'mail.type != '.acym_escapeDB(self::TYPE_NOTIFICATION);
+                $filters[] = 'mail.type != '.acym_escapeDB(self::TYPE_OVERRIDE);
+            } else {
+                $filters[] = 'mail.type IN ('.acym_escapeDB(self::TYPE_STANDARD).', '.acym_escapeDB(self::TYPE_TEMPLATE).')';
+            }
+
+            if (empty($settings['automation'])) {
+                $filters[] = 'mail.type IN ('.acym_escapeDB(self::TYPE_TEMPLATE).', '.acym_escapeDB(self::TYPE_WELCOME).', '.acym_escapeDB(self::TYPE_UNSUBSCRIBE).')';
+            }
+
+            if (!empty($settings['creator_id'])) {
+                $mailTypeCondition = 'mail.type IN ('.acym_escapeDB(self::TYPE_TEMPLATE).', '.acym_escapeDB(self::TYPE_WELCOME).', '.acym_escapeDB(self::TYPE_UNSUBSCRIBE).')';
+                $userGroups = acym_getGroupsByUser($settings['creator_id']);
+                $groupCondition = '(mail.access LIKE "%,'.implode(',%" OR mail.access LIKE "%,', $userGroups).',%")';
+                $filter = 'mail.creator_id = '.intval($settings['creator_id']).' OR ('.$mailTypeCondition.' AND '.$groupCondition.')';
+
+                if (!acym_isAdmin() && !empty($settings['element_tab'])) {
+                    $filter = '('.$filter.') 
+                            OR list.cms_user_id = '.intval($settings['creator_id']).' 
+                            OR (list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%")';
+                }
+
+                $filters['list'] = '('.$filter.')';
+            }
         }
 
         $filters[] = 'mail.parent_id IS NULL';
 
-        if (empty($settings['automation'])) {
-            $filters[] = 'mail.type IN ('.acym_escapeDB($this::TYPE_TEMPLATE).', '.acym_escapeDB($this::TYPE_WELCOME).', '.acym_escapeDB($this::TYPE_UNSUBSCRIBE).')';
-        }
-
         if (!empty($settings['drag_editor'])) {
             $filters[] = 'mail.drag_editor = 1';
-        }
-
-        if (!empty($settings['creator_id'])) {
-            $mailTypeCondition = 'mail.type IN ('.acym_escapeDB($this::TYPE_TEMPLATE).', '.acym_escapeDB($this::TYPE_WELCOME).', '.acym_escapeDB($this::TYPE_UNSUBSCRIBE).')';
-            $userGroups = acym_getGroupsByUser($settings['creator_id']);
-            $groupCondition = '(mail.access LIKE "%,'.implode(',%" OR mail.access LIKE "%,', $userGroups).',%")';
-            $filter = 'mail.creator_id = '.intval($settings['creator_id']).' OR ('.$mailTypeCondition.' AND '.$groupCondition.')';
-
-            if (!acym_isAdmin() && !empty($settings['element_tab'])) {
-                $filter = '('.$filter.') 
-                            OR list.cms_user_id = '.intval($settings['creator_id']).' 
-                            OR (list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%")';
-            }
-
-            $filters['list'] = '('.$filter.')';
         }
 
         if (!empty($settings['element_tab'])) {
@@ -1407,5 +1411,25 @@ class MailClass extends acymClass
                     AND `body` LIKE '.acym_escapeDB('%'.acym_utf8Encode('{emailcontent}').'%')
             )
         );
+    }
+
+    public function hasUserAccess(int $mailId): bool
+    {
+        $userId = acym_currentUserId();
+        if (empty($userId)) {
+            return false;
+        }
+
+        if (acym_isAdmin()) {
+            return true;
+        }
+
+        return acym_loadResult(
+                'SELECT COUNT(*) 
+                FROM #__acym_mail 
+                WHERE id = '.intval($mailId).' 
+                AND (creator_id = '.intval($userId).' 
+                    OR type = '.acym_escapeDB(self::TYPE_TEMPLATE).')'
+            ) > 0;
     }
 }

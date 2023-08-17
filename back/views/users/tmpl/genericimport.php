@@ -1,5 +1,5 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm">
-	<input type="hidden" name="filename" id="filename" value="<?php echo acym_getVar('cmd', 'filename'); ?>" />
+	<input type="hidden" name="acym_import_filename" id="filename" value="<?php echo acym_getVar('cmd', 'acym_import_filename'); ?>" />
 	<input type="hidden" name="import_columns" id="import_columns" value="" />
 	<input type="hidden" name="new_list" id="acym__import__new-list" value="" />
 	<div id="acym__users__import__generic" class="acym__content">
@@ -22,7 +22,7 @@
 			<div class="acym__title"><?php echo acym_translation('ACYM_PARAMETERS'); ?></div>
 			<div class="cell grid-x grid-margin-x margin-y">
 				<div class="cell large-6 grid-x">
-					<label for="acyencoding" class="cell medium-6">File charset</label>
+					<label for="acyencoding" class="cell medium-6"><?php echo acym_translation('ACYM_FILE_CHARSET'); ?></label>
 					<div class="cell medium-6">
                         <?php
                         $encodingHelper = new AcyMailing\Helpers\EncodingHelper();

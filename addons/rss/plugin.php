@@ -7,6 +7,13 @@ class plgAcymRss extends acymPlugin
     public function __construct()
     {
         parent::__construct();
+        $this->addonDefinition = [
+            'name' => 'RSS content',
+            'description' => '- Insert content in your emails from an RSS link',
+            'documentation' => 'https://docs.acymailing.com/addons/all-cms-add-ons/rss-feed',
+            'category' => 'Content management',
+            'level' => 'essential',
+        ];
         $this->pluginDescription->name = 'RSS and Atom feeds';
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.svg';
 

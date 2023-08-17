@@ -61,11 +61,11 @@ class DynamicsController extends acymController
 
         if (empty($user)) {
             $user = new \stdClass();
-            $user->email = acym_currentUserEmail();
+            $user->email = $userEmail;
             $user->name = acym_currentUserName();
             $user->cms_id = acym_currentUserId();
             $user->confirmed = 0;
-            $user->source = 'Back-end';
+            $user->source = acym_isAdmin() ? 'Back-end' : 'Front-end';
 
             $userClass->checkVisitor = false;
             $user->id = $userClass->save($user);
@@ -87,6 +87,7 @@ class DynamicsController extends acymController
         $plugin = acym_getVar('cmd', 'plugin', '');
         $trigger = acym_getVar('cmd', 'trigger', '');
         if (empty($plugin) || empty($trigger)) exit;
+
         $shortcode = acym_getVar('string', 'shortcode', '');
 
         $defaultValues = new \stdClass();
@@ -101,7 +102,7 @@ class DynamicsController extends acymController
             $defaultValues->defaultPluginTab = $pluginSubType;
         }
 
-        if (empty((array)$defaultValues) && $trigger == 'insertionOptions') {
+        if (empty((array)$defaultValues) && $trigger === 'insertionOptions') {
             $rawDefaultValues = $this->config->get('dcontent_default_'.$plugin);
 
             if (!empty($rawDefaultValues)) {
@@ -112,7 +113,6 @@ class DynamicsController extends acymController
         }
 
         acym_trigger($trigger, [$defaultValues], $plugin);
-
         exit;
     }
 }

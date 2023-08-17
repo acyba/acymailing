@@ -8,7 +8,12 @@ class FrontfileController extends FileController
 {
     public function __construct()
     {
-        $this->authorizedFrontTasks = ['select'];
         parent::__construct();
+
+        $this->allowedTasks = [
+            'index.php?option=com_acym&view=frontcampaigns&layout=campaigns' => [
+                'select',
+            ],
+        ];
     }
 }

@@ -6,6 +6,7 @@ use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\SegmentClass;
+use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\EntitySelectHelper;
 use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Helpers\ToolbarHelper;
@@ -237,10 +238,15 @@ trait Listing
     public function addToList()
     {
         $listsSelected = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
-        $userSelected = acym_getVar('array', 'elements_checked');
+        $userSelected = acym_getVar('array', 'elements_checked', []);
+
+        $userClass = new UserClass();
+        $userClass->onlyManageableUsers($userSelected);
+
         foreach ($userSelected as $user) {
-            $this->currentClass->subscribe($user, $listsSelected);
+            $userClass->subscribe($user, $listsSelected);
         }
+
         $this->listing();
     }
 }

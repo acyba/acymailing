@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Libraries;
 
+use AcyMailing\Classes\ListClass;
 use AcyMailing\Helpers\HeaderHelper;
 
 class acymController extends acymObject
@@ -13,9 +14,8 @@ class acymController extends acymObject
     var $breadcrumb = [];
     var $loadScripts = [];
     var $currentClass = null;
-    var $authorizedFrontTasks = [];
-    var $publicFrontTasks = [];
-    var $urlsFrontMenu = [];
+    protected $publicFrontTasks = [];
+    protected $allowedTasks = [];
     var $sessionName = '';
     var $taskCalled = '';
     protected $menuClass = '';
@@ -341,34 +341,39 @@ class acymController extends acymObject
         return $matchingElement;
     }
 
-    public function checkTaskFront($task)
+    public function checkTaskFront($task = '')
     {
-        $menuItemExist = true;
-        // if joomla, we search the menu we are currently trying to access
-        // if we don't find it with the url
-        // it means the user is not supposed to have access to it
-        if (ACYM_CMS === 'joomla' && !empty($this->urlsFrontMenu)) {
-            $jsite = \JFactory::getApplication('site');
-            $menus = $jsite->getMenu();
-            $menusExists = 0;
-            foreach ($this->urlsFrontMenu as $url) {
-                if (empty($menus->getItems('link', $url))) {
-                    continue;
-                }
-                $menusExists++;
-            }
-            $menuItemExist = !empty($menusExists);
+        if (empty($task) && !empty($this->defaulttask)) {
+            $task = $this->defaulttask;
         }
-        if (!in_array($task, $this->publicFrontTasks) && (!in_array($task, $this->authorizedFrontTasks) || !$menuItemExist)) {
-            acym_menuOnly($this->urlsFrontMenu);
-            $currentUserid = acym_currentUserId();
-            if (empty($currentUserid)) {
-                acym_askLog(true, 'ACYM_ONLY_LOGGED', 'info');
 
-                return;
-            }
+        // Handle whitelisted tasks
+        if (in_array($task, $this->publicFrontTasks)) {
+            $this->$task();
+
+            return;
         }
-        $this->$task();
+
+        // No front-end management for WordPress users
+        if (empty(acym_currentUserId()) || ACYM_CMS !== 'joomla' || !acym_level(ACYM_ENTERPRISE)) {
+            die('Front-end management not available');
+        }
+
+        // If there is no menu, someone typed the URL manually
+        $currentMenu = acym_getMenu();
+        if (empty($currentMenu)) {
+            die('Direct access denied');
+        }
+
+        // We whitelist specific routes when having access to specific menus
+        if (!empty($this->allowedTasks[$currentMenu->link]) && in_array($task, $this->allowedTasks[$currentMenu->link])) {
+            $this->$task();
+
+            return;
+        }
+
+        // Blacklist tasks by default
+        die('Unknown route, access denied');
     }
 
     protected function prepareMultilingualOption(&$data)

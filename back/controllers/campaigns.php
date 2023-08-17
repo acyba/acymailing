@@ -116,6 +116,10 @@ class CampaignsController extends acymController
         if (!empty($mailId) && $attachmentId >= 0) {
             $mailClass = new MailClass();
 
+            if (!$mailClass->hasUserAccess($mailId)) {
+                acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_DELETE_ATTACHMENT'), [], false);
+            }
+
             if ($mailClass->deleteOneAttachment($mailId, $attachmentId)) {
                 acym_sendAjaxResponse(acym_translation('ACYM_ATTACHMENT_WELL_DELETED'));
             }
@@ -169,6 +173,10 @@ class CampaignsController extends acymController
 
     public function saveAsTmplAjax()
     {
+        if (!acym_isAdmin()) {
+            die('Access denied');
+        }
+
         $mailController = new MailsController();
         $isWellSaved = $mailController->store(true);
         acym_sendAjaxResponse($isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), ['result' => $isWellSaved], $isWellSaved);

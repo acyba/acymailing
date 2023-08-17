@@ -77,9 +77,4 @@ class ConfigurationClass extends acymClass
 
         return $status;
     }
-
-    public function setLicenseKeyByDomain()
-    {
-        if (!acym_level(ACYM_ESSENTIAL)) return true;
-    }
 }

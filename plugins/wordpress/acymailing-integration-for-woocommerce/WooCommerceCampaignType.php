@@ -39,15 +39,15 @@ trait WooCommerceCampaignType
             'months' => acym_translation('ACYM_MONTHS'),
         ];
 
-        $selectedtType = 'days';
+        $selectedType = 'days';
         if (!empty($sendingParams) && isset($sendingParams[$this->mailType.'_type'])) {
-            $selectedtType = $sendingParams[$this->mailType.'_type'];
+            $selectedType = $sendingParams[$this->mailType.'_type'];
         }
         $timeSelect = '<div class="cell medium-2 margin-left-1 margin-right-1">';
         $timeSelect .= acym_select(
             $timeSelectOptions,
             'acym_woocomerce_time_frame',
-            $selectedtType,
+            $selectedType,
             ['class' => 'acym__select']
         );
         $timeSelect .= '</div>';
@@ -113,7 +113,6 @@ trait WooCommerceCampaignType
                 'status' => $campaign->sending_params[$this->mailType.'_status'],
                 'payment' => 'any',
             ],
-
         ];
 
         if (!$this->installed) {
@@ -121,6 +120,7 @@ trait WooCommerceCampaignType
 
             return;
         }
+
         $filters[] = $filter;
     }
 

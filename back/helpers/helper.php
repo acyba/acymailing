@@ -5,20 +5,17 @@ define('ACYM_DBPREFIX', '#__acym_');
 define('ACYM_LANGUAGE_FILE', 'com_acym');
 define('ACYM_ACYMAILING_WEBSITE', 'https://www.acymailing.com/');
 define('ACYM_ACYCHECKER_WEBSITE', 'https://www.acychecker.com/');
+define('ACYM_UPDATEME_API_URL', 'https://api.acymailing.com/');
 define('ACYM_YOURCRONTASK_IP', '178.23.155.178');
-define('ACYM_UPDATEMEURL', 'https://www.acyba.com/index.php?option=com_updateme&nocache='.time().'&ctrl=');
-define('ACYM_SPAMURL', ACYM_UPDATEMEURL.'spamsystem&task=');
-define('ACYM_HELPURL', ACYM_UPDATEMEURL.'doc&component='.ACYM_NAME.'&page=');
-define('ACYM_REDIRECT', ACYM_UPDATEMEURL.'redirect&page=');
-define('ACYM_UPDATEURL', ACYM_UPDATEMEURL.'update&task=');
-define('ACYM_FEEDBACK_URL', ACYM_UPDATEMEURL.'feedback&task=');
 define('ACYM_DOCUMENTATION', 'https://docs.acymailing.com/');
 define('ACYM_COMPONENT_NAME_API', 'acymailing');
 define('ACYM_PRODUCTION', '{__PRODUCTION__}');
 define('ACYM_STARTER', 0);
 define('ACYM_ESSENTIAL', 1);
 define('ACYM_ENTERPRISE', 2);
-if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
+if (!defined('DS')) {
+    define('DS', DIRECTORY_SEPARATOR);
+}
 
 include_once rtrim(dirname(__DIR__), DS).DS.'libraries'.DS.strtolower('{__CMS__}.php');
 

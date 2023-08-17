@@ -47,7 +47,6 @@ class PluginClass extends acymClass
         $newPlugin->category = $plugin->pluginDescription->category;
         $newPlugin->level = 'starter';
         $newPlugin->uptodate = 1;
-        $newPlugin->features = $plugin->pluginDescription->features;
         $newPlugin->description = $plugin->pluginDescription->description;
         $newPlugin->latest_version = '1.0';
         $newPlugin->type = 'PLUGIN';
@@ -95,7 +94,7 @@ class PluginClass extends acymClass
         parent::delete($plugin->id);
     }
 
-    public function updateAddon($addon)
+    public function updateAddon(string $addon)
     {
         $plugin = $this->getOneByFolderName($addon);
 
@@ -114,25 +113,26 @@ class PluginClass extends acymClass
         return $this->save($pluginToSave);
     }
 
-    public function downloadAddon($name, $ajax = true)
+    public function downloadAddon(string $name, bool $ajax = true)
     {
-        $urlDownload = ACYM_UPDATEMEURL.'download&task=download&dynamic='.$name.'&license_domain='.urlencode(rtrim(ACYM_LIVE, '/'));
+        $response = acym_fileGetContent(ACYM_UPDATEME_API_URL.'public/download/addon?file_name='.$name.'&api_key='.$this->config->get('license_key'));
 
-        $package = acym_fileGetContent($urlDownload);
-        if (strpos($package, 'error') !== false) {
-            $result = json_decode($package, true);
-            $error = $result['error'];
-            if (!empty($this->errors[$error])) $error = $this->errors[$error];
+        if (empty($response)) {
+            return $this->handleError('ACYM_ISSUE_WHILE_DOWNLOADING', $ajax);
+        }
+
+        if (strpos($response, 'error') !== false) {
+            $result = json_decode($response, true);
+            $error = $result['message'];
+            if (!empty($this->errors[$error])) {
+                $error = $this->errors[$error];
+            }
 
             return $this->handleError($error, $ajax);
         }
 
-        if (empty($package)) {
-            return $this->handleError('ACYM_ISSUE_WHILE_DOWNLOADING', $ajax);
-        }
-
         $tmpZipDownload = ACYM_ADDONS_FOLDER_PATH.$name.'.zip';
-        if (!acym_writeFile($tmpZipDownload, $package)) {
+        if (!acym_writeFile($tmpZipDownload, $response)) {
             return $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
         }
 

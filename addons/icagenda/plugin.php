@@ -16,6 +16,13 @@ class plgAcymIcagenda extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'iCagenda',
+            'description' => '- Insert events in your emails<br>- Filter your users based on their event registrations',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/icagenda',
+            'category' => 'Events management',
+            'level' => 'essential',
+        ];
         $this->installed = acym_isExtensionActive('com_icagenda');
         $this->rootCategoryId = 0;
 

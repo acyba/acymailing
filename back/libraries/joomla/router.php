@@ -51,10 +51,19 @@ function acym_prepareFrontViewDisplay($ctrl, $task)
 function acym_loadCmsScripts()
 {
     $toggleController = acym_isAdmin() ? 'toggle' : 'fronttoggle';
+    if (acym_isAdmin()) {
+        $ajaxUrl = 'index.php?option='.ACYM_COMPONENT.'&'.acym_noTemplate().'&'.acym_getFormToken().'&nocache='.time();
+    } else {
+        $ajaxUrl = acym_rootURI().'index.php?option='.ACYM_COMPONENT.'&'.acym_noTemplate().'&'.acym_getFormToken().'&nocache='.time();
+        $currentMenu = acym_getMenu();
+        if (!empty($currentMenu->id)) {
+            $ajaxUrl .= '&Itemid='.$currentMenu->id;
+        }
+    }
     acym_addScript(
         true,
         '
-        var ACYM_AJAX_URL = "'.(acym_isAdmin() ? '' : acym_rootURI()).'index.php?option='.ACYM_COMPONENT.'&'.acym_noTemplate().'&'.acym_getFormToken().'&nocache='.time().'";
+        var ACYM_AJAX_URL = "'.$ajaxUrl.'";
         var ACYM_TOGGLE_URL = ACYM_AJAX_URL + "&ctrl='.$toggleController.'";
         var ACYM_JOOMLA_MEDIA_IMAGE = "'.ACYM_LIVE.'";
         var ACYM_JOOMLA_MEDIA_FOLDER = "'.addslashes(trim(JComponentHelper::getParams("com_media")->get('file_path', 'images'), '/').'/').'";

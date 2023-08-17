@@ -15,49 +15,41 @@ trait Available
         $data['tab'] = 'available';
         $data['types'] = $this->types;
         $data['level'] = $this->level;
-        $data['features'] = $this->features;
         $data['workflowHelper'] = new WorkflowHelper();
 
         parent::display($data);
     }
 
-    private function handleError($error, $ajax)
-    {
-        if ($ajax) {
-            acym_sendAjaxResponse(acym_translation($error), [], false);
-        } else {
-            return acym_translation($error);
-        }
-    }
-
-    public function download($ajax = true, $pluginFromUpdate = '')
+    public function download(bool $ajax = true, string $pluginFromUpdate = '')
     {
         $plugin = [];
 
-        $pluginClass = new PluginClass();
         if (empty($pluginFromUpdate)) {
             $this->isLatestAcyMailingVersion();
             $plugin = acym_getVar('array', 'plugin');
         } else {
-            $urlDownload = ACYM_UPDATEMEURL.'integrationv6&task=getAllPlugin&cms='.ACYM_CMS;
-            $plugins = acym_fileGetContent($urlDownload);
-            $plugins = json_decode($plugins);
-            if (!empty($plugins['error'])) $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
-            foreach ($plugins as $key => $onePlugin) {
-                $folder = str_replace('.zip', '', $onePlugin->file_name);
-                if ($pluginFromUpdate === $folder) {
-                    $plugin = (array)$plugins[$key];
+            $plugins = acym_fileGetContent(ACYM_UPDATEME_API_URL.'public/addons');
+            $plugins = @json_decode($plugins, true);
+            if (empty($plugins)) {
+                $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
+            }
+
+            foreach ($plugins as $onePlugin) {
+                if ($pluginFromUpdate === $onePlugin['file_name']) {
+                    $plugin = $onePlugin;
                     break;
                 }
             }
 
-            if (empty($plugin)) return '';
+            if (empty($plugin)) {
+                return acym_translation('ACYM_ADD_ON_NOT_FOUND');
+            }
         }
-        $plugin['file_name'] = str_replace('.zip', '', $plugin['file_name']);
 
+        $pluginClass = new PluginClass();
         $pluginClass->downloadAddon($plugin['file_name'], $ajax);
 
-        //We update the plugin info in DB
+        // We update the plugin info in DB
         $pluginToSave = new \stdClass();
         $pluginToSave->title = $plugin['name'];
         $pluginToSave->folder_name = $plugin['file_name'];
@@ -68,20 +60,25 @@ trait Available
         $pluginToSave->category = $plugin['category'];
         $pluginToSave->level = $plugin['level'];
         $pluginToSave->uptodate = 1;
-        $pluginToSave->features = json_encode($plugin['features']);
         $pluginToSave->id = $pluginClass->save($pluginToSave);
 
         if (!empty($pluginToSave->id)) {
-            //we send the success message
             if ($ajax) {
                 acym_sendAjaxResponse(acym_translation('ACYM_ADD_ON_SUCCESSFULLY_INSTALLED'));
             }
-        } else {
-            return $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
+
+            return '';
         }
+
+        return $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
     }
 
-    public function getAllPlugins()
+    public function getAllPluginsAjax()
+    {
+        acym_sendAjaxResponse('', $this->getAllPlugins());
+    }
+
+    public function getAllPlugins(): array
     {
         $pluginClass = new PluginClass();
         $plugins = $pluginClass->getMatchingElements(['ordering' => 'title']);
@@ -93,12 +90,15 @@ trait Available
         }
         acym_trigger('onAcymAddSettings', [&$plugins['elements']]);
 
-        return json_encode($plugins);
+        return $plugins['elements'];
     }
 
-    public function getAllPluginsAjax()
+    private function handleError($error, $ajax)
     {
-        echo $this->getAllPlugins();
-        exit;
+        if ($ajax) {
+            acym_sendAjaxResponse(acym_translation($error), [], false);
+        }
+
+        return acym_translation($error);
     }
 }

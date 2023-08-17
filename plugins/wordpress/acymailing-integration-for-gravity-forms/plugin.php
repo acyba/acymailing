@@ -15,7 +15,6 @@ class plgAcymGravityforms extends acymPlugin
 
         $this->pluginDescription->name = 'Gravity Forms';
         $this->pluginDescription->category = 'Subscription system';
-        $this->pluginDescription->features = '[]';
         $this->pluginDescription->description = '- Add AcyMailing lists on your forms';
 
         $this->propertyLabels = [

@@ -1,5 +1,9 @@
 const acym_helperThumbnail = {
     setAjaxSaveThumbnail: function () {
+        if (!ACYM_IS_ADMIN) {
+            return true;
+        }
+
         const $editorThumbnail = jQuery('#editor_thumbnail');
         const $savedThumbnail = jQuery('[name="thumbnail"]');
 

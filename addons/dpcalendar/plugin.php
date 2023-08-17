@@ -12,6 +12,13 @@ class plgAcymDpcalendar extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'DPCalendar',
+            'description' => '- Insert events in your emails',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/dpcalendar',
+            'category' => 'Events management',
+            'level' => 'starter',
+        ];
         $this->installed = acym_isExtensionActive('com_dpcalendar');
 
         $this->pluginDescription->name = 'DPCalendar';

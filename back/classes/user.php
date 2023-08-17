@@ -295,7 +295,9 @@ class UserClass extends acymClass
             if (!empty($automationHelper->join)) $join .= ' JOIN '.implode(' JOIN ', $automationHelper->join);
             if (!empty($automationHelper->leftjoin)) $join .= ' LEFT JOIN '.implode(' LEFT JOIN ', $automationHelper->leftjoin);
         }
-        $filters[] = $where;
+        if (!empty($where)) {
+            $filters[] = $where;
+        }
         $query .= $join;
         $queryCount .= $join;
         $queryStatus .= $join;
@@ -759,8 +761,9 @@ class UserClass extends acymClass
         $manageableLists = $listClass->getManageableLists();
         if (empty($manageableLists)) return;
 
+        acym_arrayToInteger($elements);
         $elements = acym_loadResultArray(
-            'SELECT user_id 
+            'SELECT DISTINCT user_id 
             FROM #__acym_user_has_list 
             WHERE `list_id` IN ('.implode(',', $manageableLists).') 
                 AND `user_id` IN ('.implode(',', $elements).')'
@@ -1566,5 +1569,36 @@ class UserClass extends acymClass
         }
 
         return count($usersMissingKey);
+    }
+
+    public function hasUserAccess($subscriberId): bool
+    {
+        $userId = acym_currentUserId();
+        if (empty($userId)) {
+            return false;
+        }
+
+        if (acym_isAdmin()) {
+            return true;
+        }
+
+        $user = $this->getOneById($subscriberId);
+        $userEmail = acym_currentUserEmail();
+        if (!empty($user) && $user->email === $userEmail) {
+            return true;
+        }
+
+        $listClass = new ListClass();
+        $allowedListIds = $listClass->getManageableLists();
+        if (empty($allowedListIds)) {
+            return false;
+        }
+
+        $query = 'SELECT COUNT(*) FROM #__acym_user AS user 
+            JOIN #__acym_user_has_list AS map ON map.user_id = user.id 
+            WHERE map.list_id IN ('.implode(',', $allowedListIds).')
+                AND user.id = '.intval($subscriberId);
+
+        return acym_loadResult($query) > 0;
     }
 }

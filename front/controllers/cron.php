@@ -10,9 +10,12 @@ class CronController extends acymController
     public function __construct()
     {
         parent::__construct();
-        $this->setDefaultTask('cron');
-        $this->authorizedFrontTasks = ['cron'];
         acym_setNoTemplate();
+        $this->setDefaultTask('cron');
+
+        $this->publicFrontTasks = [
+            'cron',
+        ];
     }
 
     public function cron()
@@ -61,10 +64,5 @@ class CronController extends acymController
         echo '</body></html>';
 
         exit;
-    }
-
-    public function checkTaskFront($task = '')
-    {
-        parent::checkTaskFront($this->defaulttask);
     }
 }

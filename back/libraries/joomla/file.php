@@ -3,11 +3,14 @@
 use Joomla\Archive\Archive;
 
 /**
- * @param $url
+ * returns the url content or false if couldn't get it
  *
- * @return returns the url content or false if couldn't get it
+ * @param string $url
+ * @param int    $timeout
+ *
+ * @return bool|mixed|string
  */
-function acym_fileGetContent($url, $timeout = 10)
+function acym_fileGetContent(string $url, int $timeout = 10)
 {
     ob_start();
     // use the Joomla way first

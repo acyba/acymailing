@@ -12,6 +12,13 @@ class plgAcymJcalpro extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'JCal Pro',
+            'description' => '- Insert events in your emails',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/jcal-pro',
+            'category' => 'Events management',
+            'level' => 'starter',
+        ];
         $this->installed = acym_isExtensionActive('com_jcalpro');
 
         $this->pluginDescription->name = 'JCal Pro';

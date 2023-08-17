@@ -18,9 +18,12 @@ function installAcym()
         return;
     }
 
-	//TODO do better
+    //TODO do better
     if (!function_exists('acym_utf8Decode')) {
         include_once ACYM_HELPER_GLOBAL.'utf8.php';
+    }
+    if (!defined('ACYM_UPDATEME_API_URL')) {
+        define('ACYM_UPDATEME_API_URL', 'https://api.acymailing.com/');
     }
 
     //First we increase the perfs so that we won't have any surprise.
@@ -88,6 +91,7 @@ function uninstallAcym()
     <?php
 
     $tables = [
+        'mail_archive',
         'mailbox_action',
         'custom_zone',
         'mail_override',

@@ -12,6 +12,13 @@ class plgAcymDocman extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'DOCman',
+            'description' => '- Insert documents in your emails',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/docman',
+            'category' => 'Files management',
+            'level' => 'essential',
+        ];
         $this->installed = acym_isExtensionActive('com_docman');
         $this->rootCategoryId = 0;
 

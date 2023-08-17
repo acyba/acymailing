@@ -10,7 +10,6 @@ class plgAcymRss extends acymPlugin
         $this->pluginDescription->name = 'RSS and Atom feeds';
         $this->pluginDescription->icon = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/icon.svg';
         $this->pluginDescription->category = 'Content management';
-        $this->pluginDescription->features = '["content"]';
         $this->pluginDescription->description = '- Insert content in your emails from an RSS link<br />- Insert content in your emails from an Atom feed';
 
         if ($this->installed) {

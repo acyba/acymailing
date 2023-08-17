@@ -9,6 +9,7 @@ use AcyMailing\Helpers\EncodingHelper;
 use AcyMailing\Helpers\MailerHelper;
 use AcyMailing\Helpers\TabHelper;
 use AcyMailing\Helpers\ToolbarHelper;
+use AcyMailing\Helpers\UpdatemeHelper;
 use AcyMailing\Libraries\acymPlugin;
 use AcyMailing\Types\AclType;
 use AcyMailing\Types\DelayType;
@@ -279,28 +280,81 @@ trait Listing
         acym_checkToken();
 
         $formData = acym_getVar('array', 'config', []);
-        if (empty($formData)) return false;
+        if (empty($formData)) {
+            return false;
+        }
 
+        $this->handleReplyTo($formData);
+        $this->handleWordWrap($formData);
+        $this->handleDemoSite($formData);
+        $this->handleAcl($formData);
+        $this->handleSelect2Fields($formData);
+        $this->handleAcyChecker($formData);
+        $this->handleNewDkim($formData);
+
+        acym_trigger('onBeforeSaveConfigFields', [&$formData]);
+
+        // Don't move this line in the if, we need to do it before the save
+        $licenseKeyBeforeSave = $this->config->get('license_key');
+
+        if ($this->config->save($formData)) {
+            $this->handleWebsiteLinking($formData, $licenseKeyBeforeSave);
+
+            acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
+        } else {
+            acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
+        }
+
+        $this->handleMultilingual($formData);
+
+        $this->config->load();
+
+        return true;
+    }
+
+    private function handleReplyTo(&$formData)
+    {
         if ($formData['from_as_replyto'] == 1) {
             $formData['replyto_name'] = $formData['from_name'];
             $formData['replyto_email'] = $formData['from_email'];
         }
+    }
 
-        if (empty($formData['mailer_wordwrap']) || $formData['mailer_wordwrap'] < 0) $formData['mailer_wordwrap'] = 0;
-        if ($formData['mailer_wordwrap'] > 998) $formData['mailer_wordwrap'] = 998;
+    private function handleWordWrap(&$formData)
+    {
+        if (empty($formData['mailer_wordwrap']) || $formData['mailer_wordwrap'] < 0) {
+            $formData['mailer_wordwrap'] = 0;
+        }
 
+        if ($formData['mailer_wordwrap'] > 998) {
+            $formData['mailer_wordwrap'] = 998;
+        }
+    }
+
+    private function handleDemoSite(&$formData)
+    {
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             $formData['wp_access'] = 'demo';
-            foreach ($formData as $index => $data) {
-                if (strpos($index, 'acl') !== false) {
-                    unset($formData[$index]);
+            $formData['license_key'] = '';
+        }
+        //__END__demo_
+    }
+
+    private function handleAcl(&$formData)
+    {
+        if (ACYM_PRODUCTION) {
+            $aclPages = array_keys(acym_getPagesForAcl());
+            foreach ($aclPages as $page) {
+                if (empty($formData['acl_'.$page])) {
+                    $formData['acl_'.$page] = ['all'];
                 }
             }
         }
-        //__END__demo_
+    }
 
-        // Handle reset select2 fields
+    private function handleSelect2Fields(&$formData)
+    {
         $select2Fields = [
             'regacy_lists',
             'regacy_checkedlists',
@@ -321,89 +375,101 @@ trait Listing
                 $formData[$oneField] = [];
             }
         }
+    }
 
-        if (ACYM_PRODUCTION) {
-            $aclPages = array_keys(acym_getPagesForAcl());
-            foreach ($aclPages as $page) {
-                if (empty($formData['acl_'.$page])) {
-                    $formData['acl_'.$page] = ['all'];
-                }
+    private function handleAcyChecker(&$formData)
+    {
+        if (empty($formData['email_verification'])) {
+            return;
+        }
+
+        $disabledOptions = true;
+        $verificationOptions = [
+            'email_verification_non_existing',
+            'email_verification_disposable',
+            'email_verification_free',
+            'email_verification_role',
+            'email_verification_acceptall',
+        ];
+
+        foreach ($verificationOptions as $oneOption) {
+            if (!empty($formData[$oneOption])) {
+                $disabledOptions = false;
             }
         }
 
-        $licenseKeyBeforeSave = $this->config->get('license_key');
+        if ($disabledOptions) {
+            $formData['email_verification'] = false;
+            acym_enqueueMessage(acym_translation('ACYM_ACYCHECKER_AUTO_DISABLED'), 'info');
+        }
+    }
+
+    private function handleNewDkim(&$formData)
+    {
+        // The user set DKIM as disabled
+        if (empty($formData['dkim'])) {
+            return;
+        }
+
+        $privateKey = $this->config->get('dkim_private');
+        $publicKey = $this->config->get('dkim_public');
+
+        // We're manually submitting keys
+        if (!empty($formData['dkim_private']) || !empty($formData['dkim_public'])) {
+            return;
+        }
+
+        // We don't submit keys and stored keys are not empty
+        if (!isset($formData['dkim_private']) && !empty($privateKey) && !empty($publicKey)) {
+            return;
+        }
+
+        $newDkimKeys = UpdatemeHelper::call('public/dkim');
+        if (empty($newDkimKeys['private_key'])) {
+            return;
+        }
+
+        $formData['dkim_private'] = $newDkimKeys['private_key'];
+        $formData['dkim_public'] = $newDkimKeys['public_key'];
+    }
+
+    private function handleWebsiteLinking($formData, $licenseKeyBeforeSave)
+    {
         $isLicenseKeyUpdated = isset($formData['license_key']) && $licenseKeyBeforeSave !== $formData['license_key'];
 
-        if (!empty($formData['email_verification'])) {
-            $verificationOptions = [
-                'email_verification_non_existing',
-                'email_verification_disposable',
-                'email_verification_free',
-                'email_verification_role',
-                'email_verification_acceptall',
-            ];
-            $disabledOptions = true;
-            foreach ($verificationOptions as $oneOption) {
-                if (!empty($formData[$oneOption])) {
-                    $disabledOptions = false;
+        //__START__production_
+        if ($isLicenseKeyUpdated && ACYM_PRODUCTION) {
+            // If we add a key or edit it, we try to attach it
+            if (!empty($formData['license_key'])) {
+                $resultAttachLicenseOnUpdateMe = $this->attachLicenseOnUpdateMe($formData['license_key']);
+
+                if (!empty($resultAttachLicenseOnUpdateMe['message'])) {
+                    $this->displayMessage($resultAttachLicenseOnUpdateMe['message']);
+                }
+            } else {
+                // If we remove a key, we try to unlink it
+                $resultUnlinkLicenseOnUpdateMe = $this->unlinkLicenseOnUpdateMe($licenseKeyBeforeSave);
+
+                if (!empty($resultUnlinkLicenseOnUpdateMe['message'])) {
+                    $this->displayMessage($resultUnlinkLicenseOnUpdateMe['message']);
                 }
             }
-            if ($disabledOptions) {
-                $formData['email_verification'] = false;
-                acym_enqueueMessage(acym_translation('ACYM_ACYCHECKER_AUTO_DISABLED'), 'info');
-            }
         }
+        //__END__production_
+    }
 
-        // Handle reset select2 fields from addon
-        acym_trigger('onBeforeSaveConfigFields', [&$formData]);
-
-        //__START__demo_
-        if (!ACYM_PRODUCTION) {
-            $formData['license_key'] = '';
-        }
-        //__END__demo_
-
-        $status = $this->config->save($formData);
-
-        if ($status) {
-            acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
-
-            //__START__production_
-            if ($isLicenseKeyUpdated && ACYM_PRODUCTION) {
-                // If we add a key or edit it, we try to attach it
-                if (!empty($formData['license_key'])) {
-                    $resultAttachLicenseOnUpdateMe = $this->attachLicenseOnUpdateMe($formData['license_key']);
-
-                    if (!empty($resultAttachLicenseOnUpdateMe['message'])) {
-                        $this->displayMessage($resultAttachLicenseOnUpdateMe['message']);
-                    }
-                } else {
-                    // If we remove a key, we try to unlink it
-                    $resultUnlinkLicenseOnUpdateMe = $this->unlinkLicenseOnUpdateMe($licenseKeyBeforeSave);
-
-                    if (!empty($resultUnlinkLicenseOnUpdateMe['message'])) {
-                        $this->displayMessage($resultUnlinkLicenseOnUpdateMe['message']);
-                    }
-                }
-            }
-            //__END__production_
-        } else {
-            acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
-        }
-
+    private function handleMultilingual($formData)
+    {
         // Remove unused email translations
         $removed = array_diff(
             explode(',', acym_getVar('string', 'previous_multilingual_languages', '')),
             $formData['multilingual_languages']
         );
+
         if (!empty($removed)) {
             $mailClass = new MailClass();
             $mailClass->deleteByTranslationLang($removed);
         }
-
-        $this->config->load();
-
-        return true;
     }
 
     public function test()

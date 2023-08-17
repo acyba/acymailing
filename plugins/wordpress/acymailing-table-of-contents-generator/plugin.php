@@ -15,7 +15,6 @@ class plgAcymTableofcontents extends acymPlugin
         $this->pluginDescription->name = 'Table of contents';
         $this->pluginDescription->icon = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/icon.svg';
         $this->pluginDescription->category = 'Content management';
-        $this->pluginDescription->features = '["content"]';
         $this->pluginDescription->description = '- Insert a dynamic table of contents in your emails based on their contents';
     }
 

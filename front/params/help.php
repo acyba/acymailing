@@ -18,7 +18,7 @@ class JFormFieldHelp extends acym_JFormField
 
         $config = acym_config();
         $level = $config->get('level');
-        $link = ACYM_HELPURL.$this->value.'&level='.$level;
+        $link = ACYM_DOCUMENTATION;
 
         return '<a class="btn" target="_blank" href="'.$link.'">'.acym_translation('ACYM_HELP').'</a>';
     }

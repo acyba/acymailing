@@ -208,11 +208,6 @@ class acymInstall
             return false;
         }
 
-        if (!empty($this->fromVersion) && version_compare($this->fromVersion, '6.10.3', '<')) {
-            $config = acym_config();
-            $config->setLicenseKeyByDomain();
-        }
-
         return true;
     }
 
@@ -605,7 +600,7 @@ class acymInstall
 
                 if ($install) {
                     $error = $pluginsController->download(false, $plugin);
-                    if (!empty($error) && true !== $error) {
+                    if (!empty($error)) {
                         acym_enqueueMessage($error, 'error');
                     }
                 }
@@ -1489,7 +1484,9 @@ class acymInstall
                         try {
                             acym_query('ALTER TABLE `'.$tableName.'` DROP INDEX `'.$oldName.'`, ADD INDEX `'.$newName.'`'.$matches[0]);
                         } catch (\Exception $exception) {
-                            acym_logError('Error while renaming index '.$oldName.', with the error '.$exception->getMessage());
+                            if (function_exists('acym_logError')) {
+                                acym_logError('Error while renaming index '.$oldName.', with the error '.$exception->getMessage());
+                            }
                         }
                     }
                 }
@@ -1502,7 +1499,9 @@ class acymInstall
                         try {
                             acym_query($query);
                         } catch (\Exception $exception) {
-                            acym_logError('Error while renaming foreign key '.$oldName.', with the error '.$exception->getMessage());
+                            if (function_exists('acym_logError')) {
+                                acym_logError('Error while renaming foreign key '.$oldName.', with the error '.$exception->getMessage());
+                            }
                         }
                     }
                     acym_query('SET FOREIGN_KEY_CHECKS=1;');
@@ -1580,6 +1579,10 @@ class acymInstall
                 $this->updateQuery('DELETE FROM #__acym_mail_archive WHERE mail_id IN ('.implode(',', $mailsToClean).')');
                 $mailClass->delete($mailsToClean);
             }
+        }
+
+        if (version_compare($this->fromVersion, '8.7.0', '<')) {
+            $this->updateQuery('ALTER TABLE #__acym_plugin DROP `features`');
         }
     }
 

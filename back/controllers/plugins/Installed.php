@@ -16,7 +16,6 @@ trait Installed
         $data['tab'] = 'installed';
         $data['types'] = $this->types;
         $data['level'] = $this->level;
-        $data['features'] = $this->features;
         $data['plugins'] = $this->getAllPlugins();
         $data['workflowHelper'] = new WorkflowHelper();
 

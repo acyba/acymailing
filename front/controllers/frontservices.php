@@ -12,8 +12,11 @@ class FrontservicesController extends acymController
     public function __construct()
     {
         parent::__construct();
-        $this->authorizedFrontTasks = ['sendinblue'];
         acym_setNoTemplate();
+
+        $this->publicFrontTasks = [
+            'sendinblue',
+        ];
     }
 
     public function listing()

@@ -4,6 +4,7 @@ namespace AcyMailing\Controllers;
 
 use AcyMailing\Helpers\MailerHelper;
 use AcyMailing\Helpers\UpdateHelper;
+use AcyMailing\Helpers\UpdatemeHelper;
 use AcyMailing\Libraries\acymController;
 
 class LanguageController extends acymController
@@ -63,11 +64,6 @@ class LanguageController extends acymController
         } else {
             return $this->displayLanguage();
         }
-    }
-
-    public function latest()
-    {
-        $this->displayLanguage();
     }
 
     public function share()
@@ -178,12 +174,7 @@ class LanguageController extends acymController
         $file->name = $code;
         $path = acym_getLanguagePath(ACYM_ROOT, $code).DS.$code.'.com_acym.ini';
         $file->path = $path;
-        $file->content = '';
         $file->customcontent = '';
-
-
-        $showLatest = true;
-        $loadLatest = false;
 
         if (file_exists($path)) {
             $file->content = acym_fileGetContent($path);
@@ -191,7 +182,6 @@ class LanguageController extends acymController
                 acym_display(acym_translationSprintf('ACYM_FILE_NOT_FOUND', $path), 'error');
             }
         } else {
-            $loadLatest = true;
             // Load the default language
             if (ACYM_CMS === 'joomla') {
                 $message = acym_translation('ACYM_LOAD_ENGLISH_1');
@@ -202,31 +192,30 @@ class LanguageController extends acymController
             $file->content = acym_fileGetContent(acym_getLanguagePath(ACYM_ROOT, ACYM_DEFAULT_LANGUAGE).DS.ACYM_DEFAULT_LANGUAGE.'.com_acym.ini');
         }
 
-        $custompath = acym_getLanguagePath(ACYM_ROOT, $code).DS.$code.'.com_acym_custom.ini';
-        if (file_exists($custompath)) {
-            $file->customcontent = acym_fileGetContent($custompath);
+        $customPath = acym_getLanguagePath(ACYM_ROOT, $code).DS.$code.'.com_acym_custom.ini';
+        if (file_exists($customPath)) {
+            $file->customcontent = acym_fileGetContent($customPath);
         }
 
-        if ($loadLatest || acym_getVar('cmd', 'task') == 'latest') {
-            if (file_exists(acym_getLanguagePath(ACYM_ROOT, $code))) {
-                //__START__joomla_
-                if (ACYM_CMS === 'joomla') {
-                    acym_addScript(false, ACYM_UPDATEURL.'languageload&component=acym&code='.acym_getVar('cmd', 'code'));
-                }
-                //__END__joomla_
-            } else {
-                acym_enqueueMessage(acym_translationSprintf('ACYM_LANGUAGE_NOT_INSTALLED', $code), 'warning');
-            }
-            $showLatest = false;
-        } elseif (acym_getVar('cmd', 'task') == 'save') {
-            $showLatest = false;
+        if (!file_exists(acym_getLanguagePath(ACYM_ROOT, $code))) {
+            acym_enqueueMessage(acym_translationSprintf('ACYM_LANGUAGE_NOT_INSTALLED', $code), 'warning');
         }
 
         $data = [
-            'showLatest' => $showLatest,
             'file' => $file,
         ];
 
         parent::display($data);
+    }
+
+    public function getLatestTranslationAjax()
+    {
+        $languagesContent = UpdatemeHelper::call('public/download/translations?version=latest&codes='.acym_getVar('cmd', 'code'));
+
+        if (empty($languagesContent['translations'])) {
+            acym_sendAjaxResponse(acym_translation('ACYM_ERROR_LOAD_LATEST_TRANSLATION'), [], false);
+        }
+
+        acym_sendAjaxResponse('', ['translations' => array_pop($languagesContent['translations'])]);
     }
 }

@@ -15,7 +15,10 @@ class FronturlController extends acymController
     public function __construct()
     {
         parent::__construct();
-        $this->authorizedFrontTasks = ['click'];
+
+        $this->publicFrontTasks = [
+            'click',
+        ];
     }
 
     public function click()

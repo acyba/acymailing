@@ -10,6 +10,7 @@ use AcyMailing\Controllers\MailsController;
 use AcyMailing\Helpers\EditorHelper;
 use AcyMailing\Helpers\MailerHelper;
 use AcyMailing\Helpers\UpdateHelper;
+use AcyMailing\Helpers\UpdatemeHelper;
 
 trait Walkthrough
 {
@@ -240,18 +241,16 @@ trait Walkthrough
             acym_sendAjaxResponse(acym_translation('ACYM_LICENSE_NOT_FOUND'), [], false);
         }
 
-        $url = ACYM_UPDATEMEURL.'launcher&task=activateCron';
-
-        $fields = [
+        $data = [
             'domain' => ACYM_LIVE,
-            'license_key' => $licenseKey,
             'cms' => ACYM_CMS,
-            'frequency' => 900,
+            'version' => $this->config->get('version', ''),
             'level' => $this->config->get('level', ''),
+            'activate' => true,
             'url_version' => 'secured',
         ];
+        $result = UpdatemeHelper::call('api/crons/modify', 'POST', $data);
 
-        $result = acym_makeCurlCall($url, $fields);
         if ($result['type'] !== 'error') $this->config->save(['active_cron' => 1]);
 
         $configurationController = new ConfigurationController();
@@ -414,14 +413,16 @@ trait Walkthrough
             $fromMessage = $this->config->get('mailer_method', 'phpmail');
         }
 
-        $handle = curl_init();
-        $url = ACYM_UPDATEMEURL.'contact&task=contactme&email='.urlencode($email).'&version='.$this->config->get('version', '6').'&cms='.ACYM_CMS.'&message_key='.$fromMessage;
-        curl_setopt($handle, CURLOPT_URL, $url);
-        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($handle);
-        curl_close($handle);
-        $output = json_decode($output, true);
-        if (!empty($output['error'])) {
+        $data = [
+            'email' => $email,
+            'cms' => ACYM_CMS,
+            'version' => $this->config->get('version', '6'),
+            'message_key' => $fromMessage,
+        ];
+
+        $output = UpdatemeHelper::call('public/sendHelpMail', 'GET', $data);
+
+        if ($output['success'] === false) {
             acym_enqueueMessage(acym_translation('ACYM_SOMETHING_WENT_WRONG_CONTACT_ON_ACYBA'), 'error');
             $this->passWalkThrough();
         } else {
@@ -442,6 +443,11 @@ trait Walkthrough
     }
 
     public function saveStepSupportImport()
+    {
+        $this->passWalkThrough();
+    }
+
+    public function saveStepSupport()
     {
         $this->passWalkThrough();
     }

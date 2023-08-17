@@ -21,7 +21,9 @@ const acym_editorWysidRowSelector = {
 
                 let zoneOverlay = '<div class="acym__wysid__row__selector">';
                 zoneOverlay += '<div  class="acym__wysid__row__toolbox">';
-                zoneOverlay += '<i class="acymicon-floppy-o acym__wysid__row__toolbox__save acym__wysid__row__toolbox__actions"></i>';
+                if (ACYM_IS_ADMIN) {
+                    zoneOverlay += '<i class="acymicon-floppy-o acym__wysid__row__toolbox__save acym__wysid__row__toolbox__actions"></i>';
+                }
                 zoneOverlay += '<i class="acymicon-content_copy acym__wysid__row__toolbox__copy acym__wysid__row__toolbox__actions"></i>';
                 zoneOverlay += '<i class="acymicon-arrow-up acym__wysid__row__toolbox__moveup acym__wysid__row__toolbox__actions"></i>';
                 zoneOverlay += '<i class="acymicon-arrow-down acym__wysid__row__toolbox__movedown acym__wysid__row__toolbox__actions"></i>';

@@ -356,8 +356,10 @@ const acym_editorWysidNewContent = {
                             level: 'error'
                         }, 3000, true);
                     } else {
-                        let newZone = `<div class="grid-x cell acym__wysid__zone__element--new ui-draggable ui-draggable-handle" data-acym-zone-id="${response.data.id}">
-                                            <i class="acymicon-delete"></i>`;
+                        let newZone = `<div class="grid-x cell acym__wysid__zone__element--new ui-draggable ui-draggable-handle" data-acym-zone-id="${response.data.id}">`;
+                        if (ACYM_IS_ADMIN) {
+                            newZone += `<i class="acymicon-delete"></i>`;
+                        }
 
                         if (response.data.image) {
                             newZone += `<img class="cell saved_zone_image" alt="Logo custom zone" src="${response.data.image}" />`;

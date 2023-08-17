@@ -11,12 +11,12 @@ require_once __DIR__.DIRECTORY_SEPARATOR.'HikashopSubscription.php';
 
 class plgAcymHikashop extends acymPlugin
 {
-	use HikashopAutomationConditions;
-	use HikashopAutomationFilters;
-	use HikashopAutomationTriggers;
-	use HikashopFollowup;
-	use HikashopInsertion;
-	use HikashopSubscription;
+    use HikashopAutomationConditions;
+    use HikashopAutomationFilters;
+    use HikashopAutomationTriggers;
+    use HikashopFollowup;
+    use HikashopInsertion;
+    use HikashopSubscription;
 
     private $purchaseTriggerName = 'hikashop_purchase';
 
@@ -24,6 +24,13 @@ class plgAcymHikashop extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'HikaShop',
+            'description' => '- Insert products and generate coupons in your emails<br>- Filter your users based on their purchases<br>- Trigger automations when an order gets confirmed',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/hikashop',
+            'category' => 'E-commerce solutions',
+            'level' => 'starter',
+        ];
         $this->installed = acym_isExtensionActive('com_hikashop');
 
         $this->pluginDescription->name = 'HikaShop';

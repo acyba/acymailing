@@ -19,6 +19,13 @@ class plgAcymEasyprofile extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'EasyProfile',
+            'description' => '- Insert User information in your emails from the EasyProfile extension.',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/easyprofile',
+            'category' => 'User management',
+            'level' => 'starter',
+        ];
         $this->pluginDescription->name = 'Easy Profile';
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.png';
 

@@ -7,6 +7,18 @@ use AcyMailing\Types\OperatorType;
 
 class plgAcymUniversalfilter extends acymPlugin
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->addonDefinition = [
+            'name' => 'Universal filter',
+            'description' => '- Filter AcyMailing subscribers based on any data from your database<br>- Filter users based on email addresses in a specified text',
+            'documentation' => 'https://docs.acymailing.com/addons/all-cms-add-ons/universal-filter',
+            'category' => 'User management',
+            'level' => 'starter',
+        ];
+    }
+
     public function getColumnsForSelectedTable()
     {
         $defaultSelect = acym_select(

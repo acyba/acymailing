@@ -9,6 +9,13 @@ class plgAcymCbsubs extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'Community Builder - Subscriptions',
+            'description' => '- Filter AcyMailing users based on their CBSubs subscriptions',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/cb-subscriptions',
+            'category' => 'Subscription system',
+            'level' => 'starter',
+        ];
         $this->installed = in_array(acym_getPrefix().'cbsubs_plans', acym_getTableList());
     }
 

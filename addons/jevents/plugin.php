@@ -18,6 +18,13 @@ class plgAcymJevents extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'JEvents',
+            'description' => '- Insert events in your emails<br>- Filter your users based on their event registrations<br>- Trigger automations based on starting events',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/jevents',
+            'category' => 'Events management',
+            'level' => 'starter',
+        ];
         $this->installed = acym_isExtensionActive('com_jevents');
 
         $this->pluginDescription->name = 'JEvents';

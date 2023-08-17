@@ -5,18 +5,19 @@
 		  name="acyForm"
 		  class="cell grid-x acym__form__campaign__edit"
 		  data-abide>
-		<input type="hidden" name="all__plugins" id="acym__plugins__all" value="<?php echo empty($data['plugins']) ? '[]' : acym_escape($data['plugins']); ?>">
+		<input type="hidden" name="all__plugins" id="acym__plugins__all" value="<?php echo acym_escape(json_encode($data['plugins'])); ?>">
 		<input type="hidden" name="plugin__folder_name" value="">
         <?php
         $workflow = $data['workflowHelper'];
         echo $workflow->display($data['tabs'], $data['tab'], false, true);
         ?>
 		<div id="acym__plugin__installed__application" class="cell grid-x">
-            <?php if (strpos($data['plugins'], '"total":"0"') !== false) { ?>
+            <?php
+			if (empty($data['plugins'])) { ?>
 				<div class="cell grid-x align-center">
 					<h2 class="cell text-center acym__title__primary__color"><?php echo acym_translation('ACYM_YOU_DONT_HAVE_ADD_ONS'); ?></h2>
 					<a href="<?php echo acym_completeLink('plugins&task=available'); ?>"
-					   class="cell shrink button  text-center margin-top-1 margin-bottom-2"><?php echo acym_translation('ACYM_DOWNLOAD_MY_FIRST_ONE'); ?></a>
+					   class="cell shrink button text-center margin-top-1 margin-bottom-2"><?php echo acym_translation('ACYM_DOWNLOAD_MY_FIRST_ONE'); ?></a>
 				</div>
             <?php } else { ?>
 				<div class="cell grid-x grid-margin-x margin-bottom-1">
@@ -70,14 +71,14 @@
 											<span v-show="updating[plugin.id]"><?php echo acym_loaderLogo(); ?></span>
 										</button>
 
-										<i v-if="plugin.settings && plugin.settings!='not_installed'"
+										<i v-if="plugin.settings && plugin.settings != 'not_installed'"
 										   @click="toggleSettings(plugin.folder_name)"
 										   class="acymicon-cog cell shrink acym__plugins__settings__toggle cursor-pointer"></i>
-										<i v-if="plugin.settings && plugin.settings=='not_installed'"
+										<i v-if="plugin.settings && plugin.settings == 'not_installed'"
 										   class="acymicon-cog cell shrink acym__plugins__settings__toggle__blocked cursor-pointer acym__color__medium-gray acym__tooltip">
 											<span class="acym__tooltip__text"><?php echo acym_translation('ACYM_SETTINGS_AVAILABLE_INSTALLED_EXTENSION'); ?></span>
 										</i>
-										<a target="_blank" :href="documentationUrl(plugin.folder_name)" class="acym__plugins__documentation cell medium-1">
+										<a target="_blank" :href="documentationUrl(plugin.folder_name, plugin.type)" class="acym__plugins__documentation cell medium-1">
 											<i class="acymicon-book"></i>
 										</a>
 									</div>

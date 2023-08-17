@@ -5,7 +5,7 @@ use AcyMailing\Helpers\EncodingHelper;
 
 $encodingHelper = new EncodingHelper();
 $userClass = new UserClass();
-$filename = strtolower(acym_getVar('cmd', 'filename'));
+$filename = strtolower(acym_getVar('cmd', 'acym_import_filename'));
 $encoding = acym_getVar('cmd', 'encoding');
 
 $extension = '.'.acym_fileGetExt($filename);

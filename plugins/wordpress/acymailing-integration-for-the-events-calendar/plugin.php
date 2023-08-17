@@ -27,7 +27,6 @@ class plgAcymTheeventscalendar extends acymPlugin
         $this->pluginDescription->name = 'The Events Calendar';
         $this->pluginDescription->icon = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/icon.png';
         $this->pluginDescription->category = 'Events management';
-        $this->pluginDescription->features = '["content","automation"]';
         $this->pluginDescription->description = '- Insert events in your emails<br />- Filter users by event subscription';
 
         if ($this->installed) {

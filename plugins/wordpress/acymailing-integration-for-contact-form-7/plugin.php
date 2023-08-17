@@ -15,7 +15,6 @@ class plgAcymContactform7 extends acymPlugin
 
         $this->pluginDescription->name = 'Contact Form 7';
         $this->pluginDescription->category = 'Subscription system';
-        $this->pluginDescription->features = '[]';
         $this->pluginDescription->description = '- Add AcyMailing lists on contact forms';
 
         $this->propertyLabels = [

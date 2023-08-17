@@ -50,7 +50,7 @@ class ConfigurationController extends acymController
             'ISSUE_WHILE_ATTACH' => ['message' => 'ACYM_ISSUE_WHILE_ATTACHING_LICENSE', 'type' => 'error'],
             'ALREADY_ATTACH' => ['message' => 'ACYM_LICENSE_ALREADY_ATTACH', 'type' => 'info'],
             'LICENSES_DONT_MATCH' => ['message' => 'ACYM_CANT_UNLINK_WEBSITE_LICENSE_DONT_MATCH', 'type' => 'error'],
-            'MAX_SITES_ATTACH' => ['message' => 'ACYM_YOU_REACH_THE_MAX_SITE_ATTACH', 'type' => 'error'],
+            'MAX_SITES_ATTACH' => ['message' => 'ACYM_YOU_REACHED_THE_MAX_SITE_ATTACH', 'type' => 'error'],
             'SITE_NOT_FOUND' => ['message' => 'ACYM_ISSUE_WHILE_ATTACHING_LICENSE', 'type' => 'error'],
             'UNLINK_SUCCESSFUL' => ['message' => 'ACYM_LICENSE_UNLINK_SUCCESSFUL', 'type' => 'info'],
             'UNLINK_FAILED' => ['message' => 'ACYM_ERROR_WHILE_UNLINK_LICENSE', 'type' => 'error'],

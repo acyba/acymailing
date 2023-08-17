@@ -4,6 +4,7 @@ namespace AcyMailing\Controllers\Users;
 
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\HistoryClass;
+use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Helpers\EntitySelectHelper;
 use AcyMailing\Helpers\TabHelper;
@@ -45,9 +46,10 @@ trait Edition
 
             $this->breadcrumb[acym_escape(acym_translation('ACYM_NEW_SUBSCRIBER'))] = acym_completeLink('users&task=edit');
         } else {
-            $data['user-information'] = $this->currentClass->getOneById($userId);
+            $userClass = new UserClass();
+            $data['user-information'] = $userClass->getOneById($userId);
 
-            if (empty($data['user-information'])) {
+            if (empty($data['user-information']) || !$userClass->hasUserAccess($userId)) {
                 acym_enqueueMessage(acym_translation('ACYM_USER_NOT_FOUND'), 'error');
                 $this->listing();
 
@@ -295,7 +297,9 @@ trait Edition
         $user = new \stdClass();
         $user->name = $userInformation['name'];
         $user->email = $userInformation['email'];
-        if (!empty($userInformation['language'])) $user->language = $userInformation['language'];
+        if (!empty($userInformation['language'])) {
+            $user->language = $userInformation['language'];
+        }
         $user->active = $userInformation['active'];
         $user->confirmed = $userInformation['confirmed'];
         $user->tracking = $userInformation['tracking'];
@@ -310,7 +314,9 @@ trait Edition
             return;
         }
 
-        $existingUser = $this->currentClass->getOneByEmail($user->email);
+        $userClass = new UserClass();
+        $frontCreation = false;
+        $existingUser = $userClass->getOneByEmail($user->email);
         if (empty($userId)) {
             if (!empty($existingUser) && acym_isAdmin()) {
                 acym_enqueueMessage(acym_translationSprintf('ACYM_X_ALREADY_EXIST', $user->email), 'error');
@@ -322,7 +328,8 @@ trait Edition
                 $userId = $existingUser->id;
             } else {
                 $user->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
-                $userId = $this->currentClass->save($user, $customFields);
+                $userId = $userClass->save($user, $customFields);
+                $frontCreation = true;
             }
             acym_setVar('userId', $userId);
         } else {
@@ -332,15 +339,20 @@ trait Edition
 
                 return;
             }
+
+            if (!$userClass->hasUserAccess($userId)) {
+                die('Access denied for the modification of this user');
+            }
+
             $user->id = $userId;
-            $this->currentClass->save($user, $customFields);
+            $userClass->save($user, $customFields);
         }
 
         if (!empty($listsToAdd)) {
-            $this->subscribeUser(false);
+            $this->subscribeUser(false, $frontCreation);
         }
         if (!empty($listsToUnsub)) {
-            $this->currentClass->unsubscribeOnSubscriptions($userId, $listsToUnsub);
+            $userClass->unsubscribeOnSubscriptions($userId, $listsToUnsub);
         }
 
         if ($listing) {

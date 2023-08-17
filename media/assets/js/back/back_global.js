@@ -30,6 +30,7 @@ jQuery(function ($) {
         acym_helperDebugger.initDebugger();
         if (ACYM_CMS === 'joomla') acym_helperJoomla.setJoomlaLeftMenu();
         acym_helper.setKonami();
+        acym_helper.setLicenseLink();
     }
 
     BackGlobal();

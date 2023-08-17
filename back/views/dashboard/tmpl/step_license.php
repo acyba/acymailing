@@ -6,7 +6,7 @@
         <?php } else { ?>
 			<p> <?php echo acym_translationSprintf('ACYM_ENTER_LICENSE_KEY_TO_ACTIVATE_ACYM_X_FEATURES', $data['level']); ?></p>
         <?php } ?>
-		<p> <?php echo '('.acym_externalLink('ACYM_FIND_YOUR_LICENSE', ACYM_REDIRECT.'subscription-page', true, true).')' ?></p>
+		<p> <?php echo '('.acym_externalLink('ACYM_FIND_YOUR_LICENSE', ACYM_ACYMAILING_WEBSITE.'account/license/', true, true).')' ?></p>
 	</div>
 </div>
 <div class="cell margin-bottom-3 text-left">
@@ -36,14 +36,14 @@
 			<div class="cell small-7 large-5 acym__color__red" id="acym__walk_through_license__cron_label"><?php echo acym_translation('ACYM_DEACTIVATED'); ?></div>
             <?php
             echo acym_tooltip(
-                '<a type="button" id="acym__walk_through_license__button__cron" class="grid-x align-center acym_vcenter button" disabled>'.
-                acym_translation('ACYM_ACTIVATE_IT')
-                .'</a>',
-                acym_translation('ACYM_ACTIVATE_IT_CRON_DESC'),
-                'cell shrink',
-                '',
-                '',
-                'acym__tooltip_button__cron'
+                [
+                    'hoveredText' => '<a type="button" id="acym__walk_through_license__button__cron" class="grid-x align-center acym_vcenter button" disabled>'.acym_translation(
+                            'ACYM_ACTIVATE_IT'
+                        ).'</a>',
+                    'textShownInTooltip' => acym_translation('ACYM_ACTIVATE_IT_CRON_DESC'),
+                    'classContainer' => 'cell shrink',
+                    'classText' => 'acym__tooltip_button__cron',
+                ]
             );
             ?>
 			<i class="cell shrink acymicon-circle-o-notch acymicon-spin is-hidden" id="acym__walkthrough__step_license__wait_active_cron_icon"></i>

@@ -5,7 +5,7 @@ Description: Adds editor and automation options for WooCommerce in AcyMailing
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 4.9
+Version: 5.0
 */
 
 use AcyMailing\Classes\PluginClass;
@@ -40,5 +40,13 @@ function acym_integration_woocommerce(&$integrations, $acyVersion)
             'path' => __DIR__,
             'className' => 'plgAcymWoocommerce',
         ];
+    }
+}
+
+add_action('before_woocommerce_init', 'acym_register_woocommerce_hpos_compatibility');
+function acym_register_woocommerce_hpos_compatibility()
+{
+    if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
     }
 }

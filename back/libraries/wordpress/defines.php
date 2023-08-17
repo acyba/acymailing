@@ -82,7 +82,7 @@ define(
             (object)[
                 'name' => 'Business Directory',
                 'description' => '- Insert individual listings in your emails<br />- Insert listings by category',
-                'image' => 'businessdirectory.png',
+                'file_name' => 'businessdirectory',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/business-directory',
                 'category' => 'Content management',
@@ -91,7 +91,7 @@ define(
             (object)[
                 'name' => 'Contact Form 7',
                 'description' => '- Add AcyMailing lists on contact forms',
-                'image' => 'contactform7.png',
+                'file_name' => 'contactform7',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/contact-form-7',
                 'category' => 'Subscription system',
@@ -100,7 +100,7 @@ define(
             (object)[
                 'name' => 'Custom headers',
                 'description' => '- Add custom email headers to the sent emails',
-                'image' => 'customheaders.png',
+                'file_name' => 'customheaders',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/custom-headers',
                 'category' => 'Content management',
@@ -109,7 +109,7 @@ define(
             (object)[
                 'name' => 'Easy Digital Downloads',
                 'description' => '- Insert digital downloads and generate coupons in your emails',
-                'image' => 'easydigitaldownloads.png',
+                'file_name' => 'easydigitaldownloads',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/easydigitaldownloads',
                 'category' => 'E-commerce solutions',
@@ -118,7 +118,7 @@ define(
             (object)[
                 'name' => 'EventOn',
                 'description' => '- Add events from Events Manager to your emails.',
-                'image' => 'eventon.png',
+                'file_name' => 'eventon',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/eventon',
                 'category' => 'Events management',
@@ -127,7 +127,7 @@ define(
             (object)[
                 'name' => 'Events Manager',
                 'description' => '- Add events from Events Manager to your emails.<br />- Filter users on events participation.',
-                'image' => 'eventsmanager.png',
+                'file_name' => 'eventsmanager',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/events-manager',
                 'category' => 'Events management',
@@ -136,7 +136,7 @@ define(
             (object)[
                 'name' => 'Export in automations',
                 'description' => '- Export the filtered users in the automations',
-                'image' => 'automationexport.png',
+                'file_name' => 'automationexport',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/automation-export-action',
                 'category' => 'User management',
@@ -145,7 +145,7 @@ define(
             (object)[
                 'name' => 'Gravity Forms',
                 'description' => '- Add AcyMailing lists to your forms',
-                'image' => 'gravityforms.png',
+                'file_name' => 'gravityforms',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/gravity-forms',
                 'category' => 'Subscription system',
@@ -154,7 +154,7 @@ define(
             (object)[
                 'name' => 'MemberPress',
                 'description' => '- Insert MemberPress custom fields in your emails<br />- Filter users based on their subscription<br />-Trigger automation when a user subscribe to a membership',
-                'image' => 'memberpress.png',
+                'file_name' => 'memberpress',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/memberpress',
                 'category' => 'User management',
@@ -163,7 +163,7 @@ define(
             (object)[
                 'name' => 'Modern Events Calendar',
                 'description' => '- Insert events in your emails<br />- Filter users attending your events',
-                'image' => 'moderneventscalendar.png',
+                'file_name' => 'moderneventscalendar',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/modern-events-calendar',
                 'category' => 'Events management',
@@ -172,7 +172,7 @@ define(
             (object)[
                 'name' => 'RSS and Atom feeds',
                 'description' => '- Insert content in your emails from an RSS feed<br />- Insert content in your emails from an Atom feed',
-                'image' => 'rss.png',
+                'file_name' => 'rss',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/rss-feed',
                 'category' => 'Content management',
@@ -181,7 +181,7 @@ define(
             (object)[
                 'name' => 'Table of contents',
                 'description' => '- Insert a dynamic table of contents in your emails based on their contents',
-                'image' => 'tableofcontents.png',
+                'file_name' => 'tableofcontents',
                 'level' => 'starter',
                 'documentation' => 'https://docs.acymailing.com/addons/all-cms-add-ons/table-of-contents-generator',
                 'category' => 'Content management',
@@ -190,7 +190,7 @@ define(
             (object)[
                 'name' => 'The Events Calendar',
                 'description' => '- Insert events in your emails<br />- Filter users by event subscription',
-                'image' => 'theeventscalendar.png',
+                'file_name' => 'theeventscalendar',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/the-events-calendar',
                 'category' => 'Events management',
@@ -199,7 +199,7 @@ define(
             (object)[
                 'name' => 'Ultimate Member',
                 'description' => '- insert AcyMailing list on your Ultimate Member register form',
-                'image' => 'ultimatemember.png',
+                'file_name' => 'ultimatemember',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/ultimate-member',
                 'category' => 'Subscription system',
@@ -208,7 +208,7 @@ define(
             (object)[
                 'name' => 'Uncanny Automator',
                 'description' => '- Trigger recipes on AcyMailing subscriber creation/update<br />- Create new AcyMailing subscribers<br />- Subscribe users to lists<br />- Unsubscribe users from lists<br />- <br />- Update AcyMailing subscribers email addresses<br />- Create new tags<br />- Remove old tags',
-                'image' => 'uncannyautomator.png',
+                'file_name' => 'uncannyautomator',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/uncanny-automator',
                 'category' => 'User management',
@@ -217,7 +217,7 @@ define(
             (object)[
                 'name' => 'Universal filter',
                 'description' => '- Filter AcyMailing subscribers based on any data from your database<br />- Filter users based on email addresses in a specified text',
-                'image' => 'universalfilter.png',
+                'file_name' => 'universalfilter',
                 'level' => 'enterprise',
                 'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/universal-filter',
                 'category' => 'User management',
@@ -226,7 +226,7 @@ define(
             (object)[
                 'name' => 'WooCommerce',
                 'description' => '- Insert products and generate coupons in your emails<br />- Filter users based on their purchases',
-                'image' => 'woocommerce.png',
+                'file_name' => 'woocommerce',
                 'level' => 'starter',
                 'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/woocommerce',
                 'category' => 'E-commerce solutions',

@@ -12,6 +12,13 @@ class plgAcymFlexicontent extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'FLEXIcontent',
+            'description' => '- Insert FLEXIcontent articles in your emails',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/flexicontent',
+            'category' => 'Content management',
+            'level' => 'essential',
+        ];
         $this->installed = acym_isExtensionActive('com_flexicontent');
 
         $this->pluginDescription->name = 'FLEXIContent';

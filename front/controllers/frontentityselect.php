@@ -9,9 +9,9 @@ class FrontentityselectController extends EntitySelectController
     public function __construct()
     {
         parent::__construct();
-        $this->authorizedFrontTasks = [
+
+        $this->publicFrontTasks = [
             'loadEntityFront',
-            'loadEntityBack',
         ];
     }
 }

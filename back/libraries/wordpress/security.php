@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Helpers\UpdatemeHelper;
+
 function acym_getVar($type, $name, $default = null, $source = 'REQUEST', $mask = 0)
 {
     $source = strtoupper($source);

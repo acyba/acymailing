@@ -12,7 +12,10 @@ class FrontstatsController extends acymController
     public function __construct()
     {
         parent::__construct();
-        $this->authorizedFrontTasks = ['openStats'];
+
+        $this->publicFrontTasks = [
+            'openStats',
+        ];
     }
 
     public function openStats()

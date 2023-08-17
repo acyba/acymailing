@@ -181,22 +181,39 @@ trait VirtuemartSubscription
 
     public function onRegacyAfterRoute()
     {
-        $vmPath = ACYM_ROOT.'administrator'.DS.'components'.DS.'com_virtuemart'.DS;
-        $vmPathPublic = ACYM_ROOT.'components'.DS.'com_virtuemart'.DS;
-        if (!class_exists('VmConfig') && file_exists($vmPath.'helpers'.DS.'config.php')) {
-            include_once $vmPath.'helpers'.DS.'config.php';
-        }
-        if (!class_exists('shopFunctionsF') && file_exists($vmPathPublic.'helpers'.DS.'shopfunctionsf.php')) {
-            include_once $vmPathPublic.'helpers'.DS.'shopfunctionsf.php';
-        }
-        VmConfig::loadConfig();
-
-        //We are updating the user information from VM...
+        // We are updating the user information from VM
         $option = acym_getVar('string', 'option', '');
         $acySource = acym_getVar('string', 'acy_source', '');
         $task = acym_getVar('cmd', 'task', '');
-        $captcha = shopFunctionsF::checkCaptcha();
-        if ($option == 'com_virtuemart' && $acySource == 'virtuemart registration form' && $task != 'updateCartNoMethods' && $captcha === true) {
+        if ($option !== 'com_virtuemart' || $acySource !== 'virtuemart registration form' || $task === 'updateCartNoMethods') {
+            return;
+        }
+
+        $vmPath = ACYM_ROOT.'administrator'.DS.'components'.DS.'com_virtuemart'.DS;
+        if (!class_exists('VmConfig') && file_exists($vmPath.'helpers'.DS.'config.php')) {
+            include_once $vmPath.'helpers'.DS.'config.php';
+        }
+
+        if (!class_exists('VmConfig') || !method_exists('VmConfig', 'loadConfig')) {
+            return;
+        }
+
+        VmConfig::loadConfig();
+
+        $vmPathPublic = ACYM_ROOT.'components'.DS.'com_virtuemart'.DS;
+        if (!class_exists('shopFunctionsF') && file_exists($vmPathPublic.'helpers'.DS.'shopfunctionsf.php')) {
+            include_once $vmPathPublic.'helpers'.DS.'shopfunctionsf.php';
+            if (!class_exists('shopFunctionsF')) {
+                return;
+            }
+        }
+
+        if (method_exists('shopFunctionsF', 'checkCaptcha')) {
+            $captcha = shopFunctionsF::checkCaptcha();
+            if ($captcha === true) {
+                $this->updateVM();
+            }
+        } else {
             $this->updateVM();
         }
     }

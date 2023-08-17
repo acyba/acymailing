@@ -1,7 +1,8 @@
-jQuery(function($) {
+jQuery(function ($) {
 
     function Language() {
         setCopyTranslation();
+        setLoadLatest();
     }
 
     Language();
@@ -57,6 +58,34 @@ jQuery(function($) {
                 $customTextarea.val(result.join('\n'));
                 $customTextarea.html(result.join('\n'));
             }
+        });
+    }
+
+    function setLoadLatest() {
+        jQuery('#load_latest_translation').off('click').on('click', function (e) {
+            e.preventDefault();
+
+            const $translationContainer = jQuery('#translation');
+            const $spinner = jQuery('#load_latest_spinner');
+            const data = {
+                ctrl: 'language',
+                task: 'getLatestTranslationAjax',
+                code: $(this).attr('data-acym-code')
+            };
+
+            $translationContainer.hide();
+            $spinner.show();
+
+            acym_helper.post(ACYM_AJAX_URL, data).then(response => {
+                $translationContainer.show();
+                $spinner.hide();
+
+                if (response.error) {
+                    alert(response.message);
+                } else {
+                    $translationContainer.html(response.data.translations);
+                }
+            });
         });
     }
 });

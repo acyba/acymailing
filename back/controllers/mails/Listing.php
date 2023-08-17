@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Controllers\Mails;
 
+use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\TagClass;
 use AcyMailing\Helpers\ExportHelper;
 use AcyMailing\Helpers\PaginationHelper;
@@ -198,22 +199,35 @@ trait Listing
 
     public function delete()
     {
-        $returnListing = acym_getVar('string', 'return_listing', '');
         parent::delete();
+
+        $returnListing = acym_getVar('string', 'return_listing', '');
         if (!empty($returnListing)) {
-            $link = acym_isAdmin() ? acym_completeLink($returnListing, false, true) : acym_frontendLink($returnListing);
-            acym_redirect($link);
+            if (acym_isAdmin()) {
+                acym_redirect(acym_completeLink($returnListing, false, true));
+            } else {
+                $itemId = acym_getVar('int', 'acym_itemid');
+                $itemId = empty($itemId) ? '' : '&Itemid='.$itemId;
+                $urlRedirect = acym_completeLink($returnListing.$itemId, false, true);
+                acym_redirect($urlRedirect);
+            }
         }
     }
 
     public function getMailByIdAjax()
     {
+        acym_checkToken();
         $mailId = acym_getVar('int', 'id', 0);
         if (empty($mailId)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_FIND_MAIL'), [], false);
 
-        $mail = $this->currentClass->getOneById($mailId);
+        $mailClass = new MailClass();
+        $mail = $mailClass->getOneById($mailId);
         if (empty($mail)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_FIND_MAIL'), [], false);
 
-        acym_sendAjaxResponse('', $mail, true);
+        if (!$mailClass->hasUserAccess($mailId)) {
+            die('Access denied for this mail');
+        }
+
+        acym_sendAjaxResponse('', $mail);
     }
 }

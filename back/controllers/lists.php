@@ -18,7 +18,13 @@ class ListsController extends acymController
         parent::__construct();
         $this->breadcrumb[acym_translation('ACYM_LISTS')] = acym_completeLink('lists');
         $this->loadScripts = [
-            'settings' => ['colorpicker', 'vue-applications' => ['list_subscribers', 'entity_select']],
+            'settings' => [
+                'colorpicker',
+                'vue-applications' => [
+                    'list_subscribers',
+                    'entity_select',
+                ],
+            ],
         ];
     }
 }

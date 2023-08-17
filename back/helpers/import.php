@@ -91,7 +91,7 @@ class ImportHelper extends acymObject
 
         $attachment = new \stdClass();
         $attachment->filename = uniqid('import_').'.csv';
-        acym_setVar('filename', $attachment->filename);
+        acym_setVar('acym_import_filename', $attachment->filename);
 
         //Make sure we can use this sort of extension name!
         $attachment->size = $importFile['size'];
@@ -120,7 +120,7 @@ class ImportHelper extends acymObject
         $filename = uniqid('import_').'.csv';
 
         acym_writeFile($path.$filename, $content);
-        acym_setVar('filename', $filename);
+        acym_setVar('acym_import_filename', $filename);
 
         return true;
     }
@@ -413,7 +413,7 @@ class ImportHelper extends acymObject
 
     public function finalizeImport()
     {
-        $filename = strtolower(acym_getVar('cmd', 'filename'));
+        $filename = strtolower(acym_getVar('cmd', 'acym_import_filename'));
         $extension = '.'.acym_fileGetExt($filename);
         $this->forceconfirm = acym_getVar('int', 'import_confirmed_generic');
         $this->generatename = acym_getVar('int', 'import_generate_generic');
@@ -463,7 +463,7 @@ class ImportHelper extends acymObject
         }
 
         if (!empty($listsId)) {
-            $allLines[0] .= $sep.'';
+            $allLines[0] .= $sep;
         }
 
         $importColumns = str_replace(',', $separator, $importColumns);
@@ -760,7 +760,7 @@ class ImportHelper extends acymObject
         }
 
         if (!empty($errorLines)) {
-            $filename = strtolower(acym_getVar('cmd', 'filename', ''));
+            $filename = strtolower(acym_getVar('cmd', 'acym_import_filename', ''));
             if (!empty($filename)) {
                 $extension = '.'.acym_fileGetExt($filename);
                 $filename = str_replace(['.', ' '], '_', substr($filename, 0, strpos($filename, $extension))).$extension;

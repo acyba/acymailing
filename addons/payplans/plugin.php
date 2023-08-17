@@ -14,6 +14,13 @@ class plgAcymPayplans extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'PayPlans',
+            'description' => '- Filter your users based on their subscription plans',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/payplans',
+            'category' => 'E-commerce solutions',
+            'level' => 'enterprise',
+        ];
         $this->installed = acym_isExtensionActive('com_payplans');
     }
 }

@@ -250,42 +250,75 @@ trait WooCommerceAutomationConditions
 
     private function processConditionFilter_woopurchased(&$query, $options, $num)
     {
-        $conditions = [];
-        $conditions[] = 'post'.$num.'.post_type = "shop_order"';
-        $conditions[] = 'post'.$num.'.post_status = "wc-completed"';
+        if ($this->isHposActive()) {
+            $query->join['woopurchased_order'.$num] = '#__wc_orders AS order'.$num.' ON order'.$num.'.customer_id = user.cms_id AND order'.$num.'.customer_id != 0';
+            $query->where[] = 'order'.$num.'.type = "shop_order"';
+            $query->where[] = 'order'.$num.'.status = "wc-completed"';
 
-        if (!empty($options['datemin'])) {
-            $options['datemin'] = acym_replaceDate($options['datemin']);
-            if (!is_numeric($options['datemin'])) $options['datemin'] = strtotime($options['datemin']);
             if (!empty($options['datemin'])) {
-                $conditions[] = 'post'.$num.'.post_date > '.acym_escapeDB(acym_date($options['datemin'], 'Y-m-d H:i:s'));
+                $options['datemin'] = acym_replaceDate($options['datemin']);
+                if (!is_numeric($options['datemin'])) $options['datemin'] = strtotime($options['datemin']);
+                if (!empty($options['datemin'])) {
+                    $query->where[] = 'order'.$num.'.date_created_gmt > '.acym_escapeDB(acym_date($options['datemin'], 'Y-m-d H:i:s', false));
+                }
             }
-        }
-
-        if (!empty($options['datemax'])) {
-            $options['datemax'] = acym_replaceDate($options['datemax']);
-            if (!is_numeric($options['datemax'])) $options['datemax'] = strtotime($options['datemax']);
             if (!empty($options['datemax'])) {
-                $conditions[] = 'post'.$num.'.post_date < '.acym_escapeDB(acym_date($options['datemax'], 'Y-m-d H:i:s'));
+                $options['datemax'] = acym_replaceDate($options['datemax']);
+                if (!is_numeric($options['datemax'])) $options['datemax'] = strtotime($options['datemax']);
+                if (!empty($options['datemax'])) {
+                    $query->where[] = 'order'.$num.'.date_created_gmt < '.acym_escapeDB(acym_date($options['datemax'], 'Y-m-d H:i:s', false));
+                }
             }
-        }
 
-        $query->join['woopurchased_post'.$num] = '#__posts AS post'.$num.' ON '.implode(' AND ', $conditions);
+            if (!empty($options['product'])) {
+                $query->join['woopurchased_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' ON order'.$num.'.id = woooi'.$num.'.order_id AND woooi'.$num.'.order_item_type = "line_item"';
+                $query->join['woopurchased_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id AND woooim'.$num.'.meta_key = "_product_id" AND woooim'.$num.'.meta_value = '.intval(
+                        $options['product']
+                    );
+            } elseif (!empty($options['category']) && $options['category'] !== 'any') {
+                $query->join['woopurchased_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' ON order'.$num.'.id = woooi'.$num.'.order_id AND woooi'.$num.'.order_item_type = "line_item"';
+                $query->join['woopurchased_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id AND woooim'.$num.'.meta_key = "_product_id"';
+                $query->join['woopurchased_cat_map'.$num] = '#__term_relationships AS termrel'.$num.' ON termrel'.$num.'.object_id = woooim'.$num.'.meta_value';
+                $query->join['woopurchased_cat'.$num] = '#__term_taxonomy AS termtax'.$num.' ON termtax'.$num.'.term_taxonomy_id = termrel'.$num.'.term_taxonomy_id AND termtax'.$num.'.term_id = '.intval(
+                        $options['category']
+                    );
+            }
+        } else {
+            $conditions = [];
+            $conditions[] = 'post'.$num.'.post_type = "shop_order"';
+            $conditions[] = 'post'.$num.'.post_status = "wc-completed"';
 
-        $query->join['woopurchased_postmeta'.$num] = '#__postmeta AS postmeta'.$num.' ON postmeta'.$num.'.post_id = post'.$num.'.ID AND postmeta'.$num.'.meta_value = user.cms_id AND postmeta'.$num.'.meta_value != 0 AND postmeta'.$num.'.meta_key = "_customer_user"';
+            if (!empty($options['datemin'])) {
+                $options['datemin'] = acym_replaceDate($options['datemin']);
+                if (!is_numeric($options['datemin'])) $options['datemin'] = strtotime($options['datemin']);
+                if (!empty($options['datemin'])) {
+                    $conditions[] = 'post'.$num.'.post_date > '.acym_escapeDB(acym_date($options['datemin'], 'Y-m-d H:i:s'));
+                }
+            }
+            if (!empty($options['datemax'])) {
+                $options['datemax'] = acym_replaceDate($options['datemax']);
+                if (!is_numeric($options['datemax'])) $options['datemax'] = strtotime($options['datemax']);
+                if (!empty($options['datemax'])) {
+                    $conditions[] = 'post'.$num.'.post_date < '.acym_escapeDB(acym_date($options['datemax'], 'Y-m-d H:i:s'));
+                }
+            }
 
-        if (!empty($options['product'])) {
-            $query->join['woopurchased_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' ON post'.$num.'.ID = woooi'.$num.'.order_id AND woooi'.$num.'.order_item_type = "line_item"';
-            $query->join['woopurchased_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id AND woooim'.$num.'.meta_key = "_product_id" AND woooim'.$num.'.meta_value = '.intval(
-                    $options['product']
-                );
-        } elseif (!empty($options['category']) && $options['category'] != 'any') {
-            $query->join['woopurchased_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' ON post'.$num.'.ID = woooi'.$num.'.order_id AND woooi'.$num.'.order_item_type = "line_item"';
-            $query->join['woopurchased_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id AND woooim'.$num.'.meta_key = "_product_id"';
-            $query->join['woopurchased_cat_map'.$num] = '#__term_relationships AS termrel'.$num.' ON termrel'.$num.'.object_id = woooim'.$num.'.meta_value';
-            $query->join['woopurchased_cat'.$num] = '#__term_taxonomy AS termtax'.$num.' ON termtax'.$num.'.term_taxonomy_id = termrel'.$num.'.term_taxonomy_id AND termtax'.$num.'.term_id = '.intval(
-                    $options['category']
-                );
+            $query->join['woopurchased_post'.$num] = '#__posts AS post'.$num.' ON '.implode(' AND ', $conditions);
+            $query->join['woopurchased_postmeta'.$num] = '#__postmeta AS postmeta'.$num.' ON postmeta'.$num.'.post_id = post'.$num.'.ID AND postmeta'.$num.'.meta_value = user.cms_id AND postmeta'.$num.'.meta_value != 0 AND postmeta'.$num.'.meta_key = "_customer_user"';
+
+            if (!empty($options['product'])) {
+                $query->join['woopurchased_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' ON post'.$num.'.ID = woooi'.$num.'.order_id AND woooi'.$num.'.order_item_type = "line_item"';
+                $query->join['woopurchased_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id AND woooim'.$num.'.meta_key = "_product_id" AND woooim'.$num.'.meta_value = '.intval(
+                        $options['product']
+                    );
+            } elseif (!empty($options['category']) && $options['category'] != 'any') {
+                $query->join['woopurchased_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' ON post'.$num.'.ID = woooi'.$num.'.order_id AND woooi'.$num.'.order_item_type = "line_item"';
+                $query->join['woopurchased_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id AND woooim'.$num.'.meta_key = "_product_id"';
+                $query->join['woopurchased_cat_map'.$num] = '#__term_relationships AS termrel'.$num.' ON termrel'.$num.'.object_id = woooim'.$num.'.meta_value';
+                $query->join['woopurchased_cat'.$num] = '#__term_taxonomy AS termtax'.$num.' ON termtax'.$num.'.term_taxonomy_id = termrel'.$num.'.term_taxonomy_id AND termtax'.$num.'.term_id = '.intval(
+                        $options['category']
+                    );
+            }
         }
     }
 
@@ -300,16 +333,29 @@ trait WooCommerceAutomationConditions
     {
         $options['days'] = intval($options['days']);
 
-        $query->join['wooreminder_post'.$num] = '#__posts AS post'.$num.' ON post'.$num.'.post_type = "shop_order"';
-        $query->join['wooreminder_postmeta'.$num] = '#__postmeta AS postmeta'.$num.' ON postmeta'.$num.'.post_id = post'.$num.'.ID AND postmeta'.$num.'.meta_value = user.cms_id AND postmeta'.$num.'.meta_key = "_customer_user"';
-        $query->where[] = 'user.cms_id != 0';
-        $query->where[] = 'SUBSTRING(post'.$num.'.post_date, 1, 10) = '.acym_escapeDB(date('Y-m-d', time() - ($options['days'] * 86400)));
-        $query->where[] = 'post'.$num.'.post_status = '.acym_escapeDB($options['status']);
+        if ($this->isHposActive()) {
+            $query->join['wooreminder_order'.$num] = '#__wc_orders AS order'.$num.' ON order'.$num.'.customer_id = user.cms_id';
+            $query->where[] = 'order'.$num.'.type = "shop_order"';
+            $query->where[] = 'user.cms_id != 0';
 
-        if (!empty($options['payment']) && $options['payment'] != 'any') {
-            $query->join['wooreminder_postmeta'.$num] = '#__postmeta AS postmeta'.$num.' ON postmeta'.$num.'.post_id = post'.$num.'.ID';
-            $query->where[] = 'postmeta'.$num.'.meta_key = "_payment_method"';
-            $query->where[] = 'postmeta'.$num.'.meta_value = '.acym_escapeDB($options['payment']);
+            $query->where[] = 'SUBSTRING(order'.$num.'.date_created_gmt, 1, 10) = '.acym_escapeDB(acym_date(time() - ($options['days'] * 86400), 'Y-m-d', false));
+            $query->where[] = 'order'.$num.'.status = '.acym_escapeDB($options['status']);
+
+            if (!empty($options['payment']) && $options['payment'] !== 'any') {
+                $query->where[] = 'order'.$num.'.payment_method = '.acym_escapeDB($options['payment']);
+            }
+        } else {
+            $query->join['wooreminder_post'.$num] = '#__posts AS post'.$num.' ON post'.$num.'.post_type = "shop_order"';
+            $query->join['wooreminder_postmeta'.$num] = '#__postmeta AS postmeta'.$num.' ON postmeta'.$num.'.post_id = post'.$num.'.ID AND postmeta'.$num.'.meta_value = user.cms_id AND postmeta'.$num.'.meta_key = "_customer_user"';
+            $query->where[] = 'user.cms_id != 0';
+            $query->where[] = 'SUBSTRING(post'.$num.'.post_date, 1, 10) = '.acym_escapeDB(date('Y-m-d', time() - ($options['days'] * 86400)));
+            $query->where[] = 'post'.$num.'.post_status = '.acym_escapeDB($options['status']);
+
+            if (!empty($options['payment']) && $options['payment'] !== 'any') {
+                $query->join['wooreminder_postmeta'.$num] = '#__postmeta AS postmeta'.$num.' ON postmeta'.$num.'.post_id = post'.$num.'.ID';
+                $query->where[] = 'postmeta'.$num.'.meta_key = "_payment_method"';
+                $query->where[] = 'postmeta'.$num.'.meta_value = '.acym_escapeDB($options['payment']);
+            }
         }
     }
 
@@ -322,83 +368,154 @@ trait WooCommerceAutomationConditions
 
     private function processConditionFilter_woosubscription(&$query, $options, $num)
     {
-        // Retrieve the Acy users with subscriptions
-        $conditions = [];
-        $conditions[] = 'post'.$num.'.post_type = "shop_subscription"';
-
         $statuses = wcs_get_subscription_statuses();
-        if (!empty($options['status']) && in_array($options['status'], array_keys($statuses))) {
-            $conditions[] = 'post'.$num.'.post_status = '.acym_escapeDB($options['status']);
-        }
 
-        $query->join['woosubscription_post'.$num] = '#__posts AS post'.$num.' ON '.implode(' AND ', $conditions);
+        if ($this->isHposActive()) {
+            $query->join['woosubscription_order'.$num] = '#__wc_orders AS order'.$num.' ON order'.$num.'.customer_id = user.cms_id';
+            $query->where[] = 'order'.$num.'.type = "shop_subscription"';
+            $query->where[] = 'user.cms_id != 0';
 
-        $query->join['woosubscription_user'.$num] = '#__postmeta AS wcsuser'.$num.' 
+            if (!empty($options['status']) && in_array($options['status'], array_keys($statuses))) {
+                $query->where[] = 'order'.$num.'.status = '.acym_escapeDB($options['status']);
+            }
+
+            // Apply condition on product / category linked to the subscription
+            if (!empty($options['product'])) {
+                $query->join['woosubscription_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' ON order'.$num.'.id = woooi'.$num.'.order_id AND woooi'.$num.'.order_item_type = "line_item"';
+                $query->join['woosubscription_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' 
+                    ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id 
+                    AND woooim'.$num.'.meta_key IN ("_product_id", "_variation_id") 
+                    AND woooim'.$num.'.meta_value = '.intval($options['product']);
+            } elseif (!empty($options['category']) && $options['category'] != 'any') {
+                $query->join['woosubscription_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' ON order'.$num.'.id = woooi'.$num.'.order_id AND woooi'.$num.'.order_item_type = "line_item"';
+                $query->join['woosubscription_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' 
+                    ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id 
+                    AND woooim'.$num.'.meta_key = "_product_id"';
+                $query->join['woosubscription_cat_map'.$num] = '#__term_relationships AS termrel'.$num.' ON termrel'.$num.'.object_id = woooim'.$num.'.meta_value';
+                $query->join['woosubscription_cat'.$num] = '#__term_taxonomy AS termtax'.$num.' 
+                    ON termtax'.$num.'.term_taxonomy_id = termrel'.$num.'.term_taxonomy_id 
+                    AND termtax'.$num.'.term_id = '.intval($options['category']);
+            }
+
+            if (!empty($options['renewal_type']) && in_array($options['renewal_type'], ['automatic', 'manual'])) {
+                $query->join['woosubscription_meta_renewal_type'.$num] = '#__wc_orders_meta AS wcs_renewal_type'.$num.' 
+				ON wcs_renewal_type'.$num.'.order_id = order'.$num.'.id 
+				AND wcs_renewal_type'.$num.'.meta_key = "_requires_manual_renewal"
+				AND wcs_renewal_type'.$num.'.meta_value = "'.($options['renewal_type'] === 'manual' ? 'true' : 'false').'"';
+            }
+
+            // Prepare date fields values
+            $dateOptions = ['datemin', 'datemax', 'nextdatemin', 'nextdatemax', 'enddatemin', 'enddatemax'];
+            foreach ($dateOptions as $oneDateOption) {
+                if (empty($options[$oneDateOption])) continue;
+
+                $options[$oneDateOption] = acym_replaceDate($options[$oneDateOption]);
+                if (!is_numeric($options[$oneDateOption])) $options[$oneDateOption] = strtotime($options[$oneDateOption]);
+                if (!empty($options[$oneDateOption])) {
+                    $options[$oneDateOption] = acym_date($options[$oneDateOption], 'Y-m-d H:i:s', false);
+                }
+            }
+
+            // Apply date conditions
+            $dateOptions = [
+                'date' => '_schedule_start',
+                'nextdate' => '_schedule_next_payment',
+                'enddate' => '_schedule_end',
+            ];
+            foreach ($dateOptions as $oneDateType => $metaKey) {
+                if (!empty($options[$oneDateType.'min']) || !empty($options[$oneDateType.'max'])) {
+                    $query->join['woosubscription_meta'.$oneDateType.$num] = '#__wc_orders_meta AS wcs_'.$oneDateType.$num.' 
+					ON wcs_'.$oneDateType.$num.'.order_id = order'.$num.'.id 
+					AND wcs_'.$oneDateType.$num.'.meta_value != 0 
+					AND wcs_'.$oneDateType.$num.'.meta_key = '.acym_escapeDB($metaKey);
+
+                    if (!empty($options[$oneDateType.'min'])) {
+                        $query->join['woosubscription_meta'.$oneDateType.$num] .= ' AND wcs_'.$oneDateType.$num.'.meta_value > '.acym_escapeDB($options[$oneDateType.'min']);
+                    }
+
+                    if (!empty($options[$oneDateType.'max'])) {
+                        $query->join['woosubscription_meta'.$oneDateType.$num] .= ' AND wcs_'.$oneDateType.$num.'.meta_value < '.acym_escapeDB($options[$oneDateType.'max']);
+                    }
+                }
+            }
+        } else {
+            // Retrieve the Acy users with subscriptions
+            $conditions = [];
+            $conditions[] = 'post'.$num.'.post_type = "shop_subscription"';
+
+            if (!empty($options['status']) && in_array($options['status'], array_keys($statuses))) {
+                $conditions[] = 'post'.$num.'.post_status = '.acym_escapeDB($options['status']);
+            }
+
+            $query->join['woosubscription_post'.$num] = '#__posts AS post'.$num.' ON '.implode(' AND ', $conditions);
+
+            $query->join['woosubscription_user'.$num] = '#__postmeta AS wcsuser'.$num.' 
         	ON wcsuser'.$num.'.post_id = post'.$num.'.ID 
         	AND wcsuser'.$num.'.meta_value = user.cms_id 
         	AND wcsuser'.$num.'.meta_value != 0 
         	AND wcsuser'.$num.'.meta_key = "_customer_user"';
 
-        // Apply condition on product / category linked to the subscription
-        if (!empty($options['product'])) {
-            $query->join['woosubscription_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' 
+            // Apply condition on product / category linked to the subscription
+            if (!empty($options['product'])) {
+                $query->join['woosubscription_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' 
             	ON post'.$num.'.ID = woooi'.$num.'.order_id 
             	AND woooi'.$num.'.order_item_type = "line_item"';
-            $query->join['woosubscription_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' 
+                $query->join['woosubscription_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' 
             	ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id 
             	AND woooim'.$num.'.meta_key IN ("_product_id", "_variation_id") 
             	AND woooim'.$num.'.meta_value = '.intval($options['product']);
-        } elseif (!empty($options['category']) && $options['category'] != 'any') {
-            $query->join['woosubscription_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' 
+            } elseif (!empty($options['category']) && $options['category'] != 'any') {
+                $query->join['woosubscription_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' 
             	ON post'.$num.'.ID = woooi'.$num.'.order_id 
             	AND woooi'.$num.'.order_item_type = "line_item"';
-            $query->join['woosubscription_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' 
+                $query->join['woosubscription_order_itemmeta'.$num] = '#__woocommerce_order_itemmeta AS woooim'.$num.' 
             	ON woooi'.$num.'.order_item_id = woooim'.$num.'.order_item_id 
             	AND woooim'.$num.'.meta_key = "_product_id"';
-            $query->join['woosubscription_cat_map'.$num] = '#__term_relationships AS termrel'.$num.' ON termrel'.$num.'.object_id = woooim'.$num.'.meta_value';
-            $query->join['woosubscription_cat'.$num] = '#__term_taxonomy AS termtax'.$num.' 
+                $query->join['woosubscription_cat_map'.$num] = '#__term_relationships AS termrel'.$num.' ON termrel'.$num.'.object_id = woooim'.$num.'.meta_value';
+                $query->join['woosubscription_cat'.$num] = '#__term_taxonomy AS termtax'.$num.' 
             	ON termtax'.$num.'.term_taxonomy_id = termrel'.$num.'.term_taxonomy_id 
             	AND termtax'.$num.'.term_id = '.intval($options['category']);
-        }
+            }
 
-        if (!empty($options['renewal_type']) && in_array($options['renewal_type'], ['automatic', 'manual'])) {
-            $query->join['woosubscription_meta_renewal_type'.$num] = '#__postmeta AS wcs_renewal_type'.$num.' 
+            if (!empty($options['renewal_type']) && in_array($options['renewal_type'], ['automatic', 'manual'])) {
+                $query->join['woosubscription_meta_renewal_type'.$num] = '#__postmeta AS wcs_renewal_type'.$num.' 
 				ON wcs_renewal_type'.$num.'.post_id = post'.$num.'.ID 
 				AND wcs_renewal_type'.$num.'.meta_key = "_requires_manual_renewal"
 				AND wcs_renewal_type'.$num.'.meta_value = "'.($options['renewal_type'] === 'manual' ? 'true' : 'false').'"';
-        }
-
-        // Prepare date fields values
-        $dateOptions = ['datemin', 'datemax', 'nextdatemin', 'nextdatemax', 'enddatemin', 'enddatemax'];
-        foreach ($dateOptions as $oneDateOption) {
-            if (empty($options[$oneDateOption])) continue;
-
-            $options[$oneDateOption] = acym_replaceDate($options[$oneDateOption]);
-            if (!is_numeric($options[$oneDateOption])) $options[$oneDateOption] = strtotime($options[$oneDateOption]);
-            if (!empty($options[$oneDateOption])) {
-                $options[$oneDateOption] = acym_date($options[$oneDateOption], 'Y-m-d H:i:s', false);
             }
-        }
 
-        // Apply date conditions
-        $dateOptions = [
-            'date' => '_schedule_start',
-            'nextdate' => '_schedule_next_payment',
-            'enddate' => '_schedule_end',
-        ];
-        foreach ($dateOptions as $oneDateType => $metaKey) {
-            if (!empty($options[$oneDateType.'min']) || !empty($options[$oneDateType.'max'])) {
-                $query->join['woosubscription_meta'.$oneDateType.$num] = '#__postmeta AS wcs_'.$oneDateType.$num.' 
+            // Prepare date fields values
+            $dateOptions = ['datemin', 'datemax', 'nextdatemin', 'nextdatemax', 'enddatemin', 'enddatemax'];
+            foreach ($dateOptions as $oneDateOption) {
+                if (empty($options[$oneDateOption])) continue;
+
+                $options[$oneDateOption] = acym_replaceDate($options[$oneDateOption]);
+                if (!is_numeric($options[$oneDateOption])) $options[$oneDateOption] = strtotime($options[$oneDateOption]);
+                if (!empty($options[$oneDateOption])) {
+                    $options[$oneDateOption] = acym_date($options[$oneDateOption], 'Y-m-d H:i:s', false);
+                }
+            }
+
+            // Apply date conditions
+            $dateOptions = [
+                'date' => '_schedule_start',
+                'nextdate' => '_schedule_next_payment',
+                'enddate' => '_schedule_end',
+            ];
+            foreach ($dateOptions as $oneDateType => $metaKey) {
+                if (!empty($options[$oneDateType.'min']) || !empty($options[$oneDateType.'max'])) {
+                    $query->join['woosubscription_meta'.$oneDateType.$num] = '#__postmeta AS wcs_'.$oneDateType.$num.' 
 					ON wcs_'.$oneDateType.$num.'.post_id = post'.$num.'.ID 
 					AND wcs_'.$oneDateType.$num.'.meta_value != 0 
 					AND wcs_'.$oneDateType.$num.'.meta_key = '.acym_escapeDB($metaKey);
 
-                if (!empty($options[$oneDateType.'min'])) {
-                    $query->join['woosubscription_meta'.$oneDateType.$num] .= ' AND wcs_'.$oneDateType.$num.'.meta_value > '.acym_escapeDB($options[$oneDateType.'min']);
-                }
+                    if (!empty($options[$oneDateType.'min'])) {
+                        $query->join['woosubscription_meta'.$oneDateType.$num] .= ' AND wcs_'.$oneDateType.$num.'.meta_value > '.acym_escapeDB($options[$oneDateType.'min']);
+                    }
 
-                if (!empty($options[$oneDateType.'max'])) {
-                    $query->join['woosubscription_meta'.$oneDateType.$num] .= ' AND wcs_'.$oneDateType.$num.'.meta_value < '.acym_escapeDB($options[$oneDateType.'max']);
+                    if (!empty($options[$oneDateType.'max'])) {
+                        $query->join['woosubscription_meta'.$oneDateType.$num] .= ' AND wcs_'.$oneDateType.$num.'.meta_value < '.acym_escapeDB($options[$oneDateType.'max']);
+                    }
                 }
             }
         }
@@ -419,7 +536,6 @@ trait WooCommerceAutomationConditions
     private function summaryConditionFilters(&$automationCondition)
     {
         if (!empty($automationCondition['wooreminder'])) {
-
             $paymentMethods = ['any' => acym_translation('ACYM_ANY_PAYMENT_METHOD')];
             if (function_exists('WC')) {
                 $payments = WC()->payment_gateways()->payment_gateways;
@@ -439,7 +555,6 @@ trait WooCommerceAutomationConditions
         }
 
         if (!empty($automationCondition['woopurchased'])) {
-
             if (empty($automationCondition['woopurchased']['product'])) {
                 $product = acym_translation('ACYM_AT_LEAST_ONE_PRODUCT');
             } else {
@@ -473,7 +588,6 @@ trait WooCommerceAutomationConditions
         }
 
         if (!empty($automationCondition['woosubscription'])) {
-
             if (empty($automationCondition['woosubscription']['product'])) {
                 $product = acym_translation('ACYM_AT_LEAST_ONE_PRODUCT');
             } else {

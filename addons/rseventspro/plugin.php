@@ -16,6 +16,13 @@ class plgAcymRseventspro extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'RSEvents!Pro',
+            'description' => '- Insert events in your emails<br>- Filter users based on their event subscriptions',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/rsevents-pro',
+            'category' => 'Events management',
+            'level' => 'enterprise',
+        ];
         $this->installed = acym_isExtensionActive('com_rseventspro');
 
         $this->pluginDescription->name = 'RSEvents!Pro';

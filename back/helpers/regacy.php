@@ -110,7 +110,7 @@ class RegacyHelper extends acymObject
                     $id
                 ).'" class="acym_checkbox" name="'.$base.'_visible_lists_checked[]" '.$checked.' value="'.intval($id).'"/>
                             </td>
-                            <td style="border:0; padding-left:10px;" nowrap="nowrap">
+                            <td style="border:0; padding-left:10px;">
                                 <label for="acym__'.$base.'__lists-'.intval($id).'" class="acym__'.$base.'__lists__label">'.acym_escape($oneList['name']).'</label>
                             </td>
                         </tr>';

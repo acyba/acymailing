@@ -221,18 +221,35 @@ class ListClass extends acymClass
             }
         }
 
-        $confirmed = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1 ' : '';
-        $query = 'SELECT list.id, list.name, list.color, list.active, COUNT(userList.user_id) AS subscribers
-        FROM #__acym_list AS list
-        LEFT JOIN #__acym_user_has_list AS userList
-            JOIN #__acym_user AS user 
-                ON user.id = userList.user_id
+        $query = 'SELECT list.id, list.name, list.color, list.active, COUNT(user.id) AS subscribers
+            FROM #__acym_list AS list
+            LEFT JOIN #__acym_user_has_list AS userList
+                ON list.id = userList.list_id
                 AND userList.status = 1
-                AND user.active = 1 '.$confirmed.'
-        ON list.id = userList.list_id';
+            LEFT JOIN #__acym_user AS user 
+                ON user.id = userList.user_id
+                AND user.active = 1 ';
 
-        $queryCount = 'SELECT COUNT(list.id) 
-        FROM #__acym_list AS list';
+        if (intval($this->config->get('require_confirmation', 1)) === 1) {
+            $query .= ' AND user.confirmed = 1 ';
+        }
+
+        $queryCount = 'SELECT COUNT(list.id) FROM #__acym_list AS list';
+
+        if (!acym_isAdmin()) {
+            $currentUserId = acym_currentUserId();
+            if (empty($currentUserId)) {
+                return [
+                    'lists' => [],
+                    'total' => 0,
+                ];
+            }
+
+            $userGroups = acym_getGroupsByUser($currentUserId);
+            $groupCondition = '(list.access LIKE "%,'.implode(',%" OR list.access LIKE "%,', $userGroups).',%")';
+
+            $filters[] = 'list.cms_user_id = '.intval($currentUserId).' OR '.$groupCondition;
+        }
 
         if (!empty($settings['search'])) {
             $filters[] = 'list.name LIKE '.acym_escapeDB('%'.$settings['search'].'%');
@@ -457,7 +474,9 @@ class ListClass extends acymClass
         }
 
         if (empty($list->id)) {
-            if (empty($list->cms_user_id)) $list->cms_user_id = acym_currentUserId();
+            if (empty($list->cms_user_id)) {
+                $list->cms_user_id = acym_currentUserId();
+            }
 
             $list->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
         }
@@ -557,7 +576,7 @@ class ListClass extends acymClass
             if (empty($list->translation)) continue;
 
             $list->translation = json_decode($list->translation, true);
-            if (!empty($list->translation[$currentLanguageTag])){
+            if (!empty($list->translation[$currentLanguageTag])) {
                 if (!empty($list->translation[$currentLanguageTag]['name'])) {
                     $lists[$id]->name = $list->translation[$currentLanguageTag]['name'];
                 }
@@ -570,7 +589,6 @@ class ListClass extends acymClass
                     $lists[$id]->description = $list->translation[$currentLanguageTag]['description'];
                 }
             }
-
         }
 
         return $lists;
@@ -681,6 +699,7 @@ class ListClass extends acymClass
         }
 
         acym_arrayToInteger($ids);
+        $this->onlyManageableLists($ids);
         $query = 'SELECT COUNT(DISTINCT hasList.user_id) 
                     FROM #__acym_user_has_list AS hasList 
                     JOIN #__acym_user AS user 
@@ -850,7 +869,14 @@ class ListClass extends acymClass
         $idCurrentUser = acym_currentUserId();
         if (empty($idCurrentUser)) return [];
 
-        return acym_loadResultArray('SELECT id FROM #__acym_list WHERE cms_user_id = '.intval($idCurrentUser));
+        $userGroups = acym_getGroupsByUser($idCurrentUser);
+
+        return acym_loadResultArray(
+            'SELECT id 
+            FROM #__acym_list 
+            WHERE cms_user_id = '.intval($idCurrentUser).' 
+                OR (access LIKE "%,'.implode(',%" OR access LIKE "%,', $userGroups).',%")'
+        );
     }
 
     public function onlyManageableLists(&$elements)
@@ -859,6 +885,15 @@ class ListClass extends acymClass
 
         $manageableLists = $this->getManageableLists();
         $elements = array_intersect($elements, $manageableLists);
+    }
+
+    public function hasUserAccess($listId): bool
+    {
+        if (acym_isAdmin()) {
+            return true;
+        }
+
+        return in_array($listId, $this->getManageableLists());
     }
 
     public function getfrontManagementList()

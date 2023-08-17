@@ -71,9 +71,9 @@ function acym_punycode($email, $method = 'emailToPunycode')
     return $newEmail;
 }
 
-function acym_currentUserId()
+function acym_currentUserId(): int
 {
-    return get_current_user_id();
+    return intval(get_current_user_id());
 }
 
 function acym_currentUserName($userid = null)

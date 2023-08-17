@@ -620,50 +620,68 @@ trait WooCommerceInsertion
         $this->tags = [];
         foreach ($tags as $oneTag => $parameter) {
             $minAtO = isset($parameter->min) && $parameter->min == 0;
-            if (empty($user->cms_id) && !$minAtO) {
-                $this->tags[$oneTag] = '';
-                continue;
-            } elseif (empty($user->cms_id) && $minAtO) {
-                $this->tags[$oneTag] = '_EMPTYSEND_';
+
+            if (empty($user->cms_id)) {
+                $this->tags[$oneTag] = $minAtO ? '_EMPTYSEND_' : '';
                 continue;
             }
+
             //We get the lastest orders
-            $dataQuery = [
-                'numberposts' => -1,
-                'meta_key' => '_customer_user',
-                'meta_value' => $user->cms_id,
-                'post_type' => wc_get_order_types(),
-                'post_status' => array_keys(wc_get_is_paid_statuses()),
-                'meta_query' => [
-                    [
-                        'key' => '_customer_user',
-                        'value' => intval($user->cms_id),
-                        'compare' => '=',
-                    ],
-                ],
-            ];
-            if (!empty($parameter->min_date)) {
-                $minDate = acym_replaceDate($parameter->min_date);
-                $dataQuery['date_query'] = [
-                    'after' => date('Y-m-d', $minDate),
-                ];
-            }
-            $customer_orders = get_posts($dataQuery);
+            if ($this->isHposActive()) {
+                $postTypesOrder = wc_get_order_types();
+                $postTypesOrder = array_map('acym_escapeDB', $postTypesOrder);
 
-            if ($minAtO && empty($customer_orders)) {
+                $postStatusesOrder = array_keys(wc_get_is_paid_statuses());
+                $postStatusesOrder = array_map('acym_escapeDB', $postStatusesOrder);
+
+                $query = 'SELECT `order`.id AS ID 
+					FROM #__wc_orders AS `order`
+					WHERE `order`.type IN ('.implode(',', $postTypesOrder).') 
+						AND `order`.status IN ('.implode(',', $postStatusesOrder).') 
+						AND `order`.customer_id = '.intval($user->cms_id);
+                if (!empty($parameter->min_date)) {
+                    $query .= ' AND `order`.date_created_gmt > '.acym_escapeDB(acym_date(acym_replaceDate($parameter->min_date), 'Y-m-d', false));
+                }
+
+                $customerOrders = acym_loadObjectList($query);
+            } else {
+                $dataQuery = [
+                    'numberposts' => -1,
+                    'meta_key' => '_customer_user',
+                    'meta_value' => $user->cms_id,
+                    'post_type' => wc_get_order_types(),
+                    'post_status' => array_keys(wc_get_is_paid_statuses()),
+                    'meta_query' => [
+                        [
+                            'key' => '_customer_user',
+                            'value' => intval($user->cms_id),
+                            'compare' => '=',
+                        ],
+                    ],
+                ];
+                if (!empty($parameter->min_date)) {
+                    $minDate = acym_replaceDate($parameter->min_date);
+                    $dataQuery['date_query'] = [
+                        'after' => date('Y-m-d', $minDate),
+                    ];
+                }
+                $customerOrders = get_posts($dataQuery);
+            }
+
+            if ($minAtO && empty($customerOrders)) {
                 $this->tags[$oneTag] = '_EMPTYSEND_';
                 continue;
             }
 
-            if (empty($customer_orders)) {
+            if (empty($customerOrders)) {
                 $this->tags[$oneTag] = '';
                 continue;
             }
 
             //We get the products from the orders
             $product_ids = [];
-            foreach ($customer_orders as $customer_order) {
-                $order = wc_get_order($customer_order->ID);
+            foreach ($customerOrders as $customerOrder) {
+                $order = wc_get_order($customerOrder->ID);
                 $items = $order->get_items();
                 foreach ($items as $item) {
                     $product_id = $item->get_product_id();

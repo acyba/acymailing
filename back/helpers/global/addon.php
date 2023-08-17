@@ -51,32 +51,28 @@ function acym_trigger($method, $args = [], $plugin = null, $callbackOnePlugin = 
     return $result;
 }
 
-function acym_checkPluginsVersion()
+function acym_checkPluginsVersion(): bool
 {
-    //first we get all installed plugins
     $pluginClass = new PluginClass();
     $pluginsInstalled = $pluginClass->getMatchingElements();
     $pluginsInstalled = $pluginsInstalled['elements'];
-    //if we don't have any no need to go further
-    if (empty($pluginsInstalled)) return true;
 
-    //we get all plugin available from our website
-    $url = ACYM_UPDATEMEURL.'integrationv6&task=getAllPlugin&cms='.ACYM_CMS;
+    if (empty($pluginsInstalled)) {
+        return true;
+    }
 
-    $res = acym_fileGetContent($url);
-    $pluginsAvailable = json_decode($res, true);
-    if (empty($pluginsAvailable)) return true;
+    $response = acym_fileGetContent(ACYM_UPDATEME_API_URL.'public/addons');
+    $pluginsAvailable = @json_decode($response, true);
+    if (empty($pluginsAvailable)) {
+        return true;
+    }
 
     foreach ($pluginsInstalled as $key => $pluginInstalled) {
         foreach ($pluginsAvailable as $pluginAvailable) {
-            if (str_replace('.zip', '', $pluginAvailable['file_name']) == $pluginInstalled->folder_name && !version_compare(
-                    $pluginInstalled->version,
-                    $pluginAvailable['version'],
-                    '>='
-                )) {
-                $pluginsInstalled[$key]->uptodate = 0;
-                $pluginsInstalled[$key]->latest_version = $pluginAvailable['version'];
-                $pluginClass->save($pluginsInstalled[$key]);
+            if ($pluginAvailable['file_name'] === $pluginInstalled->folder_name && !version_compare($pluginInstalled->version, $pluginAvailable['version'], '>=')) {
+                $pluginInstalled->uptodate = 0;
+                $pluginInstalled->latest_version = $pluginAvailable['version'];
+                $pluginClass->save($pluginInstalled);
             }
         }
     }

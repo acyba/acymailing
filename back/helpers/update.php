@@ -80,13 +80,14 @@ class UpdateHelper extends acymObject
         $object = new \stdClass();
         $object->enabled = 1;
         $object->type = 'extension';
-        $object->location = ACYM_UPDATEMEURL.'updatexml&version={__VERSION__}';
+        $object->location = ACYM_UPDATEME_API_URL.'public/updatexml/';
 
         if (empty($extension)) {
+            $object->location .= 'component?extension=acymailing&cms=joomla&version=latest&level={__LEVEL__}';
             $type = 'component';
             $folder = '';
             $element = 'com_acym';
-            $object->location .= '&component=acymailing&cms=joomla&level={__LEVEL__}';
+
         } else {
             if (strpos($extension, 'mod_') === 0) {
                 $type = 'module';
@@ -98,7 +99,8 @@ class UpdateHelper extends acymObject
                 $folder = $extension[1];
                 $element = $extension[2];
             }
-            $object->location .= '&task=updateXMLExtension&type='.$type.'&folder='.$folder.'&element='.$element;
+
+            $object->location .= 'extension?version={__VERSION__}&type='.$type.'&folder='.$folder.'&element='.$element;
         }
 
         // Get the extension
@@ -146,20 +148,22 @@ class UpdateHelper extends acymObject
         }
 
         $installedLanguages = array_keys($siteLanguages);
-        if (empty($installedLanguages)) return;
+        if (empty($installedLanguages) || !class_exists('\AcyMailing\Helpers\UpdatemeHelper')) return;
 
         ob_start();
-        $languagesContent = acym_fileGetContent(ACYM_UPDATEURL.'loadLanguages&json=1&component=acym&codes='.implode(',', $installedLanguages));
+        $languagesContent = UpdatemeHelper::call('public/download/translations?version=latest&codes='.implode(',', $installedLanguages));
         $warnings = ob_get_clean();
-        if (!empty($warnings) && acym_isDebug()) acym_enqueueMessage($warnings, 'warning');
+        if (!empty($warnings) && acym_isDebug()) {
+            acym_enqueueMessage($warnings, 'warning');
+        }
 
-        if (empty($languagesContent)) {
+        if (empty($languagesContent) || $languagesContent['status'] === 'error') {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_LOAD_LANGUAGES'), 'error');
 
             return;
         }
 
-        $decodedLanguages = json_decode($languagesContent, true);
+        $decodedLanguages = $languagesContent['translations'];
 
         $success = [];
         $error = [];
@@ -180,7 +184,7 @@ class UpdateHelper extends acymObject
             }
         }
 
-        if (!empty($success)) acym_enqueueMessage(acym_translationSprintf('ACYM_TRANSLATION_INSTALLED', implode(', ', $success)), 'success');
+        if (!empty($success)) acym_enqueueMessage(acym_translationSprintf('ACYM_TRANSLATION_INSTALLED', implode(', ', $success)));
         if (!empty($error)) acym_enqueueMessage($error, 'error');
         if (!empty($errorLoad)) acym_enqueueMessage(acym_translationSprintf('ACYM_ERROR_LOAD_LANGUAGE', implode(', ', $errorLoad)), 'warning');
     }

@@ -8,6 +8,7 @@ use AcyMailing\Helpers\PluginHelper;
 
 class acymPlugin extends acymObject
 {
+    protected $addonDefinition;
     var $pluginHelper;
     var $cms = 'all';
     var $name = '';
@@ -1099,7 +1100,7 @@ class acymPlugin extends acymObject
                     $field['value'],
                     'cell shrink'
                 );
-            } elseif ($field['type'] == 'custom_view') {
+            } elseif ($field['type'] === 'custom_view' && acym_isAdmin()) {
                 $idCustomView = 'acym__plugins__installed__custom-view__'.$this->name;
                 $ctrl = acym_getVar('string', 'ctrl', '');
                 $classTooltip = $ctrl == 'dynamics' ? '' : 'wysid_tooltip';
@@ -1220,7 +1221,9 @@ class acymPlugin extends acymObject
             if ($plugin->folder_name === $this->name) {
                 if (!empty($plugin->settings)) {
                     foreach ($plugin->settings as $keySettings => $value) {
-                        $this->settings[$keySettings]['value'] = $plugin->settings[$keySettings]['value'];
+                        if (isset($this->settings[$keySettings]['value'])) {
+                            $this->settings[$keySettings]['value'] = $plugin->settings[$keySettings]['value'];
+                        }
                     }
                 }
                 $plugins[$key]->settings = $this->settings;

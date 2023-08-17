@@ -1,5 +1,6 @@
 <?php
 
+use AcyMailing\Helpers\UpdatemeHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 
 function acym_getVar($type, $name, $default = null, $source = 'default', $mask = 0)
@@ -120,59 +121,7 @@ function acym_cmsPermission()
 
 function acym_checkVersion($ajax = false)
 {
-    // Get any error correctly
-    ob_start();
-    $config = acym_config();
-    $url = ACYM_UPDATEURL.'loadUserInformation';
-
-    $paramsForLicenseCheck = [
-        'component' => 'acymailing', // Know which product to look at
-        'level' => strtolower($config->get('level', 'starter')), // Know which version to look at
-        'domain' => rtrim(ACYM_LIVE, '/'), // Tell the user if the automatic features are available for the current installation
-        'version' => $config->get('version'), // Tell the user if a newer version is available
-        'cms' => ACYM_CMS, // We may delay some new Acy versions depending on the CMS
-        'cmsv' => ACYM_CMSV, // Acy isn't available for some versions
-    ];
-
-
-    foreach ($paramsForLicenseCheck as $param => $value) {
-        $url .= '&'.$param.'='.urlencode($value);
-    }
-
-    $userInformation = acym_fileGetContent($url, 30);
-    $warnings = ob_get_clean();
-    $result = (!empty($warnings) && acym_isDebug()) ? $warnings : '';
-
-    // Could not load the user information
-    if (empty($userInformation) || $userInformation === false) {
-        $config->save(['lastlicensecheck' => time()]);
-        if ($ajax) {
-            acym_sendAjaxResponse(
-                '',
-                [
-                    'content' => '<br/><span style="color:#C10000;">'.acym_translation('ACYM_ERROR_LOAD_FROM_ACYBA').'</span><br/>'.$result,
-                    'lastcheck' => acym_date(time(), 'Y/m/d H:i'),
-                ],
-                false
-            );
-        } else {
-            return '';
-        }
-    }
-
-    $decodedInformation = json_decode($userInformation, true);
-
-    $newConfig = new stdClass();
-
-    $newConfig->latestversion = $decodedInformation['latestversion'];
-    $newConfig->expirationdate = $decodedInformation['expiration'];
-    $newConfig->lastlicensecheck = time();
-    $config->save($newConfig);
-
-    //check for plugins
-    acym_checkPluginsVersion();
-
-    return $newConfig->lastlicensecheck;
+    return UpdatemeHelper::getLicenseInfo($ajax);
 }
 
 function acym_loadJoomlaPlugin($family, $name = null)

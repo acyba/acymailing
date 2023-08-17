@@ -11,6 +11,7 @@ trait Ajax
 {
     public function ajaxCreateNewList()
     {
+        acym_checkToken();
         $genericImport = acym_getVar('boolean', 'generic', false);
         $selectedListsIds = json_decode(acym_getVar('string', 'selected', '[]'));
 
@@ -47,9 +48,14 @@ trait Ajax
         $limit = acym_getVar('int', 'limit', 50);
         $search = acym_getVar('string', 'modal_search', '');
 
-        if (empty($id)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);
+        if (empty($id)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);
+        }
 
         $listClass = new ListClass();
+        if (!$listClass->hasUserAccess($id)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_UNAUTHORIZED_ACCESS'), [], false);
+        }
 
         acym_sendAjaxResponse('', ['users' => $listClass->getUsersForSummaryModal($id, $offset, $limit, $search)]);
     }
@@ -65,6 +71,7 @@ trait Ajax
         $matchingListsData->idsAlready = json_decode(acym_getVar('string', 'alreadyLists'));
         $matchingListsData->page = acym_getVar('int', 'pagination_page_ajax');
         if (empty($matchingListsData->page)) $matchingListsData->page = 1;
+
         $matchingListsData->needDisplaySub = acym_getVar('int', 'needDisplaySub');
         $matchingListsData->displayNonActive = acym_getVar('int', 'nonActive');
 
@@ -126,13 +133,23 @@ trait Ajax
     public function loadMoreSubscribers()
     {
         acym_checkToken();
+        $listClass = new ListClass();
+
         $listId = acym_getVar('int', 'listId');
+
+        if (!acym_isAdmin()) {
+            $manageableLists = $listClass->getManageableLists();
+            if (!in_array($listId, $manageableLists)) {
+                die('Access denied for this list');
+            }
+        }
+
         $offset = acym_getVar('int', 'offset');
         $perCalls = acym_getVar('int', 'perCalls');
         $status = acym_getVar('int', 'status');
         $orderBy = acym_getVar('string', 'orderBy', 'id');
         $orderingSortOrder = acym_getVar('string', 'orderByOrdering', 'desc');
-        $subscribers = $this->currentClass->getSubscribersForList($listId, $offset, $perCalls, $status, $orderBy, $orderingSortOrder);
+        $subscribers = $listClass->getSubscribersForList($listId, $offset, $perCalls, $status, $orderBy, $orderingSortOrder);
         foreach ($subscribers as &$oneSub) {
             if ($oneSub->subscription_date == '0000-00-00 00:00:00') continue;
             $oneSub->subscription_date = acym_date(strtotime($oneSub->subscription_date), acym_translation('ACYM_DATE_FORMAT_LC2'));

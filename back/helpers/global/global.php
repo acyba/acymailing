@@ -164,12 +164,6 @@ function acym_isAcyCheckerInstalled()
     return $installed;
 }
 
-function acydie($arg, $ajax = false, $indent = true)
-{
-    acydump($arg, $ajax, $indent);
-    exit;
-}
-
 function acym_getErrorLogFilename(string $prefix = ''): string
 {
     if (!empty($prefix)) {

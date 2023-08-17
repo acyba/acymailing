@@ -22,7 +22,6 @@ class plgAcymEventsmanager extends acymPlugin
         $this->pluginDescription->name = 'Events Manager';
         $this->pluginDescription->icon = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/icon.svg';
         $this->pluginDescription->category = 'Events management';
-        $this->pluginDescription->features = '["content","automation"]';
         $this->pluginDescription->description = '- Insert events in your emails<br />- Filter users by event subscription';
 
         if ($this->installed) {

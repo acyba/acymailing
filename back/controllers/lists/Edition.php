@@ -56,7 +56,8 @@ trait Edition
 
             $this->breadcrumb[acym_translation('ACYM_NEW_LIST')] = acym_completeLink('lists&task=settings');
         } else {
-            $listInformation = $this->currentClass->getOneById($listId);
+            $listClass = new ListClass();
+            $listInformation = $listClass->getOneById($listId);
             if (is_null($listInformation)) {
                 acym_enqueueMessage(acym_translation('ACYM_LIST_DOESNT_EXIST'), 'error');
                 $this->listing();
@@ -64,7 +65,8 @@ trait Edition
                 return false;
             }
 
-            $subscribersCount = $this->currentClass->getSubscribersCountPerStatusByListId([$listId]);
+
+            $subscribersCount = $listClass->getSubscribersCountPerStatusByListId([$listId]);
 
             $this->breadcrumb[acym_escape($listInformation->name)] = acym_completeLink('lists&task=settings&listId='.$listId);
 
@@ -73,7 +75,6 @@ trait Edition
             $currentUser = acym_currentUserId();
             if (!acym_isAdmin() && ($listInformation->cms_user_id != $currentUser)) {
                 $userGroups = acym_getGroupsByUser($currentUser);
-
                 $canAccess = false;
 
                 foreach ($userGroups as $group) {
@@ -127,7 +128,8 @@ trait Edition
         $data['ordering'] = acym_getVar('string', 'users_ordering', 'id');
         $data['orderingSortOrder'] = acym_getVar('string', 'users_ordering_sort_order', 'desc');
         $data['classSortOrder'] = $data['orderingSortOrder'] == 'asc' ? 'acymicon-sort-amount-asc' : 'acymicon-sort-amount-desc';
-        $data['subscribers'] = $this->currentClass->getSubscribersForList($listId, 0, 500, 1, $data['ordering'], $data['orderingSortOrder']);
+        $listClass = new ListClass();
+        $data['subscribers'] = $listClass->getSubscribersForList($listId, 0, 500, 1, $data['ordering'], $data['orderingSortOrder']);
         foreach ($data['subscribers'] as &$oneSub) {
             if ($oneSub->subscription_date == '0000-00-00 00:00:00') continue;
             $oneSub->subscription_date = acym_date(strtotime($oneSub->subscription_date), acym_translation('ACYM_DATE_FORMAT_LC2'));
@@ -165,7 +167,8 @@ trait Edition
     {
         $data['listStats'] = ['deliveryRate' => 0, 'openRate' => 0, 'clickRate' => 0, 'failRate' => 0, 'bounceRate' => 0];
         if (empty($listId)) return;
-        $mails = $this->currentClass->getMailsByListId($listId);
+        $listClass = new ListClass();
+        $mails = $listClass->getMailsByListId($listId);
         if (empty($mails)) return;
 
         $mailStatClass = new MailStatClass();
@@ -226,7 +229,7 @@ trait Edition
     {
         $data['tmpls'] = [];
         if (empty($data['listInformation']->id)) return;
-
+        $listClass = new ListClass();
         $mailClass = new MailClass();
 
         foreach ([$mailClass::TYPE_WELCOME => 'welcome', $mailClass::TYPE_UNSUBSCRIBE => 'unsub'] as $full => $short) {
@@ -235,7 +238,7 @@ trait Edition
                 $data['listInformation']->{$full.'_id'} = $mailId;
                 $listInfoSave = clone $data['listInformation'];
                 unset($listInfoSave->subscribers);
-                if (!$this->currentClass->save($listInfoSave)) acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVE_LIST'), 'error');
+                if (!$listClass->save($listInfoSave)) acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVE_LIST'), 'error');
             }
 
             $returnLink = acym_completeLink('lists&task=settings&listId='.$data['listInformation']->id.'&edition=1&'.$short.'mailid={mailid}');
@@ -257,8 +260,9 @@ trait Edition
 
     public function unsetMail($type)
     {
+        $listClass = new ListClass();
         $id = acym_getVar('int', 'listId', 0);
-        $list = $this->currentClass->getOneById($id);
+        $list = $listClass->getOneById($id);
 
         if (empty($list)) {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVE_LIST'), 'error');
@@ -267,9 +271,13 @@ trait Edition
             return;
         }
 
+        if (!$listClass->hasUserAccess($id)) {
+            die('Access denied for list '.$id);
+        }
+
         $list->$type = null;
 
-        if ($this->currentClass->save($list)) {
+        if ($listClass->save($list)) {
             acym_setVar('listId', $id);
             $this->settings();
         } else {
@@ -297,6 +305,7 @@ trait Edition
     {
         acym_checkToken();
 
+        $listClass = new ListClass();
         $formData = (object)acym_getVar('array', 'list', []);
 
         $listId = acym_getVar('int', 'listId', 0);
@@ -317,9 +326,13 @@ trait Edition
 
         $listInformation->tags = acym_getVar('array', 'list_tags', []);
 
-        if (acym_isAdmin()) $listInformation->access = empty($listInformation->access) ? '' : ','.implode(',', $listInformation->access).',';
+        if (acym_isAdmin()) {
+            $listInformation->access = empty($listInformation->access) ? '' : ','.implode(',', $listInformation->access).',';
+        } elseif (!empty($formData->id) && !$listClass->hasUserAccess($formData->id)) {
+            die('Cannot save list '.$formData->id);
+        }
 
-        $listId = $this->currentClass->save($listInformation);
+        $listId = $listClass->save($listInformation);
 
         if (!empty($listId)) {
             acym_setVar('listId', $listId);
@@ -327,8 +340,8 @@ trait Edition
             $this->_saveSubscribersTolist();
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
-            if (!empty($this->currentClass->errors)) {
-                acym_enqueueMessage($this->currentClass->errors, 'error');
+            if (!empty($listClass->errors)) {
+                acym_enqueueMessage($listClass->errors, 'error');
             }
         }
         if ($goToListing) {
@@ -338,20 +351,22 @@ trait Edition
         }
     }
 
-    private function _saveSubscribersTolist()
+    private function _saveSubscribersTolist(): bool
     {
         $usersIds = json_decode(acym_getVar('string', 'acym__entity_select__selected', '[]'));
         $usersIdsUnselected = json_decode(acym_getVar('string', 'acym__entity_select__unselected', '[]'));
         $listId = acym_getVar('int', 'listId', 0);
 
-        if (empty($listId)) return false;
+        $listClass = new ListClass();
+        if (empty($listId) || !$listClass->hasUserAccess($listId)) return false;
 
         acym_arrayToInteger($usersIdsUnselected);
         if (!empty($usersIdsUnselected)) {
             acym_query(
-                'UPDATE #__acym_user_has_list SET status = 0, unsubscribe_date = '.acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s')).' WHERE list_id = '.intval(
-                    $listId
-                ).' AND user_id IN ('.implode(', ', $usersIdsUnselected).')'
+                'UPDATE #__acym_user_has_list 
+                SET status = 0, unsubscribe_date = '.acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s')).' 
+                WHERE list_id = '.intval($listId).' 
+                    AND user_id IN ('.implode(', ', $usersIdsUnselected).')'
             );
         }
 
@@ -372,8 +387,9 @@ trait Edition
      */
     public function saveSubscribers()
     {
-        $this->_saveSubscribersTolist();
         acym_checkToken();
+
+        $this->_saveSubscribersTolist();
         $listId = acym_getVar('int', 'listId', 0);
         acym_setVar('listId', $listId);
 

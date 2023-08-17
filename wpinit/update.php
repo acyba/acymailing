@@ -37,14 +37,18 @@ class acyUpdate
         $alreadyChecked = true;
 
 
-        $currentVersion = $config->get('version');
-        $url = ACYM_UPDATEMEURL.'updatexml&component=acymailing&cms=wp&level='.$config->get('level').'&version='.$currentVersion;
+        $url = ACYM_UPDATEME_API_URL.'public/updatexml/component?extension=acymailing&cms=wordpress&version=latest&level={__LEVEL__}';
         if (acym_level(ACYM_ESSENTIAL)) {
-            $url .= '&li='.urlencode(base64_encode(ACYM_LIVE));
+            $url .= '&website='.urlencode(ACYM_LIVE);
         }
 
-        $updateInformation = acym_fileGetContent($url, 10);
-        $updateInformation = substr($updateInformation, strpos($updateInformation, '<?xml'));
+        $updateInformation = acym_fileGetContent($url);
+        $xmlPos = strpos($updateInformation, '<?xml');
+        if ($xmlPos === false) {
+            return $transient;
+        }
+
+        $updateInformation = substr($updateInformation, $xmlPos);
 
         try {
             $xml = new \SimpleXMLElement($updateInformation);
@@ -54,6 +58,7 @@ class acyUpdate
             return $transient;
         }
 
+        $currentVersion = $config->get('version');
         if (!empty($currentVersion) && version_compare($currentVersion, $latestVersion, '>=')) {
             if (!empty($transient->response[$plugin_slug])) {
                 unset($transient->response[$plugin_slug]);

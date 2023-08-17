@@ -2,6 +2,8 @@
 
 namespace AcyMailing\Controllers\Configuration;
 
+use AcyMailing\Helpers\UpdatemeHelper;
+
 trait License
 {
     public function unlinkLicense()
@@ -96,36 +98,31 @@ trait License
             return $return;
         }
 
-        $url = ACYM_UPDATEMEURL.'license&task=attachWebsiteKey';
-
-        $fields = [
+        $data = [
             'domain' => ACYM_LIVE,
-            'license_key' => $licenseKey,
+            'cms' => ACYM_CMS,
+            'version' => $this->config->get('version'),
         ];
 
-        $resultAttach = acym_makeCurlCall($url, $fields);
+        $resultAttach = UpdatemeHelper::call('api/websites/attach', 'POST', $data);
 
         acym_checkVersion();
 
         //If it's not the result well formatted => don't save the license key and out
-        if (empty($resultAttach) || !empty($resultAttach['error'])) {
-            $return['message'] = empty($resultAttach['error']) ? '' : $resultAttach['error'];
+        if (empty($resultAttach)) {
+            $return['message'] = empty($resultAttach['message']) ? '' : $resultAttach['message'];
 
             return $return;
         }
 
-        $return['message'] = $resultAttach['message'];
         //If there is an error when the website has been attached => don't save the license key in the configuration
-        if ($resultAttach['type'] == 'error') {
-
-            return $return;
+        if (!$resultAttach['success']) {
+            return $resultAttach;
         }
-
-        $return['success'] = true;
 
         acym_trigger('onAcymAttachLicense', [&$licenseKey]);
 
-        return $return;
+        return $resultAttach;
     }
 
     private function unlinkLicenseOnUpdateMe($licenseKey = null)
@@ -142,8 +139,6 @@ trait License
             $licenseKey = $this->config->get('license_key', '');
         }
 
-        $level = $this->config->get('level', '');
-
         $return = [
             'message' => '',
             'success' => false,
@@ -158,47 +153,29 @@ trait License
         //First let's deactivate the cron
         $this->deactivateCron(false, $licenseKey);
 
-        $url = ACYM_UPDATEMEURL.'license&task=unlinkWebsiteFromLicense';
-
-        $fields = [
+        $data = [
             'domain' => ACYM_LIVE,
-            'license_key' => $licenseKey,
-            'level' => $level,
-            'component' => ACYM_COMPONENT_NAME_API,
         ];
 
         //Call updateme to unlink the license from this website
-        $resultUnlink = acym_makeCurlCall($url, $fields);
+        $resultUnlink = UpdatemeHelper::call('api/websites/unlink', 'POST', $data);
 
         acym_checkVersion();
 
         //If it's not the result well formated => out
-        if (empty($resultUnlink) || !empty($resultUnlink['error'])) {
-            $return['message'] = empty($resultUnlink['error']) ? '' : $resultUnlink['error'];
+        if (empty($resultUnlink)) {
+            $return['message'] = empty($resultUnlink['message']) ? '' : $resultUnlink['message'];
 
             return $return;
         }
 
-        if ($resultUnlink['type'] === 'error') {
-            //If we can't retrieve the license, we set that the unlink is ok.
-            //Example: if you don't have the license on acymailing.com, you need to unlink the license
-            if ($resultUnlink['message'] == 'LICENSE_NOT_FOUND' || $resultUnlink['message'] == 'LICENSES_DONT_MATCH') {
-                $return['message'] = 'UNLINK_SUCCESSFUL';
-                $return['success'] = true;
-
-                return $return;
-            }
+        if (!$resultUnlink['success']) {
+            return $resultUnlink;
         }
-
-        if ($resultUnlink['type'] === 'info') {
-            $return['success'] = true;
-        }
-
-        $return['message'] = $resultUnlink['message'];
 
         acym_trigger('onAcymDetachLicense');
 
-        return $return;
+        return $resultUnlink;
     }
 
     public function activateCron($licenseKey = null)
@@ -251,31 +228,20 @@ trait License
             return false;
         }
 
-        $url = ACYM_UPDATEMEURL.'launcher&task='.$functionToCall;
-
-        $fields = [
+        $data = [
             'domain' => ACYM_LIVE,
-            'license_key' => $licenseKey,
             'cms' => ACYM_CMS,
-            'frequency' => 900,
+            'version' => $this->config->get('version', ''),
             'level' => $this->config->get('level', ''),
+            'activate' => $functionToCall === 'activateCron',
             'url_version' => 'secured',
         ];
-
         //We call updateme to activate/deactivate the cron
-        $result = acym_makeCurlCall($url, $fields);
-
+        $result = UpdatemeHelper::call('api/crons/modify', 'POST', $data);
 
         //If it's not the result well formated => out
-        if (empty($result) || !empty($result['error'])) {
-            $this->displayMessage(empty($result['error']) ? '' : $result['error']);
-
-            return false;
-        }
-
-        //If there is an error during the process on updateme => out
-        if ($result['type'] == 'error') {
-            $this->displayMessage($result['message']);
+        if (empty($result) || !$result['success']) {
+            $this->displayMessage(empty($result['message']) ? 'CRON_NOT_SAVED' : $result['message']);
 
             return false;
         }

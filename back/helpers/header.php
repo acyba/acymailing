@@ -81,7 +81,7 @@ class HeaderHelper extends acymObject
 
             // If the version of the extension isn't correct, leave
             if (!empty($oneNews->version)) {
-                list($version, $operator) = explode('_', $oneNews->version);
+                [$version, $operator] = explode('_', $oneNews->version);
                 if (!version_compare($this->config->get('version'), $version, $operator)) continue;
             }
 
@@ -127,7 +127,7 @@ class HeaderHelper extends acymObject
         return $header;
     }
 
-    public function checkVersionArea($reloading = false)
+    public function checkVersionArea($reloading = false): string
     {
         $currentLevel = $this->config->get('level', '');
         $currentVersion = $this->config->get('version', '');
@@ -142,14 +142,15 @@ class HeaderHelper extends acymObject
             if ('wordpress' === ACYM_CMS) {
                 $downloadLink = admin_url().'update-core.php';
             } else {
-                $downloadLink = ACYM_REDIRECT.'update-acymailing-'.$currentLevel.'&version='.$this->config->get('version').'" target="_blank';
+                $downloadLink = ACYM_ACYMAILING_WEBSITE.'account/subscriptions/" target="_blank';
             }
             $version .= acym_tooltip(
-                '<span class="acy_updateversion acym__color__red">'.$currentVersion.'</span>',
-                acym_translationSprintf('ACYM_CLICK_UPDATE', $latestVersion),
-                '',
-                acym_translation('ACYM_OLD_VERSION'),
-                $downloadLink
+                [
+                    'hoveredText' => '<span class="acy_updateversion acym__color__red">'.$currentVersion.'</span>',
+                    'textShownInTooltip' => acym_translationSprintf('ACYM_CLICK_UPDATE', $latestVersion),
+                    'titleShownInTooltip' => acym_translation('ACYM_OLD_VERSION'),
+                    'link' => $downloadLink,
+                ]
             );
         }
 
@@ -163,17 +164,18 @@ class HeaderHelper extends acymObject
         if (acym_level(ACYM_ESSENTIAL) && ACYM_PRODUCTION) {
             if ($expirationDate == -2) {
                 $version .= '<div class="acylicence_expired">
-                            <a class="acy_attachlicence acymbuttons acym__color__red" href="'.ACYM_REDIRECT.'acymailing-assign" target="_blank">'.acym_translation(
-                        'ACYM_ATTACH_LICENCE'
-                    ).'</a>
+                            <a class="acy_attachlicence acymbuttons acym__color__red acym_link_license_tab" 
+                                href="'.acym_completeLink('configuration', false, false, true).'">'.acym_translation('ACYM_ATTACH_LICENCE').'</a>
                         </div>';
             } elseif ($expirationDate < time()) {
+                //TODO redirect to the subscription page directly instead of the subscriptions listing
+                // We'll need to return the subscription id when calling the API
                 $version .= acym_tooltip(
-                    '<span class="acy_subscriptionexpired acym__color__red">'.acym_translation('ACYM_SUBSCRIPTION_EXPIRED').'</span>',
-                    acym_translation('ACYM_SUBSCRIPTION_EXPIRED_LINK'),
-                    '',
-                    '',
-                    ACYM_REDIRECT.'renew-acymailing-'.$currentLevel
+                    [
+                        'hoveredText' => '<span class="acy_subscriptionexpired acym__color__red">'.acym_translation('ACYM_SUBSCRIPTION_EXPIRED').'</span>',
+                        'textShownInTooltip' => acym_translation('ACYM_SUBSCRIPTION_EXPIRED_LINK'),
+                        'link' => ACYM_ACYMAILING_WEBSITE.'account/subscriptions/',
+                    ]
                 );
             } else {
                 $version .= '<div class="acylicence_valid">

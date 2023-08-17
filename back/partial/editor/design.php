@@ -120,7 +120,9 @@
         } else {
             foreach ($data['custom_zones'] as $oneZone) {
                 echo '<div class="grid-x cell acym__wysid__zone__element--new ui-draggable ui-draggable-handle" data-acym-zone-id="'.$oneZone->id.'">';
-                echo '<i class="acymicon-delete"></i>';
+                if (acym_isAdmin()) {
+                    echo '<i class="acymicon-delete"></i>';
+                }
                 if (empty($oneZone->image)) {
                     echo '<i class="cell acymicon-dashboard"></i>';
                 } else {

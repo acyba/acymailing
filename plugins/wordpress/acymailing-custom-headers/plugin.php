@@ -11,7 +11,6 @@ class plgAcymCustomheaders extends acymPlugin
         $this->cms = 'WordPress';
         $this->pluginDescription->name = 'Custom headers';
         $this->pluginDescription->category = 'Content management';
-        $this->pluginDescription->features = '["content"]';
         $this->pluginDescription->description = '- Add custom email headers to your sent emails';
 
         $this->settings = [

@@ -2,6 +2,9 @@
 
 namespace AcyMailing\Controllers\Users;
 
+use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\UserClass;
+
 trait Subscription
 {
     public function resetSubscription()
@@ -14,8 +17,13 @@ trait Subscription
             return;
         }
 
+        $userClass = new UserClass();
+        if (!$userClass->hasUserAccess($userId)) {
+            die('Access denied for subscription reset of this user');
+        }
+
         $list = acym_getVar('int', 'acym__entity_select__selected');
-        $this->currentClass->resetSubscription($userId, [$list]);
+        $userClass->resetSubscription($userId, [$list]);
 
         $this->edit();
     }
@@ -23,11 +31,15 @@ trait Subscription
     public function unsubscribeUser()
     {
         $userId = acym_getVar('int', 'userId');
-
         if (empty($userId)) {
             $this->listing();
 
             return;
+        }
+
+        $userClass = new UserClass();
+        if (!$userClass->hasUserAccess($userId)) {
+            die('Access denied for unsubscribing this user');
         }
 
         $lists = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
@@ -35,7 +47,7 @@ trait Subscription
             $lists = (array)$lists;
         }
 
-        $this->currentClass->unsubscribe($userId, $lists);
+        $userClass->unsubscribe($userId, $lists);
 
         $this->edit();
     }
@@ -50,15 +62,20 @@ trait Subscription
             return;
         }
 
+        $userClass = new UserClass();
+        if (!$userClass->hasUserAccess($userId)) {
+            die('Access denied for unsubscribing this user');
+        }
+
         $lists = [];
-        $subscriptions = $this->currentClass->getSubscriptionStatus($userId);
+        $subscriptions = $userClass->getSubscriptionStatus($userId);
         foreach ($subscriptions as $i => $oneList) {
             if ($oneList->status == 1) {
                 $lists[] = $oneList->list_id;
             }
         }
 
-        $this->currentClass->unsubscribe($userId, $lists);
+        $userClass->unsubscribe($userId, $lists);
 
         $this->edit();
     }
@@ -66,27 +83,31 @@ trait Subscription
     public function resubscribeUserToAll()
     {
         $userId = acym_getVar('int', 'userId');
-
         if (empty($userId)) {
             $this->listing();
 
             return;
         }
 
+        $userClass = new UserClass();
+        if (!$userClass->hasUserAccess($userId)) {
+            die('Access denied for resubscribing this user');
+        }
+
         $lists = [];
-        $subscriptions = $this->currentClass->getSubscriptionStatus($userId);
+        $subscriptions = $userClass->getSubscriptionStatus($userId);
         foreach ($subscriptions as $i => $oneList) {
             if ($oneList->status == 0) {
                 $lists[] = $oneList->list_id;
             }
         }
 
-        $this->currentClass->subscribe($userId, $lists);
+        $userClass->subscribe($userId, $lists);
 
         $this->edit();
     }
 
-    public function subscribeUser($returnOnEdit = true)
+    public function subscribeUser($returnOnEdit = true, $frontCreation = false)
     {
         $userId = acym_getVar('int', 'userId');
         $lists = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
@@ -97,12 +118,18 @@ trait Subscription
             return;
         }
 
+        $userClass = new UserClass();
+        if (!$frontCreation && !$userClass->hasUserAccess($userId)) {
+            die('Access denied for subscribing this user');
+        }
+
         if (!is_array($lists)) {
             $lists = (array)$lists;
         }
+        $userClass->subscribe($userId, $lists);
 
-        $this->currentClass->subscribe($userId, $lists);
-
-        if ($returnOnEdit) $this->edit();
+        if ($returnOnEdit) {
+            $this->edit();
+        }
     }
 }

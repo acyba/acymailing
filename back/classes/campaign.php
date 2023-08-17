@@ -99,11 +99,11 @@ class CampaignClass extends acymClass
             $filters[] = 'mail.name LIKE '.acym_escapeDB('%'.acym_utf8Encode($settings['search']).'%');
         }
 
-        if ($settings['status'] != 'generated') {
-            $operator = $settings['element_tab'] == 'campaigns_auto' ? '=' : '!=';
-            if ($settings['element_tab'] == 'campaigns_auto') {
+        if ($settings['status'] !== 'generated') {
+            $operator = $settings['element_tab'] === 'campaigns_auto' ? '=' : '!=';
+            if ($settings['element_tab'] === 'campaigns_auto') {
                 $filters[] = 'campaign.sending_type '.$operator.' '.acym_escapeDB(self::SENDING_TYPE_AUTO);
-            } elseif ($settings['element_tab'] == 'campaigns') {
+            } elseif ($settings['element_tab'] === 'campaigns') {
                 $filters[] = 'campaign.sending_type IN ('.acym_escapeDB(self::SENDING_TYPE_NOW).', '.acym_escapeDB(self::SENDING_TYPE_SCHEDULED).')';
             } elseif (!empty($settings['element_tab'])) {
                 acym_trigger('onAcymCampaignAddFiltersSpecificListing', [&$filters, $settings['element_tab']]);
@@ -176,7 +176,7 @@ class CampaignClass extends acymClass
                 }
             }
 
-            if ($settings['element_tab'] == 'campaigns_auto' && $settings['status'] != 'generated') {
+            if ($settings['element_tab'] === 'campaigns_auto' && $settings['status'] !== 'generated') {
                 $this->getStatsCampaignAuto($results['elements'][$i], $urlClickClass);
             } else {
                 if ($isMultilingual) {
@@ -383,6 +383,24 @@ class CampaignClass extends acymClass
             WHERE mail.creator_id = '.intval($idCurrentUser)
         );
         $elements = array_intersect($elements, $manageable);
+    }
+
+    public function hasUserAccess(int $campaignId): bool
+    {
+        $userId = acym_currentUserId();
+        if (empty($userId)) {
+            return false;
+        }
+
+        if (acym_isAdmin()) {
+            return true;
+        }
+
+        $query = 'SELECT COUNT(*) FROM #__acym_campaign AS campaign 
+            JOIN #__acym_mail AS mail ON campaign.mail_id = mail.id 
+            WHERE campaign.id = '.intval($campaignId).' AND mail.creator_id = '.intval($userId);
+
+        return acym_loadResult($query) > 0;
     }
 
     /**
@@ -1015,11 +1033,15 @@ class CampaignClass extends acymClass
 
     public function getAllCampaignsGeneratedWaiting()
     {
-        $query = 'SELECT id FROM #__acym_campaign WHERE parent_id IS NOT NULL AND sending_type = '.acym_escapeDB(
-                self::SENDING_TYPE_NOW
-            ).' AND draft = 1 AND active = 1 AND sent = 0';
-
-        return acym_loadObjectList($query);
+        return acym_loadObjectList(
+            'SELECT id 
+            FROM #__acym_campaign 
+            WHERE parent_id IS NOT NULL 
+                AND sending_type = '.acym_escapeDB(self::SENDING_TYPE_NOW).' 
+                AND draft = 1 
+                AND active = 1 
+                AND sent = 0'
+        );
     }
 
     public function getCampaignsByTypes($campaignTypes, $onlyActives = false)

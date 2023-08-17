@@ -131,6 +131,10 @@ trait Edition
             $breadcrumbUrl = 'mails&task=edit&type_editor='.$typeEditor.(!empty($fromId) ? '&from='.$fromId : '').'&type='.$type;
         } else {
             // Existing mails and notifications
+            if (!$mailClass->hasUserAccess($tempId)) {
+                die('Access denied for this email');
+            }
+
             $mail = $mailClass->getOneById($tempId);
 
             if (!empty($fromMail)) {
@@ -344,7 +348,11 @@ trait Edition
             }
             $mail->{$name} = $data;
         }
-        if (isset($mail->id)) {
+
+        if (!empty($mail->id)) {
+            if (!$mailClass->hasUserAccess($mail->id)) {
+                die('Cannot save this mail');
+            }
             $previousMail = $mailClass->getOneById($mail->id);
         }
 
@@ -629,7 +637,7 @@ trait Edition
         $mail->id = acym_getVar('int', 'mailId', 0);
         $mail->autosave = acym_getVar('string', 'autoSave', '', 'REQUEST', ACYM_ALLOWRAW);
 
-        if (empty($mail->id) || !$mailClass->autoSave($mail, $language)) {
+        if (empty($mail->id) || !$mailClass->hasUserAccess($mail->id) || !$mailClass->autoSave($mail, $language)) {
             echo 'error';
         } else {
             echo 'saved';
@@ -715,6 +723,7 @@ trait Edition
 
     public function getTemplateAjax()
     {
+        acym_checkToken();
         $pagination = new PaginationHelper();
         $id = acym_getVar('int', 'id');
         $id = empty($id) ? '' : '&id='.$id;
@@ -723,7 +732,6 @@ trait Edition
         $ordering = 'creation_date';
         $orderingSortOrder = 'DESC';
         $type = acym_getVar('string', 'type', 'custom');
-        $editor = acym_getVar('string', 'editor');
         $automation = acym_getVar('boolean', 'automation', false);
         $returnUrl = acym_getVar('string', 'return');
         $returnUrl = empty($returnUrl) || 'undefined' == $returnUrl ? '' : '&return='.urlencode(base64_encode($returnUrl));
@@ -733,7 +741,7 @@ trait Edition
         $page = acym_getVar('int', 'pagination_page_ajax', 1);
         $page != 'undefined' ? : $page = '1';
 
-        $mailClass = $this->currentClass;
+        $mailClass = new MailClass();
         $matchingMails = $mailClass->getMatchingElements(
             [
                 'ordering' => $ordering,
@@ -746,6 +754,7 @@ trait Edition
                 'onlyStandard' => true,
                 'creator_id' => $this->setFrontEndParamsForTemplateChoose(),
                 'drag_editor' => !empty($fromMultilingual),
+                'gettingTemplates' => true,
             ]
         );
 
@@ -763,18 +772,24 @@ trait Edition
             $return .= '<div class="cell grid-x acym__templates__oneTpl acym__listing__block" id="'.acym_escape($oneTemplate->id).'">
                 <div class="cell acym__templates__pic text-center">';
 
-            $url = acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.intval($oneTemplate->id).$returnUrl.'&type='.$type.$id;
+            $url = acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.intval($oneTemplate->id).$returnUrl.'&type='.$type.$id.'&'.acym_getFormToken();
             if (!empty($followup_id)) {
                 $url .= '&followup_id='.$followup_id;
             }
             if (!empty($listId)) {
                 $url .= '&list_id='.$listId;
             }
-            if (!empty($this->data['campaignInformation'])) $url .= '&id='.intval($this->data['campaignInformation']);
-            if (!$automation || !empty($returnUrl)) $return .= '<a href="'.acym_completeLink($url, false, false, true).'">';
+            if (!empty($this->data['campaignInformation'])) {
+                $url .= '&id='.intval($this->data['campaignInformation']);
+            }
+            if (!$automation || !empty($returnUrl)) {
+                $return .= '<a href="'.acym_completeLink($url, false, false, true).'">';
+            }
 
             $return .= '<img src="'.acym_escape(acym_getMailThumbnail($oneTemplate->thumbnail)).'" alt="template thumbnail"/>';
-            if (!$automation || !empty($returnUrl)) $return .= '</a>';
+            if (!$automation || !empty($returnUrl)) {
+                $return .= '</a>';
+            }
 
             if ($oneTemplate->drag_editor) {
                 $return .= '<div class="acym__templates__choose__ribbon acyeditor">'.acym_translation('ACYM_DD_EDITOR').'</div>';
@@ -805,10 +820,14 @@ trait Edition
 
     public function setNewThumbnail()
     {
+        if (!acym_isAdmin()) {
+            die('Access denied for thumbnail creation');
+        }
+
         acym_checkToken();
         $contentThumbnail = acym_getVar('string', 'content', '');
         if (strpos($contentThumbnail, 'data:image/png') !== 0) {
-            acym_sendAjaxResponse('This file content is not allowed.', [], false);
+            acym_sendAjaxResponse('This file is not allowed.', [], false);
         }
 
         $mailId = acym_getVar('int', 'id', 0);
@@ -829,8 +848,8 @@ trait Edition
         }
 
         $extension = acym_fileGetExt($file);
-        if (strpos($file, 'thumbnail_') === false || !in_array($extension, ['png', 'jpeg', 'jpg', 'gif'])) {
-            acym_sendAjaxResponse('This file name is not allowed.', [], false);
+        if (strpos($file, 'thumbnail_') === false || !in_array($extension, ['png', 'jpeg', 'jpg', 'gif', 'webp'])) {
+            acym_sendAjaxResponse('This file is not allowed.', [], false);
         }
 
         acym_createFolder(ACYM_UPLOAD_FOLDER_THUMBNAIL);
@@ -847,14 +866,15 @@ trait Edition
         if (!in_array($socialName, $socialMedias)) {
             acym_sendAjaxResponse(acym_translationSprintf('ACYM_UNKNOWN_SOCIAL', $socialName), [], false);
         }
-        $extension = pathinfo($_FILES['file']['name']);
+
+        $extension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
         $newPath = ACYM_UPLOAD_FOLDER.'socials'.DS.$socialName;
-        $newPathComplete = $newPath.'.'.$extension['extension'];
+        $newPathComplete = $newPath.'.'.$extension;
 
         $allowedExtensions = acym_getImageFileExtensions();
-        if (!in_array($extension['extension'], $allowedExtensions)) {
-            $errorMessage = acym_translationSprintf('ACYM_ACCEPTED_TYPE', $extension['extension'], implode(', ', $allowedExtensions));
-        } elseif (empty($socialName) || !acym_uploadFile($_FILES['file']['tmp_name'], ACYM_ROOT.$newPathComplete)) {
+        if (!in_array($extension, $allowedExtensions)) {
+            $errorMessage = acym_translationSprintf('ACYM_ACCEPTED_TYPE', $extension, implode(', ', $allowedExtensions));
+        } elseif (!acym_uploadFile($_FILES['file']['tmp_name'], ACYM_ROOT.$newPathComplete)) {
             $errorMessage = acym_translationSprintf('ACYM_ERROR_UPLOADING_FILE_X', $newPathComplete);
         }
 
@@ -876,7 +896,7 @@ trait Edition
             acym_translation('ACYM_ICON_IMPORTED'),
             [
                 'url' => $newImgWithoutExtension,
-                'extension' => $extension['extension'],
+                'extension' => $extension,
             ]
         );
     }
@@ -942,19 +962,23 @@ trait Edition
 
     public function sendTest()
     {
+        acym_checkToken();
         $controller = acym_getVar('string', 'controller', 'mails');
         $level = 'info';
 
         $testNote = acym_getVar('string', 'test_note', '');
 
-        if ($controller == 'mails') {
+        if (in_array($controller, ['mails', 'frontmails'])) {
             $mailId = acym_getVar('int', 'id', 0);
         } else {
-            $campaingId = acym_getVar('int', 'id', 0);
+            $campaignId = acym_getVar('int', 'id', 0);
             $campaignClass = new CampaignClass();
-            $campaign = $campaignClass->getOneById($campaingId);
+            $campaign = $campaignClass->getOneById($campaignId);
             if (empty($campaign)) {
                 acym_sendAjaxResponse('', ['level' => 'error', 'message' => acym_translation('ACYM_CAMPAIGN_NOT_FOUND')], false);
+            }
+            if (!$campaignClass->hasUserAccess($campaignId)) {
+                die('A test of this campaign cannot be sent');
             }
 
             $mailId = $campaign->mail_id;
@@ -969,7 +993,7 @@ trait Edition
         $mailClass = $this->currentClass;
         $mail = $mailClass->getOneById($mailId);
 
-        if (empty($mail)) {
+        if (empty($mail) || !$mailClass->hasUserAccess($mailId)) {
             acym_sendAjaxResponse('', ['level' => 'error', 'message' => acym_translation('ACYM_EMAIL_NOT_FOUND')], false);
         }
 

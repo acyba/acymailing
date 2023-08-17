@@ -21,7 +21,6 @@ class plgAcymMemberpress extends acymPlugin
         $this->installed = acym_isExtensionActive('memberpress/memberpress.php');
         $this->pluginDescription->name = 'MemberPress';
         $this->pluginDescription->category = 'User management';
-        $this->pluginDescription->features = '["content","automation"]';
         $this->pluginDescription->description = '- Insert user information in your emails<br />- Filter users based on their membership subscription';
     }
 }

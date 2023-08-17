@@ -19,6 +19,13 @@ class plgAcymQuiz extends acymPlugin
 
         // Joomla, WordPress or all for an addon that can work on both CMSs, don't forget the uppercases
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'Community Quiz',
+            'description' => '- Insert your quiz in the emails',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/community-quiz',
+            'category' => 'Content management',
+            'level' => 'starter',
+        ];
 
         // Title displayed on the tab in the dynamic texts popup or the dynamic content insertion button
         $this->pluginDescription->name = 'Quiz';

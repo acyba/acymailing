@@ -8,6 +8,14 @@ class plgAcymCustomheaders extends acymPlugin
     {
         parent::__construct();
 
+        $this->addonDefinition = [
+            'name' => 'Custom headers',
+            'description' => '- Add custom email headers to your sent emails',
+            'documentation' => 'https://docs.acymailing.com/addons/all-cms-add-ons/custom-headers',
+            'category' => 'Content management',
+            'level' => 'starter',
+        ];
+
         $this->settings = [
             'headers' => [
                 'type' => 'multikeyvalue',

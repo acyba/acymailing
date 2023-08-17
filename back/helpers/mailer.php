@@ -469,7 +469,7 @@ class MailerHelper extends AcyMailerPhp
                 //We display the report here... we add a link to our doc for the "could not instantiate mail function".
                 $this->reportMessage = str_replace(
                     'Could not instantiate mail function',
-                    '<a target="_blank" href="'.ACYM_REDIRECT.'could-not-instantiate-mail-function">'.acym_translation('ACYM_COUND_NOT_INSTANCIATE_MAIL_FUCNTION').'</a>',
+                    '<a target="_blank" href="'.ACYM_DOCUMENTATION.'faq/could-not-instantiate-mail-function">'.acym_translation('ACYM_COUND_NOT_INSTANCIATE_MAIL_FUCNTION').'</a>',
                     $this->reportMessage
                 );
                 acym_enqueueMessage(nl2br($this->reportMessage), 'error');

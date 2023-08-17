@@ -21,7 +21,6 @@ use AcyMailing\Helpers\WorkflowHelper;
 use AcyMailing\Types\UploadfileType;
 use stdClass;
 
-
 trait Edition
 {
     public function newEmail()
@@ -49,10 +48,10 @@ trait Edition
             $welcomeUnsub = '&list_id={dataid}&type_editor=acyEditor'.$itemId.'&return='.$returnUrl;
             $data = [
                 'lists' => $listClass->getAllForSelect(true, acym_currentUserId()),
-                'campaign_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=now'.$itemId),
-                'campaign_scheduled_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'.$itemId),
-                'welcome_email_link' => acym_frontendLink('frontmails&task=edit&type='.$mailClass::TYPE_WELCOME.$welcomeUnsub),
-                'unsubscribe_email_link' => acym_frontendLink('frontmails&task=edit&type='.$mailClass::TYPE_UNSUBSCRIBE.$welcomeUnsub),
+                'campaign_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=now'.$itemId.'&'.acym_getFormToken()),
+                'campaign_scheduled_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'.$itemId.'&'.acym_getFormToken()),
+                'welcome_email_link' => acym_frontendLink('frontmails&task=edit&type='.$mailClass::TYPE_WELCOME.$welcomeUnsub.'&'.acym_getFormToken()),
+                'unsubscribe_email_link' => acym_frontendLink('frontmails&task=edit&type='.$mailClass::TYPE_UNSUBSCRIBE.$welcomeUnsub.'&'.acym_getFormToken()),
             ];
         }
         $data['menuClass'] = $this->menuClass;
@@ -83,9 +82,12 @@ trait Edition
         $campaign = $campaignClass->getOneByIdWithMail($campaignId);
         $campaignType = $this->getVarFiltersListing('string', 'campaign_type', 'now');
 
-        $this->setTaskListing($campaignType == 'auto' ? 'campaigns_auto' : 'campaigns');
+        $this->setTaskListing($campaignType === 'auto' ? 'campaigns_auto' : 'campaigns');
 
         if (!empty($campaign)) {
+            if (!$campaignClass->hasUserAccess($campaign->id)) {
+                die('Access denied for this campaign');
+            }
             $this->breadcrumb[acym_escape($campaign->name)] = '';
         } else {
             $this->breadcrumb[acym_translation('ACYM_NEW_CAMPAIGN')] = '';
@@ -105,6 +107,7 @@ trait Edition
             'tag' => $tagFilter,
             'onlyStandard' => true,
             'creator_id' => $this->setFrontEndParamsForTemplateChoose(),
+            'gettingTemplates' => true,
         ]);
 
         // Prepare the pagination
@@ -161,6 +164,10 @@ trait Edition
             $editLink .= '&from='.$mailId;
         } else {
             $campaignClass = new CampaignClass();
+            if (!$campaignClass->hasUserAccess($campaignId)) {
+                die('Access denied for this campaign');
+            }
+
             $data['mailInformation'] = $campaignClass->getOneByIdWithMail($campaignId);
             if (empty($mailId)) {
                 $mailId = $data['mailInformation']->mail_id;
@@ -186,7 +193,7 @@ trait Edition
             $data['typeEditor'] = 'acyEditor';
         } elseif (!empty($mailId)) {
             $mail = $mailClass->getOneById($mailId);
-            if (!acym_isAdmin() && ACYM_CMS == 'joomla' && acym_isPluginActive('sef', 'system')) {
+            if (!acym_isAdmin() && ACYM_CMS === 'joomla' && acym_isPluginActive('sef')) {
                 $mail->body = str_replace(['url(&quot;', '&quot;)'], ["url('", "')"], $mail->body);
             }
             $data['mailInformation']->tags = $mail->tags;
@@ -320,18 +327,18 @@ trait Edition
     public function recipients()
     {
         acym_setVar('layout', 'recipients');
+        acym_setVar('step', 'recipients');
+
         $campaignId = acym_getVar('int', 'id');
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
-        acym_setVar('step', 'recipients');
 
-        if (!empty($campaignId)) {
-            $currentCampaign = $campaignClass->getOneByIdWithMail($campaignId);
-            $this->breadcrumb[acym_escape($currentCampaign->name)] = acym_completeLink('campaigns&task=edit&step=recipients&id='.$campaignId);
-        } else {
-            $currentCampaign = new stdClass();
-            $this->breadcrumb[acym_translation('ACYM_NEW_CAMPAIGN')] = acym_completeLink('campaigns&task=edit&step=recipients');
+        if (empty($campaignId) || !$campaignClass->hasUserAccess($campaignId)) {
+            die('Access denied for this campaign');
         }
+
+        $currentCampaign = $campaignClass->getOneByIdWithMail($campaignId);
+        $this->breadcrumb[acym_escape($currentCampaign->name)] = acym_completeLink('campaigns&task=edit&step=recipients&id='.$campaignId);
 
         $campaign = [
             'campaignInformation' => $campaignId,
@@ -340,13 +347,11 @@ trait Edition
             'entitySelectHelper' => new EntitySelectHelper(),
         ];
 
-        // Get saved data if edition of a campaign
-        if (!empty($currentCampaign->mail_id)) {
-            $campaignLists = $mailClass->getAllListsByMailId($currentCampaign->mail_id);
-            $campaign['campaignListsId'] = array_keys($campaignLists);
-            acym_arrayToInteger($campaign['campaignListsId']);
-            $campaign['campaignListsSelected'] = json_encode($campaign['campaignListsId']);
-        }
+        $campaignLists = $mailClass->getAllListsByMailId($currentCampaign->mail_id);
+        $campaign['campaignListsId'] = array_keys($campaignLists);
+        acym_arrayToInteger($campaign['campaignListsId']);
+        $campaign['campaignListsSelected'] = json_encode($campaign['campaignListsId']);
+
         $this->prepareListingClasses($campaign);
         $this->prepareSegmentDisplay($campaign, $campaign['currentCampaign']->sending_params);
 
@@ -397,6 +402,10 @@ trait Edition
             $this->listing();
 
             return;
+        }
+
+        if (!$campaignClass->hasUserAccess($campaignId)) {
+            die('Access denied for this campaign');
         }
 
         //To know if we create or modify the campaign
@@ -498,6 +507,10 @@ trait Edition
             $campaign->sent = 0;
             $campaign->sending_params = [];
         } else {
+            if (!$campaignClass->hasUserAccess($campaignId)) {
+                die('Access denied for this campaign');
+            }
+
             $campaign = $campaignClass->getOneById($campaignId);
             $mail = $mailClass->getOneById($campaign->mail_id);
         }
@@ -614,6 +627,11 @@ trait Edition
         $addSegmentStep = acym_getVar('int', 'add_segment_step');
 
         $campaignClass = new CampaignClass();
+
+        if (!$campaignClass->hasUserAccess($campaignId)) {
+            die('Access denied for this campaign');
+        }
+
         $currentCampaign = $campaignClass->getOneByIdWithMail($campaignId);
 
         if ($currentCampaign->sent && !$currentCampaign->active) {
@@ -648,6 +666,10 @@ trait Edition
 
     public function saveSegment()
     {
+        if (!acym_isAdmin()) {
+            die('Access denied for segments');
+        }
+
         $segmentSelected = acym_getVar('int', 'segment_selected', 0);
         $filters = acym_getVar('array', 'acym_action', []);
         $campaignId = acym_getVar('int', 'id', 0);
@@ -695,6 +717,11 @@ trait Edition
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
         $campaignId = acym_getVar('int', 'id');
+
+        if (!$campaignClass->hasUserAccess($campaignId)) {
+            die('Access denied for this campaign');
+        }
+
         $senderInformation = acym_getVar('', 'senderInformation');
         $sendingDate = acym_getVar('string', 'sendingDate');
         $sendingType = acym_getVar('string', 'sending_type', $campaignClass::SENDING_TYPE_NOW);
@@ -888,6 +915,10 @@ trait Edition
         $campaign = empty($campaignId) ? null : $this->currentClass->getOneByIdWithMail($campaignId);
         if (is_null($campaign)) return false;
 
+        if (!$this->currentClass->hasUserAccess($campaignId)) {
+            die('Access denied for this campaign');
+        }
+
         $campaign->isAuto = $campaign->sending_type == $this->currentClass->getConstAuto();
 
         $startDate = '';
@@ -1037,6 +1068,10 @@ trait Edition
 
     public function saveTests()
     {
+        if (!acym_isAdmin()) {
+            die('Access denied for tests step');
+        }
+
         $this->edit();
     }
 }

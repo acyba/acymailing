@@ -8,7 +8,7 @@ use AcyMailing\Controllers\Plugins\Available;
 
 class PluginsController extends acymController
 {
-    var $tabs, $types, $level, $features, $errors;
+    var $tabs, $types, $level, $errors;
 
     use Installed;
     use Available;
@@ -45,12 +45,6 @@ class PluginsController extends acymController
             'starter' => 'Starter',
             'essential' => 'Essential',
             'enterprise' => 'Enterprise',
-        ];
-
-        $this->features = [
-            '' => acym_translation('ACYM_FEATURES'),
-            'content' => acym_translation('ACYM_CONTENT'),
-            'automation' => acym_translation('ACYM_AUTOMATION'),
         ];
 
         $this->errors = [

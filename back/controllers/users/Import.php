@@ -3,6 +3,7 @@
 namespace AcyMailing\Controllers\Users;
 
 use AcyMailing\Classes\MailpoetClass;
+use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\EntitySelectHelper;
 use AcyMailing\Helpers\ExportHelper;
 use AcyMailing\Helpers\ImportHelper;
@@ -14,22 +15,19 @@ trait Import
     {
         acym_setVar('layout', 'import');
 
-        $tab = new TabHelper();
-
-        $nbUsersAcymailing = $this->currentClass->getCountTotalUsers();
-        $nbUsersCMS = acym_loadResult('SELECT count('.$this->cmsUserVars->id.') FROM '.$this->cmsUserVars->table);
+        $userClass = new UserClass();
 
         // Get tables from database
         $tables = acym_getTables();
         $arrayTables = [];
-        foreach ($tables as $key => $tableName) {
+        foreach ($tables as $tableName) {
             $arrayTables[$tableName] = $tableName;
         }
 
         $data = [
-            'tab' => $tab,
-            'nbUsersAcymailing' => $nbUsersAcymailing,
-            'nbUsersCMS' => $nbUsersCMS,
+            'tab' => new TabHelper(),
+            'nbUsersAcymailing' => $userClass->getCountTotalUsers(),
+            'nbUsersCMS' => acym_loadResult('SELECT count('.$this->cmsUserVars->id.') FROM '.$this->cmsUserVars->table),
             'tables' => $arrayTables,
             'entitySelect' => new EntitySelectHelper(),
             'importHelper' => new ImportHelper(),
@@ -68,6 +66,11 @@ trait Import
         acym_checkToken();
 
         $function = acym_getVar('cmd', 'import_from');
+        $allowedImportModes = acym_isAdmin() ? ['file', 'textarea', 'cms', 'database', 'mailpoet'] : ['file', 'textarea'];
+        if (!in_array($function, $allowedImportModes)) {
+            die('Access denied for this import method');
+        }
+
         $importHelper = new ImportHelper();
 
         if (empty($function) || !$importHelper->$function()) {
@@ -76,8 +79,8 @@ trait Import
             return;
         }
 
-        if ($function == 'textarea' || $function == 'file') {
-            $importFile = ACYM_MEDIA.'import'.DS.acym_getVar('cmd', 'filename');
+        if (in_array($function, ['file', 'textarea'])) {
+            $importFile = ACYM_MEDIA.'import'.DS.acym_getVar('cmd', 'acym_import_filename');
             if (file_exists($importFile)) {
                 $importContent = file_get_contents($importFile);
             }
@@ -88,8 +91,6 @@ trait Import
                 acym_setVar('layout', 'genericimport');
                 $this->breadcrumb[acym_translation('ACYM_IMPORT')] = acym_completeLink('users&task=import');
                 parent::display();
-
-                return;
             }
         } else {
             $this->listing();
@@ -106,7 +107,7 @@ trait Import
 
     public function downloadImport()
     {
-        $filename = acym_getVar('cmd', 'filename');
+        $filename = acym_getVar('cmd', 'acym_import_filename');
         if (!file_exists(ACYM_MEDIA.'import'.DS.$filename.'.csv')) {
             return;
         }

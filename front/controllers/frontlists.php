@@ -2,6 +2,7 @@
 
 namespace AcyMailing\FrontControllers;
 
+use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Controllers\ListsController;
 use AcyMailing\Helpers\ToolbarHelper;
@@ -12,10 +13,9 @@ class FrontlistsController extends ListsController
 {
     public function __construct()
     {
-        if (!acym_level(ACYM_ENTERPRISE)) {
-            acym_redirect(acym_rootURI(), 'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', 'warning');
-        }
-        if (ACYM_CMS == 'joomla') {
+        parent::__construct();
+
+        if (ACYM_CMS === 'joomla') {
             $menu = acym_getMenu();
             if (is_object($menu)) {
                 $params = method_exists($menu, 'getParams') ? $menu->getParams() : $menu->params;
@@ -24,18 +24,29 @@ class FrontlistsController extends ListsController
             }
         }
 
-        $this->publicFrontTasks = [
-            'setAjaxListing',
+        $this->allowedTasks = [
+            'index.php?option=com_acym&view=frontlists&layout=listing' => [
+                'setAjaxListing',
+                'loadMoreSubscribers',
+                'listing',
+                'settings',
+                'apply',
+                'save',
+                'delete',
+                'saveSubscribers',
+                'unsetWelcome',
+                'unsetUnsubscribe',
+                'setInactive',
+                'setActive',
+            ],
+            'index.php?option=com_acym&view=frontusers&layout=listing' => [
+                'ajaxCreateNewList',
+            ],
+            'index.php?option=com_acym&view=frontcampaigns&layout=campaigns' => [
+                'setAjaxListing',
+                'usersSummary',
+            ],
         ];
-
-        $this->authorizedFrontTasks = [
-            'countNumberOfRecipients',
-            'ajaxCreateNewList',
-            'loadMoreSubscribers',
-            'listing',
-        ];
-        $this->urlsFrontMenu = ['index.php?option=com_acym&view=frontlists&layout=listing'];
-        parent::__construct();
     }
 
     protected function prepareListsListing(&$data)
@@ -108,5 +119,52 @@ class FrontlistsController extends ListsController
 
             $data['tmpls'][$full] = !empty($data['listInformation']->{$full.'_id'}) ? $mailClass->getOneById($data['listInformation']->{$full.'_id'}) : '';
         }
+    }
+
+    public function delete()
+    {
+        acym_checkToken();
+        $ids = acym_getVar('array', 'elements_checked', []);
+
+        $initialNumberOfLists = count($ids);
+
+        $listClass = new ListClass();
+        $listClass->onlyManageableLists($ids);
+
+        if ($initialNumberOfLists != count($ids)) {
+            die('Access denied for list deletion');
+        }
+
+        parent::delete();
+    }
+
+    public function setInactive()
+    {
+        acym_checkToken();
+        $ids = acym_getVar('array', 'elements_checked', []);
+
+        $listClass = new ListClass();
+        $listClass->onlyManageableLists($ids);
+
+        if (!empty($ids)) {
+            $listClass->setInactive($ids);
+        }
+
+        $this->listing();
+    }
+
+    public function setActive()
+    {
+        acym_checkToken();
+        $ids = acym_getVar('array', 'elements_checked', []);
+
+        $listClass = new ListClass();
+        $listClass->onlyManageableLists($ids);
+
+        if (!empty($ids)) {
+            $listClass->setActive($ids);
+        }
+
+        $this->listing();
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use AcyMailing\Libraries\acymPlugin;
+use Automattic\WooCommerce\Utilities\OrderUtil;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'WooCommerceAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'WooCommerceAutomationFilters.php';
@@ -34,7 +35,6 @@ class plgAcymWoocommerce extends acymPlugin
         $this->pluginDescription->name = 'WooCommerce';
         $this->pluginDescription->icon = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/icon.png';
         $this->pluginDescription->category = 'Content management';
-        $this->pluginDescription->features = '["content","automation"]';
         $this->pluginDescription->description = '- Insert products and generate coupons in your emails<br />- Filter users based on their purchases';
 
         if ($this->installed) {
@@ -96,5 +96,17 @@ class plgAcymWoocommerce extends acymPlugin
         }
         add_action('woocommerce_order_status_changed', [$this, 'onWooCommerceOrderStatusChange'], 50, 4);
         add_filter('woocommerce_mail_callback_params', [$this, 'onWooCommerceEmailSend'], 10, 2);
+    }
+
+    private function isHposActive(): bool
+    {
+        if (class_exists('\Automattic\WooCommerce\Utilities\OrderUtil') && method_exists(
+                OrderUtil::class,
+                'custom_orders_table_usage_is_enabled'
+            ) && OrderUtil::custom_orders_table_usage_is_enabled()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

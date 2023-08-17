@@ -1,6 +1,9 @@
 <?php if (empty($data['allCampaigns'])) { ?>
 	<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_translation('ACYM_NO_RESULTS_FOUND'); ?></h1>
-<?php } else { ?>
+<?php } else {
+		global $Itemid;
+	?>
+	<input type="hidden" name="acym_itemid" value="<?php echo empty($Itemid) ? '' : $Itemid; ?>">
 	<div class="cell margin-bottom-1 acym__listing__actions grid-x">
         <?php
         $actions = [
@@ -65,7 +68,7 @@
                         if ($email->drag_editor !== '0') $linkTask .= '&type_editor=acyEditor';
                         $returnLink = acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('cmd', 'task');
                         $return = '&return='.urlencode(base64_encode($isFront ? acym_frontendLink($returnLink) : acym_completeLink($returnLink))); ?>
-						<a class="cell auto" href="<?php echo acym_completeLink($controllerName.'&task='.$linkTask.'&id='.intval($email->id).$return); ?>">
+						<a class="cell auto" href="<?php echo acym_completeLink($controllerName.'&task='.$linkTask.'&id='.intval($email->id).$return.'&'.acym_getFormToken()); ?>">
 							<h6 class='acym__listing__title__primary acym_text_ellipsis'>
                                 <?php echo acym_escape($email->name); ?>
 							</h6>

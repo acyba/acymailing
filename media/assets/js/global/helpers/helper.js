@@ -177,23 +177,8 @@ const acym_helper = {
     },
     get: function (url = ACYM_AJAX_URL, data = {}) {
         return jQuery.get(url, data)
-                     .then(res => {
-                         if (!res) return res;
-                         if (typeof res !== 'object') res = this.parseJson(res);
-
-                         if (res.error && !acym_helper.empty(res.message)) console.error(res.message);
-
-                         return res;
-                     })
-                     .fail((xhr, status, error) => {
-                         let response = {};
-                         response.error = true;
-                         response.message = error;
-                         response.data = [];
-                         console.error(`Error calling ${url}, responded with error ${status} ${error}`);
-
-                         return error;
-                     });
+                     .then(acym_helper.parseResponse)
+                     .fail(acym_helper.handleErrors);
     },
     post: function (url = ACYM_AJAX_URL, data = {}, needAbort = false) {
         const query = jQuery.post(url, data);
@@ -267,6 +252,11 @@ const acym_helper = {
             } else {
                 konamiCodePosition = 0;
             }
+        });
+    },
+    setLicenseLink: function () {
+        jQuery('.acym_link_license_tab').on('click', function () {
+            localStorage.setItem('acyconfiguration', 'license');
         });
     }
 };

@@ -16,13 +16,21 @@ class plgSystemAcymtriggers extends JPlugin
     // Loads the Acy library
     public function initAcy()
     {
+        $isInstalling = !empty($_REQUEST['option']) && $_REQUEST['option'] === 'com_installer' && !empty($_REQUEST['task']) && $_REQUEST['task'] === 'install.install';
+
+        if ($isInstalling) {
+            return false;
+        }
+
         if (function_exists('acym_getVar')) {
             return true;
         }
 
         $ds = DIRECTORY_SEPARATOR;
         $helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
-        if (!file_exists($helperFile) || !include_once $helperFile) return false;
+        if (!file_exists($helperFile) || !include_once $helperFile) {
+            return false;
+        }
 
         return true;
     }
@@ -30,7 +38,9 @@ class plgSystemAcymtriggers extends JPlugin
     // Used to know what changed when saving a user
     public function onUserBeforeSave($user, $isnew, $new)
     {
-        if (is_object($user)) $user = get_object_vars($user);
+        if (is_object($user)) {
+            $user = get_object_vars($user);
+        }
         $this->oldUser = $user;
 
         return true;
@@ -40,11 +50,17 @@ class plgSystemAcymtriggers extends JPlugin
     public function onUserAfterSave($user, $isnew, $success, $msg)
     {
         // Some components don't give an array but an object
-        if (is_object($user)) $user = get_object_vars($user);
-        if ($success === false || empty($user['email']) || !$this->initAcy()) return true;
+        if (is_object($user)) {
+            $user = get_object_vars($user);
+        }
+        if ($success === false || empty($user['email']) || !$this->initAcy()) {
+            return true;
+        }
 
         $userClass = new UserClass();
-        if (!method_exists($userClass, 'synchSaveCmsUser')) return true;
+        if (!method_exists($userClass, 'synchSaveCmsUser')) {
+            return true;
+        }
         $userClass->synchSaveCmsUser($user, $isnew, $this->oldUser);
 
         return true;
@@ -53,12 +69,18 @@ class plgSystemAcymtriggers extends JPlugin
     // Delete Acy user on site account deletion
     public function onUserAfterDelete($user, $success, $msg)
     {
-        if (is_object($user)) $user = get_object_vars($user);
-        if ($success === false || empty($user['email']) || !$this->initAcy()) return true;
+        if (is_object($user)) {
+            $user = get_object_vars($user);
+        }
+        if ($success === false || empty($user['email']) || !$this->initAcy()) {
+            return true;
+        }
 
 
         $userClass = new UserClass();
-        if (!method_exists($userClass, 'synchDeleteCmsUser')) return true;
+        if (!method_exists($userClass, 'synchDeleteCmsUser')) {
+            return true;
+        }
         $userClass->synchDeleteCmsUser($user['email']);
 
         return true;
@@ -77,7 +99,9 @@ class plgSystemAcymtriggers extends JPlugin
     private function handleVirtuemartOrderCreateUpdate($orderData)
     {
         static $alreadyTriggerVirtuemart = false;
-        if (empty($orderData->virtuemart_user_id) || !$this->initAcy() || $alreadyTriggerVirtuemart) return;
+        if (empty($orderData->virtuemart_user_id) || !$this->initAcy() || $alreadyTriggerVirtuemart) {
+            return;
+        }
         $alreadyTriggerVirtuemart = true;
 
         $userID = acym_loadResult(
@@ -86,7 +110,9 @@ class plgSystemAcymtriggers extends JPlugin
             JOIN `#__virtuemart_order_userinfos` AS `vmuser` ON `vmuser`.`email` = `user`.`email` 
             WHERE `vmuser`.`virtuemart_user_id` = '.intval($orderData->virtuemart_user_id)
         );
-        if (empty($userID)) return;
+        if (empty($userID)) {
+            return;
+        }
 
         $automationClass = new AutomationClass();
         $automationClass->trigger('vmorder', ['userId' => $userID]);
@@ -101,14 +127,18 @@ class plgSystemAcymtriggers extends JPlugin
     // Hikashop trigger after an order is updated
     public function onAfterOrderUpdate(&$order, &$send_email)
     {
-        if (!$this->initAcy()) return;
+        if (!$this->initAcy()) {
+            return;
+        }
 
         acym_trigger('onAfterOrderUpdate', [&$order], 'plgAcymHikashop');
     }
 
     public function onAfterCartSave(&$element)
     {
-        if (!$this->initAcy()) return;
+        if (!$this->initAcy()) {
+            return;
+        }
 
         acym_trigger('onAfterCartSave', [&$element], 'plgAcymHikashop');
     }
@@ -116,20 +146,32 @@ class plgSystemAcymtriggers extends JPlugin
     public function onBeforeCompileHead()
     {
         // Don't show forms in popup iframes
-        if (!empty($_REQUEST['tmpl']) && in_array($_REQUEST['tmpl'], ['component', 'raw'])) return;
-        if (!empty($_REQUEST['acym_preview'])) return;
+        if (!empty($_REQUEST['tmpl']) && in_array($_REQUEST['tmpl'], ['component', 'raw'])) {
+            return;
+        }
+        if (!empty($_REQUEST['acym_preview'])) {
+            return;
+        }
 
         $app = JFactory::getApplication();
-        if ($app->getName() != 'site') return;
+        if ($app->getName() != 'site') {
+            return;
+        }
 
-        if (!$this->initAcy()) return;
+        if (!$this->initAcy()) {
+            return;
+        }
 
         $menu = acym_getMenu();
-        if (empty($menu)) return;
+        if (empty($menu)) {
+            return;
+        }
 
         $formClass = new FormClass();
         $forms = $formClass->getAllFormsToDisplay();
-        if (empty($forms)) return;
+        if (empty($forms)) {
+            return;
+        }
 
         foreach ($forms as $form) {
             if (!empty($form->pages) && (in_array($menu->id, $form->pages) || in_array('all', $form->pages))) {
@@ -137,12 +179,16 @@ class plgSystemAcymtriggers extends JPlugin
             }
         }
 
-        if (!empty($this->formToDisplay)) acym_initModule();
+        if (!empty($this->formToDisplay)) {
+            acym_initModule();
+        }
     }
 
     private function displayForms()
     {
-        if (empty($this->formToDisplay)) return;
+        if (empty($this->formToDisplay)) {
+            return;
+        }
 
         $buffer = JFactory::getApplication()->getBody();
 
@@ -170,13 +216,19 @@ class plgSystemAcymtriggers extends JPlugin
                 break;
             }
         }
-        if (!$regacyNeeded) return;
+        if (!$regacyNeeded) {
+            return;
+        }
 
         // Get the current extension
         $option = $this->getVar('cmd', 'option');
-        if (empty($option)) return;
+        if (empty($option)) {
+            return;
+        }
 
-        if (!$this->initAcy()) return;
+        if (!$this->initAcy()) {
+            return;
+        }
 
 
         $config = acym_config();
@@ -200,7 +252,9 @@ class plgSystemAcymtriggers extends JPlugin
         }
 
         acym_trigger('onRegacyAddComponent', [&$components]);
-        if (!isset($components[$option])) return;
+        if (!isset($components[$option])) {
+            return;
+        }
 
 
         // We're on a supported extension, good. But is this specific page supported?
@@ -215,11 +269,15 @@ class plgSystemAcymtriggers extends JPlugin
                 break;
             }
         }
-        if (!$isvalid) return;
+        if (!$isvalid) {
+            return;
+        }
 
 
         $regacyHelper = new RegacyHelper();
-        if (!$regacyHelper->prepareLists($components[$option])) return;
+        if (!$regacyHelper->prepareLists($components[$option])) {
+            return;
+        }
 
         $this->includeRegacyLists($components[$option], $regacyHelper->label, $regacyHelper->lists);
     }
@@ -260,7 +318,9 @@ class plgSystemAcymtriggers extends JPlugin
 
         $listsPosition = $config->get('regacy_listsposition', 'password');
 
-        if ($options['baseOption'] != 'regacy') $listsPosition = $config->get($options['baseOption'].'_regacy_listsposition', 'password');
+        if ($options['baseOption'] != 'regacy') {
+            $listsPosition = $config->get($options['baseOption'].'_regacy_listsposition', 'password');
+        }
 
         if ('custom' === $listsPosition) {
             $customOptionName = $options['baseOption'] == 'regacy' ? 'regacy_listspositioncustom' : $options['baseOption'].'_regacy_listspositioncustom';
@@ -376,7 +436,9 @@ class plgSystemAcymtriggers extends JPlugin
     // Trigger for hikashop user creation
     function onAfterUserCreate(&$element)
     {
-        if (!$this->initAcy()) return true;
+        if (!$this->initAcy()) {
+            return true;
+        }
 
         $formData = acym_getVar('array', 'data', []);
         $listData = acym_getVar('array', 'hikashop_visible_lists_checked', []);

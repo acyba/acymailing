@@ -59,11 +59,11 @@ function acym_punycode($email, $method = 'emailToPunycode')
     return JStringPunycode::$method($email);
 }
 
-function acym_currentUserId()
+function acym_currentUserId(): int
 {
     $acymy = JFactory::getUser();
 
-    return $acymy->id;
+    return intval($acymy->id);
 }
 
 function acym_currentUserName($userid = null)

@@ -12,6 +12,13 @@ class plgAcymEasyblog extends acymPlugin
     {
         parent::__construct();
         $this->cms = 'Joomla';
+        $this->addonDefinition = [
+            'name' => 'EasyBlog',
+            'description' => '- Insert EasyBlog content in your emails',
+            'documentation' => 'https://docs.acymailing.com/addons/joomla-add-ons/easyblog',
+            'category' => 'Content management',
+            'level' => 'essential',
+        ];
         $this->installed = acym_isExtensionActive('com_easyblog');
 
         $this->pluginDescription->name = 'EasyBlog';

@@ -18,7 +18,6 @@ class plgAcymEasydigitaldownloads extends acymPlugin
         $this->pluginDescription->name = 'Easy Digital Downloads';
         $this->pluginDescription->icon = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/icon.png';
         $this->pluginDescription->category = 'Content management';
-        $this->pluginDescription->features = '[]';
         $this->pluginDescription->description = '- Insert digital downloads and generate coupons in your emails';
         $this->isOldDatabaseVersion = false;
         if (is_admin()) {

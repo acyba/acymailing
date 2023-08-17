@@ -31,7 +31,7 @@
 					<div class="acym__plugins__card cell grid-x xlarge-3 large-4 medium-6" v-for="(plugin, index) in displayedPlugins">
 						<div class="acym__plugins__card__params_type shrink cell">{{ plugin.category }}</div>
 						<div class="acym__plugins__card__image margin-bottom-1 cell grid-x align-center">
-							<img :src="imageUrl(plugin.image)" alt="plugin image" class="cell">
+							<img :src="imageUrl(plugin.file_name)" alt="plugin image" class="cell">
 						</div>
 						<div class="acym__plugins__card__params cell grid-x">
 							<div class="cell grid-x acym_vcenter acym__plugins__card__params__title-line">
@@ -56,13 +56,13 @@
 										</a>
 									</div>
 								</div>
-								<div v-if="!installed[plugin.image]" v-show="rightLevel(plugin.level)" class="cell grid-x acym__plugins__card__actions">
+								<div v-if="!installed[plugin.file_name]" v-show="rightLevel(plugin.level)" class="cell grid-x acym__plugins__card__actions">
 									<button v-show="'<?php echo ACYM_CMS; ?>' == 'joomla'" type="button" class="acym__plugins__button cell text-center button button-secondary" @click="download(plugin)">
-										<span v-show="!downloading[plugin.image]">
+										<span v-show="!downloading[plugin.file_name]">
 											<?php echo acym_translation('ACYM_DOWNLOAD'); ?>
 											<i class="acymicon-file_download"></i>
 										</span>
-										<span v-show="downloading[plugin.image]"><?php echo acym_loaderLogo(); ?></span>
+										<span v-show="downloading[plugin.file_name]"><?php echo acym_loaderLogo(); ?></span>
 									</button>
 									<a v-show="'<?php echo ACYM_CMS; ?>' == 'wordpress'"
 									   target="_blank"
@@ -72,7 +72,7 @@
 										<i class="acymicon-file_download"></i>
 									</a>
 								</div>
-								<div v-if="installed[plugin.image]" class="cell grid-x acym__plugins__card__actions">
+								<div v-if="installed[plugin.file_name]" class="cell grid-x acym__plugins__card__actions">
 									<button type="button" class="acym__plugins__button cell text-center acym__plugins__button-disabled button button-secondary">
                                         <?php echo acym_translation('ACYM_ADD_ON_SUCCESSFULLY_INSTALLED'); ?>
 										<i class="acymicon-check"></i>
