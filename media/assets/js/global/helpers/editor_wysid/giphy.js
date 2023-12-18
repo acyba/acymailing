@@ -2,13 +2,16 @@ let isSearching = false;
 let lastSearch = '';
 let defaultSearch = 'hello';
 let limitSearch = 24;
+let offsetGiphy = 0;
+let queryGiphy = 'hello';
+let typingTimerGiphy = '';
 
 const acym_editorWysidGiphy = {
     loadGif: function () {
         //When we're already searching for gif no need to make more research in the function setResearchInput
         isSearching = true;
         //When it's the same research no need to make the research again
-        lastSearch = acym_helperEditorWysid.queryGiphy;
+        lastSearch = queryGiphy;
         //We get the grid where we display the result and then we initiate masonry
         let $grid = jQuery('#acym__wysid__modal__giphy--results');
         $grid = $grid.masonry({
@@ -19,13 +22,13 @@ const acym_editorWysidGiphy = {
             url: 'https://api.giphy.com/v1/gifs/search?limit='
                  + limitSearch
                  + '&offset='
-                 + acym_helperEditorWysid.offsetGiphy
+                 + offsetGiphy
                  + '&q='
-                 + acym_helperEditorWysid.queryGiphy
+                 + queryGiphy
                  + '&api_key=6hR2IN2Db2aw4XdtNxLELKtOh66F5XSo&rating=PG',
             dataType: 'json'
         }).then((res) => {
-            if (res.data.length === 0 && acym_helperEditorWysid.offsetGiphy === 0) {
+            if (res.data.length === 0 && offsetGiphy === 0) {
                 //If there is no result
                 if ($grid.data('masonry')) $grid.masonry('destroy');
 
@@ -35,7 +38,6 @@ const acym_editorWysidGiphy = {
                 // We empty the results grid and empty it
                 $grid.html('');
                 $grid.hide();
-                jQuery('#acym__wysid__modal__giphy--low-res-message').hide();
             } else {
                 $grid.show();
                 //We remove the class new to only get the new images
@@ -45,10 +47,9 @@ const acym_editorWysidGiphy = {
                 let $errorMessage = jQuery('#acym__wysid__modal__giphy--error_message');
                 $errorMessage.html('');
                 $errorMessage.hide();
-                jQuery('#acym__wysid__modal__giphy--low-res-message').show();
 
                 //if the offset is at 0 it means we reset the research or it's the first call
-                if (acym_helperEditorWysid.offsetGiphy === 0) {
+                if (offsetGiphy === 0) {
                     //We remove all the images that could be in the grid
                     $grid.masonry('remove', $grid.find('.acym__wysid__modal__giphy__results--img'));
                     //We scroll at the top to get the first images
@@ -59,9 +60,9 @@ const acym_editorWysidGiphy = {
                 let results = '';
                 let columnWidth = $grid.width() / 4;
                 jQuery.each(res.data, function (index, value) {
-                    let ratio = parseInt((columnWidth * 100) / parseInt(value.images.preview_gif.width)) / 100;
-                    let height = parseInt(value.images.preview_gif.height * ratio);
-                    results += `<img alt="" class="acym__wysid__modal__giphy__results--img acym__wysid__modal__giphy__results--img--new" style="height: ${height}px" src="${value.images.preview_gif.url}" data-full-res-src="${value.images.downsized.url}">`;
+                    let ratio = parseInt((columnWidth * 100) / parseInt(value.images.downsized_medium.width)) / 100;
+                    let height = parseInt(value.images.downsized_medium.height * ratio);
+                    results += `<img alt="" class="acym__wysid__modal__giphy__results--img acym__wysid__modal__giphy__results--img--new" style="height: ${height}px" src="${value.images.downsized_medium.url}" data-full-res-src="${value.images.downsized.url}">`;
                 });
 
                 //We append it and init masonry for them
@@ -86,7 +87,6 @@ const acym_editorWysidGiphy = {
             // We empty the results grid and empty it
             $grid.html('');
             $grid.hide();
-            jQuery('#acym__wysid__modal__giphy--low-res-message').hide();
         }).always(() => {
             isSearching = false;
         });
@@ -110,7 +110,7 @@ const acym_editorWysidGiphy = {
             if (scrollDone >= scrollToDo) {
                 //once it's done we remove the event listener on the scroll to prevent calling X times the urls
                 jQuery(this).off('scroll');
-                acym_helperEditorWysid.offsetGiphy += limitSearch;
+                offsetGiphy += limitSearch;
                 acym_editorWysidGiphy.loadGif();
             }
         });
@@ -127,12 +127,12 @@ const acym_editorWysidGiphy = {
 
             if ((search === '' && lastSearch === defaultSearch) || isSearching || sameResearch) return;
 
-            clearTimeout(acym_helperEditorWysid.typingTimerGiphy);
+            clearTimeout(typingTimerGiphy);
 
             if (e.key === 'Enter') {
                 acym_editorWysidGiphy.makeNewResearch(search);
             } else if (search.length >= 2) {
-                acym_helperEditorWysid.typingTimerGiphy = setTimeout(function () {
+                typingTimerGiphy = setTimeout(function () {
                     acym_editorWysidGiphy.makeNewResearch(search);
                 }, 1000);
             } else if (search === '') {
@@ -141,9 +141,10 @@ const acym_editorWysidGiphy = {
         });
     },
     makeNewResearch: function (query) {
+        clearTimeout(typingTimerGiphy);
         //If we make a new research we reset the research to 0 like it's the first we load the modal
-        acym_helperEditorWysid.offsetGiphy = 0;
-        acym_helperEditorWysid.queryGiphy = query === '' ? defaultSearch : query;
+        offsetGiphy = 0;
+        queryGiphy = query === '' ? defaultSearch : query;
         let $grid = jQuery('#acym__wysid__modal__giphy--results');
         if ($grid.data('masonry')) $grid.masonry('destroy');
         this.loadGif();

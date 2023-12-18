@@ -73,6 +73,8 @@ function acym_radio($options, $name, $selected = null, $attributes = [], $params
             unset($params['required']);
         }
 
+        $elementClass = empty($elementClass) ? '' : ' class="'.$elementClass.'"';
+
         $currentOption = '';
         if (!$frontDisplay) {
             $currentOption .= '<i data-radio="'.$currentId.'" class="acymicon-radio_button_checked acym_radio_checked'.$extraClass.'"></i>';
@@ -85,6 +87,7 @@ function acym_radio($options, $name, $selected = null, $attributes = [], $params
         if (!empty($disabledOptions[$value]['tooltipTxt'])) {
             $currentOption = acym_tooltip($currentOption, $disabledOptions[$value]['tooltipTxt']);
         }
+
         $return .= $currentOption;
 
         if (!empty($params['pluginMode'])) $return .= '<br />';
@@ -166,7 +169,8 @@ function acym_select($data, $name, $selected = null, $attribs = null, $optKey = 
         } else {
             $cleanValue = acym_escape($value);
             $cleanText = acym_escape($text);
-            $dropdown .= '<option value="'.$cleanValue.'"'.($value == $selected ? ' selected="selected"' : '').($disabled ? ' disabled="disabled"' : '').'>'.$cleanText.'</option>';
+            $dropdown .= '<option value="'.$cleanValue.'"'.(strval($value) === strval($selected) ? ' selected="selected"' : '').($disabled ? ' disabled="disabled"'
+                    : '').'>'.$cleanText.'</option>';
         }
     }
 

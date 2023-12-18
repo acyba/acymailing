@@ -1,15 +1,15 @@
 <form id="acym_form"
-	  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('string', 'task').'&id='.acym_getVar('string', 'id')); ?>"
+	  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('string', 'task').'&campaignId='.acym_getVar('string', 'campaignId')); ?>"
 	  method="post"
 	  name="acyForm"
 	  class="acym__form__campaign__edit">
-	<input type="hidden" value="<?php echo !empty($data['campaign']->id) ? $data['campaign']->id : ''; ?>" name="id" id="acym__campaign__recipients__form__campaign">
+	<input type="hidden" value="<?php echo !empty($data['campaign']->id) ? $data['campaign']->id : ''; ?>" name="campaignId" id="acym__campaign__recipients__form__campaign">
 	<div id="acym__campaigns__segment" class="grid-x">
 		<div class="cell <?php echo $data['containerClass']; ?> float-center grid-x acym__content">
             <?php
             $this->addSegmentStep($data['displaySegmentTab']);
             $workflow = $data['workflowHelper'];
-            echo $workflow->display($this->steps, $this->step);
+            echo $workflow->display($this->steps, $this->step, true, false, '', 'campaignId');
 
             if (!acym_level(ACYM_ENTERPRISE)) {
                 include acym_getView('campaigns', 'segment_splashscreen');

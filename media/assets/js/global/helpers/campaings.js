@@ -76,15 +76,18 @@ const acym_helperCampaigns = {
                 }
             });
             let mailid = current.attr('data-mail');
-            jQuery.post(ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlCampaigns + '&task=deleteAttachmentAjax&id=' + idRemove + '&mail=' + mailid, function (response) {
-                response = acym_helper.parseJson(response);
-                if (response.error) {
-                    acym_helperCampaigns.setDisplayNotif(response.message, 'error');
-                } else {
-                    acym_helperCampaigns.setDisplayNotif(response.message, 'info');
-                    jQuery('#acym__campaigns__attach__del' + idDivToRemove).remove();
+            jQuery.post(
+                ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlCampaigns + '&task=deleteAttachmentAjax&id=' + idRemove + '&mail=' + mailid,
+                function (response) {
+                    response = acym_helper.parseJson(response);
+                    if (response.error) {
+                        acym_helperCampaigns.setDisplayNotif(response.message, 'error');
+                    } else {
+                        acym_helperCampaigns.setDisplayNotif(response.message, 'info');
+                        jQuery('#acym__campaigns__attach__del' + idDivToRemove).remove();
+                    }
                 }
-            }).fail(function (e) {
+            ).fail(function (e) {
                 console.log(e);
             });
         });
@@ -134,7 +137,7 @@ const acym_helperCampaigns = {
         jQuery('.acym__campaign__listing__automatic__deactivate').off('click').on('click', function () {
             let $form = jQuery('#acym_form');
             let $campaignId = jQuery(this).attr('data-campaignid');
-            $form.append('<input type="hidden" name="id" value="' + $campaignId + '">');
+            $form.append('<input type="hidden" name="campaignId" value="' + $campaignId + '">');
             $form.find('[name="task"]').val('toggleActivateColumnCampaign');
             $form.submit();
         });
@@ -189,6 +192,27 @@ const acym_helperCampaigns = {
                 let idBody = '#acym__summary-body-' + jQuery(this).attr('data-acym-lang');
                 let idSubject = '#acym__summary-subject-' + jQuery(this).attr('data-acym-lang');
                 let idPreview = '#acym__summary-preview-' + jQuery(this).attr('data-acym-lang');
+
+                jQuery('.acym__hidden__mail__content').val(jQuery(idBody).val());
+                acym_helperPreview.loadIframe('acym__wysid__preview__iframe__acym__wysid__email__preview', false);
+
+                jQuery('.acym__campaign__summary__email__information-subject').html(jQuery(idSubject).val());
+                jQuery('.acym__campaign__summary__generated__mail__one__preview').html(jQuery(idPreview).val());
+            });
+    },
+    setClickVersionSummary: function () {
+        jQuery('.acym__campaign__summary__preview__versions-one')
+            .not('.acym__campaign__summary__preview__versions-one__empty')
+            .off('click')
+            .on('click', function () {
+                if (jQuery(this).hasClass('version__selected')) return;
+
+                jQuery('.version__selected').removeClass('version__selected');
+                jQuery(this).addClass('version__selected');
+
+                const idBody = '#acym__summary-body-' + jQuery(this).attr('data-acym-version');
+                const idSubject = '#acym__summary-subject-' + jQuery(this).attr('data-acym-version');
+                const idPreview = '#acym__summary-preview-' + jQuery(this).attr('data-acym-version');
 
                 jQuery('.acym__hidden__mail__content').val(jQuery(idBody).val());
                 acym_helperPreview.loadIframe('acym__wysid__preview__iframe__acym__wysid__email__preview', false);

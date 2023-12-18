@@ -31,8 +31,8 @@ if (acym_getVar('boolean', 'runBounce')) {
 	<div class="cell grid-x acym__listing__actions">
         <?php
         $actions = [
-            'setInactive' => acym_translation('ACYM_DISABLE'),
             'setActive' => acym_translation('ACYM_ENABLE'),
+            'setInactive' => acym_translation('ACYM_DISABLE'),
             'delete' => acym_translation('ACYM_DELETE'),
         ];
         echo acym_listingActions($actions);

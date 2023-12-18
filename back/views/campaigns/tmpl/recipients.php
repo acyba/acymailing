@@ -1,11 +1,11 @@
 <form id="acym_form"
-	  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('string', 'task').'&id='.acym_getVar('string', 'id')); ?>"
+	  action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('string', 'task').'&campaignId='.acym_getVar('string', 'campaignId')); ?>"
 	  method="post"
 	  name="acyForm"
 	  class="acym__form__campaign__edit">
 	<input type="hidden"
 		   value="<?php echo !empty($data['campaignInformation']) ? acym_escape($data['campaignInformation']) : ''; ?>"
-		   name="id"
+		   name="campaignId"
 		   id="acym__campaign__recipients__form__campaign">
 	<input type="hidden"
 		   value="<?php echo !empty($data['showSelected']) ? $data['showSelected'] : ''; ?>"
@@ -15,9 +15,9 @@
 		<div class="cell <?php echo $data['containerClass']; ?> float-center grid-x acym__content">
             <?php
             $this->addSegmentStep($data['displaySegmentTab']);
-            $workflow = $data['workflowHelper'];
-            echo $workflow->display($this->steps, $this->step);
 
+            $workflow = $data['workflowHelper'];
+            echo $workflow->display($this->steps, $this->step, true, false, '', 'campaignId');
             ?>
 			<div class="acym__campaigns__recipients__modal">
                 <?php if (!empty($data['currentCampaign']->sent) && empty($data['currentCampaign']->active)) { ?>
@@ -37,22 +37,29 @@
                                     acym_translation('ACYM_RECIPIENTS')
                                 ); ?></span></div>
 					</div>
-					<div class="cell grid-x acym_vcenter">
-						<p class="cell shrink margin-right-1"><?php echo acym_translation('ACYM_ADD_SEGMENT_STEP_IN_SEND_PROCESS').acym_info(
-                                    'ACYM_ADD_SEGMENT_STEP_IN_SEND_PROCESS_DESC'
-                                ); ?></p>
-                        <?php echo acym_radio(
-                            [1 => acym_translation('ACYM_YES'), 0 => acym_translation('ACYM_NO')],
-                            'add_segment_step',
-                            !empty($data['currentCampaign']->sending_params) && array_key_exists('segment', $data['currentCampaign']->sending_params) ? 1 : 0
-                        ); ?>
-					</div>
+                    <?php if (acym_isAllowed('segments')) { ?>
+						<div class="cell grid-x acym_vcenter">
+							<p class="cell shrink margin-right-1"><?php echo acym_translation('ACYM_ADD_SEGMENT_STEP_IN_SEND_PROCESS').acym_info(
+                                        'ACYM_ADD_SEGMENT_STEP_IN_SEND_PROCESS_DESC'
+                                    ); ?></p>
+                            <?php echo acym_radio(
+                                [1 => acym_translation('ACYM_YES'), 0 => acym_translation('ACYM_NO')],
+                                'add_segment_step',
+                                !empty($data['currentCampaign']->sending_params) && array_key_exists('segment', $data['currentCampaign']->sending_params) ? 1 : 0
+                            ); ?>
+						</div>
+                    <?php } ?>
 
 				</div>
 			</div>
 			<div class="cell grid-x text-center acym__campaign__recipients__save-button cell">
 				<div class="cell medium-shrink medium-margin-bottom-0 margin-bottom-1 text-left">
-                    <?php echo acym_backToListing(); ?>
+                    <?php
+                    echo acym_backToListing(
+                        in_array($data['currentCampaign']->sending_type, ['birthday', 'woocommerce_cart'])
+                            ? 'campaigns&task=specificListing&type='.$data['currentCampaign']->sending_type : null
+                    );
+                    ?>
 				</div>
 				<div class="cell medium-auto grid-x text-right">
 					<div class="cell medium-auto"></div>

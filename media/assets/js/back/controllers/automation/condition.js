@@ -1,4 +1,4 @@
-jQuery(function($) {
+jQuery(function ($) {
 
     function Init() {
         refreshConditionProcess();
@@ -59,7 +59,7 @@ jQuery(function($) {
                         let optionValue = conditionOptions[keys[key]];
 
                         // Set the option values
-                        let $optionField = $('[name="acym_condition[conditions]['
+                        let $optionField = $('[name^="acym_condition[conditions]['
                                              + or
                                              + ']['
                                              + $('#acym__automation__conditions__count__and').val()

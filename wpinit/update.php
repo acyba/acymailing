@@ -14,28 +14,35 @@ class acyUpdate
     public function checkUpdates($transient)
     {
         $plugin_slug = plugin_basename(dirname(__DIR__).'/index.php');
-        if (!empty($transient->no_update[$plugin_slug])) return $transient;
+        if (!empty($transient->no_update[$plugin_slug])) {
+            return $transient;
+        }
 
         // Get latest version
-
         $config = acym_config();
         $downloadURL = $config->get('downloadurl', '');
         $lastCheck = $config->get('lastupdatecheck', 0);
 
-        if (!empty($transient->response[$plugin_slug])) $transient->response[$plugin_slug]->package = $downloadURL;
-
+        if (!empty($transient->response[$plugin_slug])) {
+            $transient->response[$plugin_slug]->package = $downloadURL;
+        }
 
         // We already have a downloadURL, no need to call acymailing.com
-        if (!empty($downloadURL)) return $transient;
+        if (!empty($downloadURL)) {
+            return $transient;
+        }
 
         // If acymailing.com has been called in the last 24h and we didn't click on force-check
-        if ($lastCheck > time() - 86400 && (empty($_REQUEST['force-check']) || $_REQUEST['force-check'] != 1)) return $transient;
+        if ($lastCheck > time() - 86400 && (empty($_REQUEST['force-check']) || $_REQUEST['force-check'] != 1)) {
+            return $transient;
+        }
 
         // Don't call 50 times per page load, only useful when clicking the "Check again" button
         static $alreadyChecked = false;
-        if ($alreadyChecked) return $transient;
+        if ($alreadyChecked) {
+            return $transient;
+        }
         $alreadyChecked = true;
-
 
         $url = ACYM_UPDATEME_API_URL.'public/updatexml/component?extension=acymailing&cms=wordpress&version=latest&level={__LEVEL__}';
         if (acym_level(ACYM_ESSENTIAL)) {
@@ -75,8 +82,13 @@ class acyUpdate
 
         if (empty($transient->response[$plugin_slug])) {
             // Avoid error on wp update when nothing needs to be updated
-            if (empty($transient) && !is_object($transient)) $transient = new \stdClass();
-            if (empty($transient->response) && (!isset($transient->response) || !is_array($transient->response))) $transient->response = [];
+            if (empty($transient) && !is_object($transient)) {
+                $transient = new \stdClass();
+            }
+
+            if (empty($transient->response) && (!isset($transient->response) || !is_array($transient->response))) {
+                $transient->response = [];
+            }
 
             $transient->response[$plugin_slug] = (object)[
                 'new_version' => $latestVersion,
@@ -115,7 +127,9 @@ class acyUpdate
             $config->save($newConfig);
         }
 
-        if (acym_level(ACYM_ESSENTIAL)) acym_checkVersion();
+        if (acym_level(ACYM_ESSENTIAL)) {
+            acym_checkVersion();
+        }
 
         return $transient;
     }

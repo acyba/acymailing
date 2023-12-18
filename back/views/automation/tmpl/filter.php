@@ -134,7 +134,7 @@
                     ); ?></button>
             <?php } else { ?>
 				<div class="cell medium-shrink medium-margin-bottom-0 margin-bottom-1 text-left">
-                    <?php echo acym_backToListing("automation"); ?>
+                    <?php echo acym_backToListing('automation'); ?>
 				</div>
 				<div class="auto cell"></div>
 				<button type="button"

@@ -32,7 +32,7 @@
         ?>
 	</div>
 </div>
-<input type="hidden" name="mail[id]" value="<?php echo acym_escape($data['mail']->id); ?>" />
+<input type="hidden" id="mail_id" name="mail[id]" value="<?php echo acym_escape($data['mail']->id); ?>" />
 <input type="hidden" name="id" value="<?php echo acym_escape($data['mail']->id); ?>" />
 <?php
 acym_formOptions();

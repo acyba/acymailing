@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Controllers;
 
+use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Helpers\WorkflowHelper;
@@ -135,17 +136,18 @@ class StatsController extends acymController
         $data['show_date_filters'] = true;
         $data['page_title'] = false;
 
-        if (acym_isMultilingual() && count($data['selectedMailid']) == 1) {
-            $overrideFilterMailIdLanguage = !empty(acym_getVar('array', 'mail_ids', []));
+        if (count($data['selectedMailid']) == 1) {
+            $overrideFilterMailIdVersion = !empty(acym_getVar('array', 'mail_ids', []));
 
-            $multilingualMailSelected = $this->getVarFiltersListing('int', 'mail_id_language', 0, $overrideFilterMailIdLanguage);
-            if (!empty($multilingualMailSelected)) $data['selectedMailid'] = [$multilingualMailSelected];
+            $versionMailSelected = $this->getVarFiltersListing('int', 'mail_id_version', 0, $overrideFilterMailIdVersion);
+            if (!empty($versionMailSelected)) $data['selectedMailid'] = [$versionMailSelected];
         }
 
         $mailClass = new MailClass();
         if (count($data['selectedMailid']) == 1) {
             $data['mailInformation'] = $mailClass->getOneById($data['selectedMailid'][0]);
-            if (acym_isMultilingual()) $this->prepareMultilingualMails($data);
+            $campaignClass = new CampaignClass();
+            $data['isAbTest'] = $campaignClass->isAbTestMail($data['selectedMailid'][0]);
         }
 
         if (!empty($data['selectedMailid'])) {

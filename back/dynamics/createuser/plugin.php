@@ -137,6 +137,8 @@ class plgAcymcreateuser extends acymPlugin
 
         $user->cms_id = $joomlaUser->id;
         $userClass = new UserClass();
+        // We don't want to send the confirmation because it already has been set in the AcyMailing user creation
+        $userClass->sendConf = false;
         $userClass->save($user);
 
         // Compile the notification mail values.
@@ -308,6 +310,8 @@ class plgAcymcreateuser extends acymPlugin
         } else {
             $user->cms_id = $result;
             $userClass = new UserClass();
+            // We don't want to send the confirmation because it already has been set in the AcyMailing user creation
+            $userClass->sendConf = false;
             $userClass->save($user);
             $wpUser = new WP_User($result);
             $wpUser->set_role($configUserGroup);

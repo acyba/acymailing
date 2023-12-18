@@ -21,18 +21,17 @@ trait HikashopAutomationTriggers
         $triggers['user']['hikashopWishlistUpdated']->name = acym_translationSprintf('ACYM_X_ADD_TO_WISHLIST', 'HikaShop');
         $triggers['user']['hikashopWishlistUpdated']->option = '<input type="hidden" name="[triggers][user][hikashopWishlistUpdated][hidden]" value="">';
 
-        $statusClass = hikashop_get('type.categorysub');
-        $statusClass->type = 'status';
-        $statusClass->load();
-
-        if (empty($statusClass->categories)) {
+        $rows = acym_loadObjectList('SELECT * FROM #__hikashop_orderstatus');
+        if (empty($rows)) {
             return;
         }
-
         $cats = [];
-        foreach ($statusClass->categories as $category) {
-            $val = str_replace(' ', '_', strtoupper($category->category_name));
-            $cats[$category->category_namekey] = acym_translation($val);
+        foreach ($rows as $row) {
+            $name = hikashop_orderStatus($row->orderstatus_namekey);
+            if ($name == $row->orderstatus_namekey) {
+                $name = $row->orderstatus_name;
+            }
+            $cats[$row->orderstatus_namekey] = $name;
         }
 
         $selectedValue = empty($defaultValues['hikashoporder']['status']) ? [] : $defaultValues['hikashoporder']['status'];

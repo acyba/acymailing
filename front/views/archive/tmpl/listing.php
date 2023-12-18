@@ -31,12 +31,7 @@
                 if ($data['popup']) {
                     $iframeClass = 'acym__modal__iframe';
                     if (empty($data['userId'])) $iframeClass .= ' acym__front__not_connected_user';
-
-                    $additionalContent = '';
-                    if (empty($data['userId'])) {
-                        $additionalContent = '<p class="acym_front_message_warning">'.acym_translation('ACYM_FRONT_ARCHIVE_NOT_CONNECTED').'</p>';
-                    }
-                    echo acym_frontModal($archiveURL, $oneNewsletter->subject, false, $oneNewsletter->id, $iframeClass, $additionalContent);
+                    echo acym_frontModal($archiveURL, $oneNewsletter->subject, false, $oneNewsletter->id, $iframeClass);
                 } else {
                     echo '<p class="acym__front__archive__raw"><a href="'.$archiveURL.'" target="_blank">'.$oneNewsletter->subject.'</a></p>';
                 }

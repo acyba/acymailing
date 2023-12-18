@@ -30,6 +30,10 @@
         margin-left: -26px;
     }
 
+    #acym__wysid__context__block__column__background-image__remove {
+        margin-left: -26px;
+    }
+
     .acym__wysid__context__button__actions-i, .acym__wysid__context__button__align, .acym__wysid__context__follow__align, .acym__wysid__context__image__align {
         cursor: pointer;
         text-align: center;
@@ -81,6 +85,15 @@
     }
 
     .acym__wysid__context__modal__block-background {
+        padding: .3rem;
+        overflow-y: auto;
+
+        div span {
+            margin-right: 5px;
+        }
+    }
+
+    .acym__wysid__context__modal__block-columns-image {
         padding: .3rem;
         overflow-y: auto;
 

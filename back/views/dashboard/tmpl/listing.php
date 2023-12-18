@@ -38,7 +38,8 @@
 					</a>
                 <?php } ?>
                 <?php if (acym_isAllowed('mails')) { ?>
-					<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('mails&task=edit&type_editor=acyEditor'); ?>">
+					<a class="acym__dashboard__card__link"
+					   href="<?php echo acym_completeLink('mails&task=edit&type_editor=acyEditor&type='.\AcyMailing\Classes\MailClass::TYPE_TEMPLATE); ?>">
                         <?php echo acym_translation('ACYM_CREATE_TEMPLATE'); ?>
 					</a>
                 <?php } ?>

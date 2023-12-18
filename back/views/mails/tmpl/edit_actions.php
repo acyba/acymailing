@@ -20,7 +20,7 @@ echo acym_modalInclude(
     'class="cell large-shrink medium-6"'
 );
 
-$attributeSave = empty($data['multilingual']) || $data['editor']->editor == 'html' ? '' : 'acym-data-before="acym_editorWysidMultilingual.storeCurrentValues(true);"';
+$attributeSave = empty($data['multilingual']) || $data['editor']->editor == 'html' ? '' : 'acym-data-before="acym_editorWysidVersions.storeCurrentValues(true);"';
 
 ?>
 <button id="apply" <?php echo $attributeSave; ?> type="button" data-task="apply" class="cell large-shrink button-secondary medium-6 button acym__template__save acy_button_submit">

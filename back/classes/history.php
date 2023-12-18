@@ -61,7 +61,13 @@ class HistoryClass extends acymClass
             $history->source = implode("\n", $source);
         }
 
-        return acym_insertObject('#__acym_history', $history);
+        try {
+            $insertId = acym_insertObject('#__acym_history', $history);
+        } catch (\Exception $e) {
+            $insertId = 0;
+        }
+
+        return $insertId;
     }
 
     public function alreadyExists($userId, $date)

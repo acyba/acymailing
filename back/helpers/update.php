@@ -560,19 +560,19 @@ class UpdateHelper extends acymObject
 
             if (!file_exists(ACYM_ROOT.ACYM_UPLOAD_FOLDER.$mailingImage)) {
                 copy(
-                    ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.$mailingImage,
+                    ACYM_ROOT.ACYM_MEDIA_FOLDER.'images'.DS.$mailingImage,
                     ACYM_ROOT.ACYM_UPLOAD_FOLDER.$mailingImage
                 );
             }
             if (!file_exists(ACYM_ROOT.ACYM_UPLOAD_FOLDER.$logoAcymailing)) {
                 copy(
-                    ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.$logoAcymailing,
+                    ACYM_ROOT.ACYM_MEDIA_FOLDER.'images'.DS.$logoAcymailing,
                     ACYM_ROOT.ACYM_UPLOAD_FOLDER.$logoAcymailing
                 );
             }
             if (!file_exists(ACYM_UPLOAD_FOLDER_THUMBNAIL.$thumbnailFirstStep)) {
                 copy(
-                    ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.$thumbnailFirstStep,
+                    ACYM_ROOT.ACYM_MEDIA_FOLDER.'images'.DS.$thumbnailFirstStep,
                     ACYM_UPLOAD_FOLDER_THUMBNAIL.$thumbnailFirstStep
                 );
             }

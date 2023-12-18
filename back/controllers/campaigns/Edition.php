@@ -3,6 +3,7 @@
 namespace AcyMailing\Controllers\Campaigns;
 
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\MailArchiveClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailStatClass;
@@ -34,6 +35,7 @@ trait Edition
             $data = [
                 'lists' => $listClass->getAllForSelect(),
                 'campaign_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=now'),
+                'campaign_test_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=now&abtest=1'),
                 'campaign_auto_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=auto'),
                 'followup_link' => acym_completeLink('campaigns&task=edit&step=followupTrigger'),
                 'campaign_scheduled_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'),
@@ -73,7 +75,7 @@ trait Edition
         $pagination = new PaginationHelper();
 
         // Get filters data
-        $campaignId = acym_getVar('int', 'id', 0);
+        $campaignId = acym_getVar('int', 'campaignId', 0);
         $campaignClass = new CampaignClass();
         $searchFilter = $this->getVarFiltersListing('string', 'mailchoose_search', '');
         $tagFilter = $this->getVarFiltersListing('string', 'mailchoose_tag', '');
@@ -81,6 +83,7 @@ trait Edition
         $orderingSortOrder = $this->getVarFiltersListing('string', 'mailchoose_ordering_sort_order', 'DESC');
         $campaign = $campaignClass->getOneByIdWithMail($campaignId);
         $campaignType = $this->getVarFiltersListing('string', 'campaign_type', 'now');
+        $abTest = acym_getVar('bool', 'abtest', false);
 
         $this->setTaskListing($campaignType === 'auto' ? 'campaigns_auto' : 'campaigns');
 
@@ -124,6 +127,7 @@ trait Edition
             'ordering' => $ordering,
             'campaignID' => $campaignId,
             'campaign_type' => $campaignType,
+            'abtest' => $abTest,
         ];
         $this->prepareListingClasses($data);
         $this->prepareSegmentDisplay($data, empty($campaign->sending_params) ? false : $campaign->sending_params);
@@ -140,7 +144,7 @@ trait Edition
 
     private function prepareEditCampaign(&$data)
     {
-        $campaignId = acym_getVar('int', 'id', 0);
+        $campaignId = acym_getVar('int', 'campaignId', 0);
         $mailId = acym_getVar('int', 'from', 0);
         $mailClass = new MailClass();
         $data['mailClass'] = $mailClass;
@@ -168,11 +172,19 @@ trait Edition
                 die('Access denied for this campaign');
             }
 
+            if (!empty($mailId)) {
+                $campaignClass->resetAbTestVersion($campaignId);
+            }
+
             $data['mailInformation'] = $campaignClass->getOneByIdWithMail($campaignId);
             if (empty($mailId)) {
                 $mailId = $data['mailInformation']->mail_id;
             }
-            $editLink .= '&id='.$campaignId;
+            $editLink .= '&campaignId='.$campaignId;
+
+            if (in_array($data['mailInformation']->sending_type, ['birthday', 'woocommerce_cart'])) {
+                $this->setTaskListing('specificListing', $data['mailInformation']->sending_type);
+            }
         }
 
         if ($mailId == -1 || (empty($campaignId) && empty($mailId))) {
@@ -268,10 +280,35 @@ trait Edition
         $data['maxupload'] = acym_bytes($maxupload) > acym_bytes($maxpost) ? $maxpost : $maxupload;
     }
 
+    private function prepareAbTest(&$data, $editor = true)
+    {
+        $data['abtest'] = false;
+
+    }
+
     private function prepareMultilingual(&$data, $editor = true)
     {
         $data['multilingual'] = 0;
 
+    }
+
+    private function prepareAllMailsForAbtest(&$data)
+    {
+        $mailClass = new MailClass();
+
+        $mails = $mailClass->getParentAndChildMails($data['mailId']);
+
+        if (empty($mails)) {
+            acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_LOAD_ABTEST_MAILS'), 'error');
+
+            return;
+        }
+
+        foreach ($mails as $key => $oneMail) {
+            $mails[$key] = $this->prepareMailDataSummary($data, $oneMail->id);
+        }
+
+        $data['abtest_mails'] = $mails;
     }
 
     private function prepareAllMailsForMultilingual(&$data)
@@ -313,11 +350,12 @@ trait Edition
         $this->prepareEditCampaign($data);
         $this->prepareEditor($data);
         $this->prepareMaxUpload($data);
+        $this->prepareAbTest($data);
         $this->prepareMultilingual($data);
         $this->prepareListingClasses($data);
         $this->prepareSegmentDisplay($data, empty($data['mailInformation']->sending_params) ? false : $data['mailInformation']->sending_params);
 
-        $data['before-save'] = $data['editor']->editor != 'acyEditor' ? '' : 'acym-data-before="acym_editorWysidMultilingual.storeCurrentValues(true);"';
+        $data['before-save'] = $data['editor']->editor != 'acyEditor' ? '' : 'acym-data-before="acym_editorWysidVersions.storeCurrentValues(true);"';
 
         $data['menuClass'] = $this->menuClass;
 
@@ -329,7 +367,7 @@ trait Edition
         acym_setVar('layout', 'recipients');
         acym_setVar('step', 'recipients');
 
-        $campaignId = acym_getVar('int', 'id');
+        $campaignId = acym_getVar('int', 'campaignId');
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
 
@@ -338,7 +376,7 @@ trait Edition
         }
 
         $currentCampaign = $campaignClass->getOneByIdWithMail($campaignId);
-        $this->breadcrumb[acym_escape($currentCampaign->name)] = acym_completeLink('campaigns&task=edit&step=recipients&id='.$campaignId);
+        $this->breadcrumb[acym_escape($currentCampaign->name)] = acym_completeLink('campaigns&task=edit&step=recipients&campaignId='.$campaignId);
 
         $campaign = [
             'campaignInformation' => $campaignId,
@@ -365,7 +403,7 @@ trait Edition
 
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
-        $campaignId = acym_getVar('int', 'id');
+        $campaignId = acym_getVar('int', 'campaignId');
 
         if (empty($campaignId)) {
             acym_enqueueMessage(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), 'error');
@@ -385,7 +423,7 @@ trait Edition
         ];
 
 
-        $this->breadcrumb[acym_escape($mail->name)] = acym_completeLink(acym_completeLink('campaigns&task=edit&step=recipients&id='.$campaign->id));
+        $this->breadcrumb[acym_escape($mail->name)] = acym_completeLink(acym_completeLink('campaigns&task=edit&step=recipients&campaignId='.$campaign->id));
         parent::display($data);
     }
 
@@ -393,7 +431,7 @@ trait Edition
     {
         acym_setVar('layout', 'send_settings');
         acym_setVar('step', 'sendSettings');
-        $campaignId = acym_getVar('int', 'id');
+        $campaignId = acym_getVar('int', 'campaignId');
         $campaignClass = new CampaignClass();
         $campaignInformation = empty($campaignId) ? null : $campaignClass->getOneById($campaignId);
 
@@ -413,7 +451,7 @@ trait Edition
 
         $campaignClass = new CampaignClass();
         $currentCampaign = $campaignClass->getOneByIdWithMail($campaignId);
-        $this->breadcrumb[acym_escape($currentCampaign->name)] = acym_completeLink('campaigns&task=edit&step=sendSettings&id='.$campaignId);
+        $this->breadcrumb[acym_escape($currentCampaign->name)] = acym_completeLink('campaigns&task=edit&step=sendSettings&campaignId='.$campaignId);
 
         if (!empty($currentCampaign->sent) && empty($currentCampaign->active)) {
             $currentCampaign->sending_date = '';
@@ -422,6 +460,7 @@ trait Edition
         $campaign = [];
 
         $campaign['currentCampaign'] = $currentCampaign;
+        $campaign['nbSubscribers'] = $campaignClass->countUsersCampaign($campaignId, true);
         $campaign['from'] = $from;
         $campaign['suggestedDate'] = acym_date('1534771620', 'j M Y H:i');
         $campaign['senderInformations'] = new stdClass();
@@ -482,9 +521,10 @@ trait Edition
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
         $formData = acym_getVar('array', 'mail', []);
-        $multilingual = acym_getVar('array', 'multilingual', [], 'REQUEST', ACYM_ALLOWRAW);
+        $versions = acym_getVar('array', 'versions', [], 'REQUEST', ACYM_ALLOWRAW);
+        $versionType = acym_getVar('string', 'version_type', '');
         $allowedFields = acym_getColumns('mail');
-        $campaignId = acym_getVar('int', 'id', 0);
+        $campaignId = acym_getVar('int', 'campaignId', 0);
         $campaignType = acym_getVar('string', 'campaign_type', 'now');
 
         $types = [
@@ -554,19 +594,23 @@ trait Edition
         $mailController = new MailsController();
         $mailController->setAttachmentToMail($mail);
 
-        if (!empty($multilingual)) {
-            if (!empty($multilingual['main']['subject'])) $mail->subject = $multilingual['main']['subject'];
-            if (!empty($multilingual['main']['preview'])) $mail->preheader = $multilingual['main']['preview'];
-            if (!empty($multilingual['main']['content'])) $mail->body = $multilingual['main']['content'];
-            if (!empty($multilingual['main']['content'])) $mail->settings = $multilingual['main']['settings'];
-            if (!empty($multilingual['main']['content'])) $mail->stylesheet = $multilingual['main']['stylesheet'];
-            $mail->links_language = $this->config->get('multilingual_default');
-            unset($multilingual['main']);
+        if (!empty($versions)) {
+            if (!empty($versions['main']['subject'])) $mail->subject = $versions['main']['subject'];
+            if (!empty($versions['main']['preview'])) $mail->preheader = $versions['main']['preview'];
+            if (!empty($versions['main']['content'])) $mail->body = $versions['main']['content'];
+            if (!empty($versions['main']['content'])) $mail->settings = $versions['main']['settings'];
+            if (!empty($versions['main']['content'])) $mail->stylesheet = $versions['main']['stylesheet'];
+
+            if ($versionType === 'multilingual') {
+                $mail->links_language = $this->config->get('multilingual_default');
+            }
+
+            unset($versions['main']);
         }
 
         if ($mailID = $mailClass->save($mail)) {
-            if (acym_getVar('string', 'nextstep', '') == 'listing') {
-                acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
+            if (acym_getVar('string', 'nextstep', '') === 'listing') {
+                acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
             }
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
@@ -581,29 +625,47 @@ trait Edition
             return false;
         }
 
-        if (!empty($multilingual)) {
-            foreach ($multilingual as $langCode => $translation) {
-                if (empty($translation['subject'])) {
-                    $mailClass->delete($mailClass->getTranslationId($mailID, $langCode));
+        if (!empty($versions) && in_array($versionType, ['multilingual', 'abtest'])) {
+            $abTestSendingParams = empty($campaign->sending_params['abtest']) ? [] : $campaign->sending_params['abtest'];
+            foreach ($versions as $code => $version) {
+                if (empty($version['subject'])) {
+                    if ($versionType === 'multilingual') {
+                        $mailClass->delete($mailClass->getTranslationId($mailID, $code));
+                    } elseif (!empty($abTestSendingParams[$code])) {
+                        $mailClass->delete($abTestSendingParams[$code]);
+                    }
                     continue;
                 }
 
                 unset($mail->id);
-                $translationId = $mailClass->getTranslationId($mailID, $langCode);
-                if (!empty($translationId)) {
-                    $mail->id = $translationId;
+                $versionId = null;
+                if ($versionType === 'multilingual') {
+                    $versionId = $mailClass->getTranslationId($mailID, $code);
+                } elseif (!empty($abTestSendingParams[$code])) {
+                    $versionId = $abTestSendingParams[$code];
+                }
+                if (!empty($versionId)) {
+                    $mail->id = $versionId;
                 }
 
-                $mail->subject = $translation['subject'];
-                $mail->preheader = $translation['preview'];
-                $mail->body = $translation['content'];
-                $mail->links_language = $langCode;
-                $mail->language = $langCode;
+                $mail->subject = $version['subject'];
+                $mail->preheader = $version['preview'];
+                $mail->body = $version['content'];
                 $mail->parent_id = $mailID;
-                $mail->settings = $translation['settings'];
-                $mail->stylesheet = $translation['stylesheet'];
+                $mail->settings = $version['settings'];
+                $mail->stylesheet = $version['stylesheet'];
 
-                $mailClass->save($mail);
+                if ($versionType === 'multilingual') {
+                    $mail->links_language = $code;
+                    $mail->language = $code;
+                }
+
+                $versionMailId = $mailClass->save($mail);
+                $abTestSendingParams[$code] = $versionMailId;
+            }
+
+            if ($versionType === 'abtest') {
+                $campaign->sending_params['abtest'] = $abTestSendingParams;
             }
         }
 
@@ -614,7 +676,7 @@ trait Edition
             return $campaign->id;
         }
 
-        acym_setVar('id', $campaign->id);
+        acym_setVar('campaignId', $campaign->id);
 
         return $this->edit();
     }
@@ -623,7 +685,7 @@ trait Edition
     {
         $allLists = json_decode(acym_getVar('string', 'acym__entity_select__selected'));
         $allListsUnselected = json_decode(acym_getVar('string', 'acym__entity_select__unselected'));
-        $campaignId = acym_getVar('int', 'id');
+        $campaignId = acym_getVar('int', 'campaignId');
         $addSegmentStep = acym_getVar('int', 'add_segment_step');
 
         $campaignClass = new CampaignClass();
@@ -642,7 +704,7 @@ trait Edition
             $mailStatClass->save($mailStat);
         } elseif (!empty($currentCampaign->mail_id)) {
             $campaignClass->manageListsToCampaign($allLists, $currentCampaign->mail_id, $allListsUnselected);
-            if (acym_getVar('string', 'nextstep', '') == 'listing') {
+            if (acym_getVar('string', 'nextstep', '') === 'listing') {
                 acym_enqueueMessage(acym_translationSprintf('ACYM_LIST_IS_SAVED', $currentCampaign->name));
             }
         }
@@ -661,6 +723,8 @@ trait Edition
         if (isset($currentCampaign->sending_params['segment'])) unset($currentCampaign->sending_params['segment']);
         $campaignClass->save($currentCampaign);
 
+        acym_setVar('campaignId', $currentCampaign->id);
+
         $this->edit();
     }
 
@@ -672,7 +736,7 @@ trait Edition
 
         $segmentSelected = acym_getVar('int', 'segment_selected', 0);
         $filters = acym_getVar('array', 'acym_action', []);
-        $campaignId = acym_getVar('int', 'id', 0);
+        $campaignId = acym_getVar('int', 'campaignId', 0);
 
         if (empty($campaignId)) {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
@@ -716,7 +780,7 @@ trait Edition
     {
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
-        $campaignId = acym_getVar('int', 'id');
+        $campaignId = acym_getVar('int', 'campaignId');
 
         if (!$campaignClass->hasUserAccess($campaignId)) {
             die('Access denied for this campaign');
@@ -775,6 +839,10 @@ trait Edition
             }
         }
 
+        if (!empty($currentCampaign->sending_params['abtest']) && !empty($sendingParams['abtest'])) {
+            $sendingParams['abtest'] = array_merge($currentCampaign->sending_params['abtest'], $sendingParams['abtest']);
+        }
+
         // Handle special emails
         if (!in_array($sendingType, $campaignClass::SENDING_TYPES)) {
             $specialSendings = [];
@@ -815,8 +883,8 @@ trait Edition
         }
 
         if ($campaignClass->save($currentCampaign)) {
-            if (acym_getVar('string', 'nextstep', '') == 'listing') {
-                acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
+            if (acym_getVar('string', 'nextstep', '') === 'listing') {
+                acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
             }
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
@@ -858,15 +926,18 @@ trait Edition
 
             return;
         }
+
         $data['mailInformation'] = $this->prepareMailDataSummary($data, $data['campaignInformation']->mail_id);
         $this->prepareReceiversSummary($data);
+        $this->prepareAbTest($data, false);
+        $this->prepareAllMailsForAbtest($data);
         $this->prepareMultilingual($data, false);
         $this->prepareAllMailsForMultilingual($data);
         $this->prepareListingClasses($data);
         $this->prepareSegmentData($data);
         $this->prepareSegmentDisplay($data, $data['campaignInformation']->sending_params);
 
-        $this->breadcrumb[$data['campaignInformation']->name] = acym_completeLink('campaigns&task=edit&step=summary&id='.$data['campaignInformation']->id);
+        $this->breadcrumb[$data['campaignInformation']->name] = acym_completeLink('campaigns&task=edit&step=summary&campaignId='.$data['campaignInformation']->id);
         parent::display($data);
     }
 
@@ -911,7 +982,7 @@ trait Edition
 
     protected function prepareCampaignSummary(&$data): bool
     {
-        $campaignId = acym_getVar('int', 'id');
+        $campaignId = acym_getVar('int', 'campaignId');
         $campaign = empty($campaignId) ? null : $this->currentClass->getOneByIdWithMail($campaignId);
         if (is_null($campaign)) return false;
 
@@ -947,8 +1018,11 @@ trait Edition
         return true;
     }
 
-    protected function prepareMailDataSummary($data, $mailId)
+    protected function prepareMailDataSummary(&$data, $mailId)
     {
+        $mailArchiveClass = new MailArchiveClass();
+        $data['isArchiveCached'] = !empty($mailArchiveClass->getOneByMailId($mailId));
+
         $mailData = $data['mailClass']->getOneById($mailId);
         $mailData->from_name = empty($mailData->from_name) ? $this->config->get('from_name') : $mailData->from_name;
         $mailData->from_email = empty($mailData->from_email) ? $this->config->get('from_email') : $mailData->from_email;
@@ -1031,7 +1105,7 @@ trait Edition
         $campaignClass = new CampaignClass();
         acym_setVar('step', 'tests');
         acym_setVar('layout', 'tests');
-        $campaignId = acym_getVar('int', 'id', 0);
+        $campaignId = acym_getVar('int', 'campaignId', 0);
 
         $campaign = $campaignClass->getOneByIdWithMail($campaignId);
 
@@ -1047,11 +1121,16 @@ trait Edition
             $defaultEmails[$oneEmail] = $oneEmail;
         }
 
+        $mailClass = new MailClass();
+        $emailsToTest = $mailClass->getParentAndChildMails($campaign->mail_id);
+
         $data = [
             'id' => $campaign->id,
+            'currentCampaign' => $campaign,
             'test_emails' => $defaultEmails,
             'upgrade' => !acym_level(ACYM_ESSENTIAL),
             'version' => 'enterprise',
+            'emails_to_test' => $emailsToTest,
         ];
         if (!acym_isAcyCheckerInstalled()) {
             $lists = $campaignClass->getListsByMailId($campaign->mail_id);
@@ -1062,7 +1141,7 @@ trait Edition
         $this->prepareListingClasses($data);
         $this->prepareSegmentDisplay($data, $campaign->sending_params);
 
-        $this->breadcrumb[acym_escape($campaign->name)] = acym_completeLink('campaigns&task=edit&step=tests&id='.$campaign->id);
+        $this->breadcrumb[acym_escape($campaign->name)] = acym_completeLink('campaigns&task=edit&step=tests&campaignId='.$campaign->id);
         parent::display($data);
     }
 

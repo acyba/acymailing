@@ -83,7 +83,7 @@ jQuery(function ($) {
                 if (response.error) {
                     alert(response.message);
                 } else {
-                    $translationContainer.html(response.data.translations);
+                    $translationContainer.text(response.data.translations);
                 }
             });
         });

@@ -35,6 +35,9 @@ class ConfigurationClass extends acymClass
             if (strpos($name, 'password') !== false && !empty($value) && trim($value, '*') == '') {
                 continue;
             }
+            if (strpos($name, 'key') !== false && !empty($value) && strpos($value, '**********') !== false) {
+                continue;
+            }
 
             if ($name === 'multilingual' && $value === '1') {
                 $remindme = json_decode($this->get('remindme', '[]'), true);

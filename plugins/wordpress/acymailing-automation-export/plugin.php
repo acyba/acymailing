@@ -97,9 +97,11 @@ class plgAcymAutomationexport extends acymPlugin
     public function onAcymProcessAction_export(&$cquery, $action)
     {
         // Get the file name
-        $pathtolog = ACYM_ROOT.ACYM_LOGS_FOLDER.'export_'.date('Y-m-d').'.csv';
+        $currentDate = date('Y-m-d');
+        $pathtolog = ACYM_ROOT.ACYM_LOGS_FOLDER.'export_'.$currentDate.'.csv';
         if (!empty($action['path']) && false === strpos($action['path'], '..')) {
-            $pathtolog = ACYM_ROOT.strftime($action['path']);
+            $dateParts = explode('-', $currentDate);
+            $pathtolog = ACYM_ROOT.str_replace(['%Y', '%m', '%d'], $dateParts, $action['path']);
         }
 
         if (empty($action['core']) && empty($action['custom'])) {

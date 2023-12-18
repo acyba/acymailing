@@ -49,7 +49,7 @@ trait SubscriberFollowup
                     if (!$segmentMatched) {
                         unset($followups[$key]);
 
-                        return;
+                        break;
                     }
                 }
             } else {
@@ -59,7 +59,7 @@ trait SubscriberFollowup
                         if ($this->isUserMatchingOr($userId, $orBlock)) {
                             unset($followups[$key]);
 
-                            return;
+                            break 2;
                         }
                     }
                 }

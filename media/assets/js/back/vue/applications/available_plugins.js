@@ -32,7 +32,7 @@ jQuery(function ($) {
 
                         return false;
                     }
-                    acym_helperBack.config_get('level').done((resConfig) => {
+                    acym_helper.config_get('level').done((resConfig) => {
                         if (resConfig.error) {
                             acym_helperNotification.addNotification(resConfig.message, 'error');
 

@@ -172,7 +172,7 @@ class acyRouter
         $ctrl = acym_getVar('cmd', 'ctrl', '');
         $task = acym_getVar('cmd', 'task', '');
 
-        if (acym_isAdmin() && file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN) && is_writable(ACYM_NEW_FEATURES_SPLASHSCREEN)) {
+        if (!$front && acym_isAdmin() && file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON) && is_writable(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON)) {
             $ctrl = 'dashboard';
             $task = 'features';
             acym_setVar('ctrl', $ctrl);
@@ -180,7 +180,7 @@ class acyRouter
         }
 
         $needToMigrate = $config->get('migration') == 0 && acym_existsAcyMailing59() && acym_getVar('string', 'task') !== 'migrationDone';
-        $forceDashboard = ($needToMigrate || $config->get('walk_through') == 1) && !(defined('DOING_AJAX') && DOING_AJAX) && 'dynamics' !== $ctrl;
+        $forceDashboard = !$front && ($needToMigrate || $config->get('walk_through') == 1) && !(defined('DOING_AJAX') && DOING_AJAX) && 'dynamics' !== $ctrl;
         if ($forceDashboard) {
             $ctrl = 'dashboard';
             acym_setVar('ctrl', $ctrl);
@@ -214,7 +214,7 @@ class acyRouter
             return;
         }
 
-        if (acym_isAdmin() && $task != 'edit' && !(defined('DOING_AJAX') && DOING_AJAX)) {
+        if (!$front && acym_isAdmin() && $task != 'edit' && !(defined('DOING_AJAX') && DOING_AJAX)) {
             $pluginClass = new PluginClass();
             $installedPlugins = $pluginClass->getAll('title');
             $newPlugins = json_decode(ACYM_AVAILABLE_PLUGINS);

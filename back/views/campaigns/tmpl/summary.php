@@ -1,4 +1,5 @@
 <?php
+$isAbTest = $data['abtest'];
 $isSent = !empty($data['campaignInformation']->sent) && !empty($data['campaignInformation']->active);
 $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 ?>
@@ -16,7 +17,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
             <?php
             $this->addSegmentStep($data['displaySegmentTab']);
             $workflow = $data['workflowHelper'];
-            echo $workflow->display($this->steps, $this->step);
+            echo $workflow->display($this->steps, $this->step, true, false, '', 'campaignId');
             ?>
 
 			<div id="acym__campaign__summary" class="grid-x grid-margin-y">
@@ -26,39 +27,55 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 					</h5>
 					<div class="cell auto acym__campaign__summary__modify">
 						<a href="<?php echo acym_completeLink(
-                            $campaignController.'&task=edit&step=editEmail&edition=1&id='.intval($data['campaignInformation']->id)
+                            $campaignController.'&task=edit&step=editEmail&edition=1&campaignId='.intval($data['campaignInformation']->id)
                         ); ?>"><i class="acymicon-pencil"></i><span> <?php echo acym_translation('ACYM_EDIT'); ?></span></a>
 					</div>
 					<div class="cell grid-x">
 						<p class="cell medium-6 acym__campaign__summary__email__information">
-                            <?php echo acym_translation('ACYM_FROM_NAME'); ?>: <span class="acym__color__blue"><?php echo acym_escape(
-                                    $data['mailInformation']->from_name
-                                ); ?></span>
+                            <?php echo acym_translation('ACYM_FROM_NAME'); ?>: <span class="acym__color__blue">
+								<?php echo acym_escape($data['mailInformation']->from_name); ?>
+							</span>
 						</p>
 						<p class="cell medium-6 acym__campaign__summary__email__information">
-                            <?php echo acym_translation('ACYM_FROM_EMAIL'); ?>: <span class="acym__color__blue"><?php echo acym_escape(
-                                    $data['mailInformation']->from_email
-                                ); ?></span>
+                            <?php echo acym_translation('ACYM_FROM_EMAIL'); ?>: <span class="acym__color__blue">
+								<?php echo acym_escape($data['mailInformation']->from_email); ?>
+							</span>
 						</p>
 						<p class="cell medium-6 acym__campaign__summary__email__information">
-                            <?php echo acym_translation('ACYM_REPLYTO_NAME'); ?>: <span class="acym__color__blue"><?php echo acym_escape(
-                                    $data['mailInformation']->reply_to_name
-                                ); ?></span>
+                            <?php echo acym_translation('ACYM_REPLYTO_NAME'); ?>: <span class="acym__color__blue">
+								<?php echo acym_escape($data['mailInformation']->reply_to_name); ?>
+							</span>
 						</p>
 						<p class="cell medium-6 acym__campaign__summary__email__information">
-                            <?php echo acym_translation('ACYM_REPLYTO_EMAIL'); ?>: <span class="acym__color__blue"><?php echo acym_escape(
-                                    $data['mailInformation']->reply_to_email
-                                ); ?></span>
+                            <?php echo acym_translation('ACYM_REPLYTO_EMAIL'); ?>: <span class="acym__color__blue">
+								<?php echo acym_escape($data['mailInformation']->reply_to_email); ?>
+							</span>
 						</p>
 						<p class="cell medium-6 margin-bottom-1 margin-top-1 acym__campaign__summary__email__information">
                             <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>:
-							<span class="acym__color__blue acym__campaign__summary__email__information-subject"><?php echo acym_escape($data['mailInformation']->subject); ?></span>
+							<span class="acym__color__blue acym__campaign__summary__email__information-subject">
+								<?php echo acym_escape($data['mailInformation']->subject); ?>
+							</span>
 						</p>
+                        <?php if (!empty($data['isArchiveCached'])) { ?>
+							<div class="cell grid-x grid-margin-x" id="acym__campaigns__summary__archive__refresh">
+								<button
+										id="acym__campaigns__summary__refresh__archive"
+										class="button-secondary button margin-top-0 margin-bottom-2 margin-right-0 cell medium-shrink">
+                                    <?php echo acym_translation('ACYM_REFRESH_ARCHIVE'); ?>
+								</button>
+                                <?php echo acym_info('ACYM_REFRESH_ARCHIVE_DESC'); ?>
+								<div id="acym__campaigns__summary__refresh__archive__message"></div>
+							</div>
+                        <?php } ?>
 					</div>
 					<!-- We add the email content in a hidden div to load it into the iframe preview -->
                     <?php
                     if ($data['multilingual']) {
                         include acym_getView('campaigns', 'summary_languages', true);
+                    }
+                    if (!empty($data['abtest'])) {
+                        include acym_getView('campaigns', 'summary_abtest', true);
                     }
                     ?>
 					<input type="hidden" class="acym__hidden__mail__content" value="<?php echo acym_escape(acym_absoluteURL($data['mailInformation']->body)); ?>">
@@ -73,7 +90,9 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 							<b><?php echo acym_translation('ACYM_ATTACHMENTS'); ?></b>
 						</h5>
 						<div class="cell auto acym__campaign__summary__modify">
-							<a href="<?php echo acym_completeLink($campaignController.'&task=edit&step=editEmail&edition=1&id='.intval($data['campaignInformation']->id)); ?>"><i
+							<a href="<?php echo acym_completeLink(
+                                $campaignController.'&task=edit&step=editEmail&edition=1&campaignId='.intval($data['campaignInformation']->id)
+                            ); ?>"><i
 										class="acymicon-pencil"></i><span> <?php echo acym_translation('ACYM_EDIT'); ?></span></a>
 						</div>
                         <?php foreach (json_decode($data['mailInformation']->attachments) as $key => $oneAttachment) {
@@ -98,7 +117,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 					</h5>
 					<div class="cell auto acym__campaign__summary__modify">
 						<a href="<?php echo acym_completeLink(
-                            $campaignController.'&task=edit&step=recipients&edition=1&id='.intval($data['campaignInformation']->id)
+                            $campaignController.'&task=edit&step=recipients&edition=1&campaignId='.intval($data['campaignInformation']->id)
                         ); ?>"><i class="acymicon-pencil"></i><span> <?php echo acym_translation('ACYM_EDIT'); ?></span></a>
 					</div>
 					<div class="cell acym__listing">
@@ -143,7 +162,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                 ?></h5>
 							<div class="cell auto acym__campaign__summary__modify">
 								<a href="<?php echo acym_completeLink(
-                                    $campaignController.'&task=edit&step=segment&edition=1&id='.intval($data['campaignInformation']->id)
+                                    $campaignController.'&task=edit&step=segment&edition=1&campaignId='.intval($data['campaignInformation']->id)
                                 ); ?>"><i class="acymicon-pencil"></i><span> <?php echo acym_translation('ACYM_EDIT'); ?></span></a>
 							</div>
 							<div class="cell grid-x acym__campaign__summary__segment">
@@ -153,12 +172,68 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 						</div>
                     <?php } ?>
 				</div>
+                <?php if (!empty($data['campaignInformation']->sending_params['abtest'])) {
+                    $numberOfUsersToSend = round($data['campaignInformation']->sending_params['abtest']['repartition'] * $data['nbSubscribersAbTest'] / 100);
+                    ?>
+					<div class="cell grid-x acym__campaign__summary__section">
+						<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary">
+							<b><?php
+                                echo acym_translation('ACYM_AB_TEST'); ?></b>
+						</h5>
+						<div class="cell auto acym__campaign__summary__modify">
+							<a href="<?php echo acym_completeLink(
+                                $campaignController.'&task=edit&step=sendSettings&edition=1&campaignId='.intval($data['campaignInformation']->id)
+                            ); ?>"><i class="acymicon-pencil"></i><span> <?php echo acym_translation('ACYM_EDIT'); ?></span></a>
+						</div>
+						<div class="cell acym__listing">
+							<div class="cell acym__listing__row">
+                                <?php echo acym_translationSprintf(
+                                    'ACYM_VERSION_WILL_BE_SENT_TO_X_SUBSCRIBERS',
+                                    acym_translationSprintf('ACYM_VERSION_NAME', 'A'),
+                                    round($numberOfUsersToSend / 2)
+                                ); ?>
+							</div>
+							<div class="cell acym__listing__row">
+                                <?php echo acym_translationSprintf(
+                                    'ACYM_VERSION_WILL_BE_SENT_TO_X_SUBSCRIBERS',
+                                    acym_translationSprintf('ACYM_VERSION_NAME', 'B'),
+                                    $numberOfUsersToSend - round($numberOfUsersToSend / 2)
+                                ); ?>
+							</div>
+						</div>
+                        <?php if (!empty($data['segment'])) { ?>
+							<div class="cell grid-x acym__campaign__summary__section margin-top-1">
+								<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary"><?php
+                                    if (!empty($data['campaignInformation']->sending_params['segment']['invert'])) {
+                                        $segmentInformation = $data['campaignInformation']->sending_params['segment']['invert'] === 'exclude'
+                                            ? ' ('.acym_translation('ACYM_EXCLUDE').')'
+                                            : ' ('.acym_translation('ACYM_INCLUDE').')';
+                                    } else {
+                                        $segmentInformation = ' ('.acym_translation('ACYM_INCLUDE').')';
+                                    }
+                                    echo acym_translation('ACYM_SEGMENT').$segmentInformation;
+                                    ?></h5>
+								<div class="cell auto acym__campaign__summary__modify">
+									<a href="<?php echo acym_completeLink(
+                                        $campaignController.'&task=edit&step=segment&edition=1&campaignId='.intval($data['campaignInformation']->id)
+                                    ); ?>"><i class="acymicon-pencil"></i><span> <?php echo acym_translation('ACYM_EDIT'); ?></span></a>
+								</div>
+								<div class="cell grid-x acym__campaign__summary__segment">
+									<span class="cell medium-6"><b><?php echo $data['segment']['name']; ?></b></span>
+									<span class="cell medium-6"><b><?php echo $data['segment']['count'].'</b> '.strtolower(acym_translation('ACYM_SUBSCRIBERS')); ?></span>
+								</div>
+							</div>
+                        <?php } ?>
+					</div>
+                <?php } ?>
 				<div class="cell grid-x acym__campaign__summary__section">
 					<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary">
 						<b><?php echo acym_translation('ACYM_SEND_SETTINGS'); ?></b>
 					</h5>
 					<div class="cell auto acym__campaign__summary__modify">
-						<a href="<?php echo acym_completeLink($campaignController.'&task=edit&step=sendSettings&edition=1&id='.intval($data['campaignInformation']->id)); ?>"><i
+						<a href="<?php echo acym_completeLink(
+                            $campaignController.'&task=edit&step=sendSettings&edition=1&campaignId='.intval($data['campaignInformation']->id)
+                        ); ?>"><i
 									class="acymicon-pencil"></i><span> <?php echo acym_translation('ACYM_EDIT'); ?></span></a>
 					</div>
 					<div class="cell grid-x grid-margin-x">
@@ -204,7 +279,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 				</div>
 				<div class="cell grid-x acym__campaign__summary__bottom-controls acym__campaign__summary__section">
                     <?php
-                    if (!empty($data['campaignInformation']->sent) && !empty($data['campaignInformation']->active)) {
+                    if (!$isAbTest && !empty($data['campaignInformation']->sent) && !empty($data['campaignInformation']->active)) {
                         ?>
 						<div id="acym__campaign__summary__resendoptions" class="cell padding-1 margin-bottom-1 acym__zone__warning">
                             <?php
@@ -234,7 +309,12 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                     }
                     ?>
 					<div class="cell medium-shrink medium-margin-bottom-0 margin-bottom-1 text-left">
-                        <?php echo acym_backToListing($campaignController); ?>
+                        <?php
+                        echo acym_backToListing(
+                            in_array($data['campaignInformation']->sending_type, ['birthday', 'woocommerce_cart'])
+                                ? $campaignController.'&task=specificListing&type='.$data['campaignInformation']->sending_type : $campaignController
+                        );
+                        ?>
 					</div>
 					<div class="cell medium-auto grid-x text-right">
 						<div class="cell auto hide-for-small-only"></div>
@@ -283,7 +363,11 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                             }
 
                             $buttonClass = '';
-                            if ($data['nbSubscribers'] <= 0) $buttonClass = ' disabled';
+                            $isAbTestMissingVersion = $isAbTest && empty($data['campaignInformation']->sending_params['abtest']['B']);
+                            $isAbTestNotEnoughUsers = isset($numberOfUsersToSend) && $numberOfUsersToSend < 2;
+                            $isAbTestAlreadySent = $isAbTest && $isSent;
+                            $canNotSendAbTest = $isAbTestMissingVersion || $isAbTestNotEnoughUsers || $isAbTestAlreadySent;
+                            if ($data['nbSubscribers'] <= 0 || $canNotSendAbTest) $buttonClass = ' disabled';
 
                             if ($this->config->get('mailer_method') === 'acymailer' && $this->config->get('acymailer_popup', '0') === '0') {
                                 ob_start();
@@ -304,7 +388,25 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                 $button .= '</button>';
                             }
 
-                            if ($data['nbSubscribers'] > 0) {
+                            if ($isAbTestMissingVersion) {
+                                echo acym_tooltip(
+                                    $button,
+                                    acym_translation('ACYM_VERSION_MISSING_AB_TEST'),
+                                    'cell medium-shrink'
+                                );
+                            } elseif ($isAbTestNotEnoughUsers) {
+                                echo acym_tooltip(
+                                    $button,
+                                    acym_translation('ACYM_NOT_ENOUGH_USERS_AB_TEST'),
+                                    'cell medium-shrink'
+                                );
+                            } elseif ($isAbTestAlreadySent) {
+                                echo acym_tooltip(
+                                    $button,
+                                    acym_translation('ACYM_CANNOT_SEND_AB_TEST_AGAIN'),
+                                    'cell medium-shrink'
+                                );
+                            } elseif ($data['nbSubscribers'] > 0) {
                                 echo $button;
                             } else {
                                 echo acym_tooltip(
@@ -321,7 +423,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 		</div>
 		<div class="cell medium-auto"></div>
 	</div>
-	<input type="hidden" value="<?php echo intval($data['campaignInformation']->id); ?>" name="id" />
+	<input type="hidden" value="<?php echo intval($data['campaignInformation']->id); ?>" name="campaignId" />
 	<input type="hidden" value="<?php echo acym_escape($data['campaignInformation']->sending_date); ?>" name="sending_date" />
     <?php acym_formOptions(true, 'edit', 'summary'); ?>
 </form>

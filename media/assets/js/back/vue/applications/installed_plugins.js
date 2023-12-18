@@ -64,7 +64,7 @@ jQuery(function ($) {
                 showSettings: {}
             },
             mounted: function () {
-                acym_helperBack.config_get('level').done((resConfig) => {
+                acym_helper.config_get('level').done((resConfig) => {
                     if (resConfig.error) {
                         acym_helperNotification.addNotification(resConfig.message, 'error');
 
@@ -232,7 +232,7 @@ jQuery(function ($) {
                         const pluginDefinitions = acym_helper.parseJson(ACYM_AVAILABLE_PLUGINS);
                         const matchingPlugin = pluginDefinitions.find(plugin => plugin.file_name === pluginName);
                         if (matchingPlugin) {
-                            return pluginDefinitions[i].documentation;
+                            return matchingPlugin.documentation;
                         }
                     } else {
                         return ACYM_UPDATEME_API_URL + 'public/addons/documentation?file_name=' + pluginName;

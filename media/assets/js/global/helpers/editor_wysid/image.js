@@ -3,6 +3,8 @@ const acym_editorWysidImage = {
         jQuery('.acym__wysid__tinymce--image img').off('dblclick').on('dblclick', function () {
             if (jQuery(this).hasClass('acym__wysid__media__giphy')) {
                 acym_editorWysidNewContent.addGiphyWYSID(jQuery(this).closest('.acym__wysid__column__element'));
+            } else if (jQuery(this).hasClass('acym__wysid__media__unsplash')) {
+                acym_editorWysidNewContent.addUnsplashWYSID(jQuery(this).closest('.acym__wysid__column__element'));
             } else {
                 acym_editorWysidImage.doubleClickImage(jQuery(this));
             }

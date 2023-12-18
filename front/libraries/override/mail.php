@@ -25,7 +25,9 @@ if (!class_exists('jMail_acym')) return;
 
 
 // Handle the new Joomla mail structure
-if (version_compare($jversion, '3.8.0', '>=')) {
+if (version_compare($jversion, '4.4.0', '>=')) {
+    include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'mail'.DIRECTORY_SEPARATOR.'mail44.php';
+} elseif (version_compare($jversion, '3.8.0', '>=')) {
     include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'mail'.DIRECTORY_SEPARATOR.'mail.php';
 } else {
     include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'mail'.DIRECTORY_SEPARATOR.'jmail.php';

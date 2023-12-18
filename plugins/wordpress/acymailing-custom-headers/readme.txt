@@ -2,8 +2,8 @@
 Contributors: acyba
 Tags: newsletter, acymailing, headers
 Requires at least: 4.7
-Tested up to: 6.3
-Stable tag: 2.0
+Tested up to: 6.4.2
+Stable tag: 2.2
 Requires PHP: 7.2.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html

@@ -27,7 +27,7 @@ class FrontdynamicsController extends DynamicsController
     {
         // Make sure the current user has access to the specified email
         $mailId = acym_getVar('int', 'mailId', 0);
-        if (!empty($mailId)) {
+        if ($mailId > 0) {
             $mailClass = new MailClass();
             if (!$mailClass->hasUserAccess($mailId)) {
                 die('Access denied for this preview');

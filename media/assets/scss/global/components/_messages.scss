@@ -1,13 +1,3 @@
-@mixin enqueueMessage($type) {
-    @if $type == 'info' {
-        border-left: 4px solid map-get($foundation-palette, primary-hot);
-    } @else if $type == 'warning' {
-        border-left: 4px solid map-get($foundation-palette, warning);
-    } @else {
-        border-left: 4px solid map-get($foundation-palette, alert);
-    }
-}
-
 .acym__message {
     margin-bottom: 20px;
     padding: 15px;
@@ -15,16 +5,20 @@
     box-shadow: $primary-box-shadow;
     border-radius: 4px;
 
+    &.acym__message__success {
+        border-left: 4px solid map-get($foundation-palette, success);
+    }
+
     &.acym__message__info {
-        @include enqueueMessage('info');
+        border-left: 4px solid map-get($foundation-palette, primary-hot);
     }
 
     &.acym__message__warning {
-        @include enqueueMessage('warning');
+        border-left: 4px solid map-get($foundation-palette, warning);
     }
 
     &.acym__message__error {
-        @include enqueueMessage('error');
+        border-left: 4px solid map-get($foundation-palette, alert);
     }
 
     p {

@@ -28,7 +28,11 @@ function acym_getGroups()
     $roles = wp_roles();
     if (empty($roles->roles)) {
         $groups = acym_loadResult('SELECT option_value FROM #__options WHERE option_name = "#__user_roles"');
-        $groups = unserialize($groups);
+        if (!empty($groups)) {
+            $groups = unserialize($groups);
+        } else {
+            $groups = [];
+        }
     } else {
         $groups = $roles->roles;
     }

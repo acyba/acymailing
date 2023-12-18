@@ -72,7 +72,6 @@ class acymInstall
         $cmsMailer = acym_getCMSConfig('mailer', 'phpmail');
         $allPref['mailer_method'] = $cmsMailer === 'mail' ? 'phpmail' : $cmsMailer;
         $allPref['sendmail_path'] = acym_getCMSConfig('sendmail');
-        $smtpinfos = explode(':', acym_getCMSConfig('smtphost'));
         $allPref['smtp_port'] = acym_getCMSConfig('smtpport');
         $allPref['smtp_secured'] = acym_getCMSConfig('smtpsecure');
         $allPref['smtp_auth'] = acym_getCMSConfig('smtpauth');
@@ -92,6 +91,8 @@ class acymInstall
         $allPref['embed_files'] = '0';
         $allPref['editor'] = 'codemirror';
         $allPref['multiple_part'] = '1';
+
+        $smtpinfos = explode(':', acym_getCMSConfig('smtphost', ''));
         $allPref['smtp_host'] = $smtpinfos[0];
         $allPref['smtp_type'] = 'oauth';
         if (isset($smtpinfos[1])) {
@@ -125,7 +126,7 @@ class acymInstall
 
         $allPref['cron_fullreport'] = '1';
         $allPref['cron_savereport'] = '2';
-        $allPref['uploadfolder'] = ACYM_UPLOAD_FOLDER;
+        $allPref['uploadfolder'] = str_replace('\\', '/', ACYM_UPLOAD_FOLDER);
         $allPref['notification_created'] = '';
         $allPref['notification_accept'] = '';
         $allPref['notification_refuse'] = '';
@@ -168,7 +169,18 @@ class acymInstall
         $allPref['daily_hour'] = '12';
         $allPref['daily_minute'] = '00';
 
-        $allPref['social_icons'] = '{"facebook": "'.ACYM_MEDIA_URL.'images/logo/facebook.png", "twitter": "'.ACYM_MEDIA_URL.'images/logo/twitter.png", "instagram": "'.ACYM_MEDIA_URL.'images/logo/instagram.png", "linkedin": "'.ACYM_MEDIA_URL.'images/logo/linkedin.png", "pinterest": "'.ACYM_MEDIA_URL.'images/logo/pinterest.png", "vimeo": "'.ACYM_MEDIA_URL.'images/logo/vimeo.png", "wordpress": "'.ACYM_MEDIA_URL.'images/logo/wordpress.png", "youtube": "'.ACYM_MEDIA_URL.'images/logo/youtube.png"}';
+        $allPref['social_icons'] = json_encode([
+                'facebook' => ACYM_MEDIA_URL.'images/logo/facebook.png',
+                'twitter' => ACYM_MEDIA_URL.'images/logo/twitter.png',
+                'x' => ACYM_MEDIA_URL.'images/logo/x.png',
+                'instagram' => ACYM_MEDIA_URL.'images/logo/instagram.png',
+                'linkedin' => ACYM_MEDIA_URL.'images/logo/linkedin.png',
+                'pinterest' => ACYM_MEDIA_URL.'images/logo/pinterest.png',
+                'vimeo' => ACYM_MEDIA_URL.'images/logo/vimeo.png',
+                'wordpress' => ACYM_MEDIA_URL.'images/logo/wordpress.png',
+                'youtube' => ACYM_MEDIA_URL.'images/logo/youtube.png',
+            ]
+        );
 
         $allPref['regacy'] = 1;
         $allPref['regacy_delete'] = 1;
@@ -188,8 +200,10 @@ class acymInstall
         $allPref['delete_stats_enabled'] = 1;
         $allPref['delete_stats'] = 86400 * 360;
         $allPref['delete_archive_history_after'] = 86400 * 90;
+        $allPref['previous_version'] = '{__VERSION__}';
 
         $allPref['display_built_by'] = acym_level(ACYM_ESSENTIAL) ? 0 : 1;
+        $allPref['php_overrides'] = 0;
 
         $query = "INSERT IGNORE INTO `#__acym_configuration` (`name`,`value`) VALUES ";
         foreach ($allPref as $namekey => $value) {
@@ -215,7 +229,7 @@ class acymInstall
     public function updatePref()
     {
         try {
-            $results = acym_loadObjectList("SELECT `name`, `value` FROM `#__acym_configuration` WHERE `name` IN ('version','level') LIMIT 2", 'name');
+            $results = acym_loadObjectList('SELECT `name`, `value` FROM `#__acym_configuration` WHERE `name` IN ("version", "level") LIMIT 2', 'name');
         } catch (Exception $e) {
             $results = null;
         }
@@ -239,9 +253,10 @@ class acymInstall
         $this->fromVersion = $results['version']->value;
 
         //We update the version properly as it's a new one which is now used.
-        $query = "REPLACE INTO `#__acym_configuration` (`name`,`value`) VALUES ('level',".acym_escapeDB($this->level)."),('version',".acym_escapeDB(
-                $this->version
-            )."),('installcomplete','0')";
+        $query = 'REPLACE INTO `#__acym_configuration` (`name`,`value`) VALUES ("level",'.acym_escapeDB($this->level).')';
+        $query .= ',("version",'.acym_escapeDB($this->version).')';
+        $query .= ',("installcomplete","0")';
+        $query .= ',("previous_version",'.acym_escapeDB($this->fromVersion).')';
         acym_query($query);
 
         return true;
@@ -249,8 +264,11 @@ class acymInstall
 
     public function deleteNewSplashScreenInstall()
     {
-        if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN)) {
-            @unlink(ACYM_NEW_FEATURES_SPLASHSCREEN);
+        // Compatibility with old versions for Joomla
+        $splashscreenJson = ACYM_BACK.'partial'.DS.'update'.DS.'changelogs_splashscreen.json';
+
+        if (file_exists($splashscreenJson)) {
+            @unlink($splashscreenJson);
         }
     }
 
@@ -456,6 +474,7 @@ class acymInstall
                 $newConfig->social_icons = json_encode($socialIcons);
                 $config->save($newConfig);
             }
+
 
             // Then remove the google+ button from the emails containing it
             $mailsWithGoogle = acym_loadObjectList('SELECT `id`, `body` FROM `#__acym_mail` WHERE `body` LIKE "%googleplus%"');
@@ -1583,6 +1602,52 @@ class acymInstall
 
         if (version_compare($this->fromVersion, '8.7.0', '<')) {
             $this->updateQuery('ALTER TABLE #__acym_plugin DROP `features`');
+        }
+
+        if (version_compare($this->fromVersion, '8.7.2', '<')) {
+            $socialIcons = json_decode($config->get('social_icons', '{}'), true);
+            if (empty($socialIcons['X'])) {
+                $socialIcons['X'] = ACYM_MEDIA_URL.'images/logo/x.png';
+
+                $newConfig = new \stdClass();
+                $newConfig->social_icons = json_encode($socialIcons);
+                $config->save($newConfig);
+            }
+        }
+
+        if (version_compare($this->fromVersion, '8.7.3', '<')) {
+            $socialIcons = json_decode($config->get('social_icons', '{}'), true);
+
+            if (!empty($socialIcons['X'])) {
+                unset($socialIcons['X']);
+
+                $newConfig = new stdClass();
+                $newConfig->social_icons = json_encode($socialIcons);
+                $config->save($newConfig);
+            }
+
+            if (empty($socialIcons['x'])) {
+                $socialIcons['x'] = ACYM_MEDIA_URL.'images/logo/x.png';
+
+                $newConfig = new \stdClass();
+                $newConfig->social_icons = json_encode($socialIcons);
+                $config->save($newConfig);
+            }
+        }
+
+        //__START__joomla_
+        if (version_compare($this->fromVersion, '8.7.4', '<')) {
+            $config->save(['malicious_scan' => 1]);
+        }
+        //__END__joomla_
+
+        if (version_compare($this->fromVersion, '8.8.1', '<')) {
+            // Replace backslashes by slashes in the upload folder option
+            $uploadFolder = $config->get('uploadfolder');
+            if (!empty($uploadFolder) && strpos($uploadFolder, '\\') !== false) {
+                $uploadFolder = str_replace('\\', '/', $uploadFolder);
+                $config->save(['uploadfolder' => $uploadFolder]);
+            }
         }
     }
 

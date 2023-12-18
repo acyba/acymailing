@@ -1,4 +1,3 @@
-<input type="hidden" id="save_thumbnail" value="<?php echo intval($saveThumbnail); ?>" />
 <input type="hidden" id="default_template" value="<?php echo acym_escape($this->defaultTemplate); ?>" />
 <input type="hidden" class="acym__wysid__hidden__save__content" id="editor_content" name="editor_content" value="" />
 <input type="hidden" class="acym__wysid__hidden__save__content__template" id="editor_content_template" name="editor_content_template" value="" />
@@ -33,8 +32,8 @@ $mainColors = $this->getDefaultColors(); ?>
 	<div class="cell medium-auto"></div>
 	<div class="cell <?php echo acym_isAdmin() ? 'xxlarge-9' : ''; ?> grid-x grid-margin-x acym__content">
         <?php
-        if (!empty($data['multilingual'])) {
-            include acym_getPartial('editor', 'languages');
+        if (!empty($data['multilingual']) || !empty($data['abtest'])) {
+            include acym_getPartial('editor', 'versions');
             $preheaderSize = 'large-6';
             include acym_getView('campaigns', 'edit_email_info_content', true);
         }

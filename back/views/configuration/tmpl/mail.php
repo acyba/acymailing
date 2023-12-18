@@ -101,6 +101,23 @@
             );
             ?>
 		</div>
+		<div class="cell grid-x">
+			<label class="cell medium-6 grid-x">
+				<span class="cell medium-6">
+					<?php echo acym_translation('ACYM_UNSPLASH_ACCESS_KEY').acym_info('ACYM_UNSPLASH_ACCESS_KEY_DESC'); ?>
+				</span>
+                <?php
+                $unsplashKey = $this->config->get('unsplash_key');
+                if (strlen($unsplashKey) > 5) {
+                    $unsplashKey = str_repeat('*', 10).substr($unsplashKey, -5);
+                }
+                ?>
+				<input type="text"
+					   name="config[unsplash_key]"
+					   value="<?php echo acym_escape($unsplashKey); ?>"
+					   class="cell medium-auto" />
+			</label>
+		</div>
 	</div>
 </div>
 

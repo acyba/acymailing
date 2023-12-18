@@ -1,6 +1,6 @@
 <div id="acym__wysid__right__toolbar__current-block" style="display: none;" class="grid-padding-x cell acym__wysid__right__toolbar--menu">
 	<p class="acym__wysid__right__toolbar__current-block__empty cell text-center margin-top-1"><?php echo acym_translation('ACYM_NO_BLOCK_SELECTED'); ?></p>
-	<div id="acym__wysid__context__block" class="grid-x cell padding-1 acym__wysid__context__modal" style="display: none">
+	<div id="acym__wysid__context__block" class="grid-x cell acym__wysid__context__modal padding-1 padding-bottom-2" style="display: none">
 		<p class="cell acym__wysid__right__toolbar__p acym__title"><?php echo acym_translation('ACYM_BACKGROUND'); ?><i class="acymicon-keyboard_arrow_up"></i></p>
 		<div class="cell grid-x acym__wysid__context__modal__container">
 			<div class="cell grid-x acym_vcenter">
@@ -42,6 +42,8 @@
 			<div class="grid-x cell acym__wysid__context__modal__container__block-settings grid-margin-y acym-grid-margin-x">
 			</div>
 			<div class="cell grid-x acym__wysid__context__modal__block-background acym_vcenter margin-top-1">
+			</div>
+			<div class="cell grid-x acym__wysid__context__modal__block-columns-image acym_vcenter margin-top-1">
 			</div>
 			<div class="cell grid-x acym__wysid__context__modal__block-padding">
 			</div>

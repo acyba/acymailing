@@ -85,7 +85,7 @@ trait ModuleInsertion
             return '';
         }
 
-        $url = ACYM_LIVE.'index.php?option=com_acym&tmpl=component&ctrl=moduleloader&moduleId='.$tag->id;
+        $url = ACYM_LIVE.'index.php?option=com_acym&tmpl=component&ctrl=moduleloader&task=loadAjax&moduleId='.$tag->id;
         $url .= '&seckey='.urlencode($this->config->get('security_key'));
         $url .= '&time='.time();
 

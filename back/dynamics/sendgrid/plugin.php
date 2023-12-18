@@ -76,6 +76,7 @@ class plgAcymSendgrid extends acymPlugin
         if ($mailerHelper->externalMailer != self::SENDING_METHOD_ID) return;
         $headers = $this->getHeadersSendingMethod(self::SENDING_METHOD_ID);
         $headers[] = 'Content-Type: application/json';
+
         $data = [
             'personalizations' => [
                 [
@@ -96,6 +97,18 @@ class plgAcymSendgrid extends acymPlugin
                 ],
             ],
         ];
+
+        $mailHeaders = [];
+
+        $unsubscribeHeaderKey = array_search('List-Unsubscribe', array_column($mailerHelper->CustomHeader, 0));
+        if (!empty($unsubscribeHeaderKey)) {
+            $mailHeaders['List-Unsubscribe'] = $mailerHelper->CustomHeader[$unsubscribeHeaderKey][1];
+        }
+
+        if (!empty($mailHeaders)) {
+            $data['headers'] = (object)$mailHeaders;
+        }
+
         if (!empty($bcc)) $data['personalizations'][0]['bcc'] = [['email' => $bcc[0][0]]];
 
 

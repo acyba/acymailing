@@ -24,6 +24,14 @@ class UpdatemeHelper extends acymObject
         // No array merge because we need the keep the keys
         $headers = $headers + self::getDefaultHeaders();
 
+        if (ACYM_CMS === 'joomla' && acym_getCMSConfig('proxy_enable', false)) {
+            // https://github.com/WordPress/Requests/blob/stable/docs/proxy.md
+            $options['proxy'] = acym_getCMSConfig('proxy_host', '').':'.acym_getCMSConfig('proxy_port', '');
+            if (!empty(acym_getCMSConfig('proxy_user', '')) && !empty(acym_getCMSConfig('proxy_pass', ''))) {
+                $options['proxy'] = [$options['proxy'], acym_getCMSConfig('proxy_user', ''), acym_getCMSConfig('proxy_pass', '')];
+            }
+        }
+
         try {
             $options['verify'] = false;
             if (class_exists('\WpOrg\Requests\Requests')) {
@@ -33,6 +41,12 @@ class UpdatemeHelper extends acymObject
             }
         } catch (\Exception $exception) {
             acym_logError('Error while calling updateme on path '.$path.' with the message: '.$exception->getMessage(), 'updateme');
+
+            return [];
+        }
+
+        if (!is_object($request)) {
+            acym_logError('Non-standard result received when calling updateme on path '.$path, 'updateme');
 
             return [];
         }
@@ -59,7 +73,11 @@ class UpdatemeHelper extends acymObject
         $url .= '?level='.urlencode(strtolower($config->get('level', 'starter')));
         if (acym_level(ACYM_ESSENTIAL)) {
             // Tell the user if the automatic features are available for the current installation
-            $url .= '&domain='.urlencode(rtrim(ACYM_LIVE, '/'));
+            if ($config->get('different_admin_url_value', 0) === 1) {
+                $url .= '&domain='.$config->get('different_admin_url_value', 0);
+            } else {
+                $url .= '&domain='.urlencode(rtrim(ACYM_LIVE, '/'));
+            }
         }
         // Tell the user if a newer version is available
         $url .= '&version=latest';

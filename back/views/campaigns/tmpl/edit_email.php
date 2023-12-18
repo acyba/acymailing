@@ -1,5 +1,5 @@
 <div id="acym__campaign__edit_email" <?php echo !empty($data['menuClass']) ? 'class="'.acym_escape($data['menuClass']).'"' : ''; ?> >
-	<input type="hidden" value="<?php echo acym_escape($data['campaignID']); ?>" name="id" id="acym__campaign__recipients__form__campaign">
+	<input type="hidden" value="<?php echo acym_escape($data['campaignID']); ?>" name="campaignId" id="acym__campaign__recipients__form__campaign">
 	<input type="hidden" id="acym__mail__edit__editor__social__icons" value="<?php echo empty($data['social_icons']) ? '{}' : acym_escape($data['social_icons']); ?>">
 
 	<!-- Needed for the "Save as template" action -->
@@ -20,7 +20,8 @@
             if (empty($data['campaignID'])) {
                 $workflow->disabledAfter = 'editEmail';
             }
-            echo $workflow->display($this->steps, $this->step);
+            $abTestParameter = '&abtest='.acym_getVar('string', 'abtest', 0);
+            echo $workflow->display($this->steps, $this->step, true, false, $abTestParameter, 'campaignId');
             include acym_getView('campaigns', 'edit_email_info');
             include acym_getPartial('editor', 'attachments');
             include acym_getView('campaigns', 'edit_email_actions', true);

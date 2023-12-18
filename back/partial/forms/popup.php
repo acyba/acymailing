@@ -139,6 +139,12 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 <?php if (!$edition) { ?>
 	<script type="text/javascript">
         window.addEventListener('DOMContentLoaded', function () {
+            const acym_popupForm = document.querySelector('#acym_fulldiv_<?php echo $form->form_tag_name; ?>.acym__subscription__form__popup__overlay');
+
+            if (!acym_popupForm) {
+                return;
+            }
+            
             const isDisplayButton = <?php echo $isButton ? 'true' : 'false'; ?>;
 
             function acym_closePopupform<?php echo $form->form_tag_name;?>(element) {
@@ -152,10 +158,9 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
                 expirationDate.setDate(expirationDate.getDate() + <?php echo empty($form->settings['cookie']['cookie_expiration']) ? 1
                     : $form->settings['cookie']['cookie_expiration'];?>);
                 document.cookie = 'acym_form_<?php echo $form->id; ?>=' + Date.now() + ';expires=' + expirationDate.toUTCString() + ';path=/';
-
             }
 
-            document.querySelector('#acym_fulldiv_<?php echo $form->form_tag_name; ?>.acym__subscription__form__popup__overlay').addEventListener('click', function (event) {
+            acym_popupForm.addEventListener('click', function (event) {
                 if (event.target.closest('.acym__subscription__form__popup') === null) {
                     acym_closePopupform<?php echo $form->form_tag_name; ?>(this);
                 }
@@ -163,8 +168,6 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
             document.querySelector('#acym_fulldiv_<?php echo $form->form_tag_name; ?> .acym__subscription__form__popup__close').addEventListener('click', function (event) {
                 acym_closePopupform<?php echo $form->form_tag_name; ?>(event.target.closest('.acym__subscription__form__popup__overlay'));
             });
-
-            const acym_popupForm = document.querySelector('#acym_fulldiv_<?php echo $form->form_tag_name; ?>.acym__subscription__form__popup__overlay');
 
             if (isDisplayButton) {
                 displayByButton();
@@ -199,14 +202,12 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
                     scrollRemaining = true;
                 }
 
-                document.addEventListener('DOMContentLoaded', function () {
-                    windowSize = document.getElementsByTagName('body')[0].clientHeight;
-                    browserHeight = document.documentElement.clientHeight;
-                    if (windowSize <= browserHeight && !delayRemaining) {
-                        scrollRemaining = false;
-                        acym_popupForm.style.display = 'inline';
-                    }
-                });
+                windowSize = document.getElementsByTagName('body')[0].clientHeight;
+                browserHeight = document.documentElement.clientHeight;
+                if (windowSize <= browserHeight && !delayRemaining) {
+                    scrollRemaining = false;
+                    acym_popupForm.style.display = 'inline';
+                }
 
                 function displayAcymPopupForm() {
                     let scrollPercent = Math.round((window.scrollY) / (windowSize - browserHeight) * 100);
@@ -231,8 +232,7 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
                         }
                     }
                 }, <?php echo $form->settings['display']['delay'] * 1000; ?>);
-            };
-
+            }
         });
 	</script>
 <?php } ?>

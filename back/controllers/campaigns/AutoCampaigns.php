@@ -51,7 +51,7 @@ trait AutoCampaigns
 
     public function summaryGenerated()
     {
-        $campaignId = acym_getVar('int', 'id', 0);
+        $campaignId = acym_getVar('int', 'campaignId', 0);
         $mailClass = new MailClass();
 
         acym_setVar('layout', 'summary_generated');
@@ -105,13 +105,13 @@ trait AutoCampaigns
         $this->prepareMultilingual($data, false);
         $this->prepareAllMailsForMultilingual($data);
 
-        $this->breadcrumb[acym_escape($mail->name)] = acym_completeLink('campaigns&task=summaryGenerated&id='.$campaign->id);
+        $this->breadcrumb[acym_escape($mail->name)] = acym_completeLink('campaigns&task=summaryGenerated&campaignId='.$campaign->id);
         parent::display($data);
     }
 
     protected function changeStatusGeneratedCampaign($statusToApply = 'disable')
     {
-        $campaignId = acym_getVar('int', 'id', 0);
+        $campaignId = acym_getVar('int', 'campaignId', 0);
         $campaignClass = new CampaignClass();
 
         $campaign = $this->_loadCampaignMail($campaignId);
@@ -143,7 +143,7 @@ trait AutoCampaigns
         }
 
         if ('enable' === $statusToApply) {
-            acym_setVar('id', $campaignId);
+            acym_setVar('campaignId', $campaignId);
             $this->summaryGenerated();
         } else {
             acym_setVar('campaigns_status', 'generated');

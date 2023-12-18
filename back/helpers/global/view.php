@@ -93,6 +93,39 @@ function acym_getJSMessages()
     $msg .= '"defaultMsg": "'.acym_translation('ACYM_DEFAULT_VALIDATION_ERROR', true).'"';
 
     $keysToLoad = [
+        'ACYM_FOLLOW_UP',
+        'ACYM_FOLLOW_UPS',
+        'ACYM_MAILBOX_ACTIONS',
+        'ACYM_MAILBOX_ACTION',
+        'ACYM_TEMPLATE',
+        'ACYM_TEMPLATES',
+        'ACYM_CAMPAIGN',
+        'ACYM_CAMPAIGNS',
+        'ACYM_ELEMENT',
+        'ACYM_FORMS',
+        'ACYM_FORM',
+        'ACYM_USERS',
+        'ACYM_USER',
+        'ACYM_FIELD',
+        'ACYM_FIELDS',
+        'ACYM_LIST',
+        'ACYM_LISTS',
+        'ACYM_SEGMENTS',
+        'ACYM_SEGMENT',
+        'ACYM_OVERRIDES',
+        'ACYM_AUTOMATION',
+        'ACYM_QUEUE',
+        'ACYM_BOUNCES',
+        'ACYM_OVERRIDE',
+        'ACYM_AUTOMATIONS',
+        'ACYM_BOUNCE',
+        'ACYM_ARE_YOU_SURE_DELETE_ONE_X',
+        'ACYM_ARE_YOU_SURE_DELETE_X',
+        'ACYM_ARE_YOU_SURE_ACTIVE_X',
+        'ACYM_ARE_YOU_SURE_INACTIVE_X',
+        'ACYM_ARE_YOU_SURE_ACTIVE_ONE_X',
+        'ACYM_ARE_YOU_SURE_INACTIVE_ONE_X',
+        'ACYM_BACKGROUND_IMAGE',
         'ACYM_ACTIVATED',
         'ACYM_DEACTIVATED',
         'ACYM_NOT_ENABLED_YET',
@@ -105,10 +138,6 @@ function acym_getJSMessages()
         'ACYM_ARE_YOU_SURE',
         'ACYM_INSERT_IMG_BAD_NAME',
         'ACYM_NON_VALID_URL',
-        'ACYM_ARE_YOU_SURE_DELETE',
-        'ACYM_ARE_YOU_SURE_DELETE_ONE',
-        'ACYM_ARE_YOU_SURE_ACTIVE',
-        'ACYM_ARE_YOU_SURE_INACTIVE',
         'ACYM_SEARCH',
         'ACYM_CANCEL',
         'ACYM_CONFIRM',
@@ -143,6 +172,7 @@ function acym_getJSMessages()
         'ACYM_ARE_SURE_DUPLICATE_TEMPLATE',
         'ACYM_NOT_FOUND',
         'ACYM_EMAIL',
+        'ACYM_EMAILS',
         'ACYM_ERROR_SAVING',
         'ACYM_LOADING_ERROR',
         'ACYM_AT_LEAST_ONE_USER',
@@ -176,7 +206,6 @@ function acym_getJSMessages()
         'ACYM_NO_RESULTS_FOUND',
         'ACYM_SEARCH_GIFS',
         'ACYM_COULD_NOT_LOAD_GIF_TRY_FEW_MINUTES',
-        'ACYM_GIPHY_LOW_RES_TEXT',
         'ACYM_DONT_APPLY_STYLE_TAG_A',
         'ACYM_TITLE',
         'ACYM_PRICE',
@@ -353,6 +382,20 @@ function acym_getJSMessages()
         'ACYM_WALK_ACYMAILER_STATUS_FAIL',
         'ACYM_WALK_ACYMAILER_STATUS_WAIT',
         'ACYM_ALWAYS',
+        'ACYM_COULD_NOT_LOAD_UNSPLASH',
+        'ACYM_REACHED_SEARCH_LIMITS',
+        'ACYM_SEARCH_IMAGES',
+        'ACYM_SEARCH_FOR_IMAGES',
+        'ACYM_FULL_WIDTH',
+        'ACYM_MEDIUM',
+        'ACYM_SMALL',
+        'ACYM_THUMBNAIL',
+        'ACYM_ORIENTATION',
+        'ACYM_LANDSCAPE',
+        'ACYM_PORTRAIT',
+        'ACYM_SQUARISH',
+        'ACYM_UNSPLASH_KEY_NEEDED',
+        'ACYM_GET_ONE_HERE',
     ];
 
     foreach ($keysToLoad as $oneKey) {
@@ -394,7 +437,7 @@ function acym_listingActions($actions, $deleteMessage = '', $ctrl = '')
     return acym_select(
             $actions,
             '',
-            null,
+            0,
             $attributes,
             'value',
             'text',
@@ -407,9 +450,11 @@ function acym_listingActions($actions, $deleteMessage = '', $ctrl = '')
  *
  * @return string
  */
-function acym_backToListing($listingName = null)
+function acym_backToListing($listingName = null): string
 {
-    if (empty($listingName)) $listingName = acym_getVar('cmd', 'ctrl');
+    if (empty($listingName)) {
+        $listingName = acym_getVar('cmd', 'ctrl');
+    }
 
     $returnLink = '<p class="acym__back_to_listing">';
     $returnLink .= '<a href="'.acym_completeLink($listingName).'" class="acym_vcenter">';

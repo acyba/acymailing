@@ -36,10 +36,12 @@ trait Followup
         $triggers = [];
         acym_trigger('getFollowupTriggers', [&$triggers]);
         $data['allTriggers'] = $triggers;
+
         foreach ($data['allCampaigns'] as $key => $oneFollowup) {
             if (!empty($triggers[$oneFollowup->trigger])) {
                 $oneFollowup->condition = json_decode($oneFollowup->condition, true);
                 $data['allCampaigns'][$key]->condition = $followupClass->getConditionSummary($oneFollowup->condition, $oneFollowup->trigger);
+                $data['allCampaigns'][$key]->mail_ids = $followupClass->getEmailsByIds($oneFollowup->id);
             }
         }
     }

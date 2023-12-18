@@ -1,12 +1,4 @@
 const acym_helperBack = {
-    config_get: function (field) {
-        let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=getAjax&field=' + field;
-        return jQuery.ajax({
-            type: 'GET',
-            url: ajaxUrl,
-            dataType: 'json'
-        });
-    },
     setDoNotRemindMe: function () {
         jQuery('#acym__reviews__footer__link').on('click', function () {
             let ajaxUrl = ACYM_TOGGLE_URL + '&task=setDoNotRemindMe&value=' + encodeURIComponent(jQuery(this).attr('title'));

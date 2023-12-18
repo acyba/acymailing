@@ -206,6 +206,13 @@
             }
         }
 
+        @import "summary_abtest";
         @import "summary_multilingual";
+    }
+
+    #acym__campaigns__summary__refresh__archive__message div {
+        display: inline-block;
+        margin-left: 0.5rem;
+        vertical-align: super;
     }
 }

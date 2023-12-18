@@ -29,7 +29,13 @@ trait GlobalStats
         $this->prepareDefaultLineChart($data);
         $this->prepareDefaultDevicesChart($data);
         $this->prepareDefaultBrowsersChart($data);
-        if (acym_isMultilingual() && count($this->selectedMailIds) == 1) $this->prepareMultilingualMails($data);
+        if (count($this->selectedMailIds) == 1) {
+            if ($data['isAbTest']) {
+                $this->prepareAbTestMails($data);
+            } elseif (acym_isMultilingual()) {
+                $this->prepareMultilingualMails($data);
+            }
+        }
         $this->prepareMailFilter($data);
 
         parent::display($data);
@@ -70,12 +76,22 @@ trait GlobalStats
             $attributes
         );
 
-        $data['emailTranslationsFilters'] = '';
+        $data['emailVersionsFilters'] = '';
 
+        if (!empty($data['emailVersions'])) {
+            $data['emailVersionsFilters'] = acym_select(
+                $data['emailVersions'],
+                'mail_id_version',
+                $this->selectedMailIds[0],
+                [
+                    'class' => 'acym__select acym__stats__select__language',
+                ]
+            );
+        }
         if (!empty($data['emailTranslations'])) {
-            $data['emailTranslationsFilters'] = acym_select(
+            $data['emailVersionsFilters'] = acym_select(
                 $data['emailTranslations'],
-                'mail_id_language',
+                'mail_id_version',
                 $this->selectedMailIds[0],
                 [
                     'class' => 'acym__select acym__stats__select__language',
@@ -110,9 +126,8 @@ trait GlobalStats
         if (!empty($data['mailInformation'])) {
             $helperMailer->body = $data['mailInformation']->body;
             $helperMailer->statClick($data['mailInformation']->id, 0, true);
-            $data['mailInformation']->body = $helperMailer->body;
+            $data['mailInformation']->body = preg_replace('#&(amp;)?autoSubId=[^"]+"#Uis', '"', $helperMailer->body);
         }
-
 
         if (!empty($allPercentage)) {
             $maxPercentage = max($allPercentage);
@@ -271,7 +286,7 @@ trait GlobalStats
 
         $result = [];
         foreach ($daterange as $date) {
-            $one = acym_date(acym_getTime($date->format('Y-m-d H:i:s')), $dateCode);
+            $one = $date->format($dateCode);
 
             $current = [];
             $current['open'] = empty($opens[$one]) ? 0 : $opens[$one];
@@ -456,6 +471,29 @@ trait GlobalStats
             if ($nbUser > 0 && !empty($data['nbClick'][$listId]->nbClick)) {
                 $data['click'][$listId]['value'] = round(($data['nbClick'][$listId]->nbClick * 100) / $nbUser);
             }
+        }
+    }
+
+    private function prepareAbTestMails(&$data)
+    {
+        if (empty($this->selectedMailIds)) return;
+
+        $mailClass = new MailClass();
+
+        $mailVersions = [];
+
+        if (empty($data['mailInformation']->parent_id)) {
+            $mailVersions = $mailClass->getParentAndChildMails($data['mailInformation']->id);
+        } elseif (!empty($data['mailInformation']->parent_id)) {
+            $parentEmail = $mailClass->getOneById($data['mailInformation']->parent_id);
+            if (empty($parentEmail)) return;
+            $mailVersions = $mailClass->getParentAndChildMails($parentEmail->id);
+        }
+
+        $data['emailVersions'] = [];
+
+        foreach ($mailVersions as $email) {
+            $data['emailVersions'][$email->id] = $email->name.' - '.$email->subject;
         }
     }
 

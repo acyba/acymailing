@@ -288,7 +288,7 @@ jQuery(function ($) {
                         let optionValue = filterOptions[keys[key]];
 
                         // Set the option values
-                        let $optionField = $('[name="acym_action[filters]['
+                        let $optionField = $('[name^="acym_action[filters]['
                                              + or
                                              + ']['
                                              + $('#acym__automation__filters__count__and').val()

@@ -258,4 +258,22 @@ trait License
 
         parent::call($task, $allowedTasks);
     }
+
+    public function attachLicenseAcymailer()
+    {
+        $acyMailerLicenseKey = $this->config->get('acymailer_apikey', '');
+        $acyMailingKey = $this->config->get('license_key', '');
+        if (empty($acyMailerLicenseKey) && !empty($acyMailingKey)) {
+            acym_trigger('onAcymAttachLicense', [&$acyMailingKey]);
+        }
+        $this->config->load();
+        $acyMailerLicenseKey = $this->config->get('acymailer_apikey', '');
+        if (empty($acyMailerLicenseKey)) {
+            acym_enqueueMessage(acym_translation('ACYM_LICENCE_NO_SENDING_SERVICE'), 'error');
+        } else {
+            $this->config->save(['mailer_method' => 'acymailer']);
+            acym_enqueueMessage(acym_translation('ACYM_SENDING_SERVICE_ACTIVATED'), 'success', false);
+        }
+        $this->listing();
+    }
 }

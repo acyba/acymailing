@@ -35,18 +35,25 @@ const acym_editorWysidTest = {
                 acym_editorWysidFormAction.saveEmail(true, false);
                 return true;
             }
-            acym_editorWysidFormAction.setThumbnailPreSave()
-                                      .then(function (dataUrl) {
-                                          // Copy img content in hidden input
-                                          if (acym_editorWysidFormAction.needToGenerateThumbnail()) {
-                                              jQuery('#editor_thumbnail').attr('value', dataUrl);
-                                          }
-                                          acym_editorWysidFormAction.saveEmail(true, false);
-                                      })
-                                      .catch(function (err) {
-                                          acym_editorWysidFormAction.saveEmail(true, false);
-                                          console.error('Error generating template thumbnail: ' + err);
-                                      });
+
+            acym_helper.config_get('save_thumbnail').done((resConfig) => {
+                if (resConfig.error || !resConfig.data.value) {
+                    acym_editorWysidFormAction.saveEmail(true, false);
+                    return;
+                }
+                acym_editorWysidFormAction.setThumbnailPreSave()
+                                          .then(function (dataUrl) {
+                                              // Copy img content in hidden input
+                                              if (acym_editorWysidFormAction.needToGenerateThumbnail()) {
+                                                  jQuery('#editor_thumbnail').attr('value', dataUrl);
+                                              }
+                                              acym_editorWysidFormAction.saveEmail(true, false);
+                                          })
+                                          .catch(function (err) {
+                                              acym_editorWysidFormAction.saveEmail(true, false);
+                                              console.error('Error generating template thumbnail: ' + err);
+                                          });
+            });
             return true;
         });
     },
@@ -63,7 +70,7 @@ const acym_editorWysidTest = {
         } else {
             url += '&test_emails=' + encodeURIComponent(jQuery('input[name="emails_test"]').val());
         }
-        url += '&lang_version=' + acym_editorWysidMultilingual.currentLanguage;
+        url += '&lang_version=' + acym_editorWysidVersions.currentVersion;
 
         jQuery.post(url, function (res) {
             res = acym_helper.parseJson(res);

@@ -238,6 +238,8 @@ const acym_editorWysidContextModal = {
             let $selectedImg = jQuery('.acym__wysid__media__inserted--selected');
             if ($selectedImg.hasClass('acym__wysid__media__giphy')) {
                 acym_editorWysidNewContent.addGiphyWYSID($selectedImg.closest('.acym__wysid__column__element'));
+            } else if ($selectedImg.hasClass('acym__wysid__media__unsplash')) {
+                acym_editorWysidNewContent.addUnsplashWYSID($selectedImg.closest('.acym__wysid__column__element'));
             } else {
                 acym_editorWysidImage.openMediaManager($selectedImg.closest('.acym__wysid__column__element'));
             }

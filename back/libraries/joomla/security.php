@@ -15,7 +15,9 @@ function acym_getVar($type, $name, $default = null, $source = 'default', $mask =
         if (empty($source) || $source === 'default') $source = 'REQUEST';
         $input = JFactory::getApplication()->input;
         $sourceInput = $input->__get($source);
-        if (acym_isAdmin()) {
+        if ($type === 'file') {
+            $result = $sourceInput->files->get($name, $default, 'RAW');
+        } elseif (acym_isAdmin()) {
             $result = $sourceInput->get($name, $default, $type);
         } else {
             // When the SEF is active, $_REQUEST is empty as Joomla doesn't populate it anymore

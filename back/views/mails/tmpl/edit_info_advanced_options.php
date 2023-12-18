@@ -59,7 +59,7 @@
 						   name="mail[reply_to_email]">
 				</div>
             <?php } ?>
-            <?php if (empty($data['multilingual'])) { ?>
+            <?php if (empty($data['multilingual']) && empty($data['abtest'])) { ?>
 				<div class="cell grid-x">
 					<div class="cell medium-shrink">
 						<label for="acym__mail__edit__preheader">
@@ -87,7 +87,7 @@
 						<input id="acym__mail__edit__thumbnail" name="custom_thumbnail" type="file">
 						<span id="acym__mail__edit__thumbnail--file" class="cell shrink acym_vcenter margin-left-1"></span>
 						<button type="button" id="acym__mail__edit__thumbnail--delete" class="acymicon-close acym__color__red cursor-pointer acym_vcenter"></button>
-                        <?php if (strpos($data['mail']->thumbnail, '_custom_') !== false) { ?>
+                        <?php if (!empty($data['mail']->thumbnail) && strpos($data['mail']->thumbnail, '_custom_') !== false) { ?>
 							<div id="acym__mail__edit__thumbnail--saved" class="cell shrink grid-x">
 								<span id="acym__mail__edit__thumbnail--file-saved" class="cell shrink acym_vcenter margin-left-1">
 									<?php echo $data['mail']->thumbnail; ?>

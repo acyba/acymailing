@@ -22,10 +22,10 @@ class WorkflowHelper extends acymObject
      *
      * @return string
      */
-    public function display($steps, $currentStep, $edition = true, $needTabs = false, $linkParameters = ''): string
+    public function display($steps, $currentStep, $edition = true, $needTabs = false, $linkParameters = '', $idName = 'id'): string
     {
         $ctrl = acym_getVar('cmd', 'ctrl');
-        $id = acym_getVar('int', 'id', 0);
+        $id = acym_getVar('int', $idName, 0);
 
         $workflow = [];
         $disableTabs = false;
@@ -38,7 +38,7 @@ class WorkflowHelper extends acymObject
 
             if (!$disableTabs) {
                 if ($edition) {
-                    $link = $ctrl.'&task=edit&step='.$task.'&id='.$id;
+                    $link = $ctrl.'&task=edit&step='.$task.'&'.$idName.'='.$id;
                 } else {
                     $link = $ctrl.'&task='.$task;
                 }

@@ -5,7 +5,7 @@ Description: Adds editor options for Easy Digital Downloads in AcyMailing
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 2.0
+Version: 2.2
 */
 
 use AcyMailing\Classes\PluginClass;

@@ -94,7 +94,7 @@ const acym_editorWysidDynamic = {
             data: {
                 'mailId': mailId,
                 'code': shortcode,
-                'language': acym_editorWysidMultilingual.currentLanguage,
+                'language': acym_editorWysidVersions.currentVersion,
                 'previewBody': jQuery('#acym__wysid__template').html()
             }
         }).then(function (response) {
@@ -152,8 +152,8 @@ const acym_editorWysidDynamic = {
         ajaxURL += '&plugin=' + plugin;
         ajaxURL += '&shortcode=' + encodeURIComponent(shortcode);
         ajaxURL += '&campaignId=' + jQuery('#acym__campaign__recipients__form__campaign').val();
-        if (!acym_helper.empty(acym_editorWysidMultilingual)) {
-            ajaxURL += '&language=' + acym_editorWysidMultilingual.selectedLanguage;
+        if (!acym_helper.empty(acym_editorWysidVersions)) {
+            ajaxURL += '&language=' + acym_editorWysidVersions.selectedVersion;
         }
 
         let $campaignType = jQuery('[name="campaign_type"]');

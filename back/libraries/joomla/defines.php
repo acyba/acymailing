@@ -12,6 +12,7 @@ define('ACYM_BACK', rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.ACYM_COMPO
 define('ACYM_VIEW', ACYM_BACK.'views'.DS);
 define('ACYM_PARTIAL', ACYM_BACK.'partial'.DS);
 define('ACYM_NEW_FEATURES_SPLASHSCREEN', ACYM_BACK.'partial'.DS.'update'.DS.'new_features.php');
+define('ACYM_NEW_FEATURES_SPLASHSCREEN_JSON', ACYM_BACK.'partial'.DS.'update'.DS.'changelogs_splashscreen.json');
 define('ACYM_VIEW_FRONT', ACYM_FRONT.'views'.DS);
 define('ACYM_HELPER', ACYM_BACK.'helpers'.DS);
 define('ACYM_CLASS', ACYM_BACK.'classes'.DS);
@@ -36,13 +37,13 @@ define('ACYM_CORE_DYNAMICS_URL', acym_rootURI().'administrator/components/'.ACYM
 define('ACYM_DYNAMICS_URL', ACYM_CORE_DYNAMICS_URL);
 define('ACYM_ADDONS_FOLDER_PATH', ACYM_BACK.'dynamics'.DS);
 
-define('ACYM_MEDIA_FOLDER', 'media/'.ACYM_COMPONENT);
-define('ACYM_UPLOAD_FOLDER', ACYM_MEDIA_FOLDER.DS.'upload'.DS);
+define('ACYM_MEDIA_FOLDER', 'media'.DS.ACYM_COMPONENT.DS);
+define('ACYM_UPLOAD_FOLDER', ACYM_MEDIA_FOLDER.'upload'.DS);
 define('ACYM_UPLOAD_FOLDER_THUMBNAIL', ACYM_MEDIA.'images'.DS.'thumbnails'.DS);
 define('ACYM_UPLOADS_URL', ACYM_MEDIA_URL.'upload/');
 
 define('ACYM_CUSTOM_PLUGIN_LAYOUT', ACYM_MEDIA.'plugins'.DS);
-define('ACYM_LOGS_FOLDER', ACYM_MEDIA_FOLDER.DS.'logs'.DS);
+define('ACYM_LOGS_FOLDER', ACYM_MEDIA_FOLDER.'logs'.DS);
 define('ACYM_TMP_FOLDER', ACYM_MEDIA.'tmp'.DS);
 
 //Avoid the issue with 3.0.0_beta

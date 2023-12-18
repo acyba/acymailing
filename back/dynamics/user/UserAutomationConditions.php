@@ -191,7 +191,7 @@ trait UserAutomationConditions
                     $options['value'] = strtotime($options['value']);
                 }
                 if (is_numeric($options['value'])) {
-                    $options['value'] = strftime('%Y-%m-%d %H:%M:%S', $options['value']);
+                    $options['value'] = date('Y-m-d H:i:s', $options['value']);
                 }
             }
 

@@ -106,6 +106,12 @@ class ElementorForm extends \ElementorPro\Modules\Forms\Classes\Action_Base
             $newUser->id = $user->id;
         }
 
+        // We do that because Elementor submit the form via ajax and in ajax mode WordPress always return true to the function is_admin()
+        $config = acym_config();
+        if ($config->get('require_confirmation', 1) == 1) {
+            $userClass->forceConfAdmin = true;
+        }
+
         $userId = $userClass->save($newUser);
 
         if (!empty($settings['acym_selectLists'])) {

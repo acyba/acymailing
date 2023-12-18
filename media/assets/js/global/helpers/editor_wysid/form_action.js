@@ -1,9 +1,4 @@
 const acym_editorWysidFormAction = {
-    needToSaveThumbnail: function () {
-        const $inputSaveThumbnail = jQuery('#save_thumbnail');
-
-        return parseInt($inputSaveThumbnail.val()) === 1;
-    },
     needToGenerateThumbnail: function () {
         const $inputReset = jQuery('[name="custom_thumbnail_reset"]');
 
@@ -11,7 +6,7 @@ const acym_editorWysidFormAction = {
     },
     saveAjaxMail: function (controller, sendTest, saveAsTmpl) {
         if (controller.indexOf('mails') !== -1 || saveAsTmpl) {
-            return jQuery.when(acym_helperThumbnail.setAjaxSaveThumbnail()).done(function () {
+            return jQuery.when(acym_helperThumbnail.setAjaxSaveThumbnail()).then(function () {
                 return acym_editorWysidFormAction._ajaxCall(controller, sendTest, saveAsTmpl);
             }).fail(function (err) {
                 console.log(err);
@@ -75,8 +70,8 @@ const acym_editorWysidFormAction = {
         $emailContent.find('[contenteditable]').attr('contenteditable', 'false');
         jQuery('#acym__wysid__template a.acym__wysid__column__element__button').each(function () {
             let buttonMicrosoft = acym_editorWysidOutlook.getOutlookButton(jQuery(this));
-            jQuery(this).before('<!--[if mso]>' + buttonMicrosoft + '<![endif]--><!--[if !mso]>');
-            jQuery(this).after('<![endif]-->');
+            jQuery(this).before('<!--[if mso]>' + buttonMicrosoft + '<![endif]--><!--[if !mso]><!-->');
+            jQuery(this).after('<!--<![endif]-->');
         });
 
         jQuery('#acym__wysid__template .acym__wysid__row__element').each(function () {
@@ -114,7 +109,7 @@ const acym_editorWysidFormAction = {
     },
     _ajaxCall: function (controller, fromSendTest, saveAsTmpl) {
         // Handle when multilingual
-        acym_editorWysidMultilingual.storeCurrentValues();
+        acym_editorWysidVersions.storeCurrentValues();
 
         let ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + controller;
         if (saveAsTmpl) {
@@ -129,7 +124,7 @@ const acym_editorWysidFormAction = {
                 acym_helperNotification.addNotification(res.message, 'error');
             } else {
                 if (!saveAsTmpl) {
-                    jQuery('mail' === controller ? '[name="id"]' : '[name="id"], [name="mail[id]"]').val(res.data.result);
+                    jQuery('mail' === controller ? '[name="id"]' : saveAsTmpl ? '[name="id"], [name="mail[id]"]' : '[name="campaignId"]').val(res.data.result);
                     if (!fromSendTest) {
                         jQuery('#acym_header').css('display', '');
                         jQuery('.acym__content').css('display', '');
@@ -155,12 +150,14 @@ const acym_editorWysidFormAction = {
     },
     setSaveButtonWYSID: function () {
         jQuery('#acym__wysid__save__button').off('click').on('click', function () {
+            const caseDirectlyEmailSavedTypes = ['followup', 'notification', 'welcome', 'unsubscribe', 'template'].indexOf(jQuery('#acym__mail__type').val()) !== -1
             // Directly save the email
-            if (jQuery('[name="ctrl"]').val().indexOf('campaigns') !== -1 || [
-                'followup',
-                'notification'
-            ].indexOf(jQuery('#acym__mail__type').val()) !== -1) {
-                acym_editorWysidFormAction.saveEmail(false, false);
+            if (jQuery('[name="ctrl"]').val().indexOf('campaigns') !== -1 || caseDirectlyEmailSavedTypes) {
+                jQuery.when(acym_editorWysidFormAction.saveEmail(false, false)).then((response) => {
+                    if (caseDirectlyEmailSavedTypes) {
+                        jQuery('#mail_id').val(response.data.result);
+                    }
+                })
                 return true;
             }
 
@@ -180,7 +177,11 @@ const acym_editorWysidFormAction = {
         let heightOverlay = window.innerHeight - jQuery('#acym__wysid__top-toolbar').offset().top - $editorArea.height();
         jQuery('#acym__wysid__warning__thumbnail').css('bottom', '-' + heightOverlay + 'px').toggle();
 
-        if (acym_editorWysidFormAction.needToSaveThumbnail()) {
+        acym_helper.config_get('save_thumbnail').done((resConfig) => {
+            if (resConfig.error || !resConfig.data.value) {
+                acym_editorWysidFormAction.saveEmail(false, saveAsTmpl);
+                return;
+            }
             setTimeout(() => {
                 acym_editorWysidFormAction.setThumbnailPreSave()
                                           .then(function (dataUrl) {
@@ -195,9 +196,7 @@ const acym_editorWysidFormAction = {
                                               acym_editorWysidFormAction.saveEmail(false, saveAsTmpl);
                                           });
             }, 10);
-        } else {
-            acym_editorWysidFormAction.saveEmail(false, saveAsTmpl);
-        }
+        });
     },
     setThumbnailPreSave: function () {
         jQuery('#acym__wysid__template').css({
@@ -311,6 +310,9 @@ const acym_editorWysidFormAction = {
             acym_editorWysidDynamic.setDContentActions();
             acym_editorWysidTinymce.addTinyMceWYSID();
             acym_editorWysidRowSelector.setZoneAndBlockOverlays();
+            acym_editorWysidBackgroundStyle.updateBgSize();
+            acym_editorWysidBackgroundStyle.updateBgRepeat();
+            acym_editorWysidBackgroundStyle.updateBgPosition();
         });
     },
     setCancelButtonWYSID: function () {

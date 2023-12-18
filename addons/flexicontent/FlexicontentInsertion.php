@@ -208,7 +208,10 @@ trait FlexicontentInsertion
 
     protected function loadLibraries($email)
     {
-        require_once JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
+        $JoomlaRouter = JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
+        if (file_exists($JoomlaRouter)) {
+            require_once $JoomlaRouter;
+        }
         require_once JPATH_ADMINISTRATOR.DS.'components/com_flexicontent/defineconstants.php';
         JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_flexicontent'.DS.'tables');
         require_once JPATH_SITE.DS.'components/com_flexicontent/classes/flexicontent.fields.php';
@@ -373,24 +376,22 @@ trait FlexicontentInsertion
         $format->customFields = [];
 
         foreach ($tag->display as $key => $oneField) {
-            if ((is_numeric(
-                        $oneField
-                    ) && $fieldsId[$oneField]->iscore != 1) || ($fieldsId[$oneField]->field_type == 'title' || $fieldsId[$oneField]->field_type == 'text')) {
+            if ((is_numeric($oneField) && $fieldsId[$oneField]->iscore != 1) || in_array($fieldsId[$oneField]->field_type, ['title', 'text'])) {
                 continue;
             } // Not a core field
             $oneFieldObject = $fieldsId[$oneField];
             $oneField = $oneFieldObject->name;
             if (!isset($item->$oneField) && $oneFieldObject->field_type != 'categories' && $oneFieldObject->field_type != 'tags') continue;
 
-            if ($oneField == 'created_by') {
+            if ($oneField === 'created_by') {
                 $displayedValue = $item->creator;
-            } elseif ($oneField == 'modified_by') {
+            } elseif ($oneField === 'modified_by') {
                 $displayedValue = $item->modifier;
-            } elseif ($oneField == 'document_type') {
+            } elseif ($oneField === 'document_type') {
                 $displayedValue = $item->doctype;
-            } elseif ($oneField == 'categories') {
+            } elseif ($oneField === 'categories') {
                 $displayedValue = empty($cats) ? '' : implode(', ', $cats);
-            } elseif ($oneField == 'tags') {
+            } elseif ($oneField === 'tags') {
                 $tagsArticle = acym_loadObjectList(
                     'SELECT tags.id, tags.name, tags.alias 
                     FROM #__flexicontent_fields AS fields 
@@ -406,10 +407,10 @@ trait FlexicontentInsertion
                 }
 
                 $displayedValue = implode(', ', $flexiTags);
-            } elseif ($oneField == 'created' || $oneField == 'modified') {
+            } elseif ($oneField === 'created' || $oneField === 'modified') {
                 if ($item->$oneField == '0000-00-00 00:00:00') continue;
                 $displayedValue = acym_date($item->$oneField, acym_translation('DATE_FORMAT_LC'));
-            } elseif ($oneField == 'voting') {
+            } elseif ($oneField === 'voting') {
                 $votesdb = acym_loadObject('SELECT * FROM #__content_rating AS a WHERE content_id = '.intval($tag->id));
                 $displayedValue = empty($votesdb) || empty($votesdb->rating_count)
                     ? acym_translation('ACYM_NONE')
@@ -487,9 +488,11 @@ trait FlexicontentInsertion
                         $varFields['{'.$i.'}'] = $path;
                     } elseif (in_array($newfield->field_type, ['select', 'selectmultiple', 'checkbox'])) {
                         $dispVal = $newfield->display;
-                    } elseif ($newfield->field_type == 'email' && !empty($newfield->value[0])) {
+                    } elseif ($newfield->field_type === 'email' && !empty($newfield->value[0])) {
                         $newfield->value = unserialize($newfield->value[0]);
-                        if (!empty($newfield->value) && !empty($newfield->value['addr'])) $dispVal = '<a href="mailto:'.$newfield->value['addr'].'">'.$newfield->value['addr'].'</a>';
+                        if (!empty($newfield->value) && !empty($newfield->value['addr'])) {
+                            $dispVal = '<a href="mailto:'.$newfield->value['addr'].'">'.$newfield->value['addr'].'</a>';
+                        }
                     } else {
                         // if something is added after the posttext, remove it !
                         $newfield->posttext = $newfield->parameters->get('posttext');

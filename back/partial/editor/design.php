@@ -77,7 +77,11 @@
 		</div>
 		<div class="grid-x cell acym__wysid__block__element--new acym__wysid__block__element--new--giphy ui-draggable ui-draggable-handle">
 			<i class="cell acymicon-gif"></i>
-			<div class="cell"><?php echo acym_translation('ACYM_GIPHY'); ?></div>
+			<div class="cell">Giphy</div>
+		</div>
+		<div class="grid-x cell acym__wysid__block__element--new acym__wysid__block__element--new--unsplash ui-draggable ui-draggable-handle">
+			<i class="cell acymicon-unsplash"></i>
+			<div class="cell">Unsplash</div>
 		</div>
         <?php
         // Display content plugins

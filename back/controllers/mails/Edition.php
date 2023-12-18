@@ -212,7 +212,7 @@ trait Edition
                 $breadcrumbUrl = 'mails&task=edit&notification='.$mail->name;
             }
 
-            if (strpos($mail->stylesheet, '[class="') !== false) {
+            if (!empty($mail->stylesheet) && strpos($mail->stylesheet, '[class="') !== false) {
                 acym_enqueueMessage(acym_translation('ACYM_WARNING_STYLESHEET_NOT_CORRECT'), 'warning');
             }
         }
@@ -335,7 +335,8 @@ trait Edition
 
         $mailClass = $this->currentClass;
         $formData = acym_getVar('array', 'mail', []);
-        $multilingual = acym_getVar('array', 'multilingual', [], 'REQUEST', ACYM_ALLOWRAW);
+        $versions = acym_getVar('array', 'versions', [], 'REQUEST', ACYM_ALLOWRAW);
+        $versionType = acym_getVar('string', 'version_type', '');
         $mail = new \stdClass();
         $allowedFields = acym_getColumns('mail');
         $fromId = acym_getVar('int', 'fromId', '');
@@ -357,14 +358,18 @@ trait Edition
         }
 
 
-        if (!empty($multilingual)) {
-            if (!empty($multilingual['main']['subject'])) $mail->subject = $multilingual['main']['subject'];
-            if (!empty($multilingual['main']['preview'])) $mail->preheader = $multilingual['main']['preview'];
-            if (!empty($multilingual['main']['content'])) $mail->body = $multilingual['main']['content'];
-            if (!empty($multilingual['main']['settings'])) $mail->settings = $multilingual['main']['settings'];
-            if (!empty($multilingual['main']['stylesheet'])) $mail->stylesheet = $multilingual['main']['stylesheet'];
-            $mail->links_language = $this->config->get('multilingual_default');
-            unset($multilingual['main']);
+        if (!empty($versions)) {
+            if (!empty($versions['main']['subject'])) $mail->subject = $versions['main']['subject'];
+            if (!empty($versions['main']['preview'])) $mail->preheader = $versions['main']['preview'];
+            if (!empty($versions['main']['content'])) $mail->body = $versions['main']['content'];
+            if (!empty($versions['main']['content'])) $mail->settings = $versions['main']['settings'];
+            if (!empty($versions['main']['content'])) $mail->stylesheet = $versions['main']['stylesheet'];
+
+            if ($versionType === 'multilingual') {
+                $mail->links_language = $this->config->get('multilingual_default');
+            }
+
+            unset($versions['main']);
         }
 
         $saveAsTmpl = acym_getVar('int', 'saveAsTmpl', 0);
@@ -466,27 +471,47 @@ trait Edition
                 acym_setVar('mailID', $mailID);
             }
 
-            if (!empty($multilingual)) {
-                foreach ($multilingual as $langCode => $translation) {
-                    if (empty($translation['subject'])) {
-                        $mailClass->delete($mailClass->getTranslationId($mailID, $langCode));
+            if (!empty($versions) && in_array($versionType, ['multilingual', 'abtest'])) {
+                $abTestSendingParams = empty($campaign->sending_params['abtest']) ? [] : $campaign->sending_params['abtest'];
+                foreach ($versions as $code => $version) {
+                    if (empty($version['subject'])) {
+                        if ($versionType === 'multilingual') {
+                            $mailClass->delete($mailClass->getTranslationId($mailID, $code));
+                        } elseif (!empty($abTestSendingParams[$code])) {
+                            $mailClass->delete($abTestSendingParams[$code]);
+                        }
                         continue;
                     }
 
                     unset($mail->id);
-                    $translationId = $mailClass->getTranslationId($mailID, $langCode);
-                    if (!empty($translationId)) $mail->id = $translationId;
+                    $versionId = null;
+                    if ($versionType === 'multilingual') {
+                        $versionId = $mailClass->getTranslationId($mailID, $code);
+                    } elseif (!empty($abTestSendingParams[$code])) {
+                        $versionId = $abTestSendingParams[$code];
+                    }
+                    if (!empty($versionId)) {
+                        $mail->id = $versionId;
+                    }
 
-                    $mail->subject = $translation['subject'];
-                    $mail->preheader = $translation['preview'];
-                    $mail->body = $translation['content'];
-                    $mail->links_language = $langCode;
-                    $mail->language = $langCode;
+                    $mail->subject = $version['subject'];
+                    $mail->preheader = $version['preview'];
+                    $mail->body = $version['content'];
                     $mail->parent_id = $mailID;
-                    $mail->settings = $translation['settings'];
-                    $mail->stylesheet = $translation['stylesheet'];
+                    $mail->settings = $version['settings'];
+                    $mail->stylesheet = $version['stylesheet'];
 
-                    $mailClass->save($mail);
+                    if ($versionType === 'multilingual') {
+                        $mail->links_language = $code;
+                        $mail->language = $code;
+                    }
+
+                    $versionMailId = $mailClass->save($mail);
+                    $abTestSendingParams[$code] = $versionMailId;
+                }
+
+                if ($versionType === 'abtest') {
+                    $campaign->sending_params['abtest'] = $abTestSendingParams;
                 }
             }
 
@@ -545,7 +570,7 @@ trait Edition
         $newAttachments = [];
         $attachments = acym_getVar('array', 'attachments', []);
         if (!empty($attachments)) {
-            foreach ($attachments as $id => $filepath) {
+            foreach ($attachments as $filepath) {
                 if (empty($filepath)) continue;
 
                 $attachment = new \stdClass();
@@ -620,7 +645,7 @@ trait Edition
         $mailid = $this->store();
 
         // When saving notifications, we return to page where we clicked the "Edit email" button
-        $return = str_replace('{mailid}', empty($mailid) ? '' : $mailid, acym_getVar('string', 'return'));
+        $return = str_replace('{mailid}', empty($mailid) ? '' : $mailid, acym_getVar('string', 'return', ''));
         if (empty($return)) {
             $this->listing();
         } else {
@@ -690,7 +715,7 @@ trait Edition
     public function saveVideoPreview($image, $fileName): string
     {
         $imageVideo = imagecreatefromjpeg($image);
-        $playButton = @imagecreatefrompng(ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'images'.DS.'editor'.DS.'play_button.png');
+        $playButton = @imagecreatefrompng(ACYM_ROOT.ACYM_MEDIA_FOLDER.'images'.DS.'editor'.DS.'play_button.png');
         if ($playButton === false || $imageVideo === false) {
             return $image;
         }

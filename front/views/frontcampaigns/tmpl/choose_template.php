@@ -7,7 +7,7 @@
 			<div class="medium-4 small-12 cell">
 				<a
 						href="<?php echo acym_completeLink(
-                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&id='.acym_escape(
+                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&campaignId='.acym_escape(
                                 $data['campaignID']
                             ).'&campaign_type='.$campaignType
                         ); ?>"
@@ -26,7 +26,7 @@
 			<div class="grid-x medium-shrink text-center cell acym__templates__choose__type-templates">
 				<a
 						href="<?php echo acym_completeLink(
-                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&id='.intval($data['campaignID']).'&campaign_type='.$campaignType
+                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&campaignId='.intval($data['campaignID']).'&campaign_type='.$campaignType
                         ); ?>"
 						class="button"
 						id="acym__templates__choose__create__empty">
@@ -45,7 +45,7 @@
 						<input type="hidden"
 							   class="acym__templates__oneTpl__choose"
 							   value="<?php echo acym_completeLink(
-                                   acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.$oneTemplate->id.'&id='.intval($data['campaignID']).'&campaign_type='.$campaignType
+                                   acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.$oneTemplate->id.'&campaignId='.intval($data['campaignID']).'&campaign_type='.$campaignType
                                ); ?>" />
 						<div class="cell acym__templates__pic text-center">
 							<img src="<?php echo acym_getMailThumbnail($oneTemplate->thumbnail); ?>" alt="<?php echo acym_escape($oneTemplate->name); ?>" />

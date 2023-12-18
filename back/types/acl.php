@@ -7,7 +7,6 @@ use AcyMailing\Libraries\acymObject;
 class AclType extends acymObject
 {
     private $groups;
-    private $choices = [];
 
     public function __construct()
     {
@@ -25,11 +24,6 @@ class AclType extends acymObject
         $seprator->disable = true;
         array_unshift($this->groups, $seprator);
         array_unshift($this->groups, $allGroups);
-
-        unset($this->groups[ACYM_ADMIN_GROUP]);
-
-        $this->choices[] = acym_selectOption('all', acym_translation('ACYM_ALL'));
-        $this->choices[] = acym_selectOption('custom', acym_translation('ACYM_CUSTOM'));
     }
 
     public function display($page)

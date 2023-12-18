@@ -7,10 +7,8 @@ if (version_compare(PHP_VERSION, '7.2.0', '<')) {
     exit;
 }
 
-$helperFile = rtrim(
-        JPATH_ADMINISTRATOR,
-        DIRECTORY_SEPARATOR
-    ).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
+$ds = DIRECTORY_SEPARATOR;
+$helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
 if (!include_once $helperFile) {
     echo 'Could not load AcyMailing helper file';
 
@@ -25,7 +23,7 @@ $task = acym_getVar('cmd', 'task');
 
 $config = acym_config();
 
-if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN) && is_writable(ACYM_NEW_FEATURES_SPLASHSCREEN)) {
+if (file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON) && is_writable(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON)) {
     $ctrl = 'dashboard';
     $task = 'features';
     acym_setVar('ctrl', $ctrl);
@@ -41,7 +39,9 @@ if ($forceDashboard) {
 
 $controllerNamespace = 'AcyMailing\\Controllers\\'.ucfirst($ctrl).'Controller';
 
-if (!class_exists($controllerNamespace)) return acym_raiseError(404, acym_translation('ACYM_PAGE_NOT_FOUND').': '.$ctrl);
+if (!class_exists($controllerNamespace)) {
+    acym_raiseError(404, acym_translation('ACYM_PAGE_NOT_FOUND').': '.$ctrl);
+}
 
 $controller = new $controllerNamespace;
 if (empty($controller)) {

@@ -92,15 +92,23 @@ class acymView extends acymObject
 
         $remindme = json_decode($this->config->get('remindme', '[]'), true);
         if ($this->config->get('walk_through', 0) == 0) {
-            if (acym_isAdmin() && !in_array('multilingual', $remindme) && acym_level(ACYM_ESSENTIAL) && $this->config->get('multilingual', '0') === '0') {
-                if (count(acym_getLanguages(false, true)) > 1) {
-                    $message = acym_translation('ACYM_MULTILINGUAL_OPTIONS_PROMPT');
-                    $message .= ' <a id="acym__multilingual__reminder" href="'.acym_completeLink('configuration&task=multilingual').'">'.acym_translation('ACYM_YES').'</a>';
-                    $message .= ' / <a href="#" title="multilingual" class="acym__do__not__remindme__multilingual">'.acym_translation('ACYM_NO').'</a>';
-                    acym_display($message, 'info', false);
-                } else {
-                    $remindme[] = 'multilingual';
-                    $this->config->save(['remindme' => json_encode($remindme)]);
+            if (acym_isAdmin()) {
+                if (!in_array('multilingual', $remindme) && acym_level(ACYM_ESSENTIAL) && $this->config->get('multilingual', '0') === '0') {
+                    if (count(acym_getLanguages(false, true)) > 1) {
+                        $message = acym_translation('ACYM_MULTILINGUAL_OPTIONS_PROMPT');
+                        $message .= ' <a id="acym__multilingual__reminder" href="'.acym_completeLink('configuration&task=multilingual').'">'.acym_translation('ACYM_YES').'</a>';
+                        $message .= ' / <a href="#" title="multilingual" class="acym__do__not__remindme__multilingual">'.acym_translation('ACYM_NO').'</a>';
+                        acym_display($message, 'info', false);
+                    } else {
+                        $remindme[] = 'multilingual';
+                        $this->config->save(['remindme' => json_encode($remindme)]);
+                    }
+                }
+
+                $maliciousScan = $this->config->get('malicious_scan', 0);
+                if (!empty($maliciousScan)) {
+                    $this->config->save(['malicious_scan' => 0]);
+                    acym_display(acym_translation('ACYM_NEW_SECURITY_TOOL'), 'info');
                 }
             }
         }

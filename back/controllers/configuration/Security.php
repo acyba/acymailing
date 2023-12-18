@@ -326,4 +326,37 @@ trait Security
 
         acym_redirect(acym_completeLink('dashboard', false, true));
     }
+
+    public function scanSiteFiles()
+    {
+        $maliciousFiles = [];
+        $siteFiles = acym_getFiles(ACYM_ROOT, '.', true, true);
+        foreach ($siteFiles as $oneFilePath) {
+            $lastSlashPos = strrpos($oneFilePath, '/');
+            if (!empty($lastSlashPos) && strpos($oneFilePath, ACYM_UPLOAD_FOLDER_THUMBNAIL) !== false && preg_match(
+                    '/.*thumbnail.*php.*$/',
+                    substr($oneFilePath, $lastSlashPos + 1)
+                )) {
+                $maliciousFiles[] = $oneFilePath;
+            } elseif (filesize($oneFilePath) < 10000) {
+                $fileContent = file_get_contents($oneFilePath);
+                if (preg_match('/^<\?php echo "jm"\."te"\."st"; \?>$/U', $fileContent)) {
+                    $maliciousFiles[] = $oneFilePath;
+                } elseif (preg_match('/^<\?php\n\$[a-z]+\s*=\s*\$_COOKIE\s*;/Ui', $fileContent)) {
+                    $maliciousFiles[] = $oneFilePath;
+                }
+            }
+        }
+
+        ob_start();
+        if (!empty($maliciousFiles)) {
+            $message = acym_translation('ACYM_MALICIOUS_FILES');
+            $message .= '<ul><li>'.implode('</li><li>', $maliciousFiles).'</li></ul>';
+            acym_display($message, 'error', false);
+        } else {
+            acym_display(acym_translation('ACYM_NO_MALICIOUS_FILES'), 'success', false);
+        }
+        $message = ob_get_clean();
+        acym_sendAjaxResponse($message);
+    }
 }

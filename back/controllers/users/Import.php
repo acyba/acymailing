@@ -107,7 +107,7 @@ trait Import
 
     public function downloadImport()
     {
-        $filename = acym_getVar('cmd', 'acym_import_filename');
+        $filename = acym_getVar('cmd', 'filename');
         if (!file_exists(ACYM_MEDIA.'import'.DS.$filename.'.csv')) {
             return;
         }

@@ -31,7 +31,8 @@ class FrontservicesController extends acymController
         if (empty($securityKey) || $securityKey !== $this->config->get('sendinblue_webhooks_seckey')) exit;
 
         // Check if sending method is sendinblue
-        if ($this->config->get('mailer_method') !== 'sendinblue') exit;
+        $mailerMethod = $this->config->get('mailer_method');
+        if (!in_array($mailerMethod, ['brevo-smtp', 'sendinblue'])) exit;
 
         // Get the data passed by Sendinblue
         $entityBody = file_get_contents('php://input');

@@ -1,0 +1,137 @@
+{
+    "max_version": "9.0.0",
+    "splash_content": [
+        {
+            "menu_title": "Top 5 updates 🔥",
+            "title": "DISCOVER 5 AWESOME FEATURES AVAILABLE",
+            "articles": [
+                {
+                    "title": "🔥 Webp images shown for all mail clients that support them",
+                    "desc": "Changed the HTML tests for Outlook hiding the webp images for modern mail clients too. They are now shown when the mail client supports them."
+                },
+                {
+                    "title": "🔥 Support for webp images",
+                    "desc": "Webp images of content inserted in emails can now be automatically resized if the server supports it."
+                },
+                {
+                    "title": "🔥 Background customization for each column",
+                    "desc": "We added the possibility to change the display of the background image when you create a template and you can now add background on each column individually."
+                },
+                {
+                    "title": "🔥 Better UI when using mass actions on listings",
+                    "desc": "The number of affected elements and their type is now shown in the confirmation box, when mass-disabling subscribers for example."
+                }
+            ]
+        },
+        {
+            "menu_title": "Interfaces 🎨",
+            "title": "DISCOVER WHAT CHANGED IN INTERFACES",
+            "articles": [
+                {
+                    "title": "🎨 Better UI when using mass actions on listings",
+                    "desc": "The number of affected elements and their type is now shown in the confirmation box, when mass-disabling subscribers for example."
+                },
+                {
+                    "title": "🎨 Better flow when creating special campaigns",
+                    "desc": "When confirming a birthday campaign or returning to the listing from any step, you are now redirected to the birthday campaigns listing instead of the general listing."
+                },
+                {
+                    "title": "🎨 Improved security on subscriber edition page",
+                    "desc": "Added a security on statistics calculation in subscriber edition page to avoid deformed interfaces in some cases."
+                },
+                {
+                    "title": "🎨 Compatibility with custom admin URLs",
+                    "desc": "A new option has been added in the configuration to allow a better compatibility with websites having a custom admin URL."
+                },
+                {
+                    "title": "🎨 Better AcyMailing 5 data migration",
+                    "desc": "The AcyMailing 5 data migration script has been improved to handle more cases like the front-end edition capabilities."
+                }
+            ]
+        },
+        {
+            "menu_title": "Editor 📝",
+            "title": "DISCOVER WHAT CHANGED IN THE EDITOR",
+            "articles": [
+                {
+                    "title": "📝 webp images shown for all mail clients that support them",
+                    "desc": "Changed the HTML tests for Outlook hiding the webp images for modern mail clients too. They are now shown when the mail client supports them."
+                },
+                {
+                    "title": "📝 Support for webp images",
+                    "desc": "Webp images of content inserted in emails can now be automatically resized if the server supports it."
+                },
+                {
+                    "title": "📝 Background customization for each column",
+                    "desc": "We added the possibility to change the display of the background image when you create a template and you can now add background on each column individually."
+                }
+            ]
+        },
+        {
+            "menu_title": "Bug Fixes 🛠️",
+            "title": "DISCOVER WHAT CHANGED FOR BUG FIXES",
+            "articles": [
+                {
+                    "title": "🛠️ Custom CSS Editor Now Displays Stored Value Accurately upon Reopening",
+                    "desc": "The custom CSS option in the editor now correctly shows the stored value when re-opening the editor."
+                },
+                {
+                    "title": "🛠️ Scheduled emails sending progress now displayed",
+                    "desc": "Fixed the queue process not showing the progress of scheduled emails."
+                },
+                {
+                    "title": "🛠️ Better sending service error handling",
+                    "desc": "The email sendings don't count as failed for the recipients anymore when it is related to the sending service account (account suspended, no more credit, etc...)."
+                },
+                {
+                    "title": "🛠️ Fixed line chart",
+                    "desc": "Fixed the statistics line chart not showing November when the filter by month is active."
+                }
+            ]
+        },
+        {
+            "menu_title": "Joomla 🧩 ",
+            "title": "DISCOVER WHAT CHANGED FOR JOOMLA",
+            "articles": [
+                {
+                    "title": "🧩 Better subscription module compatibility",
+                    "desc": "New options to load the subscription module scripts have been added to improve compatibility with some websites."
+                },
+                {
+                    "title": "🧩 Better multilingual sites support",
+                    "desc": "The language code used for links of inserted articles (articles with a restricted access) now takes the custom value set by the admin."
+                },
+                {
+                    "title": "🧩 Better compatibility with Joomla 4 and 5",
+                    "desc": "Added compatibility with Joomla 4+ for the VirtueMart trigger on order placed for the automation trigger."
+                },
+                {
+                    "title": "🧩 Restored click tracking for auto-login links",
+                    "desc": "The links to articles when the auto-login is enabled are now correctly tracked when click tracking is enabled."
+                },
+                {
+                    "title": "🧩 Some front-end management irregularities have been addressed",
+                    "desc": "The creation of new campaigns from the front-end management menu has been fixed in some cases regarding access rights."
+                },
+                {
+                    "title": "🧩 Fixed the Seblod content insertion compatibility with automatic campaigns",
+                    "desc": "Fixed the newly created option in Seblod content insertion for automatic campaigns."
+                }
+            ]
+        },
+        {
+            "menu_title": "WordPress 🧩 ",
+            "title": "DISCOVER WHAT CHANGED FOR WORDPRESS",
+            "articles": [
+                {
+                    "title": "🧩 Better date format for The Events Calendar",
+                    "desc": "Dates for inserted events from The Events Calendar in emails now use the same date format as the plugin for better consistency."
+                },
+                {
+                    "title": "🧩 Confirmation email for Elementor forms",
+                    "desc": "Fixed the Elementor form integration that was not sending the confirmation email."
+                }
+            ]
+        }
+    ]
+}

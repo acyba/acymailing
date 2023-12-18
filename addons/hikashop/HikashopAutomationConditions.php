@@ -14,6 +14,20 @@ trait HikashopAutomationConditions
             $categories[$oneCat->category_id] = $oneCat->category_name;
         }
 
+        $orderStatuses = [
+            'confirmed' => acym_translation('ACYM_CONFIRMED'),
+        ];
+        if (include_once rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php') {
+            $statuses = acym_loadObjectList('SELECT * FROM #__hikashop_orderstatus');
+            foreach ($statuses as $oneStatus) {
+                $name = hikashop_orderStatus($oneStatus->orderstatus_namekey);
+                if ($name == $oneStatus->orderstatus_namekey) {
+                    $name = $oneStatus->orderstatus_name;
+                }
+                $orderStatuses[$oneStatus->orderstatus_namekey] = $name;
+            }
+        }
+
         $conditions['user']['hikapurchased'] = new stdClass();
         $conditions['user']['hikapurchased']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'HikaShop', acym_translation('ACYM_PURCHASED'));
         $conditions['user']['hikapurchased']->option = '<div class="cell grid-x grid-margin-x">';
@@ -68,6 +82,18 @@ trait HikashopAutomationConditions
         }
 
         $conditions['user']['hikapurchased']->option .= '</div>';
+
+        $conditions['user']['hikapurchased']->option .= '<div class="cell grid-x grid-margin-x">';
+        $conditions['user']['hikapurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_ORDER_STATUS').'</div>';
+
+        $conditions['user']['hikapurchased']->option .= '<div class="intext_select_automation cell">';
+        $conditions['user']['hikapurchased']->option .= acym_selectMultiple(
+            $orderStatuses,
+            'acym_condition[conditions][__numor__][__numand__][hikapurchased][orderStatus]',
+            ['confirmed'],
+            ['class' => 'acym__select']
+        );
+        $conditions['user']['hikapurchased']->option .= '</div></div>';
 
         $conditions['user']['hikapurchased']->option .= '<div class="cell grid-x grid-margin-x">';
         $conditions['user']['hikapurchased']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][hikapurchased][datemin]', '', 'cell shrink');
@@ -220,7 +246,13 @@ trait HikashopAutomationConditions
 
         $query->where[] = 'order'.$num.'.order_user_id != 0';
         $query->where[] = 'order'.$num.'.order_type = "sale"';
-        $query->where[] = 'order'.$num.'.order_status = "confirmed"';
+
+        if (!empty($options['orderStatus'])) {
+            $options['orderStatus'] = array_map('acym_escapeDB', $options['orderStatus']);
+            $query->where[] = 'order'.$num.'.order_status IN ('.implode(',', $options['orderStatus']).')';
+        } else {
+            $query->where[] = 'order'.$num.'.order_status = "confirmed"';
+        }
 
         if (!empty($options['datemin'])) {
             $options['datemin'] = acym_replaceDate($options['datemin']);
@@ -338,6 +370,27 @@ trait HikashopAutomationConditions
             ) : $cats[$automationCondition['hikapurchased']['category']]->category_name;
 
             $finalText = acym_translationSprintf('ACYM_CONDITION_PURCHASED', $product, $category);
+
+            if (!empty($automationCondition['hikapurchased']['orderStatus'])) {
+                $statusList = [];
+                $statuses = $automationCondition['hikapurchased']['orderStatus'];
+                if (include_once rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php') {
+                    $rows = acym_loadObjectList('SELECT * FROM #__hikashop_orderstatus', 'orderstatus_namekey');
+                    foreach ($statuses as $oneStatus) {
+                        $name = hikashop_orderStatus($rows[$oneStatus]->orderstatus_namekey);
+                        if ($name == $rows[$oneStatus]->orderstatus_namekey) {
+                            $name = $rows[$oneStatus]->orderstatus_name;
+                        }
+                        $statusList[] = $name;
+                    }
+                } else {
+                    foreach ($statuses as $oneStatus) {
+                        $statusList[] = $oneStatus;
+                    }
+                }
+
+                $finalText .= ' '.acym_translation('ACYM_WITH_ORDER_STATUS').' '.implode(', ', $statusList);
+            }
 
             if (acym_isExtensionActive('com_hikamarket') && empty($automationCondition['hikapurchased']['product'])) {
                 $finalText .= ' '.acym_translation('ACYM_FROM').' ';

@@ -34,6 +34,7 @@
     #acym__wysid__right {
         position: relative;
         min-width: 450px;
+        height: -webkit-fill-available;
         @import "global/editor_wysid/dynamicContents";
         @import "global/editor_wysid/dynamicTexts";
         @import "global/editor_wysid/sendTest";

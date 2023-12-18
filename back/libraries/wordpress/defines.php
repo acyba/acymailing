@@ -31,6 +31,7 @@ define('ACYM_BACK', ACYM_FOLDER.'back'.DS);
 define('ACYM_VIEW', ACYM_BACK.'views'.DS);
 define('ACYM_PARTIAL', ACYM_BACK.'partial'.DS);
 define('ACYM_NEW_FEATURES_SPLASHSCREEN', ACYM_BACK.'partial'.DS.'update'.DS.'new_features.php');
+define('ACYM_NEW_FEATURES_SPLASHSCREEN_JSON', ACYM_BACK.'partial'.DS.'update'.DS.'changelogs_splashscreen.json');
 define('ACYM_VIEW_FRONT', ACYM_FRONT.'views'.DS);
 define('ACYM_HELPER', ACYM_BACK.'helpers'.DS);
 define('ACYM_CLASS', ACYM_BACK.'classes'.DS);
@@ -65,7 +66,7 @@ define('ACYM_CORE_DYNAMICS_URL', ACYM_PLUGINS_URL.'/'.ACYM_COMPONENT.'/back/dyna
 define('ACYM_DYNAMICS_URL', ACYM_UPLOAD_FOLDER_URL.'addons/');
 define('ACYM_ADDONS_FOLDER_PATH', ACYM_UPLOADS_PATH.'addons'.DS);
 
-define('ACYM_MEDIA_FOLDER', str_replace([ABSPATH, ACYM_ROOT], '', WP_PLUGIN_DIR).'/'.ACYM_COMPONENT.'/media');
+define('ACYM_MEDIA_FOLDER', str_replace([ABSPATH, ACYM_ROOT], '', WP_PLUGIN_DIR).DS.ACYM_COMPONENT.DS.'media'.DS);
 define('ACYM_UPLOAD_FOLDER_THUMBNAIL', WP_CONTENT_DIR.DS.'uploads'.DS.ACYM_COMPONENT.DS.'thumbnails'.DS);
 define('ACYM_CUSTOM_PLUGIN_LAYOUT', ACYM_UPLOADS_PATH.'plugins'.DS);
 define('ACYM_LOGS_FOLDER', ACYM_WP_UPLOADS.'logs'.DS);

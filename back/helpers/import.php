@@ -393,7 +393,7 @@ class ImportHelper extends acymObject
 
     private function _createUploadFolder()
     {
-        $folderPath = acym_cleanPath(ACYM_ROOT.trim(html_entity_decode(str_replace('/', DS, ACYM_MEDIA_FOLDER).DS.'import'))).DS;
+        $folderPath = acym_cleanPath(ACYM_ROOT.trim(html_entity_decode(ACYM_MEDIA_FOLDER.'import'))).DS;
         if ('wordpress' === ACYM_CMS) {
             $folderPath = acym_cleanPath(WP_PLUGIN_DIR.DS.ACYM_COMPONENT.DS.'media'.DS.'import').DS;
         }
@@ -415,9 +415,9 @@ class ImportHelper extends acymObject
     {
         $filename = strtolower(acym_getVar('cmd', 'acym_import_filename'));
         $extension = '.'.acym_fileGetExt($filename);
-        $this->forceconfirm = acym_getVar('int', 'import_confirmed_generic');
-        $this->generatename = acym_getVar('int', 'import_generate_generic');
-        $this->overwrite = acym_getVar('int', 'import_overwrite_generic');
+        $this->forceconfirm = acym_getVar('int', 'import_confirmed_generic', 1);
+        $this->generatename = acym_getVar('int', 'import_generate_generic', 1);
+        $this->overwrite = acym_getVar('int', 'import_overwrite_generic', 1);
 
         // Remember user's choices
         $newConfig = new \stdClass();

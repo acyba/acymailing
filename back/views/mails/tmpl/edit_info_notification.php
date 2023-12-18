@@ -1,6 +1,6 @@
 <input type="hidden" name="notification" value="<?php echo acym_escape($data['mail']->name); ?>" />
 
-<?php if (empty($data['multilingual'])) { ?>
+<?php if (empty($data['multilingual']) && empty($data['abtest'])) { ?>
 	<div class="cell<?php if (!empty($data['langChoice'])) echo ' large-7 xlarge-8'; ?>">
 		<label>
             <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>

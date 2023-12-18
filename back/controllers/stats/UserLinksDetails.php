@@ -34,7 +34,13 @@ trait UserLinksDetails
         if (!$this->prepareDefaultPageInfo($data, true)) return;
 
         $this->prepareUserLinksDetailsListing($data);
-        if (acym_isMultilingual() && count($this->selectedMailIds) == 1) $this->prepareMultilingualMails($data);
+        if (count($this->selectedMailIds) == 1) {
+            if ($data['isAbTest']) {
+                $this->prepareAbTestMails($data);
+            } elseif (acym_isMultilingual()) {
+                $this->prepareMultilingualMails($data);
+            }
+        }
         $this->prepareMailFilter($data);
 
         parent::display($data);

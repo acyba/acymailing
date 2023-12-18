@@ -32,7 +32,7 @@ class acyCron
         // Only one batch every 15 minutes+, no need for the multi cron
         if (intval($cronFrequency) >= 900 && intval($cronBatches) < 2) return;
 
-        acym_asyncCurlCall([acym_frontendLink('cron')]);
+        acym_asyncCurlCall([acym_frontendLink('cron&task=cron')]);
     }
 }
 

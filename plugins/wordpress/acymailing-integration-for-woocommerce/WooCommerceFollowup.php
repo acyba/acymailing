@@ -35,7 +35,7 @@ trait WooCommerceFollowup
                     'followup[condition][order_status_status]',
                     !empty($followup->condition) ? $followup->condition['order_status_status'] : '',
                     ['class' => 'acym__select']
-                ).'</span>';;
+                ).'</span>';
             $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
 

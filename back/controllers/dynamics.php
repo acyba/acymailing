@@ -49,9 +49,9 @@ class DynamicsController extends acymController
         $email->attachments = '';
 
         // This is only the dynamic text/content code
-        $email->body = acym_getVar('string', 'code', '', '', ACYM_ALLOWHTML);
+        $email->body = acym_getVar('string', 'code', '', '', ACYM_ALLOWRAW);
         // This is the whole editor current content
-        $email->previewBody = acym_getVar('string', 'previewBody', '', '', ACYM_ALLOWHTML);
+        $email->previewBody = acym_getVar('string', 'previewBody', '', '', ACYM_ALLOWRAW);
 
         @acym_trigger('replaceContent', [&$email, false]);
 

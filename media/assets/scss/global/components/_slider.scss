@@ -25,5 +25,10 @@
         &:hover {
             background: map-get($editor-wysid-palette, primary-ui) !important;
         }
+
+        .slider-value {
+            position: absolute;
+            top: -1.2rem;
+        }
     }
 }

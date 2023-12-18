@@ -1,4 +1,4 @@
-jQuery(function($) {
+jQuery(function ($) {
 
     function Init() {
         setSpamTest();
@@ -13,8 +13,8 @@ jQuery(function($) {
             let test = $(this);
             test.attr('disabled', 'true');
             let url = ACYM_AJAX_URL
-                      + '&page=acymailing_campaigns&ctrl=campaigns&task=test&id='
-                      + $('input[name="id"]').val()
+                      + '&page=acymailing_campaigns&ctrl=campaigns&task=test&campaignId='
+                      + $('input[name="campaignId"]').val()
                       + '&test_note='
                       + encodeURIComponent(jQuery('#acym__wysid__send__test__note').val())
                       + '&test_emails='
@@ -58,11 +58,18 @@ jQuery(function($) {
     let _spamtestStep = 0;
 
     function handleAjaxResult(xhr, check, task) {
-        let campaignID = $('input[name="id"]').val();
-        let $check = $('#' + check).removeClass('acym_clickable').off('click');
-        let $checkI = $check.find('.acym_icon_container i');
+        const $multipleMailSelect = $('#mail_id_test');
+        let mailId = 0;
 
-        acym_helper.get(ACYM_AJAX_URL + '&ctrl=campaigns&task=' + task + '&id=' + campaignID).then(result => {
+        if ($multipleMailSelect.length) {
+            mailId = $multipleMailSelect.val();
+        }
+
+        const campaignID = $('input[name="campaignId"]').val();
+        const $check = $('#' + check).removeClass('acym_clickable').off('click');
+        const $checkI = $check.find('.acym_icon_container i');
+
+        acym_helper.get(`${ACYM_AJAX_URL}&ctrl=campaigns&task=${task}&campaignId=${campaignID}&mailId=${mailId}`).then(result => {
             if (xhr === 'SPAM') {
                 if (!result.error) {
                     $check.next('.acym_check_results').html(ACYM_JS_TXT.ACYM_TESTS_SPAM_SENT).show();

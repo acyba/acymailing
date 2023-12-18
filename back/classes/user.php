@@ -376,20 +376,26 @@ class UserClass extends acymClass
         $mailId = 0,
         $campaignOnly = false
     ) {
+        $mailType = null;
+        if (!empty($mailId)) {
+            $mailType = acym_loadResult('SELECT type FROM #__acym_mail WHERE id = '.intval($mailId));
+        }
+
         $query = 'SELECT list.id, list.translation, list.name, list.display_name, list.color, list.active, list.visible, list.description, userlist.status, userlist.subscription_date, userlist.unsubscribe_date 
                 FROM #__acym_list AS list 
                 JOIN #__acym_user_has_list AS userlist 
                     ON list.id = userlist.list_id ';
 
-        if (!empty($mailId) && $campaignOnly) {
+        if (!empty($mailId) && $campaignOnly && !empty($mailType) && $mailType !== MailClass::TYPE_FOLLOWUP) {
             $query .= 'JOIN #__acym_mail_has_list AS mail_list ON list.id = mail_list.list_id AND mail_list.mail_id = '.intval($mailId);
         }
 
         $query .= ' WHERE userlist.user_id = '.intval($userId);
 
-        if (empty($includeManagement)) {
-            $listClass = new ListClass();
-            $types = [$listClass::LIST_TYPE_STANDARD, $listClass::LIST_TYPE_FOLLOWUP];
+        if (!$includeManagement && !empty($mailType) && $mailType === MailClass::TYPE_FOLLOWUP) {
+            $query .= ' AND list.type = '.acym_escapeDB(ListClass::LIST_TYPE_FOLLOWUP);
+        } elseif (!$includeManagement) {
+            $types = [ListClass::LIST_TYPE_STANDARD, ListClass::LIST_TYPE_FOLLOWUP];
             $query .= ' AND list.type in ("'.implode('","', $types).'")';
         }
 

@@ -30,7 +30,7 @@ class AcyplgContentCCK extends plgContentCCK
             return;
         }
 
-        $query = 'SELECT a.id, a.pk, a.pkb, a.cck, a.storage_location, a.store_id, b.id as type_id, b.alias as type_alias, b.indexed,
+        $query = 'SELECT a.id, a.pk, a.pkb, a.cck, a.storage_location, a.store_id, b.id as type_id, b.indexed,
 						b.options_content, b.options_intro, c.template as content_template, c.params as content_params, d.template as intro_template,
 						d.params as intro_params, f.app as folder_app
 				FROM #__cck_core AS a
@@ -122,7 +122,11 @@ class AcyplgContentCCK extends plgContentCCK
         // Template
         $tpl['home'] = $app->getTemplate();
         $tpl['folder'] = $cck->{$client.'_template'};
-        $tpl['params'] = $cck->{$client.'_params'};
+        $cckArticleParams = $cck->{$client.'_params'};
+        if (!is_array($cckArticleParams)) {
+            $cckArticleParams = json_decode($cckArticleParams, true);
+        }
+        $tpl['params'] = $cckArticleParams;
         if (file_exists(JPATH_SITE.'/templates/'.$tpl['home'].'/html/tpl_'.$tpl['folder'])) {
             $tpl['folder'] = 'tpl_'.$tpl['folder'];
             $tpl['root'] = JPATH_SITE.'/templates/'.$tpl['home'].'/html';

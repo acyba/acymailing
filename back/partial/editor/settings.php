@@ -14,6 +14,117 @@
 			</div>
 		</div>
 		<div class="grid-x margin-bottom-1 small-12 cell">
+			<label class="middle large-6 cell" for="acym__wysid__background-size"><?php echo acym_translation('ACYM_BACKGROUND_SIZE'); ?></label>
+			<div class="cell large-6">
+                <?php
+                $backgroundSize = [
+                    'ACYM_DEFAULT' => [
+                        'cover' => acym_translation('ACYM_BG_COVER'),
+                        'auto' => acym_translation('ACYM_AUTO'),
+                        'contain' => acym_translation('ACYM_BG_CONTAIN'),
+                    ],
+                    'ACYM_CUSTOM' => [
+                        '10%' => '10%',
+                        '15%' => '15%',
+                        '20%' => '20%',
+                        '25%' => '25%',
+                        '30%' => '30%',
+                        '35%' => '35%',
+                        '40%' => '40%',
+                        '45%' => '45%',
+                        '50%' => '50%',
+                        '55%' => '55%',
+                        '60%' => '60%',
+                        '65%' => '65%',
+                        '70%' => '70%',
+                        '75%' => '75%',
+                        '80%' => '80%',
+                        '85%' => '85%',
+                        '90%' => '90%',
+                        '95%' => '95%',
+                        '100%' => '100%',
+                    ],
+                ];
+
+                $defaultBackgroundSize = 'cover';
+
+                if (!empty($data['mail']->settings)) {
+                    if (!is_array($data['mail']->settings)) $data['mail']->settings = json_decode($data['mail']->settings, true);
+
+                    if (!empty($data['mail']->settings['default']['background-size'])) $defaultSize = $data['mail']->settings['default']['background-size'];
+                }
+
+                echo '<select name="acym__wysid__background-size" id="acym__wysid__background-size" class="acym__select">';
+
+                foreach ($backgroundSize as $groupName => $values) {
+                    echo '<optgroup label="'.acym_translation($groupName).'">';
+                    foreach ($values as $value => $label) {
+                        $selected = ($defaultBackgroundSize === $value) ? 'selected' : '';
+                        echo '<option value="'.$value.'" '.$selected.'>'.$label.'</option>';
+                    }
+                    echo '</optgroup>';
+                }
+
+                echo '</select>';
+                ?>
+			</div>
+		</div>
+		<div class="grid-x margin-bottom-1 small-12 cell">
+			<label class="middle large-6 cell" for="acym__wysid__background-repeat"><?php echo acym_translation('ACYM_BACKGROUND_REPEAT'); ?></label>
+			<div class="cell large-6">
+                <?php
+                $repeat = [
+                    'no-repeat' => acym_translation('ACYM_DISABLE'),
+                    'repeat' => acym_translation('ACYM_ENABLE'),
+                ];
+
+                $defaultRepeat = 'no-repeat';
+
+                if (!empty($data['mail']->settings)) {
+                    if (!is_array($data['mail']->settings)) $data['mail']->settings = json_decode($data['mail']->settings, true);
+
+                    if (!empty($data['mail']->settings['default']['background-repeat'])) $defaultSize = $data['mail']->settings['default']['background-repeat'];
+                }
+
+                echo acym_select(
+                    $repeat,
+                    'acym__wysid__background-repeat',
+                    $defaultRepeat,
+                    ['class' => 'acym__select']
+                );
+                ?>
+			</div>
+		</div>
+		<div class="grid-x margin-bottom-1 small-12 cell">
+			<label class="middle large-6 cell" for="acym__wysid__background-position"><?php echo acym_translation('ACYM_BACKGROUND_POSITION'); ?></label>
+			<div class="cell large-6">
+                <?php
+                $position = [
+                    'top' => acym_translation('ACYM_POSITION_TOP'),
+                    'center' => acym_translation('ACYM_CENTER'),
+                    'bottom' => acym_translation('ACYM_POSITION_BOTTOM'),
+                    'left' => acym_translation('ACYM_LEFT'),
+                    'right' => acym_translation('ACYM_RIGHT'),
+                ];
+
+                $defaultPosition = 'top';
+
+                if (!empty($data['mail']->settings)) {
+                    if (!is_array($data['mail']->settings)) $data['mail']->settings = json_decode($data['mail']->settings, true);
+
+                    if (!empty($data['mail']->settings['default']['background-position'])) $defaultPosition = $data['mail']->settings['default']['background-position'];
+                }
+
+                echo acym_select(
+                    $position,
+                    'acym__wysid__background-position',
+                    $defaultPosition,
+                    ['class' => 'acym__select']
+                );
+                ?>
+			</div>
+		</div>
+		<div class="grid-x margin-bottom-1 small-12 cell">
 			<label for="acym__wysid__maincolor-colorpicker1" class="cell large-6 small-9" for="acym__wysid__maincolor-colorpicker1">
                 <?php echo acym_translation('ACYM_MAIN_COLORS').acym_info('ACYM_MAIN_COLORS_DESC'); ?>
 			</label>
@@ -114,6 +225,29 @@
 					<option style="font-family: 'Times New Roman'">Times New Roman</option>
 					<option style="font-family: 'Trebuchet MS'">Trebuchet MS</option>
 					<option style="font-family: 'Verdana'">Verdana</option>
+				</select>
+			</div>
+		</div>
+		<div class="grid-x margin-bottom-1 small-12 cell">
+			<label class="middle large-6 cell" for="acym__wysid__right__toolbar__settings__line-height"><?php echo acym_translation('ACYM_LINE_HEIGHT'); ?></label>
+			<div class="cell large-6">
+				<select id="acym__wysid__right__toolbar__settings__line-height" class="auto cell acym__select">
+					<option value="inherit"><?php echo acym_translation('ACYM_DEFAULT'); ?></option>
+					<option value="100%">100%</option>
+					<option value="110%">110%</option>
+					<option value="120%">120%</option>
+					<option value="130%">130%</option>
+					<option value="140%">140%</option>
+					<option value="150%">150%</option>
+					<option value="160%">160%</option>
+					<option value="170%">170%</option>
+					<option value="180%">180%</option>
+					<option value="190%">190%</option>
+					<option value="200%">200%</option>
+					<option value="210%">210%</option>
+					<option value="220%">220%</option>
+					<option value="230%">230%</option>
+					<option value="240%">240%</option>
 				</select>
 			</div>
 		</div>

@@ -34,7 +34,7 @@ class ExportHelper extends acymObject
         // 1 - Create a folder with the data to export
         $name = preg_replace('#[^a-z0-9]#Uis', '_', $template->name);
         $name = preg_replace('#_+#s', '_', $name);
-        $exportFolder = ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'tmp'.DS.$name;
+        $exportFolder = ACYM_ROOT.ACYM_MEDIA_FOLDER.'tmp'.DS.$name;
         acym_createFolder($exportFolder);
 
         // 2 - Copy the images in the folder, and change the src in the <img> tags
@@ -385,9 +385,14 @@ class ExportHelper extends acymObject
                 }
 
                 foreach ($data as &$oneData) {
+                    if (is_null($oneData)) {
+                        continue;
+                    }
+
+                    // Not using empty() because 0 and '0' are valid values
                     if ($excelSecure == 1) {
-                        $firstcharacter = substr($oneData, 0, 1);
-                        if (in_array($firstcharacter, ['=', '+', '-', '@'])) {
+                        $firstCharacter = substr($oneData, 0, 1);
+                        if (in_array($firstCharacter, ['=', '+', '-', '@'])) {
                             $oneData = '	'.$oneData;
                         }
                     }

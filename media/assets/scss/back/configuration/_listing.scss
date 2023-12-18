@@ -266,4 +266,18 @@
         padding-top: 1rem;
         padding-bottom: 1rem;
     }
+
+    #scanfiles_button {
+        height: fit-content;
+    }
+
+    #acym__configuration__acymailer__verify-license {
+        margin-left: 20px;
+    }
+
+    .acym__configuration__acymailer__check-license {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+    }
 }

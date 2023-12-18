@@ -50,14 +50,21 @@
 						</div>
 						<div class="cell medium-2 hide-for-small-only"></div>
 					</div>
-                    <?php foreach ($data['allElements'] as $row) { ?>
+                    <?php foreach ($data['allElements'] as $row) {
+                        ?>
 						<div data-acy-elementid="<?php echo acym_escape($row->id); ?>" class="cell grid-x acym__listing__row">
 							<div class="cell medium-auto acym_vcenter">
 								<div class="acym__listing__title">
                                     <?php
-                                    $row->language = empty($data['languages'][$row->language]) ? $row->language : $data['languages'][$row->language]->name;
+                                    $afterName = $row->language;
+                                    if (!empty($row->sending_params['abtest'])) {
+                                        $afterName = $row->subject;
+                                    } elseif (!empty($data['languages'][$row->language])) {
+                                        $afterName = $data['languages'][$row->language]->name;
+                                    }
+                                    $afterName = empty($afterName) ? '' : ' - '.$afterName
                                     ?>
-									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo $row->name.(empty($row->language) ? '' : ' - '.$row->language); ?></h6>
+									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo $row->name.$afterName; ?></h6>
 									<p class="acym__listing__title__secondary">
                                         <?php echo acym_date($row->sending_date, acym_getDateTimeFormat()); ?>
 									</p>
@@ -117,8 +124,8 @@
                                             <?php
                                             $percentageSent = 0;
                                             if (!empty($row->nbqueued) && $row->iscampaign) {
-                                                if (!empty($row->recipients)){
-													$percentageSent = 100 - ceil($row->nbqueued * 100 / $row->recipients);
+                                                if (!empty($row->recipients)) {
+                                                    $percentageSent = 100 - ceil($row->nbqueued * 100 / $row->recipients);
                                                 }
                                                 echo '<div class="progress_bar_left" style="width: '.$percentageSent.'%;"></div>';
                                             }

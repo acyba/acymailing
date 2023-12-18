@@ -85,6 +85,15 @@ class MailStatClass extends acymClass
         return $result === null ? 0 : $result;
     }
 
+    public function getTotalSubscribersByMailIdWithChild($mailId)
+    {
+        $result = acym_loadResult(
+            'SELECT SUM(total_subscribers) FROM #__acym_mail_stat WHERE mail_id IN (SELECT id FROM #__acym_mail WHERE id = '.intval($mailId).' OR parent_id = '.intval($mailId).')'
+        );
+
+        return $result === null ? 0 : $result;
+    }
+
     public function getOneByMailId($id = '')
     {
         $query = 'SELECT SUM(sent) AS sent, SUM(fail) AS fail FROM #__acym_mail_stat';
@@ -202,5 +211,50 @@ class MailStatClass extends acymClass
         foreach ($mailStats as $mailStat) {
             $this->save($mailStat);
         }
+    }
+
+    public function getBestEmailByStats($mailIds, $statsType)
+    {
+        acym_arrayToInteger($mailIds);
+
+        $query = 'SELECT ms.total_subscribers, ms.mail_id, ms.open_total, SUM(uc.click) AS click_total FROM #__acym_mail_stat AS ms LEFT JOIN #__acym_url_click AS uc ON uc.mail_id = ms.mail_id WHERE ms.mail_id IN ('.implode(
+                ',',
+                $mailIds
+            ).') GROUP BY ms.mail_id';
+
+        $mailStats = acym_loadObjectList($query, 'mail_id');
+
+        foreach ($mailStats as $key => $mailStat) {
+            $mailStats[$key]->click_rate = $mailStat->total_subscribers > 0 ? $mailStat->click_total / $mailStat->total_subscribers : 0;
+            $mailStats[$key]->open_rate = $mailStat->total_subscribers > 0 ? $mailStat->open_total / $mailStat->total_subscribers : 0;
+        }
+
+        switch ($statsType) {
+            case 'click_rate':
+                return ['click_rate' => $this->getBestMailByRate($mailStats, 'click_rate')];
+            case 'open_rate':
+                return ['open_rate' => $this->getBestMailByRate($mailStats, 'open_rate')];
+            case 'click_open_rate':
+                return [
+                    'click_rate' => $this->getBestMailByRate($mailStats, 'click_rate'),
+                    'open_rate' => $this->getBestMailByRate($mailStats, 'open_rate'),
+                ];
+        }
+    }
+
+    private function getBestMailByRate($mailStats, $type)
+    {
+        uasort(
+            $mailStats,
+            function ($a, $b) use ($type) {
+                if ($a->$type == $b->$type) {
+                    return 0;
+                }
+
+                return ($a->$type < $b->$type) ? 1 : -1;
+            }
+        );
+
+        return array_keys($mailStats)[0];
     }
 }

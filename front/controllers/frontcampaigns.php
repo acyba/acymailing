@@ -37,6 +37,9 @@ class FrontcampaignsController extends CampaignsController
             ],
         ];
 
+        $this->menuAlias = [
+            'index.php?option=com_acym&view=frontcampaigns&layout=listing' => 'index.php?option=com_acym&view=frontcampaigns&layout=campaigns',
+        ];
         $this->allowedTasks = [
             'index.php?option=com_acym&view=frontcampaigns&layout=campaigns' => [
                 'campaigns',
@@ -55,6 +58,7 @@ class FrontcampaignsController extends CampaignsController
                 'unsubscribe',
                 'clearFilters',
                 'addQueue',
+                'listing',
             ],
         ];
     }
@@ -91,15 +95,15 @@ class FrontcampaignsController extends CampaignsController
 
         $allowedSteps = [
             'listing',
-            'chooseTemplate',
-            'editEmail',
+            'choosetemplate',
+            'editemail',
             'recipients',
-            'sendSettings',
+            'sendsettings',
             'summary',
         ];
 
-        if (!in_array($nextstep, $allowedSteps)) {
-            die('Access denied for this campaign');
+        if (!in_array(strtolower($nextstep), $allowedSteps)) {
+            die('Access denied for this campaign edition step');
         }
 
         return parent::edit();

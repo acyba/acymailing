@@ -72,6 +72,10 @@ const acym_editorWysidFontStyle = {
             .val(acym_editorWysidFontStyle.getPropertyOfOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-size'))
             .trigger('change');
 
+        jQuery('#acym__wysid__right__toolbar__settings__line-height')
+            .val(acym_editorWysidFontStyle.getPropertyOfOneType(acym_editorWysidFontStyle.currentlySelectedType, 'line-height'))
+            .trigger('change');
+
         let $settingsBold = jQuery('#acym__wysid__right__toolbar__settings__bold');
         if (acym_editorWysidFontStyle.getPropertyOfOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-weight') === 'bold') {
             $settingsBold.addClass('acym__wysid__right__toolbar__settings__bold--selected');
@@ -147,6 +151,10 @@ const acym_editorWysidFontStyle = {
             acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType(acym_editorWysidFontStyle.currentlySelectedType, 'font-size', jQuery(this).val());
         });
 
+        jQuery('#acym__wysid__right__toolbar__settings__line-height').on('change', function () {
+            acym_editorWysidFontStyle.saveAndApplyPropertyOnOneType(acym_editorWysidFontStyle.currentlySelectedType, 'line-height', jQuery(this).val());
+        });
+
         $settingsBold.off('click').off('click').on('click', function () {
             if ($settingsBold.hasClass('acym__wysid__right__toolbar__settings__bold--selected')) {
                 $settingsBold.removeClass('acym__wysid__right__toolbar__settings__bold--selected');
@@ -191,6 +199,9 @@ const acym_editorWysidFontStyle = {
         if (undefined === allSocialIcons) return;
 
         jQuery.each(Object.keys(allSocialIcons), function (index, value) {
+            if (!acym_helperEditorWysid.socialMedia[value]) {
+                return;
+            }
             acym_helperEditorWysid.socialMedia[value].src = allSocialIcons[value];
         });
 

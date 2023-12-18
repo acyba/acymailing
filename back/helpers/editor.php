@@ -71,8 +71,6 @@ class EditorHelper extends acymObject
             acym_setVar('mail_type', empty($data['mail']->type) ? '' : $data['mail']->type);
             acym_setVar('automation', $this->automation ? 1 : 0);
 
-            $saveThumbnail = $this->config->get('save_thumbnail', 1);
-
             include acym_getPartial('editor', 'editor_wysid');
         } else {
             // Outside of the Acy wrapper to prevent foundation from breaking the 100 different editors we could have here
@@ -147,7 +145,7 @@ class EditorHelper extends acymObject
                 $this->editorConfig['editor_css'] = '0';
             } else {
                 //We still create the file so that the user can link to it manually
-                $fileurl = ACYM_MEDIA_FOLDER.'/templates/css/template_'.$this->mailId.'.css?time='.time();
+                $fileurl = str_replace(DS, '/', ACYM_MEDIA_FOLDER).'templates/css/template_'.$this->mailId.'.css?time='.time();
                 $this->editorConfig['custom_css_url'] = $cssurl;
                 $this->editorConfig['custom_css_file'] = $fileurl;
                 $this->editorConfig['custom_css_path'] = $filepath;
@@ -213,62 +211,70 @@ class EditorHelper extends acymObject
         wp_editor($this->content, $this->name, $options);
     }
 
-    private function getWYSIDSettings()
+    // Used in partial editor
+    private function getWYSIDSettings(): string
     {
         $ctrl = acym_getVar('string', 'ctrl');
-        if ($this->isResetCampaign() || !in_array($ctrl, ['mails', 'campaigns', 'frontmails', 'frontcampaigns'])) return '{}';
-
-        $id = acym_getVar('int', 'from', 0);
-        if ($this->settings != 'editor_settings' && empty($id)) return $this->settings;
-
-        if (empty($id)) {
-            $id = acym_getVar('int', 'id');
-            if (!empty($id) && $ctrl == 'campaigns') $id = acym_loadResult('SELECT mail_id FROM #__acym_campaign WHERE id = '.intval($id));
+        if ($this->isResetCampaign() || !in_array($ctrl, ['mails', 'campaigns', 'frontmails', 'frontcampaigns'])) {
+            return '{}';
         }
 
-        if (empty($id)) return '{}';
+        $mailId = acym_getVar('int', 'from', 0);
+        if (empty($mailId)) {
+            if ($this->settings !== 'editor_settings') {
+                return $this->settings;
+            }
 
-        $query = 'SELECT settings FROM #__acym_mail WHERE id = '.intval($id);
-        $settings = acym_loadResult($query);
+            $mailId = acym_getVar('int', 'id');
+            $campaignId = acym_getVar('int', 'campaignId');
+            if (!empty($campaignId) && $ctrl === 'campaigns') {
+                $mailId = acym_loadResult('SELECT mail_id FROM #__acym_campaign WHERE id = '.intval($campaignId));
+            }
+
+            if (empty($mailId)) {
+                return '{}';
+            }
+        }
+
+        $settings = acym_loadResult('SELECT settings FROM #__acym_mail WHERE id = '.intval($mailId));
 
         return empty($settings) ? '{}' : $settings;
     }
 
-    private function getWYSIDStylesheet()
+    // Used in partial editor
+    private function getWYSIDStylesheet(): string
     {
         $ctrl = acym_getVar('string', 'ctrl');
-        if ($this->isResetCampaign() || !in_array($ctrl, ['mails', 'campaigns', 'frontmails', 'frontcampaigns'])) return '';
-
-        $id = acym_getVar('int', 'from', 0);
-        if ($this->stylesheet != 'editor_stylesheet' && !empty($id)) return $this->stylesheet;
-
-        $notification = acym_getVar('string', 'notification');
-
-        if (empty($id)) {
-            $id = acym_getVar('int', 'id');
-            if (!empty($id) && in_array($ctrl, ['campaigns', 'frontcampaigns'])) $id = acym_loadResult('SELECT mail_id FROM #__acym_campaign WHERE id = '.intval($id));
+        if ($this->isResetCampaign() || !in_array($ctrl, ['mails', 'campaigns', 'frontmails', 'frontcampaigns'])) {
+            return '';
         }
 
-
-        if (!empty($id)) {
-            if (in_array($ctrl, ['mails', 'campaigns', 'frontmails', 'frontcampaigns'])) {
-                $stylesheet = acym_loadResult('SELECT stylesheet FROM #__acym_mail WHERE id = '.intval($id));
+        $mailId = acym_getVar('int', 'from', 0);
+        if (empty($mailId)) {
+            if ($this->stylesheet !== 'editor_stylesheet') {
+                return $this->stylesheet;
             }
 
-            return empty($stylesheet) ? '' : $stylesheet;
+            $mailId = acym_getVar('int', 'id');
+            $campaignId = acym_getVar('int', 'campaignId');
+            if (!empty($campaignId) && in_array($ctrl, ['campaigns', 'frontcampaigns'])) {
+                $mailId = acym_loadResult('SELECT mail_id FROM #__acym_campaign WHERE id = '.intval($campaignId));
+            }
+        }
+
+        $notification = acym_getVar('string', 'notification');
+        if (!empty($mailId)) {
+            $stylesheet = acym_loadResult('SELECT stylesheet FROM #__acym_mail WHERE id = '.intval($mailId));
         } elseif (!empty($notification)) {
-            $mailClass = new MailClass();
             $stylesheet = acym_loadResult(
                 'SELECT stylesheet 
                 FROM #__acym_mail 
-                WHERE `type` = '.acym_escapeDB($mailClass::TYPE_NOTIFICATION).' 
+                WHERE `type` = '.acym_escapeDB(MailClass::TYPE_NOTIFICATION).' 
                     AND `name` = '.acym_escapeDB($notification)
             );
-
-            return empty($stylesheet) ? '' : $stylesheet;
         }
 
-        return null;
+        return empty($stylesheet) ? '' : $stylesheet;
     }
 
     private function isResetCampaign()

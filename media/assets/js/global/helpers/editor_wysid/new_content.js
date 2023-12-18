@@ -89,6 +89,11 @@ const acym_editorWysidNewContent = {
         acym_editorWysidNewContent.setModalGiphyWYSID();
         jQuery('#acym__wysid__modal').css('display', 'inherit');
     },
+    addUnsplashWYSID: function (ui) {
+        acym_helperEditorWysid.$focusElement = jQuery(ui);
+        acym_editorWysidNewContent.setModalUnsplashWYSID();
+        jQuery('#acym__wysid__modal').css('display', 'inherit');
+    },
     addFollowWYSID: function () {
         let content = '<tr class="acym__wysid__column__element" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;">';
         content += '<td class="large-12 acym__wysid__column__element__td">';
@@ -132,21 +137,20 @@ const acym_editorWysidNewContent = {
         modal.css('display', 'inherit');
     },
     setModalGiphyWYSID: function () {
-        let content = '<div class="grid-container"><div class="cell grid-x align-center grid-padding-x">';
-        content += '<img hspace="0" class="cell" id="acym__wysid__modal__giphy--image" src="' + ACYM_MEDIA_URL + 'images/giphy.png" alt="">';
+        let content = '<div class="grid-container"><div class="cell grid-x align-center grid-padding-x margin-bottom-1">';
+        content += '<img hspace="0" class="cell" id="acym__wysid__modal__giphy--image" src="' + ACYM_MEDIA_URL + 'images/giphy.png" alt="Giphy logo">';
         content += '<div class="cell grid-x grid-margin-x"><input class="cell auto" type="text" id="acym__wysid__modal__giphy--search" placeholder="'
                    + ACYM_JS_TXT.ACYM_SEARCH_FOR_GIFS
                    + '">';
         content += '<button type="button" class="cell shrink button button-secondary" id="acym__wysid__modal__giphy--search--button">'
                    + ACYM_JS_TXT.ACYM_SEARCH_GIFS
                    + '</button></div>';
-        content += '<p class="cell text-center" id="acym__wysid__modal__giphy--low-res-message">' + ACYM_JS_TXT.ACYM_GIPHY_LOW_RES_TEXT + '</p>';
         content += '</div></div>';
         jQuery('#acym__wysid__modal__ui__fields').html(content);
 
         content = '<div class="grid-container acym__wysid__modal__giphy__results__container">';
         content += '<h3 class="cell text-center acym__title__primary__color" id="acym__wysid__modal__giphy--error_message" style="display: none"></h3>';
-        content += '<div class="cell grid-x grid-padding-x grid-margin-x grid-margin-y margin-top-1" id="acym__wysid__modal__giphy--results"></div></div>';
+        content += '<div class="cell grid-x grid-padding-x grid-margin-x margin-y" id="acym__wysid__modal__giphy--results"></div></div>';
         jQuery('#acym__wysid__modal__ui__display').html(content);
 
         content = '<div class="grid-container"><div class="cell grid-x align-right grid-padding-x">';
@@ -156,6 +160,56 @@ const acym_editorWysidNewContent = {
 
         acym_editorWysidGiphy.makeNewResearch('');
         acym_editorWysidGiphy.insertGif();
+    },
+    setModalUnsplashWYSID: function () {
+        let content = `<div class="grid-container">
+            <div class="cell grid-x align-center grid-padding-x margin-bottom-1">
+                <img class="cell" id="acym__wysid__modal__unsplash--image" src="${ACYM_MEDIA_URL}images/unsplash.svg" alt="Unsplash logo">
+                <div class="cell grid-x grid-margin-x margin-y">
+                    <input class="cell auto unsplash_fields" type="text" id="acym__wysid__modal__unsplash--search" placeholder="${ACYM_JS_TXT.ACYM_SEARCH_FOR_IMAGES}">
+                    <div class="cell medium-3 large-2">
+                        <select id="acym__wysid__modal__unsplash--size" class="unsplash_fields">
+                            <option value="full">${ACYM_JS_TXT.ACYM_FULL_WIDTH}</option>
+                            <option value="regular" selected="selected">${ACYM_JS_TXT.ACYM_MEDIUM}</option>
+                            <option value="small">${ACYM_JS_TXT.ACYM_SMALL}</option>
+                            <option value="thumb">${ACYM_JS_TXT.ACYM_THUMBNAIL}</option>
+                        </select>
+                    </div>
+                    <div class="cell medium-3 large-2">
+                        <select id="acym__wysid__modal__unsplash--orientation" class="unsplash_fields">
+                            <option value="all" selected="selected">${ACYM_JS_TXT.ACYM_ORIENTATION}</option>
+                            <option value="landscape">${ACYM_JS_TXT.ACYM_LANDSCAPE}</option>
+                            <option value="portrait">${ACYM_JS_TXT.ACYM_PORTRAIT}</option>
+                            <option value="squarish">${ACYM_JS_TXT.ACYM_SQUARISH}</option>
+                        </select>
+                    </div>
+                    <button type="button" class="cell shrink button button-secondary unsplash_fields" id="acym__wysid__modal__unsplash--search--button">${ACYM_JS_TXT.ACYM_SEARCH_IMAGES}</button
+                </div>
+            </div>
+        </div>`;
+        jQuery('#acym__wysid__modal__ui__fields').html(content);
+
+        if (ACYM_IS_ADMIN) {
+            jQuery('#acym__wysid__modal__unsplash--size, #acym__wysid__modal__unsplash--orientation').select2({
+                theme: 'foundation',
+                width: '100%'
+            });
+        }
+
+        content = `<div class="grid-container acym__wysid__modal__unsplash__results__container">
+            <h3 class="cell text-center acym__title__primary__color" id="acym__wysid__modal__unsplash--error_message" style="display: none"></h3>
+            <div class="cell grid-x grid-padding-x grid-margin-x margin-y" id="acym__wysid__modal__unsplash--results"></div>
+        </div>`;
+        jQuery('#acym__wysid__modal__ui__display').html(content);
+
+        content = `<div class="grid-container">
+            <div class="cell grid-x align-right grid-padding-x">
+                <button class="button" type="button" id="acym__wysid__modal__unsplash--insert" disabled="disabled">${ACYM_JS_TXT.ACYM_INSERT}</button>
+            </div>
+        </div>`;
+        jQuery('#acym__wysid__modal__ui__search').html(content);
+
+        acym_editorWysidUnsplash.init();
     },
     setModalVideoWYSID: function () {
         let content = '<div class="grid-container">';

@@ -147,7 +147,7 @@ trait Edition
             if ($oneStat->open > 0) $userStat->open++;
         }
 
-        $userStat->pourcentageOpen = empty($userStat->open) ? 0 : intval(($userStat->open * 100) / $userStat->totalSent);
+        $userStat->pourcentageOpen = (empty($userStat->open) || empty($userStat->totalSent)) ? 0 : intval(($userStat->open * 100) / $userStat->totalSent);
 
         $data['pourcentageOpen'] = $userStat->pourcentageOpen;
         $data['pourcentageClick'] = $userStat->pourcentageOpen;
@@ -236,7 +236,7 @@ trait Edition
         $languageFieldId = $fieldClass->getLanguageFieldId();
 
         foreach ($allFields as $one) {
-            $one->option = json_decode($one->option);
+            $one->option = empty($one->option) ? new \stdClass() : json_decode($one->option);
             $one->value = empty($one->value) ? '' : json_decode($one->value);
             $fieldDB = empty($one->option->fieldDB) ? '' : json_decode($one->option->fieldDB);
 

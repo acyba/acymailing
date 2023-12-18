@@ -44,7 +44,7 @@ const acym_editorWysidVersioning = {
             let mailid = jQuery('#editor_mailid').val();
             if (!acym_helper.empty(mailid) && mailid !== '-1' && false === initEdit) {
                 let ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlMails + '&task=autoSave';
-                ajaxUrl += '&language=' + acym_editorWysidMultilingual.currentLanguage;
+                ajaxUrl += '&language=' + acym_editorWysidVersions.currentVersion;
 
                 jQuery.ajax({
                     type: 'POST',

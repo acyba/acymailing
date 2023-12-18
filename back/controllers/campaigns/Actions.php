@@ -4,6 +4,7 @@ namespace AcyMailing\Controllers\Campaigns;
 
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\FollowupClass;
+use AcyMailing\Classes\MailArchiveClass;
 use AcyMailing\Classes\MailClass;
 use stdClass;
 
@@ -46,13 +47,25 @@ trait Actions
             $mail->creator_id = acym_currentUserId();
             $idNewMail = $mailClass->save($mail);
 
-            $translations = $mailClass->getTranslationsById($oldMailId, true);
-            foreach ($translations as $oneTranslation) {
-                unset($oneTranslation->id);
-                $oneTranslation->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
-                $oneTranslation->name .= '_copy';
-                $oneTranslation->parent_id = $idNewMail;
-                $mailClass->save($oneTranslation);
+            if (isset($campaign->sending_params['abtest']) && !empty($campaign->sending_params['abtest']['B'])) {
+                $mailVersion = $mailClass->getOneById($campaign->sending_params['abtest']['B']);
+                if (!empty($mailVersion)) {
+                    unset($mailVersion->id);
+                    $mailVersion->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
+                    $mailVersion->name .= '_copy';
+                    $mailVersion->parent_id = $idNewMail;
+                    $mailVersion->id = $mailClass->save($mailVersion);
+                    $campaign->sending_params['abtest']['B'] = $mailVersion->id;
+                }
+            } else {
+                $translations = $mailClass->getTranslationsById($oldMailId, true);
+                foreach ($translations as $oneTranslation) {
+                    unset($oneTranslation->id);
+                    $oneTranslation->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
+                    $oneTranslation->name .= '_copy';
+                    $oneTranslation->parent_id = $idNewMail;
+                    $mailClass->save($oneTranslation);
+                }
             }
 
             //we set the new mail id and save campaign
@@ -68,7 +81,7 @@ trait Actions
         acym_enqueueMessage(acym_translation('ACYM_CAMPAIGN_DUPLICATED_SUCCESS'));
 
         if (count($campaignsSelected) == 1 && acym_getVar('string', 'step', '') == 'summary') {
-            acym_setVar('id', $campaignId);
+            acym_setVar('campaignId', $campaignId);
             $this->editEmail();
         } else {
             $this->listing();
@@ -123,7 +136,7 @@ trait Actions
 
     public function unpause_campaign()
     {
-        $id = acym_getVar('int', 'id', 0);
+        $id = acym_getVar('int', 'campaignId', 0);
         if (empty($id)) {
             acym_enqueueMessage(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), 'error');
             $this->listing();
@@ -177,7 +190,7 @@ trait Actions
     public function confirmCampaign()
     {
         $this->updateOpenAcymailerPopup();
-        $campaignId = acym_getVar('int', 'id');
+        $campaignId = acym_getVar('int', 'campaignId');
         $campaignSendingDate = acym_getVar('string', 'sending_date');
         $resendTarget = acym_getVar('cmd', 'resend_target', '');
         $campaignClass = new CampaignClass();
@@ -192,8 +205,8 @@ trait Actions
         $campaign->active = 1;
         $campaign->sent = 0;
 
+        $currentCampaign = $campaignClass->getOneById($campaignId);
         if (!empty($resendTarget)) {
-            $currentCampaign = $campaignClass->getOneById($campaignId);
             $currentCampaign->sending_params['resendTarget'] = $resendTarget;
             $campaign->sending_params = $currentCampaign->sending_params;
             acym_trigger('onAcymResendCampaign', [$currentCampaign->mail_id]);
@@ -213,7 +226,7 @@ trait Actions
     public function activeAutoCampaign()
     {
         $this->updateOpenAcymailerPopup();
-        $campaignId = acym_getVar('int', 'id');
+        $campaignId = acym_getVar('int', 'campaignId');
         $campaignClass = new CampaignClass();
 
         $campaign = new stdClass();
@@ -235,7 +248,7 @@ trait Actions
 
     public function saveAsDraftCampaign()
     {
-        $campaignId = acym_getVar('int', 'id');
+        $campaignId = acym_getVar('int', 'campaignId');
         $campaignClass = new CampaignClass();
 
         if (!$campaignClass->hasUserAccess($campaignId)) {
@@ -261,7 +274,7 @@ trait Actions
     public function toggleActivateColumnCampaign()
     {
 
-        $campaignId = acym_getVar('int', 'id');
+        $campaignId = acym_getVar('int', 'campaignId');
         $campaignClass = new CampaignClass();
 
         $campaign = $campaignClass->getOneById($campaignId);
@@ -296,7 +309,7 @@ trait Actions
         $this->updateOpenAcymailerPopup();
 
         $campaignClass = new CampaignClass();
-        $campaignID = acym_getVar('int', 'id', 0);
+        $campaignID = acym_getVar('int', 'campaignId', 0);
 
         if (empty($campaignID)) {
             acym_enqueueMessage(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), 'error');
@@ -345,5 +358,27 @@ trait Actions
         if (acym_isAdmin() && $this->config->get('mailer_method') === 'acymailer' && intval($this->config->get('acymailer_popup', 0)) === 0) {
             $this->config->save(['acymailer_popup' => '1']);
         }
+    }
+
+    public function updateArchive()
+    {
+        $campaignId = acym_getVar('int', 'campaignId', 0);
+        if (empty($campaignId)) {
+            acym_sendAjaxResponse('', [], false);
+        }
+
+        $campaignClass = new CampaignClass();
+        $campaign = $campaignClass->getOneById($campaignId);
+        if (empty($campaign)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), [], false);
+        }
+
+        $mailArchiveClass = new MailArchiveClass();
+        $archive = $mailArchiveClass->getOneByMailId($campaign->mail_id);
+        if (!empty($archive)) {
+            $mailArchiveClass->delete($archive->id);
+        }
+
+        acym_sendAjaxResponse();
     }
 }

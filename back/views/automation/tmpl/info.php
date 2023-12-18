@@ -147,7 +147,7 @@
 			</div>
 			<div class="cell grid-x margin-top-2">
 				<div class="cell medium-shrink medium-margin-bottom-0 margin-bottom-1 text-left">
-                    <?php echo acym_backToListing("automation"); ?>
+                    <?php echo acym_backToListing('automation'); ?>
 				</div>
 				<div class="cell medium-auto grid-x grid-margin-x text-right">
 					<div class="cell auto"></div>

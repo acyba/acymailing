@@ -180,6 +180,8 @@ const acym_editorWysidDragDrop = {
                     acym_editorWysidNewContent.addVideoWYSID($item);
                 } else if ($item.hasClass('acym__wysid__block__element--new--giphy')) {
                     acym_editorWysidNewContent.addGiphyWYSID($item);
+                } else if ($item.hasClass('acym__wysid__block__element--new--unsplash')) {
+                    acym_editorWysidNewContent.addUnsplashWYSID($item);
                 } else {
                     // When we move a block that was already inside the email has been moved
                     replacement = 'existing';

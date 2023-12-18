@@ -47,16 +47,19 @@ class CampaignsViewCampaigns extends acymView
 
     public function addSegmentStep($displaySegmentTab)
     {
-        if ($displaySegmentTab) {
-            $this->steps = [
-                'chooseTemplate' => 'ACYM_CHOOSE_TEMPLATE',
-                'editEmail' => 'ACYM_EDIT_EMAIL',
-                'recipients' => 'ACYM_RECIPIENTS',
-                'segment' => 'ACYM_SEGMENT',
-                'sendSettings' => 'ACYM_SEND_SETTINGS',
-                'tests' => 'ACYM_TEST',
-                'summary' => 'ACYM_SUMMARY',
-            ];
+        if (!$displaySegmentTab) {
+            return;
         }
+        $this->steps = [
+            'chooseTemplate' => 'ACYM_CHOOSE_TEMPLATE',
+            'editEmail' => 'ACYM_EDIT_EMAIL',
+            'recipients' => 'ACYM_RECIPIENTS',
+        ];
+        if (acym_isAllowed('segments')) {
+            $this->steps['segment'] = 'ACYM_SEGMENT';
+        }
+        $this->steps['sendSettings'] = 'ACYM_SEND_SETTINGS';
+        $this->steps['tests'] = 'ACYM_TEST';
+        $this->steps['summary'] = 'ACYM_SUMMARY';
     }
 }

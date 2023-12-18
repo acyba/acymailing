@@ -4,6 +4,7 @@ jQuery(function ($) {
         setCheckPortConfiguration();
         setDKIMSelectConfiguration();
         setCheckDBConfiguration();
+        setScanFilesConfiguration();
         setOnChangeAutomaticBounce();
         setSelect2ChooseEmails();
         setAttachLicenseKey();
@@ -74,6 +75,22 @@ jQuery(function ($) {
 
             $.get(ACYM_AJAX_URL + '&ctrl=configuration&task=checkDB', function (response) {
                 $('#checkdb_report').html(response);
+            });
+        });
+    }
+
+    function setScanFilesConfiguration() {
+        $('#scanfiles_button').off('click').on('click', function (e) {
+            e.preventDefault();
+
+            $('#scanfiles_report').html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
+
+            const data = {
+                ctrl: 'configuration',
+                task: 'scanSiteFiles'
+            };
+            acym_helper.get(ACYM_AJAX_URL, data).then(res => {
+                $('#scanfiles_report').html(res.message);
             });
         });
     }

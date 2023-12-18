@@ -5,8 +5,8 @@
         <?php
         echo acym_listingActions(
             [
-                'deleteFollowup' => acym_translation('ACYM_DELETE'),
                 'duplicateFollowup' => acym_translation('ACYM_DUPLICATE'),
+                'deleteFollowup' => acym_translation('ACYM_DELETE'),
             ]
         );
         ?>
@@ -57,6 +57,11 @@
 				<div class="cell small-2 large-1 acym__listing__header__title text-center">
                     <?php echo acym_translation('ACYM_ACTIVE'); ?>
 				</div>
+
+				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
+                    <?php echo acym_translation('ACYM_ACTIONS') ?>
+				</div>
+
 				<div class="cell show-for-large large-1 acym__listing__header__title text-center">
                     <?php echo acym_translation('ACYM_ID'); ?>
 				</div>
@@ -182,6 +187,24 @@
                             : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
                         echo '<i data-acy-table="followup" data-acy-field="active" data-acy-elementid="'.acym_escape($followup->id).'" class="acym_toggleable '.$class.'"></i>';
                         ?>
+					</div>
+					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
+						<a href="<?php echo acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$followup->id); ?>">
+							<i class="acymicon-pencil" title="<?php echo acym_translation('ACYM_EDIT'); ?>"></i>
+						</a>
+						<a><i class="acymicon-content_copy fastActions"
+							  data-action="duplicateFollowup"
+							  data-acy-elementid="<?php echo acym_escape($followup->id); ?>"
+							  title="<?php echo acym_translation('ACYM_DUPLICATE'); ?>"></i>
+						</a>
+						<a href="<?php echo acym_completeLink('stats&mail_ids[]='.implode('&mail_ids[]=', $followup->mail_ids));
+                        ?>"> <i class="acymicon-insert_chart" title="<?php echo acym_translation('ACYM_STATISTICS'); ?>"></i>
+						</a>
+						<i class="cursor-pointer acymicon-trash-o fastActions deleteFastAction"
+						   data-action="deleteFollowup"
+						   data-acy-elementid="<?php echo acym_escape($followup->id); ?>"
+						   title="<?php echo acym_translation('ACYM_DELETE'); ?>"></i>
+
 					</div>
 					<div class="cell show-for-large large-1 text-center acym__listing__text">
                         <?php echo acym_escape($followup->id); ?>

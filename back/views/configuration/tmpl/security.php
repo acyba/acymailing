@@ -38,7 +38,6 @@
 							   name="config[security_key]"
 							   value="<?php echo acym_escape($this->config->get('security_key')); ?>" />
 					</div>
-
 					<div class="cell medium-6 grid-x acym__config__captcha__hcaptcha">
 						<label class="cell large-3" for="hcaptcha_sitekey">
                             <?php
@@ -143,6 +142,7 @@
 			</div>
 		</div>
     <?php } ?>
+
 	<div class="acym__configuration__security__email cell grid-x">
 		<div class="acym__title acym__title__secondary grid-x">
             <?php echo acym_translation('ACYM_EMAIL_VERIFICATION'); ?>
@@ -374,7 +374,39 @@
                     <?php echo acym_translation('ACYM_UPLOAD_FOLDER').acym_info('ACYM_UPLOAD_FOLDER_DESC'); ?>
 				</label>
 				<input class="cell large-9" id="uploadfolder" type="text" name="config[uploadfolder]" value="<?php echo acym_escape($this->config->get('uploadfolder')); ?>" />
+			</div>
+            <?php
+            //__START__joomla_
+            if ('joomla' === ACYM_CMS) {
+                ?>
+				<div class="grid-x grid-margin-y margin-y">
+					<label class="cell large-3">
+                        <?php echo acym_translation('ACYM_SCAN_SITE_FILES').acym_info('ACYM_SCAN_SITE_FILES_DESC'); ?>
+					</label>
 
+					<div class="cell large-9 grid-x">
+						<button type="button" class="cell medium-shrink button button-secondary" id="scanfiles_button">
+                            <?php echo acym_translation('ACYM_SCAN_SITE_FILES'); ?>
+						</button>
+						<div class="cell auto padding-left-1" id="scanfiles_report"></div>
+					</div>
+				</div>
+                <?php
+            }
+            //__END__joomla_
+            ?>
+			<div class="cell grid-x grid-margin-y margin-y acym_vcenter">
+				<label class="cell large-3" for="php_overrides">
+                    <?php echo acym_translation('ACYM_ALLOW_PHP_OVERRIDES').acym_info('ACYM_ALLOW_PHP_OVERRIDES_DESC'); ?>
+				</label>
+				<div class="cell grid-x large-9">
+                    <?php
+                    echo acym_switch(
+                        'config[php_overrides]',
+                        $this->config->get('php_overrides', 0)
+                    );
+                    ?>
+				</div>
 			</div>
 		</div>
 		<div class="acym__configuration__check-database margin-bottom-2">
@@ -407,6 +439,76 @@
                         );
                         ?>
 					</div>
+				</div>
+			</div>
+		</div>
+		<div class="margin-bottom-2">
+			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CRON'); ?></div>
+			<div class="grid-x grid-margin-x margin-y">
+				<div class="cell grid-x acym_vcenter">
+					<label class="cell large-3" for="cron_security">
+                        <?php echo acym_translation('ACYM_ADD_SECURITY_KEY_CRON').acym_info('ACYM_ADD_SECURITY_KEY_CRON_DESC'); ?>
+					</label>
+					<div class="cell grid-x large-9">
+                        <?php
+                        echo acym_switch(
+                            'config[cron_security]',
+                            $this->config->get('cron_security', 0)
+                        );
+                        ?>
+					</div>
+				</div>
+			</div>
+			<div class="grid-x grid-margin-y margin-y">
+				<label class="cell large-3" for="cron_key">
+                    <?php echo acym_translation('ACYM_CRON_KEY').acym_info('ACYM_CRON_KEY_DESC'); ?>
+				</label>
+				<input class="cell large-9"
+					   id="cron_key"
+					   type="text"
+					   name="config[cron_key]"
+					   value="<?php echo acym_escape($this->config->get('cron_key', $this->config->get('security_key', ''))); ?>" />
+			</div>
+		</div>
+
+		<div class="margin-bottom-2">
+			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_URL'); ?></div>
+			<div class="grid-x grid-margin-x margin-y">
+				<div class="cell grid-x acym_vcenter">
+					<label class="cell large-3" for="different_admin_url_toggle">
+                        <?php echo acym_translation('ACYM_FRONT_BACK_URL'); ?>
+					</label>
+					<div class="cell grid-x large-9">
+                        <?php
+                        echo acym_switch(
+                            'config[different_admin_url_toggle]',
+                            $this->config->get('different_admin_url_toggle', 0),
+                            '',
+                            [],
+                            '',
+                            '',
+                            '',
+                            'cron_security_config'
+                        );
+                        ?>
+					</div>
+				</div>
+			</div>
+			<div class="grid-x grid-margin-y margin-y" id="cron_security_config">
+				<div class="cell grid-x acym_vcenter">
+
+					<label class="cell large-3" for="cron_key">
+                        <?php echo acym_translation('ACYM_BACKEND_URL'); ?>
+					</label>
+					<input class="cell large-9"
+						   id="cron_key"
+						   type="text"
+						   name="config[different_admin_url_value]"
+						   value="<?php echo $this->config->get('different_admin_url_value') === ''
+                               ? rtrim(ACYM_LIVE, '/')
+                               : acym_escape(
+                                   $this->config->get('different_admin_url_value')
+                               ); ?>" />
 				</div>
 			</div>
 		</div>

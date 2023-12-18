@@ -1,6 +1,17 @@
 <div id="spam_test_zone" class="cell">
 	<h6 class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SAFE_CHECK').acym_info('ACYM_INTRO_SAFE_CHECK'); ?></h6>
 	<p class="margin-bottom-1"><?php echo acym_translation('ACYM_SAFE_CHECK_DESC'); ?></p>
+    <?php
+    if (count($data['emails_to_test']) > 1) { ?>
+		<div class="margin-bottom-1 cell grid-x">
+			<p class="cell">
+                <?php echo acym_translation('ACYM_SELECT_VERSION_TO_TEST'); ?>
+			</p>
+			<div class="cell">
+                <?php echo acym_select($data['emails_to_test'], 'mail_id_test', $data['id'], ['class' => 'acym__select'], 'id', 'subject'); ?>
+			</div>
+		</div>
+    <?php } ?>
 	<div class="grid-x align-center">
 		<div class="cell">
             <?php

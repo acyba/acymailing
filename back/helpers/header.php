@@ -29,7 +29,7 @@ class HeaderHelper extends acymObject
         // End Tools
         $header .= '</div>';
 
-        $header = '<div id="acym_header" class="grid-x hide-for-small-only margin-bottom-1">'.$header.'</div>';
+        $header = '<div id="acym_header" class="grid-x margin-bottom-1">'.$header.'</div>';
 
         return $this->getLastNews().$header;
     }
@@ -71,7 +71,7 @@ class HeaderHelper extends acymObject
             }
 
             // If the extension isn't correct, leave
-            if (!empty($oneNews->extension) && strtolower($oneNews->extension) != 'acymailing') continue;
+            if (!empty($oneNews->extension) && strtolower($oneNews->extension) !== 'acymailing') continue;
 
             // If the CMS isn't correct, leave
             if (!empty($oneNews->cms) && strtolower($oneNews->cms) != strtolower('{__CMS__}')) continue;
@@ -83,6 +83,11 @@ class HeaderHelper extends acymObject
             if (!empty($oneNews->version)) {
                 [$version, $operator] = explode('_', $oneNews->version);
                 if (!version_compare($this->config->get('version'), $version, $operator)) continue;
+            }
+
+            if (!empty($oneNews->mailermethod)) {
+                $sendMethod = $this->config->get('mailer_method', '');
+                if ($oneNews->mailermethod !== $sendMethod) continue;
             }
 
             if (in_array($oneNews->name, $doNotRemind)) continue;

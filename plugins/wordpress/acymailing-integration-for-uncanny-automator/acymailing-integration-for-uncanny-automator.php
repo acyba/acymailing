@@ -6,7 +6,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 1.4
+ * Version: 1.6
  * Text Domain: acymailing-integration-for-uncanny-automator
  * Domain Path: /language
  */

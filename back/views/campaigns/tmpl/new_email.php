@@ -9,6 +9,15 @@ $newsletters = [
         'level' => ACYM_STARTER,
     ],
     [
+        'data-link' => $data['campaign_test_link'],
+        'type' => 'campaign_test',
+        'icon' => 'flask',
+        'title' => 'ACYM_AB_TEST_CAMPAIGN',
+        'desc' => 'ACYM_AB_TEST_CAMPAIGN_DESC',
+        'level' => ACYM_ENTERPRISE,
+        'error_message' => 'ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION',
+    ],
+    [
         'data-link' => $data['campaign_scheduled_link'],
         'type' => 'scheduled',
         'icon' => 'access_time',

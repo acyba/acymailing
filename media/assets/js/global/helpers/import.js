@@ -9,6 +9,16 @@ const acym_helperImport = {
         acym_helperImport.setCreateListFromImportPage();
     },
     setImportCMSLists: function () {
+        jQuery('.acym__users__import__button').off('click').on('click', function () {
+            acym_helperImport.getSubmitButton().trigger('click');
+        });
+
+        jQuery('#acym__users__import__skip__button').off('click').on('click', function () {
+            jQuery('[name="acym__entity_select__selected"]').attr('value', '');
+            acym_helperImport.getSubmitButton().trigger('click');
+        });
+    },
+    getSubmitButton: function () {
         let $submitButton;
         if (jQuery('#acym__users__import__from_database').is(':visible')) {
             $submitButton = jQuery('#submit_import_database');
@@ -18,14 +28,7 @@ const acym_helperImport = {
             $submitButton = jQuery('#submit_import_mailpoet');
         }
 
-        jQuery('.acym__users__import__button').off('click').on('click', function () {
-            $submitButton.trigger('click');
-        });
-
-        jQuery('#acym__users__import__skip__button').off('click').on('click', function () {
-            jQuery('[name="acym__entity_select__selected"]').attr('value', '');
-            $submitButton.trigger('click');
-        });
+        return $submitButton;
     },
     setVerificationGenericImport: function () {
         let $submitButton = jQuery('#formSubmit');
@@ -149,9 +152,15 @@ const acym_helperImport = {
         });
     },
     setChangeCharset: function () {
-        jQuery('#acyencoding').off('change').on('change', function () {
-            let URL = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlUsers + '&task=ajaxEncoding&encoding=' + jQuery(this).val() + '&filename=' + jQuery(this)
-                .attr('data-filename');
+        jQuery('#acyencoding').on('change', function () {
+            let URL = ACYM_AJAX_URL
+                      + '&ctrl='
+                      + acym_helper.ctrlUsers
+                      + '&task=ajaxEncoding&encoding='
+                      + jQuery(this).val()
+                      + '&acym_import_filename='
+                      + jQuery(this)
+                          .attr('data-filename');
             let selectedDropdowns = '';
             let fieldNb = jQuery('.fieldAssignment').length;
             if (isNaN(fieldNb)) fieldNb = 1;
@@ -164,6 +173,7 @@ const acym_helperImport = {
 
             jQuery.post(URL, function (response) {
                 jQuery('#acym__users__import__generic__matchdata').html(response);
+                jQuery('.fieldAssignment').select2({theme: 'foundation'});
             });
         });
     },

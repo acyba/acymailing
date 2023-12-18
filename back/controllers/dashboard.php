@@ -21,6 +21,7 @@ class DashboardController extends acymController
 
         $this->loadScripts = [
             'walk_through' => ['editor-wysid'],
+            'features' => ['vue-applications' => ['splashscreen']],
         ];
     }
 
@@ -37,7 +38,16 @@ class DashboardController extends acymController
 
     public function features()
     {
-        if (!file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN)) {
+        if (!file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON)) {
+            $this->listing();
+
+            return;
+        }
+
+        $splashJson = acym_fileGetContent(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON);
+        $version = json_decode($splashJson);
+        if (version_compare($this->config->get('previous_version', '{__VERSION__}'), $version->max_version, '>')) {
+            @unlink(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON);
             $this->listing();
 
             return;
@@ -49,7 +59,7 @@ class DashboardController extends acymController
             'content' => ob_get_clean(),
         ];
 
-        if (!@unlink(ACYM_NEW_FEATURES_SPLASHSCREEN)) {
+        if (!@unlink(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON)) {
             $this->listing();
 
             return;

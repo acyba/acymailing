@@ -7,7 +7,7 @@
                 if (!empty($data['parent_campaign']->id)) {
                     echo acym_translationSprintf(
                         'ACYM_CAMPAIGN_GENERATED_BY',
-                        '<a href="'.acym_completeLink('campaigns&task=edit&step=editEmail&id='.$data['parent_campaign']->id).'">'.$data['parent_mail']->name.'</a>'
+                        '<a href="'.acym_completeLink('campaigns&task=edit&step=editEmail&campaignId='.$data['parent_campaign']->id).'">'.$data['parent_mail']->name.'</a>'
                     );
                 } else {
                     echo acym_translation('ACYM_AUTO_CAMPAIGN_DELETED');
@@ -91,6 +91,6 @@
 			</div>
 		</div>
 	</div>
-	<input type="hidden" value="<?php echo intval($data['campaign']->id); ?>" name="id" />
+	<input type="hidden" value="<?php echo intval($data['campaign']->id); ?>" name="campaignId" />
     <?php acym_formOptions(true, 'edit', 'summary_generated'); ?>
 </form>

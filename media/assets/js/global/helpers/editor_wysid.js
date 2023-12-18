@@ -49,7 +49,7 @@ const acym_helperEditorWysid = {
 
         jQuery('[id^="mce_"]').removeAttr('id');
 
-        acym_editorWysidMultilingual.setLanguageSelection();
+        acym_editorWysidVersions.setVersionSelection();
         acym_editorWysidDynamic.setDTexts();
     },
     setColumnRefreshUiWYSID: function (autoSave = true, initEdit = false) {
@@ -284,15 +284,13 @@ const acym_helperEditorWysid = {
     timeClickImage: 0,
     dynamicPreviewIdentifier: 0,
     typingTimer: '',
-    typingTimerGiphy: '',
-    offsetGiphy: 0,
-    queryGiphy: 'hello',
     defaultMailsSettings: {
         '#acym__wysid__background-colorpicker': {'background-color': '#efefef'},
         'p': {
             'font-family': 'Helvetica',
             'font-size': '12px',
             'font-weight': 'normal',
+            'line-height': 'inherit',
             'font-style': 'normal',
             'color': '#000000'
         },
@@ -300,6 +298,7 @@ const acym_helperEditorWysid = {
             'font-family': 'Helvetica',
             'font-size': '12px',
             'font-weight': 'normal',
+            'line-height': 'inherit',
             'font-style': 'normal',
             'color': '#0000F1'
         },
@@ -307,6 +306,7 @@ const acym_helperEditorWysid = {
             'font-family': 'Helvetica',
             'font-size': '12px',
             'font-weight': 'normal',
+            'line-height': 'inherit',
             'font-style': 'normal',
             'color': '#0000F1'
         },
@@ -314,6 +314,7 @@ const acym_helperEditorWysid = {
             'font-family': 'Helvetica',
             'font-size': '12px',
             'font-weight': 'normal',
+            'line-height': 'inherit',
             'font-style': 'normal',
             'color': '#000000'
         },
@@ -321,6 +322,7 @@ const acym_helperEditorWysid = {
             'font-family': 'Helvetica',
             'font-size': '34px',
             'font-weight': 'normal',
+            'line-height': 'inherit',
             'font-style': 'normal',
             'color': '#000000'
         },
@@ -328,6 +330,7 @@ const acym_helperEditorWysid = {
             'font-family': 'Helvetica',
             'font-size': '30px',
             'font-weight': 'normal',
+            'line-height': 'inherit',
             'font-style': 'normal',
             'color': '#000000'
         },
@@ -335,6 +338,7 @@ const acym_helperEditorWysid = {
             'font-family': 'Helvetica',
             'font-size': '28px',
             'font-weight': 'normal',
+            'line-height': 'inherit',
             'font-style': 'normal',
             'color': '#000000'
         },
@@ -342,6 +346,7 @@ const acym_helperEditorWysid = {
             'font-family': 'Helvetica',
             'font-size': '24px',
             'font-weight': 'normal',
+            'line-height': 'inherit',
             'font-style': 'normal',
             'color': '#000000'
         },
@@ -349,6 +354,7 @@ const acym_helperEditorWysid = {
             'font-family': 'Helvetica',
             'font-size': '20px',
             'font-weight': 'normal',
+            'line-height': 'inherit',
             'font-style': 'normal',
             'color': '#000000'
         },
@@ -356,6 +362,7 @@ const acym_helperEditorWysid = {
             'font-family': 'Helvetica',
             'font-size': '18px',
             'font-weight': 'normal',
+            'line-height': 'inherit',
             'font-style': 'normal',
             'color': '#000000'
         },
@@ -387,6 +394,7 @@ const acym_helperEditorWysid = {
         'instagram': {'src': ACYM_MEDIA_URL + '/images/logo/instagram.png'},
         'vimeo': {'src': ACYM_MEDIA_URL + '/images/logo/vimeo.png'},
         'wordpress': {'src': ACYM_MEDIA_URL + '/images/logo/wordpress.png'},
-        'youtube': {'src': ACYM_MEDIA_URL + '/images/logo/youtube.png'}
+        'youtube': {'src': ACYM_MEDIA_URL + '/images/logo/youtube.png'},
+        'x': {'src': ACYM_MEDIA_URL + '/images/logo/x.png'}
     }
 };

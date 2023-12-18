@@ -120,7 +120,7 @@ trait UserAutomationFilters
 
         $dateToCheck = $this->processDateToCheck($options);
 
-        $query->join['j_fields'.$num] = '#__fields_values AS jf'.$num.' ON jf'.$num.'.item_id = user.cms_id';
+        $query->join['j_fields'.$num] = '#__fields_values AS jf'.$num.' ON jf'.$num.'.item_id = user.cms_id AND jf'.$num.'.field_id = '.intval($options['field']);
         $query->where[] = 'user.cms_id != 0 ';
         $query->where[] = 'jf'.$num.'.value LIKE '.acym_escapeDB('%'.date_format($dateToCheck, '-m-d').'%');
     }

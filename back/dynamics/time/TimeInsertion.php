@@ -17,10 +17,10 @@ trait TimeInsertion
         $others['{date:2}'] = 'ACYM_DATE_FORMAT_LC2';
         $others['{date:3}'] = 'ACYM_DATE_FORMAT_LC3';
         $others['{date:4}'] = 'ACYM_DATE_FORMAT_LC4';
-        $others['{date:%m/%d/%Y}'] = '%m/%d/%Y';
-        $others['{date:%d/%m/%y}'] = '%d/%m/%y';
-        $others['{date:%A}'] = '%A';
-        $others['{date:%B}'] = '%B';
+        $others['{date:m/d/Y}'] = 'm/d/Y';
+        $others['{date:d/m/y}'] = 'd/m/y';
+        $others['{date:l}'] = 'l';
+        $others['{date:F}'] = 'F';
 
 
         $k = 0;

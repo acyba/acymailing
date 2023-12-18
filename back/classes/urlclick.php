@@ -46,7 +46,7 @@ class UrlClickClass extends acymClass
         acym_query($query);
     }
 
-    public function getNumberUsersClicked($mailIds = [])
+    public function getNumberUsersClicked($mailIds = [], $isAbTest = false)
     {
         if (!is_array($mailIds)) $mailIds = [$mailIds];
 
@@ -54,13 +54,13 @@ class UrlClickClass extends acymClass
 
         $query = 'SELECT COUNT(DISTINCT user_id) FROM #__acym_url_click AS url_click';
         $isMultilingual = acym_isMultilingual();
-        if ($isMultilingual && !empty($mailIds)) {
+        if (($isMultilingual || $isAbTest) && !empty($mailIds)) {
             $query .= ' LEFT JOIN #__acym_mail AS mail ON `mail`.`id` = `url_click`.`mail_id` WHERE `mail`.`id` IN ('.implode(
                     ',',
                     $mailIds
                 ).') OR  `mail`.`parent_id` IN ('.implode(',', $mailIds).')';
         }
-        if (!$isMultilingual && !empty($mailIds)) $query .= ' WHERE `url_click`.`mail_id` IN ('.implode(',', $mailIds).')';
+        if (!$isMultilingual && !$isAbTest && !empty($mailIds)) $query .= ' WHERE `url_click`.`mail_id` IN ('.implode(',', $mailIds).')';
         $clickNb = acym_loadResult($query);
 
         return empty($clickNb) ? 0 : $clickNb;

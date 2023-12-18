@@ -10,7 +10,7 @@
 			<div class="medium-4 small-12 cell">
 				<a
 						href="<?php echo acym_completeLink(
-                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&id='.acym_escape(
+                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&campaignId='.acym_escape(
                                 $data['campaignID']
                             ).'&campaign_type='.$campaignType
                         ); ?>"
@@ -45,10 +45,16 @@
 			</div>
 			<div class="xxlarge-3 xlarge-2 large-1 hide-for-medium-only hide-for-small-only cell"></div>
 			<div class="grid-x medium-shrink text-center cell acym__templates__choose__type-templates">
+                <?php
+                $link = acym_completeLink(
+                    acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&campaignId='.intval($data['campaignID']).'&campaign_type='.$campaignType
+                );
+                if (!empty($data['abtest'])) {
+                    $link .= '&abtest=1';
+                }
+                ?>
 				<a
-						href="<?php echo acym_completeLink(
-                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&id='.intval($data['campaignID']).'&campaign_type='.$campaignType
-                        ); ?>"
+						href="<?php echo $link; ?>"
 						class="button"
 						id="acym__templates__choose__create__empty">
                     <?php echo acym_translation('ACYM_START_FROM_EMPTY_TEMPLATE'); ?>
@@ -63,11 +69,17 @@
                 foreach ($data['allMails'] as $oneTemplate) {
                     ?>
 					<div class="cell grid-x acym__templates__oneTpl acym__listing__block">
+                        <?php
+                        $link = acym_completeLink(
+                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.$oneTemplate->id.'&campaignId='.intval($data['campaignID']).'&campaign_type='.$campaignType
+                        );
+                        if (!empty($data['abtest'])) {
+                            $link .= '&abtest=1';
+                        }
+                        ?>
 						<input type="hidden"
 							   class="acym__templates__oneTpl__choose"
-							   value="<?php echo acym_completeLink(
-                                   acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from='.$oneTemplate->id.'&id='.intval($data['campaignID']).'&campaign_type='.$campaignType
-                               ); ?>" />
+							   value="<?php echo $link; ?>" />
 						<div class="cell acym__templates__pic text-center">
 							<img src="<?php echo acym_getMailThumbnail($oneTemplate->thumbnail); ?>" alt="<?php echo acym_escape($oneTemplate->name); ?>" />
                             <?php

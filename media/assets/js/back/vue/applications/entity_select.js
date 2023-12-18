@@ -256,8 +256,7 @@ function readyFunction($) {
 
                     this.loadMoreEntity('available');
                     this.loadMoreEntity('selected');
-                    let buttonSubmit = document.getElementById('acym__entity_select__button__submit');
-                    if (typeof buttonSubmit != 'undefined' && buttonSubmit != null && buttonSubmit.classList.contains('acy_button_submit')) {
+                    if ($('#acym__entity_select__button__submit.acy_button_submit').length) {
                         acym_helper.setSubmitButtonGlobal();
                     }
 

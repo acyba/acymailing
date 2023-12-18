@@ -4,6 +4,14 @@ const acym_helper = {
     ctrlLists: ACYM_IS_ADMIN ? 'lists' : 'frontlists',
     ctrlUsers: ACYM_IS_ADMIN ? 'users' : 'frontusers',
     ctrlCampaigns: ACYM_IS_ADMIN ? 'campaigns' : 'frontcampaigns',
+    config_get: function (field) {
+        const controller = ACYM_IS_ADMIN ? 'configuration' : 'frontconfiguration';
+        return jQuery.ajax({
+            type: 'GET',
+            url: ACYM_AJAX_URL + '&ctrl=' + controller + '&task=getAjax&field=' + field,
+            dataType: 'json'
+        });
+    },
     emailValid: function (email) {
         return email.match(ACYM_REGEX_EMAIL) !== null;
     },
@@ -44,7 +52,9 @@ const acym_helper = {
     },
     setSubmitButtonGlobal: function () {
         jQuery('.acy_button_submit').off('click').on('click', function (e) {
-            if (jQuery(this).attr('data-force-submit') !== undefined) jQuery('[required]').removeAttr('required');
+            if (jQuery(this).attr('data-force-submit') !== undefined) {
+                jQuery('[required]').removeAttr('required');
+            }
 
             if (jQuery(this).hasClass('disabled')) {
                 return false;
@@ -66,7 +76,9 @@ const acym_helper = {
 
             if (jQuery(this).attr('acym-data-before')) {
                 let result = eval(jQuery(this).attr('acym-data-before'));
-                if (result === false) return false;
+                if (result === false) {
+                    return false;
+                }
             }
 
             let $form = jQuery('#acym_form');

@@ -17,21 +17,37 @@
         background-color: rgba(239, 239, 239, 0.7);
     }
 
-    #acym__wysid__edit__languages {
+    #acym__wysid__edit__versions {
         border-bottom: 1px solid black;
         margin-bottom: 1rem;
+
+        &.acym__wysid__edit__versions-abtest {
+            .acym__wysid__edit__versions__selection__edition, .acym__wysid__edit__versions__selection__check {
+                top: -.3rem !important;
+                left: unset !important;
+                right: 0;
+
+                &.acym__wysid__edit__versions__selection__check {
+                    top: 0 !important;
+                }
+            }
+
+            .acym__wysid__edit__versions__selection__element {
+                margin-right: 1rem;
+            }
+        }
 
         & > div {
             display: inline-block;
 
-            &.acym__wysid__edit__languages__separator {
+            &.acym__wysid__edit__versions__separator {
                 width: 1px;
                 height: 1.5rem;
                 vertical-align: middle;
                 background-color: $black;
             }
 
-            &.acym__wysid__edit__languages__selection {
+            &.acym__wysid__edit__versions__selection {
                 position: relative;
                 padding: 0 1rem;
                 margin-top: -0.8rem;
@@ -47,7 +63,11 @@
                     cursor: default;
                 }
 
-                .acym__wysid__edit__languages__selection__edition {
+                .acym__wysid__edit__versions__selection__element {
+                    cursor: pointer;
+                }
+
+                .acym__wysid__edit__versions__selection__edition {
                     top: 0.7rem;
                     left: 1.6rem;
                     background-color: white;
@@ -56,8 +76,8 @@
                     opacity: 0.8;
                 }
 
-                &.acym__wysid__edit__languages__selection-done {
-                    .acym__wysid__edit__languages__selection__check {
+                &.acym__wysid__edit__versions__selection-done {
+                    .acym__wysid__edit__versions__selection__check {
                         display: block;
                         top: 1.7rem;
                         left: 3.2rem;
@@ -66,16 +86,16 @@
                     }
                 }
 
-                &.acym__wysid__edit__languages-selected {
+                &.acym__wysid__edit__versions-selected {
                     img {
                         cursor: default;
                     }
 
-                    .acym__wysid__edit__languages__selection__check {
+                    .acym__wysid__edit__versions__selection__check {
                         display: none;
                     }
 
-                    .acym__wysid__edit__languages__selection__edition {
+                    .acym__wysid__edit__versions__selection__edition {
                         display: block;
                     }
                 }

@@ -88,6 +88,7 @@ class QueueClass extends acymClass
         acym_trigger('getCampaignTypes', [&$specialTypes]);
 
         foreach ($results['elements'] as $i => $oneMail) {
+            $results['elements'][$i]->sending_params = empty($oneMail->sending_params) ? [] : json_decode($oneMail->sending_params, true);
             if (in_array($oneMail->sending_type, $specialTypes)) {
                 $results['elements'][$i]->iscampaign = false;
                 $results['elements'][$i]->lists = acym_translation('ACYM_SPECIAL_MAIL_SENT_TO');
@@ -106,7 +107,17 @@ class QueueClass extends acymClass
                     WHERE ml.mail_id = '.intval($mailId),
                     'id'
                 );
-                if ($isMultilingual) {
+
+                if (isset($results['elements'][$i]->sending_params['abtest'])) {
+
+                    $isVersionB = $results['elements'][$i]->sending_params['abtest']['B'] == $results['elements'][$i]->id;
+
+                    if (empty($results['elements'][$i]->parent_id) || $isVersionB) {
+                        $results['elements'][$i]->recipients = intval($mailStatClass->getTotalSubscribersByMailId($results['elements'][$i]->id));
+                    } else {
+                        $results['elements'][$i]->recipients = intval($mailStatClass->getTotalSubscribersByMailIdWithChild($mailId));
+                    }
+                } elseif ($isMultilingual) {
                     if (empty($campaignRecipientsMultilingual[$oneMail->campaign])) {
                         $listIds = array_keys($results['elements'][$i]->lists);
                         acym_arrayToInteger($listIds);
@@ -117,7 +128,7 @@ class QueueClass extends acymClass
                             ).') and user_list.status = 1 ';
                         $automationHelper->leftjoin['mail'] = '`#__acym_mail` AS mail ON `mail`.`language` = `user`.language AND `mail`.`parent_id` = '.intval($mailId);
                         $automationHelper->where[] = '`user_list`.`list_id` IN ('.implode(',', $listIds).') AND `user_list`.`status` = 1';
-                        $filters = $campaignClass->getFilterCampaign(json_decode($oneMail->sending_params, true));
+                        $filters = $campaignClass->getFilterCampaign($oneMail->sending_params);
                         foreach ($filters as $and => $andValues) {
                             $and = intval($and);
                             foreach ($andValues as $filterName => $options) {
@@ -331,7 +342,7 @@ class QueueClass extends acymClass
     {
         if (empty($limit)) return [];
 
-        $query = 'SELECT queue.* FROM #__acym_queue AS queue';
+        $query = 'SELECT queue.*, campaign.sending_params AS sending_params FROM #__acym_queue AS queue';
         $query .= ' JOIN #__acym_user AS user ON queue.`user_id` = user.`id` ';
         $query .= ' JOIN #__acym_mail AS mail ON queue.`mail_id` = mail.`id` ';
         $query .= ' LEFT JOIN #__acym_campaign AS campaign ON campaign.`mail_id` = mail.`id` ';
@@ -359,7 +370,19 @@ class QueueClass extends acymClass
             $query .= ' AND queue.`mail_id` = '.intval($mailId);
         }
 
-        $query .= ' ORDER BY queue.`priority` ASC, queue.`sending_date` ASC, queue.`user_id` ASC';
+        // We don't display this option in the configuration anymore but we use its value if it's set in the database
+        $sendOrder = $this->config->get('sendorder');
+        if (empty($sendOrder)) {
+            $order = 'queue.`user_id` ASC';
+        } elseif ($sendOrder === 'rand') {
+            $order = 'RAND()';
+        } else {
+            $sendOrder = str_replace('subid', 'user_id', $sendOrder);
+            $ordering = explode(',', $sendOrder);
+            $order = 'queue.`'.acym_secureDBColumn(trim($ordering[0])).'` '.acym_secureDBColumn(trim($ordering[1]));
+        }
+
+        $query .= ' ORDER BY queue.`priority` ASC, queue.`sending_date` ASC, '.$order;
         // You can add a "startqueue" parameter to the url so Acy will not load the first e-mails but will start directly with the 300 or 500 or...
         $startqueue = acym_getVar('int', 'startqueue', 0);
         $query .= ' LIMIT '.intval($startqueue).','.intval($limit);
@@ -409,6 +432,19 @@ class QueueClass extends acymClass
         );
     }
 
+    public function delayAll(int $hours)
+    {
+        if ($hours < 1) {
+            return false;
+        }
+
+        return acym_query(
+            'UPDATE #__acym_queue 
+            SET sending_date = DATE_ADD(sending_date, INTERVAL '.$hours.' HOUR) 
+            WHERE sending_date < DATE_ADD(NOW(), INTERVAL '.intval($hours).' HOUR)'
+        );
+    }
+
     public function getMailReceivers($mail, $onlyNew = null)
     {
         if (empty($mail->sending_params)) {
@@ -441,7 +477,9 @@ class QueueClass extends acymClass
         }
 
         if ((is_null($onlyNew) && !empty($sendingParams['resendTarget']) && 'new' === $sendingParams['resendTarget']) || $onlyNew) {
-            $automationHelper->leftjoin['us'] = '`#__acym_user_stat` AS `us` ON `us`.`user_id` = `user`.`id` AND `us`.`mail_id` = '.intval($mail->id);
+            $automationHelper->leftjoin['us'] = '`#__acym_user_stat` AS `us` ON `us`.`user_id` = `user`.`id` AND `us`.`mail_id` IN (SELECT id FROM #__acym_mail WHERE parent_id = '.intval(
+                    $mail->id
+                ).' OR id = '.intval($mail->id).')';
             $automationHelper->where[] = '`us`.`user_id` IS NULL';
         }
 

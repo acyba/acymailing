@@ -121,7 +121,7 @@ class AutomationHelper extends acymObject
         //If so, we replace it properly and we convert it into the right time field
         if (strpos($value, '[time]') !== false) {
             $value = acym_replaceDate($value);
-            $value = strftime('%Y-%m-%d %H:%M:%S', $value);
+            $value = date('Y-m-d H:i:s', $value);
         }
 
         $value = acym_replaceDateTags($value);

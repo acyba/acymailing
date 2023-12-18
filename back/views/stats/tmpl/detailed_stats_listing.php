@@ -128,9 +128,9 @@
                             <?php
                             if (!empty($detailed_stat->campaign_id) && acym_isAllowed('campaigns')) {
                                 if (empty($detailed_stat->parent_id)) {
-                                    $link = acym_completeLink('campaigns&task=edit&step=editEmail&id='.$detailed_stat->campaign_id);
+                                    $link = acym_completeLink('campaigns&task=edit&step=editEmail&campaignId='.$detailed_stat->campaign_id);
                                 } else {
-                                    $link = acym_completeLink('campaigns&task=summaryGenerated&id='.$detailed_stat->campaign_id);
+                                    $link = acym_completeLink('campaigns&task=summaryGenerated&campaignId='.$detailed_stat->campaign_id);
                                 }
 
                                 $name = '<a href="'.$link.'" class="word-break acym__color__blue">'.$detailed_stat->subject.'</a>';

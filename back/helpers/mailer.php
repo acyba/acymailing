@@ -32,6 +32,11 @@ class MailerHelper extends AcyMailerPhp
     public $replyname;
     public $replyemail;
     public $body;
+    public $altbody;
+    public $subject;
+    public $from;
+    public $fromName;
+    public $replyto;
 
     private $encodingHelper;
     private $editorHelper;
@@ -45,6 +50,8 @@ class MailerHelper extends AcyMailerPhp
     public $errorNumber = 0;
     //Error number which induct a new try soon
     public $errorNewTry = [1, 6];
+    // Can be used when our sending method is temporary unavailable to not count it as a "real" failed
+    public $failedCounting = true;
     public $autoAddUser = false;
     public $userCreationTriggers = true;
     public $reportMessage = '';
@@ -85,6 +92,8 @@ class MailerHelper extends AcyMailerPhp
     public $mail = null;
     // Mail objects with replaceContent ran
     public $defaultMail = [];
+
+    public $isAbTest = false;
 
     public function __construct()
     {
@@ -151,7 +160,13 @@ class MailerHelper extends AcyMailerPhp
                 );
                 $this->setOAuth($oauth);
             } else {
-                $this->Password = trim($this->config->get('smtp_password'));
+                $authMethod = $this->config->get('smtp_method');
+                if (in_array($authMethod, ['CRAM-MD5', 'LOGIN', 'PLAIN', 'XOAUTH2'])) {
+                    $this->AuthType = $authMethod;
+                }
+                if ($this->SMTPAuth) {
+                    $this->Password = trim($this->config->get('smtp_password'));
+                }
             }
 
             //SMTP Secure to connect to Gmail for example (tls)
@@ -195,6 +210,15 @@ class MailerHelper extends AcyMailerPhp
             $this->Host = trim($amazonCredentials['amazon_host']).':587';
             $this->Username = trim($amazonCredentials['amazon_username']);
             $this->Password = trim($amazonCredentials['amazon_password']);
+            $this->SMTPAuth = true;
+            $this->SMTPSecure = 'tls';
+        } elseif ($mailerMethodConfig === 'brevo-smtp') {
+            $this->isSMTP();
+            $brevoSmtpCredentials = [];
+            acym_trigger('onAcymGetCredentialsSendingMethod', [&$brevoSmtpCredentials, 'brevo-smtp'], 'plgAcymBrevo');
+            $this->Host = trim($brevoSmtpCredentials['brevo-smtp_host']).':587';
+            $this->Username = trim($brevoSmtpCredentials['brevo-smtp_username']);
+            $this->Password = trim($brevoSmtpCredentials['brevo-smtp_password']);
             $this->SMTPAuth = true;
             $this->SMTPSecure = 'tls';
         } elseif (in_array($mailerMethodConfig, $externalSendingMethod)) {
@@ -393,11 +417,10 @@ class MailerHelper extends AcyMailerPhp
 
         //We will change the encoding format in case of its needed...
         //We always come from utf-8 to transform to something else!
-        if (function_exists('mb_convert_encoding')) {
-            $this->Body = mb_convert_encoding($this->Body, 'HTML-ENTITIES', 'UTF-8');
-            //Fix The Bat issues for special encoding as &sigmaf; was interpreted as &sigma;f;...
-            $this->Body = str_replace(['&amp;', '&sigmaf;'], ['&', 'ς'], $this->Body);
-        }
+        $this->Body = htmlentities($this->Body);
+        $this->Body = htmlspecialchars_decode($this->Body);
+        //Fix The Bat issues for special encoding as &sigmaf; was interpreted as &sigma;f;...
+        $this->Body = str_replace(['&amp;', '&sigmaf;'], ['&', 'ς'], $this->Body);
 
         if ($this->CharSet !== 'utf-8') {
             $this->Body = $this->encodingHelper->change($this->Body, 'UTF-8', $this->CharSet);
@@ -456,6 +479,7 @@ class MailerHelper extends AcyMailerPhp
         foreach ($this->to as $oneReceiver) {
             $receivers[] = $oneReceiver[0];
         }
+
         if (!$result) {
             $this->reportMessage = acym_translationSprintf('ACYM_SEND_ERROR', '<b>'.$this->Subject.'</b>', '<b>'.implode(' , ', $receivers).'</b>');
             if (!empty($this->ErrorInfo)) {
@@ -527,7 +551,7 @@ class MailerHelper extends AcyMailerPhp
         }
 
         global $acymLanguages;
-        if (!acym_isMultilingual()) {
+        if (!acym_isMultilingual() || $this->isAbTest) {
             if (empty($this->defaultMail[$mailId])) {
                 $this->defaultMail[$mailId] = $this->mailClass->getOneByName($mailId, true);
 
@@ -702,7 +726,7 @@ class MailerHelper extends AcyMailerPhp
         //We add the CSS like that for gmail because it deletes the tag style over 8000 char
         $finalContent .= '<style>'.implode('</style><style>', $style).'</style>';
         $finalContent .= '<!--[if mso]><style type="text/css">#acym__wysid__template center > table { width: 580px; }</style><![endif]-->';
-        $finalContent .= '<!--[if !mso]><style type="text/css">#acym__wysid__template center > table { width: 100%; }</style><![endif]-->';
+        $finalContent .= '<!--[if !mso]><!--><style>#acym__wysid__template center > table { width: 100%; }</style><!--<![endif]-->';
         if (!empty($mail->headers)) {
             $finalContent .= $mail->headers;
         }
@@ -887,6 +911,12 @@ class MailerHelper extends AcyMailerPhp
             }
         }
 
+        if (ACYM_CMS === 'wordpress') {
+            ob_start();
+            $this->Body = do_shortcode($this->Body);
+            ob_end_clean();
+        }
+
         //We replace the user tags here and for that, we will create a new object like if it was an e-mail from the database
         //So that we can simplify the tag system and it replaces always the same thing!
 
@@ -912,7 +942,9 @@ class MailerHelper extends AcyMailerPhp
             $this->statPicture($this->mailId, $receiver->id);
             $this->body = acym_absoluteURL($this->body);
             $this->statClick($this->mailId, $receiver->id);
-            if (acym_isTrackingSalesActive()) $this->trackingSales($this->mailId, $receiver->id);
+            if (acym_isTrackingSalesActive()) {
+                $this->trackingSales($this->mailId, $receiver->id);
+            }
         }
 
         $this->replaceParams();
@@ -1007,14 +1039,18 @@ class MailerHelper extends AcyMailerPhp
 
     public function statClick($mailId, $userid, $fromStat = false)
     {
-        if (!$fromStat && !in_array($this->type, $this->mailClass::TYPES_WITH_STATS)) return;
+        if (!$fromStat && !in_array($this->type, $this->mailClass::TYPES_WITH_STATS)) {
+            return;
+        }
 
         $urlClass = new UrlClass();
         $urls = [];
 
         $trackingSystemExternalWebsite = $this->config->get('trackingsystemexternalwebsite', 1);
         $trackingSystem = $this->config->get('trackingsystem', 'acymailing');
-        if (false === strpos($trackingSystem, 'acymailing') && false === strpos($trackingSystem, 'google')) return;
+        if (false === strpos($trackingSystem, 'acymailing') && false === strpos($trackingSystem, 'google')) {
+            return;
+        }
 
         if (strpos($trackingSystem, 'google') !== false) {
             $mail = $this->mailClass->getOneById($mailId);
@@ -1025,13 +1061,17 @@ class MailerHelper extends AcyMailerPhp
         }
 
         preg_match_all('#<[^>]* href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:|tel:)([^"]+)"#Ui', $this->body, $results);
-        if (empty($results)) return;
+        if (empty($results)) {
+            return;
+        }
 
         $countLinks = array_count_values($results[1]);
         if (array_product($countLinks) != 1) {
             $previousLinkHandled = '';
             foreach ($results[1] as $key => $url) {
-                if ($countLinks[$url] === 1) continue;
+                if ($countLinks[$url] === 1) {
+                    continue;
+                }
 
                 // Handle the Outlook buttons that double the link, we need to consider it as the same link that's on the main button element
                 $previousIsOutlook = false;
@@ -1104,7 +1144,8 @@ class MailerHelper extends AcyMailerPhp
                 //It can be separated with a ? as well like administrator?option=com_content
                 if (strpos($urlWithoutBase, '/') || strpos($urlWithoutBase, '?')) {
                     // Get the supposed sub-folder name
-                    $folderName = substr($urlWithoutBase, 0, strpos($urlWithoutBase, '/') == false ? strpos($urlWithoutBase, '?') : strpos($urlWithoutBase, '/'));
+                    $slashPosition = strpos($urlWithoutBase, '/');
+                    $folderName = substr($urlWithoutBase, 0, !$slashPosition ? strpos($urlWithoutBase, '?') : $slashPosition);
                     //There is no dot in a folder!
                     if (strpos($folderName, '.') === false) {
                         $subfolder = @is_dir(ACYM_ROOT.$folderName);
@@ -1119,9 +1160,9 @@ class MailerHelper extends AcyMailerPhp
             if (strpos($url, 'utm_source') === false && strpos($trackingSystem, 'google') !== false) {
                 $idToUse = empty($campaign) ? $mailId : $campaign->id;
                 $args = [];
-                $args[] = 'utm_source=newsletter_'.$idToUse;
-                $args[] = 'utm_medium=email';
-                $args[] = 'utm_campaign='.$utmCampaign;
+                $args[] = empty($campaign->sending_params['utm_source']) ? 'utm_source=newsletter_'.$idToUse : 'utm_source='.urlencode($campaign->sending_params['utm_source']);
+                $args[] = empty($campaign->sending_params['utm_medium']) ? 'utm_medium=email' : 'utm_medium='.urlencode($campaign->sending_params['utm_medium']);
+                $args[] = empty($campaign->sending_params['utm_campaign']) ? 'utm_campaign='.$utmCampaign : 'utm_campaign='.urlencode($campaign->sending_params['utm_campaign']);
                 //If we have an anchor we need to remove it and add it to the end of the url
                 $anchor = '';
                 if (strpos($url, '#') !== false) {
@@ -1143,12 +1184,28 @@ class MailerHelper extends AcyMailerPhp
             }
 
             if (strpos($trackingSystem, 'acymailing') !== false) {
-                // We don't replace an url which contains subid because we could loop or we could create quick links for modifying subscriptions which could be really dangerous
-                // We don't track something with a tag in the link
-                if (preg_match('#subid|passw|modify|\{|%7B#i', $url)) continue;
+                $isAutologin = false;
+                $autologinParams = '&amp;autoSubId=%7Bsubscriber:id%7D&amp;subKey=%7Bsubscriber:key%7Curlencode%7D';
+                if (strpos($url, $autologinParams) !== false) {
+                    $isAutologin = true;
+                    $url = str_replace($autologinParams, '', $url);
+                }
 
-                if (!$fromStat) $mytracker = $urlClass->getUrl($url, $mailId, $userid);
-                if (empty($mytracker)) continue;
+                if (preg_match('#passw|modify|\{|%7B#i', $url)) {
+                    continue;
+                }
+
+                if (!$fromStat) {
+                    $mytracker = $urlClass->getUrl($url, $mailId, $userid);
+                }
+
+                if (empty($mytracker)) {
+                    continue;
+                }
+
+                if ($isAutologin) {
+                    $mytracker .= $autologinParams;
+                }
 
                 $urls[$results[0][$i]] = str_replace($results[1][$i], $mytracker, $results[0][$i]);
             }

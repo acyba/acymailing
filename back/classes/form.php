@@ -180,6 +180,19 @@ class FormClass extends acymClass
                         'default' => '',
                     ],
                 ],
+                'miscellaneous' => [
+                    'js_loading' => [
+                        'label' => 'ACYM_JS_LOADING',
+                        'description' => 'ACYM_MODULE_JS_DESC',
+                        'type' => 'select',
+                        'options' => [
+                            'form' => acym_translation('ACYM_IN_FORM'),
+                            'head' => acym_translation('ACYM_WP_ENQUEUE_SCRIPT'),
+                        ],
+                        'default' => 'form',
+                        'allowed_types' => [self::SUB_FORM_TYPE_SHORTCODE],
+                    ],
+                ],
             ],
             'styles' => [
                 'image' => [
@@ -358,6 +371,7 @@ class FormClass extends acymClass
             'termspolicy' => 'ACYM_ARTICLE',
             'cookie' => 'ACYM_COOKIE_SETTINGS',
             'redirection' => 'ACYM_REDIRECTIONS',
+            'miscellaneous' => 'ACYM_MISCELLANEOUS',
             'message' => 'ACYM_MESSAGE',
             'image' => 'ACYM_IMAGE',
             'button' => 'ACYM_BUTTON',
@@ -556,8 +570,11 @@ class FormClass extends acymClass
                 return '';
             }
         }
-
-        acym_initModule(null, $isShortcode);
+        $loadJsInModule = $isShortcode;
+        if ($isShortcode && isset($form->settings['miscellaneous']['js_loading']) && $form->settings['miscellaneous']['js_loading'] === 'head') {
+            $loadJsInModule = false;
+        }
+        acym_initModule(null, ['loadJsInModule' => $loadJsInModule]);
         $fieldClass = new FieldClass();
         $listClass = new ListClass();
 
@@ -601,7 +618,7 @@ class FormClass extends acymClass
         $formFieldRender = acym_getPartial('forms', $form->type);
         if (!file_exists($formFieldRender)) return '';
 
-        acym_initModule(null, $isShortcode);
+        acym_initModule(null, ['loadJsInModule' => $loadJsInModule]);
 
         ob_start();
         include $formFieldRender;

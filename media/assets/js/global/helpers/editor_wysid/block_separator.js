@@ -34,6 +34,7 @@ const acym_helperBlockSeparator = {
 
         acym_helperBlockSeparator.initPadding();
         acym_helperBlockSeparator.initBackgroundColor();
+        acym_helperBlockSeparator.initBackgroundImage();
 
         $modalContainerStructure.show();
         $th.each(function (index) {
@@ -385,6 +386,62 @@ const acym_helperBlockSeparator = {
         $inputsColor.each(function () {
             let $table = jQuery($th[jQuery(this).attr('data-acym-block')]);
             acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery(this), 'background', $table, $table, 'background', true);
+        });
+    },
+    initBackgroundImage: function () {
+        let $th = jQuery('.acym__wysid__row__element--focus .acym__wysid__row__element__th');
+        let $paddingContainer = jQuery('.acym__wysid__context__modal__block-columns-image');
+        let html = `<h6 class="cell shrink acym__wysid__context__block__background__title margin-right-1">
+                        ${ACYM_JS_TXT.ACYM_BACKGROUND_IMAGE}${acym_helperTooltip.addInfo(ACYM_JS_TXT.ACYM_BACKGROUND_COLOR_DESC)}:
+                    </h6>`;
+
+        for (let i = 0 ; i < $th.length ; i++) {
+            html += `<div class="cell large-2 grid-x acym_vcenter">
+                    <span class="cell shrink">${this.blockName[i]}:</span>
+                    <i class="acymicon-insert_photo acym__color__light-blue cursor-pointer cell shrink acym__wysid__context__block__background__columns-background" data-acym-block="${i}"></i>
+                    <i class="acymicon-close acym__color__red cursor-pointer" style="display: none" id="acym__wysid__context__block__column__background-image__remove" data-acym-block="${i}"></i>
+                  </div>`;
+        }
+        $paddingContainer.html(html);
+        acym_helperTooltip.setTooltip();
+
+        this.setColumnBackgroundImage();
+    },
+    setColumnBackgroundImage: function () {
+        const $inputsImage = jQuery('.acym__wysid__context__block__background__columns-background');
+        const $isSidePanelOpen = jQuery('.acym__wysid__row__element');
+        let $table = [];
+        if ($isSidePanelOpen) {
+            $inputsImage.each(function () {
+                const $column = jQuery(this).data('acym-block');
+                let $block = jQuery('.acym__wysid__row__element--focus .acym__wysid__row__element__th__vertical__padding-' + $column);
+                if (!$table[$column]) {
+                    $table[$column] = [];
+                }
+                $table[$column].push($block);
+                const $position = $table[$column].length - 1;
+                const $backgroundImage = $table[$column][$position].css('background-image');
+                let $deleteImage = jQuery(this).parent().find('#acym__wysid__context__block__column__background-image__remove');
+                if ('none' !== $backgroundImage) {
+                    $deleteImage.show();
+                } else {
+                    $deleteImage.hide();
+                }
+                $deleteImage.off('click').on('click', function () {
+                    $table[$column][$position].css('background-image', '');
+                    jQuery(this).hide();
+                });
+            });
+        }
+        $inputsImage.off('click').on('click', function () {
+            const $column = jQuery(this).data('acym-block');
+            let $block = jQuery('.acym__wysid__row__element--focus .acym__wysid__row__element__th__vertical__padding-' + $column);
+            if (!$table[$column]) {
+                $table[$column] = [];
+            }
+            $table[$column].push($block);
+            const $position = $table[$column].length - 1;
+            acym_editorWysidImage.openMediaManager($table[$column][$position], true);
         });
     }
 };

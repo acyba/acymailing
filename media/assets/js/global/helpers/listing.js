@@ -80,37 +80,127 @@ const acym_helperListing = {
                 });
         }
 
+        function getURLPageParameter() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageParam = urlParams.get('page');
+            if (pageParam) {
+                return pageParam.replace(/^acymailing_/, '');
+            } else if (urlParams.get('ctrl')) {
+                return urlParams.get('ctrl');
+            }
+        }
+
+        function getURLRTaskParameter() {
+            const urlParam = new URLSearchParams(window.location.search);
+            return urlParam.get('task');
+        }
+
         function triggerAction() {
             let action = this.value;
             let fastAction = false;
+            let nbChecked = jQuery('[name="elements_checked[]"]:checked').length;
             if (!action || action === '0') {
                 action = this.dataset.action;
+                nbChecked = 1;
                 fastAction = true;
             }
-            let confirmMessage = '';
-            let deleteMessageComplete = jQuery('#acym__listing__action__delete-message').val();
 
-            switch (action) {
-                case 'delete':
-                    if (fastAction) {
-                        confirmMessage = `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_DELETE_ONE}`;
-                    } else {
-                        confirmMessage = `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_DELETE} ${deleteMessageComplete}`;
+            const page = getURLPageParameter();
+            const task = getURLRTaskParameter();
+            const task_content = [
+                'welcome',
+                'unsubscribe',
+                'specificListing',
+                'mailboxes',
+                'followup'
+            ];
+            let customMessages;
+            if (!task_content.includes(task)) {
+                customMessages = {
+                    forms: {
+                        fastAction: ACYM_JS_TXT.ACYM_FORM,
+                        regularAction: ACYM_JS_TXT.ACYM_FORMS
+                    },
+                    users: {
+                        fastAction: ACYM_JS_TXT.ACYM_USER,
+                        regularAction: ACYM_JS_TXT.ACYM_USERS
+                    },
+                    fields: {
+                        fastAction: ACYM_JS_TXT.ACYM_FIELD,
+                        regularAction: ACYM_JS_TXT.ACYM_FIELDS
+                    },
+                    lists: {
+                        fastAction: ACYM_JS_TXT.ACYM_LIST,
+                        regularAction: ACYM_JS_TXT.ACYM_LISTS
+                    },
+                    segments: {
+                        fastAction: ACYM_JS_TXT.ACYM_SEGMENT,
+                        regularAction: ACYM_JS_TXT.ACYM_SEGMENTS
+                    },
+                    campaigns: {
+                        fastAction: ACYM_JS_TXT.ACYM_CAMPAIGN,
+                        regularAction: ACYM_JS_TXT.ACYM_CAMPAIGNS
+                    },
+                    mails: {
+                        fastAction: ACYM_JS_TXT.ACYM_TEMPLATE,
+                        regularAction: ACYM_JS_TXT.ACYM_TEMPLATES
+                    },
+                    override: {
+                        fastAction: ACYM_JS_TXT.ACYM_OVERRIDE,
+                        regularAction: ACYM_JS_TXT.ACYM_OVERRIDES
+                    },
+                    automation: {
+                        fastAction: ACYM_JS_TXT.ACYM_AUTOMATION,
+                        regularAction: ACYM_JS_TXT.ACYM_AUTOMATIONS
+                    },
+                    bounces: {
+                        fastAction: ACYM_JS_TXT.ACYM_BOUNCE,
+                        regularAction: ACYM_JS_TXT.ACYM_BOUNCES
                     }
-                    break;
-                case 'setActive':
-                    confirmMessage = ACYM_JS_TXT.ACYM_ARE_YOU_SURE_ACTIVE;
-                    break;
-                case 'setInactive':
-                    confirmMessage = ACYM_JS_TXT.ACYM_ARE_YOU_SURE_INACTIVE;
-                    break;
-                default:
-                    confirmMessage = ACYM_JS_TXT.ACYM_ARE_YOU_SURE;
+                };
+
+            } else if (task === 'followup') {
+                customMessages = {
+                    campaigns: {
+                        fastAction: ACYM_JS_TXT.ACYM_FOLLOW_UP,
+                        regularAction: ACYM_JS_TXT.ACYM_FOLLOW_UPS
+                    }
+                };
+            } else {
+                customMessages = {
+                    bounces: {
+                        fastAction: ACYM_JS_TXT.ACYM_MAILBOX_ACTION,
+                        regularAction: ACYM_JS_TXT.ACYM_MAILBOX_ACTIONS
+                    },
+                    campaigns: {
+                        fastAction: ACYM_JS_TXT.ACYM_EMAIL,
+                        regularAction: ACYM_JS_TXT.ACYM_EMAILS
+                    }
+                };
             }
 
+            const customMessage = fastAction || nbChecked === 1 ? customMessages[page].fastAction : customMessages[page].regularAction;
+            const deleteMessageComplete = jQuery('#acym__listing__action__delete-message').val();
+            const actionTexts = {
+                'delete': (fastAction || nbChecked === 1)
+                          ? `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_DELETE_ONE_X}`
+                          : `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_DELETE_X} ${deleteMessageComplete}`,
+                'setActive': (fastAction || nbChecked === 1) ? `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_ACTIVE_ONE_X}` : `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_ACTIVE_X}`,
+                'setInactive': (fastAction || nbChecked === 1)
+                               ? `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_INACTIVE_ONE_X}`
+                               : `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE_INACTIVE_X}`,
+                'default': `${ACYM_JS_TXT.ACYM_ARE_YOU_SURE}`
+            };
+
+            if (action.includes('delete')) {
+                action = 'delete';
+            }
+            const actionType = actionTexts[action] || actionTexts['default'];
+            const confirmMessage = acym_helper.sprintf(actionType, nbChecked > 0 ? `${nbChecked} ${customMessage.toLowerCase()}` : customMessage.toLowerCase());
+
             if ('duplicate' === action || 'duplicateFollowup' === action || 'export' === action || acym_helper.confirm(confirmMessage)) {
-                let form = jQuery(this).closest('#acym_form');
-                let ctrl = jQuery(this).attr('data-ctrl');
+                const form = jQuery(this).closest('#acym_form');
+                const ctrl = jQuery(this).attr('data-ctrl');
                 if (ctrl !== undefined) {
                     form.find('[name="return_listing"]').val(form.find('[name="ctrl"]').val());
                     form.find('[name="ctrl"]').val(ctrl);
@@ -120,7 +210,7 @@ const acym_helperListing = {
                 form.find('[name="task"]').val(fastAction ? action : jQuery(this).val());
                 if (fastAction) {
                     jQuery(':checkbox').prop('checked', false);
-                    let checkboxId = '#checkbox_' + this.dataset.acyElementid;
+                    const checkboxId = '#checkbox_' + this.dataset.acyElementid;
                     jQuery(checkboxId).prop('checked', true);
                 }
                 form.submit();

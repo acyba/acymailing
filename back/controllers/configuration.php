@@ -32,9 +32,23 @@ class ConfigurationController extends acymController
         acym_checkToken();
 
         $field = acym_getVar('string', 'field', '');
+
+        $whitelistedFields = [
+            'level',
+            'unsplash_key',
+        ];
+
+        if (acym_isAdmin()) {
+            $whitelistedFields[] = 'save_thumbnail';
+        }
+
+        if (!in_array($field, $whitelistedFields)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_LOAD_INFORMATION'), [], false);
+        }
+
         $res = $this->config->get($field, '');
 
-        if (empty($res)) {
+        if (intval($res) !== 0 && empty($res)) {
             acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_LOAD_INFORMATION'), [], false);
         } else {
             acym_sendAjaxResponse('', ['value' => $res]);
@@ -48,7 +62,7 @@ class ConfigurationController extends acymController
             'LICENSE_NOT_FOUND' => ['message' => 'ACYM_LICENSE_NOT_FOUND', 'type' => 'error'],
             'WELL_ATTACH' => ['message' => 'ACYM_LICENSE_WELL_ATTACH', 'type' => 'info'],
             'ISSUE_WHILE_ATTACH' => ['message' => 'ACYM_ISSUE_WHILE_ATTACHING_LICENSE', 'type' => 'error'],
-            'ALREADY_ATTACH' => ['message' => 'ACYM_LICENSE_ALREADY_ATTACH', 'type' => 'info'],
+            'ALREADY_ATTACH' => ['message' => 'ACYM_WEBSITE_ALREADY_ATTACHED', 'type' => 'info'],
             'LICENSES_DONT_MATCH' => ['message' => 'ACYM_CANT_UNLINK_WEBSITE_LICENSE_DONT_MATCH', 'type' => 'error'],
             'MAX_SITES_ATTACH' => ['message' => 'ACYM_YOU_REACHED_THE_MAX_SITE_ATTACH', 'type' => 'error'],
             'SITE_NOT_FOUND' => ['message' => 'ACYM_ISSUE_WHILE_ATTACHING_LICENSE', 'type' => 'error'],

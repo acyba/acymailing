@@ -51,7 +51,7 @@ class CampaignsController extends acymController
 
     public function cancelDashboardAndGetCampaignsAjax()
     {
-        $campaignId = acym_getVar('int', 'id');
+        $campaignId = acym_getVar('int', 'campaignId');
         $campaignClass = new CampaignClass();
 
         if (empty($campaignId)) {
@@ -130,7 +130,7 @@ class CampaignsController extends acymController
 
     public function test()
     {
-        $campaignId = acym_getVar('int', 'id', 0);
+        $campaignId = acym_getVar('int', 'campaignId', 0);
 
         $campaignClass = new CampaignClass();
         $campaign = $campaignClass->getOneById($campaignId);
@@ -147,9 +147,28 @@ class CampaignsController extends acymController
         $success = true;
         $testNote = acym_getVar('string', 'test_note', '');
 
+        $userClass = new UserClass();
+        $mailClass = new mailClass();
+        $translatedMails = [];
+        if (acym_isMultilingual()) {
+            $translatedMails = $mailClass->getTranslationsById($campaign->mail_id, true, true);
+        }
         $testEmails = explode(',', acym_getVar('string', 'test_emails'));
         foreach ($testEmails as $oneAddress) {
-            if (!$mailerHelper->sendOne($campaign->mail_id, $oneAddress, true, $testNote)) {
+            if (acym_isMultilingual()) {
+                $user = $userClass->getOneById($oneAddress);
+                if (empty($user)) {
+                    $user = $userClass->getOneByEmail($oneAddress);
+                }
+                if (empty($user)) {
+                    $mailId = $campaign->mail_id;
+                } else {
+                    $mailId = empty($translatedMails[$user->language]) ? $campaign->mail_id : $translatedMails[$user->language]->id;
+                }
+            } else {
+                $mailId = $campaign->mail_id;
+            }
+            if (!$mailerHelper->sendOne($mailId, $oneAddress, true, $testNote)) {
                 $success = false;
             }
 

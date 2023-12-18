@@ -71,7 +71,7 @@
 
     #acym__template__import__reveal {
         position: relative;
-        overflow-x: hidden;
+        overflow: auto !important;
 
         #acym__template__import {
             .acym__template__import__info {

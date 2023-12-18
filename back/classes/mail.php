@@ -638,7 +638,7 @@ class MailClass extends acymClass
 
     private function uploadTemplate()
     {
-        $importFile = acym_getVar('none', 'uploadedfile', '', 'files');
+        $importFile = acym_getVar('file', 'uploadedfile', '', 'files');
 
         $fileError = $importFile['error'];
         if ($fileError > 0) {
@@ -671,7 +671,7 @@ class MailClass extends acymClass
             return false;
         }
 
-        $uploadPath = acym_cleanPath(ACYM_ROOT.ACYM_MEDIA_FOLDER.DS.'templates');
+        $uploadPath = acym_cleanPath(ACYM_ROOT.ACYM_MEDIA_FOLDER.'templates');
 
         if (!is_writable($uploadPath)) {
             @chmod($uploadPath, '0755');
@@ -1431,5 +1431,39 @@ class MailClass extends acymClass
                 AND (creator_id = '.intval($userId).' 
                     OR type = '.acym_escapeDB(self::TYPE_TEMPLATE).')'
             ) > 0;
+    }
+
+
+    public function getVersionsById($mailId, $includeParent = false)
+    {
+        $where = $includeParent ? ' OR `id` = '.intval($mailId) : '';
+
+        return $this->decode(
+            acym_loadObjectList(
+                'SELECT * 
+                FROM #__acym_mail 
+                WHERE `parent_id` = '.intval($mailId).$where.' ORDER BY id ASC',
+                'id'
+            )
+        );
+    }
+
+    /**
+     * Get all abtest mails linked to a parent mail, also get the parent mail
+     *
+     * @param $parentId
+     *
+     * @return array
+     */
+    public function getParentAndChildMails($parentId)
+    {
+        $mails = $this->decode(
+            acym_loadObjectList(
+                'SELECT * FROM #__acym_mail WHERE parent_id = '.intval($parentId).' OR id = '.intval($parentId),
+                'id'
+            )
+        );
+
+        return $mails;
     }
 }

@@ -177,40 +177,50 @@ class ImageHelper extends acymObject
 
         //The new file already exists, we don't have to create a new one
         if (file_exists($newFile)) {
-            return ['file' => $newFile, 'width' => $newWidth, 'height' => $newHeight];
+            return [
+                'file' => $newFile,
+                'width' => $newWidth,
+                'height' => $newHeight,
+            ];
         }
 
         switch ($extension) {
             case 'gif':
-                $img = ImageCreateFromGIF($picturePath);
+                $img = imagecreatefromgif($picturePath);
                 break;
             case 'jpg':
             case 'jpeg':
-                $img = ImageCreateFromJPEG($picturePath);
+                $img = imagecreatefromjpeg($picturePath);
                 break;
             case 'png':
-                $img = ImageCreateFromPNG($picturePath);
+                $img = imagecreatefrompng($picturePath);
+                break;
+            case 'webp':
+                if (function_exists('imagecreatefromwebp')) {
+                    $img = imagecreatefromwebp($picturePath);
+                }
                 break;
             default:
                 return false;
         }
 
-        if (!$img) {
+        if (empty($img)) {
             return false;
         }
 
-        $thumb = ImageCreateTrueColor($newWidth, $newHeight);
+        $thumb = imagecreatetruecolor($newWidth, $newHeight);
 
         if (in_array($extension, ['gif', 'png'])) {
             imagealphablending($thumb, false);
             imagesavealpha($thumb, true);
         }
 
-        if (function_exists("imagecopyresampled")) {
+        if (function_exists('imagecopyresampled')) {
             imagecopyresampled($thumb, $img, 0, 0, 0, 0, $newWidth, $newHeight, $currentwidth, $currentheight);
         } else {
             ImageCopyResized($thumb, $img, 0, 0, 0, 0, $newWidth, $newHeight, $currentwidth, $currentheight);
         }
+
         ob_start();
         switch ($extension) {
             case 'gif':
@@ -223,8 +233,12 @@ class ImageHelper extends acymObject
             case 'png':
                 $status = imagepng($thumb, null, 0);
                 break;
+            case 'webp':
+                $status = imagewebp($thumb, null, 100);
+                break;
         }
         $imageContent = ob_get_clean();
+
         $status = $status && acym_writeFile($newFile, $imageContent);
         imagedestroy($thumb);
         imagedestroy($img);
@@ -234,6 +248,10 @@ class ImageHelper extends acymObject
             $newFile = $picturePath;
         }
 
-        return ['file' => $newFile, 'width' => $newWidth, 'height' => $newHeight];
+        return [
+            'file' => $newFile,
+            'width' => $newWidth,
+            'height' => $newHeight,
+        ];
     }
 }

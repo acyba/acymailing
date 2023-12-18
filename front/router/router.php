@@ -20,6 +20,7 @@ class AcymRouter extends AcymRouterBase
             'fronturl',
             'frontmails',
             'frontdynamics',
+            'frontservices',
         ];
 
         $this->paramsNotSef = [
@@ -49,6 +50,7 @@ class AcymRouter extends AcymRouterBase
             'type_editor',
             'listId',
             'userId',
+            'campaignId',
             'userKey',
         ];
     }

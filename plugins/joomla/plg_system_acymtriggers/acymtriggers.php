@@ -10,8 +10,17 @@ defined('_JEXEC') or die('Restricted access');
 
 class plgSystemAcymtriggers extends JPlugin
 {
-    var $oldUser = null;
-    var $formToDisplay = [];
+    private $oldUser = null;
+    private $formToDisplay = [];
+
+    public function __construct(&$subject, $config = [])
+    {
+        parent::__construct($subject, $config);
+
+        if (version_compare(JVERSION, '4.0.0', '>=')) {
+            $this->registerLegacyListener('plgVmOnUserOrder');
+        }
+    }
 
     // Loads the Acy library
     public function initAcy()
@@ -110,6 +119,7 @@ class plgSystemAcymtriggers extends JPlugin
             JOIN `#__virtuemart_order_userinfos` AS `vmuser` ON `vmuser`.`email` = `user`.`email` 
             WHERE `vmuser`.`virtuemart_user_id` = '.intval($orderData->virtuemart_user_id)
         );
+
         if (empty($userID)) {
             return;
         }
@@ -485,7 +495,7 @@ class plgSystemAcymtriggers extends JPlugin
         $cleanedUrl = substr($currentUrl, 0, strpos($currentUrl, 'autoSubId') - 1);
 
         $cmsId = acym_loadResult('SELECT `cms_id` FROM #__acym_user WHERE `id` = '.intval($subId).' AND `key` = '.acym_escapeDB($subKey));
-        if (empty($cmsId)) {
+        if (empty($cmsId) || $cmsId === acym_currentUserId()) {
             acym_redirect($cleanedUrl);
 
             return;

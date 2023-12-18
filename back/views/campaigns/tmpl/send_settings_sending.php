@@ -36,7 +36,7 @@
                 <?php
                 $tooltip = acym_level(ACYM_ENTERPRISE) ? '' : 'data-acym-tooltip="'.acym_translationSprintf('ACYM_USE_THIS_FEATURE', 'AcyMailing Enterprise').'"';
                 $class = $data['currentCampaign']->send_auto ? 'button-radio-selected' : 'button-radio-unselected';
-                $class .= !acym_level(ACYM_ENTERPRISE) || !$data['currentCampaign']->draft ? ' disabled' : '';
+                $class .= !acym_level(ACYM_ENTERPRISE) || !$data['currentCampaign']->draft || isset($data['currentCampaign']->sending_params['abtest']) ? ' disabled' : '';
                 ?>
 				<div class="cell auto grid-x align-center">
 					<button type="button" <?php echo $tooltip; ?>
@@ -165,13 +165,61 @@
         <?php
         $label = acym_translation('ACYM_TRACK_THIS_CAMPAIGN');
         $label .= acym_info('ACYM_TRACK_THIS_CAMPAIGN_DESC');
+        $isTracked = $data['currentCampaign']->tracking ?? 1;
         echo acym_switch(
             'senderInformation[tracking]',
-            isset($data['currentCampaign']->tracking) ? $data['currentCampaign']->tracking : 1,
-            $label,
-            []
+            $isTracked,
+            $label
         ); ?>
 	</div>
+    <?php
+    $trackingMode = $this->config->get('trackingsystem', 'acymailing');
+    if (stripos($trackingMode, 'google') !== false) {
+        ?>
+		<div class="cell grid-x align-center" id="utm_settings" <?php echo empty($isTracked) ? 'style="display:none;"' : ''; ?>>
+			<h6 class="cell acym__title acym__title__secondary acym__title__secondary__utm">
+                <?php echo acym_translation('ACYM_CUSTOM_UTM'); ?>
+			</h6>
+			<div class="cell grid-x medium-11 grid-margin-x margin-y">
+				<div class="cell medium-5">
+					<label for="utm_campaign">utm_campaign</label>
+					<input name="sending_params[utm_campaign]" id="utm_campaign"
+						   type="text"
+						   maxlength="100"
+						   class="cell"
+						   value="<?php echo empty($data['currentCampaign']->sending_params['utm_campaign'])
+                               ? ''
+                               : acym_escape(
+                                   $data['currentCampaign']->sending_params['utm_campaign']
+                               ); ?>"
+						   placeholder="<?php echo acym_escape($data['currentCampaign']->subject); ?>">
+				</div>
+				<div class="cell medium-1"></div>
+				<div class="cell medium-5">
+					<label for="utm_source">utm_source</label>
+					<input name="sending_params[utm_source]" id="utm_source"
+						   type="text"
+						   value="<?php echo empty($data['currentCampaign']->sending_params['utm_source'])
+                               ? ''
+                               : acym_escape(
+                                   $data['currentCampaign']->sending_params['utm_source']
+                               ); ?>"
+						   placeholder="newsletter_<?php echo $data['currentCampaign']->id; ?>">
+				</div>
+				<div class="cell medium-5">
+					<label for="utm_medium">utm_medium</label>
+					<input name="sending_params[utm_medium]" id="utm_medium"
+						   type="text"
+						   value="<?php echo empty($data['currentCampaign']->sending_params['utm_medium'])
+                               ? ''
+                               : acym_escape(
+                                   $data['currentCampaign']->sending_params['utm_medium']
+                               ); ?>"
+						   placeholder="email">
+				</div>
+			</div>
+		</div>
+    <?php } ?>
     <?php if ($this->config->get('mailer_method') === 'postmark') { ?>
 		<div class="cell grid-x">
 			<div class="cell grid-x medium-10 large-7 xlarge-5 margin-left-3 margin-top-1">

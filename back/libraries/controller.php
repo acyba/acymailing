@@ -16,6 +16,7 @@ class acymController extends acymObject
     var $currentClass = null;
     protected $publicFrontTasks = [];
     protected $allowedTasks = [];
+    protected $menuAlias = [];
     var $sessionName = '';
     var $taskCalled = '';
     protected $menuClass = '';
@@ -280,7 +281,7 @@ class acymController extends acymObject
         acym_checkToken();
         $ids = acym_getVar('array', 'elements_checked', []);
         $allChecked = acym_getVar('string', 'checkbox_all');
-        $currentPage = explode('_', acym_getVar('string', 'page'));
+        $currentPage = explode('_', acym_getVar('string', 'page', ''));
         $pageNumber = $this->getVarFiltersListing('int', end($currentPage).'_pagination_page', 1);
 
         if (!empty($ids) && !empty($this->currentClass)) {
@@ -343,6 +344,11 @@ class acymController extends acymObject
 
     public function checkTaskFront($task = '')
     {
+        // For cron tasks created by users on their own server, for Joomla 4
+        if ($this->getName() === 'cron') {
+            $task = 'cron';
+        }
+
         if (empty($task) && !empty($this->defaulttask)) {
             $task = $this->defaulttask;
         }
@@ -356,24 +362,39 @@ class acymController extends acymObject
 
         // No front-end management for WordPress users
         if (empty(acym_currentUserId()) || ACYM_CMS !== 'joomla' || !acym_level(ACYM_ENTERPRISE)) {
-            die('Front-end management not available');
+            acym_redirect(acym_rootURI(), 'Front-end management not available');
         }
 
         // If there is no menu, someone typed the URL manually
         $currentMenu = acym_getMenu();
         if (empty($currentMenu)) {
-            die('Direct access denied');
+            acym_redirect(acym_rootURI(), 'Direct access denied');
         }
 
         // We whitelist specific routes when having access to specific menus
-        if (!empty($this->allowedTasks[$currentMenu->link]) && in_array($task, $this->allowedTasks[$currentMenu->link])) {
+        if ($this->isTaskAllowed($currentMenu->link, $task)) {
             $this->$task();
 
             return;
         }
 
         // Blacklist tasks by default
-        die('Unknown route, access denied');
+        acym_redirect(acym_rootURI(), 'Unknown route, access denied');
+    }
+
+    private function isTaskAllowed($menuUrl, $task): bool
+    {
+        if (!empty($this->allowedTasks[$menuUrl]) && in_array($task, $this->allowedTasks[$menuUrl])) {
+            return true;
+        }
+
+        if (!empty($this->menuAlias[$menuUrl])) {
+            $menuUrl = $this->menuAlias[$menuUrl];
+
+            return $this->isTaskAllowed($menuUrl, $task);
+        }
+
+        return false;
     }
 
     protected function prepareMultilingualOption(&$data)

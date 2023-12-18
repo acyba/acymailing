@@ -50,10 +50,7 @@ function installAcym()
     if (!$installClass->update) {
         $installClass->deleteNewSplashScreenInstall();
     } elseif (!empty($installClass->fromVersion)) {
-        $fromVersion = substr($installClass->fromVersion, 0, strrpos($installClass->fromVersion, '.'));
-        $toVersion = substr($installClass->version, 0, strrpos($installClass->version, '.'));
-
-        if (version_compare($fromVersion, $toVersion, '=')) {
+        if (version_compare($installClass->fromVersion, $installClass->version, '=')) {
             $installClass->deleteNewSplashScreenInstall();
         }
     }

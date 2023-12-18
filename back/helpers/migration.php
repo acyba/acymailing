@@ -249,6 +249,12 @@ class MigrationHelper extends acymObject
         $valuesToInsert = [];
 
         foreach ($dataPrevious as $value) {
+            if (empty($fieldsMatch[$value->namekey])) {
+                continue;
+            }
+
+            $value->namekey = $fieldsMatch[$value->namekey];
+
             switch ($value->namekey) {
                 case 'queue_type':
                     switch ($value->value) {
@@ -265,12 +271,8 @@ class MigrationHelper extends acymObject
                     $sending_platform = $value->value == 'smtp' || $value->value === 'elasticemail' ? 'external' : 'server';
                     $valuesToInsert[] = '("sending_platform",'.acym_escapeDB($sending_platform).')';
                     break;
-
-                case 'sendorder':
-                    $value->value = str_replace('subid', 'user_id', $value->value);
             }
 
-            $value->namekey = $fieldsMatch[$value->namekey];
             $valuesToInsert[] = '('.acym_escapeDB($value->namekey).','.acym_escapeDB($value->value).')';
         }
 
@@ -603,9 +605,10 @@ class MigrationHelper extends acymObject
                                 mail.`tempid`, 
                                 mail.`senddate`, 
                                 mail.`published`, 
-                                mail.`attach`, 
+                                mail.`attach`,
+                                mail.userid, 
                                 template.`stylesheet`, 
-                                template.`styles` 
+                                template.`styles`
                         FROM #__acymailing_mail mail 
                         LEFT JOIN #__acymailing_template template 
                         ON mail.tempid = template.tempid
@@ -690,7 +693,8 @@ class MigrationHelper extends acymObject
                 $attachments = unserialize($oneMail->attach);
                 foreach ($attachments as $oneAttachment) {
                     $fileName = substr($oneAttachment->filename, strrpos($oneAttachment->filename, DS));
-                    $v7Location = acym_getFilesFolder().$fileName;
+                    $uploadFolder = str_replace(['/', '\\'], DS, acym_getFilesFolder());
+                    $v7Location = $uploadFolder.$fileName;
 
                     // if the file doesn't exist, don't add it
                     $v5Path = acym_cleanPath(ACYM_ROOT.DS.$oneAttachment->filename);
@@ -724,6 +728,7 @@ class MigrationHelper extends acymObject
                     'mail_id' => intval($oneMail->mailid),
                     'sending_type' => acym_escapeDB(0 === $sendingType ? $campaignClass::SENDING_TYPE_NOW : $campaignClass::SENDING_TYPE_SCHEDULED),
                     'sent' => intval($isSent),
+                    'sending_params' => acym_escapeDB('[]'),
                 ];
                 $campaignsToInsert[] = '('.implode(', ', $campaign).')';
             }
@@ -816,7 +821,7 @@ class MigrationHelper extends acymObject
     public function migrateLists($params = [])
     {
         $lists = acym_loadObjectList(
-            'SELECT `listid`, `name`, `published`, `visible`, `color`, `userid`, `type`, `description` 
+            'SELECT `listid`, `name`, `published`, `visible`, `color`, `userid`, `type`, `description`, `access_manage` 
             FROM #__acymailing_list 
             LIMIT '.intval($params['currentElement']).', '.intval($params['insertPerCalls'])
         );
@@ -824,7 +829,16 @@ class MigrationHelper extends acymObject
         $listsToInsert = [];
         $listClass = new ListClass();
 
+        $siteUserGroups = acym_getGroups();
+
         foreach ($lists as $oneList) {
+            $access = '';
+            if ($oneList->access_manage === 'all') {
+                $access = ','.implode(',', $siteUserGroups).',';
+            } elseif ($oneList->access_manage !== 'none') {
+                $access = $oneList->access_manage;
+            }
+
             $list = [
                 'id' => intval($oneList->listid),
                 'name' => acym_escapeDB($oneList->name),
@@ -836,6 +850,7 @@ class MigrationHelper extends acymObject
                 'cms_user_id' => empty($oneList->userid) ? acym_currentUserId() : intval($oneList->userid),
                 'description' => acym_escapeDB($oneList->description),
                 'type' => acym_escapeDB($oneList->type === 'campaign' ? $listClass::LIST_TYPE_FOLLOWUP : $listClass::LIST_TYPE_STANDARD),
+                'access' => acym_escapeDB($access),
             ];
 
             $listsToInsert[] = '('.implode(', ', $list).')';
@@ -1328,6 +1343,7 @@ class MigrationHelper extends acymObject
             'UPDATE #__acym_list SET `unsubscribe_id` = NULL',
             'UPDATE #__acym_list SET `welcome_id` = NULL',
             'UPDATE #__acym_mail SET `parent_id` = NULL',
+            'DELETE FROM #__acym_mail_archive',
             'DELETE FROM #__acym_followup_has_mail',
             'DELETE FROM #__acym_followup',
             'DELETE FROM #__acym_tag WHERE `type` = "mail"',

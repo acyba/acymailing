@@ -7,7 +7,7 @@
     </div>
 
     <?php
-    if (empty($data['multilingual'])) {
+    if (empty($data['multilingual']) && empty($data['abtest'])) {
         $preheaderSize = '';
         include acym_getView('campaigns', 'edit_email_info_content', true);
     }

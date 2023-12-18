@@ -6,7 +6,12 @@ if (!empty($data['translation_languages'])) {
 ?>
 <div class="cell grid-x margin-top-1">
 	<div class="cell medium-shrink medium-margin-bottom-0 margin-bottom-1">
-        <?php echo acym_backToListing(); ?>
+        <?php
+        echo acym_backToListing(
+            in_array($data['currentCampaign']->sending_type, ['birthday', 'woocommerce_cart'])
+                ? 'campaigns&task=specificListing&type='.$data['currentCampaign']->sending_type : null
+        );
+        ?>
 	</div>
 	<div class="cell medium-auto grid-x text-right">
 		<div class="cell medium-auto"></div>

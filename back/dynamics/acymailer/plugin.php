@@ -1,6 +1,7 @@
 <?php
 
 use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\QueueClass;
 use AcyMailing\Libraries\acymPlugin;
 
 class plgAcymAcymailer extends acymPlugin
@@ -36,8 +37,11 @@ class plgAcymAcymailer extends acymPlugin
         23 => 'ACYM_INVALID_API_KEY',
         24 => 'ACYM_LICENSE_BLOCKED',
         25 => 'ACYM_SEE_LOGS_FILE',
+        26 => 'ACYM_SERVICE_TEMPORARY_UNAVAILABLE',
+        27 => 'ACYM_DOMAIN_ONLY_ON_ONE_LICENSE',
+        28 => 'ACYM_EMAIL_UNDER_VERIFICATION',
     ];
-    private $errorCodes = [0, 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25];
+    private $errorCodes = [0, 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28];
 
     public function __construct()
     {
@@ -152,6 +156,7 @@ class plgAcymAcymailer extends acymPlugin
         ob_start();
         ?>
 		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
+
 			<div class="cell grid-x acym__sending__methods__one__settings">
                 <?php if (!acym_level(ACYM_ESSENTIAL) && empty($data['step'])) { ?>
 					<div class="acym_vcenter acym__config__acymailer__warning margin-top-1 cell grid-x ">
@@ -189,6 +194,17 @@ class plgAcymAcymailer extends acymPlugin
 							<a target="_blank" href="<?php echo $subscriptionsPage; ?>"><?php echo acym_translation('ACYM_SWITCH_MY_LICENSE'); ?></a>
 						</span>
 					</div>
+                    <?php if (empty($acyMailerKey) && !empty($licenseKey)) { ?>
+						<div class="acym__configuration__acymailer__check-license cell grid-x text-center">
+                            <?php echo acym_translation('ACYM_CHECK_SENDING_SERVICE_LICENSE'); ?>
+							<button
+									data-task="attachLicenseAcymailer"
+									id="acym__configuration__acymailer__verify-license"
+									class="cell medium-shrink button margin-bottom-0 acy_button_submit">
+                                <?php echo acym_translation('ACYM_CHECK_LICENSE'); ?>
+							</button>
+						</div>
+                    <?php } ?>
                 <?php } else { ?>
 					<div class="cell grid-x">
                         <?php
@@ -481,6 +497,7 @@ class plgAcymAcymailer extends acymPlugin
 
         $apikey = $this->config->get(self::SENDING_METHOD_ID.'_apikey');
         if (empty($apikey)) {
+            $mailerHelper->failedCounting = false;
             $response['error'] = true;
             $response['message'] = acym_translation('ACYM_MISSING_API_KEY');
 
@@ -488,6 +505,7 @@ class plgAcymAcymailer extends acymPlugin
         }
 
         if ($this->isUnsubscribeLinkMissing($mailerHelper)) {
+            $mailerHelper->failedCounting = false;
             $response['error'] = true;
             $response['message'] = acym_translation('ACYM_MISSING_UNSUBSCRIBE_LINK');
 
@@ -511,6 +529,7 @@ class plgAcymAcymailer extends acymPlugin
 
         $unverifiedDomains = array_diff($domainsUsed, $verifiedDomains);
         if (!empty($unverifiedDomains)) {
+            $mailerHelper->failedCounting = false;
             $response['error'] = true;
             $response['message'] = acym_translationSprintf('ACYM_UNVERIFIED_DOMAINS_PREVENTING_EMAILS_FROM_BEING_SENT_X', implode(', ', $unverifiedDomains));
 
@@ -526,11 +545,13 @@ class plgAcymAcymailer extends acymPlugin
             [],
             'POST'
         );
-        if (!empty($result['logs'])) {
-            acym_logError($result['logs'], self::SENDING_METHOD_ID);
+
+        if (!empty($responseMailer['logs'])) {
+            acym_logError($responseMailer['logs'], self::SENDING_METHOD_ID);
         }
 
         if (!empty($responseMailer['error_curl'])) {
+            $mailerHelper->failedCounting = false;
             $response['error'] = true;
             $response['message'] = acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $responseMailer['error_curl']);
         } elseif (!$this->checkSuccessCode($this->responseCode)) {
@@ -542,6 +563,16 @@ class plgAcymAcymailer extends acymPlugin
                 $response['message'] .= '<a target="_blank" class="acym__color__blue" href="'.ACYM_ACYMAILING_WEBSITE.'">';
                 $response['message'] .= acym_translation('ACYM_GET_MORE_CREDITS');
                 $response['message'] .= '</a>';
+            }
+
+            // Don't unsubscribe/remove recipients if the error isn't related to them
+            if (!empty($responseMailer['code']) && in_array($responseMailer['code'], [18, 26, 28])) {
+                $mailerHelper->failedCounting = false;
+            }
+
+            if ($responseMailer['code'] == 26) {
+                $queueClass = new QueueClass();
+                $queueClass->delayAll(24);
             }
         } else {
             $response['error'] = false;
@@ -1039,7 +1070,9 @@ class plgAcymAcymailer extends acymPlugin
 
     private function translate($response)
     {
-        if (!isset($response['code']) && empty($response['message'])) return '';
+        if (!isset($response['code']) && empty($response['message'])) {
+            return '';
+        }
 
         $correspondence = '';
         $messageData = '';
@@ -1130,11 +1163,5 @@ class plgAcymAcymailer extends acymPlugin
         }
 
         return true;
-    }
-
-    public function onAcymSendingMethodOptions(&$data)
-    {
-        $data['embedImage'][self::SENDING_METHOD_ID] = false;
-        $data['embedAttachment'][self::SENDING_METHOD_ID] = false;
     }
 }

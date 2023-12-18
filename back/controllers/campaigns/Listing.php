@@ -32,30 +32,48 @@ trait Listing
             'specificListing',
         ];
         $currentTask = acym_getVar('string', 'task', '');
-        $type = acym_getVar('string', 'type', '');
-        if (!in_array($currentTask, $taskToStore) && !$fromListing) return;
+        if (!in_array($currentTask, $taskToStore) && !$fromListing) {
+            return;
+        }
 
         if ((empty($currentTask) || !in_array($currentTask, $taskToStore)) && !empty($_SESSION[$variableName])) {
             $taskToGo = is_array($_SESSION[$variableName]) ? $_SESSION[$variableName]['task'].'&type='.$_SESSION[$variableName]['type'] : $_SESSION[$variableName];
             $link = acym_completeLink(($isFrontJoomla ? 'front' : '').'campaigns&task='.$taskToGo, false, true);
             acym_redirect($link);
         } else {
-            if (empty($currentTask) || !in_array($currentTask, $taskToStore)) $currentTask = 'campaigns';
-            if ($currentTask == 'specificListing') $currentTask = empty($type) ? 'campaigns' : ['task' => $currentTask, 'type' => $type];
+            if (empty($currentTask) || !in_array($currentTask, $taskToStore)) {
+                $currentTask = 'campaigns';
+            }
+
+            if ($currentTask === 'specificListing') {
+                $type = acym_getVar('string', 'type', '');
+                $currentTask = empty($type) ? 'campaigns' : ['task' => $currentTask, 'type' => $type];
+            }
+
             $_SESSION[$variableName] = $currentTask;
         }
 
         $taskToCall = is_array($currentTask) ? $currentTask['task'] : $currentTask;
-        if ($fromListing && method_exists($this, $taskToCall)) $this->$taskToCall();
+
+        if ($fromListing && method_exists($this, $taskToCall)) {
+            $this->$taskToCall();
+        }
     }
 
-    public function setTaskListing($task): bool
+    public function setTaskListing($task, $type = null): bool
     {
-        if (!in_array($task, ['campaigns', 'campaigns_auto', 'welcome', 'unsubscribe'])) {
+        if (!in_array($task, ['campaigns', 'campaigns_auto', 'welcome', 'unsubscribe', 'specificListing'])) {
             return false;
         }
 
-        $isFrontJoomla = !acym_isAdmin() && ACYM_CMS == 'joomla';
+        if ($task === 'specificListing') {
+            $task = [
+                'task' => 'specificListing',
+                'type' => $type,
+            ];
+        }
+
+        $isFrontJoomla = !acym_isAdmin() && ACYM_CMS === 'joomla';
         $variableName = $isFrontJoomla ? 'ctrl_stored_front' : 'ctrl_stored';
         acym_session();
         $_SESSION[$variableName] = $task;

@@ -65,6 +65,7 @@ class CronHelper extends acymObject
                 'clean_data_external_sending_method',
                 'clean_export_changes',
                 'mailbox_action',
+                'abtest',
             ];
         }
     }
@@ -404,7 +405,19 @@ class CronHelper extends acymObject
             $this->config->save(['cron_last_daily' => $time]);
         }
 
-        if ($this->externalSendingNotFinished) acym_makeCurlCall(acym_frontendLink('cron&external_sending_repeat=1'), [], [], true);
+        // Step 16: A/B testing
+        if (!in_array('abtest', $this->skip)) {
+            $campaignClass = new CampaignClass();
+            $abTestCampaigns = $campaignClass->getAllAbTestCampaignsToFinishSending();
+            foreach ($abTestCampaigns as $campaign) {
+                if ($campaignClass->finishAbTestCampaign($campaign)) {
+                    $this->messages[] = acym_translationSprintf('ACYM_ABTEST_CAMPAIGN_X_FINAL_VERSION_SENT', $campaign->id);
+                    $this->processed = true;
+                }
+            }
+        }
+
+        if ($this->externalSendingNotFinished) acym_makeCurlCall(acym_frontendLink('cron&task=cron&external_sending_repeat=1'), [], [], true);
 
         return true;
     }
@@ -505,7 +518,7 @@ class CronHelper extends acymObject
         $urls = [];
 
         for ($i = 1 ; $i <= $emailsBatches - 1 ; $i++) {
-            $urls[] = acym_frontendLink('cron&startqueue='.($emailsPerBatches * $i));
+            $urls[] = acym_frontendLink('cron&task=cron&startqueue='.($emailsPerBatches * $i));
         }
 
         acym_asyncCurlCall($urls);

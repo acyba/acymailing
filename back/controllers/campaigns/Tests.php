@@ -13,9 +13,18 @@ trait Tests
 {
     public function checkContent()
     {
-        $campaignId = acym_getVar('int', 'id', 0);
         $campaignClass = new CampaignClass();
-        $campaign = $campaignClass->getOneByIdWithMail($campaignId);
+        $mailClass = new MailClass();
+
+        $campaignId = acym_getVar('int', 'campaignId', 0);
+        $campaign = $campaignClass->getOneById($campaignId);
+
+        if (empty($campaign)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), [], false);
+        }
+
+        $mailId = acym_getVar('int', 'mailId', 0);
+        $mail = $mailClass->getOneById(empty($mailId) ? $campaign->mail_id : $mailId);
 
         $result = '';
         $spamWords = [
@@ -203,7 +212,7 @@ trait Tests
 
         $spamWordsInContent = [];
         foreach ($spamWords as $oneWord) {
-            if ((bool)preg_match('#'.preg_quote($oneWord, '#').'#Uis', $campaign->subject.$campaign->body)) {
+            if ((bool)preg_match('#'.preg_quote($oneWord, '#').'#Uis', $mail->subject.$mail->body)) {
                 $spamWordsInContent[] = $oneWord;
             }
         }
@@ -218,11 +227,18 @@ trait Tests
 
     public function checkLinks()
     {
-        $campaignId = acym_getVar('int', 'id', 0);
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
+
+        $campaignId = acym_getVar('int', 'campaignId', 0);
         $campaign = $campaignClass->getOneById($campaignId);
-        $mail = $mailClass->getOneById($campaign->mail_id);
+
+        if (empty($campaign)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_CAMPAIGN_NOT_FOUND'), [], false);
+        }
+
+        $mailId = acym_getVar('int', 'mailId', 0);
+        $mail = $mailClass->getOneById(empty($mailId) ? $campaign->mail_id : $mailId);
 
         acym_trigger('replaceContent', [&$mail, false]);
         $userClass = new UserClass();
@@ -270,11 +286,16 @@ trait Tests
         $data = [];
         $success = false;
 
-        $campaignId = acym_getVar('int', 'id', 0);
+        $campaignId = acym_getVar('int', 'campaignId', 0);
         $campaignClass = new CampaignClass();
         $campaign = $campaignClass->getOneByIdWithMail($campaignId);
 
-        if (empty($campaign->mail_id)) {
+        $mailId = acym_getVar('int', 'mailId', 0);
+        if (empty($mailId)) {
+            $mailId = $campaign->mail_id;
+        }
+
+        if (empty($mailId)) {
             $message = acym_translation('ACYM_CAMPAIGN_NOT_FOUND');
         } else {
             ob_start();
@@ -307,7 +328,7 @@ trait Tests
                         $receiver->enabled = 1;
                         $mailerHelper->isSpamTest = true;
 
-                        if ($mailerHelper->sendOne($campaign->mail_id, $receiver)) {
+                        if ($mailerHelper->sendOne($mailId, $receiver)) {
                             $success = true;
                             $data['url'] = 'https://mailtester.acyba.com/'.(substr($spamtestSystem['email'], 0, strpos($spamtestSystem['email'], '@')));
                             $data['lang'] = acym_getLanguageTag(true);

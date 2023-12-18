@@ -1,6 +1,12 @@
 <div class="cell grid-x text-center acym__campaign__email__save-button">
 	<div class="cell medium-shrink medium-margin-bottom-0 margin-bottom-1 text-left">
-        <?php echo acym_backToListing(); ?>
+        <?php
+        $campaignType = $data['mailInformation']->sending_type ?? $data['campaign_type'];
+        echo acym_backToListing(
+            in_array($campaignType, ['birthday', 'woocommerce_cart'])
+                ? 'campaigns&task=specificListing&type='.$campaignType : null
+        );
+        ?>
 	</div>
 	<div class="cell medium-auto grid-x text-right">
 		<div class="cell medium-auto"></div>

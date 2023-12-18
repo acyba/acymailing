@@ -97,7 +97,7 @@
 				<div class="grid-x medium-auto small-11 cell acym__campaign__listing acym__listing__title__container">
 					<div class="cell medium-auto small-7 acym__listing__title acym__campaign__title">
                         <?php $linkTask = 'generated' == $data['status'] ? 'summaryGenerated' : 'edit&step=editEmail'; ?>
-						<a class="cell auto" href="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.$linkTask.'&id='.intval($campaign->id)); ?>">
+						<a class="cell auto" href="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.$linkTask.'&campaignId='.intval($campaign->id)); ?>">
 							<h6 class='acym__listing__title__primary acym_text_ellipsis'>
                                 <?php echo acym_escape($campaign->name); ?>
 							</h6>

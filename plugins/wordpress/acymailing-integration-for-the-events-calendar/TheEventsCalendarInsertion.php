@@ -314,11 +314,11 @@ trait TheEventsCalendarInsertion
 
         $allday = !empty($properties['_EventAllDay']->value) && $properties['_EventAllDay']->value === 'yes';
 
-        $varFields['{startdate}'] = acym_date($element->start_date, acym_translation('ACYM_DATE_FORMAT_LC2'), false);
-        $varFields['{enddate}'] = acym_date($element->end_date, acym_translation('ACYM_DATE_FORMAT_LC2'), false);
+        $varFields['{startdate}'] = tribe_format_date($element->start_date, true);
+        $varFields['{enddate}'] = tribe_format_date($element->end_date, true);
 
-        $varFields['{simplestartdate}'] = acym_date($element->start_date, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
-        $varFields['{simpleenddate}'] = acym_date($element->end_date, acym_translation('ACYM_DATE_FORMAT_LC1'), false);
+        $varFields['{simplestartdate}'] = tribe_format_date($element->start_date, false);
+        $varFields['{simpleenddate}'] = tribe_format_date($element->end_date, false);
 
         $varFields['{date}'] = $allday ? $varFields['{simplestartdate}'] : $varFields['{startdate}'];
         if (($allday && $varFields['{simplestartdate}'] !== $varFields['{simpleenddate}']) || (!$allday && $element->start_date !== $element->end_date)) {
@@ -326,7 +326,7 @@ trait TheEventsCalendarInsertion
                 $endDateDisplay = $varFields['{simpleenddate}'];
             } else {
                 if ($varFields['{simplestartdate}'] === $varFields['{simpleenddate}']) {
-                    $endDateDisplay = acym_date($element->end_date, 'H:i', false);
+                    $endDateDisplay = acym_date($element->end_date, get_option('time_format', 'H:i'), false);
                 } else {
                     $endDateDisplay = $varFields['{enddate}'];
                 }

@@ -221,8 +221,17 @@ class QueueHelper extends acymObject
                 }
             }
 
+            $isAbTesting = false;
+
+            if (!empty($oneQueue->sending_params)) {
+                $sendingParams = json_decode($oneQueue->sending_params, true);
+
+                $isAbTesting = isset($sendingParams['abtest']);
+            }
+
             $this->triggerSentHook($oneQueue->mail_id);
             try {
+                $mailHelper->isAbTest = $isAbTesting;
                 $result = $mailHelper->sendOne($oneQueue->mail_id, $oneQueue->user_id);
             } catch (\Exception $e) {
                 $result = false;
@@ -262,15 +271,19 @@ class QueueHelper extends acymObject
             } else {
                 $this->errorSend++;
 
-                $newtry = false;
+                $shouldTrySendingLater = false;
                 if (in_array($mailHelper->errorNumber, $mailHelper->errorNewTry)) {
                     if (empty($maxTry) || $oneQueue->try < $maxTry - 1) {
-                        $newtry = true;
-                        $otherMessage = acym_translationSprintf('ACYM_QUEUE_NEXT_TRY', 60);
+                        $shouldTrySendingLater = true;
+                        if ($mailHelper->failedCounting) {
+                            $otherMessage = acym_translationSprintf('ACYM_QUEUE_NEXT_TRY', 60);
+                        }
                     }
+
                     if ($mailHelper->errorNumber == 1) {
                         $this->consecutiveError++;
                     }
+
                     //If we have 2 consecutive errors, we pause the process a little bit to avoid possible other issues.
                     if ($this->consecutiveError == 2) {
                         sleep(1);
@@ -278,7 +291,7 @@ class QueueHelper extends acymObject
                 }
 
                 //We delete the queue entry if it's more than number of try allowed
-                if (!$newtry) {
+                if (!$shouldTrySendingLater) {
                     $queueDelete[$oneQueue->mail_id][] = $oneQueue->user_id;
                     $statsAdd[$oneQueue->mail_id][0][] = $oneQueue->user_id;
                     if ($mailHelper->errorNumber == 1 && $this->config->get('bounce_action_maxtry')) {
@@ -288,9 +301,11 @@ class QueueHelper extends acymObject
                         //Let's execute an action on this subscriber if we have something to do...
                         $otherMessage .= $this->_failedActions($oneQueue->user_id);
                     }
-                } else {
+                } elseif ($mailHelper->failedCounting) {
                     $queueUpdate[$oneQueue->mail_id][] = $oneQueue->user_id;
                 }
+
+                $mailHelper->failedCounting = true;
             }
 
             $messageOnScreen = '[ID '.$oneQueue->mail_id.'] '.$mailHelper->reportMessage;

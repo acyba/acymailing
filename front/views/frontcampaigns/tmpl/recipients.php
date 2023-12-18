@@ -5,7 +5,7 @@
 	  class="acym__form__campaign__edit <?php echo !empty($data['menuClass']) ? acym_escape($data['menuClass']) : ''; ?>">
 	<input type="hidden"
 		   value="<?php echo !empty($data['campaignInformation']) ? acym_escape($data['campaignInformation']) : ''; ?>"
-		   name="id"
+		   name="campaignId"
 		   id="acym__campaign__recipients__form__campaign">
 	<input type="hidden"
 		   value="<?php echo !empty($data['showSelected']) ? $data['showSelected'] : ''; ?>"
@@ -16,7 +16,7 @@
             <?php
             $this->addSegmentStep($data['displaySegmentTab']);
             $workflow = $data['workflowHelper'];
-            echo $workflow->display($this->steps, $this->step);
+            echo $workflow->display($this->steps, $this->step, true, false, '', 'campaignId');
 
             ?>
 			<div class="acym__campaigns__recipients__modal">

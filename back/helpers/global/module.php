@@ -8,7 +8,7 @@ function acym_getModuleFormName()
     return 'formAcym'.rand(1000, 9999).$i++;
 }
 
-function acym_initModule($params = null, $loadJsInModule = false)
+function acym_initModule($params = null, $options = [])
 {
     if (acym_isAjax()) {
         return;
@@ -25,7 +25,10 @@ function acym_initModule($params = null, $loadJsInModule = false)
     if (!is_null($params) && method_exists($params, 'get')) {
         $nameCaption = $params->get('nametext');
         $emailCaption = $params->get('emailtext');
-        $loadJsInModule = $params->get('includejs') === 'module';
+        $jsLoading = $params->get('includejs');
+        $options['loadJsInModule'] = $jsLoading === 'module';
+        $options['defer'] = in_array($jsLoading, ['all', 'defer']);
+        $options['async'] = in_array($jsLoading, ['all', 'async']);
     }
 
     if (empty($nameCaption)) {
@@ -58,16 +61,21 @@ function acym_initModule($params = null, $loadJsInModule = false)
     $spellChecker = empty($acymEmailMisspelledLoaded) && !empty($config->get('email_spellcheck'));
     if ($spellChecker) $acymEmailMisspelledLoaded = true;
 
-    if ($loadJsInModule) {
+    if (!empty($options['loadJsInModule'])) {
         if ($spellChecker) echo '<script type="text/javascript" src="'.ACYM_JS.'libraries/email-misspelled.min.js?v='.$version.'"></script>';
         echo '<script type="text/javascript" src="'.ACYM_JS.'module.min.js?v='.$version.'"></script>';
         echo '<script type="text/javascript">'.$js.'</script>';
     } else {
-        if ($spellChecker) {
-            acym_addScript(false, ACYM_JS.'libraries/email-misspelled.min.js?v='.$version);
+        $scriptOptions = ['defer' => !empty($options['defer'])];
+        if (!empty($options['async'])) {
+            $scriptOptions['async'] = true;
         }
-        $scriptName = acym_addScript(false, ACYM_JS.'module.min.js?v='.$version);
-        acym_addScript(true, $js, ['defer' => false, 'dependencies' => ['script_name' => $scriptName]]);
+
+        if ($spellChecker) {
+            acym_addScript(false, ACYM_JS.'libraries/email-misspelled.min.js?v='.$version, $scriptOptions);
+        }
+        $scriptName = acym_addScript(false, ACYM_JS.'module.min.js?v='.$version, $scriptOptions);
+        acym_addScript(true, $js, array_merge($scriptOptions, ['dependencies' => ['script_name' => $scriptName]]));
     }
 
     if ('wordpress' === ACYM_CMS && !in_array(acym_getVar('string', 'action'), ['elementor', 'elementor_ajax'])) {

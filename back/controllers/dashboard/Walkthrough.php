@@ -222,14 +222,15 @@ trait Walkthrough
         $configurationController = new ConfigurationController();
         $return = $configurationController->attachLicenseOnUpdateMe($licenseKey);
 
-        if ($return['success'] === false) {
+        if (empty($return['success'])) {
             $this->config->save(['license_key' => '']);
         }
 
-        $return['message'] = $configurationController->displayMessage($return['message'], true);
-        $ajaxSuccess = $return['message']['type'] !== 'error';
+        $originalMessage = $return['message'];
+        $return['message'] = $configurationController->displayMessage($originalMessage, true);
+        $ajaxSuccess = !empty($return['message']['type']) && $return['message']['type'] !== 'error';
 
-        acym_sendAjaxResponse($return['message']['message'], [], $ajaxSuccess);
+        acym_sendAjaxResponse($return['message']['message'] ?? $originalMessage, [], $ajaxSuccess);
     }
 
     //Function called in Ajax that's why we exit
@@ -251,11 +252,13 @@ trait Walkthrough
         ];
         $result = UpdatemeHelper::call('api/crons/modify', 'POST', $data);
 
-        if ($result['type'] !== 'error') $this->config->save(['active_cron' => 1]);
+        if ($result['type'] !== 'error') {
+            $this->config->save(['active_cron' => 1]);
+        }
 
         $configurationController = new ConfigurationController();
         $result['message'] = $configurationController->displayMessage($result['message'], true);
-        $success = $result['type'] !== 'error';
+        $success = $result['message']['type'] !== 'error';
 
         acym_sendAjaxResponse($result['message']['message'], [], $success);
     }

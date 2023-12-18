@@ -51,6 +51,12 @@ trait Campaigns
         $pagination->setStatus($matchingElements['total'], $page, $campaignsPerPage);
         $tagClass = new TagClass();
 
+        foreach ($matchingElements['elements'] as $key => $element) {
+            if (empty($matchingElements['elements'][$key]->sending_params)) {
+                continue;
+            }
+        }
+
         $viewData = [
             'allElements' => $matchingElements['elements'],
             'pagination' => $pagination,

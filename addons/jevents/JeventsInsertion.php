@@ -636,10 +636,10 @@ trait JeventsInsertion
 
         if (!empty($this->useStdTime)) {
             if (!empty($startTime)) {
-                $startTime = strtolower(strftime("%#I:%M%p", strtotime($element->startrepeat)));
+                $startTime = strtolower(date('h:iA', strtotime($element->startrepeat)));
             }
             if (!empty($endTime)) {
-                $endTime = strtolower(strftime("%#I:%M%p", strtotime($element->endrepeat)));
+                $endTime = strtolower(date('h:iA', strtotime($element->endrepeat)));
             }
         }
 

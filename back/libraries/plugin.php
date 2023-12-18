@@ -726,24 +726,36 @@ class acymPlugin extends acymObject
     /**
      * Handles the custom layouts and the pictures management
      *
-     * @param string $result What will be inserted in the email
-     * @param object $options Selected options when inserting dcontent
-     * @param array  $data Data used as shortcodes in custom layouts
+     * @param string $htmlResult What will be inserted in the email
+     * @param object $insertionOptions Selected options when inserting dcontent
+     * @param array  $dataShortcodes Data used as shortcodes in custom layouts
      *
      * @return string
      */
-    protected function finalizeElementFormat($result, $options, $data)
+    protected function finalizeElementFormat(string $htmlResult, object $insertionOptions, array $dataShortcodes): string
     {
-        $customLayoutPath = ACYM_CUSTOM_PLUGIN_LAYOUT.$this->name.'.html';
-        //Check if the template exists...
-        if (file_exists($customLayoutPath)) {
-            $data['{wrappedText}'] = $this->pluginHelper->wrappedText;
-            $viewContent = acym_fileGetContent($customLayoutPath);
-            $viewContentReplace = str_replace(array_keys($data), $data, $viewContent);
-            if ($viewContent !== $viewContentReplace) $result = $viewContentReplace;
+        // Hidden feature, users can do a PHP custom view
+        $fullCustomLayoutPath = ACYM_CUSTOM_PLUGIN_LAYOUT.$this->name.'.php';
+        if ($this->config->get('php_overrides', 0) == 1 && file_exists($fullCustomLayoutPath)) {
+            ob_start();
+            require $fullCustomLayoutPath;
+            $viewContent = ob_get_clean();
+            $htmlResult = str_replace(array_keys($dataShortcodes), $dataShortcodes, $viewContent);
+        } else {
+            // Default custom view feature with only HTML for security reasons
+            $customLayoutPath = ACYM_CUSTOM_PLUGIN_LAYOUT.$this->name.'.html';
+            if (file_exists($customLayoutPath)) {
+                $dataShortcodes['{wrappedText}'] = $this->pluginHelper->wrappedText;
+                $viewContent = acym_fileGetContent($customLayoutPath);
+                $viewContentReplace = str_replace(array_keys($dataShortcodes), $dataShortcodes, $viewContent);
+                if ($viewContent !== $viewContentReplace) {
+                    $htmlResult = $viewContentReplace;
+                }
+            }
         }
 
-        return $this->pluginHelper->managePicts($options, $result);
+        // Resize/remove pictures if needed
+        return $this->pluginHelper->managePicts($insertionOptions, $htmlResult);
     }
 
     protected function filtersFromConditions(&$filters)
@@ -789,7 +801,7 @@ class acymPlugin extends acymObject
 
         switch ($field->type) {
             case 'calendar':
-                $format = $field->fieldparams['showtime'] == '1' ? 'Y-m-d H:i' : 'Y-m-d';
+                $format = acym_translation($field->fieldparams['showtime'] == '1' ? 'ACYM_DATE_FORMAT_LC2' : 'ACYM_DATE_FORMAT_LC1');
                 $field->value = acym_date(strtotime($field->value), $format);
                 break;
 
@@ -901,15 +913,32 @@ class acymPlugin extends acymObject
     protected function getLanguage($elementLanguage = null, $onlyValue = false)
     {
         $value = $this->emailLanguage;
-        if (!empty($elementLanguage) && $elementLanguage !== '*') $value = $elementLanguage;
+        if (!empty($elementLanguage) && $elementLanguage !== '*') {
+            $value = $elementLanguage;
+        }
 
-        if (empty($value)) return '';
+        if (empty($value)) {
+            return '';
+        }
 
-        if ($onlyValue) return $value;
+        if (ACYM_CMS === 'joomla' && acym_isPluginActive('languagefilter')) {
+            $languages = acym_loadObjectList('SELECT * FROM #__languages', 'lang_code');
+            if (isset($languages[$value])) {
+                $value = $languages[$value]->sef;
+            } else {
+                $value = substr($value, 0, strpos($value, '-'));
+            }
 
-        if (ACYM_CMS == 'joomla' && acym_isPluginActive('languagefilter')) {
-            return '&lang='.substr($value, 0, strpos($value, '-'));
+            if ($onlyValue) {
+                return $value;
+            }
+
+            return '&lang='.$value;
         } else {
+            if ($onlyValue) {
+                return $value;
+            }
+
             return '&language='.$value;
         }
     }
@@ -1387,7 +1416,7 @@ class acymPlugin extends acymObject
     {
         if (empty($account) && empty($pricing)) return '';
 
-        $html = '<div class="cell grid-x acym-grid-margin-x shrink"><p class="cell shrink">'.acym_translation('ACYM_DONT_HAVE_ACCOUNT').'</p>';
+        $html = '<div class="cell grid-x acym-grid-margin-x shrink acym_vcenter"><p class="cell shrink">'.acym_translation('ACYM_DONT_HAVE_ACCOUNT').'</p>';
         if (!empty($account)) $html .= '<a target="_blank" class="cell shrink" href="'.$account.'">'.acym_translation('ACYM_CREATE_ONE').'</a>';
         if (!empty($account) && !empty($pricing)) $html .= '<p class="cell shrink">'.strtolower(acym_translation('ACYM_OR')).'</p>';
         if (!empty($pricing)) $html .= '<a target="_blank" class="cell shrink" href="'.$pricing.'">'.acym_translation('ACYM_CHECK_THEIR_PRICING').'</a>';

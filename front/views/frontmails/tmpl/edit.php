@@ -47,7 +47,7 @@
 			<p class="cell medium-shrink acym__toggle__arrow__trigger"><?php echo acym_translation('ACYM_ADVANCED_OPTIONS'); ?> <i class="acymicon-keyboard_arrow_down"></i></p>
 			<div class="cell acym__toggle__arrow__contain">
 				<div class="grid-x grid-padding-x">
-                    <?php if (empty($data['multilingual'])) { ?>
+                    <?php if (empty($data['multilingual']) && empty($data['abtest'])) { ?>
 						<div class="cell grid-x">
 							<div class="cell medium-shrink">
 								<label for="acym__mail__edit__preheader">

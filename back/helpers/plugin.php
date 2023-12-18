@@ -281,7 +281,7 @@ class PluginHelper extends acymObject
         acym_createDir($dest);
         foreach ($resultspictures[2] as $i => $extension) {
             $pictname = md5($resultspictures[1][$i]).'.'.$extension;
-            $picturl = ACYM_LIVE.ACYM_MEDIA_FOLDER.'/resized/'.$pictname;
+            $picturl = ACYM_LIVE.str_replace(DS, '/', ACYM_MEDIA_FOLDER).'resized/'.$pictname;
             $pictPath = $dest.$pictname;
             $pictCode = trim($resultspictures[1][$i], '"');
             if (file_exists($pictPath)) {
@@ -369,7 +369,7 @@ class PluginHelper extends acymObject
         // May God punish every person using Outlook, or imposing this monstrosity for his employees
         $pregreplace['#(<p style=")([^>]*>\s*<img *[^>]*margin-left: auto; margin-right: auto;[^>]*>\s*</p>)#Uis'] = '$1text-align: center;$2';
         // Outlook doesn't handle webp images
-        $pregreplace['#(<img [^>]*src="[^"]+\.webp"[^>]*>)#Uis'] = '<!--[if !mso]>$1<![endif]-->';
+        $pregreplace['#(<img [^>]*src="[^"]+\.webp"[^>]*>)#Uis'] = '<!--[if !mso]><!-->$1<!--<![endif]-->';
 
         $newbody = preg_replace(array_keys($pregreplace), $pregreplace, $html);
         //we do it in two steps as this regex can break the page
@@ -446,6 +446,9 @@ class PluginHelper extends acymObject
         } elseif (is_string($text) && !empty($text)) {
             foreach ($replacement as $code => $value) {
                 $codes = [$code, urlencode($code)];
+                if (is_null($value)) {
+                    $value = '';
+                }
                 $safePregValue = str_replace('$', '\$', $value);
 
                 foreach ($codes as $oneCode) {

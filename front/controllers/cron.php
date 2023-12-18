@@ -18,8 +18,20 @@ class CronController extends acymController
         ];
     }
 
+    public function isSecureCronUrl(): bool
+    {
+        $cronKey = acym_getVar('string', 'cronKey', '');
+
+        return $cronKey === $this->config->get('cron_key', '');
+    }
+
     public function cron()
     {
+        //We check if the cron security is enabled
+        if (!empty($this->config->get('cron_security', 0)) && !$this->isSecureCronUrl()) {
+            die(acym_translation('ACYM_SECURITY_KEY_CRON_MISSING'));
+        }
+
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             exit;
@@ -45,7 +57,10 @@ class CronController extends acymController
         }
 
         //removeIf(development)
-        if ($expirationDate < time() && (empty($_SERVER['HTTP_REFERER']) || strpos($_SERVER['HTTP_REFERER'], 'www.yourcrontask.com') === false)) {
+        if ($expirationDate < time() && (empty($_SERVER['HTTP_REFERER']) || (strpos($_SERVER['HTTP_REFERER'], 'www.yourcrontask.com') === false && strpos(
+                        $_SERVER['HTTP_REFERER'],
+                        'api.acymailing.com'
+                    ) === false))) {
             exit;
         }
         //endRemoveIf(development)

@@ -17,7 +17,7 @@ const acym_helperToggle = {
             let elementid = element.attr('data-acy-elementid');
             let newvalue = element.attr('data-acy-newvalue');
 
-            let url = ACYM_TOGGLE_URL + '&table=' + table + '&field=' + field + '&id=' + elementid + '&value=' + newvalue;
+            let url = ACYM_TOGGLE_URL + '&task=toggle&table=' + table + '&field=' + field + '&id=' + elementid + '&value=' + newvalue;
 
             acym_helper.get(url).then(res => {
                 if (res.error) {
@@ -72,7 +72,7 @@ const acym_helperToggle = {
             let $elementid = $element.attr('data-acy-elementid');
             let $newvalue = $element.attr('data-acy-newvalue');
 
-            let url = ACYM_TOGGLE_URL + '&table=' + $table + '&field=' + $field + '&id=' + $elementid + '&value=' + $newvalue;
+            let url = ACYM_TOGGLE_URL + '&task=toggle&table=' + $table + '&field=' + $field + '&id=' + $elementid + '&value=' + $newvalue;
 
             jQuery.ajax({
                 url: url,

@@ -4,7 +4,7 @@
 		<input name="mail[name]" type="text" class="acy_required_field" value="<?php echo acym_escape($data['mail']->name); ?>" required>
 	</label>
 </div>
-<?php if (empty($data['multilingual'])) { ?>
+<?php if (empty($data['multilingual']) && empty($data['abtest'])) { ?>
 	<div class="cell xlarge-3 medium-6">
 		<label>
             <?php echo acym_translation('ACYM_EMAIL_SUBJECT'); ?>

@@ -106,6 +106,15 @@
         <?php
         foreach ($data['allCampaigns'] as $campaign) {
             if (isset($campaign->display) && !$campaign->display) continue;
+            $specialIcon = '';
+            $specialText = '';
+            if (is_array($campaign->sending_params) && array_key_exists('abtest', $campaign->sending_params)) {
+                $specialIcon = '<i class="acymicon-flask acym__selection__card__icon"></i> ';
+                if (empty($campaign->sending_params['abtest']['abtest_finished']) && empty($campaign->draft)) {
+                    $specialText = ' ('.acym_translation('ACYM_PROCESSING').')';
+                }
+            }
+
             ?>
 			<div class="grid-x cell acym__listing__row">
 				<div class="medium-shrink small-1 cell">
@@ -114,11 +123,11 @@
 				<div class="grid-x medium-auto small-11 cell acym__campaign__listing acym__listing__title__container">
 					<div class="cell medium-auto small-7 acym__listing__title acym__campaign__title">
                         <?php $linkTask = 'generated' == $data['status'] ? 'summaryGenerated' : 'edit&step=editEmail';
-                        $linkCampaign = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.$linkTask.'&id='.intval($campaign->id));
+                        $linkCampaign = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.$linkTask.'&campaignId='.intval($campaign->id));
                         ?>
 						<a class="cell auto" href="<?php echo $linkCampaign; ?>">
-							<h6 class='acym__listing__title__primary acym_text_ellipsis'>
-                                <?php echo acym_escape($campaign->name); ?>
+							<h6 class='acym__listing__title__primary acym_text_ellipsis' style="display:flex; align-items:center;">
+                                <?php echo $specialIcon.acym_escape($campaign->name).$specialText; ?>
 							</h6>
 						</a>
 						<p class='acym__listing__title__secondary'>
@@ -192,13 +201,15 @@
                                 $numberCampaignsGenerated = empty($campaign->sending_params['number_generated']) ? '0' : $campaign->sending_params['number_generated'];
                                 $tooltip = acym_translationSprintf('ACYM_X_CAMPAIGN_GENERATED', $numberCampaignsGenerated);
 
+								$nextTrigger = empty($campaign->sending_params['trigger_text']) ? '' : $campaign->sending_params['trigger_text'];
                                 echo acym_tooltip(
                                     '<div class="cell acym__campaign__status__status acym__background-color__purple">
-																<span class="acym__color__white">'.$campaign->sending_params['trigger_text'].'</span>
-															</div>',
+										<span class="acym__color__white">'.$nextTrigger.'</span>
+									</div>',
                                     $tooltip,
                                     'cell'
                                 );
+
                                 $target = '<div class="acym__campaign__listing__automatic__deactivate grid-x cell xlarge-shrink acym_vcenter" data-campaignid="'.acym_escape(
                                         $campaign->id
                                     ).'">
