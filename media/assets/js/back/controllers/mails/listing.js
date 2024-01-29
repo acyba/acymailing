@@ -1,8 +1,9 @@
-jQuery(function($) {
+jQuery(function ($) {
 
     function Init() {
         setCreateButton();
         setExportTemplate();
+        setFavoriteTemplate();
         setDuplicateTemplate();
         initButtonFile();
     }
@@ -27,6 +28,14 @@ jQuery(function($) {
             $('#acym_form').attr('action', formAction);
             $('input[name="task"]').val('');
             $('#formSubmit').removeAttr('disabled');
+        });
+    }
+
+    function setFavoriteTemplate() {
+        $('.acym__listing__default_template').on('click', function () {
+            $('input[name="task"]').val($(this).attr('data-task'));
+            $('input[name="templateId"]').val($(this).attr('data-template'));
+            $('#formSubmit').trigger('click');
         });
     }
 

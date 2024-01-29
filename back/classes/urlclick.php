@@ -236,4 +236,44 @@ class UrlClickClass extends acymClass
 
         return $return;
     }
+
+    public function getTotalClicksPerMail(array $mailIds = [])
+    {
+        acym_arrayToInteger($mailIds);
+
+        $query = 'SELECT SUM(click) AS total_clicks, COUNT(click) AS unique_clicks, mail_id FROM #__acym_url_click ';
+        $query .= empty($mailIds) ? '' : 'WHERE `mail_id` IN ('.implode(',', $mailIds).') ';
+        $query .= 'GROUP BY mail_id';
+
+        return acym_loadObjectList($query, 'mail_id');
+    }
+
+    public function getOneByMailIdAndUserId(int $mailId, int $userId)
+    {
+        return acym_loadObject('SELECT * FROM #__acym_url_click WHERE mail_id = '.intval($mailId).' AND user_id = '.intval($userId));
+    }
+
+    public function getUserMailsClicked(int $userId): array
+    {
+        return acym_loadObjectList(
+            'SELECT user_stat.mail_id, url_click.click
+            FROM #__acym_user_stat AS user_stat
+            LEFT JOIN #__acym_url_click AS url_click 
+                ON url_click.mail_id = user_stat.mail_id 
+                AND url_click.user_id = user_stat.user_id
+            WHERE user_stat.user_id = '.intval($userId).'
+            GROUP BY user_stat.mail_id'
+        );
+    }
+
+    public function getClicksByMailId(int $mailId): array
+    {
+        return acym_loadObjectList(
+            'SELECT url_click.url_id, url_click.user_id, url_click.click, url_click.date_click, `user`.email, url.url
+            FROM #__acym_url_click AS url_click
+            LEFT JOIN #__acym_user AS `user` ON url_click.user_id = `user`.id
+            JOIN #__acym_url AS url ON url_click.url_id = url.id
+            WHERE url_click.mail_id = '.intval($mailId)
+        );
+    }
 }

@@ -79,7 +79,7 @@
 						class="cell acym__templates__oneTpl acym__listing__block acym_template_option">
 					<div class="text-center cell acym__listing__block__delete acym__background-color__red">
 						<div>
-							<i class="acymicon-trash-o acym__listing__block__delete__trash acym__color__white"></i>
+							<i class="acymicon-trash-o js-acym__listing__block__delete__trash acym__color__white"></i>
 							<p class="acym__listing__block__delete__submit acym__color__white acy_button_submit" data-task="unsetWelcome">
 								<i class="acymicon-trash-o acym__color__white"></i>
 							</p>
@@ -134,7 +134,7 @@
 						class="cell acym__templates__oneTpl acym__listing__block acym_template_option">
 					<div class="text-center cell acym__listing__block__delete acym__background-color__red">
 						<div>
-							<i class="acymicon-trash-o acym__listing__block__delete__trash acym__color__white"></i>
+							<i class="acymicon-trash-o js-acym__listing__block__delete__trash acym__color__white"></i>
 							<p class="acym__listing__block__delete__submit acym__color__white acy_button_submit" data-task="unsetUnsubscribe">
 								<i class="acymicon-trash-o acym__color__white"></i>
 							</p>

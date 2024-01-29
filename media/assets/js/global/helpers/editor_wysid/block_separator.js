@@ -310,8 +310,8 @@ const acym_helperBlockSeparator = {
 
 
         jQuery('.acym__wysid__context__block__vertical__padding--input').off('change').on('change', function () {
-            let $self = jQuery(this);
-            let valueEntered = $self.val();
+            const $self = jQuery(this);
+            const valueEntered = $self.val();
             if (valueEntered < 0) {
                 $self.val(0);
                 return;
@@ -324,10 +324,10 @@ const acym_helperBlockSeparator = {
             let style = '';
             jQuery('.acym__wysid__context__block__vertical__padding--input').each((index, $input) => {
                 $input = jQuery($input);
-                let indexUp = index + 1;
-                let inputValue = Math.round($input.val() / 2);
-                style += `[id="${$parentTable.attr('id')}"] .acym__wysid__row__element__th__vertical__padding-${index}{padding-bottom: ${inputValue}px !important}`;
-                style += `[id="${$parentTable.attr('id')}"] .acym__wysid__row__element__th__vertical__padding-${indexUp}{padding-top: ${inputValue}px !important}`;
+                const indexUp = index + 1;
+                const inputValue = Math.round($input.val() / 2);
+                style += `#${$parentTable.attr('id')} .acym__wysid__row__element__th__vertical__padding-${index}{padding-bottom: ${inputValue}px !important}`;
+                style += `#${$parentTable.attr('id')} .acym__wysid__row__element__th__vertical__padding-${indexUp}{padding-top: ${inputValue}px !important}`;
             });
 
             $parentTable.prepend(`<style data-vertical-padding="${$parentTable.attr('id')}">

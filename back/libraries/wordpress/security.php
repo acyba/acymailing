@@ -74,16 +74,17 @@ function acym_cleanVar($var, $type, $mask)
 
     switch ($type) {
         case 'string':
-            $var = (string)$var;
+            $var = strval($var);
             break;
         case 'int':
-            $var = (int)$var;
+            $var = intval($var);
             break;
         case 'float':
-            $var = (float)$var;
+            $var = floatval($var);
             break;
+        case 'bool':
         case 'boolean':
-            $var = (boolean)$var;
+            $var = boolval($var);
             break;
         case 'word':
             $var = preg_replace('#[^a-zA-Z_]#', '', $var);

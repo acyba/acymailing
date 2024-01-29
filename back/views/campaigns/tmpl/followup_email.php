@@ -80,7 +80,7 @@
 							</div>
 						</div>
                         <?php foreach ($data['followup']->mails as $mail) { ?>
-							<div class="grid-x cell acym__listing__row">
+							<div class="grid-x cell align-middle acym__listing__row">
 								<div class="grid-x medium-auto small-11 cell acym__listing__title__container">
 									<div class="auto cell acym__listing__title">
                                         <?php echo $mail->subject; ?>

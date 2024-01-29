@@ -1,14 +1,14 @@
 <?php
 
-use AcyMailing\Types\OperatorType;
 use AcyMailing\Types\OperatorinType;
+use AcyMailing\Types\OperatorType;
 
 trait UserAutomationFilters
 {
     public function onAcymDeclareFilters(&$filters)
     {
         $allGroups = acym_getGroups();
-        $groups = [];
+        $groups = ['' => acym_translation('ACYM_NO_GROUP')];
         foreach ($allGroups as $group) {
             $groups[$group->id] = $group->text;
         }

@@ -1,26 +1,35 @@
 .button {
-    background-color: $color-palette-cyan;
-    border: 1px solid $color-palette-cyan;
-    color: $white;
-    border-radius: 4px;
-    transition: .2s ease-in-out;
-    cursor: pointer;
-    min-height: 0;
-    padding: .5rem .8rem;
-    font-weight: 500;
-    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: max-content;
+    min-height: 40px;
     height: auto;
-    margin-bottom: 0;
+    min-width: 100px;
+    max-width:100%;
+    padding: 0 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: $font-weight-semi-bold;
+    font-size: 14px;
     box-shadow: none;
+    background-color: $color-palette-cyan;
+    color: $white;
+    border: 1px solid $color-palette-cyan;
+    transition: .2s ease-in-out;
 
     &:hover {
-        background-color: $blue-green;
+        background-color: $blue-secondary;
         border: 1px solid $blue-green;
 
         &:active {
             background-color: $color-palette-dark-blue;
             border: 1px solid $color-palette-dark-blue;
         }
+    }
+
+    &.button-full-width {
+        width:100%;
     }
 
     &.button-secondary {
@@ -64,9 +73,10 @@
 
     // The !important markers are there because of WordPress
     &.disabled:not(.clear), &[disabled]:not(.clear) {
-        background-color: $dark-gray !important;
-        border: 1px solid $dark-gray !important;
+        background-color: $very-light-gray !important;
+        border: 1px solid $very-light-gray !important;
         color: $white !important;
+        opacity: 1;
     }
 
     &.clear.secondary,
@@ -92,6 +102,7 @@
         border: 1px solid $alert-color;
         transition: .2s;
         position: relative;
+        display: flex;
 
         &:hover {
             background-color: $alert-color;
@@ -114,9 +125,9 @@
     }
 
     i {
-        font-size: 15px;
+        font-size: 18px;
         vertical-align: middle;
-        margin-right: 6px;
+        margin-right: 8px;
     }
 
     span {

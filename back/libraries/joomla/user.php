@@ -27,9 +27,9 @@ function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
     jimport('joomla.access.access');
 
     $groups = JAccess::getGroupsByUser($userid, $recursive);
+    acym_arrayToInteger($groups);
 
     if ($names) {
-        acym_arrayToInteger($groups);
         $groups = acym_loadResultArray(
             'SELECT ugroup.title 
             FROM #__usergroups AS ugroup 

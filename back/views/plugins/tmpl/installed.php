@@ -13,7 +13,7 @@
         ?>
 		<div id="acym__plugin__installed__application" class="cell grid-x">
             <?php
-			if (empty($data['plugins'])) { ?>
+            if (empty($data['plugins'])) { ?>
 				<div class="cell grid-x align-center">
 					<h2 class="cell text-center acym__title__primary__color"><?php echo acym_translation('ACYM_YOU_DONT_HAVE_ADD_ONS'); ?></h2>
 					<a href="<?php echo acym_completeLink('plugins&task=available'); ?>"
@@ -47,7 +47,7 @@
 						 style="display: none;"
 						 v-infinite-scroll="loadMorePlugins"
 						 :infinite-scroll-disabled="busy">
-						<div class="acym__plugins__card cell grid-x xlarge-3 large-4 medium-6"
+						<div class="acym__plugins__card cell xlarge-3 large-4 medium-6 grid-y align-justify"
 							 :id="'acym__plugins__card__' + plugin.folder_name"
 							 v-for="(plugin, index) in displayedPlugins"
 							 :key="plugin">
@@ -55,33 +55,43 @@
 								<button v-if="plugin.type == 'ADDON'" @click="deletePlugin(plugin.id)" type="button" class="acym__plugins__button__delete">
 									<i class="acymicon-trash-o"></i>
 								</button>
+
 								<div class="acym__plugins__card__params_type shrink cell">{{ plugin.category }}</div>
+
+								<!-- PICTURE CARD -->
 								<div class="acym__plugins__card__image margin-bottom-1 cell grid-x align-center">
 									<img :src="imageUrl(plugin.folder_name, plugin.type)" alt="plugin image" class="cell">
 								</div>
-								<div class="acym__plugins__card__params cell grid-x">
-									<div class="cell grid-x acym_vcenter acym__plugins__card__params__title-line">
-										<h2 class="cell medium-9 acym__plugins__card__params__title acym_text_ellipsis" :title="plugin.title">{{ plugin.title }}</h2>
-										<div class="cell auto"></div>
-										<button v-show="plugin.uptodate == '0'" data-acym-tooltip="<?php echo acym_translation('ACYM_UPDATE'); ?>"
-												type="button"
-												class="acym__plugins__button shrink acym__plugins__button__update cell text-center"
-												@click="updatePlugin(plugin)">
-											<span v-show="!updating[plugin.id]"><i class="acymicon-exclamation-triangle"></i></span>
-											<span v-show="updating[plugin.id]"><?php echo acym_loaderLogo(); ?></span>
-										</button>
 
-										<i v-if="plugin.settings && plugin.settings != 'not_installed'"
-										   @click="toggleSettings(plugin.folder_name)"
-										   class="acymicon-cog cell shrink acym__plugins__settings__toggle cursor-pointer"></i>
-										<i v-if="plugin.settings && plugin.settings == 'not_installed'"
-										   class="acymicon-cog cell shrink acym__plugins__settings__toggle__blocked cursor-pointer acym__color__medium-gray acym__tooltip">
-											<span class="acym__tooltip__text"><?php echo acym_translation('ACYM_SETTINGS_AVAILABLE_INSTALLED_EXTENSION'); ?></span>
-										</i>
-										<a target="_blank" :href="documentationUrl(plugin.folder_name, plugin.type)" class="acym__plugins__documentation cell medium-1">
-											<i class="acymicon-book"></i>
-										</a>
+								<!-- MAIN CARD -->
+								<div class="acym__plugins__card__params">
+									<div class="acym__plugins__card__params__title-line">
+										<h2 class="medium-9 acym__plugins__card__params__title acym_text_ellipsis" :title="plugin.title">{{ plugin.title }}</h2>
+										<div class="acym__plugins__card__params__icons">
+											<button v-show="plugin.uptodate == '0'" data-acym-tooltip="<?php echo acym_translation('ACYM_UPDATE'); ?>"
+													type="button"
+													class="acym__plugins__button shrink acym__plugins__button__update cell text-center"
+													@click="updatePlugin(plugin)">
+												<span v-show="!updating[plugin.id]"><i class="acymicon-exclamation-triangle"></i></span>
+												<span v-show="updating[plugin.id]"><?php echo acym_loaderLogo(); ?></span>
+											</button>
+											<div v-if="plugin.settings && plugin.settings != 'not_installed'" class="acym__icon">
+												<i @click="toggleSettings(plugin.folder_name)"
+												   class="acymicon-cog cell shrink acym__plugins__settings__toggle cursor-pointer"></i>
+											</div>
+											<div v-if="plugin.settings && plugin.settings == 'not_installed'" class="acym__icon">
+												<i class="acymicon-cog cell shrink acym__plugins__settings__toggle__blocked cursor-pointer acym__color__medium-gray acym__tooltip">
+													<span class="acym__tooltip__text"><?php echo acym_translation('ACYM_SETTINGS_AVAILABLE_INSTALLED_EXTENSION'); ?></span>
+												</i>
+											</div>
+											<a class="acym__icon" target="_blank"
+											   :href="documentationUrl(plugin.folder_name, plugin.type)"
+											   class="acym__icon acym__plugins__documentation cell medium-1">
+												<i class="acymicon-book"></i>
+											</a>
+										</div>
 									</div>
+
 									<div ref="plugins" :class="isOverflown(index)" class="acym__plugins__card__params_desc cell" v-html="plugin.description"></div>
 
 									<div v-if="plugin.type == 'ADDON'" class="acym__plugins__card__actions cell grid-x acym_vcenter" v-show="rightLevel(plugin.level)">

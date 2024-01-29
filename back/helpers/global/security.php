@@ -147,3 +147,22 @@ function acym_raiseError($code, $message)
     http_response_code($code);
     exit;
 }
+
+/**
+ * Check if the license is valid, make this check weekly
+ *
+ * @return bool
+ */
+function acym_isLicenseValidWeekly(): bool
+{
+    $config = acym_config();
+    $expirationDate = $config->get('expirationdate', 0);
+    // $expirationDate is empty when no call has been made yet on our server, or when it is a Starter license. Starter licenses don't have access to the cron
+    if (empty($expirationDate) || (time() - 604800) > $config->get('lastlicensecheck', 0)) {
+        acym_checkVersion();
+        $config = acym_config(true);
+        $expirationDate = $config->get('expirationdate', 0);
+    }
+
+    return $expirationDate >= time();
+}

@@ -396,6 +396,7 @@ function acym_getJSMessages()
         'ACYM_SQUARISH',
         'ACYM_UNSPLASH_KEY_NEEDED',
         'ACYM_GET_ONE_HERE',
+        'ACYM_ENTITY',
     ];
 
     foreach ($keysToLoad as $oneKey) {

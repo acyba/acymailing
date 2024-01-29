@@ -382,7 +382,9 @@ class MigrationHelper extends acymObject
         $fieldsV5 = [];
 
         foreach ($fieldsV5InDB as $key => $field) {
-            if (in_array($key, $columnUserTable)) $fieldsV5[$key] = $field;
+            if (in_array($key, $columnUserTable)) {
+                $fieldsV5[$key] = $field;
+            }
         }
 
         if (empty($fieldsV5)) return true;
@@ -390,7 +392,10 @@ class MigrationHelper extends acymObject
         $fieldsKeyV5 = array_keys($fieldsV5);
 
         $whereUserField = '`'.implode('` IS NOT NULL OR `', $fieldsKeyV5);
-        if (!empty($fieldsKeyV5)) $whereUserField .= '` IS NOT NULL';
+        if (!empty($fieldsKeyV5)) {
+            $whereUserField .= '` IS NOT NULL';
+        }
+
         $query = 'SELECT `subid`, `'.implode('`, `', $fieldsKeyV5).'` FROM #__acymailing_subscriber WHERE '.$whereUserField.' LIMIT '.intval($params['currentElement']).', '.intval(
                 $params['insertPerCalls']
             );
@@ -427,7 +432,13 @@ class MigrationHelper extends acymObject
                     }
                 }
 
-                if (strlen($user->$fieldKey) === 0 || ($fieldImported[$fieldKey]->type === 'phone' && $user->$fieldKey === ',')) continue;
+                if ('phone' == $fieldImported[$fieldKey]->type) {
+                    $user->$fieldKey = str_replace('+', '', $user->$fieldKey);
+                }
+
+                if (strlen($user->$fieldKey) === 0 || ($fieldImported[$fieldKey]->type === 'phone' && $user->$fieldKey === ',')) {
+                    continue;
+                }
 
                 $valuesToInsert[] = '('.intval($user->subid).', '.acym_escapeDB($user->$fieldKey).', '.intval($fieldImported[$fieldKey]->id).')';
             }

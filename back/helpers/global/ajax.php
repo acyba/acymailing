@@ -11,10 +11,23 @@ function acym_getAllHeaders()
     foreach ($_SERVER as $name => $value) {
         if (substr($name, 0, 5) === 'HTTP_') {
             $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+        } else {
+            $headers[$name] = $value;
         }
     }
 
     return $headers;
+}
+
+function acym_getHeader($headerName)
+{
+    $allHeaders = acym_getAllHeaders();
+
+    if (!empty($allHeaders[$headerName])) {
+        return $allHeaders[$headerName];
+    }
+
+    return '';
 }
 
 function acym_isAjax()

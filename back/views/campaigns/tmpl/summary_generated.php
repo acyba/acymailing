@@ -79,12 +79,12 @@
 						<button type="button" class="cell shrink button acym__button__cancel acy_button_submit" data-task="disableGeneratedCampaign">
                             <?php echo acym_translation('ACYM_DISABLE'); ?> <i class="acymicon-lock"></i>
 						</button>
-						<button type="button" class="cell shrink button button-send acy_button_submit" data-task="addQueue"><?php echo acym_translation('ACYM_SEND'); ?>
+						<button type="button" class="cell shrink button button-send acy_button_submit margin-bottom-0" data-task="addQueue"><?php echo acym_translation('ACYM_SEND'); ?>
 							<i class="acymicon-paper-plane"></i></button>
                     <?php } else { ?>
 						<button type="button" class="cell shrink button acy_button_submit" data-task="enableGeneratedCampaign"><?php echo acym_translation('ACYM_ENABLE'); ?> <i
 									class="acymicon-unlock"></i></button>
-						<button type="button" class="cell shrink disabled button button-send" disabled><?php echo acym_translation('ACYM_SEND'); ?>
+						<button type="button" class="cell shrink disabled button button-send margin-bottom-0" disabled><?php echo acym_translation('ACYM_SEND'); ?>
 							<i class="acymicon-paper-plane"></i></button>
                     <?php } ?>
 				</div>

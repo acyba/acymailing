@@ -298,11 +298,13 @@ CREATE TABLE IF NOT EXISTS `#__acym_queue` (
 CREATE TABLE IF NOT EXISTS `#__acym_mail_stat` (
 	`mail_id` INT NOT NULL,
 	`total_subscribers` INT NOT NULL DEFAULT 0,
-	`sent` INT NULL DEFAULT 0,
+	`sent` INT NOT NULL DEFAULT 0,
 	`send_date` DATETIME NULL,
-	`fail` INT NULL DEFAULT 0,
+	`fail` INT NOT NULL DEFAULT 0,
 	`open_unique` INT NOT NULL DEFAULT 0,
 	`open_total` INT NOT NULL DEFAULT 0,
+	`click_unique` INT NOT NULL DEFAULT 0,
+	`click_total` INT NOT NULL DEFAULT 0,
 	`bounce_unique` MEDIUMINT(8) NOT NULL DEFAULT 0,
 	`bounce_details` LONGTEXT NULL,
 	`unsubscribe_total` INT NOT NULL DEFAULT 0,
@@ -550,7 +552,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_plugin` (
 	`description` LONGTEXT NOT NULL,
 	`latest_version` VARCHAR(10) NOT NULL,
 	`settings` LONGTEXT NULL,
-	`type` VARCHAR(20) NOT NULL DEFAULT "ADDON",
+	`type` VARCHAR(20) NOT NULL DEFAULT 'ADDON',
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB

@@ -54,42 +54,47 @@ class FronturlController extends acymController
             acym_redirect($urlObject->url);
         }
 
-        if (!acym_isRobot()) {
-            $urlClick = [
-                'mail_id' => $mailId,
-                'url_id' => $urlObject->id,
-                'click' => 1,
-                'user_id' => $userId,
-                'date_click' => acym_date('now', 'Y-m-d H:i:s'),
-            ];
-            $urlClickClass = new UrlClickClass();
-            $urlClickClass->save($urlClick);
+        if (acym_isRobot()) {
+            acym_redirect($urlObject->url);
+        }
 
-            if (empty($userStat->open)) {
-                $userStatToInsert = [];
-                $userStatToInsert['user_id'] = $userId;
-                $userStatToInsert['mail_id'] = $mailId;
-                $userStatToInsert['open'] = 1;
-                $userStatToInsert['open_date'] = acym_date('now', 'Y-m-d H:i:s');
+        $urlClick = [
+            'mail_id' => $mailId,
+            'url_id' => $urlObject->id,
+            'click' => 1,
+            'user_id' => $userId,
+            'date_click' => acym_date('now', 'Y-m-d H:i:s'),
+        ];
 
-                $mailStatToInsert = [];
-                $mailStatToInsert['mail_id'] = $mailId;
-                $mailStatToInsert['open_unique'] = 1;
-                $mailStatToInsert['open_total'] = 1;
-                $userStatClass->save($userStatToInsert);
+        $mailStatClass = new MailStatClass();
+        $urlClickClass = new UrlClickClass();
+        $urlClickClass->save($urlClick);
 
-                $mailStatClass = new MailStatClass();
-                $mailStatClass->save($mailStatToInsert);
-            }
+        if (empty($userStat->open)) {
+            $userStatToInsert = [];
+            $userStatToInsert['user_id'] = $userId;
+            $userStatToInsert['mail_id'] = $mailId;
+            $userStatToInsert['open'] = 1;
+            $userStatToInsert['open_date'] = acym_date('now', 'Y-m-d H:i:s');
+            $userStatClass->save($userStatToInsert);
 
-            $userClass = new UserClass();
-            $subscriber = $userClass->getOneById($userId);
-            if (!empty($subscriber)) {
-                $subscriber->last_open_date = acym_date('now', 'Y-m-d H:i:s');
-                $subscriber->last_click_date = acym_date('now', 'Y-m-d H:i:s');
-                $userClass->triggers = false;
-                $userClass->save($subscriber);
-            }
+            $mailStatToInsert = [];
+            $mailStatToInsert['mail_id'] = $mailId;
+            $mailStatToInsert['open_unique'] = 1;
+            $mailStatToInsert['open_total'] = 1;
+            $mailStatClass->save($mailStatToInsert);
+        }
+
+        $clickStats = $urlClickClass->getOneByMailIdAndUserId($mailId, $userId);
+        $mailStatClass->incrementClicks($mailId, $clickStats->click == 1);
+
+        $userClass = new UserClass();
+        $subscriber = $userClass->getOneById($userId);
+        if (!empty($subscriber)) {
+            $subscriber->last_open_date = acym_date('now', 'Y-m-d H:i:s');
+            $subscriber->last_click_date = acym_date('now', 'Y-m-d H:i:s');
+            $userClass->triggers = false;
+            $userClass->save($subscriber);
         }
 
         acym_redirect($urlObject->url);

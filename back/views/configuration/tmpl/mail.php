@@ -101,6 +101,19 @@
             );
             ?>
 		</div>
+        <?php if ($this->config->get('built_by_update', 0) == 1 || acym_level(ACYM_ESSENTIAL)) { ?>
+			<div class="cell grid-x grid-margin-x">
+                <?php
+                echo acym_switch(
+                    'config[display_built_by]',
+                    $this->config->get('display_built_by', 0),
+                    acym_translation('ACYM_ADD_BUILT_BY_FOOTER'),
+                    [],
+                    'xlarge-3 medium-5 small-9'
+                );
+                ?>
+			</div>
+        <?php } ?>
 		<div class="cell grid-x">
 			<label class="cell medium-6 grid-x">
 				<span class="cell medium-6">
@@ -174,22 +187,18 @@
                     'label' => 'ACYM_ADD_UNSUBSCRIBE_HEADER_IN_MAIL',
                     'default' => 1,
                 ],
-            ];
-
-            if ($this->config->get('built_by_update', 0) == 1 || acym_level(ACYM_ESSENTIAL)) {
-                $options['display_built_by'] = [
-                    'label' => 'ACYM_ADD_BUILT_BY_FOOTER',
-                ];
-            }
-
-            $options['embed_images'] = [
-                'label' => 'ACYM_CONFIGURATION_EMBED_IMAGES',
-                'info_disabled' => 'ACYM_CONFIGURATION_OPTION_DESC_DISABLED',
-            ];
-
-            $options['embed_files'] = [
-                'label' => 'ACYM_CONFIGURATION_EMBED_ATTACHMENTS',
-                'info_disabled' => 'ACYM_CONFIGURATION_OPTION_DESC_DISABLED',
+                'embed_images' => [
+                    'label' => 'ACYM_CONFIGURATION_EMBED_IMAGES',
+                    'info_disabled' => 'ACYM_CONFIGURATION_OPTION_DESC_DISABLED',
+                ],
+                'embed_files' => [
+                    'label' => 'ACYM_CONFIGURATION_EMBED_ATTACHMENTS',
+                    'info_disabled' => 'ACYM_CONFIGURATION_OPTION_DESC_DISABLED',
+                ],
+                'archive_index' => [
+                    'label' => 'ACYM_CONFIGURATION_INDEX_ARCHIVE',
+                    'info_disabled' => 'ACYM_CONFIGURATION_INDEX_ARCHIVE_DESC',
+                ],
             ];
 
             foreach ($options as $oneOption => $option) {

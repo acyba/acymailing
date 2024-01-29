@@ -70,7 +70,7 @@
         <?php
         foreach ($data['allCampaigns'] as $followup) {
             ?>
-			<div class="grid-x cell acym__listing__row">
+			<div class="grid-x cell align-middle acym__listing__row">
 				<div class="medium-shrink small-1 cell">
 					<input id="checkbox_<?php echo acym_escape($followup->id); ?>" type="checkbox" name="elements_checked[]" value="<?php echo acym_escape($followup->id); ?>">
 				</div>

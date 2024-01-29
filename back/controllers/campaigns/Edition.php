@@ -29,19 +29,33 @@ trait Edition
         acym_setVar('layout', 'new_email');
 
         $listClass = new ListClass();
-        $mailClass = new MailClass();
         if (acym_isAdmin()) {
             $returnUrl = urlencode(base64_encode(acym_completeLink('campaigns')));
-            $data = [
-                'lists' => $listClass->getAllForSelect(),
-                'campaign_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=now'),
-                'campaign_test_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=now&abtest=1'),
-                'campaign_auto_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=auto'),
-                'followup_link' => acym_completeLink('campaigns&task=edit&step=followupTrigger'),
-                'campaign_scheduled_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'),
-                'welcome_email_link' => acym_completeLink('mails&task=edit&type='.$mailClass::TYPE_WELCOME.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
-                'unsubscribe_email_link' => acym_completeLink('mails&task=edit&type='.$mailClass::TYPE_UNSUBSCRIBE.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
-            ];
+            $favoriteTemplate = $this->config->get('favorite_template', 0);
+
+            if (empty($favoriteTemplate)) {
+                $data = [
+                    'lists' => $listClass->getAllForSelect(),
+                    'campaign_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=now'),
+                    'campaign_test_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=now&abtest=1'),
+                    'campaign_auto_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=auto'),
+                    'followup_link' => acym_completeLink('campaigns&task=edit&step=followupTrigger'),
+                    'campaign_scheduled_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'),
+                    'welcome_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_WELCOME.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
+                    'unsubscribe_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_UNSUBSCRIBE.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
+                ];
+            } else {
+                $data = [
+                    'lists' => $listClass->getAllForSelect(),
+                    'campaign_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=now'),
+                    'campaign_test_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=now&abtest=1'),
+                    'campaign_auto_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=auto'),
+                    'followup_link' => acym_completeLink('campaigns&task=edit&step=followupTrigger'),
+                    'campaign_scheduled_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=scheduled'),
+                    'welcome_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_WELCOME.'&from='.$favoriteTemplate.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
+                    'unsubscribe_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_UNSUBSCRIBE.'&from='.$favoriteTemplate.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
+                ];
+            }
         } else {
             global $Itemid;
             $itemId = empty($Itemid) ? '' : '&Itemid='.$Itemid;
@@ -52,8 +66,8 @@ trait Edition
                 'lists' => $listClass->getAllForSelect(true, acym_currentUserId()),
                 'campaign_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=now'.$itemId.'&'.acym_getFormToken()),
                 'campaign_scheduled_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'.$itemId.'&'.acym_getFormToken()),
-                'welcome_email_link' => acym_frontendLink('frontmails&task=edit&type='.$mailClass::TYPE_WELCOME.$welcomeUnsub.'&'.acym_getFormToken()),
-                'unsubscribe_email_link' => acym_frontendLink('frontmails&task=edit&type='.$mailClass::TYPE_UNSUBSCRIBE.$welcomeUnsub.'&'.acym_getFormToken()),
+                'welcome_email_link' => acym_frontendLink('frontmails&task=edit&type='.MailClass::TYPE_WELCOME.$welcomeUnsub.'&'.acym_getFormToken()),
+                'unsubscribe_email_link' => acym_frontendLink('frontmails&task=edit&type='.MailClass::TYPE_UNSUBSCRIBE.$welcomeUnsub.'&'.acym_getFormToken()),
             ];
         }
         $data['menuClass'] = $this->menuClass;
@@ -91,7 +105,7 @@ trait Edition
             if (!$campaignClass->hasUserAccess($campaign->id)) {
                 die('Access denied for this campaign');
             }
-            $this->breadcrumb[acym_escape($campaign->name)] = '';
+            $this->breadcrumb[$campaign->name] = '';
         } else {
             $this->breadcrumb[acym_translation('ACYM_NEW_CAMPAIGN')] = '';
         }
@@ -101,17 +115,18 @@ trait Edition
         $page = $this->getVarFiltersListing('int', 'mailchoose_pagination_page', 1);
 
         $mailClass = new MailClass();
-        $matchingMails = $mailClass->getMatchingElements([
-            'ordering' => $ordering,
-            'ordering_sort_order' => $orderingSortOrder,
-            'search' => $searchFilter,
-            'elementsPerPage' => $mailsPerPage,
-            'offset' => ($page - 1) * $mailsPerPage,
-            'tag' => $tagFilter,
-            'onlyStandard' => true,
-            'creator_id' => $this->setFrontEndParamsForTemplateChoose(),
-            'gettingTemplates' => true,
-        ]);
+        $matchingMails = $mailClass->getMatchingElements(
+            [
+                'ordering' => $ordering,
+                'ordering_sort_order' => $orderingSortOrder,
+                'search' => $searchFilter,
+                'elementsPerPage' => $mailsPerPage,
+                'offset' => ($page - 1) * $mailsPerPage,
+                'tag' => $tagFilter,
+                'creator_id' => $this->setFrontEndParamsForTemplateChoose(),
+                'gettingTemplates' => true,
+            ]
+        );
 
         // Prepare the pagination
         $pagination->setStatus($matchingMails['total'], $page, $mailsPerPage);
@@ -1066,10 +1081,13 @@ trait Edition
             foreach ($campaignLists as $oneList) {
                 $listsIds[] = $oneList->list_id;
             }
+
             if (empty($data['campaignInformation']->sending_params)) {
+                // No segment saved, get subscribers count the easy way
                 $listClass = new ListClass();
                 $nbSubscribers = $listClass->getSubscribersCount($listsIds);
             } else {
+                // There may be segments
                 $campaignClass = new CampaignClass();
                 $nbSubscribers = $campaignClass->countUsersCampaign($data['campaignInformation']->id);
             }
@@ -1079,24 +1097,14 @@ trait Edition
         $data['listsIds'] = $listsIds;
         $data['nbSubscribers'] = $nbSubscribers;
 
+        // Campaign already sent, calculate the number of new receivers
         if (!empty($data['campaignInformation']->sent) && !empty($data['campaignInformation']->active)) {
-            $isSegmentExcluded = !empty($data['campaignInformation']->sending_params['segment']) && $data['campaignInformation']->sending_params['segment']['invert'] === 'exclude';
-
             $queueClass = new QueueClass();
             $data['mailInformation']->sending_params = $data['campaignInformation']->sending_params;
-            $automationHelper = $queueClass->getMailReceivers($data['mailInformation'], true);
-            $whereFlagPosition = array_search('user.automation LIKE "%a-1a%"', $automationHelper->where);
-            if ($whereFlagPosition !== false && $isSegmentExcluded) {
-                $automationHelper->where[$whereFlagPosition] = 'user.automation NOT LIKE "%a-1a%"';
-            }
-            $data['receiversNew'] = acym_loadResult($automationHelper->getQuery(['COUNT(DISTINCT `user`.id)']));
 
-            $automationHelper = $queueClass->getMailReceivers($data['mailInformation'], false);
-            $whereFlagPosition = array_search('user.automation LIKE "%a-1a%"', $automationHelper->where);
-            if ($whereFlagPosition !== false && $isSegmentExcluded) {
-                $automationHelper->where[$whereFlagPosition] = 'user.automation NOT LIKE "%a-1a%"';
-            }
-            $data['receiversAll'] = acym_loadResult($automationHelper->getQuery(['COUNT(DISTINCT `user`.id)']));
+            $automationHelper = $queueClass->getMailReceivers($data['mailInformation'], true);
+            $data['receiversNew'] = acym_loadResult($automationHelper->getQuery(['COUNT(DISTINCT `user`.id)']));
+            $automationHelper->removeFlag(SegmentsController::FLAG_COUNT);
         }
     }
 

@@ -8,7 +8,7 @@
 		<form method="post" action="<?php
         echo $data['actionUrl']; ?>" id="acym_form" class="acym__archive__form">
 			<h1 class="acym__front__archive__title"><?php echo acym_translation('ACYM_NEWSLETTERS'); ?></h1>
-			<div id="acym__front__archive__search">
+			<div id="acym__front__archive__search" class="grid-x">
                 <?php
                 if (!empty($data['paramsCMS']['widget_id'])) {
                     echo '<input type="text" name="acym_search['.$data['paramsCMS']['widget_id'].']" value="'.acym_escape($data['search']).'">';

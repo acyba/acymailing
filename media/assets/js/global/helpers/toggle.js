@@ -33,7 +33,7 @@ const acym_helperToggle = {
             });
         });
 
-        jQuery('.acym_toggle_delete').off('click').on('click', function () {
+        jQuery('.js-acym_toggle_delete').off('click').on('click', function () {
             let element = jQuery(this);
 
             let confirmation = element.attr('confirmation');

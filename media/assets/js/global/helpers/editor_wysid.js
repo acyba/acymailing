@@ -395,6 +395,7 @@ const acym_helperEditorWysid = {
         'vimeo': {'src': ACYM_MEDIA_URL + '/images/logo/vimeo.png'},
         'wordpress': {'src': ACYM_MEDIA_URL + '/images/logo/wordpress.png'},
         'youtube': {'src': ACYM_MEDIA_URL + '/images/logo/youtube.png'},
-        'x': {'src': ACYM_MEDIA_URL + '/images/logo/x.png'}
+        'x': {'src': ACYM_MEDIA_URL + '/images/logo/x.png'},
+        'telegram': {'src': ACYM_MEDIA_URL + '/images/logo/telegram.png'}
     }
 };

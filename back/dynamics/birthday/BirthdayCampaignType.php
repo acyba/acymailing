@@ -11,7 +11,12 @@ trait BirthdayCampaignType
     public function getNewEmailsTypeBlock(&$extraBlocks)
     {
         if (acym_isAdmin()) {
-            $birthdayMailLink = acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type='.$this->mailType);
+            $favoriteTemplate = $this->config->get('favorite_template', 0);
+            if (empty($favoriteTemplate)) {
+                $birthdayMailLink = acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type='.$this->mailType);
+            } else {
+                $birthdayMailLink = acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type='.$this->mailType);
+            }
         } else {
             $birthdayMailLink = acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type='.$this->mailType);
         }
@@ -186,19 +191,27 @@ trait BirthdayCampaignType
 
     public function onAcymSendCampaignSpecial($campaign, &$filters, &$pluginIsExisting)
     {
-        if ($campaign->sending_type != $this->mailType) return;
+        if ($campaign->sending_type !== $this->mailType) {
+            return;
+        }
 
-        $sendingTime = (int)$campaign->sending_params[$this->mailType.'_number'];
-        if ($campaign->sending_params[$this->mailType.'_type'] == 'weeks') {
+        $sendingTime = $campaign->sending_params[$this->mailType.'_number'] ?? 1;
+        $sendingTime = intval($sendingTime);
+
+        if (empty($campaign->sending_params[$this->mailType.'_type'])) {
+            $campaign->sending_params[$this->mailType.'_type'] = 'days';
+        }
+
+        if ($campaign->sending_params[$this->mailType.'_type'] === 'weeks') {
             $sendingTime *= 7;
-        } elseif ($campaign->sending_params[$this->mailType.'_type'] == 'months') {
+        } elseif ($campaign->sending_params[$this->mailType.'_type'] === 'months') {
             $sendingTime *= 30;
         }
         $filter = [
             'birthday' => [
                 'days' => $sendingTime,
-                'field' => $campaign->sending_params[$this->mailType.'_field'],
-                'relative' => $campaign->sending_params[$this->mailType.'_relative'],
+                'field' => $campaign->sending_params[$this->mailType.'_field'] ?? '',
+                'relative' => $campaign->sending_params[$this->mailType.'_relative'] ?? 'before',
                 'plugin' => $campaign->sending_params[$this->mailType.'_plugin'] ?? get_class($this),
             ],
         ];

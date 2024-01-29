@@ -92,7 +92,7 @@
 	</div>
 </div>
 
-<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
+<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2">
 	<div class="cell grid-x acym__configuration__showmore-head">
 		<div class="acym__title acym__title__secondary cell auto margin-bottom-0"><?php echo acym_translation('ACYM_CONFIGURATION_ADVANCED'); ?></div>
 		<div class="cell shrink">

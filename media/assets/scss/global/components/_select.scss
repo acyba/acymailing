@@ -1,7 +1,10 @@
 .acym_listing_sort-by {
-    padding-top: 7px;
+    padding: 10px;
     text-align: right;
-    padding-right: 40px;
+
+    @media screen and (min-width: 1024px) {
+        padding-right: 10px;
+    }
 }
 
 .select2-container {
@@ -25,7 +28,7 @@
 
     .select2-selection.select2-selection--single, .selection .select2-selection.select2-selection--single, .select2-selection--multiple {
         background-color: $white;
-        border-color: $dark-gray;
+        border-color: $blue-light;
 
         &:focus, &:hover {
             background-color: $white;
@@ -46,6 +49,11 @@
             background-color: $white;
             border-color: $white;
             border-radius: 3px;
+            font-size: .8rem;
+
+            &::placeholder {
+                color: rgba($color-palette-dark-blue, .4);
+            }
 
             &:hover, &:focus {
                 background-color: $white;
@@ -60,15 +68,17 @@
         border: none;
 
         &:before {
-            content: "\e93b";
-            font-size: .4rem;
+            content: "\e913";
+            font-size: 1rem;
             position: absolute;
             right: -5px;
+            top: -7px;
         }
     }
 
     &.select2-container--open .select2-selection--single .select2-selection__arrow b::before {
-        top: -7px;
+        top: -12px;
+        right: -12px;
     }
 
     .select2-selection__rendered {

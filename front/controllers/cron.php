@@ -48,19 +48,12 @@ class CronController extends acymController
             die(acym_translationSprintf('ACYM_CRON_WRONG_DOMAIN', ACYM_LIVE));
         }
 
-        $expirationDate = $this->config->get('expirationdate', 0);
-        // $expirationDate is empty when no call has been made yet on our server, or when it is a Starter license. Starter licenses don't have access to the cron
-        if (empty($expirationDate) || (time() - 604800) > $this->config->get('lastlicensecheck', 0)) {
-            acym_checkVersion();
-            $this->config = acym_config(true);
-            $expirationDate = $this->config->get('expirationdate', 0);
-        }
 
         //removeIf(development)
-        if ($expirationDate < time() && (empty($_SERVER['HTTP_REFERER']) || (strpos($_SERVER['HTTP_REFERER'], 'www.yourcrontask.com') === false && strpos(
-                        $_SERVER['HTTP_REFERER'],
-                        'api.acymailing.com'
-                    ) === false))) {
+        if (!acym_isLicenseValidWeekly() && (empty($_SERVER['HTTP_REFERER']) || (strpos($_SERVER['HTTP_REFERER'], 'www.yourcrontask.com') === false && strpos(
+                    $_SERVER['HTTP_REFERER'],
+                    'api.acymailing.com'
+                ) === false))) {
             exit;
         }
         //endRemoveIf(development)

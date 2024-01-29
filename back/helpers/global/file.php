@@ -154,7 +154,7 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
 
     // We remove all dots or space from the file name to avoid the double extension security issue and the fact some mail clients don't like spaces
     $file['name'] = str_replace(
-            ['-', '.', ' '],
+            ['-', '.', ' ', '\''],
             '_',
             substr($file['name'], 0, strrpos($file['name'], '.'))
         ).'.'.$extension[1];

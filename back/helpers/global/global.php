@@ -191,3 +191,11 @@ function acym_isLogFileErrorExist($prefix = ''): bool
 
     return file_exists($reportPath);
 }
+
+function acym_getJsonData(): array
+{
+    $rawData = acym_fileGetContent('php://input');
+    $decodedData = @json_decode($rawData, true);
+
+    return empty($decodedData) ? [] : $decodedData;
+}

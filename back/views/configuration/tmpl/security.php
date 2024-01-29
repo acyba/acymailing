@@ -1,4 +1,32 @@
 <div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
+    <?php if (acym_level(ACYM_ESSENTIAL)) { ?>
+		<div class="margin-bottom-2 acym__configuration__rest_api cell grid-x">
+			<div class="acym__title acym__title__secondary grid-x">
+                <?php echo acym_translation('ACYM_REST_API'); ?>
+                <?php echo acym_externalLink(
+                    'ACYM_DOCUMENTATION',
+                    ACYM_DOCUMENTATION.'v/rest-api/',
+                    true,
+                    true,
+                    ['margin-left-1']
+                ); ?>
+			</div>
+			<div class="cell grid-x acym_vcenter">
+				<label class="cell large-3" for="php_overrides">
+                    <?php echo acym_translation('ACYM_ACTIVATE_REST_API').acym_info('ACYM_ACTIVATE_REST_API_DESC'); ?>
+				</label>
+				<div class="cell grid-x large-9">
+                    <?php
+                    echo acym_switch(
+                        'config[rest_api]',
+                        $this->config->get('rest_api', 0)
+                    );
+                    ?>
+				</div>
+			</div>
+		</div>
+    <?php } ?>
+
     <?php if (!empty($data['labelDropdownCaptcha']) && isset($data['level']) && isset($data['captchaOptions'])) { ?>
 		<div class="margin-bottom-2 cell margin-y acym__configuration__security__captcha">
 			<div class="acym__title acym__title__secondary"><?php echo $data['labelDropdownCaptcha'] ?></div>

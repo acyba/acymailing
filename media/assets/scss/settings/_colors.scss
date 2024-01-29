@@ -1,11 +1,29 @@
-$color-palette-dark-blue: #01095e;
-$color-palette-cyan: #00A4FF;
-$color-palette-light-blue: #ECF8FF;
-$color-palette-black: #202020;
-$color-palette-dark-text: #454545;
+// new design system
+// Primaires
+$dark-grey-primary: #303e46; // dark grey
+$blue-night-primary: #01095e; // bleu nuit
+$blue-primary: #00a4ff; // bleu
 
-$blue-green: #0F7DBA;
-$light-orange: #fce5ce;
+// Secondaires
+$red-secondary: #ff5259; // rouge
+$green-secondary: #6ef9c4; // vart "validé"
+$blue-secondary: #0079d3; // bleu moyen
+
+// Background
+$blue-light: #e5f6fe; // bleu clair
+$green-light: #ecfdf3; // vert clair
+$red-light: #feeeef; // rouge clair
+$grey-light: #f1f1f1; // gris clair
+// new design system
+
+$color-palette-dark-blue: $blue-night-primary;
+$color-palette-cyan: $blue-primary;
+$color-palette-light-blue: $blue-light;
+$color-palette-black: #202020;
+$color-palette-dark-text: $dark-grey-primary;
+
+$blue-green: $blue-secondary;
+$orange-light: #fce5ce;
 $orange: #ffa639;
 
 $foundation-palette: (
@@ -13,10 +31,11 @@ $foundation-palette: (
         primary-light: $color-palette-cyan,
         primary-hot: #5d77ff,
         secondary: #767676,
-        success: #3dea91,
+        success: $green-secondary,
         warning: #ffab15,
         alert: #ff5259,
 );
+
 $editor-wysid-palette: (
         primary: #2f3d45,
         secondary: #e6f2fb,
@@ -33,6 +52,7 @@ $dark-blue: #0ca0e4;
 $green: #4dd64d;
 $black: #0a0a0a;
 $white: #fefefe;
+$white: #ffffff;
 $gold: #ffc233;
 
 $very-light-gray: #f1f1f1;

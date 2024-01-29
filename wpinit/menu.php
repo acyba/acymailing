@@ -94,7 +94,7 @@ class acyMenu
         $controllers = ['dynamics', 'file', 'language'];
         foreach ($controllers as $oneCtrl) {
             add_submenu_page(
-                null,
+                ACYM_COMPONENT.'_'.$oneCtrl,
                 $oneCtrl,
                 $oneCtrl,
                 $capability,

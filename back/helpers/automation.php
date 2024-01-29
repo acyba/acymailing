@@ -15,7 +15,7 @@ class AutomationHelper extends acymObject
     public $orderBy = '';
     public $groupBy = '';
     public $limit = '';
-    public $invert = false;
+    public $excludeSelected = false;
 
     public function getQuery($select = []): string
     {
@@ -81,7 +81,7 @@ class AutomationHelper extends acymObject
 
         $this->join = [];
         $this->leftjoin = [];
-        $this->where = $reset ? [] : ['user.automation LIKE "%a'.intval($id).'a%"'];
+        $this->where = $reset ? [] : ['user.automation '.($this->excludeSelected ? 'NOT ' : '').'LIKE "%a'.intval($id).'a%"'];
         $this->orderBy = '';
         $this->limit = '';
     }

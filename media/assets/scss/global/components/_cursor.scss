@@ -7,6 +7,11 @@
     cursor: grabbing;
 }
 
+.acym_disabled {
+    cursor: none;
+    pointer-events: none;
+}
+
 .acym_toggleable {
     cursor: pointer;
 }

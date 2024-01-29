@@ -112,12 +112,12 @@ const acym_helper = {
         });
     },
     setDeleteOptionsGlobal: function () {
-        jQuery('.acym__listing__block__delete__trash').off('click').on('click', function (e) {
+        jQuery('.js-acym__listing__block__delete__trash').off('click').on('click', function (e) {
             e.preventDefault();
             let $blockDelete = jQuery(this).closest(' .acym__listing__block__delete');
-            $blockDelete.css('width', '80px');
-            $blockDelete.find('div>i').css('width', '0');
-            $blockDelete.animate({maxWidth: '80px'}, 'fast', function () {
+            $blockDelete.css('width', '56px');
+            $blockDelete.find('.acym__listing__block__delete__trash').css('display', 'none');
+            $blockDelete.animate({maxWidth: '56px'}, 'fast', function () {
                 jQuery('.acym__listing__block__delete__cancel', this).off('click').on('click', function () {
                     acym_helper.setHideDeleteOptionsGlobal(jQuery(this).closest('.acym__listing__block__delete'));
                 });
@@ -128,9 +128,9 @@ const acym_helper = {
         });
     },
     setHideDeleteOptionsGlobal: function ($blockDelete) {
-        jQuery('.acym__listing__block__delete__cancel').off('click');
-        $blockDelete.animate({maxWidth: '40px'}, 'fast', function () {
-            $blockDelete.find('i').css('width', '40px');
+        jQuery('.js-acym__listing__block__delete__cancel').off('click');
+        $blockDelete.animate({maxWidth: '28px'}, 'fast', function () {
+            $blockDelete.find('.acym__listing__block__delete__trash').css('display', 'block');
         });
     },
     confirm: function (text) {

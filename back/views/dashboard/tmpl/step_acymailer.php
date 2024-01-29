@@ -33,7 +33,7 @@
 			</div>
 		</div>
         <?php foreach ($data['CnameRecords'] as $cnameRecord) { ?>
-			<div class="grid-x cell acym__listing__row">
+			<div class="grid-x cell align-middle acym__listing__row">
 				<div class="grid-x medium-6 cell">
                     <?php echo $cnameRecord['name']; ?>
 				</div>

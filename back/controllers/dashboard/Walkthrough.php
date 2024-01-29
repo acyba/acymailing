@@ -109,7 +109,15 @@ trait Walkthrough
         $listClass = new ListClass();
         $walkthroughParams = json_decode($this->config->get('walkthrough_params', '[]'), true);
 
-        $users = empty($walkthroughParams['list_id']) ? [] : $listClass->getSubscribersForList($walkthroughParams['list_id'], 0, 500);
+        $users = empty($walkthroughParams['list_id'])
+            ? []
+            : $listClass->getSubscribersForList(
+                [
+                    'listIds' => [$walkthroughParams['list_id']],
+                    'offset' => 0,
+                    'limit' => 500,
+                ]
+            );
         $usersReturn = [];
         if (!empty($users)) {
             foreach ($users as $user) {

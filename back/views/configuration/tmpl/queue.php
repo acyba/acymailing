@@ -1,4 +1,4 @@
-<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2 margin-bottom-2">
+<div class="acym__content acym_area padding-vertical-1 padding-horizontal-2">
 	<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_CONFIGURATION_QUEUE'); ?></div>
 	<div class="grid-x grid-margin-x margin-y">
 		<div class="cell medium-3"><?php echo acym_translation('ACYM_CONFIGURATION_QUEUE_PROCESSING'); ?></div>

@@ -6,7 +6,7 @@
     }
 
     .acym__search-field {
-        height: 39px;
+        height: 40px;
         margin-left: -1px;
     }
 
@@ -15,13 +15,17 @@
         display: none;
         cursor: pointer;
         position: absolute;
-        right: 60px;
-        top: 6px;
-        @include transition-duration(0.3s);
+        right: 10px;
+        top: 12px;
+        @include transition-duration(.3s);
         @include transition-property(opacity);
 
+        i.acymicon-close {
+            font-size: 16px;
+        }
+
         &:hover {
-            opacity: 0.7;
+            opacity: .7;
         }
     }
 
@@ -37,10 +41,12 @@
 
     .input-group-button {
         .acym__search__button {
+            padding: 0 0 0 12px;
             background-color: $white;
-            border-radius: 0 6px 6px 0 !important;
-            border: 1px solid map-get($foundation-palette, secondary);
-            border-left: 0 !important;
+            border-radius: $primary-radius 0 0 $primary-radius !important;
+            border: 1px solid $blue-night-primary;
+            border-right: 0 !important;
+            min-width: auto;
 
             i {
                 vertical-align: middle;
@@ -48,20 +54,21 @@
             }
 
             &:hover, &:focus {
-                border-color: map-get($foundation-palette, secondary);
+                border-color: $blue-night-primary;
                 background-color: $more-options-toggled-toolbar-light !important;
             }
         }
     }
 
     .input-group-field {
+        padding-left: 6px;
         background-color: $white;
-        border-radius: 6px 0 0 6px !important;
-        border: 1px solid map-get($foundation-palette, secondary);
-        border-right: 0 !important;
+        border-radius: 0 $primary-radius $primary-radius 0 !important;
+        border: 1px solid $blue-night-primary;
+        border-left: 0 !important;
 
         &:hover, &:focus {
-            border-color: map-get($foundation-palette, secondary);
+            border-color: $blue-night-primary;
             background-color: $white !important;
         }
     }

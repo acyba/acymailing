@@ -192,11 +192,15 @@ trait Followup
             return;
         }
 
+        $favoriteTemplate = $this->config->get('favorite_template', 0);
+        $startFrom = empty($favoriteTemplate) ? '' : '&from='.$favoriteTemplate;
         $data = [
             'workflowHelper' => new WorkflowHelper(),
             'followup' => $followup,
             'linkNewEmail' => acym_completeLink(
-                'mails&task=edit&step=editEmail&type=followup&followup_id='.$id.'&return='.urlencode(acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$id)),
+                'mails&task=edit&step=editEmail&type=followup&followup_id='.$id.'&return='.urlencode(
+                    acym_completeLink('campaigns&task=edit&step=followupEmail&id='.$id)
+                ).$startFrom,
                 false,
                 true
             ),

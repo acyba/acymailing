@@ -5,66 +5,73 @@
 
             .acym__dashboard__one-card {
                 position: relative;
-                display: inline-block;
+                display: flex;
+                text-align: center;
+                flex-direction: column;
                 margin-top: 20px;
 
                 .acym__dashboard__card__picto {
                     border-radius: 100px;
-                    height: 150px;
-                    width: 150px;
-                    display: inline-block;
+                    height: 100px;
+                    width: 100px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto;
 
                     i {
-                        font-size: 90px;
-                        transform: translateY(33%);
-                        display: inline-block;
+                        font-size: 48px;
                         line-height: 1;
                     }
                 }
 
                 .acym__dashboard__card__picto__audience {
-                    background-color: #E5F6FE;
+                    background-color: $blue-light;
 
                     .acym__dashboard__card__icon__audience {
-                        color: #00A3FE;
+                        color: $blue-primary;
                     }
                 }
 
                 .acym__dashboard__card__picto__campaigns {
-                    background-color: #ECFDF3;
+                    background-color: $green-light;
 
                     .acym__dashboard__card__icon__campaigns {
-                        color: #3DEA91;
+                        color: $green-secondary;
                     }
                 }
 
                 .acym__dashboard__card__picto__automation {
-                    background-color: #FEEEEF;
+                    background-color: $red-light;
 
                     .acym__dashboard__card__icon__automation {
-                        color: #FF5059;
+                        color: $red-secondary;
                     }
                 }
 
                 .acym__dashboard__card__title {
-                    font-size: 30px;
+                    font-size: 16px;
                     margin-top: 20px;
                     color: $color-palette-dark-blue;
                 }
 
                 hr {
-                    margin-top: 25px;
+                    margin: 14px 0;
+                    width: 100%;
                 }
 
                 .acym__dashboard__card__link {
-                    display: block;
-                    font-size: 1rem;
-                    margin-top: 1rem;
-                    transition: 0.2s;
+                    display: inline-block;
+                    font-size: 14px;
+                    padding: 12px 8px 0 8px;
+                    transition: .2s;
+                    text-decoration: underline;
+                    color: $blue;
 
                     .acym__dashboard__card__link__unclickable {
                         user-select: none;
                         color: $dark-gray;
+                        font-weight: $font-weight-semi-bold;
                     }
 
                     &:hover {

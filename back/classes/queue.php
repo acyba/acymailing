@@ -23,24 +23,24 @@ class QueueClass extends acymClass
         $mailStatClass = new MailStatClass();
         $mailClass = new MailClass();
         $query = 'FROM #__acym_mail AS mail
-                    LEFT JOIN #__acym_queue AS queue ON mail.id = queue.mail_id 
-                    LEFT JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id OR mail.parent_id = campaign.mail_id';
+                  JOIN #__acym_queue AS queue ON mail.id = queue.mail_id 
+                  LEFT JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id OR mail.parent_id = campaign.mail_id';
 
         // This query returns an array like "number of mails" => score. cf the equivalent in the list class to understand how it works
-        $queryStatus = 'SELECT COUNT(DISTINCT mail.id) AS number, IF(queue.mail_id IS NULL, campaign.active + 2, campaign.active) AS score
+        $queryStatus = 'SELECT COUNT(DISTINCT mail.id) AS number, campaign.active
                         FROM #__acym_mail AS mail
-                        LEFT JOIN #__acym_queue AS queue ON queue.mail_id = mail.id 
+                        JOIN #__acym_queue AS queue ON queue.mail_id = mail.id 
                         LEFT JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id';
 
-        $filters = [];
-        $filters[] = '(campaign.id IS NULL AND queue.mail_id IS NOT NULL) OR (campaign.id IS NOT NULL AND campaign.draft = 0 AND ((queue.mail_id IS NULL AND campaign.sending_type = '.acym_escapeDB(
-                $campaignClass->getConstScheduled()
-            ).' AND campaign.sent = 0) OR queue.mail_id IS NOT NULL))';
-
         if (!empty($settings['tag'])) {
-            $query .= ' JOIN #__acym_tag AS tag ON mail.id = tag.id_element AND tag.type = "mail" AND tag.name = '.acym_escapeDB($settings['tag']);
+            $query .= ' JOIN #__acym_tag AS tag ON (mail.id = tag.id_element OR mail.parent_id = tag.id_element) AND tag.type = "mail" AND tag.name = '.acym_escapeDB(
+                    $settings['tag']
+                );
             $queryStatus .= ' JOIN #__acym_tag AS tag ON mail.id = tag.id_element AND tag.type = "mail" AND tag.name = '.acym_escapeDB($settings['tag']);
         }
+
+        $filters = [];
+        $filters[] = 'campaign.id IS NULL OR campaign.draft = 0';
 
         if (!empty($settings['search'])) {
             $filters[] = 'mail.subject LIKE '.acym_escapeDB('%'.$settings['search'].'%').' OR mail.name LIKE '.acym_escapeDB('%'.$settings['search'].'%');
@@ -52,9 +52,8 @@ class QueueClass extends acymClass
 
         if (!empty($settings['status'])) {
             $allowedStatus = [
-                'sending' => 'campaign.active = 1 AND queue.mail_id IS NOT NULL',
+                'sending' => 'campaign.active = 1',
                 'paused' => 'campaign.active = 0',
-                'scheduled' => 'campaign.active = 1 AND queue.mail_id IS NULL',
                 'automation' => 'mail.type = '.acym_escapeDB($mailClass::TYPE_AUTOMATION),
                 'followup' => 'mail.type = '.acym_escapeDB($mailClass::TYPE_FOLLOWUP),
             ];
@@ -109,7 +108,6 @@ class QueueClass extends acymClass
                 );
 
                 if (isset($results['elements'][$i]->sending_params['abtest'])) {
-
                     $isVersionB = $results['elements'][$i]->sending_params['abtest']['B'] == $results['elements'][$i]->id;
 
                     if (empty($results['elements'][$i]->parent_id) || $isVersionB) {
@@ -128,18 +126,35 @@ class QueueClass extends acymClass
                             ).') and user_list.status = 1 ';
                         $automationHelper->leftjoin['mail'] = '`#__acym_mail` AS mail ON `mail`.`language` = `user`.language AND `mail`.`parent_id` = '.intval($mailId);
                         $automationHelper->where[] = '`user_list`.`list_id` IN ('.implode(',', $listIds).') AND `user_list`.`status` = 1';
+
                         $filters = $campaignClass->getFilterCampaign($oneMail->sending_params);
-                        foreach ($filters as $and => $andValues) {
-                            $and = intval($and);
-                            foreach ($andValues as $filterName => $options) {
-                                acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelper, &$options, &$and]);
+                        if (!empty($filters)) {
+                            foreach ($filters as $orValues) {
+                                if (empty($orValues)) continue;
+
+                                $automationHelperSegment = new AutomationHelper();
+                                foreach ($orValues as $and => $andValues) {
+                                    $and = intval($and);
+                                    foreach ($andValues as $filterName => $options) {
+                                        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelperSegment, &$options, &$and]);
+                                    }
+                                }
+                                $automationHelperSegment->addFlag(SegmentsController::FLAG_COUNT);
                             }
+
+                            $segmentMatchingCondition = 'LIKE';
+                            if (!empty($oneMail->sending_params['segment']['invert']) && $oneMail->sending_params['segment']['invert'] === 'exclude') {
+                                $segmentMatchingCondition = 'NOT LIKE';
+                            }
+                            $automationHelper->where[] = 'user.automation '.$segmentMatchingCondition.' "%a'.intval(SegmentsController::FLAG_COUNT).'a%"';
                         }
+
                         $automationHelper->groupBy = 'mail_id';
                         $campaignRecipientsMultilingual[$oneMail->campaign] = acym_loadObjectList(
                             $automationHelper->getQuery(['COUNT(DISTINCT user_list.`user_id`) AS elements', 'IF(mail.id IS NULL, '.intval($mailId).', `mail`.`id`) AS mail_id']),
                             'mail_id'
                         );
+                        $automationHelper->removeFlag(SegmentsController::FLAG_COUNT);
                     }
                     $results['elements'][$i]->recipients = intval($campaignRecipientsMultilingual[$oneMail->campaign][$oneMail->id]->elements);
                 } else {
@@ -149,29 +164,85 @@ class QueueClass extends acymClass
         }
 
         $automationNumber = acym_loadResult(
-            'SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB(
-                $mailClass::TYPE_AUTOMATION
-            )
+            'SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail AS mail 
+	        JOIN #__acym_queue AS queue 
+                ON mail.id = queue.mail_id 
+            WHERE mail.type = '.acym_escapeDB($mailClass::TYPE_AUTOMATION)
         );
         $followupNumber = acym_loadResult(
-            'SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail as mail JOIN #__acym_queue AS queue ON mail.id = queue.mail_id WHERE mail.type = '.acym_escapeDB(
-                $mailClass::TYPE_FOLLOWUP
-            )
+            'SELECT COUNT(DISTINCT mail.id) 
+            FROM #__acym_mail AS mail 
+            JOIN #__acym_queue AS queue 
+                ON mail.id = queue.mail_id 
+            WHERE mail.type = '.acym_escapeDB($mailClass::TYPE_FOLLOWUP)
         );
 
-        $elementsPerStatus = acym_loadObjectList($queryStatus.' GROUP BY score', 'score');
-        for ($i = 0 ; $i < 4 ; $i++) {
+        $elementsPerStatus = acym_loadObjectList($queryStatus.' GROUP BY active', 'active');
+        for ($i = 0 ; $i < 2 ; $i++) {
             $elementsPerStatus[$i] = empty($elementsPerStatus[$i]) ? 0 : $elementsPerStatus[$i]->number;
         }
 
         $results['status'] = [
             'all' => array_sum($elementsPerStatus) + $automationNumber + $followupNumber,
             'sending' => $elementsPerStatus[1],
-            'paused' => $elementsPerStatus[0] + $elementsPerStatus[2],
-            'scheduled' => $elementsPerStatus[3],
+            'paused' => $elementsPerStatus[0],
             'automation' => $automationNumber,
             'followup' => $followupNumber,
         ];
+
+        return $results;
+    }
+
+    /**
+     * Get campaigns depending on filters (search, status, pagination)
+     *
+     * @param $settings
+     *
+     * @return array|void
+     */
+    public function getMatchingScheduledCampaigns($settings)
+    {
+        $campaignClass = new CampaignClass();
+        $mailClass = new MailClass();
+        $query = 'FROM #__acym_mail AS mail 
+                  JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id OR mail.parent_id = campaign.mail_id ';
+
+        if (!empty($settings['tag'])) {
+            $query .= ' JOIN #__acym_tag AS tag ON mail.id = tag.id_element AND tag.type = "mail" AND tag.name = '.acym_escapeDB($settings['tag']);
+        }
+
+        $filters = [
+            'campaign.draft = 0',
+            'campaign.sent = 0',
+            'campaign.sending_type = '.acym_escapeDB($campaignClass->getConstScheduled()),
+        ];
+
+        if (!empty($settings['search'])) {
+            $filters[] = 'mail.subject LIKE '.acym_escapeDB('%'.$settings['search'].'%').' OR mail.name LIKE '.acym_escapeDB('%'.$settings['search'].'%');
+        }
+
+        if (!empty($filters)) {
+            $query .= ' WHERE ('.implode(') AND (', $filters).')';
+        }
+
+        $queryCount = 'SELECT COUNT(DISTINCT mail.id) '.$query;
+        $query = 'SELECT mail.name, mail.subject, mail.id, campaign.sending_date, campaign.sending_params, mail.language, mail.parent_id '.$query.' GROUP BY mail.id ORDER BY campaign.sending_date ASC';
+
+        acym_query('SET SQL_BIG_SELECTS=1;');
+        $results['elements'] = $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['campaignsPerPage']));
+        $results['total'] = acym_loadResult($queryCount);
+
+        foreach ($results['elements'] as $i => $oneMail) {
+            $results['elements'][$i]->sending_params = empty($oneMail->sending_params) ? [] : json_decode($oneMail->sending_params, true);
+            $mailId = empty($oneMail->parent_id) ? $oneMail->id : $oneMail->parent_id;
+            $results['elements'][$i]->lists = acym_loadObjectList(
+                'SELECT l.color, l.name, l.id
+                    FROM #__acym_list AS l 
+                    JOIN #__acym_mail_has_list AS ml ON ml.list_id = l.id 
+                    WHERE ml.mail_id = '.intval($mailId),
+                'id'
+            );
+        }
 
         return $results;
     }
@@ -445,7 +516,7 @@ class QueueClass extends acymClass
         );
     }
 
-    public function getMailReceivers($mail, $onlyNew = null)
+    public function getMailReceivers($mail, $onlyNew = false)
     {
         if (empty($mail->sending_params)) {
             $sendingParams = [];
@@ -455,6 +526,10 @@ class QueueClass extends acymClass
 
             $campaignClass = new CampaignClass();
             $mail->filters = $campaignClass->getFilterCampaign($sendingParams);
+
+            if (!empty($sendingParams['resendTarget']) && 'new' === $sendingParams['resendTarget']) {
+                $onlyNew = true;
+            }
         }
 
         $automationHelper = new AutomationHelper();
@@ -465,53 +540,57 @@ class QueueClass extends acymClass
             'maillist.mail_id = '.intval(empty($mail->parent_id) ? $mail->id : $mail->parent_id),
         ];
 
-        if ($onlyNew === null && acym_isMultilingual()) {
-            $where = $mail->id == $mail->parent_id ? ' OR user.language = "" OR user.language NOT IN(SELECT language FROM #__acym_mail WHERE parent_id = '.intval(
-                    $mail->id
-                ).')' : '';
-            $automationHelper->where[] = ' (user.language = '.acym_escapeDB($mail->language).' '.$where.')';
+        // Send this version only to the users with the correct language
+        if (!$onlyNew && acym_isMultilingual()) {
+            $where = 'user.language = '.acym_escapeDB($mail->language);
+            if ($mail->id == $mail->parent_id) {
+                //TODO check if a user with no language will receive every versions or only the main one
+                $where .= ' OR user.language = "" OR user.language NOT IN (SELECT language FROM #__acym_mail WHERE parent_id = '.intval($mail->id).')';
+            }
+            $automationHelper->where[] = $where;
         }
 
         if ($this->config->get('require_confirmation', 1) == 1) {
             $automationHelper->where[] = '`user`.`confirmed` = 1';
         }
 
-        if ((is_null($onlyNew) && !empty($sendingParams['resendTarget']) && 'new' === $sendingParams['resendTarget']) || $onlyNew) {
+        if ($onlyNew) {
             $automationHelper->leftjoin['us'] = '`#__acym_user_stat` AS `us` ON `us`.`user_id` = `user`.`id` AND `us`.`mail_id` IN (SELECT id FROM #__acym_mail WHERE parent_id = '.intval(
                     $mail->id
                 ).' OR id = '.intval($mail->id).')';
             $automationHelper->where[] = '`us`.`user_id` IS NULL';
-        }
 
-        // Do not count the disabled user for the resend counter on summary
-        if (!is_null($onlyNew)) {
+            // Do not count the disabled user for the resend counter on summary
             $automationHelper->where[] = '`user`.`active` = 1';
         }
 
         $automationHelper->removeFlag(SegmentsController::FLAG_USERS);
+        $automationHelper->removeFlag(SegmentsController::FLAG_COUNT);
 
-        if (!empty($mail->filters)) {
-            $isExcluded = !empty($sendingParams['segment']['invert']) && $sendingParams['segment']['invert'] === 'exclude';
-            $automationHelper->removeFlag(SegmentsController::FLAG_COUNT);
-            // Handle potential segment
-            foreach ($mail->filters as $or => $orValues) {
-                $automationHelperSegment = new AutomationHelper();
-                foreach ($orValues as $and => $andValues) {
-                    $and = intval($and);
-                    foreach ($andValues as $filterName => $options) {
-                        acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelperSegment, &$options, &$and]);
-                    }
-                }
-                $automationHelperSegment->invert = $isExcluded;
-                $automationHelperSegment->addFlag(SegmentsController::FLAG_COUNT);
-            }
-            $notLike = '';
-
-            if ($isExcluded) {
-                $notLike = 'NOT ';
-            }
-            $automationHelper->where[] = 'user.automation '.$notLike.' LIKE "%a'.intval(SegmentsController::FLAG_COUNT).'a%"';
+        // Handle potential segment
+        if (empty($mail->filters)) {
+            return $automationHelper;
         }
+
+        // Mark users matching the segment
+        foreach ($mail->filters as $orValues) {
+            if (empty($orValues)) continue;
+
+            $automationHelperSegment = new AutomationHelper();
+            foreach ($orValues as $and => $andValues) {
+                $and = intval($and);
+                foreach ($andValues as $filterName => $options) {
+                    acym_trigger('onAcymProcessFilter_'.$filterName, [&$automationHelperSegment, &$options, &$and]);
+                }
+            }
+            $automationHelperSegment->addFlag(SegmentsController::FLAG_COUNT);
+        }
+
+        $segmentMatchingCondition = 'LIKE';
+        if (!empty($sendingParams['segment']['invert']) && $sendingParams['segment']['invert'] === 'exclude') {
+            $segmentMatchingCondition = 'NOT LIKE';
+        }
+        $automationHelper->where[] = 'user.automation '.$segmentMatchingCondition.' "%a'.intval(SegmentsController::FLAG_COUNT).'a%"';
 
         return $automationHelper;
     }

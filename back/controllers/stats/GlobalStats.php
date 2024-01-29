@@ -576,7 +576,7 @@ trait GlobalStats
 
         //For the total opening, the doughnut chart
         $data['mail']->totalMail = $data['mail']->sent + $data['mail']->fail;
-        $data['mail']->pourcentageSent = empty($data['mail']->totalMail) ? 0 : number_format(($data['mail']->sent * 100) / $data['mail']->totalMail, 2);
+        $data['mail']->percentageSent = empty($data['mail']->totalMail) ? 0 : number_format(($data['mail']->sent * 100) / $data['mail']->totalMail, 2);
         $data['mail']->allSent = empty($data['mail']->totalMail)
             ? acym_translationSprintf('ACYM_X_MAIL_SUCCESSFULLY_SENT_OF_X', 0, 0)
             : acym_translationSprintf(
@@ -587,7 +587,7 @@ trait GlobalStats
 
         //open rate
         $openRateCampaign = empty($this->selectedMailIds) ? $campaignClass->getOpenRateAllCampaign() : $campaignClass->getOpenRateCampaigns($this->selectedMailIds);
-        $data['mail']->pourcentageOpen = empty($openRateCampaign->sent) ? 0 : number_format(($openRateCampaign->open_unique * 100) / $openRateCampaign->sent, 2);
+        $data['mail']->percentageOpen = empty($openRateCampaign->sent) ? 0 : number_format(($openRateCampaign->open_unique * 100) / $openRateCampaign->sent, 2);
         $data['mail']->allOpen = empty($openRateCampaign->sent)
             ? acym_translationSprintf('ACYM_X_MAIL_OPENED_OF_X', 0, 0)
             : acym_translationSprintf(
@@ -598,7 +598,7 @@ trait GlobalStats
 
         //click rate
         $clickRateCampaign = $urlClickClass->getNumberUsersClicked($this->selectedMailIds);
-        $data['mail']->pourcentageClick = empty($data['mail']->sent) ? 0 : number_format(($clickRateCampaign * 100) / $data['mail']->sent, 2);
+        $data['mail']->percentageClick = empty($data['mail']->sent) ? 0 : number_format(($clickRateCampaign * 100) / $data['mail']->sent, 2);
         $data['mail']->allClick = empty($data['mail']->sent)
             ? acym_translationSprintf('ACYM_X_MAIL_CLICKED_OF_X', 0, 0)
             : acym_translationSprintf(
@@ -609,7 +609,7 @@ trait GlobalStats
 
         //bounce rate
         $bounceRateCampaign = empty($this->selectedMailIds) ? $campaignClass->getBounceRateAllCampaign() : $campaignClass->getBounceRateCampaigns($this->selectedMailIds);
-        $data['mail']->pourcentageBounce = empty($data['mail']->sent) ? 0 : number_format(($bounceRateCampaign->bounce_unique * 100) / $data['mail']->sent, 2);
+        $data['mail']->percentageBounce = empty($data['mail']->sent) ? 0 : number_format(($bounceRateCampaign->bounce_unique * 100) / $data['mail']->sent, 2);
         $data['mail']->allBounce = empty($data['mail']->sent)
             ? acym_translationSprintf('ACYM_X_BOUNCE_OF_X', 0, 0)
             : acym_translationSprintf(
@@ -621,7 +621,7 @@ trait GlobalStats
         if (!empty($this->selectedMailIds)) {
             //unsubscribe rate
             $mailStat = $mailStatClass->getByMailIds($this->selectedMailIds);
-            $data['mail']->pourcentageUnsub = empty($data['mail']->sent) ? 0 : number_format(($mailStat->unsubscribe_total * 100) / $data['mail']->sent, 2);
+            $data['mail']->percentageUnsub = empty($data['mail']->sent) ? 0 : number_format(($mailStat->unsubscribe_total * 100) / $data['mail']->sent, 2);
             $data['mail']->allUnsub = empty($data['mail']->sent)
                 ? acym_translationSprintf('ACYM_X_USERS_UNSUBSCRIBED_OF_X', 0, 0)
                 : acym_translationSprintf(
@@ -712,11 +712,11 @@ trait GlobalStats
         $this->prepareDefaultBrowsersChart($data);
 
         $globalDonut = [
-            $data['mail']->pourcentageSent,
-            $data['mail']->pourcentageOpen,
-            $data['mail']->pourcentageClick,
-            $data['mail']->pourcentageBounce,
-            $data['mail']->pourcentageUnsub,
+            $data['mail']->percentageSent,
+            $data['mail']->percentageOpen,
+            $data['mail']->percentageClick,
+            $data['mail']->percentageBounce,
+            $data['mail']->percentageUnsub,
         ];
         $mailName = empty($this->selectedMailIds) ? acym_translation('ACYM_ALL_MAILS') : $data['mailInformation']->name;
         $globalLine = $data['mail']->$timeLinechart;
@@ -739,10 +739,20 @@ trait GlobalStats
 
         $columnsToExport['mail.subject'] = acym_translation('ACYM_EMAIL_SUBJECT');
         foreach ($columnsMailStat as $column) {
-            if (in_array($column, ['mail_id'])) continue;
-            $trad = acym_translation('ACYM_'.strtoupper($column).'_COLUMN_STAT');
-            if ($column == 'send_date') $trad = acym_translation('ACYM_SEND_DATE');
-            $columnsToExport['mailstat.'.$column] = $trad;
+            if ($column === 'mail_id') {
+                continue;
+            }
+
+            $translation = acym_translation('ACYM_'.strtoupper($column).'_COLUMN_STAT');
+            if ($column === 'send_date') {
+                $translation = acym_translation('ACYM_SEND_DATE');
+            } elseif ($column === 'click_total') {
+                $translation = acym_translation('ACYM_TOTAL_CLICKS');
+            } elseif ($column === 'click_unique') {
+                $translation = acym_translation('ACYM_UNIQUE_CLICKS');
+            }
+
+            $columnsToExport['mailstat.'.$column] = $translation;
         }
 
         $query = 'SELECT '.implode(', ', array_keys($columnsToExport)).' FROM #__acym_mail_stat AS mailstat LEFT JOIN #__acym_mail AS mail ON mail.id = mailstat.mail_id '.$where;

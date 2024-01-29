@@ -5,45 +5,33 @@
             font-weight: 700;
         }
 
-        .acym__templates__footer__title {
+        .acym__templates__footer {
             font-weight: bold;
+            font-size: 14px;
         }
 
         .acym__listing__block__icons {
             position: absolute;
-            width: 40px;
-            max-width: 40px;
-            height: 40px;
+            right: 28px;
+            top: 28px;
+            width: 28px;
             cursor: pointer;
-            overflow: hidden;
             z-index: 1100;
         }
 
         .acym__listing__block__duplicate {
             display: none;
-            right: 18px;
-            margin-top: 3px;
-            border-radius: 5px;
-
-            i {
-                line-height: 40px !important;
-                width: 40px;
-                overflow: hidden;
-                font-size: 26px;
-                margin-right: 0;
-            }
         }
 
         .acym__listing__block__select {
-            margin-left: 0px;
-            margin-top: 0px;
-            border-radius: 5px 0 5px 0;
-            background-color: rgba(240, 240, 240, 0.5);
+            position: absolute;
+            left: 15px;
+            top: 15px;
 
             input[type='checkbox'] {
                 width: 22px;
                 z-index: 900;
-                margin: 0.5rem !important;
+                margin: .5rem !important;
 
                 &:after {
                     color: $font-primary;
@@ -52,14 +40,18 @@
             }
         }
 
+        .acym__listing__default_template {
+            margin-bottom: 10px;
+        }
+
         .acym__listing__block__delete {
-            top: 55px;
-            right: 18px;
+            position: absolute;
         }
 
         .acym__listing__block__export {
             position: relative;
             margin-bottom: .3rem;
+            width: 100%;
 
             i {
                 overflow: hidden;
@@ -89,7 +81,6 @@
                 display: none;
             }
         }
-
     }
 
     a.downloadmore {

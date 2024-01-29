@@ -20,20 +20,22 @@
             <?php if (empty($data['allElements'])) { ?>
 				<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_translation('ACYM_NO_RESULTS_FOUND'); ?></h1>
             <?php } else { ?>
-				<div class="grid-x">
-					<div class="auto cell">
+				<div class="cell grid-x">
+					<div class="grid-x acym__listing__actions cell auto">
                         <?php
                         $sendingText = $this->config->get('cron_last', 0) < (time() - 43200) ? 'ACYM_QUEUE_READY' : 'ACYM_SENDING';
 
-                        $options = [
-                            '' => ['ACYM_ALL', $data['numberPerStatus']['all']],
-                            'sending' => [$sendingText, $data['numberPerStatus']['sending']],
-                            'paused' => ['ACYM_PAUSED', $data['numberPerStatus']['paused']],
-                            'scheduled' => ['ACYM_SCHEDULED', $data['numberPerStatus']['scheduled']],
-                            'automation' => ['ACYM_AUTOMATION', $data['numberPerStatus']['automation']],
-                            'followup' => ['ACYM_FOLLOW_UP', $data['numberPerStatus']['followup']],
-                        ];
-                        echo acym_filterStatus($options, $data['status'], 'cqueue_status');
+                        echo acym_filterStatus(
+                            [
+                                '' => ['ACYM_ALL', $data['numberPerStatus']['all']],
+                                'sending' => [$sendingText, $data['numberPerStatus']['sending']],
+                                'paused' => ['ACYM_PAUSED', $data['numberPerStatus']['paused']],
+                                'automation' => ['ACYM_AUTOMATION', $data['numberPerStatus']['automation']],
+                                'followup' => ['ACYM_FOLLOW_UP', $data['numberPerStatus']['followup']],
+                            ],
+                            $data['status'],
+                            'cqueue_status'
+                        );
                         ?>
 					</div>
 				</div>
@@ -101,13 +103,13 @@
 							<div class="cell medium-4 small-9">
 								<div class="acym_vcenter grid-x text-center">
                                     <?php
-                                    // First determine the type (scheduled / paused / sending)
-                                    if ($row->active == 0 && $row->iscampaign) {
-                                        $text = acym_translation('ACYM_PAUSED');
-                                        $class = 'acym_status_paused';
-                                    } elseif (!$row->iscampaign || $row->sending_type === $data['campaignClass']::SENDING_TYPE_SCHEDULED && empty($row->nbqueued)) {
+                                    // First determine the type (paused / sending)
+                                    if (!$row->iscampaign) {
                                         $text = acym_translation('ACYM_SCHEDULED');
                                         $class = 'acym_status_scheduled';
+                                    } elseif ($row->active == 0) {
+                                        $text = acym_translation('ACYM_PAUSED');
+                                        $class = 'acym_status_paused';
                                     } else {
                                         if ($this->config->get('cron_last', 0) < (time() - 43200)) {
                                             $text = acym_translation('ACYM_QUEUE_READY');
@@ -141,7 +143,7 @@
 										</div>
 									</div>
 
-                                    <?php if (!empty($row->nbqueued) && $row->active == 1) { ?>
+                                    <?php if ($row->active == 1) { ?>
 										<div class="cell acym_sendnow">
 
                                             <?php
@@ -174,7 +176,6 @@
                                     }
 
                                     // Delete button
-                                    $deleteID = 'cancel_campaign_'.$row->id;
                                     echo acym_tooltip('<i class="acymicon-times-circle acym__queue__cancel__button" mailid="'.$row->id.'"></i>', acym_translation($cancelText));
                                     echo '</div>';
                                     ?>
@@ -191,5 +192,4 @@
 		<input type="hidden" name="acym__queue__play_pause__campaign_id">
 		<input type="hidden" name="acym__queue__play_pause__active__new_value">
 	</div>
-
 </form>

@@ -1,14 +1,14 @@
 <?php
 
-use AcyMailing\Types\OperatorType;
 use AcyMailing\Types\OperatorinType;
+use AcyMailing\Types\OperatorType;
 
 trait UserAutomationConditions
 {
     public function onAcymDeclareConditions(&$conditions)
     {
         $allGroups = acym_getGroups();
-        $groups = [];
+        $groups = ['' => acym_translation('ACYM_NO_GROUP')];
         foreach ($allGroups as $group) {
             $groups[$group->id] = $group->text;
         }
@@ -133,28 +133,43 @@ trait UserAutomationConditions
 
     private function _processAcyGroup(&$query, $options, $num)
     {
-        if (ACYM_CMS == 'joomla') {
-            $operator = (empty($options['in']) || $options['in'] == 'in') ? 'IS NOT NULL AND cmsuser'.$num.'.user_id != 0' : "IS NULL";
-
-            if (empty($options['subgroup'])) {
-                $value = ' = '.intval($options['group']);
+        if (empty($options['group'])) {
+            if (ACYM_CMS === 'joomla') {
+                $operator = (empty($options['in']) || $options['in'] === 'in') ? 'IS NULL' : 'IS NOT NULL AND cmsuser'.$num.'.user_id != 0';
+                $query->leftjoin['cmsuser'.$num] = '#__user_usergroup_map AS cmsuser'.$num.' 
+                ON cmsuser'.$num.'.user_id = user.cms_id ';
             } else {
-                $lftrgt = acym_loadObject('SELECT lft, rgt FROM #__usergroups WHERE id = '.intval($options['group']));
-                $allGroups = acym_loadResultArray('SELECT id FROM #__usergroups WHERE lft > '.intval($lftrgt->lft).' AND rgt < '.intval($lftrgt->rgt));
-                array_unshift($allGroups, $options['group']);
-                $value = ' IN ('.implode(', ', $allGroups).')';
+                $operator = (empty($options['in']) || $options['in'] === 'in') ? 'IS NOT NULL AND cmsuser'.$num.'.user_id != 0' : 'IS NULL AND user.cms_id != 0';
+                $query->leftjoin['cmsuser'.$num] = '#__usermeta AS cmsuser'.$num.' 
+                ON cmsuser'.$num.'.user_id = user.cms_id 
+                AND cmsuser'.$num.'.meta_key = "#__capabilities" 
+                AND cmsuser'.$num.'.meta_value = "a:0:{}"';
             }
-
-            $query->leftjoin['cmsuser'.$num] = "#__user_usergroup_map AS cmsuser$num ON cmsuser$num.user_id = user.cms_id AND cmsuser$num.group_id".$value;
-            $query->where[] = "cmsuser$num.user_id ".$operator;
         } else {
-            $operator = (empty($options['in']) || $options['in'] == 'in') ? 'IS NOT NULL AND cmsuser'.$num.'.user_id != 0' : "IS NULL";
+            $operator = (empty($options['in']) || $options['in'] === 'in') ? 'IS NOT NULL AND cmsuser'.$num.'.user_id != 0' : 'IS NULL';
 
-            $query->leftjoin['cmsuser'.$num] = '#__usermeta AS cmsuser'.$num.' ON cmsuser'.$num.'.user_id = user.cms_id AND cmsuser'.$num.'.meta_key = "#__capabilities" AND cmsuser'.$num.'.meta_value LIKE '.acym_escapeDB(
-                    '%'.strlen($options['group']).':"'.$options['group'].'"%'
-                );
-            $query->where[] = 'cmsuser'.$num.'.user_id '.$operator;
+            if (ACYM_CMS === 'joomla') {
+                if (empty($options['subgroup'])) {
+                    $value = ' = '.intval($options['group']);
+                } else {
+                    $lftrgt = acym_loadObject('SELECT lft, rgt FROM #__usergroups WHERE id = '.intval($options['group']));
+                    $allSubGroups = acym_loadResultArray('SELECT id FROM #__usergroups WHERE lft > '.intval($lftrgt->lft).' AND rgt < '.intval($lftrgt->rgt));
+                    array_unshift($allSubGroups, $options['group']);
+                    $value = ' IN ('.implode(', ', $allSubGroups).')';
+                }
+
+                $query->leftjoin['cmsuser'.$num] = '#__user_usergroup_map AS cmsuser'.$num.' 
+                ON cmsuser'.$num.'.user_id = user.cms_id 
+                AND cmsuser'.$num.'.group_id'.$value;
+            } else {
+                $query->leftjoin['cmsuser'.$num] = '#__usermeta AS cmsuser'.$num.' 
+                ON cmsuser'.$num.'.user_id = user.cms_id 
+                AND cmsuser'.$num.'.meta_key = "#__capabilities" 
+                AND cmsuser'.$num.'.meta_value LIKE '.acym_escapeDB('%'.strlen($options['group']).':"'.acym_secureDBColumn($options['group']).'"%');
+            }
         }
+
+        $query->where[] = 'cmsuser'.$num.'.user_id '.$operator;
 
         return $query->count();
     }
@@ -234,7 +249,9 @@ trait UserAutomationConditions
             $allGroups = acym_getGroups();
             $groups = [];
             foreach ($allGroups as $group) {
-                if ($automation['acy_group']['group'] == $group->id) $automation['acy_group']['group'] = $group->text;
+                if ($automation['acy_group']['group'] == $group->id) {
+                    $automation['acy_group']['group'] = $group->text;
+                }
                 $groups[$group->id] = $group->text;
             }
         } else {
@@ -244,13 +261,17 @@ trait UserAutomationConditions
             }
         }
 
+        if (empty($automation['acy_group']['group'])) {
+            $automation['acy_group']['group'] = acym_translation('ACYM_NO_GROUP');
+        }
+
         $finalText = acym_translationSprintf(
             'ACYM_FILTER_ACY_GROUP_SUMMARY',
             acym_translation($automation['acy_group']['in'] == 'in' ? 'ACYM_IN' : 'ACYM_NOT_IN'),
             acym_translation($automation['acy_group']['group'])
         );
         if ('joomla' === ACYM_CMS) {
-            $finalText .= $automation['acy_group']['subgroup'] == 1 ? '' : ' '.acym_translation('ACYM_FILTER_ACY_GROUP_SUBGROUP_SUMMARY');
+            $finalText .= $automation['acy_group']['subgroup'] == 1 ? ' '.acym_translation('ACYM_FILTER_ACY_GROUP_SUBGROUP_SUMMARY') : '';
         }
 
         $automation = $finalText;

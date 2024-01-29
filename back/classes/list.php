@@ -281,7 +281,6 @@ class ListClass extends acymClass
 
     public function getListsByIds($ids)
     {
-
         if (!is_array($ids)) $ids = [$ids];
         acym_arrayToInteger($ids);
         if (empty($ids)) return [];
@@ -305,73 +304,6 @@ class ListClass extends acymClass
                 GROUP BY list.id';
 
         return acym_loadObjectList($query);
-    }
-
-    /**
-     * Get users subscribed to a list
-     *
-     * @param $settings : filters (search, status, pagination)
-     * @param $id       : list ID
-     *
-     * @return array
-     */
-    public function getMatchingSubscribersByListId($settings, $id)
-    {
-        $query = 'SELECT user.* FROM #__acym_user AS user JOIN #__acym_user_has_list AS userList ON user.id = userList.user_id';
-        $queryCount = 'SELECT COUNT(user.id) FROM #__acym_user AS user JOIN #__acym_user_has_list AS userList ON user.id = userList.user_id';
-        $queryStatus = 'SELECT COUNT(id) AS number, active FROM #__acym_user AS user JOIN #__acym_user_has_list AS userList ON user.id = userList.user_id';
-
-        $filters = [];
-        $filters[] = 'userList.list_id = '.intval($id);
-        $filters[] = 'userList.status = 1';
-
-        // Search filter
-        if (!empty($settings['search'])) {
-            $searchValue = acym_escapeDB('%'.$settings['search'].'%');
-            $filters[] = 'user.email LIKE '.$searchValue.' OR user.name LIKE '.$searchValue;
-        }
-
-        // Status
-        if (!empty($filters)) {
-            $queryStatus .= ' WHERE ('.implode(') AND (', $filters).')';
-        }
-
-        if (!empty($settings['status'])) {
-            $allowedStatus = [
-                'active' => 'active = 1',
-                'inactive' => 'active = 0',
-            ];
-            if (empty($allowedStatus[$settings['status']])) {
-                die('Injection denied');
-            }
-            $filters[] = 'user.'.$allowedStatus[$settings['status']];
-        }
-
-        if (!empty($filters)) {
-            $query .= ' WHERE ('.implode(') AND (', $filters).')';
-            $queryCount .= ' WHERE ('.implode(') AND (', $filters).')';
-        }
-
-        // Ordering
-        $query .= ' ORDER BY user.id DESC';
-
-        $results['users'] = acym_loadObjectList($query, '', $settings['offset'], $settings['usersPerPage']);
-        $results['total'] = acym_loadResult($queryCount);
-
-        // Status
-        $usersPerStatus = acym_loadObjectList($queryStatus.' GROUP BY active', 'active');
-
-        for ($i = 0 ; $i < 2 ; $i++) {
-            $usersPerStatus[$i] = empty($usersPerStatus[$i]) ? 0 : $usersPerStatus[$i]->number;
-        }
-
-        $results['status'] = [
-            'all' => array_sum($usersPerStatus),
-            'active' => $usersPerStatus[1],
-            'inactive' => $usersPerStatus[0],
-        ];
-
-        return $results;
     }
 
     public function getSubscribersCountByListId($id)
@@ -420,16 +352,40 @@ class ListClass extends acymClass
         return acym_loadResultArray($query);
     }
 
-    public function getSubscribersForList($listId, $offset = 0, $perCalls = 100, $status = '', $orderBy = '', $orderBySort = '')
+    public function getSubscribersForList(array $options = [])
     {
-        if (empty($listId)) return [];
+        $listIds = $options['listIds'] ?? [];
+        $offset = $options['offset'] ?? 0;
+        $limit = $options['limit'] ?? 100;
+        $status = $options['status'] ?? null;
+        $orderBy = $options['orderBy'] ?? '';
+        $orderBySort = $options['orderBySort'] ?? '';
+        $subscribedAfter = $options['subscribed_after'] ?? null;
+        $unsubscribedAfter = $options['unsubscribed_after'] ?? null;
 
-        $statusCond = '';
-        if ($status !== '' && is_int($status)) $statusCond = ' AND user_list.status = '.intval($status);
+        if (empty($listIds)) {
+            return [];
+        }
 
-        $requestSub = 'SELECT user.email, user.name, user.id, user.confirmed, user_list.status, user_list.subscription_date FROM #__acym_user AS user';
+        acym_arrayToInteger($listIds);
+
+        $statusCondition = '';
+        if (!is_null($status)) {
+            $statusCondition .= ' AND user_list.status = '.intval($status);
+        }
+
+        if (!empty($subscribedAfter)) {
+            $statusCondition .= ' AND user_list.subscription_date > '.acym_escapeDB($subscribedAfter);
+        }
+
+        if (!empty($unsubscribedAfter)) {
+            $statusCondition .= ' AND user_list.unsubscribe_date > '.acym_escapeDB($unsubscribedAfter);
+        }
+
+        $requestSub = 'SELECT user.*, user_list.status, user_list.subscription_date, user_list.unsubscribe_date FROM #__acym_user AS user';
         $requestSub .= ' LEFT JOIN #__acym_user_has_list AS user_list ON user.id = user_list.user_id';
-        $requestSub .= ' WHERE user.active = 1 AND user_list.list_id = '.intval($listId).$statusCond;
+        $requestSub .= ' WHERE user.active = 1 AND user_list.list_id IN ('.implode(', ', $listIds).')'.$statusCondition;
+
         if (!empty($orderBy)) {
             if (empty($orderBySort)) $orderBySort = 'desc';
             $requestSub .= ' ORDER BY '.acym_secureDBColumn($orderBy).' '.acym_secureDBColumn($orderBySort);
@@ -439,14 +395,16 @@ class ListClass extends acymClass
             $requestSub,
             '',
             $offset,
-            $perCalls
+            $limit
         );
     }
 
-    public function delete($elements)
+    public function delete($elements, $force = false)
     {
         if (!is_array($elements)) $elements = [$elements];
-        $this->onlyManageableLists($elements);
+        if (!$force) {
+            $this->onlyManageableLists($elements);
+        }
 
         if (empty($elements)) return 0;
 
@@ -1002,5 +960,37 @@ class ListClass extends acymClass
 
 
         return acym_loadObjectList($query, 'id');
+    }
+
+    public function getXLists(array $options = [])
+    {
+        $limit = $options['limit'] ?? 10;
+        $offset = $options['offset'] ?? 0;
+        $filters = $options['filters'] ?? [];
+
+        $conditions = [];
+        foreach ($filters as $column => $filter) {
+            switch ($column) {
+                case 'id':
+                case 'active':
+                case 'visible':
+                case 'clean':
+                case 'welcome_id':
+                case 'unsubscribe_id':
+                case 'cms_user_id':
+                case 'tracking':
+                    $conditions[] = acym_secureDBColumn($column).' = '.intval($filter);
+                    break;
+                default:
+                    $conditions[] = acym_secureDBColumn($column).' LIKE '.acym_escapeDB('%'.$filter.'%');
+            }
+        }
+
+        $query = 'SELECT * FROM #__acym_list';
+        if (!empty($conditions)) {
+            $query .= ' WHERE '.implode(' AND ', $conditions);
+        }
+
+        return acym_loadObjectList($query, $this->pkey, $offset, $limit);
     }
 }

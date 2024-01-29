@@ -47,6 +47,8 @@ class plgAcymSendinblue extends acymPlugin
 
     public function onAcymGetSendingMethods(&$data, $isMailer = false)
     {
+        if ($this->config->get('mailer_method') !== self::SENDING_METHOD_ID) return;
+
         $data['sendingMethods'][self::SENDING_METHOD_ID] = [
             'name' => $this->pluginDescription->name.' ('.acym_translation('ACYM_DEPRECATED').')',
             'image' => ACYM_IMAGES.'mailers/brevo.png',

@@ -5,7 +5,7 @@ Description: Allows you to automatically insert RSS content in your emails
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 3.0
+Version: 3.1
 */
 
 use AcyMailing\Classes\PluginClass;

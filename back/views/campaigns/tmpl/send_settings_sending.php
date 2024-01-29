@@ -125,7 +125,7 @@
                     <?php
                     $startDateValue = '';
                     if (!empty($data['currentCampaign']->sending_params['start_date'])) {
-                        $startDateValue = acym_date($data['currentCampaign']->sending_params['start_date'], 'Y-m-d H:i');
+                        $startDateValue = acym_date($data['currentCampaign']->sending_params['start_date'], 'd M Y H:i');
                     }
                     ?>
 					<input type="text" name="start_date" class="acy_date_picker" readonly value="<?php echo $startDateValue; ?>">

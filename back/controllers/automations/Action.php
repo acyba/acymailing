@@ -98,21 +98,28 @@ trait Action
 
     public function createMail()
     {
-        $mailClass = new MailClass();
         $id = acym_getVar('int', 'id');
         $idAdmin = acym_getVar('boolean', 'automation_admin');
-        $type = $mailClass::TYPE_AUTOMATION;
-        if ($idAdmin) $type = 'automation_admin';
+        $type = MailClass::TYPE_AUTOMATION;
+        if ($idAdmin) {
+            $type = 'automation_admin';
+        }
+
         $and = acym_getVar('string', 'and_action');
         $this->_saveActions(empty($id));
+
         $actions = acym_getVar('array', 'acym_action');
         $mailId = $actions['actions'][$and]['acy_add_queue']['mail_id'];
         $mailId = empty($mailId) ? '' : '&id='.$mailId;
+
+        $favoriteTemplate = $this->config->get('favorite_template', 0);
+        $startFrom = empty($favoriteTemplate) || !empty($mailId) ? '' : '&from='.$favoriteTemplate;
+
         acym_redirect(
             acym_completeLink(
                 'mails&task=edit&step=editEmail&type='.$type.$mailId.'&return='.urlencode(
                     acym_completeLink('automation&task=edit&step=action&id='.$id.'&fromMailEditor=1&mailid={mailid}&and='.$and)
-                ),
+                ).$startFrom,
                 false,
                 true
             )

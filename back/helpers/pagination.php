@@ -7,11 +7,11 @@ use AcyMailing\Libraries\acymObject;
 class PaginationHelper extends acymObject
 {
     // The total number of elements in the database
-    var $total;
+    private $total;
     // Current page
-    var $page;
+    private $page;
     // Number of elements displayed per page
-    var $nbPerPage;
+    private $nbPerPage;
 
     public function setStatus($total, $page, $nbPerPage)
     {
@@ -20,11 +20,16 @@ class PaginationHelper extends acymObject
         $this->nbPerPage = $nbPerPage;
     }
 
-    public function display($page, $suffix = '', $dynamics = false)
+    public function display(string $page = '', string $suffix = '', bool $dynamics = false): string
     {
         $name = empty($page) ? 'pagination_page_ajax' : $page.'_pagination_page';
 
-        // There's only one page, don't display the pagination
+        $this->total = intval($this->total);
+        $this->nbPerPage = intval($this->nbPerPage);
+        if (empty($this->nbPerPage)) {
+            return '';
+        }
+
         $nbPages = ceil($this->total / $this->nbPerPage);
 
         $class = $dynamics ? ' margin-bottom-1' : '';

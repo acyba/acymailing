@@ -21,11 +21,15 @@ select[multiple] {
 
 input[type='text'], input[type='email'], input[type='tel'], textarea, input[type='password'], input[type="number"] {
     background-color: $white;
-    border-color: $dark-gray;
+    border-color: $blue-light;
     border-radius: $primary-radius;
     box-shadow: none;
-    font-size: 0.8rem;
+    font-size: .8rem;
     color: $color-palette-dark-blue;
+
+    &::placeholder {
+          color: rgba($color-palette-dark-blue,.4);
+    }
 
     &:focus, &:hover {
         background-color: $white;

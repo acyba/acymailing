@@ -83,7 +83,7 @@
 			</div>
             <?php
             foreach ($data['user_links_details'] as $userLinkDetails) { ?>
-				<div class="grid-x cell acym__listing__row">
+				<div class="grid-x cell align-middle acym__listing__row">
 					<div class="grid-x medium-auto small-11 cell">
 						<div class="medium-auto small-12 cell acym__listing__user_links_details__content acym_text_ellipsis">
                             <?php

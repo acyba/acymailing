@@ -12,6 +12,7 @@ use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Classes\PluginClass;
 use AcyMailing\Classes\RuleClass;
 use AcyMailing\Classes\SegmentClass;
+use AcyMailing\Classes\UrlClickClass;
 use AcyMailing\Controllers\ConfigurationController;
 use AcyMailing\Controllers\PluginsController;
 use AcyMailing\Helpers\AutomationHelper;
@@ -179,6 +180,7 @@ class acymInstall
                 'vimeo' => ACYM_MEDIA_URL.'images/logo/vimeo.png',
                 'wordpress' => ACYM_MEDIA_URL.'images/logo/wordpress.png',
                 'youtube' => ACYM_MEDIA_URL.'images/logo/youtube.png',
+                'telegram' => ACYM_MEDIA_URL.'images/logo/telegram.png',
             ]
         );
 
@@ -1647,6 +1649,32 @@ class acymInstall
             if (!empty($uploadFolder) && strpos($uploadFolder, '\\') !== false) {
                 $uploadFolder = str_replace('\\', '/', $uploadFolder);
                 $config->save(['uploadfolder' => $uploadFolder]);
+            }
+        }
+
+        if (version_compare($this->fromVersion, '9.2.0', '<')) {
+            $socialIcons = json_decode($config->get('social_icons', '{}'), true);
+            if (empty($socialIcons['telegram'])) {
+                $socialIcons['telegram'] = ACYM_MEDIA_URL.'images/logo/telegram.png';
+
+                $newConfig = new \stdClass();
+                $newConfig->social_icons = json_encode($socialIcons);
+                $config->save($newConfig);
+            }
+
+            $this->updateQuery('ALTER TABLE #__acym_mail_stat ADD COLUMN `click_unique` INT NOT NULL DEFAULT 0');
+            $this->updateQuery('ALTER TABLE #__acym_mail_stat ADD COLUMN `click_total` INT NOT NULL DEFAULT 0');
+
+            $urlClickClass = new UrlClickClass();
+            $mailClicks = $urlClickClass->getTotalClicksPerMail();
+            if (!empty($mailClicks)) {
+                foreach ($mailClicks as $mailId => $stats) {
+                    $this->updateQuery(
+                        'UPDATE #__acym_mail_stat 
+                        SET click_unique = '.intval($stats->unique_clicks).', click_total = '.intval($stats->total_clicks).' 
+                        WHERE mail_id = '.intval($mailId)
+                    );
+                }
             }
         }
     }

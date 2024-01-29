@@ -134,7 +134,9 @@ function acym_getTableList()
 {
     global $wpdb;
 
-    return acym_loadResultArray('SELECT table_name FROM information_schema.tables WHERE table_schema = '.acym_escapeDB($wpdb->dbname).' AND table_name LIKE '.acym_escapeDB($wpdb->prefix.'%'));
+    return acym_loadResultArray(
+        'SELECT table_name FROM information_schema.tables WHERE table_schema = '.acym_escapeDB($wpdb->dbname).' AND table_name LIKE '.acym_escapeDB($wpdb->prefix.'%')
+    );
 }
 
 function acym_getCMSConfig($varname, $default = null)

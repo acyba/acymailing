@@ -9,7 +9,12 @@ trait WooCommerceCampaignType
     public function getNewEmailsTypeBlock(&$extraBlocks)
     {
         if (acym_isAdmin()) {
-            $woocomerceMailLink = acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type='.$this->mailType);
+            $favoriteTemplate = $this->config->get('favorite_template', 0);
+            if (empty($favoriteTemplate)) {
+                $woocomerceMailLink = acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type='.$this->mailType);
+            } else {
+                $woocomerceMailLink = acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type='.$this->mailType);
+            }
         } else {
             $woocomerceMailLink = acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type='.$this->mailType);
         }

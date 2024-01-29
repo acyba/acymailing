@@ -22,7 +22,61 @@
 }
 
 .acym__filter__status {
+    --filter-status-color: #{$font-primary};
+    --filter-status-border-color: #{$grey-light};
+
+    --filter-status-number-color: #{$font-primary};
+    --filter-status-number-background: #{$grey-light};
+
+    display: flex;
+    align-items: center;
     outline: none;
+    color: var(--filter-status-color);
+    border: 1px solid var(--filter-status-border-color);
+    margin: 5px 10px 5px 0;
+    padding-left: 12px;
+    cursor: pointer;
+    min-width: 100px;
+
+    &:hover {
+        --filter-status-border-color: #{$blue-night-primary};
+    }
+
+    &[disabled] {
+        --filter-status-number-color: rgba($blue-night-primary, .4);
+        --filter-status-number-background: #{$grey-light};
+
+        --filter-status-color: rgba($blue-night-primary, .4);
+        --filter-status-border-color: #{$grey-light};
+
+        cursor: default;
+        pointer-events: none;
+    }
+
+    &.acym__status__select {
+        --filter-status-color: #{$blue-night-primary};
+        --filter-status-border-color: #{$blue-light};
+
+        .acym__filter__status__number {
+            --filter-status-number-color: #{$blue-night-primary};
+            --filter-status-number-background: #{$blue-light};
+        }
+    }
+
+    .acym__filter__status__number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 25px;
+        min-width: 25px;
+        margin: 6px;
+        padding: 0 6px;
+        border-radius: $primary-radius;
+        text-align: center;
+        font-size: 10px;
+        background-color: var(--filter-status-number-background);
+        color: var(--filter-status-number-color);
+    }
 }
 
 .acym__listing__actions {
@@ -71,6 +125,7 @@
 
     .acym__listing__row:nth-child(even) {
         background-color: #F0F0F0;
+        border-radius: $secondary-radius;
     }
 
     .acym__listing__id {
@@ -79,7 +134,7 @@
 
     .acym__listing__controls i {
         &:hover {
-            opacity: 0.7;
+            opacity: .7;
         }
     }
 
@@ -92,6 +147,7 @@
         padding: .5rem 1rem;
         background-color: $font-primary;
         z-index: 1001;
+        border-radius: $secondary-radius;
 
         [type='checkbox'] {
             margin: 0;
@@ -127,12 +183,11 @@
 
     .acym__listing__text {
         font-size: .8rem;
+        font-weight: 500;
 
         h6 {
             font-size: .8rem;
         }
-
-        font-weight: 500;
     }
 
     .acym__listing__title {
@@ -160,7 +215,7 @@
             word-wrap: break-word;
             margin-top: 9px;
             margin-bottom: -10px;
-            line-height: 0;
+            line-height: 1;
             color: #8a8a8a;
             font-size: 11px;
         }
@@ -226,31 +281,37 @@
 }
 
 .acym__templates__oneTpl {
-    max-height: 270px;
     position: relative;
+    background-color: $white;
+    border-radius: $secondary-radius;
+
+    &:hover {
+        box-shadow: $box-shadow-card-hover;
+
+        .acym__templates__pic img {
+            opacity: .7;
+        }
+    }
 }
 
 .acym__templates__pic {
     position: relative;
-    margin-bottom: 5px;
-    border-top: 2px solid transparent;
-    border-left: 2px solid transparent;
-    border-right: 2px solid transparent;
-    border-radius: $primary-radius $primary-radius 0 0;
-    background-color: $light-gray;
     height: 208px;
+    background-color: $black;
+
     @media screen and (min-width: 640px) {
         min-height: 110px;
     }
 
     img {
-        max-height: 200px;
-        border-radius: 5px;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 1;
+        transition: .2s opacity;
     }
 
     &:hover {
-        box-shadow: 0 0 4px 2px #c5c5c5;
-        transition: 0.2s;
         cursor: pointer;
     }
 }
@@ -264,28 +325,63 @@
 }
 
 .acym__listing__block__delete {
+    --width-icon: 28px;
+
     display: none;
-    position: absolute;
-    width: 40px;
-    max-width: 40px;
-    height: 40px;
-    margin-left: 3px;
-    margin-top: 3px;
-    cursor: pointer;
+    width: var(--width-icon);
+    max-width: var(--width-icon);
+    height: var(--width-icon);
     overflow: hidden;
     border-radius: 5px;
-    z-index: 1100;
+    margin-top: 10px;
+    right: 0;
 
-    i {
-        line-height: 40px !important;
-        float: left;
-        width: 40px;
-        overflow: hidden;
+    .acym__listing__block__delete__cancel {
+        width: 28px;
+        display: block;
     }
 
-    p {
+    .acym__listing__block__delete__trash {
+        --icon-background-color: #{$red-light};
+        --icon-color: #{$red-secondary};
+
+        // hover
+        --icon-background-color-hover: #{$red-secondary};
+        --icon-color-hover: #{$white};
+
+        z-index: 10;
+        position: relative;
+
+        i {
+            overflow: hidden;
+        }
+    }
+
+    .acym__listing__block__delete__action {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: $red-secondary;
+    }
+
+    // icon trash, Real "deleted" action
+    .acym__listing__block__delete__submit {
+        --icon-background-color: $red-secondary;
+        --icon-color: $white;
+        --icon-background-color-hover: $red-secondary;
+        --icon-font-size: 1.1rem;
+
+        width: 28px;
+        display: block;
+    }
+
+    i {
+        line-height: var(--width-icon) !important;
         float: left;
-        line-height: 40px;
+        width: var(--width-icon);
+        z-index: 1101;
     }
 }
 

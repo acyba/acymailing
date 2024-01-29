@@ -6,11 +6,13 @@ use AcyMailing\Classes\QueueClass;
 use AcyMailing\Helpers\QueueHelper;
 use AcyMailing\Libraries\acymController;
 use AcyMailing\Controllers\Queue\Campaigns;
+use AcyMailing\Controllers\Queue\Scheduled;
 use AcyMailing\Controllers\Queue\Detailed;
 
 class QueueController extends acymController
 {
     use Campaigns;
+    use Scheduled;
     use Detailed;
 
     public function __construct()

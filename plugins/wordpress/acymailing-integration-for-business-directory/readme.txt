@@ -3,7 +3,7 @@ Contributors: acyba
 Tags: newsletter, integration, acymailing, business
 Requires at least: 5.0
 Tested up to: 6.4.2
-Stable tag: 1.6
+Stable tag: 1.7
 Requires PHP: 7.2.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html

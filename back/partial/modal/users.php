@@ -17,7 +17,7 @@
 			 v-infinite-scroll="loadMoreUsers"
 			 :infinite-scroll-disabled="busy"
 			 infinite-scroll-immediate-check="false">
-			<div class="grid-x cell acym__listing__row" v-for="(user, index) in users">
+			<div class="grid-x cell align-middle acym__listing__row" v-for="(user, index) in users">
 				<div class="cell small-12 medium-6 acym__listing__title acym_word-break">
 					<h6>{{ user.email }}</h6>
 				</div>

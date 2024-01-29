@@ -130,7 +130,7 @@
 			</div>
 		</div>
         <?php foreach ($data['languages'] as $oneLanguage) { ?>
-			<div class="grid-x cell acym__listing__row">
+			<div class="grid-x cell align-middle acym__listing__row">
 				<div class="medium-1 small-1 cell acym__listing__text">
                     <?php echo $oneLanguage->edit; ?>
 				</div>

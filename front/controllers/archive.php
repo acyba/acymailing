@@ -27,8 +27,10 @@ class ArchiveController extends acymController
 
     public function view()
     {
-        // Index Follow meta tag
-        acym_addMetadata('robots', 'noindex,nofollow');
+        if ($this->config->get('archive_index', 0) == 0) {
+            acym_addMetadata('robots', 'noindex,nofollow');
+        }
+
         acym_addMetadata('UTF-8', '', 'charset');
 
         $mailId = acym_getVar('int', 'id', 0);
@@ -47,7 +49,7 @@ class ArchiveController extends acymController
             return;
         }
 
-        acym_addMetadata('og:url', acym_frontendLink('archive&task=view&mailid='.$mailId));
+        acym_addMetadata('og:url', acym_frontendLink('archive&task=view&id='.$mailId));
         acym_addMetadata('og:title', $oneMail->subject);
         acym_setPageTitle($oneMail->subject);
 

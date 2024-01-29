@@ -35,11 +35,8 @@ class FrontservicesController extends acymController
         if (!in_array($mailerMethod, ['brevo-smtp', 'sendinblue'])) exit;
 
         // Get the data passed by Sendinblue
-        $entityBody = file_get_contents('php://input');
-        if (empty($entityBody)) exit;
-
-        $data = json_decode($entityBody, true);
-        if ($data === null || empty($data['email'])) exit;
+        $data = acym_getJsonData();
+        if (empty($data['email'])) exit;
 
         // Get the user from the email
         $userClass = new UserClass();

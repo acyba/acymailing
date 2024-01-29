@@ -91,6 +91,7 @@ trait Edition
         if (!empty($segment) && !empty($segment['filters'])) {
             foreach ($segment['filters'] as $or => $orValues) {
                 if (empty($orValues)) continue;
+
                 $automationHelpers[$or] = new AutomationHelper();
                 foreach ($orValues as $and => $andValues) {
                     $and = intval($and);
@@ -99,53 +100,40 @@ trait Edition
                     }
                 }
 
-                $automationHelpers[$or]->invert = $exclude;
+                $automationHelpers[$or]->excludeSelected = $exclude;
                 $automationHelpers[$or]->addFlag(self::FLAG_COUNT);
             }
         }
 
-        $join = '';
-
         if (!empty($listsIds)) {
             acym_arrayToInteger($listsIds);
-            $join = $this->config->get('require_confirmation', 1) == 1 ? ' AND user.confirmed = 1' : '';
-        }
 
-        if (!empty($segment['filters'])) {
-            if ($exclude) {
-                foreach ($automationHelpers as $or => $orValues) {
-                    $orValues->where = ['user.automation NOT LIKE "%a'.self::FLAG_COUNT.'a%"'];
-                }
+            $join = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id ';
+            $join .= 'AND user_list.list_id IN ('.implode(',', $listsIds).') ';
+            $join .= 'AND user_list.status = 1 ';
+            $join .= 'AND user.active = 1 ';
+            if ($this->config->get('require_confirmation', 1) == 1) {
+                $join .= 'AND user.confirmed = 1 ';
             }
         }
-
-        $userIds = [];
 
         if (empty($automationHelpers)) {
             $automationHelperBase = new AutomationHelper();
             if (!empty($listsIds)) {
-                $automationHelperBase->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
-                        ',',
-                        $listsIds
-                    ).') and user_list.status = 1 '.$join;
-                $automationHelperBase->where[] = 'user.active = 1';
+                $automationHelperBase->join['user_list'] = $join;
             }
-            $userIds = acym_loadResultArray($automationHelperBase->getQuery(['user.id']));
-        } else {
-            foreach ($automationHelpers as $automationHelper) {
-                if (!empty($listsIds)) {
-                    $automationHelper->join['user_list'] = ' #__acym_user_has_list AS user_list ON user_list.user_id = user.id AND user_list.list_id IN ('.implode(
-                            ',',
-                            $listsIds
-                        ).') and user_list.status = 1 '.$join;
-                    $automationHelper->where[] = 'user.active = 1';
-                }
-                $userIds = array_merge($userIds, acym_loadResultArray($automationHelper->getQuery(['user.id'])));
-            }
-            $automationHelper->removeFlag(self::FLAG_COUNT);
-        }
 
-        return count(array_unique($userIds));
+            return acym_loadResult($automationHelperBase->getQuery(['COUNT(DISTINCT user.id)']));
+        } else {
+            $automationHelperBase = array_pop($automationHelpers);
+            if (!empty($listsIds)) {
+                $automationHelperBase->join['user_list'] = $join;
+            }
+            $numberOfRecipients = acym_loadResult($automationHelperBase->getQuery(['COUNT(DISTINCT user.id)']));
+            $automationHelperBase->removeFlag(self::FLAG_COUNT);
+
+            return $numberOfRecipients;
+        }
     }
 
     public function countResults()

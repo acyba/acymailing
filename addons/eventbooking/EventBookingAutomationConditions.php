@@ -37,6 +37,25 @@ trait EventBookingAutomationConditions
         );
         $conditions['user']['ebregistration']->option .= '</div>';
 
+        $conditions['user']['ebregistration']->option .= '<div class="intext_select_automation cell">';
+        $ajaxParamsCategory = json_encode(
+            [
+                'plugin' => __CLASS__,
+                'trigger' => 'searchEventCategory',
+            ]
+        );
+        $conditions['user']['ebregistration']->option .= acym_select(
+            [],
+            'acym_condition[conditions][__numor__][__numand__][ebregistration][category]',
+            null,
+            [
+                'class' => 'acym__select acym_select2_ajax',
+                'data-placeholder' => acym_translation('ACYM_ANY_CATEGORY'),
+                'data-params' => $ajaxParamsCategory,
+            ]
+        );
+        $conditions['user']['ebregistration']->option .= '</div>';
+
         $status = [];
         $status[] = acym_selectOption('-1', 'ACYM_STATUS');
         $status[] = acym_selectOption('0', 'EB_PENDING');
@@ -95,6 +114,41 @@ trait EventBookingAutomationConditions
         exit;
     }
 
+    public function searchEventCategory()
+    {
+        $id = acym_getVar('int', 'id');
+        if (!empty($id)) {
+            $subject = acym_loadResult('SELECT `name` FROM #__eb_categories WHERE `id` = '.intval($id));
+            if (empty($subject)) $subject = '';
+            echo json_encode(
+                [
+                    [
+                        'value' => $id,
+                        'text' => $id.' - '.$subject,
+                    ],
+                ]
+            );
+            exit;
+        }
+
+        $return = [];
+        $search = acym_getVar('string', 'search', '');
+
+        $elements = acym_loadObjectList(
+            'SELECT DISTINCT `id`, `name` AS `title` 
+            FROM `#__eb_categories` 
+            WHERE `name` LIKE '.acym_escapeDB('%'.$search.'%').' 
+            ORDER BY `title` ASC',
+            'id'
+        );
+
+        foreach ($elements as $oneElement) {
+            $return[] = [$oneElement->id, $oneElement->id.' - '.$oneElement->title];
+        }
+        echo json_encode($return);
+        exit;
+    }
+
     public function onAcymProcessCondition_ebregistration(&$query, $options, $num, &$conditionNotValid)
     {
         $this->processConditionFilter_ebregistration($query, $options, $num);
@@ -112,7 +166,12 @@ trait EventBookingAutomationConditions
                     )
                 )';
 
-        if (!empty($options['event'])) $join .= ' AND eventbooking'.$num.'.event_id = '.intval($options['event']);
+        if (!empty($options['event'])) {
+            $join .= ' AND eventbooking'.$num.'.event_id = '.intval($options['event']);
+        } elseif (!empty($options['category'])) {
+            $join .= ' AND eventbooking'.$num.'.event_id IN (SELECT DISTINCT eventbookingCat'.$num.'.event_id FROM #__eb_event_categories AS eventbookingCat'.$num.' WHERE eventbookingCat'.$num.'.category_id = '.intval($options['category']).')';
+        }
+
         if (isset($options['status']) && $options['status'] != -1) $join .= ' AND eventbooking'.$num.'.published = '.intval($options['status']);
 
         if (!empty($options['datemin'])) {
@@ -146,14 +205,20 @@ trait EventBookingAutomationConditions
 
     private function summaryConditionFilters(&$automationCondition)
     {
+        $finalText = '';
         if (!empty($automationCondition['ebregistration'])) {
             acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
             acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR);
 
-            if (empty($automationCondition['ebregistration']['event'])) {
-                $event = acym_translation('ACYM_ANY_EVENT');
-            } else {
+            if (!empty($automationCondition['ebregistration']['event'])) {
                 $event = acym_loadResult('SELECT `title` FROM #__eb_events WHERE `id` = '.intval($automationCondition['ebregistration']['event']));
+                $category = '';
+            } elseif (!empty($automationCondition['ebregistration']['category'])) {
+                $category = acym_loadResult('SELECT `name` FROM #__eb_categories WHERE `id` = '.intval($automationCondition['ebregistration']['category']));
+                $event = '';
+            } else {
+                $event = acym_translation('ACYM_ANY_EVENT');
+                $category = acym_translation('ACYM_ANY_CATEGORY');
             }
 
             $status = [
@@ -165,7 +230,19 @@ trait EventBookingAutomationConditions
 
             $status = acym_translation($status[$automationCondition['ebregistration']['status']]);
 
-            $finalText = acym_translationSprintf('ACYM_REGISTERED', $event, $status);
+            if (empty($automationCondition['ebregistration']['in']) || $automationCondition['ebregistration']['in'] === 'in') {
+                if (empty($event)) {
+                    $finalText = acym_translationSprintf('ACYM_IS_REGISTERED', $status, $category);
+                } else {
+                    $finalText = acym_translationSprintf('ACYM_IS_REGISTERED', $status, $event);
+                }
+            } else {
+                if (empty($event)) {
+                    $finalText = acym_translationSprintf('ACYM_NOT_REGISTERED', $status, $category);
+                } else {
+                    $finalText = acym_translationSprintf('ACYM_NOT_REGISTERED', $status, $event);
+                }
+            }
 
             $dates = [];
             if (!empty($automationCondition['ebregistration']['datemin'])) {

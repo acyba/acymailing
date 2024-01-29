@@ -1,11 +1,13 @@
-$border-radius: 4px;
+$border-radius: 8px;
 $global-font-size: 100%;
 $global-width: 100%;
 $primary-radius: 4px;
+$secondary-radius: 8px;
 $primary-box-shadow: 2px 2px 15px 2px #ebebeb;
 $listing-box-shadow: 2px 2px 15px 2px #eaeaea;
 $box-shadow-button: 0 0 4px 1px rgba(80, 80, 80, .4);
 $box-shadow-button-hover: 0 0 8px 1px rgba(80, 80, 80, .4);
+$box-shadow-card-hover: 0 4px 10px rgba(#000000, .15);
 $body-antialiased: true;
 $global-margin: 1rem;
 $global-padding: 1rem;

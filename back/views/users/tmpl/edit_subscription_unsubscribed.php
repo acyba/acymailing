@@ -1,6 +1,6 @@
 <div class="grid-x acym__listing">
     <?php foreach ($data['unsubscribe'] as $oneUnsubscription) { ?>
-        <div class="grid-x cell acym__listing__row">
+        <div class="grid-x cell align-middle acym__listing__row">
             <div class="grid-x small-6 large-8 cell acym__users__display__list__name">
                 <?php echo '<i class="cell shrink acymicon-circle" style="color:'.acym_escape($oneUnsubscription->color).'"></i>'; ?>
                 <h6 class="cell auto"><?php echo acym_escape($oneUnsubscription->name); ?></h6>

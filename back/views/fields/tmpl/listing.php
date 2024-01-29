@@ -41,9 +41,9 @@
 			<div class="acym__sortable__listing cell grid-x" data-sort-ctrl="fields">
                 <?php
                 foreach ($data['allFields'] as $field) {
-                    $generalClass = in_array($field->id, [1, 2, $data['languageFieldId']]) ? ' acym_opacity-5 ' : ' acym_toggleable cursor-pointer ';
+                    $generalClass = in_array($field->id, [1, 2, $data['languageFieldId']]) ? ' acym_opacity-5 acym_disabled ' : ' acym_toggleable cursor-pointer ';
                     ?>
-					<div class="grid-x cell acym__listing__row" data-id-element="<?php echo acym_escape($field->id); ?>">
+					<div class="grid-x cell align-middle acym__listing__row" data-id-element="<?php echo acym_escape($field->id); ?>">
 						<div class="medium-shrink small-1 cell">
 							<input id="checkbox_<?php echo acym_escape($field->id); ?>" type="checkbox" name="elements_checked[]" value="<?php echo acym_escape($field->id); ?>">
 						</div>
@@ -59,7 +59,7 @@
 									<h6><?php echo acym_escape(acym_translation($field->name)); ?></h6>
 								</a>
 							</div>
-							<div class="medium-auto hide-for-small-only cell acym__listing__title">
+							<div class="medium-auto hide-for-small-only cell acym__listing__title ">
 								<h6><?php echo acym_translation('ACYM_'.strtoupper(acym_escape($field->type))); ?></h6>
 							</div>
 							<div class="acym__listing__controls acym__field__controls medium-1 small-3 text-center cell">
@@ -67,7 +67,7 @@
                                 $class = $field->required == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0' : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
                                 echo '<i data-acy-table="field" data-acy-field="required" data-acy-elementid="'.acym_escape(
                                         $field->id
-                                    ).'" class="'.(in_array($field->id, [2, $data['languageFieldId']]) ? ' acym_opacity-5 ' : ' acym_toggleable cursor-pointer ').$class.'"></i>';
+                                    ).'" class="'.(in_array($field->id, [2, $data['languageFieldId']]) ? ' acym_opacity-5 acym_disabled ' : ' acym_toggleable cursor-pointer ').$class.'"></i>';
                                 ?>
 							</div>
 							<div class="acym__listing__controls hide-for-small-only acym__field__controls medium-1 small-1 text-center cell">

@@ -16,6 +16,7 @@ class AcymRouter extends AcymRouterBase
         require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
 
         $this->pagesNotSef = [
+            'api',
             'cron',
             'fronturl',
             'frontmails',
@@ -117,11 +118,6 @@ class AcymRouter extends AcymRouterBase
             unset($query['mail_id']);
         }
 
-        if ($ctrl === 'frontcampaigns' && isset($query['id'])) {
-            $segments[] = $this->getCampaignSEF($query['id']);
-            unset($query['id']);
-        }
-
         foreach ($query as $name => $value) {
             // We don't add to the SEF url these elements
             if (in_array($name, $this->paramsNotSef)) continue;
@@ -184,17 +180,12 @@ class AcymRouter extends AcymRouterBase
             $vars['mail_id'] = $id;
         }
 
-        if ($vars['ctrl'] === 'frontcampaigns' && $vars['task'] === 'edit' && !empty($segments)) {
-            $campaign = array_shift($segments);
-            [$id, $alias] = explode($this->separator, $campaign, 2);
-            $vars['id'] = $id;
-        }
-
-        foreach ($segments as $name) {
+        foreach ($segments as $position => $name) {
             if (strpos($name, $this->separator) === false) continue;
 
             [$arg, $val] = explode($this->separator, $name, 2);
             $vars[$arg] = $val;
+            unset($segments[$position]);
         }
 
         return $vars;
@@ -206,16 +197,6 @@ class AcymRouter extends AcymRouterBase
         $mail = $mailClass->getOneById($id);
 
         return $id.$this->separator.acym_getAlias($mail->subject);
-    }
-
-    private function getCampaignSEF($campaignId): string
-    {
-        if (empty($campaignId) || !is_numeric($campaignId)) return '0'.$this->separator.'new';
-
-        $campaignClass = new CampaignClass();
-        $campaign = $campaignClass->getOneByIdWithMail($campaignId);
-
-        return $campaignId.$this->separator.acym_getAlias($campaign->subject);
     }
 
     private function getListSEF($id): string

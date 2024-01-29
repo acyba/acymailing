@@ -253,7 +253,7 @@ class plgAcymAcymailer extends acymPlugin
 							</div>
                         <?php } else { ?>
                             <?php foreach ($domains as $domain) { ?>
-								<div acym-data-domain="<?php echo $domain['domain'] ?>" class="grid-x cell acym__listing__row">
+								<div acym-data-domain="<?php echo $domain['domain'] ?>" class="grid-x cell align-middle acym__listing__row">
 									<div class="grid-x medium-auto cell acym__listing__title__container">
                                         <?php echo $domain['domain']; ?>
 									</div>
@@ -320,7 +320,7 @@ class plgAcymAcymailer extends acymPlugin
 														</div>
 													</div>
                                                     <?php foreach ($domain['CnameRecords'] as $cnameRecord) { ?>
-														<div class="grid-x cell acym__listing__row">
+														<div class="grid-x cell align-middle acym__listing__row">
 															<div class="grid-x medium-6 cell acym__listing__title__container cname-name">
                                                                 <?php echo $cnameRecord['name']; ?>
 															</div>

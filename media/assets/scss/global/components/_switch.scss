@@ -1,35 +1,44 @@
 .switch {
-    height: 1.5rem;
+    --color-switch: $color-palette-dark-blue;
+    --color-switch-disabled: $very-light-gray;
+    --height-switch: 18px;
+    --width-switch: 42px;
+    --spacing-switch: 2px;
+
+    height: calc(var(--height-switch) + var(--spacing-switch));
     font-size: .625rem;
     margin-bottom: 0;
 
     .switch-paddle {
         margin-left: 15px;
-        width: 40px;
-        height: 19px;
-        font-size: .625rem;
-        background: $color-palette-light-blue;
-        border: 1px solid $color-palette-dark-blue;
+        width: var(--width-switch);
+        height: calc(var(--height-switch) + var(--spacing-switch));
+        background: $white;
+        border: 1px solid var(--color-switch);
 
         &.disabled {
-            opacity: .5;
+            border-color: var(--color-switch-disabled);
+
+            &:after {
+                background: var(--color-switch-disabled);
+            }
         }
 
         &:after {
-            top: 2px;
-            left: 2px;
-            width: 13px;
-            height: 13px;
-            background: $color-palette-dark-blue;
+            top: var(--spacing-switch);
+            left: var(--spacing-switch);
+            width: calc(var(--height-switch) - var(--spacing-switch) * 2);
+            height: calc(var(--height-switch) - var(--spacing-switch) * 2);
+            background: var(--color-switch);
         }
     }
 
     input:checked ~ .switch-paddle {
-        background: $color-palette-dark-blue;
+        background: var(--color-switch);
 
         &:after {
             background: $white;
-            left: 23px;
+            left: calc(var(--width-switch) - var(--height-switch));
         }
     }
 }

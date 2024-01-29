@@ -12,33 +12,33 @@
 	</div>
 	<div class="cell grid-x">
 		<div class="grid-x acym__listing__actions cell auto">
-			<div class="medium-auto cell">
-                <?php
-                $options = [
-                    '' => ['ACYM_ALL', $data['allStatusFilter']->all],
-                    'sent' => ['ACYM_SENT', $data['allStatusFilter']->sent],
-                    'draft' => ['ACYM_DRAFT', $data['allStatusFilter']->draft],
-                ];
-                echo acym_filterStatus($options, $data['status'], $data['campaign_type'].'_status');
-                ?>
-			</div>
-		</div>
-		<div class="grid-x cell auto">
-			<div class="cell acym_listing_sort-by">
-                <?php echo acym_sortBy(
-                    [
-                        'id' => acym_strtolower(acym_translation('ACYM_ID')),
-                        'name' => acym_translation('ACYM_NAME'),
-                        'sending_date' => acym_translation('ACYM_SENDING_DATE'),
-                        'creation_date' => acym_translation('ACYM_DATE_CREATED'),
-                        'draft' => acym_translation('ACYM_DRAFT'),
-                        'active' => acym_translation('ACYM_ACTIVE'),
-                        'sent' => acym_translation('ACYM_SENT'),
-                    ],
-                    $data['campaign_type'],
-                    $data['ordering'],
-                    $data['orderingSortOrder']
-                ); ?>
+			<div class="cell grid-x align-justify">
+				<div class="cell grid-x large-shrink acym_vcenter">
+                    <?php
+                    $options = [
+                        '' => ['ACYM_ALL', $data['allStatusFilter']->all],
+                        'sent' => ['ACYM_SENT', $data['allStatusFilter']->sent],
+                        'draft' => ['ACYM_DRAFT', $data['allStatusFilter']->draft],
+                    ];
+                    echo acym_filterStatus($options, $data['status'], $data['campaign_type'].'_status');
+                    ?>
+				</div>
+				<div class="cell large-shrink acym_listing_sort-by">
+                    <?php echo acym_sortBy(
+                        [
+                            'id' => acym_strtolower(acym_translation('ACYM_ID')),
+                            'name' => acym_translation('ACYM_NAME'),
+                            'sending_date' => acym_translation('ACYM_SENDING_DATE'),
+                            'creation_date' => acym_translation('ACYM_DATE_CREATED'),
+                            'draft' => acym_translation('ACYM_DRAFT'),
+                            'active' => acym_translation('ACYM_ACTIVE'),
+                            'sent' => acym_translation('ACYM_SENT'),
+                        ],
+                        $data['campaign_type'],
+                        $data['ordering'],
+                        $data['orderingSortOrder']
+                    ); ?>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -90,11 +90,11 @@
         foreach ($data['allCampaigns'] as $campaign) {
             if (isset($campaign->display) && !$campaign->display) continue;
             ?>
-			<div class="grid-x cell acym__listing__row">
+			<div class="grid-x cell align-middle acym__listing__row">
 				<div class="medium-shrink small-1 cell">
 					<input id="checkbox_<?php echo acym_escape($campaign->id); ?>" type="checkbox" name="elements_checked[]" value="<?php echo acym_escape($campaign->id); ?>">
 				</div>
-				<div class="grid-x medium-auto small-11 cell acym__campaign__listing acym__listing__title__container">
+				<div class="grid-x medium-auto small-11 cell align-middle acym__campaign__listing acym__listing__title__container">
 					<div class="cell medium-auto small-7 acym__listing__title acym__campaign__title">
                         <?php $linkTask = 'generated' == $data['status'] ? 'summaryGenerated' : 'edit&step=editEmail'; ?>
 						<a class="cell auto" href="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.$linkTask.'&campaignId='.intval($campaign->id)); ?>">
@@ -188,7 +188,7 @@
                             echo acym_tooltip(
                                 '<i data-acy-table="campaign" data-acy-field="visible" data-acy-elementid="'.acym_escape($campaign->id).'" class="acym_toggleable '.$class.'"></i>',
                                 acym_translation($tooltip),
-                                'secondary_status'
+                                null
                             );
                             ?>
 						</div>

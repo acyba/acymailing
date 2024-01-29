@@ -12,8 +12,8 @@
             echo acym_listingActions($actions);
             ?>
 		</div>
-		<div class="grid-x cell">
-			<div class="auto cell acym_vcenter">
+		<div class="grid-x cell align-justify">
+			<div class="cell grid-x large-shrink acym_vcenter">
                 <?php
                 $options = [
                     '' => ['ACYM_ALL', $data['formsNumberPerStatus']['all']],
@@ -23,7 +23,7 @@
                 echo acym_filterStatus($options, $data['status'], 'forms_status');
                 ?>
 			</div>
-			<div class="cell acym_listing_sort-by auto">
+			<div class="cell large-shrink acym_listing_sort-by">
                 <?php echo acym_sortBy(
                     [
                         'id' => acym_strtolower(acym_translation('ACYM_ID')),
@@ -67,7 +67,7 @@
 			</div>
 		</div>
         <?php foreach ($data['allForms'] as $form) { ?>
-			<div data-acy-elementid="<?php echo acym_escape($form->id); ?>" class="grid-x cell acym__listing__row">
+			<div data-acy-elementid="<?php echo acym_escape($form->id); ?>" class="grid-x cell align-middle acym__listing__row">
 				<div class="medium-shrink small-1 cell">
 					<input id="checkbox_<?php echo acym_escape($form->id); ?>" type="checkbox" name="elements_checked[]" value="<?php echo acym_escape($form->id); ?>">
 				</div>

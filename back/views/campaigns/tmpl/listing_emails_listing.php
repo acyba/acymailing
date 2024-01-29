@@ -55,11 +55,11 @@
         foreach ($data['allCampaigns'] as $email) {
             if (isset($email->display) && !$email->display) continue;
             ?>
-			<div class="grid-x cell acym__listing__row">
+			<div class="grid-x cell align-middle acym__listing__row">
 				<div class="medium-shrink small-1 cell">
 					<input id="checkbox_<?php echo acym_escape($email->id); ?>" type="checkbox" name="elements_checked[]" value="<?php echo acym_escape($email->id); ?>">
 				</div>
-				<div class="grid-x medium-auto small-11 cell acym__campaign__listing acym__listing__title__container">
+				<div class="grid-x medium-auto small-11 cell align-middle acym__campaign__listing acym__listing__title__container">
 					<div class="cell medium-auto small-7 acym__listing__title acym__campaign__title">
                         <?php
                         $isFront = !acym_isAdmin() && ACYM_CMS == 'joomla';

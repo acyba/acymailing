@@ -12,30 +12,28 @@
 	</div>
 	<div class="cell grid-x">
 		<div class="grid-x acym__listing__actions cell auto">
-			<div class="medium-auto cell">
-                <?php
-                if ($data['campaign_type'] == 'campaigns_auto') {
-                    $options = [
-                        '' => ['ACYM_AUTOMATICS_CAMPAIGNS', $data['allStatusFilter']->all],
-                        'generated' => [
-                            'ACYM_GENERATED',
-                            $data['allStatusFilter']->generated,
-                            $data['generatedPending'] ? 'pending' : '',
-                        ],
-                    ];
-                } else {
-                    $options = [
-                        '' => ['ACYM_ALL', $data['allStatusFilter']->all],
-                        'scheduled' => ['ACYM_SCHEDULED', $data['allStatusFilter']->scheduled],
-                        'sent' => ['ACYM_SENT', $data['allStatusFilter']->sent],
-                        'draft' => ['ACYM_DRAFT', $data['allStatusFilter']->draft],
-                    ];
-                }
-                if (isset($data['campaign_type'])) {
-                    echo acym_filterStatus($options, $data['status'], $data['campaign_type'].'_status');
-                }
-                ?>
-			</div>
+            <?php
+            if ($data['campaign_type'] == 'campaigns_auto') {
+                $options = [
+                    '' => ['ACYM_AUTOMATICS_CAMPAIGNS', $data['allStatusFilter']->all],
+                    'generated' => [
+                        'ACYM_GENERATED',
+                        $data['allStatusFilter']->generated,
+                        $data['generatedPending'] ? 'pending' : '',
+                    ],
+                ];
+            } else {
+                $options = [
+                    '' => ['ACYM_ALL', $data['allStatusFilter']->all],
+                    'scheduled' => ['ACYM_SCHEDULED', $data['allStatusFilter']->scheduled],
+                    'sent' => ['ACYM_SENT', $data['allStatusFilter']->sent],
+                    'draft' => ['ACYM_DRAFT', $data['allStatusFilter']->draft],
+                ];
+            }
+            if (isset($data['campaign_type'])) {
+                echo acym_filterStatus($options, $data['status'], $data['campaign_type'].'_status');
+            }
+            ?>
 		</div>
 		<div class="grid-x cell auto">
 			<div class="cell acym_listing_sort-by">
@@ -116,11 +114,11 @@
             }
 
             ?>
-			<div class="grid-x cell acym__listing__row">
+			<div class="grid-x cell align-middle acym__listing__row">
 				<div class="medium-shrink small-1 cell">
 					<input id="checkbox_<?php echo acym_escape($campaign->id); ?>" type="checkbox" name="elements_checked[]" value="<?php echo acym_escape($campaign->id); ?>">
 				</div>
-				<div class="grid-x medium-auto small-11 cell acym__campaign__listing acym__listing__title__container">
+				<div class="grid-x medium-auto small-11 cell align-middle acym__campaign__listing acym__listing__title__container">
 					<div class="cell medium-auto small-7 acym__listing__title acym__campaign__title">
                         <?php $linkTask = 'generated' == $data['status'] ? 'summaryGenerated' : 'edit&step=editEmail';
                         $linkCampaign = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task='.$linkTask.'&campaignId='.intval($campaign->id));
@@ -293,7 +291,7 @@
 						</div>
                     <?php } ?>
                     <?php if (acym_isAdmin()) { ?>
-						<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
+						<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center acym__icon__table">
                             <?php
                             if ($campaign->visible == 1) {
                                 $class = 'acymicon-eye" data-acy-newvalue="0';
@@ -305,13 +303,13 @@
                             echo acym_tooltip(
                                 '<i data-acy-table="campaign" data-acy-field="visible" data-acy-elementid="'.acym_escape($campaign->id).'" class="acym_toggleable '.$class.'"></i>',
                                 acym_translation($tooltip),
-                                'secondary_status'
+                                null
                             );
                             ?>
 						</div>
                         <?php
                     } ?>
-					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
+					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center acym__icon__table">
 						<a href="<?php echo $linkCampaign; ?>"><i class="acymicon-pencil" title="<?php echo acym_translation('ACYM_EDIT'); ?>"></i></a>
 						<a><i class="acymicon-content_copy fastActions"
 							  data-action="duplicate"

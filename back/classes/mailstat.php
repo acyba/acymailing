@@ -114,23 +114,9 @@ class MailStatClass extends acymClass
         return acym_loadObject($query);
     }
 
-    public function getAllFromMailIds($mailsIds = [])
-    {
-        acym_arrayToInteger($mailsIds);
-        if (empty($mailsIds)) {
-            $mailsIds[] = 0;
-        }
-
-        $result = acym_loadObjectList('SELECT * FROM #__acym_mail_stat WHERE mail_id IN ('.implode(',', $mailsIds).')', 'mail_id');
-
-        return $result === null ? 0 : $result;
-    }
-
     public function getOneRowByMailId($mailId)
     {
-        $query = 'SELECT * FROM #__acym_mail_stat WHERE mail_id = '.intval($mailId);
-
-        return acym_loadObject($query);
+        return acym_loadObject('SELECT * FROM #__acym_mail_stat WHERE mail_id = '.intval($mailId));
     }
 
     public function getAllMailsForStats($search = '')
@@ -256,5 +242,14 @@ class MailStatClass extends acymClass
         );
 
         return array_keys($mailStats)[0];
+    }
+
+    public function incrementClicks(int $mailId, bool $isFirst)
+    {
+        acym_query(
+            'UPDATE #__acym_mail_stat 
+            SET click_total = click_total + 1'.($isFirst ? ', click_unique = click_unique + 1' : '').'
+            WHERE mail_id = '.intval($mailId)
+        );
     }
 }

@@ -12,8 +12,8 @@
             echo acym_listingActions($actions);
             ?>
 		</div>
-		<div class="cell grid-x">
-			<div class="auto cell acym_vcenter">
+		<div class="cell grid-x align-justify">
+			<div class="cell grid-x large-shrink acym_vcenter">
                 <?php
                 $options = [
                     '' => ['ACYM_ALL', $data['userNumberPerStatus']['all']],
@@ -25,7 +25,7 @@
                 echo acym_filterStatus($options, $data['status'], 'users_status');
                 ?>
 			</div>
-			<div class="cell acym_listing_sort-by auto">
+			<div class="cell large-shrink acym_listing_sort-by">
                 <?php echo acym_sortBy(
                     [
                         'id' => acym_strtolower(acym_translation('ACYM_ID')),
@@ -90,7 +90,7 @@
         foreach ($data['allUsers'] as $user) {
             $linkUser = acym_completeLink(acym_getVar('cmd', 'ctrl').'&task=edit&userId='.$user->id);
             ?>
-			<div class="grid-x cell acym__listing__row">
+			<div class="grid-x cell align-middle acym__listing__row">
 				<div class="medium-shrink small-1 cell">
 					<input id="checkbox_<?php echo acym_escape($user->id); ?>" type="checkbox" name="elements_checked[]" value="<?php echo acym_escape($user->id); ?>">
 				</div>
@@ -172,7 +172,7 @@
                             ?>
 						</div>
                     <?php } ?>
-					<div class="acym__listing__controls acym__users__controls small-1 text-center cell">
+					<div class="acym__listing__controls acym__users__controls small-1 text-center cell acym__icon__table">
                         <?php
                         if ($user->active == 1) {
                             $class = 'acymicon-check-circle acym__color__green" data-acy-newvalue="0';
@@ -198,12 +198,12 @@
                             echo acym_tooltip(
                                 '<i data-acy-table="user" data-acy-field="confirmed" data-acy-elementid="'.acym_escape($user->id).'" class="acym_toggleable '.$class.'"></i>',
                                 acym_translation($tooltip),
-                                'secondary_status'
+                                null
                             );
                         }
                         ?>
 					</div>
-					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center">
+					<div class="large-1 hide-for-small-only hide-for-medium-only cell text-center acym__icon__table">
 						<a href="<?php echo $linkUser; ?>"><i class="acymicon-pencil" title="<?php echo acym_translation('ACYM_EDIT'); ?>"></i></a>
                         <?php if (acym_isAdmin()) { ?>
 							<a><i class="acymicon-download fastActions"

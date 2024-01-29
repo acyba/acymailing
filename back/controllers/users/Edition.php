@@ -4,6 +4,7 @@ namespace AcyMailing\Controllers\Users;
 
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\HistoryClass;
+use AcyMailing\Classes\UrlClickClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\UserStatClass;
 use AcyMailing\Helpers\EntitySelectHelper;
@@ -128,8 +129,8 @@ trait Edition
 
     private function prepareStatsEdit(&$data, $userId)
     {
-        $data['pourcentageOpen'] = 0;
-        $data['pourcentageClick'] = 0;
+        $data['percentageOpen'] = 0;
+        $data['percentageClick'] = 0;
 
         if (empty($userId)) return;
 
@@ -141,16 +142,27 @@ trait Edition
         $userStat = new \stdClass();
         $userStat->totalSent = 0;
         $userStat->open = 0;
+        $userStat->click = 0;
 
         foreach ($userStatFromDB as $oneStat) {
             if ($oneStat->sent > 0) $userStat->totalSent++;
             if ($oneStat->open > 0) $userStat->open++;
         }
 
-        $userStat->pourcentageOpen = (empty($userStat->open) || empty($userStat->totalSent)) ? 0 : intval(($userStat->open * 100) / $userStat->totalSent);
+        $urlClickClass = new UrlClickClass();
+        $clickStats = $urlClickClass->getUserMailsClicked($userId);
 
-        $data['pourcentageOpen'] = $userStat->pourcentageOpen;
-        $data['pourcentageClick'] = $userStat->pourcentageOpen;
+        foreach ($clickStats as $oneStat) {
+            if (!empty($oneStat->click)) {
+                $userStat->click++;
+            }
+        }
+
+        $userStat->percentageOpen = empty($userStat->open) || empty($userStat->totalSent) ? 0 : intval(($userStat->open * 100) / $userStat->totalSent);
+        $userStat->percentageClick = empty($userStat->click) || empty($userStat->totalSent) ? 0 : intval(($userStat->click * 100) / $userStat->totalSent);
+
+        $data['percentageOpen'] = number_format($userStat->percentageOpen, 2);
+        $data['percentageClick'] = number_format($userStat->percentageClick, 2);
     }
 
     private function prepareMailHistory(&$data, $userId)

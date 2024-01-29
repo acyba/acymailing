@@ -37,7 +37,7 @@
 				<div class="cell large-2 acym__listing__header__title"></div>
 			</div>
 			<div class="grid-x cell acym__list__settings__subscribers__listing" v-infinite-scroll="loadMoreSubscriber" :infinite-scroll-disabled="busy">
-				<div class="grid-x cell acym__listing__row" v-for="(sub, index) in displayedSubscribers">
+				<div class="grid-x cell align-middle acym__listing__row" v-for="(sub, index) in displayedSubscribers">
 					<div class="cell medium-7 small-10 acym_word-break large-1">
 						<span :class="sub.confirmed==1 || requireConfirmation==0?'':'acym__color__dark-gray'">{{ sub.id }}</span>
 					</div>

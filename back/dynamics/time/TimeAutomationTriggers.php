@@ -137,7 +137,7 @@ trait TimeAutomationTriggers
         $triggers['classic']['every']->name = acym_translation('ACYM_EVERY');
         $triggers['classic']['every']->option = '<div class="grid-x grid-margin-x">';
         $triggers['classic']['every']->option .= '<div class="cell medium-shrink">';
-        $triggers['classic']['every']->option .= '<input type="number" name="[triggers][classic][every][number]" class="intext_input" value="'.intval($defaultEvery).'">';
+        $triggers['classic']['every']->option .= '<input type="number" min="1" name="[triggers][classic][every][number]" class="intext_input" value="'.intval($defaultEvery).'">';
         $triggers['classic']['every']->option .= '</div>';
         $triggers['classic']['every']->option .= '<div class="cell medium-auto">'.acym_select(
                 $every,

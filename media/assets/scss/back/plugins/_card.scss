@@ -6,29 +6,23 @@ $perspective: 600;
 #acym_wrapper {
     #acym__plugin__available__application, #acym__plugin__installed__application {
         .acym__plugins__card {
-            border-radius: 5px;
+            border-radius: $secondary-radius;
             transition: .3s ease-in-out;
             transition-property: box-shadow, transform;
             border: 0;
-            align-content: baseline;
             position: relative;
-            height: 410px;
-            padding: 1rem;
+            padding: 1.2rem;
+            background-color: rgba($blue-light, .3);
+            align-content: space-between;
 
             &:hover {
-                box-shadow: 0 2px 4px rgba(40, 41, 61, 0.04), 0 8px 16px rgba(96, 97, 112, 0.16);
+                box-shadow: $box-shadow-card-hover;
 
                 .acym__plugins__button__delete {
                     visibility: visible;
 
                     &:hover {
                         opacity: .8;
-                    }
-                }
-
-                .acym__plugins__card__image {
-                    img {
-                        transform: scale(1.07);
                     }
                 }
             }
@@ -58,7 +52,7 @@ $perspective: 600;
                 letter-spacing: 0.20000000298023224px;
 
                 height: 26px;
-                border-radius: 8px;
+                border-radius: $secondary-radius;
                 padding: 4px 8px 4px 8px;
                 background-color: $very-light-gray;
                 margin-bottom: 1rem;
@@ -68,28 +62,57 @@ $perspective: 600;
 
             .acym__plugins__card__image {
                 overflow: hidden;
-                height: 150px;
+                height: 175px;
                 position: relative;
+                border-radius: $secondary-radius;
+                background: linear-gradient(115deg, #dcefff, transparent);
 
                 img {
+                    border-radius: $secondary-radius;
                     transition: transform .3s ease-in-out;
-                    background: linear-gradient(115deg, #dcefff, transparent);;
+                    object-fit: cover;
+                }
+            }
+
+            .acym__plugins__card__actions {
+                width: 100%;
+
+                .acym__plugins__button {
+                    width: 100%;
+                    margin-bottom: 0;
                 }
             }
 
             .acym__plugins__card__params {
-                height: 100%;
-                max-height: 175px;
+                width: 100%;
 
                 .acym__plugins__card__params__title-line {
-                    align-items: start;
+
+                    @media screen and (min-width: 1024px) {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 10px;
+                    }
 
                     .acym__plugins__card__params__title {
                         font-family: Roboto, sans-serif;
                         font-size: 1.1rem;
                         font-weight: 700;
                         line-height: 28px;
-                        color: $color-palette-black;
+                        color: $blue-night-primary;
+                        margin-bottom: 10px;
+
+                        @media screen and (min-width: 1024px) {
+                            margin-bottom: 0;
+                        }
+                    }
+
+                    .acym__plugins__card__params__icons {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        grid-template-rows: 1fr;
+                        gap: 0 10px;
                     }
                 }
 
@@ -97,31 +120,9 @@ $perspective: 600;
                     font-size: .8rem;
                     font-weight: 500;
                     line-height: 20px;
-                    height: 100%;
                     margin: .5rem 0;
-                    max-height: 65px;
                     overflow: auto;
                     color: $color-palette-dark-text;
-
-                    &.acym__plugins__card__params_desc__overflown {
-                        background: linear-gradient($white 85%, $light-gray);
-                    }
-                }
-
-                .acym__plugins__documentation {
-                    color: $color-palette-cyan;
-                    line-height: 28px;
-                    padding-left: 3px;
-                    font-size: 24px;
-
-                    i {
-                        font-size: 1.1rem;
-                    }
-
-                    &:hover {
-                        color: $primary-color;
-                        text-decoration: underline;
-                    }
                 }
 
                 .acym__plugins__settings__toggle {

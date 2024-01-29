@@ -79,7 +79,7 @@
 			</div>
             <?php
             foreach ($data['links_details'] as $linkDetails) { ?>
-				<div class="grid-x cell acym__listing__row">
+				<div class="grid-x cell align-middle acym__listing__row">
 					<div class="grid-x medium-auto small-11 cell">
 						<div class="auto cell acym__listing__links_details__content">
                             <?php

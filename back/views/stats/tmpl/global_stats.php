@@ -5,7 +5,7 @@
 				<div class="cell auto"></div>
 				<h2 class="cell shrink text-right acym_stats__title__choose"><?php echo acym_translation('ACYM_SELECT_AN_EMAIL'); ?></h2>
 				<div class="cell large-4 medium-6 margin-left-1"><?php echo $data['mail_filter']; ?></div>
-				<button class="cell margin-left-1 shrink acy_button_submit button" data-task="listing"><?php echo acym_translation('ACYM_VALIDATE'); ?></button>
+				<button class="cell margin-1 shrink acy_button_submit button" data-task="listing"><?php echo acym_translation('ACYM_VALIDATE'); ?></button>
 				<div class="cell auto"></div>
 			</div>
             <?php if (!empty($data['emailVersionsFilters']) && (!empty($data['emailVersions']) || !empty($data['emailTranslations']))) { ?>

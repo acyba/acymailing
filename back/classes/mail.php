@@ -80,16 +80,19 @@ class MailClass extends acymClass
             $filters[] = 'mail.name LIKE '.acym_escapeDB('%'.acym_utf8Encode($settings['search']).'%');
         }
 
-        if (!empty($settings['editor'])) {
-            if ($settings['editor'] == 'html') {
-                $filters[] .= 'mail.drag_editor = 0';
-            } else {
-                $filters[] .= 'mail.drag_editor = 1';
-            }
-        }
-
         if (!empty($settings['gettingTemplates'])) {
             $filters[] = 'mail.type = '.acym_escapeDB(self::TYPE_TEMPLATE);
+            if (!acym_isAdmin()) {
+                $currentUserId = acym_currentUserId();
+                $condition = 'mail.creator_id = '.intval($currentUserId);
+
+                $userGroups = acym_getGroupsByUser($currentUserId);
+                if (!empty($userGroups)) {
+                    $condition .= ' OR access LIKE "%,'.implode(',%" OR access LIKE "%,', $userGroups).',%"';
+                }
+
+                $filters[] = $condition;
+            }
         } else {
             if (!empty($settings['automation']) || empty($settings['onlyStandard'])) {
                 $filters[] = 'mail.type != '.acym_escapeDB(self::TYPE_NOTIFICATION);
@@ -133,7 +136,9 @@ class MailClass extends acymClass
 
         if (!empty($filters)) {
             $query .= ' WHERE ('.implode(') AND (', $filters).')';
-            if (!acym_isAdmin()) unset($filters['list']);
+            if (!acym_isAdmin()) {
+                unset($filters['list']);
+            }
             $queryCount .= ' WHERE ('.implode(') AND (', $filters).')';
         }
 
@@ -491,6 +496,11 @@ class MailClass extends acymClass
 
         $this->deleteMediaFolder($elements);
         acym_arrayToInteger($elements);
+
+        $favoriteTemplate = (int)$this->config->get('favorite_template', 0);
+        if (in_array($favoriteTemplate, $elements)) {
+            $this->config->save(['favorite_template' => 0]);
+        }
 
         $allThumbnailToDelete = acym_loadResultArray('SELECT DISTINCT thumbnail FROM #__acym_mail WHERE id IN ('.implode(',', $elements).')');
 
@@ -1465,5 +1475,33 @@ class MailClass extends acymClass
         );
 
         return $mails;
+    }
+
+    public function getAllTemplatesByType($options)
+    {
+        $limit = $options['limit'] ?? 10;
+        $offset = $options['offset'] ?? 0;
+        $filters = $options['filters'] ?? [];
+        $search = $filters['search'] ?? '';
+        $templateType = $filters['templateType'] ?? '';
+
+        $query = 'SELECT * FROM #__acym_mail';
+        $conditions = ['`type` = '.acym_escapeDB(self::TYPE_TEMPLATE)];
+
+        if (!empty($search)) {
+            $conditions[] = '(name LIKE '.acym_escapeDB('%'.$search.'%').' OR subject LIKE '.acym_escapeDB('%'.$search.'%').')';
+        }
+
+        if (!empty($templateType)) {
+            if ($templateType === 'drag') {
+                $conditions[] = 'drag_editor = 1';
+            } else {
+                $conditions[] = 'drag_editor = 0';
+            }
+        }
+
+        $query .= ' WHERE '.implode(' AND ', $conditions);
+
+        return $this->decode(acym_loadObjectList($query, '', $offset, $limit));
     }
 }

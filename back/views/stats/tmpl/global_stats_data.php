@@ -57,7 +57,7 @@
                 <?php
                 echo acym_roundChart(
                     '',
-                    $data['mail']->pourcentageSent,
+                    $data['mail']->percentageSent,
                     'delivery',
                     '',
                     acym_tooltip(acym_translation('ACYM_SUCCESSFULLY_SENT'), $data['mail']->allSent)
@@ -65,17 +65,17 @@
 			</div>
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                 <?php
-                echo acym_roundChart('', $data['mail']->pourcentageOpen, 'open', '', acym_tooltip(acym_translation('ACYM_OPEN_RATE'), $data['mail']->allOpen)); ?>
+                echo acym_roundChart('', $data['mail']->percentageOpen, 'open', '', acym_tooltip(acym_translation('ACYM_OPEN_RATE'), $data['mail']->allOpen)); ?>
 			</div>
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                 <?php
-                echo acym_roundChart('', $data['mail']->pourcentageClick, 'click', '', acym_tooltip(acym_translation('ACYM_CLICK_RATE'), $data['mail']->allClick)); ?>
+                echo acym_roundChart('', $data['mail']->percentageClick, 'click', '', acym_tooltip(acym_translation('ACYM_CLICK_RATE'), $data['mail']->allClick)); ?>
 			</div>
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                 <?php
                 echo acym_roundChart(
                     '',
-                    $data['mail']->pourcentageBounce,
+                    $data['mail']->percentageBounce,
                     'bounce',
                     '',
                     acym_tooltip(acym_translation('ACYM_BOUNCE_RATE'), $data['mail']->allBounce)
@@ -86,7 +86,7 @@
                     <?php
                     echo acym_roundChart(
                         '',
-                        $data['mail']->pourcentageUnsub,
+                        $data['mail']->percentageUnsub,
                         'unsubscribe',
                         '',
                         acym_tooltip(acym_translation('ACYM_UNSUBSCRIBE_RATE'), $data['mail']->allUnsub)

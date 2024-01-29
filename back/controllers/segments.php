@@ -9,7 +9,6 @@ use AcyMailing\Controllers\Segments\Campaign;
 
 class SegmentsController extends acymController
 {
-
     use Listing;
     use Edition;
     use Campaign;

@@ -129,7 +129,16 @@ trait Edition
         $data['orderingSortOrder'] = acym_getVar('string', 'users_ordering_sort_order', 'desc');
         $data['classSortOrder'] = $data['orderingSortOrder'] == 'asc' ? 'acymicon-sort-amount-asc' : 'acymicon-sort-amount-desc';
         $listClass = new ListClass();
-        $data['subscribers'] = $listClass->getSubscribersForList($listId, 0, 500, 1, $data['ordering'], $data['orderingSortOrder']);
+        $data['subscribers'] = $listClass->getSubscribersForList(
+            [
+                'listIds' => [$listId],
+                'offset' => 0,
+                'limit' => 500,
+                'status' => 1,
+                'orderBy' => $data['ordering'],
+                'orderBySort' => $data['orderingSortOrder'],
+            ]
+        );
         foreach ($data['subscribers'] as &$oneSub) {
             if ($oneSub->subscription_date == '0000-00-00 00:00:00') continue;
             $oneSub->subscription_date = acym_date(strtotime($oneSub->subscription_date), acym_translation('ACYM_DATE_FORMAT_LC2'));
@@ -242,15 +251,20 @@ trait Edition
             }
 
             $returnLink = acym_completeLink('lists&task=settings&listId='.$data['listInformation']->id.'&edition=1&'.$short.'mailid={mailid}');
+            $favoriteTemplate = $this->config->get('favorite_template', 0);
+            $startFrom = empty($favoriteTemplate) ? '' : '&from='.$favoriteTemplate;
+
             if (empty($data['listInformation']->{$full.'_id'})) {
                 $data['tmpls'][$short.'TmplUrl'] = acym_completeLink(
-                    'mails&task=edit&step=editEmail&type='.$full.'&type_editor=acyEditor&list_id='.$data['listInformation']->id.'&return='.urlencode(base64_encode($returnLink))
+                    'mails&task=edit&step=editEmail&type='.$full.'&type_editor=acyEditor&list_id='.$data['listInformation']->id.'&return='.urlencode(
+                        base64_encode($returnLink)
+                    ).$startFrom
                 );
             } else {
                 $data['tmpls'][$short.'TmplUrl'] = acym_completeLink(
                     'mails&task=edit&id='.$data['listInformation']->{$full.'_id'}.'&type='.$full.'&list_id='.$data['listInformation']->id.'&return='.urlencode(
                         base64_encode($returnLink)
-                    )
+                    ).$startFrom
                 );
             }
 

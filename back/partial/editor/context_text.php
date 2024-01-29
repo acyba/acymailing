@@ -9,7 +9,7 @@
             if (empty($onePlugin)) continue;
 
             echo '<button type="button"
-						class="cell medium-4 button button-secondary"
+						class="cell medium-6 button button-secondary"
 						acym-button-switch-type="'.$onePlugin->plugin.'">'.$onePlugin->name.'</button>';
 
             $data['tabHelper']->startTab($onePlugin->plugin);

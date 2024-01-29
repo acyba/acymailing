@@ -802,7 +802,7 @@ class acymPlugin extends acymObject
         switch ($field->type) {
             case 'calendar':
                 $format = acym_translation($field->fieldparams['showtime'] == '1' ? 'ACYM_DATE_FORMAT_LC2' : 'ACYM_DATE_FORMAT_LC1');
-                $field->value = acym_date(strtotime($field->value), $format);
+                $field->value = \JHTML::_('date', $field->value, $format);
                 break;
 
             case 'checkboxes':
@@ -989,6 +989,10 @@ class acymPlugin extends acymObject
             $fields[$field->id][] = $field;
         }
 
+        usort($fields, function ($a, $b) {
+            return $a[0]->ordering <=> $b[0]->ordering;
+        });
+
         foreach ($fields as $fieldValues) {
             $value = $this->getFormattedValue($fieldValues);
 
@@ -996,7 +1000,7 @@ class acymPlugin extends acymObject
 
             $customFields[] = [
                 $value,
-                $fieldValues[0]->title,
+                $fieldValues[0]->label,
             ];
         }
     }
@@ -1476,7 +1480,7 @@ class acymPlugin extends acymObject
         $dateNowWithTimeZone = acym_date('now', 'Y-m-d h:i:s');
         $dateToCheck = new \DateTime($dateNowWithTimeZone);
         $interval = new \DateInterval('P'.intval($options['days']).'D');
-        if ($options['relative'] == 'before') {
+        if ($options['relative'] === 'before') {
             $dateToCheck->add($interval);
         } else {
             $dateToCheck->sub($interval);

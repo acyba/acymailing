@@ -10,8 +10,8 @@
         echo acym_listingActions($actions);
         ?>
 	</div>
-	<div class="cell grid-x">
-		<div class="grid-x acym__listing__actions cell auto">
+	<div class="cell grid-x align-justify">
+		<div class="cell grid-x large-shrink acym_vcenter">
 			<div class="auto cell acym_vcenter">
                 <?php
                 $options = [
@@ -23,7 +23,7 @@
                 ?>
 			</div>
 		</div>
-		<div class="cell acym_listing_sort-by auto">
+		<div class="cell large-shrink acym_listing_sort-by">
             <?php echo acym_sortBy(
                 [
                     'name' => acym_translation('ACYM_NAME'),
@@ -62,7 +62,7 @@
         <?php
         foreach ($data['allMailboxes'] as $mailbox) {
             ?>
-			<div class="grid-x cell acym__listing__row">
+			<div class="grid-x cell align-middle acym__listing__row">
 				<div class="medium-shrink small-1 cell">
 					<input id="checkbox_<?php echo acym_escape($mailbox->id); ?>" type="checkbox" name="elements_checked[]" value="<?php echo acym_escape($mailbox->id); ?>">
 				</div>

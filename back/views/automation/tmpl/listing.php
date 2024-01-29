@@ -12,12 +12,12 @@
 				<h1 class="cell acym__listing__empty__subtitle"><?php echo acym_translation('ACYM_CREATE_ONE_AND_LET_ACYAMAILING_DO_IT'); ?></h1>
 				<div class="medium-4"></div>
 				<div class="medium-4 cell grid-x grid-margin-x align-center">
-					<div class="medium-shrink cell">
+					<div class="medium-6 padding-bottom-1 cell">
 						<button type="button" class="button button-secondary acy_button_submit" data-task="edit" data-step="action">
                             <?php echo acym_translation('ACYM_NEW_MASS_ACTION'); ?>
 						</button>
 					</div>
-					<div class="medium-shrink cell">
+					<div class="medium-6 padding-bottom-1 cell">
 						<button type="button" class="button acy_button_submit" data-task="edit" data-step="info">
                             <?php echo acym_translation('ACYM_CREATE_AUTOMATION'); ?>
 						</button>
@@ -40,8 +40,8 @@
                         echo acym_listingActions($actions, acym_translation('ACYM_BE_CAREFUL_THIS_DELETE_ELEMENTS_LINKED_AUTOMATION'));
                         ?>
 					</div>
-					<div class="grid-x cell">
-						<div class="auto cell acym_vcenter">
+					<div class="grid-x cell align-justify">
+						<div class="cell grid-x large-shrink acym_vcenter">
                             <?php
                             $options = [
                                 '' => ['ACYM_ALL', $data["automationNumberPerStatus"]["all"]],
@@ -51,7 +51,7 @@
                             echo acym_filterStatus($options, $data["status"], 'automation_status');
                             ?>
 						</div>
-						<div class="cell acym_listing_sort-by auto">
+						<div class="cell large-shrink acym_listing_sort-by">
                             <?php echo acym_sortBy(
                                 [
                                     'id' => acym_strtolower(acym_translation('ACYM_ID')),
@@ -86,7 +86,7 @@
 						</div>
 					</div>
                     <?php foreach ($data['allAutomations'] as $automation) { ?>
-						<div data-acy-elementid="<?php echo acym_escape($automation->id); ?>" class="grid-x cell acym__listing__row">
+						<div data-acy-elementid="<?php echo acym_escape($automation->id); ?>" class="grid-x cell align-middle acym__listing__row">
 							<div class="medium-shrink small-1 cell">
 								<input id="checkbox_<?php echo acym_escape($automation->id); ?>"
 									   type="checkbox"

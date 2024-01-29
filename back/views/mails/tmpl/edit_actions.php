@@ -11,13 +11,13 @@ if (acym_isAdmin() && $data['mail']->editor != 'acyEditor') {
 }
 
 echo acym_modalInclude(
-    '<button type="button" id="acym__template__start-from" class="cell button-secondary button">'.acym_translation('ACYM_START_FROM').'</button>',
+    '<button type="button" id="acym__template__start-from" class="cell button-secondary button button-full-width">'.acym_translation('ACYM_START_FROM').'</button>',
     dirname(__FILE__).DS.'choose_template_ajax.php',
     'acym__template__choose__modal',
     $data,
     '',
     '',
-    'class="cell large-shrink medium-6"'
+    'class="cell large-shrink medium-6 margin-bottom-0"'
 );
 
 $attributeSave = empty($data['multilingual']) || $data['editor']->editor == 'html' ? '' : 'acym-data-before="acym_editorWysidVersions.storeCurrentValues(true);"';

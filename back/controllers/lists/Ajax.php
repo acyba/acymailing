@@ -149,7 +149,16 @@ trait Ajax
         $status = acym_getVar('int', 'status');
         $orderBy = acym_getVar('string', 'orderBy', 'id');
         $orderingSortOrder = acym_getVar('string', 'orderByOrdering', 'desc');
-        $subscribers = $listClass->getSubscribersForList($listId, $offset, $perCalls, $status, $orderBy, $orderingSortOrder);
+        $subscribers = $listClass->getSubscribersForList(
+            [
+                'listIds' => [$listId],
+                'offset' => $offset,
+                'limit' => $perCalls,
+                'status' => $status,
+                'orderBy' => $orderBy,
+                'orderBySort' => $orderingSortOrder,
+            ]
+        );
         foreach ($subscribers as &$oneSub) {
             if ($oneSub->subscription_date == '0000-00-00 00:00:00') continue;
             $oneSub->subscription_date = acym_date(strtotime($oneSub->subscription_date), acym_translation('ACYM_DATE_FORMAT_LC2'));

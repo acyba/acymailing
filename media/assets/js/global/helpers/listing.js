@@ -83,16 +83,20 @@ const acym_helperListing = {
         function getURLPageParameter() {
             const urlParams = new URLSearchParams(window.location.search);
             const pageParam = urlParams.get('page');
+            let page = '';
             if (pageParam) {
-                return pageParam.replace(/^acymailing_/, '');
+                page = pageParam.replace(/^acymailing_/, '');
             } else if (urlParams.get('ctrl')) {
-                return urlParams.get('ctrl');
+                page = urlParams.get('ctrl');
             }
+
+            return page ? page : '';
         }
 
-        function getURLRTaskParameter() {
+        function getURLTaskParameter() {
             const urlParam = new URLSearchParams(window.location.search);
-            return urlParam.get('task');
+            const task = urlParam.get('task');
+            return task ? task : '';
         }
 
         function triggerAction() {
@@ -106,7 +110,7 @@ const acym_helperListing = {
             }
 
             const page = getURLPageParameter();
-            const task = getURLRTaskParameter();
+            const task = getURLTaskParameter();
             const task_content = [
                 'welcome',
                 'unsubscribe',
@@ -156,6 +160,10 @@ const acym_helperListing = {
                     bounces: {
                         fastAction: ACYM_JS_TXT.ACYM_BOUNCE,
                         regularAction: ACYM_JS_TXT.ACYM_BOUNCES
+                    },
+                    '': {
+                        fastAction: ACYM_JS_TXT.ACYM_ENTITY,
+                        regularAction: ACYM_JS_TXT.ACYM_ENTITY
                     }
                 };
 

@@ -110,6 +110,23 @@ class UserStatClass extends acymClass
         return acym_loadObject($query);
     }
 
+    public function getDetailedStatistics(array $options)
+    {
+        $limit = $options['limit'] ?? 10;
+        $offset = $options['offset'] ?? 0;
+        $mailId = $options['mail_id'] ?? 0;
+
+        return acym_loadObjectList(
+            'SELECT user_stat.*, `user`.email
+            FROM #__acym_user_stat AS user_stat
+            JOIN #__acym_user AS `user` ON user_stat.user_id = `user`.id 
+            WHERE `mail_id` = '.intval($mailId),
+            '',
+            $offset,
+            $limit
+        );
+    }
+
     public function getAllUserStatByUserId($idUser)
     {
         $query = 'SELECT * FROM #__acym_user_stat WHERE user_id = '.intval($idUser);

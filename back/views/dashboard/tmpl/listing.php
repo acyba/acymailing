@@ -8,15 +8,23 @@
 				<h1 class="cell acym__dashboard__card__title"><?php echo acym_translation('ACYM_AUDIENCE'); ?></h1>
 				<hr class="cell small-10">
                 <?php if (acym_isAllowed('lists')) { ?>
-					<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('lists'); ?>">
-                        <?php echo acym_translation('ACYM_VIEW_ALL_LISTS'); ?>
-					</a>
-					<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('lists&task=edit&step=settings'); ?>">
-                        <?php echo acym_translation('ACYM_CREATE_LIST'); ?>
-					</a>
+					<div class="grid-x align-middle">
+						<div class="cell auto text-right">
+							<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('lists'); ?>">
+                                <?php echo acym_translation('ACYM_VIEW_ALL_LISTS'); ?>
+							</a>
+						</div>
+						<div class="cell auto text-left">
+							<a class="acym__dashboard__card__link"
+							   href="<?php echo acym_completeLink('lists&task=edit&step=settings'); ?>">
+                                <?php echo acym_translation('ACYM_CREATE_LIST'); ?>
+							</a>
+						</div>
+					</div>
                 <?php } ?>
                 <?php if (acym_isAllowed('segments')) { ?>
-					<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('segments&task=edit'); ?>">
+					<a class="acym__dashboard__card__link"
+					   href="<?php echo acym_completeLink('segments&task=edit'); ?>">
                         <?php echo acym_translation('ACYM_CREATE_SEGMENT'); ?>
 					</a>
                 <?php } ?>
@@ -30,12 +38,20 @@
 				<h1 class="acym__dashboard__card__title"><?php echo acym_translation('ACYM_EMAILS'); ?></h1>
 				<hr class="cell small-10">
                 <?php if (acym_isAllowed('campaigns')) { ?>
-					<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('campaigns'); ?>">
-                        <?php echo acym_translation('ACYM_VIEW_ALL_EMAILS'); ?>
-					</a>
-					<a class="acym__dashboard__card__link" href="<?php echo acym_completeLink('campaigns&task=newEmail'); ?>">
-                        <?php echo acym_translation('ACYM_CREATE_NEW_EMAIL'); ?>
-					</a>
+					<div class="grid-x align-middle">
+						<div class="cell auto text-right">
+							<a class="acym__dashboard__card__link"
+							   href="<?php echo acym_completeLink('campaigns'); ?>">
+                                <?php echo acym_translation('ACYM_VIEW_ALL_EMAILS'); ?>
+							</a>
+						</div>
+						<div class="cell auto text-left">
+							<a class="acym__dashboard__card__link"
+							   href="<?php echo acym_completeLink('campaigns&task=newEmail'); ?>">
+                                <?php echo acym_translation('ACYM_CREATE_NEW_EMAIL'); ?>
+							</a>
+						</div>
+					</div>
                 <?php } ?>
                 <?php if (acym_isAllowed('mails')) { ?>
 					<a class="acym__dashboard__card__link"
@@ -54,16 +70,22 @@
 				</div>
 				<h1 class="acym__dashboard__card__title"><?php echo acym_translation('ACYM_AUTOMATION'); ?></h1>
 				<hr class="cell small-10">
-				<a class="acym__dashboard__card__link"
-                    <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>
-				   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=listing'); ?>">
-                    <?php echo acym_translation('ACYM_VIEW_ALL_AUTOMATIONS'); ?>
-				</a>
-				<a class="acym__dashboard__card__link"
-                    <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>
-				   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=edit&step=info'); ?>">
-                    <?php echo acym_translation('ACYM_NEW_AUTOMATION'); ?>
-				</a>
+				<div class="grid-x align-middle">
+					<div class="cell auto text-right">
+						<a class="acym__dashboard__card__link"
+                            <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>
+						   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=listing'); ?>">
+                            <?php echo acym_translation('ACYM_VIEW_ALL_AUTOMATIONS'); ?>
+						</a>
+					</div>
+					<div class="cell auto text-left">
+						<a class="acym__dashboard__card__link"
+                            <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>
+						   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=edit&step=info'); ?>">
+                            <?php echo acym_translation('ACYM_NEW_AUTOMATION'); ?>
+						</a>
+					</div>
+				</div>
 				<a class="acym__dashboard__card__link"
                     <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>
 				   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=edit&step=action'); ?>">
@@ -98,7 +120,8 @@
 							<a class="acym__dashboard__active-campaigns__one-campaign__title medium-4 small-12"
 							   href="<?php echo acym_completeLink('campaigns&task=edit&step=editEmail&id=').$campaign->id; ?>"><?php echo $campaign->name; ?></a>
 							<div class="acym__dashboard__active-campaigns__one-campaign__state medium-2 small-12 acym__background-color__blue text-center">
-								<span><?php echo acym_translation('ACYM_SCHEDULED').' : '.acym_getDate($campaign->sending_date, 'ACYM_DATE_FORMAT_LC3'); ?></span></div>
+								<span><?php echo acym_translation('ACYM_SCHEDULED').' : '.acym_getDate($campaign->sending_date, 'ACYM_DATE_FORMAT_LC3'); ?></span>
+							</div>
 							<p id="<?php echo intval($campaign->id); ?>"
 							   class="medium-6 small-12 acym__dashboard__active-campaigns__one-campaign__action acym__color__dark-gray"><?php echo acym_translation(
                                     'ACYM_CANCEL_SCHEDULING'

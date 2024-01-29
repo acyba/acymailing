@@ -114,7 +114,7 @@
 			</div>
             <?php
             foreach ($data['detailed_stats'] as $detailed_stat) { ?>
-				<div class="grid-x cell acym__listing__row">
+				<div class="grid-x cell align-middle acym__listing__row">
 					<div class="grid-x medium-auto small-11 cell">
 						<div class="xxlarge-1 small-2 cell acym__listing__detailed__stats__content">
                             <?php

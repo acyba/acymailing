@@ -19,15 +19,15 @@
         <?php } ?>
 	</table>
 </div>
-<div class="cell margin-bottom-3">
-	<button type="button" class="button button-secondary" id="acym__walkthrough__list__new"><?php echo acym_translation('ACYM_ADD_NEW'); ?></button>
+<div class="cell text-center">
+	<button type="button" class="button button-secondary margin-auto margin-top-1 margin-bottom-1" id="acym__walkthrough__list__new"><?php echo acym_translation('ACYM_ADD_NEW'); ?></button>
 	<div id="acym__walkthrough__list__add-zone" style="display: none;">
 		<label for="acym__walkthrough__list__new-address"><?php echo acym_translation('ACYM_EMAIL_ADDRESS'); ?></label>
 		<input type="text" id="acym__walkthrough__list__new-address" />
-		<button type="button" class="button button-secondary" id="acym__walkthrough__list__add"><?php echo acym_translation('ACYM_ADD'); ?></button>
+		<button type="button" class="button button-secondary margin-auto margin-bottom-1" id="acym__walkthrough__list__add"><?php echo acym_translation('ACYM_ADD'); ?></button>
 	</div>
 </div>
 
 <div class="cell text-center">
-	<button type="button" class="acy_button_submit button" data-task="saveStepList" data-condition="walkthroughList"><?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?></button>
+	<button type="button" class="acy_button_submit button margin-auto margin-bottom-1" data-task="saveStepList" data-condition="walkthroughList"><?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?></button>
 </div>

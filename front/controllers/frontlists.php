@@ -109,7 +109,9 @@ class FrontlistsController extends ListsController
             $returnLink = acym_completeLink('frontlists&task=settings&listId='.$data['listInformation']->id.'&edition=1&'.$short.'mailid={mailid}');
             if (empty($data['listInformation']->{$full.'_id'})) {
                 $data['tmpls'][$short.'TmplUrl'] = acym_completeLink(
-                    'frontmails&task=edit&step=editEmail&type='.$full.'&type_editor=acyEditor&return='.urlencode(base64_encode($returnLink)).'&'.acym_getFormToken()
+                    'frontmails&task=edit&step=editEmail&type='.$full.'&type_editor=acyEditor&list_id='.$data['listInformation']->id.'&return='.urlencode(
+                        base64_encode($returnLink)
+                    ).'&'.acym_getFormToken()
                 );
             } else {
                 $data['tmpls'][$short.'TmplUrl'] = acym_completeLink(

@@ -3,7 +3,7 @@
 	<select id="<?php echo $data['property_name']; ?>" multiple onchange="saveAcyListSelectMultiple('<?php echo $data['property_name']; ?>', this)">
         <?php
         foreach ($data['lists'] as $id => $name) {
-            echo '<option value="'.$id.'">'.$name.'</option>';
+            echo '<option value="'.$id.'">'.acym_escape($name).'</option>';
         }
         ?>
 	</select>

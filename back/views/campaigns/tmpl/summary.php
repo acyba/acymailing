@@ -110,10 +110,12 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                 <?php } ?>
 				<div class="cell grid-x acym__campaign__summary__section">
 					<h5 class="cell shrink margin-right-2 acym__title acym__title__secondary">
-						<b><?php
-                            echo acym_translation('ACYM_RECIPIENTS').' ('.$data['nbSubscribers'].' '.acym_translation('ACYM_SUBSCRIBERS').acym_info(
-                                    'ACYM_SUMMARY_NUMBER_RECEIVERS_DESC'
-                                ).')'; ?></b>
+						<b>
+                            <?php
+                            echo acym_translation('ACYM_RECIPIENTS');
+                            echo ' ('.$data['nbSubscribers'].' '.acym_translation('ACYM_SUBSCRIBERS').acym_info('ACYM_SUMMARY_NUMBER_RECEIVERS_DESC').')';
+                            ?>
+						</b>
 					</h5>
 					<div class="cell auto acym__campaign__summary__modify">
 						<a href="<?php echo acym_completeLink(
@@ -301,7 +303,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
 									<?php echo acym_translationSprintf('ACYM_X_RECIPIENTS', $data['receiversNew']); ?>
 								</span>
 								<span id="resend_receivers_all" style="display: none;">
-									<?php echo acym_translationSprintf('ACYM_X_RECIPIENTS', $data['receiversAll']); ?>
+									<?php echo acym_translationSprintf('ACYM_X_RECIPIENTS', $data['nbSubscribers']); ?>
 								</span>
 							</div>
 						</div>
@@ -381,7 +383,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                     ['class' => 'cell button medium-shrink'.$buttonClass]
                                 );
                             } else {
-                                $button = '<button type="button" class="cell button acy_button_submit medium-shrink'.$buttonClass.'" data-task="'.acym_escape(
+                                $button = '<button type="button" class="cell button acy_button_submit medium-shrink margin-bottom-0'.$buttonClass.'" data-task="'.acym_escape(
                                         $task
                                     ).'">';
                                 $button .= acym_translation($buttonText);

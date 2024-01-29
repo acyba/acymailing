@@ -87,3 +87,47 @@
         width: 26px;
     }
 }
+
+#acym_wrapper {
+    .acym__icon {
+        --icon-background-color: #{$blue-light};
+        --icon-color: #{$blue-night-primary};
+        --icon-size: 24px;
+        --icon-font-size: 1.1rem;
+
+        // hover
+        --icon-background-color-hover: #{$blue-primary};
+        --icon-color-hover: #{$white};
+
+        line-height: calc(var(--icon-size) + 4px);
+        font-size: var(--icon-size);
+        text-align: center;
+        height: calc(var(--icon-size) + 4px);
+        width: calc(var(--icon-size) + 4px);
+        border-radius: $primary-radius;
+        background-color: var(--icon-background-color);
+        color: var(--icon-color);
+        display: block;
+        transition: background .3s, color .3s;
+        cursor: pointer;
+
+        i {
+            font-size: var(--icon-font-size);
+            color: var(--icon-color);
+        }
+
+        &:hover {
+            background-color: var(--icon-background-color-hover);
+
+            i {
+                color: var(--icon-color-hover);
+            }
+        }
+
+        &__table {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+    }
+}

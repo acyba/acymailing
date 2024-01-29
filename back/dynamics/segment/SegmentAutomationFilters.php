@@ -30,22 +30,21 @@ trait SegmentAutomationFilters
 
     public function onAcymProcessFilterCount_acy_segment(&$query, &$options, &$num)
     {
-        $oneSegment = (new SegmentClass())->getOneById($options['id']);
-        $countUsers = (new SegmentsController())->countSegmentByParams((array)$oneSegment, []);
-
         $this->onAcymProcessFilter_acy_segment($query, $options, $num);
 
-        return acym_translationSprintf('ACYM_SELECTED_USERS', $countUsers);
+        return acym_translationSprintf('ACYM_SELECTED_USERS', $query->count());
     }
 
     public function onAcymProcessFilter_acy_segment(&$query, &$options, $num)
     {
-        $oneSegment = (new SegmentClass())->getOneById($options['id']);
+        $segmentClass = new SegmentClass();
+        $oneSegment = $segmentClass->getOneById($options['id']);
 
         $automationHelpers = [];
         if (!empty($oneSegment) && !empty($oneSegment->filters)) {
             foreach ($oneSegment->filters as $or => $orValues) {
                 if (empty($orValues)) continue;
+
                 $automationHelpers[$or] = new AutomationHelper();
                 foreach ($orValues as $and => $andValues) {
                     $and = intval($and);
@@ -56,17 +55,22 @@ trait SegmentAutomationFilters
             }
         }
 
-        $where = '';
-        foreach ($automationHelpers as $index => $automationHelper) {
+        $whereClauses = [];
+        foreach ($automationHelpers as $automationHelper) {
             if (!empty($automationHelper->where)) {
-                $where .= ' ('.implode(') AND (', $automationHelper->where).')';
-                // Add 'or' except for the last condition
-                if ($index != count($automationHelpers) - 1) $where .= ' OR ';
+                $whereClauses[] = ' ('.implode(') AND (', $automationHelper->where).')';
             }
-            if (!empty($automationHelper->join)) $query->join = array_merge($query->join, $automationHelper->join);
-            if (!empty($automationHelper->leftjoin)) $query->leftjoin = array_merge($query->leftjoin, $automationHelper->leftjoin);
+            if (!empty($automationHelper->join)) {
+                $query->join = array_merge($query->join, $automationHelper->join);
+            }
+            if (!empty($automationHelper->leftjoin)) {
+                $query->leftjoin = array_merge($query->leftjoin, $automationHelper->leftjoin);
+            }
         }
-        if (!empty($where)) $query->where = array_merge($query->where, [$where]);
+
+        if (!empty($whereClauses)) {
+            $query->where = array_merge($query->where, [implode(' OR ', $whereClauses)]);
+        }
     }
 
     public function onAcymDeclareSummary_filters(&$automation)

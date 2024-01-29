@@ -240,6 +240,18 @@ class FieldClass extends acymClass
         }
     }
 
+    public function getAllFieldsByUserIds($userIds)
+    {
+        acym_arrayToInteger($userIds);
+        if (empty($userIds)) return [];
+
+        $query = 'SELECT user_field.user_id, user_field.value, field.name FROM #__acym_user_has_field AS user_field
+                    JOIN #__acym_field AS field ON user_field.field_id = field.id
+                    WHERE user_field.user_id IN ('.implode(',', $userIds).')';
+
+        return acym_loadObjectList($query);
+    }
+
     public function getAllFieldsListingByUserIds($userIds, $fieldIds, $listing = '')
     {
         $query = 'SELECT field.type AS `type`, field.value AS `value`, field.name AS field_name, user_field.user_id AS user_id, user_field.field_id AS field_id, user_field.value AS field_value, field.active, field.option 

@@ -945,7 +945,7 @@ function acym_filterStatus($options, $selected, $name)
     $filterStatus = '<input type="hidden" id="acym_filter_status" name="'.acym_escape($name).'" value="'.acym_escape($selected).'"/>';
 
     foreach ($options as $value => $text) {
-        $class = 'acym__filter__status clear button secondary';
+        $class = 'acym__filter__status ';
         if ($value == $selected) {
             $class .= ' font-bold acym__status__select';
         }
@@ -963,7 +963,7 @@ function acym_filterStatus($options, $selected, $name)
             $userCount = ' ('.$text[1].')';
         }
         $filterStatus .= '<button type="button" acym-data-status="'.acym_escape($value).'" class="'.acym_escape($class).'"'.$disabled.'>';
-        $filterStatus .= acym_translation($text[0]).$extraIcon.$userCount.'</button>';
+        $filterStatus .= acym_translation($text[0]).$extraIcon.'<span class="acym__filter__status__number">'.$userCount.'</span></button>';
     }
 
     return $filterStatus;
@@ -972,12 +972,12 @@ function acym_filterStatus($options, $selected, $name)
 function acym_filterSearch($search, $name, $placeholder = 'ACYM_SEARCH', $showClearBtn = true, $additionnalClasses = '')
 {
     $searchField = '<div class="input-group acym__search-area '.$additionnalClasses.'">
-        <input class="input-group-field acym__search-field" type="text" name="'.acym_escape($name).'" placeholder="'.acym_escape(
-            acym_translation($placeholder)
-        ).'" value="'.acym_escape($search).'">
         <div class="input-group-button">
             <button class="button acym__search__button"><i class="acymicon-search"></i></button>
-        </div>';
+        </div>
+        <input class="input-group-field acym__search-field" type="text" name="'.acym_escape($name).'" placeholder="'.acym_escape(
+            acym_translation($placeholder)
+        ).'" value="'.acym_escape($search).'">';
     if ($showClearBtn) {
         $searchField .= '<span class="acym__search-clear"><i class="acymicon-close"></i></span>';
     }

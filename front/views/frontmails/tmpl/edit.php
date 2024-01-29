@@ -1,5 +1,5 @@
 <div id="acym__editor__content" class="grid-x acym__content acym__editor__area <?php echo !empty($data['menuClass']) ? acym_escape($data['menuClass']) : ''; ?>">
-	<div class="cell grid-x grid-margin-x align-right">
+	<div class="cell grid-x grid-margin-x align-right margin-bottom-1">
 		<input type="hidden" id="acym__mail__edit__editor" value="<?php echo acym_escape($data['mail']->editor); ?>">
 		<input type="hidden"
 			   class="acym__wysid__hidden__save__thumbnail"
@@ -12,6 +12,7 @@
         <?php
         include acym_getView('mails', 'edit_actions', true);
         ?>
+
 	</div>
 	<div class="cell grid-x grid-padding-x acym__editor__content__options">
         <?php
@@ -38,7 +39,7 @@
 				<label>
                     <?php
                     echo acym_translation('ACYM_SELECT_ONE_OR_MORE_LIST');
-                    echo acym_selectMultiple($data['lists'], 'list_ids', $data['list_id'], ['class' => 'acym__select']);
+                    echo acym_selectMultiple($data['lists'], 'list_ids', empty($data['list_id']) ? [] : $data['list_id'], ['class' => 'acym__select']);
                     ?>
 				</label>
 			</div>

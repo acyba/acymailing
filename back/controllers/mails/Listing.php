@@ -70,6 +70,7 @@ trait Listing
             'orderingSortOrder' => $orderingSortOrder,
             'templateImportView' => $templateImportView,
             'mailClass' => $mailClass,
+            'favoriteTemplateId' => (int)$this->config->get('favorite_template', 0),
         ];
 
         if (!empty($mailsData['tag'])) {
@@ -147,6 +148,23 @@ trait Listing
     {
         $updateHelper = new UpdateHelper();
         $updateHelper->installTemplates();
+
+        $this->listing();
+    }
+
+    public function favorite()
+    {
+        $templateId = acym_getVar('int', 'templateId', 0);
+
+        if (empty($templateId)) {
+            acym_enqueueMessage(acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_TEMPLATE')), 'error');
+            $this->listing();
+
+            return;
+        }
+
+        $favoriteTemplateId = $this->config->get('favorite_template', 0);
+        $this->config->save(['favorite_template' => (int)$favoriteTemplateId === $templateId ? 0 : $templateId]);
 
         $this->listing();
     }

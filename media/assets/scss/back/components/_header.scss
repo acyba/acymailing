@@ -69,22 +69,38 @@
 
     a[type="button"], .acym__header__notification {
         margin: -5px 5px -3px 5px;
-        height: 47px;
-        width: 47px;
+        height: 44px;
+        width: 44px;
     }
 
     .button_header {
-        border-radius: 50%;
-        color: $font-primary;
-        background-color: $white;
-        box-shadow: $box-shadow-button;
+        --bg-color-button-header: #{$blue-light};
+        --color-button-header-icon: #{$blue-night-primary};
+
+        // hover
+        --bg-color-button-header-hover: #{$blue-primary};
+        --color-button-header-icon-hover: #{$white};
+
+        color: var(--color-button-header-icon);
+        background-color: var(--bg-color-button-header);
+        border-radius: 4px;
+        transition: .3s background-color;
 
         i {
-            font-size: 1.4rem;
+            font-size: 1.8rem;
+            color: var(--color-button-header-icon);
+            transition: .3s color;
         }
 
         &:hover {
-            box-shadow: $box-shadow-button-hover;
+            transition: .3s background-color;
+            color: var(--color-button-header-icon-hover);
+            background-color: var(--bg-color-button-header-hover);
+
+            i {
+                color: var(--color-button-header-icon-hover);
+                transition: .3s color;
+            }
         }
     }
 
@@ -97,6 +113,7 @@
                 color: $alert-color !important;
             }
         }
+
 
         .acyversion_uptodate, .acy_updateversion {
             font-weight: 600;
@@ -139,16 +156,27 @@
 
     @mixin notificationButtonColor($level) {
         @if $level == 'success' {
-            --shadow-color: #{$green-opacity};
+            --bg-color-button-header: #{$green-light};
+            --color-button-header-icon: #{$green-secondary};
+            --bg-color-button-header-hover: #{$green-secondary};
         } @else if $level == 'info' {
-            --shadow-color: #{$blue-opacity};
+            --bg-color-button-header: #{$blue-light};
+            --color-button-header-icon: #{$blue-night-primary};
+            --bg-color-button-header-hover: #{$blue-night-primary};
         } @else if $level == 'warning' {
-            --shadow-color: #{$orange-opacity};
+            --bg-color-button-header: #{$orange-light};
+            --color-button-header-icon: #{$orange};
+            --bg-color-button-header-hover: #{$orange};
+        } @else if $level == 'error' {
+            --bg-color-button-header: #{$red-light};
+            --color-button-header-icon: #{$red-secondary};
+            --bg-color-button-header-hover: #{$red-secondary};
         } @else {
-            --shadow-color: #{$red-opacity};
+            --bg-color-button-header: #{$blue-light};
+            --color-button-header-icon: #{$blue-night-primary};
+            --bg-color-button-header-hover: #{$blue-primary};
         }
-
-        box-shadow: 0 0 4px 1px var(--shadow-color);
+        box-shadow: none;
 
         &.acym__header__notification__pulse {
             animation: pulse 2s;
@@ -158,18 +186,22 @@
 
     .acym__header__notification__button__success {
         @include notificationButtonColor('success');
+        background-color: $green-light;
     }
 
     .acym__header__notification__button__info {
         @include notificationButtonColor('info');
+        background-color: $blue-light;
     }
 
     .acym__header__notification__button__warning {
         @include notificationButtonColor('warning');
+        background-color: $orange-light;
     }
 
     .acym__header__notification__button__error {
         @include notificationButtonColor('error');
+        background-color: $red-light;
     }
 
     @keyframes pulse {

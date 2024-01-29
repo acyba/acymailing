@@ -1,5 +1,4 @@
-jQuery(function($) {
-
+jQuery(function ($) {
     function Init() {
         setMoreListsQueue();
         setToggleDeleteCampaign();
@@ -21,7 +20,7 @@ jQuery(function($) {
         $('.acym__queue__cancel__button').off('click').on('click', function () {
             if (acym_helper.confirm(ACYM_JS_TXT.ACYM_CONFIRMATION_CANCEL_CAMPAIGN_QUEUE)) {
                 $('[name="acym__queue__cancel__mail_id"]').val($(this).attr('mailid'));
-                $('[name="task"]').val('cancelSending');
+                $('[name="task"]').val('cancelCampaignSending');
 
                 $('#formSubmit').trigger('click');
             }

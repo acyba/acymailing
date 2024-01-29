@@ -14,7 +14,6 @@ trait Campaigns
     public function campaigns()
     {
         acym_setVar('layout', 'campaigns');
-        $pagination = new PaginationHelper();
 
         if (acym_level(ACYM_ESSENTIAL) && $this->config->get('cron_last', 0) < (time() - 43200)) {
             acym_enqueueMessage(
@@ -31,6 +30,7 @@ trait Campaigns
         $status = $this->getVarFiltersListing('string', 'cqueue_status', '');
 
         // Get pagination data
+        $pagination = new PaginationHelper();
         $campaignsPerPage = $pagination->getListLimit();
         $page = $this->getVarFiltersListing('int', 'cqueue_pagination_page', 1);
 
@@ -45,17 +45,9 @@ trait Campaigns
             ]
         );
 
-        $campaignClass = new CampaignClass();
-
         // Prepare the pagination
         $pagination->setStatus($matchingElements['total'], $page, $campaignsPerPage);
         $tagClass = new TagClass();
-
-        foreach ($matchingElements['elements'] as $key => $element) {
-            if (empty($matchingElements['elements'][$key]->sending_params)) {
-                continue;
-            }
-        }
 
         $viewData = [
             'allElements' => $matchingElements['elements'],
@@ -65,7 +57,7 @@ trait Campaigns
             'allTags' => $tagClass->getAllTagsByType('mail'),
             'numberPerStatus' => $matchingElements['status'],
             'status' => $status,
-            'campaignClass' => $campaignClass,
+            'campaignClass' => new CampaignClass(),
             'languages' => acym_getLanguages(),
             'workflowHelper' => new WorkflowHelper(),
         ];
@@ -123,6 +115,11 @@ trait Campaigns
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_QUEUE_CANCEL_CAMPAIGN'), 'error');
         }
+    }
+
+    public function cancelCampaignSending()
+    {
+        $this->cancelSending();
         $this->campaigns();
     }
 

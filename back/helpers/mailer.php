@@ -850,7 +850,7 @@ class MailerHelper extends AcyMailerPhp
         if (!empty($this->defaultMail[$mailId]->stylesheet)) {
             $this->stylesheet = $this->defaultMail[$mailId]->stylesheet;
         }
-        $this->settings = json_decode($this->defaultMail[$mailId]->settings, true);
+        $this->settings = empty($this->defaultMail[$mailId]->settings) ? [] : json_decode($this->defaultMail[$mailId]->settings, true);
 
         if (!empty($this->defaultMail[$mailId]->headers)) {
             $this->mailHeader = $this->defaultMail[$mailId]->headers;
@@ -1185,10 +1185,22 @@ class MailerHelper extends AcyMailerPhp
 
             if (strpos($trackingSystem, 'acymailing') !== false) {
                 $isAutologin = false;
-                $autologinParams = '&amp;autoSubId=%7Bsubscriber:id%7D&amp;subKey=%7Bsubscriber:key%7Curlencode%7D';
+                $autologinParams = 'autoSubId=%7Bsubscriber:id%7D&amp;subKey=%7Bsubscriber:key%7Curlencode%7D';
                 if (strpos($url, $autologinParams) !== false) {
                     $isAutologin = true;
-                    $url = str_replace($autologinParams, '', $url);
+                    $url = str_replace(
+                        [
+                            '?'.$autologinParams.'&amp;',
+                            '?'.$autologinParams,
+                            '&amp;'.$autologinParams,
+                        ],
+                        [
+                            '?',
+                            '',
+                            '',
+                        ],
+                        $url
+                    );
                 }
 
                 if (preg_match('#passw|modify|\{|%7B#i', $url)) {
@@ -1204,6 +1216,7 @@ class MailerHelper extends AcyMailerPhp
                 }
 
                 if ($isAutologin) {
+                    $mytracker .= strpos($mytracker, '?') === false ? '?' : '&amp;';
                     $mytracker .= $autologinParams;
                 }
 
