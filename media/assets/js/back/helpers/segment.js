@@ -263,7 +263,7 @@ const acym_helperSegment = {
                         const optionValue = filterOptions[keys[key]];
 
                         // Set the option values
-                        let $optionField = jQuery('[name="acym_action[filters]['
+                        let $optionField = jQuery('[name^="acym_action[filters]['
                                                   + or
                                                   + ']['
                                                   + jQuery('#acym__segments__filters__count__and').val()

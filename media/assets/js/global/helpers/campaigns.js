@@ -93,7 +93,7 @@ const acym_helperCampaigns = {
         });
     },
     setDisplayNotif: function (message, type) {
-        if (acym_helper.ctrlCampaigns.substr(0, 5) !== 'front') {
+        if (acym_helper.ctrlCampaigns.substring(0, 5) !== 'front') {
             acym_helperNotification.addNotification(message, type);
         } else {
             console.log(message);

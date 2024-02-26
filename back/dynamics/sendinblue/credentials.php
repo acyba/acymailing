@@ -32,7 +32,7 @@ class SendinblueCredentials extends SendinblueClass
         $remindMe = json_decode($this->config->get('remindme', '[]'), true);
 
         if (intval($needValidation) === 1 && !in_array('sendinblue_validation', $remindMe)) {
-            $docUrl = 'https://docs.acymailing.com/external-sending-method/sendinblue#my-account-needs-validation';
+            $docUrl = ACYM_DOCUMENTATION.'external-sending-method/sendinblue#my-account-needs-validation';
 
             $message = acym_translation('ACYM_SENDINBLUE_VALIDATION_NEEDED');
             $message .= '<br/><a href="'.$docUrl.'" target="_blank">'.$docUrl.'</a>';

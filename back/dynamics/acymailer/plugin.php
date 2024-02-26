@@ -995,6 +995,10 @@ class plgAcymAcymailer extends acymPlugin
             }
         }
 
+        // Add security empty text message
+        if (empty($creditsShowed)) {
+            $creditsShowed = '0';
+        }
         $html = acym_translationSprintf(
             'ACYM_SENDING_METHOD_X_UNITY',
             self::SENDING_METHOD_NAME,

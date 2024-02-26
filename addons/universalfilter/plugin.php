@@ -288,6 +288,9 @@ class plgAcymUniversalfilter extends acymPlugin
         if (!in_array($options['source'], ['id', 'email', 'cms_id'])) $options['source'] = 'cms_id';
         $options['query'] = acym_replaceDate($options['query']);
 
+        $options['query'] = trim($options['query']);
+        $options['query'] = trim($options['query'], ';');
+
         $where = 'user.'.$options['source'];
         $where .= $options['type'] == 'in' ? ' IN ' : ' NOT IN ';
 

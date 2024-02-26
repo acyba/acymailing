@@ -1677,6 +1677,11 @@ class acymInstall
                 }
             }
         }
+
+        if (version_compare($this->fromVersion, '9.3.0', '<')) {
+            $this->updateQuery('ALTER TABLE #__acym_rule ADD COLUMN `description` VARCHAR(250) NULL AFTER `name`');
+            $this->updateQuery('UPDATE #__acym_rule SET `ordering` = (SELECT MAX(`ordering`) + 1 FROM #__acym_rule) WHERE `id` = 17');
+        }
     }
 
     public function updateQuery($query)

@@ -32,8 +32,8 @@
 	<div class="cell grid-x margin-top-3">
 		<div class="cell medium-auto hide-for-small-only"></div>
 		<div class="cell grid-x text-center align-center">
-			<div class="cell grid-margin-x">
-				<a target="_blank" href="https://docs.acymailing.com/main-pages/email-overrides" class="button button-secondary cell shrink">
+			<div class="cell grid-x grid-margin-x align-center">
+				<a target="_blank" href="<?php echo ACYM_DOCUMENTATION; ?>main-pages/email-overrides" class="button button-secondary cell shrink">
                     <?php echo acym_translation('ACYM_SEE_MORE'); ?>
 				</a>
 				<a target="_blank"

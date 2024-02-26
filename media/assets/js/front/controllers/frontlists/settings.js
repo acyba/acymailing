@@ -45,8 +45,8 @@ jQuery(function($) {
         ];
         data.map((evolData, indexEvol) => {
             evolData.map((monthData, indexMonth) => {
-                let month = monthData.substr(0, monthData.indexOf('_'));
-                let nbUser = monthData.substr(monthData.indexOf('_') + 1);
+                let month = monthData.substring(0, monthData.indexOf('_'));
+                let nbUser = monthData.substring(monthData.indexOf('_') + 1);
                 dataList[indexEvol].push(nbUser);
 
                 if (indexEvol == 0) {

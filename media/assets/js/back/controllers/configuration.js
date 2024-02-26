@@ -30,6 +30,8 @@ jQuery(function ($) {
         setAclMultiselect();
         setAttachmentsPositionToggle();
         setAutoSendingCounter();
+        testConnection();
+        synchronizebounceAddressFields();
     }
 
     Configuration();
@@ -397,5 +399,106 @@ jQuery(function ($) {
             jQuery('#automatic_sending_speed_too_much').css('display', waitAmount === 0 && timeForOneBatch > processTimeLimit ? 'inline-block' : 'none');
             jQuery('#automatic_sending_speed_too_many_batches').css('display', batchesNumber > 5 ? 'inline-block' : 'none');
         }).trigger('change');
+    }
+
+    function testConnection() {
+        const $loader = $('#acym__mailbox__edition__configuration__test-loader');
+        const $result = $('#acym__mailbox__edition__configuration__test-result');
+        const $iconResult = $('#acym__mailbox__edition__configuration__test-icon');
+        const $testButton = $('#acym__mailbox__edition__configuration__test-test');
+
+        const resetUI = () => {
+            $loader.css('display', 'flex');
+            $result.empty();
+            $iconResult.hide().removeClass('acymicon-check-circle acym__color__green acymicon-times-circle acym__color__red');
+            $result.removeAttr('data-acym-tooltip').removeClass('acym__tooltip');
+        };
+
+        const mapFormData = (formData) => {
+            const filteredFormData = formData.filter(({name}) => dataToKeep.includes(name));
+
+            const mappedFormData = filteredFormData.map(({
+                                                             name,
+                                                             value
+                                                         }) => {
+                if (elementNameMapping[name]) {
+                    return {
+                        name: elementNameMapping[name],
+                        value
+                    };
+                } else {
+                    return {
+                        name,
+                        value
+                    };
+                }
+            });
+
+            return mappedFormData;
+        };
+
+        const elementNameMapping = {
+            'config[bounce_server]': 'mailbox[server]',
+            'config[bounce_username]': 'mailbox[username]',
+            'config[bounce_password]': 'mailbox[password]',
+            'config[bounce_connection]': 'mailbox[connection_method]',
+            'config[bounce_secured]': 'mailbox[secure_method]',
+            'config[bounce_certif]': 'mailbox[self_signed]',
+            'config[bounce_port]': 'mailbox[port]'
+        };
+        const dataToKeep = Object.keys(elementNameMapping).map(key => key);
+
+        $testButton.off('click').on('click', function () {
+            resetUI();
+
+            const formData = $(this).closest('form').serializeArray();
+            const data = mapFormData(formData).concat([
+                {
+                    name: 'mailbox[id]',
+                    value: 'configuration'
+                },
+                {
+                    name: 'ctrl',
+                    value: 'bounces'
+                },
+                {
+                    name: 'task',
+                    value: 'testMailboxAction'
+                }
+            ]);
+
+            acym_helper.post(ACYM_AJAX_URL, data)
+                       .then(({
+                                  error,
+                                  message,
+                                  data
+                              }) => {
+                           $loader.hide();
+                           $result.html(message);
+                           if (error) {
+                               if (data.report && data.report.length) {
+                                   $result.attr('data-acym-tooltip', data.report.join('<br>'));
+                                   acym_helperTooltip.setTooltip();
+                               }
+                               $iconResult.addClass('acymicon-times-circle acym__color__red');
+                           } else {
+                               $iconResult.addClass('acymicon-check-circle acym__color__green');
+                           }
+                           $iconResult.css('display', 'flex');
+                       });
+        });
+    }
+
+    function synchronizebounceAddressFields() {
+        const $inputField1 = $('#bounceAddress1');
+        const $inputField2 = $('#bounceAddress2');
+
+        $inputField1.on('input', function () {
+            $inputField2.val($(this).val());
+        });
+
+        $inputField2.on('input', function () {
+            $inputField1.val($(this).val());
+        });
     }
 });

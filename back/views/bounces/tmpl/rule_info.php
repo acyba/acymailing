@@ -10,4 +10,12 @@
             [],
             'medium-4'
         ); ?></div>
+	<label class="cell grid-x grid-margin-x">
+		<span class="cell medium-4 acym__label"><?php echo acym_translation('ACYM_DESCRIPTION'); ?>:</span>
+		<div class="cell medium-8 acym__label">
+				<textarea class="acym__description" rows="3" maxlength="200" id="acym__bounces__sum__description" name="bounce[description]"><?php echo acym_escape(
+                        (empty($data['rule']) || empty($data['rule']->description) ? '' : $data['rule']->description)
+                    ); ?></textarea>
+		</div>
+	</label>
 </div>

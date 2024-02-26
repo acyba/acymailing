@@ -4,8 +4,8 @@ const acym_editorWysidFormAction = {
 
         return !$inputReset.length || parseInt($inputReset.val()) === 1;
     },
-    saveAjaxMail: function (controller, sendTest, saveAsTmpl) {
-        if (controller.indexOf('mails') !== -1 || saveAsTmpl) {
+    saveAjaxMail: function (controller, sendTest, saveAsTmpl, saveThumbnail = true) {
+        if ((controller.indexOf('mails') !== -1 || saveAsTmpl) && saveThumbnail) {
             return jQuery.when(acym_helperThumbnail.setAjaxSaveThumbnail()).then(function () {
                 return acym_editorWysidFormAction._ajaxCall(controller, sendTest, saveAsTmpl);
             }).fail(function (err) {
@@ -16,7 +16,7 @@ const acym_editorWysidFormAction = {
             return acym_editorWysidFormAction._ajaxCall(controller, sendTest, saveAsTmpl);
         }
     },
-    saveEmail: function (sendTest, saveAsTmpl) {
+    saveEmail: function (sendTest, saveAsTmpl, saveThumbnail = true) {
         let $warning = jQuery('#acym__wysid__warning__thumbnail');
         if (!$warning.is(':visible')) {
             let heightOverlay = window.innerHeight - jQuery('#acym__wysid__top-toolbar').offset().top - jQuery('#acym__wysid__wrap').height();
@@ -105,7 +105,7 @@ const acym_editorWysidFormAction = {
             jQuery('.acym__wysid__hidden__save__colors').val(mainColor1 + ',' + mainColor2 + ',' + mainColor3);
         }
 
-        return acym_editorWysidFormAction.saveAjaxMail(jQuery('[name="ctrl"]').val(), sendTest, saveAsTmpl);
+        return acym_editorWysidFormAction.saveAjaxMail(jQuery('[name="ctrl"]').val(), sendTest, saveAsTmpl, saveThumbnail);
     },
     _ajaxCall: function (controller, fromSendTest, saveAsTmpl) {
         // Handle when multilingual
@@ -150,14 +150,19 @@ const acym_editorWysidFormAction = {
     },
     setSaveButtonWYSID: function () {
         jQuery('#acym__wysid__save__button').off('click').on('click', function () {
-            const caseDirectlyEmailSavedTypes = ['followup', 'notification', 'welcome', 'unsubscribe', 'template'].indexOf(jQuery('#acym__mail__type').val()) !== -1
+            const caseDirectlyEmailSavedTypes = [
+                                                    'followup',
+                                                    'notification',
+                                                    'welcome',
+                                                    'unsubscribe'
+                                                ].indexOf(jQuery('#acym__mail__type').val()) !== -1;
             // Directly save the email
             if (jQuery('[name="ctrl"]').val().indexOf('campaigns') !== -1 || caseDirectlyEmailSavedTypes) {
                 jQuery.when(acym_editorWysidFormAction.saveEmail(false, false)).then((response) => {
                     if (caseDirectlyEmailSavedTypes) {
                         jQuery('#mail_id').val(response.data.result);
                     }
-                })
+                });
                 return true;
             }
 
@@ -178,8 +183,8 @@ const acym_editorWysidFormAction = {
         jQuery('#acym__wysid__warning__thumbnail').css('bottom', '-' + heightOverlay + 'px').toggle();
 
         acym_helper.config_get('save_thumbnail').done((resConfig) => {
-            if (resConfig.error || !resConfig.data.value) {
-                acym_editorWysidFormAction.saveEmail(false, saveAsTmpl);
+            if (resConfig.error || resConfig.data.value != 1) {
+                acym_editorWysidFormAction.saveEmail(false, saveAsTmpl, false);
                 return;
             }
             setTimeout(() => {

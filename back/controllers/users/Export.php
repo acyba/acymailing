@@ -129,7 +129,7 @@ trait Export
         $customFieldsToExport = [];
         $specialFieldsToExport = [];
         foreach ($fieldsToExport as $i => $oneField) {
-            if ($oneField === 'subscribe_date') {
+            if (in_array($oneField, ['subscribe_date', 'unsubscribe_date'])) {
                 $specialFieldsToExport[] = $oneField;
                 unset($fieldsToExport[$i]);
             } elseif (!empty($customFields[$oneField])) {

@@ -142,6 +142,10 @@ trait Subscription
             $userClass->subscribe($user->id, $listIds, $decodedData['trigger'] ?? true);
         }
         $errorMsg = [];
+        if (count($errors) === count($decodedData['emails'])) {
+            $this->sendJsonResponse(['message' => 'No users found.'], 404);
+        }
+
         $result = ['message' => 'Users subscribed.'];
         if (!empty($userClass->errors)) {
             $errorMsg[] = implode(', ', $userClass->errors);
@@ -193,6 +197,11 @@ trait Subscription
         }
 
         $errorMsg = [];
+
+        if (count($errors) === count($decodedData['emails'])) {
+            $this->sendJsonResponse(['message' => 'No users found.'], 404);
+        }
+
         $result = ['message' => 'Users unsubscribed.'];
         if (!empty($userClass->errors)) {
             $errorMsg[] = $userClass->errors;

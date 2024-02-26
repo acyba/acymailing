@@ -184,7 +184,7 @@ define(
                 'description' => '- Insert a dynamic table of contents in your emails based on their contents',
                 'file_name' => 'tableofcontents',
                 'level' => 'starter',
-                'documentation' => 'https://docs.acymailing.com/addons/all-cms-add-ons/table-of-contents-generator',
+                'documentation' => ACYM_DOCUMENTATION.'addons/all-cms-add-ons/table-of-contents-generator',
                 'category' => 'Content management',
                 'downloadlink' => 'https://wordpress.org/plugins/acymailing-table-of-contents-generator/',
             ],

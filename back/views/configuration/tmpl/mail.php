@@ -73,9 +73,9 @@
 				<label class="cell large-6 xlarge-4 grid-x">
 					<span class="cell"><?php echo acym_translation('ACYM_BOUNCE_EMAIL').acym_info('ACYM_BOUNCE_ADDRESS_DESC'); ?></span>
 					<input type="text"
-						   name="config[bounce_email]"
 						   placeholder="<?php echo acym_translation('ACYM_BOUNCE_EMAIL_PLACEHOLDER'); ?>"
-						   value="<?php echo acym_escape($this->config->get('bounce_email')); ?>" />
+						   value="<?php echo acym_escape($this->config->get('bounce_email')); ?>"
+						   id="bounceAddress1" />
 				</label>
 			</div>
 		</div>
@@ -197,7 +197,6 @@
                 ],
                 'archive_index' => [
                     'label' => 'ACYM_CONFIGURATION_INDEX_ARCHIVE',
-                    'info_disabled' => 'ACYM_CONFIGURATION_INDEX_ARCHIVE_DESC',
                 ],
             ];
 
@@ -367,7 +366,7 @@
             ?>
 
 			<div class="cell">
-				<a class="button button-secondary margin-bottom-0 margin-top-1" target="_blank" href="https://docs.acymailing.com/setup/configuration/mail-configuration/dkim">
+				<a class="button button-secondary margin-bottom-0 margin-top-1" target="_blank" href="<?php echo ACYM_DOCUMENTATION; ?>setup/configuration/mail-configuration/dkim">
                     <?php echo acym_translation('ACYM_HELP'); ?>
 				</a>
 			</div>

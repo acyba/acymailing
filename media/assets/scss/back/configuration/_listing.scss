@@ -280,4 +280,16 @@
         align-items: center;
         padding: 20px;
     }
+
+    .acym__mailbox__edition__configuration__test {
+        .acymicon-spin {
+            display: none;
+        }
+
+        #acym__mailbox__edition__configuration__test-icon {
+            display: none;
+            margin-left: .5rem;
+            font-size: 15px;
+        }
+    }
 }

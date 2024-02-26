@@ -10,6 +10,8 @@ class RuleClass extends acymClass
     var $pkey = 'id';
     var $errors = [];
 
+    const FINAL_RULE_ID = 17;
+
     public function getAll($key = null, $active = false)
     {
         $rules = acym_loadObjectList('SELECT * FROM `#__acym_rule` '.($active ? 'WHERE active = 1' : '').' ORDER BY `ordering` ASC');

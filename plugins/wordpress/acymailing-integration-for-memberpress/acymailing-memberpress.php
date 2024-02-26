@@ -5,7 +5,7 @@ Description: Filter users by membership, Insert MemberPress custom field in your
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 2.3
+Version: 2.4
 */
 
 use AcyMailing\Classes\PluginClass;

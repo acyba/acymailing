@@ -37,8 +37,8 @@ const acym_editorWysidTest = {
             }
 
             acym_helper.config_get('save_thumbnail').done((resConfig) => {
-                if (resConfig.error || !resConfig.data.value) {
-                    acym_editorWysidFormAction.saveEmail(true, false);
+                if (resConfig.error || resConfig.data.value != 1) {
+                    acym_editorWysidFormAction.saveEmail(true, false, false);
                     return;
                 }
                 acym_editorWysidFormAction.setThumbnailPreSave()

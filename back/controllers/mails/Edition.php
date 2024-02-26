@@ -779,7 +779,7 @@ trait Edition
                 'onlyStandard' => true,
                 'creator_id' => $this->setFrontEndParamsForTemplateChoose(),
                 'drag_editor' => !empty($fromMultilingual),
-                'gettingTemplates' => true,
+                'gettingTemplates' => !$automation,
             ]
         );
 

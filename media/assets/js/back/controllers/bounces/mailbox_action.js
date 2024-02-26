@@ -101,7 +101,7 @@ jQuery(function ($) {
 
                 $.each(actionParams, function (paramName, paramValue) {
                     // Set the param values
-                    const $optionField = $('[name="acym_action[' + currentNumber + '][' + actionName + '][' + paramName + ']"]');
+                    const $optionField = $('[name^="acym_action[' + currentNumber + '][' + actionName + '][' + paramName + ']"]');
                     acym_helperFilter.setFieldValue($optionField, paramValue);
 
                     // For the select2 to show the new value

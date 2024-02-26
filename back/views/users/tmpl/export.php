@@ -29,6 +29,10 @@
                     $checked = in_array('subscribe_date', $defaultFields) ? 'checked="checked"' : '';
                     echo '<input '.$checked.' id="checkbox_subscribe_date" class="acym__users__export__export_fields" type="checkbox" name="export_fields[]" value="subscribe_date">
                         	<label for="checkbox_subscribe_date">'.acym_translation('ACYM_SUBSCRIPTION_DATE').'</label><br/>';
+
+                    $checked = in_array('unsubscribe_date', $defaultFields) ? 'checked="checked"' : '';
+                    echo '<input '.$checked.' id="checkbox_unsubscribe_date" class="acym__users__export__export_fields" type="checkbox" name="export_fields[]" value="unsubscribe_date">
+    						<label for="checkbox_unsubscribe_date">'.acym_translation('ACYM_UNSUBSCRIPTION_DATE').'</label><br/>';
                     ?>
 				</div>
 				<div class="grid-x margin-bottom-1" id="userField_separator">

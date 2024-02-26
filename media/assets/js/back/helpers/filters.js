@@ -7,7 +7,7 @@ const acym_helperFilter = {
             if (!task) task = 'trigger';
 
             let url = ACYM_AJAX_URL + '&ctrl=' + ctrl + '&task=' + task + '&id=' + encodeURIComponent(value);
-            
+
             let dataParams = $field.attr('data-params');
             let decodedParams = acym_helper.parseJson(dataParams);
             url += '&' + jQuery.param(decodedParams);
@@ -24,8 +24,7 @@ const acym_helperFilter = {
                     $field.append(newOption).trigger('change');
                 }
             });
-
-        } else if ($field.attr('type') === 'hidden' && $field.attr('id') !== undefined && $field.attr('id').substr(0, 8) === 'delayvar') {
+        } else if ($field.attr('type') === 'hidden' && $field.attr('id') !== undefined && $field.attr('id').substring(0, 8) === 'delayvar') {
             let typeDelay = 'second';
             if (value >= 60 && value % 60 == 0) {
                 value = value / 60;
@@ -43,7 +42,7 @@ const acym_helperFilter = {
                     }
                 }
             }
-            let numDelayField = $field.attr('id').substr(8);
+            let numDelayField = $field.attr('id').substring(8);
             jQuery('#delayvalue' + numDelayField).val(value);
             jQuery('#delaytype' + numDelayField).val(typeDelay).trigger('change');
         } else if (!$field.is(':checkbox') && $field.attr('data-switch') === undefined) {

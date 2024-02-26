@@ -213,6 +213,15 @@ trait Listing
     {
         $rulesSelected = acym_getVar('array', 'elements_checked');
 
+        if (in_array(RuleClass::FINAL_RULE_ID, $rulesSelected)) {
+            acym_enqueueMessage(acym_translation('ACYM_CANNOT_DELETE_FINAL_RULE'), 'error');
+
+            $key = array_search(RuleClass::FINAL_RULE_ID, $rulesSelected);
+            if ($key !== false) {
+                unset($rulesSelected[$key]);
+            }
+        }
+
         $ruleClass = new RuleClass();
         $ruleClass->delete($rulesSelected);
 

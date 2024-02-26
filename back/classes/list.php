@@ -469,7 +469,7 @@ class ListClass extends acymClass
         return $listID;
     }
 
-    public function getAllWithIdName()
+    public function getAllWithIdName(): array
     {
         $endQuery = '';
         if (!acym_isAdmin()) {

@@ -4,11 +4,6 @@
 		<div class="cell medium-3"><?php echo acym_translation('ACYM_CONFIGURATION_QUEUE_PROCESSING'); ?></div>
 		<div class="cell medium-9">
             <?php
-            $queueModes = [
-                'auto' => acym_translation('ACYM_CONFIGURATION_QUEUE_AUTOMATIC'),
-                'automan' => acym_translation('ACYM_CONFIGURATION_QUEUE_AUTOMAN'),
-                'manual' => acym_translation('ACYM_CONFIGURATION_QUEUE_MANUAL'),
-            ];
             $disabledOptions = [];
             if (!acym_level(ACYM_ESSENTIAL)) {
                 $disabledOptions = [
@@ -17,7 +12,11 @@
                 ];
             }
             echo acym_radio(
-                $queueModes,
+                [
+                    'auto' => acym_translation('ACYM_CONFIGURATION_QUEUE_AUTOMATIC'),
+                    'automan' => acym_translation('ACYM_CONFIGURATION_QUEUE_AUTOMAN'),
+                    'manual' => acym_translation('ACYM_CONFIGURATION_QUEUE_MANUAL'),
+                ],
                 'config[queue_type]',
                 $this->config->get('queue_type', 'automan'),
                 [
@@ -69,9 +68,9 @@
                         ).'" />',
                         $delayHtml
                     );
-					echo '<span id="automatic_sending_speed_too_many_batches">';
+                    echo '<span id="automatic_sending_speed_too_many_batches">';
                     echo acym_info('ACYM_TOO_MANY_BATCHES', '', '', '', true);
-					echo '</span>';
+                    echo '</span>';
                     ?>
 				</div>
 				<div class="cell">

@@ -78,6 +78,7 @@ trait Rule
         $ruleObject->executed_on = '[]';
         $ruleObject->action_message = '[]';
         $ruleObject->action_user = '[]';
+        $ruleObject->description = $rule['description'];
 
         foreach ($rule as $column => $value) {
             acym_secureDBColumn($column);

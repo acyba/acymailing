@@ -103,6 +103,7 @@ class plgAcymSendgrid extends acymPlugin
         $unsubscribeHeaderKey = array_search('List-Unsubscribe', array_column($mailerHelper->CustomHeader, 0));
         if (!empty($unsubscribeHeaderKey)) {
             $mailHeaders['List-Unsubscribe'] = $mailerHelper->CustomHeader[$unsubscribeHeaderKey][1];
+            $mailHeaders['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
         }
 
         if (!empty($mailHeaders)) {

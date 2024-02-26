@@ -627,7 +627,13 @@ class CampaignClass extends acymClass
 
             // Resending a campaign only to users who didn't receive it
             if (!empty($campaign->sending_params['resendTarget']) && 'new' === $campaign->sending_params['resendTarget']) {
-                $automationHelper->leftjoin['us'] = '`#__acym_user_stat` AS `us` ON `us`.`user_id` = `user`.`id` AND `us`.`mail_id` = '.intval($campaign->mail_id);
+                if (acym_isMultilingual()) {
+                    $automationHelper->leftjoin['us'] = '`#__acym_user_stat` AS `us` ON `us`.`user_id` = `user`.`id` AND `us`.`mail_id` IN (SELECT id FROM #__acym_mail WHERE parent_id = '.intval(
+                            $campaign->mail_id
+                        ).' OR id = '.intval($campaign->mail_id).')';
+                } else {
+                    $automationHelper->leftjoin['us'] = '`#__acym_user_stat` AS `us` ON `us`.`user_id` = `user`.`id` AND `us`.`mail_id` = '.intval($campaign->mail_id);
+                }
                 $conditions[] = '`us`.`user_id` IS NULL';
             }
 
@@ -991,7 +997,7 @@ class CampaignClass extends acymClass
         }
     }
 
-    private function shouldGenerateCampaign($campaign, $campaignMail)
+    private function shouldGenerateCampaign($campaign, $campaignMail): bool
     {
         // The generateByCategory function is the only one that can stop a campaign generation, with min number of items
         $results = acym_trigger('generateByCategory', [&$campaignMail], null, function ($plugin) {
@@ -1010,9 +1016,11 @@ class CampaignClass extends acymClass
         return true;
     }
 
-    private function updateAutoCampaign(&$campaign, $campaignMail, $time)
+    private function updateAutoCampaign(&$campaign, $campaignMail, $time): bool
     {
-        if (!$this->shouldGenerateCampaign($campaign, $campaignMail)) return false;
+        if (!$this->shouldGenerateCampaign($campaign, $campaignMail)) {
+            return false;
+        }
 
         if (empty($campaign->sending_params['number_generated'])) {
             $campaign->sending_params['number_generated'] = 1;
@@ -1020,6 +1028,8 @@ class CampaignClass extends acymClass
             $campaign->sending_params['number_generated']++;
         }
         $campaign->last_generated = $time;
+
+        $this->messages[] = acym_translationSprintf('ACYM_CAMPAIGN_GENERATED', $campaign->name, $campaign->sending_params['number_generated']);
 
         return true;
     }

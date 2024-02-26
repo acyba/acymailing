@@ -71,21 +71,22 @@
 				<div class="cell medium-auto align-right grid-margin-x acym_vcenter">
 					<div class="cell medium-auto"></div>
                     <?php if ($data['campaign']->sent) { ?>
-						<p class="cell text-center acym__campaign__summary__generated__action__text"><?php echo acym_translationSprintf(
-                                'ACYM_CAMPAIGN_HAS_BEEN_SENT_ON_X',
-                                $data['campaign']->sending_date
-                            ); ?></p>
+						<p class="cell text-center acym__campaign__summary__generated__action__text">
+                            <?php echo acym_translationSprintf('ACYM_CAMPAIGN_HAS_BEEN_SENT_ON_X', $data['campaign']->sending_date); ?>
+						</p>
                     <?php } elseif ($data['campaign']->waiting_confirmation) { ?>
 						<button type="button" class="cell shrink button acym__button__cancel acy_button_submit" data-task="disableGeneratedCampaign">
                             <?php echo acym_translation('ACYM_DISABLE'); ?> <i class="acymicon-lock"></i>
 						</button>
-						<button type="button" class="cell shrink button button-send acy_button_submit margin-bottom-0" data-task="addQueue"><?php echo acym_translation('ACYM_SEND'); ?>
+						<button type="button" class="cell shrink button button-send acy_button_submit" data-task="addQueue"><?php echo acym_translation('ACYM_SEND'); ?>
 							<i class="acymicon-paper-plane"></i></button>
                     <?php } else { ?>
-						<button type="button" class="cell shrink button acy_button_submit" data-task="enableGeneratedCampaign"><?php echo acym_translation('ACYM_ENABLE'); ?> <i
-									class="acymicon-unlock"></i></button>
-						<button type="button" class="cell shrink disabled button button-send margin-bottom-0" disabled><?php echo acym_translation('ACYM_SEND'); ?>
-							<i class="acymicon-paper-plane"></i></button>
+						<button type="button" class="cell shrink button acy_button_submit" data-task="enableGeneratedCampaign">
+                            <?php echo acym_translation('ACYM_ENABLE'); ?> <i class="acymicon-unlock"></i>
+						</button>
+						<button type="button" class="cell shrink disabled button button-send margin-bottom-0" disabled>
+                            <?php echo acym_translation('ACYM_SEND'); ?><i class="acymicon-paper-plane"></i>
+						</button>
                     <?php } ?>
 				</div>
 			</div>

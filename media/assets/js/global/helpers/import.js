@@ -100,7 +100,7 @@ const acym_helperImport = {
             return false;
         }
 
-        if (columns.substr(0, 1) === ',') {
+        if (columns.substring(0, 1) === ',') {
             columns = columns.substring(1);
         }
 
@@ -121,7 +121,7 @@ const acym_helperImport = {
         $inputFile.off('change').on('change', function () {
             let $form = jQuery('#acym_form');
 
-            if (this.files.length > 0 && this.files[0].name.substr(this.files[0].name.length - 3).toLowerCase() === 'csv') {
+            if (this.files.length > 0 && this.files[0].name.substring(this.files[0].name.length - 3).toLowerCase() === 'csv') {
                 jQuery('.acym__users__import__from_file__file-name').html(this.files[0].name);
                 jQuery('.acym__users__import__from_file__file').show();
                 jQuery('.acym__users__import__from_file__choose').hide();

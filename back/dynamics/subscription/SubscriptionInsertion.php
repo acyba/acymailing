@@ -30,11 +30,12 @@ trait SubscriptionInsertion
     {
         $others = [];
         $others['unsubscribe'] = ['name' => acym_translation('ACYM_UNSUBSCRIBE_LINK'), 'default' => 'ACYM_UNSUBSCRIBE'];
+        $others['unsubscribeall'] = ['name' => acym_translation('ACYM_UNSUBSCRIBE_ALL_LISTS_LINK'), 'default' => 'ACYM_UNSUBSCRIBE_ALL_LISTS'];
         $others['confirm'] = ['name' => acym_translation('ACYM_CONFIRM_SUBSCRIPTION_LINK'), 'default' => 'ACYM_CONFIRM_SUBSCRIPTION'];
         $others['subscribe'] = ['name' => acym_translation('ACYM_SUBSCRIBE_LINK'), 'default' => 'ACYM_SUBSCRIBE'];
 
         ?>
-        <script type="text/javascript">
+		<script type="text/javascript">
             var openedLists = false;
             var selectedSubscriptionDText = '';
 
@@ -81,7 +82,7 @@ trait SubscriptionInsertion
                     changeSubscriptionTag('subscribe');
                 });
             }
-        </script>
+		</script>
         <?php
 
         //Add an area where the user will be able to select another text to add
@@ -219,6 +220,7 @@ trait SubscriptionInsertion
         }
 
         $email->addCustomHeader('List-Unsubscribe', '<mailto:'.$mailto.'?subject=unsubscribe_user_'.$user->id.'&body='.$body.'>');
+        $email->addCustomHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
     }
 
     public function replaceContent(&$email, $send = true)
@@ -526,7 +528,7 @@ trait SubscriptionInsertion
 
     private function _replaceSubscriptionTags(&$email)
     {
-        $match = '#(?:{|%7B)(confirm|unsubscribe|subscribe(?:\|[^}]+)*)(?:}|%7D)(.*)(?:{|%7B)/(confirm|unsubscribe|subscribe)(?:}|%7D)#Uis';
+        $match = '#(?:{|%7B)(confirm|unsubscribe|unsubscribeall|subscribe(?:\|[^}]+)*)(?:}|%7D)(.*)(?:{|%7B)/(confirm|unsubscribe|unsubscribeall|subscribe)(?:}|%7D)#Uis';
         $variables = ['subject', 'body'];
         $found = false;
         $results = [];
@@ -586,12 +588,18 @@ trait SubscriptionInsertion
 
             return '<a style="text-decoration:none;" target="_blank" href="'.$myLink.'"><span class="acym_subscribe acym_link">'.$allresults[2][$i].'</span></a>';
         } else {
-            // unsubscribe link
             $this->unsubscribeLink[$email->id] = true;
 
-            $myLink = 'frontusers&task=unsubscribe&userId={subscriber:id}&userKey={subscriber:key|urlencode}'.$lang.'&mail_id='.$email->id;
-            if ($this->config->get('unsubpage_header') != 1) {
-                $myLink .= '&'.acym_noTemplate();
+            $baseLink = 'frontusers'.$lang.'&mail_id='.$email->id;
+            if ($parameters->id === 'unsubscribe') {
+                $myLink = $baseLink.'&task=unsubscribe&userId={subscriber:id}&userKey={subscriber:key|urlencode}';
+                if ($this->config->get('unsubpage_header') != 1) {
+                    $myLink .= '&'.acym_noTemplate();
+                }
+                $unsubClass = 'acym_unsubscribe';
+            } else {
+                $myLink = $baseLink.'&task=unsubscribeAll&user_id={subscriber:id}&user_key={subscriber:key|urlencode}';
+                $unsubClass = 'acym_unsubscribe_all_lists';
             }
             $myLink = acym_frontendLink($myLink);
 
@@ -599,7 +607,7 @@ trait SubscriptionInsertion
                 return $myLink;
             }
 
-            return '<a style="text-decoration:none;" target="_blank" href="'.$myLink.'"><span class="acym_unsubscribe acym_link">'.$allresults[2][$i].'</span></a>';
+            return '<a style="text-decoration:none;" target="_blank" href="'.$myLink.'"><span class="'.$unsubClass.' acym_link">'.$allresults[2][$i].'</span></a>';
         }
     }
 

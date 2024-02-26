@@ -245,6 +245,17 @@ class ExportHelper extends acymObject
         return '';
     }
 
+    private function getLists(): array
+    {
+        static $lists = null;
+        if (empty($lists)) {
+            $listClass = new ListClass();
+            $lists = $listClass->getAllWithIdName();
+        }
+
+        return $lists;
+    }
+
     public function exportCSV($query, $fieldsToExport, $customFieldsToExport, $specialFieldsToExport, $separator = ',', $charset = 'UTF-8', $exportFile = null, $flagToRemove = 0)
     {
         $nbExport = $this->getExportLimit();
@@ -262,14 +273,16 @@ class ExportHelper extends acymObject
         }
 
         if (in_array('subscribe_date', $specialFieldsToExport)) {
-            $listClass = new ListClass();
-            $lists = $listClass->getAll();
+            $lists = $this->getLists();
             foreach ($lists as $oneList) {
-                if ($oneList->type === $listClass::LIST_TYPE_FRONT) {
-                    continue;
-                }
+                $allFieldsToExport[] = acym_translation('ACYM_SUBSCRIPTION_DATE').' '.acym_translation($oneList);
+            }
+        }
 
-                $allFieldsToExport[] = acym_translation('ACYM_SUBSCRIPTION_DATE').' '.acym_translation($oneList->name);
+        if (in_array('unsubscribe_date', $specialFieldsToExport)) {
+            $lists = $this->getLists();
+            foreach ($lists as $oneList) {
+                $allFieldsToExport[] = acym_translation('ACYM_UNSUBSCRIPTION_DATE').' '.acym_translation($oneList);
             }
         }
 
@@ -367,20 +380,26 @@ class ExportHelper extends acymObject
                     unset($userCustomFields);
                 }
 
-                if (in_array('subscribe_date', $specialFieldsToExport)) {
+                if (isset($lists)) {
                     $userSubscriptions = acym_loadObjectList(
-                        'SELECT `list_id`, `subscription_date` 
+                        'SELECT `list_id`, `subscription_date`, `unsubscribe_date` 
                         FROM #__acym_user_has_list 
                         WHERE user_id = '.intval($userID),
                         'list_id'
                     );
-                    foreach ($lists as $oneList) {
-                        if ($oneList->type === $listClass::LIST_TYPE_FRONT) {
-                            continue;
-                        }
 
-                        $data[] = empty($userSubscriptions[$oneList->id]) ? '' : $userSubscriptions[$oneList->id]->subscription_date;
+                    if (in_array('subscribe_date', $specialFieldsToExport)) {
+                        foreach ($lists as $listId => $oneList) {
+                            $data[] = $userSubscriptions[$listId]->subscription_date ?? '';
+                        }
                     }
+
+                    if (in_array('unsubscribe_date', $specialFieldsToExport)) {
+                        foreach ($lists as $listId => $oneList) {
+                            $data[] = $userSubscriptions[$listId]->unsubscribe_date ?? '';
+                        }
+                    }
+
                     unset($userSubscriptions);
                 }
 

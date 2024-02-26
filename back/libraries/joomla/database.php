@@ -117,10 +117,14 @@ function acym_getTableList()
 
 function acym_getCMSConfig($varname, $default = null)
 {
-    if (ACYM_J30) {
+    if (ACYM_J30 && !ACYM_J40) {
         $acyapp = acym_getGlobal('app');
 
         return $acyapp->getCfg($varname, $default);
+    } elseif (ACYM_J40) {
+        $acyapp = acym_getGlobal('app');
+
+        return $acyapp->get($varname, $default);
     }
 
     $conf = JFactory::getConfig();

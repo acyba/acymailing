@@ -31,7 +31,7 @@ jQuery(function ($) {
                     let optionValue = actionOptions[keys[key]];
 
                     // Set the option values
-                    let $optionField = $('[name="acym_action[actions][' + and + '][' + actionName + '][' + optionName + ']"]');
+                    let $optionField = $('[name^="acym_action[actions][' + and + '][' + actionName + '][' + optionName + ']"]');
 
                     acym_helperFilter.setFieldValue($optionField, optionValue);
 

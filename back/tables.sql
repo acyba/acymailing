@@ -459,6 +459,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_user_has_field` (
 CREATE TABLE IF NOT EXISTS `#__acym_rule` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(250) NOT NULL,
+	`description` VARCHAR(250) NULL,
 	`ordering` SMALLINT(6) NULL,
 	`regex` TEXT NOT NULL,
 	`executed_on` TEXT NOT NULL,

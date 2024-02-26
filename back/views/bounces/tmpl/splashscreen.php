@@ -39,14 +39,19 @@
 
 		<div class="cell grid-x margin-top-3">
 			<div class="cell medium-auto hide-for-small-only"></div>
-            <?php if ($data['isEnterprise']) { ?>
-				<button data-task="passSplash" class="cell medium-shrink button primary acy_button_submit" type="button"><?php echo acym_translation('ACYM_LETS_GO'); ?></button>
-            <?php } else { ?>
-				<div class="cell medium-shrink">
-                    <?php acym_upgradeTo('enterprise', 'bounces'); ?>
-				</div>
+            <?php
+            if (!acym_level(ACYM_ENTERPRISE)) {
+                if ($data['isEnterprise']) { ?>
+					<button data-task="passSplash" class="cell medium-shrink button primary acy_button_submit" type="button"><?php echo acym_translation(
+                            'ACYM_LETS_GO'
+                        ); ?></button>
+                <?php } else { ?>
+					<div class="cell medium-shrink">
+                        <?php acym_upgradeTo('enterprise', 'bounces'); ?>
+					</div>
+                <?php } ?>
+				<div class="cell medium-auto hide-for-small-only"></div>
             <?php } ?>
-			<div class="cell medium-auto hide-for-small-only"></div>
 		</div>
 	</div>
     <?php acym_formOptions(); ?>

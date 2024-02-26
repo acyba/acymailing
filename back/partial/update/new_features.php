@@ -33,6 +33,9 @@
 						<a v-if="this.menus.indexOf(this.activeMenu)+1 < this.menus.length"
 						   class="acym_vcenter align-center large-shrink button button-secondary"
 						   @click="toggleNextMenu"><?php echo acym_translation('ACYM_NEXT'); ?></a>
+						<a v-if="this.menus.indexOf(this.activeMenu)+1 === this.menus.length"
+						   class="acym_vcenter align-center large-shrink button button-secondary acym__splashscreen__bottom__skip__button"
+						   @click="skipButton"><?php echo acym_translation('ACYM_SKIP'); ?></a>
 					</div>
 
 					<h2 class="acym__splashscreen__title">{{activeMenu.title}}</h2>

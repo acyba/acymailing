@@ -5,8 +5,8 @@
 		<div class="grid-x acym__listing__actions cell margin-bottom-1">
             <?php
             $actions = [
-                'setActive' => acym_translation('ACYM_ENABLE'),
-                'setInactive' => acym_translation('ACYM_DISABLE'),
+                'setActive' => acym_translation('ACYM_ACTIVATE'),
+                'setInactive' => acym_translation('ACYM_DEACTIVATE'),
                 'delete' => acym_translation('ACYM_DELETE'),
             ];
             echo acym_listingActions($actions);
