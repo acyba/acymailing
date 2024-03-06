@@ -34,6 +34,7 @@ class ApiController extends acymController
     ];
 
     private const TYPE_TEMPLATE = 'template';
+    private const TYPE_MAIL = 'mail';
     private const TYPE_USER = 'user';
 
     private const COLUMNS_TO_RETURN_FOR_GET = [
@@ -52,6 +53,12 @@ class ApiController extends acymController
             'reply_to_email',
             'headers',
             'preheader',
+        ],
+        self::TYPE_MAIL => [
+            'id',
+            'name',
+            'creation_date',
+            'subject',
         ],
         self::TYPE_USER => [
             'id',
@@ -96,6 +103,7 @@ class ApiController extends acymController
                 'getCampaignById',
                 'getOneTemplate',
                 'getTemplates',
+                'getEmails',
             ],
             'POST' => [
                 'createList',

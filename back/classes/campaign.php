@@ -659,7 +659,7 @@ class CampaignClass extends acymClass
             } elseif ($abTestFinal && !empty($campaign->sending_params['abtest']['final'])) {
                 $mailIds = [$campaign->mail_id, $campaign->sending_params['abtest']['B']];
                 acym_arrayToInteger($mailIds);
-                $automationHelper->where = ['user.id NOT IN (SELECT user_id FROM #__acym_user_stat WHERE mail_id IN ('.implode(',', $mailIds).'))'];
+                $automationHelper->where[] = 'user.id NOT IN (SELECT user_id FROM #__acym_user_stat WHERE mail_id IN ('.implode(',', $mailIds).'))';
 
                 $select = [intval($campaign->sending_params['abtest']['final']), 'ul.`user_id`', acym_escapeDB($date)];
                 $numberUsersInsertedByMailId[intval($campaign->sending_params['abtest']['final'])] = acym_query(

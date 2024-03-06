@@ -1,11 +1,12 @@
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm">
-	<div id="acym__bounces__splashscreen" class="acym__content cell grid-x">
+	<div id="acym__bounces__splashscreen" class="cell grid-x">
 		<div class="cell grid-x acym__splashscreen__bloc margin-top-2">
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>
 			<div class="cell large-8 grid-x text-center">
-				<h3 class="cell acym__title text-center"><i class="acymicon-transfer acym__color__green margin-right-1"></i><?php echo acym_translation(
-                        'ACYM_WHAT_IS_BOUNCE_HANDLING'
-                    ); ?></h3>
+				<h3 class="cell acym__title text-center">
+					<i class="acymicon-transfer acym__color__green margin-right-1"></i>
+					<?php echo acym_translation('ACYM_WHAT_IS_BOUNCE_HANDLING'); ?>
+				</h3>
 				<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_WHAT_IS_BOUNCE_HANDLING_TEXT'); ?></p>
 			</div>
 			<div class="cell large-2 hide-for-medium-only hide-for-small-only"></div>

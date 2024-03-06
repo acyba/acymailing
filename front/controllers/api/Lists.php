@@ -68,13 +68,8 @@ trait Lists
         $this->sendJsonResponse(['message' => 'Error deleting list.'], 500);
     }
 
-    /**
-     * Get AcyMailing lists by IDs.
-     *
-     */
     public function getLists(): void
     {
-
         $listClass = new ListClass();
         $lists = $listClass->getXLists(
             [

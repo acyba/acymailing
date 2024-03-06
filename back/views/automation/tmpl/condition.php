@@ -169,7 +169,7 @@
 					</button>
 					<button
 							type="button"
-							class="button acy_button_submit medium-shrink cell"
+							class="button acy_button_submit medium-shrink medium-margin-bottom-0 cell"
 							data-task="edit"
 							data-step="saveConditions"
 							data-condition="cleanCondition"

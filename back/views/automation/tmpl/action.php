@@ -84,7 +84,7 @@
 							data-step="saveExitActions">
                         <?php echo acym_translation('ACYM_SAVE_EXIT'); ?>
 					</button>
-					<button type="button" class="cell button medium-shrink acy_button_submit" data-task="edit" data-step="saveActions">
+					<button type="button" class="cell button medium-shrink medium-margin-bottom-0 acy_button_submit" data-task="edit" data-step="saveActions">
                         <?php echo acym_translation('ACYM_SAVE_CONTINUE'); ?>
 					</button>
 				</div>

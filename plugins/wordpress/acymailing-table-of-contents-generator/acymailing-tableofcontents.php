@@ -5,7 +5,7 @@ Description: Insert a dynamic table of contents in your emails based on their co
 Author: AcyMailing Newsletter Team
 Author URI: https://www.acymailing.com
 License: GPLv3
-Version: 2.4
+Version: 2.5
 */
 
 use AcyMailing\Classes\PluginClass;

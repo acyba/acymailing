@@ -29,6 +29,17 @@ class MailClass extends acymClass
     const TYPE_FOLLOWUP = 'followup';
     const TYPE_TEMPLATE = 'template';
 
+    const ALL_TYPES = [
+        self::TYPE_STANDARD,
+        self::TYPE_NOTIFICATION,
+        self::TYPE_OVERRIDE,
+        self::TYPE_WELCOME,
+        self::TYPE_UNSUBSCRIBE,
+        self::TYPE_AUTOMATION,
+        self::TYPE_FOLLOWUP,
+        self::TYPE_TEMPLATE,
+    ];
+
     // Used by some sending methods to know the priority of a sent email (transactional => reset password / account confirmation...)
     const TYPES_TRANSACTIONAL = [
         self::TYPE_NOTIFICATION,
@@ -286,7 +297,7 @@ class MailClass extends acymClass
      *
      * @return array
      */
-    public function getMailsByType($typeMail, $settings)
+    public function getMailsByType(?string $typeMail, array $settings)
     {
         if (empty($settings['key'])) {
             $settings['key'] = '';
@@ -297,21 +308,26 @@ class MailClass extends acymClass
         if (empty($settings['mailsPerPage'])) {
             $settings['mailsPerPage'] = 12;
         }
+        $search = $settings['filters']['search'] ?? '';
 
         $query = 'SELECT * FROM #__acym_mail AS mail';
         $queryCount = 'SELECT count(*) FROM #__acym_mail AS mail';
 
         // Mail type filtering
         $filters = [];
-        $filters[] = 'mail.type = '.acym_escapeDB($typeMail);
-
-        // Search filter
-        if (!empty($settings['search'])) {
-            $filters[] = 'mail.name LIKE '.acym_escapeDB('%'.$settings['search'].'%');
+        if (!empty($typeMail)) {
+            $filters[] = 'mail.type = '.acym_escapeDB($typeMail);
         }
 
-        $query .= ' WHERE ('.implode(') AND (', $filters).')';
-        $queryCount .= ' WHERE ('.implode(') AND (', $filters).')';
+        // Search filter
+        if (!empty($search)) {
+            $filters[] = 'mail.name LIKE '.acym_escapeDB('%'.$search.'%');
+        }
+
+        if (!empty($filters)) {
+            $query .= ' WHERE ('.implode(') AND (', $filters).')';
+            $queryCount .= ' WHERE ('.implode(') AND (', $filters).')';
+        }
 
         $query .= ' ORDER BY id DESC';
 

@@ -634,17 +634,20 @@ trait WooCommerceAutomationConditions
         }
     }
 
-    private function getOrderStatuses($withDefaultStatus = false)
+    private function getOrderStatuses(bool $withDefaultStatus = false): array
     {
-        if (!function_exists('wc_get_order_statuses')) return [];
+        if (!function_exists('wc_get_order_statuses')) {
+            return [];
+        }
 
         $orderStatuses = [];
-        if ($withDefaultStatus) $orderStatuses[0] = acym_translation('ACYM_ANY_STATUS');
+        if ($withDefaultStatus) {
+            $orderStatuses[0] = acym_translation('ACYM_ANY_STATUS');
+        }
 
         // Get all order statuses from WooCommerce (natives and from other plugins)
-        $allWooCoommerceOrderStatuses = wc_get_order_statuses();
-        $orderStatuses = array_merge($orderStatuses, $allWooCoommerceOrderStatuses);
+        $allWooCommerceOrderStatuses = wc_get_order_statuses();
 
-        return $orderStatuses;
+        return array_merge($orderStatuses, $allWooCommerceOrderStatuses);
     }
 }

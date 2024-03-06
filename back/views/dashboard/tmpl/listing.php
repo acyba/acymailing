@@ -23,10 +23,12 @@
 					</div>
                 <?php } ?>
                 <?php if (acym_isAllowed('segments')) { ?>
-					<a class="acym__dashboard__card__link"
-					   href="<?php echo acym_completeLink('segments&task=edit'); ?>">
-                        <?php echo acym_translation('ACYM_CREATE_SEGMENT'); ?>
-					</a>
+					<div class="cell auto margin-bottom-2">
+						<a class="acym__dashboard__card__link"
+						   href="<?php echo acym_completeLink('segments&task=edit'); ?>">
+                            <?php echo acym_translation('ACYM_CREATE_SEGMENT'); ?>
+						</a>
+					</div>
                 <?php } ?>
 			</div>
         <?php } ?>
@@ -54,10 +56,12 @@
 					</div>
                 <?php } ?>
                 <?php if (acym_isAllowed('mails')) { ?>
-					<a class="acym__dashboard__card__link"
-					   href="<?php echo acym_completeLink('mails&task=edit&type_editor=acyEditor&type='.\AcyMailing\Classes\MailClass::TYPE_TEMPLATE); ?>">
-                        <?php echo acym_translation('ACYM_CREATE_TEMPLATE'); ?>
-					</a>
+					<div class="cell auto margin-bottom-2">
+						<a class="acym__dashboard__card__link"
+						   href="<?php echo acym_completeLink('mails&task=edit&type_editor=acyEditor&type='.\AcyMailing\Classes\MailClass::TYPE_TEMPLATE); ?>">
+                            <?php echo acym_translation('ACYM_CREATE_TEMPLATE'); ?>
+						</a>
+					</div>
                 <?php } ?>
 			</div>
         <?php } ?>
@@ -86,11 +90,13 @@
 						</a>
 					</div>
 				</div>
-				<a class="acym__dashboard__card__link"
-                    <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>
-				   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=edit&step=action'); ?>">
-                    <?php echo acym_translation('ACYM_NEW_MASS_ACTION'); ?>
-				</a>
+				<div class="cell auto margin-bottom-2">
+					<a class="acym__dashboard__card__link"
+                        <?php echo $disabledLinks ? 'data-acym-tooltip="'.acym_translation('ACYM_ONLY_AVAILABLE_ENTERPRISE_VERSION', true).'"' : '' ?>
+					   href="<?php echo $disabledLinks ? '#' : acym_completeLink('automation&task=edit&step=action'); ?>">
+                        <?php echo acym_translation('ACYM_NEW_MASS_ACTION'); ?>
+					</a>
+				</div>
 			</div>
         <?php } ?>
 	</div>

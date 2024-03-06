@@ -344,11 +344,9 @@ trait EventBookingInsertion
 
         //Get the related menu item if specified
         $menuId = $this->getParam('itemid');
-        if (!empty($menuId)) {
-            $link .= '&Itemid='.intval($menuId);
-        }
+        $menuId = empty($menuId) ? '' : '&Itemid='.intval($menuId);
 
-        $link = $this->finalizeLink($link, $tag);
+        $link = $this->finalizeLink($link.$menuId, $tag);
         $varFields['{link}'] = $link;
 
         $title = '';
@@ -371,6 +369,7 @@ trait EventBookingInsertion
         $varFields['{desc}'] = !empty($element->$languageMethod) ? $element->$languageMethod : $element->description;
         if (in_array('desc', $tag->display)) $contentText .= $varFields['{desc}'];
 
+        $element->image = is_null($element->image) ? '' : $element->image;
         $varFields['{image}'] = acym_frontendLink($element->image, false);
         if (in_array('image', $tag->display) && !empty($element->image)) $imagePath = $varFields['{image}'];
 
@@ -389,11 +388,13 @@ trait EventBookingInsertion
         $varFields['{location}'] = '';
         $languageMethod = 'name_'.substr($this->emailLanguage, 0, 2);
         $languageName = !empty($element->$languageMethod) ? $element->$languageMethod : $element->location_name;
-        if (!empty($element->location_id)) $varFields['{location}'] = '<a href="index.php?option=com_eventbooking&view=map&format=html&location_id='.$element->location_id.'">'.$languageName.'</a>';
+        if (!empty($element->location_id)) {
+            $locationLink = $this->finalizeLink('index.php?option=com_eventbooking&view=map&format=html&location_id='.$element->location_id.$menuId, $tag);
+            $varFields['{location}'] = '<a href="'.$locationLink.'" target="_blank">'.$languageName.'</a>';
+        }
         if (in_array('location', $tag->display) && !empty($element->location_id)) {
             $customFields[] = [$varFields['{location}'], acym_translation('ACYM_LOCATION')];
         }
-
 
         $categories = acym_loadObjectList(
             'SELECT cat.*
@@ -404,10 +405,9 @@ trait EventBookingInsertion
         );
 
         foreach ($categories as $i => $oneCat) {
+            $categoryLink = $this->finalizeLink('index.php?option=com_eventbooking&view=category&id='.$oneCat->id.$menuId, $tag);
             $categories[$i] =
-                '<a target="_blank" href="index.php?option=com_eventbooking&view=category&id='.$oneCat->id.'">'.acym_escape(
-                    !empty($oneCat->$languageMethod) ? $oneCat->$languageMethod : $oneCat->name
-                ).'</a>';
+                '<a target="_blank" href="'.$categoryLink.'">'.acym_escape(empty($oneCat->$languageMethod) ? $oneCat->name : $oneCat->$languageMethod).'</a>';
         }
         $varFields['{cats}'] = implode(', ', $categories);
         if (in_array('cats', $tag->display)) {
@@ -468,7 +468,7 @@ trait EventBookingInsertion
 
         $varFields['{indiv}'] = [];
         if (in_array('indiv', $tag->display)) {
-            $reglink = acym_frontendLink('index.php?option=com_eventbooking&task=register.individual_registration&event_id='.$tag->id, false);
+            $reglink = $this->finalizeLink('index.php?option=com_eventbooking&task=register.individual_registration&event_id='.$tag->id.$menuId, $tag);
             $varFields['{individualregbutton}'] = '<a class="event_registration eb_indivreg" href="'.$reglink.'" target="_blank">'.acym_translation(
                     'EB_REGISTER_INDIVIDUAL'
                 ).'</a> ';

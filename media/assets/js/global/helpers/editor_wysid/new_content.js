@@ -342,7 +342,7 @@ const acym_editorWysidNewContent = {
                         <input id="custom_zone_image" type="file" value="" />
                     </div>
                 </div>
-                <div class="cell text-center">
+                <div class="cell align-center grid-x">
                     <button class="button button-secondary" type="button" id="custom_zone_cancel">${ACYM_JS_TXT.ACYM_CANCEL}</button>
                     <button class="button margin-left-1" id="custom_zone_save" type="button" disabled="disabled">
                         ${ACYM_JS_TXT.ACYM_SAVE}

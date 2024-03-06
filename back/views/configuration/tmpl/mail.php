@@ -73,6 +73,7 @@
 				<label class="cell large-6 xlarge-4 grid-x">
 					<span class="cell"><?php echo acym_translation('ACYM_BOUNCE_EMAIL').acym_info('ACYM_BOUNCE_ADDRESS_DESC'); ?></span>
 					<input type="text"
+						   name="config[bounce_email]"
 						   placeholder="<?php echo acym_translation('ACYM_BOUNCE_EMAIL_PLACEHOLDER'); ?>"
 						   value="<?php echo acym_escape($this->config->get('bounce_email')); ?>"
 						   id="bounceAddress1" />

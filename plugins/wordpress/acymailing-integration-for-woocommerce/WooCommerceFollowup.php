@@ -21,74 +21,74 @@ trait WooCommerceFollowup
 
     public function getAcymAdditionalConditionFollowup(&$additionalCondition, $trigger, $followup, $statusArray)
     {
-        if ($trigger == $this->purchaseTriggerName) {
-            $woocommerceOrderStatus = $this->getOrderStatuses();
-            $multiselectOrderStatus = acym_selectMultiple(
-                $woocommerceOrderStatus,
-                'followup[condition][order_status]',
-                !empty($followup->condition) && $followup->condition['order_status'] ? $followup->condition['order_status'] : [],
+        if ($trigger !== $this->purchaseTriggerName) {
+            return;
+        }
+
+        $woocommerceOrderStatus = $this->getOrderStatuses();
+        $multiselectOrderStatus = acym_selectMultiple(
+            $woocommerceOrderStatus,
+            'followup[condition][order_status]',
+            !empty($followup->condition) && $followup->condition['order_status'] ? $followup->condition['order_status'] : [],
+            ['class' => 'acym__select']
+        );
+        $multiselectOrderStatus = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectOrderStatus.'</span>';
+        $statusOrderStatus = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
+                $statusArray,
+                'followup[condition][order_status_status]',
+                !empty($followup->condition) ? $followup->condition['order_status_status'] : '',
                 ['class' => 'acym__select']
-            );
-            $multiselectOrderStatus = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectOrderStatus.'</span>';
-            $statusOrderStatus = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
-                    $statusArray,
-                    'followup[condition][order_status_status]',
-                    !empty($followup->condition) ? $followup->condition['order_status_status'] : '',
-                    ['class' => 'acym__select']
-                ).'</span>';
-            $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
+            ).'</span>';
+        $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
 
-            $ajaxParams = json_encode([
+        $parametersProductSelect = [
+            'class' => 'acym__select acym_select2_ajax',
+            'data-params' => acym_escape([
                 'plugin' => 'plgAcymWoocommerce',
                 'trigger' => 'searchProduct',
-            ]);
-            $parametersProductSelect = [
-                'class' => 'acym__select acym_select2_ajax',
-                'data-params' => acym_escape($ajaxParams),
-                'data-selected' => !empty($followup->condition) && !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : '',
-            ];
-            $woocommerceProducts = [];
-            $multiselectProducts = acym_selectMultiple(
-                $woocommerceProducts,
-                'followup[condition][products]',
-                !empty($followup->condition) && !empty($followup->condition['products']) ? $followup->condition['products'] : [],
-                $parametersProductSelect
-            );
-            $multiselectProducts = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectProducts.'</span>';
-            $statusProducts = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
-                    $statusArray,
-                    'followup[condition][products_status]',
-                    !empty($followup->condition) ? $followup->condition['products_status'] : '',
-                    ['class' => 'acym__select']
-                ).'</span>';;
-            $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
+            ], false),
+            'data-selected' => !empty($followup->condition) && !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : '',
+        ];
+        $woocommerceProducts = [];
+        $multiselectProducts = acym_selectMultiple(
+            $woocommerceProducts,
+            'followup[condition][products]',
+            !empty($followup->condition) && !empty($followup->condition['products']) ? $followup->condition['products'] : [],
+            $parametersProductSelect
+        );
+        $multiselectProducts = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectProducts.'</span>';
+        $statusProducts = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
+                $statusArray,
+                'followup[condition][products_status]',
+                !empty($followup->condition) ? $followup->condition['products_status'] : '',
+                ['class' => 'acym__select']
+            ).'</span>';
+        $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
-            $ajaxParams = json_encode([
+        $parametersCategoriesSelect = [
+            'class' => 'acym__select acym_select2_ajax',
+            'data-params' => acym_escape([
                 'plugin' => 'plgAcymWoocommerce',
                 'trigger' => 'searchCat',
-            ]);
-            $parametersCategoriesSelect = [
-                'class' => 'acym__select acym_select2_ajax',
-                'data-params' => acym_escape($ajaxParams),
-                'data-selected' => !empty($followup->condition) && !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : '',
-            ];
-            $woocommerceCategories = [];
-            $multiselectCategories = acym_selectMultiple(
-                $woocommerceCategories,
-                'followup[condition][categories]',
-                !empty($followup->condition) && !empty($followup->condition['categories']) ? $followup->condition['categories'] : [],
-                $parametersCategoriesSelect
-            );
-            $multiselectCategories = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectCategories.'</span>';
-            $statusCategories = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
-                    $statusArray,
-                    'followup[condition][categories_status]',
-                    !empty($followup->condition) ? $followup->condition['categories_status'] : '',
-                    ['class' => 'acym__select']
-                ).'</span>';;
-            $additionalCondition['categories'] = acym_translationSprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
-        }
+            ], false),
+            'data-selected' => !empty($followup->condition) && !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : '',
+        ];
+        $woocommerceCategories = [];
+        $multiselectCategories = acym_selectMultiple(
+            $woocommerceCategories,
+            'followup[condition][categories]',
+            !empty($followup->condition) && !empty($followup->condition['categories']) ? $followup->condition['categories'] : [],
+            $parametersCategoriesSelect
+        );
+        $multiselectCategories = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectCategories.'</span>';
+        $statusCategories = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
+                $statusArray,
+                'followup[condition][categories_status]',
+                !empty($followup->condition) ? $followup->condition['categories_status'] : '',
+                ['class' => 'acym__select']
+            ).'</span>';
+        $additionalCondition['categories'] = acym_translationSprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
     }
 
     public function searchCat()

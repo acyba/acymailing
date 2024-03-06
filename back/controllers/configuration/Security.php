@@ -311,6 +311,7 @@ trait Security
 
     private function fixDefaultValues($correctTableColumns, $oneTableName)
     {
+        $oneTableName = str_replace('#__', acym_getPrefix(), $oneTableName);
         try {
             $currentTableColumns = acym_loadObjectList(
                 'SELECT COLUMN_NAME, COLUMN_DEFAULT, IS_NULLABLE, COLUMN_TYPE 
@@ -349,7 +350,9 @@ trait Security
                 $currentTableColumns[$oneColumn]->COLUMN_DEFAULT = '\''.substr($currentTableColumns[$oneColumn]->COLUMN_DEFAULT, 1, -1).'\'';
             }
 
-            if (!empty($currentTableColumns[$oneColumn]->COLUMN_DEFAULT) && $currentTableColumns[$oneColumn]->COLUMN_DEFAULT === $defaultValue) {
+            $isColumnDefaultEmpty = empty($currentTableColumns[$oneColumn]->COLUMN_DEFAULT) && $currentTableColumns[$oneColumn]->COLUMN_DEFAULT !== '0';
+
+            if (!$isColumnDefaultEmpty && $currentTableColumns[$oneColumn]->COLUMN_DEFAULT === $defaultValue) {
                 continue;
             }
 

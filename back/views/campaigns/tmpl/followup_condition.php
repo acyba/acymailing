@@ -18,9 +18,7 @@
                 echo '<p class="cell acym__color__orange padding-left-1"><b>'.acym_translation('ACYM_MISSING_ADDON').'</b></p>';
             }
             if (!empty($data['additionalCondition']) || $data['trigger'] == 'user_subscribe') {
-                echo '<h5 class="cell acym__title__primary__color padding-left-1">'.acym_translation(
-                        'ACYM_SPECIFIC_CONDITIONS_TRIGGER'
-                    ).'</h5>';
+                echo '<h5 class="cell acym__title__primary__color padding-left-1">'.acym_translation('ACYM_SPECIFIC_CONDITIONS_TRIGGER').'</h5>';
             }
             foreach ($data['additionalCondition'] as $condition) {
                 ?>
@@ -29,7 +27,7 @@
             }
 
             ?>
-            <?php if ($data['trigger'] == 'user_subscribe') { ?>
+            <?php if ($data['trigger'] === 'user_subscribe') { ?>
 				<span class="cell grid-x acym_vcenter margin-bottom-1 margin-top-1 padding-left-2"><?php echo acym_translationSprintf(
                         $data['lists_subscribe_translation'],
                         $data['select_status_lists'],
@@ -37,7 +35,7 @@
                     ); ?></span>
             <?php } ?>
 			<h5 class="cell acym__title__primary__color margin-top-2 padding-left-1"><?php echo acym_translation('ACYM_CLASSIC_CONDITIONS'); ?></h5>
-            <?php if ($data['trigger'] != 'user_subscribe') { ?>
+            <?php if ($data['trigger'] !== 'user_subscribe') { ?>
 				<span class="cell grid-x acym_vcenter margin-bottom-1 margin-top-1 padding-left-2"><?php echo acym_translationSprintf(
                         $data['lists_subscribe_translation'],
                         $data['select_status_lists'],

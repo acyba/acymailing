@@ -1371,7 +1371,9 @@ class UserClass extends acymClass
                 }
                 $formatToDisplay = explode('%', str_replace('y', 'Y', $fieldOptions->format));
                 unset($formatToDisplay[0]);
-                $oneField->value = acym_date($oneField->value, implode('-', $formatToDisplay));
+                if (!empty($oneField->value)) {
+                    $oneField->value = acym_date($oneField->value, implode('-', $formatToDisplay));
+                }
             }
             $user->{$oneField->namekey} = empty($oneField->value) ? '' : $oneField->value;
         }

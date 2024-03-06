@@ -966,7 +966,7 @@ class ListClass extends acymClass
     {
         $limit = $options['limit'] ?? 10;
         $offset = $options['offset'] ?? 0;
-        $filters = $options['filters'] ?? [];
+        $filters = $options['filters'] ?? ['type' => self::LIST_TYPE_STANDARD];
 
         $conditions = [];
         foreach ($filters as $column => $filter) {

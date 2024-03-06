@@ -108,4 +108,33 @@ trait Emails
 
         $this->sendJsonResponse(['message' => 'Error sending.'], 500);
     }
+
+    public function getEmails(): void
+    {
+        $filters = acym_getVar('array', 'filters', []);
+        $typeMail = null;
+        if (!empty($filters['type'])) {
+            $typeMail = $filters['type'];
+
+            if (!in_array($typeMail, MailClass::ALL_TYPES)) {
+                $this->sendJsonResponse(['message' => 'Invalid type.'], 422);
+            }
+        }
+
+        $mailClass = new MailClass();
+        $mails = $mailClass->getMailsByType(
+            $typeMail,
+            [
+                'offset' => acym_getVar('int', 'offset', 0),
+                'mailsPerPage' => acym_getVar('int', 'limit', 100),
+                'filters' => $filters,
+            ]
+        );
+
+        foreach ($mails['mails'] as $i => $oneMail) {
+            $mails['mails'][$i] = $this->removeExtraColumns(self::TYPE_MAIL, $oneMail);
+        }
+
+        $this->sendJsonResponse($mails['mails']);
+    }
 }
