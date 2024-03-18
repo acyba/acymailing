@@ -1,10 +1,11 @@
 <?php
 
-use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\Router\RouterBase;
 
-class AcymRouter extends AcymRouterBase
+class AcymRouter extends RouterBase
 {
     private $pagesNotSef;
     private $paramsNotSef;
@@ -138,7 +139,7 @@ class AcymRouter extends AcymRouterBase
             $vars['task'] = '';
             $vars['step'] = '';
         } else {
-            $jsite = JFactory::getApplication('site');
+            $jsite = Factory::getApplication('site');
             $menus = $jsite->getMenu();
             $menu = $menus->getActive();
             if (!empty($menu) && !empty($menu->query)) {

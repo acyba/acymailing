@@ -1,8 +1,13 @@
 <?php
 
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Plugin\PluginHelper;
+
 defined('_JEXEC') or die('Restricted access');
 
-class plgSystemJceacym extends JPlugin
+class plgSystemJceacym extends CMSPlugin
 {
     public function onBeforeWfEditorRender(&$settings)
     {
@@ -18,12 +23,12 @@ class plgSystemJceacym extends JPlugin
 
     public function onAfterInitialise()
     {
-        $app = JFactory::getApplication();
+        $app = Factory::getApplication();
         if ($app->input->getCmd('option') !== 'com_media') return;
         if (!$app->input->getWord('asset') || $app->input->getWord('tmpl') !== 'component') return;
         if (!$this->isEditorEnabled()) return;
 
-        $params = JComponentHelper::getParams('com_jce');
+        $params = ComponentHelper::getParams('com_jce');
         if (!empty($params) && (bool)$params->get('replace_media_manager', 1) === true) {
             // Prevent JCE redirection
             if ($app->input->getCmd('author') === 'acymailing') {
@@ -44,7 +49,7 @@ class plgSystemJceacym extends JPlugin
 
         unset($_SESSION['acyJCERedirectionPrevented']);
 
-        $params = JComponentHelper::getParams('com_jce');
+        $params = ComponentHelper::getParams('com_jce');
         if (!empty($params)) {
             // Re-set the JCE option value
             $params->set('replace_media_manager', 1);
@@ -53,12 +58,12 @@ class plgSystemJceacym extends JPlugin
 
     private function isEditorEnabled()
     {
-        if (!JPluginHelper::getPlugin('editors', 'jce')) {
+        if (!PluginHelper::getPlugin('editors', 'jce')) {
             return false;
         }
 
-        $config = JFactory::getConfig();
-        $user = JFactory::getUser();
+        $config = Factory::getConfig();
+        $user = Factory::getUser();
 
         if ($user->getParam('editor', $config->get('editor')) !== 'jce') {
             return false;

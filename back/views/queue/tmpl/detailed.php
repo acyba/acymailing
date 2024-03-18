@@ -21,7 +21,7 @@
 				<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_translation('ACYM_NO_RESULTS_FOUND'); ?></h1>
             <?php } else { ?>
 				<div class="grid-x acym__listing acym__listing__view__dqueue">
-					<div class="cell grid-x acym__listing__header">
+					<div class="cell grid-x acym__listing__header hide-for-small-only">
 						<div class="acym__listing__header__title cell large-2 medium-3">
                             <?php echo acym_translation('ACYM_SENDING_DATE'); ?>
 						</div>
@@ -43,10 +43,9 @@
 							<div class="cell large-2 medium-3">
                                 <?php echo acym_date($row->sending_date, acym_getDateTimeFormat()); ?>
 							</div>
-							<div class="cell medium-4">
-								<div class="acym__listing__title acym_text_ellipsis">
-                                    <?php echo $row->name; ?>
-								</div>
+							<div class="cell medium-4 acym__listing__title">
+								<div class="acym__listing__title acym_text_ellipsis"><?php echo acym_escape($row->name); ?></div>
+								<span class="acym__listing__title__secondary acym_text_ellipsis"><?php echo acym_escape($row->subject); ?></span>
 							</div>
 							<div class="cell large-4 medium-3">
 								<a href="<?php echo acym_completeLink('users&task=edit&userId='.$row->user_id); ?>">

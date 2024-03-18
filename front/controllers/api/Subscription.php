@@ -151,7 +151,7 @@ trait Subscription
             $errorMsg[] = implode(', ', $userClass->errors);
         }
         if (!empty($errors)) {
-            $errorMsg[] = acym_translation_sprintf('ACYM_SEND_ERROR_USER', implode(', ', $errors));
+            $errorMsg[] = acym_translationSprintf('ACYM_SEND_ERROR_USER', implode(', ', $errors));
         }
         if (!empty($errorMsg)) {
             $result['errors'] = implode(', ', $errorMsg);
@@ -207,7 +207,7 @@ trait Subscription
             $errorMsg[] = $userClass->errors;
         }
         if (!empty($errors)) {
-            $errorMsg[] = acym_translation_sprintf('ACYM_SEND_ERROR_USER', implode(', ', $errors));
+            $errorMsg[] = acym_translationSprintf('ACYM_SEND_ERROR_USER', implode(', ', $errors));
         }
         if (!empty($errorMsg)) {
             $result['errors'] = implode(', ', $errorMsg);

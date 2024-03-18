@@ -24,7 +24,11 @@ class acyUpdate
         $lastCheck = $config->get('lastupdatecheck', 0);
 
         if (!empty($transient->response[$plugin_slug])) {
-            $transient->response[$plugin_slug]->package = $downloadURL;
+            if (empty($downloadURL) && !acym_level(ACYM_ESSENTIAL)) {
+                $downloadURL = $transient->response[$plugin_slug]->package;
+            } else {
+                $transient->response[$plugin_slug]->package = $downloadURL;
+            }
         }
 
         // We already have a downloadURL, no need to call acymailing.com

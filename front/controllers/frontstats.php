@@ -23,7 +23,8 @@ class FrontstatsController extends acymController
         $mailId = acym_getVar('int', 'id');
         $userId = acym_getVar('int', 'userid');
 
-        if (!empty($mailId) && !empty($userId)) {
+
+        if (!empty($mailId) && !empty($userId) && !acym_isRobot()) {
             $userStatClass = new UserStatClass();
             $userStat = $userStatClass->getOneByMailAndUserId($mailId, $userId);
             if (!empty($userStat)) {

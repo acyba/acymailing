@@ -140,6 +140,7 @@
 
         .cname-name, .cname-value {
             cursor: pointer;
+            overflow: hidden;
         }
 
         #automatic_sending_speed_preview {

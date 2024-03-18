@@ -1,6 +1,7 @@
 <?php
 
 use AcyMailing\Helpers\TabHelper;
+use Joomla\CMS\Component\ComponentHelper;
 
 trait JdownloadsInsertion
 {
@@ -245,7 +246,7 @@ trait JdownloadsInsertion
 
     protected function loadLibraries($email)
     {
-        $params = JComponentHelper::getParams('com_jdownloads');
+        $params = ComponentHelper::getParams('com_jdownloads');
 
         $this->symbolWidth = $params->get('file_pic_size', '32');
         $this->symbolHeight = $params->get('file_pic_size_height', '32');

@@ -24,10 +24,10 @@ function acym_level($neededLevel)
     return $currentLevelNumber >= $neededLevel;
 }
 
-function acym_upgradeTo($version, $utmSource)
+function acym_upgradeTo(string $version, string $utmMedium)
 {
-    $link = ACYM_ACYMAILING_WEBSITE.'pricing?utm_source=acymailing_plugin&utm_medium='.$utmSource.'&utm_campaign=purchase';
-    $text = $version == 'essential' ? 'AcyMailing Essential' : 'AcyMailing Enterprise';
+    $link = ACYM_ACYMAILING_WEBSITE.'pricing?utm_source=acymailing_plugin&utm_medium='.$utmMedium.'&utm_campaign=purchase';
+    $text = $version === 'essential' ? 'AcyMailing Essential' : 'AcyMailing Enterprise';
     echo '<div class="acym__upgrade cell grid-x text-center align-center">
             <h2 class="acym__listing__empty__title cell">'.acym_translationSprintf('ACYM_USE_THIS_FEATURE', '<span class="acym__color__blue">'.$text.'</span>').'</h2>
             <a target="_blank" href="'.$link.'" class="button  cell shrink">'.acym_translation('ACYM_UPGRADE_NOW').'</a>

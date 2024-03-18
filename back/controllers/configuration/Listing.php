@@ -275,6 +275,13 @@ trait Listing
         $data['listAllMinutes'] = $listAllMinutes;
     }
 
+    private function handleEmails(&$formData)
+    {
+        $formData['from_email'] = acym_strtolower($formData['from_email']);
+        $formData['replyto_email'] = acym_strtolower($formData['replyto_email']);
+        $formData['bounce_email'] = acym_strtolower($formData['bounce_email']);
+    }
+
     public function store()
     {
         acym_checkToken();
@@ -291,6 +298,7 @@ trait Listing
         $this->handleSelect2Fields($formData);
         $this->handleAcyChecker($formData);
         $this->handleNewDkim($formData);
+        $this->handleEmails($formData);
 
         acym_trigger('onBeforeSaveConfigFields', [&$formData]);
 

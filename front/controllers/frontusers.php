@@ -348,8 +348,8 @@ class FrontusersController extends UsersController
 
     private function redirectUnsubWorked()
     {
-        acym_enqueueMessage(acym_translation('ACYM_SUBSCRIPTION_UPDATED_OK'), 'success');
-        $redirect_url = $this->config->get('unsub_redirect_url', '');
+        acym_enqueueMessage(acym_translation('ACYM_SUBSCRIPTION_UPDATED_OK'));
+        $redirect_url = $this->config->get('unsub_redirect_url');
         if (!empty($redirect_url)) {
             acym_redirect($redirect_url);
         } else {
@@ -365,7 +365,11 @@ class FrontusersController extends UsersController
         }
 
         $this->unsubscribeAllInner();
-        $this->redirectUnsubWorked();
+
+        $ajax = acym_getVar('int', 'ajax', 0);
+        if (!$ajax) {
+            $this->redirectUnsubWorked();
+        }
     }
 
     public function saveSubscriptions()

@@ -240,7 +240,7 @@ const acym_helperMailer = {
     },
     deleteDomain() {
         jQuery('.acym__config__acymailer__domain--delete').off('click').on('click', function () {
-            if (!confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE)) {
+            if (!confirm(ACYM_JS_TXT.ACYM_DELETE_DOMAIN_CONFIRMATION)) {
                 return;
             }
             this.classList.remove('acymicon-delete');

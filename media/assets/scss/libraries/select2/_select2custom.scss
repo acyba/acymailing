@@ -23,6 +23,10 @@
         }
     }
 
+    .select2-container .select2-selection--multiple .select2-selection__choice {
+        white-space: break-spaces;
+    }
+
     .select2-selection__choice {
         margin: 6px 0 0 5px;
         padding: 2px 5px;

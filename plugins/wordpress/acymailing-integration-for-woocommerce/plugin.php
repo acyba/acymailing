@@ -25,6 +25,9 @@ class plgAcymWoocommerce extends acymPlugin
     use WooCommerceSubscription;
     use WooCommerceTracking;
 
+    private $orderTypes = [];
+    private $wcsInstalled = false;
+
     public function __construct()
     {
         parent::__construct();
@@ -74,6 +77,19 @@ class plgAcymWoocommerce extends acymPlugin
                     'info' => 'ACYM_REMOVE_VAT_DESC',
                 ],
             ];
+
+            $this->wcsInstalled = acym_isExtensionActive('woocommerce-subscriptions/woocommerce-subscriptions.php');
+            if ($this->wcsInstalled) {
+                $this->orderTypes = [
+                    '' => __('All orders types', 'woocommerce-subscriptions'),
+                    'original' => __('Original', 'woocommerce-subscriptions'),
+                    'parent' => __('Subscription Parent', 'woocommerce-subscriptions'),
+                    'renewal' => __('Subscription Renewal', 'woocommerce-subscriptions'),
+                    'resubscribe' => __('Subscription Resubscribe', 'woocommerce-subscriptions'),
+                    'switch' => __('Subscription Switch', 'woocommerce-subscriptions'),
+                    'regular' => __('Non-subscription', 'woocommerce-subscriptions'),
+                ];
+            }
         } else {
             $this->settings = [
                 'not_installed' => '1',

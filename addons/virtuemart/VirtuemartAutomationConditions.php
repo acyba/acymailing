@@ -120,7 +120,7 @@ trait VirtuemartAutomationConditions
         $conditions['user']['vmpurchased']->option .= '<div class="cell acym_vcenter shrink">'.acym_translation('ACYM_BOUGHT').'</div>';
 
         $conditions['user']['vmpurchased']->option .= '<div class="intext_select_automation cell">';
-        $ajaxParams = json_encode(['plugin' => __CLASS__, 'trigger' => 'searchProduct',]);
+        $ajaxParams = json_encode(['plugin' => __CLASS__, 'trigger' => 'searchProduct']);
         $conditions['user']['vmpurchased']->option .= acym_select(
             [],
             'acym_condition[conditions][__numor__][__numand__][vmpurchased][product]',

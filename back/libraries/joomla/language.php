@@ -2,12 +2,15 @@
 
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Language;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Installer\Installer;
 
 global $acymLanguages;
 
 function acym_translation($key, $jsSafe = false, $interpretBackSlashes = true, $textdomain = 'acymailing')
 {
-    $translation = JText::_($key, false, $interpretBackSlashes);
+    $translation = Text::_($key, false, $interpretBackSlashes);
 
     if ($jsSafe) {
         $translation = str_replace('"', '\"', $translation);
@@ -25,7 +28,8 @@ function acym_setLanguage($lang)
         return $previousLanguage;
     }
 
-    $acylanguage = JFactory::getLanguage();
+    $acyapp = acym_getGlobal('app');
+    $acylanguage = $acyapp->getLanguage();
 
     return $acylanguage->setLanguage($lang);
 }
@@ -34,17 +38,7 @@ function acym_translationSprintf()
 {
     $args = func_get_args();
 
-    return call_user_func_array(['JText', 'sprintf'], $args);
-}
-
-/**
- * Deprecated see acym_translationSprintf()
- */
-function acym_translation_sprintf()
-{
-    $args = func_get_args();
-
-    return call_user_func_array(['JText', 'sprintf'], $args);
+    return call_user_func_array(['Joomla\CMS\Language\Text', 'sprintf'], $args);
 }
 
 function acym_getLanguages($uppercaseLangCode = false, $published = false)
@@ -69,11 +63,7 @@ function acym_getLanguages($uppercaseLangCode = false, $published = false)
         if (empty($xmlFile)) {
             $data = [];
         } else {
-            if (ACYM_J40) {
-                $data = \JInstaller::parseXMLInstallFile(ACYM_LANGUAGE.$dir.DS.$xmlFile);
-            } else {
-                $data = JApplicationHelper::parseXMLLangMetaFile(ACYM_LANGUAGE.$dir.DS.$xmlFile);
-            }
+            $data = Installer::parseXMLInstallFile(ACYM_LANGUAGE.$dir.DS.$xmlFile);
         }
 
         $lang = new stdClass();
@@ -91,7 +81,8 @@ function acym_getLanguages($uppercaseLangCode = false, $published = false)
 
 function acym_getLanguageTag($simple = false)
 {
-    $acylanguage = JFactory::getLanguage();
+    $acyapp = acym_getGlobal('app');
+    $acylanguage = $acyapp->getLanguage();
     $langCode = $acylanguage->getTag();
 
     return $simple ? substr($langCode, 0, 2) : $langCode;
@@ -99,18 +90,14 @@ function acym_getLanguageTag($simple = false)
 
 function acym_loadLanguageFile($extension = 'joomla', $basePath = JPATH_SITE, $lang = null, $reload = false, $default = true)
 {
-    $acylanguage = JFactory::getLanguage();
-
+    $acyapp = acym_getGlobal('app');
+    $acylanguage = $acyapp->getLanguage();
     $acylanguage->load($extension, $basePath, $lang, $reload, $default);
 }
 
 function acym_getLanguagePath($basePath = ACYM_BASE, $language = null)
 {
-    if (ACYM_J40) {
-        return LanguageHelper::getLanguagePath(rtrim($basePath, DS), $language);
-    } else {
-        return JLanguage::getLanguagePath(rtrim($basePath, DS), $language);
-    }
+    return LanguageHelper::getLanguagePath(rtrim($basePath, DS), $language);
 }
 
 function acym_languageOption($emailLanguage, $name)
@@ -138,7 +125,7 @@ function acym_getCmsUserLanguage($userId = null)
     if ($userId === null) $userId = acym_currentUserId();
     if (empty($userId)) return '';
 
-    $user = JFactory::getUser($userId);
+    $user = Factory::getUser($userId);
 
     return $user->getParam('language', $user->getParam('admin_language', ''));
 }

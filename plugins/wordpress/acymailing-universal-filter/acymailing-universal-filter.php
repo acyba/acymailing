@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing universal filter
-Description: Adds two new filters in the AcyMailing automations to let you make your own database integration
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 2.8
+ * Plugin Name: AcyMailing universal filter
+ * Description: Adds two new filters in the AcyMailing automations to let you make your own database integration
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 2.8
+ * Requires Plugins: acymailing
 */
 
 use AcyMailing\Classes\PluginClass;

@@ -193,7 +193,16 @@
                             ?>
 						</div>
                     <?php } ?>
-					<h6 class="large-1 hide-for-medium-only hide-for-small-only cell text-center acym__listing__text"><?php echo acym_escape($campaign->id); ?></h6>
+					<h6 class="large-1 hide-for-medium-only hide-for-small-only cell text-center acym__listing__text">
+                        <?php
+                        echo acym_tooltip(
+                            [
+                                'hoveredText' => $campaign->id,
+                                'textShownInTooltip' => acym_translationSprintf('ACYM_MAIL_ID_X', $campaign->mail_id),
+                            ]
+                        );
+                        ?>
+					</h6>
 				</div>
 			</div>
             <?php

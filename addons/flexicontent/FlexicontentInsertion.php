@@ -1,6 +1,8 @@
 <?php
 
 use AcyMailing\Helpers\TabHelper;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Table\Table;
 
 trait FlexicontentInsertion
 {
@@ -213,7 +215,7 @@ trait FlexicontentInsertion
             require_once $JoomlaRouter;
         }
         require_once JPATH_ADMINISTRATOR.DS.'components/com_flexicontent/defineconstants.php';
-        JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_flexicontent'.DS.'tables');
+        Table::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_flexicontent'.DS.'tables');
         require_once JPATH_SITE.DS.'components/com_flexicontent/classes/flexicontent.fields.php';
         require_once JPATH_SITE.DS.'components/com_flexicontent/classes/flexicontent.helper.php';
         require_once JPATH_SITE.DS.'components/com_flexicontent/models/'.FLEXI_ITEMVIEW.'.php';
@@ -466,7 +468,7 @@ trait FlexicontentInsertion
 
             //we need cat's information
             $item->cats = [];
-            $item->parameters = JComponentHelper::getParams('com_flexicontent');
+            $item->parameters = ComponentHelper::getParams('com_flexicontent');
             $item->cats[] = acym_loadObject('SELECT * FROM #__categories WHERE id = '.intval($item->catid));
             $item->cats[0]->slug = $item->cats[0]->alias;
             $item->creator = null;

@@ -1,8 +1,10 @@
 <?php
 
+use Joomla\CMS\Plugin\CMSPlugin;
+
 defined('_JEXEC') or die('Restricted access');
 
-class plgSystemAcymailoverride extends JPlugin
+class plgSystemAcymailoverride extends CMSPlugin
 {
     public function __construct(&$subject, $config = [])
     {

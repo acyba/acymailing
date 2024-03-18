@@ -398,8 +398,8 @@ class MailClass extends acymClass
         } else {
             $query = 'SELECT list.*
                     FROM #__acym_mail_has_list AS mailLists
-                    JOIN #__acym_list AS list ON mailLists.list_id = list.id
-                    WHERE mailLists.mail_id = '.intval($id);
+                    JOIN #__acym_mail AS mail ON (mailLists.mail_id = mail.id OR mailLists.mail_id = mail.parent_id) AND mail.id = '.intval($id).'
+                    JOIN #__acym_list AS list ON mailLists.list_id = list.id';
         }
 
         return acym_loadObjectList($query, 'id');
@@ -1118,7 +1118,10 @@ class MailClass extends acymClass
 
     protected function addPoweredByAcyMailing($mail)
     {
-        if (empty($mail->body)) return $mail;
+        if (empty($mail->body)) {
+            return $mail;
+        }
+
         //If we don't display the powered by we remove it
         if ($this->config->get('display_built_by', 0) != 1) {
             if (strpos($mail->body, 'acym__powered_by_acymailing') !== false) {
@@ -1135,18 +1138,23 @@ class MailClass extends acymClass
 
             return $mail;
         }
-        if (empty($mail->body)) return $mail;
-        if (strpos($mail->body, 'acym__powered_by_acymailing') !== false) return $mail;
+
+        if (strpos($mail->body, 'acym__powered_by_acymailing') !== false) {
+            return $mail;
+        }
 
         $isWysidEditor = strpos($mail->body, 'acym__wysid__template') !== false;
-
         $urlPoweredByImage = ACYM_IMAGES.'poweredby_black.png';
 
-        $poweredByHTML = '<p id="acym__powered_by_acymailing">';
-        $poweredByHTML .= '<a href="'.ACYM_ACYMAILING_WEBSITE.'?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="blank">';
-        $poweredByHTML .= '<img alt="Email built with AcyMailing" height="40" width="199" style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;" src="'.$urlPoweredByImage.'"/>';
-        $poweredByHTML .= '</a></p>';
-        $poweredByWYSID = '<table id="acym__powered_by_acymailing" class="row" bgcolor="#ffffff" style="background-color: transparent" cellpadding="0" cellspacing="0" border="0">
+        if (!$isWysidEditor) {
+            $poweredByHTML = '<p id="acym__powered_by_acymailing">';
+            $poweredByHTML .= '<a href="'.ACYM_ACYMAILING_WEBSITE.'?utm_campaign=powered_by_v7&utm_source=acymailing_plugin&utm_medium=built_with_footer" target="blank">';
+            $poweredByHTML .= '<img alt="Email built with AcyMailing" height="40" width="199" style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto;" src="'.$urlPoweredByImage.'"/>';
+            $poweredByHTML .= '</a></p>';
+
+            $mail->body = $mail->body.$poweredByHTML;
+        } else {
+            $poweredByWYSID = '<table id="acym__powered_by_acymailing" class="row" bgcolor="#ffffff" style="background-color: transparent" cellpadding="0" cellspacing="0" border="0">
     <tbody bgcolor style="background-color: inherit;">
         <tr>
             <th class="small-12 medium-12 large-12 columns" valign="top" style="height: auto;">
@@ -1158,7 +1166,7 @@ class MailClass extends acymClass
                             <td class="large-12">
                                 <div style="position: relative;">
                                     <p style="word-break: break-word; text-align: center;">
-                                    <a href="'.ACYM_ACYMAILING_WEBSITE.'?utm_campaign=powered_by_v7&utm_source=acymailing_plugin" target="_blank">
+                                    <a href="'.ACYM_ACYMAILING_WEBSITE.'?utm_campaign=powered_by_v7&utm_source=acymailing_plugin&utm_medium=built_with_footer" target="_blank">
                                         <img src="'.$urlPoweredByImage.'"
                                             title="poweredby" alt="Email built with AcyMailing"
                                             style="height: 40px; width:199px; max-width: 100%; height: auto; box-sizing: border-box; padding: 0px 5px; display: inline-block; margin-left: auto; margin-right: auto;"
@@ -1174,10 +1182,6 @@ class MailClass extends acymClass
         </tr>
     </tbody>
 </table>';
-
-        if (!$isWysidEditor) {
-            $mail->body = $mail->body.$poweredByHTML;
-        } else {
 
             $mailBodyDom = new \DOMDocument();
             //Some inserted content add specific tags that shows warnings

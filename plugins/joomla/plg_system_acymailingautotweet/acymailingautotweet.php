@@ -3,6 +3,7 @@
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Helpers\MailerHelper;
+use Joomla\CMS\Factory;
 
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die('Restricted access');
@@ -41,7 +42,7 @@ class plgSystemAcymailingAutotweet extends PlgAutotweetBase
 
         $date = new DateTime($mailStat->send_date);
         if ($date->format('Y-m-d') === '1970-01-01') {
-            $date->modify(JFactory::getDate()->toSql());
+            $date->modify(Factory::getDate()->toSql());
         }
 
         $archiveLink = $this->getArchiveLink($mail);

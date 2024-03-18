@@ -199,7 +199,7 @@
                                 $numberCampaignsGenerated = empty($campaign->sending_params['number_generated']) ? '0' : $campaign->sending_params['number_generated'];
                                 $tooltip = acym_translationSprintf('ACYM_X_CAMPAIGN_GENERATED', $numberCampaignsGenerated);
 
-								$nextTrigger = empty($campaign->sending_params['trigger_text']) ? '' : $campaign->sending_params['trigger_text'];
+                                $nextTrigger = empty($campaign->sending_params['trigger_text']) ? '' : $campaign->sending_params['trigger_text'];
                                 echo acym_tooltip(
                                     '<div class="cell acym__campaign__status__status acym__background-color__purple">
 										<span class="acym__color__white">'.$nextTrigger.'</span>
@@ -327,7 +327,14 @@
 						   title="<?php echo acym_translation('ACYM_DELETE'); ?>"></i>
 					</div>
 					<h6 class="large-1 hide-for-medium-only hide-for-small-only cell text-center acym__listing__text acym__campaign__listing__id">
-                        <?php echo acym_escape($campaign->id); ?>
+                        <?php
+                        echo acym_tooltip(
+                            [
+                                'hoveredText' => $campaign->id,
+                                'textShownInTooltip' => acym_translationSprintf('ACYM_MAIL_ID_X', $campaign->mail_id),
+                            ]
+                        );
+                        ?>
 					</h6>
 				</div>
 			</div>

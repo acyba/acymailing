@@ -1,5 +1,8 @@
 <?php
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\HTML\HTMLHelper;
+
 function acym_addScript(bool $raw, string $script, array $params = []): string
 {
     $acyDocument = acym_getGlobal('doc');
@@ -66,12 +69,12 @@ function acym_loadCmsScripts()
         var ACYM_AJAX_URL = "'.$ajaxUrl.'";
         var ACYM_TOGGLE_URL = ACYM_AJAX_URL + "&ctrl='.$toggleController.'";
         var ACYM_JOOMLA_MEDIA_IMAGE = "'.ACYM_LIVE.'";
-        var ACYM_JOOMLA_MEDIA_FOLDER = "'.addslashes(trim(JComponentHelper::getParams("com_media")->get('file_path', 'images'), '/').'/').'";
-        var ACYM_JOOMLA_MEDIA_FOLDER_IMAGES = "'.addslashes(trim(JComponentHelper::getParams("com_media")->get('image_path', 'images'), '/').'/').'";
+        var ACYM_JOOMLA_MEDIA_FOLDER = "'.addslashes(trim(ComponentHelper::getParams("com_media")->get('file_path', 'images'), '/').'/').'";
+        var ACYM_JOOMLA_MEDIA_FOLDER_IMAGES = "'.addslashes(trim(ComponentHelper::getParams("com_media")->get('image_path', 'images'), '/').'/').'";
         var ACYM_IS_ADMIN = '.(acym_isAdmin() ? 'true' : 'false').';'
     );
 
-    JHtml::_('jquery.framework');
+    HTMLHelper::_('jquery.framework');
     acym_addScript(false, ACYM_JS.'libraries/jquery-ui.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'jquery-ui.min.js'));
 }
 

@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing integration for The Events Calendar
-Description: Insert events in your emails and filter users attending your events
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 3.3
+ * Plugin Name: AcyMailing integration for The Events Calendar
+ * Description: Insert events in your emails and filter users attending your events
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 3.3
+ * Requires Plugins: acymailing, the-events-calendar
 */
 
 use AcyMailing\Classes\PluginClass;

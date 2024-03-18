@@ -215,7 +215,7 @@ if (typeof submitAcymForm !== 'function') {
     function acym_handleOtherRequiredFields(validation) {
         let requiredFields = document.querySelectorAll('#'
                                                        + acyformName
-                                                       + ' [data-required]:not([type="checkbox"]):not([type="radio"]):not([acym-field-type="date"])');
+                                                       + ' [data-required]:not([type="checkbox"]):not([type="radio"]):not([acym-field-type="date"]):not([name="captcha_code"])');
         if (requiredFields.length === 0) return;
 
         for (let i = 0 ; i < requiredFields.length ; i++) {

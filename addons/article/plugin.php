@@ -2,6 +2,7 @@
 
 use AcyMailing\Libraries\acymPlugin;
 use AcyMailing\Helpers\TabHelper;
+use Joomla\Component\Content\Site\Helper\RouteHelper;
 
 class plgAcymArticle extends acymPlugin
 {
@@ -467,7 +468,11 @@ class plgAcymArticle extends acymPlugin
         if (defined('SH404SEF_IS_RUNNING') && SH404SEF_IS_RUNNING == 1) {
             $link = 'index.php?option=com_content&view=article&id='.$completeId.'&catid='.$element->catid.$this->getLanguage($element->language);
         } else {
-            $link = ContentHelperRoute::getArticleRoute($completeId, $element->catid, $this->getLanguage($element->language, true));
+            if (ACYM_J40) {
+                $link = RouteHelper::getArticleRoute($completeId, $element->catid, $this->getLanguage($element->language, true));
+            } else {
+                $link = ContentHelperRoute::getArticleRoute($completeId, $element->catid, $this->getLanguage($element->language, true));
+            }
         }
 
         $link = $this->finalizeLink($link, $tag, intval($element->access) === 1 && intval($element->category_access) === 1);

@@ -1,5 +1,9 @@
 <?php
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\String\PunycodeHelper;
+use Joomla\CMS\Access\Access;
+
 global $acymCmsUserVars;
 $acymCmsUserVars = new stdClass();
 $acymCmsUserVars->table = '#__users';
@@ -26,7 +30,7 @@ function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
 
     jimport('joomla.access.access');
 
-    $groups = JAccess::getGroupsByUser($userid, $recursive);
+    $groups = Access::getGroupsByUser($userid, $recursive);
     acym_arrayToInteger($groups);
 
     if ($names) {
@@ -56,12 +60,12 @@ function acym_punycode($email, $method = 'emailToPunycode')
         return $email;
     }
 
-    return JStringPunycode::$method($email);
+    return PunycodeHelper::$method($email);
 }
 
 function acym_currentUserId(): int
 {
-    $acymy = JFactory::getUser();
+    $acymy = Factory::getUser();
 
     return intval($acymy->id);
 }
@@ -69,12 +73,12 @@ function acym_currentUserId(): int
 function acym_currentUserName($userid = null)
 {
     if (!empty($userid)) {
-        $special = JFactory::getUser($userid);
+        $special = Factory::getUser($userid);
 
         return $special->name;
     }
 
-    $acymy = JFactory::getUser();
+    $acymy = Factory::getUser();
 
     return $acymy->name;
 }
@@ -82,12 +86,12 @@ function acym_currentUserName($userid = null)
 function acym_currentUserEmail($userid = null)
 {
     if (!empty($userid)) {
-        $special = JFactory::getUser($userid);
+        $special = Factory::getUser($userid);
 
         return $special->email;
     }
 
-    $acymy = JFactory::getUser();
+    $acymy = Factory::getUser();
 
     return $acymy->email;
 }

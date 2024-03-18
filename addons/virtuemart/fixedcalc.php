@@ -1,16 +1,18 @@
 <?php
 
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die();
 
 class fixedCalculationHelper extends calculationHelper
 {
     public function __construct($vendorId = 1, $countryId = 0, $stateId = 0)
     {
-        $this->_db = JFactory::getDBO();
-        $config = JFactory::getConfig();
+        $this->_db = Factory::getDbo();
+        $config = Factory::getConfig();
         $offset = $config->get('offset');
 
-        $jnow = JFactory::getDate($offset);
+        $jnow = Factory::getDate($offset);
         $this->_now = $jnow->toSQL();
         $this->_nullDate = $this->_db->getNullDate();
 

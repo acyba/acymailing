@@ -1,18 +1,21 @@
 <?php
 
 use AcyMailing\Classes\MailClass;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die('Restricted access');
 
-class plgSearchAcymailing extends JPlugin
+class plgSearchAcymailing extends CMSPlugin
 {
     public function onContentSearchAreas()
     {
-        $language = JFactory::getLanguage();
+        $language = Factory::getLanguage();
         $language->load('com_acym', JPATH_ROOT, null, true);
         $language->load('com_acym_custom', JPATH_ROOT, null, true);
 
-        return ['acymailing' => JText::_('ACYM_NEWSLETTERS')];
+        return ['acymailing' => Text::_('ACYM_NEWSLETTERS')];
     }
 
     public function onContentSearch($text, $type = 'any', $ordering = '', $areas = null)

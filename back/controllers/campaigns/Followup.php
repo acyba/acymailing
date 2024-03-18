@@ -118,7 +118,6 @@ trait Followup
         $segments = $segmentClass->getAllForSelect(false);
 
         $statusArray = [
-            '' => '',
             'is' => acym_strtolower(acym_translation('ACYM_IS')),
             'is_not' => acym_strtolower(acym_translation('ACYM_IS_NOT')),
         ];

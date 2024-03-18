@@ -1,6 +1,7 @@
 <?php
 
 use AcyMailing\Helpers\TabHelper;
+use Joomla\CMS\Date\Date;
 
 trait JcalproInsertion
 {
@@ -298,7 +299,7 @@ trait JcalproInsertion
         if (in_array('description', $tag->display)) $contentText .= $varFields['{description}'];
         $dateFormat = $element->duration_type == 2 ? 'ACYM_DATE_FORMAT_LC1' : 'ACYM_DATE_FORMAT_LC2';
 
-        $varFields['{startdate}'] = new JDate($element->start_date);
+        $varFields['{startdate}'] = new Date($element->start_date);
         $varFields['{startdate}']->setTimezone(new DateTimeZone($element->timezone));
         $varFields['{startdate}'] = $varFields['{startdate}']->format(acym_translation($dateFormat), true);
 
@@ -310,7 +311,7 @@ trait JcalproInsertion
         // 2 => all day events
         // 3 => set end date
         if (in_array($element->duration_type, [1, 3])) {
-            $varFields['{enddate}'] = new JDate($element->end_date);
+            $varFields['{enddate}'] = new Date($element->end_date);
             $varFields['{enddate}']->setTimezone(new DateTimeZone($element->timezone));
             $varFields['{enddate}'] = $varFields['{enddate}']->format(acym_translation('ACYM_DATE_FORMAT_LC2'), true);
 

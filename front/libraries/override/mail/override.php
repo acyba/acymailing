@@ -2,6 +2,9 @@
 
 use AcyMailing\Helpers\MailerHelper;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Mail\Mail;
+use Joomla\CMS\Mail\MailHelper;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -38,7 +41,7 @@ class jMail_acym extends PHPMailer
     public static function getInstance($id = 'Joomla', $exceptions = true)
     {
         if (empty(self::$instances[$id])) {
-            self::$instances[$id] = new JMail($exceptions);
+            self::$instances[$id] = new Mail($exceptions);
         }
 
         return self::$instances[$id];
@@ -107,13 +110,13 @@ class jMail_acym extends PHPMailer
             // If $from is an array we assume it has an address and a name
             if (isset($from[2])) {
                 // If it is an array with entries, use them
-                $result = $this->SetFrom(JMailHelper::cleanLine($from[0]), JMailHelper::cleanLine($from[1]), (bool)$from[2]);
+                $result = $this->SetFrom(MailHelper::cleanLine($from[0]), MailHelper::cleanLine($from[1]), (bool)$from[2]);
             } else {
-                $result = $this->SetFrom(JMailHelper::cleanLine($from[0]), JMailHelper::cleanLine($from[1]));
+                $result = $this->SetFrom(MailHelper::cleanLine($from[0]), MailHelper::cleanLine($from[1]));
             }
         } elseif (is_string($from)) {
             // If it is a string we assume it is just the address
-            $result = $this->SetFrom(JMailHelper::cleanLine($from));
+            $result = $this->SetFrom(MailHelper::cleanLine($from));
         } else {
             // If it is neither, we throw a warning
             acym_raiseError(500, acym_translationSprintf('JLIB_MAIL_INVALID_EMAIL_SENDER', $from));
@@ -129,14 +132,14 @@ class jMail_acym extends PHPMailer
 
     public function setSubject($subject)
     {
-        $this->Subject = JMailHelper::cleanLine($subject);
+        $this->Subject = MailHelper::cleanLine($subject);
 
         return $this;
     }
 
     public function setBody($content)
     {
-        $this->Body = JMailHelper::cleanText($content);
+        $this->Body = MailHelper::cleanText($content);
 
         return $this;
     }
@@ -155,8 +158,8 @@ class jMail_acym extends PHPMailer
                 }
 
                 foreach ($combined as $recipientEmail => $recipientName) {
-                    $recipientEmail = JMailHelper::cleanLine($recipientEmail);
-                    $recipientName = JMailHelper::cleanLine($recipientName);
+                    $recipientEmail = MailHelper::cleanLine($recipientEmail);
+                    $recipientName = MailHelper::cleanLine($recipientName);
 
                     // Wrapped in try/catch if PHPMailer is configured to throw exceptions
                     try {
@@ -169,10 +172,10 @@ class jMail_acym extends PHPMailer
                     }
                 }
             } else {
-                $name = JMailHelper::cleanLine($name);
+                $name = MailHelper::cleanLine($name);
 
                 foreach ($recipient as $to) {
-                    $to = JMailHelper::cleanLine($to);
+                    $to = MailHelper::cleanLine($to);
 
                     // Wrapped in try/catch if PHPMailer is configured to throw exceptions
                     try {
@@ -186,7 +189,7 @@ class jMail_acym extends PHPMailer
                 }
             }
         } else {
-            $recipient = JMailHelper::cleanLine($recipient);
+            $recipient = MailHelper::cleanLine($recipient);
 
             // Wrapped in try/catch if PHPMailer is configured to throw exceptions
             try {
@@ -294,7 +297,7 @@ class jMail_acym extends PHPMailer
     public function isSendmail()
     {
         // Prefer the Joomla configured sendmail path and default to the configured PHP path otherwise
-        $sendmail = JFactory::getConfig()->get('sendmail', ini_get('sendmail_path'));
+        $sendmail = Factory::getConfig()->get('sendmail', ini_get('sendmail_path'));
 
         // And if we still don't have a path, then use the system default for Linux
         if (empty($sendmail)) {
@@ -347,7 +350,7 @@ class jMail_acym extends PHPMailer
         $from, $fromName, $recipient, $subject, $body, $mode = false, $cc = null, $bcc = null, $attachment = null, $replyTo = null, $replyToName = null
     ) {
         // Create config object
-        $config = JFactory::getConfig();
+        $config = Factory::getConfig();
 
         $this->setSubject($subject);
         $this->setBody($body);

@@ -1,5 +1,7 @@
 <?php
 
+use Joomla\CMS\Factory;
+
 function acym_escapeDB($value)
 {
     $acydb = acym_getGlobal('db');
@@ -127,7 +129,7 @@ function acym_getCMSConfig($varname, $default = null)
         return $acyapp->get($varname, $default);
     }
 
-    $conf = JFactory::getConfig();
+    $conf = Factory::getConfig();
     $val = $conf->getValue('config.'.$varname);
 
     return empty($val) ? $default : $val;

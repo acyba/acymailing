@@ -1,7 +1,8 @@
 <?php
 
-use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\ListClass;
+use AcyMailing\Classes\UserClass;
+use Joomla\CMS\Factory;
 
 trait VirtuemartSubscription
 {
@@ -181,6 +182,16 @@ trait VirtuemartSubscription
 
     public function onRegacyAfterRoute()
     {
+        acym_session();
+
+        if (!isset($_SESSION['acym_virtuemart_user_email'])) {
+            $email = acym_getVar('string', 'email', '');
+
+            if (!empty($email)) {
+                $_SESSION['acym_virtuemart_user_email'] = $email;
+            }
+        }
+
         // We are updating the user information from VM
         $option = acym_getVar('string', 'option', '');
         $acySource = acym_getVar('string', 'acy_source', '');
@@ -223,13 +234,17 @@ trait VirtuemartSubscription
         $config = acym_config();
         if (!$config->get('virtuemart_sub', 0) || acym_isAdmin()) return;
 
-        $email = acym_getVar('string', 'email', '');
+        $email = $_SESSION['acym_virtuemart_user_email'] ?? null;
         if (empty($email)) {
-            $user = JFactory::getUser();
+            $user = Factory::getUser();
             if (!empty($user)) $email = $user->get('email');
         }
 
-        if (empty($email)) return;
+        if (empty($email)) {
+            unset($_SESSION['acym_virtuemart_user_email']);
+
+            return;
+        }
 
         $autoListsRaw = $config->get('virtuemart_autolists', '');
         $autoLists = explode(',', $autoListsRaw);
@@ -248,6 +263,8 @@ trait VirtuemartSubscription
         if (empty($user)) {
 
             if (!$config->get('virtuemart_save_user', 1) && empty($autoListsRaw) && empty($visibleListsChecked)) {
+                unset($_SESSION['acym_virtuemart_user_email']);
+
                 return;
             }
 
@@ -268,7 +285,11 @@ trait VirtuemartSubscription
             $user->id = $userClass->save($user);
         }
 
-        if (empty($user->id)) return;
+        if (empty($user->id)) {
+            unset($_SESSION['acym_virtuemart_user_email']);
+
+            return;
+        }
 
         // Handle user subscription
         $currentSubscription = $userClass->getSubscriptionStatus($user->id);
@@ -301,6 +322,7 @@ trait VirtuemartSubscription
         }
 
         if (!empty($listsToSubscribe)) $userClass->subscribe($user->id, $listsToSubscribe);
+        unset($_SESSION['acym_virtuemart_user_email']);
     }
 
     /**

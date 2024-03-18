@@ -1,5 +1,10 @@
 <?php
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Filter\OutputFilter;
+use Joomla\Component\Content\Site\Helper\RouteHelper;
+
 function acym_getPageLink($menu)
 {
     $menuDB = acym_loadObject(
@@ -26,9 +31,9 @@ function acym_cmsModal($isIframe, $content, $buttonText, $isButton, $modalTitle,
         'modalWidth' => '80',
     ];
 
-    JHtml::_('jquery.framework');
+    HTMLHelper::_('jquery.framework');
     if (ACYM_J40) {
-        $wa = JFactory::getApplication()->getDocument()->getWebAssetManager();
+        $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
         $wa->useScript('field.modal-fields');
         acym_addStyle(
             true,
@@ -43,7 +48,7 @@ function acym_cmsModal($isIframe, $content, $buttonText, $isButton, $modalTitle,
             }'
         );
     } else {
-        JHtml::_('script', 'system/modal-fields.js', ['version' => 'auto', 'relative' => true]);
+        HTMLHelper::_('script', 'system/modal-fields.js', ['version' => 'auto', 'relative' => true]);
         acym_addStyle(true, '#'.$identifier.' .modal-body { overflow: auto; }');
         $params['footer'] = '<a role="button" class="btn" data-dismiss="modal" aria-hidden="true">'.acym_translation('JLIB_HTML_BEHAVIOR_CLOSE').'</a>';
     }
@@ -58,7 +63,7 @@ function acym_cmsModal($isIframe, $content, $buttonText, $isButton, $modalTitle,
                 data-bs-toggle="modal"
                 data-bs-target="#'.$identifier.'">';
     $html .= acym_translation($buttonText).'</a>';
-    $html .= JHtml::_('bootstrap.renderModal', $identifier, $params);
+    $html .= HTMLHelper::_('bootstrap.renderModal', $identifier, $params);
 
     return $html;
 }
@@ -72,13 +77,6 @@ function acym_getArticleURL($id, $popup, $text)
 {
     if (empty($id)) return '';
 
-    // Make sure the Joomla link generator class is loaded
-    if (!class_exists('ContentHelperRoute')) {
-        $contentHelper = JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
-        if (!file_exists($contentHelper)) return '';
-        require_once $contentHelper;
-    }
-
     $query = 'SELECT article.id, article.alias, article.catid, cat.alias AS catalias, article.language
         FROM #__content AS article 
         LEFT JOIN #__categories AS cat ON cat.id = article.catid 
@@ -88,7 +86,17 @@ function acym_getArticleURL($id, $popup, $text)
     $category = $article->catid.(empty($article->catalias) ? '' : ':'.$article->catalias);
     $articleid = $article->id.(empty($article->alias) ? '' : ':'.$article->alias);
 
-    $url = ContentHelperRoute::getArticleRoute($articleid, $category, $article->language);
+    if (ACYM_J40) {
+        $url = RouteHelper::getArticleRoute($articleid, $category, $article->language);
+    } else {
+        // Make sure the Joomla link generator class is loaded
+        if (!class_exists('ContentHelperRoute')) {
+            $contentHelper = JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
+            if (!file_exists($contentHelper)) return '';
+            require_once $contentHelper;
+        }
+        $url = ContentHelperRoute::getArticleRoute($articleid, $category, $article->language);
+    }
 
     if ($popup == 1) {
         $url .= (strpos($url, '?') ? '&' : '?').acym_noTemplate();
@@ -108,10 +116,10 @@ function acym_articleSelectionPage()
 function acym_getPageOverride(&$ctrl, $view, $forceBackend = false)
 {
     if ($forceBackend || acym_isAdmin()) {
-        $app = JFactory::getApplication('administrator');
+        $app = Factory::getApplication('administrator');
         $folder = JPATH_ADMINISTRATOR;
     } else {
-        $app = JFactory::getApplication('site');
+        $app = Factory::getApplication('site');
         $folder = JPATH_SITE;
         if (!file_exists(ACYM_VIEW_FRONT.$ctrl)) $ctrl = 'front'.$ctrl;
     }
@@ -126,7 +134,7 @@ function acym_cmsCleanHtml($html)
 
 function acym_getAlias($name)
 {
-    return JFilterOutput::stringURLSafe($name);
+    return OutputFilter::stringURLSafe($name);
 }
 
 function acym_getAllPages()

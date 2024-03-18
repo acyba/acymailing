@@ -1065,7 +1065,7 @@ trait Edition
         acym_trigger('replaceUserInformation', [&$mailData, &$data['receiver'], false]);
 
         $editorHelper = new EditorHelper();
-        $mailData->settings = json_decode($mailData->settings, true);
+        $mailData->settings = empty($mailData->settings) ? [] : json_decode($mailData->settings, true);
         $mailData->stylesheet .= $editorHelper->getSettingsStyle($mailData->settings);
 
         return $mailData;

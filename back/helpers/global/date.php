@@ -292,7 +292,7 @@ function acym_getTime($date)
 
 function acym_date($time = 'now', $format = null, $useTz = true, $translate = true)
 {
-    if ($time == 'now') {
+    if ($time === 'now') {
         $time = time();
     }
 

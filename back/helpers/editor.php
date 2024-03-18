@@ -6,6 +6,7 @@ use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\ZoneClass;
 use AcyMailing\Libraries\acymObject;
 use Joomla\CMS\Editor\Editor as Editor;
+use Joomla\CMS\Factory;
 
 class EditorHelper extends acymObject
 {
@@ -101,7 +102,7 @@ class EditorHelper extends acymObject
         $this->editor = acym_getCMSConfig('editor', 'tinymce');
 
         if (!class_exists('Joomla\CMS\Editor\Editor')) {
-            $this->myEditor = \JFactory::getEditor($this->editor);
+            $this->myEditor = Factory::getEditor($this->editor);
         } else {
             $this->myEditor = Editor::getInstance($this->editor);
         }

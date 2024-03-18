@@ -1,6 +1,7 @@
 <?php
 
 use AcyMailing\Helpers\TabHelper;
+use Joomla\CMS\Registry\Registry;
 
 trait RseventsproInsertion
 {
@@ -384,7 +385,7 @@ trait RseventsproInsertion
                 if ($this->rsconfig->color) {
                     $color = '';
                     if ($cat->params) {
-                        $registry = new JRegistry();
+                        $registry = new Registry();
                         $registry->loadString($cat->params);
                         $color = $registry->get('color');
                     }

@@ -21,17 +21,17 @@
 				<h1 class="cell acym__listing__empty__search__title text-center"><?php echo acym_translation('ACYM_NO_RESULTS_FOUND'); ?></h1>
             <?php } else { ?>
 				<div class="grid-x acym__listing acym__listing__view__squeue">
-					<div class="cell grid-x acym__listing__header">
-						<div class="acym__listing__header__title cell medium-auto hide-for-small-only">
+					<div class="cell grid-x acym__listing__header hide-for-small-only">
+						<div class="acym__listing__header__title cell medium-auto">
                             <?php echo acym_translation('ACYM_MAILS'); ?>
 						</div>
-						<div class="acym__listing__header__title cell large-3 hide-for-medium-only hide-for-small-only text-center">
+						<div class="acym__listing__header__title cell large-3 hide-for-medium-only text-center">
                             <?php echo acym_translation('ACYM_RECIPIENTS'); ?>
 						</div>
-						<div class="acym__listing__header__title cell medium-4 hide-for-small-only text-center">
+						<div class="acym__listing__header__title cell medium-4 text-center">
                             <?php echo acym_translation('ACYM_SENDING_DATE'); ?>
 						</div>
-						<div class="cell medium-2 hide-for-small-only"></div>
+						<div class="cell medium-2"></div>
 					</div>
                     <?php foreach ($data['allElements'] as $row) {
                         ?>
@@ -47,7 +47,8 @@
                                     }
                                     $afterName = empty($afterName) ? '' : ' - '.$afterName
                                     ?>
-									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo $row->name.$afterName; ?></h6>
+									<h6 class="acym__listing__title__primary acym_text_ellipsis"><?php echo acym_escape($row->name.$afterName); ?></h6>
+									<span class="acym__listing__title__secondary acym_text_ellipsis"><?php echo acym_escape($row->subject); ?></span>
 								</div>
 							</div>
 							<div class="cell large-3 hide-for-medium-only hide-for-small-only text-center">

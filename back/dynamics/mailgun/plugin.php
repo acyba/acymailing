@@ -131,10 +131,16 @@ class plgAcymMailgun extends acymPlugin
             'subject' => $mailerHelper->Subject,
             'html' => $mailerHelper->Body,
         ];
-        if (!empty($bcc)) $data['bcc'] = $bcc[0][0];
+        if (!empty($bcc)) {
+            foreach ($bcc as $key => $bccEmail) {
+                $data['bcc['.$key.']'] = $bccEmail[0];
+            }
+        }
 
         if (!empty($attachments)) {
-            $data['attachment'] = curl_file_create($attachments[0][0]);
+            foreach ($attachments as $key => $attachment) {
+                $data['attachment['.$key.']'] = curl_file_create($attachment[0]);
+            }
         }
 
         $responseMailer = $this->callApiSendingMethod($this->sendingMethodApiUrl.'messages', $data, $headers, 'POST', $authentication, true);

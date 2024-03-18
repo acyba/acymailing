@@ -25,70 +25,79 @@ trait WooCommerceFollowup
             return;
         }
 
-        $woocommerceOrderStatus = $this->getOrderStatuses();
-        $multiselectOrderStatus = acym_selectMultiple(
-            $woocommerceOrderStatus,
-            'followup[condition][order_status]',
-            !empty($followup->condition) && $followup->condition['order_status'] ? $followup->condition['order_status'] : [],
-            ['class' => 'acym__select']
-        );
-        $multiselectOrderStatus = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectOrderStatus.'</span>';
+        $multiselectOrderStatus = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.acym_selectMultiple(
+                $this->getOrderStatuses(),
+                'followup[condition][order_status]',
+                !empty($followup->condition['order_status']) ? $followup->condition['order_status'] : [],
+                ['class' => 'acym__select']
+            ).'</span>';
+
         $statusOrderStatus = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
                 $statusArray,
                 'followup[condition][order_status_status]',
-                !empty($followup->condition) ? $followup->condition['order_status_status'] : '',
+                !empty($followup->condition['order_status_status']) ? $followup->condition['order_status_status'] : '',
                 ['class' => 'acym__select']
             ).'</span>';
+
         $additionalCondition['order_status'] = acym_translationSprintf('ACYM_WOOCOMMERCE_ORDER_STATUS_IN', $statusOrderStatus, $multiselectOrderStatus);
 
 
-        $parametersProductSelect = [
-            'class' => 'acym__select acym_select2_ajax',
-            'data-params' => acym_escape([
-                'plugin' => 'plgAcymWoocommerce',
-                'trigger' => 'searchProduct',
-            ], false),
-            'data-selected' => !empty($followup->condition) && !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : '',
-        ];
-        $woocommerceProducts = [];
-        $multiselectProducts = acym_selectMultiple(
-            $woocommerceProducts,
-            'followup[condition][products]',
-            !empty($followup->condition) && !empty($followup->condition['products']) ? $followup->condition['products'] : [],
-            $parametersProductSelect
-        );
-        $multiselectProducts = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectProducts.'</span>';
+        $multiselectProducts = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.acym_selectMultiple(
+                [],
+                'followup[condition][products]',
+                !empty($followup->condition['products']) ? $followup->condition['products'] : [],
+                [
+                    'class' => 'acym__select acym_select2_ajax',
+                    'data-params' => acym_escape([
+                        'plugin' => 'plgAcymWoocommerce',
+                        'trigger' => 'searchProduct',
+                        'variations' => true,
+                    ], false),
+                    'data-selected' => !empty($followup->condition['products']) ? implode(',', $followup->condition['products']) : '',
+                ]
+            ).'</span>';
+
         $statusProducts = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
                 $statusArray,
                 'followup[condition][products_status]',
-                !empty($followup->condition) ? $followup->condition['products_status'] : '',
+                !empty($followup->condition['products_status']) ? $followup->condition['products_status'] : '',
                 ['class' => 'acym__select']
             ).'</span>';
+
         $additionalCondition['products'] = acym_translationSprintf('ACYM_WOOCOMMERCE_PRODUCT_IN', $statusProducts, $multiselectProducts);
 
-        $parametersCategoriesSelect = [
-            'class' => 'acym__select acym_select2_ajax',
-            'data-params' => acym_escape([
-                'plugin' => 'plgAcymWoocommerce',
-                'trigger' => 'searchCat',
-            ], false),
-            'data-selected' => !empty($followup->condition) && !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : '',
-        ];
-        $woocommerceCategories = [];
-        $multiselectCategories = acym_selectMultiple(
-            $woocommerceCategories,
-            'followup[condition][categories]',
-            !empty($followup->condition) && !empty($followup->condition['categories']) ? $followup->condition['categories'] : [],
-            $parametersCategoriesSelect
-        );
-        $multiselectCategories = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.$multiselectCategories.'</span>';
+
+        $multiselectCategories = '<span class="cell large-4 medium-6 acym__followup__condition__select__in-text">'.acym_selectMultiple(
+                [],
+                'followup[condition][categories]',
+                !empty($followup->condition['categories']) ? $followup->condition['categories'] : [],
+                [
+                    'class' => 'acym__select acym_select2_ajax',
+                    'data-params' => acym_escape([
+                        'plugin' => 'plgAcymWoocommerce',
+                        'trigger' => 'searchCat',
+                    ], false),
+                    'data-selected' => !empty($followup->condition['categories']) ? implode(',', $followup->condition['categories']) : '',
+                ]
+            ).'</span>';
+
         $statusCategories = '<span class="cell large-1 medium-2 acym__followup__condition__select__in-text">'.acym_select(
                 $statusArray,
                 'followup[condition][categories_status]',
-                !empty($followup->condition) ? $followup->condition['categories_status'] : '',
+                !empty($followup->condition['categories_status']) ? $followup->condition['categories_status'] : '',
                 ['class' => 'acym__select']
             ).'</span>';
+
         $additionalCondition['categories'] = acym_translationSprintf('ACYM_WOOCOMMERCE_CATEGORY_IN', $statusCategories, $multiselectCategories);
+
+        if ($this->wcsInstalled) {
+            $additionalCondition['order_type'] = acym_translation('ACYM_ORDER_TYPE').'<span class="cell large-2 medium-6 acym__followup__condition__select__in-text">'.acym_select(
+                    $this->orderTypes,
+                    'followup[condition][order_type]',
+                    empty($followup->condition['order_type']) ? '' : $followup->condition['order_type'],
+                    ['class' => 'acym__select']
+                ).'</span>';
+        }
     }
 
     public function searchCat()
@@ -122,17 +131,23 @@ trait WooCommerceFollowup
     public function matchFollowupsConditions(&$followups, $userId, $params)
     {
         foreach ($followups as $key => $followup) {
-            if ($followup->trigger != $this->purchaseTriggerName) continue;
+            if ($followup->trigger != $this->purchaseTriggerName) {
+                continue;
+            }
+
             //We check the order status
             if (!empty($followup->condition['order_status_status']) && !empty($followup->condition['order_status'])) {
-                $status = $followup->condition['order_status_status'] == 'is';
+                $status = $followup->condition['order_status_status'] === 'is';
                 $inArray = in_array('wc-'.$params['woo_order_status'], $followup->condition['order_status']);
-                if (($status && !$inArray) || (!$status && $inArray)) unset($followups[$key]);
+                if ($status !== $inArray) {
+                    unset($followups[$key]);
+                    continue;
+                }
             }
 
             //We check the products
             if (!empty($followup->condition['products_status']) && !empty($followup->condition['products'])) {
-                $status = $followup->condition['products_status'] == 'is';
+                $status = $followup->condition['products_status'] === 'is';
                 $inArray = false;
                 foreach ($params['woo_order_product_ids'] as $product_id) {
                     if (in_array($product_id, $followup->condition['products'])) {
@@ -140,12 +155,16 @@ trait WooCommerceFollowup
                         break;
                     }
                 }
-                if (($status && !$inArray) || (!$status && $inArray)) unset($followups[$key]);
+
+                if ($status !== $inArray) {
+                    unset($followups[$key]);
+                    continue;
+                }
             }
 
             //We check the categories
             if (!empty($followup->condition['categories_status']) && !empty($followup->condition['categories'])) {
-                $status = $followup->condition['categories_status'] == 'is';
+                $status = $followup->condition['categories_status'] === 'is';
                 $inArray = false;
                 foreach ($params['woo_order_cat_ids'] as $cat_id) {
                     if (in_array($cat_id, $followup->condition['categories'])) {
@@ -153,56 +172,96 @@ trait WooCommerceFollowup
                         break;
                     }
                 }
-                if (($status && !$inArray) || (!$status && $inArray)) unset($followups[$key]);
+
+                if ($status !== $inArray) {
+                    unset($followups[$key]);
+                    continue;
+                }
+            }
+
+            if (!empty($followup->condition['order_type'])) {
+                $order = wc_get_order($params['woo_order_id']);
+
+                if (in_array($followup->condition['order_type'], ['original', 'regular'])) {
+                    if ($order->get_meta('_subscription_renewal') || $order->get_meta('_subscription_switch')) {
+                        unset($followups[$key]);
+                    } elseif ($followup->condition['order_type'] === 'regular' && !empty($order->get_parent_id())) {
+                        unset($followups[$key]);
+                    }
+                } elseif ($followup->condition['order_type'] === 'parent') {
+                    if (!empty($order->get_parent_id())) {
+                        unset($followups[$key]);
+                    }
+                } else {
+                    if ($followup->condition['order_type'] === 'renewal') {
+                        $metaKey = '_subscription_renewal';
+                    } elseif ($followup->condition['order_type'] === 'resubscribe') {
+                        $metaKey = '_subscription_resubscribe';
+                    } else {
+                        $metaKey = '_subscription_switch';
+                    }
+
+                    $metaKey = apply_filters('woocommerce_subscriptions_admin_order_type_filter_meta_key', $metaKey, $followup->condition['order_type']);
+
+                    if (empty($order->get_meta($metaKey))) {
+                        unset($followups[$key]);
+                    }
+                }
             }
         }
     }
 
     public function getFollowupConditionSummary(&$return, $condition, $trigger, $statusArray)
     {
-        if ($trigger == $this->purchaseTriggerName) {
-            if (empty($condition['order_status_status']) || empty($condition['order_status'])) {
-                $return[] = acym_translation('ACYM_EVERY_ORDER_STATUS');
-            } else {
-                $woocommerceOrderStatus = $this->getOrderStatuses();
-                $orderStatusToDisplay = [];
-                foreach ($woocommerceOrderStatus as $key => $orderStatus) {
-                    if (in_array($key, $condition['order_status'])) $orderStatusToDisplay[] = $orderStatus;
-                }
-                $return[] = acym_translationSprintf('ACYM_ORDER_STATUS_X_IN_X', strtolower($statusArray[$condition['order_status_status']]), implode(', ', $orderStatusToDisplay));
+        if ($trigger !== $this->purchaseTriggerName) {
+            return;
+        }
+
+        if (empty($condition['order_status_status']) || empty($condition['order_status'])) {
+            $return[] = acym_translation('ACYM_EVERY_ORDER_STATUS');
+        } else {
+            $woocommerceOrderStatus = $this->getOrderStatuses();
+            $orderStatusToDisplay = [];
+            foreach ($woocommerceOrderStatus as $key => $orderStatus) {
+                if (in_array($key, $condition['order_status'])) $orderStatusToDisplay[] = $orderStatus;
             }
+            $return[] = acym_translationSprintf('ACYM_ORDER_STATUS_X_IN_X', acym_strtolower($statusArray[$condition['order_status_status']]), implode(', ', $orderStatusToDisplay));
+        }
 
-            if (empty($condition['products_status']) || empty($condition['products'])) {
-                $return[] = acym_translation('ACYM_ANY_PRODUCT');
-            } else {
-                $args = [
-                    'post__in' => $condition['products'],
-                    'post_type' => 'product',
-                ];
-                $posts = new WP_Query($args);
+        if (empty($condition['products_status']) || empty($condition['products'])) {
+            $return[] = acym_translation('ACYM_ANY_PRODUCT');
+        } else {
+            $args = [
+                'post__in' => $condition['products'],
+                'post_type' => ['product', 'product_variation'],
+            ];
+            $posts = new WP_Query($args);
 
-                $productsToDisplay = [];
-                if ($posts->have_posts()) {
-                    foreach ($posts->get_posts() as $post) {
-                        $productsToDisplay[] = $post->post_title;
-                    }
+            $productsToDisplay = [];
+            if ($posts->have_posts()) {
+                foreach ($posts->get_posts() as $post) {
+                    $productsToDisplay[] = $post->post_title;
                 }
-                $return[] = acym_translationSprintf('ACYM_PRODUCTS_X_IN_X', strtolower($statusArray[$condition['products_status']]), implode(', ', $productsToDisplay));
             }
+            $return[] = acym_translationSprintf('ACYM_PRODUCTS_X_IN_X', acym_strtolower($statusArray[$condition['products_status']]), implode(', ', $productsToDisplay));
+        }
 
-            if (empty($condition['categories_status']) || empty($condition['categories'])) {
-                $return[] = acym_translation('ACYM_EVERY_CATEGORIES');
-            } else {
-                $cats = $this->getWooCategories($condition['categories']);
+        if (empty($condition['categories_status']) || empty($condition['categories'])) {
+            $return[] = acym_translation('ACYM_EVERY_CATEGORIES');
+        } else {
+            $cats = $this->getWooCategories($condition['categories']);
 
-                $categoriesToDisplay = [];
-                if (!empty($cats)) {
-                    foreach ($cats as $cat) {
-                        $categoriesToDisplay[] = $cat->name;
-                    }
+            $categoriesToDisplay = [];
+            if (!empty($cats)) {
+                foreach ($cats as $cat) {
+                    $categoriesToDisplay[] = $cat->name;
                 }
-                $return[] = acym_translationSprintf('ACYM_CATEGORIES_X_IN_X', strtolower($statusArray[$condition['categories_status']]), implode(', ', $categoriesToDisplay));
             }
+            $return[] = acym_translationSprintf('ACYM_CATEGORIES_X_IN_X', acym_strtolower($statusArray[$condition['categories_status']]), implode(', ', $categoriesToDisplay));
+        }
+
+        if ($this->wcsInstalled && !empty($condition['order_type']) && !empty($this->orderTypes[$condition['order_type']])) {
+            $return[] = acym_translation('ACYM_ORDER_TYPE').': '.$this->orderTypes[$condition['order_type']];
         }
     }
 }

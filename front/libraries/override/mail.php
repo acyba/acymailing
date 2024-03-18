@@ -1,12 +1,15 @@
 <?php
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
+
 defined('_JEXEC') or die('Restricted access');
 
 // The Joomla mail class already exists, can't override
 if (class_exists('JMail', false) || class_exists('Joomla\CMS\Mail\Mail', false)) return;
 
-if (class_exists('JComponentHelper') && method_exists('JComponentHelper', 'isEnabled') && JComponentHelper::isEnabled('com_eesender', true)) {
-    $app = JFactory::getApplication();
+if (class_exists('ComponentHelper') && method_exists('ComponentHelper', 'isEnabled') && ComponentHelper::isEnabled('com_eesender', true)) {
+    $app = Factory::getApplication();
     if ($app->isAdmin()) {
         $app->enqueueMessage('The AcyMailing email override plugin isn\'t compatible with the Elastic Email Sender extension, please disable one of these two extensions', 'error');
     }

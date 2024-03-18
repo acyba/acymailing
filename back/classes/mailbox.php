@@ -76,7 +76,7 @@ class MailboxClass extends acymClass
             $mailbox->name .= '_copy';
 
             if (empty($this->save($mailbox))) {
-                $duplicateErrors[] = acym_translation_sprintf('ACYM_ERROR_DUPLICATING_MAILBOX_ACTION', $originalName);
+                $duplicateErrors[] = acym_translationSprintf('ACYM_ERROR_DUPLICATING_MAILBOX_ACTION', $originalName);
             }
         }
 

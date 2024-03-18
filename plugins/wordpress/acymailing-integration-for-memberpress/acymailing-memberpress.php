@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing integration for MemberPress
-Description: Filter users by membership, Insert MemberPress custom field in your newsletter
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 2.5
+ * Plugin Name: AcyMailing integration for MemberPress
+ * Description: Filter users by membership, Insert MemberPress custom field in your newsletter
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 2.5
+ * Requires Plugins: acymailing
 */
 
 use AcyMailing\Classes\PluginClass;

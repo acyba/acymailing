@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing integration for Business Directory
-Description: Adds editor options for Business Directory in AcyMailing
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 1.9
+ * Plugin Name: AcyMailing integration for Business Directory
+ * Description: Adds editor options for Business Directory in AcyMailing
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 1.9
+ * Requires Plugins: acymailing, business-directory-plugin
 */
 
 use AcyMailing\Classes\PluginClass;

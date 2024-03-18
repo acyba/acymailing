@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing integration for Gravity Forms
-Description: Adds the possibility to show AcyMailing lists on Gravity Forms
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 2.9
+ * Plugin Name: AcyMailing integration for Gravity Forms
+ * Description: Adds the possibility to show AcyMailing lists on Gravity Forms
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 2.9
+ * Requires Plugins: acymailing
 */
 
 use AcyMailing\Classes\PluginClass;

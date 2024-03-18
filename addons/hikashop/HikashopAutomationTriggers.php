@@ -99,6 +99,11 @@ trait HikashopAutomationTriggers
 
         //We get the products ids
         $productIds = acym_loadResultArray('SELECT product_id FROM #__hikashop_order_product WHERE order_id = '.intval($order->order_id));
+        acym_arrayToInteger($productIds);
+        if (!empty($productIds)) {
+            $productIdsParent = acym_loadResultArray('SELECT product_parent_id FROM #__hikashop_product WHERE product_id IN ('.implode(',', $productIds).')');
+            $productIds = array_unique(array_merge($productIds, $productIdsParent));
+        }
 
         //We get the categories ids
         acym_arrayToInteger($productIds);

@@ -2,6 +2,8 @@
 
 use AcyMailing\Libraries\acymParameter;
 use AcyMailing\Helpers\TabHelper;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Plugin\PluginHelper;
 
 trait JeventsInsertion
 {
@@ -369,13 +371,13 @@ trait JeventsInsertion
         acym_loadLanguageFile('com_jevents', JPATH_SITE);
 
         if (file_exists(JPATH_SITE.DS.'plugins'.DS.'jevents'.DS.'jevfiles'.DS.'jevfiles.php')) {
-            $JEVplugin = JPluginHelper::getPlugin('jevents', 'jevfiles');
+            $JEVplugin = PluginHelper::getPlugin('jevents', 'jevfiles');
             $JEVparams = new acymParameter($JEVplugin->params);
-            $imagesFolder = JComponentHelper::getParams('com_media')->get('image_path', 'images');
+            $imagesFolder = ComponentHelper::getParams('com_media')->get('image_path', 'images');
             $this->imgFolder = ACYM_LIVE.$imagesFolder.'/'.trim($JEVparams->get('folder', 'jevents'), '/').'/';
         }
 
-        $this->useStdTime = JComponentHelper::getParams("com_jevents")->get('com_calUseStdTime');
+        $this->useStdTime = ComponentHelper::getParams("com_jevents")->get('com_calUseStdTime');
 
         return true;
     }
@@ -390,7 +392,7 @@ trait JeventsInsertion
 
         if (empty($tags)) return $this->generateCampaignResult;
 
-        $multicat = JComponentHelper::getParams('com_jevents')->get('multicategory', 0);
+        $multicat = ComponentHelper::getParams('com_jevents')->get('multicategory', 0);
 
         foreach ($tags as $oneTag => $parameter) {
             if (isset($this->tags[$oneTag])) continue;

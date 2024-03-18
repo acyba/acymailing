@@ -189,7 +189,7 @@ class CronHelper extends acymObject
         if ($this->config->get('queue_stop_weekend', 0) && $dayOfWeek >= 6) {
             $this->skip[] = 'send';
         }
-        if ($this->config->get('queue_type') != 'manual' && !in_array('send', $this->skip)) {
+        if ($this->config->get('queue_type') !== 'manual' && !in_array('send', $this->skip)) {
             $this->multiCron();
             $queueHelper = new QueueHelper();
             $queueHelper->send_limit = (int)$this->config->get('queue_nbmail_auto');
@@ -417,7 +417,13 @@ class CronHelper extends acymObject
             }
         }
 
-        if ($this->externalSendingNotFinished) acym_makeCurlCall(acym_frontendLink('cron&task=cron&external_sending_repeat=1'), [], [], true);
+        if ($this->externalSendingNotFinished) {
+            $cronKey = '';
+            if (!empty($this->config->get('cron_security', 0)) && !empty($this->config->get('cron_key'))) {
+                $cronKey = '&cronKey='.$this->config->get('cron_key');
+            }
+            acym_makeCurlCall(acym_frontendLink('cron&task=cron&external_sending_repeat=1&t='.time().$cronKey), [], [], true);
+        }
 
         return true;
     }
@@ -517,8 +523,13 @@ class CronHelper extends acymObject
 
         $urls = [];
 
+        $cronKey = '';
+        if (!empty($this->config->get('cron_security', 0)) && !empty($this->config->get('cron_key'))) {
+            $cronKey = '&cronKey='.$this->config->get('cron_key');
+        }
+
         for ($i = 1 ; $i <= $emailsBatches - 1 ; $i++) {
-            $urls[] = acym_frontendLink('cron&task=cron&startqueue='.($emailsPerBatches * $i));
+            $urls[] = acym_frontendLink('cron&task=cron&startqueue='.($emailsPerBatches * $i).'&t='.time().$cronKey);
         }
 
         acym_asyncCurlCall($urls);

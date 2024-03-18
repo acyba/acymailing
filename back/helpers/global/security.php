@@ -69,7 +69,7 @@ function acym_generateKey($length)
     return $randstring;
 }
 
-function acym_isRobot()
+function acym_isRobot(): bool
 {
     if (empty($_SERVER)) {
         return false;

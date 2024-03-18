@@ -92,22 +92,24 @@ trait MemberpressInsertion
         return $finalValue;
     }
 
-    private function getMeprCustomFields()
+    private function getMeprCustomFields(): array
     {
         $meprOptions = acym_loadResult('SELECT option_value FROM `wp_options` WHERE option_name = "mepr_options"');
-
-        if (empty($meprOptions)) return [];
-
-        $meprOptions = unserialize($meprOptions);
-
-        if (empty($meprOptions['custom_fields'])) return [];
-
-        $return = [];
-
-        foreach ($meprOptions['custom_fields'] as $custom_field) {
-            $return[$custom_field['field_key']] = $custom_field;
+        if (empty($meprOptions)) {
+            return [];
         }
 
-        return $return;
+        $meprOptions = unserialize($meprOptions);
+        $meprOptions = json_decode(json_encode($meprOptions), true);
+        if (empty($meprOptions['custom_fields'])) {
+            return [];
+        }
+
+        $customFields = [];
+        foreach ($meprOptions['custom_fields'] as $customField) {
+            $customFields[$customField['field_key']] = $customField;
+        }
+
+        return $customFields;
     }
 }

@@ -415,7 +415,6 @@ CREATE TABLE IF NOT EXISTS `#__acym_field` (
 	`backend_listing` TINYINT(3) NULL,
 	`frontend_edition` TINYINT(3) NULL,
 	`frontend_listing` TINYINT(3) NULL,
-	`access` VARCHAR(255) NULL,
 	`namekey` VARCHAR(255) NOT NULL,
 	`translation` LONGTEXT NULL,
 	PRIMARY KEY (`id`)

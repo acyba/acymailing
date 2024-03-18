@@ -6,7 +6,10 @@ use Joomla\Registry\Registry;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Application\ApplicationHelper;
 
 class plgAcymcreateuser extends acymPlugin
 {
@@ -17,7 +20,7 @@ class plgAcymcreateuser extends acymPlugin
 
         $usergroups = acym_getGroups();
         if ('joomla' === ACYM_CMS) {
-            $joomlaUsersparams = JComponentHelper::getParams('com_users');
+            $joomlaUsersparams = ComponentHelper::getParams('com_users');
             $defaultUsergroup = $joomlaUsersparams->get('new_usertype');
         } else {
             $defaultUsergroup = get_option('default_role');
@@ -83,8 +86,8 @@ class plgAcymcreateuser extends acymPlugin
 
     protected function createJoomlaUser($user)
     {
-        $joomlaUsersparams = JComponentHelper::getParams('com_users');
-        $joomlaConfig = JFactory::getConfig();
+        $joomlaUsersparams = ComponentHelper::getParams('com_users');
+        $joomlaConfig = Factory::getConfig();
 
         $useractivation = $joomlaUsersparams->get('useractivation');
         $allowUserRegistration = $joomlaUsersparams->get('allowUserRegistration');
@@ -100,7 +103,7 @@ class plgAcymcreateuser extends acymPlugin
         if ($joomlaUsersparams->get('minimum_length') > 8) $length = $joomlaUsersparams->get('minimum_length');
         $tryCount = 0;
         do {
-            $password = JUserHelper::genrandompassword($length);
+            $password = UserHelper::genrandompassword($length);
             $tryCount++;
             //Could happen if the admin selected 90 as min integers and min length = 9, in this case we will never generate a satisfying password
             if ($tryCount > 50) break;
@@ -122,11 +125,11 @@ class plgAcymcreateuser extends acymPlugin
             'groups' => [$configUserGroup],
         ];
 
-        $joomlaUser = new JUser();
+        $joomlaUser = new User();
 
         // Check if the user needs to activate his account.
         if (in_array($useractivation, [1, 2])) {
-            $userData['activation'] = JApplicationHelper::getHash(JUserHelper::genrandompassword());
+            $userData['activation'] = ApplicationHelper::getHash(UserHelper::genrandompassword());
             $userData['block'] = 1;
         }
 
@@ -202,8 +205,7 @@ class plgAcymcreateuser extends acymPlugin
             $emailBody = str_replace($keys, $replaceData, $emailBody);
         }
 
-        // Fetch the mail object - A reference to the global mail object (JMail) is fetched through the JFactory object. This is the object creating our mail.
-        $mailer = JFactory::getMailer();
+        $mailer = Factory::getMailer();
         /* Set a sender - The sender of an email is set with setSender. The function takes an array with an email address and a name as an argument.
         We fetch the site's email address and name from the global configuration.
         This info is set in Global Configuration -> Server -> Mail Settings. */
@@ -237,7 +239,7 @@ class plgAcymcreateuser extends acymPlugin
 
             $isNew = empty($joomlaUser->id);
 
-            $my = \JFactory::getUser();
+            $my = Factory::getUser();
 
             $oldUser = new User($joomlaUser->id);
 

@@ -28,7 +28,6 @@ trait Edition
             $field->backend_listing = 0;
             $field->frontend_edition = 1;
             $field->frontend_listing = 0;
-            $field->access = 1;
             $field->fieldDB = new \stdClass();
         } else {
             $field = $fieldClass->getOneById($fieldId);
@@ -66,8 +65,6 @@ trait Edition
                     array_unshift($field->fieldDB->columns, acym_translation('ACYM_CHOOSE_COLUMN'));
                 }
             }
-            //DONT ERASE PLEASE
-            //$field->display = json_decode($field->option->display);
         }
 
         if (!empty($fieldId)) {
@@ -221,7 +218,6 @@ trait Edition
         }
         $newField->backend_edition = $field['backend_edition'];
         $newField->backend_listing = $field['backend_listing'];
-        $newField->access = 'all';
 
         if (empty($fieldId)) {
             $newField->ordering = $fieldClass->getOrdering() + 1;

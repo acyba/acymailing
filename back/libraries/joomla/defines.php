@@ -1,5 +1,7 @@
 <?php
 
+use Joomla\CMS\Uri\Uri;
+
 define('ACYM_CMS', 'joomla');
 define('ACYM_CMS_TITLE', 'Joomla!');
 define('ACYM_COMPONENT', 'com_acym');
@@ -62,7 +64,7 @@ define('ACYM_AVAILABLE_PLUGINS', json_encode([]));
 
 function acym_rootURI($pathonly = false, $path = null)
 {
-    $url = JURI::root($pathonly, $path);
+    $url = Uri::root($pathonly, $path);
     $mysitesGuruPos = strpos($url, '/plugins/system/bfnetwork');
     if ($mysitesGuruPos !== false) {
         $url = substr($url, 0, $mysitesGuruPos);
