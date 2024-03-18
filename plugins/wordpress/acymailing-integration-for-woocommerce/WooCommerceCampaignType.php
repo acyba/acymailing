@@ -39,6 +39,7 @@ trait WooCommerceCampaignType
         if ($type != $this->mailType) return;
 
         $timeSelectOptions = [
+            'hours' => acym_translation('ACYM_HOURS'),
             'days' => acym_translation('ACYM_DAYS'),
             'weeks' => acym_translation('ACYM_WEEKS'),
             'months' => acym_translation('ACYM_MONTHS'),
@@ -111,6 +112,8 @@ trait WooCommerceCampaignType
             $sendingTime *= 7;
         } elseif ($campaign->sending_params[$this->mailType.'_type'] == 'months') {
             $sendingTime *= 30;
+        } elseif ($campaign->sending_params[$this->mailType.'_type'] == 'hours') {
+            $sendingTime /= 24;
         }
         $filter = [
             'wooreminder' => [

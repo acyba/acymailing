@@ -1,43 +1,17 @@
 {
-    "max_version": "9.3.0",
+    "max_version": "9.4.0",
     "splash_content": [
         {
             "menu_title": "Top 2 updates 🔥",
             "title": "DISCOVER 2 AWESOME FEATURES AVAILABLE",
             "articles": [
                 {
-                    "title": "🔥 Simplification of the bounce handling",
-                    "desc": "We improved the way the bounce handling configuration is presented, regrouping everything you need under the bounce handling configuration tab."
+                    "title": "🔥 Zapier integration",
+                    "desc": "The new integration with Zapier is now available publicly! Automate your marketing workflows by connecting AcyMailing with 2000+ apps."
                 },
                 {
-                    "title": "🔥 Unsubscribe from all lists",
-                    "desc": "An 'Unsubscribe from all lists' link can be inserted in the email editor, allowing receivers to unsubscribe with one click from all the campaign lists they are subscribed to."
-                }
-            ]
-        },
-        {
-            "menu_title": "Bug Fixes 🛠️",
-            "title": "DISCOVER WHAT CHANGED FOR BUG FIXES",
-            "articles": [
-                {
-                    "title": "🛠️ Automations field values refreshing",
-                    "desc": "The fields using a multiple select now correctly show the saved value for filters in the segments and automations."
-                },
-                {
-                    "title": "🛠️ Thumbnail saving in templates",
-                    "desc": "The send test button from the template edition page was not taking Save Thumbnail configuration option into account."
-                },
-                {
-                    "title": "🛠️ Resend multilingual campaigns",
-                    "desc": "We fixed an issue for the multilingual campaigns when resending them to new users only."
-                },
-                {
-                    "title": "🛠️ Automation email creation",
-                    "desc": "When using the 'add an email into the queue' action in an automation, starting from an existing email was only showing the template instead of the existing campaigns."
-                },
-                {
-                    "title": "🛠️ Resend confirmation email action",
-                    "desc": "The 'Resend confirmation email' action was sending the email twice if the click tracking was enabled."
+                    "title": "🔥 Sending service improvements",
+                    "desc": "The AcyMailing sending service options have been improved for mobile view, and tips have been added to guide you in validating your domains."
                 }
             ]
         },
@@ -46,12 +20,38 @@
             "title": "DISCOVER WHAT CHANGED FOR JOOMLA",
             "articles": [
                 {
-                    "title": "🧩 CLI extension installation",
-                    "desc": "An error could happen when trying to install or update AcyMailing using the CLI for Joomla 4 and higher."
+                    "title": "🧩 Membership Pro integration",
+                    "desc": "A new integration with Membership Pro lets you filter AcyMailing users by plans they subscribed to."
                 },
                 {
-                    "title": "🧩 Front-end listing actions",
-                    "desc": "The front-end listing actions couldn't be executed when the Joomla SEF option was disabled."
+                    "title": "🧩 Joomla 5",
+                    "desc": "AcyMailing can now be used on Joomla 5 websites without requiring the compatibility plugin to be active."
+                },
+                {
+                    "title": "🧩 Better integration for Events Booking",
+                    "desc": "The links to categories, locations and registration page now use the specified Joomla menu ID if any, for the Events Booking integration."
+                }
+            ]
+        },
+        {
+            "menu_title": "WordPress 🧩 ",
+            "title": "DISCOVER WHAT CHANGED FOR WORDPRESS",
+            "articles": [
+                {
+                    "title": "🧩 WooCommerce follow-up campaigns",
+                    "desc": "It is now possible to select product variations in the follow-up based on WooCommerce purchases."
+                },
+                {
+                    "title": "🧩 WooCommerce automations",
+                    "desc": "It is now possible to select product variations in the WooCommerce purchase filter, and filter on multiple products."
+                },
+                {
+                    "title": "🧩 WooCommerce abandoned cart",
+                    "desc": "In WooCommerce abandoned cart send settings, you can now choose to send the email based on hours since the order has been placed."
+                },
+                {
+                    "title": "🧩 Memberpress integration update",
+                    "desc": "The Memberpress integration plugin has been updated to take into account the new way to store custom fields."
                 }
             ]
         },
@@ -60,28 +60,70 @@
             "title": "DISCOVER WHAT CHANGED IN GENERAL",
             "articles": [
                 {
-                    "title": "🎁 Gmail specific email header",
-                    "desc": "We added the List-Unsubscribe-Post=One-Click header to the sent emails containing an unsubscribe link to follow the Gmail guidance and therefore reduce the effect of anti-SPAM filters."
+                    "title": "🎁 Quick user subscribe actions",
+                    "desc": "It is now possible from the subscriber listing to subscribe and unsubscribe users from lists by clicking on the list icon."
                 },
                 {
-                    "title": "🎁 AcyMailing sending service credits message",
-                    "desc": "We improved the 'Remaining credits' message when no credits were used with the AcyMailing sending service."
+                    "title": "🎁 Editor videos",
+                    "desc": "A new option lets you choose if a play button should be added on the video thumbnails when inserting videos in the emails."
                 },
                 {
-                    "title": "🎁 Export unsubscribe date",
-                    "desc": "You can now export the unsubscribe date when exporting subscribers."
+                    "title": "🎁 Easy access to mail IDs",
+                    "desc": "On the campaigns listing, the corresponding mail ID has been added to make it easier to use the new REST API."
                 },
                 {
-                    "title": "🎁 Subscribers actions rewording",
-                    "desc": "The wording of the 'Choose an action' drop-down menu in the Subscribers listing has been improved, making it more consistent."
+                    "title": "🎁 Improved List-Unsubscribe header",
+                    "desc": "When inserting an unsubscribe link in an email, and having the option to add a List-Unsubscribe header, the direct unsubscribe link is added in addition to the email sent to an admin."
                 },
                 {
-                    "title": "🎁 Additional security",
-                    "desc": "A security has been added on the Universal filter add-on for the SQL request filter, adding the ; character at the end of the request."
+                    "title": "🎁 A/B test campaigns click rate",
+                    "desc": "When an A/B test campaign is based on the click rate, it is now calculated on the number of users that opened the email rather than the number of recipients."
+                }
+            ]
+        },
+        {
+            "menu_title": "Bug Fixes 🛠️",
+            "title": "DISCOVER WHAT CHANGED FOR BUG FIXES",
+            "articles": [
+                {
+                    "title": "🛠️ Translations fixes",
+                    "desc": "The accents are now correctly displayed in select fields when building a subscription form."
                 },
                 {
-                    "title": "🎁 REST API messages improved",
-                    "desc": "We changed an API error message when trying to subscribe or unsubscribe non-existing users."
+                    "title": "🛠️ Bounce connection for self-signed certificates",
+                    "desc": "The connection verification for the bounce address credentials now correctly shows a success message when the self signed certificate option is disabled."
+                },
+                {
+                    "title": "🛠️ Unsubscribe link in multilingual campaigns",
+                    "desc": "Fixed direct unsubscribe link not working for secondary languages in multilingual campaigns."
+                },
+                {
+                    "title": "🛠️ Multiple batch system with security key",
+                    "desc": "For the send process, the multiple batch system now works correctly when the security key is active."
+                },
+                {
+                    "title": "🛠️ Mailgun embedded attachments",
+                    "desc": "Fixed Mailgun embed attachment only embedding the first one."
+                },
+                {
+                    "title": "🛠️ Mailgun BCC option",
+                    "desc": "Fixed Mailgun BCC option only sending to the first recipient in the BCC list."
+                },
+                {
+                    "title": "🛠️ Hikashop variant categories",
+                    "desc": "Fixed the Hikashop filter on variant categories not taken into account."
+                },
+                {
+                    "title": "🛠️ SecurImage captcha compatibility",
+                    "desc": "Fixed compatibility with the captcha SecurImage when submitting subscription forms."
+                },
+                {
+                    "title": "🛠️ VirtueMart guest users subscription",
+                    "desc": "Fixed a bug with the VirtueMart integration that was not subscribing guest users to lists when they checked the lists checkbox on the one page checkout."
+                },
+                {
+                    "title": "🛠️ Starter version update",
+                    "desc": "Some users on starter version were not able to fast update their AcyMailing version, it has been fixed."
                 }
             ]
         }

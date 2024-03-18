@@ -1,6 +1,7 @@
 <?php
 
 use Joomla\Archive\Archive;
+use Joomla\CMS\Http\HttpFactory;
 
 /**
  * returns the url content or false if couldn't get it
@@ -24,8 +25,8 @@ function acym_fileGetContent(string $url, int $timeout = 10)
         $data = @file_get_contents($url, false, $streamContext);
     }
 
-    if (empty($data) && class_exists('JHttpFactory') && method_exists('JHttpFactory', 'getHttp')) {
-        $http = JHttpFactory::getHttp();
+    if (empty($data)) {
+        $http = HttpFactory::getHttp();
         try {
             $response = $http->get($url, [], $timeout);
         } catch (RuntimeException $e) {

@@ -1,6 +1,7 @@
 <?php
 
 use AcyMailing\Helpers\TabHelper;
+use Joomla\CMS\Registry\Registry;
 
 trait EventBookingInsertion
 {
@@ -515,7 +516,7 @@ trait EventBookingInsertion
 
         $xml = simplexml_load_file(JPATH_ROOT.'/components/com_eventbooking/fields.xml');
         $fields = $xml->fields->fieldset->children();
-        $params = new JRegistry();
+        $params = new Registry();
         $params->loadString($customFields, 'INI');
         $decodedFields = json_decode($customFields);
 

@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing table of contents generator
-Description: Insert a dynamic table of contents in your emails based on their contents
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 2.5
+ * Plugin Name: AcyMailing table of contents generator
+ * Description: Insert a dynamic table of contents in your emails based on their contents
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 2.5
+ * Requires Plugins: acymailing
 */
 
 use AcyMailing\Classes\PluginClass;

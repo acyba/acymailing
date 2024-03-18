@@ -732,7 +732,6 @@ class FieldClass extends acymClass
         $field->backend_listing = 0;
         $field->frontend_edition = 1;
         $field->frontend_listing = 0;
-        $field->access = 'all';
         $field->namekey = 'acym_language';
 
         $rowId = acym_insertObject('#__acym_field', $field);

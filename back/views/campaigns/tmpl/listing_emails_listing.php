@@ -47,7 +47,7 @@
                     <?php echo acym_translation('ACYM_CLICK'); ?>
 				</div>
 				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_ID'); ?>
+                    <?php echo acym_translation('ACYM_MAIL_ID'); ?>
 				</div>
 			</div>
 		</div>

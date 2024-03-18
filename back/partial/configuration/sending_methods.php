@@ -10,7 +10,7 @@
     ?>
 	<div class="acym__title acym__title__secondary margin-top-1 medium-12 <?php echo !empty($data['step']) && $data['step'] == 'phpmail' ? 'text-center'
         : ''; ?> "><?php echo acym_translation('ACYM_SENDING_MEHTODS'); ?></div>
-	<div class="cell grid-x grid-margin-x grid-margin-y acym__sending__methods__choose__selection <?php echo !empty($data['step']) && $data['step'] == 'phpmail' ? 'align-center'
+	<div class="cell grid-x grid-margin-x grid-margin-y acym__sending__methods__choose__selection text-center <?php echo !empty($data['step']) && $data['step'] == 'phpmail' ? 'align-center'
         : ''; ?>">
         <?php
         foreach ($services as $key => $sendingMethod) {

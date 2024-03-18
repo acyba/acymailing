@@ -275,8 +275,38 @@
 
 // Foundation uses !important on its classes...
 @media print, screen and (min-width: 40em) {
-    .grid-x > .medium-margin-bottom-0 {
-        margin-bottom: 0 !important;
+    .grid-x {
+        & > .medium-margin-bottom-0 {
+            margin-bottom: 0 !important;
+        }
+
+        & > .medium-margin-top-0 {
+            margin-top: 0 !important;
+        }
+
+        & > .medium-margin-left-0 {
+            margin-left: 0 !important;
+        }
+
+        & > .medium-margin-right-0 {
+            margin-right: 0 !important;
+        }
+
+        & > .medium-margin-bottom-1 {
+            margin-bottom: 1rem !important;
+        }
+
+        & > .medium-margin-top-1 {
+            margin-top: 1rem !important;
+        }
+
+        & > .medium-margin-left-1 {
+            margin-left: 1rem !important;
+        }
+
+        & > .medium-margin-right-1 {
+            margin-right: 1rem !important;
+        }
     }
 }
 

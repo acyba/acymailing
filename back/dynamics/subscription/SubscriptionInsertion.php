@@ -195,8 +195,11 @@ trait SubscriptionInsertion
         if (empty($mailto)) {
             $mailto = empty($email->replyemail) ? $this->config->get('replyto_email') : $email->replyemail;
         }
+
         // No bounce address, no reply-to address on the email or the configuration
-        if (empty($mailto)) return;
+        if (empty($mailto)) {
+            return;
+        }
 
         $body = 'Please%20unsubscribe%20user%20ID%20'.$user->id;
 
@@ -219,7 +222,12 @@ trait SubscriptionInsertion
             }
         }
 
-        $email->addCustomHeader('List-Unsubscribe', '<mailto:'.$mailto.'?subject=unsubscribe_user_'.$user->id.'&body='.$body.'>');
+        $unsubscribeLink = str_replace(
+            ['{subscriber:id}', '{subscriber:key|urlencode}'],
+            [$user->id, urlencode($user->key)],
+            $this->unsubscribeLink[$email->id]
+        );
+        $email->addCustomHeader('List-Unsubscribe', '<'.$unsubscribeLink.'&ajax=1>, <mailto:'.$mailto.'?subject=unsubscribe_user_'.$user->id.'&body='.$body.'>');
         $email->addCustomHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
     }
 
@@ -323,7 +331,7 @@ trait SubscriptionInsertion
     {
         $mailid = $email->id;
         $type = strtolower($email->type);
-        // 'standard','welcome','unsubscribe'
+        // standard, welcome, unsubscribe, unsubscribeall
 
         if (isset($this->lists[$mailid][$subid])) {
             return $this->lists[$mailid][$subid];
@@ -588,26 +596,26 @@ trait SubscriptionInsertion
 
             return '<a style="text-decoration:none;" target="_blank" href="'.$myLink.'"><span class="acym_subscribe acym_link">'.$allresults[2][$i].'</span></a>';
         } else {
-            $this->unsubscribeLink[$email->id] = true;
-
             $baseLink = 'frontusers'.$lang.'&mail_id='.$email->id;
             if ($parameters->id === 'unsubscribe') {
-                $myLink = $baseLink.'&task=unsubscribe&userId={subscriber:id}&userKey={subscriber:key|urlencode}';
+                $unsubscribeLink = $baseLink.'&task=unsubscribe&userId={subscriber:id}&userKey={subscriber:key|urlencode}';
                 if ($this->config->get('unsubpage_header') != 1) {
-                    $myLink .= '&'.acym_noTemplate();
+                    $unsubscribeLink .= '&'.acym_noTemplate();
                 }
                 $unsubClass = 'acym_unsubscribe';
             } else {
-                $myLink = $baseLink.'&task=unsubscribeAll&user_id={subscriber:id}&user_key={subscriber:key|urlencode}';
+                $unsubscribeLink = $baseLink.'&task=unsubscribeAll&user_id={subscriber:id}&user_key={subscriber:key|urlencode}';
                 $unsubClass = 'acym_unsubscribe_all_lists';
             }
-            $myLink = acym_frontendLink($myLink);
+            $unsubscribeLink = acym_frontendLink($unsubscribeLink);
+
+            $this->unsubscribeLink[$email->id] = $unsubscribeLink;
 
             if (empty($allresults[2][$i])) {
-                return $myLink;
+                return $unsubscribeLink;
             }
 
-            return '<a style="text-decoration:none;" target="_blank" href="'.$myLink.'"><span class="'.$unsubClass.' acym_link">'.$allresults[2][$i].'</span></a>';
+            return '<a style="text-decoration:none;" target="_blank" href="'.$unsubscribeLink.'"><span class="'.$unsubClass.' acym_link">'.$allresults[2][$i].'</span></a>';
         }
     }
 

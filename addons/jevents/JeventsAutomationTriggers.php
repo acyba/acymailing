@@ -1,5 +1,7 @@
 <?php
 
+use Joomla\CMS\Component\ComponentHelper;
+
 trait JeventsAutomationTriggers
 {
     public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
@@ -59,7 +61,7 @@ trait JeventsAutomationTriggers
             $where = [];
 
             if (!empty($triggerReminder['cat'])) {
-                $multicat = JComponentHelper::getParams('com_jevents')->get('multicategory', 0);
+                $multicat = ComponentHelper::getParams('com_jevents')->get('multicategory', 0);
                 if ($multicat == 1) {
                     $join[] = 'JOIN #__jevents_catmap AS cats ON rpt.eventid = cats.evid ';
                     $where[] = 'cats.catid = '.intval($triggerReminder['cat']);

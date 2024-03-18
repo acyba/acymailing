@@ -9,6 +9,7 @@
 defined('_JEXEC') or die;
 
 use AcyMailing\Libraries\acymPlugin;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 
 class plgAcymSurvey extends acymPlugin
 {
@@ -262,7 +263,7 @@ class plgAcymSurvey extends acymPlugin
 
         // load survey urls
         JLoader::import('response', JPATH_ROOT.'/components/com_communitysurveys/models');
-        $responseModel = JModelLegacy::getInstance('response', 'CommunitySurveysModel');
+        $responseModel = BaseDatabaseModel::getInstance('response', 'CommunitySurveysModel');
 
         $tags = [];
         foreach ($extractedTags as $shortcode => $oneTag) {

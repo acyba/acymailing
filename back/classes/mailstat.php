@@ -24,7 +24,7 @@ class MailStatClass extends acymClass
                 $column[] = '`'.acym_secureDBColumn($key).'`';
 
                 if ($key === 'tracking_sale') {
-                    $valueColumn[] = strlen($value) === 0 ? 'NULL' : floatval($value);
+                    $valueColumn[] = is_null($value) || strlen($value) === 0 ? 'NULL' : floatval($value);
                 } else {
                     $valueColumn[] = acym_escapeDB($value);
                 }
@@ -199,32 +199,31 @@ class MailStatClass extends acymClass
         }
     }
 
-    public function getBestEmailByStats($mailIds, $statsType)
+    public function getBestEmailByStats(array $mailIds, string $statsType): array
     {
         acym_arrayToInteger($mailIds);
 
-        $query = 'SELECT ms.total_subscribers, ms.mail_id, ms.open_total, SUM(uc.click) AS click_total FROM #__acym_mail_stat AS ms LEFT JOIN #__acym_url_click AS uc ON uc.mail_id = ms.mail_id WHERE ms.mail_id IN ('.implode(
-                ',',
-                $mailIds
-            ).') GROUP BY ms.mail_id';
-
-        $mailStats = acym_loadObjectList($query, 'mail_id');
+        $mailStats = acym_loadObjectList(
+            'SELECT ms.total_subscribers, ms.mail_id, ms.open_total, ms.click_total 
+            FROM #__acym_mail_stat AS ms 
+            WHERE ms.mail_id IN ('.implode(',', $mailIds).')',
+            'mail_id'
+        );
 
         foreach ($mailStats as $key => $mailStat) {
-            $mailStats[$key]->click_rate = $mailStat->total_subscribers > 0 ? $mailStat->click_total / $mailStat->total_subscribers : 0;
+            $mailStats[$key]->click_rate = $mailStat->open_total > 0 ? $mailStat->click_total / $mailStat->open_total : 0;
             $mailStats[$key]->open_rate = $mailStat->total_subscribers > 0 ? $mailStat->open_total / $mailStat->total_subscribers : 0;
         }
 
-        switch ($statsType) {
-            case 'click_rate':
-                return ['click_rate' => $this->getBestMailByRate($mailStats, 'click_rate')];
-            case 'open_rate':
-                return ['open_rate' => $this->getBestMailByRate($mailStats, 'open_rate')];
-            case 'click_open_rate':
-                return [
-                    'click_rate' => $this->getBestMailByRate($mailStats, 'click_rate'),
-                    'open_rate' => $this->getBestMailByRate($mailStats, 'open_rate'),
-                ];
+        if ($statsType === 'click_rate') {
+            return ['click_rate' => $this->getBestMailByRate($mailStats, 'click_rate')];
+        } elseif ($statsType === 'open_rate') {
+            return ['open_rate' => $this->getBestMailByRate($mailStats, 'open_rate')];
+        } else {
+            return [
+                'click_rate' => $this->getBestMailByRate($mailStats, 'click_rate'),
+                'open_rate' => $this->getBestMailByRate($mailStats, 'open_rate'),
+            ];
         }
     }
 

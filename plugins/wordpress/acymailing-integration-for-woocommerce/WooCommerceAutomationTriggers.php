@@ -79,6 +79,11 @@ trait WooCommerceAutomationTriggers
         $categoriesIds = [];
         foreach ($items as $item) {
             $productIds[] = $item->get_product_id();
+            $variationId = $item->get_variation_id();
+            if (!empty($variationId)) {
+                $productIds[] = $variationId;
+            }
+
             $terms = get_the_terms($item->get_product_id(), 'product_cat');
             if (!empty($terms)) {
                 foreach ($terms as $term) {
@@ -93,6 +98,7 @@ trait WooCommerceAutomationTriggers
             'woo_order_status' => $statusTo,
             'woo_order_product_ids' => $productIds,
             'woo_order_cat_ids' => $categoriesIds,
+            'woo_order_id' => $order->get_id(),
         ];
 
         $followupClass = new FollowupClass();

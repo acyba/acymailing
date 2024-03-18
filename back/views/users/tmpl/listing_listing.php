@@ -134,14 +134,21 @@
                             $subscriptionsCount = count($data['usersSubscriptions'][$user->id]);
                             $counter = 0;
                             foreach ($data['usersSubscriptions'][$user->id] as $oneSub) {
-                                $classes = 'acym_subscription ';
-                                $classes .= intval($oneSub->status) === 1 ? 'acymicon-circle' : 'acymicon-radio_button_unchecked';
+                                $classes = 'acym_subscription acym_toggleable ';
+                                $newvalue = intval($oneSub->status) === 1 ? 0 : 1;
+                                $classes .= $newvalue === 0 ? 'acymicon-circle' : 'acymicon-radio_button_unchecked';
                                 if ($counter >= 5 && $subscriptionsCount !== 6) $classes .= ' acym_subscription_more';
+                                $toggleAttributes = 'data-acy-user-id="'.$user->id.'" data-acy-list-name="'.$oneSub->name.'" data-acy-list-id="'.$oneSub->id.'"';
+
+                                $dataTask = $newvalue === 0 ? 'unsubscribeOnClick' : 'subscribeOnClick';
+                                $toggleAttributes .= ' data-acy-task="'.$dataTask.'"';
+
+                                $toggleAttributes .= ' data-acy-newvalue="'.$newvalue.'"';
 
                                 echo acym_tooltip(
-                                    '<i class="'.$classes.'" style="color:'.acym_escape($oneSub->color).'"></i>',
+                                    '<i class="'.$classes.'" style="color:'.acym_escape($oneSub->color).'" '.$toggleAttributes.'></i>',
                                     acym_translationSprintf(
-                                        intval($oneSub->status) === 1 ? 'ACYM_SUBSCRIBED_TO_LIST' : 'ACYM_UNSUBSCRIBED_FROM_LIST',
+                                        $newvalue === 0 ? 'ACYM_SUBSCRIBED_TO_LIST' : 'ACYM_UNSUBSCRIBED_FROM_LIST',
                                         acym_escape($oneSub->name)
                                     )
                                 );

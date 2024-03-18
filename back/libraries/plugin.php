@@ -5,6 +5,7 @@ namespace AcyMailing\Libraries;
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\PluginClass;
 use AcyMailing\Helpers\PluginHelper;
+use Joomla\CMS\HTML\HTMLHelper;
 
 class acymPlugin extends acymObject
 {
@@ -802,7 +803,7 @@ class acymPlugin extends acymObject
         switch ($field->type) {
             case 'calendar':
                 $format = acym_translation($field->fieldparams['showtime'] == '1' ? 'ACYM_DATE_FORMAT_LC2' : 'ACYM_DATE_FORMAT_LC1');
-                $field->value = \JHTML::_('date', $field->value, $format);
+                $field->value = HTMLHelper::_('date', $field->value, $format);
                 break;
 
             case 'checkboxes':
@@ -1313,16 +1314,17 @@ class acymPlugin extends acymObject
     protected function getIdsSelectAjax()
     {
         $ids = acym_getVar('string', 'id');
-        if (strpos($ids, ',') !== false) {
+        if (is_null($ids)) {
+            return false;
+        } elseif (strpos($ids, ',') !== false) {
             $ids = explode(',', $ids);
         } elseif (!empty($ids)) {
             $ids = [$ids];
-        } elseif (!is_null($ids)) {
+        } else {
             echo json_encode([]);
             exit;
-        } else {
-            return false;
         }
+
         acym_arrayToInteger($ids);
 
         return $ids;

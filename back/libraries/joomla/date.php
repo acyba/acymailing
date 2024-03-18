@@ -1,11 +1,14 @@
 <?php
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+
 function acym_getTimeOffsetCMS()
 {
     static $timeoffset = null;
     if ($timeoffset === null) {
 
-        $dateC = JFactory::getDate(
+        $dateC = Factory::getDate(
             'now',
             acym_getCMSConfig('offset')
         );
@@ -17,7 +20,7 @@ function acym_getTimeOffsetCMS()
 
 function acym_dateTimeCMS($time)
 {
-    return JHTML::_('date', $time, 'Y-m-d H:i:s', null);
+    return HTMLHelper::_('date', $time, 'Y-m-d H:i:s', null);
 }
 
 function acym_getDateTimeFormat($default = 'ACYM_DATE_FORMAT_LC2')

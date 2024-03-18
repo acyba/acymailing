@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Controllers;
 
+use AcyMailing\Classes\UserClass;
 use AcyMailing\Libraries\acymController;
 
 class ToggleController extends acymController
@@ -187,4 +188,35 @@ class ToggleController extends acymController
             acym_sendAjaxResponse(acym_translation('ACYM_ERROR_SAVING'), [], false);
         }
     }
+
+    public function subscribeOnClick()
+    {
+        $userId = acym_getVar('int', 'userid');
+        $listId = acym_getVar('int', 'listid');
+
+        $userClass = new UserClass();
+        $result = $userClass->subscribe($userId, [$listId]);
+
+        if ($result) {
+            acym_sendAjaxResponse();
+        } else {
+            acym_sendAjaxResponse('', [], false);
+        }
+    }
+
+    public function unsubscribeOnClick()
+    {
+        $userId = acym_getVar('int', 'userid');
+        $listId = acym_getVar('int', 'listid');
+
+        $userClass = new UserClass();
+        $result = $userClass->unsubscribe($userId, [$listId]);
+
+        if ($result) {
+            acym_sendAjaxResponse();
+        } else {
+            acym_sendAjaxResponse('', [], false);
+        }
+    }
+
 }

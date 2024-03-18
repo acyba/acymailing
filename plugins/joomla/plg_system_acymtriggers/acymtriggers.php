@@ -5,10 +5,14 @@ use AcyMailing\Classes\FormClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\RegacyHelper;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Application\WebApplication;
 
 defined('_JEXEC') or die('Restricted access');
 
-class plgSystemAcymtriggers extends JPlugin
+class plgSystemAcymtriggers extends CMSPlugin
 {
     private $oldUser = null;
     private $formToDisplay = [];
@@ -163,7 +167,7 @@ class plgSystemAcymtriggers extends JPlugin
             return;
         }
 
-        $app = JFactory::getApplication();
+        $app = Factory::getApplication();
         if ($app->getName() != 'site') {
             return;
         }
@@ -200,11 +204,11 @@ class plgSystemAcymtriggers extends JPlugin
             return;
         }
 
-        $buffer = JFactory::getApplication()->getBody();
+        $buffer = Factory::getApplication()->getBody();
 
         $buffer = preg_replace('/(<body.*>)/Ui', '$1'.implode('', $this->formToDisplay), $buffer);
 
-        JFactory::getApplication()->setBody($buffer);
+        Factory::getApplication()->setBody($buffer);
     }
 
     public function onAfterRender()
@@ -215,7 +219,7 @@ class plgSystemAcymtriggers extends JPlugin
 
     private function applyRegacy()
     {
-        $db = JFactory::getDBO();
+        $db = Factory::getDbo();
         $db->setQuery('SELECT `value` FROM #__acym_configuration WHERE `name` LIKE "%regacy" OR `name` LIKE "%\_sub"');
         $regacyOptions = $db->loadColumn();
 
@@ -296,7 +300,7 @@ class plgSystemAcymtriggers extends JPlugin
     {
         $jversion = preg_replace('#[^0-9\.]#i', '', JVERSION);
         if (version_compare($jversion, '4.0.0', '>=')) {
-            $acyapp = JFactory::getApplication();
+            $acyapp = Factory::getApplication();
             $input = $acyapp->input;
             $sourceInput = $input->__get('REQUEST');
 
@@ -311,7 +315,7 @@ class plgSystemAcymtriggers extends JPlugin
         }
 
         if (is_string($result)) {
-            return JComponentHelper::filterText($result);
+            return ComponentHelper::filterText($result);
         }
 
         return $result;
@@ -321,9 +325,9 @@ class plgSystemAcymtriggers extends JPlugin
     {
         $config = acym_config();
         if (ACYM_J40) {
-            $body = JFactory::getApplication()->getBody(false);
+            $body = Factory::getApplication()->getBody(false);
         } else {
-            $body = JResponse::getBody();
+            $body = WebApplication::getBody();
         }
 
         $listsPosition = $config->get('regacy_listsposition', 'password');
@@ -356,9 +360,9 @@ class plgSystemAcymtriggers extends JPlugin
                     </tr>';
                 $body = preg_replace($regex, '$1'.$lists, $body, 1);
                 if (ACYM_J40) {
-                    JFactory::getApplication()->setBody($body);
+                    Factory::getApplication()->setBody($body);
                 } else {
-                    JResponse::setBody($body);
+                    WebApplication::setBody($body);
                 }
 
                 return;
@@ -410,9 +414,9 @@ class plgSystemAcymtriggers extends JPlugin
                     }
                     $body = preg_replace($regex, '$1'.$lists, $body, 1);
                     if (ACYM_J40) {
-                        JFactory::getApplication()->setBody($body);
+                        Factory::getApplication()->setBody($body);
                     } else {
-                        JResponse::setBody($body);
+                        WebApplication::setBody($body);
                     }
 
                     return;
@@ -427,7 +431,7 @@ class plgSystemAcymtriggers extends JPlugin
     {
         // Fix a bug in Joomla: the session com_media.return_url is deleted the first time we submit the image upload form
         if (!empty($_REQUEST['author']) && 'acymailing' === $_REQUEST['author'] && !empty($_REQUEST['task']) && 'file.upload' === $_REQUEST['task'] && !empty($_REQUEST['option']) && 'com_media' === $_REQUEST['option']) {
-            $session = JFactory::getSession();
+            $session = Factory::getSession();
             $session->set('com_media.return_url', 'index.php?option=com_media&view=images&tmpl=component');
         }
 
@@ -470,7 +474,7 @@ class plgSystemAcymtriggers extends JPlugin
     {
         static $db;
         if (empty($db)) {
-            $db = JFactory::getDBO();
+            $db = Factory::getDbo();
         }
 
         $db->setQuery('SELECT `value` FROM #__acym_configuration WHERE `name` = '.$db->quote($conf));

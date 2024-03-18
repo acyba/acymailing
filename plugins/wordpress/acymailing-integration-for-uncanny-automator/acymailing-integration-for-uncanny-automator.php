@@ -9,6 +9,7 @@
  * Version: 1.9
  * Text Domain: acymailing-integration-for-uncanny-automator
  * Domain Path: /language
+ * Requires Plugins: acymailing, uncanny-automator
  */
 
 class AcyMailingUncannyAutomatorIntegration

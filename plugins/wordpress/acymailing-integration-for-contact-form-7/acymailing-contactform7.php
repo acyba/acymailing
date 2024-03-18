@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing integration for Contact Form 7
-Description: Adds the possibility to show AcyMailing lists on Contact Form 7 forms
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 2.8
+ * Plugin Name: AcyMailing integration for Contact Form 7
+ * Description: Adds the possibility to show AcyMailing lists on Contact Form 7 forms
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 2.8
+ * Requires Plugins: acymailing, contact-form-7
 */
 
 use AcyMailing\Classes\PluginClass;

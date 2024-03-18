@@ -1,5 +1,9 @@
 <?php
 
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+
 function acym_route($url, $xhtml = true, $ssl = null)
 {
     if (ACYM_J40) {
@@ -9,12 +13,12 @@ function acym_route($url, $xhtml = true, $ssl = null)
         }
     }
 
-    return JRoute::_($url, $xhtml, $ssl === null ? 0 : $ssl);
+    return Route::_($url, $xhtml, $ssl === null ? 0 : $ssl);
 }
 
 function acym_baseURI($pathonly = false)
 {
-    return JURI::base($pathonly);
+    return Uri::base($pathonly);
 }
 
 function acym_completeLink($link, $popup = false, $redirect = false, $forceNoPopup = false)
@@ -43,7 +47,7 @@ function acym_frontendLink(string $link, bool $complete = true, bool $sef = true
             // sh404 generates a PHP notice when the content language is missing in Joomla
             return @Sh404sefHelperGeneral::getSefFromNonSef($link);
         } else {
-            return JRoute::link('site', $link, true, 0, true);
+            return Route::link('site', $link, true, 0, true);
         }
     }
 
@@ -56,7 +60,7 @@ function acym_getMenu()
 {
     global $Itemid;
 
-    $jsite = JFactory::getApplication('site');
+    $jsite = Factory::getApplication('site');
     $menus = $jsite->getMenu();
     $menu = $menus->getActive();
 

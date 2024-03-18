@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing automation export
-Description: Adds a new option in the AcyMailing automations to export the selected users in a file
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 2.5
+ * Plugin Name: AcyMailing automation export
+ * Description: Adds a new option in the AcyMailing automations to export the selected users in a file
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 2.5
+ * Requires Plugins: acymailing
 */
 
 use AcyMailing\Classes\PluginClass;

@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing integration for Ultimate Member
-Description: Add AcyMailing lists on your Ultimate Member registration form
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 2.7
+ * Plugin Name: AcyMailing integration for Ultimate Member
+ * Description: Add AcyMailing lists on your Ultimate Member registration form
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 2.7
+ * Requires Plugins: acymailing, ultimate-member
 */
 
 use AcyMailing\Classes\PluginClass;

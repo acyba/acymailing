@@ -10,7 +10,6 @@ class MailboxHelper extends BounceHelper
     public $mailboxConfig = [];
     public $conditions;
 
-
     public function buildConfigFromMailbox(): bool
     {
         $this->mailboxConfig = [
@@ -30,8 +29,8 @@ class MailboxHelper extends BounceHelper
     private function isConfigurationValid(): bool
     {
         $error = false;
-        foreach ($this->mailboxConfig as $oneConfig) {
-            if (empty($oneConfig)) {
+        foreach ($this->mailboxConfig as $key => $oneConfig) {
+            if (empty($oneConfig) && !in_array($key, ['self_signed', 'secure_method'])) {
                 $error = true;
                 break;
             }

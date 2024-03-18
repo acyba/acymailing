@@ -419,9 +419,8 @@ class FollowupClass extends acymClass
         return $return;
     }
 
-    public function subscribeUserToFollowupList($followupIds, $userId)
+    public function subscribeUserToFollowupList(array $followupIds, $userId): array
     {
-        if (!is_array($followupIds)) $followupIds = [$followupIds];
         acym_arrayToInteger($followupIds);
 
         $followupLists = acym_loadObjectList(
@@ -431,7 +430,9 @@ class FollowupClass extends acymClass
             'list_id'
         );
 
-        if (empty($followupLists)) return [];
+        if (empty($followupLists)) {
+            return [];
+        }
 
         $followupListIds = [];
         foreach ($followupLists as $listId => $followupList) {
@@ -439,7 +440,9 @@ class FollowupClass extends acymClass
             $followupListIds[$listId] = $followupList->id;
         }
 
-        if (empty($followupListIds)) return [];
+        if (empty($followupListIds)) {
+            return [];
+        }
 
         $userClass = new UserClass();
         $userClass->subscribe($userId, array_keys($followupListIds), false);

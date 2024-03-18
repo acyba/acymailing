@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing integration for Easy Digital Downloads
-Description: Adds editor options for Easy Digital Downloads in AcyMailing
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 2.5
+ * Plugin Name: AcyMailing integration for Easy Digital Downloads
+ * Description: Adds editor options for Easy Digital Downloads in AcyMailing
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 2.5
+ * Requires Plugins: acymailing, easy-digital-downloads
 */
 
 use AcyMailing\Classes\PluginClass;

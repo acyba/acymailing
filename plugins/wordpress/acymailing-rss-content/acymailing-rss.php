@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing RSS content
-Description: Allows you to automatically insert RSS content in your emails
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 3.3
+ * Plugin Name: AcyMailing RSS content
+ * Description: Allows you to automatically insert RSS content in your emails
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 3.3
+ * Requires Plugins: acymailing
 */
 
 use AcyMailing\Classes\PluginClass;

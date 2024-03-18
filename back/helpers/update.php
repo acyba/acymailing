@@ -14,6 +14,7 @@ use AcyMailing\Classes\RuleClass;
 use AcyMailing\Classes\StepClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Libraries\acymObject;
+use Joomla\CMS\Installer\Installer;
 
 class UpdateHelper extends acymObject
 {
@@ -257,9 +258,9 @@ class UpdateHelper extends acymObject
 
     public function installFields()
     {
-        $query = "INSERT IGNORE INTO #__acym_field (`id`, `name`, `type`, `value`, `active`, `default_value`, `required`, `ordering`, `option`, `core`, `backend_edition`, `backend_listing`, `frontend_edition`, `frontend_listing`, `access`, `namekey`) VALUES 
-    (1, 'ACYM_NAME', 'text', NULL, 1, NULL, 0, 1, '{\"error_message\":\"\",\"error_message_invalid\":\"\",\"size\":\"\",\"rows\":\"\",\"columns\":\"\",\"format\":\"\",\"custom_text\":\"\",\"css_class\":\"\",\"authorized_content\":{\"0\":\"all\",\"regex\":\"\"}}', 1, 1, 1, 1, 1, 'all', 'acym_name'), 
-    (2, 'ACYM_EMAIL', 'text', NULL, 1, NULL, 1, 2, '{\"error_message\":\"\",\"error_message_invalid\":\"\",\"size\":\"\",\"rows\":\"\",\"columns\":\"\",\"format\":\"\",\"custom_text\":\"\",\"css_class\":\"\",\"authorized_content\":{\"0\":\"all\",\"regex\":\"\"}}', 1, 1, 1, 1, 1, 'all', 'acym_email');";
+        $query = "INSERT IGNORE INTO #__acym_field (`id`, `name`, `type`, `value`, `active`, `default_value`, `required`, `ordering`, `option`, `core`, `backend_edition`, `backend_listing`, `frontend_edition`, `frontend_listing`, `namekey`) VALUES 
+    (1, 'ACYM_NAME', 'text', NULL, 1, NULL, 0, 1, '{\"error_message\":\"\",\"error_message_invalid\":\"\",\"size\":\"\",\"rows\":\"\",\"columns\":\"\",\"format\":\"\",\"custom_text\":\"\",\"css_class\":\"\",\"authorized_content\":{\"0\":\"all\",\"regex\":\"\"}}', 1, 1, 1, 1, 1, 'acym_name'), 
+    (2, 'ACYM_EMAIL', 'text', NULL, 1, NULL, 1, 2, '{\"error_message\":\"\",\"error_message_invalid\":\"\",\"size\":\"\",\"rows\":\"\",\"columns\":\"\",\"format\":\"\",\"custom_text\":\"\",\"css_class\":\"\",\"authorized_content\":{\"0\":\"all\",\"regex\":\"\"}}', 1, 1, 1, 1, 1, 'acym_email');";
         acym_query($query);
 
         $fieldClass = new FieldClass();
@@ -638,7 +639,7 @@ class UpdateHelper extends acymObject
             $extensionsToPublish = array_diff($extensionsToPublish, $existingExtensions);
         }
 
-        $installer = \JInstaller::getInstance();
+        $installer = Installer::getInstance();
         foreach ($dirs as $oneExtension) {
             $extension = ACYM_BACK.'extensions'.DS.$oneExtension;
             if (file_exists($extension)) {

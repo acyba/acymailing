@@ -1,8 +1,11 @@
 <?php
 
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Session\Session;
+
 function acym_formToken()
 {
-    return JHTML::_('form.token');
+    return HTMLHelper::_('form.token');
 }
 
 /**
@@ -10,22 +13,12 @@ function acym_formToken()
  */
 function acym_checkToken()
 {
-    if (ACYM_J40) {
-        \JSession::checkToken() || \JSession::checkToken('get') || die('Invalid Token');
-    } else {
-        if (!JRequest::checkToken() && !JRequest::checkToken('get')) {
-            JSession::checkToken() || JSession::checkToken('get') || die('Invalid Token');
-        }
-    }
+    Session::checkToken() || Session::checkToken('get') || die('Invalid Token');
 }
 
 function acym_getFormToken()
 {
-    if (ACYM_J30) {
-        return JSession::getFormToken().'=1';
-    }
-
-    return JUtility::getToken().'=1';
+    return Session::getFormToken().'=1';
 }
 
 function acym_noTemplate(): string

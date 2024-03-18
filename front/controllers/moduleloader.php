@@ -3,6 +3,7 @@
 namespace AcyMailing\FrontControllers;
 
 use AcyMailing\Libraries\acymController;
+use Joomla\CMS\Helper\ModuleHelper;
 
 class ModuleloaderController extends acymController
 {
@@ -39,7 +40,7 @@ class ModuleloaderController extends acymController
 
         $params = [];
 
-        $moduleOutput = \JModuleHelper::renderModule($module, $params);
+        $moduleOutput = ModuleHelper::renderModule($module, $params);
         acym_sendAjaxResponse('', ['output' => $moduleOutput]);
     }
 }

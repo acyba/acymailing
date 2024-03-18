@@ -1,11 +1,12 @@
 <?php
 
 use AcyMailing\Classes\PluginClass;
+use Joomla\CMS\Component\ComponentHelper;
 
 function acym_isExtensionActive($extension)
 {
     // Keep both to handle old Joomla 3 versions
-    return JComponentHelper::isInstalled($extension) && JComponentHelper::isEnabled($extension, true);
+    return ComponentHelper::isInstalled($extension) && ComponentHelper::isEnabled($extension, true);
 }
 
 function acym_getPluginsPath($file, $dir)

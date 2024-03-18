@@ -1686,6 +1686,32 @@ class acymInstall
             $maxOrdering = acym_loadResult('SELECT MAX(ordering) FROM #__acym_rule');
             $this->updateQuery('UPDATE #__acym_rule SET `ordering` = '.intval($maxOrdering + 1).' WHERE `id` = 17');
         }
+
+        if (version_compare($this->fromVersion, '9.4.0', '<')) {
+            $config->save([
+                'from_email' => acym_strtolower($config->get('from_email')),
+                'replyto_email' => acym_strtolower($config->get('replyto_email')),
+                'bounce_email' => acym_strtolower($config->get('bounce_email')),
+            ]);
+
+            // Make sure that all domains in AcyMailer configuration are in lower cases
+            $acymailerParams = $config->get('acymailer_domains', '[]');
+            $acymailerParams = @json_decode($acymailerParams, true);
+            if (!empty($acymailerParams)) {
+                foreach ($acymailerParams as $domain => $domainParams) {
+                    $acymailerParams[$domain]['domain'] = acym_strtolower($domainParams['domain']);
+                    if (acym_strtolower($domain) === $domain) {
+                        continue;
+                    }
+
+                    $acymailerParams[acym_strtolower($domain)] = $acymailerParams[$domain];
+                    unset($acymailerParams[$domain]);
+                }
+                $config->save(['acymailer_domains' => json_encode($acymailerParams)]);
+            }
+
+            $this->updateQuery('ALTER TABLE `#__acym_field` DROP COLUMN `access`');
+        }
     }
 
     public function updateQuery($query)

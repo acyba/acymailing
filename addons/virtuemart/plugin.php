@@ -1,6 +1,7 @@
 <?php
 
 use AcyMailing\Libraries\acymPlugin;
+use Joomla\CMS\Component\ComponentHelper;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'VirtuemartAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'VirtuemartAutomationFilters.php';
@@ -31,7 +32,7 @@ class plgAcymVirtuemart extends acymPlugin
         ];
         $this->installed = acym_isExtensionActive('com_virtuemart');
         if ($this->installed) {
-            $params = JComponentHelper::getParams('com_languages');
+            $params = ComponentHelper::getParams('com_languages');
             $this->lang = strtolower(str_replace('-', '_', $params->get('site', 'en-GB')));
         }
 

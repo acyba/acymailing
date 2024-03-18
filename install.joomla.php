@@ -1,6 +1,9 @@
 <?php
 
 use AcyMailing\Helpers\UpdateHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Installer\Installer;
 
 if (version_compare(PHP_VERSION, '7.2.0', '<')) {
     echo '<p style="color:red">This version of AcyMailing requires at least PHP 7.2.0, it is time to upgrade the PHP version of your server!</p>';
@@ -72,7 +75,7 @@ function installAcym()
 
 function uninstallAcym()
 {
-    $db = JFactory::getDBO();
+    $db = Factory::getDbo();
     $jversion = preg_replace('#[^0-9\.]#i', '', JVERSION);
     $method = version_compare($jversion, '4.0.0', '>=') ? 'execute' : 'query';
 
@@ -170,7 +173,7 @@ class com_acymInstallerScript
     public function preflight($type, $parent)
     {
         if ($type === 'update') {
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
             $query = $db->getQuery(true)->select('*')->from('#__extensions');
             $query->where(
                 'type = "component" AND element = "com_acym"'
@@ -180,12 +183,12 @@ class com_acymInstallerScript
             try {
                 $extension = $db->loadObject();
             } catch (Exception $e) {
-                echo JText::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $e->getCode(), $e->getMessage()).'<br />';
+                echo Text::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $e->getCode(), $e->getMessage()).'<br />';
 
                 return false;
             }
 
-            $installer = new JInstaller();
+            $installer = new Installer();
             $installer->refreshManifestCache($extension->extension_id);
         }
 

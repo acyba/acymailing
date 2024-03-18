@@ -72,7 +72,7 @@ class QueueClass extends acymClass
         $queryCount = 'SELECT COUNT(DISTINCT mail.id) '.$query;
         $query .= ' GROUP BY mail.id';
 
-        $query = 'SELECT mail.name, mail.subject, mail.id, campaign.id AS campaign, IF(campaign.sending_date IS NULL, queue.sending_date, campaign.sending_date) AS sending_date, campaign.sending_type, campaign.active, campaign.sending_params AS sending_params, COUNT(queue.mail_id) AS nbqueued, mail.language, mail.parent_id '.$query.' ORDER BY queue.sending_date ASC';
+        $query = 'SELECT mail.name, mail.subject, mail.type, mail.id, campaign.id AS campaign, IF(campaign.sending_date IS NULL, queue.sending_date, campaign.sending_date) AS sending_date, campaign.sending_type, campaign.active, campaign.sending_params AS sending_params, COUNT(queue.mail_id) AS nbqueued, mail.language, mail.parent_id '.$query.' ORDER BY queue.sending_date ASC';
 
         acym_query('SET SQL_BIG_SELECTS=1;');
         $results['elements'] = $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['campaignsPerPage']));
@@ -94,7 +94,11 @@ class QueueClass extends acymClass
                 $results['elements'][$i]->recipients = acym_loadResult('SELECT COUNT(*) FROM #__acym_queue WHERE mail_id = '.intval($oneMail->id));
             } elseif (empty($oneMail->campaign)) {
                 $results['elements'][$i]->iscampaign = false;
-                $results['elements'][$i]->lists = acym_translation('ACYM_MAIL_FROM_AUTOMATION_SENT_TO');
+                if ($oneMail->type === $mailClass::TYPE_FOLLOWUP) {
+                    $results['elements'][$i]->lists = acym_translation('ACYM_MAIL_FROM_FOLLOWUP_SENT_TO');
+                } else {
+                    $results['elements'][$i]->lists = acym_translation('ACYM_MAIL_FROM_AUTOMATION_SENT_TO');
+                }
                 $results['elements'][$i]->recipients = acym_loadResult('SELECT COUNT(*) FROM #__acym_queue WHERE mail_id = '.intval($oneMail->id));
             } else {
                 $mailId = empty($oneMail->parent_id) ? $oneMail->id : $oneMail->parent_id;

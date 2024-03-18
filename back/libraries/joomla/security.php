@@ -2,6 +2,9 @@
 
 use AcyMailing\Helpers\UpdatemeHelper;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
 
 function acym_getVar($type, $name, $default = null, $source = 'default', $mask = 0)
 {
@@ -13,7 +16,7 @@ function acym_getVar($type, $name, $default = null, $source = 'default', $mask =
         }
 
         if (empty($source) || $source === 'default') $source = 'REQUEST';
-        $input = JFactory::getApplication()->input;
+        $input = Factory::getApplication()->input;
         $sourceInput = $input->__get($source);
         if ($type === 'file') {
             $result = $sourceInput->files->get($name, $default, 'RAW');
@@ -28,7 +31,7 @@ function acym_getVar($type, $name, $default = null, $source = 'default', $mask =
     }
 
     if (is_string($result) && !($mask & ACYM_ALLOWRAW)) {
-        return JComponentHelper::filterText($result);
+        return ComponentHelper::filterText($result);
     }
 
     return $result;
@@ -38,7 +41,7 @@ function acym_setVar($name, $value = null, $hash = 'method', $overwrite = true)
 {
     if (ACYM_J40) {
         if (empty($hash) || $hash === 'method') $hash = 'REQUEST';
-        $input = JFactory::getApplication()->input;
+        $input = Factory::getApplication()->input;
         $hashInput = $input->__get($hash);
         $hashInput->set($name, $value);
         $input->set($name, $value);
@@ -107,10 +110,10 @@ function acym_getDefaultConfigValues()
 
 function acym_cmsPermission()
 {
-    $user = JFactory::getUser();
+    $user = Factory::getUser();
     if (!$user->authorise('core.admin', ACYM_COMPONENT)) return '';
 
-    $url = 'index.php?option=com_config&view=component&component='.ACYM_COMPONENT.'&return='.urlencode(base64_encode((string)JUri::getInstance()));
+    $url = 'index.php?option=com_config&view=component&component='.ACYM_COMPONENT.'&return='.urlencode(base64_encode((string)Uri::getInstance()));
 
     return '
 		<div class="cell grid-x margin-bottom-1">
@@ -128,21 +131,17 @@ function acym_checkVersion($ajax = false)
 
 function acym_loadJoomlaPlugin($family, $name = null)
 {
-    if (ACYM_J40) {
-        PluginHelper::importPlugin($family, $name);
-    } else {
-        JPluginHelper::importPlugin($family, $name);
-    }
+    PluginHelper::importPlugin($family, $name);
 }
 
 function acym_triggerCmsHook($method, $args = [], $isAction = true)
 {
     if (ACYM_J40) {
-        $result = JFactory::getApplication()->triggerEvent($method, $args);
+        $result = Factory::getApplication()->triggerEvent($method, $args);
     } else {
         global $acydispatcher;
         if ($acydispatcher === null) {
-            $acydispatcher = JDispatcher::getInstance();
+            $acydispatcher = JEventDispatcher::getInstance();
         }
 
         $result = @$acydispatcher->trigger($method, $args);
@@ -167,7 +166,7 @@ function acym_getCmsCaptcha()
     );
 
     // Import plugins to translate their name
-    JPluginHelper::importPlugin('captcha');
+    PluginHelper::importPlugin('captcha');
     $results = [];
     foreach ($captchaPlugins as $captchaPlugin) {
         $results[$captchaPlugin->element] = acym_translation($captchaPlugin->name);
@@ -178,7 +177,7 @@ function acym_getCmsCaptcha()
 
 function acym_loadCaptcha($captchaPluginName, $id)
 {
-    JPluginHelper::importPlugin('captcha', $captchaPluginName);
+    PluginHelper::importPlugin('captcha', $captchaPluginName);
     acym_triggerCmsHook('onInit', [$id]);
     $result = acym_triggerCmsHook('onDisplay', [null, $id, 'class=""']);
 
@@ -187,7 +186,7 @@ function acym_loadCaptcha($captchaPluginName, $id)
 
 function acym_checkCaptcha($captchaPluginName)
 {
-    JPluginHelper::importPlugin('captcha', $captchaPluginName);
+    PluginHelper::importPlugin('captcha', $captchaPluginName);
     try {
         $result = acym_triggerCmsHook('onCheckAnswer', [null]);
     } catch (Exception $e) {

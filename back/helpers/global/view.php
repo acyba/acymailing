@@ -93,6 +93,8 @@ function acym_getJSMessages()
     $msg .= '"defaultMsg": "'.acym_translation('ACYM_DEFAULT_VALIDATION_ERROR', true).'"';
 
     $keysToLoad = [
+        'ACYM_UNSUBSCRIBED_FROM_LIST',
+        'ACYM_SUBSCRIBED_TO_LIST',
         'ACYM_FOLLOW_UP',
         'ACYM_FOLLOW_UPS',
         'ACYM_MAILBOX_ACTIONS',
@@ -397,6 +399,7 @@ function acym_getJSMessages()
         'ACYM_UNSPLASH_KEY_NEEDED',
         'ACYM_GET_ONE_HERE',
         'ACYM_ENTITY',
+        'ACYM_DELETE_DOMAIN_CONFIRMATION',
     ];
 
     foreach ($keysToLoad as $oneKey) {

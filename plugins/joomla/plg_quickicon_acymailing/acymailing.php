@@ -1,14 +1,10 @@
 <?php
-/**
- * @package          AcyMailing for Joomla
- * @author           acyba.com
- * @copyright    (C) 2009-2020 ACYBA SAS - All rights reserved.
- * @license          GNU/GPLv3 https://www.gnu.org/licenses/gpl-3.0.html
- */
+
+use Joomla\CMS\Plugin\CMSPlugin;
 
 defined('_JEXEC') or die('Restricted access');
 
-class plgQuickiconAcymailing extends JPlugin
+class plgQuickiconAcymailing extends CMSPlugin
 {
     public function onGetIcons($context)
     {

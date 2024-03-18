@@ -1,8 +1,9 @@
 <?php
-/**
- * @copyright      Copyright (C) 2009-{__YEAR__} ACYBA SAS - All rights reserved.
- * @license        GNU/GPLv3 https://www.gnu.org/licenses/gpl-3.0.html
- */
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Registry\Registry;
+
 defined('_JEXEC') || die('Restricted access');
 
 class AcyplgContentCCK extends plgContentCCK
@@ -46,7 +47,7 @@ class AcyplgContentCCK extends plgContentCCK
             return;
         }
 
-        JPluginHelper::importPlugin('cck_storage_location');
+        PluginHelper::importPlugin('cck_storage_location');
         if ($context == 'text') {
             $client = 'intro';
         } else {
@@ -60,9 +61,9 @@ class AcyplgContentCCK extends plgContentCCK
         }
 
         // Fields
-        $app = JFactory::getApplication();
+        $app = Factory::getApplication();
 
-        $user = JFactory::getUser();
+        $user = Factory::getUser();
         $authorizedViewLevels = $user->getAuthorisedViewLevels();
         acym_arrayToInteger($authorizedViewLevels);
         $access = implode(',', $user->getAuthorisedViewLevels());
@@ -109,7 +110,7 @@ class AcyplgContentCCK extends plgContentCCK
         }
         if (!isset($this->loaded[$contentType.'_'.$client.'_options'])) {
             acym_loadLanguageFile('pkg_app_cck_'.$cck->folder_app, JPATH_SITE, null, false, false);
-            $registry = new JRegistry;
+            $registry = new Registry();
             $registry->loadString($cck->{'options_'.$client});
             $this->loaded[$contentType.'_'.$client.'_options'] = $registry->toArray();
             if (isset($this->loaded[$contentType.'_'.$client.'_options']['sef'])) {

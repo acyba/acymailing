@@ -1,11 +1,13 @@
 <?php
 
 use AcyMailing\Classes\PluginClass;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
 
-function acym_getGlobal($type)
+function acym_getGlobal(string $type)
 {
     $variables = [
-        'db' => ['acydb', 'getDBO'],
+        'db' => ['acydb', 'getDbo'],
         'doc' => ['acyDocument', 'getDocument'],
         'app' => ['acyapp', 'getApplication'],
     ];
@@ -13,7 +15,7 @@ function acym_getGlobal($type)
     global ${$variables[$type][0]};
     if (${$variables[$type][0]} === null) {
         $method = $variables[$type][1];
-        ${$variables[$type][0]} = JFactory::$method();
+        ${$variables[$type][0]} = Factory::$method();
     }
 
     return ${$variables[$type][0]};
@@ -35,7 +37,7 @@ function acym_setPageTitle($title)
     } elseif (acym_getCMSConfig('sitename_pagetitles', 0) == 2) {
         $title = acym_translationSprintf('ACYM_JPAGETITLE', $title, acym_getCMSConfig('sitename'));
     }
-    $document = JFactory::getDocument();
+    $document = Factory::getDocument();
     $document->setTitle($title);
 }
 
@@ -93,14 +95,14 @@ function acym_getLeftMenu($name)
 
 function acym_isPluginActive($plugin, $family = 'system')
 {
-    $plugin = JPluginHelper::getPlugin($family, $plugin);
+    $plugin = PluginHelper::getPlugin($family, $plugin);
 
     return !empty($plugin);
 }
 
 function acym_menuOnly($links)
 {
-    $menu = JFactory::getApplication('site')->getMenu()->getActive();
+    $menu = Factory::getApplication('site')->getMenu()->getActive();
     $menuFound = false;
     if (!empty($menu)) {
         foreach ($links as $link) {

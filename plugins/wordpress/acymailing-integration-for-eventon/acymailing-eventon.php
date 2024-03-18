@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing integration for EventOn
-Description: Insert events in your emails
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 2.6
+ * Plugin Name: AcyMailing integration for EventOn
+ * Description: Insert events in your emails
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 2.6
+ * Requires Plugins: acymailing
 */
 
 use AcyMailing\Classes\PluginClass;

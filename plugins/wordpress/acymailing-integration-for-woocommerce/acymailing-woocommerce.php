@@ -1,11 +1,12 @@
 <?php
 /*
-Plugin Name: AcyMailing integration for WooCommerce
-Description: Adds editor and automation options for WooCommerce in AcyMailing
-Author: AcyMailing Newsletter Team
-Author URI: https://www.acymailing.com
-License: GPLv3
-Version: 5.5
+ * Plugin Name: AcyMailing integration for WooCommerce
+ * Description: Adds editor and automation options for WooCommerce in AcyMailing
+ * Author: AcyMailing Newsletter Team
+ * Author URI: https://www.acymailing.com
+ * License: GPLv3
+ * Version: 5.5
+ * Requires Plugins: acymailing, woocommerce
 */
 
 use AcyMailing\Classes\PluginClass;

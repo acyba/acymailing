@@ -115,6 +115,17 @@
                 ?>
 			</div>
         <?php } ?>
+		<div class="cell grid-x grid-margin-x">
+            <?php
+            echo acym_switch(
+                'config[add_play_button_video]',
+                $this->config->get('add_play_button_video', 1),
+                acym_translation('ACYM_ADD_PLAY_BUTTON'),
+                [],
+                'xlarge-3 medium-5 small-9'
+            );
+            ?>
+		</div>
 		<div class="cell grid-x">
 			<label class="cell medium-6 grid-x">
 				<span class="cell medium-6">

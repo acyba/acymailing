@@ -714,6 +714,10 @@ trait Edition
 
     public function saveVideoPreview($image, $fileName): string
     {
+        if (!$this->config->get('add_play_button_video', 1)) {
+            return $image;
+        }
+
         $imageVideo = imagecreatefromjpeg($image);
         $playButton = @imagecreatefrompng(ACYM_ROOT.ACYM_MEDIA_FOLDER.'images'.DS.'editor'.DS.'play_button.png');
         if ($playButton === false || $imageVideo === false) {

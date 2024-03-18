@@ -145,11 +145,6 @@ trait Edition
         }
     }
 
-    public function exceptionsErrorHandler($severity, $message, $filename, $lineno)
-    {
-        $this->mailboxReport[] = $message.' in '.$filename.' on line '.$lineno;
-    }
-
     public function testMailboxAction()
     {
         $mailbox = acym_getVar('array', 'mailbox', []);
@@ -176,13 +171,17 @@ trait Edition
             }
         }
 
-        set_error_handler([$this, 'exceptionsErrorHandler']);
-
         $mailboxHelper = new MailboxHelper();
-        if ($mailboxHelper->isConnectionValid($mailbox)) {
-            acym_sendAjaxResponse(acym_translation('ACYM_CONNECTION_SUCCESSFUL'));
-        } else {
+        try {
+            $isConnectionValid = $mailboxHelper->isConnectionValid($mailbox);
+        } catch (\Exception $e) {
+            $this->mailboxReport[] = $e->getMessage();
+        }
+
+        if (empty($isConnectionValid)) {
             acym_sendAjaxResponse(acym_translation('ACYM_CONNECTION_FAILED'), ['report' => $this->mailboxReport], false);
+        } else {
+            acym_sendAjaxResponse(acym_translation('ACYM_CONNECTION_SUCCESSFUL'));
         }
     }
 }

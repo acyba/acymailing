@@ -202,4 +202,13 @@
         }
     }
 
+    .intext_select_automation {
+        .select2-selection__clear {
+            display: none;
+        }
+    }
+
+    .select2 .select2-search input[placeholder]:not([placeholder=""]){
+        min-width: 178px;
+    }
 }
