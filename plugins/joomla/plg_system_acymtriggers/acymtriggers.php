@@ -327,7 +327,7 @@ class plgSystemAcymtriggers extends CMSPlugin
         if (ACYM_J40) {
             $body = Factory::getApplication()->getBody(false);
         } else {
-            $body = WebApplication::getBody();
+            $body = JResponse::getBody();
         }
 
         $listsPosition = $config->get('regacy_listsposition', 'password');

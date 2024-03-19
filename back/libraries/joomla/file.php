@@ -17,12 +17,14 @@ function acym_fileGetContent(string $url, int $timeout = 10)
     // use the Joomla way first
     $data = '';
 
-    if (function_exists('file_get_contents')) {
-        if (!empty($timeout)) {
-            ini_set('default_socket_timeout', $timeout);
+    if (!ACYM_J40) {
+        if (function_exists('file_get_contents')) {
+            if (!empty($timeout)) {
+                ini_set('default_socket_timeout', $timeout);
+            }
+            $streamContext = stream_context_create(['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]]);
+            $data = @file_get_contents($url, false, $streamContext);
         }
-        $streamContext = stream_context_create(['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]]);
-        $data = @file_get_contents($url, false, $streamContext);
     }
 
     if (empty($data)) {
