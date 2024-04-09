@@ -86,7 +86,7 @@ function acym_loadPlugins()
     $dynamics = acym_getFolders(ACYM_BACK.'dynamics');
 
     $pluginClass = new PluginClass();
-    $plugins = $pluginClass->getAll('folder_name');
+    $plugins = $pluginClass->getPlugins();
 
     foreach ($dynamics as $key => $oneDynamic) {
         if (!empty($plugins[$oneDynamic]) && 0 === intval($plugins[$oneDynamic]->active)) {

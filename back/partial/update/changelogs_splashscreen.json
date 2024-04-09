@@ -2,16 +2,12 @@
     "max_version": "9.4.0",
     "splash_content": [
         {
-            "menu_title": "Top 2 updates 🔥",
-            "title": "DISCOVER 2 AWESOME FEATURES AVAILABLE",
+            "menu_title": "Top feature 🔥",
+            "title": "DISCOVER THE BEST FEATURE OF THIS RELEASE",
             "articles": [
                 {
-                    "title": "🔥 Zapier integration",
-                    "desc": "The new integration with Zapier is now available publicly! Automate your marketing workflows by connecting AcyMailing with 2000+ apps."
-                },
-                {
-                    "title": "🔥 Sending service improvements",
-                    "desc": "The AcyMailing sending service options have been improved for mobile view, and tips have been added to guide you in validating your domains."
+                    "title": "🔥 Make.com integration",
+                    "desc": "The new integration with make.com is now available publicly. Easily automate your tasks and create your own workflows with hundreds of apps!"
                 }
             ]
         },
@@ -20,16 +16,16 @@
             "title": "DISCOVER WHAT CHANGED FOR JOOMLA",
             "articles": [
                 {
-                    "title": "🧩 Membership Pro integration",
-                    "desc": "A new integration with Membership Pro lets you filter AcyMailing users by plans they subscribed to."
+                    "title": "🧩 Joomla 3 compatibility",
+                    "desc": "We fixed a compatibility issue that could occur for websites based on Joomla 3."
                 },
                 {
-                    "title": "🧩 Joomla 5",
-                    "desc": "AcyMailing can now be used on Joomla 5 websites without requiring the compatibility plugin to be active."
+                    "title": "🧩 Joomla modal style",
+                    "desc": "The Joomla modal is no longer affected by the AcyMailing styles."
                 },
                 {
-                    "title": "🧩 Better integration for Events Booking",
-                    "desc": "The links to categories, locations and registration page now use the specified Joomla menu ID if any, for the Events Booking integration."
+                    "title": "🧩 More custom fields handled",
+                    "desc": "When inserting Joomla articles with custom fields, the media fields are shown correctly and the subform fields are now handled."
                 }
             ]
         },
@@ -38,20 +34,12 @@
             "title": "DISCOVER WHAT CHANGED FOR WORDPRESS",
             "articles": [
                 {
-                    "title": "🧩 WooCommerce follow-up campaigns",
-                    "desc": "It is now possible to select product variations in the follow-up based on WooCommerce purchases."
+                    "title": "🧩 WooCommerce Guest Purchases",
+                    "desc": "Guest purchases are now supported by the action target Purchased a product for WooCommerce automations."
                 },
                 {
-                    "title": "🧩 WooCommerce automations",
-                    "desc": "It is now possible to select product variations in the WooCommerce purchase filter, and filter on multiple products."
-                },
-                {
-                    "title": "🧩 WooCommerce abandoned cart",
-                    "desc": "In WooCommerce abandoned cart send settings, you can now choose to send the email based on hours since the order has been placed."
-                },
-                {
-                    "title": "🧩 Memberpress integration update",
-                    "desc": "The Memberpress integration plugin has been updated to take into account the new way to store custom fields."
+                    "title": "🧩 More WooCommerce integrations",
+                    "desc": "The subscription checkbox option is now available for the WooCommerce checkout Gutenberg block."
                 }
             ]
         },
@@ -60,70 +48,20 @@
             "title": "DISCOVER WHAT CHANGED IN GENERAL",
             "articles": [
                 {
-                    "title": "🎁 Quick user subscribe actions",
-                    "desc": "It is now possible from the subscriber listing to subscribe and unsubscribe users from lists by clicking on the list icon."
+                    "title": "🎁 Better MailGun integration",
+                    "desc": "The MailGun integration via API now uses the Reply-To email address specified in the AcyMailing configuration."
                 },
                 {
-                    "title": "🎁 Editor videos",
-                    "desc": "A new option lets you choose if a play button should be added on the video thumbnails when inserting videos in the emails."
+                    "title": "🎁 Better user fields insertion",
+                    "desc": "The user fields inserted in emails are now formatted. For example date fields show the month name, phone fields show the country code, etc..."
                 },
                 {
-                    "title": "🎁 Easy access to mail IDs",
-                    "desc": "On the campaigns listing, the corresponding mail ID has been added to make it easier to use the new REST API."
+                    "title": "🎁 Better statistics export",
+                    "desc": "The bounce details have been improved when you export the statistics full data."
                 },
                 {
-                    "title": "🎁 Improved List-Unsubscribe header",
-                    "desc": "When inserting an unsubscribe link in an email, and having the option to add a List-Unsubscribe header, the direct unsubscribe link is added in addition to the email sent to an admin."
-                },
-                {
-                    "title": "🎁 A/B test campaigns click rate",
-                    "desc": "When an A/B test campaign is based on the click rate, it is now calculated on the number of users that opened the email rather than the number of recipients."
-                }
-            ]
-        },
-        {
-            "menu_title": "Bug Fixes 🛠️",
-            "title": "DISCOVER WHAT CHANGED FOR BUG FIXES",
-            "articles": [
-                {
-                    "title": "🛠️ Translations fixes",
-                    "desc": "The accents are now correctly displayed in select fields when building a subscription form."
-                },
-                {
-                    "title": "🛠️ Bounce connection for self-signed certificates",
-                    "desc": "The connection verification for the bounce address credentials now correctly shows a success message when the self signed certificate option is disabled."
-                },
-                {
-                    "title": "🛠️ Unsubscribe link in multilingual campaigns",
-                    "desc": "Fixed direct unsubscribe link not working for secondary languages in multilingual campaigns."
-                },
-                {
-                    "title": "🛠️ Multiple batch system with security key",
-                    "desc": "For the send process, the multiple batch system now works correctly when the security key is active."
-                },
-                {
-                    "title": "🛠️ Mailgun embedded attachments",
-                    "desc": "Fixed Mailgun embed attachment only embedding the first one."
-                },
-                {
-                    "title": "🛠️ Mailgun BCC option",
-                    "desc": "Fixed Mailgun BCC option only sending to the first recipient in the BCC list."
-                },
-                {
-                    "title": "🛠️ Hikashop variant categories",
-                    "desc": "Fixed the Hikashop filter on variant categories not taken into account."
-                },
-                {
-                    "title": "🛠️ SecurImage captcha compatibility",
-                    "desc": "Fixed compatibility with the captcha SecurImage when submitting subscription forms."
-                },
-                {
-                    "title": "🛠️ VirtueMart guest users subscription",
-                    "desc": "Fixed a bug with the VirtueMart integration that was not subscribing guest users to lists when they checked the lists checkbox on the one page checkout."
-                },
-                {
-                    "title": "🛠️ Starter version update",
-                    "desc": "Some users on starter version were not able to fast update their AcyMailing version, it has been fixed."
+                    "title": "🎁 Better performance",
+                    "desc": "We improved various parts of the code to make AcyMailing faster and more reliable."
                 }
             ]
         }

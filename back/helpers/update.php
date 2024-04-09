@@ -664,7 +664,7 @@ class UpdateHelper extends acymObject
     public function installAddons()
     {
         $pluginClass = new PluginClass();
-        $installedAddons = array_keys($pluginClass->getAll('folder_name'));
+        $installedAddons = array_keys($pluginClass->getPlugins());
         $coreAddons = acym_coreAddons();
 
         foreach ($coreAddons as $oneAddon) {

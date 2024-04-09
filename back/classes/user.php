@@ -1359,7 +1359,7 @@ class UserClass extends acymClass
                     }
                     $oneField->value = implode(',', $values);
                 }
-            } elseif ($oneField->type === 'file') {
+            } elseif ($oneField->type === 'file' && !empty($oneField->value)) {
                 $oneField->value = json_decode($oneField->value);
                 if (!empty($oneField->value)) {
                     $oneField->value = $oneField->value[0];

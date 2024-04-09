@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 5.6
+ * Version: 5.7
  * Requires Plugins: acymailing, woocommerce
 */
 
@@ -50,4 +50,34 @@ function acym_register_woocommerce_hpos_compatibility()
     if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
         \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
     }
+}
+
+add_action('woocommerce_blocks_loaded', function () {
+    require_once __DIR__.DIRECTORY_SEPARATOR.'acymailing-wc-block-blocks-integration.php';
+    add_action(
+        'woocommerce_blocks_cart_block_registration',
+        function ($integration_registry) {
+            $integration_registry->register(new AcymailingWcBlock());
+        }
+    );
+    add_action(
+        'woocommerce_blocks_checkout_block_registration',
+        function ($integration_registry) {
+            $integration_registry->register(new AcymailingWcBlock());
+        }
+    );
+});
+
+add_action('block_categories_all', 'registerAcymailingWcBlock', 10, 2);
+function registerAcymailingWcBlock($categories)
+{
+    return array_merge(
+        $categories,
+        [
+            [
+                'slug' => 'acymailing-wc-block',
+                'title' => acym_translation('ACYM_WOO_CHECKOUT_BLOCK'),
+            ],
+        ]
+    );
 }

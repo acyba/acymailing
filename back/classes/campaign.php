@@ -78,6 +78,12 @@ class CampaignClass extends acymClass
 
 
         $filters = [];
+        $task = acym_getVar('string', 'task');
+        if ($task === 'campaigns') {
+            $filters[] = 'mail.type = \'standard\'';
+        } elseif ($task === 'mailbox_action') {
+            $filters[] = 'mail.type = \'mailbox_action\'';
+        }
         $mailIds = [];
 
         $query .= ' JOIN #__acym_mail AS mail ON campaign.mail_id = mail.id';

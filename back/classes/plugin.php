@@ -9,6 +9,27 @@ class PluginClass extends acymClass
     var $table = 'plugin';
     var $pkey = 'id';
     var $nameColumn = 'title';
+    private $plugins = [];
+
+    public function __construct()
+    {
+        global $acymPluginByFolderName;
+        if (empty($acymPluginByFolderName)) {
+            $acymPluginByFolderName = $this->getAll('folder_name');
+        }
+        $this->plugins = $acymPluginByFolderName;
+        parent::__construct();
+    }
+
+    public function getPlugins()
+    {
+        return $this->plugins;
+    }
+
+    public function getOnePluginByFolderName(string $folderName)
+    {
+        return $this->plugins[$folderName] ?? null;
+    }
 
     public function getNotUptoDatePlugins()
     {
@@ -18,11 +39,6 @@ class PluginClass extends acymClass
         }
 
         return acym_loadResultArray('SELECT folder_name FROM #__acym_plugin WHERE uptodate = 0');
-    }
-
-    public function getOneByFolderName($folderName)
-    {
-        return acym_loadObject('SELECT * FROM #__acym_plugin WHERE folder_name = '.acym_escapeDB($folderName));
     }
 
     public function getSettings($addon)
@@ -36,7 +52,7 @@ class PluginClass extends acymClass
     {
         if (empty($plugin->pluginDescription->name)) return;
 
-        $data = $this->getOneByFolderName($plugin->name);
+        $data = $this->plugins[$plugin->name] ?? null;
 
         // Prepare the missing entry in the db
         $newPlugin = new \stdClass();
@@ -70,7 +86,7 @@ class PluginClass extends acymClass
 
     public function enable($folderName)
     {
-        $plugin = $this->getOneByFolderName($folderName);
+        $plugin = $this->getOnePluginByFolderName($folderName);
         if (empty($plugin)) return;
 
         $plugin->active = 1;
@@ -79,7 +95,7 @@ class PluginClass extends acymClass
 
     public function disable($folderName)
     {
-        $plugin = $this->getOneByFolderName($folderName);
+        $plugin = $this->getOnePluginByFolderName($folderName);
         if (empty($plugin)) return;
 
         $plugin->active = 0;
@@ -88,7 +104,7 @@ class PluginClass extends acymClass
 
     public function deleteByFolderName($folderName)
     {
-        $plugin = $this->getOneByFolderName($folderName);
+        $plugin = $this->getOnePluginByFolderName($folderName);
         if (empty($plugin)) return;
 
         parent::delete($plugin->id);
@@ -96,7 +112,7 @@ class PluginClass extends acymClass
 
     public function updateAddon(string $addon)
     {
-        $plugin = $this->getOneByFolderName($addon);
+        $plugin = $this->getOnePluginByFolderName($addon);
 
         if (empty($plugin)) {
             return false;

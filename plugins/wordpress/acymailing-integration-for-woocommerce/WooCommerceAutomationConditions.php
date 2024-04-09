@@ -292,7 +292,7 @@ trait WooCommerceAutomationConditions
         $this->prepareOptions($options);
 
         if ($this->isHposActive()) {
-            $query->join['woopurchased_order'.$num] = '#__wc_orders AS order'.$num.' ON order'.$num.'.customer_id = user.cms_id AND order'.$num.'.customer_id != 0';
+            $query->join['woopurchased_order'.$num] = '#__wc_orders AS order'.$num.' ON order'.$num.'.billing_email = user.email AND order'.$num.'.billing_email != ""';
             $query->where[] = 'order'.$num.'.type = "shop_order"';
             $query->where[] = 'order'.$num.'.status = "wc-completed"';
 
@@ -376,7 +376,8 @@ trait WooCommerceAutomationConditions
             }
 
             $query->join['woopurchased_post'.$num] = '#__posts AS post'.$num.' ON '.implode(' AND ', $conditions);
-            $query->join['woopurchased_postmeta'.$num] = '#__postmeta AS postmeta'.$num.' ON postmeta'.$num.'.post_id = post'.$num.'.ID AND postmeta'.$num.'.meta_value = user.cms_id AND postmeta'.$num.'.meta_value != 0 AND postmeta'.$num.'.meta_key = "_customer_user"';
+            $query->join['woopurchased_postmeta'.$num] = '#__postmeta AS postmeta'.$num.' ON postmeta'.$num.'.post_id = post'.$num.'.ID AND postmeta'.$num.'.meta_value = user.email AND postmeta'.$num.'.meta_value != "" AND postmeta'.$num.'.meta_key = "_billing_email"';
+            $query->where[] = 'user.email != ""';
 
             if (!empty($options['product'])) {
                 $query->join['woopurchased_order_items'.$num] = '#__woocommerce_order_items AS woooi'.$num.' ON post'.$num.'.ID = woooi'.$num.'.order_id AND woooi'.$num.'.order_item_type = "line_item"';

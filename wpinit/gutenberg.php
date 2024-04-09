@@ -42,8 +42,6 @@ class acyGutenberg
 
     public function registerBlockSubscription()
     {
-        $posts = acym_trigger('getPosts', [false, 0], 'plgAcymPost');
-
         wp_register_script(
             'gutenberg-acymailing-subscription-form',
             ACYM_JS.'gutenberg/subscription.min.js?time='.time()
@@ -52,8 +50,7 @@ class acyGutenberg
             'gutenberg-acymailing-subscription-form',
             'var acym_lists = '.json_encode($this->lists).';
             var ACYM_JS_TXT = '.acym_getJSMessages().';
-            var acym_fields = '.json_encode($this->fields).';
-            var acym_posts = '.json_encode($posts)
+            var acym_fields = '.json_encode($this->fields).';'
         );
 
         $basicAttribute = [

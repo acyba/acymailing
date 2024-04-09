@@ -8,7 +8,6 @@ use AcyMailing\Helpers\RegacyHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Application\WebApplication;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -362,7 +361,7 @@ class plgSystemAcymtriggers extends CMSPlugin
                 if (ACYM_J40) {
                     Factory::getApplication()->setBody($body);
                 } else {
-                    WebApplication::setBody($body);
+                    JResponse::setBody($body);
                 }
 
                 return;
@@ -416,7 +415,7 @@ class plgSystemAcymtriggers extends CMSPlugin
                     if (ACYM_J40) {
                         Factory::getApplication()->setBody($body);
                     } else {
-                        WebApplication::setBody($body);
+                        JResponse::setBody($body);
                     }
 
                     return;

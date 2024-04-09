@@ -223,6 +223,16 @@ class ExportHelper extends acymObject
                 if (is_null($line)) {
                     $line = '';
                 }
+                if ($key === 'bounce_details' && !empty($line)) {
+                    $line = @unserialize($line);
+                    if ($line !== false) {
+                        $formattedLine = '';
+                        foreach ($line as $detailKey => $detailValue) {
+                            $formattedLine .= $detailKey.': '.$detailValue.'; ';
+                        }
+                        $line = rtrim($formattedLine, '; ');
+                    }
+                }
                 $oneLine[] = htmlspecialchars($line, ENT_QUOTES, 'UTF-8');
             }
             //We delete the double quote so it won't break the CSV

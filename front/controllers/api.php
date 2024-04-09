@@ -91,6 +91,7 @@ class ApiController extends acymController
 
         $methodTasks = [
             'GET' => [
+                'authenticate',
                 'getSubscribersFromLists',
                 'getUnsubscribedUsersFromLists',
                 'getUserSubscriptionById',
@@ -131,7 +132,10 @@ class ApiController extends acymController
             $this->sendJsonResponse(['message' => 'Content-Type must be application/json'], 415);
         }
 
+        $existingTask = false;
         foreach ($methodTasks as $method => $tasks) {
+            $existingTask = $existingTask || in_array($taskCalled, $tasks);
+
             foreach ($tasks as $task) {
                 if ($taskCalled === $task && $methodUsed !== $method) {
                     $this->sendJsonResponse(['message' => 'Method not allowed.'], 405);
@@ -140,7 +144,11 @@ class ApiController extends acymController
             }
         }
 
-        $this->authenticate();
+        if (!$existingTask) {
+            $this->sendJsonResponse(['message' => 'Task not allowed.'], 403);
+        }
+
+        $this->authenticate($taskCalled === 'authenticate');
     }
 
     /**
@@ -149,7 +157,7 @@ class ApiController extends acymController
     /**
      * Validate the API key and check the user's license before processing requests.
      */
-    private function authenticate(): void
+    private function authenticate(bool $isRouteAuthenticate = false): void
     {
         $apiKey = acym_getHeader('Api-Key');
 
@@ -168,6 +176,15 @@ class ApiController extends acymController
 
         if (!acym_isLicenseValidWeekly()) {
             $this->sendJsonResponse(['message' => 'License is expired'], 401);
+        }
+
+        if ($isRouteAuthenticate) {
+            $this->sendJsonResponse(
+                [
+                    'message' => 'Successfully authenticated',
+                    'siteName' => acym_getCMSConfig('sitename'),
+                ]
+            );
         }
     }
 

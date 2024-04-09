@@ -46,6 +46,17 @@ class FieldClass extends acymClass
         return acym_loadObjectList($query);
     }
 
+    public function getFieldsByNameKey(array $nameKeys): array
+    {
+        if (empty($nameKeys)) {
+            return [];
+        }
+
+        $nameKeys = array_map('acym_escapeDB', $nameKeys);
+
+        return acym_loadObjectList('SELECT * FROM #__acym_field WHERE `namekey` IN('.implode(',', $nameKeys).') ORDER BY `ordering` ASC', 'id');
+    }
+
     public function getFieldsByType($types)
     {
         if (empty($types)) return [];
@@ -252,11 +263,11 @@ class FieldClass extends acymClass
         return acym_loadObjectList($query);
     }
 
-    public function getAllFieldsListingByUserIds($userIds, $fieldIds, $listing = '')
+    public function getAllFieldsListingByUserIds($userIds, $fieldIds, $listing = ''): array
     {
         $query = 'SELECT field.type AS `type`, field.value AS `value`, field.name AS field_name, user_field.user_id AS user_id, user_field.field_id AS field_id, user_field.value AS field_value, field.active, field.option 
                     FROM #__acym_user_has_field AS user_field
-                    LEFT JOIN #__acym_field AS field ON user_field.field_id = field.id';
+                    JOIN #__acym_field AS field ON user_field.field_id = field.id';
 
         $conditions = [];
 
@@ -282,21 +293,33 @@ class FieldClass extends acymClass
 
         $fieldsTypeWithInField = ['radio', 'checkbox', 'single_dropdown', 'multiple_dropdown'];
         foreach ($values as $one) {
-            if (intval($one->active) === 0) continue;
+            if (intval($one->active) === 0) {
+                continue;
+            }
+
+            $key = $one->field_id.'-'.$one->user_id;
 
             if (!in_array($one->type, $fieldsTypeWithInField)) {
                 if ($one->type === 'phone') {
-                    $fieldValues[$one->field_id.'-'.$one->user_id] = empty($one->field_value) ? '' : '+'.preg_replace('/,/', ' ', $one->field_value, 1);
+                    if (empty($one->field_value)) {
+                        $fieldValues[$key] = '';
+                    } else {
+                        if (substr($one->field_value, 0, 1) === ',') {
+                            $fieldValues[$key] = str_replace(',', '', $one->field_value);
+                        } else {
+                            $fieldValues[$key] = '+'.str_replace(',', ' ', $one->field_value);
+                        }
+                    }
                 } elseif ($one->type === 'date') {
                     if (empty($one->field_value)) {
-                        $fieldValues[$one->field_id.'-'.$one->user_id] = '';
+                        $fieldValues[$key] = '';
                     } else {
                         $one->option = json_decode($one->option);
-                        $fieldValues[$one->field_id.'-'.$one->user_id] = acym_displayDateFormat($one->option->format, '', $one->field_value, [], false);
+                        $fieldValues[$key] = acym_displayDateFormat($one->option->format, '', $one->field_value, [], false);
                     }
                 } else {
                     $decoded = json_decode($one->field_value);
-                    $fieldValues[$one->field_id.'-'.$one->user_id] = is_array($decoded) ? implode(', ', $decoded) : $one->field_value;
+                    $fieldValues[$key] = is_array($decoded) ? implode(', ', $decoded) : $one->field_value;
                 }
             } else {
                 $defaultValues = json_decode($one->value, true);
@@ -314,7 +337,7 @@ class FieldClass extends acymClass
                                 $query = 'SELECT '.acym_secureDBColumn($dbOptions['title']).' 
                                             FROM '.acym_secureDBColumn($dbOptions['database']).'.'.acym_secureDBColumn($dbOptions['table']).' 
                                             WHERE '.acym_secureDBColumn($dbOptions['value']).' = '.acym_escapeDB($one->field_value);
-                                $fieldValues[$one->field_id.'-'.$one->user_id][] = acym_loadResult($query);
+                                $fieldValues[$key][] = acym_loadResult($query);
                             }
                         }
                     }
@@ -322,12 +345,12 @@ class FieldClass extends acymClass
                     // Classic options
                     foreach ($defaultValues as $oneValue) {
                         if (!in_array($oneValue['value'], explode(',', $one->field_value))) continue;
-                        $fieldValues[$one->field_id.'-'.$one->user_id][] = $oneValue['title'];
+                        $fieldValues[$key][] = $oneValue['title'];
                     }
                 }
 
-                if (!empty($fieldValues[$one->field_id.'-'.$one->user_id])) {
-                    $fieldValues[$one->field_id.'-'.$one->user_id] = implode(', ', $fieldValues[$one->field_id.'-'.$one->user_id]);
+                if (!empty($fieldValues[$key])) {
+                    $fieldValues[$key] = implode(', ', $fieldValues[$key]);
                 }
             }
         }

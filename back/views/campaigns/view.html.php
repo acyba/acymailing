@@ -43,6 +43,8 @@ class CampaignsViewCampaigns extends acymView
         }
 
         acym_trigger('onAcymDisplayCampaignListingSpecificTabs', [&$this->tabs]);
+
+        $this->tabs['mailbox_action'] = 'ACYM_MAILBOX_ACTION_CAMPAIGN';
     }
 
     public function addSegmentStep($displaySegmentTab)

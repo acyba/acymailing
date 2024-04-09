@@ -155,7 +155,13 @@ const acym_subscriptionBlock = {
         }
     },
     initPosts: function () {
-        acym_posts.map(posts => {
+        jQuery.get(this.ajaxUrl, {
+            ctrl: 'dynamics',
+            task: 'trigger',
+            plugin: 'plgAcymPost',
+            trigger: 'getPosts'
+        }).then(response => {
+            const posts = JSON.parse(response);
             posts.map(post => {
                 this.posts.push({
                     value: post[0],
@@ -213,7 +219,8 @@ const acym_subscriptionBlock = {
             subTable.push(self.textEdit(ACYM_JS_TXT.ACYM_SUBSCRIBE_TEXT_LOGGED_IN, props, 'subtextlogged'));
             confirmationTable.push(self.textEdit(ACYM_JS_TXT.ACYM_CONFIRMATION_MESSAGE, props, 'confirmation_message'));
         }
-        return self.el('div', blockProps, self.el(Fragment, {}, self.el(InspectorControls, {}, self.el(PanelBody,
+        return self.el('div', blockProps, self.el(Fragment, {}, self.el(InspectorControls, {}, self.el(
+            PanelBody,
             {
                 title: ACYM_JS_TXT.ACYM_MAIN_OPTIONS,
                 initialOpen: true
@@ -221,7 +228,8 @@ const acym_subscriptionBlock = {
             self.textEdit(ACYM_JS_TXT.ACYM_TITLE, props, 'title'),
             self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAY_MODE, props, 'mode', 'displayMode'),
             ...subTable
-        ), self.el(PanelBody,
+        ), self.el(
+            PanelBody,
             {
                 title: ACYM_JS_TXT.ACYM_LISTS_OPTIONS,
                 initialOpen: true
@@ -230,7 +238,8 @@ const acym_subscriptionBlock = {
             self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAYED_LISTS, props, 'displists', 'lists', true),
             self.selectEdit(ACYM_JS_TXT.ACYM_LISTS_CHECKED_DEFAULT, props, 'listschecked', 'lists', true),
             self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAY_LISTS, props, 'listposition', 'listPlacement')
-        ), self.el(PanelBody,
+        ), self.el(
+            PanelBody,
             {
                 title: ACYM_JS_TXT.ACYM_FIELDS_OPTIONS,
                 initialOpen: false
@@ -238,14 +247,16 @@ const acym_subscriptionBlock = {
             self.selectEdit(ACYM_JS_TXT.ACYM_FIELDS_TO_DISPLAY, props, 'fields', 'fields', true),
             self.selectEdit(ACYM_JS_TXT.ACYM_TEXT_MODE, props, 'textmode', 'displayTextMode'),
             self.selectEdit(ACYM_JS_TXT.ACYM_FORM_AUTOFILL_ID, props, 'userinfo', 'subscriberInfo')
-        ), self.el(PanelBody,
+        ), self.el(
+            PanelBody,
             {
                 title: ACYM_JS_TXT.ACYM_TERMS_POLICY_OPTIONS,
                 initialOpen: false
             },
             self.selectEdit(ACYM_JS_TXT.ACYM_TERMS_CONDITIONS, props, 'termscontent', 'posts'),
             self.selectEdit(ACYM_JS_TXT.ACYM_PRIVACY_POLICY, props, 'privacypolicy', 'posts')
-        ), self.el(PanelBody,
+        ), self.el(
+            PanelBody,
             {
                 title: ACYM_JS_TXT.ACYM_SUBSCRIBE_OPTIONS,
                 initialOpen: false
@@ -253,7 +264,8 @@ const acym_subscriptionBlock = {
             self.selectEdit(ACYM_JS_TXT.ACYM_SUCCESS_MODE, props, 'successmode', 'replaceMessage'),
             ...confirmationTable,
             self.textEdit(ACYM_JS_TXT.ACYM_REDIRECT_LINK, props, 'redirect')
-        ), self.el(PanelBody,
+        ), self.el(
+            PanelBody,
             {
                 title: ACYM_JS_TXT.ACYM_UNSUBSCRIBE_OPTIONS,
                 initialOpen: false
@@ -261,7 +273,8 @@ const acym_subscriptionBlock = {
             self.selectEdit(ACYM_JS_TXT.ACYM_DISPLAY_UNSUB_BUTTON, props, 'unsub', 'unsubButton'),
             self.textEdit(ACYM_JS_TXT.ACYM_UNSUBSCRIBE_TEXT, props, 'unsubtext'),
             self.textEdit(ACYM_JS_TXT.ACYM_REDIRECT_LINK_UNSUB, props, 'unsubredirect')
-        ), self.el(PanelBody,
+        ), self.el(
+            PanelBody,
             {
                 title: ACYM_JS_TXT.ACYM_ADVANCED_OPTIONS,
                 initialOpen: false

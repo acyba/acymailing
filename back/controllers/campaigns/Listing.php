@@ -30,6 +30,7 @@ trait Listing
             'unsubscribe',
             'followup',
             'specificListing',
+            'mailbox_action',
         ];
         $currentTask = acym_getVar('string', 'task', '');
         if (!in_array($currentTask, $taskToStore) && !$fromListing) {
@@ -247,5 +248,22 @@ trait Listing
                 $allCountStatus->draft += $campaign->draft;
             }
         }
+    }
+
+    public function mailbox_action()
+    {
+        acym_setVar('layout', 'mailbox_action');
+
+        $data = [
+            'campaign_type' => 'campaigns',
+            'element_to_display' => lcfirst(acym_translation('ACYM_MAILBOX_ACTION_CAMPAIGN')),
+        ];
+        $this->prepareAllCampaignsListing($data);
+        $this->prepareToolbar($data);
+        $this->prepareListingClasses($data);
+
+        $data['menuClass'] = $this->menuClass;
+
+        parent::display($data);
     }
 }

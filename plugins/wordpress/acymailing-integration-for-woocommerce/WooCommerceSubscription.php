@@ -91,17 +91,48 @@ trait WooCommerceSubscription
         if (empty($posted_data['billing_email']) || empty($posted_data['acym_regacy_sub'])) return;
 
 
-        // Get existing AcyMailing user or create one
-        $userClass = new UserClass();
+        $userName = [];
+        if (!empty($posted_data['billing_first_name'])) $userName[] = $posted_data['billing_first_name'];
+        if (!empty($posted_data['billing_last_name'])) $userName[] = $posted_data['billing_last_name'];
+        $name = implode(' ', $userName);
 
-        $user = $userClass->getOneByEmail($posted_data['billing_email']);
+        $this->subscribeFromCheckout($posted_data['billing_email'], $name);
+    }
+
+    /**
+     * Subscribe user when the WooCommerce gutenberg checkout is processed
+     *
+     * @param $order : WooCommerce order
+     */
+    public function subscribeUserOnCheckoutWCApi($order, $request)
+    {
+        $config = acym_config();
+        if (!$config->get('woocommerce_sub', 0)) return;
+
+        $body = json_decode($request->get_body(), true);
+        if (empty($body['billing_address']['email']) || empty($body['extensions'][self::WC_ACY_SUBSCRIBE_KEY]['is-subscribing'])) {
+            return;
+        }
+
+        $userName = [];
+        if (!empty($body['billing_address']['first_name'])) $userName[] = $body['billing_address']['first_name'];
+        if (!empty($body['billing_address']['last_name'])) $userName[] = $body['billing_address']['last_name'];
+        $name = implode(' ', $userName);
+
+        $this->subscribeFromCheckout($body['billing_address']['email'], $name);
+    }
+
+    private function subscribeFromCheckout($email, $name = '')
+    {
+        $config = acym_config();
+        $userClass = new UserClass();
+        $user = $userClass->getOneByEmail($email);
         if (empty($user)) {
             $user = new stdClass();
-            $user->email = $posted_data['billing_email'];
-            $userName = [];
-            if (!empty($posted_data['billing_first_name'])) $userName[] = $posted_data['billing_first_name'];
-            if (!empty($posted_data['billing_last_name'])) $userName[] = $posted_data['billing_last_name'];
-            if (!empty($userName)) $user->name = implode(' ', $userName);
+            $user->email = $email;
+            if (!empty($name)) {
+                $user->name = $name;
+            }
             $user->source = 'woocommerce';
             $user->id = $userClass->save($user);
         }

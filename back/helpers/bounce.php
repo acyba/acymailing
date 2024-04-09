@@ -234,14 +234,10 @@ class BounceHelper extends acymObject
         $protocol = $this->connectMethod;
         $serverName = '{'.trim($this->server);
         if (empty($port)) {
-            if ($secure == 'ssl' && $protocol == 'imap') {
-                $port = '993';
-            } elseif ($secure == 'ssl' && $protocol == 'pop3') {
-                $port = '995';
-            } elseif ($protocol == 'imap') {
-                $port = '143';
-            } elseif ($protocol == 'pop3') {
-                $port = '110';
+            if ($protocol === 'imap') {
+                $port = $secure === 'ssl' ? '993' : '143';
+            } elseif ($protocol === 'pop3') {
+                $port = $secure === 'ssl' ? '995' : '110';
             }
         }
 
@@ -283,7 +279,7 @@ class BounceHelper extends acymObject
             }
         }
 
-        return $this->mailbox ? true : false;
+        return (bool)$this->mailbox;
     }
 
     public function getNBMessages()

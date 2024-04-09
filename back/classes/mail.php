@@ -27,6 +27,7 @@ class MailClass extends acymClass
     const TYPE_UNSUBSCRIBE = 'unsubscribe';
     const TYPE_AUTOMATION = 'automation';
     const TYPE_FOLLOWUP = 'followup';
+    const TYPE_MAILBOX_ACTION = 'mailbox_action';
     const TYPE_TEMPLATE = 'template';
 
     const ALL_TYPES = [
@@ -37,6 +38,7 @@ class MailClass extends acymClass
         self::TYPE_UNSUBSCRIBE,
         self::TYPE_AUTOMATION,
         self::TYPE_FOLLOWUP,
+        self::TYPE_MAILBOX_ACTION,
         self::TYPE_TEMPLATE,
     ];
 
@@ -55,6 +57,7 @@ class MailClass extends acymClass
         self::TYPE_WELCOME,
         self::TYPE_UNSUBSCRIBE,
         self::TYPE_FOLLOWUP,
+        self::TYPE_MAILBOX_ACTION,
     ];
 
     // Types that don't let the user modify the name

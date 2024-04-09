@@ -1,6 +1,5 @@
 <?php
 
-use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\FieldClass;
 
@@ -134,29 +133,34 @@ trait SubscriberInsertion
 
         if (empty($extractedTags)) return;
 
-        $userClass = new UserClass();
-        $user = $userClass->getAllUserFields($user);
+        $fieldClass = new FieldClass();
+        $fields = $fieldClass->getFieldsByNameKey(array_column($extractedTags, 'id'));
+        $fieldsData = empty($user->id) ? [] : $fieldClass->getAllFieldsListingByUserIds($user->id, array_keys($fields));
+        $fieldsNameKeyIdMap = array_combine(array_column($fields, 'namekey'), array_column($fields, 'id'));
 
         $tags = [];
         foreach ($extractedTags as $i => $oneTag) {
-            if (isset($tags[$i])) continue;
+            if (isset($tags[$i]) || (!empty($oneTag->info) && $oneTag->info === 'current')) {
+                continue;
+            }
 
-            if (!empty($oneTag->info) && $oneTag->info == 'current') continue;
-            $tags[$i] = empty($user->id) ? $oneTag->default : $this->replaceSubTag($oneTag, $user);
+            $fieldNameKey = $oneTag->id === 'acym_language' ? 'language' : $oneTag->id;
+            $fieldId = $fieldsNameKeyIdMap[$fieldNameKey] ?? 0;
+            $fieldValue = $user->$fieldNameKey ?? '';
+
+            if (strlen($fieldValue) === 0 && !empty($user->id) && !empty($fieldId)) {
+                $fieldValue = $fieldsData[$fieldId.'-'.$user->id] ?? $oneTag->default;
+            }
+
+            if (strlen($fieldValue) === 0) {
+                $fieldValue = $oneTag->default;
+            }
+
+            $fieldValue = acym_translation(nl2br($fieldValue));
+            $this->pluginHelper->formatString($fieldValue, $oneTag);
+            $tags[$i] = $fieldValue;
         }
 
         $this->pluginHelper->replaceTags($email, $tags);
-    }
-
-    private function replaceSubTag(&$mytag, $user)
-    {
-        $fieldClass = new FieldClass();
-        $field = $mytag->id;
-        $replaceme = (isset($user->$field) && strlen($user->$field) > 0) ? $user->$field : $mytag->default;
-        $replaceme = acym_translation(nl2br($replaceme));
-
-        $this->pluginHelper->formatString($replaceme, $mytag);
-
-        return $replaceme;
     }
 }

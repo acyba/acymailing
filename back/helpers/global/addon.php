@@ -8,7 +8,9 @@ global $acymAddonsForSettings;
 function acym_trigger($method, $args = [], $plugin = null, $callbackOnePlugin = null)
 {
     // On WordPress we load the addons before the tables are created on installation
-    if (!in_array(acym_getPrefix().'acym_configuration', acym_getTableList())) return null;
+    if (!in_array(acym_getPrefix().'acym_configuration', acym_getTableList())) {
+        return null;
+    }
 
     // Handle multilingual
     if (in_array($method, ['replaceContent', 'replaceUserInformation']) && !empty($args[0]->language)) {

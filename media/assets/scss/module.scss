@@ -195,27 +195,6 @@ div.modal {
     z-index: 10050;
 }
 
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 10040;
-    background-color: #000;
-}
-
-.modal-backdrop.fade {
-    visibility: hidden;
-}
-
-.modal-backdrop,
-.modal-backdrop.fade.in {
-    visibility: visible;
-    opacity: 0.8;
-    filter: alpha(opacity=80);
-}
-
 .acym_invalid_field {
     border: 1px solid #9d261d !important;
     background: #f2dede !important;

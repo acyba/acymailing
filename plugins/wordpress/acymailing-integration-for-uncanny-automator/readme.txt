@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, acymailing, uncanny, automator, integration
 Requires at least: 5.0
-Tested up to: 6.4.3
+Tested up to: 6.5
 Stable tag: 2.0
 Requires PHP: 7.2.0
 License: GPLv3

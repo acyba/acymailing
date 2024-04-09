@@ -1,8 +1,8 @@
 <?php
 
+use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
-use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Helpers\MailerHelper;
 
 trait ForwardMailboxAction
@@ -261,7 +261,7 @@ trait ForwardMailboxAction
         }
 
         $newMail->subject = $subject;
-        $newMail->type = mailClass::TYPE_STANDARD;
+        $newMail->type = mailClass::TYPE_MAILBOX_ACTION;
         $newMail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
 
         if (!empty($mailboxHelper->action->senderfrom)) {

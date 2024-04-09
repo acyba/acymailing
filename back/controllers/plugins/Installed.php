@@ -42,7 +42,7 @@ trait Installed
         }
 
         $pluginClass = new PluginClass();
-        $plugin = $pluginClass->getOneByFolderName($pluginFolderName);
+        $plugin = $pluginClass->getOnePluginByFolderName($pluginFolderName);
 
         if (empty($plugin)) {
             acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_SAVE_SETTINGS'));

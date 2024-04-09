@@ -66,8 +66,23 @@ class WorkflowHelper extends acymObject
     {
         $ctrl = acym_getVar('cmd', 'ctrl');
 
+        $mailTypes = ['mailbox_action'];
+
         $workflow = [];
         foreach ($steps as $task => $title) {
+            if (in_array($task, $mailTypes)) {
+                $searchSettings = [
+                    'offset' => 0,
+                    'mailsPerPage' => 1,
+                    'key' => '',
+                ];
+                $mailClass = new \AcyMailing\Classes\MailClass();
+                $existingMailbox = $mailClass->getMailsByType($task, $searchSettings);
+                if (empty($existingMailbox['mails'])) {
+                    continue;
+                }
+            }
+
             $title = acym_translation($title);
 
             $linkAttribute = $currentStep == $task ? 'aria-selected="true"' : '';
@@ -75,7 +90,6 @@ class WorkflowHelper extends acymObject
             $link = $ctrl.'&task='.$task;
 
             $title = '<a class="acym_tab acym__color__medium-gray" '.$linkAttribute.' href="'.acym_completeLink($link).'">'.$title.'</a>';
-
 
             $workflow[] = '<li class="tabs-title">'.$title.'</li>';
         }

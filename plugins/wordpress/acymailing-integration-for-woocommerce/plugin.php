@@ -28,6 +28,8 @@ class plgAcymWoocommerce extends acymPlugin
     private $orderTypes = [];
     private $wcsInstalled = false;
 
+    const WC_ACY_SUBSCRIBE_KEY = 'acymailing-wc-subscription-optin-block';
+
     public function __construct()
     {
         parent::__construct();
@@ -106,6 +108,7 @@ class plgAcymWoocommerce extends acymPlugin
     {
         add_filter('woocommerce_checkout_fields', [$this, 'addSubscriptionFieldWC']);
         add_action('woocommerce_checkout_order_processed', [$this, 'subscribeUserOnCheckoutWC'], 15, 3);
+        add_action('woocommerce_store_api_checkout_update_order_from_request', [$this, 'subscribeUserOnCheckoutWCApi'], 10, 2);
         if (acym_isTrackingSalesActive()) {
             add_action('woocommerce_payment_successful_result', [$this, 'trackingWoocommerce'], 10, 2);
             $this->trackingWoocommerceAddCookie();

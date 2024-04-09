@@ -84,7 +84,7 @@ class acymPlugin extends acymObject
         $this->campaignType = acym_getVar('string', 'campaign_type', '');
 
         $pluginClass = new PluginClass();
-        $currentAddon = $pluginClass->getOneByFolderName($this->name);
+        $currentAddon = $pluginClass->getOnePluginByFolderName($this->name);
         $this->active = empty($currentAddon) || $currentAddon->active;
         $this->savedSettings = empty($currentAddon) ? null : $currentAddon->settings;
         if (!empty($this->savedSettings) && is_string($this->savedSettings)) {
@@ -792,7 +792,7 @@ class acymPlugin extends acymObject
         return $displayTags;
     }
 
-    protected function getFormattedValue(&$fieldValues)
+    protected function getFormattedValue($fieldValues)
     {
         $field = $fieldValues[0];
 
@@ -819,7 +819,7 @@ class acymPlugin extends acymObject
                     }
                 }
 
-                $field->value = implode(',', $values);
+                $field->value = implode(', ', $values);
                 break;
 
             case 'dpcalendar':
@@ -847,7 +847,20 @@ class acymPlugin extends acymObject
                 break;
 
             case 'media':
-                $field->value = '<img src="'.$field->value.'" alt="" />';
+                $value = '';
+                if (!empty($field->value)) {
+                    if (substr($field->value, 0, 1) === '{') {
+                        $value = json_decode($field->value, true);
+                        if (!empty($value['imagefile'])) {
+                            $alt = empty($value['alt_text']) ? '' : ' alt="'.acym_escape($value['alt_text']).'"';
+                            $value = '<img src="'.$value['imagefile'].'"'.$alt.' />';
+                        }
+                    } else {
+                        $value = '<img src="'.$field->value.'" alt="" />';
+                    }
+                }
+
+                $field->value = $value;
                 break;
 
             case 'repeatable':
@@ -906,6 +919,44 @@ class acymPlugin extends acymObject
                 }
                 $field->value = $field->usergroups[$field->value]->title;
                 break;
+            case 'subform':
+                if (!empty($field->value)) {
+                    $rows = json_decode($field->value, true);
+
+                    $formattedValues = [];
+                    foreach ($rows as $values) {
+                        $fieldValues = [];
+                        foreach ($values as $fieldIdentifier => $fieldValue) {
+                            $fieldId = str_replace('field', '', $fieldIdentifier);
+                            $oneFieldDefinition = acym_loadObject(
+                                'SELECT `field`.*
+                                FROM #__fields AS `field`
+                                WHERE `field`.`id` = '.intval($fieldId)
+                            );
+
+                            if (empty($oneFieldDefinition)) {
+                                break 3;
+                            }
+
+                            $multiCompatibleValues = [];
+                            if (is_array($fieldValue)) {
+                                foreach ($fieldValue as $oneFieldValue) {
+                                    $oneValue = clone $oneFieldDefinition;
+                                    $oneValue->value = $oneFieldValue;
+                                    $multiCompatibleValues[] = $oneValue;
+                                }
+                            } else {
+                                $oneFieldDefinition->value = $fieldValue;
+                                $multiCompatibleValues[] = $oneFieldDefinition;
+                            }
+
+                            $fieldValues[] = $oneFieldDefinition->label.': '.$this->getFormattedValue($multiCompatibleValues);
+                        }
+                        $formattedValues[] = implode(', ', $fieldValues);
+                    }
+
+                    $field->value = empty($formattedValues) ? '' : '<ul><li>'.implode('</li><li>', $formattedValues).'</li></ul>';
+                }
         }
 
         return $field->value;
@@ -973,7 +1024,9 @@ class acymPlugin extends acymObject
 
     protected function handleCustomFields($tag, &$customFields)
     {
-        if (empty($tag->custom)) return;
+        if (empty($tag->custom)) {
+            return;
+        }
 
         $tag->custom = explode(',', $tag->custom);
         acym_arrayToInteger($tag->custom);
