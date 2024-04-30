@@ -18,7 +18,7 @@ function acydump($arg, $ajax = false, $indent = true, $htmlentities = false)
     }
 }
 
-function acym_debug($file = false, $indent = true)
+function acym_debug(bool $file = false, bool $indent = true)
 {
     $debug = debug_backtrace();
     $takenPath = [];

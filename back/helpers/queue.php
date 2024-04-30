@@ -473,10 +473,11 @@ class QueueHelper extends acymObject
             $nbSent = empty($infos[1]) ? 0 : count($infos[1]);
             $nbFail = empty($infos[0]) ? 0 : count($infos[0]);
 
-            $mailStat = [];
-            $mailStat['mail_id'] = $mailId;
-            $mailStat['sent'] = $nbSent;
-            $mailStat['fail'] = $nbFail;
+            $mailStat = [
+                'mail_id' => $mailId,
+                'sent' => $nbSent,
+                'fail' => $nbFail,
+            ];
 
             $mailStatClass->save($mailStat);
         }

@@ -33,10 +33,11 @@ class FrontstatsController extends acymController
                     $openUnique = 0;
                 }
 
-                $mailStat = [];
-                $mailStat['mail_id'] = $mailId;
-                $mailStat['open_unique'] = $openUnique;
-                $mailStat['open_total'] = 1;
+                $mailStat = [
+                    'mail_id' => $mailId,
+                    'open_unique' => $openUnique,
+                    'open_total' => 1,
+                ];
 
                 $mailStatClass = new MailStatClass();
                 $mailStatClass->save($mailStat);

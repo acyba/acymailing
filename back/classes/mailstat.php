@@ -15,10 +15,6 @@ class MailStatClass extends acymClass
         $valueColumn = [];
         $columnName = acym_getColumns('mail_stat');
 
-        if (!is_array($mailStat)) {
-            $mailStat = (array)$mailStat;
-        }
-
         foreach ($mailStat as $key => $value) {
             if (in_array($key, $columnName)) {
                 $column[] = '`'.acym_secureDBColumn($key).'`';
@@ -35,35 +31,36 @@ class MailStatClass extends acymClass
 
         $onDuplicate = [];
 
-        if (!empty($mailStat['sent'])) {
+        if (isset($mailStat['sent'])) {
             $onDuplicate[] = ' sent = sent + '.intval($mailStat['sent']);
         }
 
-        if (!empty($mailStat['fail'])) {
+        if (isset($mailStat['fail'])) {
             $onDuplicate[] = ' fail = fail + '.intval($mailStat['fail']);
         }
 
-        if (!empty($mailStat['open_unique'])) {
-            $onDuplicate[] = 'open_unique = open_unique + 1';
+        if (isset($mailStat['open_unique'])) {
+            $onDuplicate[] = 'open_unique = open_unique + '.intval($mailStat['open_unique']);
         }
 
-        if (!empty($mailStat['open_total'])) {
-            $onDuplicate[] = 'open_total = open_total + 1';
+        if (isset($mailStat['open_total'])) {
+            $onDuplicate[] = 'open_total = open_total + '.intval($mailStat['open_total']);
         }
 
-        if (!empty($mailStat['total_subscribers'])) {
-            $onDuplicate[] = 'total_subscribers = '.intval($mailStat['total_subscribers']);
+        if (isset($mailStat['total_subscribers'])) {
+            $onDuplicate[] = 'total_subscribers = total_subscribers + '.intval($mailStat['total_subscribers']);
         }
 
-        if (!empty($mailStat['unsubscribe_total'])) {
+        if (isset($mailStat['unsubscribe_total'])) {
             $onDuplicate[] = ' unsubscribe_total = unsubscribe_total + '.intval($mailStat['unsubscribe_total']);
         }
 
-        if (!empty($mailStat['tracking_sale'])) {
+        if (isset($mailStat['tracking_sale'])) {
+            // Cannot be changed as it is not guaranteed that the plugin is updated at the same time
             $onDuplicate[] = 'tracking_sale = '.floatval($mailStat['tracking_sale']);
         }
 
-        if (!empty($mailStat['currency'])) {
+        if (isset($mailStat['currency'])) {
             $onDuplicate[] = 'currency = '.acym_escapeDB($mailStat['currency']);
         }
 

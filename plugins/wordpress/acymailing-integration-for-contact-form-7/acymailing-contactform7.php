@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 2.9
+ * Version: 3.0
  * Requires Plugins: acymailing, contact-form-7
 */
 

@@ -476,13 +476,15 @@ class FollowupClass extends acymClass
 
         if (empty($followups)) return false;
 
+        $priority = $this->config->get('followup_max_priority', 0) == 1 ? 1 : 2;
+
         $valuesToInsert = [];
 
         foreach ($followups as $followupId => $mailsInfo) {
             foreach ($mailsInfo as $mailInfo) {
                 $sendDate = time() + (intval($mailInfo->delay) * intval($mailInfo->delay_unit));
                 $sendDate = acym_date($sendDate, 'Y-m-d H:i:s', false);
-                $valuesToInsert[] = ' ('.intval($mailInfo->mail_id).', '.intval($userId).', '.acym_escapeDB($sendDate).', 2) ';
+                $valuesToInsert[] = ' ('.intval($mailInfo->mail_id).', '.intval($userId).', '.acym_escapeDB($sendDate).', '.intval($priority).') ';
                 $this->addMailStat($mailInfo->mail_id);
             }
             $followupToTrigger[$followupId]->last_trigger = time();
@@ -500,16 +502,15 @@ class FollowupClass extends acymClass
     {
         $mailStatClass = new MailStatClass();
         $mailStat = $mailStatClass->getOneRowByMailId($mailId);
-        $mailStatNew = new \stdClass();
-        $mailStatNew->mail_id = intval($mailId);
+        $newMailStat = [
+            'mail_id' => intval($mailId),
+            'total_subscribers' => 1,
+        ];
         if (empty($mailStat)) {
-            $mailStatNew->total_subscribers = 1;
-            $mailStatNew->send_date = acym_date('now', 'Y-m-d H:i:s', false);
-        } else {
-            $mailStatNew->total_subscribers = $mailStat->total_subscribers + 1;
+            $newMailStat['send_date'] = acym_date('now', 'Y-m-d H:i:s', false);
         }
 
-        $mailStatClass->save($mailStatNew);
+        $mailStatClass->save($newMailStat);
     }
 
     public function getFollowupDailyBases()

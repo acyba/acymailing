@@ -48,6 +48,7 @@ class MailClass extends acymClass
         self::TYPE_OVERRIDE,
         self::TYPE_WELCOME,
         self::TYPE_UNSUBSCRIBE,
+        self::TYPE_TEMPLATE,
     ];
 
     // Types on which the click statistics are active
@@ -1019,17 +1020,15 @@ class MailClass extends acymClass
         $mailStatClass = new MailStatClass();
         $mailStat = $mailStatClass->getOneRowByMailId($mailId);
 
+        $newMailStat = [
+            'mail_id' => intval($mailId),
+            'total_subscribers' => intval($result),
+        ];
         if (empty($mailStat)) {
-            $mailStat = new \stdClass();
-            $mailStat->mail_id = intval($mailId);
-            $mailStat->total_subscribers = intval($result);
-            $mailStat->send_date = $sendingDate;
-        } else {
-            $mailStat->total_subscribers += intval($result);
+            $newMailStat['send_date'] = $sendingDate;
         }
 
-        unset($mailStat->sent);
-        $mailStatClass->save($mailStat);
+        $mailStatClass->save($newMailStat);
 
         if ($result === 0) {
             return acym_translation('ACYM_CAMPAIGN_ALREADY_QUEUED');
@@ -1526,5 +1525,17 @@ class MailClass extends acymClass
         $query .= ' WHERE '.implode(' AND ', $conditions);
 
         return $this->decode(acym_loadObjectList($query, '', $offset, $limit));
+    }
+
+    public function updateFollowupPriority($oldPriority, $newPriority)
+    {
+        if ($oldPriority == 0 && $newPriority == 1) {
+            $updatePriorityQuery = 'UPDATE `#__acym_queue` AS `queue`
+                INNER JOIN `#__acym_mail` AS `mail` ON `queue`.`mail_id` = `mail`.`id`
+                SET `queue`.`priority` = 1
+                WHERE `mail`.`type` = "'.self::TYPE_FOLLOWUP.'"';
+
+            return acym_query($updatePriorityQuery);
+        }
     }
 }

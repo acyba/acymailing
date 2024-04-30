@@ -78,10 +78,11 @@ class FronturlController extends acymController
             $userStatToInsert['open_date'] = acym_date('now', 'Y-m-d H:i:s');
             $userStatClass->save($userStatToInsert);
 
-            $mailStatToInsert = [];
-            $mailStatToInsert['mail_id'] = $mailId;
-            $mailStatToInsert['open_unique'] = 1;
-            $mailStatToInsert['open_total'] = 1;
+            $mailStatToInsert = [
+                'mail_id' => $mailId,
+                'open_unique' => 1,
+                'open_total' => 1,
+            ];
             $mailStatClass->save($mailStatToInsert);
         }
 

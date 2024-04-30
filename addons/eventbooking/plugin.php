@@ -34,6 +34,7 @@ class plgAcymEventbooking extends acymPlugin
         if ($this->installed) {
             acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
             acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR);
+            acym_loadLanguageFile('com_eventbooking', JPATH_ADMINISTRATOR);
             $this->displayOptions = [
                 'eb_title' => [acym_translation('EB_TITLE'), true],
                 'eb_price' => [acym_translation('EB_PRICE'), true],
@@ -48,6 +49,13 @@ class plgAcymEventbooking extends acymPlugin
                 'eb_capacity' => [acym_translation('EB_CAPACITY'), false],
                 'eb_regstart' => [acym_translation('EB_REGISTRATION_START_DATE'), false],
                 'eb_cut' => [acym_translation('EB_CUT_OFF_DATE'), false],
+                'eb_early' => [acym_translation('EB_EARLY_BIRD_DISCOUNT_DATE'), false],
+                'eb_cancel_before' => [acym_translation('EB_CANCEL_BEFORE_DATE'), false],
+                'eb_registrant_edit_close' => [acym_translation('EB_REGISTRANT_EDIT_CLOSE_DATE'), false],
+                'eb_created' => [acym_translation('ACYM_DATE_CREATED'), false],
+                'eb_max_end' => [acym_translation('EB_VALIDATION_MAXIMUM').' '.acym_translation('EB_EVENT_END_DATE'), false],
+                'eb_late_fee' => [acym_translation('EB_LATE_FEE_DATE'), false],
+                'eb_deposit_until' => [acym_translation('EB_DEPOSIT_UNTIL_DATE'), false],
             ];
             $this->initCustomView();
             $this->settings = [

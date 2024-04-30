@@ -173,6 +173,14 @@
                 ?>
 			</div>
 		</div>
+        <?php if (acym_level(ACYM_ENTERPRISE)) { ?>
+			<div class="cell medium-3"><?php echo acym_translation('ACYM_SET_FOLLOWUP_PRIORITY').acym_info('ACYM_SET_FOLLOWUP_PRIORITY_DESC'); ?></div>
+			<div class="cell medium-9 grid-x">
+				<div class="cell medium-6 large-4 xlarge-3 xxlarge-2">
+                    <?php echo acym_switch('config[followup_max_priority]', $this->config->get('followup_max_priority', 0)); ?>
+				</div>
+			</div>
+        <?php } ?>
 	</div>
 </div>
 <?php

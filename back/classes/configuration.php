@@ -26,6 +26,8 @@ class ConfigurationClass extends acymClass
 
     public function save($newConfig, $escape = true)
     {
+        $oldFollowupPriority = $this->get('followup_max_priority', 0);
+
         // We do a replace so that values are always kept up to date and added if necessary in the mean time
         $query = 'REPLACE INTO #__acym_configuration (`name`, `value`) VALUES ';
 
@@ -77,6 +79,11 @@ class ConfigurationClass extends acymClass
         if ($status === false) {
             acym_display(isset($e) ? $e->getMessage() : substr(strip_tags(acym_getDBError()), 0, 200).'...', 'error');
         }
+
+        $newFollowupPriority = $this->get('followup_max_priority', 0);
+
+        $mailClass = new MailClass();
+        $mailClass->updateFollowupPriority($oldFollowupPriority, $newFollowupPriority);
 
         return $status;
     }

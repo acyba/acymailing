@@ -118,7 +118,7 @@ trait HikashopAutomationConditions
         $conditions['user']['hikareminder']->option = '<div class="cell">';
         $conditions['user']['hikareminder']->option .= acym_translationSprintf(
             'ACYM_ORDER_WITH_STATUS',
-            $delayType->display('acym_condition[conditions][__numor__][__numand__][hikareminder][days]', 1, 1, '__numor____numand__'),
+            '<input type="number" name="acym_condition[conditions][__numor__][__numand__][hikareminder][days]" value="1" min="1" class="intext_input"/>',
             '<div class="intext_select_automation cell margin-right-1">'.acym_select(
                 $orderStatuses,
                 'acym_condition[conditions][__numor__][__numand__][hikareminder][status]',
@@ -317,7 +317,7 @@ trait HikashopAutomationConditions
         $query->where[] = 'order'.$num.'.order_type = "sale"';
         $query->where[] = 'order'.$num.'.order_status = '.acym_escapeDB($orderStatus);
 
-        $query->where[] = 'FROM_UNIXTIME(order'.$num.'.order_created, "%Y-%m-%d") = '.acym_escapeDB(date('Y-m-d', time() - $options['days']));
+        $query->where[] = 'FROM_UNIXTIME(order'.$num.'.order_created, "%Y-%m-%d") = '.acym_escapeDB(acym_date(time() - ($options['days'] * 86400), 'Y-m-d', false));
 
         if (!empty($options['payment']) && $options['payment'] != 'any') {
             $query->where[] = 'order'.$num.'.order_payment_id = '.intval($options['payment']);

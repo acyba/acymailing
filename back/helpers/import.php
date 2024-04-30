@@ -429,7 +429,7 @@ class ImportHelper extends acymObject
         $filename = str_replace(['.', ' '], '_', substr($filename, 0, strpos($filename, $extension))).$extension;
         $uploadPath = ACYM_MEDIA.'import'.DS.$filename;
 
-        if (!file_exists($uploadPath)) {
+        if (!file_exists($uploadPath) || !is_file($uploadPath)) {
             acym_enqueueMessage(acym_translation('ACYM_UPLOADED_FILE_NOT_FOUND').' '.$uploadPath, 'error');
 
             return false;

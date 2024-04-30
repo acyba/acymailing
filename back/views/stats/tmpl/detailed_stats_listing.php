@@ -193,7 +193,7 @@
 						<div class="large-1 medium-1 small-1 cell acym__listing__detailed__stats__content text-center cursor-default">
                             <?php
                             $targetSuccess = '<i class="acymicon-check acym__listing__detailed_stats_sent__success" ></i>';
-                            $targetFail = '<i class="acymicon-times acym__listing__detailed_stats_sent__fail" ></i>';
+                            $targetFail = '<i class="acymicon-times-circle acym__listing__detailed_stats_sent__fail" ></i>';
                             echo acym_tooltip(
                                 empty($detailed_stat->fail) ? $targetSuccess : $targetFail,
                                 acym_translation('ACYM_SENT').' : '.$detailed_stat->sent.' '.acym_translation('ACYM_FAIL').' : '.$detailed_stat->fail

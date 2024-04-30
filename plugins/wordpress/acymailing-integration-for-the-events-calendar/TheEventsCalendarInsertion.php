@@ -118,7 +118,7 @@ trait TheEventsCalendarInsertion
                 'name' => 'order',
                 'options' => [
                     'ID' => 'ACYM_DATE_CREATED',
-                    'start_date' => 'ACYM_DATE',
+                    'occurrence.start_date' => 'ACYM_DATE',
                     'post_title' => 'ACYM_TITLE',
                     'menu_order' => 'ACYM_MENU_ORDER',
                     'rand' => 'ACYM_RANDOM',
@@ -127,8 +127,8 @@ trait TheEventsCalendarInsertion
                 'defaultdir' => 'asc',
             ],
         ];
-        $this->autoContentOptions($catOptions, 'event');
 
+        $this->autoContentOptions($catOptions, 'event');
         $this->autoCampaignOptions($catOptions);
 
         $displayOptions = array_merge($displayOptions, $catOptions);
@@ -206,14 +206,19 @@ trait TheEventsCalendarInsertion
         $time = time();
 
         foreach ($tags as $oneTag => $parameter) {
-            if (isset($this->tags[$oneTag])) continue;
+            if (isset($this->tags[$oneTag])) {
+                continue;
+            }
 
             if (empty($parameter->from)) {
                 $parameter->from = date('Y-m-d H:i:s', $time);
             } else {
                 $parameter->from = acym_date(acym_replaceDate($parameter->from), 'Y-m-d H:i:s');
             }
-            if (!empty($parameter->to)) $parameter->to = acym_date(acym_replaceDate($parameter->to), 'Y-m-d H:i:s');
+
+            if (!empty($parameter->to)) {
+                $parameter->to = acym_date(acym_replaceDate($parameter->to), 'Y-m-d H:i:s');
+            }
 
             $query = 'SELECT DISTINCT occurrence.occurrence_id 
                     FROM #__tec_occurrences AS occurrence

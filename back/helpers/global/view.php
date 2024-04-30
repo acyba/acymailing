@@ -224,6 +224,7 @@ function acym_getJSMessages()
         'ACYM_IMAGE',
         'ACYM_DOWNLOAD',
         'ACYM_INTRO_ONLY',
+        'ACYM_EXCERPT',
         'ACYM_LINK_DOWNLOAD',
         'ACYM_IMAGE_HTML_TAG',
         'ACYM_LOCATION',

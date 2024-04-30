@@ -692,24 +692,13 @@ class CampaignClass extends acymClass
 
         $mailStatClass = new MailStatClass();
         foreach ($numberUsersInsertedByMailId as $mailId => $numberOfUsersInserted) {
-            $mailStat = $mailStatClass->getOneRowByMailId($mailId);
+            $newMailStat = [
+                'mail_id' => intval($mailId),
+                'total_subscribers' => intval($numberOfUsersInserted),
+                'send_date' => $date,
+            ];
 
-            if (empty($mailStat)) {
-                $mailStat = [];
-                $mailStat['mail_id'] = intval($mailId);
-                $mailStat['total_subscribers'] = 0;
-            } else {
-                $mailStat = get_object_vars($mailStat);
-            }
-
-            $mailStat['total_subscribers'] += intval($numberOfUsersInserted);
-            $mailStat['send_date'] = $date;
-
-            if (!empty($mailStat['sent'])) {
-                unset($mailStat['sent']);
-            }
-
-            $mailStatClass->save($mailStat);
+            $mailStatClass->save($newMailStat);
         }
 
         if ($result === 0) {

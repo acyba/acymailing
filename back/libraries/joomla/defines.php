@@ -55,6 +55,7 @@ define('ACYM_J30', version_compare($jversion, '3.0.0', '>='));
 define('ACYM_J37', version_compare($jversion, '3.7.0', '>='));
 define('ACYM_J39', version_compare($jversion, '3.9.0', '>='));
 define('ACYM_J40', version_compare($jversion, '4.0.0', '>='));
+define('ACYM_J50', version_compare($jversion, '5.0.0', '>='));
 
 define('ACYM_ALLOWRAW', defined('JREQUEST_ALLOWRAW') ? JREQUEST_ALLOWRAW : 2);
 define('ACYM_ALLOWHTML', defined('JREQUEST_ALLOWHTML') ? JREQUEST_ALLOWHTML : 4);

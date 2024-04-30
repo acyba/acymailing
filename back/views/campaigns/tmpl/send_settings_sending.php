@@ -65,7 +65,9 @@
 	<div class="cell grid-x acym__campaign__sendsettings__params margin-left-3"
 		 data-show="acym__campaign__sendsettings__scheduled" <?php echo $data['currentCampaign']->send_scheduled ? '' : 'style="display: none"'; ?>>
 		<div class="cell grid-x acym__campaign__sendsettings__display-send-type-scheduled">
-			<label id="acym__campaign__sendsettings__scheduled__send-date__label" class="cell shrink"><?php echo acym_translation('ACYM_CAMPAIGN_WILL_BE_SENT'); ?></label>
+			<label id="acym__campaign__sendsettings__scheduled__send-date__label" class="cell shrink">
+                <?php echo acym_translation('ACYM_CAMPAIGN_WILL_BE_SENT'); ?>
+			</label>
 			<label class="cell shrink" for="acym__campaign__sendsettings__send">
                 <?php
                 $value = empty($data['currentCampaign']->sending_date) ? '' : acym_date($data['currentCampaign']->sending_date, 'Y-m-d H:i');
@@ -125,10 +127,15 @@
                     <?php
                     $startDateValue = '';
                     if (!empty($data['currentCampaign']->sending_params['start_date'])) {
-                        $startDateValue = acym_date($data['currentCampaign']->sending_params['start_date'], 'd M Y H:i');
+                        $startDateValue = acym_date($data['currentCampaign']->sending_params['start_date'], 'Y-m-d H:i');
                     }
                     ?>
-					<input type="text" name="start_date" class="acy_date_picker" readonly value="<?php echo $startDateValue; ?>">
+					<input type="text"
+						   name="start_date"
+						   class="acy_date_picker"
+						   data-acym-translate="0"
+						   readonly
+						   value="<?php echo acym_escape($startDateValue); ?>">
 				</div>
 			</div>
 			<div class="cell grid-x margin-top-1">

@@ -2,7 +2,7 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Registry\Registry;
+use Joomla\Registry\Registry;
 
 defined('_JEXEC') || die('Restricted access');
 

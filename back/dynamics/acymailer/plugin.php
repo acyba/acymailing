@@ -1110,20 +1110,11 @@ class plgAcymAcymailer extends acymPlugin
      */
     private function isUnsubscribeLinkMissing($mailerHelper): bool
     {
-        if ($mailerHelper->isTest || $mailerHelper->isForward || $mailerHelper->isSpamTest) {
+        if ($mailerHelper->isTest || $mailerHelper->isForward || $mailerHelper->isSpamTest || empty($mailerHelper->mail)) {
             return false;
         }
 
-        if (empty($mailerHelper->mail)) {
-            return false;
-        }
-
-        static $mailClass = null;
-        if ($mailClass === null) {
-            $mailClass = new MailClass();
-        }
-
-        if (in_array($mailerHelper->mail->type, [$mailClass::TYPE_NOTIFICATION, $mailClass::TYPE_OVERRIDE, $mailClass::TYPE_UNSUBSCRIBE, $mailClass::TYPE_TEMPLATE])) {
+        if (in_array($mailerHelper->mail->type, MailClass::TYPES_TRANSACTIONAL) || $mailerHelper->mail->type === MailClass::TYPE_AUTOMATION) {
             return false;
         }
 
@@ -1197,7 +1188,7 @@ class plgAcymAcymailer extends acymPlugin
                 continue;
             }
 
-            if ($oneEntry['target'] === $entryValue) {
+            if (rtrim($oneEntry['target'], '.') === rtrim($entryValue, '.')) {
                 return true;
             }
 

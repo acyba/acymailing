@@ -1,7 +1,7 @@
 <?php
 
 use AcyMailing\Helpers\TabHelper;
-use Joomla\CMS\Registry\Registry;
+use Joomla\Registry\Registry;
 
 trait RseventsproInsertion
 {

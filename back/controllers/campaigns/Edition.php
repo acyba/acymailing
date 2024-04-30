@@ -52,8 +52,12 @@ trait Edition
                     'campaign_auto_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=auto'),
                     'followup_link' => acym_completeLink('campaigns&task=edit&step=followupTrigger'),
                     'campaign_scheduled_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=scheduled'),
-                    'welcome_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_WELCOME.'&from='.$favoriteTemplate.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
-                    'unsubscribe_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_UNSUBSCRIBE.'&from='.$favoriteTemplate.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
+                    'welcome_email_link' => acym_completeLink(
+                        'mails&task=edit&type='.MailClass::TYPE_WELCOME.'&from='.$favoriteTemplate.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl
+                    ),
+                    'unsubscribe_email_link' => acym_completeLink(
+                        'mails&task=edit&type='.MailClass::TYPE_UNSUBSCRIBE.'&from='.$favoriteTemplate.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl
+                    ),
                 ];
             }
         } else {
@@ -711,13 +715,7 @@ trait Edition
 
         $currentCampaign = $campaignClass->getOneByIdWithMail($campaignId);
 
-        if ($currentCampaign->sent && !$currentCampaign->active) {
-            $mailStatClass = new MailStatClass();
-            $listClass = new ListClass();
-            $mailStat = $mailStatClass->getOneRowByMailId($currentCampaign->mail_id);
-            $mailStat->total_subscribers = $listClass->getTotalSubCount($allLists);
-            $mailStatClass->save($mailStat);
-        } elseif (!empty($currentCampaign->mail_id)) {
+        if ((!$currentCampaign->sent || $currentCampaign->active) && !empty($currentCampaign->mail_id)) {
             $campaignClass->manageListsToCampaign($allLists, $currentCampaign->mail_id, $allListsUnselected);
             if (acym_getVar('string', 'nextstep', '') === 'listing') {
                 acym_enqueueMessage(acym_translationSprintf('ACYM_LIST_IS_SAVED', $currentCampaign->name));

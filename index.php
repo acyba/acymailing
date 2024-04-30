@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 9.5.0
+ * Version: 9.6.0
  * Text Domain: acymailing
  * Domain Path: /language
  * Requires at least: 5.0

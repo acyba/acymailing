@@ -22,6 +22,7 @@ class plgAcymPost extends acymPlugin
             $this->displayOptions = [
                 'title' => ['ACYM_TITLE', true],
                 'image' => ['ACYM_FEATURED_IMAGE', true],
+                'excerpt' => ['ACYM_EXCERPT', false],
                 'intro' => ['ACYM_INTRO_ONLY', true],
                 'content' => ['ACYM_FULL_TEXT', false],
                 'cats' => ['ACYM_CATEGORIES', false],
@@ -369,6 +370,11 @@ class plgAcymPost extends acymPlugin
         if (!in_array('image', $tag->display)) $imagePath = '';
 
         $contentText = '';
+        $varFields['{excerpt}'] = $this->cleanExtensionContent($element->post_excerpt);
+        if (in_array('excerpt', $tag->display) && !empty($varFields['{excerpt}'])) {
+            $contentText .= '<p>'.$varFields['{excerpt}'].'</p>';
+        }
+
         $varFields['{content}'] = $this->cleanExtensionContent($element->post_content);
         $varFields['{intro}'] = $this->cleanExtensionContent($this->getIntro($element->post_content));
         $varFields['{content}'] = !empty($tag->replaceshortcode) ? $this->replaceShortcode($varFields['{content}']) : $varFields['{content}'];

@@ -90,8 +90,12 @@ function acym_getLanguageTag($simple = false)
 
 function acym_loadLanguageFile($extension = 'joomla', $basePath = JPATH_SITE, $lang = null, $reload = false, $default = true)
 {
-    $acyapp = acym_getGlobal('app');
-    $acylanguage = $acyapp->getLanguage();
+    if (ACYM_J50) {
+        $acylanguage = Factory::getLanguage();
+    } else {
+        $acyapp = acym_getGlobal('app');
+        $acylanguage = $acyapp->getLanguage();
+    }
     $acylanguage->load($extension, $basePath, $lang, $reload, $default);
 }
 

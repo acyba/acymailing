@@ -462,7 +462,7 @@ class PluginHelper extends acymObject
                     // Dcontent specific syntax
                     $text = preg_replace(
                         '#(<tr[^>]+)data-dynamic="'.preg_quote($oneCode, '#').'"([^>]+>[^<]*<td[^>]*>).+</i>[^<]*</td>[^<]*</tr>#Uis',
-                        '$1$2'.$safePregValue.'</td></tr>',
+                        '${1}${2}'.$safePregValue.'</td></tr>',
                         $text
                     );
 

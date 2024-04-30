@@ -281,9 +281,9 @@ trait SubscriberAutomationActions
 
         if (empty($mail)) return '';
 
-        if ($mailClass::TYPE_AUTOMATION != $mail->type) {
+        if (MailClass::TYPE_AUTOMATION !== $mail->type) {
             unset($mail->id);
-            $mail->type = $mailClass::TYPE_AUTOMATION;
+            $mail->type = MailClass::TYPE_AUTOMATION;
             $mail->id = $mailClass->save($mail);
         }
 
