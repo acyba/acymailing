@@ -165,7 +165,12 @@
                 $queueDelete = $this->config->get('queue_delete_days', 0);
                 if (!acym_level(ACYM_ESSENTIAL)) {
                     $inputContent = '<input type="number" class="intext_input" disabled min="0" name="config[queue_delete_days]" value="'.$queueDelete.'">';
-                    $inputContent = acym_tooltip($inputContent, acym_translation('ACYM_PRO_ONLY'));
+                    $inputContent = acym_tooltip(
+                        [
+                            'hoveredText' => $inputContent,
+                            'textShownInTooltip' => acym_translation('ACYM_PRO_ONLY'),
+                        ]
+                    );
                 } else {
                     $inputContent = '<input type="number" class="intext_input" min="0" name="config[queue_delete_days]" value="'.$queueDelete.'">';
                 }

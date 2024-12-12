@@ -87,7 +87,8 @@ trait Ajax
             $params['ids'] = $matchingListsData->idsSelected;
         }
 
-        $lists = $this->currentClass->getListsWithIdNameCount($params);
+        $listClass = new ListClass();
+        $lists = $listClass->getListsWithIdNameCount($params);
 
         $return = '';
 

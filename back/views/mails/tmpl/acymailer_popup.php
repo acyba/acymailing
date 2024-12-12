@@ -24,6 +24,6 @@
     </div>
 
 </div>
-<img src="<?php echo ACYM_IMAGES.'import/spaceman_template.png'; ?>" alt="spaceman with smoke" id="acym__template__import__image__spaceman">
-<img src="<?php echo ACYM_IMAGES.'import/smoke_rocket.png'; ?>" alt="smoke of rocket" id="acym__template__import__image__smoke">
+<img src="<?php echo ACYM_IMAGES.'templates/spaceman_template.png'; ?>" alt="spaceman with smoke" id="acym__template__import__image__spaceman">
+<img src="<?php echo ACYM_IMAGES.'templates/smoke_rocket.png'; ?>" alt="smoke of rocket" id="acym__template__import__image__smoke">
 

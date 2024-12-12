@@ -61,6 +61,18 @@ function acym_coreAddons()
             'latest_version' => '{__VERSION__}',
             'type' => 'CORE',
         ],
+        (object)[
+            'title' => acym_translation('ACYM_CONTACTS'),
+            'folder_name' => 'contact',
+            'version' => '{__VERSION__}',
+            'active' => '1',
+            'category' => 'User management',
+            'level' => 'entreprise',
+            'uptodate' => '1',
+            'description' => '- Filter your AcyMailing users based on their contact category<br/>- Auto-create AcyMailing users on contact creation<br/>- Import contacts into AcyMailing',
+            'latest_version' => '{__VERSION__}',
+            'type' => 'CORE',
+        ],
     ];
 }
 

@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Controllers;
 
+use AcyMailing\Classes\OverrideClass;
 use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Helpers\ToolbarHelper;
 use AcyMailing\Helpers\UpdateHelper;
@@ -83,7 +84,8 @@ class OverrideController extends acymController
 
     public function reInstallOverrideEmails()
     {
-        $this->currentClass->cleanEmailsOverride();
+        $overrideClass = new OverrideClass();
+        $overrideClass->cleanEmailsOverride();
         $this->installOverrideEmails();
 
         return $this->listing();

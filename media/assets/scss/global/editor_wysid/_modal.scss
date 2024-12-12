@@ -82,15 +82,15 @@
             color: #222;
         }
 
-        #acym__wysid__modal__giphy--image, #acym__wysid__modal__unsplash--image {
+        #acym__wysid__modal__gif--image, #acym__wysid__modal__unsplash--image {
             width: 200px;
             margin-bottom: 1rem;
         }
 
-        .acym__wysid__modal__giphy__results__container, .acym__wysid__modal__unsplash__results__container {
+        .acym__wysid__modal__gif__results__container, .acym__wysid__modal__unsplash__results__container {
             overflow-y: auto;
 
-            .acym__wysid__modal__giphy__results--img, .acym__wysid__modal__unsplash__results--img {
+            .acym__wysid__modal__gif__results--img, .acym__wysid__modal__unsplash__results--img {
                 cursor: pointer;
                 border: 4px solid $white;
                 border-radius: 5px;
@@ -99,7 +99,7 @@
                 background-size: 250% 250%;
                 background-image: linear-gradient(115deg, $light-gray, transparent);
 
-                &.acym__wysid__modal__giphy__results--img--selected, &.acym__wysid__modal__unsplash__results--img--selected {
+                &.acym__wysid__modal__gif__results--img--selected, &.acym__wysid__modal__unsplash__results--img--selected {
                     border-color: $font-primary !important;
                 }
 
@@ -286,7 +286,7 @@
     }
 }
 
-#acym__wysid__modal__joomla-image {
+#acym__upload__modal__joomla-image {
     z-index: 160000;
     top: 0;
     right: 0;
@@ -296,7 +296,7 @@
     display: none;
     overflow: auto;
 
-    #acym__wysid__modal__joomla-image__bg {
+    #acym__upload__modal__joomla-image__bg {
         z-index: 160100;
         opacity: 0.7;
         background-color: black;
@@ -307,7 +307,7 @@
         position: fixed;
     }
 
-    #acym__wysid__modal__joomla-image__ui {
+    #acym__upload__modal__joomla-image__ui {
         background-color: white;
         z-index: 160200;
         box-shadow: 0 0 10px #191919;
@@ -383,7 +383,7 @@
         padding: 5px;
     }
 
-    #acym__wysid__modal__joomla-image__ui {
+    #acym__upload__modal__joomla-image__ui {
         height: 650px;
         max-width: 1000px;
         position: relative;

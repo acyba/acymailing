@@ -140,15 +140,15 @@ class FrontusersController extends UsersController
         $msgtype = 'success';
         $extraMsg = '';
         if (empty($myuser->confirmed) && $this->config->get('require_confirmation', 1) == 1) {
+            $extraMsg = strip_tags(acym_getVar('string', 'confirmation_message'));
             if ($userClass->confirmationSentSuccess || empty($userClass->confirmationSentError)) {
-                $msg = 'ACYM_CONFIRMATION_SENT';
+                $msg = !empty($extraMsg) ? $extraMsg : 'ACYM_CONFIRMATION_SENT';
                 $code = 2;
             } else {
                 $msg = $userClass->confirmationSentError;
                 $code = 7;
                 $msgtype = 'error';
             }
-            $extraMsg = strip_tags(acym_getVar('string', 'confirmation_message'));
         } else {
             if ($userClass->subscribed) {
                 $msg = strip_tags(acym_getVar('string', 'confirmation_message'));
@@ -326,11 +326,12 @@ class FrontusersController extends UsersController
     {
         $userClass = new UserClass();
         $user = $this->getUserFromUnsubPage();
+        $redirectUrl = $this->config->get('unsub_redirect_url', acym_rootURI());
 
         $allLists = $userClass->getUserSubscriptionById($user->id);
         if (empty($allLists)) {
-            acym_enqueueMessage(acym_translation('ACYM_AN_ISSUE_OCCURED_WHILE_SAVING'), 'error');
-            acym_redirect(acym_rootURI());
+            acym_enqueueMessage(acym_translation('ACYM_NOT_SUBSCRIBED_ANY_LIST'), 'info');
+            acym_redirect(!empty($redirectUrl) ? $redirectUrl : acym_rootURI());
         }
 
         $lists = [];
@@ -349,9 +350,9 @@ class FrontusersController extends UsersController
     private function redirectUnsubWorked()
     {
         acym_enqueueMessage(acym_translation('ACYM_SUBSCRIPTION_UPDATED_OK'));
-        $redirect_url = $this->config->get('unsub_redirect_url');
-        if (!empty($redirect_url)) {
-            acym_redirect($redirect_url);
+        $redirectUrl = $this->config->get('unsub_redirect_url');
+        if (!empty($redirectUrl)) {
+            acym_redirect($redirectUrl);
         } else {
             acym_redirect(acym_rootURI());
         }
@@ -361,10 +362,18 @@ class FrontusersController extends UsersController
     {
         $userClass = new UserClass();
         if ($userClass->identify(true, 'user_id', 'user_key') === false) {
-            $this->displayMessage('ACYM_USER_NOT_FOUND', false);
+            acym_enqueueMessage(acym_translation('ACYM_USER_NOT_FOUND'), 'error');
+
+            acym_redirect(acym_rootURI());
         }
 
-        $this->unsubscribeAllInner();
+        $displayCheckedLists = acym_getVar('string', 'displayed_checked_lists', '');
+        if (!empty($displayCheckedLists)) {
+            $user = $this->getUserFromUnsubPage();
+            $userClass->unsubscribe($user->id, explode(',', $displayCheckedLists));
+        } else {
+            $this->unsubscribeAllInner();
+        }
 
         $ajax = acym_getVar('int', 'ajax', 0);
         if (!$ajax) {
@@ -379,30 +388,32 @@ class FrontusersController extends UsersController
             $this->displayMessage('ACYM_USER_NOT_FOUND', false);
         }
 
-        //get the user
-        $user = $this->getUserFromUnsubPage();
-        //get the list the user want to sub
-        $listsChecked = acym_getVar('array', 'lists');
-        //if he uncheck all lists we directly unsubscribe to all lists
-        if (empty($listsChecked)) {
-            $this->unsubscribeAllInner(true);
-            $this->redirectUnsubWorked();
-        }
-        $listsChecked = array_keys($listsChecked);
 
-        //we get the user subscriptions
+        // Get the user
+        $user = $this->getUserFromUnsubPage();
+        // Get the list the user want to sub
+        $listsChecked = acym_getVar('array', 'lists', []);
+        $listsChecked = array_filter($listsChecked, function ($status) {
+            return intval($status) === 1;
+        });
+        $listsChecked = array_keys($listsChecked);
+        // Get the displayed lists
+        $displayedCheckedLists = explode(',', acym_getVar('string', 'displayed_checked_lists', ''));
+        // We get the user subscriptions
         $userSubscriptions = $userClass->getUserSubscriptionById($user->id);
 
-        //we subscribe the user to the checked lists
+        // We subscribe the user to the checked lists
         $userClass->subscribe($user->id, $listsChecked);
 
-        //we unsub to the unchecked lists
+        // We unsub to the unchecked lists
         $listsToUnsub = [];
         foreach ($userSubscriptions as $subscription) {
-            // The list wasn't displayed || the user checked the list || the user isn't subscribed
-            if (intval($subscription->visible) === 0 || in_array($subscription->id, $listsChecked) || intval($subscription->status) !== 1) continue;
-
-            $listsToUnsub[] = $subscription->id;
+            // The list wasn't checked && the list is displayed && the user is subscribed to it
+            if (!in_array($subscription->id, $listsChecked)
+                && in_array($subscription->id, $displayedCheckedLists)
+                && intval($subscription->status) === 1) {
+                $listsToUnsub[] = $subscription->id;
+            }
         }
 
         $userClass->unsubscribe($user->id, $listsToUnsub);
@@ -415,6 +426,12 @@ class FrontusersController extends UsersController
         $lang = acym_getVar('string', 'language', acym_getLanguageTag());
         $mailId = acym_getVar('int', 'mail_id', 0);
         $campaignListOnly = $this->config->get('unsubscribe_campaign_list_only', '0') === '1';
+        $displaySurvey = $this->config->get('unsubpage_survey', '0') === '1';
+        $surveyAnswers = $this->config->get('unsub_survey', '[]');
+        $unsubscribeColor = $this->config->get('unsubscribe_color', '#00a4ff');
+        $hoverColor = $this->darkenRGBColor($unsubscribeColor, 20);
+
+        $surveyAnswers = json_decode($surveyAnswers, true);
 
         if (ACYM_CMS === 'joomla' && !empty($_GET['language'])) $lang = $_GET['language'];
         acym_setLanguage($lang);
@@ -439,10 +456,77 @@ class FrontusersController extends UsersController
             foreach ($allLanguages as $key => $language) {
                 $data['languages'][$key] = $language->name;
             }
+
+            $surveyAnswersTranslations = $this->config->get('unsub_survey_translation', '');
+
+            if (!empty($surveyAnswersTranslations)) {
+                $surveyAnswersTranslations = json_decode($surveyAnswersTranslations, true);
+                if (isset($surveyAnswersTranslations[$data['lang']])) {
+                    $surveyAnswers = $surveyAnswersTranslations[$data['lang']]['unsub_survey'];
+                }
+            }
         }
+
+        if ($displaySurvey) {
+            $data['surveyAnswers'] = $surveyAnswers;
+            array_unshift($data['surveyAnswers'], acym_translation('ACYM_SELECT_REASON'));
+            $data['surveyAnswers'][] = acym_translation('ACYM_OTHER');
+            $data['surveyAnswers'] = array_combine($data['surveyAnswers'], $data['surveyAnswers']);
+        }
+
+        if (!empty($this->config->get('unsubscribe_color'))) {
+            $unsubscribeColor = $this->config->get('unsubscribe_color');
+            $hoverColor = $this->darkenRGBColor($unsubscribeColor, 20);
+            $data['unsubscribeColor'] = $unsubscribeColor;
+            $data['hoverColor'] = $hoverColor;
+        }
+        $data['svgImage'] = $this->getSVGImage($unsubscribeColor, $hoverColor);
 
         acym_setVar('layout', 'unsubscribepage');
         parent::display($data);
+    }
+
+    public function getSVGImage($unsubscribeColor, $hoverColor)
+    {
+        if ($this->config->get('display_unsub_image') === '1') {
+            $svgPath = ACYM_IMAGES.'unsubscribe/unsub_image.svg';
+
+            $svgContent = acym_fileGetContent($svgPath);
+
+            return str_replace(
+                ['#B118C8', '#C794CF'],
+                [$unsubscribeColor, $hoverColor],
+                $svgContent
+            );
+        }
+
+        return '';
+    }
+
+    public function hexToRGB($hexColor)
+    {
+        $hexColor = ltrim($hexColor, '#');
+
+        if (strlen($hexColor) === 3) {
+            $hexColor = $hexColor[0].$hexColor[0].$hexColor[1].$hexColor[1].$hexColor[2].$hexColor[2];
+        }
+
+        $r = hexdec(substr($hexColor, 0, 2));
+        $g = hexdec(substr($hexColor, 2, 2));
+        $b = hexdec(substr($hexColor, 4, 2));
+
+        return [$r, $g, $b];
+    }
+
+    public function darkenRGBColor($hexColor, $percent)
+    {
+        $rgbValues = $this->hexToRGB($hexColor);
+
+        $darkenedRGB = array_map(function ($value) use ($percent) {
+            return max(0, $value - ($value * $percent / 100));
+        }, $rgbValues);
+
+        return sprintf('rgb(%d, %d, %d)', $darkenedRGB[0], $darkenedRGB[1], $darkenedRGB[2]);
     }
 
     public function confirm()
@@ -469,7 +553,7 @@ class FrontusersController extends UsersController
             }
         }
 
-        //Now we can really confirm the user
+        // Now we can really confirm the user
         if (!$user->confirmed) {
             $userClass->confirm($user->id);
         }
@@ -478,7 +562,7 @@ class FrontusersController extends UsersController
         $redirectUrl = $this->config->get('confirm_redirect');
         if (!empty($redirectUrl)) {
             $replace = [];
-            //We replace tags in case of the user added some dynamic information to its url.
+            // We replace tags in case of the user added some dynamic information to its url.
             foreach ($user as $key => $val) {
                 $replace['{user:'.$key.'}'] = $val;
             }

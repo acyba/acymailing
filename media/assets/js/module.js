@@ -273,7 +273,8 @@ if (typeof submitAcymForm !== 'function') {
             } else if (authorized[0] === 'numbers_letters') {
                 reg = /^[a-zA-Z0-9]+$/;
             } else if (authorized[0] === 'regex') {
-                reg = new RegExp(authorized['regex']);
+                // We trim the / char from the regex
+                reg = new RegExp(authorized['regex'].replace(/^\//, '').replace(/\/$/, ''));
             }
 
             if (reg !== '' && authorizeContent[i].value.length > 0 && !reg.test(authorizeContent[i].value)) {

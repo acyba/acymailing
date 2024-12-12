@@ -2,6 +2,9 @@
 
 use AcyMailing\Classes\FieldClass;
 
+
+include_once __DIR__.DIRECTORY_SEPARATOR.'field.php';
+
 class JFormFieldFields extends acym_JFormField
 {
     var $type = 'fields';

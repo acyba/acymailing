@@ -51,6 +51,15 @@
 		<input name="mail[reply_to_email]" type="text" placeholder="<?php echo acym_escape($this->config->get('replyto_email')); ?>" value="<?php echo $replyToEmailValue; ?>">
 	</label>
 </div>
+<div class="cell xlarge-3 medium-6">
+	<label>
+        <?php
+        echo acym_translation('ACYM_BCC').' '.acym_info('ACYM_BCC_DESC');
+        $bccEmail = acym_escape(empty($data['mail']->bcc) ? '' : $data['mail']->bcc);
+        ?>
+		<input name="mail[bcc]" type="text" placeholder="bcc@example.com" value="<?php echo acym_escape($bccEmail); ?>">
+	</label>
+</div>
 
 <?php if (!empty($data['langChoice'])) { ?>
 	<div class="cell large-6 xlarge-3">

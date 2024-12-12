@@ -315,7 +315,7 @@ trait VirtuemartAutomationConditions
 
         $query->join[$orderUser] = '`#__virtuemart_order_userinfos` AS '.$orderUser.' ON '.$orderUser.'.`email` = `user`.`email` OR ('.$orderUser.'.`virtuemart_user_id` = `user`.`cms_id` AND `user`.`cms_id` > 0)';
         $query->join[$order] = '`#__virtuemart_orders` AS '.$order.' ON '.$order.'.`virtuemart_order_id` = '.$orderUser.'.`virtuemart_order_id`';
-        $query->where[] = $order.'.`order_status` IN ("C", "F", "U")';
+        $query->where[] = $order.'.`order_status` IN ("C", "F", "U", "S")';
 
         if (!empty($options['datemin'])) {
             $options['datemin'] = acym_replaceDate($options['datemin']);

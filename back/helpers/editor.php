@@ -5,6 +5,7 @@ namespace AcyMailing\Helpers;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\ZoneClass;
 use AcyMailing\Libraries\acymObject;
+use AcyMailing\Types\DtextType;
 use Joomla\CMS\Editor\Editor as Editor;
 use Joomla\CMS\Factory;
 
@@ -83,6 +84,9 @@ class EditorHelper extends acymObject
             echo '</div><div class="acym_no_foundation">';
 
             // Display the editor
+            $dtextType = new DtextType();
+            $dtextType->display(['withButton' => false]);
+
             $method = 'display{__CMS__}';
             $this->$method();
 
@@ -99,6 +103,15 @@ class EditorHelper extends acymObject
 
     private function displayJoomla()
     {
+        $dtextType = new DtextType();
+        $dtextType->displayButton(
+            [
+                'icon' => 'acymicon-chevrons',
+                'text' => acym_translation('ACYM_INSERT_DYNAMIC_TEXT'),
+                'class' => 'button button-secondary margin-bottom-0 margin-top-1',
+            ]
+        );
+
         $this->editor = acym_getCMSConfig('editor', 'tinymce');
 
         if (!class_exists('Joomla\CMS\Editor\Editor')) {
@@ -117,17 +130,18 @@ class EditorHelper extends acymObject
             $classMail = new MailClass();
             $filepath = $classMail->createTemplateFile($this->mailId);
 
-            if ($this->editor == 'tinymce') {
+            if ($this->editor === 'tinymce') {
                 $this->editorConfig['content_css_custom'] = $cssurl.'&local=http';
                 $this->editorConfig['content_css'] = '0';
 
-                // Joomla broke the custom css feature in the v3.9.21 so we have to do this
-                $access = [];
-                for ($i = 1 ; $i < 20 ; $i++) {
-                    $access[] = $i;
-                }
                 // We disable this for Joomla 4 because it might do a fatal due to Joomla 4 TinyMCE params not well formatted
                 if (!ACYM_J40) {
+                    // Joomla broke the custom css feature in the v3.9.21 so we have to do this
+                    $access = [];
+                    for ($i = 1 ; $i < 20 ; $i++) {
+                        $access[] = $i;
+                    }
+
                     $this->editorConfig['configuration'] = (object)[
                         'toolbars' => (object)['AcyCustomCSS' => []],
                         'setoptions' => [
@@ -139,7 +153,7 @@ class EditorHelper extends acymObject
                         ],
                     ];
                 }
-            } elseif ($this->editor == 'jckeditor' || $this->editor == 'fckeditor') {
+            } elseif ($this->editor === 'jckeditor' || $this->editor === 'fckeditor') {
                 //For jckeditor, we need to create a fake template.css file... lets do that on the template/css/folder
                 $this->editorConfig['content_css_custom'] = $filepath;
                 $this->editorConfig['content_css'] = '0';
@@ -158,6 +172,7 @@ class EditorHelper extends acymObject
         if (empty($this->editorContent)) {
             $this->content = acym_escape($this->content);
             ob_start();
+
             echo $this->myEditor->display(
                 $this->name,
                 $this->content,
@@ -187,12 +202,13 @@ class EditorHelper extends acymObject
         add_filter('mce_external_plugins', [$this, 'addPlugins']);
         add_filter('mce_buttons', [$this, 'addButtons']);
         add_filter('mce_buttons_2', [$this, 'addButtonsToolbar']);
+        add_action('media_buttons', [$this, 'addDtextButton']);
 
         $mailClass = new MailClass();
 
         $mail = $mailClass->getOneById($this->mailId);
         $stylesheet = empty($mail) ? '' : trim(preg_replace('/\s\s+/', ' ', $mailClass->buildCSS($mail->stylesheet)));
-        $stylesheet = str_replace('"', '\"', $stylesheet);
+        $stylesheet = str_replace(['"', "\r\n", "\n"], ['\"', '', ''], $stylesheet);
 
         $options = [
             'editor_css' => '<style type="text/css">
@@ -202,7 +218,7 @@ class EditorHelper extends acymObject
                              </style>',
             'editor_height' => $this->height,
             'textarea_rows' => $this->rows,
-            "wpautop" => false,
+            'wpautop' => false,
             'tinymce' => [
                 'content_css' => '',
                 'content_style' => '.alignleft{float:left;margin:0.5em 1em 0.5em 0;} .aligncenter{display: block;margin-left: auto;margin-right: auto;} .alignright{float: right;margin: 0.5em 0 0.5em 1em;}'.$stylesheet,
@@ -212,11 +228,25 @@ class EditorHelper extends acymObject
         wp_editor($this->content, $this->name, $options);
     }
 
+    public function addDtextButton($editor_id = 'content')
+    {
+        static $instance = 0;
+        ++$instance;
+
+        $img = '<i class="acymicon-chevrons"></i> ';
+
+        printf(
+            '<button type="button" class="button" id="acym__dtext__button" data-editor="%s">%s</button>',
+            esc_attr($editor_id),
+            $img.acym_translation('ACYM_INSERT_DYNAMIC_TEXT')
+        );
+    }
+
     // Used in partial editor
     private function getWYSIDSettings(): string
     {
         $ctrl = acym_getVar('string', 'ctrl');
-        if ($this->isResetCampaign() || !in_array($ctrl, ['mails', 'campaigns', 'frontmails', 'frontcampaigns'])) {
+        if ($this->isResetCampaign() || !in_array($ctrl, ['dashboard', 'mails', 'campaigns', 'frontmails', 'frontcampaigns'])) {
             return '{}';
         }
 

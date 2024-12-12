@@ -9,8 +9,13 @@ use Joomla\CMS\Mail\Mail;
 
 class OverrideClass extends acymClass
 {
-    var $table = 'mail_override';
-    var $pkey = 'id';
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'mail_override';
+        $this->pkey = 'id';
+    }
 
     /**
      * Get mails depending on filters (search, ordering, pagination)
@@ -19,7 +24,7 @@ class OverrideClass extends acymClass
      *
      * @return mixed
      */
-    public function getMatchingElements($settings = [])
+    public function getMatchingElements(array $settings = []): array
     {
         $query = 'SELECT override.*, mail.name, mail.subject FROM #__acym_mail_override AS override JOIN #__acym_mail AS mail ON override.mail_id = mail.id';
         $queryCount = 'SELECT COUNT(override.mail_id) as total, SUM(override.active) as totalActive FROM #__acym_mail_override AS override INNER JOIN #__acym_mail AS mail ON override.mail_id = mail.id';
@@ -107,9 +112,12 @@ class OverrideClass extends acymClass
         $activeOverrides = $this->getActiveOverrides('name');
 
         $joomlaMailStyle = 'plaintext';
-        if ('joomla' === ACYM_CMS && ACYM_J40) {
-            $params = \Joomla\CMS\Component\ComponentHelper::getParams('com_mails');
-            $joomlaMailStyle = $params->get('mail_style', 'plaintext');
+        if ('joomla' === ACYM_CMS) {
+            acym_loadLanguageFile('com_contact');
+            if (ACYM_J40) {
+                $params = \Joomla\CMS\Component\ComponentHelper::getParams('com_mails');
+                $joomlaMailStyle = $params->get('mail_style', 'plaintext');
+            }
         }
        
         foreach ($activeOverrides as $oneOverride) {
@@ -155,6 +163,7 @@ class OverrideClass extends acymClass
                 if ('plaintext' !== $joomlaMailStyle) {
                     $$part = str_replace('<br>', '', $$part);
                 }
+                $$part = str_replace("\r\n", "\n", $$part);
 
                 $matches = preg_match('/'.trim($oneOverride->$identifier).'/', $$part, $params) === 1 && $matches;
 

@@ -8,7 +8,7 @@ jQuery(function ($) {
             el: '#acym__plugin__available__application',
             data: {
                 allPlugins: [],
-                displayedPlugins: [1],
+                displayedPlugins: [],
                 search: acym_helper.getCookie('acym_available_plugins_search'),
                 type: acym_helper.getCookie('acym_available_plugins_type'),
                 level: acym_helper.getCookie('acym_available_plugins_level'),
@@ -62,6 +62,7 @@ jQuery(function ($) {
                         });
                     });
                 });
+                this.$el.addEventListener('touchend', this.loadMorePlugins);
             },
             methods: {
                 getAllPlugins() {
@@ -132,11 +133,15 @@ jQuery(function ($) {
                 setStatus() {
                     for (let plugin in this.allPlugins) {
                         this.downloading[this.allPlugins[plugin].file_name] = false;
-                        this.installed[this.allPlugins[plugin].file_name] = this.isInstalled(this.allPlugins[plugin].name);
+                        this.installed[this.allPlugins[plugin].file_name] = this.isInstalled(this.allPlugins[plugin]);
                     }
                 },
-                isInstalled(pluginName) {
-                    return this.allPluginsInstalled.find(plugin => plugin.title === pluginName) !== undefined;
+                isInstalled(pluginDefinition) {
+                    if (this.allPluginsInstalled.find(plugin => plugin.title === pluginDefinition.name) !== undefined) {
+                        return true;
+                    }
+
+                    return this.allPluginsInstalled.find(plugin => plugin.folder_name === pluginDefinition.file_name) !== undefined;
                 },
                 filter() {
                     return this.allPlugins.filter((plugin) => (plugin.level.toLowerCase().indexOf(this.level.toLowerCase()) !== -1)

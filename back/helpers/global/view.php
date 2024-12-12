@@ -64,6 +64,7 @@ function acym_loadAssets($ctrl, $task)
         }
         acym_addScript(false, ACYM_JS.$scope.'/'.$ctrl.'.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.'.min.js'), $params);
     }
+
     if (file_exists(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.DS.$task.'.min.js')) {
         acym_addScript(false, ACYM_JS.$scope.'/'.$ctrl.'/'.$task.'.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.$scope.DS.$ctrl.DS.$task.'.min.js'));
     }
@@ -203,11 +204,10 @@ function acym_getJSMessages()
         'ACYM_FILL_ALL_INFORMATION',
         'ACYM_ASSIGN_EMAIL_COLUMN',
         'ACYM_DUPLICATE_X_FOR_X',
-        'ACYM_ASSIGN_COLUMN_TO_FIELD',
         'ACYM_SEARCH_FOR_GIFS',
         'ACYM_NO_RESULTS_FOUND',
         'ACYM_SEARCH_GIFS',
-        'ACYM_COULD_NOT_LOAD_GIF_TRY_FEW_MINUTES',
+        'ACYM_COULD_NOT_LOAD_GIF_TRY_AGAIN',
         'ACYM_DONT_APPLY_STYLE_TAG_A',
         'ACYM_TITLE',
         'ACYM_PRICE',
@@ -401,6 +401,8 @@ function acym_getJSMessages()
         'ACYM_GET_ONE_HERE',
         'ACYM_ENTITY',
         'ACYM_DELETE_DOMAIN_CONFIRMATION',
+        'ACYM_TENOR_KEY_NEEDED',
+        'ACYM_COPY_CODE',
     ];
 
     foreach ($keysToLoad as $oneKey) {

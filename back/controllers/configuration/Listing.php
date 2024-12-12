@@ -21,6 +21,9 @@ trait Listing
     {
         acym_setVar('layout', 'listing');
 
+        // We check if we have to store a token from an OAuth provider
+        $this->getAccessToken();
+
         $data = [];
         $data['tab'] = new TabHelper();
         $this->prepareLanguages($data);
@@ -46,6 +49,8 @@ trait Listing
 
         $this->prepareMailSettings($data);
         $this->prepareMultilingualOption($data);
+
+        $this->loadSurveyAnswers($data);
 
         parent::display($data);
     }
@@ -299,6 +304,7 @@ trait Listing
         $this->handleAcyChecker($formData);
         $this->handleNewDkim($formData);
         $this->handleEmails($formData);
+        $this->handleUnsubSurvey($formData);
 
         acym_trigger('onBeforeSaveConfigFields', [&$formData]);
 
@@ -376,9 +382,13 @@ trait Listing
             'wp_access',
             'multilingual_languages',
             'allowed_hosts',
+            'unsub_survey',
         ];
 
         foreach ($select2Fields as $oneField) {
+            if ($oneField === 'unsub_survey' && !empty($formData[$oneField])) {
+                $formData[$oneField] = json_encode($formData[$oneField]);
+            }
             if (empty($formData[$oneField])) {
                 $formData[$oneField] = [];
             }
@@ -533,6 +543,37 @@ trait Listing
         $this->listing();
     }
 
+    public function handleUnsubSurvey(&$formData)
+    {
+        if (isset($formData['unsub_survey'])) {
+            $unsubSurvey = json_decode($formData['unsub_survey'], true);
+            if (is_array($unsubSurvey)) {
+                foreach ($unsubSurvey as $key => $value) {
+                    if (is_string($value)) {
+                        $unsubSurvey[$key] = strip_tags($value);
+                    }
+                }
+                $formData['unsub_survey'] = json_encode($unsubSurvey);
+            }
+        }
+
+        if (isset($formData['unsub_survey_translation'])) {
+            $unsubSurveyTranslation = json_decode($formData['unsub_survey_translation'], true);
+            if (is_array($unsubSurveyTranslation)) {
+                foreach ($unsubSurveyTranslation as $lang => $unsubSurvey) {
+                    if (is_array($unsubSurvey) && isset($unsubSurvey['unsub_survey'])) {
+                        foreach ($unsubSurvey['unsub_survey'] as $key => $value) {
+                            if (is_string($value)) {
+                                $unsubSurveyTranslation[$lang]['unsub_survey'][$key] = strip_tags($value);
+                            }
+                        }
+                    }
+                }
+                $formData['unsub_survey_translation'] = json_encode($unsubSurveyTranslation);
+            }
+        }
+    }
+
     //__START__starter_
     private function resetQueueProcess()
     {
@@ -540,5 +581,18 @@ trait Listing
             $this->config->save(['queue_type' => 'manual']);
         }
     }
+
     //__END__starter_
+
+    public function addNewSml()
+    {
+        acym_trigger('onConfigurationAddSml');
+        $this->listing();
+    }
+
+    public function deleteSml()
+    {
+        acym_trigger('onConfigurationDeleteSml');
+        $this->listing();
+    }
 }

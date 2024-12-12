@@ -2,22 +2,14 @@ const acym_editorWysidJoomla = {
     addMediaJoomlaWYSID: function (ui, rows) {
         rows = rows === undefined ? false : rows;
         acym_helperEditorWysid.$focusElement = jQuery(ui);
-        let $modalUi = jQuery('#acym__wysid__modal__joomla-image__ui__iframe');
-        let joomla4 = jQuery('#acym__wysid__modal__joomla-image__ui__actions').length > 0;
-        $modalUi.css({
-            'height': joomla4 ? '90%' : '100%',
-            'width': '100%'
+        acym_helperJoomlaGlobal.openMediaManager(function (mediaObject) {
+            acym_editorWysidJoomla.validateMediaSelection(rows, [mediaObject.url], mediaObject.alt, mediaObject.title, mediaObject.caption);
+            acym_helperEditorWysid.setColumnRefreshUiWYSID();
+        }, function () {
+            acym_editorWysidJoomla.cancelMediaSelection(rows);
         });
-
-        $modalUi.contents().find('.chzn-container-single').attr('style', '').css('width', '150px');
-        acym_editorWysidJoomla.setInsertMediaJoomlaWYSID($modalUi, rows);
-        $modalUi.on('load', function () {
-            acym_editorWysidJoomla.setInsertMediaJoomlaWYSID($modalUi, rows);
-        });
-        jQuery('#acym__wysid__modal__joomla-image').css('display', 'inherit');
     },
     cancelMediaSelection: function (rows) {
-        jQuery('#acym__wysid__modal__joomla-image').hide();
         if (!rows) {
             if (acym_helperEditorWysid.$focusElement.length && acym_helperEditorWysid.$focusElement.html().indexOf('insert_photo') !== -1) {
                 acym_helperEditorWysid.$focusElement.replaceWith('');
@@ -71,10 +63,10 @@ const acym_editorWysidJoomla = {
             // We're selecting an image to insert in the email
 
             let content = '';
-            let $link = acym_helperEditorWysid.$focusElement.find('.acym__wysid__link__image');
+            const $link = acym_helperEditorWysid.$focusElement.find('.acym__wysid__link__image');
             for (let i in imagesUrls) {
                 if (!imagesUrls.hasOwnProperty(i)) continue;
-                let linkImage = imagesUrls[i];
+                const linkImage = imagesUrls[i];
 
                 // If the name isn't correct, ask for confirmation
                 if (linkImage.indexOf('..') >= 0 && !confirm(ACYM_JS_TXT.ACYM_INSERT_IMG_BAD_NAME)) return;
@@ -110,77 +102,18 @@ const acym_editorWysidJoomla = {
                 content += '</td>';
                 content += '</tr>';
 
-                jQuery('#acym__wysid__context__image__alt').val(alt);
-                jQuery('#acym__wysid__context__image__title').val(title);
-                jQuery('#acym__wysid__context__image__caption').val(caption);
+                jQuery('#acym__upload__context__image__alt').val(alt);
+                jQuery('#acym__upload_context__image__title').val(title);
+                jQuery('#acym__upload__context__image__caption').val(caption);
             }
             acym_helperEditorWysid.$focusElement.replaceWith(content);
 
-            let imgSelected = jQuery('.acym__wysid__media__inserted--selected');
+            const imgSelected = jQuery('.acym__wysid__media__inserted--selected');
             jQuery('#acym__wysid__context__image__width').val(imgSelected.width());
             jQuery('#acym__wysid__context__image__height').val(imgSelected.height());
 
             acym_editorWysidImage.setImageWidthHeightOnInsert();
             acym_editorWysidTinymce.addTinyMceWYSID();
         }
-
-        // Close the image selection modal
-        jQuery('#acym__wysid__modal__joomla-image').hide();
-        acym_helperEditorWysid.setColumnRefreshUiWYSID();
-    },
-    setInsertMediaJoomlaWYSID: function ($modalUi, rows) {
-        // Joomla 4
-        jQuery('#acym__wysid__modal__joomla-image__ui__actions__cancel').off('click').on('click', function () {
-            acym_editorWysidJoomla.cancelMediaSelection(rows);
-        });
-        jQuery('#acym__wysid__modal__joomla-image__ui__actions__select').off('click').on('click', function () {
-            // 1 - Get current folder
-            let folderPath = ACYM_ROOT_URI;
-            $modalUi.contents().find('.media-breadcrumb-item a').each(function () {
-                folderPath += jQuery(this).text().trim() + '/';
-            });
-
-
-            // 2 - Get selected image(s)
-            let imagesUrls = [];
-
-            // When selecting images from the grid view
-            $modalUi.contents().find('.media-browser-grid .media-browser-item.selected .media-browser-image .media-browser-item-info').each(function () {
-                imagesUrls.push(folderPath + jQuery(this).text().trim());
-            });
-
-            // When selecting images from the list view instead of grid view
-            if (imagesUrls.length === 0) {
-                $modalUi.contents().find('.media-browser .media-browser-item.selected').each(function () {
-                    if (!acym_helper.empty(jQuery(this).find('.size').text().trim())) {
-                        imagesUrls.push(folderPath + jQuery(this).find('.name').text().trim());
-                    }
-                });
-            }
-
-            let altValue = jQuery('#acym__wysid__context__image__alt').val();
-            let valueTitle = jQuery('#acym__wysid__context__image__title').val();
-            let valueCaption = jQuery('#acym__wysid__context__image__caption').val();
-            acym_editorWysidJoomla.validateMediaSelection(rows, imagesUrls, altValue, valueTitle, valueCaption);
-        });
-
-        // Joomla 3
-        $modalUi.contents().find('.button-cancel').attr('onclick', '').off('click').on('click', function () {
-            acym_editorWysidJoomla.cancelMediaSelection(rows);
-        });
-        $modalUi.contents().find('.pull-right .btn-success, .pull-right .btn-primary').attr('onclick', '').off('click').on('click', function () {
-            let urlImg = $modalUi.contents().find('#f_url').val();
-            let altValue = $modalUi.contents().find('#f_alt').val();
-            let valueTitle = $modalUi.contents().find('#f_title').val();
-            let valueCaption = $modalUi.contents().find('#f_caption').val();
-            let imagesUrls = [];
-            if (!acym_helper.empty(urlImg)) {
-                if (urlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER) || urlImg.match('^' + ACYM_JOOMLA_MEDIA_FOLDER_IMAGES)) {
-                    urlImg = ACYM_JOOMLA_MEDIA_IMAGE + urlImg;
-                }
-                imagesUrls.push(urlImg);
-            }
-            acym_editorWysidJoomla.validateMediaSelection(rows, imagesUrls, altValue, valueTitle, valueCaption);
-        });
     }
 };

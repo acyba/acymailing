@@ -1,5 +1,47 @@
-.acym__splashscreen__bloc {
-    .acym__splashscreen__desc {
-        font-size: 1rem;
+.acym__splashscreen__white__container {
+    background-color: $white;
+    display: flex;
+    align-items: center;
+}
+
+.acym__splashscreen__blue__container {
+    background-color: $blue-light;
+    display: flex;
+    align-items: center;
+}
+
+.acym__splashscreen__image {
+    display: flex;
+    align-items: center;
+
+    img {
+        width: 33rem;
+        height: auto;
+        max-height: 100%;
     }
+}
+
+.acym__splashscreen__container {
+    .acym__splashscreen__desc {
+        font-size: 0.9rem;
+        color: $blue-night-primary;
+    }
+
+    .acym__splashscreen__title {
+        font-size: 2rem;
+        font-weight: normal;
+    }
+
+    .acym__splashscreen__subtitle {
+        font-size: 1.2rem;
+        font-weight: 900;
+    }
+}
+
+.acym__ul.acym__splashscreen__ul li:before {
+    color: $blue-night-primary;
+}
+
+.acym__splashscreen__segment__desc {
+    width: 70% !important;
 }

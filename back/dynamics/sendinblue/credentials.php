@@ -4,12 +4,21 @@ use AcyMailing\Types\DelayType;
 
 class SendinblueCredentials extends SendinblueClass
 {
-    public function onAcymGetCredentialsSendingMethod(&$credentials, $sendingMethod)
+    /**
+     * @param array $credentials
+     * @param string $sendingMethod
+     * @param array $sendingMethodListParams this parameter is only used for the plugin sending method list
+     *
+     * @return void
+     */
+    public function onAcymGetCredentialsSendingMethod(array &$credentials, string $sendingMethod, array $sendingMethodListParams = [])
     {
         if ($sendingMethod != plgAcymSendinblue::SENDING_METHOD_ID) return;
 
+        $key = plgAcymSendinblue::SENDING_METHOD_ID.'_api_key';
+
         $credentials = [
-            plgAcymSendinblue::SENDING_METHOD_ID.'_api_key' => $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_api_key', ''),
+            $key => $sendingMethodListParams[$key] ?? $this->config->get($key, ''),
         ];
     }
 
@@ -44,8 +53,8 @@ class SendinblueCredentials extends SendinblueClass
         }
 
         $delayType = new DelayType();
-        $defaultApiKey = empty($data['tab']->config->values[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key']) ? ''
-            : $data['tab']->config->values[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key']->value;
+        $config = empty($data['tab']) ? $this->config : $data['tab']->config;
+        $defaultApiKey = $config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_api_key');
         ob_start();
         ?>
 		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings">
@@ -53,11 +62,7 @@ class SendinblueCredentials extends SendinblueClass
 				<label class="cell shrink margin-right-1" for="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings_api-key">
                     <?php echo acym_translationSprintf('ACYM_SENDING_METHOD_API_KEY', plgAcymSendinblue::SENDING_METHOD_NAME); ?>
 				</label>
-                <?php
-                echo $this->getLinks(
-                    'https://get.brevo.com/hbvmwg6onvve'
-                );
-                ?>
+                <?php echo $this->getLinks('https://get.brevo.com/hbvmwg6onvve'); ?>
 				<input type="text"
 					   id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings_api-key"
 					   value="<?php echo empty($defaultApiKey) ? $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_api_key') : $defaultApiKey; ?>"

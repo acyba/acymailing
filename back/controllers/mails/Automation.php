@@ -2,11 +2,13 @@
 
 namespace AcyMailing\Controllers\Mails;
 
+use AcyMailing\Classes\MailClass;
+
 trait Automation
 {
     public function deleteMailAutomation()
     {
-        $mailClass = $this->currentClass;
+        $mailClass = new MailClass();
         $mailId = acym_getVar('int', 'id', 0);
 
         if (!empty($mailId)) $mailClass->delete($mailId);
@@ -15,7 +17,7 @@ trait Automation
 
     public function duplicateMailAutomation()
     {
-        $mailClass = $this->currentClass;
+        $mailClass = new MailClass();
         $mailId = acym_getVar('int', 'id', 0);
         $prevMail = acym_getVar('int', 'previousId');
 
@@ -25,7 +27,7 @@ trait Automation
             acym_sendAjaxResponse(acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_ID')), [], false);
         }
 
-        $newMail = $mailClass->duplicateMail($mailId, $mailClass::TYPE_AUTOMATION);
+        $newMail = $mailClass->duplicateMail($mailId, MailClass::TYPE_AUTOMATION);
 
         if (empty($newMail)) {
             acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_DUPLICATE_EMAIL'), [], false);

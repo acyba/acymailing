@@ -9,7 +9,7 @@ const acym_editorWysidTinymce = {
             selector: '.acym__wysid__tinymce--text',
             inline: true,
             menubar: false,
-            plugins: 'textcolor colorpicker lists link code noneditable lineheight table image',
+            plugins: 'textcolor colorpicker lists link code noneditable lineheight table image directionality',
             image_class_list: [
                 {
                     title: 'Responsive',
@@ -22,7 +22,7 @@ const acym_editorWysidTinymce = {
             toolbar: [
                 'undo redo formatselect fontselect fontsizeselect',
                 'alignmentsplit | listsplit outdent indent lineheightselect | table | image',
-                'bold italic underline strikethrough removeformat | forecolor backcolor | link unlink | code'
+                'bold italic underline strikethrough removeformat | forecolor backcolor | link unlink | ltr rtl | code'
             ],
             default_link_target: '_blank',
             link_class_list: [
@@ -272,7 +272,7 @@ const acym_editorWysidTinymce = {
         });
     },
     cleanForFirefox: function (currentArea, timerTotal) {
-        let tinymceP = currentArea.find('>p');
+        const tinymceP = currentArea.find('>p');
         if (tinymceP.length === 0 && timerTotal < 1000) {
             setTimeout(() => {
                 acym_editorWysidTinymce.cleanForFirefox(currentArea, timerTotal + 50);

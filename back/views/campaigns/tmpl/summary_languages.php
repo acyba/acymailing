@@ -10,8 +10,10 @@
         }
 
         $flag = acym_tooltip(
-            '<img acym-data-lang="'.$language->code.'" src="'.acym_getFlagByCode($language->code).'" alt="'.$language->code.' flag">',
-            $language->name
+            [
+                'hoveredText' => '<img acym-data-lang="'.$language->code.'" src="'.acym_getFlagByCode($language->code).'" alt="'.$language->code.' flag">',
+                'textShownInTooltip' => $language->name,
+            ]
         );
         echo '<div data-acym-lang="'.$language->code.'" class="cell shrink acym__campaign__summary__preview__languages-one '.$class.'">'.$flag.'</div>';
 

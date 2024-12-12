@@ -167,7 +167,7 @@ trait JeventsInsertion
                 ],
                 [
                     'title' => 'ACYM_AUTO_LOGIN',
-                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION_WARNING',
                     'type' => 'boolean',
                     'name' => 'autologin',
                     'default' => false,
@@ -669,34 +669,37 @@ trait JeventsInsertion
 
     private function handleLink($element, &$varFields, $tag)
     {
-        $link = 'index.php?option=com_jevents&task=icalrepeat.detail&evid='.intval($element->rp_id);
-        $areaCats = [];
-        $areaCats[] = $element->catid;
-        $cats = acym_loadObjectList('SELECT id, parent_id FROM #__categories', 'id');
-        $position = $element->catid;
+        $menuId = $this->getParam('itemid');
+        if (empty($menuId)) {
+            $menus = acym_loadObjectList('SELECT id, params FROM #__menu WHERE link LIKE "index.php?option=com_jevents&view=cat&layout=listevents"');
+            if (!empty($menus)) {
+                $areaCats = [];
+                $areaCats[] = $element->catid;
+                $cats = acym_loadObjectList('SELECT id, parent_id FROM #__categories', 'id');
+                $position = $element->catid;
 
-        while ($cats[$position]->parent_id != 0) {
-            $areaCats[] = $cats[$position]->parent_id;
-            $position = $cats[$position]->parent_id;
-        }
-
-        $menuId = '';
-        $menus = acym_loadObjectList('SELECT id, params FROM #__menu WHERE link LIKE "index.php?option=com_jevents&view=cat&layout=listevents"');
-        if (!empty($menus)) {
-            foreach ($menus as $i => $menu) {
-                $menus[$i]->params = json_decode($menus[$i]->params);
-                if (empty($menus[$i]->params->catidnew)) continue;
-                foreach ($menus[$i]->params->catidnew as $oneCatid) {
-                    if (in_array($oneCatid, $areaCats)) {
-                        $menuId = $menus[$i]->id;
-                        break;
-                    }
+                while ($cats[$position]->parent_id != 0) {
+                    $areaCats[] = $cats[$position]->parent_id;
+                    $position = $cats[$position]->parent_id;
                 }
-                if ($menuId != '') {
-                    break;
+
+                foreach ($menus as $menu) {
+                    $menu->params = json_decode($menu->params);
+                    if (empty($menu->params->catidnew)) {
+                        continue;
+                    }
+
+                    foreach ($menu->params->catidnew as $oneCatid) {
+                        if (in_array($oneCatid, $areaCats)) {
+                            $menuId = $menu->id;
+                            break 2;
+                        }
+                    }
                 }
             }
         }
+
+        $link = 'index.php?option=com_jevents&task=icalrepeat.detail&evid='.intval($element->rp_id);
 
         if (empty($menuId)) {
             $summary = str_replace('-', ' ', $element->summary);
@@ -704,9 +707,7 @@ trait JeventsInsertion
             $summary = preg_replace('/(\s|[^A-Za-z0-9\-])+/', '-', $summary);
             $summary = trim($summary, '-');
             $time = explode('-', substr($element->startrepeat, 0, strpos($element->startrepeat, ' ')));
-            $link = 'index.php?option=com_jevents&task=icalrepeat.detail&evid='.intval($element->rp_id).'&year='.intval($time[0]).'&month='.intval($time[1]).'&day='.intval(
-                    $time[2]
-                ).'&title='.$summary.'&uid='.$element->uid;
+            $link .= '&year='.intval($time[0]).'&month='.intval($time[1]).'&day='.intval($time[2]).'&title='.$summary.'&uid='.$element->uid;
         } else {
             $link .= '&Itemid='.intval($menuId);
         }

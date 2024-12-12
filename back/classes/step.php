@@ -6,8 +6,13 @@ use AcyMailing\Libraries\acymClass;
 
 class StepClass extends acymClass
 {
-    var $table = 'step';
-    var $pkey = 'id';
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'step';
+        $this->pkey = 'id';
+    }
 
     public function save($step)
     {

@@ -2,13 +2,20 @@
 
 use AcyMailing\Classes\ConfigurationClass;
 
-function acydump($arg, $ajax = false, $indent = true, $htmlentities = false)
+function acydump($arg, $ajax = false, array $options = [])
 {
+    $indent = $options['indent'] ?? true;
+    $htmlentities = $options['htmlentities'] ?? true;
+
     ob_start();
     var_dump($arg);
     $result = ob_get_clean();
 
     if ($ajax) {
+        if ($options['clear_file'] === true) {
+            file_put_contents(ACYM_ROOT.'acydebug.txt', '');
+        }
+
         file_put_contents(ACYM_ROOT.'acydebug.txt', $result, FILE_APPEND);
     } else {
         $style = $indent ? 'margin-left: 220px;' : '';
@@ -26,7 +33,7 @@ function acym_debug(bool $file = false, bool $indent = true)
         if (empty($step['file']) || empty($step['line'])) continue;
         $takenPath[] = $step['file'].' => '.$step['line'];
     }
-    acydump(implode($file ? "\n" : '<br/>', $takenPath), $file, $indent);
+    acydump(implode($file ? "\n" : '<br/>', $takenPath), $file, ['indent' => $indent]);
 }
 
 function acym_config($reload = false)
@@ -173,9 +180,17 @@ function acym_getErrorLogFilename(string $prefix = ''): string
     return $prefix.'errors.log';
 }
 
-function acym_logError(string $message, string $prefix = '')
+function acym_logError(string $message, string $prefix = '', int $maxLines = 0)
 {
     $reportPath = acym_getLogPath(acym_getErrorLogFilename($prefix), true);
+
+    if ($maxLines > 0 && file_exists($reportPath)) {
+        $lines = file($reportPath);
+        if (!empty($lines)) {
+            $lines = array_slice($lines, -$maxLines);
+            file_put_contents($reportPath, implode("\n", $lines));
+        }
+    }
 
     $lr = "\r\n";
     file_put_contents(
@@ -194,8 +209,39 @@ function acym_isLogFileErrorExist($prefix = ''): bool
 
 function acym_getJsonData(): array
 {
-    $rawData = acym_fileGetContent('php://input');
+    $rawData = file_get_contents('php://input');
     $decodedData = @json_decode($rawData, true);
 
     return empty($decodedData) ? [] : $decodedData;
+}
+
+function displayFreeTrialMessage()
+{
+    if (!acym_isAdmin()) {
+        return;
+    }
+
+    $config = acym_config();
+
+    if ($config->get('isTrial', 0) != 1) {
+        return;
+    }
+
+    $expirationDate = $config->get('expirationdate', 0);
+    $href = ACYM_ACYMAILING_WEBSITE.'account/license';
+    if ($config->get('expirationdate', 0) > time()) {
+        $days = ceil(($expirationDate - time()) / 86400);
+        $buttonFullAccess = '<a target="_blank" class="button button-secondary margin-left-1 shrink margin-bottom-0" href="'.$href.'">'.acym_translation(
+                'ACYM_GET_FULL_ACCESS'
+            ).'</a>';
+        $message = '<span class="shrink">'.acym_translationSprintf('ACYM_FREE_TRIAL_EXPIRATION_X_DAYS', $days).'</span>';
+        $type = 'warning';
+    } else {
+        $buttonFullAccess = '<a target="_blank" class="button acym__button__upgrade margin-left-1 shrink margin-bottom-0" href="'.$href.'">'.acym_translation(
+                'ACYM_GET_FULL_ACCESS'
+            ).'</a>';
+        $message = '<span class="shrink">'.acym_translation('ACYM_FREE_TRIAL_ENDED').'</span>';
+        $type = 'error';
+    }
+    acym_enqueueMessage('<div class="cell grid-x acym_vcenter">'.$message.$buttonFullAccess.'</div>', $type, false);
 }

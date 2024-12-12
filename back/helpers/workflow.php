@@ -62,7 +62,7 @@ class WorkflowHelper extends acymObject
         return $result;
     }
 
-    public function displayTabs($steps, $currentStep)
+    public function displayTabs($steps, $currentStep, $options = [])
     {
         $ctrl = acym_getVar('cmd', 'ctrl');
 
@@ -87,9 +87,20 @@ class WorkflowHelper extends acymObject
 
             $linkAttribute = $currentStep == $task ? 'aria-selected="true"' : '';
 
-            $link = $ctrl.'&task='.$task;
+            if (!empty($options['query'])) {
+                $link = $ctrl.$options['query'].$task;
+            } else {
+                $link = $ctrl.'&task='.$task;
+            }
 
-            $title = '<a class="acym_tab acym__color__medium-gray" '.$linkAttribute.' href="'.acym_completeLink($link).'">'.$title.'</a>';
+            if (!empty($options['disableTabs']) && in_array($task, $options['disableTabs'])) {
+                $link = '';
+                $linkAttribute = 'aria-disabled="true"';
+            }
+
+            $hrefAttribute = $link ? 'href="'.acym_completeLink($link).'"' : '';
+
+            $title = '<a class="acym_tab acym__color__medium-gray" '.$linkAttribute.' '.$hrefAttribute.'>'.$title.'</a>';
 
             $workflow[] = '<li class="tabs-title">'.$title.'</li>';
         }

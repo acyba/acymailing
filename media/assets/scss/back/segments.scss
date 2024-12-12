@@ -1,2 +1,6 @@
 @import "../settings";
-@import "segments/edit";
+
+#acym_wrapper {
+    @import "segments/edit";
+    @import "segments/listing";
+}

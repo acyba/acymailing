@@ -18,10 +18,10 @@
 			 :infinite-scroll-disabled="busy"
 			 infinite-scroll-immediate-check="false">
 			<div class="grid-x cell align-middle acym__listing__row" v-for="(user, index) in users">
-				<div class="cell small-12 medium-6 acym__listing__title acym_word-break">
+				<div class="cell small-6 acym__listing__title acym_word-break">
 					<h6>{{ user.email }}</h6>
 				</div>
-				<div class="cell medium-4 small-10 acym_word-break">
+				<div class="cell small-6 medium-4 acym_word-break">
 					<span>{{ user.name }}</span>
 				</div>
 				<div class="medium-2 hide-for-small-only cell acym_word-break">

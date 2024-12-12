@@ -6,7 +6,7 @@
     }
 
     ?>
-	<div id="acym__forms" class="acym__content cell">
+	<div id="acym__segments" class="acym__content cell">
         <?php if ($isEmpty) {
             include acym_getView('segments', 'listing_empty');
         } else {

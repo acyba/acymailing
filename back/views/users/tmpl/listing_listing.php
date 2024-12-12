@@ -106,14 +106,16 @@
 					<div class="cell hide-for-small-only hide-for-medium-only large-2 xlarge-1">
                         <?php
                         echo acym_tooltip(
-                            acym_date(
-                                $user->creation_date,
-                                acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC5')
-                            ),
-                            acym_date(
-                                $user->creation_date,
-                                'Y-m-d H:i:s'
-                            )
+                            [
+                                'hoveredText' => acym_date(
+                                    $user->creation_date,
+                                    acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC5')
+                                ),
+                                'textShownInTooltip' => acym_date(
+                                    $user->creation_date,
+                                    'Y-m-d H:i:s'
+                                ),
+                            ]
                         );
                         ?>
 					</div>
@@ -146,11 +148,13 @@
                                 $toggleAttributes .= ' data-acy-newvalue="'.$newvalue.'"';
 
                                 echo acym_tooltip(
-                                    '<i class="'.$classes.'" style="color:'.acym_escape($oneSub->color).'" '.$toggleAttributes.'></i>',
-                                    acym_translationSprintf(
-                                        $newvalue === 0 ? 'ACYM_SUBSCRIBED_TO_LIST' : 'ACYM_UNSUBSCRIBED_FROM_LIST',
-                                        acym_escape($oneSub->name)
-                                    )
+                                    [
+                                        'hoveredText' => '<i class="'.$classes.'" style="color:'.acym_escape($oneSub->color).'" '.$toggleAttributes.'></i>',
+                                        'textShownInTooltip' => acym_translationSprintf(
+                                            $newvalue === 0 ? 'ACYM_SUBSCRIBED_TO_LIST' : 'ACYM_UNSUBSCRIBED_FROM_LIST',
+                                            acym_escape($oneSub->name)
+                                        ),
+                                    ]
                                 );
                                 $counter++;
                             }
@@ -189,8 +193,12 @@
                             $tooltip = 'ACYM_DEACTIVATED';
                         }
                         echo acym_tooltip(
-                            '<i data-acy-table="user" data-acy-field="active" data-acy-elementid="'.acym_escape($user->id).'" class="acym_toggleable '.$class.'"></i>',
-                            acym_translation($tooltip)
+                            [
+                                'hoveredText' => '<i data-acy-table="user" data-acy-field="active" data-acy-elementid="'.acym_escape(
+                                        $user->id
+                                    ).'" class="acym_toggleable '.$class.'"></i>',
+                                'textShownInTooltip' => acym_translation($tooltip),
+                            ]
                         );
 
                         if ($this->config->get('require_confirmation', '0') == '1') { ?>
@@ -203,9 +211,12 @@
                                 $tooltip = 'ACYM_NOT_CONFIRMED';
                             }
                             echo acym_tooltip(
-                                '<i data-acy-table="user" data-acy-field="confirmed" data-acy-elementid="'.acym_escape($user->id).'" class="acym_toggleable '.$class.'"></i>',
-                                acym_translation($tooltip),
-                                null
+                                [
+                                    'hoveredText' => '<i data-acy-table="user" data-acy-field="confirmed" data-acy-elementid="'.acym_escape(
+                                            $user->id
+                                        ).'" class="acym_toggleable '.$class.'"></i>',
+                                    'textShownInTooltip' => acym_translation($tooltip),
+                                ]
                             );
                         }
                         ?>

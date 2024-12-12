@@ -43,7 +43,7 @@ trait Scheduled
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
-            'allTags' => $tagClass->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType(TagClass::TYPE_MAIL),
             'campaignClass' => new CampaignClass(),
             'languages' => acym_getLanguages(),
             'workflowHelper' => new WorkflowHelper(),

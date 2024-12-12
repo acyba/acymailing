@@ -5,41 +5,70 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 2.7
+ * Version: 3.0
  * Requires Plugins: acymailing, easy-digital-downloads
 */
 
 use AcyMailing\Classes\PluginClass;
 
-register_deactivation_hook(__FILE__, 'acym_integration_easydigitaldownloads_disable');
-function acym_integration_easydigitaldownloads_disable()
-{
-    $vendorFolder = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'vendor';
-    $helperFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
-    if (!is_plugin_active('acymailing/index.php') || !file_exists($vendorFolder) || !include_once $helperFile) return;
-
-    $pluginClass = new PluginClass();
-    $pluginClass->disable('easydigitaldownloads');
+if (!defined('ABSPATH')) {
+    exit;
 }
 
-register_uninstall_hook(__FILE__, 'acym_integration_easydigitaldownloads_uninstall');
-function acym_integration_easydigitaldownloads_uninstall()
+class AcyMailingIntegrationForEasyDigitalDownloads
 {
-    $vendorFolder = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'vendor';
-    $helperFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
-    if (!is_plugin_active('acymailing/index.php') || !file_exists($vendorFolder) || !include_once $helperFile) return;
+    const INTEGRATION_PLUGIN_NAME = 'plgAcymEasydigitaldownloads';
 
-    $pluginClass = new PluginClass();
-    $pluginClass->deleteByFolderName('easydigitaldownloads');
-}
+    public function __construct()
+    {
+        register_deactivation_hook(__FILE__, [$this, 'disable']);
+        register_uninstall_hook(__FILE__, [self::class, 'uninstall']);
+        add_action('acym_load_installed_integrations', [$this, 'register'], 10, 2);
+    }
 
-add_action('acym_load_installed_integrations', 'acym_integration_easydigitaldownloads', 10, 2);
-function acym_integration_easydigitaldownloads(&$integrations, $acyVersion)
-{
-    if (version_compare($acyVersion, '7.7.4', '>=')) {
-        $integrations[] = [
-            'path' => __DIR__,
-            'className' => 'plgAcymEasydigitaldownloads',
-        ];
+    public function disable(): void
+    {
+        if (!self::loadAcyMailingLibrary()) {
+            return;
+        }
+
+        $pluginClass = new PluginClass();
+        $pluginClass->disable(self::getIntegrationName());
+    }
+
+    public static function uninstall(): void
+    {
+        if (!self::loadAcyMailingLibrary()) {
+            return;
+        }
+
+        $pluginClass = new PluginClass();
+        $pluginClass->deleteByFolderName(self::getIntegrationName());
+    }
+
+    public function register(array &$integrations, string $acyVersion): void
+    {
+        if (version_compare($acyVersion, '7.7.4', '>=')) {
+            $integrations[] = [
+                'path' => __DIR__,
+                'className' => self::INTEGRATION_PLUGIN_NAME,
+            ];
+        }
+    }
+
+    private static function getIntegrationName(): string
+    {
+        return strtolower(substr(self::INTEGRATION_PLUGIN_NAME, 7));
+    }
+
+    private static function loadAcyMailingLibrary(): bool
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        $vendorFolder = dirname(__DIR__).$ds.'acymailing'.$ds.'vendor';
+        $helperFile = dirname(__DIR__).$ds.'acymailing'.$ds.'back'.$ds.'helpers'.$ds.'helper.php';
+
+        return file_exists($vendorFolder) && include_once $helperFile;
     }
 }
+
+new AcyMailingIntegrationForEasyDigitalDownloads();

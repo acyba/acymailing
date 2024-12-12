@@ -170,6 +170,8 @@ const acym_editorWysidDynamic = {
 
                 // We just added the options in the container, activate the needed JS on it
 
+                // Init the right toolbar sliding parts
+                acym_editorWysidToolbar.setRightToolbarWYSID();
                 // Init radio button options
                 acym_helperRadio.setRadioIconsGlobal();
                 // Init search and category fields
@@ -370,7 +372,7 @@ const acym_editorWysidDynamic = {
 };
 
 function setTag(tagvalue, element) {
-    var $allRows = jQuery('.acym__listing__row__popup');
+    const $allRows = jQuery('.acym__listing__row__popup');
     $allRows.removeClass('selected_row');
     element.addClass('selected_row');
     window.document.getElementById('dtextcode').value = tagvalue;

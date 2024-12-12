@@ -6,8 +6,8 @@
 			<div class="acym__splashscreen__menu">
 				<div class="acym__splashscreen__menu__title">
 					<h2>
-						<span class="acym__splashscreen__menu__title-big">BIG</span>
-						<span class="acym__splashscreen__menu__title-updates">UPDATES</span>
+						<span class="acym__splashscreen__menu__title-big">NEW</span>
+						<span class="acym__splashscreen__menu__title-updates">VERSION</span>
 					</h2>
 
 					<button class="acym_vcenter align-center large-shrink button"
@@ -25,7 +25,7 @@
 			<div class="acym__splashscreen__body">
 				<div v-if="activeMenu">
 					<div class="acym__splashscreen__body__buttonWrapper">
-						<a href="<?php echo ACYM_ACYMAILING_WEBSITE.'change-log/'; ?>"
+						<a href="<?php echo ACYM_ACYMAILING_WEBSITE.'changelog/'; ?>"
 						   class="acym_vcenter align-center large-shrink button"
 						   target="_blank">
                             <?php echo acym_translation('ACYM_SEE_FULL_CHANGELOG'); ?>

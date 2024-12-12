@@ -39,7 +39,7 @@ $mainColors = $this->getDefaultColors(); ?>
         }
         ?>
 
-		<div class="cell grid-x padding-1 padding-bottom-0">
+		<div class="cell grid-x align-center padding-1 padding-bottom-0">
 			<div class="cell medium-auto hide-for-small-only"></div>
 			<button id="acym__wysid__edit__button" type="button" class="cell button xlarge-3 large-4 medium-5 margin-bottom-0">
 				<i class="acymicon-edit"></i>
@@ -61,9 +61,11 @@ $mainColors = $this->getDefaultColors(); ?>
             <?php
             if (!empty($data['multilingual'])) {
                 echo acym_tooltip(
-                    '<div id="acym__wysid__edit__preview__reset__content"><i class="acymicon-rotate-left"></i></div>',
-                    acym_translation('ACYM_REMOVE_TRANSLATION_DESC'),
-                    'acym__wysid__edit__preview__reset is-hidden'
+                    [
+                        'hoveredText' => '<div id="acym__wysid__edit__preview__reset__content"><i class="acymicon-rotate-left"></i></div>',
+                        'textShownInTooltip' => acym_translation('ACYM_REMOVE_TRANSLATION_DESC'),
+                        'classContainer' => 'acym__wysid__edit__preview__reset is-hidden',
+                    ]
                 );
             }
             ?>
@@ -71,8 +73,9 @@ $mainColors = $this->getDefaultColors(); ?>
             <?php
             $classes = '';
             if (acym_isAdmin()) {
-                $classes = 'large-10';
-                if (!$this->walkThrough) $classes .= ' xxlarge-9';
+                if (!$this->walkThrough) {
+                    $classes = 'large-10 xxlarge-9';
+                }
             }
             ?>
 			<div id="acym__wysid__email__preview" class="acym__email__preview grid-x cell <?php echo $classes; ?> margin-top-1"></div>
@@ -151,32 +154,9 @@ $mainColors = $this->getDefaultColors(); ?>
 			</div>
 		</div>
 
-        <?php if ('joomla' === ACYM_CMS) { ?>
-			<div id="acym__wysid__modal__joomla-image">
-				<div id="acym__wysid__modal__joomla-image__bg" class="acym__wysid__modal__joomla-image--close"></div>
-				<div id="acym__wysid__modal__joomla-image__ui" class="float-center cell">
-                    <?php
-                    $mediaURL = 'index.php?option=com_media&asset=com_acym&author=acymailing&tmpl=component';
-                    if (!ACYM_J40) {
-                        $mediaURL .= '&view=images';
-                    } elseif (!acym_isAdmin()) {
-                        $mediaURL .= '&view=media';
-                    }
-                    ?>
-					<iframe id="acym__wysid__modal__joomla-image__ui__iframe" src="<?php echo $mediaURL; ?>" frameborder="0"></iframe>
-                    <?php if (ACYM_J40) { ?>
-						<div id="acym__wysid__modal__joomla-image__ui__actions" class="cell grid-x grid-margin-x align-right">
-							<button id="acym__wysid__modal__joomla-image__ui__actions__cancel" type="button" class="button button-secondary cell shrink margin-bottom-0">
-                                <?php echo acym_translation('ACYM_CANCEL'); ?>
-							</button>
-							<button id="acym__wysid__modal__joomla-image__ui__actions__select" type="button" class="button button-secondary cell shrink margin-bottom-0">
-                                <?php echo acym_translation('ACYM_SELECT'); ?>
-							</button>
-						</div>
-                    <?php } ?>
-				</div>
-			</div>
-        <?php } ?>
+        <?php if ('joomla' === ACYM_CMS) {
+            include acym_getPartial('joomla', 'media_modal');
+        } ?>
 	</div>
 </div>
 <div id="acym__wysid__fullscreen__modal" class="grid-x align-center">

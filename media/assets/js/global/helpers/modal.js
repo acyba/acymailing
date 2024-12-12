@@ -127,7 +127,12 @@ const acym_helperModal = {
             ajaxUrl += '&previousId=' + $actionContainer.find('[name$="[mail_id]"]').val();
 
             jQuery.post(ajaxUrl, function (res) {
-                res = acym_helper.parseJson(res, {'error': true, 'message': acym_helper.sprintf(ACYM_JS_TXT.ACYM_NOT_FOUND, ACYM_JS_TXT.ACYM_EMAIL)});
+                res = acym_helper.parseJson(res,
+                    {
+                        'error': true,
+                        'message': acym_helper.sprintf(ACYM_JS_TXT.ACYM_NOT_FOUND, ACYM_JS_TXT.ACYM_EMAIL)
+                    }
+                );
                 if (res.error) {
                     alert(res.message);
                     return false;
@@ -182,7 +187,7 @@ const acym_helperModal = {
     },
     setSelectTagStartFrom: function () {
         jQuery('#mailchoose_tag__ajax').on('change', function (e) {
-            jQuery('#acym_tag_template_choose__ajax').attr('value', jQuery(this).attr('value'));
+            jQuery('#acym_tag_template_choose__ajax').attr('value', jQuery(this).val());
             acym_helperModal.setAjaxAndResetPaginationStartFrom();
         });
     },

@@ -9,10 +9,6 @@ use AcyMailing\Libraries\acymClass;
 
 class UserClass extends acymClass
 {
-    var $table = 'user';
-    var $pkey = 'id';
-    var $nameColumn = 'email';
-
     var $checkVisitor = true;
     var $restrictedFields = ['id', 'key', 'confirmed', 'active', 'cms_id', 'creation_date'];
     var $allowModif = false;
@@ -32,6 +28,14 @@ class UserClass extends acymClass
     public $sendWelcomeEmail = true;
     public $sendUnsubscribeEmail = true;
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'user';
+        $this->pkey = 'id';
+    }
+
     /**
      * Get users depending on filters (search, status, pagination)
      *
@@ -39,7 +43,7 @@ class UserClass extends acymClass
      *
      * @return mixed
      */
-    public function getMatchingElements($settings = [])
+    public function getMatchingElements(array $settings = []): array
     {
         // Initialize the queries
         $columns = '`user`.*';
@@ -93,12 +97,12 @@ class UserClass extends acymClass
 
         // Get CMS username separately if needed
         if (!empty($results['elements']) && !empty($settings['cms_username'])) {
-            $cmsIds = array_diff(array_column($results['elements'], 'cms_id'), [0]);
+            $cmsIds = array_diff(array_column($results['elements'], 'cms_id'), [0, '']);
             if (!empty($cmsIds)) {
                 $userNames = acym_loadObjectList(
                     'SELECT '.$this->cmsUserVars->id.' AS id, '.$this->cmsUserVars->username.' AS `cms_username` 
                     FROM '.$this->cmsUserVars->table.' 
-                    WHERE id IN ('.implode(', ', $cmsIds).')',
+                    WHERE id IN ('.implode(', ', array_values($cmsIds)).')',
                     'id'
                 );
                 foreach ($results['elements'] as $key => $oneElement) {
@@ -420,6 +424,15 @@ class UserClass extends acymClass
         return $lists;
     }
 
+    public function getUserStandardListIdById(int $userId)
+    {
+        $query = 'SELECT list.id FROM #__acym_list AS list 
+	              JOIN #__acym_user_has_list AS user_list ON list.id = user_list.list_id AND user_list.status = 1 AND user_list.user_id = '.$userId.' 
+	              WHERE list.visible = 1 AND list.type = '.acym_escapeDB(ListClass::LIST_TYPE_STANDARD);
+
+        return acym_loadResultArray($query);
+    }
+
     /**
      * Get the subscription of one user
      *
@@ -457,13 +470,12 @@ class UserClass extends acymClass
      */
     public function getUsersSubscriptionsByIds($usersId, $creatorId = 0)
     {
-        $listClass = new ListClass();
         $query = 'SELECT `list`.`id`, `list`.`color`, `list`.`name`, `userlist`.`user_id`, `userlist`.`status`
                 FROM #__acym_list AS `list`
                 JOIN #__acym_user_has_list AS `userlist` 
                     ON `list`.`id` = `userlist`.`list_id`
                 WHERE `userlist`.`user_id` IN ('.implode(',', $usersId).')
-                    AND `list`.`type` = '.acym_escapeDB($listClass::LIST_TYPE_STANDARD);
+                    AND `list`.`type` = '.acym_escapeDB(ListClass::LIST_TYPE_STANDARD);
 
         if (!empty($creatorId)) {
             $userGroups = acym_getGroupsByUser($creatorId);
@@ -842,7 +854,7 @@ class UserClass extends acymClass
         }
     }
 
-    public function save($user, $customFields = null, $ajax = false)
+    public function save($user, $customFields = [], $ajax = false)
     {
         if (empty($user->email) && empty($user->id)) return false;
 
@@ -923,7 +935,7 @@ class UserClass extends acymClass
             if (is_numeric($user->$oneAttribute)) continue;
 
             if (function_exists('mb_detect_encoding')) {
-                if (mb_detect_encoding($user->$oneAttribute, 'UTF-8', true) != 'UTF-8') {
+                if (mb_detect_encoding($user->$oneAttribute, 'UTF-8', true) !== 'UTF-8') {
                     $user->$oneAttribute = acym_utf8Encode($user->$oneAttribute);
                 }
             } elseif (!preg_match(
@@ -968,6 +980,22 @@ class UserClass extends acymClass
 
         // Save custom fields if there are any
         $fieldClass = new FieldClass();
+        if (!empty($customFields)) {
+            foreach ($customFields as $key => $value) {
+                if (!is_string($value)) {
+                    continue;
+                }
+
+                // Remove most of the existing emojis that are not supported
+                $value = preg_replace('/[\x{10000}-\x{10FFFF}]/u', '', $value);
+
+                $field = $fieldClass->getOneById($key);
+                if (empty($field) || $field->type !== 'textarea') {
+                    $value = preg_replace('/\s+/', ' ', $value);
+                }
+                $customFields[$key] = $value;
+            }
+        }
         $fieldClass->store($userID, $customFields, $ajax);
         if (!empty($fieldClass->errors)) {
             $this->errors = array_merge($this->errors, $fieldClass->errors);
@@ -1316,8 +1344,7 @@ class UserClass extends acymClass
             $return[$value] = $value;
         }
 
-        $fieldClass = new FieldClass();
-        $languageFieldId = $this->config->get($fieldClass::LANGUAGE_FIELD_ID_KEY, 0);
+        $languageFieldId = $this->config->get(FieldClass::LANGUAGE_FIELD_ID_KEY, 0);
 
         // Acy custom fields except name, email and language because they already are in the user table
         $customFields = acym_loadObjectList(

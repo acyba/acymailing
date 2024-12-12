@@ -18,7 +18,7 @@ class plgAcymArticle extends acymPlugin
         $this->pluginDescription->icon = '<i class="cell acymicon-joomla"></i>';
         $this->pluginDescription->icontype = 'raw';
 
-        if ($this->installed && ACYM_CMS == 'joomla') {
+        if (ACYM_CMS === 'joomla') {
             $this->displayOptions = [
                 'title' => ['ACYM_TITLE', true],
                 'intro' => ['ACYM_INTRO_TEXT', true],
@@ -188,7 +188,7 @@ class plgAcymArticle extends acymPlugin
                 ],
                 [
                     'title' => 'ACYM_AUTO_LOGIN',
-                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION_WARNING',
                     'type' => 'boolean',
                     'name' => 'autologin',
                     'default' => false,
@@ -508,6 +508,10 @@ class plgAcymArticle extends acymPlugin
             if (!empty($images['image_fulltext_caption'])) $varFields['{image_fulltext_caption}'] = $images['image_fulltext_caption'];
 
             $pictVar = in_array('intro', $tag->display) || empty($images['image_fulltext']) ? 'image_intro' : 'image_fulltext';
+            if (empty($images[$pictVar])) {
+                $pictVar = $pictVar === 'image_intro' ? 'image_fulltext' : 'image_intro';
+            }
+
             if (!empty($images[$pictVar])) {
                 $imagePath = acym_rootURI().$images[$pictVar];
                 $altImage = empty($images[$pictVar.'_alt']) ? 'image' : $images[$pictVar.'_alt'];
@@ -525,13 +529,19 @@ class plgAcymArticle extends acymPlugin
         }
 
         $varFields['{content}'] = $element->introtext.$element->fulltext;
-        if (in_array('content', $tag->display)) $contentText .= $varFields['{content}'];
+        if (in_array('content', $tag->display)) {
+            $contentText .= $varFields['{content}'];
+        }
 
-        $varFields['{intro}'] = $element->introtext;
-        if (in_array('intro', $tag->display)) $contentText .= $varFields['{intro}'];
+        $varFields['{intro}'] = $this->fixDivStructure($element->introtext);
+        if (in_array('intro', $tag->display)) {
+            $contentText .= $varFields['{intro}'];
+        }
 
-        $varFields['{full}'] = $element->fulltext;
-        if (in_array('full', $tag->display)) $contentText .= $varFields['{full}'];
+        $varFields['{full}'] = $this->fixDivStructure($element->fulltext);
+        if (in_array('full', $tag->display)) {
+            $contentText .= $varFields['{full}'];
+        }
 
         $contentText = $this->cleanExtensionContent($contentText);
 
@@ -618,10 +628,5 @@ class plgAcymArticle extends acymPlugin
         }
 
         return $categoryTitle.$this->finalizeElementFormat($result, $tag, $varFields);
-    }
-
-    protected function cleanExtensionContent($text)
-    {
-        return preg_replace('#\{igallery[^}]+\}#Uis', '', $text);
     }
 }

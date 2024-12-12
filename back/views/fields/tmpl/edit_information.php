@@ -5,7 +5,9 @@ if (!empty($data['translation_languages'])) {
         $data['translation_languages'],
         'field[translation]',
         empty($data['field']->translation) ? '' : $data['field']->translation,
-        acym_translation('ACYM_LANGUAGE_CUSTOM_FIELD_DESC')
+        acym_translation('ACYM_LANGUAGE_CUSTOM_FIELD_DESC'),
+        '',
+        'field'
     );
 } ?>
 <label class="cell xlarge-12 large-6 margin-top-1">

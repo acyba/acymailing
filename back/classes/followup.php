@@ -7,9 +7,6 @@ use AcyMailing\Libraries\acymClass;
 
 class FollowupClass extends acymClass
 {
-    var $table = 'followup';
-    var $pkey = 'id';
-
     const DEFAULT_DELAY_UNIT = 86400;
     const DELAY_UNIT = [
         60 => 'ACYM_MINUTES',
@@ -18,6 +15,14 @@ class FollowupClass extends acymClass
         604800 => 'ACYM_WEEKS',
         2628000 => 'ACYM_MONTHS',
     ];
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'followup';
+        $this->pkey = 'id';
+    }
 
     public function getDelayUnits()
     {
@@ -29,7 +34,7 @@ class FollowupClass extends acymClass
         return $return;
     }
 
-    public function getMatchingElements($settings = [])
+    public function getMatchingElements(array $settings = []): array
     {
         $query = 'SELECT `followup`.*, COUNT(`mails`.`mail_id`) AS nbEmails 
                 FROM #__acym_followup AS followup 
@@ -192,7 +197,13 @@ class FollowupClass extends acymClass
 
         if (empty($followup)) return false;
 
-        if (!empty($followup->condition)) $followup->condition = json_decode($followup->condition, true);
+        if (!empty($followup->condition)) {
+            $followup->condition = json_decode($followup->condition, true);
+        }
+
+        if (!empty($followup->loop_mail_skip)) {
+            $followup->loop_mail_skip = json_decode($followup->loop_mail_skip, true);
+        }
 
         return $followup;
     }
@@ -210,7 +221,13 @@ class FollowupClass extends acymClass
 
     public function save($element)
     {
-        if (!empty($element->condition) && is_array($element->condition)) $element->condition = json_encode($element->condition);
+        if (!empty($element->condition) && is_array($element->condition)) {
+            $element->condition = json_encode($element->condition);
+        }
+
+        if (!empty($element->loop_mail_skip) && is_array($element->loop_mail_skip)) {
+            $element->loop_mail_skip = json_encode($element->loop_mail_skip);
+        }
 
         $this->updateListFollowup($element);
 
@@ -227,7 +244,7 @@ class FollowupClass extends acymClass
             $randColor = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
             $list->color = '#'.$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)].$randColor[rand(0, 15)];
             $list->access = '';
-            $list->type = $listClass::LIST_TYPE_FOLLOWUP;
+            $list->type = ListClass::LIST_TYPE_FOLLOWUP;
         } else {
             $list = $listClass->getOneById($element->list_id);
             $list->name = $element->display_name;
@@ -436,8 +453,14 @@ class FollowupClass extends acymClass
 
         $followupListIds = [];
         foreach ($followupLists as $listId => $followupList) {
-            if (($followupList->send_once == 1 && !empty($followupList->status) && $followupList->status == 1) || (!empty($followupList->status) && $followupList->status != 1)) continue;
-            $followupListIds[$listId] = $followupList->id;
+            // The user unsubscribed, don't re-subscribe them
+            if (in_array($followupList->status, [0, '0'], true)) {
+                continue;
+            }
+
+            if ($followupList->status === '' || $followupList->send_once == 0) {
+                $followupListIds[$listId] = $followupList->id;
+            }
         }
 
         if (empty($followupListIds)) {
@@ -544,5 +567,118 @@ class FollowupClass extends acymClass
                     AND list_id = '.intval($mailInfo->list_id);
 
         return acym_query($query);
+    }
+
+    public function getXFollowups(array $options): array
+    {
+        $limit = $options['limit'] ?? 10;
+        $offset = $options['offset'] ?? 0;
+        $filters = $options['filters'] ?? [];
+
+        $conditions = [];
+        foreach ($filters as $column => $filter) {
+            switch ($column) {
+                case 'id':
+                case 'active':
+                case 'send_one':
+                    $conditions[] = acym_secureDBColumn($column).' = '.intval($filter);
+                    break;
+                case 'name':
+                case 'trigger':
+                case 'display_name':
+                    $conditions[] = '`'.acym_secureDBColumn($column).'` LIKE '.acym_escapeDB('%'.$filter.'%');
+                    break;
+                default:
+                    $conditions[] = acym_secureDBColumn($column).' = '.acym_escapeDB('%'.$filter.'%');
+            }
+        }
+
+        $query = 'SELECT * FROM #__acym_followup ';
+
+        if (!empty($conditions)) {
+            $query .= ' WHERE '.implode(' AND ', $conditions);
+        }
+
+        $followUps = acym_loadObjectList($query, $this->pkey, $offset, $limit);
+
+        if (empty($followUps)) {
+            return [];
+        }
+
+        foreach ($followUps as &$followUp) {
+            if (!empty($followUp->condition)) {
+                $followUp->condition = json_decode($followUp->condition, true);
+            }
+        }
+
+        return $followUps;
+    }
+
+    /**
+     * @param string $mailId
+     *
+     * @return object|null
+     */
+    public function getOneByMailId(int $mailId): ?object
+    {
+        return acym_loadObject(
+            'SELECT followup.* 
+            FROM #__acym_followup AS followup
+            JOIN #__acym_followup_has_mail AS map
+                 ON followup.id = map.followup_id
+            WHERE mail_id = '.intval($mailId)
+        );
+    }
+
+    /**
+     * @param $followupId
+     *
+     * @return object
+     */
+    public function getLastEmail(int $followupId): object
+    {
+        return acym_loadObject(
+            'SELECT mail_id as id, delay * delay_unit as totalDelay FROM #__acym_followup_has_mail WHERE followup_id = '.intval($followupId).' ORDER BY totalDelay DESC'
+        );
+    }
+
+    /**
+     * @param int   $followUpId
+     * @param int   $userId
+     * @param int   $additionalDelay
+     * @param array $mailIdToSkip
+     *
+     * @return void
+     */
+    public function triggerFollowUp(int $followUpId, int $userId, int $additionalDelay = 0, array $mailIdToSkip = []): void
+    {
+        $followUp = $this->getOneById($followUpId);
+
+        if (empty($followUp)) {
+            return;
+        }
+
+        $values = intval($userId).', '.intval($followUp->list_id).', 1, '.acym_escapeDB(acym_date(time(), 'Y-m-d H:i:s'));
+
+        acym_query('INSERT IGNORE INTO #__acym_user_has_list (`user_id`, `list_id`, `status`, `subscription_date`) VALUES ('.$values.') ON DUPLICATE KEY UPDATE status = 1');
+
+        $followups = $this->getFollowupsWithMailsInfoByIds($followUpId);
+        $allValues = [];
+        foreach ($followups as $mails) {
+            foreach ($mails as $mail) {
+                if (in_array($mail->mail_id, $mailIdToSkip)) {
+                    continue;
+                }
+                $sendDate = time() + (intval($mail->delay) * intval($mail->delay_unit)) + $additionalDelay;
+                $sendDate = acym_escapeDB(acym_date($sendDate, 'Y-m-d H:i:s', false));
+                $allValues[] = '('.intval($mail->mail_id).', '.intval($userId).', '.$sendDate.', '.$this->config->get('priority_newsletter', 3).', 0'.')';
+            }
+        }
+
+        $queryToProcess = 'INSERT IGNORE INTO #__acym_queue (`mail_id`, `user_id`, `sending_date`, `priority`, `try`) VALUES '.implode(', ', $allValues);
+
+        if (empty(acym_query($queryToProcess))) {
+            acym_logError("Error adding follow up email to queue \n Values: ".implode(', ', $allValues)." \n Error: ".acym_getDBError());
+        }
     }
 }

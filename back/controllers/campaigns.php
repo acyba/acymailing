@@ -35,9 +35,9 @@ class CampaignsController extends acymController
         $this->breadcrumb[acym_translation('ACYM_EMAILS')] = acym_completeLink('campaigns');
         $this->loadScripts = [
             'recipients' => ['vue-applications' => ['entity_select']],
+            'segment' => ['datepicker', 'vue-applications' => ['modal_users_summary']],
             'send_settings' => ['datepicker'],
             'summary' => ['vue-applications' => ['modal_users_summary']],
-            'segment' => ['datepicker', 'vue-applications' => ['modal_users_summary']],
         ];
 
         if (acym_isAdmin()) {
@@ -95,17 +95,15 @@ class CampaignsController extends acymController
         acym_sendAjaxResponse('', ['content' => $result]);
     }
 
-    public function countNumberOfRecipients()
+    public function ajaxCountNumberOfRecipients(): void
     {
         $listsSelected = acym_getVar('array', 'listsSelected', []);
         if (empty($listsSelected)) {
-            echo 0;
-            exit;
+            acym_sendAjaxResponse('', ['recipients' => 0]);
         }
 
         $listClass = new ListClass();
-        echo $listClass->getTotalSubCount($listsSelected);
-        exit;
+        acym_sendAjaxResponse('', ['recipients' => $listClass->getTotalSubCount($listsSelected)]);
     }
 
     public function deleteAttachmentAjax()

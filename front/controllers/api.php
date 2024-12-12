@@ -9,6 +9,7 @@ use AcyMailing\FrontControllers\Api\Statistics;
 use AcyMailing\FrontControllers\Api\Subscription;
 use AcyMailing\FrontControllers\Api\Templates;
 use AcyMailing\FrontControllers\Api\Users;
+use AcyMailing\FrontControllers\Api\FollowUp;
 use AcyMailing\Libraries\acymController;
 
 class ApiController extends acymController
@@ -20,6 +21,7 @@ class ApiController extends acymController
     use Subscription;
     use Statistics;
     use Templates;
+    use FollowUp;
 
     private const AVAILABLE_TMPL_COLUMNS = [
         'name',
@@ -97,6 +99,7 @@ class ApiController extends acymController
                 'getUserSubscriptionById',
                 'getUsers',
                 'getLists',
+                'getCampaigns',
                 'getCampaignStatistics',
                 'getCampaignStatisticsDetailed',
                 'getCampaignStatisticsClicks',
@@ -105,6 +108,9 @@ class ApiController extends acymController
                 'getOneTemplate',
                 'getTemplates',
                 'getEmails',
+                'getFollowUpById',
+                'getFollowUps',
+                'getFollowupStatistics',
             ],
             'POST' => [
                 'createList',
@@ -116,12 +122,17 @@ class ApiController extends acymController
                 'subscribeUsers',
                 'createTemplate',
                 'updateTemplate',
+                'createOrUpdateFollowUp',
+                'attachEmailToFollowUp',
+                'sendCampaign',
             ],
             'DELETE' => [
                 'deleteUser',
                 'deleteList',
                 'deleteCampaign',
                 'deleteTemplate',
+                'deleteEmailFromFollowUp',
+                'deleteFollowUp',
             ],
         ];
 
@@ -152,9 +163,6 @@ class ApiController extends acymController
     }
 
     /**
-     * Execute common tasks before calling public functions.
-     */
-    /**
      * Validate the API key and check the user's license before processing requests.
      */
     private function authenticate(bool $isRouteAuthenticate = false): void
@@ -164,7 +172,10 @@ class ApiController extends acymController
         if (empty($apiKey)) {
             $apiKey = acym_getHeader('API-KEY');
             if (empty($apiKey)) {
-                $this->sendJsonResponse(['message' => 'Header Api-Key is missing'], 401);
+                $apiKey = acym_getHeader('api-key');
+                if (empty($apiKey)) {
+                    $this->sendJsonResponse(['message' => 'Header Api-Key is missing'], 401);
+                }
             }
         }
 

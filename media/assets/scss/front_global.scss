@@ -5,6 +5,10 @@
 
 #acym_wrapper {
     @include foundation-everything-acyba;
+
+    [aria-disabled=true] {
+        opacity: .5 !important;
+    }
 }
 
 //include our style

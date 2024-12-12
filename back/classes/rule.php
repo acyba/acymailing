@@ -6,11 +6,17 @@ use AcyMailing\Libraries\acymClass;
 
 class RuleClass extends acymClass
 {
-    var $table = 'rule';
-    var $pkey = 'id';
     var $errors = [];
 
     const FINAL_RULE_ID = 17;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'rule';
+        $this->pkey = 'id';
+    }
 
     public function getAll($key = null, $active = false)
     {
@@ -54,9 +60,7 @@ class RuleClass extends acymClass
 
     public function getOrderingNumber()
     {
-        $query = 'SELECT COUNT(id) FROM #__acym_rule';
-
-        return acym_loadResult($query);
+        return acym_loadResult('SELECT COUNT(`id`) FROM #__acym_rule');
     }
 
     public function cleanTable()

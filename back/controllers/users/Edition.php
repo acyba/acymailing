@@ -105,7 +105,8 @@ trait Edition
 
         if (empty($userId)) return;
 
-        $data['allSubscriptions'] = $this->currentClass->getUserSubscriptionById($userId);
+        $userClass = new UserClass();
+        $data['allSubscriptions'] = $userClass->getUserSubscriptionById($userId);
 
         foreach ($data['allSubscriptions'] as $sub) {
             if ($sub->status == 1) {
@@ -167,8 +168,20 @@ trait Edition
 
     private function prepareMailHistory(&$data, $userId)
     {
-        if (empty($userId)) return;
-        $data['userMailHistory'] = $this->currentClass->getMailHistory($userId);
+        if (empty($userId)) {
+            return;
+        }
+
+        $userClass = new UserClass();
+        $data['userMailHistory'] = $userClass->getMailHistory($userId);
+        foreach ($data['userMailHistory'] as $mailId => $oneMailHistory) {
+            if (!empty($oneMailHistory->bounce_rule) && preg_match('/(.*) \[(.*)]/Us', $oneMailHistory->bounce_rule, $matches)) {
+                $ruleName = acym_translation($matches[1]).' ['.$matches[2].']';
+            } else {
+                $ruleName = $data['userMailHistory'][$mailId]->bounce_rule;
+            }
+            $data['userMailHistory'][$mailId]->ruleName = $ruleName;
+        }
     }
 
     private function prepareHistoryEdit(&$data, $userId)
@@ -177,6 +190,7 @@ trait Edition
 
         $historyClass = new HistoryClass();
         $data['userHistory'] = $historyClass->getHistoryOfOneById($userId);
+        $data['unsubReasons'] = $historyClass->getAllMainLanguageUnsubReasons();
         foreach ($data['userHistory'] as &$oneHistory) {
             if (!empty($oneHistory->data)) {
                 $historyData = explode("\n", $oneHistory->data);
@@ -196,11 +210,13 @@ trait Edition
                     $details .= '<b>'.acym_escape(acym_translation($part1)).' : </b>'.acym_escape($part2).'<br />';
                 }
                 if ($oneHistory->action === 'unsubscribed') {
+
                     $details .= acym_translation('ACYM_UNSUBSCRIBE_REASON');
                     if (empty(acym_escape($oneHistory->unsubscribe_reason))) {
                         $details .= ' '.acym_translation('ACYM_NO_REASON_SET_BY_USER');
                     } else {
-                        $details .= ' '.acym_escape($oneHistory->unsubscribe_reason);
+                        $reason = $historyClass->getUnsubscribeReasonText($oneHistory->unsubscribe_reason);
+                        $details .= ' '.acym_escape($reason);
                     }
                 }
 

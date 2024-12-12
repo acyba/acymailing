@@ -20,7 +20,9 @@ const acym_helper = {
         return str;
     },
     parseJson: function (json, defaultValue) {
-        if (typeof json === 'object') return json;
+        if (typeof json === 'object' || typeof json === 'undefined') {
+            return json;
+        }
 
         try {
             const begin = json.indexOf('{');
@@ -64,12 +66,12 @@ const acym_helper = {
             e.preventDefault();
 
             // We may want to add a condition on a submit button, something not checkable with the form validation script
-            let condition = jQuery(this).attr('data-condition');
+            const condition = jQuery(this).attr('data-condition');
             if (condition && typeof jQuery[condition] === 'function' && !jQuery[condition]()) {
                 return false;
             }
 
-            let confirmationMessage = jQuery(this).attr('data-confirmation-message');
+            const confirmationMessage = jQuery(this).attr('data-confirmation-message');
             if (typeof confirmationMessage !== typeof undefined && !acym_helper.confirm(ACYM_JS_TXT[confirmationMessage])) {
                 return false;
             }
@@ -81,28 +83,28 @@ const acym_helper = {
                 }
             }
 
-            let $form = jQuery('#acym_form');
-            let task = jQuery(this).attr('data-task');
-            let controller = jQuery(this).attr('data-ctrl');
+            const $form = jQuery('#acym_form');
+            const task = jQuery(this).attr('data-task');
+            const controller = jQuery(this).attr('data-ctrl');
 
             if (controller !== undefined) {
                 $form.find('[name=ctrl]').val(controller);
             }
             $form.find('[name="task"]').val(task);
 
-            let step = jQuery(this).attr('data-step');
+            const step = jQuery(this).attr('data-step');
             if (step != null) {
                 $form.find('[name="nextstep"]').val(step);
             }
 
             //for the automations
-            let and = jQuery(this).attr('data-and');
+            const and = jQuery(this).attr('data-and');
             if (and != null) {
                 $form.append('<input type="hidden" value="' + and + '" name="and_action">');
             }
 
             // This garbage code is for the required fields and the Edge/IE fucking compatibility
-            let $buttonSubmit = $form.find('#formSubmit');
+            const $buttonSubmit = $form.find('#formSubmit');
             if ($buttonSubmit[0] == undefined) {
                 let evt = new MouseEvent('click');
                 document.querySelector('#formSubmit').dispatchEvent(evt);

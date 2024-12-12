@@ -90,7 +90,7 @@ trait Users
     {
         $decodedData = acym_getJsonData();
 
-        if (!isset($decodedData['email'])) {
+        if (!isset($decodedData['email']) || !is_string($decodedData['email'])) {
             $this->sendJsonResponse(['message' => 'Email not provided in the request body.'], 422);
         }
 
@@ -102,28 +102,32 @@ trait Users
             $user->email = $decodedData['email'];
         }
 
-        if (isset($decodedData['name'])) {
+        if (isset($decodedData['name']) && is_string($decodedData['name'])) {
             $user->name = $decodedData['name'];
         }
 
         if (isset($decodedData['active'])) {
-            $user->active = $decodedData['active'];
+            $user->active = intval($decodedData['active']);
         }
 
         if (isset($decodedData['confirmed'])) {
-            $user->confirmed = $decodedData['confirmed'];
+            $user->confirmed = intval($decodedData['confirmed']);
         }
 
         if (isset($decodedData['cmsId'])) {
-            $user->cms_id = $decodedData['cmsId'];
+            $user->cms_id = intval($decodedData['cmsId']);
+        }
+
+        if (isset($decodedData['language']) && is_string($decodedData['language'])) {
+            $user->language = $decodedData['language'];
         }
 
         if (isset($decodedData['sendConf'])) {
-            $userClass->sendConf = $decodedData['sendConf'];
+            $userClass->sendConf = (bool)$decodedData['sendConf'];
         }
 
         if (isset($decodedData['triggers'])) {
-            $userClass->triggers = $decodedData['triggers'];
+            $userClass->triggers = (bool)$decodedData['triggers'];
         }
 
         $customFields = $decodedData['customFields'] ?? [];

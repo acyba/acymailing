@@ -26,7 +26,7 @@ trait BirthdayCampaignType
             'description' => acym_translation('ACYM_BIRTHDAY_MAIL_DESC'),
             'icon' => 'acymicon-calendar',
             'link' => $birthdayMailLink,
-            'level' => 2,
+            'level' => ACYM_ENTERPRISE,
             'email_type' => $this->mailType,
         ];
     }
@@ -246,7 +246,9 @@ trait BirthdayCampaignType
 
     public function onAcymDisplayCampaignListingSpecificTabs(&$tabs)
     {
-        $tabs['specificListing&type='.$this->mailType] = 'ACYM_BIRTHDAY_EMAIL';
+        if (acym_level(ACYM_ENTERPRISE)) {
+            $tabs['specificListing&type='.$this->mailType] = 'ACYM_BIRTHDAY_EMAIL';
+        }
     }
 
     public function onAcymSpecificListingActive(&$exists, $task)

@@ -178,8 +178,8 @@ const acym_editorWysidDragDrop = {
                     acym_editorWysidNewContent.addMediaWysid($item);
                 } else if ($item.hasClass('acym__wysid__block__element--new--video')) {
                     acym_editorWysidNewContent.addVideoWYSID($item);
-                } else if ($item.hasClass('acym__wysid__block__element--new--giphy')) {
-                    acym_editorWysidNewContent.addGiphyWYSID($item);
+                } else if ($item.hasClass('acym__wysid__block__element--new--gif')) {
+                    acym_editorWysidNewContent.addGifWYSID($item);
                 } else if ($item.hasClass('acym__wysid__block__element--new--unsplash')) {
                     acym_editorWysidNewContent.addUnsplashWYSID($item);
                 } else {

@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     initUser();
     blockPasteEvent();
+    handleUnsubscribeReasonChange();
+    handleDisplayedCheckedLists();
+    handleLanguageChange();
 });
 
 function initUser() {
@@ -126,4 +129,79 @@ function blockPasteEvent() {
             event.preventDefault();
         });
     });
+}
+
+function handleUnsubscribeReasonChange() {
+    const select = document.querySelector('select[name="unsubscribe_selector_reason"]');
+    if (!select) return;
+
+    const customInput = document.getElementById('acym__custom__unsubscribe__reason');
+    const customInputLabel = document.querySelector('.acym__custom__reason__label');
+    const hiddenInput = document.querySelector('input[name="unsubscribe_reason"]');
+
+    select.addEventListener('change', function () {
+        if (this.selectedIndex === 0) {
+            hiddenInput.value = '';
+            customInput.classList.add('is-hidden');
+            customInputLabel.classList.add('is-hidden');
+        } else if (this.selectedIndex === this.options.length - 1) {
+            customInput.classList.remove('is-hidden');
+            customInputLabel.classList.remove('is-hidden');
+            hiddenInput.value = '';
+        } else {
+            customInput.classList.add('is-hidden');
+            customInputLabel.classList.add('is-hidden');
+            hiddenInput.value = this.selectedIndex;
+        }
+        updateFieldStyle(select, hiddenInput.value !== '');
+    });
+
+    customInput.addEventListener('input', function () {
+        hiddenInput.value = this.value;
+        updateFieldStyle(select, hiddenInput.value !== '');
+    });
+}
+
+function updateFieldStyle(field, isValid) {
+    if (isValid) {
+        field.classList.add('acym__unsub__reason__selected');
+    } else {
+        field.classList.remove('acym__unsub__reason__selected');
+    }
+}
+
+function handleDisplayedCheckedLists() {
+    const displayedCheckedList = [];
+    const displayedLists = document.querySelectorAll('.acym__unsubscribe__list__switch input.switch-input');
+
+    displayedLists.forEach(item => {
+        const hiddenInput = item.closest('.acym__unsubscribe__list__switch').querySelector('input[type="hidden"]');
+        item.addEventListener('change', () => {
+            hiddenInput.value = item.checked ? '1' : '0';
+        });
+
+        if (item.checked) {
+            hiddenInput.value = '1';
+            displayedCheckedList.push(hiddenInput.name.match(/\d+/)[0]);
+        } else {
+            hiddenInput.value = '0';
+        }
+    });
+
+    document.getElementById('displayed_checked_lists').value = displayedCheckedList.join(',');
+}
+
+function handleLanguageChange() {
+    const select = document.getElementById('acym__unsubscribe__language__select');
+    let link = window.location.href;
+    const languageParam = link.match(/&language=[^&]+/);
+    if (null !== languageParam && languageParam.length > 0) {
+        link = link.replace(languageParam[0], '');
+    }
+    if (null !== select) {
+        select.addEventListener('change', function () {
+            link += '&language=' + this.value;
+            window.location.href = link;
+        });
+    }
 }

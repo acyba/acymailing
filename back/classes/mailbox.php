@@ -7,10 +7,15 @@ use AcyMailing\Libraries\acymClass;
 
 class MailboxClass extends acymClass
 {
-    var $table = 'mailbox_action';
-    var $pkey = 'id';
+    public function __construct()
+    {
+        parent::__construct();
 
-    public function getMatchingElements($settings = [])
+        $this->table = 'mailbox_action';
+        $this->pkey = 'id';
+    }
+
+    public function getMatchingElements(array $settings = []): array
     {
         $query = 'SELECT * FROM #__acym_mailbox_action';
         $queryCount = 'SELECT COUNT(id) AS total, SUM(active) AS totalActive FROM #__acym_mailbox_action';

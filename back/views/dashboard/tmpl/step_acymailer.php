@@ -1,124 +1,116 @@
-<input type="hidden" name="skip" value="acymailer" />
-<input type="hidden" id="acym__walkthrough__acymailer__domain" value="<?php echo acym_escape($data['domain']); ?>" />
+<form id="acym_form" action="<?php echo acym_completeLink('dashboard'); ?>" method="post" name="acyForm" data-abide novalidate>
+	<div id="acym__walkthrough">
+		<div class="acym__walkthrough cell grid-x" id="acym__walkthrough__acymailer">
+			<div class="acym__content cell grid-x acym__walkthrough__content align-center">
+                <?php
+                $data['stepsType']->display(
+                    [
+                        'currentStep' => 3,
+                        'totalSteps' => 3,
+                    ]
+                );
+                ?>
 
-<h2 class="acym__title text-center cell"><?php echo acym_translation('ACYM_ASS_CONFIGURATION'); ?></h2>
+				<h1 class="cell acym__title text-center"><?php echo acym_translation('ACYM_YOUR_SENDING_METHOD'); ?></h1>
 
-<div class="cell medium-1 hide-for-small-only"></div>
-<div class="cell medium-auto small-12 grid-x margin-top-1 text-left margin-y">
-	<div class="cell grid-x">
-		<p class="cell text-center">
-            <?php echo acym_translation('ACYM_WALK_ACYMAILER_1'); ?>
-		</p>
-		<p class="cell text-center">
-            <?php echo acym_translationSprintf('ACYM_WALK_ACYMAILER_2', empty($data['domain']) ? 'your.domain.com' : $data['domain']); ?>
-		</p>
-		<p class="cell text-center">
-            <?php echo acym_translation('ACYM_WALK_ACYMAILER_3'); ?>
-			<a href="<?php echo ACYM_DOCUMENTATION; ?>external-sending-method/acymailing-sending-service#how-to-add-the-dns-entries-on-my-server"
-			   class="cell shrink"
-			   id="acym__walkthrough__acymailer__cname__doc"
-			   target="_blank">
-                <?php echo acym_translation('ACYM_STEP_BY_STEP_GUIDE'); ?>
-			</a>
-		</p>
-	</div>
+				<div class="cell grid-x grid-margin-x align-center margin-top-3">
+					<div id="acym__walkthrough__acymailer__domain__container" class="cell xlarge-10 large-12 grid-x grid-margin-y margin-bottom-3">
+						<div class="cell grid-x large-6 align-left">
+							<h5 class="cell margin-bottom-2"><?php echo acym_translation('ACYM_LICENSE_WITH_SENDING_SERVICE'); ?></h5>
 
-	<div class="grid-x acym__listing cell" id="acym__walkthrough__acymailer__domain__cname">
-		<div class="grid-x cell acym__listing__header text-left">
-			<div class="medium-6 cell acym__listing__header__title">
-                <?php echo acym_translation('ACYM_NAME'); ?>
-			</div>
-			<div class="medium-6 cell acym__listing__header__title">
-                <?php echo acym_translation('ACYM_VALUE'); ?>
-			</div>
-		</div>
-        <?php foreach ($data['CnameRecords'] as $cnameRecord) { ?>
-			<div class="grid-x cell align-middle acym__listing__row">
-				<div class="grid-x medium-6 cell">
-                    <?php echo $cnameRecord['name']; ?>
+							<div class="cell margin-bottom-1"><?php echo acym_translation('ACYM_LETS_CONFIGURE'); ?></div>
+							<div class="cell"><?php echo acym_translation('ACYM_WALK_ACYMAILER_1'); ?></div>
+							<div class="cell"><?php echo acym_translationSprintf('ACYM_WALK_ACYMAILER_2', $data['suggestedDomain']); ?></div>
+							<div class="cell">
+                                <?php echo acym_translation('ACYM_WALK_ACYMAILER_3'); ?>
+								<a target="_blank"
+								   id="acym__cname__documentation"
+								   href="<?php echo ACYM_DOCUMENTATION; ?>external-sending-method/acymailing-sending-service#how-to-add-the-dns-entries-on-my-server">
+                                    <?php echo acym_translation('ACYM_STEP_BY_STEP_GUIDE'); ?>
+								</a>
+							</div>
+						</div>
+						<div class="cell grid-x grid-margin-x align-center align-middle large-6">
+							<div class="cell grid-x grid-margin-x grid-margin-y align-center">
+								<div class="cell small-7 medium-8 large-9 xlarge-7">
+									<input id="acymailer_domain"
+										   class="cell medium-6 large-4 xlarge-3"
+										   type="text"
+										   autocomplete="off"
+										   value="">
+									<span id="acymailer_domain_error" class="medium-6 large-4 xlarge-3"></span>
+                                    <?php if (!empty($data['suggestedDomain'])) { ?>
+										<span id="acym__acymailer__unverifiedDomains">
+											<span class="acym__acymailer__oneSuggestion"><?php echo acym_escape($data['suggestedDomain']); ?></span>
+										</span>
+                                    <?php } ?>
+								</div>
+								<div id="acym__configuration__sending__method_addDomain_submit" class="cell grid-x shrink acym_vcenter">
+									<button type="button"
+											id="acym__walkthrough__acymailer__add_domain"
+											class="cell shrink button button-secondary">
+                                        <?php echo acym_translation('ACYM_ADD_MY_DOMAIN'); ?>
+									</button>
+								</div>
+								<div class="cell grid-x align-center margin-top-1">
+									<i class="acym_vcenter acymicon-circle-o-notch acymicon-spin is-hidden"
+									   id="acym__walkthrough__acymailer__domain__spinner"></i>
+									<div class="cell shrink grid-x acym_vcenter is-hidden" id="acym__walkthrough__acymailer__add__error">
+										<i class="acymicon-close acym__color__red cell shrink"></i>
+										<span class="cell shrink" id="acym__walkthrough__acymailer__add__error__message"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div id="acym__walkthrough__acymailer__cname__container" class="cell xxlarge-8 large-10 grid-x margin-bottom-3 text-center is-hidden">
+						<div class="cell"><?php echo acym_translation('ACYM_ADD_CNAME'); ?></div>
+						<div class="cell">
+                            <?php echo acym_translation('ACYM_WALK_ACYMAILER_3'); ?>
+							<a target="_blank"
+							   id="acym__cname__documentation"
+							   href="<?php echo ACYM_DOCUMENTATION; ?>external-sending-method/acymailing-sending-service#how-to-add-the-dns-entries-on-my-server">
+                                <?php echo acym_translation('ACYM_STEP_BY_STEP_GUIDE'); ?>
+							</a>
+						</div>
+						<div class="cell margin-top-1"><?php echo acym_translation('ACYM_CHECK_STATUS_ANYTIME'); ?></div>
+
+						<div class="cell grid-x acym__listing margin-top-3" id="acym__walkthrough__acymailer__domain__cname">
+							<div class="cell grid-x grid-margin-x margin-left-0 acym__listing__header text-left">
+								<div class="cell small-6 acym__listing__header__title">
+                                    <?php echo acym_translation('ACYM_NAME'); ?>
+								</div>
+								<div class="cell small-6 acym__listing__header__title">
+                                    <?php echo acym_translation('ACYM_VALUE'); ?>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="grid-x medium-6 cell">
-                    <?php echo $cnameRecord['value']; ?>
+			</div>
+			<div class="cell acym__walkthrough_footer grid-x algin-center text-center">
+				<div id="acym__walkthrough_footer__domain__container" class="cell grid-x grid-margin-x margin-top-3 margin-bottom-2 text-center">
+					<h5 class="cell margin-bottom-1"><?php echo acym_translation('ACYM_DONT_WANT_WAIT'); ?></h5>
+					<div class="cell"><?php echo acym_translation('ACYM_WALK_ACYMAILER_LATER'); ?></div>
+					<div class="cell"><?php echo acym_translation('ACYM_WALK_ACYMAILER_OTHER'); ?></div>
+				</div>
+				<div id="acym__walkthrough_footer__cname__container" class="cell grid-x grid-margin-x margin-top-3 margin-bottom-2 text-center align-center is-hidden">
+					<div class="cell xlarge-6"><?php echo acym_translation('ACYM_WALK_FOOTER_SWITCH'); ?></div>
+					<div class="cell"></div>
+					<div class="cell xlarge-6"><?php echo acym_translation('ACYM_WALK_FOOTER_DNS'); ?></div>
+					<div class="cell margin-top-1"><?php echo acym_translation('ACYM_WALK_FOOTER_USE'); ?></div>
+				</div>
+				<div class="cell grid-x grid-margin-x margin-bottom-2 align-center">
+					<button type="button" data-task="startUsing" class="cell shrink button acy_button_submit">
+                        <?php echo acym_translation('ACYM_START_USING'); ?>
+					</button>
+					<button type="button" data-task="tryEditor" class="cell shrink button button-secondary acy_button_submit">
+                        <?php echo acym_translation('ACYM_TEST_THE_EDITOR'); ?>
+					</button>
 				</div>
 			</div>
-        <?php } ?>
-	</div>
-	<div class="cell grid-x acym_vcenter align-center" id="acym__configuration__acymailer__add__error">
-		<i class="acymicon-close acym__color__red cell shrink"></i>
-		<span class="cell shrink" id="acym__configuration__acymailer__add__error__message"></span>
-	</div>
-
-	<div class="cell grid-x">
-		<p class="cell text-center">
-            <?php echo acym_translation('ACYM_WALK_ACYMAILER_4'); ?>
-		</p>
-		<p class="cell text-center">
-            <?php echo acym_translation('ACYM_WALK_ACYMAILER_5'); ?>
-		</p>
-		<h5 class="cell text-center font-bold margin-top-2 margin-bottom-1">
-            <?php echo acym_translation('ACYM_WALK_ACYMAILER_6'); ?>
-		</h5>
-		<p class="cell text-center">
-            <?php echo acym_translation('ACYM_WALK_ACYMAILER_7'); ?>
-		</p>
-	</div>
-
-	<div class="cell grid-x margin-top-1 acym_vcenter">
-		<div class="cell small-2 medium-4 text-right">
-            <?php echo acym_translation('ACYM_WALK_ACYMAILER_DOMAIN_STATUS'); ?>
-		</div>
-		<div class="cell small-10 medium-8 padding-left-1 acym_vcenter" id="acym__walkthrough__acymailer__domain_status">
-            <?php
-            if ($data['status'] === 'SUCCESS') {
-                $iconClass = 'acymicon-check-circle acym__color__green';
-                $text = acym_translation('ACYM_WALK_ACYMAILER_STATUS_SUCCESS');
-            } elseif ($data['status'] === 'FAILED') {
-                $iconClass = 'acymicon-remove acym__color__red';
-                $text = acym_translation('ACYM_WALK_ACYMAILER_STATUS_FAIL');
-            } else {
-                $iconClass = 'acymicon-access_time acym__color__orange';
-                $text = acym_translation('ACYM_WALK_ACYMAILER_STATUS_WAIT');
-            }
-            ?>
-			<i class="<?php echo $iconClass; ?> padding-right-1"></i>
-            <?php echo $text; ?>
 		</div>
 	</div>
-
-	<div class="cell grid-x grid-margin-x align-center">
-		<button type="button" class="button cell shrink" id="acym__walkthrough__acymailer__domain_status_reload">
-            <?php echo acym_translation('ACYM_CHECK_DOMAIN_VALIDATION'); ?>
-		</button>
-		<a href="<?php echo ACYM_ACYMAILING_WEBSITE; ?>contact/" target="_blank" class="button button-secondary"><?php echo acym_translation('ACYM_CONTACT_SUPPORT'); ?></a>
-	</div>
-</div>
-<div class="cell medium-1 hide-for-small-only"></div>
-
-<h3 class="cell text-center margin-top-3" id="acym__walkthrough__acymailer__information"><?php echo acym_translation('ACYM_YOUR_EMAIL_INFORMATION'); ?></h3>
-<div class="cell medium-1 hide-for-small-only"></div>
-<div class="cell medium-auto small-12 grid-x margin-top-1 text-left margin-y">
-	<div class="cell">
-		<label>
-            <?php echo acym_translation('ACYM_FROM_NAME').acym_info('ACYM_FROM_NAME_INFO'); ?>
-			<input type="text" name="from_name" value="<?php echo acym_escape($data['siteName']); ?>" required>
-		</label>
-	</div>
-
-	<div class="cell">
-		<label>
-            <?php echo acym_translation('ACYM_FROM_MAIL_ADDRESS').acym_info('ACYM_FROM_ADDRESS_INFO'); ?>
-			<input type="email" name="from_address" value="<?php echo acym_escape($data['userEmail']); ?>" required>
-		</label>
-	</div>
-</div>
-<div class="cell medium-1 hide-for-small-only"></div>
-
-<div class="cell grid-x align-center margin-top-3">
-	<button type="submit"
-			class="acy_button_submit button"
-			id="acym__selection__button-select"
-			data-task="saveStepAcyMailer"
-        <?php echo $data['status'] === 'SUCCESS' ? '' : 'disabled'; ?>>
-        <?php echo acym_translation('ACYM_SEND_TEST'); ?>
-	</button>
-</div>
+    <?php acym_formOptions(true, '', '', 'dashboard'); ?>
+</form>

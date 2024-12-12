@@ -64,11 +64,19 @@
     }
 }
 
-#acym__wysid .button.disabled, #acym__wysid .button.disabled:focus, #acym__wysid .button.disabled:hover,
-#acym__wysid .button[disabled], #acym__wysid .button[disabled]:focus, #acym__wysid .button[disabled]:hover {
-    background-color: $color-palette-black !important;
-    color: #fefefe !important;
-    cursor: not-allowed;
+// The button must not be inside a div with ID acym__wysid__modal
+#acym__wysid .button:not(.modal-button) {
+    .disabled, [disabled] {
+        background-color: $color-palette-black !important;
+        color: #fefefe !important;
+        cursor: not-allowed;
+
+        &:focus, &:hover {
+            background-color: $color-palette-black !important;
+            color: #fefefe !important;
+            cursor: not-allowed;
+        }
+    }
 }
 
 input:checked ~ .switch-paddle {

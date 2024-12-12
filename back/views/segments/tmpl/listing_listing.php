@@ -71,18 +71,21 @@
 					<div class="cell auto hide-for-small-only">
                         <?php
                         echo acym_tooltip(
-                            acym_date(
-                                $segment->creation_date,
-                                acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC5'),
-                                false
-                            ),
-                            $segment->creation_date
+                            [
+                                'hoveredText' => acym_date(
+                                    $segment->creation_date,
+                                    acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC5'),
+                                    false
+                                ),
+                                'textShownInTooltip' => $segment->creation_date,
+                            ]
                         );
                         ?>
 					</div>
 					<div class="cell small-1 acym__listing__controls text-center">
                         <?php
-                        $class = $segment->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0' : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
+                        $class = $segment->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0'
+                            : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
                         echo '<i data-acy-table="segment" data-acy-field="active" data-acy-elementid="'.acym_escape($segment->id).'" class="acym_toggleable '.$class.'"></i>';
                         ?>
 					</div>
@@ -92,6 +95,6 @@
 				</div>
 			</div>
         <?php } ?>
-        <?php echo $data['pagination']->display('form'); ?>
+        <?php echo $data['pagination']->display('segments'); ?>
 	</div>
 <?php } ?>

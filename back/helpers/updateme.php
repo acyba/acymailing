@@ -26,38 +26,29 @@ class UpdatemeHelper extends acymObject
 
         if (ACYM_CMS === 'joomla' && acym_getCMSConfig('proxy_enable', false)) {
             // https://github.com/WordPress/Requests/blob/stable/docs/proxy.md
-            $options['proxy'] = acym_getCMSConfig('proxy_host', '').':'.acym_getCMSConfig('proxy_port', '');
+            $options['proxy'] = ['host' => acym_getCMSConfig('proxy_host', '').':'.acym_getCMSConfig('proxy_port', '')];
             if (!empty(acym_getCMSConfig('proxy_user', '')) && !empty(acym_getCMSConfig('proxy_pass', ''))) {
-                $options['proxy'] = [$options['proxy'], acym_getCMSConfig('proxy_user', ''), acym_getCMSConfig('proxy_pass', '')];
+                $options['proxy']['auth'] = acym_getCMSConfig('proxy_user', '').':'.acym_getCMSConfig('proxy_pass', '');
             }
         }
+        $options['verifySsl'] = false;
+        $options['headers'] = $headers;
+        $options['method'] = $method;
+        $options['data'] = $data;
+        $request = acym_makeCurlCall($url, $options);
 
-        try {
-            $options['verify'] = false;
-            if (class_exists('\WpOrg\Requests\Requests')) {
-                $request = \WpOrg\Requests\Requests::request($url, $headers, $method == 'GET' ? $data : json_encode($data), $method, $options);
-            } else {
-                $request = \Requests::request($url, $headers, $method == 'GET' ? $data : json_encode($data), $method, $options);
-            }
-        } catch (\Exception $exception) {
-            acym_logError('Error while calling updateme on path '.$path.' with the message: '.$exception->getMessage(), 'updateme');
+        if (!empty($request['error'])) {
+            acym_logError('Error while calling our API on path '.$path.' with the message: '.$request['error'], 'updateme');
 
             return [];
         }
 
-        if (!is_object($request)) {
-            acym_logError('Non-standard result received when calling updateme on path '.$path, 'updateme');
-
-            return [];
-        }
-
-        $return = json_decode($request->body, true);
+        $return = $request;
         $return['success'] = true;
 
-        if ($request->status_code < 200 || $request->status_code > 299) {
-            acym_logError('Error while calling updateme on path '.$path.' with the status code: '.$request->status_code."\r\n and body".$request->body, 'updateme');
+        if ($request['status_code'] < 200 || $request['status_code'] > 299) {
+            acym_logError('Error while calling updateme on path '.$path.' with the status code: '.$request['status_code']."\r\n and body".json_encode($request), 'updateme');
             $return['success'] = false;
-            $return['status_code'] = $request->status_code;
         }
 
         return $return;
@@ -107,6 +98,7 @@ class UpdatemeHelper extends acymObject
         $newConfig->latestversion = $userInformation['latestversion'];
         $newConfig->expirationdate = $userInformation['expiration'];
         $newConfig->lastlicensecheck = time();
+        $newConfig->isTrial = empty($userInformation['isTrial']) ? 0 : 1;
         $config->save($newConfig);
 
         //check for plugins

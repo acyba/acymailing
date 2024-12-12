@@ -25,8 +25,8 @@ trait Listing
         // Get pagination data
         $mailsPerPage = $pagination->getListLimit();
         $page = $this->getVarFiltersListing('int', 'mails_pagination_page', 1);
-        $mailClass = $this->currentClass;
-        $status = $mailClass::TYPE_STANDARD;
+        $mailClass = new MailClass();
+        $status = MailClass::TYPE_STANDARD;
 
         $requestData = [
             'ordering' => $ordering,
@@ -60,7 +60,7 @@ trait Listing
         $tagClass = new TagClass();
         $mailsData = [
             'allMails' => $matchingMails['elements'],
-            'allTags' => $tagClass->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType(TagClass::TYPE_MAIL),
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
@@ -120,7 +120,13 @@ trait Listing
 
     public function doUploadTemplate()
     {
-        $mailClass = $this->currentClass;
+        acym_checkToken();
+
+        if (!acym_isAdmin() || !acym_isAllowed('mails')) {
+            die('Access denied');
+        }
+
+        $mailClass = new MailClass();
         $mailClass->doupload();
 
         $this->listing();
@@ -135,7 +141,8 @@ trait Listing
 
         if (empty($templateId)) exit;
 
-        $template = $this->currentClass->getOneById($templateId);
+        $mailClass = new MailClass();
+        $template = $mailClass->getOneById($templateId);
 
         // We have all we need for the export, prepare the headers for the download
         $exportHelper = new ExportHelper();
@@ -193,7 +200,7 @@ trait Listing
 
     public function duplicate($templates = [])
     {
-        $mailClass = $this->currentClass;
+        $mailClass = new MailClass();
         $tmplError = [];
         foreach ($templates as $templateId) {
             $oldTemplate = $mailClass->getOneById($templateId);

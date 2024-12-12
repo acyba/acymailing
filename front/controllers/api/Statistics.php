@@ -3,6 +3,7 @@
 namespace AcyMailing\FrontControllers\Api;
 
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Classes\UrlClickClass;
@@ -109,5 +110,28 @@ trait Statistics
         );
 
         $this->sendJsonResponse(array_values($statistics['links_details']));
+    }
+
+
+    public function getFollowupStatistics()
+    {
+        $followupId = acym_getVar('int', 'followupId', 0);
+
+        $followupClass = new FollowupClass();
+        $followup = $followupClass->getOneById($followupId);
+        if (empty($followup)) {
+            $this->sendJsonResponse(['message' => acym_translation('ACYM_FOLLOWUP_NOT_FOUND')], 404);
+        }
+
+        $followupMailId = $followupClass->getEmailsByIds($followup->id);
+
+        $mailStatClass = new MailStatClass();
+
+        $statistics = [];
+        foreach ($followupMailId as $oneMailId) {
+            $statistics[$oneMailId] = $mailStatClass->getOneRowByMailId($oneMailId);
+        }
+
+        $this->sendJsonResponse(array_values($statistics));
     }
 }

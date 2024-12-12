@@ -38,15 +38,18 @@ trait AutoCampaigns
         }
     }
 
-    private function getCountStatusFilterCampaignsAuto($allCampaigns, &$allCountStatus, &$campaignClass)
+    private function getCountStatusFilterCampaignsAuto($allCampaigns, &$allCountStatus)
     {
         $allCountStatus->all = 0;
         $allCountStatus->generated = 0;
 
         if (!empty($allCampaigns)) $allCountStatus->all = count($allCampaigns);
 
-        $generatedCampaigns = $this->currentClass->getAllCampaignsGenerated();
-        if (!empty($generatedCampaigns)) $allCountStatus->generated = count($generatedCampaigns);
+        $campaignClass = new CampaignClass();
+        $generatedCampaigns = $campaignClass->getAllCampaignsGenerated();
+        if (!empty($generatedCampaigns)) {
+            $allCountStatus->generated = count($generatedCampaigns);
+        }
     }
 
     public function summaryGenerated()

@@ -1,3 +1,8 @@
+<?php
+
+use AcyMailing\Classes\TagClass;
+
+?>
 <form id="acym_form" action="<?php echo acym_completeLink(acym_getVar('cmd', 'ctrl')); ?>" method="post" name="acyForm" data-abide novalidate>
 	<input type="hidden" name="id" value="<?php echo empty($data['id']) ? '' : intval($data['id']); ?>">
 	<input type="hidden" name="actionId" value="<?php echo empty($data['action']->id) ? '' : intval($data['action']->id); ?>">
@@ -9,7 +14,7 @@
 
 	<div style="display: none">
         <?php
-        $dataForTemplate = ['allTags' => $data['tagClass']->getAllTagsByType('mail')];
+        $dataForTemplate = ['allTags' => $data['tagClass']->getAllTagsByType(TagClass::TYPE_MAIL)];
         echo acym_modalInclude(
             '',
             ACYM_VIEW.'mails'.DS.'tmpl'.DS.'choose_template_ajax.php',

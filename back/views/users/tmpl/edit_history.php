@@ -4,9 +4,9 @@
 			<button type="button"
 					class="cell small-6 acym__users__history__toggle-button acym__users__history__toggle-button-selected"
 					data-acym-toggle-history="mail"><?php echo acym_translation('ACYM_EMAIL_HISTORY'); ?></button>
-			<button type="button" class="cell small-6 acym__users__history__toggle-button" data-acym-toggle-history="user"><?php echo acym_translation(
-                    'ACYM_USER_HISTORY'
-                ); ?></button>
+			<button type="button" class="cell small-6 acym__users__history__toggle-button" data-acym-toggle-history="user">
+                <?php echo acym_translation('ACYM_USER_HISTORY'); ?>
+			</button>
 		</div>
 		<div class="cell grid-x align-middle" data-acym-type="mail">
             <?php if (empty($data['userMailHistory'])) {
@@ -28,7 +28,7 @@
 					<div class="medium-1 hide-for-small-only cell acym__listing__header__title">
                         <?php echo acym_translation('ACYM_CLICK'); ?>
 					</div>
-					<div class="medium-1 hide-for-small-only cell acym__listing__header__title">
+					<div class="medium-2 hide-for-small-only cell acym__listing__header__title">
                         <?php echo acym_translation('ACYM_BOUNCES'); ?>
 					</div>
 				</div>
@@ -43,8 +43,10 @@
                                 <?php echo empty($oneMailHistory->send_date) || '0000-00-00 00:00:00' == $oneMailHistory->send_date
                                     ? '-'
                                     : acym_tooltip(
-                                        acym_date(acym_getTime($oneMailHistory->send_date), 'd F H:i'),
-                                        acym_date(acym_getTime($oneMailHistory->send_date), acym_getDateTimeFormat())
+                                        [
+                                            'hoveredText' => acym_date(acym_getTime($oneMailHistory->send_date), 'd F H:i'),
+                                            'textShownInTooltip' => acym_date(acym_getTime($oneMailHistory->send_date), acym_getDateTimeFormat()),
+                                        ]
                                     ); ?>
 							</div>
 							<div class="medium-1 cell text-center">
@@ -54,15 +56,17 @@
                                 <?php echo empty($oneMailHistory->open_date)
                                     ? '-'
                                     : acym_tooltip(
-                                        acym_date(acym_getTime($oneMailHistory->open_date), 'd F H:i'),
-                                        acym_date(acym_getTime($oneMailHistory->open_date), acym_getDateTimeFormat())
+                                        [
+                                            'hoveredText' => acym_date(acym_getTime($oneMailHistory->open_date), 'd F H:i'),
+                                            'textShownInTooltip' => acym_date(acym_getTime($oneMailHistory->open_date), acym_getDateTimeFormat()),
+                                        ]
                                     ); ?>
 							</div>
 							<div class="medium-1 cell text-center">
                                 <?php echo $oneMailHistory->click; ?>
 							</div>
-							<div class="medium-1 cell text-center">
-                                <?php echo empty($oneMailHistory->bounce_rule) ? '-' : $oneMailHistory->bounce_rule; ?>
+							<div class="medium-2 cell text-center acym__listing__header__user_history__bounce">
+                                <?php echo empty($oneMailHistory->bounce_rule) ? '-' : $oneMailHistory->ruleName; ?>
 							</div>
 						</div>
                     <?php } ?>
@@ -105,6 +109,15 @@
                                 $langKey = 'ACYM_ACTION_'.strtoupper($oneHistory->action);
                                 $translation = acym_translation($langKey);
                                 echo $translation === $langKey ? $oneHistory->action : $translation;
+                                if ($oneHistory->action === 'unsubscribed' && !empty($oneHistory->unsubscribe_reason)) {
+                                    if (is_numeric($oneHistory->unsubscribe_reason)) {
+                                        $index = $oneHistory->unsubscribe_reason - 1;
+                                        $reason = $data['unsubReasons'][$index] ?? $oneHistory->unsubscribe_reason;
+                                    } else {
+                                        $reason = $oneHistory->unsubscribe_reason;
+                                    }
+                                    echo '<br />'.acym_escape($reason);
+                                }
                                 ?>
 							</div>
 							<div class="cell small-6 medium-3">

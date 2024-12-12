@@ -4,13 +4,10 @@ namespace AcyMailing\Libraries;
 
 class acymClass extends acymObject
 {
-    var $table = '';
+    protected $table;
 
     // Name of the Primary Key
-    var $pkey = '';
-
-    // Name of the namekey field (for non numeric values)
-    var $namekey = '';
+    protected $pkey = '';
 
     // Handle errors
     var $errors = [];
@@ -18,16 +15,13 @@ class acymClass extends acymObject
     // Information messages, mainly for the cron report
     var $messages = [];
 
-    // Column used to humanely identify the element
-    var $nameColumn = 'name';
-
     /**
      * @param array $settings
      *
      * @return array containing "elements[]" which are all the requested element, "total" which is the number of elements.
      * Can also contain "status[]", containing the status of elements. Optional.
      */
-    public function getMatchingElements($settings = [])
+    public function getMatchingElements(array $settings = []): array
     {
         if (!empty($this->table) && !empty($this->pkey)) {
             $query = 'SELECT * FROM #__acym_'.acym_secureDBColumn($this->table);
@@ -128,21 +122,18 @@ class acymClass extends acymObject
         if (empty($elements)) return 0;
         if (!is_array($elements)) $elements = [$elements];
 
-        $column = is_numeric(reset($elements)) ? $this->pkey : $this->namekey;
-
-        //Secure the query
         $escapedElements = [];
         foreach ($elements as $key => $val) {
             $escapedElements[$key] = acym_escapeDB($val);
         }
 
-        if (empty($column) || empty($this->pkey) || empty($this->table) || empty($escapedElements)) {
+        if (empty($this->pkey) || empty($this->table) || empty($escapedElements)) {
             return false;
         }
 
         acym_trigger('onAcymBefore'.ucfirst($this->table).'Delete', [&$elements]);
 
-        $query = 'DELETE FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE '.acym_secureDBColumn($column).' IN ('.implode(',', $escapedElements).')';
+        $query = 'DELETE FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE '.acym_secureDBColumn($this->pkey).' IN ('.implode(',', $escapedElements).')';
         $result = acym_query($query);
 
         if (!$result) return false;

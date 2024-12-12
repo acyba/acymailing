@@ -85,7 +85,12 @@ function acym_radio($options, $name, $selected = null, $attributes = [], $params
         $currentOption .= '<label for="'.$currentId.'" id="'.$currentId.'-lbl" class="'.$extraClass.'">'.acym_translation($label).'</label>';
 
         if (!empty($disabledOptions[$value]['tooltipTxt'])) {
-            $currentOption = acym_tooltip($currentOption, $disabledOptions[$value]['tooltipTxt']);
+            $currentOption = acym_tooltip(
+                [
+                    'hoveredText' => $currentOption,
+                    'textShownInTooltip' => $disabledOptions[$value]['tooltipTxt'],
+                ]
+            );
         }
 
         $return .= $currentOption;
@@ -825,25 +830,28 @@ function acym_cancelButton($text = 'ACYM_CANCEL', $url = '', $class = 'button me
     return '<a href="'.$url.'" class="cell '.$class.' acym__button__cancel">'.acym_translation($text).'</a>';
 }
 
-function acym_tooltip($options, $textShownInTooltip = '', $classContainer = '', $titleShownInTooltip = '', $link = '', $classText = ''): string
+/**
+ * @param array $options
+ *
+ * Options:
+ *    classContainer      => Classes applied on the main container
+ *    hoveredText         => Text shown on the page
+ *    classText           => Classes applied to the hovered text container
+ *    titleShownInTooltip => Title added above the tooltip text
+ *    textShownInTooltip  => Text shown inside the tooltip box
+ *    link                => URL to redirect on click to the hovered text
+ *    classLink           => Classes applied on the link element if any
+ *
+ * @return string
+ */
+function acym_tooltip(array $options): string
 {
-    if (!is_array($options)) {
-        $options = [
-            'hoveredText' => $options,
-            'textShownInTooltip' => $textShownInTooltip,
-            'classContainer' => $classContainer,
-            'titleShownInTooltip' => $titleShownInTooltip,
-            'link' => $link,
-            'classText' => $classText,
-        ];
-    }
-
-    if (empty($options['classContainer'])) $options['classContainer'] = '';
-    if (empty($options['classText'])) $options['classText'] = '';
-    if (empty($options['titleShownInTooltip'])) $options['titleShownInTooltip'] = '';
-    if (empty($options['textShownInTooltip'])) $options['textShownInTooltip'] = '';
-    if (empty($options['hoveredText'])) $options['hoveredText'] = '';
-    if (empty($options['classLink'])) $options['classLink'] = '';
+    if (!isset($options['classContainer'])) $options['classContainer'] = '';
+    if (!isset($options['classText'])) $options['classText'] = '';
+    if (!isset($options['titleShownInTooltip'])) $options['titleShownInTooltip'] = '';
+    if (!isset($options['textShownInTooltip'])) $options['textShownInTooltip'] = '';
+    if (!isset($options['hoveredText'])) $options['hoveredText'] = '';
+    if (!isset($options['classLink'])) $options['classLink'] = '';
 
     if (!empty($options['link'])) {
         $options['hoveredText'] = '<a href="'.$options['link'].'" title="'.acym_escape($options['titleShownInTooltip']).'" target="_blank" class="'.acym_escape(
@@ -862,16 +870,32 @@ function acym_tooltip($options, $textShownInTooltip = '', $classContainer = '', 
     return $tooltip;
 }
 
-function acym_info($tooltipText, $class = '', $containerClass = '', $classText = '', $warningInfo = false): string
+function acym_info($options, $class = '', $containerClass = '', $classText = '', $warningInfo = false): string
 {
-    $classWarning = $warningInfo ? 'acym__tooltip__info__warning' : '';
+    if (!is_array($options)) {
+        $options = [
+            'textShownInTooltip' => $options,
+            'classContainer' => $containerClass,
+            'classIcon' => $class,
+            'classText' => $classText,
+            'isWarning' => $warningInfo,
+        ];
+    }
+
+    if (!isset($options['textShownInTooltip'])) $options['textShownInTooltip'] = '';
+    if (!isset($options['classContainer'])) $options['classContainer'] = '';
+    if (!isset($options['classText'])) $options['classText'] = '';
+    if (!isset($options['classIcon'])) $options['classIcon'] = '';
+    if (!isset($options['isWarning'])) $options['isWarning'] = false;
+
+    $classWarning = $options['isWarning'] ? 'acym__tooltip__info__warning' : '';
 
     return acym_tooltip(
         [
-            'hoveredText' => '<span class="acym__tooltip__info__container '.$class.'"><i class="acym__tooltip__info__icon acymicon-info-circle '.$classWarning.'"></i></span>',
-            'textShownInTooltip' => acym_translation($tooltipText),
-            'classContainer' => 'acym__tooltip__info '.$containerClass,
-            'classText' => $classText,
+            'hoveredText' => '<span class="acym__tooltip__info__container '.$options['classIcon'].'"><i class="acym__tooltip__info__icon acymicon-info-circle '.$classWarning.'"></i></span>',
+            'textShownInTooltip' => acym_translation($options['textShownInTooltip']),
+            'classContainer' => 'acym__tooltip__info '.$options['classContainer'],
+            'classText' => $options['classText'],
         ]
     );
 }
@@ -904,7 +928,12 @@ function acym_sortBy($options, $listing, $default = '', $defaultSortOrdering = '
     );
 
     $tooltipText = $orderingSortOrder == 'asc' ? acym_translation('ACYM_SORT_ASC') : acym_translation('ACYM_SORT_DESC');
-    $display .= acym_tooltip('<i class="'.$classSortOrder.' acym__listing__ordering__sort-order" aria-hidden="true"></i>', $tooltipText);
+    $display .= acym_tooltip(
+        [
+            'hoveredText' => '<i class="'.$classSortOrder.' acym__listing__ordering__sort-order" aria-hidden="true"></i>',
+            'textShownInTooltip' => $tooltipText,
+        ]
+    );
 
     $display .= '<input type="hidden" id="acym__listing__ordering__sort-order--input" name="'.$listing.'_ordering_sort_order" value="'.$orderingSortOrder.'">';
 

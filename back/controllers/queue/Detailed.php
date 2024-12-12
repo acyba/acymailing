@@ -42,7 +42,7 @@ trait Detailed
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
-            'allTags' => $tagClass->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType(TagClass::TYPE_MAIL),
             'workflowHelper' => new WorkflowHelper(),
         ];
 

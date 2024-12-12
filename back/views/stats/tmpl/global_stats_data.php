@@ -32,7 +32,12 @@
 			<div class="cell grid-x auto margin-left-1">
                 <?php
                 foreach ($data['lists'] as $list) {
-                    echo acym_tooltip('<i style="color: '.$list->color.'" class="acym_subscription acymicon-circle"></i>', $list->name);
+                    echo acym_tooltip(
+                        [
+                            'hoveredText' => '<i style="color: '.$list->color.'" class="acym_subscription acymicon-circle"></i>',
+                            'textShownInTooltip' => $list->name,
+                        ]
+                    );
                 }
                 ?>
 			</div>
@@ -60,16 +65,43 @@
                     $data['mail']->percentageSent,
                     'delivery',
                     '',
-                    acym_tooltip(acym_translation('ACYM_SUCCESSFULLY_SENT'), $data['mail']->allSent)
+                    acym_tooltip(
+                        [
+                            'hoveredText' => acym_translation('ACYM_SUCCESSFULLY_SENT'),
+                            'textShownInTooltip' => $data['mail']->allSent,
+                        ]
+                    )
                 ); ?>
 			</div>
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                 <?php
-                echo acym_roundChart('', $data['mail']->percentageOpen, 'open', '', acym_tooltip(acym_translation('ACYM_OPEN_RATE'), $data['mail']->allOpen)); ?>
+                echo acym_roundChart(
+                    '',
+                    $data['mail']->percentageOpen,
+                    'open',
+                    '',
+                    acym_tooltip(
+                        [
+                            'hoveredText' => acym_translation('ACYM_OPEN_RATE'),
+                            'textShownInTooltip' => $data['mail']->allOpen,
+                        ]
+                    )
+                ); ?>
 			</div>
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                 <?php
-                echo acym_roundChart('', $data['mail']->percentageClick, 'click', '', acym_tooltip(acym_translation('ACYM_CLICK_RATE'), $data['mail']->allClick)); ?>
+                echo acym_roundChart(
+                    '',
+                    $data['mail']->percentageClick,
+                    'click',
+                    '',
+                    acym_tooltip(
+                        [
+                            'hoveredText' => acym_translation('ACYM_CLICK_RATE'),
+                            'textShownInTooltip' => $data['mail']->allClick,
+                        ]
+                    )
+                ); ?>
 			</div>
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                 <?php
@@ -78,7 +110,12 @@
                     $data['mail']->percentageBounce,
                     'bounce',
                     '',
-                    acym_tooltip(acym_translation('ACYM_BOUNCE_RATE'), $data['mail']->allBounce)
+                    acym_tooltip(
+                        [
+                            'hoveredText' => acym_translation('ACYM_BOUNCE_RATE'),
+                            'textShownInTooltip' => $data['mail']->allBounce,
+                        ]
+                    )
                 ); ?>
 			</div>
             <?php if (!empty($data['selectedMailid'])) { ?>
@@ -89,7 +126,12 @@
                         $data['mail']->percentageUnsub,
                         'unsubscribe',
                         '',
-                        acym_tooltip(acym_translation('ACYM_UNSUBSCRIBE_RATE'), $data['mail']->allUnsub)
+                        acym_tooltip(
+                            [
+                                'hoveredText' => acym_translation('ACYM_UNSUBSCRIBE_RATE'),
+                                'textShownInTooltip' => $data['mail']->allUnsub,
+                            ]
+                        )
                     ); ?>
 				</div>
             <?php } ?>

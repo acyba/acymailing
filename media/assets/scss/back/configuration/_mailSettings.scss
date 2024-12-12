@@ -1,0 +1,163 @@
+#available_ports {
+    max-width: 900px;
+
+    a {
+        color: cornflowerblue;
+        text-decoration: none;
+    }
+}
+
+#dkim_config {
+    input {
+        font-size: 13px;
+
+        &[type="text"] {
+            display: inline;
+            width: 200px;
+            height: 32px;
+
+            &#dkim_domain {
+                width: 200px;
+            }
+
+            &#dkim_key {
+                width: 120px;
+                font-size: 10px;
+            }
+
+            &#dkim_value {
+                width: 220px;
+                font-size: 10px;
+            }
+        }
+    }
+
+    textarea {
+        font-size: 13px;
+        height: 200px;
+        max-width: 480px;
+    }
+}
+
+.cname-name, .cname-value {
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.acym__configuration__sending__method-icon, .acym__sending__methods__validate_domain-delete, .acym__sending__methods__unverifiedDomain-icon {
+    font-size: 1.2em;
+
+    &.domain_selected {
+        color: $color-palette-cyan;
+    }
+}
+
+#acymailer_settings {
+    .acym__sending__methods__one__settings {
+        .acym__config__acymailer__warning {
+            i {
+                margin-right: .5rem;
+            }
+        }
+    }
+}
+
+.acym__config__acymailer__cname__modal__container {
+    height: auto !important;
+
+    .acym__config__acymailer__cname__modal {
+        .acym__config__acymailer__cname__modal__link {
+            margin-left: .3rem;
+            text-decoration: underline;
+        }
+    }
+}
+
+#acymailer_settings, .acym__config__acymailer__cname__modal {
+    .acym__listing {
+        .acym__listing__header__title__container, .acym__listing__title__container {
+            margin-left: 0;
+        }
+
+        .acym__listing__header__title {
+            padding: 0;
+        }
+
+        .acym__listing__row {
+            .acym__config__acymailer__domain--delete {
+                margin-left: .5rem;
+            }
+
+            i {
+                font-size: 22px;
+            }
+        }
+    }
+}
+
+.acym__config__acymailer__rate-status__icon {
+    font-size: 15px;
+    margin-left: 10px;
+}
+
+.acym__acymailer__domain_containers {
+    display: flex;
+    justify-content: space-between;
+}
+
+#acym__acymailer__unverifiedDomains {
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 6px rgb(218, 218, 218);
+    border: 0;
+
+    .acym__acymailer__oneSuggestion {
+        padding: 10px 10px;
+    }
+
+    .acym__acymailer__suggestion_selected {
+        background-color: #0079d3;
+        color: white;
+        cursor: pointer;
+    }
+}
+
+#acymailer_domain_error {
+    color: red;
+}
+
+#acym__configuration__sending__method_addDomain_submit {
+    height: 40px;
+}
+
+#acym__configuration__acymailer__add__error {
+    display: none;
+}
+
+#acymailer_info_icon {
+    color: map-get($foundation-palette, primary-hot);
+    margin-right: 0.5rem;
+    font-size: 17px;
+}
+
+#activate_ass_method_notice {
+    background-color: $light-blue;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+#acym__configuration__acymailer__verify-license {
+    margin-left: 20px;
+}
+
+.acym__configuration__acymailer__check-license {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+}

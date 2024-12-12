@@ -42,14 +42,14 @@ trait StatisticsAutomationFilters
             FROM #__acym_mail AS mail 
             LEFT JOIN #__acym_campaign AS campaign ON mail.`id` = campaign.`mail_id` 
             WHERE (mail.`subject` LIKE '.acym_escapeDB('%'.$search.'%').' OR mail.`name` LIKE '.acym_escapeDB('%'.$search.'%').') 
-                AND mail.`type` != '.acym_escapeDB($mailClass::TYPE_TEMPLATE).'
+                AND mail.`type` != '.acym_escapeDB(MailClass::TYPE_TEMPLATE).'
             ORDER BY mail.`name` ASC'
         );
 
         $mails = $mailClass->decode($mails);
 
         foreach ($mails as $oneMail) {
-            $name = in_array($oneMail->type, $mailClass::TYPES_NO_NAME) ? $oneMail->subject : $oneMail->name;
+            $name = in_array($oneMail->type, MailClass::TYPES_NO_NAME) ? $oneMail->subject : $oneMail->name;
             $campaignId = empty($oneMail->campaignId) ? '' : ' ['.acym_translation('ACYM_ID').' '.$oneMail->campaignId.']';
             $return[] = [$oneMail->id, $name.$campaignId];
         }

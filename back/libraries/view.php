@@ -128,8 +128,14 @@ class acymView extends acymObject
 
         if ($outsideForm) echo '</form>';
 
+        if (ACYM_CMS !== 'wordpress' || !acym_isAdmin()) {
+            return;
+        }
+
         $remind = json_decode($this->config->get('remindme', '[]'));
-        if (ACYM_CMS == 'wordpress' && !in_array('reviews', $remind) && acym_isAdmin() && $controller->name != 'language') {
+        $installationDate = $this->config->get('install_date', time());
+
+        if (!in_array('reviews', $remind) && !in_array($controller->name, ['dashboard', 'language']) && $installationDate < time() - 7 * 86400) {
             echo '<div id="acym__reviews__footer" style="margin: 0 0 30px 30px;">';
             echo acym_translationSprintf(
                 'ACYM_REVIEW_FOOTER',

@@ -2,9 +2,9 @@
 Contributors: acyba
 Tags: newsletter, integration, acymailing, woocommerce
 Requires at least: 4.7
-Tested up to: 6.5.2
-Stable tag: 5.8
-Requires PHP: 7.2.0
+Tested up to: 6.7.1
+Stable tag: 6.1
+Requires PHP: 7.4.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

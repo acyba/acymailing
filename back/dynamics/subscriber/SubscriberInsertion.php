@@ -5,17 +5,6 @@ use AcyMailing\Classes\FieldClass;
 
 trait SubscriberInsertion
 {
-    /**
-     * Array of fields loaded to have the right option value
-     */
-    var $fields = [];
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->pluginDescription->name = acym_translation('ACYM_SUBSCRIBER');
-    }
-
     public function dynamicText($mailId)
     {
         return $this->pluginDescription;
@@ -25,19 +14,19 @@ trait SubscriberInsertion
     {
         ?>
 		<script type="text/javascript">
-            var selectedSubscriberDText;
+            let selectedSubscriberDText;
 
             function changeSubscriberTag(tagname, element) {
                 if (!tagname) return;
 
                 selectedSubscriberDText = tagname;
 
-                var baseTag = '<?php echo $this->name; ?>';
-                var $inputType = jQuery('input[name="typeInfoSubscriber"]:checked');
+                let baseTag = '<?php echo $this->name; ?>';
+                const $inputType = jQuery('input[name="typeInfoSubscriber"]:checked');
                 if ($inputType.length > 0 && $inputType.val() === 'current') {
                     baseTag = 'user';
                 }
-                var finalTag = '{' + baseTag + ':' + tagname;
+                let finalTag = '{' + baseTag + ':' + tagname;
 
                 if ($inputType.length > 0 && $inputType.val() !== 'current') {
                     finalTag += '|info:' + $inputType.val() + '';
@@ -76,7 +65,7 @@ trait SubscriberInsertion
         $descriptions['send_date'] = acym_translation('ACYM_USER_SEND_DATE');
 
         echo '<div class="acym__popup__listing text-center grid-x">';
-        if (!empty($isAutomationAdmin) || ($mailType == 'notification' && $typeNotif != 'acy_confirm')) {
+        if (!empty($isAutomationAdmin) || ($mailType === 'notification' && $typeNotif !== 'acy_confirm')) {
             $textTrigger = $mailType == 'notification' ? 'ACYM_USER_TRIGGERING_NOTIFICATION' : 'ACYM_USER_TRIGGERING_AUTOMATION';
             $typeinfo = [];
             $typeinfo[] = acym_selectOption('receiver', 'ACYM_RECEIVER_INFORMATION');
@@ -88,8 +77,7 @@ trait SubscriberInsertion
                 ['onclick' => 'changeSubscriberTag(selectedSubscriberDText, jQuery(this))']
             );
         }
-        echo '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_RECEIVER_INFORMATION').'</h1>
-					';
+        echo '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_RECEIVER_INFORMATION').'</h1>';
 
         $others = [];
         $others['name|part:first|ucfirst'] = ['name' => acym_translation('ACYM_USER_FIRSTPART'), 'desc' => acym_translation('ACYM_USER_FIRSTPART_DESC')];

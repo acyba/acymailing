@@ -46,7 +46,7 @@ class FrontstatsController extends acymController
                 $openedWith = '';
                 if (isset($_SERVER['HTTP_USER_AGENT'])) {
                     $userAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
-                    $allDevices = array_merge($userStatClass::DESKTOP_DEVICES, $userStatClass::MOBILE_DEVICES);
+                    $allDevices = array_merge(UserStatClass::DESKTOP_DEVICES, UserStatClass::MOBILE_DEVICES);
 
                     foreach ($allDevices as $oneDeviceKey => $oneDevice) {
                         if (preg_match('/'.$oneDeviceKey.'/', $userAgent)) {
@@ -85,7 +85,7 @@ class FrontstatsController extends acymController
 
         ob_end_clean();
 
-        $picture = ACYM_MEDIA_RELATIVE.'images/statpicture.png';
+        $picture = ACYM_MEDIA_RELATIVE.'images/editor/statpicture.png';
 
         $picture = ltrim(str_replace(['\\', '/'], DS, $picture), DS);
 

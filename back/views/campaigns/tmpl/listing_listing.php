@@ -150,8 +150,10 @@
                                 if ($counter >= 5 && $subscriptionsCount !== 6) $classes .= ' acym_subscription_more';
 
                                 echo acym_tooltip(
-                                    '<i class="'.$classes.'" style="color:'.acym_escape($list->color).'"></i>',
-                                    acym_escape($list->name)
+                                    [
+                                        'hoveredText' => '<i class="'.$classes.'" style="color:'.acym_escape($list->color).'"></i>',
+                                        'textShownInTooltip' => acym_escape($list->name),
+                                    ]
                                 );
                                 $counter++;
                             }
@@ -191,8 +193,10 @@
                                         'ACYM_CANCEL_SCHEDULING'
                                     ).'</span></div>';
                                 echo '<div class="cell acym__campaign__listing__status__controls"><div class="grid-x text-center"><div class="cell auto"></div>'.acym_tooltip(
-                                        $target,
-                                        acym_translation('ACYM_STOP_THE_SCHEDULING_AND_SET_CAMPAIGN_AS_DRAFT')
+                                        [
+                                            'hoveredText' => $target,
+                                            'textShownInTooltip' => acym_translation('ACYM_STOP_THE_SCHEDULING_AND_SET_CAMPAIGN_AS_DRAFT'),
+                                        ]
                                     ).'<div class="cell auto"></div></div></div>';
                                 // Is an activated auto campaign
                             } elseif ($data['statusAuto'] === $campaign->sending_type && !$campaign->draft) {
@@ -201,11 +205,13 @@
 
                                 $nextTrigger = empty($campaign->sending_params['trigger_text']) ? '' : $campaign->sending_params['trigger_text'];
                                 echo acym_tooltip(
-                                    '<div class="cell acym__campaign__status__status acym__background-color__purple">
+                                    [
+                                        'hoveredText' => '<div class="cell acym__campaign__status__status acym__background-color__purple">
 										<span class="acym__color__white">'.$nextTrigger.'</span>
 									</div>',
-                                    $tooltip,
-                                    'cell'
+                                        'textShownInTooltip' => $tooltip,
+                                        'classContainer' => 'cell',
+                                    ]
                                 );
 
                                 $target = '<div class="acym__campaign__listing__automatic__deactivate grid-x cell xlarge-shrink acym_vcenter" data-campaignid="'.acym_escape(
@@ -301,9 +307,12 @@
                                 $tooltip = 'ACYM_INVISIBLE';
                             }
                             echo acym_tooltip(
-                                '<i data-acy-table="campaign" data-acy-field="visible" data-acy-elementid="'.acym_escape($campaign->id).'" class="acym_toggleable '.$class.'"></i>',
-                                acym_translation($tooltip),
-                                null
+                                [
+                                    'hoveredText' => '<i data-acy-table="campaign" data-acy-field="visible" data-acy-elementid="'.acym_escape(
+                                            $campaign->id
+                                        ).'" class="acym_toggleable '.$class.'"></i>',
+                                    'textShownInTooltip' => acym_translation($tooltip),
+                                ]
                             );
                             ?>
 						</div>

@@ -6,7 +6,6 @@ require ACYM_BACK.'vendor'.DS.'autoload.php';
 include __DIR__.DS.'joomla'.DS.'language.php';
 include __DIR__.DS.'joomla'.DS.'database.php';
 include __DIR__.DS.'joomla'.DS.'date.php';
-include __DIR__.DS.'joomla'.DS.'fields.php';
 include __DIR__.DS.'joomla'.DS.'file.php';
 include __DIR__.DS.'joomla'.DS.'form.php';
 include __DIR__.DS.'joomla'.DS.'security.php';

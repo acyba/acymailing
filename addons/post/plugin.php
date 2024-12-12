@@ -7,6 +7,28 @@ class plgAcymPost extends acymPlugin
 {
     private $groupedByCategory = false;
     private $currentCategory = null;
+    private $acfFields = [];
+    private $handledFieldTypes = [
+        'text',
+        'textarea',
+        'number',
+        'range',
+        'email',
+        'url',
+        'password',
+        'image',
+        'file',
+        'select',
+        'checkbox',
+        'radio',
+        'true_false',
+        'date_picker',
+        'date_time_picker',
+        'time_picker',
+        'color_picker',
+        'button_group',
+        'link',
+    ];
 
     public function __construct()
     {
@@ -18,7 +40,7 @@ class plgAcymPost extends acymPlugin
         $this->pluginDescription->icon = '<i class="cell acymicon-wordpress"></i>';
         $this->pluginDescription->icontype = 'raw';
 
-        if ($this->installed && ACYM_CMS == 'wordpress') {
+        if (ACYM_CMS === 'wordpress') {
             $this->displayOptions = [
                 'title' => ['ACYM_TITLE', true],
                 'image' => ['ACYM_FEATURED_IMAGE', true],
@@ -30,14 +52,31 @@ class plgAcymPost extends acymPlugin
                 'readmore' => ['ACYM_READ_MORE', false],
             ];
 
-            $this->initCustomView();
+            $this->initCustomView(true);
 
             $this->settings = [
                 'custom_view' => [
                     'type' => 'custom_view',
-                    'tags' => array_merge($this->displayOptions, $this->replaceOptions, $this->elementOptions),
+                    'tags' => array_merge($this->displayOptions, $this->replaceOptions, $this->customOptions, $this->elementOptions),
                 ],
             ];
+        }
+    }
+
+    public function initCustomOptionsCustomView()
+    {
+        $customFields = acym_loadObjectList('SELECT post_title, post_excerpt, post_content FROM #__posts WHERE post_status = "publish" AND post_type = "acf-field"');
+        if (empty($customFields)) {
+            return;
+        }
+
+        foreach ($customFields as $customField) {
+            $settings = unserialize($customField->post_content);
+            if (!in_array($settings['type'], $this->handledFieldTypes)) {
+                continue;
+            }
+
+            $this->customOptions[$customField->post_excerpt] = [$customField->post_title];
         }
     }
 
@@ -105,50 +144,73 @@ class plgAcymPost extends acymPlugin
 
         $displayOptions = [
             [
-                'title' => 'ACYM_FEATURED_IMAGE_SIZE',
-                'type' => 'select',
-                'name' => 'size',
-                'options' => $imageFeaturedSize,
-                'default' => 'full',
-            ],
-            [
                 'title' => 'ACYM_DISPLAY',
                 'type' => 'checkbox',
                 'name' => 'display',
                 'options' => $this->displayOptions,
             ],
-            [
-                'title' => 'ACYM_CLICKABLE_TITLE',
-                'type' => 'boolean',
-                'name' => 'clickable',
-                'default' => true,
-            ],
-            [
-                'title' => 'ACYM_CLICKABLE_IMAGE',
-                'type' => 'boolean',
-                'name' => 'clickableimg',
-                'default' => false,
-            ],
-            [
-                'title' => 'ACYM_REPLACE_SHORTCODES',
-                'type' => 'boolean',
-                'name' => 'replaceshortcode',
-                'default' => false,
-            ],
-            [
-                'title' => 'ACYM_TRUNCATE',
-                'type' => 'intextfield',
-                'isNumber' => 1,
-                'name' => 'wrap',
-                'text' => 'ACYM_TRUNCATE_AFTER',
-                'default' => 0,
-            ],
-            [
-                'title' => 'ACYM_DISPLAY_PICTURES',
-                'type' => 'pictures',
-                'name' => 'pictures',
-            ],
         ];
+
+        $this->initAcfData();
+        if (!empty($this->acfFields)) {
+            $customFieldsOptions = [];
+            foreach ($this->acfFields as $field) {
+                if (!in_array($field['type'], $this->handledFieldTypes)) {
+                    continue;
+                }
+                $customFieldsOptions[$field['ID']] = [$field['label'], false];
+            }
+            $displayOptions[] = [
+                'title' => 'ACF',
+                'type' => 'checkbox',
+                'name' => 'acf',
+                'options' => $customFieldsOptions,
+            ];
+        }
+
+        $displayOptions = array_merge(
+            $displayOptions,
+            [
+                [
+                    'title' => 'ACYM_FEATURED_IMAGE_SIZE',
+                    'type' => 'select',
+                    'name' => 'size',
+                    'options' => $imageFeaturedSize,
+                    'default' => 'full',
+                ],
+                [
+                    'title' => 'ACYM_CLICKABLE_TITLE',
+                    'type' => 'boolean',
+                    'name' => 'clickable',
+                    'default' => true,
+                ],
+                [
+                    'title' => 'ACYM_CLICKABLE_IMAGE',
+                    'type' => 'boolean',
+                    'name' => 'clickableimg',
+                    'default' => false,
+                ],
+                [
+                    'title' => 'ACYM_REPLACE_SHORTCODES',
+                    'type' => 'boolean',
+                    'name' => 'replaceshortcode',
+                    'default' => false,
+                ],
+                [
+                    'title' => 'ACYM_TRUNCATE',
+                    'type' => 'intextfield',
+                    'isNumber' => 1,
+                    'name' => 'wrap',
+                    'text' => 'ACYM_TRUNCATE_AFTER',
+                    'default' => 0,
+                ],
+                [
+                    'title' => 'ACYM_DISPLAY_PICTURES',
+                    'type' => 'pictures',
+                    'name' => 'pictures',
+                ],
+            ]
+        );
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
         echo $this->displaySelectionZone($zoneContent);
@@ -219,7 +281,12 @@ class plgAcymPost extends acymPlugin
         $rows = $this->getElements();
         foreach ($rows as $i => $row) {
             if (str_replace(['wp:core-embed', 'wp:shortcode'], '', $row->post_content) !== $row->post_content) {
-                $rows[$i]->post_title = acym_tooltip('<i class="acymicon-exclamation-triangle"></i>', acym_translation('ACYM_SPECIAL_CONTENT_WARNING')).$rows[$i]->post_title;
+                $rows[$i]->post_title = acym_tooltip(
+                        [
+                            'hoveredText' => '<i class="acymicon-exclamation-triangle"></i>',
+                            'textShownInTooltip' => acym_translation('ACYM_SPECIAL_CONTENT_WARNING'),
+                        ]
+                    ).$rows[$i]->post_title;
             }
         }
 
@@ -249,6 +316,7 @@ class plgAcymPost extends acymPlugin
 
     public function replaceContent(&$email)
     {
+        $this->initAcfData();
         $this->replaceMultiple($email);
         $this->replaceOne($email);
     }
@@ -405,7 +473,30 @@ class plgAcymPost extends acymPlugin
         $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_escape(
                 acym_translation('ACYM_READ_MORE')
             ).'</span></a>';
-        if (in_array('readmore', $tag->display)) $afterArticle .= $varFields['{readmore}'];
+        if (in_array('readmore', $tag->display)) {
+            $afterArticle .= $varFields['{readmore}'];
+        }
+
+        if (!empty($this->acfFields)) {
+            $tag->acf = empty($tag->acf) ? [] : explode(',', $tag->acf);
+
+            foreach ($this->acfFields as $field) {
+                $varFields['{'.$field['name'].'}'] = acf_get_value($tag->id, $field);
+
+                if (empty($varFields['{'.$field['name'].'}']) && (!is_string($varFields['{'.$field['name'].'}']) || strlen($varFields['{'.$field['name'].'}']) === 0)) {
+                    continue;
+                }
+
+                $varFields['{'.$field['name'].'}'] = $this->getFormattedAcfFieldValue($varFields['{'.$field['name'].'}'], $tag->id, $field);
+
+                if (in_array($field['ID'], $tag->acf) && strlen($varFields['{'.$field['name'].'}']) > 0) {
+                    $customFields[] = [
+                        $varFields['{'.$field['name'].'}'],
+                        acf_get_field_label($field),
+                    ];
+                }
+            }
+        }
 
         $format = new stdClass();
         $format->tag = $tag;
@@ -440,7 +531,15 @@ class plgAcymPost extends acymPlugin
         return $categoryTitle.$this->finalizeElementFormat($result, $tag, $varFields);
     }
 
-    public function getPosts($ajax = true, $postPerPage = 20)
+    /**
+     * Used in Gutenberg block and elementor
+     *
+     * @param bool $ajax
+     * @param int  $postPerPage
+     *
+     * @return array|array[]|void
+     */
+    public function getPosts(bool $ajax = true, int $postPerPage = 20)
     {
         $return = $ajax ? [] : [0 => [0, acym_translation('ACYM_SELECT_AN_ARTICLE')]];
 
@@ -500,5 +599,65 @@ class plgAcymPost extends acymPlugin
         }
 
         return intval($elementId);
+    }
+
+    private function initAcfData(): void
+    {
+        if (!acym_isExtensionActive('advanced-custom-fields/acf.php') || !function_exists('acf_get_field_groups')) {
+            return;
+        }
+
+        $fieldGroups = acf_get_field_groups(['post_type' => 'post']);
+        foreach ($fieldGroups as $fieldGroup) {
+            if (empty($fieldGroup['active'])) {
+                continue;
+            }
+
+            $this->acfFields = array_merge($this->acfFields, acf_get_fields($fieldGroup));
+        }
+    }
+
+    private function getFormattedAcfFieldValue($value, $postId, $field): string
+    {
+        $value = acf_format_value($value, $postId, $field);
+        if ($field['type'] === 'email') {
+            $value = '<a href="mailto:'.$value.'">'.$value.'</a>';
+        } elseif ($field['type'] === 'url') {
+            $value = '<a href="'.$value.'" target="_blank">'.$value.'</a>';
+        } elseif ($field['type'] === 'link') {
+            $value = '<a href="'.$value['url'].'" target="_blank">'.(empty($value['title']) ? $value['url'] : $value['title']).'</a>';
+        } elseif ($field['type'] === 'image') {
+            if (empty($value['link'])) {
+                $value = '';
+            } else {
+                $alt = acym_escape($value['alt']);
+
+                $value = '<img alt="'.$alt.'" src="'.$value['link'].'" />';
+            }
+        } elseif (in_array($field['type'], ['checkbox', 'select'])) {
+            if (is_array($value)) {
+                $value = implode(', ', $value);
+            }
+        } elseif ($field['type'] === 'true_false') {
+            $value = empty($value) ? acym_translation('ACYM_NO') : acym_translation('ACYM_YES');
+        } elseif ($field['type'] === 'file') {
+            if (empty($value['link'])) {
+                $value = '';
+            } else {
+                $value = '<a href="'.$value['link'].'" target="_blank">'.acym_escape(
+                        $value['filename']
+                    ).'</a>';
+            }
+        } elseif ($field['type'] === 'textarea') {
+            $value = nl2br($value);
+        } elseif (in_array($field['type'], ['time_picker', 'date_picker', 'date_time_picker'])) {
+            if ($field['display_format'] !== $field['return_format']) {
+                $value = date($field['display_format'], strtotime($value));
+            }
+        } else {
+            $value = acym_escape($value);
+        }
+
+        return $value;
     }
 }

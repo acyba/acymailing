@@ -8,13 +8,19 @@ use AcyMailing\Libraries\acymClass;
 
 class ListClass extends acymClass
 {
-    var $table = 'list';
-    var $pkey = 'id';
     const LIST_TYPE_STANDARD = 'standard';
     const LIST_TYPE_FRONT = 'front';
     const LIST_TYPE_FOLLOWUP = 'followup';
 
-    public function getMatchingElements($settings = [])
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'list';
+        $this->pkey = 'id';
+    }
+
+    public function getMatchingElements(array $settings = []): array
     {
         $columns = 'list.*';
         if (!empty($settings['columns'])) {
@@ -431,12 +437,16 @@ class ListClass extends acymClass
             unset($list->tags);
         }
 
+        $oldList = null;
+
         if (empty($list->id)) {
             if (empty($list->cms_user_id)) {
                 $list->cms_user_id = acym_currentUserId();
             }
 
             $list->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
+        } else {
+            $oldList = $this->getOneById($list->id);
         }
 
         if (!empty($list->translation)) {
@@ -459,11 +469,25 @@ class ListClass extends acymClass
             $list->access = '';
         }
 
+        if (empty($list->id)) {
+            acym_trigger('onAcymBeforeListCreate', [&$list]);
+        } else {
+            acym_trigger('onAcymBeforeListModify', [&$list]);
+        }
+
         $listID = parent::save($list);
 
         if (!empty($listID) && isset($tags)) {
             $tagClass = new TagClass();
-            $tagClass->setTags('list', $listID, $tags);
+            $tagClass->setTags(TagClass::TYPE_LIST, intval($listID), $tags);
+        }
+
+        $list->id = $listID;
+
+        if (is_null($oldList)) {
+            acym_trigger('onAcymAfterListCreate', [&$list]);
+        } else {
+            acym_trigger('onAcymAfterListModify', [&$list, &$oldList]);
         }
 
         return $listID;
@@ -875,8 +899,9 @@ class ListClass extends acymClass
 
     public function setWelcomeUnsubEmail($listIds, $mailId, $type)
     {
-        $mailClass = new MailClass();
-        if (!in_array($type, [$mailClass::TYPE_WELCOME, $mailClass::TYPE_UNSUBSCRIBE]) || empty($mailId)) return false;
+        if (!in_array($type, [MailClass::TYPE_WELCOME, MailClass::TYPE_UNSUBSCRIBE]) || empty($mailId)) {
+            return false;
+        }
 
         $column = acym_escape($type).'_id';
         $columnsList = acym_getColumns('list');

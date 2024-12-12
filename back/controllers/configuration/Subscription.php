@@ -74,4 +74,10 @@ trait Subscription
 
         acym_sendAjaxResponse('', ['notificationCenter' => $helperHeader->getNotificationCenter()]);
     }
+
+    private function loadSurveyAnswers(&$data)
+    {
+        $surveyTexts = $this->config->get('unsub_survey', '{}');
+        $data['surveyAnswers'] = json_decode($surveyTexts, true);
+    }
 }

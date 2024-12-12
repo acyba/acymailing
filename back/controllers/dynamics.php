@@ -11,47 +11,12 @@ class DynamicsController extends acymController
 {
     public function replaceDummy()
     {
-        $mailClass = new MailClass();
         $mailId = acym_getVar('int', 'mailId', 0);
-        if (!empty($mailId)) {
-            $email = $mailClass->getOneById($mailId);
-        }
+        $code = acym_getVar('string', 'code', '', '', ACYM_ALLOWRAW);
+        $previewBody = acym_getVar('string', 'previewBody', '', '', ACYM_ALLOWRAW);
 
-        if (empty($email)) {
-            $email = new \stdClass();
-            $email->id = 0;
-            $email->name = '';
-            $email->subject = '';
-            $email->from_name = '';
-            $email->from_email = '';
-            $email->reply_to_name = '';
-            $email->reply_to_email = '';
-            $email->bcc = '';
-            $email->links_language = '';
-        }
-
-        $language = acym_getVar('string', 'language', 'main');
-        if (!empty($language)) {
-            if ($language === 'main') {
-                $language = $this->config->get('multilingual_default', ACYM_DEFAULT_LANGUAGE);
-            }
-            $email->links_language = $language;
-        }
-
-
-        $email->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
-        $email->creator_id = acym_currentUserId();
-        $email->thumbnail = '';
-        $email->drag_editor = '1';
-        $email->type = $mailClass::TYPE_STANDARD;
-        $email->settings = '';
-        $email->stylesheet = '';
-        $email->attachments = '';
-
-        // This is only the dynamic text/content code
-        $email->body = acym_getVar('string', 'code', '', '', ACYM_ALLOWRAW);
-        // This is the whole editor current content
-        $email->previewBody = acym_getVar('string', 'previewBody', '', '', ACYM_ALLOWRAW);
+        $pluginHelper = new PluginHelper();
+        $email = $pluginHelper->createDummyEmailObject($mailId, $code, $previewBody);
 
         @acym_trigger('replaceContent', [&$email, false]);
 
@@ -88,11 +53,16 @@ class DynamicsController extends acymController
         $trigger = acym_getVar('cmd', 'trigger', '');
         if (empty($plugin) || empty($trigger)) exit;
 
+        $triggerParams = $this->getTriggerParams($plugin, $trigger);
+        acym_trigger($trigger, $triggerParams, $plugin);
+        exit;
+    }
+
+    private function getTriggerParams(string $plugin, string $trigger): array
+    {
         $shortcode = acym_getVar('string', 'shortcode', '');
-
-        $defaultValues = new \stdClass();
-
         $shortcode = trim($shortcode, '{}');
+
         $separatorPosition = strpos($shortcode, ':');
         if (false !== $separatorPosition) {
             $pluginSubType = substr($shortcode, 0, $separatorPosition);
@@ -100,19 +70,24 @@ class DynamicsController extends acymController
             $pluginHelper = new PluginHelper();
             $defaultValues = $pluginHelper->extractTag($shortcode);
             $defaultValues->defaultPluginTab = $pluginSubType;
+
+            return [$defaultValues];
         }
 
-        if (empty((array)$defaultValues) && $trigger === 'insertionOptions') {
+        if ($trigger === 'insertionOptions') {
             $rawDefaultValues = $this->config->get('dcontent_default_'.$plugin);
 
             if (!empty($rawDefaultValues)) {
                 $defaultValues = json_decode($rawDefaultValues, true);
                 unset($defaultValues['id']);
+                unset($defaultValues['from']);
+                unset($defaultValues['to']);
                 $defaultValues = (object)$defaultValues;
+
+                return [$defaultValues];
             }
         }
 
-        acym_trigger($trigger, [$defaultValues], $plugin);
-        exit;
+        return [];
     }
 }

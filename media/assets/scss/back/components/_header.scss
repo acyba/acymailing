@@ -16,7 +16,7 @@
         display: block;
         width: 35px;
         height: 35px;
-        background: url(../images/logo_acym.svg);
+        background: url(../images/logos/logo_acym.svg);
         background-repeat: no-repeat;
     }
 
@@ -97,7 +97,7 @@
             color: var(--color-button-header-icon-hover);
             background-color: var(--bg-color-button-header-hover);
 
-            i {
+            > i {
                 color: var(--color-button-header-icon-hover);
                 transition: .3s color;
             }

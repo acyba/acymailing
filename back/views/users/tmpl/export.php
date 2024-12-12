@@ -146,8 +146,10 @@
             $exportButton .= acym_translation('ACYM_EXPORT_SUBSCRIBERS');
             $exportButton .= '</button>';
             echo acym_tooltip(
-                $exportButton,
-                acym_translation('ACYM_DATA_WILL_EXPORT_CSV_FORMAT')
+                [
+                    'hoveredText' => $exportButton,
+                    'textShownInTooltip' => acym_translation('ACYM_DATA_WILL_EXPORT_CSV_FORMAT'),
+                ]
             );
             ?>
 			<div class="cell hide-for-small-only medium-auto"></div>

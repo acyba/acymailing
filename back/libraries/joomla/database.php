@@ -6,6 +6,10 @@ function acym_escapeDB($value)
 {
     $acydb = acym_getGlobal('db');
 
+    if (is_null($value)) {
+        $value = '';
+    }
+
     return $acydb->quote($value);
 }
 
@@ -24,12 +28,14 @@ function acym_query($query)
     return $acydb->getAffectedRows();
 }
 
-function acym_loadObjectList($query, $key = '', $offset = null, $limit = null)
+function acym_loadObjectList($query, $key = '', $offset = null, $limit = null): array
 {
     $acydb = acym_getGlobal('db');
     $acydb->setQuery($query, $offset, $limit);
 
-    return $acydb->loadObjectList($key);
+    $results = $acydb->loadObjectList($key);
+
+    return empty($results) ? [] : $results;
 }
 
 function acym_prepareQuery($query)

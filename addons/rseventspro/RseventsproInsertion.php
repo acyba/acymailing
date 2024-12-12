@@ -101,7 +101,7 @@ trait RseventsproInsertion
                 ],
                 [
                     'title' => 'ACYM_AUTO_LOGIN',
-                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION_WARNING',
                     'type' => 'boolean',
                     'name' => 'autologin',
                     'default' => false,
@@ -312,8 +312,10 @@ trait RseventsproInsertion
         $varFields = $this->getCustomLayoutVars($element);
 
         $language = $this->getLanguage();
+        $menuId = $this->getParam('itemid');
+        $menuId = empty($menuId) ? '' : '&Itemid='.intval($menuId);
 
-        $link = rseventsproHelper::route('index.php?option=com_rseventspro&layout=show&id='.rseventsproHelper::sef($element->id, $element->name).$language);
+        $link = rseventsproHelper::route('index.php?option=com_rseventspro&layout=show&id='.rseventsproHelper::sef($element->id, $element->name).$language.$menuId);
         $link = str_replace('/administrator/', '/', $link);
         if (!empty($tag->autologin)) {
             $link .= (strpos($link, '?') ? '&' : '?').'autoSubId={subscriber:id}&subKey={subscriber:key|urlencode}';
@@ -358,7 +360,9 @@ trait RseventsproInsertion
 
         $varFields['{location}'] = '';
         if (!empty($element->location_id)) {
-            $url = rseventsproHelper::route('index.php?option=com_rseventspro&layout=location&id='.rseventsproHelper::sef($element->location_id, $element->location_name));
+            $url = rseventsproHelper::route(
+                'index.php?option=com_rseventspro&layout=location&id='.rseventsproHelper::sef($element->location_id, $element->location_name).$language.$menuId
+            );
             $url = str_replace('/administrator/', '/', $url);
             $varFields['{location}'] = '<a href="'.$url.'" target="_blank">'.$element->location_name.'</a>';
         }
@@ -370,12 +374,12 @@ trait RseventsproInsertion
 
         $allcategories = acym_loadObjectList(
             'SELECT category.`id`, category.`title` 
-                FROM `#__categories` AS category 
-                JOIN #__rseventspro_taxonomy AS map ON category.`id` = map.`id` 
-                WHERE category.`published` = 1 
-                    AND category.`extension` = "com_rseventspro" 
-                    AND map.`type` = "category" 
-                    AND map.`ide` = '.intval($tag->id),
+            FROM `#__categories` AS category 
+            JOIN #__rseventspro_taxonomy AS map ON category.`id` = map.`id` 
+            WHERE category.`published` = 1 
+                AND category.`extension` = "com_rseventspro" 
+                AND map.`type` = "category" 
+                AND map.`ide` = '.intval($tag->id),
             'title'
         );
 
@@ -392,7 +396,8 @@ trait RseventsproInsertion
 
                     $style = empty($color) ? '' : 'style="color: '.$color.'"';
                 }
-                $url = rseventsproHelper::route('index.php?option=com_rseventspro&category='.rseventsproHelper::sef($cat->id, $cat->title).$language);
+
+                $url = rseventsproHelper::route('index.php?option=com_rseventspro&category='.rseventsproHelper::sef($cat->id, $cat->title).$language.$menuId);
                 $url = str_replace('administrator/', '', $url);
 
                 $categories[] = '<a href="'.$url.'" class="rs_cat_link" '.$style.' target="_blank">'.$cat->title.'</a>';
@@ -415,18 +420,20 @@ trait RseventsproInsertion
 
         if (!empty($alltags)) {
             foreach ($alltags as $oneTag) {
-                $url = rseventsproHelper::route('index.php?option=com_rseventspro&tag='.rseventsproHelper::sef($oneTag->id, $oneTag->name).$language);
+                $url = rseventsproHelper::route('index.php?option=com_rseventspro&tag='.rseventsproHelper::sef($oneTag->id, $oneTag->name).$language.$menuId);
                 $url = str_replace('administrator/', '', $url);
 
                 $tags[] = '<a href="'.$url.'" class="rs_tag_link" target="_blank">'.$oneTag->name.'</a>';
             }
         }
         $varFields['{tags}'] = implode(', ', $tags);
-        if (in_array('tags', $tag->display) && !empty($alltags)) $customFields[] = [$varFields['{tags}'], acym_translation('COM_RSEVENTSPRO_GLOBAL_TAGS')];
+        if (in_array('tags', $tag->display) && !empty($alltags)) {
+            $customFields[] = [$varFields['{tags}'], acym_translation('COM_RSEVENTSPRO_GLOBAL_TAGS')];
+        }
 
-        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">'.acym_translation(
-                'ACYM_READ_MORE'
-            ).'</span></a>';
+        $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'"><span class="acymailing_readmore">';
+        $varFields['{readmore}'] .= acym_translation('ACYM_READ_MORE');
+        $varFields['{readmore}'] .= '</span></a>';
         if (!empty($tag->readmore)) {
             $afterArticle .= $varFields['{readmore}'];
         }

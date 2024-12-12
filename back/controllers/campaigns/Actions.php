@@ -288,7 +288,7 @@ trait Actions
         $campaign->active = empty($campaign->active) ? 1 : 0;
 
         // Remove the next trigger when disabling the automatic campaign. It will be calculated again properly if reactivated
-        if ($campaign->active === 0 && $campaign->sending_type === $campaignClass::SENDING_TYPE_AUTO) {
+        if ($campaign->active === 0 && $campaign->sending_type === CampaignClass::SENDING_TYPE_AUTO) {
             $campaign->next_trigger = null;
         }
 

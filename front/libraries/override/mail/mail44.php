@@ -62,7 +62,13 @@ class Mail extends PHPMailer implements MailerInterface
         $ds = DIRECTORY_SEPARATOR;
         if (!empty($this->to[0][0]) && include_once rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php') {
             $mailerHelper = new MailerHelper();
-            $success = $mailerHelper->overrideEmail($this->Subject, $this->Body, $this->to[0][0]);
+            $success = $mailerHelper->overrideEmail(
+                [
+                    'subject' => $this->Subject,
+                    'message' => $this->Body,
+                    'to' => $this->to[0][0],
+                ]
+            );
         }
 
         // We sent the email using AcyMailing

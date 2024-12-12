@@ -7,6 +7,7 @@ trait EventBookingAutomationConditions
     public function onAcymDeclareConditions(&$conditions)
     {
         acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
+        acym_loadLanguageFile('com_eventbooking', JPATH_ADMINISTRATOR);
         acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR);
 
         $conditions['user']['ebregistration'] = new stdClass();
@@ -61,6 +62,8 @@ trait EventBookingAutomationConditions
         $status[] = acym_selectOption('0', 'EB_PENDING');
         $status[] = acym_selectOption('1', 'EB_PAID');
         $status[] = acym_selectOption('2', 'EB_CANCELLED');
+        $status[] = acym_selectOption('3', 'EB_WAITING_LIST');
+        $status[] = acym_selectOption('4', 'EB_WAITING_LIST_CANCELLED');
 
         $conditions['user']['ebregistration']->option .= '<div class="intext_select_automation cell">';
         $conditions['user']['ebregistration']->option .= acym_select(
@@ -169,7 +172,9 @@ trait EventBookingAutomationConditions
         if (!empty($options['event'])) {
             $join .= ' AND eventbooking'.$num.'.event_id = '.intval($options['event']);
         } elseif (!empty($options['category'])) {
-            $join .= ' AND eventbooking'.$num.'.event_id IN (SELECT DISTINCT eventbookingCat'.$num.'.event_id FROM #__eb_event_categories AS eventbookingCat'.$num.' WHERE eventbookingCat'.$num.'.category_id = '.intval($options['category']).')';
+            $join .= ' AND eventbooking'.$num.'.event_id IN (SELECT DISTINCT eventbookingCat'.$num.'.event_id FROM #__eb_event_categories AS eventbookingCat'.$num.' WHERE eventbookingCat'.$num.'.category_id = '.intval(
+                    $options['category']
+                ).')';
         }
 
         if (isset($options['status']) && $options['status'] != -1) $join .= ' AND eventbooking'.$num.'.published = '.intval($options['status']);
@@ -208,6 +213,7 @@ trait EventBookingAutomationConditions
         $finalText = '';
         if (!empty($automationCondition['ebregistration'])) {
             acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
+            acym_loadLanguageFile('com_eventbooking', JPATH_ADMINISTRATOR);
             acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR);
 
             if (!empty($automationCondition['ebregistration']['event'])) {
@@ -226,6 +232,8 @@ trait EventBookingAutomationConditions
                 '0' => 'EB_PENDING',
                 '1' => 'EB_PAID',
                 '2' => 'EB_CANCELLED',
+                '3' => 'EB_WAITING_LIST',
+                '4' => 'EB_WAITING_LIST_CANCELLED',
             ];
 
             $status = acym_translation($status[$automationCondition['ebregistration']['status']]);

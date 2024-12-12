@@ -13,6 +13,10 @@ class ListsController extends acymController
     use Edition;
     use Ajax;
 
+    public const LIST_EDITION_TABS_GENERAL = 'general';
+    public const LIST_EDITION_TABS_SUBSCRIBERS = 'subscribers';
+    public const LIST_EDITION_TABS_UNSUBSCRIPTIONS = 'unsubscriptions';
+
     public function __construct()
     {
         parent::__construct();

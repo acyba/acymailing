@@ -27,8 +27,6 @@ trait SubscriberAutomationActions
             exit;
         }
 
-        $mailClass = new MailClass();
-
         $return = [];
         $return[] = [-1, acym_translation('ACYM_ALL_MAILS')];
         $search = acym_utf8Encode(acym_getVar('string', 'search', ''));
@@ -37,7 +35,7 @@ trait SubscriberAutomationActions
             FROM #__acym_mail 
             WHERE (`subject` LIKE '.acym_escapeDB('%'.$search.'%').' 
                 OR `name` LIKE '.acym_escapeDB('%'.$search.'%').') 
-                AND `type` != '.acym_escapeDB($mailClass::TYPE_NOTIFICATION).'
+                AND `type` != '.acym_escapeDB(MailClass::TYPE_NOTIFICATION).'
             ORDER BY `subject` ASC 
             LIMIT 20'
         );
@@ -117,9 +115,11 @@ trait SubscriberAutomationActions
             } elseif ('date' == $field->type) {
                 $field->option = json_decode($field->option, true);
                 $customFieldValues[$field->id] = acym_tooltip(
-                    '<input class="acym__automation__one-field acym__automation__actions__fields__select intext_input_automation cell" type="text" name="[actions][__and__][acy_user_value][value]" style="display: none" data-action-field="'.$field->id.'">',
-                    acym_translationSprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
-                    'intext_select_automation cell'
+                    [
+                        'hoveredText' => '<input class="acym__automation__one-field acym__automation__actions__fields__select intext_input_automation cell" type="text" name="[actions][__and__][acy_user_value][value]" style="display: none" data-action-field="'.$field->id.'">',
+                        'textShownInTooltip' => acym_translationSprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
+                        'classContainer' => 'intext_select_automation cell',
+                    ]
                 );
             }
         }

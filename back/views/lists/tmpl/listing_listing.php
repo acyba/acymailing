@@ -40,7 +40,11 @@
 			</div>
 		</div>
 	</div>
-    <?php $columnWidthClass = acym_isAdmin() ? 'medium-2 large-2' : 'medium-1'; ?>
+    <?php
+    $columnClassesText = acym_isAdmin() ? 'show-for-xxlarge medium-1 xxlarge-2' : 'is-hidden medium-1';
+    $columnClassesIcon = acym_isAdmin() ? 'hide-for-small-only hide-for-xxlarge medium-1 xxlarge-2' : 'hide-for-small-only medium-1';
+    $columnWidthClass = acym_isAdmin() ? 'medium-1 xxlarge-2' : 'medium-1';
+    ?>
 	<div class="grid-x acym__listing acym__listing__view__list">
 		<div class="grid-x cell acym__listing__header">
 			<div class="medium-shrink small-1 cell">
@@ -50,29 +54,59 @@
 				<div class="acym__listing__header__title cell auto">
                     <?php echo acym_translation('ACYM_LIST'); ?>
 				</div>
-				<div class="acym__listing__header__title cell hide-for-small-only <?php echo $columnWidthClass; ?> text-center">
-                    <?php echo acym_isAdmin() ? acym_translation('ACYM_SUBSCRIBED') : acym_tooltip('<i class="acymicon-user-check"></i>', acym_translation('ACYM_SUBSCRIBED')); ?>
+				<div class="acym__listing__header__title cell <?php echo $columnClassesText; ?> text-center">
+                    <?php echo acym_translation('ACYM_SUBSCRIBED'); ?>
+				</div>
+				<div class="acym__listing__header__title cell <?php echo $columnClassesIcon; ?> text-center">
+                    <?php
+                    echo acym_tooltip(
+                        [
+                            'hoveredText' => '<i class="acymicon-user-check"></i>',
+                            'textShownInTooltip' => acym_translation('ACYM_SUBSCRIBED'),
+                        ]
+                    );
+                    ?>
 				</div>
                 <?php if ($this->config->get('require_confirmation', 1) == 1) { ?>
-					<div class="acym__listing__header__title cell hide-for-small-only <?php echo $columnWidthClass; ?> text-center">
-                        <?php echo acym_isAdmin()
-                            ? acym_translation('ACYM_NOT_CONFIRMED')
-                            : acym_tooltip(
-                                '<i class="acymicon-hourglass-2"></i>',
-                                acym_translation('ACYM_NOT_CONFIRMED')
-                            ); ?>
+					<div class="acym__listing__header__title cell show-for-xxlarge <?php echo $columnClassesText; ?> text-center">
+                        <?php echo acym_translation('ACYM_NOT_CONFIRMED'); ?>
+					</div>
+					<div class="acym__listing__header__title cell <?php echo $columnClassesIcon; ?> text-center">
+                        <?php
+                        echo acym_tooltip(
+                            [
+                                'hoveredText' => '<i class="acymicon-hourglass-2"></i>',
+                                'textShownInTooltip' => acym_translation('ACYM_NOT_CONFIRMED'),
+                            ]
+                        );
+                        ?>
 					</div>
                 <?php } ?>
-				<div class="acym__listing__header__title cell hide-for-small-only <?php echo $columnWidthClass; ?> text-center">
-                    <?php echo acym_isAdmin()
-                        ? acym_translation('ACYM_UNSUBSCRIBED')
-                        : acym_tooltip(
-                            '<i class="acymicon-user-minus"></i>',
-                            acym_translation('ACYM_UNSUBSCRIBED')
-                        ); ?>
+				<div class="acym__listing__header__title cell <?php echo $columnClassesText; ?> text-center">
+                    <?php echo acym_translation('ACYM_UNSUBSCRIBED'); ?>
 				</div>
-				<div class="acym__listing__header__title cell hide-for-small-only <?php echo $columnWidthClass; ?> text-center">
-                    <?php echo acym_isAdmin() ? acym_translation('ACYM_INACTIVE') : acym_tooltip('<i class="acymicon-remove"></i>', acym_translation('ACYM_INACTIVE')); ?>
+				<div class="acym__listing__header__title cell <?php echo $columnClassesIcon; ?> text-center">
+                    <?php
+                    echo acym_tooltip(
+                        [
+                            'hoveredText' => '<i class="acymicon-user-minus"></i>',
+                            'textShownInTooltip' => acym_translation('ACYM_UNSUBSCRIBED'),
+                        ]
+                    );
+                    ?>
+				</div>
+				<div class="acym__listing__header__title cell <?php echo $columnClassesText; ?> text-center">
+                    <?php echo acym_translation('ACYM_INACTIVE'); ?>
+				</div>
+				<div class="acym__listing__header__title cell <?php echo $columnClassesIcon; ?> text-center">
+                    <?php
+                    echo acym_tooltip(
+                        [
+                            'hoveredText' => '<i class="acymicon-remove"></i>',
+                            'textShownInTooltip' => acym_translation('ACYM_INACTIVE'),
+                        ]
+                    );
+                    ?>
 				</div>
 				<div class="acym__listing__header__title cell hide-for-small-only medium-2 large-1 text-center">
                     <?php echo acym_translation('ACYM_STATUS'); ?>
@@ -103,22 +137,63 @@
 						</a>
 					</div>
 					<div class="small-1 <?php echo $columnWidthClass; ?> text-center small-up-1 cell">
-                        <?php echo $list->sendable_users;
-                        $textEvolSub = ' <span class="acym__listing__evol-green">(+'.$list->newSub.')</span>';
-                        if (!empty($list->newSub)) echo acym_tooltip($textEvolSub, acym_translation('ACYM_EVOL_SUB')); ?>
+                        <?php
+                        echo acym_tooltip(
+                            [
+                                'hoveredText' => $list->sendable_users,
+                                'textShownInTooltip' => acym_translation('ACYM_SUBSCRIBED'),
+                            ]
+                        );
+
+                        if (!empty($list->newSub)) {
+                            echo acym_tooltip(
+                                [
+                                    'hoveredText' => ' <span class="acym__listing__evol-green">(+'.$list->newSub.')</span>',
+                                    'textShownInTooltip' => acym_translation('ACYM_EVOL_SUB'),
+                                ]
+                            );
+                        } ?>
 					</div>
                     <?php if ($this->config->get('require_confirmation', 1) == 1) { ?>
 						<div class="small-1 <?php echo $columnWidthClass; ?> text-center small-up-1 cell">
-                            <?php echo $list->unconfirmed_users; ?>
+                            <?php
+                            echo acym_tooltip(
+                                [
+                                    'hoveredText' => $list->unconfirmed_users,
+                                    'textShownInTooltip' => acym_translation('ACYM_NOT_CONFIRMED'),
+                                ]
+                            );
+                            ?>
 						</div>
                     <?php } ?>
 					<div class="small-1 <?php echo $columnWidthClass; ?> text-center small-up-1 cell">
-                        <?php echo $list->unsubscribed_users;
-                        $textEvolUnsub = ' <span class="acym__listing__evol-red">(+'.$list->newUnsub.')</span>';
-                        if (!empty($list->newUnsub)) echo acym_tooltip($textEvolUnsub, acym_translation('ACYM_EVOL_UNSUB')); ?>
+                        <?php
+                        echo acym_tooltip(
+                            [
+                                'hoveredText' => $list->unsubscribed_users,
+                                'textShownInTooltip' => acym_translation('ACYM_UNSUBSCRIBED'),
+                            ]
+                        );
+                        ?>
+                        <?php
+                        if (!empty($list->newUnsub)) {
+                            echo acym_tooltip(
+                                [
+                                    'hoveredText' => ' <span class="acym__listing__evol-red">(+'.$list->newUnsub.')</span>',
+                                    'textShownInTooltip' => acym_translation('ACYM_EVOL_UNSUB'),
+                                ]
+                            );
+                        } ?>
 					</div>
 					<div class="small-1 <?php echo $columnWidthClass; ?> text-center small-up-1 cell">
-                        <?php echo $list->inactive_users; ?>
+                        <?php
+                        echo acym_tooltip(
+                            [
+                                'hoveredText' => $list->inactive_users,
+                                'textShownInTooltip' => acym_translation('ACYM_INACTIVE'),
+                            ]
+                        );
+                        ?>
 					</div>
 					<div class="cell small-1 medium-2 large-1 text-center acym__listing__controls acym__lists__controls acym__icon__table">
                         <?php
@@ -130,8 +205,12 @@
                             $tooltip = 'ACYM_INACTIVE';
                         }
                         echo acym_tooltip(
-                            '<i data-acy-table="list" data-acy-field="active" data-acy-elementid="'.acym_escape($list->id).'" class="acym_toggleable '.$class.'"></i>',
-                            acym_translation($tooltip)
+                            [
+                                'hoveredText' => '<i data-acy-table="list" data-acy-field="active" data-acy-elementid="'.acym_escape(
+                                        $list->id
+                                    ).'" class="acym_toggleable '.$class.'"></i>',
+                                'textShownInTooltip' => acym_translation($tooltip),
+                            ]
                         );
 
                         if (acym_isAdmin()) {
@@ -143,9 +222,12 @@
                                 $tooltip = 'ACYM_INVISIBLE';
                             }
                             echo acym_tooltip(
-                                '<i data-acy-table="list" data-acy-field="visible" data-acy-elementid="'.acym_escape($list->id).'" class="acym_toggleable '.$class.'"></i>',
-                                acym_translation($tooltip),
-                                null
+                                [
+                                    'hoveredText' => '<i data-acy-table="list" data-acy-field="visible" data-acy-elementid="'.acym_escape(
+                                            $list->id
+                                        ).'" class="acym_toggleable '.$class.'"></i>',
+                                    'textShownInTooltip' => acym_translation($tooltip),
+                                ]
                             );
                         }
                         ?>

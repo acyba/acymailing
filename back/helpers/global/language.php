@@ -43,7 +43,7 @@ function acym_getMultilingualLanguages()
     return $languages;
 }
 
-function acym_displayLanguageRadio($languages, $name, $translation, $info, $default = '')
+function acym_displayLanguageRadio($languages, $name, $translation, $info, $default = '', string $type = '')
 {
     $config = acym_config();
     $defaultLanguage = $config->get('multilingual_default');
@@ -51,10 +51,10 @@ function acym_displayLanguageRadio($languages, $name, $translation, $info, $defa
     if (is_array($translation)) $translation = json_encode($translation);
     if (is_array($default)) $default = json_encode($default);
 
-    $return = '<div class="cell grid-x grid-margin-x acym__multilingual__selection">';
-    $return .= '<input type="hidden" id="acym__multilingual__selection__translation" name="'.$name.'" value="'.acym_escape($translation).'">';
-    $return .= '<input type="hidden" id="acym__multilingual__selection__translation__default" name="" value="'.acym_escape($default).'">';
-    $return .= '<input type="hidden" id="acym__multilingual__selection__main-language" value="'.acym_escape($defaultLanguage).'">';
+    $return = '<div class="cell grid-x grid-margin-x acym__multilingual__selection" id="acym__multilingual__selection-'.$type.'">';
+    $return .= '<input type="hidden" class="acym__multilingual__selection__translation" name="'.$name.'" value="'.acym_escape($translation).'">';
+    $return .= '<input type="hidden" class="acym__multilingual__selection__translation__default" name="" value="'.acym_escape($default).'">';
+    $return .= '<input type="hidden" class="acym__multilingual__selection__main-language" value="'.acym_escape($defaultLanguage).'">';
     $return .= '<h4 class="cell shrink acym__title">'.acym_translation('ACYM_LANGUAGE').acym_info($info).'</h4>';
 
     foreach ($languages as $code => $language) {

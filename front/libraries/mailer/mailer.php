@@ -14,7 +14,7 @@
  * @copyright 2012 - 2020 Marcus Bointon
  * @copyright 2010 - 2012 Jim Jagielski
  * @copyright 2004 - 2009 Andy Prevost
- * @license   http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
+ * @license   https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html GNU Lesser General Public License
  * @note      This program is distributed in the hope that it will be useful - WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE.
@@ -155,8 +155,7 @@ class AcyMailerPhp
      * Only supported in simple alt or alt_inline message types
      * To generate iCal event structures, use classes like EasyPeasyICS or iCalcreator.
      *
-     * @see http://sprain.ch/blog/downloads/php-class-easypeasyics-create-ical-files-with-php/
-     * @see http://kigkonsult.se/iCalcreator/
+     * @see https://kigkonsult.se/iCalcreator/
      *
      * @var string
      */
@@ -361,6 +360,13 @@ class AcyMailerPhp
     public $AuthType = '';
 
     /**
+     * SMTP SMTPXClient command attibutes
+     *
+     * @var array
+     */
+    protected $SMTPXClient = [];
+
+    /**
      * An implementation of the PHPMailer OAuthTokenProvider interface.
      *
      * @var OAuthTokenProvider
@@ -464,7 +470,7 @@ class AcyMailerPhp
      * Only applicable when sending via SMTP.
      *
      * @see https://en.wikipedia.org/wiki/Variable_envelope_return_path
-     * @see http://www.postfix.org/VERP_README.html Postfix VERP info
+     * @see https://www.postfix.org/VERP_README.html Postfix VERP info
      *
      * @var bool
      */
@@ -542,15 +548,15 @@ class AcyMailerPhp
     public $DKIM_private_string = '';
 
     /**
-     * Callback Action.php function name.
+     * Callback Action function name.
      *
      * The function that handles the result of the send email action.
      * It is called out by send() for each email sent.
      *
-     * Value can be any php callable: http://www.php.net/is_callable
+     * Value can be any php callable: https://www.php.net/is_callable
      *
      * Parameters:
-     *   bool $result        result of the send action
+     *   bool $result           result of the send action
      *   array   $to            email addresses of the recipients
      *   array   $cc            cc email addresses
      *   array   $bcc           bcc email addresses
@@ -753,7 +759,7 @@ class AcyMailerPhp
      *
      * @var string
      */
-    const VERSION = '6.7.1';
+    const VERSION = '6.9.1';
 
     /**
      * Error severity: message only, continue processing.
@@ -798,7 +804,7 @@ class AcyMailerPhp
      * The maximum line length supported by mail().
      *
      * Background: mail() will sometimes corrupt messages
-     * with headers headers longer than 65 chars, see #818.
+     * with headers longer than 65 chars, see #818.
      *
      * @var int
      */
@@ -901,7 +907,7 @@ class AcyMailerPhp
         }
         //Is this a PSR-3 logger?
         if ($this->Debugoutput instanceof \Psr\Log\LoggerInterface) {
-            $this->Debugoutput->debug($str);
+            $this->Debugoutput->debug(rtrim($str, "\r\n"));
 
             return;
         }
@@ -1210,7 +1216,7 @@ class AcyMailerPhp
      * Uses the imap_rfc822_parse_adrlist function if the IMAP extension is available.
      * Note that quotes in the name part are removed.
      *
-     * @see http://www.andrew.cmu.edu/user/agreen1/testing/mrbs/web/Mail/RFC822.php A more careful implementation
+     * @see https://www.andrew.cmu.edu/user/agreen1/testing/mrbs/web/Mail/RFC822.php A more careful implementation
      *
      * @param string $addrstr The address list string
      * @param bool   $useimap Whether to use the IMAP extension to parse the list
@@ -1268,7 +1274,7 @@ class AcyMailerPhp
                         ];
                     }
                 } else {
-                    list($name, $email) = explode('<', $address);
+                    [$name, $email] = explode('<', $address);
                     $email = trim(str_replace('>', '', $email));
                     $name = trim($name);
                     if (static::validateAddress($email)) {
@@ -1405,7 +1411,6 @@ class AcyMailerPhp
                  *  * IPv6 literals: 'first.last@[IPv6:a1::]'
                  * Not all of these will necessarily work for sending!
                  *
-                 * @see       http://squiloople.com/2009/12/20/email-address-validation/
                  * @copyright 2009-2010 Michael Rushton
                  * Feel free to use and redistribute this code. But please keep this copyright notice.
                  */
@@ -1576,6 +1581,10 @@ class AcyMailerPhp
 
             //Validate From, Sender, and ConfirmReadingTo addresses
             foreach (['From', 'Sender', 'ConfirmReadingTo'] as $address_kind) {
+                if ($this->{$address_kind} === null) {
+                    $this->{$address_kind} = '';
+                    continue;
+                }
                 $this->{$address_kind} = trim($this->{$address_kind});
                 if (empty($this->{$address_kind})) {
                     continue;
@@ -1728,9 +1737,8 @@ class AcyMailerPhp
         //This sets the SMTP envelope sender which gets turned into a return-path header by the receiver
         //A space after `-f` is optional, but there is a long history of its presence
         //causing problems, so we don't use one
-        //Exim docs: http://www.exim.org/exim-html-current/doc/html/spec_html/ch-the_exim_command_line.html
-        //Sendmail docs: http://www.sendmail.org/~ca/email/man/sendmail.html
-        //Qmail docs: http://www.qmail.org/man/man8/qmail-inject.html
+        //Exim docs: https://www.exim.org/exim-html-current/doc/html/spec_html/ch-the_exim_command_line.html
+        //Sendmail docs: https://www.sendmail.org/~ca/email/man/sendmail.html
         //Example problem: https://www.drupal.org/node/1057954
 
         //PHP 5.6 workaround
@@ -1896,7 +1904,7 @@ class AcyMailerPhp
     /**
      * Send mail using the PHP mail() function.
      *
-     * @see http://www.php.net/manual/en/book.mail.php
+     * @see https://www.php.net/manual/en/book.mail.php
      *
      * @param string $header The message headers
      * @param string $body   The message body
@@ -1926,9 +1934,8 @@ class AcyMailerPhp
         //This sets the SMTP envelope sender which gets turned into a return-path header by the receiver
         //A space after `-f` is optional, but there is a long history of its presence
         //causing problems, so we don't use one
-        //Exim docs: http://www.exim.org/exim-html-current/doc/html/spec_html/ch-the_exim_command_line.html
-        //Sendmail docs: http://www.sendmail.org/~ca/email/man/sendmail.html
-        //Qmail docs: http://www.qmail.org/man/man8/qmail-inject.html
+        //Exim docs: https://www.exim.org/exim-html-current/doc/html/spec_html/ch-the_exim_command_line.html
+        //Sendmail docs: https://www.sendmail.org/~ca/email/man/sendmail.html
         //Example problem: https://www.drupal.org/node/1057954
         //CVE-2016-10033, CVE-2016-10045: Don't pass -f if characters will be escaped.
 
@@ -2004,6 +2011,38 @@ class AcyMailerPhp
     }
 
     /**
+     * Provide SMTP XCLIENT attributes
+     *
+     * @param string  $name  Attribute name
+     * @param ?string $value Attribute value
+     *
+     * @return bool
+     */
+    public function setSMTPXclientAttribute($name, $value)
+    {
+        if (!in_array($name, SMTP::$xclient_allowed_attributes)) {
+            return false;
+        }
+        if (isset($this->SMTPXClient[$name]) && $value === null) {
+            unset($this->SMTPXClient[$name]);
+        } elseif ($value !== null) {
+            $this->SMTPXClient[$name] = $value;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get SMTP XCLIENT attributes
+     *
+     * @return array
+     */
+    public function getSMTPXclientAttributes()
+    {
+        return $this->SMTPXClient;
+    }
+
+    /**
      * Send mail via SMTP.
      * Returns false if there is a bad MAIL FROM, RCPT, or DATA input.
      *
@@ -2030,6 +2069,9 @@ class AcyMailerPhp
             $smtp_from = $this->From;
         } else {
             $smtp_from = $this->Sender;
+        }
+        if (count($this->SMTPXClient)) {
+            $this->smtp->xclient($this->SMTPXClient);
         }
         if (!$this->smtp->mail($smtp_from)) {
             $this->setError($this->lang('from_failed').$smtp_from.' : '.implode(',', $this->smtp->getError()));
@@ -2201,10 +2243,17 @@ class AcyMailerPhp
                     $this->smtp->hello($hello);
                     //Automatically enable TLS encryption if:
                     //* it's not disabled
+                    //* we are not connecting to localhost
                     //* we have openssl extension
                     //* we are not already using SSL
                     //* the server offers STARTTLS
-                    if ($this->SMTPAutoTLS && $sslext && 'ssl' !== $secure && $this->smtp->getServerExt('STARTTLS')) {
+                    if (
+                        $this->SMTPAutoTLS &&
+                        $this->Host !== 'localhost' &&
+                        $sslext &&
+                        $secure !== 'ssl' &&
+                        $this->smtp->getServerExt('STARTTLS')
+                    ) {
                         $tls = true;
                     }
                     if ($tls) {
@@ -2439,7 +2488,7 @@ class AcyMailerPhp
      */
     public function addrFormat($addr)
     {
-        if (empty($addr[1])) { //No name provided
+        if (!isset($addr[1]) || ($addr[1] === '')) { //No name provided
             return $this->secureHeader($addr[0]);
         }
 
@@ -3598,7 +3647,7 @@ class AcyMailerPhp
      * without breaking lines within a character.
      * Adapted from a function by paravoid.
      *
-     * @see http://www.php.net/manual/en/function.mb-encode-mimeheader.php#60283
+     * @see https://www.php.net/manual/en/function.mb-encode-mimeheader.php#60283
      *
      * @param string $str       multi-byte text to wrap encode
      * @param string $linebreak string to use as linefeed/end-of-line
@@ -3654,7 +3703,7 @@ class AcyMailerPhp
     /**
      * Encode a string using Q encoding.
      *
-     * @see http://tools.ietf.org/html/rfc2047#section-4.2
+     * @see https://www.rfc-editor.org/rfc/rfc2047#section-4.2
      *
      * @param string $str      the text to encode
      * @param string $position Where the text is going to be used, see the RFC for what that means
@@ -4065,6 +4114,79 @@ class AcyMailerPhp
     }
 
     /**
+     * Clear a specific custom header by name or name and value.
+     * $name value can be overloaded to contain
+     * both header name and value (name:value).
+     *
+     * @param string      $name  Custom header name
+     * @param string|null $value Header value
+     *
+     * @return bool True if a header was replaced successfully
+     */
+    public function clearCustomHeader($name, $value = null)
+    {
+        if (null === $value && strpos($name, ':') !== false) {
+            //Value passed in as name:value
+            [$name, $value] = explode(':', $name, 2);
+        }
+        $name = trim($name);
+        $value = (null === $value) ? null : trim($value);
+
+        foreach ($this->CustomHeader as $k => $pair) {
+            if ($pair[0] == $name) {
+                // We remove the header if the value is not provided or it matches.
+                if (null === $value || $pair[1] == $value) {
+                    unset($this->CustomHeader[$k]);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Replace a custom header.
+     * $name value can be overloaded to contain
+     * both header name and value (name:value).
+     *
+     * @param string      $name  Custom header name
+     * @param string|null $value Header value
+     *
+     * @return bool True if a header was replaced successfully
+     * @throws Exception
+     */
+    public function replaceCustomHeader($name, $value = null)
+    {
+        if (null === $value && strpos($name, ':') !== false) {
+            //Value passed in as name:value
+            [$name, $value] = explode(':', $name, 2);
+        }
+        $name = trim($name);
+        $value = (null === $value) ? '' : trim($value);
+
+        $replaced = false;
+        foreach ($this->CustomHeader as $k => $pair) {
+            if ($pair[0] == $name) {
+                if ($replaced) {
+                    unset($this->CustomHeader[$k]);
+                    continue;
+                }
+                if (strpbrk($name.$value, "\r\n") !== false) {
+                    if ($this->exceptions) {
+                        throw new Exception($this->lang('invalid_header'));
+                    }
+
+                    return false;
+                }
+                $this->CustomHeader[$k] = [$name, $value];
+                $replaced = true;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Add an error message to the error container.
      *
      * @param string $msg
@@ -4159,8 +4281,8 @@ class AcyMailerPhp
             return filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false;
         }
 
-        //Is it a syntactically valid hostname (when embeded in a URL)?
-        return filter_var('http://'.$host, FILTER_VALIDATE_URL) !== false;
+        //Is it a syntactically valid hostname (when embedded in a URL)?
+        return filter_var('https://'.$host, FILTER_VALIDATE_URL) !== false;
     }
 
     /**
@@ -4237,7 +4359,7 @@ class AcyMailerPhp
     {
         if (null === $value && strpos($name, ':') !== false) {
             //Value passed in as name:value
-            list($name, $value) = explode(':', $name, 2);
+            [$name, $value] = explode(':', $name, 2);
         }
         $name = trim($name);
         $value = (null === $value) ? '' : trim($value);
@@ -4573,7 +4695,7 @@ class AcyMailerPhp
      * Multi-byte-safe pathinfo replacement.
      * Drop-in replacement for pathinfo(), but multibyte- and cross-platform-safe.
      *
-     * @see http://www.php.net/manual/en/function.pathinfo.php#107461
+     * @see https://www.php.net/manual/en/function.pathinfo.php#107461
      *
      * @param string     $path    A filename or path, does not need to exist as a file
      * @param int|string $options Either a PATHINFO_* constant,
@@ -4834,7 +4956,7 @@ class AcyMailerPhp
             if (strpos($line, ':') === false) {
                 continue;
             }
-            list($heading, $value) = explode(':', $line, 2);
+            [$heading, $value] = explode(':', $line, 2);
             //Lower-case header name
             $heading = strtolower($heading);
             //Collapse white space within the value, also convert WSP to space

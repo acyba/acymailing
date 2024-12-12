@@ -6,19 +6,21 @@ use AcyMailing\Libraries\acymClass;
 
 class PluginClass extends acymClass
 {
-    var $table = 'plugin';
-    var $pkey = 'id';
-    var $nameColumn = 'title';
-    private $plugins = [];
+    private $plugins;
 
     public function __construct()
     {
+        parent::__construct();
+
+        $this->table = 'plugin';
+        $this->pkey = 'id';
+
         global $acymPluginByFolderName;
         if (empty($acymPluginByFolderName)) {
             $acymPluginByFolderName = $this->getAll('folder_name');
         }
+
         $this->plugins = $acymPluginByFolderName;
-        parent::__construct();
     }
 
     public function getPlugins()
@@ -50,7 +52,9 @@ class PluginClass extends acymClass
 
     public function addIntegrationIfMissing($plugin)
     {
-        if (empty($plugin->pluginDescription->name)) return;
+        if (empty($plugin->pluginDescription->name)) {
+            return;
+        }
 
         $data = $this->plugins[$plugin->name] ?? null;
 
@@ -71,13 +75,15 @@ class PluginClass extends acymClass
             $newPlugin->id = $data->id;
             $newPlugin->settings = $data->settings;
 
-            if ($data->type === 'ADDON') {
-                // The integration has just been activated and the old addon was installed
+            if ($data->type !== 'ADDON') {
+                return;
+            }
 
-                // Remove the old addon's files
-                if (file_exists(ACYM_ADDONS_FOLDER_PATH.$plugin->name)) {
-                    acym_deleteFolder(ACYM_ADDONS_FOLDER_PATH.$plugin->name);
-                }
+            // The integration has just been activated and the old addon was installed
+
+            // Remove the old addon's files
+            if (file_exists(ACYM_ADDONS_FOLDER_PATH.$plugin->name)) {
+                acym_deleteFolder(ACYM_ADDONS_FOLDER_PATH.$plugin->name);
             }
         }
 
@@ -131,6 +137,7 @@ class PluginClass extends acymClass
 
     public function downloadAddon(string $name, bool $ajax = true)
     {
+        //__START__joomla_
         $response = acym_fileGetContent(ACYM_UPDATEME_API_URL.'public/download/addon?file_name='.$name.'&api_key='.$this->config->get('license_key'));
 
         if (empty($response)) {
@@ -159,6 +166,8 @@ class PluginClass extends acymClass
         if (!unlink($tmpZipDownload)) {
             return $this->handleError('ACYM_ERROR_FILE_DELETION', false);
         }
+
+        //__END__joomla_
 
         return true;
     }

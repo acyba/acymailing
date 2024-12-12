@@ -58,7 +58,7 @@
             }
 
             .acym-logo {
-                background: url(../images/logo_acym.svg) no-repeat;
+                background: url(../images/logos/logo_acym.svg) no-repeat;
                 display: inline-block;
                 width: 25px;
                 height: 25px;
@@ -114,7 +114,6 @@
         #acym_content:not(.popup_size), .acym_no_foundation {
             width: calc(100% - #{$menu-joomla-width});
             margin-left: $menu-joomla-width;
-            margin-bottom: 100px;
         }
     }
 }

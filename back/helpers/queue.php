@@ -17,7 +17,7 @@ class QueueHelper extends acymObject
     var $error = false;
     var $nbprocess = 0;
     var $start = 0;
-    var $stoptime = 0;
+    public int $stoptime = 0;
     var $successSend = 0;
     var $errorSend = 0;
     var $consecutiveError = 0;
@@ -204,7 +204,17 @@ class QueueHelper extends acymObject
             $emailFrequency = 0;
         }
 
+        $userLists = [];
+        $userClass = new UserClass();
+        $isSendingMethodByListActive = false;
+        acym_trigger('sendingMethodByListActive', [&$isSendingMethodByListActive]);
+        $mailHelper->isSendingMethodByListActive = $isSendingMethodByListActive;
+
         foreach ($queueElements as $oneQueue) {
+            if ($isSendingMethodByListActive && empty($userLists[$oneQueue->user_id])) {
+                $userSubscriptions = $userClass->getUserStandardListIdById($oneQueue->user_id);
+                $userLists[$oneQueue->user_id] = empty($userSubscriptions) ? [] : $userSubscriptions;
+            }
             if (!empty($emailFrequency)) {
                 sleep($emailFrequency);
             }
@@ -232,6 +242,8 @@ class QueueHelper extends acymObject
             $this->triggerSentHook($oneQueue->mail_id);
             try {
                 $mailHelper->isAbTest = $isAbTesting;
+                $mailHelper->listsIds = empty($userLists[$oneQueue->user_id]) ? [] : $userLists[$oneQueue->user_id];
+                $mailHelper->setSendingMethodSetting();
                 $result = $mailHelper->sendOne($oneQueue->mail_id, $oneQueue->user_id);
             } catch (\Exception $e) {
                 $result = false;
@@ -253,6 +265,7 @@ class QueueHelper extends acymObject
 
                 //In case of the e-mail has been sent now, we immediately process the update/delete and stats
                 $queueDeleteOk = $this->_deleteQueue($queueDelete);
+                $mailHelper->triggerFollowUpAgain($oneQueue->mail_id, $oneQueue->user_id);
                 $queueDelete = [];
 
                 //We only update the queue and add the stats every 10 emails so that we can group things and avoid queries
@@ -269,6 +282,7 @@ class QueueHelper extends acymObject
                 $queueDeleteOk = $this->_deleteQueue($queueDelete);
                 $queueDelete = [];
             } else {
+                acym_trigger('onAcymFailedSendingEmail', [$oneQueue->mail_id, $oneQueue->user_id, $mailHelper->errorNumber]);
                 $this->errorSend++;
 
                 $shouldTrySendingLater = false;

@@ -249,7 +249,7 @@ trait EasysocialInsertion
             ],
             [
                 'title' => 'ACYM_AUTO_LOGIN',
-                'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION_WARNING',
                 'type' => 'boolean',
                 'name' => 'autologin',
                 'default' => false,

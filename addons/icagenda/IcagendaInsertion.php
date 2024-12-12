@@ -145,7 +145,7 @@ trait IcagendaInsertion
                 ],
                 [
                     'title' => 'ACYM_AUTO_LOGIN',
-                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION',
+                    'tooltip' => 'ACYM_AUTO_LOGIN_DESCRIPTION_WARNING',
                     'type' => 'boolean',
                     'name' => 'autologin',
                     'default' => false,
@@ -327,6 +327,10 @@ trait IcagendaInsertion
         $varFields = $this->getCustomLayoutVars($element);
 
         $link = 'index.php?option=com_icagenda&view=event&id='.$tag->id.':'.$element->alias;
+        $menuId = $this->getParam('itemid');
+        if (!empty($menuId)) {
+            $link .= '&Itemid='.intval($menuId);
+        }
         $link = $this->finalizeLink($link, $tag);
 
         $varFields['{link}'] = $link;

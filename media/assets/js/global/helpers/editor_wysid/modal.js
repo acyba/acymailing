@@ -21,8 +21,8 @@ const acym_editorWysidModal = {
 
         if (ACYM_CMS !== 'joomla') return;
 
-        jQuery('.acym__wysid__modal__joomla-image--close').on('click', function () {
-            jQuery('#acym__wysid__modal__joomla-image').hide();
+        jQuery('.acym__upload__modal__joomla-image--close').on('click', function () {
+            jQuery('#acym__upload__modal__joomla-image').hide();
             if (acym_helperEditorWysid.$focusElement.length
                 && acym_helperEditorWysid.$focusElement.prop('tagName')
                 !== 'TR'
@@ -54,7 +54,7 @@ const acym_editorWysidModal = {
                 toInsert += '<em class="acym_remove_dynamic acymicon-close">&zwj;</em></span> &zwj;';
 
                 if (!acym_helper.empty(lastKnownRangeInEditor) && !acym_editorWysidModal.isSelectionInEditor()) {
-                    let selection = window.getSelection();
+                    const selection = window.getSelection();
                     selection.removeAllRanges();
                     selection.addRange(lastKnownRangeInEditor);
                 }

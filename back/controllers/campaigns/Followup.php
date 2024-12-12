@@ -16,9 +16,8 @@ trait Followup
     {
         acym_setVar('layout', 'followup');
 
-        $mailClass = new MailClass();
         $data = [
-            'campaign_type' => $mailClass::TYPE_FOLLOWUP,
+            'campaign_type' => MailClass::TYPE_FOLLOWUP,
             'element_to_display' => lcfirst(acym_translation('ACYM_FOLLOW_UP')),
         ];
         $this->getAllParamsRequest($data);
@@ -294,6 +293,13 @@ trait Followup
         }
 
         $followup->id = $followupClass->save($followup);
+        if (empty($followup->id)) {
+            acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING').': '.acym_getDBError(), 'error');
+            $this->listing();
+
+            return false;
+        }
+
         acym_setVar('id', $followup->id);
 
         return $this->edit();

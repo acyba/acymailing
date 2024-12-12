@@ -1,0 +1,35 @@
+.acym__steps__container {
+    text-align: center;
+    margin: 20px;
+    position: relative;
+
+    .acym__steps__circles {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    &:before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        border-top: 2px solid $blue-primary;
+        background: black;
+        width: 100%;
+        transform: translateY(-50%);
+    }
+
+    .acym__steps__circle {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border: 2px solid $blue-primary;
+        border-radius: 16px;
+        background-color: $white;
+
+        &.acym__steps__done, &.acym__steps__current {
+            background-color: $blue-primary;
+        }
+    }
+}

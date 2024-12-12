@@ -2,6 +2,10 @@
 
 function acym_escapeDB($value)
 {
+    if (is_null($value)) {
+        $value = '';
+    }
+
     // esc_sql replaces % by something like {svzzvzevzv} but it's normal, it will be replaced back by % before the query is executed
     return "'".esc_sql($value)."'";
 }
@@ -16,7 +20,7 @@ function acym_query($query)
     return $result === false ? null : $result;
 }
 
-function acym_loadObjectList($query, $key = '', $offset = null, $limit = null)
+function acym_loadObjectList($query, $key = '', $offset = null, $limit = null): array
 {
     global $wpdb;
     $query = acym_prepareQuery($query);
@@ -27,7 +31,7 @@ function acym_loadObjectList($query, $key = '', $offset = null, $limit = null)
 
     $results = $wpdb->get_results($query);
     if (empty($key)) {
-        return $results;
+        return empty($results) ? [] : $results;
     }
 
     $sorted = [];

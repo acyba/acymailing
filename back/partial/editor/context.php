@@ -95,21 +95,25 @@
 					acym-data-type="call-action"><?php echo acym_translation('ACYM_CALL_TO_ACTION'); ?></button>
             <?php
             echo acym_tooltip(
-                '<button type="button" 
-					class="button-radio cell acym__wysid__context__button--type" 
-					acym-button-radio-group="buttonType" 
-					acym-data-type="unsubscribe">'.acym_translation('ACYM_UNSUBSCRIBE').'</button>',
-                acym_translation('ACYM_UNSUBSCRIBE_BUTTON_DESC'),
-                'cell medium-4 grid-x'
+                [
+                    'hoveredText' => '<button type="button" 
+						class="button-radio cell acym__wysid__context__button--type" 
+						acym-button-radio-group="buttonType" 
+						acym-data-type="unsubscribe">'.acym_translation('ACYM_UNSUBSCRIBE').'</button>',
+                    'textShownInTooltip' => acym_translation('ACYM_UNSUBSCRIBE_BUTTON_DESC'),
+                    'classContainer' => 'cell medium-4 grid-x',
+                ]
             );
 
             echo acym_tooltip(
-                '<button type="button" 
-                	class="button-radio cell acym__wysid__context__button--type" 
-					acym-button-radio-group="buttonType" 
-					acym-data-type="confirm">'.acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION').'</button>',
-                acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION_BUTTON_DESC'),
-                'cell medium-4 grid-x'
+                [
+                    'hoveredText' => '<button type="button" 
+						class="button-radio cell acym__wysid__context__button--type" 
+						acym-button-radio-group="buttonType" 
+						acym-data-type="confirm">'.acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION').'</button>',
+                    'textShownInTooltip' => acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION_BUTTON_DESC'),
+                    'classContainer' => 'cell medium-4 grid-x',
+                ]
             );
             ?>
 		</div>
@@ -122,9 +126,18 @@
 				<input id="acym__wysid__context__button__text" class="auto cell" type="text" placeholder="<?php echo acym_translation('ACYM_MY_BUTTON'); ?>">
 			</div>
 			<div class="grid-x cell acym__wysid__context__button__link__container">
-				<div class="input-group cell grid-x">
+				<div class="cell grid-x">
 					<label class="cell small-5" for="acym__wysid__context__button__link"><?php echo acym_translation('ACYM_LINK'); ?></label>
 					<input id="acym__wysid__context__button__link" class="input-group-field cell auto" type="text" placeholder="https://www.example.com">
+				</div>
+			</div>
+			<div class="grid-x cell acym__wysid__context__button__link__file">
+				<div class="cell grid-x">
+					<label class="cell small-5">
+                        <?php echo acym_translation('ACYM_FILE'); ?>
+                        <?php echo acym_info('ACYM_FILE_GENERATE_LINK_BUTTON_EDITOR'); ?>
+					</label>
+					<button id="acym__wysid__context__button__file" type="button" class="button button-secondary"><?php echo acym_translation('ACYM_SELECT_FILE'); ?></button>
 				</div>
 			</div>
 		</div>
@@ -227,7 +240,18 @@
 			</div>
 			<div class="cell grid-x margin-top-1 acym_vcenter margin-bottom-1">
                 <?php
-                echo acym_switch('full_width', 0, acym_tooltip(acym_translation('ACYM_FULL_WIDTH'), acym_translation('ACYM_FULL_WIDTH_DESC')), [], 'small-5');
+                echo acym_switch(
+                    'full_width',
+                    0,
+                    acym_tooltip(
+                        [
+                            'hoveredText' => acym_translation('ACYM_FULL_WIDTH'),
+                            'textShownInTooltip' => acym_translation('ACYM_FULL_WIDTH_DESC'),
+                        ]
+                    ),
+                    [],
+                    'small-5'
+                );
                 ?>
 				<div class="cell grid-x acym__button__padding">
 					<div class="cell grid-x">
@@ -334,29 +358,29 @@
 				   id="acym__wysid__context__image__url"
 				   placeholder="https://www.example.com/image.png"
 				   class="cell small-8">
-			<label for="acym__wysid__context__image__alt" class="cell small-4">
+			<label for="acym__upload__context__image__alt" class="cell small-4">
                 <?php echo acym_translation('ACYM_IMAGE_ALT').acym_info('ACYM_IMAGE_ALT_DESCRIPTION'); ?>
 			</label>
 			<input type="text"
 				   name="image_alt"
 				   value=""
-				   id="acym__wysid__context__image__alt"
+				   id="acym__upload__context__image__alt"
 				   class="cell small-8">
-			<label for="acym__wysid__context__image__title" class="cell small-4">
+			<label for="acym__upload_context__image__title" class="cell small-4">
                 <?php echo acym_translation('ACYM_IMAGE_TITLE').acym_info('ACYM_IMAGE_TITLE_DESCRIPTION'); ?>
 			</label>
 			<input type="text"
 				   name="image_title"
 				   value=""
-				   id="acym__wysid__context__image__title"
+				   id="acym__upload_context__image__title"
 				   class="cell small-8">
-			<label for="acym__wysid__context__image__caption" class="cell small-4">
+			<label for="acym__upload__context__image__caption" class="cell small-4">
                 <?php echo acym_translation('ACYM_CAPTION'); ?>
 			</label>
 			<input type="text"
 				   name="image_caption"
 				   value=""
-				   id="acym__wysid__context__image__caption"
+				   id="acym__upload__context__image__caption"
 				   class="cell small-8">
 			<button type="button" class="cell shrink button button-secondary margin-top-1" id="acym__wysid__context__image__change">
                 <?php echo acym_translation('ACYM_MEDIA_MANAGE'); ?>
@@ -523,7 +547,8 @@
                         'acym__wysid__built-with__text__color',
                         'black',
                         ['class' => 'acym__select']
-                    ); ?>
+                    );
+                    ?>
 				</div>
 			</div>
 		</div>

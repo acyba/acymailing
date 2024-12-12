@@ -1,43 +1,65 @@
-<div id="acym__cron__splashscreen" class="cell grid-x">
-	<div class="cell grid-x acym__splashscreen__bloc margin-top-2">
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
-		<div class="cell large-10 grid-x text-center">
-			<h3 class="cell acym__title text-center"><i class="acymicon-user acym__color__green margin-right-1"></i><?php echo acym_translation(
-                    'ACYM_WHAT_NEEED_CRON_SERVICE'
-                ); ?></h3>
-			<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_WHAT_NEEED_CRON_SERVICE_DESC'); ?></p>
+<?php $pricingPage = ACYM_ACYMAILING_WEBSITE.'pricing?utm_source=acymailing_plugin&utm_medium=licence&utm_campaign=upgrade_from_plugin'; ?>
+
+<div class="acym__splashscreen__white__container cell grid-x padding-2 align-center">
+	<div class="cell large-8 grid-x align-center acym__splashscreen__container">
+		<div class="cell large-6 padding-3 align-center">
+			<h2 class="acym__title acym__title__secondary acym__splashscreen__subtitle margin-bottom-1">
+                <?php echo acym_translation('ACYM_MAKE_EMAILS_EFFICIENT'); ?>
+			</h2>
+			<h3 class="acym__title acym__splashscreen__title">
+                <?php echo acym_translation('ACYM_LICENSE_AUTOMATIZE_SENDING'); ?>
+			</h3>
+			<p class="acym__splashscreen__desc">
+                <?php echo acym_translation('ACYM_LICENSE_TEXT_1'); ?>
+			</p>
+			<p class="acym__splashscreen__desc margin-bottom-1">
+                <?php echo acym_translation('ACYM_LICENSE_TEXT_3'); ?>
+			</p>
+			<ul class="acym__ul acym__splashscreen__ul acym margin-bottom-2">
+				<li class="acym__splashscreen__desc">
+                    <?php echo acym_translation('ACYM_LICENSE_LISTING_TEXT_1'); ?>
+				</li>
+				<li class="acym__splashscreen__desc">
+                    <?php echo acym_translation('ACYM_LICENSE_LISTING_TEXT_2'); ?>
+				</li>
+				<li class="acym__splashscreen__desc">
+                    <?php echo acym_translation('ACYM_LICENSE_LISTING_TEXT_3'); ?>
+				</li>
+				<li class="acym__splashscreen__desc">
+                    <?php echo acym_translation('ACYM_LICENSE_LISTING_TEXT_4'); ?>
+				</li>
+				<li class="acym__splashscreen__desc">
+                    <?php echo acym_translation('ACYM_LICENSE_LISTING_TEXT_5'); ?>
+				</li>
+				<li class="acym__splashscreen__desc">
+                    <?php echo acym_translation('ACYM_LICENSE_LISTING_TEXT_6'); ?>
+				</li>
+			</ul>
+			<a class="cell medium-6 large-shrink button acym__button__upgrade" target="_blank" href="<?php echo $pricingPage; ?>">
+                <?php echo acym_translation('ACYM_GOPRO'); ?>
+			</a>
 		</div>
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
+		<div class="cell large-6 padding-3 align-center acym__splashscreen__image">
+			<img src="<?php echo ACYM_IMAGES.'upgrade/tablet_smartphone.png'; ?>" alt="AcyMailing stats on tablet and smartphone">
+		</div>
 	</div>
-	<hr class="cell medium-5 margin-vertical-2">
-	<div class="cell grid-x acym__splashscreen__bloc">
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
-		<div class="cell large-10 grid-x text-center">
-			<h3 class="cell acym__title text-center"><i class="acymicon-eye acym__color__orange margin-right-1"></i><?php echo acym_translation('ACYM_PLEASE_SHOW_EXAMPLE'); ?></h3>
-			<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_PLEASE_SHOW_EXAMPLE_CONFIG_DESC'); ?></p>
+</div>
+
+<div class="acym__splashscreen__blue__container cell grid-x padding-2 align-center">
+	<div class="cell large-8 grid-x align-center acym__splashscreen__container">
+		<div class="cell large-6 align-center acym__splashscreen__image">
+			<img src="<?php echo ACYM_IMAGES.'upgrade/detailed_stats.png'; ?>" alt="Charts Stats Image">
 		</div>
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
-	</div>
-	<hr class="cell medium-5 margin-vertical-2">
-	<div class="cell grid-x acym__splashscreen__bloc">
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
-		<div class="cell large-10 grid-x text-center">
-			<h3 class="cell acym__title text-center"><i class="acymicon-power acym__color__light-blue margin-right-1"></i><?php echo acym_translation('ACYM_WANT_GIVE_TRY'); ?></h3>
-			<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_WANT_GIVE_TRY_DESC'); ?></p>
+		<div class="cell large-6 padding-3 align-center">
+			<h2 class="acym__title acym__title__secondary acym__splashscreen__subtitle margin-bottom-1">
+                <?php echo acym_translation('ACYM_LICENSE_DOUBT_TO_TRY'); ?>
+			</h2>
+			<p class="acym__splashscreen__desc margin-bottom-1">
+                <?php echo acym_translation('ACYM_LICENSE_TEXT_4'); ?>
+			</p>
+			<a class="cell medium-6 large-shrink button acym__button__upgrade margin-top-2" target="_blank" href="<?php echo $pricingPage; ?>">
+                <?php echo acym_translation('ACYM_REFOUND_GUARANTEE'); ?>
+			</a>
 		</div>
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
-	</div>
-	<div class="cell grid-x margin-top-3">
-		<div class="cell medium-auto hide-for-small-only"></div>
-		<div class="cell">
-			<div class="cell grid-x text-center align-center">
-				<a target="_blank"
-				   href="<?php echo ACYM_ACYMAILING_WEBSITE; ?>pricing?utm_source=acymailing_plugin&utm_medium=config&utm_campaign=purchase"
-				   class="button cell shrink">
-                    <?php echo acym_translation('ACYM_GET_PRO_VERSION'); ?>
-				</a>
-			</div>
-		</div>
-		<div class="cell medium-auto hide-for-small-only"></div>
 	</div>
 </div>

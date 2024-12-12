@@ -36,9 +36,10 @@
 					<div class="cell auto acym__campaign__recipients__number-display grid-x align-left acym_vcenter">
                         <?php echo acym_loaderLogo(); ?>
 						<div class="cell shrink">
-							<span class="acym__campaign__recipients__number-recipients">0</span>&nbsp;<span id="acym__campaign__recipients__span"><?php echo acym_strtolower(
-                                    acym_translation('ACYM_RECIPIENTS')
-                                ); ?></span></div>
+							<span class="entity_select__recipients__number-recipients">0</span>&nbsp;<span id="entity_select__recipients__span">
+								<?php echo acym_strtolower(acym_translation('ACYM_RECIPIENTS')); ?>
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>

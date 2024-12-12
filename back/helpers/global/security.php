@@ -89,7 +89,7 @@ function acym_isRobot(): bool
 function acym_displayErrors()
 {
     error_reporting(E_ALL);
-    @ini_set("display_errors", 1);
+    @ini_set('display_errors', 1);
 }
 
 function acym_checkRobots()

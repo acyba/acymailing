@@ -5,41 +5,70 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 2.7
+ * Version: 3.1
  * Requires Plugins: acymailing
 */
 
 use AcyMailing\Classes\PluginClass;
 
-register_deactivation_hook(__FILE__, 'acym_integration_automationexport_disable');
-function acym_integration_automationexport_disable()
-{
-    $vendorFolder = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'vendor';
-    $helperFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
-    if (!is_plugin_active('acymailing/index.php') || !file_exists($vendorFolder) || !include_once $helperFile) return;
-
-    $pluginClass = new PluginClass();
-    $pluginClass->disable('automationexport');
+if (!defined('ABSPATH')) {
+    exit;
 }
 
-register_uninstall_hook(__FILE__, 'acym_integration_automationexport_uninstall');
-function acym_integration_automationexport_uninstall()
+class AutomationExportForAcyMailing
 {
-    $vendorFolder = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'vendor';
-    $helperFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
-    if (!is_plugin_active('acymailing/index.php') || !file_exists($vendorFolder) || !include_once $helperFile) return;
+    const INTEGRATION_PLUGIN_NAME = 'plgAcymAutomationexport';
 
-    $pluginClass = new PluginClass();
-    $pluginClass->deleteByFolderName('automationexport');
-}
+    public function __construct()
+    {
+        register_deactivation_hook(__FILE__, [$this, 'disable']);
+        register_uninstall_hook(__FILE__, [self::class, 'uninstall']);
+        add_action('acym_load_installed_integrations', [$this, 'register'], 10, 2);
+    }
 
-add_action('acym_load_installed_integrations', 'acym_integration_automationexport', 10, 2);
-function acym_integration_automationexport(&$integrations, $acyVersion)
-{
-    if (version_compare($acyVersion, '7.5.11', '>=')) {
-        $integrations[] = [
-            'path' => __DIR__,
-            'className' => 'plgAcymAutomationexport',
-        ];
+    public function disable(): void
+    {
+        if (!self::loadAcyMailingLibrary()) {
+            return;
+        }
+
+        $pluginClass = new PluginClass();
+        $pluginClass->disable(self::getIntegrationName());
+    }
+
+    public static function uninstall(): void
+    {
+        if (!self::loadAcyMailingLibrary()) {
+            return;
+        }
+
+        $pluginClass = new PluginClass();
+        $pluginClass->deleteByFolderName(self::getIntegrationName());
+    }
+
+    public function register(array &$integrations, string $acyVersion): void
+    {
+        if (version_compare($acyVersion, '7.5.11', '>=')) {
+            $integrations[] = [
+                'path' => __DIR__,
+                'className' => self::INTEGRATION_PLUGIN_NAME,
+            ];
+        }
+    }
+
+    private static function getIntegrationName(): string
+    {
+        return strtolower(substr(self::INTEGRATION_PLUGIN_NAME, 7));
+    }
+
+    private static function loadAcyMailingLibrary(): bool
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        $vendorFolder = dirname(__DIR__).$ds.'acymailing'.$ds.'vendor';
+        $helperFile = dirname(__DIR__).$ds.'acymailing'.$ds.'back'.$ds.'helpers'.$ds.'helper.php';
+
+        return file_exists($vendorFolder) && include_once $helperFile;
     }
 }
+
+new AutomationExportForAcyMailing();

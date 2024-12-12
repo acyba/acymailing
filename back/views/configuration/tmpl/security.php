@@ -71,11 +71,12 @@
                             <?php
                             echo acym_translation('ACYM_GENERAL_SITE_KEY');
                             echo acym_tooltip(
-                                '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
-                                acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
-                                'acym__tooltip__info',
-                                '',
-                                'https://dashboard.hcaptcha.com/sites/new'
+                                [
+                                    'hoveredText' => '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+                                    'textShownInTooltip' => acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
+                                    'classContainer' => 'acym__tooltip__info',
+                                    'link' => 'https://dashboard.hcaptcha.com/sites/new',
+                                ]
                             );
                             ?>
 						</label>
@@ -90,11 +91,12 @@
                             <?php
                             echo acym_translation('ACYM_GENERAL_SECRET_KEY');
                             echo acym_tooltip(
-                                '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
-                                acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
-                                'acym__tooltip__info',
-                                '',
-                                'https://dashboard.hcaptcha.com/sites/new'
+                                [
+                                    'hoveredText' => '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+                                    'textShownInTooltip' => acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
+                                    'classContainer' => 'acym__tooltip__info',
+                                    'link' => 'https://dashboard.hcaptcha.com/sites/new',
+                                ]
                             );
                             ?>
 						</label>
@@ -110,11 +112,12 @@
                             <?php
                             echo acym_translation('ACYM_SITE_KEY');
                             echo acym_tooltip(
-                                '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
-                                acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
-                                'acym__tooltip__info',
-                                '',
-                                'https://www.google.com/recaptcha/admin'
+                                [
+                                    'hoveredText' => '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+                                    'textShownInTooltip' => acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
+                                    'classContainer' => 'acym__tooltip__info',
+                                    'link' => 'https://www.google.com/recaptcha/admin',
+                                ]
                             );
                             ?>
 						</label>
@@ -129,11 +132,12 @@
                             <?php
                             echo acym_translation('ACYM_SECRET_KEY');
                             echo acym_tooltip(
-                                '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
-                                acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
-                                'acym__tooltip__info',
-                                '',
-                                'https://www.google.com/recaptcha/admin'
+                                [
+                                    'hoveredText' => '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+                                    'textShownInTooltip' => acym_translation('ACYM_CLICK_HERE_TO_CREATE'),
+                                    'classContainer' => 'acym__tooltip__info',
+                                    'link' => 'https://www.google.com/recaptcha/admin',
+                                ]
                             );
                             ?>
 						</label>
@@ -148,11 +152,12 @@
                             <?php
                             echo acym_translation('ACYM_CAPTCHA_SCORE');
                             echo acym_tooltip(
-                                '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
-                                acym_translation('ACYM_CAPTCHA_SCORE_DESC'),
-                                'acym__tooltip__info',
-                                '',
-                                'https://developers.google.com/recaptcha/docs/v3'
+                                [
+                                    'hoveredText' => '<span class="acym__tooltip__info__container"><i class="acym__tooltip__info__icon acymicon-info-circle"></i></span>',
+                                    'textShownInTooltip' => acym_translation('ACYM_CAPTCHA_SCORE_DESC'),
+                                    'classContainer' => 'acym__tooltip__info',
+                                    'link' => 'https://developers.google.com/recaptcha/docs/v3',
+                                ]
                             );
                             ?>
 						</label>
@@ -373,17 +378,48 @@
 				</div>
 			</div>
         <?php } ?>
-        <?php if ('joomla' === ACYM_CMS) { ?>
-			<div class="margin-bottom-2">
-				<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_FRONTEND_EDITION'); ?></div>
-                <?php
-                if (!acym_level(ACYM_ENTERPRISE)) {
-                    $data['version'] = 'enterprise';
-                    include acym_getView('dashboard', 'upgrade', true);
-                }
-                ?>
-			</div>
-        <?php } ?>
+        <?php if ('joomla' === ACYM_CMS) {
+            //__START__enterprise_
+            if (acym_level(ACYM_ENTERPRISE)) { ?>
+				<div class="margin-bottom-2">
+					<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_FRONTEND_EDITION'); ?></div>
+					<div class="grid-x grid-margin-x grid-margin-y">
+						<div class="cell large-3 small-12"><?php echo acym_translation('ACYM_FRONT_DELETE_BUTTON').acym_info('ACYM_FRONT_DELETE_BUTTON_DESC'); ?></div>
+						<div class="cell auto">
+                            <?php
+                            echo acym_radio(
+                                [
+                                    'delete' => acym_translation('ACYM_DELETE_THE_SUBSCRIBER'),
+                                    'removesub' => acym_translation('ACYM_REMOVE_USER_SUBSCRIPTION'),
+                                ],
+                                'config[frontend_delete_button]',
+                                $this->config->get('frontend_delete_button', 'delete')
+                            );
+                            ?>
+						</div>
+					</div>
+					<div class="grid-x grid-margin-x grid-margin-y">
+						<div class="cell large-3"><?php echo acym_translation('ACYM_FRONT_FILTER_CAMPAIGNS'); ?></div>
+						<div class="cell large-9">
+                            <?php
+                            echo acym_select(
+                                [
+                                    'own' => acym_translation('ACYM_FRONT_ONLY_CREATED_CAMPAIGNS'),
+                                    'allowed' => acym_translation('ACYM_FRONT_SENT_TO_ALLOWED_LISTS'),
+                                ],
+                                'config[front_campaigns_filter]',
+                                $this->config->get('front_campaigns_filter', 'own'),
+                                [
+                                    'class' => 'acym__select',
+                                ]
+                            );
+                            ?>
+						</div>
+					</div>
+				</div>
+                <?php // __END__enterprise_
+            }
+        } ?>
 		<div class="margin-bottom-2">
 			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_FILES'); ?></div>
 			<div class="grid-x grid-margin-y margin-y">
@@ -454,7 +490,6 @@
                         }
                         $allowedHostsFormatted = [];
                         if (!empty($allowedHosts)) {
-                            $allowedHostsFormatted = [];
                             foreach ($allowedHosts as $host) {
                                 $allowedHostsFormatted[$host] = $host;
                             }
@@ -468,6 +503,19 @@
                         ?>
 					</div>
 				</div>
+				<div class="cell grid-x acym_vcenter">
+					<label class="cell large-3" for="allowed_files">
+                        <?php echo acym_translation('ACYM_ACTIVATE_AUTOLOGIN_URLS').acym_info('ACYM_ACTIVATE_AUTOLOGIN_URLS_DESC'); ?>
+					</label>
+					<div class="cell grid-x large-9">
+                        <?php
+                        echo acym_switch(
+                            'config[autologin_urls]',
+                            $this->config->get('autologin_urls', 0)
+                        );
+                        ?>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="margin-bottom-2">
@@ -475,7 +523,7 @@
 			<div class="grid-x grid-margin-x margin-y">
 				<div class="cell grid-x acym_vcenter">
 					<label class="cell large-3" for="cron_security">
-                        <?php echo acym_translation('ACYM_ADD_SECURITY_KEY_CRON').acym_info('ACYM_ADD_SECURITY_KEY_CRON_DESC'); ?>
+                        <?php echo acym_translation('ACYM_ADD_SECURITY_KEY_CRON'); ?>
 					</label>
 					<div class="cell grid-x large-9">
                         <?php
@@ -547,9 +595,13 @@
 				<div class="cell grid-x">
                     <?php
                     echo acym_tooltip(
-                        '<button type="button" class="cell medium-shrink button button-secondary" id="checkdb_button">'.acym_translation('ACYM_CHECK_DB').'</button>',
-                        acym_translation('ACYM_INTRO_CHECK_DATABASE'),
-                        'cell medium-shrink'
+                        [
+                            'hoveredText' => '<button type="button" class="cell medium-shrink button button-secondary" id="checkdb_button">'.acym_translation(
+                                    'ACYM_CHECK_DB'
+                                ).'</button>',
+                            'textShownInTooltip' => acym_translation('ACYM_INTRO_CHECK_DATABASE'),
+                            'classContainer' => 'cell medium-shrink',
+                        ]
                     );
                     ?>
 					<div class="cell auto padding-left-1" id="checkdb_report"></div>

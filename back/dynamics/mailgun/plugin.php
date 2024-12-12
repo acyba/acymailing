@@ -32,9 +32,9 @@ class plgAcymMailgun extends acymPlugin
             'us' => acym_translation('ACYM_US'),
             'eu' => acym_translation('ACYM_EU'),
         ];
-        $defaultDomain = empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_domain']) ? ''
-            : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_domain']->value;
-        $defaultApiKey = empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value;
+        $config = empty($data['tab']) ? $this->config : $data['tab']->config;
+        $defaultDomain = $config->get(self::SENDING_METHOD_ID.'_api_domain');
+        $defaultApiKey = $config->get(self::SENDING_METHOD_ID.'_api_key');
         ob_start();
         ?>
 		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
@@ -111,14 +111,14 @@ class plgAcymMailgun extends acymPlugin
         }
     }
 
-    public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $replyTo, $bcc = [], $attachments = [])
+    public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $replyTo, $bcc = [], $attachments = [], $sendingMethodListParams = [])
     {
         //https://documentation.mailgun.com/en/latest/user_manual.html#sending-via-api
         if ($mailerHelper->externalMailer != self::SENDING_METHOD_ID) return;
 
         $this->setSendingMethodApiUrl();
         $headers = $this->getHeadersSendingMethod(self::SENDING_METHOD_ID);
-        $authentication = $this->getAuthenticationSendingMethod(self::SENDING_METHOD_ID);
+        $authentication = $this->getAuthenticationSendingMethod(self::SENDING_METHOD_ID, [], $sendingMethodListParams);
         $fromData = $from['email'];
         $replyToData = $replyTo['email'] ?? '';
         $toData = $to['email'];
@@ -162,25 +162,39 @@ class plgAcymMailgun extends acymPlugin
 
     private function setSendingMethodApiUrl($credentials = [])
     {
-        if (empty($credentials)) $this->onAcymGetCredentialsSendingMethod($credentials, self::SENDING_METHOD_ID);
+        if (empty($credentials)) {
+            $this->onAcymGetCredentialsSendingMethod($credentials, self::SENDING_METHOD_ID);
+        }
 
         $this->sendingMethodApiUrl = self::SENDING_METHOD_API_URL_US;
-        if ($credentials[self::SENDING_METHOD_ID.'_api_region'] === 'eu') {
+        if (!empty($credentials[self::SENDING_METHOD_ID.'_api_region']) && $credentials[self::SENDING_METHOD_ID.'_api_region'] === 'eu') {
             $this->sendingMethodApiUrl = self::SENDING_METHOD_API_URL_EU;
         }
+
         if (!empty($credentials[self::SENDING_METHOD_ID.'_api_domain'])) {
             $this->sendingMethodApiUrl .= $credentials[self::SENDING_METHOD_ID.'_api_domain'].'/';
         }
     }
 
-    public function onAcymGetCredentialsSendingMethod(&$credentials, $sendingMethod)
+    /**
+     * @param array  $credentials
+     * @param string $sendingMethod
+     * @param array  $sendingMethodListParams this parameter is only used for the plugin sending method list
+     *
+     * @return void
+     */
+    public function onAcymGetCredentialsSendingMethod(array &$credentials, string $sendingMethod, array $sendingMethodListParams = [])
     {
         if ($sendingMethod != self::SENDING_METHOD_ID) return;
 
+        $apiKey = self::SENDING_METHOD_ID.'_api_key';
+        $domain = self::SENDING_METHOD_ID.'_api_domain';
+        $region = self::SENDING_METHOD_ID.'_api_region';
+
         $credentials = [
-            self::SENDING_METHOD_ID.'_api_key' => $this->config->get(self::SENDING_METHOD_ID.'_api_key', ''),
-            self::SENDING_METHOD_ID.'_api_domain' => $this->config->get(self::SENDING_METHOD_ID.'_api_domain', ''),
-            self::SENDING_METHOD_ID.'_api_region' => $this->config->get(self::SENDING_METHOD_ID.'_api_region', 'us'),
+            $apiKey => $sendingMethodListParams[$apiKey] ?? $this->config->get($apiKey, ''),
+            $domain => $sendingMethodListParams[$domain] ?? $this->config->get($domain, ''),
+            $region => $sendingMethodListParams[$region] ?? $this->config->get($region, 'us'),
         ];
     }
 
@@ -189,9 +203,9 @@ class plgAcymMailgun extends acymPlugin
         return ['content-type: multipart/form-data'];
     }
 
-    public function getAuthenticationSendingMethod($sendingMethod, $credentials = [])
+    public function getAuthenticationSendingMethod($sendingMethod, $credentials = [], $sendingMethodListParams = [])
     {
-        if (empty($credentials)) $this->onAcymGetCredentialsSendingMethod($credentials, $sendingMethod);
+        if (empty($credentials)) $this->onAcymGetCredentialsSendingMethod($credentials, $sendingMethod, $sendingMethodListParams);
 
         return [
             'name' => 'api',
@@ -209,7 +223,7 @@ class plgAcymMailgun extends acymPlugin
         if ($method != self::SENDING_METHOD_ID) return;
 
         //__START__wordpress_
-        if (ACYM_CMS == 'wordpress' && $plugin == 'wp_mail_smtp') {
+        if (ACYM_CMS === 'wordpress' && $plugin === 'wp_mail_smtp') {
             $wpMailSmtpSetting = get_option('wp_mail_smtp', '');
             if (empty($wpMailSmtpSetting) || empty($wpMailSmtpSetting['mailgun'])) return;
 

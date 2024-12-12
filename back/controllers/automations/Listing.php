@@ -80,7 +80,7 @@ trait Listing
                         $mailClass = new MailClass();
                         foreach ($action->actions as &$oneAction) {
                             if (!empty($oneAction['acy_add_queue']['mail_id'])) {
-                                $newMail = $mailClass->duplicateMail($oneAction['acy_add_queue']['mail_id'], $mailClass::TYPE_AUTOMATION);
+                                $newMail = $mailClass->duplicateMail($oneAction['acy_add_queue']['mail_id'], MailClass::TYPE_AUTOMATION);
                                 if (!empty($newMail)) {
                                     $oneAction['acy_add_queue']['mail_id'] = $newMail->id;
                                 }

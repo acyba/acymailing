@@ -6,8 +6,6 @@ use AcyMailing\Libraries\acymClass;
 
 class UserStatClass extends acymClass
 {
-    var $table = 'user_stat';
-
     const DESKTOP_DEVICES = [
         'windows' => 'Windows',
         'macintosh' => 'Mac',
@@ -32,6 +30,13 @@ class UserStatClass extends acymClass
         'ipod' => 'iPod',
         'android' => 'Android',
     ];
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'user_stat';
+    }
 
     public function save($userStat, $overrideSendDate = false)
     {

@@ -32,7 +32,7 @@ define('ACYM_IMAGES', ACYM_MEDIA_URL.'images/');
 define('ACYM_CSS', ACYM_MEDIA_URL.'css/');
 define('ACYM_JS', ACYM_MEDIA_URL.'js/');
 define('ACYM_TEMPLATE', ACYM_MEDIA.'templates'.DS);
-define('ACYM_TEMPLATE_URL', ACYM_MEDIA_URL.'templates'.DS);
+define('ACYM_TEMPLATE_URL', ACYM_MEDIA_URL.'templates/');
 define('ACYM_TMP_URL', ACYM_MEDIA_URL.'tmp/');
 define('ACYM_TEMPLATE_THUMBNAILS', ACYM_IMAGES.'thumbnails/');
 define('ACYM_CORE_DYNAMICS_URL', acym_rootURI().'administrator/components/'.ACYM_COMPONENT.'/dynamics/');

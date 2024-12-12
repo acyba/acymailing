@@ -8,12 +8,18 @@ use AcyMailing\Libraries\acymClass;
 
 class AutomationClass extends acymClass
 {
-    var $table = 'automation';
-    var $pkey = 'id';
     var $didAnAction = false;
     var $report = [];
 
-    public function getMatchingElements($settings = [])
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'automation';
+        $this->pkey = 'id';
+    }
+
+    public function getMatchingElements(array $settings = []): array
     {
         $query = 'SELECT * FROM #__acym_automation';
         $queryCount = 'SELECT COUNT(id) AS total, SUM(active) AS totalActive FROM #__acym_automation';

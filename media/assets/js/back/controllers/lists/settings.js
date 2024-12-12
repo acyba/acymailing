@@ -3,7 +3,6 @@ jQuery(function($) {
         setColorPicker();
         setSubscriptionEvolutionChart();
         acym_helperSelectionMultilingual.init('list');
-        acym_helperTooltip.setUserInfoLoadingHover();
     }
 
     Init();

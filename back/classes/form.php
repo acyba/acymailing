@@ -12,13 +12,14 @@ class FormClass extends acymClass
     const SUB_FORM_TYPE_HEADER = 'header';
     const SUB_FORM_TYPE_FOOTER = 'footer';
 
-    var $table = 'form';
-    var $pkey = 'id';
     private $settings;
 
     public function __construct()
     {
         parent::__construct();
+
+        $this->table = 'form';
+        $this->pkey = 'id';
 
         $listClass = new ListClass();
         $lists = $listClass->getAllForSelect(false);
@@ -379,7 +380,7 @@ class FormClass extends acymClass
         ];
     }
 
-    public function getMatchingElements($settings = [])
+    public function getMatchingElements(array $settings = []): array
     {
         $query = 'SELECT form.* FROM #__acym_form AS form';
         $queryCount = 'SELECT COUNT(form.id) AS total, SUM(active) AS totalActive FROM #__acym_form AS form';

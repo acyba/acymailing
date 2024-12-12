@@ -5,9 +5,9 @@ use AcyMailing\Classes\FormClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\RegacyHelper;
-use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -23,28 +23,6 @@ class plgSystemAcymtriggers extends CMSPlugin
         if (version_compare(JVERSION, '4.0.0', '>=')) {
             $this->registerLegacyListener('plgVmOnUserOrder');
         }
-    }
-
-    // Loads the Acy library
-    public function initAcy()
-    {
-        $isInstalling = !empty($_REQUEST['option']) && $_REQUEST['option'] === 'com_installer' && !empty($_REQUEST['task']) && $_REQUEST['task'] === 'install.install';
-
-        if ($isInstalling) {
-            return false;
-        }
-
-        if (function_exists('acym_getVar')) {
-            return true;
-        }
-
-        $ds = DIRECTORY_SEPARATOR;
-        $helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
-        if (!file_exists($helperFile) || !include_once $helperFile) {
-            return false;
-        }
-
-        return true;
     }
 
     // Used to know what changed when saving a user
@@ -65,17 +43,131 @@ class plgSystemAcymtriggers extends CMSPlugin
         if (is_object($user)) {
             $user = get_object_vars($user);
         }
+
         if ($success === false || empty($user['email']) || !$this->initAcy()) {
             return true;
         }
 
         $userClass = new UserClass();
-        if (!method_exists($userClass, 'synchSaveCmsUser')) {
-            return true;
-        }
         $userClass->synchSaveCmsUser($user, $isnew, $this->oldUser);
 
         return true;
+    }
+
+    public function onContentBeforeSave($context, $article, $isNew, $data = [])
+    {
+        if ($context !== 'com_contact.contact' || empty($data['email_to']) || !$this->initAcy()) {
+            return;
+        }
+
+        $config = acym_config();
+        if ($config->get('regacy_contact', 0) != 1) {
+            return;
+        }
+
+        $source = 'Contact';
+        acym_setVar('acy_source', $source);
+
+        $userClass = new UserClass();
+        $userClass->checkVisitor = false;
+        $userClass->sendConf = false;
+
+        if (!$isNew) {
+            $previousEmailAddress = acym_loadResult('SELECT `email_to` FROM #__contact_details WHERE `id` = '.intval($data['id']));
+            if (!empty($previousEmailAddress)) {
+                $acyUser = $userClass->getOneByEmail($previousEmailAddress);
+            }
+        }
+
+        if (empty($acyUser)) {
+            $acyUser = $userClass->getOneByEmail($data['email_to']);
+        }
+
+        if (empty($acyUser)) {
+            $acyUser = new stdClass();
+            $acyUser->source = $source;
+        }
+
+        /* * * * * * * * * * * * * * * * * * *
+        * Step 1: create / update the user  *
+        * * * * * * * * * * * * * * * * * * */
+        $acyUser->name = $data['name'] ?? '';
+        $acyUser->email = $data['email_to'];
+        $acyUser->active = $data['published'] == '0' ? 0 : 1;
+
+        $regacyContactForceConf = $config->get('regacy_contact_forceconf', 0) == 1;
+        if (!$regacyContactForceConf) {
+            $acyUser->confirmed = 1;
+        }
+
+        $isNew = $isNew || empty($acyUser->id);
+
+        $id = $userClass->save($acyUser);
+
+        if (empty($id)) {
+            return;
+        }
+
+        /* * * * * * * * * * * * * * * * * * * * * *
+         * Step 2: Handle the user's subscription  *
+         * * * * * * * * * * * * * * * * * * * * * */
+        $currentSubscription = $userClass->getSubscriptionStatus($id);
+
+        $autoLists = $isNew ? $config->get('regacy_contact_autolists') : '';
+        $autoLists = explode(',', $autoLists);
+        acym_arrayToInteger($autoLists);
+
+        $listsClass = new ListClass();
+        $allLists = $listsClass->getAll();
+
+        $listsToSubscribe = [];
+        foreach ($allLists as $oneList) {
+            if (!$oneList->active || !empty($currentSubscription[$oneList->id])) {
+                continue;
+            }
+
+            if (in_array($oneList->id, $autoLists)) {
+                $listsToSubscribe[] = $oneList->id;
+            }
+        }
+
+        if (!empty($listsToSubscribe)) {
+            $userClass->subscribe($id, $listsToSubscribe);
+        }
+
+        $confirmationRequired = $config->get('require_confirmation', 1);
+        if (empty($acyUser->active) || !empty($acyUser->confirmed) || !$confirmationRequired) {
+            return;
+        }
+
+        // New active user, or just activated the user, send the email
+        if (empty($acyUser->id) && $regacyContactForceConf) {
+            $userClass->forceConfAdmin = true;
+            $userClass->sendConfirmation($id);
+        }
+    }
+
+    public function onContentBeforeDelete($context, $data)
+    {
+        if ($context !== 'com_contact.contact' || !$this->initAcy()) {
+            return;
+        }
+
+        $config = acym_config();
+        if ($config->get('regacy_contact', '0') != 1 || $config->get('regacy_contact_delete', '0') != 1) {
+            return;
+        }
+
+        $userClass = new UserClass();
+        $contactEmail = $data->get('email_to');
+        if (empty($contactEmail)) {
+            return;
+        }
+
+        $acyUser = $userClass->getOneByEmail($contactEmail);
+        if (!empty($acyUser)) {
+            $userClass->delete($acyUser->id);
+        }
     }
 
     // Delete Acy user on site account deletion
@@ -84,15 +176,13 @@ class plgSystemAcymtriggers extends CMSPlugin
         if (is_object($user)) {
             $user = get_object_vars($user);
         }
+
         if ($success === false || empty($user['email']) || !$this->initAcy()) {
             return true;
         }
 
 
         $userClass = new UserClass();
-        if (!method_exists($userClass, 'synchDeleteCmsUser')) {
-            return true;
-        }
         $userClass->synchDeleteCmsUser($user['email']);
 
         return true;
@@ -111,7 +201,7 @@ class plgSystemAcymtriggers extends CMSPlugin
     private function handleVirtuemartOrderCreateUpdate($orderData)
     {
         static $alreadyTriggerVirtuemart = false;
-        if (empty($orderData->virtuemart_user_id) || !$this->initAcy() || $alreadyTriggerVirtuemart) {
+        if (empty($orderData->virtuemart_user_id) || $alreadyTriggerVirtuemart || !$this->initAcy()) {
             return;
         }
         $alreadyTriggerVirtuemart = true;
@@ -134,7 +224,7 @@ class plgSystemAcymtriggers extends CMSPlugin
     // Hikashop trigger after an order is created
     public function onAfterOrderCreate(&$order, &$send_email)
     {
-        return $this->onAfterOrderUpdate($order, $send_email);
+        $this->onAfterOrderUpdate($order, $send_email);
     }
 
     // Hikashop trigger after an order is updated
@@ -154,6 +244,19 @@ class plgSystemAcymtriggers extends CMSPlugin
         }
 
         acym_trigger('onAfterCartSave', [&$element], 'plgAcymHikashop');
+    }
+
+    // Trigger for hikashop user creation
+    public function onAfterUserCreate(&$element)
+    {
+        if (!$this->initAcy()) {
+            return;
+        }
+
+        $formData = acym_getVar('array', 'data', []);
+        $listData = acym_getVar('array', 'hikashop_visible_lists_checked', []);
+
+        acym_trigger('onAfterHikashopUserCreate', [$formData, $listData, $element]);
     }
 
     public function onBeforeCompileHead()
@@ -197,6 +300,75 @@ class plgSystemAcymtriggers extends CMSPlugin
         }
     }
 
+    public function onAfterRender()
+    {
+        $this->displayForms();
+        $this->applyRegacy();
+    }
+
+    public function onAfterRoute()
+    {
+        // Fix a bug in Joomla: the session com_media.return_url is deleted the first time we submit the image upload form
+        if (!empty($_REQUEST['author']) && 'acymailing' === $_REQUEST['author'] && !empty($_REQUEST['task']) && 'file.upload' === $_REQUEST['task'] && !empty($_REQUEST['option']) && 'com_media' === $_REQUEST['option']) {
+            $session = Factory::getSession();
+            $session->set('com_media.return_url', 'index.php?option=com_media&view=images&tmpl=component');
+        }
+
+        $source = $this->getVar('string', 'acy_source');
+        if ($source === 'virtuemart registration form') {
+            if (!$this->initAcy()) {
+                return;
+            }
+            acym_trigger('onRegacyAfterRoute', []);
+        }
+
+        if (empty($_GET['code']) || empty($_GET['state'])) {
+            return;
+        }
+
+        if ($_GET['state'] === 'acymailing') {
+            if (!$this->initAcy()) {
+                return;
+            }
+            acym_redirect(acym_completeLink('configuration&code='.$_GET['code'], false, true));
+        }
+    }
+
+    public function onAfterInitialise()
+    {
+        $this->handleCron();
+        $this->handleAutologin();
+    }
+
+
+    private function initAcy(): bool
+    {
+        $isInstalling = !empty($_REQUEST['option']) && in_array(
+                $_REQUEST['option'],
+                [
+                    'com_installer',
+                    'com_joomlaupdate',
+                    'com_postinstall',
+                ]
+            );
+
+        if ($isInstalling) {
+            return false;
+        }
+
+        if (function_exists('acym_getVar')) {
+            return true;
+        }
+
+        $ds = DIRECTORY_SEPARATOR;
+        $helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
+        if (!file_exists($helperFile) || !include_once $helperFile) {
+            return false;
+        }
+
+        return true;
+    }
+
     private function displayForms()
     {
         if (empty($this->formToDisplay)) {
@@ -210,14 +382,14 @@ class plgSystemAcymtriggers extends CMSPlugin
         Factory::getApplication()->setBody($buffer);
     }
 
-    public function onAfterRender()
-    {
-        $this->displayForms();
-        $this->applyRegacy();
-    }
-
     private function applyRegacy()
     {
+        // Get the current extension
+        $option = $this->getVar('cmd', 'option');
+        if (empty($option)) {
+            return;
+        }
+
         $db = Factory::getDbo();
         $db->setQuery('SELECT `value` FROM #__acym_configuration WHERE `name` LIKE "%regacy" OR `name` LIKE "%\_sub"');
         $regacyOptions = $db->loadColumn();
@@ -233,16 +405,9 @@ class plgSystemAcymtriggers extends CMSPlugin
             return;
         }
 
-        // Get the current extension
-        $option = $this->getVar('cmd', 'option');
-        if (empty($option)) {
-            return;
-        }
-
         if (!$this->initAcy()) {
             return;
         }
-
 
         $config = acym_config();
         if ($config->get('regacy', 0)) {
@@ -272,7 +437,9 @@ class plgSystemAcymtriggers extends CMSPlugin
 
         // We're on a supported extension, good. But is this specific page supported?
         $viewVar = ['view'];
-        if (!empty($components[$option]['viewvar'])) $viewVar = $components[$option]['viewvar'];
+        if (!empty($components[$option]['viewvar'])) {
+            $viewVar = $components[$option]['viewvar'];
+        }
 
         $isvalid = false;
         foreach ($viewVar as $oneVar) {
@@ -286,7 +453,6 @@ class plgSystemAcymtriggers extends CMSPlugin
             return;
         }
 
-
         $regacyHelper = new RegacyHelper();
         if (!$regacyHelper->prepareLists($components[$option])) {
             return;
@@ -295,7 +461,7 @@ class plgSystemAcymtriggers extends CMSPlugin
         $this->includeRegacyLists($components[$option], $regacyHelper->label, $regacyHelper->lists);
     }
 
-    function getVar($type, $name)
+    private function getVar($type, $name)
     {
         $jversion = preg_replace('#[^0-9\.]#i', '', JVERSION);
         if (version_compare($jversion, '4.0.0', '>=')) {
@@ -426,49 +592,6 @@ class plgSystemAcymtriggers extends CMSPlugin
         }
     }
 
-    public function onAfterRoute()
-    {
-        // Fix a bug in Joomla: the session com_media.return_url is deleted the first time we submit the image upload form
-        if (!empty($_REQUEST['author']) && 'acymailing' === $_REQUEST['author'] && !empty($_REQUEST['task']) && 'file.upload' === $_REQUEST['task'] && !empty($_REQUEST['option']) && 'com_media' === $_REQUEST['option']) {
-            $session = Factory::getSession();
-            $session->set('com_media.return_url', 'index.php?option=com_media&view=images&tmpl=component');
-        }
-
-        if (!$this->initAcy()) return true;
-        acym_trigger('onRegacyAfterRoute', []);
-
-        if (empty($_GET['code']) || empty($_GET['state'])) {
-            return;
-        }
-
-        if ($_GET['state'] === 'acymailing') {
-            acym_redirect(acym_completeLink('configuration&code='.$_GET['code'], false, true));
-        }
-    }
-
-    // Trigger for hikashop user creation
-    function onAfterUserCreate(&$element)
-    {
-        if (!$this->initAcy()) {
-            return true;
-        }
-
-        $formData = acym_getVar('array', 'data', []);
-        $listData = acym_getVar('array', 'hikashop_visible_lists_checked', []);
-
-        acym_trigger('onAfterHikashopUserCreate', [$formData, $listData, $element]);
-    }
-
-    public function onAfterInitialise()
-    {
-        $this->handleCron();
-        $this->handleAutologin();
-    }
-
-    private function handleCron()
-    {
-    }
-
     private function getAcyConf($conf)
     {
         static $db;
@@ -481,7 +604,11 @@ class plgSystemAcymtriggers extends CMSPlugin
         return $db->loadResult();
     }
 
-    function handleAutologin()
+    private function handleCron()
+    {
+    }
+
+    private function handleAutologin()
     {
         $subId = $this->getVar('int', 'autoSubId');
         $subKey = $this->getVar('string', 'subKey');
@@ -495,7 +622,12 @@ class plgSystemAcymtriggers extends CMSPlugin
         }
 
         $currentUrl = acym_currentURL();
-        $cleanedUrl = substr($currentUrl, 0, strpos($currentUrl, 'autoSubId') - 1);
+        $cleanedUrl = acym_cleanUrl($currentUrl, ['autoSubId', 'subKey']);
+
+        $config = acym_config();
+        if ($config->get('autologin_urls', 0) == 0) {
+            acym_redirect($cleanedUrl);
+        }
 
         $cmsId = acym_loadResult('SELECT `cms_id` FROM #__acym_user WHERE `id` = '.intval($subId).' AND `key` = '.acym_escapeDB($subKey));
         if (empty($cmsId) || $cmsId === acym_currentUserId()) {
@@ -519,5 +651,4 @@ class plgSystemAcymtriggers extends CMSPlugin
 
         acym_redirect($cleanedUrl);
     }
-
 }

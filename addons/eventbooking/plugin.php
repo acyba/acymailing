@@ -33,8 +33,9 @@ class plgAcymEventbooking extends acymPlugin
 
         if ($this->installed) {
             acym_loadLanguageFile('com_eventbooking', JPATH_SITE);
-            acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR);
             acym_loadLanguageFile('com_eventbooking', JPATH_ADMINISTRATOR);
+            acym_loadLanguageFile('com_eventbookingcommon', JPATH_ADMINISTRATOR);
+
             $this->displayOptions = [
                 'eb_title' => [acym_translation('EB_TITLE'), true],
                 'eb_price' => [acym_translation('EB_PRICE'), true],

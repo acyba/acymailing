@@ -6,8 +6,13 @@ use AcyMailing\Libraries\acymClass;
 
 class ConditionClass extends acymClass
 {
-    var $table = 'condition';
-    var $pkey = 'id';
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'condition';
+        $this->pkey = 'id';
+    }
 
     public function getOneByStepId($stepId)
     {

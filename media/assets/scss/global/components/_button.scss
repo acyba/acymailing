@@ -6,7 +6,7 @@
     min-height: 40px;
     height: auto;
     min-width: 100px;
-    max-width:100%;
+    max-width: 100%;
     padding: 0 16px;
     border-radius: 4px;
     cursor: pointer;
@@ -29,7 +29,7 @@
     }
 
     &.button-full-width {
-        width:100%;
+        width: 100%;
     }
 
     &.button-secondary {
@@ -121,6 +121,18 @@
 
         span {
             color: $alert-color;
+        }
+    }
+
+    &.acym__button__upgrade {
+        color: $black;
+        background-color: $yellow-gopro;
+        border-color: $yellow-gopro;
+
+        &:hover {
+            background-color: $yellow-gopro;
+            border-color: $yellow-gopro;
+            color: $black;
         }
     }
 

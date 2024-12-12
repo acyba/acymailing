@@ -1,5 +1,7 @@
 <?php
 
+include_once __DIR__.DIRECTORY_SEPARATOR.'field.php';
+
 class JFormFieldArticle extends acym_JFormField
 {
     var $type = 'article';

@@ -6,12 +6,17 @@ use AcyMailing\Libraries\acymClass;
 
 class FieldClass extends acymClass
 {
-    var $table = 'field';
-    var $pkey = 'id';
-
     const LANGUAGE_FIELD_ID_KEY = 'language_field_id';
 
-    public function getMatchingElements($settings = [])
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'field';
+        $this->pkey = 'id';
+    }
+
+    public function getMatchingElements(array $settings = []): array
     {
         $query = 'SELECT * FROM #__acym_field';
         $queryCount = 'SELECT COUNT(*) FROM #__acym_field';
@@ -503,7 +508,7 @@ class FieldClass extends acymClass
             } else {
                 $field->option->authorized_content->message = $field->option->error_message_invalid;
             }
-            $authorizedContent = ' data-authorized-content="'.acym_escape($field->option->authorized_content).'"';
+            $authorizedContent = ' data-authorized-content="'.acym_escape($field->option->authorized_content, false).'"';
         }
 
         $attributesSelectField = [];
@@ -552,14 +557,28 @@ class FieldClass extends acymClass
         if ($field->id == 1) {
             $nameAttribute = ' name="user[name]"';
             $inputTmp = '<input '.$nameAttribute.$placeholder.$required.$value.$authorizedContent.$style.$maxCharacters.$readonly.' type="text" class="cell '.$allClasses.' '.$textClasses.'"'.'>';
-            if (!empty($readonly)) $inputTmp = acym_tooltip($inputTmp, acym_translation('ACYM_CF_EDITION_BLOCKED'));
+            if (!empty($readonly)) {
+                $inputTmp = acym_tooltip(
+                    [
+                        'hoveredText' => $inputTmp,
+                        'textShownInTooltip' => acym_translation('ACYM_CF_EDITION_BLOCKED'),
+                    ]
+                );
+            }
             $return .= $inputTmp;
         } elseif ($field->id == 2) {
             $nameAttribute = ' name="user[email]"';
             $uniqueId = 'email_field_'.rand(100, 900);
             $inputTmp = '<input id="'.$uniqueId.'" '.$nameAttribute.$placeholder.$value.$authorizedContent.$style.$maxCharacters.$readonly.' required type="email" class="cell acym__user__edit__email '.$allClasses.' '.$emailClasses.'"'.($displayFront && $cmsUser
                     ? 'disabled' : '').'>';
-            if (!empty($readonly)) $inputTmp = acym_tooltip($inputTmp, acym_translation('ACYM_CF_EDITION_BLOCKED'));
+            if (!empty($readonly)) {
+                $inputTmp = acym_tooltip(
+                    [
+                        'hoveredText' => $inputTmp,
+                        'textShownInTooltip' => acym_translation('ACYM_CF_EDITION_BLOCKED'),
+                    ]
+                );
+            }
             $return .= $inputTmp;
             if ($displayFront && !$cmsUser && !empty($this->config->get('email_spellcheck'))) {
                 $return .= '<ul acym-data-field="'.$uniqueId.'" class="acym_email_suggestions" style="display: none;"></ul>';
@@ -581,7 +600,12 @@ class FieldClass extends acymClass
             );
 
             if (!empty($readonly)) {
-                $selectTmp = acym_tooltip($selectTmp, acym_translation('ACYM_CF_EDITION_BLOCKED'));
+                $selectTmp = acym_tooltip(
+                    [
+                        'hoveredText' => $selectTmp,
+                        'textShownInTooltip' => acym_translation('ACYM_CF_EDITION_BLOCKED'),
+                    ]
+                );
             }
             $return .= $selectTmp;
         } elseif ($field->type === 'text') {

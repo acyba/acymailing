@@ -17,18 +17,18 @@ trait UserInsertion
     {
         ?>
 		<script type="text/javascript">
-            var selectedUserDText;
+            let selectedUserDText;
 
             function changeUserTag(tagname) {
                 if (!tagname) return;
 
                 selectedUserDText = tagname;
 
-                var dText;
-                var iscf = tagname.toLowerCase().indexOf('custom');
+                let dText;
+                const iscf = tagname.toLowerCase().indexOf('custom');
 
                 if (iscf >= 0) {
-                    dText = '{usertag:' + tagname.substr(0, iscf) + '|type:custom';
+                    dText = '{usertag:' + tagname.substring(0, iscf) + '|type:custom';
                 } else {
                     dText = '{usertag:' + tagname;
                 }
@@ -50,9 +50,17 @@ trait UserInsertion
         $typeinfo = [];
         $typeinfo[] = acym_selectOption('receiver', 'ACYM_RECEIVER_INFORMATION');
         $typeinfo[] = acym_selectOption('sender', 'ACYM_SENDER_INFORMATION');
-        if (!empty($isAutomation)) $typeinfo[] = acym_selectOption('current', 'ACYM_USER_TRIGGERING_AUTOMATION');
+        if (!empty($isAutomation)) {
+            $typeinfo[] = acym_selectOption('current', 'ACYM_USER_TRIGGERING_AUTOMATION');
+        }
 
-        echo acym_radio($typeinfo, 'typeInfoUser', 'receiver', ['onclick' => 'changeUserTag(selectedUserDText)']);
+        echo acym_radio(
+            $typeinfo,
+            'typeInfoUser',
+            'receiver',
+            ['onclick' => 'changeUserTag(selectedUserDText)'],
+            ['containerClass' => 'margin-bottom-1']
+        );
 
         $fields = [
             $this->cmsUserVars->username => 'ACYM_LOGIN_NAME',

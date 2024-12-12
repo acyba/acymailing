@@ -101,7 +101,7 @@ const acym_editorWysidFontStyle = {
 
         // Init template design options
         jQuery('#acym__wysid__background-image__template').off('click').on('click', function () {
-            acym_editorWysidImage.openMediaManager($emailContentContainer, true);
+            acym_editorWysidImage.addMediaWPWYSID($emailContentContainer, true);
         });
 
         if ($emailContentContainer.css('background-image') !== 'none') {

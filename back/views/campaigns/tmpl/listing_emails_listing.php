@@ -65,7 +65,10 @@
                         $isFront = !acym_isAdmin() && ACYM_CMS == 'joomla';
                         $controllerName = $isFront ? 'frontmails' : 'mails';
                         $linkTask = 'edit&step=editEmail&type=welcome';
-                        if ($email->drag_editor !== '0') $linkTask .= '&type_editor=acyEditor';
+                        if (intval($email->drag_editor) !== 0) {
+                            $linkTask .= '&type_editor=acyEditor';
+                        }
+
                         $returnLink = acym_getVar('cmd', 'ctrl').'&task='.acym_getVar('cmd', 'task');
                         $return = '&return='.urlencode(base64_encode($isFront ? acym_frontendLink($returnLink) : acym_completeLink($returnLink)));
                         $idName = !empty($data['cleartask']) && in_array($data['cleartask'], ['welcome', 'unsubscribe']) ? 'id' : 'campaignId';
@@ -87,7 +90,12 @@
                         if (!empty($email->lists)) {
                             echo '<div class="grid-x cell text-center">';
                             foreach ($email->lists as $list) {
-                                echo acym_tooltip('<i class="acym_subscription acymicon-circle" style="color:'.acym_escape($list->color).'"></i>', acym_escape($list->name));
+                                echo acym_tooltip(
+                                    [
+                                        'hoveredText' => '<i class="acym_subscription acymicon-circle" style="color:'.acym_escape($list->color).'"></i>',
+                                        'textShownInTooltip' => acym_escape($list->name),
+                                    ]
+                                );
                             }
                             echo '</div>';
                         } else {

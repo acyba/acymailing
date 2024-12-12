@@ -2,12 +2,15 @@
 
 namespace AcyMailing\Controllers\Lists;
 
+use AcyMailing\Classes\HistoryClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Classes\TagClass;
 use AcyMailing\Classes\UrlClickClass;
+use AcyMailing\Controllers\ListsController;
 use AcyMailing\Helpers\EntitySelectHelper;
+use AcyMailing\Helpers\WorkflowHelper;
 
 trait Edition
 {
@@ -15,19 +18,39 @@ trait Edition
     {
         acym_setVar('layout', 'settings');
 
+        $tab = acym_getVar('string', 'step', ListsController::LIST_EDITION_TABS_GENERAL);
+
+        // In the front with the SEF activated, the tab is not always set
+        if (empty($tab)) {
+            $tab = ListsController::LIST_EDITION_TABS_GENERAL;
+        }
+
         $data = [];
         $data['svg'] = acym_loaderLogo(false);
+        $data['workflowHelper'] = new WorkflowHelper();
+        $data['currentTab'] = $tab;
+        $data['tabs'] = [
+            'general' => ListsController::LIST_EDITION_TABS_GENERAL,
+            'subscribers' => ListsController::LIST_EDITION_TABS_SUBSCRIBERS,
+            'unsubscriptions' => ListsController::LIST_EDITION_TABS_UNSUBSCRIPTIONS,
+        ];
 
         $listId = acym_getVar('int', 'listId', 0);
 
         if (!$this->prepareListSettings($data, $listId)) return;
-        $this->prepareTagsSettings($data, $listId);
-        $this->prepareSubscribersSettings($data, $listId);
-        $this->prepareSubscribersEntitySelect($data, $listId);
-        $this->prepareListStat($data, $listId);
-        $this->prepareListStatEvolution($data, $listId);
-        $this->prepareWelcomeUnsubData($data);
-        $this->prepareMultilingualOption($data);
+
+        if ($tab === ListsController::LIST_EDITION_TABS_GENERAL) {
+            $this->prepareTagsSettings($data, $listId);
+            $this->prepareListStat($data, $listId);
+            $this->prepareListStatEvolution($data, $listId);
+            $this->prepareWelcomeUnsubData($data);
+            $this->prepareMultilingualOption($data);
+        } elseif ($tab === ListsController::LIST_EDITION_TABS_SUBSCRIBERS) {
+            $this->prepareSubscribersEntitySelect($data, $listId);
+            $this->prepareSubscribersSettings($data, $listId);
+        } elseif ($tab === ListsController::LIST_EDITION_TABS_UNSUBSCRIPTIONS) {
+            $this->prepareUnsubReasons($data);
+        }
 
         parent::display($data);
     }
@@ -115,9 +138,9 @@ trait Edition
     private function prepareTagsSettings(&$data, $listId)
     {
         $tagClass = new TagClass();
-        $data['allTags'] = $tagClass->getAllTagsByType('list');
+        $data['allTags'] = $tagClass->getAllTagsByType(TagClass::TYPE_LIST);
         $data['listTagsName'] = [];
-        $listsTags = $tagClass->getAllTagsByElementId('list', $listId);
+        $listsTags = $tagClass->getAllTagsByElementId(TagClass::TYPE_LIST, intval($listId));
         foreach ($listsTags as $oneTag) {
             $data['listTagsName'][] = $oneTag;
         }
@@ -241,7 +264,7 @@ trait Edition
         $listClass = new ListClass();
         $mailClass = new MailClass();
 
-        foreach ([$mailClass::TYPE_WELCOME => 'welcome', $mailClass::TYPE_UNSUBSCRIBE => 'unsub'] as $full => $short) {
+        foreach ([MailClass::TYPE_WELCOME => 'welcome', MailClass::TYPE_UNSUBSCRIBE => 'unsub'] as $full => $short) {
             $mailId = acym_getVar('int', $short.'mailid', 0);
             if (empty($data['listInformation']->{$full.'_id'}) && !empty($mailId)) {
                 $data['listInformation']->{$full.'_id'} = $mailId;
@@ -272,7 +295,7 @@ trait Edition
         }
     }
 
-    public function unsetMail($type)
+    public function unsetMail(string $type)
     {
         $listClass = new ListClass();
         $id = acym_getVar('int', 'listId', 0);
@@ -286,7 +309,7 @@ trait Edition
         }
 
         if (!$listClass->hasUserAccess($id)) {
-            die('Access denied for list '.$id);
+            die('Access denied for list '.acym_escape($id));
         }
 
         $list->$type = null;
@@ -343,7 +366,7 @@ trait Edition
         if (acym_isAdmin()) {
             $listInformation->access = empty($listInformation->access) ? '' : ','.implode(',', $listInformation->access).',';
         } elseif (!empty($formData->id) && !$listClass->hasUserAccess($formData->id)) {
-            die('Cannot save list '.$formData->id);
+            die('Cannot save list '.acym_escape($formData->id));
         }
 
         $listId = $listClass->save($listInformation);
@@ -358,6 +381,7 @@ trait Edition
                 acym_enqueueMessage($listClass->errors, 'error');
             }
         }
+
         if ($goToListing) {
             $this->listing();
         } else {
@@ -408,5 +432,50 @@ trait Edition
         acym_setVar('listId', $listId);
 
         $this->settings();
+    }
+
+    private function sortDataByList($data)
+    {
+        $sortedData = [];
+
+        foreach ($data as $entry) {
+            $pattern = '/(?<!EXECUTED_BY::)\b\d+\b/';
+            preg_match_all($pattern, $entry->data, $listNumbers);
+
+            foreach ($listNumbers[0] as $listNumber) {
+                if (!isset($sortedData[$listNumber])) {
+                    $sortedData[$listNumber] = [];
+                }
+
+                $sortedData[$listNumber][] = $entry->unsubscribe_reason;
+            }
+        }
+
+        return $sortedData;
+    }
+
+    private function prepareUnsubReasons(&$data)
+    {
+        $historyClass = new HistoryClass();
+        $allReasonsData = $historyClass->getAllUnsubReasons();
+
+        $sortedData = $this->sortDataByList($allReasonsData);
+        $listId = acym_getVar('int', 'listId', 0);
+        $currentListData = $sortedData[$listId] ?? [];
+        $reasonCounts = array_count_values($currentListData);
+
+        $allAnswers = $historyClass->getAllMainLanguageUnsubReasons();
+        $newReasonCounts = [];
+        foreach ($reasonCounts as $key => $value) {
+            if (is_numeric($key) && isset($allAnswers[$key - 1])) {
+                $newReasonCounts[$allAnswers[$key - 1]] = $value;
+            } else {
+                $newReasonCounts[$key] = $value;
+            }
+        }
+
+        arsort($newReasonCounts);
+
+        $data['unsubReasons'] = $newReasonCounts;
     }
 }

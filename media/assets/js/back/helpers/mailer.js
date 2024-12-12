@@ -16,14 +16,17 @@ const acym_helperMailer = {
                 sendingMethod: this.getAttribute('sending-method-id')
             };
 
-            const credentialsField = jQuery(`[name^="config[${sendingMethod}"]`);
+            const isSml = jQuery(this).closest('#acym__configuration__sml__form').length > 0;
+            const $credentialsField = jQuery(`[name^="${isSml ? 'sml' : 'config'}[${sendingMethod}"]`);
 
-            for (let i = 0 ; i < credentialsField.length ; i++) {
-                let field = credentialsField[i];
-                if (field.getAttribute('type') == 'radio' && field.checked) {
-                    data[field.getAttribute('name')] = field.value;
-                } else if (field.getAttribute('type') != 'radio') {
-                    data[field.getAttribute('name')] = field.value;
+            for (let i = 0 ; i < $credentialsField.length ; i++) {
+                const field = $credentialsField[i];
+                const key = field.getAttribute('name').replace('sml', 'config');
+
+                if (field.getAttribute('type') != 'radio') {
+                    data[key] = field.value;
+                } else if (field.checked) {
+                    data[key] = field.value;
                 }
             }
 
@@ -108,7 +111,7 @@ const acym_helperMailer = {
             });
         });
     },
-    displayAuth2Params() {
+    displayOAuth2Params() {
         const $smtpHost = jQuery('#smtp_host');
         if ($smtpHost.length === 0) {
             return;
@@ -116,16 +119,16 @@ const acym_helperMailer = {
 
         const $connectionType = jQuery('#smtp_type');
         $connectionType.on('change', function () {
-            acym_helperMailer.handleAuth2ParamsAppearance();
+            acym_helperMailer.handleOAuth2ParamsAppearance();
         });
 
         $smtpHost.on('keyup', function () {
-            acym_helperMailer.handleAuth2ParamsAppearance();
+            acym_helperMailer.handleOAuth2ParamsAppearance();
         });
 
-        acym_helperMailer.handleAuth2ParamsAppearance();
+        acym_helperMailer.handleOAuth2ParamsAppearance();
     },
-    handleAuth2ParamsAppearance() {
+    handleOAuth2ParamsAppearance() {
         const auth2SmtpMicrosoft = [
             'smtp-mail.outlook.com',
             'smtp.office365.com'

@@ -13,8 +13,8 @@
 			</field>
 			<field name="hiddenlists" type="lists" default="None" label="ACYM_AUTO_SUBSCRIBE_TO" description="ACYM_AUTO_SUBSCRIBE_TO_DESC"/>
 			<field name="fields" type="fields" default="1,2" label="ACYM_FIELDS_TO_DISPLAY" description="ACYM_FIELDS_TO_DISPLAY_DESC"/>
-			<field name="introtext" type="textarea" rows="5" cols="35" default="" label="ACYM_INTRO_TEXT" description="ACYM_INTRO_TEXT_DESC" filter="SAFEHTML"/>
-			<field name="posttext" type="textarea" rows="5" cols="35" default="" label="ACYM_POST_TEXT" description="ACYM_POST_TEXT_DESC" filter="SAFEHTML"/>
+			<field name="introtext" type="textarea" rows="5" cols="35" default="" label="ACYM_INTRO_TEXT" description="ACYM_INTRO_TEXT_DESC" filter="RAW"/>
+			<field name="posttext" type="textarea" rows="5" cols="35" default="" label="ACYM_POST_TEXT" description="ACYM_POST_TEXT_DESC" filter="RAW"/>
 		</fieldset>
 	</fields>
 </metadata>

@@ -57,7 +57,7 @@ jQuery(function ($) {
                     );
                 },
                 getAllSubscribers() {
-                    let ctrl = document.querySelector('[name="ctrl"]').value;
+                    const ctrl = document.querySelector('[name="ctrl"]').value;
                     $.get(ACYM_AJAX_URL
                           + '&ctrl='
                           + ctrl
@@ -78,7 +78,7 @@ jQuery(function ($) {
                             return true;
                         }
 
-                        let nbLoaded = res.data.subscribers.length;
+                        const nbLoaded = res.data.subscribers.length;
 
                         this.subscribed = this.subscribed.concat(res.data.subscribers);
                         this.total += nbLoaded;
@@ -153,6 +153,12 @@ jQuery(function ($) {
                 },
                 users_ordering() {
                     this.getAgainSubscribers();
+                },
+                displayedSubscribers() {
+                    setTimeout(() => {
+                        acym_helperTooltip.setTooltip();
+                        acym_helperTooltip.setUserInfoLoadingHover();
+                    }, 200);
                 }
             }
         });

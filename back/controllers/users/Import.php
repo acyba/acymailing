@@ -39,6 +39,12 @@ trait Import
         }
         //__END__wordpress_
 
+        //__START__joomla_
+        if (ACYM_CMS === 'joomla') {
+            $this->prepareContacts($data);
+        }
+        //__END__joomla_
+
         $this->breadcrumb[acym_translation('ACYM_IMPORT')] = acym_completeLink('users&task=import');
         $data['menuClass'] = $this->menuClass;
 
@@ -51,22 +57,23 @@ trait Import
         $mailpoetClass = new MailpoetClass();
         $data['mailpoet_list'] = $mailpoetClass->getAllLists();
     }
-
     //__END__wordpress_
 
-    public function ajaxEncoding()
+    //__START__joomla_
+    private function prepareContacts(&$data)
     {
-        acym_setVar('layout', 'ajaxencoding');
-        parent::display();
-        exit;
+        $data['nbUsersContact'] = acym_loadResult('SELECT COUNT(*) FROM #__contact_details');
+        $data['contactCategories'] = acym_loadObjectList('SELECT `id` AS `value`, `title` AS `text` FROM #__categories WHERE `extension` = "com_contact"');
     }
+
+    //__END__joomla_
 
     public function doImport()
     {
         acym_checkToken();
 
         $function = acym_getVar('cmd', 'import_from');
-        $allowedImportModes = acym_isAdmin() ? ['file', 'textarea', 'cms', 'database', 'mailpoet'] : ['file', 'textarea'];
+        $allowedImportModes = acym_isAdmin() ? ['file', 'textarea', 'cms', 'database', 'mailpoet', 'contact'] : ['file', 'textarea'];
         if (!in_array($function, $allowedImportModes)) {
             die('Access denied for this import method');
         }
@@ -84,6 +91,7 @@ trait Import
             if (file_exists($importFile)) {
                 $importContent = file_get_contents($importFile);
             }
+
             if (empty($importContent)) {
                 acym_enqueueMessage(acym_translation('ACYM_EMPTY_TEXTAREA'), 'error');
                 $this->import();
@@ -95,6 +103,22 @@ trait Import
         } else {
             $this->listing();
         }
+    }
+
+    public function ajaxEncoding()
+    {
+        acym_setVar('layout', 'ajaxencoding');
+
+        $data = [];
+
+        ob_start();
+        parent::display($data);
+
+        $data = [
+            'preview' => ob_get_clean(),
+        ];
+
+        acym_sendAjaxResponse('', $data);
     }
 
     public function finalizeImport()

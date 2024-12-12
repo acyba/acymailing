@@ -1,5 +1,11 @@
 #acym_wrapper {
     #acym__users {
+        .acym__listing__empty {
+            [data-task="import"] {
+                margin-left: auto;
+            }
+        }
+
         .acym__users__subscription {
             padding-left: 7px;
         }

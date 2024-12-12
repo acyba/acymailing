@@ -56,7 +56,7 @@ class EncodingHelper extends acymObject
             return $data;
         }
 
-        if ($inputCharset == 'UTF-8' && $outputCharset == 'ISO-8859-1') {
+        if ($inputCharset === 'UTF-8' && $outputCharset === 'ISO-8859-1') {
             $data = str_replace(['€', '„', '“'], ['EUR', '"', '"'], $data);
         }
 
@@ -74,11 +74,11 @@ class EncodingHelper extends acymObject
             return mb_convert_encoding($data, $outputCharset, $inputCharset);
         }
 
-        if ($inputCharset == 'UTF-8' && $outputCharset == 'ISO-8859-1') {
+        if ($inputCharset === 'UTF-8' && $outputCharset === 'ISO-8859-1') {
             return acym_utf8Decode($data);
         }
 
-        if ($inputCharset == 'ISO-8859-1' && $outputCharset == 'UTF-8') {
+        if ($inputCharset === 'ISO-8859-1' && $outputCharset === 'UTF-8') {
             return acym_utf8Encode($data);
         }
 

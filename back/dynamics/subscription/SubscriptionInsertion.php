@@ -47,7 +47,7 @@ trait SubscriptionInsertion
                     echo 'defaultText["'.$tagname.'"] = "'.acym_translation($tag['default'], true).'";';
                 }
                 ?>
-                jQuery('.acym__subscription__subscription').removeClass('selected_row');
+                jQuery('.selected_row').removeClass('selected_row');
                 jQuery('#tr_' + tagName).addClass('selected_row');
                 jQuery('#acym__popup__subscription__tagtext').val(defaultText[tagName]);
                 setSubscriptionTag();
@@ -330,8 +330,6 @@ trait SubscriptionInsertion
     private function _getAttachedListid($email, $subid)
     {
         $mailid = $email->id;
-        $type = strtolower($email->type);
-        // standard, welcome, unsubscribe, unsubscribeall
 
         if (isset($this->lists[$mailid][$subid])) {
             return $this->lists[$mailid][$subid];
@@ -368,7 +366,7 @@ trait SubscriptionInsertion
             return $this->lists[$mailid][$subid];
         }
 
-        if ($type == $mailClass::TYPE_WELCOME && !empty($subid)) {
+        if (!empty($subid) && !empty($email->type) && $email->type === MailClass::TYPE_WELCOME) {
             //Last list the user subscribed to...
             $listid = acym_loadResult(
                 'SELECT list.id 
@@ -384,7 +382,7 @@ trait SubscriptionInsertion
             }
         }
 
-        if ($type == $mailClass::TYPE_UNSUBSCRIBE && !empty($subid)) {
+        if (!empty($subid) && !empty($email->type) && $email->type === MailClass::TYPE_UNSUBSCRIBE) {
             //Last list the user unsubscribed from...
             $listid = acym_loadResult(
                 'SELECT list.id 
@@ -536,7 +534,7 @@ trait SubscriptionInsertion
 
     private function _replaceSubscriptionTags(&$email)
     {
-        $match = '#(?:{|%7B)(confirm|unsubscribe|unsubscribeall|subscribe(?:\|[^}]+)*)(?:}|%7D)(.*)(?:{|%7B)/(confirm|unsubscribe|unsubscribeall|subscribe)(?:}|%7D)#Uis';
+        $match = '#(?:{|%7B)(confirm|unsubscribe(?:\|[^}]+)*|unsubscribeall|subscribe(?:\|[^}]+)*)(?:}|%7D)(.*)(?:{|%7B)/(confirm|unsubscribe|unsubscribeall|subscribe)(?:}|%7D)#Uis';
         $variables = ['subject', 'body'];
         $found = false;
         $results = [];
@@ -607,7 +605,14 @@ trait SubscriptionInsertion
                 $unsubscribeLink = $baseLink.'&task=unsubscribeAll&user_id={subscriber:id}&user_key={subscriber:key|urlencode}';
                 $unsubClass = 'acym_unsubscribe_all_lists';
             }
-            $unsubscribeLink = acym_frontendLink($unsubscribeLink);
+
+            $needToCompleteLink = true;
+            if (!empty($parameters->baseUrl)) {
+                $unsubscribeLink = $parameters->baseUrl.$unsubscribeLink;
+                $needToCompleteLink = false;
+            }
+
+            $unsubscribeLink = acym_frontendLink($unsubscribeLink, $needToCompleteLink);
 
             $this->unsubscribeLink[$email->id] = $unsubscribeLink;
 

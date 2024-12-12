@@ -24,7 +24,7 @@ trait WooCommerceCampaignType
             'description' => acym_translation('ACYM_WOOCOMMERCE_EMAIL_DESC'),
             'icon' => 'acymicon-cart-arrow-down',
             'link' => $woocomerceMailLink,
-            'level' => 1,
+            'level' => ACYM_ESSENTIAL,
             'email_type' => $this->mailType,
         ];
     }
@@ -134,7 +134,9 @@ trait WooCommerceCampaignType
 
     public function onAcymDisplayCampaignListingSpecificTabs(&$tabs)
     {
-        $tabs['specificListing&type='.$this->mailType] = 'ACYM_WOOCOMMERCE_ABANDONED_CART';
+        if (acym_level(ACYM_ESSENTIAL)) {
+            $tabs['specificListing&type='.$this->mailType] = 'ACYM_WOOCOMMERCE_ABANDONED_CART';
+        }
     }
 
     public function onAcymSpecificListingActive(&$exists, $task)

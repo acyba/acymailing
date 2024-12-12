@@ -99,7 +99,7 @@ class acyUpdate
                 'package' => $downloadURL,
                 'slug' => $plugin_slug,
                 'icons' => [
-                    '1x' => ACYM_IMAGES.'logo_icon.png',
+                    '1x' => ACYM_IMAGES.'logos/logo_icon.png',
                 ],
                 'url' => 'https://wordpress.org/plugins/acymailing/',
             ];

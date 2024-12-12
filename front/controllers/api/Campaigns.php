@@ -40,14 +40,25 @@ trait Campaigns
             }
 
             // Create the Mail element
-            $mail->subject = $decodedData['subject'] ?? '';
-            $mail->name = $decodedData['name'] ?? '';
-            $mail->body = $decodedData['body'] ?? '';
-            $mail->bcc = $decodedData['bcc'] ?? '';
+            $mail->subject = $decodedData['subject'] ?? (!empty($mail->subject) ? $mail->subject : '');
+            $mail->name = $decodedData['name'] ?? (!empty($mail->name) ? $mail->name : '');
+            $mail->body = $decodedData['body'] ?? (!empty($mail->body) ? $mail->body : '');
+            $mail->from_name = $decodedData['from_name'] ?? (!empty($mail->from_name) ? $mail->from_name : '');
+            $mail->from_email = $decodedData['from_email'] ?? (!empty($mail->from_email) ? $mail->from_email : '');
+            $mail->reply_to_name = $decodedData['reply_to_name'] ?? (!empty($mail->reply_to_name) ? $mail->reply_to_name : '');
+            $mail->reply_to_email = $decodedData['reply_to_email'] ?? (!empty($mail->reply_to_email) ? $mail->reply_to_email : '');
+            $mail->bounce_email = $decodedData['bounce_email'] ?? (!empty($mail->bounce_email) ? $mail->bounce_email : '');
+            $mail->bcc = $decodedData['bcc'] ?? (!empty($mail->bcc) ? $mail->bcc : '');
+
+            $mail->preheader = $decodedData['preheader'] ?? (!empty($mail->preheader) ? $mail->preheader : '');
             $mail->type = MailClass::TYPE_STANDARD;
             $mail->drag_editor = 0;
 
             $mailId = $mailClass->save($mail);
+
+            if (empty($mailId)) {
+                $this->sendJsonResponse(['message' => 'Could not save the mail information: '.implode(' | ', $mailClass->errors)], 500);
+            }
 
             // Create the Campaign element
             $campaign->draft = 1;
@@ -120,6 +131,11 @@ trait Campaigns
             }
 
             $campaignId = $campaignClass->save($campaign);
+
+            if (empty($campaignId)) {
+                $this->sendJsonResponse(['message' => 'Could not save the campaign: '.implode(' | ', $campaignClass->errors)], 500);
+            }
+
             $lists = $decodedData['listIds'] ?? [];
             $unselectedLists = [];
             if (!empty($lists)) {

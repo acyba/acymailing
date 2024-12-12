@@ -35,11 +35,6 @@
             }
         }
 
-        .fieldAssignmentError {
-            border-color: map-get($foundation-palette, alert);
-            color: map-get($foundation-palette, alert);
-        }
-
         td {
             padding-right: 1rem;
         }

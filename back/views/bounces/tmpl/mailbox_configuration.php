@@ -72,11 +72,15 @@
         ?>
 	</div>
 	<div class="cell grid-x acym__mailbox__edition__configuration__test">
-		<button type="button" data-task="testMailboxAction" class="button button-secondary cell medium-4 large-shrink" id="acym__mailbox__edition__configuration__test-test">
+		<button type="button"
+				data-task="testMailboxAction"
+				class="button button-secondary cell medium-4 large-shrink margin-bottom-0"
+				id="acym__mailbox__edition__configuration__test-test">
             <?php echo acym_translation('ACYM_TEST_CONNECTION'); ?>
 		</button>
 		<span class="acymicon-spin acymicon-circle-o-notch acym_vcenter cell shrink margin-left-1" id="acym__mailbox__edition__configuration__test-loader"></span>
 		<span class="cell shrink acym_vcenter margin-left-1" id="acym__mailbox__edition__configuration__test-result"></span>
-		<span class="acymicon-check-circle acym__color__green acymicon-times-circle acym__color__red cell shrink acym_vcenter" id="acym__mailbox__edition__configuration__test-icon"></span>
+		<span class="acymicon-check-circle acym__color__green acymicon-times-circle acym__color__red cell shrink acym_vcenter"
+			  id="acym__mailbox__edition__configuration__test-icon"></span>
 	</div>
 </div>

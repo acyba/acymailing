@@ -47,6 +47,9 @@ trait WooCommerceInsertion
 
     public function insertionOptions($defaultValues = null)
     {
+        if (empty($defaultValues)) {
+            $defaultValues = new stdClass();
+        }
         $this->defaultValues = $defaultValues;
         $this->prepareWPCategories('product_cat');
 
@@ -626,7 +629,7 @@ trait WooCommerceInsertion
                 $postTypesOrder = wc_get_order_types();
                 $postTypesOrder = array_map('acym_escapeDB', $postTypesOrder);
 
-                $postStatusesOrder = array_keys(wc_get_is_paid_statuses());
+                $postStatusesOrder = wc_get_is_paid_statuses();
                 $postStatusesOrder = array_map('acym_escapeDB', $postStatusesOrder);
 
                 $query = 'SELECT `order`.id AS ID 
@@ -670,7 +673,7 @@ trait WooCommerceInsertion
                 $dataQuery = [
                     'numberposts' => -1,
                     'post_type' => wc_get_order_types(),
-                    'post_status' => array_keys(wc_get_is_paid_statuses()),
+                    'post_status' => wc_get_is_paid_statuses(),
                     'meta_query' => $userFilter,
                 ];
 

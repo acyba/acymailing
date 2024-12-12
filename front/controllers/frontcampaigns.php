@@ -48,7 +48,7 @@ class FrontcampaignsController extends CampaignsController
                 'save',
                 'saveAjax',
                 'deleteAttachmentAjax',
-                'countNumberOfRecipients',
+                'ajaxCountNumberOfRecipients',
                 'saveAsDraftCampaign',
                 'confirmCampaign',
                 'stopScheduled',

@@ -5,79 +5,111 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 5.8
+ * Version: 6.1
  * Requires Plugins: acymailing, woocommerce
 */
 
 use AcyMailing\Classes\PluginClass;
 
-register_deactivation_hook(__FILE__, 'acym_integration_woocommerce_disable');
-function acym_integration_woocommerce_disable()
-{
-    $vendorFolder = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'vendor';
-    $helperFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
-    if (!is_plugin_active('acymailing/index.php') || !file_exists($vendorFolder) || !include_once $helperFile) return;
-
-    $pluginClass = new PluginClass();
-    $pluginClass->disable('woocommerce');
+if (!defined('ABSPATH')) {
+    exit;
 }
 
-register_uninstall_hook(__FILE__, 'acym_integration_woocommerce_uninstall');
-function acym_integration_woocommerce_uninstall()
+class AcyMailingIntegrationForWooCommerce
 {
-    $vendorFolder = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'vendor';
-    $helperFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'acymailing'.DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
-    if (!is_plugin_active('acymailing/index.php') || !file_exists($vendorFolder) || !include_once $helperFile) return;
+    const INTEGRATION_PLUGIN_NAME = 'plgAcymWoocommerce';
 
-    $pluginClass = new PluginClass();
-    $pluginClass->deleteByFolderName('woocommerce');
-}
-
-add_action('acym_load_installed_integrations', 'acym_integration_woocommerce', 10, 2);
-function acym_integration_woocommerce(&$integrations, $acyVersion)
-{
-    if (version_compare($acyVersion, '7.5.11', '>=')) {
-        $integrations[] = [
-            'path' => __DIR__,
-            'className' => 'plgAcymWoocommerce',
-        ];
+    public function __construct()
+    {
+        register_deactivation_hook(__FILE__, [$this, 'disable']);
+        register_uninstall_hook(__FILE__, [self::class, 'uninstall']);
+        add_action('acym_load_installed_integrations', [$this, 'register'], 10, 2);
+        add_action('before_woocommerce_init', [$this, 'hposCompatibility']);
+        add_action('block_categories_all', [$this, 'registerBlock'], 10, 2);
+        add_action('woocommerce_blocks_loaded', [$this, 'initBlock'], 10);
     }
-}
 
-add_action('before_woocommerce_init', 'acym_register_woocommerce_hpos_compatibility');
-function acym_register_woocommerce_hpos_compatibility()
-{
-    if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
-        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+    public function disable(): void
+    {
+        if (!self::loadAcyMailingLibrary()) {
+            return;
+        }
+
+        $pluginClass = new PluginClass();
+        $pluginClass->disable(self::getIntegrationName());
     }
-}
 
-add_action('woocommerce_blocks_loaded', function () {
-    require_once __DIR__.DIRECTORY_SEPARATOR.'acymailing-wc-block-blocks-integration.php';
-    add_action(
-        'woocommerce_blocks_cart_block_registration',
-        function ($integration_registry) {
-            $integration_registry->register(new AcymailingWcBlock());
+    public static function uninstall(): void
+    {
+        if (!self::loadAcyMailingLibrary()) {
+            return;
         }
-    );
-    add_action(
-        'woocommerce_blocks_checkout_block_registration',
-        function ($integration_registry) {
-            $integration_registry->register(new AcymailingWcBlock());
-        }
-    );
-});
 
-add_action('block_categories_all', 'registerAcymailingWcBlock', 10, 2);
-function registerAcymailingWcBlock($categories)
-{
-    return array_merge(
-        $categories,
-        [
+        $pluginClass = new PluginClass();
+        $pluginClass->deleteByFolderName(self::getIntegrationName());
+    }
+
+    public function register(array &$integrations, string $acyVersion): void
+    {
+        if (version_compare($acyVersion, '9.5.1', '>=')) {
+            $integrations[] = [
+                'path' => __DIR__,
+                'className' => self::INTEGRATION_PLUGIN_NAME,
+            ];
+        }
+    }
+
+    public function hposCompatibility()
+    {
+        if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+            \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+        }
+    }
+
+    public function registerBlock($categories)
+    {
+        return array_merge(
+            $categories,
             [
-                'slug' => 'acymailing-wc-block',
-                'title' => acym_translation('ACYM_WOO_CHECKOUT_BLOCK'),
-            ],
-        ]
-    );
+                [
+                    'slug' => 'acymailing-wc-block',
+                    'title' => acym_translation('ACYM_WOO_CHECKOUT_BLOCK'),
+                ],
+            ]
+        );
+    }
+
+    public function initBlock()
+    {
+        require_once __DIR__.DIRECTORY_SEPARATOR.'acymailing-wc-block-blocks-integration.php';
+
+        add_action(
+            'woocommerce_blocks_cart_block_registration',
+            function ($integration_registry) {
+                $integration_registry->register(new AcymailingWcBlock());
+            }
+        );
+        add_action(
+            'woocommerce_blocks_checkout_block_registration',
+            function ($integration_registry) {
+                $integration_registry->register(new AcymailingWcBlock());
+            }
+        );
+    }
+
+    private static function getIntegrationName(): string
+    {
+        return strtolower(substr(self::INTEGRATION_PLUGIN_NAME, 7));
+    }
+
+    private static function loadAcyMailingLibrary(): bool
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        $vendorFolder = dirname(__DIR__).$ds.'acymailing'.$ds.'vendor';
+        $helperFile = dirname(__DIR__).$ds.'acymailing'.$ds.'back'.$ds.'helpers'.$ds.'helper.php';
+
+        return file_exists($vendorFolder) && include_once $helperFile;
+    }
 }
+
+new AcyMailingIntegrationForWooCommerce();

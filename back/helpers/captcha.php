@@ -101,12 +101,12 @@ class CaptchaHelper extends acymObject
         } elseif ($captchaPluginName === 'acym_hcaptcha') {
             $data = [
                 'secret' => $this->config->get('hcaptcha_secretkey'),
-                'response' => $_POST['h-captcha-response'],
+                'response' => $_REQUEST['h-captcha-response'],
             ];
 
             $responseData = acym_makeCurlCall(
                 'https://hcaptcha.com/siteverify',
-                $data
+                ['data' => $data, 'method' => 'POST']
             );
 
             return !empty($responseData['success']);

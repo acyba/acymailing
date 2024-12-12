@@ -219,6 +219,127 @@ class ImportHelper extends acymObject
         return true;
     }
 
+    //__START__joomla_
+    public function contact()
+    {
+        $time = time();
+        $sourceImport = acym_translationSprintf('ACYM_IMPORT_FROM_CONTACT_X', acym_date($time, 'Y-m-d H:i:s'));
+        $categories = acym_getVar('array', 'contact_categories', []);
+        $this->config->save(['import_contact_categories' => implode(',', $categories)]);
+        acym_arrayToInteger($categories);
+
+        $query = 'SELECT `contact`.`name`, `contact`.`email_to`, `contact`.`created`, `contact`.`published` 
+              FROM #__contact_details AS `contact` 
+              WHERE `contact`.`email_to` != ""';
+        if (!empty($categories)) {
+            $query .= ' AND `contact`.`catid` IN ('.implode(', ', $categories).')';
+        }
+        $contacts = acym_loadObjectList($query);
+
+        // Step 1: insert or update users
+        $emails = array_map(function ($contact) {
+            return acym_escapeDB($contact->email_to);
+        }, $contacts);
+        if (empty($emails)) {
+            acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_NO_CONTACTS'), 'error');
+
+            return false;
+        }
+        $emailsString = implode(',', $emails);
+        $existingUsersQuery = 'SELECT `id`, `email` FROM #__acym_user WHERE `email` IN ('.$emailsString.')';
+        $existingUsers = acym_loadObjectList($existingUsersQuery, 'email');
+
+        $insertValues = [];
+        $updateQueries = [];
+        $newUserIds = [];
+        foreach ($contacts as $contact) {
+            $contact->email_to = trim($contact->email_to);
+            if (isset($existingUsers[$contact->email_to])) {
+                $existingUserId = $existingUsers[$contact->email_to]->id;
+                $updateQueries[] = 'UPDATE #__acym_user SET 
+                                `name` = '.acym_escapeDB($contact->name).', 
+                                `active` = '.acym_escapeDB($contact->published).' 
+                                WHERE `id` = '.intval($existingUserId);
+            } else {
+                $insertValues[] = '('.acym_escapeDB($contact->name).', 
+                               '.acym_escapeDB($contact->email_to).', 
+                               '.acym_escapeDB($contact->created).', 
+                               '.intval($contact->published).', 
+                               '.acym_escapeDB($sourceImport).')';
+            }
+        }
+
+        if (!empty($insertValues)) {
+            $insertQuery = 'INSERT INTO #__acym_user (`name`,`email`,`creation_date`,`active`, `source`) VALUES '.implode(',', $insertValues);
+            acym_query($insertQuery);
+            $newUserIds = acym_loadResultArray('SELECT `id` FROM #__acym_user WHERE `source` = '.acym_escapeDB($sourceImport));
+        }
+
+        foreach ($updateQueries as $updateQuery) {
+            acym_query($updateQuery);
+        }
+
+        // Step 2: subscribe all the registered users to one or several lists
+        $lists = $this->getImportedLists();
+        $listsSubscribe = [];
+        if (!empty($lists)) {
+            foreach ($lists as $listid => $val) {
+                if (!empty($val)) {
+                    $listsSubscribe[] = intval($listid);
+                }
+            }
+        }
+
+        if (!empty($listsSubscribe)) {
+            $allUserIdsQuery = 'SELECT `id` FROM #__acym_user WHERE `email` IN ('.$emailsString.')';
+            $allUserIds = acym_loadResultArray($allUserIdsQuery);
+            if (!empty($allUserIds)) {
+                $existingSubscriptionsQuery = 'SELECT `user_id`, `list_id`, `status` FROM #__acym_user_has_list WHERE `user_id` IN ('.implode(',', $allUserIds).')';
+                $existingSubscriptions = acym_loadObjectList($existingSubscriptionsQuery);
+
+                $subscribeValues = [];
+                foreach ($allUserIds as $userId) {
+                    foreach ($listsSubscribe as $listId) {
+                        foreach ($existingSubscriptions as $subscription) {
+                            if ($subscription->user_id == $userId && $subscription->list_id == $listId && $subscription->status == 0) {
+                                continue 2;
+                            }
+                        }
+                        $subscribeValues[] = '('.intval($userId).', '.intval($listId).', 1, '.acym_escapeDB(acym_date($time, 'Y-m-d H:i:s', false)).')';
+                    }
+                }
+
+                if (!empty($subscribeValues)) {
+                    $subscribeQuery = 'INSERT INTO #__acym_user_has_list (`user_id`, `list_id`, `status`, `subscription_date`) VALUES '.implode(
+                            ',',
+                            $subscribeValues
+                        ).' ON DUPLICATE KEY UPDATE `status` = VALUES(`status`), `subscription_date` = VALUES(`subscription_date`)';
+                    acym_query($subscribeQuery);
+                }
+            }
+        }
+
+        // Step 3: Set user keys
+        if (!empty($newUserIds)) {
+            $updateKeyQueries = [];
+            foreach ($newUserIds as $userId) {
+                $key = acym_generateKey(14);
+                $updateKeyQueries[] = 'UPDATE #__acym_user SET `key` = '.acym_escapeDB($key).' WHERE `id` = '.intval($userId);
+            }
+            foreach ($updateKeyQueries as $updateKeyQuery) {
+                acym_query($updateKeyQuery);
+            }
+        }
+
+        acym_query('UPDATE #__acym_configuration SET `value` = '.intval($time).' WHERE `name` = "last_import"');
+        acym_enqueueMessage(acym_translationSprintf('ACYM_IMPORT_NEW_SUBS', count($contacts)), 'info');
+
+        return true;
+    }
+
+
+    //__END__joomla_
+
     public function database($onlyImport = false)
     {
         $this->forceconfirm = acym_getVar('int', 'import_confirmed_database');
@@ -747,6 +868,9 @@ class ImportHelper extends acymObject
                 }
             }
 
+            if (acym_isMultilingual() && empty($newUser->language)) {
+                $newUser->language = $this->config->get('multilingual_default', '');
+            }
 
             //Everything is Ok... we can add the line
             $importUsers[] = $newUser;
@@ -788,19 +912,22 @@ class ImportHelper extends acymObject
         $this->totalInserted = $countUsersAfterImport - $countUsersBeforeImport;
 
         if ($this->dispresults) {
-            //All users have been added properly into the database... we will now subscribe the users
-            acym_enqueueMessage(
-                acym_translationSprintf(
-                    'ACYM_IMPORT_REPORTING',
-                    $this->totalTry,
-                    $this->totalInserted,
-                    $this->totalTry - $this->totalValid,
-                    $this->totalValid - $this->totalInserted
-                ),
-                'info'
+            $maybeUpdated = acym_translation('ACYM_NOT_UPDATED');
+            if ($this->overwrite) {
+                $maybeUpdated = acym_translation('ACYM_UPDATED');
+            }
+            $reportMsg = acym_translationSprintf(
+                'ACYM_IMPORT_REPORTING_UPDATED',
+                $this->totalTry,
+                $this->totalInserted,
+                $this->totalTry - $this->totalValid,
+                $this->totalValid - $this->totalInserted,
+                $maybeUpdated
             );
+            acym_enqueueMessage($reportMsg, 'info');
         }
 
+        // All users have been added properly into the database... we will now subscribe the users
         $this->_subscribeUsers();
 
         return $success;

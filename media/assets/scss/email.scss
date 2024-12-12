@@ -39,12 +39,10 @@
         td.cflabel, td.cfvalue {
             padding: .2rem .625rem;
         }
-    }
-}
 
-#acym_wrapper {
-    td.cflabel, td.cfvalue {
-        padding: .2rem .625rem;
+        img {
+            height: auto;
+        }
     }
 }
 
@@ -66,8 +64,4 @@
 
 .revealonline {
     display: none;
-}
-
-#acym__wysid__template .acymailing_content img {
-    height: auto;
 }

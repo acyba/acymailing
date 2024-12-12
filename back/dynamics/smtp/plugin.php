@@ -25,7 +25,6 @@ class plgAcymSmtp extends acymPlugin
 
     public function onAcymGetSendingMethodsHtmlSetting(&$data)
     {
-        $this->getAccessToken();
         $smtpRedirectUrl = trim($this->config->get('smtp_redirectUrl'));
         $redirectUrl = empty($smtpRedirectUrl) ? acym_baseURI() : $smtpRedirectUrl;
 
@@ -203,7 +202,7 @@ class plgAcymSmtp extends acymPlugin
 				</div>
 				<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 					<button <?php echo $loginAttribute; ?>
-							data-task="loginForAuth2"
+							data-task="loginForOAuth2Smtp"
 							class="button acy_button_submit button-secondary margin-bottom-1"
 							id="smtp_account_login">
                         <?php echo acym_translation('ACYM_LOGIN'); ?>
@@ -256,57 +255,6 @@ class plgAcymSmtp extends acymPlugin
         if ((empty($clientId) || empty($secret)) && $requireAuth) {
             $link = '<a class="acym_message_link" href="'.acym_completeLink('configuration#oauthParams').'">'.strtolower(acym_translation('ACYM_HERE')).'</a>';
             acym_enqueueMessage(acym_translationSprintf('ACYM_SMTP_OAUTH_WARNING', $link), 'warning');
-        }
-    }
-
-    public function getAccessToken()
-    {
-        $code = acym_getVar('string', 'code');
-        $clientId = trim($this->config->get('smtp_clientId'));
-        $secret = trim($this->config->get('smtp_secret'));
-        $host = strtolower(trim($this->config->get('smtp_host')));
-        $smtpRedirectUrl = trim($this->config->get('smtp_redirectUrl'));
-        $redirectUrl = empty($smtpRedirectUrl) ? acym_baseURI() : $smtpRedirectUrl;
-        $scope = '';
-
-        if (empty($clientId) || empty($secret) || empty($code)) {
-            return;
-        }
-
-        if ($host === 'smtp.gmail.com') {
-            $url = 'https://oauth2.googleapis.com/token';
-        } else {
-            $tenant = trim($this->config->get('smtp_tenant'));
-            if (empty($tenant)) {
-                acym_enqueueMessage(acym_translation('ACYM_TENANT_FIELD_IS_MISSING'), 'error');
-            }
-            $url = 'https://login.microsoftonline.com/'.$tenant.'/oauth2/v2.0/token';
-            $scope = 'https://outlook.office.com/SMTP.Send';
-        }
-
-        $params = ['client_id' => $clientId, 'grant_type' => 'authorization_code', 'client_secret' => $secret, 'code' => $code, 'redirect_uri' => $redirectUrl];
-
-        if (!empty($scope)) {
-            $params['scope'] = $scope;
-        }
-
-        $response = acym_makeCurlCall($url, $params);
-
-        if (empty($response['error'])) {
-            $token = $response['token_type'].' '.$response['access_token'];
-            $expireIn = time() + (int)$response['expires_in'];
-
-            $config = ['smtp_token' => $token, 'smtp_token_expireIn' => $expireIn];
-
-            if (!empty($response['refresh_token'])) {
-                $config['smtp_refresh_token'] = $response['refresh_token'];
-            }
-
-            $this->config->save($config);
-
-            acym_enqueueMessage(acym_translation('ACYM_SMTP_OAUTH_OK'), 'info');
-        } else {
-            acym_enqueueMessage(acym_translationSprintf('ACYM_SMTP_OAUTH_ERROR', $response['error']), 'error', false);
         }
     }
 }

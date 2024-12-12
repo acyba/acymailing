@@ -115,6 +115,10 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 		margin: 1rem 10px !important;
 	}
 
+	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__popup .acym__subscription__form__fields .acym__user__edit__email{
+		margin: auto;
+	}
+
 	<?php if(!empty($form->settings['message']['color'])) { ?>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>#acym__subscription__form__popup-text{
 		color: <?php echo $form->settings['message']['color']; ?>;
@@ -138,13 +142,22 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 </style>
 <?php if (!$edition) { ?>
 	<script type="text/javascript">
+        const acymBackupFormTimeout<?php echo $form->form_tag_name; ?> = setTimeout(() => {
+            acym_initPopupDisplay<?php echo $form->form_tag_name; ?>(true);
+        }, 1000);
+
         window.addEventListener('DOMContentLoaded', function () {
+            clearTimeout(acymBackupFormTimeout<?php echo $form->form_tag_name; ?>);
+            acym_initPopupDisplay<?php echo $form->form_tag_name; ?>();
+        });
+
+        function acym_initPopupDisplay<?php echo $form->form_tag_name; ?>(addedDelayForBackup = false) {
             const acym_popupForm = document.querySelector('#acym_fulldiv_<?php echo $form->form_tag_name; ?>.acym__subscription__form__popup__overlay');
 
             if (!acym_popupForm) {
                 return;
             }
-            
+
             const isDisplayButton = <?php echo $isButton ? 'true' : 'false'; ?>;
 
             function acym_closePopupform<?php echo $form->form_tag_name;?>(element) {
@@ -224,6 +237,11 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 
                 window.addEventListener('scroll', displayAcymPopupForm);
 
+                let delayInMs = delayDisplay * 1000;
+                if (addedDelayForBackup && delayDisplay > 1000) {
+                    delayInMs -= 1000;
+                }
+
                 setTimeout(function () {
                     if (acym_popupForm !== null) {
                         delayRemaining = false;
@@ -231,9 +249,11 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
                             acym_popupForm.style.display = 'inline';
                         }
                     }
-                }, <?php echo $form->settings['display']['delay'] * 1000; ?>);
+                }, delayInMs);
             }
-        });
+        }
 	</script>
-<?php } ?>
-<?php if (!$edition) include acym_getPartial('forms', 'cookie'); ?>
+    <?php
+    include acym_getPartial('forms', 'cookie');
+}
+?>

@@ -19,7 +19,7 @@ trait Listing
         $data['ordering'] = $this->getVarFiltersListing('string', 'lists_ordering', 'id');
         $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'lists_ordering_sort_order', 'desc');
         $data['status'] = $this->getVarFiltersListing('string', 'lists_status', '');
-        $data['allTags'] = $tagClass->getAllTagsByType('list');
+        $data['allTags'] = $tagClass->getAllTagsByType(TagClass::TYPE_LIST);
         $data['pagination'] = new PaginationHelper();
 
         if (!empty($data['tag'])) {

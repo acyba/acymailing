@@ -50,23 +50,31 @@
 	</div>
 	<div class="cell grid-y medium-4 acym__list__settings__tmpls__welcome">
 		<div class="cell small-2 acym__list__settings__tmpls__title align-center acym_vcenter">
-            <?php echo acym_tooltip(
-                '<label>'.acym_translation('ACYM_WELCOME_MAIL').'</label>',
-                '('.acym_translation('ACYM_OPTIONAL').') '.acym_translation('ACYM_WELCOME_MAIL_DESC')
-            ); ?>
+            <?php
+			echo acym_tooltip(
+                [
+					'hoveredText' => '<label>'.acym_translation('ACYM_WELCOME_MAIL').'</label>',
+                	'textShownInTooltip' => '('.acym_translation('ACYM_OPTIONAL').') '.acym_translation('ACYM_WELCOME_MAIL_DESC')
+				]
+            );
+			?>
 			<i class="acymicon-email margin-left-1"></i>
 		</div>
 		<div class="cell grid-x acym__template__block align-center acym_vcenter small-10 acym__list__button__add__mail">
             <?php
             if (!acym_isAllowed('mails')) {
                 echo acym_tooltip(
-                    '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
-                    acym_translation('ACYM_UNAUTHORIZED_ACCESS')
+                    [
+						'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                    	'textShownInTooltip' => acym_translation('ACYM_UNAUTHORIZED_ACCESS')
+					]
                 );
             } elseif (empty($data['listInformation']->id)) {
                 echo acym_tooltip(
-                    '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
-                    acym_translation('ACYM_SAVE_LIST_FIRST')
+                    [
+						'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                	    'textShownInTooltip' => acym_translation('ACYM_SAVE_LIST_FIRST')
+					]
                 );
             } elseif (empty($data['listInformation']->welcome_id)) { ?>
 				<a class="acym_vcenter text-center align-center acym__color__white acym__list__button__add__mail__welcome__unsub"
@@ -76,18 +84,27 @@
             <?php } else { ?>
 				<button type="button"
 						template="<?php echo acym_escape($data['listInformation']->welcome_id); ?>"
-						class="cell acym__templates__oneTpl acym__listing__block acym_template_option">
-					<div class="text-center cell acym__listing__block__delete acym__background-color__red">
+						class="cell acym__lists__oneMail acym__listing__block acym_template_option">
+
+					<!-- Icon delete -->
+					<div class="acym__listing__block__delete">
 						<div>
-							<i class="acymicon-trash-o js-acym__listing__block__delete__trash acym__color__white"></i>
-							<p class="acym__listing__block__delete__submit acym__color__white acy_button_submit" data-task="unsetWelcome">
-								<i class="acymicon-trash-o acym__color__white"></i>
-							</p>
-							<p class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
-								<i class="acymicon-keyboard_arrow_right acym__color__white"></i>
-							</p>
+							<div class="js-acym__listing__block__delete__trash acym__listing__block__delete__trash acym__icon">
+								<i class="acymicon-trash-o"></i>
+							</div>
+							<div class="acym__listing__block__delete__action">
+								<div class="acym__icon acym__listing__block__delete__submit acy_button_submit"
+								 	data-task="unsetWelcome">
+									<i class="acymicon-trash-o"></i>
+								</div>
+								<div class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
+									<i class="acymicon-keyboard_arrow_right acym__color__white"></i>
+								</div>
+							</div>
 						</div>
 					</div>
+
+					<!-- Mail preview -->
 					<a href="<?php echo $data['tmpls']['welcomeTmplUrl']; ?>">
 						<div class="cell grid-x text-center">
 							<div class="cell acym__templates__pic text-center">
@@ -106,8 +123,10 @@
 	<div class="cell grid-y medium-4 acym__list__settings__tmpls__unsubscribe">
 		<div class="cell small-2 acym__list__settings__tmpls__title align-center acym_vcenter">
             <?php echo acym_tooltip(
-                '<label>'.acym_translation('ACYM_UNSUBSCRIBE_MAIL').'</label>',
-                '('.acym_translation('ACYM_OPTIONAL').') '.acym_translation('ACYM_UNSUBSCRIBE_MAIL_DESC')
+                [
+					'hoveredText' => '<label>'.acym_translation('ACYM_UNSUBSCRIBE_MAIL').'</label>',
+                	'textShownInTooltip' => '('.acym_translation('ACYM_OPTIONAL').') '.acym_translation('ACYM_UNSUBSCRIBE_MAIL_DESC')
+				]
             ); ?>
 			<i class="acymicon-email margin-left-1"></i>
 		</div>
@@ -115,13 +134,17 @@
             <?php
             if (!acym_isAllowed('mails')) {
                 echo acym_tooltip(
-                    '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
-                    acym_translation('ACYM_UNAUTHORIZED_ACCESS')
+                    [
+						'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                    	'textShownInTooltip' => acym_translation('ACYM_UNAUTHORIZED_ACCESS')
+					]
                 );
             } elseif (empty($data['listInformation']->id)) {
                 echo acym_tooltip(
-                    '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
-                    acym_translation('ACYM_SAVE_LIST_FIRST')
+                    [
+						'hoveredText' => '<i class="acymicon-ban acym__list__button__add__mail__disabled"></i>',
+                    	'textShownInTooltip' => acym_translation('ACYM_SAVE_LIST_FIRST')
+					]
                 );
             } elseif (empty($data['listInformation']->unsubscribe_id)) { ?>
 				<a class="acym_vcenter text-center align-center acym__color__white acym__list__button__add__mail__welcome__unsub"
@@ -131,18 +154,26 @@
             <?php } else { ?>
 				<button type="button"
 						template="<?php echo acym_escape($data['listInformation']->unsubscribe_id); ?>"
-						class="cell acym__templates__oneTpl acym__listing__block acym_template_option">
-					<div class="text-center cell acym__listing__block__delete acym__background-color__red">
+						class="cell acym__lists__oneMail acym__listing__block acym_template_option">
+					<!-- Icon delete -->
+					<div class="acym__listing__block__delete">
 						<div>
-							<i class="acymicon-trash-o js-acym__listing__block__delete__trash acym__color__white"></i>
-							<p class="acym__listing__block__delete__submit acym__color__white acy_button_submit" data-task="unsetUnsubscribe">
-								<i class="acymicon-trash-o acym__color__white"></i>
-							</p>
-							<p class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
-								<i class="acymicon-keyboard_arrow_right acym__color__white"></i>
-							</p>
+							<div class="js-acym__listing__block__delete__trash acym__listing__block__delete__trash acym__icon">
+								<i class="acymicon-trash-o"></i>
+							</div>
+							<div class="acym__listing__block__delete__action">
+								<div class="acym__icon acym__listing__block__delete__submit acy_button_submit"
+								 	data-task="unsetUnsubscribe">
+									<i class="acymicon-trash-o"></i>
+								</div>
+								<div class="acym__listing__block__delete__cancel acym__background-color__very-dark-gray acym__color__white">
+									<i class="acymicon-keyboard_arrow_right acym__color__white"></i>
+								</div>
+							</div>
 						</div>
 					</div>
+
+					<!-- Mail preview -->
 					<a href="<?php echo $data['tmpls']['unsubTmplUrl']; ?>">
 						<div class="cell grid-x text-center">
 							<div class="cell acym__templates__pic text-center">

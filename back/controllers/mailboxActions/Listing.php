@@ -50,7 +50,8 @@ trait Listing
                 'status' => $status,
             ],
             $status,
-            $page
+            $page,
+            'mailbox'
         );
 
         // End pagination
@@ -68,7 +69,6 @@ trait Listing
     {
         acym_setVar('layout', 'mailboxes');
         acym_setVar('task', 'mailboxes');
-        $this->currentClass = new MailboxClass();
 
         $data = [
             'pagination' => new PaginationHelper(),

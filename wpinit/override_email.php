@@ -14,9 +14,7 @@ class acyOverrideEmail
     public function overrideEmailFunction($args)
     {
         $mailerHelper = new MailerHelper();
-        $overridden = $mailerHelper->overrideEmail($args['subject'], $args['message'], $args['to']);
-
-        if ($overridden) {
+        if ($mailerHelper->overrideEmail($args)) {
             add_action('phpmailer_init', [$this, 'blockEmailSending']);
             add_filter('post_smtp_do_send_email', [$this, 'blockEmailSendingPostSMTP']);
         }

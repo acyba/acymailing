@@ -340,7 +340,7 @@ class MigrationHelper extends acymObject
                         acym_escapeDB(empty($oneTemplate->name) ? acym_translation('ACYM_MIGRATED_TEMPLATE').' '.time() : $oneTemplate->name),
                         acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false)),
                         '0',
-                        acym_escapeDB($mailClass::TYPE_TEMPLATE),
+                        acym_escapeDB(MailClass::TYPE_TEMPLATE),
                         acym_escapeDB(empty($oneTemplate->body) ? '' : $oneTemplate->body),
                         acym_escapeDB($oneTemplate->subject),
                         acym_escapeDB($oneTemplate->fromname),
@@ -600,9 +600,6 @@ class MigrationHelper extends acymObject
 
     public function migrateMails($params = [])
     {
-        $campaignClass = new CampaignClass();
-        $mailClass = new MailClass();
-
         $queryGetMails = 'SELECT mail.`mailid`,
                                 mail.`created`, 
                                 mail.`type`, 
@@ -642,16 +639,16 @@ class MigrationHelper extends acymObject
 
             switch ($oneMail->type) {
                 case 'welcome':
-                    $mailType = $mailClass::TYPE_WELCOME;
+                    $mailType = MailClass::TYPE_WELCOME;
                     break;
                 case 'unsub':
-                    $mailType = $mailClass::TYPE_UNSUBSCRIBE;
+                    $mailType = MailClass::TYPE_UNSUBSCRIBE;
                     break;
                 case 'followup':
-                    $mailType = $mailClass::TYPE_FOLLOWUP;
+                    $mailType = MailClass::TYPE_FOLLOWUP;
                     break;
                 case 'news':
-                    $mailType = $mailClass::TYPE_STANDARD;
+                    $mailType = MailClass::TYPE_STANDARD;
                     break;
                 default:
                     $mailType = 'invalid';
@@ -727,7 +724,7 @@ class MigrationHelper extends acymObject
             $mail['attachments'] = acym_escapeDB(json_encode($mail['attachments']));
 
             // Create the related campaign
-            if ($mailType === $mailClass::TYPE_STANDARD) {
+            if ($mailType === MailClass::TYPE_STANDARD) {
                 $stats = acym_loadResult('SELECT COUNT(mailid) FROM #__acymailing_stats WHERE mailid = '.intval($oneMail->mailid));
                 $isSent = !empty($stats);
 
@@ -737,7 +734,7 @@ class MigrationHelper extends acymObject
                     'draft' => intval(!$isSent),
                     'active' => empty($oneMail->published) ? 0 : intval($oneMail->published),
                     'mail_id' => intval($oneMail->mailid),
-                    'sending_type' => acym_escapeDB(0 === $sendingType ? $campaignClass::SENDING_TYPE_NOW : $campaignClass::SENDING_TYPE_SCHEDULED),
+                    'sending_type' => acym_escapeDB(0 === $sendingType ? CampaignClass::SENDING_TYPE_NOW : CampaignClass::SENDING_TYPE_SCHEDULED),
                     'sent' => intval($isSent),
                     'sending_params' => acym_escapeDB('[]'),
                 ];
@@ -745,7 +742,7 @@ class MigrationHelper extends acymObject
             }
 
             // Create the related follow-up
-            if ($mailType === $mailClass::TYPE_FOLLOWUP) {
+            if ($mailType === MailClass::TYPE_FOLLOWUP) {
                 $v5Campaign = acym_loadObject(
                     'SELECT l.listid, l.published, l.name 
                     FROM #__acymailing_listmail AS lm
@@ -838,14 +835,13 @@ class MigrationHelper extends acymObject
         );
 
         $listsToInsert = [];
-        $listClass = new ListClass();
 
-        $siteUserGroups = acym_getGroups();
+        $siteUserGroupIds = array_keys(acym_getGroups());
 
         foreach ($lists as $oneList) {
             $access = '';
             if ($oneList->access_manage === 'all') {
-                $access = ','.implode(',', $siteUserGroups).',';
+                $access = ','.implode(',', $siteUserGroupIds).',';
             } elseif ($oneList->access_manage !== 'none') {
                 $access = $oneList->access_manage;
             }
@@ -860,7 +856,7 @@ class MigrationHelper extends acymObject
                 'creation_date' => acym_escapeDB(acym_date('now', 'Y-m-d H:i:s')),
                 'cms_user_id' => empty($oneList->userid) ? acym_currentUserId() : intval($oneList->userid),
                 'description' => acym_escapeDB($oneList->description),
-                'type' => acym_escapeDB($oneList->type === 'campaign' ? $listClass::LIST_TYPE_FOLLOWUP : $listClass::LIST_TYPE_STANDARD),
+                'type' => acym_escapeDB($oneList->type === 'campaign' ? ListClass::LIST_TYPE_FOLLOWUP : ListClass::LIST_TYPE_STANDARD),
                 'access' => acym_escapeDB($access),
             ];
 

@@ -25,7 +25,8 @@ class plgAcymPostmark extends acymPlugin
 
     public function onAcymGetSendingMethodsHtmlSetting(&$data)
     {
-        $defaultApiKey = empty($data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']) ? '' : $data['tab']->config->values[self::SENDING_METHOD_ID.'_api_key']->value;
+		$config = empty($data['tab']) ? $this->config : $data['tab']->config;
+        $defaultApiKey = $config->get(self::SENDING_METHOD_ID.'_api_key');
         ob_start();
         ?>
 		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
@@ -58,9 +59,9 @@ class plgAcymPostmark extends acymPlugin
         $data['sendingMethodsHtmlSettings'][self::SENDING_METHOD_ID] = ob_get_clean();
     }
 
-    public function getHeadersSendingMethod($sendingMethod, $credentials = [])
+    public function getHeadersSendingMethod($sendingMethod, $credentials = [], $sendingMethodListParams = [])
     {
-        if (empty($credentials)) $this->onAcymGetCredentialsSendingMethod($credentials, $sendingMethod);
+        if (empty($credentials)) $this->onAcymGetCredentialsSendingMethod($credentials, $sendingMethod, $sendingMethodListParams);
 
         return [
             'X-Postmark-Server-Token:'.$credentials[self::SENDING_METHOD_ID.'_api_key'],
@@ -69,12 +70,21 @@ class plgAcymPostmark extends acymPlugin
         ];
     }
 
-    public function onAcymGetCredentialsSendingMethod(&$credentials, $sendingMethod)
+    /**
+     * @param array  $credentials
+     * @param string $sendingMethod
+     * @param array  $sendingMethodListParams this parameter is only used for the plugin sending method list
+     *
+     * @return void
+     */
+    public function onAcymGetCredentialsSendingMethod(array &$credentials, string $sendingMethod, array $sendingMethodListParams = [])
     {
         if ($sendingMethod != self::SENDING_METHOD_ID) return;
 
+        $key = self::SENDING_METHOD_ID.'_api_key';
+
         $credentials = [
-            self::SENDING_METHOD_ID.'_api_key' => $this->config->get(self::SENDING_METHOD_ID.'_api_key', ''),
+            $key => $sendingMethodListParams[$key] ?? $this->config->get($key, ''),
         ];
     }
 
@@ -97,7 +107,7 @@ class plgAcymPostmark extends acymPlugin
         }
     }
 
-    public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $reply_to, $bcc = [], $attachments = [])
+    public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $reply_to, $bcc = [], $attachments = [], $sendingMethodListParams = [])
     {
         //https://postmarkapp.com/developer/api/email-api
         if ($mailerHelper->externalMailer != self::SENDING_METHOD_ID) return;
@@ -143,7 +153,7 @@ class plgAcymPostmark extends acymPlugin
             }
         }
 
-        $headers = $this->getHeadersSendingMethod(self::SENDING_METHOD_ID);
+        $headers = $this->getHeadersSendingMethod(self::SENDING_METHOD_ID, [], $sendingMethodListParams);
         $responseMailer = $this->callApiSendingMethod(self::SENDING_METHOD_API_URL.'email', $data, $headers, 'POST');
 
         if (!empty($responseMailer['ErrorCode'])) {

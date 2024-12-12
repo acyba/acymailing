@@ -53,6 +53,10 @@
             &[aria-selected='true'] {
                 font-weight: 500;
             }
+
+            &[aria-disabled="true"]:hover {
+                background-color: transparent;
+            }
         }
     }
 
@@ -71,6 +75,47 @@
         &:hover, &:focus {
             color: $medium-gray;
             background-color: inherit;
+        }
+    }
+
+    .acym__selection__page__tabs {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        margin: 0;
+        gap: 1.5rem;
+
+        li.step {
+            display: inline-block;
+
+            &:not(.current_step) a {
+                cursor: pointer;
+            }
+
+            &:not(.disabled_step):hover a {
+                background-color: $light-blue;
+            }
+
+            &.current_step a {
+                color: $dark-blue;
+                background-color: $light-blue;
+                font-weight: 500;
+                border-radius: 4px;
+            }
+
+            &.disabled_step {
+                padding: 15px;
+                color: $medium-gray;
+                cursor: default;
+            }
+
+            a {
+                display: block;
+                padding: 15px;
+                border-radius: 4px;
+                color: $very-dark-gray;
+                transition: .2s;
+            }
         }
     }
 }

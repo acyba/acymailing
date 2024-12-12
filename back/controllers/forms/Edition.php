@@ -19,7 +19,11 @@ trait Edition
                 $widgetUrl = 'index.php?option=com_modules&task=module.add&eid='.intval($moduleId);
             }
         } else {
-            $widgetUrl = 'widgets.php';
+            if (current_theme_supports('widgets')) {
+                $widgetUrl = 'widgets.php';
+            } else {
+                $widgetUrl = 'site-editor.php';
+            }
         }
 
         $data = [
@@ -41,10 +45,10 @@ trait Edition
         acym_setVar('layout', 'edit');
         $formClass = new FormClass();
         $id = acym_getVar('int', 'id', 0);
-        $type = acym_getVar('string', 'type', ACYM_CMS === 'wordpress' ? $formClass::SUB_FORM_TYPE_SHORTCODE : $formClass::SUB_FORM_TYPE_POPUP);
+        $type = acym_getVar('string', 'type', ACYM_CMS === 'wordpress' ? FormClass::SUB_FORM_TYPE_SHORTCODE : FormClass::SUB_FORM_TYPE_POPUP);
         if (!acym_level(ACYM_ENTERPRISE) && in_array(
                 $type,
-                [$formClass::SUB_FORM_TYPE_POPUP, $formClass::SUB_FORM_TYPE_HEADER, $formClass::SUB_FORM_TYPE_FOOTER]
+                [FormClass::SUB_FORM_TYPE_POPUP, FormClass::SUB_FORM_TYPE_HEADER, FormClass::SUB_FORM_TYPE_FOOTER]
             )) {
             acym_enqueueMessage(acym_translation('ACYM_NOT_ALLOWED_CREATE_TYPE_FORM'), 'info');
             $this->listing();

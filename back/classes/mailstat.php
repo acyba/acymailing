@@ -6,8 +6,13 @@ use AcyMailing\Libraries\acymClass;
 
 class MailStatClass extends acymClass
 {
-    var $table = 'mail_stat';
-    var $pkey = 'mail_id';
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'mail_stat';
+        $this->pkey = 'mail_id';
+    }
 
     public function save($mailStat)
     {
@@ -119,14 +124,13 @@ class MailStatClass extends acymClass
     public function getAllMailsForStats($search = '')
     {
         $mailClass = new MailClass();
-        $campaignClass = new CampaignClass();
 
         $query = 'SELECT mail.* 
                   FROM #__acym_mail AS mail 
                   JOIN #__acym_mail_stat AS mail_stat ON mail.id = mail_stat.mail_id';
 
         $queryAutoCampaign = 'SELECT mail.* FROM #__acym_mail AS mail 
-                              JOIN #__acym_campaign as campaign ON campaign.mail_id = mail.id AND campaign.sending_type = '.acym_escapeDB($campaignClass::SENDING_TYPE_AUTO);
+                              JOIN #__acym_campaign as campaign ON campaign.mail_id = mail.id AND campaign.sending_type = '.acym_escapeDB(CampaignClass::SENDING_TYPE_AUTO);
 
         $querySearch = '';
 

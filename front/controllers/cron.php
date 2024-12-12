@@ -50,10 +50,7 @@ class CronController extends acymController
 
 
         //removeIf(development)
-        if (!acym_isLicenseValidWeekly() && (empty($_SERVER['HTTP_REFERER']) || (strpos($_SERVER['HTTP_REFERER'], 'www.yourcrontask.com') === false && strpos(
-                    $_SERVER['HTTP_REFERER'],
-                    'api.acymailing.com'
-                ) === false))) {
+        if (!acym_isLicenseValidWeekly() && (empty($_SERVER['HTTP_REFERER']) || strpos($_SERVER['HTTP_REFERER'], 'api.acymailing.com') === false)) {
             exit;
         }
         //endRemoveIf(development)
@@ -61,14 +58,12 @@ class CronController extends acymController
 
         echo '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" /><title>'.acym_translation('ACYM_CRON').'</title></head><body>';
         $cronHelper = new CronHelper();
-        $cronHelper->report = true;
-        $cronHelper->addSkipFromString(acym_getVar('string', 'skip'));
-        $emailtypes = acym_getVar('string', 'emailtypes');
-        if (!empty($emailtypes)) {
-            $cronHelper->emailtypes = explode(',', $emailtypes);
+        $cronHelper->addSkipFromString(acym_getVar('string', 'skip', ''));
+        $emailTypes = acym_getVar('string', 'emailtypes', '');
+        if (!empty($emailTypes)) {
+            $cronHelper->setEmailTypes(explode(',', $emailTypes));
         }
         $cronHelper->cron();
-        $cronHelper->report();
         echo '</body></html>';
 
         exit;

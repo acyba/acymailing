@@ -14,10 +14,17 @@
             'languages' => 'ACYM_CONFIGURATION_LANGUAGES',
         ];
 
+        acym_trigger('onConfigurationAddTabs', [&$tabs]);
+
         foreach ($tabs as $oneTab => $title) {
             $data['tab']->startTab(acym_translation($title));
             echo '<div class="acym__configuration__content">';
-            include dirname(__FILE__).DS.$oneTab.'.php';
+            $filename = dirname(__FILE__).DS.$oneTab.'.php';
+            if (file_exists($filename)) {
+                include dirname(__FILE__).DS.$oneTab.'.php';
+            } else {
+                acym_trigger('onConfigurationTab_'.$oneTab, [$data]);
+            }
             echo '</div>';
             $data['tab']->endTab();
         }

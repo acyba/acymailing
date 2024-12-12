@@ -80,12 +80,14 @@
 					<div class="cell large-2 medium-2 hide-for-small-only">
                         <?php
                         echo acym_tooltip(
-                            acym_date(
-                                $form->creation_date,
-                                acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC5'),
-                                false
-                            ),
-                            $form->creation_date
+                            [
+                                'hoveredText' => acym_date(
+                                    $form->creation_date,
+                                    acym_getDateTimeFormat('ACYM_DATE_FORMAT_LC5'),
+                                    false
+                                ),
+                                'textShownInTooltip' => $form->creation_date,
+                            ]
                         );
                         ?>
 					</div>

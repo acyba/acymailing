@@ -71,9 +71,7 @@ abstract class AbstractHtmlProcessor
      *
      * Please use `::fromHtml` or `::fromDomDocument` instead.
      */
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * Builds a new instance from the given HTML.
@@ -194,7 +192,7 @@ abstract class AbstractHtmlProcessor
      *
      * @return string
      */
-    protected function removeSelfClosingTagsClosingTags(string $html): string
+    private function removeSelfClosingTagsClosingTags(string $html): string
     {
         return \preg_replace('%</' . self::PHP_UNRECOGNIZED_VOID_TAGNAME_MATCHER . '>%', '', $html);
     }
@@ -208,7 +206,7 @@ abstract class AbstractHtmlProcessor
      *
      * @throws \RuntimeException
      */
-    protected function getBodyElement(): \DOMElement
+    private function getBodyElement(): \DOMElement
     {
         $node = $this->getDomDocument()->getElementsByTagName('body')->item(0);
         if (!$node instanceof \DOMElement) {
@@ -240,7 +238,7 @@ abstract class AbstractHtmlProcessor
     {
         $domDocument = new \DOMDocument();
         $domDocument->strictErrorChecking = false;
-        $domDocument->formatOutput = true;
+        $domDocument->formatOutput = false;
         $libXmlState = \libxml_use_internal_errors(true);
         $domDocument->loadHTML($this->prepareHtmlForDomConversion($html));
         \libxml_clear_errors();

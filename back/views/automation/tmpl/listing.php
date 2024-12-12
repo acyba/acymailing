@@ -7,17 +7,17 @@
     ?>
 	<div id="acym__automation" class="acym__content">
         <?php if ($isEmpty) { ?>
-			<div class="grid-x text-center">
+			<div class="grid-x text-center acym__listing__empty">
 				<h1 class="cell acym__listing__empty__title"><?php echo acym_translation('ACYM_YOU_DONT_HAVE_ANY_AUTOMATION'); ?></h1>
 				<h1 class="cell acym__listing__empty__subtitle"><?php echo acym_translation('ACYM_CREATE_ONE_AND_LET_ACYAMAILING_DO_IT'); ?></h1>
-				<div class="medium-4"></div>
-				<div class="medium-4 cell grid-x grid-margin-x align-center">
-					<div class="medium-6 padding-bottom-1 cell">
+				<div class="cell medium-4 hide-for-small-only"></div>
+				<div class="cell medium-4 grid-x grid-margin-x align-center">
+					<div class="cell small-6 padding-bottom-1">
 						<button type="button" class="button button-secondary acy_button_submit" data-task="edit" data-step="action">
                             <?php echo acym_translation('ACYM_NEW_MASS_ACTION'); ?>
 						</button>
 					</div>
-					<div class="medium-6 padding-bottom-1 cell">
+					<div class="cell small-6 padding-bottom-1">
 						<button type="button" class="button acy_button_submit" data-task="edit" data-step="info">
                             <?php echo acym_translation('ACYM_CREATE_AUTOMATION'); ?>
 						</button>
@@ -104,7 +104,12 @@
                                         <?php
                                         $automation->description = acym_escape(acym_translation($automation->description));
                                         if (strlen($automation->description) >= 50) {
-                                            echo acym_tooltip(substr($automation->description, 0, 50), $automation->description).'...';
+                                            echo acym_tooltip(
+                                                    [
+                                                        'hoveredText' => substr($automation->description, 0, 50),
+                                                        'textShownInTooltip' => $automation->description,
+                                                    ]
+                                                ).'...';
                                         } else {
                                             echo $automation->description;
                                         }

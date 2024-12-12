@@ -26,7 +26,8 @@ const acym_helperThumbnail = {
             ctrl: acym_helper.ctrlMails,
             task: 'setNewThumbnail',
             content: $editorThumbnail.val(),
-            thumbnail: generatedThumbnail
+            thumbnail: generatedThumbnail,
+            mailId: jQuery('#editor_mailid').val()
         };
 
         return acym_helper.post(ACYM_AJAX_URL, data).then(response => {

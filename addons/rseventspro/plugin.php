@@ -62,6 +62,11 @@ class plgAcymRseventspro extends acymPlugin
                     'label' => 'ACYM_HIDE_PAST_EVENTS',
                     'value' => 1,
                 ],
+                'itemid' => [
+                    'type' => 'text',
+                    'label' => 'ACYM_MENU_ID',
+                    'value' => '',
+                ],
             ];
         } else {
             $this->settings = [

@@ -1,5 +1,10 @@
 <?php
-if (empty($data['mailInformation'])) $data['mailInformation'] = $data['mail'];
+
+use AcyMailing\Classes\TagClass;
+
+if (empty($data['mailInformation'])) {
+    $data['mailInformation'] = $data['mail'];
+}
 
 $isAbTest = !empty($data['abtest']);
 
@@ -23,14 +28,16 @@ $isAbTest = !empty($data['abtest']);
 						<span class="acym__wysid__edit__versions__selection__element" acym-data-version="main">'.$data['main_version']->name.'</span>';
         } else {
             echo acym_tooltip(
-                '<i class="acymicon-pencil acym__wysid__edit__versions__selection__edition"></i>
+                [
+                    'hoveredText' => '<i class="acymicon-pencil acym__wysid__edit__versions__selection__edition"></i>
 						<i class="acymicon-check acym__wysid__edit__versions__selection__check"></i>
 						<img 
 						class="acym__wysid__edit__versions__selection__element" 
 						acym-data-version="main" 
 						src="'.acym_getFlagByCode($data['main_language']->code).'" 
 						alt="'.$data['main_language']->code.' flag">',
-                $data['main_language']->name
+                    'textShownInTooltip' => $data['main_language']->name,
+                ]
             );
         }
 
@@ -69,14 +76,16 @@ $isAbTest = !empty($data['abtest']);
 						<span class="acym__wysid__edit__versions__selection__element" acym-data-version="'.$version->code.'">'.$version->name.'</span>';
             } else {
                 echo acym_tooltip(
-                    '<i class="acymicon-pencil acym__wysid__edit__versions__selection__edition"></i>
+                    [
+                        'hoveredText' => '<i class="acymicon-pencil acym__wysid__edit__versions__selection__edition"></i>
 							<i class="acymicon-check acym__wysid__edit__versions__selection__check"></i>
 							<img 
 							class="acym__wysid__edit__versions__selection__element" 
 							acym-data-version="'.$version->code.'" 
 							src="'.acym_getFlagByCode($version->code).'" 
 							alt="'.$version->code.' flag">',
-                    $version->name
+                        'textShownInTooltip' => $version->name,
+                    ]
                 );
             }
             ?>
@@ -111,7 +120,7 @@ $isAbTest = !empty($data['abtest']);
         <?php echo acym_translation('ACYM_START_FROM_TEMPLATE'); ?>
 	</button>
     <?php
-    $dataForTemplate = ['allTags' => $data['tagClass']->getAllTagsByType('mail')];
+    $dataForTemplate = ['allTags' => $data['tagClass']->getAllTagsByType(TagClass::TYPE_MAIL)];
     echo acym_modal_include(
         '',
         ACYM_VIEW.'mails'.DS.'tmpl'.DS.'choose_template_ajax.php',

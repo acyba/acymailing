@@ -65,6 +65,7 @@
 							<a href="<?php echo acym_completeLink('mails&task=edit&type=override&id='.intval($override->mail_id).'&return='.urlencode(acym_currentURL())); ?>">
 								<p><?php
                                     $subject = preg_replace('#^{trans:([A-Z_]+)(|.+)*}$#', '$1', $override->subject);
+                                    $subject = str_replace('%', '%%', $subject);
                                     echo acym_translationSprintf($subject, '{param1}', '{param2}');
                                     ?></p>
 							</a>
@@ -83,10 +84,12 @@
                                 $tooltip = 'ACYM_INACTIVE';
                             }
                             echo acym_tooltip(
-                                '<i data-acy-table="mail_override" data-acy-field="active" data-acy-elementid="'.acym_escape(
-                                    $override->id
-                                ).'" class="acym_toggleable '.$class.'"></i>',
-                                acym_translation($tooltip)
+                                [
+                                    'hoveredText' => '<i data-acy-table="mail_override" data-acy-field="active" data-acy-elementid="'.acym_escape(
+                                            $override->id
+                                        ).'" class="acym_toggleable '.$class.'"></i>',
+                                    'textShownInTooltip' => acym_translation($tooltip),
+                                ]
                             );
                             ?>
 						</div>

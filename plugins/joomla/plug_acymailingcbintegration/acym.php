@@ -118,7 +118,10 @@ class getAcymTab extends cbTabHandler
         $userClass = new UserClass();
         $acyUser = $userClass->getOneByEmail($cbUser->email);
 
-        if (!empty($cbUser->id)) $currentUser = $userClass->getOneByCMSId($cbUser->id);
+        if (!empty($cbUser->id)) {
+            $currentUser = $userClass->getOneByCMSId($cbUser->id);
+        }
+
         if (!empty($currentUser)) {
             // The user may have changed its email address from CB, delete the previous AcyMailing user if we found two. It's like a merge of two Acy users
             if (!empty($acyUser->id) && $acyUser->id != $currentUser->id) {
@@ -136,8 +139,15 @@ class getAcymTab extends cbTabHandler
 
         $acyUser = $this->getCurrentUser($cbUser);
 
+        if (empty($acyUser)) {
+            $acyUser = new stdClass();
+        }
+
         $acyUser->email = $cbUser->email;
-        if (!empty($cbUser->name)) $acyUser->name = $cbUser->name;
+        if (!empty($cbUser->name)) {
+            $acyUser->name = $cbUser->name;
+        }
+
         if (!empty($cbUser->user_id)) {
             $acyUser->cms_id = $cbUser->user_id;
         } elseif (!empty($cbUser->id)) {
@@ -329,7 +339,9 @@ class getAcymTab extends cbTabHandler
     {
         $acyUser = $this->getCurrentUser($cbUser);
 
-        if (empty($acyUser)) $acyUser = new stdClass();
+        if (empty($acyUser)) {
+            $acyUser = new stdClass();
+        }
 
         if (!empty($cbUser->name)) $acyUser->name = $cbUser->name;
         if (!empty($cbUser->email)) $acyUser->email = $cbUser->email;

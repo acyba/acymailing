@@ -18,12 +18,21 @@
             ?>
 		</div>
         <?php
-        $icon = empty($data['upgrade']) ? '<i></i>' : acym_tooltip('<i class="acymicon-question-circle-o"></i>', acym_translation('ACYM_NEED_PRO_VERSION'));
+        $icon = empty($data['upgrade'])
+            ? '<i></i>'
+            : acym_tooltip(
+                [
+                    'hoveredText' => '<i class="acymicon-question-circle-o"></i>',
+                    'textShownInTooltip' => acym_translation('ACYM_NEED_PRO_VERSION'),
+                ]
+            );
         $iconSpamTest = acym_level(ACYM_ENTERPRISE)
             ? '<i></i>'
             : acym_tooltip(
-                '<i class="acymicon-question-circle-o"></i>',
-                acym_translation('ACYM_NEED_ENTERPRISE_VERSION')
+                [
+                    'hoveredText' => '<i class="acymicon-question-circle-o"></i>',
+                    'textShownInTooltip' => acym_translation('ACYM_NEED_ENTERPRISE_VERSION'),
+                ]
             );
         $classContainer = 'is-hidden';
         if (!empty($data['upgrade'])) $classContainer = 'acym__campaigns__tests__starter';

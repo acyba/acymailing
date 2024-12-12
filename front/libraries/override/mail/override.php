@@ -55,7 +55,13 @@ class jMail_acym extends PHPMailer
         $ds = DIRECTORY_SEPARATOR;
         if (!empty($this->to[0][0]) && include_once rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php') {
             $mailerHelper = new MailerHelper();
-            $success = $mailerHelper->overrideEmail($this->Subject, $this->Body, $this->to[0][0]);
+            $success = $mailerHelper->overrideEmail(
+                [
+                    'subject' => $this->Subject,
+                    'message' => $this->Body,
+                    'to' => $this->to[0][0],
+                ]
+            );
         }
 
         // We sent the email using AcyMailing
@@ -347,7 +353,17 @@ class jMail_acym extends PHPMailer
     }
 
     public function sendMail(
-        $from, $fromName, $recipient, $subject, $body, $mode = false, $cc = null, $bcc = null, $attachment = null, $replyTo = null, $replyToName = null
+        $from,
+        $fromName,
+        $recipient,
+        $subject,
+        $body,
+        $mode = false,
+        $cc = null,
+        $bcc = null,
+        $attachment = null,
+        $replyTo = null,
+        $replyToName = null
     ) {
         // Create config object
         $config = Factory::getConfig();

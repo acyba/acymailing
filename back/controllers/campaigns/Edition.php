@@ -139,7 +139,7 @@ trait Edition
 
         $data = [
             'allMails' => $matchingMails['elements'],
-            'allTags' => $tagClass->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType(TagClass::TYPE_MAIL),
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
@@ -289,6 +289,8 @@ trait Edition
         if ($data['editor']->isDragAndDrop()) {
             $this->loadScripts['edit_email'][] = 'editor-wysid';
             $this->loadScripts['edit_email']['vue-applications'] = ['custom_view'];
+        } else {
+            $this->loadScripts['edit_email'][] = 'dtextPicker';
         }
     }
 
@@ -360,7 +362,7 @@ trait Edition
         $data = [
             'containerClass' => $this->stepContainerClass,
             'social_icons' => $this->config->get('social_icons', '{}'),
-            'allTags' => $tagClass->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType(TagClass::TYPE_MAIL),
             'campaign_type' => acym_getVar('string', 'campaign_type', 'now'),
             'typeEditor' => acym_getVar('string', 'type_editor', ''),
             'uploadFileType' => new UploadfileType(),
@@ -374,7 +376,11 @@ trait Edition
         $this->prepareListingClasses($data);
         $this->prepareSegmentDisplay($data, empty($data['mailInformation']->sending_params) ? false : $data['mailInformation']->sending_params);
 
-        $data['before-save'] = $data['editor']->editor != 'acyEditor' ? '' : 'acym-data-before="acym_editorWysidVersions.storeCurrentValues(true);"';
+        $data['before-save'] = '';
+
+        if ($data['editor']->editor === 'acyEditor') {
+            $data['before-save'] = 'acym-data-before="acym_editorWysidVersions.storeCurrentValues(true);acym_editorWysidFormAction.cleanMceInput();"';
+        }
 
         $data['menuClass'] = $this->menuClass;
 
@@ -484,14 +490,14 @@ trait Edition
         $campaign['suggestedDate'] = acym_date('1534771620', 'j M Y H:i');
         $campaign['senderInformations'] = new stdClass();
         $campaign['config_values'] = new stdClass();
-        $campaign['currentCampaign']->send_now = $currentCampaign->sending_type == $campaignClass::SENDING_TYPE_NOW;
-        $campaign['currentCampaign']->send_scheduled = $currentCampaign->sending_type == $campaignClass::SENDING_TYPE_SCHEDULED;
-        $campaign['currentCampaign']->send_auto = $currentCampaign->sending_type == $campaignClass::SENDING_TYPE_AUTO;
+        $campaign['currentCampaign']->send_now = $currentCampaign->sending_type == CampaignClass::SENDING_TYPE_NOW;
+        $campaign['currentCampaign']->send_scheduled = $currentCampaign->sending_type == CampaignClass::SENDING_TYPE_SCHEDULED;
+        $campaign['currentCampaign']->send_auto = $currentCampaign->sending_type == CampaignClass::SENDING_TYPE_AUTO;
         $campaign['campaignClass'] = $campaignClass;
 
         // Handle special emails
         $campaign['currentCampaign']->send_specific = [];
-        if (!in_array($currentCampaign->sending_type, $campaignClass::SENDING_TYPES)) {
+        if (!in_array($currentCampaign->sending_type, CampaignClass::SENDING_TYPES)) {
             acym_trigger('getCampaignSpecificSendSettings', [$currentCampaign->sending_type, $currentCampaign->sending_params, &$campaign['currentCampaign']->send_specific]);
         }
 
@@ -499,6 +505,7 @@ trait Edition
         $campaign['senderInformations']->from_email = empty($currentCampaign->from_email) ? '' : $currentCampaign->from_email;
         $campaign['senderInformations']->reply_to_name = empty($currentCampaign->reply_to_name) ? '' : $currentCampaign->reply_to_name;
         $campaign['senderInformations']->reply_to_email = empty($currentCampaign->reply_to_email) ? '' : $currentCampaign->reply_to_email;
+        $campaign['senderInformations']->bounce_email = empty($currentCampaign->bounce_email) ? '' : $currentCampaign->bounce_email;
 
         $campaign['config_values']->from_name = $this->config->get('from_name', '');
         $campaign['config_values']->from_email = $this->config->get('from_email', '');
@@ -547,9 +554,9 @@ trait Edition
         $campaignType = acym_getVar('string', 'campaign_type', 'now');
 
         $types = [
-            'now' => $campaignClass::SENDING_TYPE_NOW,
-            'auto' => $campaignClass::SENDING_TYPE_AUTO,
-            'scheduled' => $campaignClass::SENDING_TYPE_SCHEDULED,
+            'now' => CampaignClass::SENDING_TYPE_NOW,
+            'auto' => CampaignClass::SENDING_TYPE_AUTO,
+            'scheduled' => CampaignClass::SENDING_TYPE_SCHEDULED,
         ];
 
         acym_trigger('getCampaignTypes', [&$types]);
@@ -557,7 +564,7 @@ trait Edition
         if (empty($campaignId)) {
             $mail = new stdClass();
             $mail->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
-            $mail->type = $mailClass::TYPE_STANDARD;
+            $mail->type = MailClass::TYPE_STANDARD;
 
             $campaign = new stdClass();
             $campaign->draft = 1;
@@ -572,6 +579,11 @@ trait Edition
 
             $campaign = $campaignClass->getOneById($campaignId);
             $mail = $mailClass->getOneById($campaign->mail_id);
+            $mailArchiveClass = new MailArchiveClass();
+            $archive = $mailArchiveClass->getOneByMailId($mail->id);
+            if (!empty($archive)) {
+                $mailArchiveClass->delete($archive->id);
+            }
         }
         $campaign->visible = acym_getVar('int', 'visible', 1);
 
@@ -801,10 +813,10 @@ trait Edition
 
         $senderInformation = acym_getVar('', 'senderInformation');
         $sendingDate = acym_getVar('string', 'sendingDate');
-        $sendingType = acym_getVar('string', 'sending_type', $campaignClass::SENDING_TYPE_NOW);
+        $sendingType = acym_getVar('string', 'sending_type', CampaignClass::SENDING_TYPE_NOW);
         $sendingParams = acym_getVar('array', 'sending_params', []);
         $specificSendingParams = [];
-        $isScheduled = $campaignClass::SENDING_TYPE_SCHEDULED == $sendingType;
+        $isScheduled = CampaignClass::SENDING_TYPE_SCHEDULED == $sendingType;
 
         $currentCampaign = $campaignClass->getOneById($campaignId);
 
@@ -816,7 +828,7 @@ trait Edition
             return;
         }
 
-        if ($campaignClass::SENDING_TYPE_AUTO == $sendingType) {
+        if (CampaignClass::SENDING_TYPE_AUTO == $sendingType) {
             $triggerType = acym_getVar('string', 'acym_triggers', '');
             if (empty($triggerType)) {
                 acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
@@ -857,7 +869,7 @@ trait Edition
         }
 
         // Handle special emails
-        if (!in_array($sendingType, $campaignClass::SENDING_TYPES)) {
+        if (!in_array($sendingType, CampaignClass::SENDING_TYPES)) {
             $specialSendings = [];
             acym_trigger('saveCampaignSpecificSendSettings', [$currentCampaign->sending_type, &$specialSendings]);
             if (!empty($specialSendings)) {
@@ -883,6 +895,7 @@ trait Edition
         $currentMail->from_email = $senderInformation['from_email'];
         $currentMail->reply_to_name = $senderInformation['reply_to_name'];
         $currentMail->reply_to_email = $senderInformation['reply_to_email'];
+        $currentMail->bounce_email = $senderInformation['bounce_email'];
         $currentMail->bcc = $senderInformation['bcc'];
         $currentMail->tracking = $senderInformation['tracking'];
         $currentMail->translation = empty($senderInformation['translation']) ? '' : $senderInformation['translation'];
@@ -928,7 +941,7 @@ trait Edition
 
         $data = [
             'mailClass' => new MailClass(),
-            'campaignClass' => $this->currentClass,
+            'campaignClass' => new CampaignClass(),
             'containerClass' => $this->stepContainerClass,
         ];
 
@@ -996,14 +1009,17 @@ trait Edition
     protected function prepareCampaignSummary(&$data): bool
     {
         $campaignId = acym_getVar('int', 'campaignId');
-        $campaign = empty($campaignId) ? null : $this->currentClass->getOneByIdWithMail($campaignId);
-        if (is_null($campaign)) return false;
+        $campaignClass = new CampaignClass();
+        $campaign = empty($campaignId) ? null : $campaignClass->getOneByIdWithMail($campaignId);
+        if (is_null($campaign)) {
+            return false;
+        }
 
-        if (!$this->currentClass->hasUserAccess($campaignId)) {
+        if (!$campaignClass->hasUserAccess($campaignId)) {
             die('Access denied for this campaign');
         }
 
-        $campaign->isAuto = $campaign->sending_type == $this->currentClass->getConstAuto();
+        $campaign->isAuto = $campaign->sending_type == $campaignClass->getConstAuto();
 
         $startDate = '';
         if ($campaign->isAuto) {
@@ -1027,6 +1043,8 @@ trait Edition
         ];
         $data['campaignInformation'] = $campaign;
         $data['mailId'] = $campaign->mail_id;
+
+        acym_trigger('onAcymCampaignSummary', [&$data]);
 
         return true;
     }

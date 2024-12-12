@@ -184,18 +184,34 @@ class ImageHelper extends acymObject
             ];
         }
 
-        switch ($extension) {
-            case 'gif':
+        // Checks the real file type as it can be renamed, but not available on all servers
+        if (function_exists('exif_imagetype')) {
+            $imageRealType = exif_imagetype($picturePath);
+        } else {
+            if ($extension === 'gif') {
+                $imageRealType = IMAGETYPE_GIF;
+            } elseif ($extension === 'jpg' || $extension === 'jpeg') {
+                $imageRealType = IMAGETYPE_JPEG;
+            } elseif ($extension === 'png') {
+                $imageRealType = IMAGETYPE_PNG;
+            } elseif ($extension === 'webp') {
+                $imageRealType = IMAGETYPE_WEBP;
+            } else {
+                return false;
+            }
+        }
+
+        switch ($imageRealType) {
+            case IMAGETYPE_GIF:
                 $img = imagecreatefromgif($picturePath);
                 break;
-            case 'jpg':
-            case 'jpeg':
+            case IMAGETYPE_JPEG:
                 $img = imagecreatefromjpeg($picturePath);
                 break;
-            case 'png':
+            case IMAGETYPE_PNG:
                 $img = imagecreatefrompng($picturePath);
                 break;
-            case 'webp':
+            case IMAGETYPE_WEBP:
                 if (function_exists('imagecreatefromwebp')) {
                     $img = imagecreatefromwebp($picturePath);
                 }
@@ -210,7 +226,7 @@ class ImageHelper extends acymObject
 
         $thumb = imagecreatetruecolor($newWidth, $newHeight);
 
-        if (in_array($extension, ['gif', 'png'])) {
+        if (in_array($imageRealType, [IMAGETYPE_GIF, IMAGETYPE_PNG])) {
             imagealphablending($thumb, false);
             imagesavealpha($thumb, true);
         }
@@ -222,18 +238,17 @@ class ImageHelper extends acymObject
         }
 
         ob_start();
-        switch ($extension) {
-            case 'gif':
+        switch ($imageRealType) {
+            case IMAGETYPE_GIF:
                 $status = imagegif($thumb);
                 break;
-            case 'jpg':
-            case 'jpeg':
+            case IMAGETYPE_JPEG:
                 $status = imagejpeg($thumb, null, 100);
                 break;
-            case 'png':
+            case IMAGETYPE_PNG:
                 $status = imagepng($thumb, null, 0);
                 break;
-            case 'webp':
+            case IMAGETYPE_WEBP:
                 $status = imagewebp($thumb, null, 100);
                 break;
         }

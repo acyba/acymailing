@@ -47,7 +47,7 @@ jQuery(function ($) {
             el: '#acym__plugin__installed__application',
             data: {
                 allPlugins: [],
-                displayedPlugins: [1],
+                displayedPlugins: [],
                 search: acym_helper.getCookie('acym_installed_plugins_search'),
                 type: acym_helper.getCookie('acym_installed_plugins_type'),
                 level: acym_helper.getCookie('acym_installed_plugins_level'),
@@ -71,6 +71,8 @@ jQuery(function ($) {
                         return false;
                     }
                     this.allPlugins = acym_helper.parseJson(document.getElementById('acym__plugins__all').value);
+                    // We delete this element to prevent an error when saving the form
+                    document.getElementById('acym__plugins__all').remove();
                     this.currentLevel = resConfig.data.value.toLowerCase();
                     this.resetDisplay();
                     if (this.displayedPlugins.length === 0) {

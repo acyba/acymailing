@@ -28,7 +28,7 @@ function acym_getMailThumbnail($thumbnail)
         }
     }
 
-    return ACYM_IMAGES.'default_template_thumbnail.png';
+    return ACYM_IMAGES.'templates/default_template_thumbnail.png';
 }
 
 function acym_getFlagByCode($code)

@@ -24,6 +24,8 @@ define('ACYM_HELPER_GLOBAL', ACYM_HELPER.'global'.DS);
 
 define('ACYM_REGEX_SWITCHES', '#(switch_[0-9]*".*)(data\-switch=")(switch_.+id=")(switch_.+for=")(switch_)#Uis');
 define('ACYM_SOCIAL_MEDIA', json_encode(['facebook', 'twitter', 'instagram', 'linkedin', 'pinterest', 'vimeo', 'wordpress', 'youtube', 'x', 'telegram']));
+define('ACYM_ENTERPRISE_PRICE', '7.4');
+define('ACYM_ESSENTIAL_PRICE', '2.4');
 
 //Avoid date warnings...
 if (is_callable('date_default_timezone_set')) {

@@ -5,7 +5,7 @@
 			<div class="cell large-8 grid-x text-center">
 				<h3 class="cell acym__title text-center">
 					<i class="acymicon-transfer acym__color__green margin-right-1"></i>
-					<?php echo acym_translation('ACYM_WHAT_IS_BOUNCE_HANDLING'); ?>
+                    <?php echo acym_translation('ACYM_WHAT_IS_BOUNCE_HANDLING'); ?>
 				</h3>
 				<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_WHAT_IS_BOUNCE_HANDLING_TEXT'); ?></p>
 			</div>
@@ -41,16 +41,10 @@
 		<div class="cell grid-x margin-top-3">
 			<div class="cell medium-auto hide-for-small-only"></div>
             <?php
-            if (!acym_level(ACYM_ENTERPRISE)) {
-                if ($data['isEnterprise']) { ?>
-					<button data-task="passSplash" class="cell medium-shrink button primary acy_button_submit" type="button"><?php echo acym_translation(
-                            'ACYM_LETS_GO'
-                        ); ?></button>
-                <?php } else { ?>
-					<div class="cell medium-shrink">
-                        <?php acym_upgradeTo('enterprise', 'bounces'); ?>
-					</div>
-                <?php } ?>
+            if (!acym_level(ACYM_ENTERPRISE)) { ?>
+				<div class="cell medium-shrink">
+                    <?php acym_upgradeTo('enterprise', 'bounces'); ?>
+				</div>
 				<div class="cell medium-auto hide-for-small-only"></div>
             <?php } ?>
 		</div>

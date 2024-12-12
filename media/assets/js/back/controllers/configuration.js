@@ -1,6 +1,18 @@
 jQuery(function ($) {
+    const defaultSendingMethodPrefix = '.acym__configuration__mail-settings';
+    const smlSendingMethodPrefix = '#acym__configuration__sml__form';
+
     function Configuration() {
+        switchOauthFromHost();
+        switchBounceConnectionMethod();
+        switchProtocolMethodsForImap();
         setSendingMethodSwitchConfiguration();
+        setSmlConfiguration();
+        setSendingMethodSwitchConfiguration(smlSendingMethodPrefix, 'sml');
+        setEditSml();
+        setDeleteSml();
+        setShowButtonSml();
+        setSendingMethodSwitchConfiguration(defaultSendingMethodPrefix, 'config');
         setCheckPortConfiguration();
         setDKIMSelectConfiguration();
         setCheckDBConfiguration();
@@ -14,12 +26,15 @@ jQuery(function ($) {
         acym_helperMailer.setTestCredentialsSendingMethods();
         acym_helperMailer.setButtonCopyFromPlugin();
         acym_helperMailer.setSynchroExistingUsers();
-        acym_helperSelectionPage.setSelectionElement(true, true, callbackSendSettingsClicked);
+        acym_helperSelectionPage.setSelectionElement(true, true, callbackSendSettingsClickedDefault, undefined, {prefix: defaultSendingMethodPrefix});
+        acym_helperSelectionPage.setSelectionElement(true, true, callbackSendSettingsClickedSml, undefined, {prefix: smlSendingMethodPrefix});
         setEmbedImageToggle();
         acym_helperSelectionMultilingual.init('configuration');
+        acym_helperSelectionMultilingual.init('configuration_subscription');
         resetSubmitButtons();
         setAllowedHostsMultipleSelect();
-        acym_helperMailer.displayAuth2Params();
+        setSurveyAnswerMultipleSelect();
+        acym_helperMailer.displayOAuth2Params();
         acym_helperMailer.acymailerAddDomains();
         acym_helperMailer.displayCnameRecord();
         acym_helperMailer.deleteDomain();
@@ -32,16 +47,26 @@ jQuery(function ($) {
         setAutoSendingCounter();
         testConnection();
         synchronizebounceAddressFields();
+        setCustomAnswersField();
+        setColorPicker();
+        initButtonImage();
     }
 
     Configuration();
 
-    function setSendingMethodSwitchConfiguration() {
-        let $method = $('input[name="config[mailer_method]"]');
+    function setSmlConfiguration() {
+        const $allInputs = $(`${smlSendingMethodPrefix} input[name^="config["]`);
+        for (let i = 0 ; i < $allInputs.length ; i++) {
+            $allInputs[i].setAttribute('name', $allInputs[i].getAttribute('name').replace('config', 'sml'));
+        }
+    }
+
+    function setSendingMethodSwitchConfiguration(prefix, inputName) {
+        const $method = $(`input[name="${inputName}[mailer_method]"]`);
         $method.on('change', function () {
-            $('.send_settings').hide();
-            let selected = $('input[name="config[mailer_method]"]:checked').val();
-            const $settings = $(`#${selected}_settings`);
+            $(`${prefix} .send_settings`).hide();
+            const selected = $(`input[name="${inputName}[mailer_method]"]:checked`).val();
+            const $settings = $(`${prefix} #${selected}_settings`);
             if ($settings.length > 0) {
                 $settings.show();
             }
@@ -198,6 +223,10 @@ jQuery(function ($) {
                 acym_helperSelectionMultilingual.changeLanguage_configuration(acym_helperSelectionMultilingual.mainLanguage);
             }
 
+            if ($('[name="config[unsub_survey_translation]"]').length > 0) {
+                acym_helperSelectionMultilingual.changeLanguage_configuration_subscription(acym_helperSelectionMultilingual.mainLanguage);
+            }
+
             // Update delay fields (bounce and queue process)
             $('input[id^="delayvar"]').trigger('change');
 
@@ -238,16 +267,20 @@ jQuery(function ($) {
         let params = $(`#${paramsId}`).val();
         params = acym_helper.parseJson(params);
 
-        let $selectedCard = $('.acym__sending__methods__choose .acym__selection__card-selected');
-        if ($selectedCard.length === 0) return;
+        const $selectedCard = $('.acym__sending__methods__choose .acym__selection__card-selected');
+        if ($selectedCard.length === 0) {
+            return;
+        }
 
-        let $embedImageToggle = $(`[name="config[${optionName}]"]`);
-        let $info = $embedImageToggle.closest('.acym__configuration__mail__option').find('.acym__configuration__mail__info__disabled');
-        let $switchLabel = $embedImageToggle.closest('.acym__configuration__mail__option').find('> .switch-label');
-        let $switchPaddle = $embedImageToggle.closest('.acym__configuration__mail__option').find('.switch-paddle');
+        const $embedImageToggle = $(`[name="config[${optionName}]"]`);
+        const $info = $embedImageToggle.closest('.acym__configuration__mail__option').find('.acym__configuration__mail__info__disabled');
+        const $switchLabel = $embedImageToggle.closest('.acym__configuration__mail__option').find('> .switch-label');
+        const $switchPaddle = $embedImageToggle.closest('.acym__configuration__mail__option').find('.switch-paddle');
 
-        if (undefined !== params[$selectedCard.attr('id')] && !params[$selectedCard.attr('id')]) {
-            if (parseInt($embedImageToggle.val()) === 1) $switchLabel.trigger('click');
+        if (undefined !== params[$selectedCard.attr('data-acym-method')] && !params[$selectedCard.attr('data-acym-method')]) {
+            if (parseInt($embedImageToggle.val()) === 1) {
+                $switchLabel.trigger('click');
+            }
             $switchPaddle.addClass('disabled').attr('data-acym-tooltip', $info.find('.acym__tooltip__text ').html());
             $embedImageToggle.next().attr('disabled', 'true');
             $info.closest('.acym__tooltip__info').show();
@@ -259,22 +292,29 @@ jQuery(function ($) {
         acym_helperTooltip.setTooltip();
     }
 
-    function callbackSendSettingsClicked(element) {
-        const settings = document.querySelector(`#${element.id}_settings`);
+    function callbackSendSettingsClickedDefault(element) {
+        callbackSendSettingsClicked(element, '.acym__configuration__mail-settings');
+        setEmbedImageToggle();
+    }
+
+    function callbackSendSettingsClickedSml(element) {
+        callbackSendSettingsClicked(element, '#acym__configuration__sml__form');
+    }
+
+    function callbackSendSettingsClicked(element, prefix) {
+        const settings = document.querySelector(`${prefix} #${element.id}_settings`);
         if (settings) {
             settings.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
             });
         }
-        setEmbedImageToggle();
     }
 
     function setEmbedImageToggle() {
         setOptionDisabled('acym__config__mail__embed__image__blocked', 'embed_images');
         setOptionDisabled('acym__config__mail__embed__attachment__blocked', 'embed_files');
     }
-
 
     function resetSubmitButtons() {
         $('[data-task="downloadExportChangesFile"]').on('click', function () {
@@ -306,6 +346,20 @@ jQuery(function ($) {
                     text: term
                 };
             }
+        });
+    }
+
+    function setSurveyAnswerMultipleSelect() {
+        const $multipleSelect = $('.acym__survey__answer__select');
+
+        $multipleSelect.select2({
+            width: '100%',
+            placeholder: $multipleSelect.attr('placeholder'),
+            tags: true,
+            theme: 'foundation',
+            tokenSeparators: [
+                '' + ''
+            ]
         });
     }
 
@@ -499,6 +553,247 @@ jQuery(function ($) {
 
         $inputField2.on('input', function () {
             $inputField1.val($(this).val());
+        });
+    }
+
+    function setCustomAnswersField() {
+        const h4Element = $('.acym__multilingual__selection h4').eq(1);
+        if (h4Element.length) {
+            h4Element.addClass('xlarge-3 medium-5 small-9');
+        }
+
+        let counter = $('.acym__customs__answer__answer[data-response]').length;
+        $('#acym__custom_answer__add-answer').off('click').on('click', function () {
+
+            let newContent = '<div class="grid-x cell acym__customs__answers acym__content acym_noshadow grid-margin-x margin-y">';
+            newContent += '<input type="text" name="config[unsub_survey][]" class="cell medium-10 acym__customs__answer__answer" data-response="'
+                          + counter
+                          + '" value="">';
+            newContent += '<i class="cell acymicon-close small-1 acym__color__red cursor-pointer acym__custom__delete__value"></i>';
+            newContent += '</div>';
+
+            $('.acym__customs__answers__listing__sortable').append(newContent);
+            counter++;
+        });
+
+        $('.acym__customs__answers__listing__sortable').on('click', '.acym__custom__delete__value', function () {
+            const parent = $(this).closest('.acym__customs__answers');
+
+            let responseIndex = parseInt(parent.find('.acym__customs__answer__answer').data('response'));
+
+            parent.remove();
+
+            for (let language in acym_helperSelectionMultilingual.translation) {
+                acym_helperSelectionMultilingual.translation[language]['unsub_survey'].splice(responseIndex, 1);
+            }
+
+            $('.acym__customs__answers__listing__sortable .acym__customs__answers').each(function (index) {
+                $(this).find('.acym__customs__answer__answer').data('response', index);
+            });
+        });
+    }
+
+    function switchOauthFromHost() {
+        const $bounceHostInput = $('[name="config[bounce_server]"]');
+        const $protocolSelect = $('#acym__config__bounce__protocol');
+
+        const isOauthProtocol = $protocolSelect.val() === 'imap';
+        const isOauthHost = [
+            'imap.gmail.com',
+            'outlook.office365.com'
+        ].includes($bounceHostInput.val());
+
+        displayOauthForBounce(isOauthProtocol && isOauthHost, $bounceHostInput.val());
+
+        $bounceHostInput.off('input').on('input', function () {
+            const isOauthProtocol = $protocolSelect.val() === 'imap';
+            const isOauthHost = [
+                'imap.gmail.com',
+                'outlook.office365.com'
+            ].includes($bounceHostInput.val());
+
+            displayConnectionMethodFromProtocol(isOauthProtocol && isOauthHost);
+            displayOauthForBounce(isOauthProtocol && isOauthHost, $bounceHostInput.val());
+        });
+    }
+
+    function displayOauthForBounce(isOauth, hostName) {
+        const imapConnectionMethod = document.getElementById('acym__oauth2_imap_connection_method');
+        const tenantContainer = document.getElementById('acym__oauth2_bounce_params__tenant');
+        if (!imapConnectionMethod) {
+            return;
+        }
+
+        if (hostName === 'outlook.office365.com') {
+            tenantContainer.style.display = 'flex';
+        } else {
+            tenantContainer.style.display = 'none';
+        }
+
+        if (isOauth) {
+            imapConnectionMethod.style.display = 'flex';
+        } else {
+            imapConnectionMethod.style.display = 'none';
+        }
+    }
+
+    function switchProtocolMethodsForImap() {
+        const $protocolSelect = $('#acym__config__bounce__protocol');
+        if ($protocolSelect.length === 0) {
+            return;
+        }
+
+        displayConnectionMethodFromProtocol($protocolSelect.val() === 'imap');
+
+        $protocolSelect.on('change', function () {
+            displayConnectionMethodFromProtocol(this.value === 'imap');
+        });
+    }
+
+    function displayConnectionMethodFromProtocol(isImapSelected) {
+        const imapConnectionMethod = document.getElementById('acym__oauth2_imap_connection_method');
+
+        if (!imapConnectionMethod) {
+            return;
+        }
+
+        const defaultAuth = document.getElementById('acym__default_auth_bounce_params');
+        const oauth2Auth = document.getElementById('acym__oauth2_bounce_params');
+
+        const $connectionMethodSelect = $('#acym__config__imap_connection_method');
+
+        if (isImapSelected) {
+            imapConnectionMethod.style.display = 'flex';
+            displaySelectedBounceAuth($connectionMethodSelect.val() === 'oauth');
+        } else {
+            imapConnectionMethod.style.display = 'none';
+            defaultAuth.style.display = 'block';
+            oauth2Auth.style.display = 'none';
+        }
+    }
+
+    function switchBounceConnectionMethod() {
+        const $connectionMethodSelect = $('#acym__config__imap_connection_method');
+        if ($connectionMethodSelect.length === 0) {
+            return;
+        }
+
+        displaySelectedBounceAuth($connectionMethodSelect.val() === 'oauth');
+
+        $connectionMethodSelect.on('change', function () {
+            displaySelectedBounceAuth(this.value === 'oauth');
+        });
+    }
+
+    function displaySelectedBounceAuth(isOauth2Selected = false) {
+        const defaultAuth = document.getElementById('acym__default_auth_bounce_params');
+        const oauth2Auth = document.getElementById('acym__oauth2_bounce_params');
+
+        if (isOauth2Selected) {
+            defaultAuth.style.display = 'none';
+            oauth2Auth.style.display = 'block';
+        } else {
+            defaultAuth.style.display = 'block';
+            oauth2Auth.style.display = 'none';
+        }
+    }
+
+    function setEditSml() {
+        const $editButtons = $('.acym__configuration__sml__edit');
+        const $cancelEditButton = $('#acym__configuration__sml__cancel-edit');
+        const $currentId = $('#acym__configuration__sml__method__id');
+        const methods = acym_helper.parseJson($('#acym__configuration__sml__methods').val());
+        const $smlContainer = $(smlSendingMethodPrefix);
+        const $buttonToggle = $('#acym__configuration__sml__toggle');
+
+        $editButtons.on('click', function () {
+            $buttonToggle.hide();
+            $smlContainer.show();
+            const methodId = $(this).closest('.acym__configuration__sml__actions').attr('data-acym-method-id');
+            $currentId.val(methodId);
+            $cancelEditButton.show();
+            const method = methods[methodId];
+            const container = $(`[name="sml[mailer_method]"][value="${method.mailer_method}"]`).closest('.acym__sending__methods__one');
+            container.find('.acym__selection__card').click();
+
+            const $allInputs = $(`${smlSendingMethodPrefix} input[name^="sml["]`);
+            for (let i = 0 ; i < $allInputs.length ; i++) {
+                const key = $allInputs[i].name.replaceAll(/(sml\[)|\]/gi, '');
+                if (key === 'mailer_method') {
+                    continue;
+                }
+                $allInputs[i].value = method[$allInputs[i].name.replaceAll(/(sml\[)|\]/gi, '')];
+            }
+        });
+
+        $cancelEditButton.on('click', function () {
+            $currentId.val('');
+            $(`#acym__configuration__sml__name`).val('');
+            $smlContainer.hide();
+            $buttonToggle.show();
+        });
+    }
+
+    function setDeleteSml() {
+        const $deleteButtons = $('.acym__configuration__sml__delete');
+        const $saveButton = $('[data-task="addNewSml"]');
+        const $currentId = $('#acym__configuration__sml__method__id');
+
+        $deleteButtons.on('click', function () {
+            const methodId = $(this).closest('.acym__configuration__sml__actions').attr('data-acym-method-id');
+            $currentId.val(methodId);
+
+            $saveButton.attr('data-task', 'deleteSml');
+            $saveButton.click();
+        });
+    }
+
+    function setShowButtonSml() {
+        const $buttonToggle = $('#acym__configuration__sml__toggle');
+        const $smlContainer = $(smlSendingMethodPrefix);
+
+        $buttonToggle.on('click', function () {
+            $smlContainer.show();
+            $buttonToggle.hide();
+        });
+    }
+
+    function setColorPicker() {
+        const $colorField = $('#acym__config__settings__color-picker');
+        if (typeof $colorField.spectrum == 'function') {
+            $colorField
+                .spectrum({
+                    showInput: true,
+                    preferredFormat: 'hex'
+                });
+        }
+    }
+
+    function initButtonImage() {
+        $('#acym__unsubscribe__logo').on('click', function () {
+            acym_helperImage.openMediaManager(function (mediaObject) {
+                $('#acym__unsubscribe__logo_value').val(mediaObject.url).trigger('change');
+                $('.acym__unsub__logo__text')
+                    .html(mediaObject.url + ' <i class="acymicon-trash-o margin-left-1 acym__color__red acym__unsub__logo__remove"></i>');
+            });
+        });
+
+        $('#acym__unsubscribe__image').on('click', function () {
+            acym_helperImage.openMediaManager(function (mediaObject) {
+                $('#acym__unsubscribe__image_value').val(mediaObject.url).trigger('change');
+                $('.acym__unsub__image__text')
+                    .html(mediaObject.url + ' <i class="acymicon-trash-o margin-left-1 acym__color__red acym__unsub__image__remove"></i>');
+            });
+        });
+
+        $(document).on('click', '.acym__unsub__logo__remove', function () {
+            $('#acym__unsubscribe__logo_value').val('').trigger('change');
+            $('.acym__unsub__logo__text').empty();
+        });
+
+        $(document).on('click', '.acym__unsub__image__remove', function () {
+            $('#acym__unsubscribe__image_value').val('').trigger('change');
+            $('.acym__unsub__image__text').empty();
         });
     }
 });

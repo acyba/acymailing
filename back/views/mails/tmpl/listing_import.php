@@ -15,15 +15,15 @@ $maxSize = acym_translationSprintf(
 			<ul class="acym__ul">
 				<li><?php echo acym_translation('ACYM_TEMLPATE_ZIP_IMPORT'); ?></li>
 				<ul class="acym__ul">
-					<li>/template.html -> <?php echo acym_translation('ACYM_TEMPLATE_HTML_IMPORT'); ?></li>
-					<li>/css -> <?php echo acym_translation('ACYM_TEMPLATE_CSS_IMPORT'); ?></li>
-					<li>/images -> <?php echo acym_translation('ACYM_TEMPLATE_IMAGES_IMPORT'); ?></li>
-					<li>/thumbnail.png -> <?php echo acym_translation('ACYM_TEMPLATE_THUMBNAIL_IMPORT'); ?></li>
+					<li>/template.html -> <?php echo acym_translation('ACYM_TEMPLATE_HTML_IMPORT').' ('.acym_translation('ACYM_REQUIRED'); ?>)</li>
+					<li>/css -> <?php echo acym_translation('ACYM_TEMPLATE_CSS_IMPORT').' ('.acym_translation('ACYM_OPTIONAL'); ?>)</li>
+					<li>/images -> <?php echo acym_translation('ACYM_TEMPLATE_IMAGES_IMPORT').' ('.acym_translation('ACYM_OPTIONAL'); ?>)</li>
+					<li>/thumbnail.png -> <?php echo acym_translation('ACYM_TEMPLATE_THUMBNAIL_IMPORT').' ('.acym_translation('ACYM_OPTIONAL'); ?>)</li>
 				</ul>
 			</ul>
 		</div>
 		<div class="cell grid-x align-center">
-			<img id="acym__template__import__image__template" src="<?php echo ACYM_IMAGES.'import/template.png'; ?>" alt="template picture" class="cell shrink">
+			<img id="acym__template__import__image__template" src="<?php echo ACYM_IMAGES.'templates/template.png'; ?>" alt="template picture" class="cell shrink">
 			<input type="file" name="uploadedfile" class="cell" />
 			<div class="cell align-center grid-x grid-margin-x acym_vcenter">
 				<button type="button" class="cell shrink button button-secondary" id="acym__template__import__file"><?php echo acym_translation('ACYM_CHOOSE_FILE'); ?></button>
@@ -36,6 +36,6 @@ $maxSize = acym_translationSprintf(
 		</div>
 	</div>
 </div>
-<img src="<?php echo ACYM_IMAGES.'import/spaceman_template.png'; ?>" alt="spaceman with smoke" id="acym__template__import__image__spaceman">
-<img src="<?php echo ACYM_IMAGES.'import/smoke_rocket.png'; ?>" alt="smoke of rocket" id="acym__template__import__image__smoke">
+<img src="<?php echo ACYM_IMAGES.'templates/spaceman_template.png'; ?>" alt="spaceman with smoke" id="acym__template__import__image__spaceman">
+<img src="<?php echo ACYM_IMAGES.'templates/smoke_rocket.png'; ?>" alt="smoke of rocket" id="acym__template__import__image__smoke">
 

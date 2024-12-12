@@ -121,6 +121,10 @@
                     }
                 }
             }
+
+            .acym__listing__header__user_history__bounce {
+                overflow: auto;
+            }
         }
 
         @media screen and (max-width: 639px) {

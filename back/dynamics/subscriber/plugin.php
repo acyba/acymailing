@@ -22,11 +22,6 @@ class plgAcymSubscriber extends acymPlugin
     use SubscriberFollowup;
     use SubscriberInsertion;
 
-    /**
-     * Array of fields loaded to have the right option value
-     */
-    var $fields = [];
-
     public function __construct()
     {
         parent::__construct();

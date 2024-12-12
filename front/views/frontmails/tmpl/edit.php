@@ -66,8 +66,10 @@
 							<label for="acym__mail__edit__html__stylesheet">
                                 <?php
                                 echo acym_tooltip(
-                                    acym_translation('ACYM_CUSTOM_ADD_STYLESHEET'),
-                                    acym_translation('ACYM_STYLESHEET_HTML_DESC')
+                                    [
+                                        'hoveredText' => acym_translation('ACYM_CUSTOM_ADD_STYLESHEET'),
+                                        'textShownInTooltip' => acym_translation('ACYM_STYLESHEET_HTML_DESC'),
+                                    ]
                                 );
                                 $stylesheet = empty($data['mail']->stylesheet) ? '' : $data['mail']->stylesheet;
                                 ?>

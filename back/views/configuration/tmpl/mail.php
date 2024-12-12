@@ -9,7 +9,9 @@
                 $data['translation_languages'],
                 'config[sender_info_translation]',
                 $this->config->get('sender_info_translation', ''),
-                acym_translation('ACYM_LANGUAGE_SENDER_INFORMATION_DESC')
+                acym_translation('ACYM_LANGUAGE_SENDER_INFORMATION_DESC'),
+                '',
+                'configuration'
             );
         } ?>
 		<div class="grid-x grid-margin-x margin-y">
@@ -143,6 +145,23 @@
 					   class="cell medium-auto" />
 			</label>
 		</div>
+		<div class="cell grid-x">
+			<label class="cell medium-6 grid-x">
+				<span class="cell medium-6">
+					<?php echo acym_translation('ACYM_TENOR_ACCESS_KEY').acym_info('ACYM_TENOR_ACCESS_KEY_DESC'); ?>
+				</span>
+                <?php
+                $tenorKey = $this->config->get('tenor_key');
+                if (strlen($tenorKey) > 5) {
+                    $tenorKey = str_repeat('*', 10).substr($tenorKey, -5);
+                }
+                ?>
+				<input type="text"
+					   name="config[tenor_key]"
+					   value="<?php echo acym_escape($tenorKey); ?>"
+					   class="cell medium-auto" />
+			</label>
+		</div>
 	</div>
 </div>
 
@@ -209,6 +228,9 @@
                 ],
                 'archive_index' => [
                     'label' => 'ACYM_CONFIGURATION_INDEX_ARCHIVE',
+                ],
+                'send_website_emails' => [
+                    'label' => 'ACYM_SEND_WEBSITE_EMAILS',
                 ],
             ];
 

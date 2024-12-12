@@ -6,7 +6,12 @@ use AcyMailing\Libraries\acymClass;
 
 class HistoryClass extends acymClass
 {
-    var $table = 'history';
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'history';
+    }
 
     /**
      * Function insert to insert a line into the history...
@@ -92,5 +97,32 @@ class HistoryClass extends acymClass
         $query .= ' ORDER BY h.date DESC';
 
         return acym_loadObjectList($query);
+    }
+
+    public function getAllUnsubReasons()
+    {
+        $query = 'SELECT action, data, unsubscribe_reason FROM #__acym_history WHERE action = "unsubscribed" AND unsubscribe_reason != ""';
+
+        return acym_loadObjectList($query);
+    }
+
+    public function getAllMainLanguageUnsubReasons()
+    {
+        $allUnsubReasons = $this->config->get('unsub_survey', '{}');
+
+        return json_decode($allUnsubReasons, true);
+    }
+
+    public function getUnsubscribeReasonText($index)
+    {
+        $surveyAnswers = json_decode($this->config->get('unsub_survey'), true);
+        if (is_numeric($index)) {
+            $index = $index - 1;
+            $reason = $surveyAnswers[$index] ?? $index;
+        } else {
+            $reason = $index;
+        }
+
+        return $reason;
     }
 }

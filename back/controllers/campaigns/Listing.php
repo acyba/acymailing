@@ -129,8 +129,7 @@ trait Listing
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'campaigns_search');
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'newEmail'], 'add', true);
-        $mailClass = new MailClass();
-        if (acym_isAdmin() && (empty($data['campaign_type']) || $data['campaign_type'] !== $mailClass::TYPE_FOLLOWUP)) {
+        if (acym_isAdmin() && (empty($data['campaign_type']) || $data['campaign_type'] !== MailClass::TYPE_FOLLOWUP)) {
             $toolbarHelper->addFilterByTag($data, 'campaigns_tag', 'acym__campaigns__filter__tags acym__select');
         }
 
@@ -142,7 +141,7 @@ trait Listing
         $tagClass = new TagClass();
         $data['search'] = $this->getVarFiltersListing('string', 'campaigns_search', '');
         $data['tag'] = $this->getVarFiltersListing('string', 'campaigns_tag', '');
-        $data['allTags'] = $tagClass->getAllTagsByType('mail');
+        $data['allTags'] = $tagClass->getAllTagsByType(TagClass::TYPE_MAIL);
         $data['pagination'] = new PaginationHelper();
         $data['status'] = '';
         if (isset($data['campaign_type'])) {
@@ -199,7 +198,7 @@ trait Listing
 
         if (empty($class)) {
             foreach ($matchingCampaigns['elements'] as $key => $campaign) {
-                $matchingCampaigns['elements'][$key]->scheduled = $campaignClass::SENDING_TYPE_SCHEDULED == $campaign->sending_type;
+                $matchingCampaigns['elements'][$key]->scheduled = CampaignClass::SENDING_TYPE_SCHEDULED == $campaign->sending_type;
             }
         }
 
@@ -207,10 +206,10 @@ trait Listing
         if (empty($class)) {
             $data['allStatusFilter'] = $this->getCountStatusFilter($matchingCampaigns['total'], $data['campaign_type']);
             if ('campaigns_auto' === $data['campaign_type'] && 'generated' === $data['status']) {
-                $data['allStatusFilter']->all = $campaignClass->getCountCampaignType($campaignClass::SENDING_TYPE_AUTO);
+                $data['allStatusFilter']->all = $campaignClass->getCountCampaignType(CampaignClass::SENDING_TYPE_AUTO);
             }
             $totalElement = empty($status) ? $data['allStatusFilter']->all : $data['allStatusFilter']->$status;
-            $data['statusAuto'] = $campaignClass::SENDING_TYPE_AUTO;
+            $data['statusAuto'] = CampaignClass::SENDING_TYPE_AUTO;
         } else {
             $totalElement = $matchingCampaigns['total'];
         }
@@ -225,15 +224,15 @@ trait Listing
         $allCountStatus = new \stdClass();
 
         if ($type == 'campaigns') {
-            $this->getCountStatusFilterCampaigns($allCampaigns, $allCountStatus, $campaignClass);
+            $this->getCountStatusFilterCampaigns($allCampaigns, $allCountStatus);
         } else {
-            $this->getCountStatusFilterCampaignsAuto($allCampaigns, $allCountStatus, $campaignClass);
+            $this->getCountStatusFilterCampaignsAuto($allCampaigns, $allCountStatus);
         }
 
         return $allCountStatus;
     }
 
-    private function getCountStatusFilterCampaigns($allCampaigns, &$allCountStatus, &$campaignClass)
+    private function getCountStatusFilterCampaigns($allCampaigns, &$allCountStatus)
     {
         $allCountStatus->all = 0;
         $allCountStatus->scheduled = 0;
@@ -243,7 +242,7 @@ trait Listing
         foreach ($allCampaigns as $campaign) {
             if (empty($campaign->parent_id)) {
                 $allCountStatus->all += 1;
-                if ($campaignClass::SENDING_TYPE_SCHEDULED == $campaign->sending_type) $allCountStatus->scheduled += 1;
+                if (CampaignClass::SENDING_TYPE_SCHEDULED == $campaign->sending_type) $allCountStatus->scheduled += 1;
                 $allCountStatus->sent += $campaign->sent;
                 $allCountStatus->draft += $campaign->draft;
             }

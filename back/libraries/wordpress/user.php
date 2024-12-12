@@ -20,6 +20,10 @@ function acym_getGroupsByUser($userid = null, $recursive = null, $names = false)
         $user = new WP_User($userid);
     }
 
+    if (is_multisite() && is_super_admin()) {
+        return ['administrator'];
+    }
+
     return $user->roles;
 }
 

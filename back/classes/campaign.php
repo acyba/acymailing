@@ -9,8 +9,6 @@ use AcyMailing\Libraries\acymClass;
 
 class CampaignClass extends acymClass
 {
-    var $table = 'campaign';
-    var $pkey = 'id';
     const SENDING_TYPE_NOW = 'now';
     const SENDING_TYPE_SCHEDULED = 'scheduled';
     const SENDING_TYPE_AUTO = 'auto';
@@ -20,7 +18,16 @@ class CampaignClass extends acymClass
         self::SENDING_TYPE_AUTO,
     ];
     const AB_TEST_VERSIONS = ['B'];
-    var $encodedColumns = ['sending_params'];
+
+    private array $jsonColumns = ['sending_params'];
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'campaign';
+        $this->pkey = 'id';
+    }
 
     public function getConstNow()
     {
@@ -47,7 +54,7 @@ class CampaignClass extends acymClass
             }
         }
 
-        foreach ($this->encodedColumns as $oneColumn) {
+        foreach ($this->jsonColumns as $oneColumn) {
             if (!isset($campaign->$oneColumn)) continue;
 
             $campaign->$oneColumn = empty($campaign->$oneColumn) ? [] : json_decode($campaign->$oneColumn, true);
@@ -68,7 +75,7 @@ class CampaignClass extends acymClass
         return $this->decode($allCampaigns);
     }
 
-    public function getMatchingElements($settings = [])
+    public function getMatchingElements(array $settings = []): array
     {
         $tagClass = new TagClass();
         $mailClass = new MailClass();
@@ -169,11 +176,11 @@ class CampaignClass extends acymClass
         $results['elements'] = $this->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']));
 
         foreach ($results['elements'] as $oneCampaign) {
-            array_push($mailIds, $oneCampaign->mail_id);
+            $mailIds[] = $oneCampaign->mail_id;
             $oneCampaign->tags = '';
         }
 
-        $tags = $tagClass->getAllTagsByTypeAndElementIds('mail', $mailIds);
+        $tags = $tagClass->getAllTagsByTypeAndElementIds(TagClass::TYPE_MAIL, $mailIds);
         $lists = $mailClass->getAllListsByMailIds($mailIds);
 
         $isMultilingual = acym_isMultilingual();
@@ -301,7 +308,7 @@ class CampaignClass extends acymClass
 
     public function getOneByIdWithMail($id)
     {
-        $query = 'SELECT campaign.*, mail.name, mail.subject, mail.body, mail.from_name, mail.from_email, mail.reply_to_name, mail.reply_to_email, mail.bcc, mail.links_language, mail.tracking, mail.translation
+        $query = 'SELECT campaign.*, mail.name, mail.subject, mail.body, mail.from_name, mail.from_email, mail.reply_to_name, mail.reply_to_email, mail.bcc, mail.links_language, mail.tracking, mail.translation, mail.bounce_email
                 FROM #__acym_campaign AS campaign
                 JOIN #__acym_mail AS mail ON campaign.mail_id = mail.id
                 WHERE campaign.id = '.intval($id);
@@ -372,7 +379,7 @@ class CampaignClass extends acymClass
         }
 
         foreach ($campaign as $oneAttribute => $value) {
-            if (in_array($oneAttribute, $this->encodedColumns)) {
+            if (in_array($oneAttribute, $this->jsonColumns)) {
                 $campaign->$oneAttribute = json_encode(empty($value) ? [] : $value);
             } else {
                 if (empty($value)) continue;
@@ -384,7 +391,7 @@ class CampaignClass extends acymClass
 
         if (!empty($campaignID) && isset($tags)) {
             $tagClass = new TagClass();
-            $tagClass->setTags('mail', $campaign->mail_id, $tags);
+            $tagClass->setTags(TagClass::TYPE_MAIL, intval($campaign->mail_id), $tags);
         }
 
         return $campaignID;
@@ -531,7 +538,7 @@ class CampaignClass extends acymClass
         if (!empty($sendingParams['segment'])) {
             if (!empty($sendingParams['segment']['filters'])) {
                 $filters = $sendingParams['segment']['filters'];
-            } else {
+            } elseif (!empty($sendingParams['segment']['segment_id'])) {
                 $segmentClass = new SegmentClass();
                 $segment = $segmentClass->getOneById($sendingParams['segment']['segment_id']);
                 if (!empty($segment)) {
@@ -830,8 +837,6 @@ class CampaignClass extends acymClass
 
     public function getLastNewsletters(&$params): array
     {
-        $mailClass = new MailClass();
-
         // Init select elements
         $querySelect = 'SELECT mail.*, campaign.sending_date ';
         $queryCountSelect = 'SELECT COUNT(*) FROM (SELECT DISTINCT mail.id ';
@@ -847,7 +852,7 @@ class CampaignClass extends acymClass
         }
 
         // Make sure we display only active campaigns
-        $where = 'WHERE campaign.active = 1 AND campaign.sent = 1 AND mail.type = '.acym_escapeDB($mailClass::TYPE_STANDARD).' AND campaign.visible = 1 ';
+        $where = 'WHERE campaign.active = 1 AND campaign.sent = 1 AND mail.type = '.acym_escapeDB(MailClass::TYPE_STANDARD).' AND campaign.visible = 1 ';
 
         // If we want an archive of some specific lists
         if (isset($params['lists'])) {

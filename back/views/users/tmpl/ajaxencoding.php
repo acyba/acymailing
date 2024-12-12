@@ -159,8 +159,7 @@ $nbLines = count($this->lines);
         // Possible values for columns imported as new custom field
         $fieldAssignment = [];
 
-        $fieldAssignment[] = acym_selectOption('0', 'ACYM_UNASSIGNED', 'value', 'text');
-        $fieldAssignment[] = acym_selectOption('1', 'ACYM_IGNORE');
+        $fieldAssignment[] = acym_selectOption('0', 'ACYM_IGNORED');
         $separator = acym_selectOption('3', '----------------------');
         $separator->disable = true;
         $fieldAssignment[] = $separator;
@@ -180,10 +179,6 @@ $nbLines = count($this->lines);
             $fieldAssignment[] = acym_selectOption($value, $label);
             $cleanFields[$value] = strtolower($label);
         }
-
-
-        // Also recognize the ignored columns
-        $cleanFields['1'] = acym_translation('ACYM_IGNORE');
 
         // Add first line to assign the imported columns, also add a button to ignore all unassigned columns if there are at least 6 columns
         echo '<tr>';

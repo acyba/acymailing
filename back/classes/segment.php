@@ -7,10 +7,15 @@ use AcyMailing\Libraries\acymClass;
 
 class SegmentClass extends acymClass
 {
-    var $table = 'segment';
-    var $pkey = 'id';
+    public function __construct()
+    {
+        parent::__construct();
 
-    public function getMatchingElements($settings = [])
+        $this->table = 'segment';
+        $this->pkey = 'id';
+    }
+
+    public function getMatchingElements(array $settings = []): array
     {
         $query = 'SELECT segment.* FROM #__acym_segment AS segment';
         $queryCount = 'SELECT COUNT(segment.id) AS total, SUM(active) AS totalActive FROM #__acym_segment AS segment';

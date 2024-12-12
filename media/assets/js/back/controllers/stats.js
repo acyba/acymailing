@@ -7,8 +7,20 @@ jQuery(document).on('acy_preview_loaded', () => {
         .find('body')
         .prepend(jQuery('#acym__stats__add_style_export__click-map').html());
     jQuery.each(allLinksClick, (index, value) => {
-        if (index === 'allClick') return;
-        let $link = jQuery('#acym__wysid__preview__iframe__acym__wysid__email__preview').contents().find('[href="' + index + '"]');
+        if (index === 'allClick') {
+            return;
+        }
+
+        const $emailContents = jQuery('#acym__wysid__preview__iframe__acym__wysid__email__preview').contents();
+        let $link = $emailContents.find('[href="' + index + '"]');
+
+        if ($link.length < 1) {
+            $link = $emailContents.find('[href^="' + index + '&utm_source"]');
+            if ($link.length < 1) {
+                $link = $emailContents.find('[href^="' + index + '?utm_source"]');
+            }
+        }
+
         $link.css({
             'position': 'relative',
             'overflow': 'initial',
@@ -27,7 +39,7 @@ jQuery(document).on('acy_preview_loaded', () => {
     acym_helperTooltip.setTooltip();
 });
 
-jQuery(function($) {
+jQuery(function ($) {
 
     function stats() {
         setStartEndDate();

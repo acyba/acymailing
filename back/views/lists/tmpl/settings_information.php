@@ -1,6 +1,13 @@
 <?php
 if (!empty($data['translation_languages'])) {
-    echo acym_displayLanguageRadio($data['translation_languages'], 'list[translation]', $data['listInformation']->translation, acym_translation('ACYM_LANGUAGE_LIST_DESC'));
+    echo acym_displayLanguageRadio(
+        $data['translation_languages'],
+        'list[translation]',
+        $data['listInformation']->translation,
+        acym_translation('ACYM_LANGUAGE_LIST_DESC'),
+        '',
+        'list'
+    );
 } ?>
 	<div class="cell">
 		<label>

@@ -62,24 +62,16 @@ class acyActivation
             return;
         }
 
-        require_once ACYM_FOLDER.'install.class.php';
-
-        if (!class_exists('acymInstall')) return;
-
         //First we increase the perfs so that we won't have any surprise.
         acym_increasePerf();
 
-        $installClass = new \acymInstall();
-        $installClass->addPref();
-        $installClass->updatePref();
-        $installClass->updateSQL();
-        $installClass->checkDB();
+        $updateHelper = new UpdateHelper();
+        $updateHelper->addPref();
+        $updateHelper->updatePref();
+        $updateHelper->updateSQL();
+        $updateHelper->checkDB();
 
         $config->save(['downloadurl' => '', 'lastupdatecheck' => '0']);
-
-        $updateHelper = new UpdateHelper();
-        $updateHelper->fromLevel = $installClass->fromLevel;
-        $updateHelper->fromVersion = $installClass->fromVersion;
 
         $languageFiles = acym_getFiles(ACYM_FOLDER.'language'.DS, '\.ini');
         acym_createFolder(ACYM_LANGUAGE);
@@ -94,26 +86,18 @@ class acyActivation
         $updateHelper->installList();
         $updateHelper->installNotifications();
 
-        if ($installClass->firstInstallation) {
+        if ($updateHelper->firstInstallation) {
             $updateHelper->installTemplates();
             $updateHelper->installDefaultAutomations();
         }
 
-        if (!$installClass->update) {
-            $installClass->deleteNewSplashScreenInstall();
-        } elseif (!empty($installClass->fromVersion)) {
-            if (version_compare($installClass->fromVersion, $installClass->version, '=')) {
-                $installClass->deleteNewSplashScreenInstall();
-            }
-        }
+        $updateHelper->deleteNewSplashScreenInstall();
 
         $updateHelper->installFields();
         $updateHelper->installAddons();
         $updateHelper->installOverrideEmails();
 
-        $newConfig = new \stdClass();
-        $newConfig->installcomplete = 1;
-        $config->save($newConfig);
+        $config->save(['installcomplete' => 1]);
 
         // Reload conf
         acym_config(true);

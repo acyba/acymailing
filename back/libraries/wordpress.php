@@ -7,7 +7,6 @@ include __DIR__.DS.'punycode.php';
 include __DIR__.DS.'wordpress'.DS.'language.php';
 include __DIR__.DS.'wordpress'.DS.'database.php';
 include __DIR__.DS.'wordpress'.DS.'date.php';
-include __DIR__.DS.'wordpress'.DS.'fields.php';
 include __DIR__.DS.'wordpress'.DS.'file.php';
 include __DIR__.DS.'wordpress'.DS.'form.php';
 include __DIR__.DS.'wordpress'.DS.'security.php';

@@ -30,7 +30,8 @@ class UsersController extends acymController
 
     public function getAll()
     {
-        return $this->currentClass->getAll();
+        $userClass = new UserClass();
+        return $userClass->getAll();
     }
 
     public function clean()

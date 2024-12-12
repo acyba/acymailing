@@ -1,48 +1,51 @@
-<div id="acym__override__splashscreen" class="acym__content cell grid-x">
-	<div class="cell grid-x acym__splashscreen__bloc margin-top-2">
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
-		<div class="cell large-10 grid-x text-center">
-			<h3 class="cell acym__title text-center"><i class="acymicon-email acym__color__green margin-right-1"></i><?php echo acym_translation(
-                    'ACYM_WHAT_ARE_OVERRIDE_EMAILS'
-                ); ?></h3>
-			<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_WHAT_ARE_OVERRIDE_EMAILS_DESC'); ?></p>
-		</div>
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
-	</div>
-	<hr class="cell medium-5 margin-vertical-2">
-	<div class="cell grid-x acym__splashscreen__bloc">
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
-		<div class="cell large-10 grid-x text-center">
-			<h3 class="cell acym__title text-center"><i class="acymicon-eye acym__color__orange margin-right-1"></i><?php echo acym_translation('ACYM_PLEASE_SHOW_EXAMPLE'); ?>
+<?php $pricingPage = ACYM_ACYMAILING_WEBSITE.'pricing?utm_source=acymailing_plugin&utm_medium=override&utm_campaign=upgrade_from_plugin';
+$cms = (ACYM_CMS === 'joomla') ? 'HikaShop' : 'WooCommerce'; ?>
+<div class="acym__splashscreen__white__container cell grid-x padding-2 align-center">
+	<div class="cell large-8 grid-x align-center acym__splashscreen__container">
+		<div class="cell large-6 padding-3 align-center">
+			<h2 class="acym__title acym__title__secondary acym__splashscreen__subtitle margin-bottom-1">
+                <?php echo acym_translation('ACYM_MAKE_EMAILS_EFFICIENT'); ?>
+			</h2>
+			<h3 class="acym__title acym__splashscreen__title">
+                <?php echo acym_translation('ACYM_USE_FOR_AUTO_EMAIL'); ?>
 			</h3>
-			<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_PLEASE_SHOW_EXAMPLE_DESC'); ?></p>
+			<p class="acym__splashscreen__desc margin-bottom-1">
+                <?php echo acym_translationSprintf('ACYM_WHAT_IS_OVERRIDE_EMAIL_1_X', $cms); ?>
+			</p>
+			<p class="acym__splashscreen__desc margin-bottom-2">
+                <?php echo acym_translationSprintf('ACYM_WHAT_IS_OVERRIDE_EMAIL_2_X', $cms); ?>
+			</p>
+			<a class="cell medium-6 large-shrink button acym__button__upgrade" target="_blank" href="<?php echo $pricingPage; ?>">
+                <?php echo acym_translation('ACYM_GOPRO'); ?>
+			</a>
 		</div>
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
+		<div class="cell large-6 align-center acym__splashscreen__image">
+			<img src="<?php echo ACYM_IMAGES.'upgrade/override.png'; ?>" alt="Email override image">
+		</div>
 	</div>
-	<hr class="cell medium-5 margin-vertical-2">
-	<div class="cell grid-x acym__splashscreen__bloc">
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
-		<div class="cell large-10 grid-x text-center">
-			<h3 class="cell acym__title text-center"><i class="acymicon-power acym__color__light-blue margin-right-1"></i><?php echo acym_translation('ACYM_WHY_USE_OVERRIDE'); ?>
-			</h3>
-			<p class="cell acym__splashscreen__desc"><?php echo acym_translation('ACYM_WHY_USE_OVERRIDE_DESC'); ?></p>
+</div>
+
+<div class="acym__splashscreen__blue__container cell grid-x padding-2 align-center">
+	<div class="cell large-8 grid-x align-center acym__splashscreen__container">
+		<div class="cell large-6 align-center acym__splashscreen__image">
+			<img src="<?php echo ACYM_IMAGES.'upgrade/mobile_stats.png'; ?>" alt="Mobile Stats Image">
 		</div>
-		<div class="cell large-1 hide-for-medium-only hide-for-small-only"></div>
-	</div>
-	<div class="cell grid-x margin-top-3">
-		<div class="cell medium-auto hide-for-small-only"></div>
-		<div class="cell grid-x text-center align-center">
-			<div class="cell grid-x grid-margin-x align-center">
-				<a target="_blank" href="<?php echo ACYM_DOCUMENTATION; ?>main-pages/email-overrides" class="button button-secondary cell shrink">
-                    <?php echo acym_translation('ACYM_SEE_MORE'); ?>
-				</a>
-				<a target="_blank"
-				   href="<?php echo ACYM_ACYMAILING_WEBSITE; ?>pricing?utm_source=acymailing_plugin&utm_medium=override&utm_campaign=purchase"
-				   class="button cell shrink">
-                    <?php echo acym_translation('ACYM_GET_ENTERPRISE_VERSION'); ?>
-				</a>
-			</div>
+		<div class="cell large-6 padding-3 align-center">
+			<h2 class="acym__title acym__title__secondary acym__splashscreen__subtitle margin-bottom-1">
+                <?php echo acym_translation('ACYM_WHY_OVERRIDE_EMAIL'); ?>
+			</h2>
+			<p class="acym__splashscreen__desc margin-bottom-1">
+                <?php echo acym_translation('ACYM_BECAUSE_OVERRIDE_EMAIL_1'); ?>
+			</p>
+			<p class="acym__splashscreen__desc margin-bottom-1">
+                <?php echo acym_translation('ACYM_BECAUSE_OVERRIDE_EMAIL_2'); ?>
+			</p>
+			<p class="acym__splashscreen__desc margin-bottom-1">
+                <?php echo acym_translation('ACYM_OVERRIDE_TRY_IT'); ?>
+			</p>
+			<a class="cell medium-6 large-shrink button acym__button__upgrade margin-top-2" target="_blank" href="<?php echo $pricingPage; ?>">
+                <?php echo acym_translation('ACYM_REFOUND_GUARANTEE'); ?>
+			</a>
 		</div>
-		<div class="cell medium-auto hide-for-small-only"></div>
 	</div>
 </div>

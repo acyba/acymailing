@@ -15,14 +15,16 @@ trait Campaigns
     {
         acym_setVar('layout', 'campaigns');
 
-        if (acym_level(ACYM_ESSENTIAL) && $this->config->get('cron_last', 0) < (time() - 43200)) {
-            acym_enqueueMessage(
-                acym_translation('ACYM_CREATE_CRON_REMINDER').' <a id="acym__queue__configure-cron" href="'.acym_completeLink('configuration&tab=license').'">'.acym_translation(
-                    'ACYM_GOTO_CONFIG'
-                ).'</a>',
-                'warning'
-            );
+        //__START__production_
+        if (ACYM_PRODUCTION) {
+            if (acym_level(ACYM_ESSENTIAL) && $this->config->get('cron_last', 0) < (time() - 43200)) {
+                $message = acym_translation('ACYM_CREATE_CRON_REMINDER');
+                $message .= ' <a id="acym__queue__configure-cron" href="'.acym_completeLink('configuration&tab=license').'">'.acym_translation('ACYM_GOTO_CONFIG').'</a>';
+
+                acym_enqueueMessage($message, 'warning');
+            }
         }
+        //__END__production_
 
         // Get filters data
         $searchFilter = $this->getVarFiltersListing('string', 'cqueue_search', '');
@@ -54,7 +56,7 @@ trait Campaigns
             'pagination' => $pagination,
             'search' => $searchFilter,
             'tag' => $tagFilter,
-            'allTags' => $tagClass->getAllTagsByType('mail'),
+            'allTags' => $tagClass->getAllTagsByType(TagClass::TYPE_MAIL),
             'numberPerStatus' => $matchingElements['status'],
             'status' => $status,
             'campaignClass' => new CampaignClass(),

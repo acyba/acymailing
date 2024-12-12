@@ -61,15 +61,15 @@ const acym_helperToggle = {
         });
 
         jQuery('.js-acym_toggle_delete').off('click').on('click', function () {
-            let element = jQuery(this);
+            const element = jQuery(this);
 
-            let confirmation = element.attr('confirmation');
+            const confirmation = element.attr('confirmation');
             if (!confirmation || acym_helper.confirm(ACYM_JS_TXT.ACYM_ARE_YOU_SURE)) {
-                let table = element.attr('data-acy-table');
-                let elementid = element.attr('data-acy-elementid');
+                const table = element.attr('data-acy-table');
+                const elementid = element.attr('data-acy-elementid');
+                const method = element.attr('data-acy-method');
 
                 let url = ACYM_TOGGLE_URL + '&task=delete&table=' + table + '&id=' + elementid;
-                let method = element.attr('data-acy-method');
                 if (method !== undefined) {
                     url += '&method=' + method;
                 }

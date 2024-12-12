@@ -65,14 +65,21 @@ class plgAcymAmazon extends acymPlugin
         $data['sendingMethodsHtmlSettings'][self::SENDING_METHOD_ID] = ob_get_clean();
     }
 
-    public function onAcymGetCredentialsSendingMethod(&$credentials, $sendingMethod)
+    /**
+     * @param array  $credentials
+     * @param string $sendingMethod
+     * @param array  $sendingMethodListParams this parameter is only used for the plugin sending method list
+     *
+     * @return void
+     */
+    public function onAcymGetCredentialsSendingMethod(array &$credentials, string $sendingMethod, array $sendingMethodListParams = [])
     {
         if ($sendingMethod != self::SENDING_METHOD_ID) return;
 
         $credentials = [
-            self::SENDING_METHOD_ID.'_host' => $this->config->get(self::SENDING_METHOD_ID.'_host', ''),
-            self::SENDING_METHOD_ID.'_username' => $this->config->get(self::SENDING_METHOD_ID.'_username', ''),
-            self::SENDING_METHOD_ID.'_password' => $this->config->get(self::SENDING_METHOD_ID.'_password', ''),
+            self::SENDING_METHOD_ID.'_host' => $sendingMethodListParams[self::SENDING_METHOD_ID.'_host'] ?? $this->config->get(self::SENDING_METHOD_ID.'_host', ''),
+            self::SENDING_METHOD_ID.'_username' => $sendingMethodListParams[self::SENDING_METHOD_ID.'_username'] ?? $this->config->get(self::SENDING_METHOD_ID.'_username', ''),
+            self::SENDING_METHOD_ID.'_password' => $sendingMethodListParams[self::SENDING_METHOD_ID.'_password'] ?? $this->config->get(self::SENDING_METHOD_ID.'_password', ''),
         ];
     }
 }

@@ -6,8 +6,13 @@ use AcyMailing\Libraries\acymClass;
 
 class ActionClass extends acymClass
 {
-    var $table = 'action';
-    var $pkey = 'id';
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'action';
+        $this->pkey = 'id';
+    }
 
     public function getActionsByStepId($stepId)
     {

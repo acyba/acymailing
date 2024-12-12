@@ -118,15 +118,18 @@
                         if (!empty($campaign->lists)) {
                             echo '<div class="grid-x cell text-center">';
                             foreach ($campaign->lists as $list) {
-                                echo acym_tooltip('<i class="acym_subscription acymicon-circle" style="color:'.acym_escape($list->color).'"></i>', acym_escape($list->name));
+                                echo acym_tooltip(
+                                    [
+                                        'hoveredText' => '<i class="acym_subscription acymicon-circle" style="color:'.acym_escape($list->color).'"></i>',
+                                        'textShownInTooltip' => acym_escape($list->name),
+                                    ]
+                                );
                             }
                             echo '</div>';
                         } else {
                             echo '<div class="cell medium-12">'.(empty($campaign->automation)
                                     ? acym_translation('ACYM_NO_LIST_SELECTED')
-                                    : acym_translation(
-                                        'ACYM_SENT_WITH_AUTOMATION'
-                                    )).'</div>';
+                                    : acym_translation('ACYM_SENT_WITH_AUTOMATION')).'</div>';
                         }
                         ?>
 					</div>
@@ -186,9 +189,12 @@
                                 $tooltip = 'ACYM_INVISIBLE';
                             }
                             echo acym_tooltip(
-                                '<i data-acy-table="campaign" data-acy-field="visible" data-acy-elementid="'.acym_escape($campaign->id).'" class="acym_toggleable '.$class.'"></i>',
-                                acym_translation($tooltip),
-                                null
+                                [
+                                    'hoveredText' => '<i data-acy-table="campaign" data-acy-field="visible" data-acy-elementid="'.acym_escape(
+                                            $campaign->id
+                                        ).'" class="acym_toggleable '.$class.'"></i>',
+                                    'textShownInTooltip' => acym_translation($tooltip),
+                                ]
                             );
                             ?>
 						</div>

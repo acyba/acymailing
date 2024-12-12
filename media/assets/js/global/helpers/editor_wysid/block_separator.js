@@ -441,7 +441,7 @@ const acym_helperBlockSeparator = {
             }
             $table[$column].push($block);
             const $position = $table[$column].length - 1;
-            acym_editorWysidImage.openMediaManager($table[$column][$position], true);
+            acym_editorWysidImage.addMediaWPWYSID($table[$column][$position], true);
         });
     }
 };

@@ -1,14 +1,44 @@
 const acym_helperSelectionMultilingual = {
     mainLanguage: '',
     currentLanguage: '',
+    previousLanguage: '',
     translation: {},
     defaultTranslation: {},
     $translationInput: '',
     mainParams: {},
     init: function (type) {
-        this.currentLanguage = this.mainLanguage = jQuery('#acym__multilingual__selection__main-language').val();
-        this.$translationInput = jQuery('#acym__multilingual__selection__translation');
-        this.$defaultTranslationInput = jQuery('#acym__multilingual__selection__translation__default');
+        const mainLangElement = jQuery(`#acym__multilingual__selection-${type} .acym__multilingual__selection__main-language`);
+        if (mainLangElement.length) {
+            this.currentLanguage = this.mainLanguage = mainLangElement.val();
+        } else {
+            this.currentLanguage = this.mainLanguage = 'defaultLanguage';
+        }
+
+        this.$translationInput = jQuery(`#acym__multilingual__selection-${type} .acym__multilingual__selection__translation`);
+        this.$defaultTranslationInput = jQuery(`#acym__multilingual__selection-${type} .acym__multilingual__selection__translation__default`);
+
+        if (this.$translationInput.length && this.$translationInput.val() !== undefined) {
+            try {
+                this.translation = acym_helper.empty(this.$translationInput.val()) ? {} : acym_helper.parseJson(this.$translationInput.val());
+            } catch (e) {
+                this.translation = {};
+            }
+        } else {
+            this.translation = {};
+        }
+
+        if (this.$defaultTranslationInput.length && this.$defaultTranslationInput.val() !== undefined) {
+            try {
+                this.defaultTranslation = acym_helper.empty(this.$defaultTranslationInput.val())
+                                          ? {}
+                                          : acym_helper.parseJson(this.$defaultTranslationInput.val());
+            } catch (e) {
+                this.defaultTranslation = {};
+            }
+        } else {
+            this.defaultTranslation = {};
+        }
+
         this.translation = acym_helper.empty(this.$translationInput.val()) ? {} : acym_helper.parseJson(this.$translationInput.val());
         this.defaultTranslation = acym_helper.empty(this.$defaultTranslationInput.val()) ? {} : acym_helper.parseJson(this.$defaultTranslationInput.val());
 
@@ -25,16 +55,17 @@ const acym_helperSelectionMultilingual = {
         }
 
         //We set the selection
-        jQuery('.acym__multilingual__selection__one').off('click').on('click', function () {
+        jQuery(`#acym__multilingual__selection-${type} .acym__multilingual__selection__one`).off('click').on('click', function () {
             if (jQuery(this).hasClass('acym__multilingual__selection__one__selected')) return;
 
             let code = jQuery(this).attr('data-acym-code');
             if (acym_helper.empty(code)) return;
 
-            jQuery('.acym__multilingual__selection__one').removeClass('acym__multilingual__selection__one__selected');
+            jQuery(`#acym__multilingual__selection-${type} .acym__multilingual__selection__one`).removeClass('acym__multilingual__selection__one__selected');
             jQuery(this).addClass('acym__multilingual__selection__one__selected');
 
             if (typeof acym_helperSelectionMultilingual[`changeLanguage_${type}`] === 'function') {
+                acym_helperSelectionMultilingual.previousLanguage = acym_helperSelectionMultilingual.currentLanguage;
                 acym_helperSelectionMultilingual.currentLanguage = code;
                 acym_helperSelectionMultilingual[`changeLanguage_${type}`](code);
             }
@@ -184,6 +215,7 @@ const acym_helperSelectionMultilingual = {
         this.mainParams.from_email = jQuery('[name="config[from_email]"]').val();
         this.mainParams.replyto_name = jQuery('[name="config[replyto_name]"]').val();
         this.mainParams.replyto_email = jQuery('[name="config[replyto_email]"]').val();
+        this.mainLanguage = acym_helperSelectionMultilingual.mainLanguage || {};
     },
     updateTranslation_configuration() {
         jQuery('[name="config[from_name]"], [name="config[from_email]"], [name="config[replyto_name]"], [name="config[replyto_email]"]')
@@ -251,5 +283,110 @@ const acym_helperSelectionMultilingual = {
         jQuery('[name="config[from_email]"]').val(from_email);
         jQuery('[name="config[replyto_name]"]').val(replyto_name);
         jQuery('[name="config[replyto_email]"]').val(replyto_email);
+    },
+    setMainParams_configuration_subscription: function () {
+        this.mainParams.unsub_survey = [];
+        jQuery('.acym__customs__answer__answer').each((index, element) => {
+            this.mainParams.unsub_survey[index] = jQuery(element).val();
+        });
+        this.mainLanguage = acym_helperSelectionMultilingual.mainLanguage || {};
+        if (!this.translation[this.mainLanguage]) {
+            this.translation[this.mainLanguage] = {};
+        }
+        this.translation[this.mainLanguage]['unsub_survey'] = this.mainParams.unsub_survey;
+
+        for (let language in this.translation) {
+            if (this.translation.hasOwnProperty(language)) {
+                this.synchronizeUnsubSurvey(language);
+            }
+        }
+    },
+    updateTranslation_configuration_subscription() {
+        jQuery(document)
+            .off('keyup', '.acym__customs__answer__answer')
+            .on('keyup', '.acym__customs__answer__answer', function () {
+                const $inputValue = jQuery(this).val();
+                const $index = jQuery('.acym__customs__answer__answer').index(this);
+
+                if (!acym_helperSelectionMultilingual.translation[acym_helperSelectionMultilingual.currentLanguage]) {
+                    acym_helperSelectionMultilingual.translation[acym_helperSelectionMultilingual.currentLanguage] = {};
+                }
+                if (!acym_helperSelectionMultilingual.translation[acym_helperSelectionMultilingual.currentLanguage]['unsub_survey']) {
+                    acym_helperSelectionMultilingual.translation[acym_helperSelectionMultilingual.currentLanguage]['unsub_survey'] = [];
+                }
+
+                let unsubSurvey = acym_helperSelectionMultilingual.translation[acym_helperSelectionMultilingual.currentLanguage]['unsub_survey'];
+                if (!Array.isArray(unsubSurvey)) {
+                    unsubSurvey = [unsubSurvey];
+                }
+                unsubSurvey[$index] = $inputValue;
+
+                acym_helperSelectionMultilingual.translation[acym_helperSelectionMultilingual.currentLanguage]['unsub_survey'] = unsubSurvey;
+                acym_helperSelectionMultilingual.$translationInput.val(JSON.stringify(acym_helperSelectionMultilingual.translation));
+            });
+    },
+    changeLanguage_configuration_subscription: function (code) {
+        if (!this.translation[this.mainLanguage]) {
+            this.translation[this.mainLanguage] = {unsub_survey: []};
+        }
+
+        for (let language in this.translation) {
+            if (this.translation.hasOwnProperty(language)) {
+                this.synchronizeUnsubSurvey(language);
+            }
+        }
+
+        if (code === this.mainLanguage) {
+            const mainLanguageUnsubSurvey = this.translation[this.mainLanguage]['unsub_survey'];
+            jQuery('.acym__customs__answer__answer').each(function (index) {
+                jQuery(this).val(mainLanguageUnsubSurvey[index] || '');
+            });
+        } else {
+            if (this.translation[code] && this.translation[code].unsub_survey) {
+                const updatedUnsubSurvey = this.translation[code].unsub_survey;
+                jQuery('.acym__customs__answer__answer').each(function (index) {
+                    jQuery(this).val(updatedUnsubSurvey[index] || '');
+                });
+            }
+        }
+
+        if (acym_helperSelectionMultilingual.currentLanguage === acym_helperSelectionMultilingual.mainLanguage) {
+            if (!acym_helperSelectionMultilingual.mainParams.unsub_survey) {
+                acym_helperSelectionMultilingual.mainParams.unsub_survey = [];
+            }
+            jQuery('.acym__customs__answer__answer').each((index, element) => {
+                acym_helperSelectionMultilingual.mainParams.unsub_survey[index] = jQuery(element).val();
+            });
+        }
+
+        jQuery('form').on('submit', function () {
+            let mainLanguageElement = jQuery(`#acym__multilingual__selection-configuration_subscription .acym__multilingual__selection__one[data-acym-code="${acym_helperSelectionMultilingual.mainLanguage}"]`);
+            mainLanguageElement.trigger('click');
+        });
+
+        jQuery('[name="config[unsub_survey]"]').val(JSON.stringify(this.translation[this.mainLanguage]['unsub_survey']));
+        jQuery('[name="config[unsub_survey_translation]"]').val(JSON.stringify(this.translation));
+    },
+    synchronizeUnsubSurvey: function (language) {
+        if (!this.translation[language]['unsub_survey']) {
+            this.translation[language]['unsub_survey'] = [];
+        }
+        let unsubSurvey = this.translation[language]['unsub_survey'];
+
+        while (unsubSurvey.length < this.mainParams.unsub_survey.length) {
+            unsubSurvey.push('');
+        }
+        if (unsubSurvey.length > this.mainParams.unsub_survey.length) {
+            unsubSurvey.splice(this.mainParams.unsub_survey.length);
+        }
+
+        for (let i = 0 ; i < unsubSurvey.length ; i++) {
+            if (unsubSurvey[i] === '') {
+                unsubSurvey[i] = this.translation[this.mainLanguage]['unsub_survey'][i];
+            }
+        }
+
+        this.translation[language]['unsub_survey'] = unsubSurvey;
     }
+
 };

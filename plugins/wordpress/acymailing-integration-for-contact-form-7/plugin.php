@@ -54,15 +54,17 @@ class plgAcymContactform7 extends acymPlugin
         );
     }
 
-    // Validation filter
+    // Filter to block form submission
     public function acymsubValidationFilter($result, $tag)
     {
         $name = $tag->name;
-        $is_required = $tag->is_required();
-        $value = isset($_POST[$name]) ? (array)$_POST[$name] : [];
-        $value = array_map('esc_attr', $value);
-        $hiddenValue = isset($_POST['acymhiddenlists_'.$name]) ? sanitize_text_field($_POST['acymhiddenlists_'.$name]) : '';
-        if ($is_required && empty($value) && empty($hiddenValue)) {
+        if(!$tag->is_required()){
+            return $result;
+        }
+
+        $value = isset($_REQUEST[$name]) ? (array)$_REQUEST[$name] : [];
+        $hiddenValue = isset($_REQUEST['acymhiddenlists_'.$name]) ? sanitize_text_field($_REQUEST['acymhiddenlists_'.$name]) : '';
+        if (empty($value) && empty($hiddenValue)) {
             $result->invalidate($tag, wpcf7_get_message('invalid_required'));
         }
 

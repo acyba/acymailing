@@ -43,22 +43,25 @@ $finalRule = RuleClass::FINAL_RULE_ID;
 
 <div class="grid-x margin-top-1 acym__listing">
 	<div class="cell grid-x acym__listing__header">
-		<div class="medium-shrink small-1 cell">
+		<div class="cell small-1 medium-shrink">
 			<input id="checkbox_all" type="checkbox" name="checkbox_all">
 		</div>
-		<div class="cell medium-1"></div>
-		<div class="grid-x medium-auto cell">
-			<div class="cell medium-4 acym__listing__header__title">
+		<div class="cell small-1"></div>
+		<div class="cell small-10 medium-auto grid-x">
+			<div class="cell small-10 medium-4 acym__listing__header__title">
                 <?php echo acym_translation('ACYM_BOUNCE_RULE'); ?>
 			</div>
-			<div class="cell medium-3 acym__listing__header__title">
+			<div class="cell hide-for-small-only medium-3 acym__listing__header__title">
                 <?php echo acym_translation('ACYM_ACTION_ON_USER'); ?>
 			</div>
-			<div class="cell medium-4 acym__listing__header__title">
+			<div class="cell hide-for-small-only medium-3 acym__listing__header__title">
                 <?php echo acym_translation('ACYM_ACTION_ON_EMAIL'); ?>
 			</div>
-			<div class="cell medium-1 acym__listing__header__title text-center">
+			<div class="cell small-2 medium-1 acym__listing__header__title text-center">
                 <?php echo acym_translation('ACYM_ACTIVE'); ?>
+			</div>
+			<div class="cell hide-for-small-only medium-1 text-center acym__listing__header__title">
+                <?php echo acym_translation('ACYM_ID'); ?>
 			</div>
 		</div>
 	</div>
@@ -68,13 +71,13 @@ $finalRule = RuleClass::FINAL_RULE_ID;
             ?>
 			<div class="grid-x cell align-middle acym__listing__row <?php echo (intval($oneRule->id) === $finalRule) ? 'acym__no__sortable' : ''; ?>"
 				 data-id-element="<?php echo acym_escape($oneRule->id); ?>">
-				<div class="medium-shrink small-1 cell acym_vcenter">
+				<div class="cell small-1 medium-shrink acym_vcenter">
 					<input id="checkbox_<?php echo acym_escape($oneRule->id); ?>"
 						   type="checkbox"
 						   name="elements_checked[]"
 						   value="<?php echo acym_escape($oneRule->id); ?>">
 				</div>
-				<div class="medium-1 cell acym_vcenter align-center acym__bounce__listing__handle">
+				<div class="cell small-1 acym_vcenter align-center acym__bounce__listing__handle">
                     <?php if (intval($oneRule->id) !== $finalRule) { ?>
 						<div class="grabbable acym__sortable__listing__handle grid-x">
 							<i class="acymicon-ellipsis-h cell acym__color__dark-gray"></i>
@@ -82,8 +85,8 @@ $finalRule = RuleClass::FINAL_RULE_ID;
 						</div>
                     <?php } ?>
 				</div>
-				<div class="grid-x medium-auto small-11 cell acym__field__listing acym_vcenter">
-					<div class="medium-4 acym__listing__title">
+				<div class="cell small-10 medium-auto grid-x acym__field__listing acym_vcenter">
+					<div class="cell small-10 medium-4 acym__listing__title">
 						<a href="<?php echo acym_completeLink('bounces&task=rule&ruleId='.$oneRule->id); ?>"
 						   class="shrink">
 							<h6 class="acym__listing__title__important"><?php echo acym_escape(acym_translation($oneRule->name));
@@ -92,7 +95,7 @@ $finalRule = RuleClass::FINAL_RULE_ID;
                                 } ?></h6>
 						</a>
 					</div>
-					<div class="cell medium-3 acym__listing__text">
+					<div class="cell hide-for-small-only medium-3 acym__listing__text">
 						<h6>
                             <?php if (in_array('delete_user_subscription', $oneRule->action_user)) {
                                 echo acym_translation('ACYM_REMOVE_SUB').'<br />';
@@ -115,7 +118,7 @@ $finalRule = RuleClass::FINAL_RULE_ID;
                             ?>
 						</h6>
 					</div>
-					<div class="cell medium-4 acym__listing__text">
+					<div class="cell hide-for-small-only medium-3 acym__listing__text">
 						<h6>
                             <?php if (in_array('save_message', $oneRule->action_message)) {
                                 echo acym_translation('ACYM_SAVE_MESSAGE_DATABASE').'<br />';
@@ -128,7 +131,7 @@ $finalRule = RuleClass::FINAL_RULE_ID;
                             } ?>
 						</h6>
 					</div>
-					<div class="cell medium-1 text-center acym__listing__controls">
+					<div class="cell small-2 medium-1 text-center acym__listing__controls">
                         <?php
                         $class = $oneRule->active == 1 ? 'acymicon-check-circle acym__color__green" data-acy-newvalue="0'
                             : 'acymicon-times-circle acym__color__red" data-acy-newvalue="1';
@@ -136,6 +139,9 @@ $finalRule = RuleClass::FINAL_RULE_ID;
                                 $oneRule->id
                             ).'" class="acym_toggleable cursor-pointer '.$class.'"></i>';
                         ?>
+					</div>
+					<div class="cell hide-for-small-only medium-1 text-center acym__listing__header__title">
+                        <?php echo intval($oneRule->id); ?>
 					</div>
 				</div>
 			</div>

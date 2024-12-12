@@ -6,8 +6,13 @@ use AcyMailing\Libraries\acymClass;
 
 class ZoneClass extends acymClass
 {
-    var $table = 'custom_zone';
-    var $pkey = 'id';
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'custom_zone';
+        $this->pkey = 'id';
+    }
 
     public function save($element)
     {

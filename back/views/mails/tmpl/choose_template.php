@@ -1,5 +1,4 @@
 <div class="grid-x grid-margin-x margin-top-3">
-
     <?php
     $campaignType = empty($data['campaign_type']) ? '' : $data['campaign_type'];
     if (empty($data['allMails']) && empty($data['search']) && empty($data['tag']) && empty($data['status'])) { ?>
@@ -8,14 +7,13 @@
 			<h1 class="acym__listing__empty__subtitle cell"><?php echo acym_translation('ACYM_CREATE_CAMPAIGN_EMPTY_TEMPLATE'); ?></h1>
 			<div class="medium-4"></div>
 			<div class="medium-4 small-12 cell">
-				<a
-						href="<?php echo acym_completeLink(
-                            acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&campaignId='.acym_escape(
-                                $data['campaignID']
-                            ).'&campaign_type='.$campaignType
-                        ); ?>"
-						class="button expanded"
-						id="acym__templates__choose__create__empty">
+				<a href="<?php echo acym_completeLink(
+                    acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&campaignId='.acym_escape(
+                        $data['campaignID']
+                    ).'&campaign_type='.$campaignType
+                ); ?>"
+				   class="button expanded"
+				   id="acym__templates__choose__create__empty">
                     <?php echo acym_translation('ACYM_CREATE_EMPTY_TEMPLATE'); ?>
 				</a>
 			</div>
@@ -53,10 +51,9 @@
                     $link .= '&abtest=1';
                 }
                 ?>
-				<a
-						href="<?php echo $link; ?>"
-						class="button"
-						id="acym__templates__choose__create__empty">
+				<a href="<?php echo $link; ?>"
+				   class="button"
+				   id="acym__templates__choose__create__empty">
                     <?php echo acym_translation('ACYM_START_FROM_EMPTY_TEMPLATE'); ?>
 				</a>
 			</div>

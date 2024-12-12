@@ -6,7 +6,12 @@ use AcyMailing\Libraries\acymClass;
 
 class UrlClickClass extends acymClass
 {
-    var $table = 'url_click';
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'url_click';
+    }
 
     public function save($urlClick)
     {

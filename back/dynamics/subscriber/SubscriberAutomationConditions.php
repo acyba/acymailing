@@ -65,11 +65,13 @@ trait SubscriberAutomationConditions
             } elseif ('date' == $field->type) {
                 $field->option = json_decode($field->option, true);
                 $customFieldValues[$field->id] = acym_tooltip(
-                    '<input class="acym__automation__one-field acym__automation__conditions__fields__select intext_input_automation cell" type="text" name="[conditions][__numor__][__numand__][acy_field][value]" style="display: none" data-condition-field="'.intval(
-                        $field->id
-                    ).'">',
-                    acym_translationSprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
-                    'intext_select_automation cell'
+                    [
+                        'hoveredText' => '<input class="acym__automation__one-field acym__automation__conditions__fields__select intext_input_automation cell" type="text" name="[conditions][__numor__][__numand__][acy_field][value]" style="display: none" data-condition-field="'.intval(
+                                $field->id
+                            ).'">',
+                        'textShownInTooltip' => acym_translationSprintf('ACYM_DATE_AUTOMATION_INPUT', $field->option['format']),
+                        'classContainer' => 'intext_select_automation cell',
+                    ]
                 );
             }
         }

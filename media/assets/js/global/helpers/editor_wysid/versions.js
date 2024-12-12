@@ -93,7 +93,11 @@ const acym_editorWysidVersions = {
     storeCurrentValues: function (saveStep = false) {
         // Make sure we're in a multilingual context
         const currentSubject = jQuery('input[name="mail[subject]"]').val();
-        if (!acym_helperModal.isMultilingualEdition) return true;
+
+        if (!acym_helperModal.isMultilingualEdition) {
+            return true;
+        }
+
         if (jQuery('#acym__wysid__edit__versions__creation').hasClass('is-hidden') && acym_helper.empty(currentSubject)) {
             return true;
         }

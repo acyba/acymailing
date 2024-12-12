@@ -55,17 +55,17 @@ class GF_Field_Acy extends GF_Field
     {
         //We get the hidden lists
         $autoSubLists = isset($this->acymAutoSubList) ? implode(',', $this->acymAutoSubList) : '';
-        $inputHidden = '<input type="hidden" name="acy_hidden_lists" value="'.$autoSubLists.'">';
+        $inputHidden = '<input type="hidden" name="acy_hidden_lists" value="'.acym_escape($autoSubLists).'">';
 
         //For the two others parameters: the lists that we displays and the one that are checked
         $checkboxes = '';
         if (isset($this->acymDisplayedList)) {
             $listClass = new ListClass();
-            $lists = $listClass->getAllForSelect();
+            $lists = $listClass->getAllForSelect(true, 0, true, true);
 
             if (empty($lists)) return $inputHidden;
 
-            $acymCheckedList = isset($this->acymCheckedList) ? $this->acymCheckedList : [];
+            $acymCheckedList = $this->acymCheckedList ?? [];
 
             //We generate the checkboxes
             foreach ($this->acymDisplayedList as $listId) {
@@ -74,8 +74,8 @@ class GF_Field_Acy extends GF_Field
                 $uniqueId = 'gform_acy_list_sub_'.$listId;
                 //this line allows to know if we are on the editor or the front-end
                 $isDisabled = $this->is_form_editor() ? 'disabled' : '';
-                $checkboxes .= '<input type="checkbox" id="'.$uniqueId.'" name="acy_list_sub[]" value="'.$listId.'" '.$checked.' '.$isDisabled.'>';
-                $checkboxes .= '<label for="'.$uniqueId.'">'.$lists[$listId].'</label> <br>';
+                $checkboxes .= '<input type="checkbox" id="'.$uniqueId.'" name="acy_list_sub[]" value="'.intval($listId).'" '.$checked.' '.$isDisabled.'>';
+                $checkboxes .= '<label for="'.$uniqueId.'" style="margin-left: 5px;">'.$lists[$listId].'</label><br>';
             }
         }
 

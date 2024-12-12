@@ -11,6 +11,6 @@ class plgAcymOnline extends acymPlugin
     public function __construct()
     {
         parent::__construct();
-        $this->pluginDescription->name = acym_translation('ACYM_WEBSITE_LINKS');
+        $this->pluginDescription->name = acym_translation('ACYM_WEBSITE');
     }
 }

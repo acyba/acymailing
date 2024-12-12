@@ -125,8 +125,8 @@ trait Listing
         // This keeps keys
         $data['lists'] = [0 => acym_translation('ACYM_SELECT_A_LIST')];
         foreach ($lists as $oneList) {
-            if ($oneList->type === $listClass::LIST_TYPE_FRONT) continue;
-            if ($oneList->type === $listClass::LIST_TYPE_FOLLOWUP) {
+            if ($oneList->type === ListClass::LIST_TYPE_FRONT) continue;
+            if ($oneList->type === ListClass::LIST_TYPE_FOLLOWUP) {
                 $followup = $followupClass->getOneByListId($oneList->id);
                 if (empty($followup)) continue;
                 $oneList->name = $followup->display_name;
@@ -193,7 +193,8 @@ trait Listing
         $subscriptions = [];
 
         if (!empty($usersId)) {
-            $subscriptionsArray = $this->currentClass->getUsersSubscriptionsByIds($usersId);
+            $userClass = new UserClass();
+            $subscriptionsArray = $userClass->getUsersSubscriptionsByIds($usersId);
 
             foreach ($subscriptionsArray as $oneSubscription) {
                 $subscriptions[$oneSubscription->user_id][$oneSubscription->id] = $oneSubscription;

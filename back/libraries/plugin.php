@@ -208,6 +208,8 @@ class acymPlugin extends acymObject
     protected function getCategoryFilter()
     {
         $filter_cat = acym_getVar('int', 'plugin_category', 0);
+        $this->catvalues = [];
+        $this->catvalues[] = acym_selectOption(0, 'ACYM_ALL');
 
         $this->cats = [];
         $this->subCategories = [];
@@ -215,12 +217,10 @@ class acymPlugin extends acymObject
             foreach ($this->categories as $oneCat) {
                 $this->cats[$oneCat->parent_id][] = $oneCat;
             }
-        }
-        $this->catvalues = [];
-        $this->catvalues[] = acym_selectOption(0, 'ACYM_ALL');
-        $this->handleChildrenCategories($this->rootCategoryId);
-        foreach ($this->categories as $oneCat) {
-            $this->subCategories[$oneCat->id] = $this->getSubCats($oneCat->id);
+            $this->handleChildrenCategories($this->rootCategoryId);
+            foreach ($this->categories as $oneCat) {
+                $this->subCategories[$oneCat->id] = $this->getSubCats($oneCat->id);
+            }
         }
 
         return acym_select(
@@ -374,7 +374,7 @@ class acymPlugin extends acymObject
         ];
     }
 
-    protected function getElementsListing($options)
+    protected function getElementsListing($options): string
     {
         if ($this->pageInfo->loadMore) {
             return $this->getInnerListing($options);
@@ -398,21 +398,24 @@ class acymPlugin extends acymObject
         return $listing;
     }
 
-    private function getInnerListing($options)
+    private function getInnerListing($options): string
     {
-        $listing = '';
-        // Actual listing
         if (empty($options['rows']) && $this->pageInfo->loadMore) {
-            return '<h3 class="cell acym__listing__empty__load-more text-center">'.acym_translation('ACYM_NO_MORE_RESULTS').'</h3>';
+            $listing = '<h3 class="cell acym__listing__empty__load-more text-center">'.acym_translation('ACYM_NO_MORE_RESULTS').'</h3>';
         } elseif (empty($options['rows'])) {
-            $listing .= '<h1 class="cell acym__listing__empty__search__modal text-center">'.acym_translation('ACYM_NO_RESULTS_FOUND').'</h1>';
+            $listing = '<h1 class="cell acym__listing__empty__search__modal text-center">'.acym_translation('ACYM_NO_RESULTS_FOUND').'</h1>';
         } else {
             $selected = explode(',', acym_getVar('string', 'selected', ''));
-            if (!empty($this->defaultValues->id)) $selected = [$this->defaultValues->id];
+            if (!empty($this->defaultValues->id)) {
+                $selected = [$this->defaultValues->id];
+            }
 
+            $listing = '';
             foreach ($options['rows'] as $row) {
                 $class = 'cell grid-x acym__row__no-listing acym__listing__row__popup';
-                if (in_array($row->{$options['id']}, $selected)) $class .= ' selected_row';
+                if (in_array($row->{$options['id']}, $selected)) {
+                    $class .= ' selected_row';
+                }
 
                 $listing .= '<div 
                     class="'.$class.'" 
@@ -424,9 +427,20 @@ class acymPlugin extends acymObject
 
                     if (!empty($oneColumn['type'])) {
                         if ($oneColumn['type'] === 'date') {
-                            if (!is_numeric($value) && $value != '0000-00-00 00:00:00') $value = strtotime($value);
-                            $tooltip = acym_date($value, acym_translation('ACYM_DATE_FORMAT_LC2'));
-                            $value = acym_tooltip(acym_date($value, acym_translation('ACYM_DATE_FORMAT_LC5')), $tooltip);
+                            if (empty($value)) {
+                                $value = '-';
+                            } else {
+                                if (!is_numeric($value) && $value != '0000-00-00 00:00:00') {
+                                    $value = strtotime($value);
+                                }
+                                $tooltip = acym_date($value, acym_translation('ACYM_DATE_FORMAT_LC2'));
+                                $value = acym_tooltip(
+                                    [
+                                        'hoveredText' => acym_date($value, acym_translation('ACYM_DATE_FORMAT_LC5')),
+                                        'textShownInTooltip' => $tooltip,
+                                    ]
+                                );
+                            }
                         } elseif ($oneColumn['type'] === 'int') {
                             $value = intval($value);
                         }
@@ -443,7 +457,7 @@ class acymPlugin extends acymObject
         return $listing;
     }
 
-    protected function getCategoryListing()
+    protected function getCategoryListing(): string
     {
         $listing = '';
         if (empty($this->catvalues)) {
@@ -460,18 +474,20 @@ class acymPlugin extends acymObject
         foreach ($this->catvalues as $oneCat) {
             if (empty($oneCat->value)) continue;
 
-            $class = 'cell grid-x acym__row__no-listing acym__listing__row__popup';
-            if (in_array($oneCat->value, $selected)) $class .= ' selected_row';
-            $listing .= '<div class="'.$class.'" data-id="'.intval($oneCat->value).'" onclick="applyContentauto'.acym_escape($this->name).'('.intval($oneCat->value).', this);">
-                        <div class="cell medium-5">'.acym_escape($oneCat->text).'</div>
-                    </div>';
+            $classes = 'cell grid-x acym__row__no-listing acym__listing__row__popup';
+            if (in_array($oneCat->value, $selected)) {
+                $classes .= ' selected_row';
+            }
+            $listing .= '<div class="'.$classes.'" data-id="'.intval($oneCat->value).'" onclick="applyContentauto'.acym_escape($this->name).'('.intval($oneCat->value).', this);">
+                    <div class="cell medium-5">'.acym_escape($oneCat->text).'</div>
+                </div>';
         }
         $listing .= '</div>';
 
         return $listing;
     }
 
-    protected function getTagListing()
+    protected function getTagListing(): string
     {
         $listing = '';
         if (empty($this->tagvalues)) {
@@ -494,9 +510,7 @@ class acymPlugin extends acymObject
 
             $class = 'cell grid-x acym__row__no-listing acym__listing__row__popup';
             if (in_array($oneTag->$termIdName, $selected)) $class .= ' selected_row';
-            $listing .= '<div class="'.$class.'" data-id="'.intval($oneTag->$termIdName).'" onclick="applyContent'.acym_escape($this->name).'_tags('.intval(
-                    $oneTag->$termIdName
-                ).', this);">
+            $listing .= '<div class="'.$class.'" data-id="'.intval($oneTag->$termIdName).'" onclick="applyContent'.acym_escape($this->name).'_tags('.intval($oneTag->$termIdName).', this);">
                         <div class="cell medium-5">'.acym_escape($oneTag->name).'</div>
                     </div>';
         }
@@ -1385,11 +1399,15 @@ class acymPlugin extends acymObject
 
     protected function cleanExtensionContent($text)
     {
-        if (!acym_isExtensionActive('classic-editor/classic-editor.php') || strpos($text, '<!-- wp:') !== false) {
-            return $text;
-        }
+        if (ACYM_CMS === 'wordpress') {
+            if (!acym_isExtensionActive('classic-editor/classic-editor.php') || strpos($text, '<!-- wp:') !== false) {
+                return $text;
+            }
 
-        return nl2br($text);
+            return nl2br($text);
+        } else {
+            return preg_replace('#\{igallery[^}]+\}#Ui', '', $text);
+        }
     }
 
     protected function callApiSendingMethod($url, $data = [], $headers = [], $type = 'GET', $authentication = [], $dataDecoded = false)
@@ -1440,7 +1458,9 @@ class acymPlugin extends acymObject
         if ($error) {
             return ['error_curl' => $error];
         } else {
-            return json_decode($response, true);
+            $response = json_decode($response, true);
+
+            return empty($response) ? ['error_curl' => 'Malformed response'] : $response;
         }
     }
 
@@ -1569,5 +1589,19 @@ class acymPlugin extends acymObject
         $content = do_shortcode($content);
 
         return preg_replace('#<!-- wp:shortcode -->(.*)<!-- /wp:shortcode -->#Uis', '$1', $content);
+    }
+
+    protected function fixDivStructure(string $text): string
+    {
+        $nbOpeningDivs = substr_count($text, '<div');
+        $nbClosingDivs = substr_count($text, '</div>');
+
+        if ($nbOpeningDivs > $nbClosingDivs) {
+            $text .= str_repeat('</div>', $nbOpeningDivs - $nbClosingDivs);
+        } elseif ($nbOpeningDivs < $nbClosingDivs) {
+            $text = str_repeat('<div>', $nbClosingDivs - $nbOpeningDivs).$text;
+        }
+
+        return $text;
     }
 }

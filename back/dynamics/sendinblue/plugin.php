@@ -66,7 +66,7 @@ class plgAcymSendinblue extends acymPlugin
         $this->credentials->testCredentialSendingMethod($sendingMethod, $credentials);
     }
 
-    public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $reply_to, $bcc = [], $attachments = [])
+    public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $reply_to, $bcc = [], $attachments = [], $sendingMethodListParams = [])
     {
         $this->transactional->sendTransactionalEmail(
             $response,

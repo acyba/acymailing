@@ -203,9 +203,9 @@ const acym_editorWysidContextModal = {
         let $alignments = jQuery('.acym__wysid__context__image__align');
         let $linkInput = jQuery('#acym__wysid__context__image__link');
         let $urlInput = jQuery('#acym__wysid__context__image__url');
-        let $altInput = jQuery('#acym__wysid__context__image__alt');
-        let $titleInput = jQuery('#acym__wysid__context__image__title');
-        let $captionInput = jQuery('#acym__wysid__context__image__caption');
+        let $altInput = jQuery('#acym__upload__context__image__alt');
+        let $titleInput = jQuery('#acym__upload_context__image__title');
+        let $captionInput = jQuery('#acym__upload__context__image__caption');
         let $aTag = $img.closest('.acym__wysid__link__image');
         let $widthInput = jQuery('#acym__wysid__context__image__width');
         let $heightInput = jQuery('#acym__wysid__context__image__height');
@@ -236,12 +236,12 @@ const acym_editorWysidContextModal = {
 
         jQuery('#acym__wysid__context__image__change').off('click').on('click', function () {
             let $selectedImg = jQuery('.acym__wysid__media__inserted--selected');
-            if ($selectedImg.hasClass('acym__wysid__media__giphy')) {
-                acym_editorWysidNewContent.addGiphyWYSID($selectedImg.closest('.acym__wysid__column__element'));
+            if ($selectedImg.hasClass('acym__wysid__media__gif')) {
+                acym_editorWysidNewContent.addGifWYSID($selectedImg.closest('.acym__wysid__column__element'));
             } else if ($selectedImg.hasClass('acym__wysid__media__unsplash')) {
                 acym_editorWysidNewContent.addUnsplashWYSID($selectedImg.closest('.acym__wysid__column__element'));
             } else {
-                acym_editorWysidImage.openMediaManager($selectedImg.closest('.acym__wysid__column__element'));
+                acym_editorWysidImage.addMediaWPWYSID($selectedImg.closest('.acym__wysid__column__element'));
             }
         });
 
@@ -400,20 +400,24 @@ const acym_editorWysidContextModal = {
             );
             acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__button__color'), 'color', $button, $button, 'color');
 
-            let $inputLink = jQuery('.acym__wysid__context__button__link__container');
-            let $inputText = jQuery('.acym__wysid__context__button__text__container');
+            const $inputLink = jQuery('.acym__wysid__context__button__link__container');
+            const $inputText = jQuery('.acym__wysid__context__button__text__container');
+            const $buttonFile = jQuery('.acym__wysid__context__button__link__file');
 
-            let $buttonsType = jQuery('.acym__wysid__context__button--type').addClass('button-radio-unselected').removeClass('button-radio-selected');
+            const $buttonsType = jQuery('.acym__wysid__context__button--type').addClass('button-radio-unselected').removeClass('button-radio-selected');
 
             if ($button.attr('href').indexOf('{confirm}') !== -1) {
                 jQuery('[acym-data-type="confirm"]').removeClass('button-radio-unselected').addClass('button-radio-selected');
                 $inputLink.hide();
+                $buttonFile.hide();
             } else if ($button.attr('href').indexOf('{unsubscribe}') !== -1) {
                 jQuery('[acym-data-type="unsubscribe"]').removeClass('button-radio-unselected').addClass('button-radio-selected');
                 $inputLink.hide();
+                $buttonFile.hide();
             } else {
                 jQuery('[acym-data-type="call-action"]').removeClass('button-radio-unselected').addClass('button-radio-selected');
                 $inputLink.show();
+                $buttonFile.show();
             }
 
             $buttonsType.off('click').on('click', function () {
@@ -428,11 +432,13 @@ const acym_editorWysidContextModal = {
                     $inputLink.find('#acym__wysid__context__button__link, .acym__wysid__context__button__link').val('#').trigger('change');
                     $inputText.find('#acym__wysid__context__button__text').val(ACYM_JS_TXT.ACYM_BUTTON).trigger('change');
                     $inputLink.show();
+                    $buttonFile.show();
                 } else {
-                    let dynamicLink = `{${linkType}}{/${linkType}}`;
+                    const dynamicLink = `{${linkType}}{/${linkType}}`;
                     $inputLink.find('#acym__wysid__context__button__link, .acym__wysid__context__button__link').val(dynamicLink).trigger('change');
                     $inputText.find('#acym__wysid__context__button__text').val(ACYM_JS_TXT[`ACYM_${linkType.toUpperCase()}`]).trigger('change');
                     $inputLink.hide();
+                    $buttonFile.hide();
                 }
             });
 
@@ -466,6 +472,12 @@ const acym_editorWysidContextModal = {
                     jQuery(this).val(jQuery(this).val().trim());
                     $button.attr('href', jQuery(this).val());
                 });
+            jQuery('#acym__wysid__context__button__file').off('click').on('click', function () {
+                acym_helperImage.openMediaManager(function (mediaObject) {
+                    jQuery('#acym__wysid__context__button__link').val(mediaObject.url).trigger('change');
+                    acym_helperEditorWysid.setColumnRefreshUiWYSID();
+                });
+            });
             jQuery('#acym__wysid__context__button__bold')
                 .css('background-color', $button.css('font-weight') == 700 ? '' : 'inherit')
                 .off('click')
@@ -818,13 +830,26 @@ const acym_editorWysidContextModal = {
             e.stopPropagation();
             e.preventDefault();
 
-            let $contextPoweredBy = jQuery('#acym__wysid__context__poweredby');
+            const $contextPoweredBy = jQuery('#acym__wysid__context__poweredby');
             acym_editorWysidContextModal.showBlockOptions($contextPoweredBy);
 
-            jQuery(window).off('mousedown').on('mousedown', function (event) {
-                if (acym_editorWysidContextModal.clickedOnRightToolbar(event)) return true;
-                if (event.target.title !== 'poweredby' && jQuery(event.target).children().children('[title="poweredby"]').length === 0) {
+            if (jQuery(this).find('img[src*="poweredby_white.png"]').length > 0) {
+                // change the select 2 value to white
 
+                const $colorSelect = jQuery('#acym__wysid__built-with__text__color');
+                $colorSelect.val('white');
+                $colorSelect.select2({
+                    theme: 'foundation',
+                    width: '100%'
+                });
+            }
+
+            jQuery(window).off('mousedown').on('mousedown', function (event) {
+                if (acym_editorWysidContextModal.clickedOnRightToolbar(event)) {
+                    return true;
+                }
+
+                if (event.target.title !== 'poweredby' && jQuery(event.target).children().children('[title="poweredby"]').length === 0) {
                     jQuery(this).off('mousedown');
                     acym_editorWysidContextModal.hideBlockOptions($contextPoweredBy, jQuery(event.target));
                     jQuery('.acym__wysid__context__modal__container--structure').hide();

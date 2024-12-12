@@ -114,7 +114,7 @@ const acym_editorWysidFormAction = {
         let ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + controller;
         if (saveAsTmpl) {
             jQuery('input[name="task"]').val('saveAsTmplAjax');
-            ajaxUrl += '&saveAsTmpl=1';
+            ajaxUrl += `&saveAsTmpl=1&saveAsTmplVersion=${acym_editorWysidVersions.currentVersion}`;
         } else {
             jQuery('input[name="task"]').val('saveAjax');
         }
@@ -124,7 +124,7 @@ const acym_editorWysidFormAction = {
                 acym_helperNotification.addNotification(res.message, 'error');
             } else {
                 if (!saveAsTmpl) {
-                    jQuery('mail' === controller ? '[name="id"]' : saveAsTmpl ? '[name="id"], [name="mail[id]"]' : '[name="campaignId"]').val(res.data.result);
+                    jQuery('mails' === controller ? '[name="id"], [name="mail[id]"]' : '[name="campaignId"]').val(res.data.result);
                     if (!fromSendTest) {
                         jQuery('#acym_header').css('display', '');
                         jQuery('.acym__content').css('display', '');
@@ -181,6 +181,7 @@ const acym_editorWysidFormAction = {
         let $editorArea = jQuery('#acym__wysid__wrap');
         let heightOverlay = window.innerHeight - jQuery('#acym__wysid__top-toolbar').offset().top - $editorArea.height();
         jQuery('#acym__wysid__warning__thumbnail').css('bottom', '-' + heightOverlay + 'px').toggle();
+        jQuery('#acym__wysid__template').find('[id^="mce_"]').removeAttr('id');
 
         acym_helper.config_get('save_thumbnail').done((resConfig) => {
             if (resConfig.error || resConfig.data.value != 1) {
@@ -246,8 +247,10 @@ const acym_editorWysidFormAction = {
             jQuery('.acym__wysid__row__element__toolbox__colorpicker').spectrum('destroy');
             jQuery('.sp-container').remove();
             jQuery('#acym_header').css('display', 'none');
-            jQuery('.acym__content').css('display', 'none');
-            let acymWysidDivStyle = {
+            if (jQuery('#acym__walkthrough').length === 0) {
+                jQuery('.acym__content').css('display', 'none');
+            }
+            const acymWysidDivStyle = {
                 'display': 'inherit'
             };
             if (ACYM_CMS === 'joomla') {
@@ -329,5 +332,8 @@ const acym_editorWysidFormAction = {
             jQuery('.acym__wysid__hidden__save__stylesheet').val(acym_helperEditorWysid.savedStylesheet);
             jQuery('.acym__wysid__hidden__save__colors').val(acym_helperEditorWysid.savedColors);
         });
+    },
+    cleanMceInput: function () {
+        jQuery('input[type="hidden"][name^="mce_"]').remove();
     }
 };

@@ -1,233 +1,147 @@
+@import "../gopro/gopro";
+@import "../dynamics/content";
+@import "../configuration/listing";
+
 #acym_wrapper {
-    #acym__walkthrough {
+    .acym__walkthrough__main {
+        min-height: 340px;
+    }
+
+    .button {
+        height: 40px;
+    }
+
+    a.button-gopro {
+        background-color: $yellow-gopro;
+        border-color: $yellow-gopro;
+        color: $black;
+
+        &:hover {
+            background-color: $yellow-gopro;
+            border-color: $yellow-gopro;
+            color: $black;
+            font-size: medium;
+        }
+    }
+
+    .acym__walkthrough__discover {
+        background-color: #def0ff;
+
+        h2 {
+            font-size: 1.4rem;
+        }
+    }
+
+    .acym__walkthrough__card {
+        background-color: #fff;
+        border-radius: $border-radius;
+    }
+
+    .acym__gopro__images_vertical {
+        width: auto;
+        max-height: 245px;
+    }
+
+    &[class^="dashboard_step_"] {
+        #acym_header {
+            #checkVersionArea, #checkVersionButton {
+                visibility: hidden;
+            }
+
+            .acym__header__notification {
+                display: none;
+            }
+        }
+    }
+
+    .acym__title {
+        font-weight: 400;
+    }
+
+    #acym__walkthrough__thank_you {
+        h1.acym__main_title {
+            margin-top: 4.5rem;
+        }
+
+        .acym__gopro__footer__title{
+            font-size: 1.2rem;
+        }
+    }
+
+    #acym__walkthrough__license {
+        #acym__walkthrough__license__spinner__attach, #acym__walkthrough__license__spinner__cron {
+            width: fit-content;
+            height: fit-content;
+            margin-top: .4rem;
+        }
+
+        #acym__walk_through_license__licenseStatus, #acym__walk_through_license__cron_label {
+            line-height: 2;
+        }
+    }
+
+    #acym__walkthrough__final {
+        #acym__pricing__page, #acym__cname__documentation {
+            color: $blue-primary;
+            text-decoration: underline;
+        }
+    }
+
+    #acym__walkthrough__acymailer {
+        #acym__cname__documentation {
+            color: $blue-primary;
+            text-decoration: underline;
+        }
+
+        #acym__acymailer__unverifiedDomains {
+            position: absolute;
+        }
+
+        .cname-name, .cname-value {
+            cursor: pointer;
+        }
+
+        .acym__walkthrough_footer {
+            background-color: $light-blue-new;
+            border-bottom-right-radius: $border-radius;
+            border-bottom-left-radius: $border-radius;
+        }
+    }
+
+    #acym__walkthrough__editor {
+        #acym__wysid__email__preview {
+            padding-bottom: 400px;
+            overflow: hidden;
+            box-shadow: 2px 2px 15px 2px $medium-gray;
+        }
+
         #acym__wysid__edit .acym__content {
             box-shadow: none;
             padding: 0;
         }
 
-        #acym__walkthrough__license {
-            #acym__walkthrough__step_license__pass {
-                &:hover {
-                    text-decoration: underline;
-                }
-            }
+        #acym__wysid__test__button, #acym__wysid__test__button + p {
+            display: none;
         }
+    }
 
-        #acym__walkthrough__phpmail {
-            .acym__sending__methods__clean__data {
-                .select2-container {
-                    width: 150px !important;
-                }
-            }
-        }
+    .acym__walkthrough__content {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
 
-        #acym__walkthrough__list {
-            #acym__walkthrough__list__receivers {
-                display: inline-table;
-                max-width: 370px;
+    .acym__walkthrough__footer {
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+    }
 
-                th, td {
-                    padding: 0.4rem;
-                }
+    .acym__walkthrough__card {
+        margin-bottom: 1rem;
+    }
 
-                .acym__walkthrough__list__receivers__remove {
-                    font-size: 0.8rem;
-                    cursor: pointer;
-                }
-            }
-
-            label[for="acym__walkthrough__list__new-address"] {
-                display: inline-block;
-            }
-
-            #acym__walkthrough__list__new-address {
-                display: inline-block;
-                text-align: left;
-                width: 200px;
-                margin: 0 0.5rem;
-            }
-        }
-
-        .acym__walk-through__step {
-            margin-top: 10px;
-            font-size: 16px;
-        }
-
-        .acym__walk_through__back {
-            margin-bottom: 10px;
-
-            i {
-                vertical-align: baseline;
-                font-size: 15px;
-            }
-
-            span {
-                font-size: 15px;
-                margin-left: 5px;
-            }
-        }
-
-        .acym__walkthrough__title__subwelcome {
-            font-size: 1.5rem;
-        }
-
-        .acym__walkthrough__sub-title {
-            font-size: 1rem;
-            margin-top: 10px;
-        }
-
-        .acym__walk-through__content__save {
-            margin-top: 40px;
-        }
-
-        .acym__walk-through__content__label {
-            margin-top: 20px;
-            margin-bottom: 7px;
-        }
-
-        .acym__walk-through__content__title {
-            font-weight: bold;
-            font-size: 23px;
-        }
-
-        .acym__walkthrough__content {
-            margin-top: 40px;
-            position: relative;
-
-            #acym__walkthrough__skip {
-                position: absolute;
-                font-size: .8rem;
-                top: 10px;
-                right: 10px;
-                cursor: pointer;
-                font-weight: 500;
-            }
-
-            #acym__wysid__edit {
-                height: 500px;
-
-                #acym__wysid__preview__iframe__acym__wysid__email__preview {
-                    height: 400px;
-                }
-
-                #acym__wysid__email__preview {
-                    padding-bottom: 400px;
-                    box-shadow: 0 0 15px 2px #c7c7c7;
-                }
-
-                #acym__wysid__edit__preview {
-                    height: 440px;
-                }
-            }
-        }
-
-        .acym__walkthrough__section {
-            font-size: 1rem;
-            font-weight: bold;
-            margin-bottom: $global-margin;
-        }
-
-        .acym__walkthrough__section__help {
-            margin-right: 1rem;
-            margin-left: 2rem;
-            color: $dark-gray;
-        }
-
-        .acym__walkthrough__fail__label {
-            font-size: .9rem;
-            font-weight: 600;
-            color: $font-primary;
-        }
-
-        #acym__walkthrough__success__img {
-            width: 250px;
-        }
-
-        #acym__walkthrough__result__choice {
-            .acym__walkthrough__result__choice__one {
-                cursor: pointer;
-                transition: 0.2s ease;
-                opacity: 0.3;
-
-                i {
-                    font-size: 5rem;
-                    line-height: 1;
-                }
-
-                &:hover, &.selected {
-                    opacity: 1;
-
-                    &#acym__walkthrough__result__choice__yes {
-                        color: $success-color;
-                    }
-
-                    &#acym__walkthrough__result__choice__no {
-                        color: $alert-color;
-                    }
-                }
-            }
-        }
-
-        #acym__walkthrough__result__spam {
-            visibility: hidden;
-            transform: translateY(-20px);
-            transition: transform 0.2s ease-in, 0.16s visibility;
-
-            &.visible {
-                visibility: visible;
-                transform: translateY(20px);
-            }
-
-            p {
-                font-weight: 600;
-            }
-        }
-
-        .acym__sending__methods__choose {
-            .acym__configuration__sending__method-icon, .acym__sending__methods__validate_domain-delete, .acym__sending__methods__unverifiedDomain-icon {
-                font-size: 1.2em;
-
-                &.domain_selected {
-                    color: $color-palette-cyan;
-                }
-            }
-
-            .acym__acymailer__domain_containers {
-                display: flex;
-                justify-content: space-between;
-            }
-
-            .walkthrough__responsive {
-                width: 100%;
-                padding-top: 20px;
-            }
-
-            #acym__configuration__sending__method__cnameTable__container {
-                width: 100%;
-
-                .cname-name {
-                    cursor: pointer;
-                    padding-right: 3rem !important;
-                }
-
-                .cname-value {
-                    cursor: pointer;
-                }
-            }
-        }
-
-        #acym__walkthrough__acymailer {
-            #acym__walkthrough__acymailer__information {
-                font-size: 1.3rem;
-            }
-
-            #acym__walkthrough__acymailer__domain__cname {
-                box-shadow: $primary-box-shadow;
-            }
-        }
-
-        #acym__walkthrough__acymailer__cname__doc {
-            text-decoration: underline;
+    @media (max-width: 1440px) {
+        .acym__walkthrough__card__left {
+            margin-bottom: 3rem;
         }
     }
 }

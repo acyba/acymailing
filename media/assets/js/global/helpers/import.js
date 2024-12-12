@@ -24,6 +24,8 @@ const acym_helperImport = {
             $submitButton = jQuery('#submit_import_database');
         } else if (jQuery('#acym__users__import__cms_users').is(':visible')) {
             $submitButton = jQuery('#submit_import_cms');
+        } else if (jQuery('#acym__users__import__cms_contact').is(':visible')) {
+            $submitButton = jQuery('#submit_import_contact');
         } else {
             $submitButton = jQuery('#submit_import_mailpoet');
         }
@@ -57,7 +59,6 @@ const acym_helperImport = {
         let emailField = false;
         let columns = '';
         let selectedFields = [];
-        let $checkboxIgnoreValue = jQuery('#acym__users__import__from_file__ignore__checkbox').is(':checked');
 
         let fieldNb = jQuery('.fieldAssignment').length;
 
@@ -67,14 +68,8 @@ const acym_helperImport = {
             let $fieldAssignement = jQuery('#fieldAssignment' + i);
             string = $fieldAssignement.val();
             if (string == 0) {
-                if ($checkboxIgnoreValue) {
-                    $fieldAssignement.val(1);
-                    string = 1;
-                } else {
-                    acym_helperImport.setColorUnassignedField($fieldAssignement);
-                    subval = false;
-                    errors += '\n' + acym_helper.sprintf(ACYM_JS_TXT.ACYM_ASSIGN_COLUMN_TO_FIELD, i + 1);
-                }
+                $fieldAssignement.val(1);
+                string = 1;
             }
 
             if (string == 'email') {
@@ -107,13 +102,6 @@ const acym_helperImport = {
         jQuery('#import_columns').val(columns);
 
         return true;
-    },
-    setColorUnassignedField: function ($select) {
-        if ($select.val() == 0) {
-            $select.addClass('fieldAssignmentError');
-        } else {
-            $select.removeClass('fieldAssignmentError');
-        }
     },
     setImportFromFileEvent: function () {
         let $inputFile = jQuery('#acym__users__import__from_file__import__input');
@@ -153,26 +141,29 @@ const acym_helperImport = {
     },
     setChangeCharset: function () {
         jQuery('#acyencoding').on('change', function () {
-            let URL = ACYM_AJAX_URL
-                      + '&ctrl='
-                      + acym_helper.ctrlUsers
-                      + '&task=ajaxEncoding&encoding='
-                      + jQuery(this).val()
-                      + '&acym_import_filename='
-                      + jQuery(this)
-                          .attr('data-filename');
-            let selectedDropdowns = '';
             let fieldNb = jQuery('.fieldAssignment').length;
-            if (isNaN(fieldNb)) fieldNb = 1;
-
-            for (let i = 0 ; i < fieldNb ; i++) {
-                selectedDropdowns += '&fieldAssignment' + i + '=' + jQuery('#fieldAssignment' + i).val();
+            if (isNaN(fieldNb)) {
+                fieldNb = 1;
             }
 
-            URL += selectedDropdowns;
+            const data = {
+                ctrl: acym_helper.ctrlUsers,
+                task: 'ajaxEncoding',
+                encoding: jQuery(this).val(),
+                acym_import_filename: jQuery(this).attr('data-filename')
+            };
 
-            jQuery.post(URL, function (response) {
-                jQuery('#acym__users__import__generic__matchdata').html(response);
+            for (let i = 0 ; i < fieldNb ; i++) {
+                data['fieldAssignment' + i] = jQuery('#fieldAssignment' + i).val();
+            }
+
+            jQuery.ajax({
+                url: ACYM_AJAX_URL,
+                type: 'POST',
+                data: data
+            }).then(function (response) {
+                response = acym_helper.parseJson(response);
+                jQuery('#acym__users__import__generic__matchdata').html(response.data.preview);
                 jQuery('.fieldAssignment').select2({theme: 'foundation'});
             });
         });

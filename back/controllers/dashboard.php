@@ -20,8 +20,8 @@ class DashboardController extends acymController
         parent::__construct();
 
         $this->loadScripts = [
-            'walk_through' => ['editor-wysid'],
             'features' => ['vue-applications' => ['splashscreen']],
+            'step_editor' => ['editor-wysid'],
         ];
     }
 

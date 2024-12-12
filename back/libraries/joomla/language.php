@@ -81,8 +81,13 @@ function acym_getLanguages($uppercaseLangCode = false, $published = false)
 
 function acym_getLanguageTag($simple = false)
 {
-    $acyapp = acym_getGlobal('app');
-    $acylanguage = $acyapp->getLanguage();
+    if (ACYM_J40) {
+        $acylanguage = Factory::getLanguage();
+    } else {
+        $acyapp = acym_getGlobal('app');
+        $acylanguage = $acyapp->getLanguage();
+    }
+
     $langCode = $acylanguage->getTag();
 
     return $simple ? substr($langCode, 0, 2) : $langCode;
@@ -90,7 +95,7 @@ function acym_getLanguageTag($simple = false)
 
 function acym_loadLanguageFile($extension = 'joomla', $basePath = JPATH_SITE, $lang = null, $reload = false, $default = true)
 {
-    if (ACYM_J50) {
+    if (ACYM_J40) {
         $acylanguage = Factory::getLanguage();
     } else {
         $acyapp = acym_getGlobal('app');

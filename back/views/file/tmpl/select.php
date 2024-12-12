@@ -21,7 +21,7 @@
                         if (in_array($ext, $data['imageExtensions'])) {
                             $srcImg = ACYM_LIVE.rtrim($data['uploadFolder'], DS).'/'.$file;
                         } else {
-                            $srcImg = ACYM_LIVE.str_replace(DS, '/', ACYM_MEDIA_FOLDER).'images/file.png';
+                            $srcImg = ACYM_LIVE.str_replace(DS, '/', ACYM_MEDIA_FOLDER).'images/icons/file.png';
                         }
 
                         if (strlen($file) > 20) {

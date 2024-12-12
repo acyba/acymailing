@@ -100,11 +100,17 @@ class EntitySelectHelper extends acymObject
     }
 
     public function entitySelect(
-        $entity, $entityParams = [], $columnsToDisplay = ['name'], $buttonSubmit = [
-        'text' => '',
-        'action' => '',
-        'class' => '',
-    ], $displaySelected = true, $additionalData = '', $displayedName = ''
+        $entity,
+        $entityParams = [],
+        $columnsToDisplay = ['name'],
+        $buttonSubmit = [
+            'text' => '',
+            'action' => '',
+            'class' => '',
+        ],
+        $displaySelected = true,
+        $additionalData = '',
+        $displayedName = ''
     ) {
         $columnJoin = '';
         if (!empty($columnsToDisplay['join'])) {
@@ -124,7 +130,7 @@ class EntitySelectHelper extends acymObject
                         id="acym__entity_select" 
                         class="acym__entity_select cell grid-x" 
                         data-display-selected="'.($displaySelected ? 'true' : 'false').'" 
-                        data data-entity="'.acym_escape($entity).'" 
+                        data-entity="'.acym_escape($entity).'" 
                         data-type="select" 
                         data-columns="'.implode(',', array_keys($columnsToDisplay)).'" 
                         data-columns-class="'.acym_escape(json_encode($columnsToDisplay)).'" 
@@ -174,7 +180,10 @@ class EntitySelectHelper extends acymObject
             'name' => 'auto',
             'id' => 'small-1',
         ];
-        if (!empty($join)) $columns['join'] = $join;
+
+        if (!empty($join)) {
+            $columns['join'] = $join;
+        }
 
         return $columns;
     }

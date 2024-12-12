@@ -1,5 +1,7 @@
 <?php
 
+use AcyMailing\Classes\FieldClass;
+
 trait OnlineInsertion
 {
     public function dynamicText($mailId)
@@ -9,118 +11,139 @@ trait OnlineInsertion
 
     public function textPopup()
     {
-        $others = [];
-        $others['readonline'] = [
-            'default' => acym_translation('ACYM_VIEW_ONLINE', true),
-            'desc' => acym_translation('ACYM_VIEW_ONLINE_DESC'),
-        ];
-        if (ACYM_CMS == 'joomla') {
-            $profilePage = acym_getPageLink('view=frontusers&layout=profile');
-            $others['modify_profile'] = [
+        $links = [
+            'readonline' => [
+                'default' => acym_translation('ACYM_VIEW_ONLINE', true),
+                'desc' => acym_translation('ACYM_VIEW_ONLINE_DESC'),
+            ],
+            'modify_profile' => [
                 'default' => acym_translation('ACYM_MODIFY_MY_PROFILE', true),
                 'desc' => acym_translation('ACYM_MODIFY_PROFILE_DESC'),
-                'disabled' => empty($profilePage),
+                'disabled' => (ACYM_CMS == 'joomla' && empty(acym_getPageLink('view=frontusers&layout=profile'))),
                 'tooltip' => acym_translation('ACYM_NO_PROFILE_MENU'),
+            ],
+        ];
+
+        $information = [];
+        if (ACYM_CMS === 'joomla') {
+            $baseUrlValue = ACYM_J50 ? \Joomla\CMS\Uri\Uri::root() : JURI::root();
+            $information = [
+                'site_name' => [
+                    'label' => acym_translation('ACYM_SITE_NAME'),
+                    'value' => acym_getCMSConfig('sitename'),
+                ],
+                'base_url' => [
+                    'label' => ucfirst(acym_translationSprintf('ACYM_X_URL', ACYM_CMS)),
+                    'value' => $baseUrlValue,
+                ],
+            ];
+        } elseif (ACYM_CMS === 'wordpress') {
+            $information = [
+                'site_name' => [
+                    'label' => acym_translation('ACYM_SITE_NAME'),
+                    'value' => acym_getCMSConfig('sitename'),
+                ],
+                'wp_address' => [
+                    'label' => ucfirst(acym_translationSprintf('ACYM_X_ADDRESS', ACYM_CMS)),
+                    'value' => acym_getCMSConfig('siteurl'),
+                ],
+                'site_address' => [
+                    'label' => acym_translation('ACYM_SITE_URL'),
+                    'value' => acym_getCMSConfig('home'),
+                ],
+                'tagline' => [
+                    'label' => acym_translation('ACYM_TAGLINE'),
+                    'value' => acym_getCMSConfig('blogdescription'),
+                ],
+                'site_icon' => [
+                    'label' => acym_translation('ACYM_SITE_ICON'),
+                    'value' => get_site_icon_url(),
+                ],
+                'admin_email' => [
+                    'label' => acym_translation('ACYM_ADMIN_EMAIL'),
+                    'value' => acym_getCMSConfig('admin_email'),
+                ],
             ];
         }
-
         ?>
 		<script type="text/javascript">
             let selectedOnlineDText = '';
+            let selectedInfoKey = '';
 
-            function changeOnlineTag(tagName) {
+            function changeOnlineTag(tagName, infoKey = '', disableInput = false) {
                 selectedOnlineDText = tagName;
-                let defaultText = [];
+                selectedInfoKey = infoKey;
+                const defaultText = [];
                 <?php
-                foreach ($others as $tagname => $tag) {
+                foreach ($links as $tagname => $tag) {
                     echo 'defaultText["'.$tagname.'"] = "'.$tag['default'].'";';
                 }
-                ?>
-                jQuery('#tr_' + tagName).addClass('selected_row');
-                document.getElementById('acym__popup__online__tagtext').value = defaultText[tagName];
-
-                <?php if (ACYM_CMS == 'joomla') { ?>
-                if (selectedOnlineDText === 'readonline') {
-                    jQuery('#acym__popup__online__theme__option').removeClass('is-hidden');
-                } else {
-                    jQuery('#acym__popup__online__theme__option').addClass('is-hidden');
+                foreach ($information as $infoKey => $info) {
+                    echo 'defaultText["info_'.$infoKey.'"] = \''.str_replace("'", "\\'", $info['value']).'\';';
                 }
-                <?php } ?>
+                ?>
+                jQuery('.selected_row').removeClass('selected_row');
+                jQuery('#tr_' + tagName).addClass('selected_row');
+
+                if (infoKey === '') {
+                    document.getElementById('acym__popup__online__tagtext').value = defaultText[tagName];
+                } else {
+                    document.getElementById('acym__popup__online__tagtext').value = '';
+                    document.getElementById('acym__popup__online__tagtext').setAttribute('data-value', defaultText['info_' + infoKey]);
+                }
+
+                if (disableInput) {
+                    document.getElementById('acym__popup__online__tagtext').setAttribute('readonly', 'readonly');
+                } else {
+                    document.getElementById('acym__popup__online__tagtext').removeAttribute('readonly');
+                }
 
                 setOnlineTag();
             }
 
+            function getTagText() {
+                const tagText = document.getElementById('acym__popup__online__tagtext');
+                return tagText.value != '' ? tagText.value : tagText.getAttribute('data-value') || '';
+            }
+
             function setOnlineTag() {
-                // The value of the hidden input for the switch is changed after the onchange event is called...
                 setTimeout(function () {
                     let themeOption = '';
                     if (selectedOnlineDText === 'readonline') {
                         let themeInput = document.querySelector('input[name="acym__popup__online__theme"]');
                         themeOption = '|theme:' + (themeInput && themeInput.value === '1' ? '1' : '0');
                     }
-                    let tag = '{' + selectedOnlineDText + themeOption + '}' + document.getElementById('acym__popup__online__tagtext').value + '{/' + selectedOnlineDText + '}';
+                    let tag = '{'
+                              + (selectedOnlineDText === 'info' ? 'info:' + selectedInfoKey : selectedOnlineDText)
+                              + themeOption
+                              + '}'
+                              + getTagText()
+                              + '{/'
+                              + selectedOnlineDText
+                              + '}';
                     setTag(tag, jQuery('#tr_' + selectedOnlineDText));
                 }, 50);
             }
 		</script>
 
-		<div class="acym__popup__listing text-center grid-x">
-			<div class="grid-x medium-12 cell acym__row__no-listing text-left">
-				<div class="grid-x cell">
-					<label class="small-3" style="line-height: 40px;" for="acym__popup__online__tagtext"><?php echo acym_translation('ACYM_TEXT'); ?>: </label>
-					<input class="small-9" type="text" name="tagtext" id="acym__popup__online__tagtext" onchange="setOnlineTag();">
-				</div>
-				<div class="grid-x cell margin-top-1 margin-bottom-1 is-hidden" id="acym__popup__online__theme__option">
-                    <?php
-                    echo acym_switch(
-                        'acym__popup__online__theme',
-                        false,
-                        acym_translation('ACYM_OPEN_IN_SITE'),
-                        ['onchange' => 'setOnlineTag();']
-                    );
-                    ?>
-				</div>
-				<div class="medium-auto"></div>
-			</div>
-
-            <?php
-            foreach ($others as $tagname => $tag) {
-                if (empty($tag['disabled'])) {
-                    $onclick = 'onclick="changeOnlineTag(\''.$tagname.'\');"';
-                    $class = '';
-                } else {
-                    $onclick = '';
-                    $class = 'acym__listing__row__popup--disabled';
-                }
-
-                $rowHtml = '<div class="grid-x small-12 cell acym__row__no-listing acym__listing__row__popup text-left '.$class.'" '.$onclick.' id="tr_'.$tagname.'" >';
-                $rowHtml .= '<div class="cell small-12 acym__listing__title acym__listing__title__dynamics">'.$tag['desc'].'</div>';
-                $rowHtml .= '</div>';
-
-                if (!empty($tag['disabled'])) {
-                    $rowHtml = acym_tooltip($rowHtml, $tag['tooltip'], 'cell');
-                }
-
-                echo $rowHtml;
-            }
-            ?>
-		</div>
-
         <?php
+        include acym_getPartial('editor', 'website_content');
     }
 
     public function replaceContent(&$email, $send = true)
     {
         if (empty($email->body)) return;
 
-        // Parenthesis like (?:xxxx) are not stored in $results, so only (.*) is taken into account, in $results[1]
+        $tags = $this->_replaceInformationTags($email);
+
         $match = '#(?:{|%7B)(modify_profile|readonline(?:\|[^}]+)?)(?:}|%7D)(.*)(?:{|%7B)/(readonline|modify_profile)(?:}|%7D)#Uis';
         $results = [];
         $found = preg_match_all($match, $email->body, $results);
 
-        if (!$found) return;
+        if (!$found && empty($tags)) {
+            return;
+        };
 
-        $tags = [];
         foreach ($results[0] as $i => $oneTag) {
             if (isset($tags[$oneTag])) continue;
 
@@ -141,15 +164,44 @@ trait OnlineInsertion
                 $link = acym_frontendLink($link);
             }
 
-
-            // If there is nothing in $results[1] that means it's already a link
             if (empty($results[2][$i])) {
                 $tags[$oneTag] = $link;
             } else {
                 $tags[$oneTag] = '<a style="text-decoration:none;" href="'.$link.'" target="_blank"><span class="acym_online acym_link">'.$results[2][$i].'</span></a>';
             }
         }
-
         $this->pluginHelper->replaceTags($email, $tags);
+    }
+
+    private function _replaceInformationTags(&$email): array
+    {
+        $match = '#\{info:([a-z_]+)\}(.*?)\{\/info\}#is';
+        $extractedTags = [];
+        $found = preg_match_all($match, $email->body, $extractedTags);
+        $tags = [];
+
+        if (!$found) {
+            return $tags;
+        }
+
+        foreach ($extractedTags[0] as $i => $fullMatch) {
+            $content = $extractedTags[2][$i];
+            $fieldValue = '';
+
+            if (acym_isValidEmail($content)) {
+                $fieldValue = '<a style="text-decoration:none;" href="mailto:'.$content.'"><span class="acym_online acym_link">'.$content.'</span></a>';
+            } elseif (acym_isValidUrl($content)) {
+                if (acym_isImageUrl($content)) {
+                    $fieldValue = '<img src="'.$content.'" alt="Image" style="display: inline-block; max-width: 25px; max-height: 25px; vertical-align: middle;" />';
+                } else {
+                    $fieldValue = '<a style="text-decoration:none;" href="'.$content.'" target="_blank"><span class="acym_online acym_link">'.$content.'</span></a>';
+                }
+            } else {
+                $fieldValue = $content;
+            }
+            $tags[$fullMatch] = $fieldValue;
+        }
+
+        return $tags;
     }
 }

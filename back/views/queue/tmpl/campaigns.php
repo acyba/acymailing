@@ -84,12 +84,19 @@
                                         foreach ($row->lists as $oneList) {
                                             if ($i == 6) {
                                                 echo acym_tooltip(
-                                                    '<i data-campaign="'.$row->id.'" class="acym_subscription acymicon-add"></i>',
-                                                    acym_translation('ACYM_SHOW_ALL_LISTS')
+                                                    [
+                                                        'hoveredText' => '<i data-campaign="'.$row->id.'" class="acym_subscription acymicon-add"></i>',
+                                                        'textShownInTooltip' => acym_translation('ACYM_SHOW_ALL_LISTS'),
+                                                    ]
                                                 );
                                                 $class .= ' is-hidden';
                                             }
-                                            echo acym_tooltip('<i class="'.$class.'" style="color:'.$oneList->color.'"></i>', $oneList->name);
+                                            echo acym_tooltip(
+                                                [
+                                                    'hoveredText' => '<i class="'.$class.'" style="color:'.$oneList->color.'"></i>',
+                                                    'textShownInTooltip' => $oneList->name,
+                                                ]
+                                            );
                                             $i++;
                                         }
                                     }
@@ -172,12 +179,20 @@
                                     // Play/pause button
                                     if (!empty($row->nbqueued) && $row->iscampaign) {
                                         $class = $row->active == 0 ? 'acymicon-play_circle_filled' : 'acymicon-pause-circle';
-                                        echo '<i campaignid="'.$row->campaign.'" class="'.$class.' acym__queue__play_pause__button"></i>';
+                                        echo acym_tooltip([
+                                            'hoveredText' => '<i campaignid="'.$row->campaign.'" class="'.$class.' acym__queue__play_pause__button"></i>',
+                                            'textShownInTooltip' => acym_translation($row->active == 0 ? 'ACYM_UNPAUSE_CAMPAIGN' : 'ACYM_PAUSE_CAMPAIGN'),
+                                        ]);
                                         $cancelText = 'ACYM_CANCEL_CAMPAIGN';
                                     }
 
                                     // Delete button
-                                    echo acym_tooltip('<i class="acymicon-times-circle acym__queue__cancel__button" mailid="'.$row->id.'"></i>', acym_translation($cancelText));
+                                    echo acym_tooltip(
+                                        [
+                                            'hoveredText' => '<i class="acymicon-times-circle acym__queue__cancel__button" mailid="'.$row->id.'"></i>',
+                                            'textShownInTooltip' => acym_translation($cancelText),
+                                        ]
+                                    );
                                     echo '</div>';
                                     ?>
 								</div>

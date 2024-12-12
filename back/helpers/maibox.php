@@ -3,7 +3,6 @@
 namespace AcyMailing\Helpers;
 
 use AcyMailing\Classes\UserClass;
-use Couchbase\User;
 
 class MailboxHelper extends BounceHelper
 {
@@ -21,6 +20,8 @@ class MailboxHelper extends BounceHelper
             'secure_method' => $this->action->secure_method,
             'self_signed' => $this->action->self_signed,
             'timeout' => 10,
+            'bounce_token' => empty($this->action->bounce_token) ? '' : $this->action->bounce_token,
+            'imap_connection_method' => empty($this->action->imap_connection_method) ? 'classic' : $this->action->imap_connection_method,
         ];
 
         return $this->isConfigurationValid();
@@ -28,9 +29,11 @@ class MailboxHelper extends BounceHelper
 
     private function isConfigurationValid(): bool
     {
+        $keyShouldNotBeEmpty = $this->mailboxConfig['imap_connection_method'] === 'classic' ? 'password' : 'bounce_token';
+
         $error = false;
         foreach ($this->mailboxConfig as $key => $oneConfig) {
-            if (empty($oneConfig) && !in_array($key, ['self_signed', 'secure_method'])) {
+            if (empty($oneConfig) && $key === $keyShouldNotBeEmpty) {
                 $error = true;
                 break;
             }

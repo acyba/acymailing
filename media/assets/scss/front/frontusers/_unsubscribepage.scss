@@ -1,56 +1,177 @@
 #acym_wrapper {
-    #acym__unsubscribe__label__language {
-        margin-top: 1rem;
+    .acym__unsubscribe__title {
+        color: $black;
+        font-weight: normal;
     }
 
-    #acym__unusbscribe__language__select {
-        margin-top: 1rem;
-    }
+    .acym__unsubscribe__page {
+        display: flex;
+        justify-content: space-between;
+        background-color: $grey-light;
+        height: 100vh;
 
-    &.frontusers_unsubscribepage {
-        max-width: 400px;
-        margin-left: auto;
-        margin-right: auto;
+        .button-secondary:hover {
+            color: $white !important;
+        }
 
-        fieldset {
+        .acym__unsubscribe__image__container {
+            width: 45%;
+            background-color: $grey-light;
+            align-content: center;
+            justify-items: center;
+        }
+
+        .acym__unsubscribe__form__container {
+            width: 55%;
             background-color: $white;
+            align-content: center;
 
-            legend {
-                background-color: $white;
-                margin-left: 1rem;
+            &.no-image {
+                width: 100%;
+            }
+
+            .acym__unsubscribe__container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .acy__unsubscribe__form__header {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                .acym__unsubscribe__form__header__image {
+                    max-width: 80%;
+
+                    img {
+                        max-height: 200px;
+                    }
+                }
+
+                #acym__unsubscribe__language__select {
+                    max-width: 300px;
+                }
+            }
+
+            .acym__unsubscribe__lists__container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                max-width: 700px;
+
+                .acym__unsubscribe__lists__listing {
+                    width: 70%;
+
+                    ul {
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+
+                    .acym__unsubscribe__list__item {
+                        display: flex;
+                        justify-content: space-between;
+                        width: 100%;
+                        flex-wrap: wrap;
+
+
+                        .acym__unsubscribe__list__display__name {
+                            font-size: 1rem;
+                            font-weight: $font-weight-bold;
+                            word-wrap: break-word;
+                        }
+
+                        .acym__unsubscribe__list__description {
+                            font-size: 0.85rem;
+                            color: $font-primary-light;
+                            word-wrap: break-word;
+                            white-space: normal;
+                        }
+
+                        .acym__unsubscribe__list__switch {
+                            display: flex;
+                            align-items: flex-start;
+                            width: 10%;
+                        }
+                    }
+                }
+
+
+                .acym__unsubscribe__reason__section {
+                    width: 70%;
+                    font-weight: $font-weight-bold;
+                    font-size: 1rem;
+
+                    .acym__unsubscribe__reason__label {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        width: 100%;
+                        margin-bottom: 8px;
+
+                        .acym__optional {
+                            font-size: 0.875rem;
+                            color: $optional-label;
+                        }
+                    }
+
+                    #unsubscribe_selector_reason {
+                        border: 2px solid $grey-light;
+                        box-shadow: none;
+                        line-height: 1.15;
+                    }
+
+                    .acym__unsub__reason__selected {
+                        border: 2px solid;
+                        box-shadow: none;
+                    }
+
+                    .acym__unsub__reason__selected {
+                        border: 2px solid $grey-light;
+                        box-shadow: none;
+                    }
+                }
+
+                .acym__unsubscribe__actions {
+                    display: flex;
+                    justify-content: flex-start;
+                    width: 70%;
+
+                    button {
+                        flex: 1;
+                        max-width: 200px;
+                        margin-right: 1rem;
+                        text-align: center;
+                    }
+                }
+            }
+
+            .acym__powered__by__image {
+                max-width: 150px;
             }
         }
-    }
 
-    .acym_front_page__unsubscribe {
-        .acym_front_page__unsubscribe__title {
-            font-size: 1.25rem;
-            font-weight: 500;
-        }
+        @media screen and (max-width: 639px) {
+            .acym__unsubscribe__form__container {
+                width: 100%;
+            }
 
-        .acym_front_page__unsubscribe__lists__container {
-            border: 2px solid #cacaca;
-            padding: 2rem;
-        }
+            .acym__unsubscribe__actions {
+                flex-direction: column;
+                align-items: center;
 
-        input[type="checkbox"] {
-            vertical-align: bottom;
-            margin: 0 .3rem;
-        }
+                button {
+                    width: 100%;
+                    max-width: none;
+                    margin-right: 0;
+                    margin-bottom: 0.5rem;
+                }
 
-        label {
-            margin: 0;
-        }
-
-        .acym_front_page__unsubscribe__lists__actions {
-            text-align: center;
-        }
-
-        ul {
-            list-style: none;
-
-            li {
-                padding: .3rem 0;
+                button:last-child {
+                    margin-bottom: 0;
+                }
             }
         }
     }

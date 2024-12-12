@@ -1,8 +1,8 @@
 const acym_editorWysidImage = {
     setDoubleClickImage: function () {
         jQuery('.acym__wysid__tinymce--image img').off('dblclick').on('dblclick', function () {
-            if (jQuery(this).hasClass('acym__wysid__media__giphy')) {
-                acym_editorWysidNewContent.addGiphyWYSID(jQuery(this).closest('.acym__wysid__column__element'));
+            if (jQuery(this).hasClass('acym__wysid__media__gif')) {
+                acym_editorWysidNewContent.addGifWYSID(jQuery(this).closest('.acym__wysid__column__element'));
             } else if (jQuery(this).hasClass('acym__wysid__media__unsplash')) {
                 acym_editorWysidNewContent.addUnsplashWYSID(jQuery(this).closest('.acym__wysid__column__element'));
             } else {
@@ -11,7 +11,7 @@ const acym_editorWysidImage = {
         });
     },
     doubleClickImage: function ($element) {
-        acym_editorWysidImage.openMediaManager($element.closest('.acym__wysid__column__element'));
+        acym_editorWysidImage.addMediaWPWYSID($element.closest('.acym__wysid__column__element'));
     },
     addBackgroundImgToRows: function ($element) {
         let $deleteImage = jQuery('#acym__wysid__context__block__background-image__remove');
@@ -23,7 +23,7 @@ const acym_editorWysidImage = {
         }
 
         jQuery('#acym__wysid__context__block__background-image').off('click').on('click', function () {
-            acym_editorWysidImage.openMediaManager($element, true);
+            acym_editorWysidImage.addMediaWPWYSID($element, true);
         });
 
         $deleteImage.off('click').on('click', function () {
@@ -41,7 +41,7 @@ const acym_editorWysidImage = {
             }, 200);
         }
     },
-    openMediaManager: function (ui, rows) {
+    addMediaWPWYSID: function (ui, rows) {
         if (ACYM_CMS === 'wordpress') {
             acym_editorWysidWordpress.addMediaWPWYSID(ui, rows);
         } else {

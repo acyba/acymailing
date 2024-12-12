@@ -58,7 +58,7 @@ const acym_editorWysidNewContent = {
         content += '<div style="text-align: center" data-mce-style="text-align: center">';
         content += '<img class="acym__wysid__media__inserted" src="'
                    + ACYM_MEDIA_URL
-                   + 'images/default_image.png" title="image" hspace="0" alt="" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;"/>';
+                   + 'images/editor/image_insertion/default_image.png" title="image" hspace="0" alt="" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;"/>';
         content += '</div>';
         content += '</div>';
         content += '</td>';
@@ -84,9 +84,9 @@ const acym_editorWysidNewContent = {
         acym_editorWysidNewContent.setModalVideoWYSID();
         jQuery('#acym__wysid__modal').css('display', 'inherit');
     },
-    addGiphyWYSID: function (ui) {
+    addGifWYSID: function (ui) {
         acym_helperEditorWysid.$focusElement = jQuery(ui);
-        acym_editorWysidNewContent.setModalGiphyWYSID();
+        acym_editorWysidNewContent.setModalGifWYSID();
         jQuery('#acym__wysid__modal').css('display', 'inherit');
     },
     addUnsplashWYSID: function (ui) {
@@ -103,13 +103,13 @@ const acym_editorWysidNewContent = {
         content += '<a class="acym__wysid__column__element__follow__facebook" href="" target="_blank">';
         content += '<img hspace="0" style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="'
                    + acym_helperEditorWysid.socialMedia.facebook.src
-                   + '" width="40" alt="facebook">';
+                   + '" width="40" alt="facebook icon">';
         content += '</a>';
 
-        content += '<a class="acym__wysid__column__element__follow__twitter" href="" target="_blank">';
+        content += '<a class="acym__wysid__column__element__follow__x" href="" target="_blank">';
         content += '<img hspace="0" style="display: inline-block; max-width: 100%; height: auto;  box-sizing: border-box; width: 40px; padding: 3px;" src="'
-                   + acym_helperEditorWysid.socialMedia.twitter.src
-                   + '"  width="40" alt="twitter">';
+                   + acym_helperEditorWysid.socialMedia.x.src
+                   + '"  width="40" alt="x social media icon">';
         content += '</a>';
 
         content += '</p>';
@@ -136,35 +136,39 @@ const acym_editorWysidNewContent = {
         modal.addClass('acym__wysid__modal__tiny');
         modal.css('display', 'inherit');
     },
-    setModalGiphyWYSID: function () {
-        let content = '<div class="grid-container"><div class="cell grid-x align-center grid-padding-x margin-bottom-1">';
-        content += '<img hspace="0" class="cell" id="acym__wysid__modal__giphy--image" src="' + ACYM_MEDIA_URL + 'images/giphy.png" alt="Giphy logo">';
-        content += '<div class="cell grid-x grid-margin-x"><input class="cell auto" type="text" id="acym__wysid__modal__giphy--search" placeholder="'
-                   + ACYM_JS_TXT.ACYM_SEARCH_FOR_GIFS
-                   + '">';
-        content += '<button type="button" class="cell shrink button button-secondary" id="acym__wysid__modal__giphy--search--button">'
-                   + ACYM_JS_TXT.ACYM_SEARCH_GIFS
-                   + '</button></div>';
-        content += '</div></div>';
+    setModalGifWYSID: function () {
+        let content = `<div class="grid-container">
+            <div class="cell grid-x align-center grid-padding-x margin-bottom-1">
+                <img hspace="0" class="cell" id="acym__wysid__modal__gif--image" src="${ACYM_MEDIA_URL}images/editor/image_insertion/tenor.svg" alt="Tenor logo">
+                <div class="cell grid-x grid-margin-x">
+                    <input class="cell auto gif_fields" type="text" id="acym__wysid__modal__gif--search" placeholder="${ACYM_JS_TXT.ACYM_SEARCH_FOR_GIFS}">
+                    <button type="button" class="cell shrink button modal-button button-secondary gif_fields" id="acym__wysid__modal__gif--search--button">
+                        ${ACYM_JS_TXT.ACYM_SEARCH_GIFS}
+                    </button>
+                </div>
+            </div>
+        </div>`;
         jQuery('#acym__wysid__modal__ui__fields').html(content);
 
-        content = '<div class="grid-container acym__wysid__modal__giphy__results__container">';
-        content += '<h3 class="cell text-center acym__title__primary__color" id="acym__wysid__modal__giphy--error_message" style="display: none"></h3>';
-        content += '<div class="cell grid-x grid-padding-x grid-margin-x margin-y" id="acym__wysid__modal__giphy--results"></div></div>';
+        content = `<div class="grid-container acym__wysid__modal__gif__results__container">
+            <h3 class="cell text-center acym__title__primary__color" id="acym__wysid__modal__gif--error_message" style="display: none"></h3>
+            <div class="cell grid-x grid-padding-x grid-margin-x margin-y" id="acym__wysid__modal__gif--results"></div>
+        </div>`;
         jQuery('#acym__wysid__modal__ui__display').html(content);
 
-        content = '<div class="grid-container"><div class="cell grid-x align-right grid-padding-x">';
-        content += '<button class="button" type="button" id="acym__wysid__modal__giphy--insert" disabled="disabled">' + ACYM_JS_TXT.ACYM_INSERT + '</button>';
-        content += '</div></div>';
+        content = `<div class="grid-container">
+            <div class="cell grid-x align-right grid-padding-x">
+                <button class="button modal-button" type="button" id="acym__wysid__modal__gif--insert" disabled="disabled">${ACYM_JS_TXT.ACYM_INSERT}</button>
+            </div>
+        </div>`;
         jQuery('#acym__wysid__modal__ui__search').html(content);
 
-        acym_editorWysidGiphy.makeNewResearch('');
-        acym_editorWysidGiphy.insertGif();
+        acym_editorWysidGif.init();
     },
     setModalUnsplashWYSID: function () {
         let content = `<div class="grid-container">
             <div class="cell grid-x align-center grid-padding-x margin-bottom-1">
-                <img class="cell" id="acym__wysid__modal__unsplash--image" src="${ACYM_MEDIA_URL}images/unsplash.svg" alt="Unsplash logo">
+                <img class="cell" id="acym__wysid__modal__unsplash--image" src="${ACYM_MEDIA_URL}images/editor/image_insertion/unsplash.svg" alt="Unsplash logo">
                 <div class="cell grid-x grid-margin-x margin-y">
                     <input class="cell auto unsplash_fields" type="text" id="acym__wysid__modal__unsplash--search" placeholder="${ACYM_JS_TXT.ACYM_SEARCH_FOR_IMAGES}">
                     <div class="cell medium-3 large-2">
@@ -183,7 +187,7 @@ const acym_editorWysidNewContent = {
                             <option value="squarish">${ACYM_JS_TXT.ACYM_SQUARISH}</option>
                         </select>
                     </div>
-                    <button type="button" class="cell shrink button button-secondary unsplash_fields" id="acym__wysid__modal__unsplash--search--button">${ACYM_JS_TXT.ACYM_SEARCH_IMAGES}</button
+                    <button type="button" class="cell shrink button modal-button button-secondary unsplash_fields" id="acym__wysid__modal__unsplash--search--button">${ACYM_JS_TXT.ACYM_SEARCH_IMAGES}</button
                 </div>
             </div>
         </div>`;
@@ -204,7 +208,7 @@ const acym_editorWysidNewContent = {
 
         content = `<div class="grid-container">
             <div class="cell grid-x align-right grid-padding-x">
-                <button class="button" type="button" id="acym__wysid__modal__unsplash--insert" disabled="disabled">${ACYM_JS_TXT.ACYM_INSERT}</button>
+                <button class="button modal-button" type="button" id="acym__wysid__modal__unsplash--insert" disabled="disabled">${ACYM_JS_TXT.ACYM_INSERT}</button>
             </div>
         </div>`;
         jQuery('#acym__wysid__modal__ui__search').html(content);
@@ -218,15 +222,15 @@ const acym_editorWysidNewContent = {
         content += '<div class="auto cell"></div>';
 
         content += '<div class="small-3 medium-3 cell" style="display: inline-flex">';
-        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + ACYM_MEDIA_URL + 'images/vimeo.png">';
+        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + ACYM_MEDIA_URL + 'images/editor/video_insertion/vimeo.png">';
         content += '</div>';
 
         content += '<div class="small-3 medium-3 cell" style="display: inline-flex">';
-        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + ACYM_MEDIA_URL + 'images/youtube.png">';
+        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + ACYM_MEDIA_URL + 'images/editor/video_insertion/youtube.png">';
         content += '</div>';
 
         content += '<div class="small-4 medium-3 cell" style="display: inline-flex; padding: 15px 0 0 30px;">';
-        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + ACYM_MEDIA_URL + 'images/dailymotion.png">';
+        content += '<img alt="" style="display: block; margin: auto; max-height: 50px" src="' + ACYM_MEDIA_URL + 'images/editor/video_insertion/dailymotion.png">';
         content += '</div>';
 
         content += '<div class="auto cell"></div>';
@@ -235,7 +239,7 @@ const acym_editorWysidNewContent = {
         content += '</div>';
 
         content += '<div class="small-4 medium-2 cell">';
-        content += '<button type="button" id="acym__wysid__modal__video__load" class="button primary expanded ">' + ACYM_JS_TXT.ACYM_LOAD + '</button>';
+        content += '<button type="button" id="acym__wysid__modal__video__load" class="button modal-button primary expanded ">' + ACYM_JS_TXT.ACYM_LOAD + '</button>';
         content += '</div>';
 
         content += '</div>';
@@ -259,7 +263,7 @@ const acym_editorWysidNewContent = {
         content += '<div class="small-8 medium-10 cell"></div>';
 
         content += '<div class="small-4 medium-2 cell">';
-        content += '<button type="button" id="acym__wysid__modal__video__insert" class="button primary expanded disabled">'
+        content += '<button type="button" id="acym__wysid__modal__video__insert" class="button modal-button primary expanded disabled">'
                    + ACYM_JS_TXT.ACYM_INSERT
                    + '</button>';
         content += '</div>';
@@ -343,8 +347,8 @@ const acym_editorWysidNewContent = {
                     </div>
                 </div>
                 <div class="cell align-center grid-x">
-                    <button class="button button-secondary" type="button" id="custom_zone_cancel">${ACYM_JS_TXT.ACYM_CANCEL}</button>
-                    <button class="button margin-left-1" id="custom_zone_save" type="button" disabled="disabled">
+                    <button class="button modal-button button-secondary" type="button" id="custom_zone_cancel">${ACYM_JS_TXT.ACYM_CANCEL}</button>
+                    <button class="button modal-button margin-left-1" id="custom_zone_save" type="button" disabled="disabled">
                         ${ACYM_JS_TXT.ACYM_SAVE}
                         <i id="custom_zone_save_spinner" class="acymicon-circle-o-notch acymicon-spin"></i>
                     </button>

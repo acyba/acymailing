@@ -24,7 +24,7 @@ class AutomationController extends acymController
     public function __construct()
     {
         parent::__construct();
-        $this->breadcrumb[acym_translation('ACYM_AUTOMATION')] = acym_completeLink('automation');
+        $this->breadcrumb[acym_translation('ACYM_AUTOMATIONS')] = acym_completeLink('automation');
         $this->loadScripts = [
             'info' => ['datepicker'],
             'condition' => ['datepicker'],

@@ -17,31 +17,20 @@ CREATE TABLE IF NOT EXISTS `#__acym_user` (
 	`last_open_date` DATETIME NULL,
 	`last_click_date` DATETIME NULL,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX `email_UNIQUE`(`email` ASC)
+	UNIQUE INDEX `email_UNIQUE` (`email`(191) ASC),
+	INDEX `#__index_acym_user1`(`cms_id`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_configuration`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_configuration` (
-	`name` VARCHAR(255) NOT NULL,
+	`name` VARCHAR(190) NOT NULL,
 	`value` TEXT NOT NULL,
 	PRIMARY KEY (`name`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_mail`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_mail` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -70,8 +59,10 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail` (
 	`language` VARCHAR(20) NOT NULL DEFAULT '',
 	`parent_id` INT NULL,
 	`translation` TEXT NULL,
+	`bounce_email` VARCHAR(100) NULL,
 	PRIMARY KEY (`id`),
 	INDEX `#__index_acym_mail1`(`parent_id` ASC),
+	INDEX `#__index_acym_mail2` (`type`),
 	CONSTRAINT `#__fk_acym_mail1`
 		FOREIGN KEY (`parent_id`)
 			REFERENCES `#__acym_mail`(`id`)
@@ -79,14 +70,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_list`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_list` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -119,14 +104,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_list` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_campaign`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_campaign` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`sending_date` DATETIME NULL,
@@ -149,14 +128,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_campaign` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_user_has_list`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_user_has_list` (
 	`user_id` INT NOT NULL,
 	`list_id` INT NOT NULL,
@@ -180,14 +153,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_user_has_list` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_automation`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_automation` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -199,13 +166,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_automation` (
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
--- -----------------------------------------------------
--- Table `#__acym_step`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_step` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -221,14 +183,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_step` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_tag`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_tag` (
 	`name` VARCHAR(50) NOT NULL,
 	`type` VARCHAR(20) NOT NULL,
@@ -236,9 +192,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_tag` (
 	PRIMARY KEY (`name`, `type`, `id_element`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
 CREATE TABLE IF NOT EXISTS `#__acym_mail_has_list` (
 	`mail_id` INT NOT NULL,
@@ -258,14 +212,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail_has_list` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_queue`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_queue` (
 	`mail_id` INT NOT NULL,
 	`user_id` INT NOT NULL,
@@ -287,14 +235,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_queue` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_mail_stat`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_mail_stat` (
 	`mail_id` INT NOT NULL,
 	`total_subscribers` INT NOT NULL DEFAULT 0,
@@ -318,14 +260,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail_stat` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_user_stat`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_user_stat` (
 	`user_id` INT NOT NULL,
 	`mail_id` INT NOT NULL,
@@ -349,14 +285,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_user_stat` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_url`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_url` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` LONGTEXT NULL,
@@ -364,14 +294,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_url` (
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_url_click`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_url_click` (
 	`mail_id` INT NOT NULL,
 	`url_id` INT NOT NULL,
@@ -392,14 +316,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_url_click` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_field`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_field` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -420,14 +338,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_field` (
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_user_has_field`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_user_has_field` (
 	`user_id` INT NOT NULL,
 	`field_id` INT NOT NULL,
@@ -447,14 +359,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_user_has_field` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_rule`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_rule` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(250) NOT NULL,
@@ -470,14 +376,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_rule` (
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_history`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_history` (
 	`user_id` INT NOT NULL,
 	`date` INT NOT NULL,
@@ -490,14 +390,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_history` (
 	PRIMARY KEY (`user_id`, `date`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_condition`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_condition` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`step_id` INT NOT NULL,
@@ -510,14 +404,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_condition` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_action`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_action` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`condition_id` INT NOT NULL,
@@ -532,14 +420,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_action` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
-
--- -----------------------------------------------------
--- Table `#__acym_plugin`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_plugin` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`title` VARCHAR(100) NOT NULL,
@@ -556,13 +438,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_plugin` (
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
--- -----------------------------------------------------
--- Table `#__acym_form`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_form` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -575,13 +452,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_form` (
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
--- -----------------------------------------------------
--- Table `#__acym_segment`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_segment` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -591,13 +463,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_segment` (
 	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
--- -----------------------------------------------------
--- Table `#__acym_segment`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_followup` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -609,6 +476,9 @@ CREATE TABLE IF NOT EXISTS `#__acym_followup` (
 	`send_once` TINYINT(1) NOT NULL DEFAULT 1,
 	`list_id` INT NULL,
 	`last_trigger` INT NULL,
+	`loop` TINYINT(1) NOT NULL DEFAULT 0,
+	`loop_delay` INT NULL,
+	`loop_mail_skip` VARCHAR(255) NULL,
 	PRIMARY KEY (`id`),
 	INDEX `#__index_acym_followup_has_list`(`list_id` ASC),
 	CONSTRAINT `#__fk_acym_followup_has_list`
@@ -618,9 +488,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_followup` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
 CREATE TABLE IF NOT EXISTS `#__acym_followup_has_mail` (
 	`mail_id` INT NOT NULL,
@@ -642,13 +510,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_followup_has_mail` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
--- -----------------------------------------------------
--- Table `#__acym_mail_override`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_mail_override` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`mail_id` INT NOT NULL,
@@ -665,13 +528,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail_override` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
--- -----------------------------------------------------
--- Table `#__acym_mail_override`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_custom_zone` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -680,13 +538,8 @@ CREATE TABLE IF NOT EXISTS `#__acym_custom_zone` (
 	PRIMARY KEY(`id`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
--- -----------------------------------------------------
--- Table `#__acym_mailbox_action`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_mailbox_action` (
 	`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` varchar(255) DEFAULT NULL,
@@ -707,17 +560,11 @@ CREATE TABLE IF NOT EXISTS `#__acym_mailbox_action` (
 	`senderfrom` tinyint(4) NOT NULL DEFAULT 0,
 	`senderto` tinyint(4) NOT NULL DEFAULT 0,
 	`active` tinyint(4) NOT NULL DEFAULT 0,
-	PRIMARY KEY (`id`),
-	INDEX `#__index_acym_mailbox_action1`(`name` ASC)
+	PRIMARY KEY (`id`)
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;
 
--- -----------------------------------------------------
--- Table `#__acym_mail_archive`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__acym_mail_archive` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`mail_id` INT NOT NULL,
@@ -735,6 +582,4 @@ CREATE TABLE IF NOT EXISTS `#__acym_mail_archive` (
 			ON UPDATE NO ACTION
 )
 	ENGINE = InnoDB
-	/*!40100
-	DEFAULT CHARACTER SET utf8
-	COLLATE utf8_general_ci*/;
+	/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci*/;

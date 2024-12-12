@@ -91,16 +91,19 @@
                         <?php echo acym_translation('ACYM_NAME'); ?>
 					</div>
 					<div class="large-1 medium-1 small-1 cell acym__listing__header__title text-center">
-                        <?php echo acym_translation('ACYM_TOTAL_CLICK'); ?>
-					</div>
-					<div class="large-1 medium-1 small-1 cell acym__listing__header__title text-center">
                         <?php echo acym_translation('ACYM_OPENED'); ?>
 					</div>
 					<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__header__title text-center">
                         <?php echo acym_translation('ACYM_OPEN_DATE'); ?>
 					</div>
+					<div class="large-1 medium-1 small-1 cell acym__listing__header__title text-center">
+                        <?php echo acym_translation('ACYM_TOTAL_CLICK'); ?>
+					</div>
 					<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__header__title text-center">
-                        <?php echo acym_translation('ACYM_BOUNCES'); ?>
+                        <?php echo acym_translation('ACYM_UNSUBSCRIBED'); ?>
+					</div>
+					<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__header__title text-center">
+                        <?php echo acym_translation('ACYM_BOUNCED'); ?>
 					</div>
                     <?php if (acym_isTrackingSalesActive()) { ?>
 						<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__header__title text-center">
@@ -119,8 +122,10 @@
 						<div class="xxlarge-1 small-2 cell acym__listing__detailed__stats__content">
                             <?php
                             echo acym_tooltip(
-                                '<p>'.acym_date(acym_getTime($detailed_stat->send_date), 'd/m/Y').'</p>',
-                                acym_date(acym_getTime($detailed_stat->send_date), acym_getDateTimeFormat())
+                                [
+                                    'hoveredText' => '<p>'.acym_date(acym_getTime($detailed_stat->send_date), acym_translation('ACYM_DATE_FORMAT_LC5')).'</p>',
+                                    'textShownInTooltip' => acym_date(acym_getTime($detailed_stat->send_date), acym_getDateTimeFormat()),
+                                ]
                             );
                             ?>
 						</div>
@@ -137,7 +142,12 @@
                             } else {
                                 $name = $detailed_stat->name;
                             }
-                            echo acym_tooltip($name, acym_translation('ACYM_EMAIL_SUBJECT').' : '.$detailed_stat->subject);
+                            echo acym_tooltip(
+                                [
+                                    'hoveredText' => $name,
+                                    'textShownInTooltip' => acym_translation('ACYM_EMAIL_SUBJECT').' : '.$detailed_stat->subject,
+                                ]
+                            );
 
                             ?>
 						</div>
@@ -158,25 +168,37 @@
                             <?php } ?>
 						</div>
 						<div class="large-1 medium-1 small-1 cell acym__listing__detailed__stats__content text-center">
-							<p class="hide-for-medium-only hide-for-small-only"><?php echo empty($detailed_stat->total_click) ? 0 : $detailed_stat->total_click; ?></p>
-						</div>
-						<div class="large-1 medium-1 small-1 cell acym__listing__detailed__stats__content text-center">
 							<p class="hide-for-medium-only hide-for-small-only"><?php echo $detailed_stat->open; ?></p>
 						</div>
 						<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__detailed__stats__content text-center">
                             <?php
                             if (!empty($detailed_stat->open_date)) {
                                 echo acym_tooltip(
-                                    '<p>'.acym_date(acym_getTime($detailed_stat->open_date), 'd/m/Y').'</p>',
-                                    acym_date(acym_getTime($detailed_stat->open_date), acym_getDateTimeFormat())
+                                    [
+                                        'hoveredText' => '<p>'.acym_date(acym_getTime($detailed_stat->open_date), acym_translation('ACYM_DATE_FORMAT_LC5')).'</p>',
+                                        'textShownInTooltip' => acym_date(acym_getTime($detailed_stat->open_date), acym_getDateTimeFormat()),
+                                    ]
                                 );
                             }
                             ?>
 						</div>
+						<div class="large-1 medium-1 small-1 cell acym__listing__detailed__stats__content text-center">
+							<p class="hide-for-medium-only hide-for-small-only"><?php echo empty($detailed_stat->total_click) ? 0 : $detailed_stat->total_click; ?></p>
+						</div>
+						<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__detailed__stats__content text-center">
+                            <?php echo $detailed_stat->unsubscribe; ?>
+						</div>
 						<div class="large-1 hide-for-small-only hide-for-medium-only cell acym__listing__detailed__stats__content text-center">
                             <?php
                             //echo $detailed_stat->bounce
-                            echo empty($detailed_stat->bounce) ? $detailed_stat->bounce : acym_tooltip($detailed_stat->bounce, $detailed_stat->bounce_rule);
+                            echo empty($detailed_stat->bounce)
+                                ? $detailed_stat->bounce
+                                : acym_tooltip(
+                                    [
+                                        'hoveredText' => $detailed_stat->bounce,
+                                        'textShownInTooltip' => $detailed_stat->bounce_rule,
+                                    ]
+                                );
                             ?>
 						</div>
                         <?php if (acym_isTrackingSalesActive()) { ?>
@@ -195,8 +217,10 @@
                             $targetSuccess = '<i class="acymicon-check acym__listing__detailed_stats_sent__success" ></i>';
                             $targetFail = '<i class="acymicon-times-circle acym__listing__detailed_stats_sent__fail" ></i>';
                             echo acym_tooltip(
-                                empty($detailed_stat->fail) ? $targetSuccess : $targetFail,
-                                acym_translation('ACYM_SENT').' : '.$detailed_stat->sent.' '.acym_translation('ACYM_FAIL').' : '.$detailed_stat->fail
+                                [
+                                    'hoveredText' => empty($detailed_stat->fail) ? $targetSuccess : $targetFail,
+                                    'textShownInTooltip' => acym_translation('ACYM_SENT').' : '.$detailed_stat->sent.' '.acym_translation('ACYM_FAIL').' : '.$detailed_stat->fail,
+                                ]
                             );
                             ?>
 						</div>

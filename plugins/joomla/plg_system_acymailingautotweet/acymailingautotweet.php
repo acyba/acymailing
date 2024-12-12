@@ -38,7 +38,7 @@ class plgSystemAcymailingAutotweet extends PlgAutotweetBase
         $mailClass = new MailClass();
         $mail = $mailClass->getOneById($mailId);
         // Only register campaigns
-        if (empty($mail) || $mail->type !== $mailClass::TYPE_STANDARD) return;
+        if (empty($mail) || $mail->type !== MailClass::TYPE_STANDARD) return;
 
         $date = new DateTime($mailStat->send_date);
         if ($date->format('Y-m-d') === '1970-01-01') {
@@ -53,7 +53,7 @@ class plgSystemAcymailingAutotweet extends PlgAutotweetBase
         $this->postStatusMessage($mailId, $date->format('Y-m-d'), $mail->subject, 0, $archiveLink, '', $jsonObject);
     }
 
-    public function getData($mailId, $typeinfo = null)
+    public function getData(int $mailId, $typeinfo = null)
     {
         // typeinfo is not used (one message type only)
 
@@ -105,6 +105,6 @@ class plgSystemAcymailingAutotweet extends PlgAutotweetBase
 
     public function getExtendedData($id, $typeinfo, &$native_object)
     {
-        return $this->getData($id, $typeinfo);
+        return $this->getData(intval($id), $typeinfo);
     }
 }

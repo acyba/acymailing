@@ -13,6 +13,12 @@
         include acym_getView('users', 'importcmsusers', true);
         $data['tab']->endTab();
 
+        if (ACYM_CMS === 'joomla') {
+            $data['tab']->startTab(acym_translationSprintf('ACYM_IMPORT_CMS_USERS', strtolower(acym_translation('ACYM_CONTACT'))));
+            include acym_getView('users', 'importfromcontact', true);
+            $data['tab']->endTab();
+        }
+
         $data['tab']->startTab(acym_translation('ACYM_IMPORT_DATABASE'));
         include acym_getView('users', 'importfromdatabase', true);
         $data['tab']->endTab();

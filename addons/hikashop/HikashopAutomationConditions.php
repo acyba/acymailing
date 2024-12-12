@@ -168,7 +168,6 @@ trait HikashopAutomationConditions
         $ids = $this->getIdsSelectAjax();
 
         if (!empty($ids)) {
-            $value = '';
             $elements = acym_loadObjectList('SELECT `product_name` AS name, `product_id` AS id FROM #__hikashop_product WHERE `product_id` IN ("'.implode('","', $ids).'")');
 
             $value = [];
@@ -187,7 +186,11 @@ trait HikashopAutomationConditions
         $return = [];
         $search = acym_getVar('string', 'search', '');
         $elements = acym_loadObjectList(
-            'SELECT `product_id`, `product_name` FROM `#__hikashop_product` WHERE `product_name` LIKE '.acym_escapeDB('%'.$search.'%').' ORDER BY `product_name`'
+            'SELECT `product_id`, `product_name` 
+            FROM `#__hikashop_product` 
+            WHERE `product_name` LIKE '.acym_escapeDB('%'.$search.'%').' 
+                OR `product_code` LIKE '.acym_escapeDB('%'.$search.'%').' 
+            ORDER BY `product_name`'
         );
 
         foreach ($elements as $oneElement) {
@@ -202,7 +205,6 @@ trait HikashopAutomationConditions
     {
         $ids = $this->getIdsSelectAjax();
         if (!empty($ids)) {
-            $value = '';
             $elements = acym_loadObjectList('SELECT `vendor_name` AS name, `vendor_id` AS id FROM #__hikamarket_vendor WHERE `vendor_id` IN ("'.implode('","', $ids).'")');
 
             $value = [];

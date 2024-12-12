@@ -7,7 +7,8 @@
             'senderInformation[translation]',
             $data['currentCampaign']->translation,
             acym_translation('ACYM_LANGUAGE_SENDER_INFORMATION_DESC'),
-            $this->config->get('sender_info_translation', '')
+            $this->config->get('sender_info_translation', ''),
+            'campaign'
         );
     }
     ?>
@@ -102,6 +103,18 @@
 				   name="senderInformation[bcc]"
 				   placeholder="<?php echo acym_escape(acym_translation('ACYM_TEST_ADDRESS')); ?>"
 				   value="<?php echo acym_escape($data['currentCampaign']->bcc); ?>">
+		</div>
+		<div class="cell medium-1"></div>
+		<div class="cell medium-5 grid-x acym__campaign__sendsettings__bounce">
+			<label for="acym__campaign__sendsettings__bounce--input" class="cell acym__campaign__sendsettings__label-settings">
+                <?php echo acym_translation('ACYM_BOUNCE_EMAIL').' '.acym_info('ACYM_BOUNCE_ADDRESS_DESC'); ?>
+			</label>
+			<input type="text"
+				   class="cell"
+				   id="acym__campaign__sendsettings__bounce--input"
+				   name="senderInformation[bounce_email]"
+				   placeholder="<?php echo acym_escape($this->config->get('bounce_email', acym_translation('ACYM_TEST_ADDRESS'))); ?>"
+				   value="<?php echo acym_escape($data['currentCampaign']->bounce_email); ?>">
 		</div>
 	</div>
 </div>

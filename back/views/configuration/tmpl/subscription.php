@@ -149,7 +149,7 @@
 		<div class="cell margin-bottom-2">
 			<div class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_UNSUBSCRIBE_PAGE'); ?></div>
 			<div class="grid-x grid-margin-x margin-y">
-				<div class="cell grid-x margin-top-1 acym_vcenter">
+				<div class="cell grid-x margin-top-1">
                     <?php
                     echo acym_switch(
                         'config[unsubscribe_page]',
@@ -159,32 +159,157 @@
                         'xlarge-3 medium-5 small-9',
                         'auto',
                         '',
-                        'unsubpage_header'
+                        'unsubpage_settings'
                     );
                     ?>
 				</div>
-				<div class="cell grid-x margin-top-1" id="unsubpage_header">
-					<div class="cell grid-x">
+				<div class="cell grid-x margin-bottom-1" id="unsubpage_settings">
+					<div class="cell grid-x margin-bottom-1">
                         <?php
                         echo acym_switch(
                             'config[unsubscribe_campaign_list_only]',
                             $this->config->get('unsubscribe_campaign_list_only', 0),
                             acym_translation('ACYM_CAMPAIGN_LIST_ONLY'),
                             [],
-                            'xlarge-3 medium-5 small-9'
+                            'xlarge-3'
                         );
                         ?>
 					</div>
-					<div class="cell grid-x margin-top-1">
+					<div class="cell grid-x margin-bottom-1">
+						<label for="acym__configuration__subscription__unsub-title" class="cell xlarge-3"><?php echo acym_translation(
+                                'ACYM_UNSUBSCRIBE_PAGE_CHANGE'
+                            ); ?></label>
+						<input id="acym__configuration__subscription__unsub-title"
+							   class="cell xlarge-4 large-5 medium-6"
+							   type="text"
+							   name="config[unsubscribe_title]"
+							   value="<?php echo acym_escape($this->config->get('unsubscribe_title', '')); ?>">
+						<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
+					</div>
+					<div class="cell grid-x margin-bottom-1">
+						<label for="acym__config__settings__color-picker" class="cell xlarge-3"><?php echo acym_translation(
+                                'ACYM_UNSUBSCRIBE_PAGE_COLOR'
+                            ); ?></label>
+						<p class="cell margin-bottom-1 small-6" id="acym__config__settings__unsub-color">
+							<input type="text"
+								   name="config[unsubscribe_color]"
+								   id="acym__config__settings__color-picker"
+								   value="<?php echo acym_escape($this->config->get('unsubscribe_color', '#00a4ff')); ?>" />
+						</p>
+					</div>
+					<div class="cell grid-x margin-bottom-1">
+						<label for="acym__configuration__subscription__unsub-logo" class="cell xlarge-3"><?php echo acym_translation(
+                                'ACYM_UNSUBSCRIBE_PAGE_LOGO'
+                            ); ?></label>
+						<button type="button" class="cell shrink button button-secondary margin-bottom-0" id="acym__unsubscribe__logo">
+                            <?php echo acym_translation('ACYM_UPLOAD_IMAGE'); ?>
+						</button>
+						<span class="cell grid-x acym_vcenter shrink acym__unsub__logo__text margin-left-1">
+						    <?php if (!empty($this->config->get('unsubscribe_logo'))) { ?>
+                                <?php echo $this->config->get('unsubscribe_logo'); ?>
+								<i class="acymicon-trash-o acym__color__red acym__unsub__logo__remove margin-left-1"></i>
+                            <?php } ?>
+						</span>
+						<input type="hidden" id="acym__unsubscribe__logo_value" name="config[unsubscribe_logo]" value="<?php echo $this->config->get('unsubscribe_logo'); ?>">
+					</div>
+					<div class="cell grid-x margin-bottom-1">
                         <?php
                         echo acym_switch(
-                            'config[unsubpage_header]',
-                            $this->config->get('unsubpage_header', 0),
-                            acym_translation('ACYM_UNSUBSCRIBE_PAGE_HEADER'),
+                            'config[display_unsub_image]',
+                            $this->config->get('display_unsub_image', 1),
+                            acym_translation('ACYM_DISPLAY_UNSUBSCRIBE_IMAGE'),
                             [],
-                            'xlarge-3 medium-5 small-9'
+                            'xlarge-3 medium-5 small-9',
+                            'auto',
+                            '',
+                            'unsub_image'
                         );
                         ?>
+					</div>
+					<div class="cell grid-x margin-bottom-1" id="unsub_image">
+						<label for="acym__configuration__subscription__unsub-image" class="cell xlarge-3"><?php echo acym_translation(
+                                'ACYM_UNSUBSCRIBE_PAGE_IMAGE'
+                            ); ?></label>
+						<button type="button" class="cell shrink button button-secondary margin-bottom-0" id="acym__unsubscribe__image">
+                            <?php echo acym_translation('ACYM_UPLOAD_IMAGE'); ?>
+						</button>
+						<span class="cell shrink grid-x acym_vcenter acym__unsub__image__text margin-left-1">
+							<?php if (!empty($this->config->get('unsubscribe_image'))) { ?>
+                                <?php echo $this->config->get('unsubscribe_image'); ?>
+								<i class="acymicon-trash-o acym__color__red acym__unsub__image__remove margin-left-1"></i>
+                            <?php } ?>
+						</span>
+						<input type="hidden" id="acym__unsubscribe__image_value" name="config[unsubscribe_image]" value="<?php echo $this->config->get('unsubscribe_image'); ?>">
+					</div>
+					<div class="cell grid-x margin-bottom-1" id="acym__configuration__unsubscription__survey">
+                        <?php
+                        echo acym_switch(
+                            'config[unsubpage_survey]',
+                            $this->config->get('unsubpage_survey', 0),
+                            acym_translation('ACYM_UNSUBSCRIBE_PAGE_SURVEY'),
+                            [],
+                            'xlarge-3',
+                            'auto',
+                            '',
+                            'acym__configuration__unsubscription__survey-text'
+                        );
+                        ?>
+					</div>
+					<div class="cell grid-x margin-bottom-1" id="acym__configuration__unsubscription__survey-text">
+                        <?php
+                        if (acym_isMultilingual()) { ?>
+							<div class="cell grid-x">
+                                <?php
+                                if (!empty($data['translation_languages'])) {
+                                    echo acym_displayLanguageRadio(
+                                        $data['translation_languages'],
+                                        'config[unsub_survey_translation]',
+                                        $this->config->get('unsub_survey_translation', ''),
+                                        acym_translation('ACYM_CUSTOM_SURVEY_LANGUAGE'),
+                                        [],
+                                        'configuration_subscription'
+                                    );
+                                } ?>
+							</div>
+                            <?php
+                        } ?>
+						<div class="cell grid-x acym__customs__change margin-bottom-1" id="acym__customs__answer">
+							<label class="cell large-3 margin-top-1" for="unsubscribe_survey">
+                                <?php echo acym_translation('ACYM_CUSTOM_SURVEY').acym_info('ACYM_CUSTOM_SURVEY_DESC'); ?>
+							</label>
+							<div class="cell grid-x acym__listing">
+								<div class="acym__customs__answers__listing__sortable cell medium-6 grid-x">
+                                    <?php if (empty($data['surveyAnswers'])) { ?>
+										<div class="grid-x cell acym__customs__answers acym__content acym_noshadow grid-margin-x margin-y">
+											<input type="text"
+												   name="config[unsub_survey][]"
+												   class="cell medium-10 acym__customs__answer__answer"
+												   data-response="1"
+												   value="">
+										</div>
+                                    <?php } else {
+                                        $i = 0;
+                                        foreach ($data['surveyAnswers'] as $answer) { ?>
+											<div class="grid-x cell acym__customs__answers acym__content acym_noshadow grid-margin-x margin-y">
+												<input type="text"
+													   name="config[unsub_survey][]"
+													   class="cell medium-10 acym__customs__answer__answer"
+													   data-response="<?php echo $i; ?>"
+													   value="<?php echo acym_escape($answer); ?>">
+                                                <?php
+                                                if ($i > 0) { ?>
+													<i class=" cell acymicon-close small-1 acym__color__red cursor-pointer acym__custom__delete__value"></i>
+                                                <?php } ?>
+											</div>
+                                            <?php $i++;
+                                        } ?>
+                                    <?php } ?>
+								</div>
+							</div>
+							<button type="button" class="cell button button-secondary margin-top-1" id="acym__custom_answer__add-answer"><?php echo acym_translation(
+                                    'ACYM_ADD_ANSWER'
+                                ); ?></button>
+						</div>
 					</div>
                     <?php if (acym_isMultilingual()) { ?>
 						<div class="cell grid-x margin-top-1">
@@ -199,15 +324,6 @@
                             ?>
 						</div>
                     <?php } ?>
-					<label for="acym__configuration__subscription__unsub-title" class="cell grid-x margin-bottom-1 margin-top-1">
-						<span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_UNSUBSCRIBE_PAGE_CHANGE'); ?></span>
-						<input id="acym__configuration__subscription__unsub-title"
-							   class="cell xlarge-4 medium-auto margin-bottom-0"
-							   type="text"
-							   name="config[unsubscribe_title]"
-							   value="<?php echo acym_escape($this->config->get('unsubscribe_title'), ''); ?>">
-						<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
-					</label>
 					<label for="acym__configuration__subscription__unsub-url" class="cell grid-x margin-bottom-1 margin-top-1">
 						<span class="cell xlarge-3 medium-5 acym_vcenter"><?php echo acym_translation('ACYM_REDIRECTION_URL'); ?></span>
 						<input id="acym__configuration__subscription__unsub-url"
@@ -218,11 +334,15 @@
 						<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 					</label>
 				</div>
+                <?php if ('joomla' === ACYM_CMS) {
+                    include acym_getPartial('joomla', 'media_modal');
+                } ?>
 			</div>
 		</div>
 	</div>
 </div>
 
+<!-- CMS Integration -->
 <div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
 	<div class="cell grid-x acym__configuration__showmore-head">
 		<div class="acym__title acym__title__secondary cell auto margin-bottom-0">
@@ -419,6 +539,5 @@
 	</div>
 </div>
 
-<!-- Integrations -->
 <?php
 acym_trigger('onRegacyOptionsDisplay', [$data['lists']]);

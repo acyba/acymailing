@@ -60,6 +60,10 @@ class plgAcymGravityforms extends acymPlugin
         $lists = array_merge($hiddenLists, $checkedLists);
         $lists = array_unique($lists);
 
+		if (empty($lists)) {
+			return;
+		}
+
         $userClass = new UserClass();
         $alreadyExists = $userClass->getOneByEmail($user->email);
 
@@ -76,10 +80,6 @@ class plgAcymGravityforms extends acymPlugin
         $user->id = $userClass->save($user);
         if (!empty($userClass->errors)) {
             acym_logError('Error while subscribing user '.$user->email.' to lists '.implode(',', $lists)."\n Error: ".json_encode($userClass->errors), 'gravityforms');
-        }
-
-        if (!$lists) {
-            return;
         }
 
         $subscribed = $userClass->subscribe($user->id, $lists);

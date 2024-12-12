@@ -122,6 +122,28 @@ function acym_getEmailOverrides()
         ],
     ];
 
+    if (ACYM_J40) {
+        $emailOverrides[] = [
+            'name' => 'joomla-contact',
+            'base_subject' => ['COM_CONTACT_ENQUIRY_SUBJECT'],
+            'base_body' => ['ACYM_COM_CONTACT_ENQUIRY_TEXT_WITHOUT_CUSTOM_FIELDS'],
+            'new_subject' => '{trans:COM_CONTACT_ENQUIRY_SUBJECT|param1|param2}',
+            'new_body' => '{trans:ACYM_COM_CONTACT_ENQUIRY_TEXT_WITHOUT_CUSTOM_FIELDS|param3|param4|param5|param6}',
+            'description' => 'ACYM_COM_CONTACT_ENQUIRY',
+            'source' => 'com_contact',
+        ];
+    } else {
+        $emailOverrides[] = [
+            'name' => 'joomla-contact',
+            'base_subject' => ['ACYM_COM_CONTACT_ENQUIRY_SUBJECT_J_OLD'],
+            'base_body' => ['ACYM_COM_CONTACT_ENQUIRY_BODY_J_OLD'],
+            'new_subject' => '{trans:ACYM_COM_CONTACT_ENQUIRY_SUBJECT_J_OLD|param1|param2}',
+            'new_body' => '{trans:ACYM_COM_CONTACT_ENQUIRY_BODY_J_OLD|param3|param4|param5|param6}',
+            'description' => 'ACYM_COM_CONTACT_ENQUIRY',
+            'source' => 'com_contact',
+        ];
+    }
+
     acym_trigger('onAcymGetEmailOverrides', [&$emailOverrides]);
 
     return $emailOverrides;

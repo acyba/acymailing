@@ -59,12 +59,19 @@
                                     foreach ($row->lists as $oneList) {
                                         if ($i === 6) {
                                             echo acym_tooltip(
-                                                '<i data-campaign="'.$row->id.'" class="acym_subscription acymicon-add"></i>',
-                                                acym_translation('ACYM_SHOW_ALL_LISTS')
+                                                [
+                                                    'hoveredText' => '<i data-campaign="'.$row->id.'" class="acym_subscription acymicon-add"></i>',
+                                                    'textShownInTooltip' => acym_translation('ACYM_SHOW_ALL_LISTS'),
+                                                ]
                                             );
                                             $class .= ' is-hidden';
                                         }
-                                        echo acym_tooltip('<i class="'.$class.'" style="color:'.$oneList->color.'"></i>', $oneList->name);
+                                        echo acym_tooltip(
+                                            [
+                                                'hoveredText' => '<i class="'.$class.'" style="color:'.$oneList->color.'"></i>',
+                                                'textShownInTooltip' => $oneList->name,
+                                            ]
+                                        );
                                         $i++;
                                     }
                                     ?>
@@ -79,8 +86,10 @@
                                     // Now display the action buttons
                                     echo '<div class="acym_action_buttons">';
                                     echo acym_tooltip(
-                                        '<i class="acymicon-times-circle acym__queue__cancel__button" mailid="'.$row->id.'"></i>',
-                                        acym_translation('ACYM_CANCEL_SCHEDULING')
+                                        [
+                                            'hoveredText' => '<i class="acymicon-times-circle acym__queue__cancel__button" mailid="'.$row->id.'"></i>',
+                                            'textShownInTooltip' => acym_translation('ACYM_CANCEL_SCHEDULING'),
+                                        ]
                                     );
                                     echo '</div>';
                                     ?>

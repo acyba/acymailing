@@ -40,7 +40,9 @@ function acym_getVar($type, $name, $default = null, $source = 'default', $mask =
 function acym_setVar($name, $value = null, $hash = 'method', $overwrite = true)
 {
     if (ACYM_J40) {
-        if (empty($hash) || $hash === 'method') $hash = 'REQUEST';
+        if (empty($hash) || $hash === 'method') {
+            $hash = 'REQUEST';
+        }
         $input = Factory::getApplication()->input;
         $hashInput = $input->__get($hash);
         $hashInput->set($name, $value);

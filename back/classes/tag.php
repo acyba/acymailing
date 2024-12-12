@@ -6,92 +6,91 @@ use AcyMailing\Libraries\acymClass;
 
 class TagClass extends acymClass
 {
-    var $table = 'tag';
-    var $pkey = 'id';
+    const TYPE_MAIL = 'mail';
+    const TYPE_LIST = 'list';
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'tag';
+        $this->pkey = 'id';
+    }
 
     /**
      * Attaches the tags passed in parameter to the specified element
-     *
-     * @param string $type    Could be list, campaign, template, automation...
-     * @param int    $elementId
-     * @param array  $newTags Array of tag ids, or new tag names
      */
-    public function setTags($type, $elementId, $newTags)
+    public function setTags(string $type, int $elementId, array $newTags): void
     {
         // Remove the old tags from the element
-        acym_query('DELETE FROM #__acym_tag WHERE `type` = '.acym_escapeDB($type).' AND id_element = '.intval($elementId));
+        acym_query('DELETE FROM #__acym_tag WHERE `type` = '.acym_escapeDB($type).' AND `id_element` = '.intval($elementId));
 
         $tagsToInsertQuery = [];
 
         foreach ($newTags as $oneTag) {
-
             $newTag = new \stdClass();
             $newTag->type = $type;
 
-            if (strpos($oneTag, "acy_new_tag_") !== false) {
-                // New tag
-                $tagName = substr($oneTag, strlen("acy_new_tag_"));
+            if (strpos($oneTag, 'acy_new_tag_') !== false) {
+                $tagName = substr($oneTag, 12);
                 if (empty($tagName)) {
                     continue;
                 }
+
                 $newTag->name = $tagName;
             } else {
                 $newTag->name = $oneTag;
             }
             $tagsToInsertQuery[] = '('.acym_escapeDB($newTag->name).','.acym_escapeDB($newTag->type).', '.intval($elementId).')';
         }
+
         if (!empty($tagsToInsertQuery)) {
             acym_query('INSERT INTO #__acym_tag (`name`, `type`, `id_element`) VALUES '.implode(',', $tagsToInsertQuery));
         }
     }
 
-    /**
-     * @param $type
-     *
-     * @return array
-     */
-    public function getAllTagsByType($type)
+    public function getAllTagsByType(string $type): array
     {
-        $query = 'SELECT `name` AS value, `name` FROM #__acym_tag WHERE `type` = '.acym_escapeDB($type).' GROUP BY `name`';
-
-        return acym_loadObjectList($query);
+        return acym_loadObjectList(
+            'SELECT `name` AS `value`, `name` 
+            FROM #__acym_tag 
+            WHERE `type` = '.acym_escapeDB($type).' 
+            GROUP BY `name`'
+        );
     }
 
-    /**
-     * @param $type
-     * @param $id
-     *
-     * @return array
-     */
-    public function getAllTagsByElementId($type, $id)
+    public function getAllTagsByElementId(string $type, int $id): array
     {
-        if (empty($id)) return [];
+        if (empty($id)) {
+            return [];
+        }
 
-        $query = 'SELECT * FROM #__acym_tag WHERE type = '.acym_escapeDB($type).' AND id_element = '.intval($id);
-        $tags = acym_loadResultArray($query);
+        $tags = acym_loadResultArray(
+            'SELECT * 
+            FROM #__acym_tag 
+            WHERE `type` = '.acym_escapeDB($type).' 
+                AND `id_element` = '.intval($id)
+        );
 
         return empty($tags) ? [] : $tags;
     }
 
-    /**
-     * @param $type
-     * @param $ids
-     *
-     * @return array
-     */
-    public function getAllTagsByTypeAndElementIds($type, $ids)
+    public function getAllTagsByTypeAndElementIds(string $type, array $ids): array
     {
         acym_arrayToInteger($ids);
         if (empty($ids)) {
             return [];
         }
 
-        $query = 'SELECT * FROM #__acym_tag WHERE `type` = '.acym_escapeDB($type).' AND `id_element` IN ('.implode(',', $ids).')';
-
-        return acym_loadObjectList($query);
+        return acym_loadObjectList(
+            'SELECT * 
+            FROM #__acym_tag 
+            WHERE `type` = '.acym_escapeDB($type).' 
+                AND `id_element` IN ('.implode(',', $ids).')'
+        );
     }
 
-    public function getAllTagsForSelect()
+    public function getAllTagsForSelect(): array
     {
         return acym_loadObjectList(
             'SELECT DISTINCT `name` 
@@ -100,8 +99,8 @@ class TagClass extends acymClass
         );
     }
 
-    public function deleteByName($name)
+    public function deleteByName(string $name): void
     {
-        acym_query('DELETE FROM #__acym_tag WHERE name = '.acym_escapeDB($name));
+        acym_query('DELETE FROM #__acym_tag WHERE `name` = '.acym_escapeDB($name));
     }
 }

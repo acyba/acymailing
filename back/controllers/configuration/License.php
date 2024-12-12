@@ -188,7 +188,7 @@ trait License
         }
         //__END__demo_
         $result = $this->modifyCron('activateCron', $licenseKey);
-        //If everything went ok we save config with a active_cron to true
+        //If everything went ok we save config with an active_cron to true
         if ($result !== false && $this->displayMessage($result['message'])) $this->config->save(['active_cron' => 1]);
         $this->listing();
 
@@ -206,7 +206,7 @@ trait License
         }
         //__END__demo_
         $result = $this->modifyCron('deactivateCron', $licenseKey);
-        //If everything went ok we save config with a active_cron to false
+        //If everything went ok we save config with an active_cron to false
         if ($result !== false && $this->displayMessage($result['message'])) $this->config->save(['active_cron' => 0]);
         if ($listing) $this->listing();
 
@@ -214,7 +214,7 @@ trait License
     }
 
     //The listing parameter allows us to know if we need to display the listing or not
-    public function modifyCron($functionToCall, $licenseKey = null)
+    public function modifyCron(string $functionToCall, ?string $licenseKey = null)
     {
         if (is_null($licenseKey)) {
             $config = acym_getVar('array', 'config', []);
@@ -231,16 +231,17 @@ trait License
         $data = [
             'domain' => ACYM_LIVE,
             'cms' => ACYM_CMS,
-            'version' => $this->config->get('version', ''),
-            'level' => $this->config->get('level', ''),
+            'version' => $this->config->get('version'),
+            'level' => $this->config->get('level'),
             'activate' => $functionToCall === 'activateCron',
-            'url_version' => 'secured',
+            'security_key' => $this->config->get('cron_key'),
         ];
+
         //We call updateme to activate/deactivate the cron
         $result = UpdatemeHelper::call('api/crons/modify', 'POST', $data);
 
         //If it's not the result well formated => out
-        if (empty($result) || !$result['success']) {
+        if (empty($result['success'])) {
             $this->displayMessage(empty($result['message']) ? 'CRON_NOT_SAVED' : $result['message']);
 
             return false;

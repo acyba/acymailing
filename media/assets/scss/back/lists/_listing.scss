@@ -1,4 +1,15 @@
 #acym__lists {
+    #acym__list__listing__empty__button__container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .acym__listing__empty {
+        .button {
+            margin: auto;
+        }
+    }
+
     .acym__lists__clean {
         font-size: 12px;
         font-weight: 400;
@@ -29,6 +40,11 @@
                 white-space: nowrap;
                 text-overflow: ellipsis;
             }
+        }
+
+        .acym__listing__header i {
+            color: $white;
+            font-size: 1.2rem;
         }
     }
 }

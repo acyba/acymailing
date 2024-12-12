@@ -16,8 +16,8 @@ class plgSystemJceacym extends CMSPlugin
         }
 
         // We're in a newsletter context, no other CSS file should be applied.
-        if (!empty($_REQUEST['acycssfile'])) {
-            $settings['content_css'] = $_REQUEST['acycssfile'];
+        if (!empty(acym_getVar('string', 'acycssfile', ''))) {
+            $settings['content_css'] = acym_getVar('string', 'acycssfile', '');
         }
     }
 

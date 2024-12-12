@@ -54,12 +54,12 @@ class QueueClass extends acymClass
             $allowedStatus = [
                 'sending' => 'campaign.active = 1',
                 'paused' => 'campaign.active = 0',
-                'automation' => 'mail.type = '.acym_escapeDB($mailClass::TYPE_AUTOMATION),
-                'followup' => 'mail.type = '.acym_escapeDB($mailClass::TYPE_FOLLOWUP),
+                'automation' => 'mail.type = '.acym_escapeDB(MailClass::TYPE_AUTOMATION),
+                'followup' => 'mail.type = '.acym_escapeDB(MailClass::TYPE_FOLLOWUP),
             ];
 
             if (empty($allowedStatus[$settings['status']])) {
-                die('Unauthorized filter: '.$settings['status']);
+                die('Unauthorized filter: '.acym_escape($settings['status']));
             }
 
             $filters[] = $allowedStatus[$settings['status']];
@@ -94,7 +94,7 @@ class QueueClass extends acymClass
                 $results['elements'][$i]->recipients = acym_loadResult('SELECT COUNT(*) FROM #__acym_queue WHERE mail_id = '.intval($oneMail->id));
             } elseif (empty($oneMail->campaign)) {
                 $results['elements'][$i]->iscampaign = false;
-                if ($oneMail->type === $mailClass::TYPE_FOLLOWUP) {
+                if ($oneMail->type === MailClass::TYPE_FOLLOWUP) {
                     $results['elements'][$i]->lists = acym_translation('ACYM_MAIL_FROM_FOLLOWUP_SENT_TO');
                 } else {
                     $results['elements'][$i]->lists = acym_translation('ACYM_MAIL_FROM_AUTOMATION_SENT_TO');
@@ -171,14 +171,14 @@ class QueueClass extends acymClass
             'SELECT COUNT(DISTINCT mail.id) FROM #__acym_mail AS mail 
 	        JOIN #__acym_queue AS queue 
                 ON mail.id = queue.mail_id 
-            WHERE mail.type = '.acym_escapeDB($mailClass::TYPE_AUTOMATION)
+            WHERE mail.type = '.acym_escapeDB(MailClass::TYPE_AUTOMATION)
         );
         $followupNumber = acym_loadResult(
             'SELECT COUNT(DISTINCT mail.id) 
             FROM #__acym_mail AS mail 
             JOIN #__acym_queue AS queue 
                 ON mail.id = queue.mail_id 
-            WHERE mail.type = '.acym_escapeDB($mailClass::TYPE_FOLLOWUP)
+            WHERE mail.type = '.acym_escapeDB(MailClass::TYPE_FOLLOWUP)
         );
 
         $elementsPerStatus = acym_loadObjectList($queryStatus.' GROUP BY active', 'active');
@@ -430,8 +430,7 @@ class QueueClass extends acymClass
                         )';
 
         if ($this->config->get('require_confirmation', 1) == 1) {
-            $mailClass = new MailClass();
-            $query .= ' AND (user.confirmed = 1 OR mail.type = '.acym_escapeDB($mailClass::TYPE_NOTIFICATION).' OR mail.name LIKE "%confirm%")';
+            $query .= ' AND (user.confirmed = 1 OR mail.type = '.acym_escapeDB(MailClass::TYPE_NOTIFICATION).' OR mail.name LIKE "%confirm%")';
         }
 
         if (!empty($this->emailtypes)) {

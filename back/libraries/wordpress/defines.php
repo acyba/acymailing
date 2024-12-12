@@ -83,6 +83,15 @@ define(
     json_encode(
         [
             (object)[
+                'name' => 'Advanced Custom Fields (ACF)',
+                'description' => '- Insert custom post types in your emails<br />- Insert them by category',
+                'file_name' => 'acf',
+                'level' => 'starter',
+                'documentation' => ACYM_DOCUMENTATION.'addons/wordpress-add-ons/advanced-custom-fields-acf',
+                'category' => 'Content management',
+                'downloadlink' => 'https://wordpress.org/plugins/acymailing-integration-for-acf/',
+            ],
+            (object)[
                 'name' => 'Business Directory',
                 'description' => '- Insert individual listings in your emails<br />- Insert listings by category',
                 'file_name' => 'businessdirectory',

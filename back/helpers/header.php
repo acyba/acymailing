@@ -142,12 +142,17 @@ class HeaderHelper extends acymObject
         $version .= '<div id="acym_level">'.ACYM_NAME.' '.$currentLevel.' ';
 
         if (version_compare($currentVersion, $latestVersion, '>=')) {
-            $version .= acym_tooltip('<span class="acym__color__green">'.$currentVersion.'</span>', acym_translation('ACYM_UP_TO_DATE'));
+            $version .= acym_tooltip(
+                [
+                    'hoveredText' => '<span class="acym__color__green">'.$currentVersion.'</span>',
+                    'textShownInTooltip' => acym_translation('ACYM_UP_TO_DATE'),
+                ]
+            );
         } elseif (!empty($latestVersion)) {
             if ('wordpress' === ACYM_CMS) {
                 $downloadLink = admin_url().'update-core.php';
             } else {
-                $downloadLink = ACYM_ACYMAILING_WEBSITE.'account/subscriptions/" target="_blank';
+                $downloadLink = ACYM_ACYMAILING_WEBSITE.'account/license/" target="_blank';
             }
             $version .= acym_tooltip(
                 [
@@ -179,7 +184,7 @@ class HeaderHelper extends acymObject
                     [
                         'hoveredText' => '<span class="acy_subscriptionexpired acym__color__red">'.acym_translation('ACYM_SUBSCRIPTION_EXPIRED').'</span>',
                         'textShownInTooltip' => acym_translation('ACYM_SUBSCRIPTION_EXPIRED_LINK'),
-                        'link' => ACYM_ACYMAILING_WEBSITE.'account/subscriptions/',
+                        'link' => ACYM_ACYMAILING_WEBSITE.'account/license/',
                     ]
                 );
             } else {
@@ -215,18 +220,22 @@ class HeaderHelper extends acymObject
         if (empty($lastLicenseCheck)) $lastLicenseCheck = $time;
 
         return acym_tooltip(
-            '<a id="checkVersionButton" type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" data-check="'.acym_escape(
-                $checking
-            ).'"><i class="cell shrink acymicon-autorenew"></i></a>',
-            acym_translation('ACYM_LAST_CHECK').' <span id="acym__check__version__last__check">'.acym_date($lastLicenseCheck, 'Y/m/d H:i').'</span>'
+            [
+                'hoveredText' => '<a id="checkVersionButton" type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" data-check="'.acym_escape(
+                        $checking
+                    ).'"><i class="cell shrink acymicon-autorenew"></i></a>',
+                'textShownInTooltip' => acym_translation('ACYM_LAST_CHECK').' <span id="acym__check__version__last__check">'.acym_date($lastLicenseCheck, 'Y/m/d H:i').'</span>',
+            ]
         );
     }
 
     private function getDocumentationButton()
     {
         return acym_tooltip(
-            '<a type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" target="_blank" href="'.ACYM_DOCUMENTATION.'"><i class="cell shrink acymicon-book"></i></a>',
-            acym_translation('ACYM_DOCUMENTATION')
+            [
+                'hoveredText' => '<a type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" target="_blank" href="'.ACYM_DOCUMENTATION.'"><i class="cell shrink acymicon-book"></i></a>',
+                'textShownInTooltip' => acym_translation('ACYM_DOCUMENTATION'),
+            ]
         );
     }
 

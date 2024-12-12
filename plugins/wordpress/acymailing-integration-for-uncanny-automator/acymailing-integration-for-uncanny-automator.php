@@ -1,18 +1,21 @@
 <?php
-
 /**
  * Plugin Name: AcyMailing integration for Uncanny Automator
  * Description: Add AcyMailing triggers and actions in Uncanny Automator
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 2.1
+ * Version: 2.3
  * Text Domain: acymailing-integration-for-uncanny-automator
  * Domain Path: /language
  * Requires Plugins: acymailing, uncanny-automator
  */
 
-class AcyMailingUncannyAutomatorIntegration
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+class AcyMailingIntegrationForUncannyAutomator
 {
     const INTEGRATION_CODE = 'acymailing';
 
@@ -33,4 +36,4 @@ class AcyMailingUncannyAutomatorIntegration
     }
 }
 
-new AcyMailingUncannyAutomatorIntegration();
+new AcyMailingIntegrationForUncannyAutomator();

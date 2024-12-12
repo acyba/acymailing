@@ -6,10 +6,9 @@ use AcyMailing\Libraries\acymObject;
 
 class ToolbarHelper extends acymObject
 {
-    var $leftPart = '';
-    var $rightPart = '';
-    var $nonPermanentPart = '';
-    var $moreOptionsPart = [];
+    private string $leftPart = '';
+    private string $rightPart = '';
+    private array $moreOptionsPart = [];
 
     public function addButton($textContent, $attributes, $icon = '', $isPrimary = false)
     {
@@ -26,7 +25,7 @@ class ToolbarHelper extends acymObject
 
     public function addOtherContent($content, $side = 'right')
     {
-        if ($side === 'right' || $side === 'left') {
+        if (in_array($side, ['left', 'right'])) {
             $this->{$side.'Part'} .= $content;
         }
     }
@@ -59,20 +58,18 @@ class ToolbarHelper extends acymObject
 
     public function addOption($content)
     {
-        array_push($this->moreOptionsPart, $content);
+        $this->moreOptionsPart[] = $content;
     }
 
     public function addOptionSelect($title, $select)
     {
-        $content = '<div class="cell grid-x shrink acym__toolbar__filters__select"><label class="cell">'.$title.'</label>'.$select.'</div>';
-        array_push($this->moreOptionsPart, $content);
+        $this->moreOptionsPart[] = '<div class="cell grid-x shrink acym__toolbar__filters__select"><label class="cell">'.$title.'</label>'.$select.'</div>';
     }
 
     public function displayToolbar($data)
     {
         $data['leftPart'] = $this->leftPart;
         $data['rightPart'] = $this->rightPart;
-        $data['nonPermanentPart'] = $this->nonPermanentPart;
         $data['moreOptionsPart'] = $this->moreOptionsPart;
         include acym_getPartial('toolbar', 'toolbar');
     }

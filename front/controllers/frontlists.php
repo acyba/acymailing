@@ -97,13 +97,16 @@ class FrontlistsController extends ListsController
 
         $mailClass = new MailClass();
 
-        foreach ([$mailClass::TYPE_WELCOME => 'welcome', $mailClass::TYPE_UNSUBSCRIBE => 'unsub'] as $full => $short) {
+        foreach ([MailClass::TYPE_WELCOME => 'welcome', MailClass::TYPE_UNSUBSCRIBE => 'unsub'] as $full => $short) {
             $mailId = acym_getVar('int', $short.'mailid', 0);
             if (empty($data['listInformation']->{$full.'_id'}) && !empty($mailId)) {
                 $data['listInformation']->{$full.'_id'} = $mailId;
                 $listInfoSave = clone $data['listInformation'];
                 unset($listInfoSave->subscribers);
-                if (!$this->currentClass->save($listInfoSave)) acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVE_LIST'), 'error');
+                $listClass = new ListClass();
+                if (!$listClass->save($listInfoSave)) {
+                    acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVE_LIST'), 'error');
+                }
             }
 
             $returnLink = acym_completeLink('frontlists&task=settings&listId='.$data['listInformation']->id.'&edition=1&'.$short.'mailid={mailid}');

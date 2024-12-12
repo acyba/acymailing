@@ -75,9 +75,9 @@
 			<i class="cell acymicon-play_circle_filled"></i>
 			<div class="cell"><?php echo acym_translation('ACYM_VIDEO'); ?></div>
 		</div>
-		<div class="grid-x cell acym__wysid__block__element--new acym__wysid__block__element--new--giphy ui-draggable ui-draggable-handle">
+		<div class="grid-x cell acym__wysid__block__element--new acym__wysid__block__element--new--gif ui-draggable ui-draggable-handle">
 			<i class="cell acymicon-gif"></i>
-			<div class="cell">Giphy</div>
+			<div class="cell">Gif</div>
 		</div>
 		<div class="grid-x cell acym__wysid__block__element--new acym__wysid__block__element--new--unsplash ui-draggable ui-draggable-handle">
 			<i class="cell acymicon-unsplash"></i>
@@ -92,9 +92,9 @@
 
             echo '<div '.$title.' data-plugin="'.acym_escape($onePlugin->plugin).'" class="grid-x cell acym__wysid__block__element--new ui-draggable ui-draggable-handle">';
 
-            if (empty($onePlugin->icontype) || $onePlugin->icontype == 'img') {
+            if (empty($onePlugin->icontype) || $onePlugin->icontype === 'img') {
                 echo '<img class="cell acym-plugin-icon" src="'.$onePlugin->icon.'" alt="icon"/>';
-            } elseif ($onePlugin->icontype == 'raw') {
+            } elseif ($onePlugin->icontype === 'raw') {
                 echo $onePlugin->icon;
             }
 

@@ -1,4 +1,9 @@
 #acym__list__settings {
+
+    #acym__list__settings__actions .button {
+        margin-bottom: 0 !important;
+    }
+
     button.acym_template_option {
         padding: 5px 15px;
         width: 100%;
@@ -131,17 +136,23 @@
         }
     }
 
-    .acym__listing__block__delete {
-        top: 3px;
-        right: 16px;
+    .acym__lists__oneMail {
+        position: relative;
+
+        .acym__listing__block__delete {
+            z-index: 1;
+            position: absolute;
+            top: 4px;
+            right: 24px;
+        }
     }
 }
 
-.dataTable__icon__size{
+.dataTable__icon__size {
     font-size: 16px;
 }
 
-.list_order_gap{
+.list_order_gap {
     gap: 5px;
 }
 

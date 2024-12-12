@@ -1,0 +1,84 @@
+@import "settings";
+
+#acym_wrapper {
+    #acym__dtext__button {
+        cursor: pointer;
+    }
+
+    #acym__dtext__picker {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100000;
+        background-color: rgba(0, 0, 0, .4);
+    }
+
+    #acym__dtext__picker__modal {
+        position: fixed;
+        top: 10%;
+        left: calc(50% - 400px);
+        width: 800px;
+        height: 80%;
+
+        background-color: $white;
+        overflow: auto;
+        border-radius: $primary-radius;
+
+        text-align: left;
+
+        #acym__dtext__picker__modal__close {
+            position: fixed;
+            top: 10%;
+            right: calc(50% - 400px);
+            padding: .3rem;
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        ul.tabs {
+            position: relative;
+            overflow-x: auto;
+            white-space: nowrap;
+            border: 0;
+            background-color: #f6f6f6;
+            width: 100%;
+        }
+
+        .tabs-title > a {
+            outline: 0;
+            color: #444;
+
+            &:focus, &[aria-selected=true] {
+                color: #0ca0e4;
+                background-color: #fefefe;
+            }
+        }
+
+        .tabs-content {
+            padding: 1rem;
+            border: none;
+
+            .acym__popup__listing {
+                .acym_radio_group {
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    @media screen and (max-width: 900px) {
+        #acym__dtext__picker__modal {
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+
+            #acym__dtext__picker__modal__close {
+                top: 5%;
+                right: 5%;
+            }
+        }
+    }
+}

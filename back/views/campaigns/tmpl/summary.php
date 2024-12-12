@@ -101,9 +101,11 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                             $onlyFilename = end($onlyFilename);
 
                             echo acym_tooltip(
-                                '<div class="cell" data-toggle="path_attachment_'.$key.'">'.$onlyFilename.'</div>',
-                                $oneAttachment->filename,
-                                'cell'
+                                [
+                                    'hoveredText' => '<div class="cell" data-toggle="path_attachment_'.$key.'">'.$onlyFilename.'</div>',
+                                    'textShownInTooltip' => $oneAttachment->filename,
+                                    'classContainer' => 'cell',
+                                ]
                             );
                         } ?>
 					</div>
@@ -140,13 +142,13 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                 'acym__modal__users__summary__container'
                             );
                             echo '<div class="cell grid-x acym__listing__row">
-							<span class="cell medium-6">
+							<span class="cell small-6">
 							<i class="acymicon-circle acym__campaign__summary__recipients__list__color margin-right-1" 
 							style="color: '.$oneList->color.'">
 							</i>
 							<b>'.$oneList->name.'</b>
 							</span>
-							<span class="cell medium-6">'.$subscribers.'</span>
+							<span class="cell small-6">'.$subscribers.'</span>
 						</div>';
                         } ?>
 					</div>
@@ -344,7 +346,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                 ?>
 
 								<button type="submit"
-										class="cell button button-secondary medium-margin-bottom-0 margin-bottom-1 margin-right-1 acy_button_submit medium-shrink"
+										class="cell button button-secondary margin-bottom-1 margin-right-1 acy_button_submit medium-shrink"
 										data-task="saveAsDraftCampaign">
                                     <?php echo acym_translation('ACYM_SAVE_AS_DRAFT'); ?>
 								</button>
@@ -364,12 +366,24 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                 $buttonText = 'ACYM_ACTIVE_CAMPAIGN';
                             }
 
-                            $buttonClass = '';
-                            $isAbTestMissingVersion = $isAbTest && empty($data['campaignInformation']->sending_params['abtest']['B']);
-                            $isAbTestNotEnoughUsers = isset($numberOfUsersToSend) && $numberOfUsersToSend < 2;
-                            $isAbTestAlreadySent = $isAbTest && $isSent;
-                            $canNotSendAbTest = $isAbTestMissingVersion || $isAbTestNotEnoughUsers || $isAbTestAlreadySent;
-                            if ($data['nbSubscribers'] <= 0 || $canNotSendAbTest) $buttonClass = ' disabled';
+
+                            if ($isAbTest && empty($data['campaignInformation']->sending_params['abtest']['B'])) {
+                                $data['notAllowedSendingError'] = acym_translation('ACYM_VERSION_MISSING_AB_TEST');
+                            }
+
+                            if (isset($numberOfUsersToSend) && $numberOfUsersToSend < 2) {
+                                $data['notAllowedSendingError'] = acym_translation('ACYM_NOT_ENOUGH_USERS_AB_TEST');
+                            }
+
+                            if ($isAbTest && $isSent) {
+                                $data['notAllowedSendingError'] = acym_translation('ACYM_CANNOT_SEND_AB_TEST_AGAIN');
+                            }
+
+                            if ($data['nbSubscribers'] <= 0) {
+                                $data['notAllowedSendingError'] = acym_translation('ACYM_ADD_RECIPIENTS_TO_SEND_THIS_CAMPAIGN');
+                            }
+
+                            $buttonClass = empty($data['notAllowedSendingError']) ? '' : ' disabled';
 
                             if ($this->config->get('mailer_method') === 'acymailer' && $this->config->get('acymailer_popup', '0') === '0') {
                                 ob_start();
@@ -383,39 +397,21 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                                     ['class' => 'cell button medium-shrink'.$buttonClass]
                                 );
                             } else {
-                                $button = '<button type="button" class="cell button acy_button_submit medium-shrink margin-bottom-0'.$buttonClass.'" data-task="'.acym_escape(
-                                        $task
-                                    ).'">';
+                                $button = '<button type="button" class="cell button acy_button_submit medium-shrink'.$buttonClass.'" data-task="'.acym_escape($task).'">';
                                 $button .= acym_translation($buttonText);
                                 $button .= '</button>';
                             }
 
-                            if ($isAbTestMissingVersion) {
+                            if (!empty($data['notAllowedSendingError'])) {
                                 echo acym_tooltip(
-                                    $button,
-                                    acym_translation('ACYM_VERSION_MISSING_AB_TEST'),
-                                    'cell medium-shrink'
+                                    [
+                                        'hoveredText' => $button,
+                                        'textShownInTooltip' => $data['notAllowedSendingError'],
+                                        'classContainer' => 'cell medium-shrink',
+                                    ]
                                 );
-                            } elseif ($isAbTestNotEnoughUsers) {
-                                echo acym_tooltip(
-                                    $button,
-                                    acym_translation('ACYM_NOT_ENOUGH_USERS_AB_TEST'),
-                                    'cell medium-shrink'
-                                );
-                            } elseif ($isAbTestAlreadySent) {
-                                echo acym_tooltip(
-                                    $button,
-                                    acym_translation('ACYM_CANNOT_SEND_AB_TEST_AGAIN'),
-                                    'cell medium-shrink'
-                                );
-                            } elseif ($data['nbSubscribers'] > 0) {
-                                echo $button;
                             } else {
-                                echo acym_tooltip(
-                                    $button,
-                                    acym_translation('ACYM_ADD_RECIPIENTS_TO_SEND_THIS_CAMPAIGN'),
-                                    'cell medium-shrink'
-                                );
+                                echo $button;
                             }
                         }
                         ?>

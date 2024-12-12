@@ -1,10 +1,12 @@
-<h2 class="cell acym__title acym__title__secondary acym__fields__edit__section__title" id="acym__fields__edit__section__title--content">
+<h2 class="cell acym__title acym__title__secondary acym__fields__edit__section__title"
+	id="acym__fields__edit__section__title--content">
     <?php echo acym_translation('ACYM_FIELD_CONTENT'); ?>
 </h2>
 
 <label class="cell large-6 acym__fields__change" id="acym__fields__default-value">
     <?php echo acym_translation('ACYM_DEFAULT_VALUE'); ?>
-	<input type="text" name="field[default_value]" value="<?php echo isset($data['field']->default_value) ? $data['field']->default_value : ''; ?>">
+	<input type="text" name="field[default_value]"
+		   value="<?php echo isset($data['field']->default_value) ? $data['field']->default_value : ''; ?>">
 </label>
 
 <div class="cell acym__fields__change" id="acym__fields__authorized-content">
@@ -56,7 +58,8 @@
         ).'<br>'.acym_translation('ACYM_EXEMPLE_FORMAT')
     );
     ?>
-	<input type="text" name="field[option][format]" value="<?php echo empty($data['field']->option->format) ? '%d%m%y' : $data['field']->option->format; ?>">
+	<input type="text" name="field[option][format]"
+		   value="<?php echo empty($data['field']->option->format) ? '%d%m%y' : $data['field']->option->format; ?>">
 </label>
 
 <label class="cell acym__fields__change grid-x" id="acym__fields__max_characters">

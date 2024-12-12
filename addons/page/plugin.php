@@ -13,7 +13,7 @@ class plgAcymPage extends acymPlugin
         $this->pluginDescription->icon = '<div class="wp-menu-image dashicons-before dashicons-admin-page"></div>';
         $this->pluginDescription->icontype = 'raw';
 
-        if ($this->installed && ACYM_CMS == 'wordpress') {
+        if (ACYM_CMS === 'wordpress') {
             $this->displayOptions = [
                 'title' => ['ACYM_TITLE', true],
                 'image' => ['ACYM_FEATURED_IMAGE', true],
@@ -143,7 +143,12 @@ class plgAcymPage extends acymPlugin
         $rows = $this->getElements();
         foreach ($rows as $i => $row) {
             if (str_replace(['wp:core-embed', 'wp:shortcode'], '', $row->post_content) !== $row->post_content) {
-                $rows[$i]->post_title = acym_tooltip('<i class="acymicon-exclamation-triangle"></i>', acym_translation('ACYM_SPECIAL_CONTENT_WARNING')).$rows[$i]->post_title;
+                $rows[$i]->post_title = acym_tooltip(
+                        [
+                            'hoveredText' => '<i class="acymicon-exclamation-triangle"></i>',
+                            'textShownInTooltip' => acym_translation('ACYM_SPECIAL_CONTENT_WARNING'),
+                        ]
+                    ).$rows[$i]->post_title;
             }
         }
 

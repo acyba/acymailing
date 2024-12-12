@@ -6,7 +6,6 @@ use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\RuleClass;
 use AcyMailing\Helpers\BounceHelper;
 use AcyMailing\Helpers\CronHelper;
-use AcyMailing\Helpers\SplashscreenHelper;
 use AcyMailing\Helpers\ToolbarHelper;
 use AcyMailing\Helpers\UpdateHelper;
 use AcyMailing\Helpers\WorkflowHelper;
@@ -42,6 +41,19 @@ trait Listing
             );
             $toolbarHelper->addButton('ACYM_RUN_BOUNCE_HANDLING', ['data-task' => 'test'], 'play_arrow');
             $toolbarHelper->addButton('ACYM_CREATE', ['data-task' => 'rule', 'type' => 'submit'], 'add', true);
+
+
+            $remindMe = json_decode($this->config->get('remindme', '[]'), true);
+            $messageIdentifier = 'bounce_rules_'.UpdateHelper::BOUNCE_VERSION;
+
+            if (!in_array($messageIdentifier, $remindMe) && $this->config->get('bounceVersion', 0) < UpdateHelper::BOUNCE_VERSION) {
+                $message = acym_translation('ACYM_NEW_BOUNCE_RULES');
+                $message .= '<a href="#" class="acym__do__not__remindme acym__do__not__remindme__info" title="'.$messageIdentifier.'">';
+                $message .= acym_translation('ACYM_DO_NOT_REMIND_ME');
+                $message .= '</a>';
+
+                acym_enqueueMessage($message, 'info', false);
+            }
         } else {
             $toolbarHelper = new ToolbarHelper();
             $toolbarHelper->addSearchBar($data['search'], 'mailboxes_search', 'ACYM_SEARCH');
@@ -54,8 +66,6 @@ trait Listing
 
     public function bounces()
     {
-        $this->currentClass = new RuleClass();
-        $splashscreenHelper = new SplashscreenHelper();
         $data = [];
 
 
@@ -68,14 +78,6 @@ trait Listing
         $this->prepareToolbar($data);
 
         parent::display($data);
-    }
-
-    public function passSplash()
-    {
-        $splashscreenHelper = new SplashscreenHelper();
-        $splashscreenHelper->setDisplaySplashscreenForViewName('bounces', 0);
-
-        $this->listing();
     }
 
     // When one of the raw of the listing is moved we set the ordering
@@ -167,9 +169,7 @@ trait Listing
 
         //Load the cron class to save the report if there is one
         $cronHelper = new CronHelper();
-        $cronHelper->messages[] = $nbMessagesReport;
-        $cronHelper->detailMessages = $bounceHelper->messages;
-        $cronHelper->saveReport();
+        $cronHelper->saveReport($nbMessagesReport, $bounceHelper->messages);
 
         if ($this->config->get('bounce_max', 0) != 0 && $nbMessages > $this->config->get('bounce_max', 0)) {
             //We still have some messages...

@@ -4,6 +4,7 @@ namespace AcyMailing\Helpers;
 
 
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\MailArchiveClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\OverrideClass;
@@ -12,6 +13,7 @@ use AcyMailing\Classes\UserClass;
 use AcyMailerPhp\Exception;
 use AcyMailerPhp\OAuth;
 use AcyMailerPhp\AcyMailerPhp;
+use Pelago\Emogrifier\HtmlProcessor\HtmlPruner;
 
 class MailerHelper extends AcyMailerPhp
 {
@@ -90,10 +92,19 @@ class MailerHelper extends AcyMailerPhp
     public $links_language;
     public $id = null;
     public $mail = null;
+    private $nameIdMap = [];
     // Mail objects with replaceContent ran
     public $defaultMail = [];
 
+    // Sending method list plugin
+    public $listsIds = [];
+    private $currentMethodSetting = [];
+
     public $isAbTest = false;
+    public $isTransactional = false;
+    public $isOneTimeMail = false;
+    private $currentSendingMethod = '';
+    public $isSendingMethodByListActive = false;
 
     public function __construct()
     {
@@ -115,117 +126,7 @@ class MailerHelper extends AcyMailerPhp
             $this->WordWrap = $maxLineLength;
         }
 
-        $externalSendingMethod = [];
-        acym_trigger('onAcymGetSendingMethods', [&$externalSendingMethod, true]);
-        $externalSendingMethod = array_keys($externalSendingMethod['sendingMethods']);
-
-        $mailerMethodConfig = $this->config->get('mailer_method', 'phpmail');
-
-        // Default mailer is to use PHP's mail function
-        if ($mailerMethodConfig === 'smtp') {
-            $this->isSMTP();
-            $this->Host = trim($this->config->get('smtp_host'));
-            $port = $this->config->get('smtp_port');
-            // 465 is default port for SSL
-            if (empty($port) && $this->config->get('smtp_secured') === 'ssl') {
-                $port = 465;
-            }
-            if (!empty($port)) {
-                $this->Host .= ':'.$port;
-            }
-            $this->SMTPAuth = (bool)$this->config->get('smtp_auth', true);
-            $this->Username = trim($this->config->get('smtp_username'));
-            $connectionType = $this->config->get('smtp_type');
-            $hostName = explode(':', $this->Host)[0];
-
-            if (OAuth::hostRequireOauth($hostName, $connectionType)) {
-                $this->AuthType = 'XOAUTH2';
-
-                $this->clientSecret = trim($this->config->get('smtp_secret'));
-                $this->clientId = trim($this->config->get('smtp_clientId'));
-                $this->refreshToken = trim($this->config->get('smtp_refresh_token'));
-                $this->oauthToken = trim($this->config->get('smtp_token'));
-                $this->expiredIn = trim($this->config->get('smtp_token_expireIn'));
-
-                $oauth = new OAuth(
-                    [
-                        'userName' => $this->Username,
-                        'clientSecret' => $this->clientSecret,
-                        'oauthToken' => $this->oauthToken,
-                        'clientId' => $this->clientId,
-                        'refreshToken' => $this->refreshToken,
-                        'expiredIn' => $this->expiredIn,
-                        'host' => $hostName,
-                    ]
-                );
-                $this->setOAuth($oauth);
-            } else {
-                $authMethod = $this->config->get('smtp_method');
-                if (in_array($authMethod, ['CRAM-MD5', 'LOGIN', 'PLAIN', 'XOAUTH2'])) {
-                    $this->AuthType = $authMethod;
-                }
-                if ($this->SMTPAuth) {
-                    $this->Password = trim($this->config->get('smtp_password'));
-                }
-            }
-
-            //SMTP Secure to connect to Gmail for example (tls)
-            $this->SMTPSecure = trim((string)$this->config->get('smtp_secured'));
-
-            if (empty($this->Sender)) {
-                $this->Sender = strpos($this->Username, '@') ? $this->Username : $this->config->get('from_email');
-            }
-        } elseif ($mailerMethodConfig === 'sendmail') {
-            $this->isSendmail();
-            $this->Sendmail = trim($this->config->get('sendmail_path'));
-            if (empty($this->Sendmail)) {
-                $this->Sendmail = '/usr/sbin/sendmail';
-            }
-        } elseif ($mailerMethodConfig === 'qmail') {
-            $this->isQmail();
-        } elseif ($mailerMethodConfig === 'elasticemail') {
-            $port = $this->config->get('elasticemail_port', 'rest');
-            if (is_numeric($port)) {
-                $this->isSMTP();
-                if ($port == '25') {
-                    $this->Host = 'smtp25.elasticemail.com:25';
-                } else {
-                    $this->Host = 'smtp.elasticemail.com:2525';
-                }
-                $this->Username = trim($this->config->get('elasticemail_username'));
-                $this->Password = trim($this->config->get('elasticemail_password'));
-                $this->SMTPAuth = true;
-            } else {
-                //REST API!
-                include_once ACYM_LIBRARIES.'mailer'.DS.'elasticemail.php';
-                $this->Mailer = 'elasticemail';
-                $this->{$this->Mailer} = new \acyElasticemail();
-                $this->{$this->Mailer}->Username = trim($this->config->get('elasticemail_username'));
-                $this->{$this->Mailer}->Password = trim($this->config->get('elasticemail_password'));
-            }
-        } elseif ($mailerMethodConfig === 'amazon') {
-            $this->isSMTP();
-            $amazonCredentials = [];
-            acym_trigger('onAcymGetCredentialsSendingMethod', [&$amazonCredentials, 'amazon'], 'plgAcymAmazon');
-            $this->Host = trim($amazonCredentials['amazon_host']).':587';
-            $this->Username = trim($amazonCredentials['amazon_username']);
-            $this->Password = trim($amazonCredentials['amazon_password']);
-            $this->SMTPAuth = true;
-            $this->SMTPSecure = 'tls';
-        } elseif ($mailerMethodConfig === 'brevo-smtp') {
-            $this->isSMTP();
-            $brevoSmtpCredentials = [];
-            acym_trigger('onAcymGetCredentialsSendingMethod', [&$brevoSmtpCredentials, 'brevo-smtp'], 'plgAcymBrevo');
-            $this->Host = trim($brevoSmtpCredentials['brevo-smtp_host']).':587';
-            $this->Username = trim($brevoSmtpCredentials['brevo-smtp_username']);
-            $this->Password = trim($brevoSmtpCredentials['brevo-smtp_password']);
-            $this->SMTPAuth = true;
-            $this->SMTPSecure = 'tls';
-        } elseif (in_array($mailerMethodConfig, $externalSendingMethod)) {
-            $this->isExternal($mailerMethodConfig);
-        } else {
-            $this->isMail();
-        }
+        $this->setSendingMethodSetting();
 
         //Do we have a DKIM validation?
         if ($this->config->get('dkim', 0) && $this->Mailer != 'elasticemail') {
@@ -261,6 +162,153 @@ class MailerHelper extends AcyMailerPhp
         $this->addParamInfo();
     }
 
+    private function getSendingMethodSettings($settingName, $default = ''): string
+    {
+        if (empty($this->currentMethodSetting)) {
+            return $this->config->get($settingName, $default);
+        }
+
+        return $this->currentMethodSetting[$settingName] ?? $default;
+    }
+
+    /**
+     * @return string
+     */
+    private function getSendingMethod(): string
+    {
+        $this->currentMethodSetting = [];
+
+        $sendingMethods = $this->config->get('sending_method_list', '{}');
+        $sendingMethods = json_decode($sendingMethods, true);
+        $sendingMethodsByList = $this->config->get('sending_method_list_by_list', '{}');
+        $sendingMethodsByList = json_decode($sendingMethodsByList, true);
+
+        if (empty($this->listsIds) || empty($sendingMethods) || empty($sendingMethodsByList) || empty($sendingMethodsByList[$this->listsIds[0]])) {
+            return $this->config->get('mailer_method', 'phpmail');
+        }
+
+        $sendingMethodIds = [];
+
+        foreach ($this->listsIds as $listId) {
+            if (!empty($sendingMethodsByList[$listId])) {
+                $sendingMethodIds[] = $sendingMethodsByList[$listId];
+            }
+        }
+
+        if (count($sendingMethodIds) !== count($this->listsIds) || count(array_unique($sendingMethodIds)) !== 1) {
+            return $this->config->get('mailer_method', 'phpmail');
+        }
+
+        $sendingMethodId = $sendingMethodIds[0];
+
+        if (empty($sendingMethods[$sendingMethodId])) {
+            return $this->config->get('mailer_method', 'phpmail');
+        }
+
+        $this->currentMethodSetting = $sendingMethods[$sendingMethodId];
+
+        return $sendingMethods[$sendingMethodId]['mailer_method'];
+    }
+
+    /**
+     * @return void
+     */
+    public function setSendingMethodSetting(): void
+    {
+        $externalSendingMethod = [];
+        acym_trigger('onAcymGetSendingMethods', [&$externalSendingMethod, true]);
+        $externalSendingMethod = array_keys($externalSendingMethod['sendingMethods']);
+
+        $mailerMethodConfig = $this->getSendingMethod();
+        $this->currentSendingMethod = $mailerMethodConfig;
+
+        // Default mailer is to use PHP's mail function
+        if ($mailerMethodConfig === 'smtp') {
+            $this->isSMTP();
+            $this->Host = trim($this->getSendingMethodSettings('smtp_host'));
+            $port = $this->getSendingMethodSettings('smtp_port');
+            // 465 is default port for SSL
+            if (empty($port) && $this->getSendingMethodSettings('smtp_secured') === 'ssl') {
+                $port = 465;
+            }
+            if (!empty($port)) {
+                $this->Host .= ':'.$port;
+            }
+            $this->SMTPAuth = (bool)$this->getSendingMethodSettings('smtp_auth', true);
+            $this->Username = trim($this->getSendingMethodSettings('smtp_username'));
+            $connectionType = $this->getSendingMethodSettings('smtp_type');
+            $hostName = explode(':', $this->Host)[0];
+
+            if (OAuth::hostRequireOauth($hostName, $connectionType)) {
+                $this->AuthType = 'XOAUTH2';
+
+                $this->clientSecret = trim($this->getSendingMethodSettings('smtp_secret'));
+                $this->clientId = trim($this->getSendingMethodSettings('smtp_clientId'));
+                $this->refreshToken = trim($this->getSendingMethodSettings('smtp_refresh_token'));
+                $this->oauthToken = trim($this->getSendingMethodSettings('smtp_token'));
+                $this->expiredIn = trim($this->getSendingMethodSettings('smtp_token_expireIn'));
+
+                $oauth = new OAuth(
+                    [
+                        'userName' => $this->Username,
+                        'clientSecret' => $this->clientSecret,
+                        'oauthToken' => $this->oauthToken,
+                        'clientId' => $this->clientId,
+                        'refreshToken' => $this->refreshToken,
+                        'expiredIn' => $this->expiredIn,
+                        'host' => $hostName,
+                    ]
+                );
+                $this->setOAuth($oauth);
+            } else {
+                $authMethod = $this->getSendingMethodSettings('smtp_method');
+                if (in_array($authMethod, ['CRAM-MD5', 'LOGIN', 'PLAIN', 'XOAUTH2'])) {
+                    $this->AuthType = $authMethod;
+                }
+                if ($this->SMTPAuth) {
+                    $this->Password = trim($this->getSendingMethodSettings('smtp_password'));
+                }
+            }
+
+            //SMTP Secure to connect to Gmail for example (tls)
+            $this->SMTPSecure = trim((string)$this->getSendingMethodSettings('smtp_secured'));
+
+            if (empty($this->Sender)) {
+                $this->Sender = strpos($this->Username, '@') ? $this->Username : $this->getSendingMethodSettings('from_email');
+            }
+        } elseif ($mailerMethodConfig === 'sendmail') {
+            $this->isSendmail();
+            $this->Sendmail = trim($this->getSendingMethodSettings('sendmail_path'));
+            if (empty($this->Sendmail)) {
+                $this->Sendmail = '/usr/sbin/sendmail';
+            }
+        } elseif ($mailerMethodConfig === 'qmail') {
+            $this->isQmail();
+        } elseif ($mailerMethodConfig === 'amazon') {
+            $this->isSMTP();
+            $amazonCredentials = [];
+            acym_trigger('onAcymGetCredentialsSendingMethod', [&$amazonCredentials, 'amazon', $this->currentMethodSetting], 'plgAcymAmazon');
+            $this->Host = trim($amazonCredentials['amazon_host']).':587';
+            $this->Username = trim($amazonCredentials['amazon_username']);
+            $this->Password = trim($amazonCredentials['amazon_password']);
+            $this->SMTPAuth = true;
+            $this->SMTPSecure = 'tls';
+        } elseif ($mailerMethodConfig === 'brevo-smtp') {
+            $this->isSMTP();
+            $brevoSmtpCredentials = [];
+            acym_trigger('onAcymGetCredentialsSendingMethod', [&$brevoSmtpCredentials, 'brevo-smtp', $this->currentMethodSetting], 'plgAcymBrevo');
+            $this->Host = trim($brevoSmtpCredentials['brevo-smtp_host']).':587';
+            $this->Username = trim($brevoSmtpCredentials['brevo-smtp_username']);
+            $this->Password = trim($brevoSmtpCredentials['brevo-smtp_password']);
+            $this->SMTPAuth = true;
+            $this->SMTPSecure = 'tls';
+        } elseif (in_array($mailerMethodConfig, $externalSendingMethod)) {
+            $this->isExternal($mailerMethodConfig);
+        } else {
+            $this->isMail();
+        }
+    }
+
     /**
      * Send messages using SMTP.
      */
@@ -270,19 +318,9 @@ class MailerHelper extends AcyMailerPhp
         $this->externalMailer = $method;
     }
 
-    protected function elasticemailSend($MIMEHeader, $MIMEBody)
-    {
-        $result = $this->elasticemail->sendMail($this);
-        if (!$result) {
-            $this->setError($this->elasticemail->error);
-        }
-
-        return $result;
-    }
-
     protected function externalSend($MIMEHeader, $MIMEBody)
     {
-        $fromName = empty($this->FromName) ? $this->config->get('from_name', '') : $this->FromName;
+        $fromName = empty($this->FromName) ? $this->config->get('from_name') : $this->FromName;
         $reply_to = array_shift($this->ReplyTo);
 
         $attachments = [];
@@ -303,6 +341,7 @@ class MailerHelper extends AcyMailerPhp
             ['email' => $reply_to[0], 'name' => $reply_to[1]],
             !empty($this->bcc) ? $this->bcc : [],
             $attachments,
+            $this->currentMethodSetting,
         ];
         acym_trigger('onAcymSendEmail', $data);
 
@@ -439,12 +478,18 @@ class MailerHelper extends AcyMailerPhp
 
         $externalSending = false;
 
-        $isTransactional = $this->isForward || $this->isTest || $this->isSpamTest;
-        if (!empty($this->mailId) && !empty($this->defaultMail[$this->mailId]) && $this->mailClass->isTransactionalMail($this->defaultMail[$this->mailId])) {
-            $isTransactional = true;
+        $this->isOneTimeMail = $this->isTransactional = $this->isForward || $this->isTest || $this->isSpamTest;
+        if (!empty($this->mailId) && !empty($this->defaultMail[$this->mailId])) {
+            if ($this->mailClass->isTransactionalMail($this->defaultMail[$this->mailId])) {
+                $this->isTransactional = true;
+            }
+
+            if ($this->mailClass->isOneTimeMail($this->defaultMail[$this->mailId])) {
+                $this->isOneTimeMail = true;
+            }
         }
 
-        acym_trigger('onAcymProcessQueueExternalSendingCampaign', [&$externalSending, $isTransactional]);
+        acym_trigger('onAcymProcessQueueExternalSendingCampaign', [&$externalSending, $this->isTransactional]);
 
         $warnings = '';
 
@@ -499,7 +544,16 @@ class MailerHelper extends AcyMailerPhp
                 acym_enqueueMessage(nl2br($this->reportMessage), 'error');
             }
         } else {
-            $this->reportMessage = acym_translationSprintf('ACYM_SEND_SUCCESS', '<b>'.$this->Subject.'</b>', '<b>'.implode(' , ', $receivers).'</b>');
+            if ($this->isSendingMethodByListActive) {
+                $this->reportMessage = acym_translationSprintf(
+                    'ACYM_SEND_SUCCESS_WITH_SENDING_METHOD',
+                    '<b>'.$this->Subject.'</b>',
+                    '<b>'.implode(' , ', $receivers).'</b>',
+                    '<b>'.$this->currentSendingMethod.'</b>'
+                );
+            } else {
+                $this->reportMessage = acym_translationSprintf('ACYM_SEND_SUCCESS', '<b>'.$this->Subject.'</b>', '<b>'.implode(' , ', $receivers).'</b>');
+            }
             if (!empty($warnings)) {
                 $this->reportMessage .= " \n\n ".$warnings;
             }
@@ -528,16 +582,7 @@ class MailerHelper extends AcyMailerPhp
         $this->setFrom($this->getSendSettings('from_email'), $this->getSendSettings('from_name'));
     }
 
-    private function loadUrlAndStyle($mailId)
-    {
-        // Replace the urls into absolute urls
-        $this->defaultMail[$mailId]->body = acym_absoluteURL($this->defaultMail[$mailId]->body);
-
-        $style = $this->getEmailStylesheet($this->defaultMail[$mailId]);
-        $this->prepareEmailContent($this->defaultMail[$mailId], $style);
-    }
-
-    public function load($mailId, $user = null)
+    public function load(int $mailId, $user = null)
     {
         // If it's already loaded return the email
         if (isset($this->defaultMail[$mailId])) {
@@ -551,20 +596,9 @@ class MailerHelper extends AcyMailerPhp
         }
 
         global $acymLanguages;
-        if (!acym_isMultilingual() || $this->isAbTest) {
-            if (empty($this->defaultMail[$mailId])) {
-                $this->defaultMail[$mailId] = $this->mailClass->getOneByName($mailId, true);
-
-                if (!empty($this->defaultMail[$mailId]->id)) {
-                    $this->defaultMail[$this->defaultMail[$mailId]->id] = $this->defaultMail[$mailId];
-                }
-            }
-        } elseif (empty($this->overrideEmailToSend)) {
+        if (!$this->isAbTest && empty($this->overrideEmailToSend) && acym_isMultilingual()) {
             $defaultLanguage = $this->config->get('multilingual_default', ACYM_DEFAULT_LANGUAGE);
             $mails = $this->mailClass->getMultilingualMails($mailId);
-            if (empty($mails)) {
-                $mails = $this->mailClass->getMultilingualMailsByName($mailId);
-            }
 
             $this->userLanguage = $user != null && !empty($user->language) ? $user->language : $defaultLanguage;
 
@@ -617,7 +651,7 @@ class MailerHelper extends AcyMailerPhp
         $this->mail = clone $this->defaultMail[$mailId];
         acym_trigger('replaceContent', [&$this->defaultMail[$mailId], true]);
 
-        $this->loadUrlAndStyle($mailId);
+        $this->prepareEmailContent($mailId);
         if (!$this->isTest) {
             $this->storeArchiveVersion($mailId);
         }
@@ -628,7 +662,7 @@ class MailerHelper extends AcyMailerPhp
     private function storeArchiveVersion($mailId)
     {
         $mailId = intval($mailId);
-        if (empty($mailId) || $this->defaultMail[$mailId]->type !== $this->mailClass::TYPE_STANDARD) {
+        if (empty($mailId) || $this->defaultMail[$mailId]->type !== MailClass::TYPE_STANDARD) {
             return;
         }
 
@@ -647,92 +681,6 @@ class MailerHelper extends AcyMailerPhp
         $mailArchive->stylesheet = $this->defaultMail[$mailId]->stylesheet;
         $mailArchive->attachments = $this->defaultMail[$mailId]->attachments;
         $this->mailArchiveClass->save($mailArchive);
-    }
-
-    private function getEmailStylesheet(&$mail): array
-    {
-        static $foundationCSS = null;
-        if (empty($foundationCSS)) {
-            $foundationCSS = acym_fileGetContent(ACYM_MEDIA.'css'.DS.'libraries'.DS.'foundation_email.min.css');
-            // Remove the #acym__wysid__template prefix, not needed in sent emails
-            $foundationCSS = str_replace('#acym__wysid__template ', '', $foundationCSS);
-        }
-
-        $style = [];
-
-        // If this is a drag and drop mail we add foundation css for email
-        if (strpos($mail->body, 'acym__wysid__template') !== false) {
-            $style['foundation'] = $foundationCSS;
-        }
-
-        static $emailFixes = null;
-        if (empty($emailFixes)) {
-            $emailFixes = acym_getEmailCssFixes();
-        }
-        $style[] = $emailFixes;
-
-        if (!empty($mail->stylesheet)) {
-            $style[] = $mail->stylesheet;
-        }
-
-        $settingsStyles = $this->editorHelper->getSettingsStyle($mail->settings);
-        if (!empty($settingsStyles)) {
-            $style[] = $settingsStyles;
-        }
-
-        preg_match('@<[^>"t]*body[^>]*>@', $mail->body, $matches);
-        if (empty($matches[0])) {
-            $mail->body = '<body yahoo="fix">'.$mail->body.'</body>';
-        }
-
-        //We get all the content of the tag styles in the body
-        $styleFoundInBody = preg_match_all('/<\s*style[^>]*>(.*?)<\s*\/\s*style>/s', $mail->body, $matches);
-        if ($styleFoundInBody) {
-            foreach ($matches[1] as $match) {
-                $style[] = $match;
-            }
-        }
-
-        return $style;
-    }
-
-    private function prepareEmailContent(&$mail, $style)
-    {
-        // We inline all the styles we previously get
-        // Emogrifer deletes all the <style> tags in the body
-        global $emogrifiedMediaCSS;
-        $emogrifiedMediaCSS = '';
-        $mail->body = AcyCssInliner::fromHtml($mail->body)
-                                   ->inlineCss(implode('', $style))
-                                   ->renderBodyContent();
-
-        //We get all the media queries from all the CSS
-        $style[] = $emogrifiedMediaCSS;
-
-        preg_match('@<[^>"t]*/body[^>]*>@', $mail->body, $matches);
-        if (empty($matches[0])) {
-            $mail->body = $mail->body.'</body>';
-        }
-
-        // We remove the foundation library because it's already inlined and we just need the media queries
-        //By the way there are more than 23 000 char in foundation library
-        unset($style['foundation']);
-
-        $finalContent = '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head>';
-        $finalContent .= '<!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->';
-        $finalContent .= '<meta http-equiv="Content-Type" content="text/html; charset='.strtolower($this->config->get('charset')).'" />'."\n";
-        $finalContent .= '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'."\n";
-        $finalContent .= '<title>'.$mail->subject.'</title>'."\n";
-        //We add the CSS like that for gmail because it deletes the tag style over 8000 char
-        $finalContent .= '<style>'.implode('</style><style>', $style).'</style>';
-        $finalContent .= '<!--[if mso]><style type="text/css">#acym__wysid__template center > table { width: 580px; }</style><![endif]-->';
-        $finalContent .= '<!--[if !mso]><!--><style>#acym__wysid__template center > table { width: 100%; }</style><!--<![endif]-->';
-        if (!empty($mail->headers)) {
-            $finalContent .= $mail->headers;
-        }
-        $finalContent .= '</head>'.$mail->body.'</html>';
-
-        $mail->body = $finalContent;
     }
 
     private function canTrack($mailId, $user): bool
@@ -811,15 +759,46 @@ class MailerHelper extends AcyMailerPhp
             return false;
         }
 
+        if (!is_numeric($mailId)) {
+            if (empty($this->nameIdMap[$mailId])) {
+                $mail = $this->mailClass->getOneByName($mailId);
+                if (empty($mail->id)) {
+                    $this->reportMessage = 'Can not load the e-mail: '.acym_escape($mailId);
+                    $this->errorNumber = 2;
+
+                    if ($this->report) {
+                        acym_enqueueMessage($this->reportMessage, 'error');
+                    }
+
+                    return false;
+                }
+
+                $this->nameIdMap[$mailId] = $mail->id;
+            }
+
+            $mailId = $this->nameIdMap[$mailId];
+        }
+
+        // Can be a string for Joomla 3 and WordPress
+        $mailId = intval($mailId);
+
         // Load the mail with global tags replaced
         if (!$this->load($mailId, $receiver)) {
-            $this->reportMessage = 'Can not load the e-mail : '.acym_escape($mailId);
+            $this->reportMessage = 'Can not load the e-mail with ID n°'.$mailId;
+            $this->errorNumber = 2;
+
             if ($this->report) {
                 acym_enqueueMessage($this->reportMessage, 'error');
             }
-            $this->errorNumber = 2;
 
             return false;
+        }
+
+        // If the bounce is specific in this email we change it
+        if (!empty($this->defaultMail[$mailId]->bounce_email)) {
+            $this->Sender = $this->cleanText($this->defaultMail[$mailId]->bounce_email);
+        } else {
+            $this->Sender = $this->cleanText($this->config->get('bounce_email', ''));
         }
 
         // Specify a messageID which will be kept by most mail clients and in the feedback loop
@@ -838,7 +817,7 @@ class MailerHelper extends AcyMailerPhp
         }
         $this->addAddress($this->cleanText($receiver->email), $addedName);
 
-        $this->isHTML(true);
+        $this->isHTML();
 
         $this->Subject = $this->defaultMail[$mailId]->subject;
         $this->Body = $this->defaultMail[$mailId]->body;
@@ -966,20 +945,24 @@ class MailerHelper extends AcyMailerPhp
                 }
             }
         }
-        if (!empty($acymLanguages['userLanguage'])) unset($acymLanguages['userLanguage']);
+
+        if (!empty($acymLanguages['userLanguage'])) {
+            unset($acymLanguages['userLanguage']);
+        }
+
+        // A user based dtext may have inserted HTML content, we need to re-inline the CSS to it
+        foreach ($result as $oneResult) {
+            if (!empty($oneResult['emogrifier'])) {
+                $this->prepareEmailContent();
+                break;
+            }
+        }
 
         if ($this->config->get('multiple_part', false)) {
             $this->altbody = $this->textVersion($this->Body);
         }
 
         $this->replaceParams();
-
-        foreach ($result as $oneResult) {
-            if (!empty($oneResult) && $oneResult['emogrifier']) {
-                $this->loadUrlAndStyle($mailId);
-                break;
-            }
-        }
 
         $status = $this->send();
         if ($this->trackEmail) {
@@ -991,6 +974,41 @@ class MailerHelper extends AcyMailerPhp
         }
 
         return $status;
+    }
+
+    public function triggerFollowUpAgain(string $mailId, string $userId): void
+    {
+        if ($this->defaultMail[$mailId]->type !== MailClass::TYPE_FOLLOWUP) {
+            return;
+        }
+
+        $followUpClass = new FollowupClass();
+        $followUp = $followUpClass->getOneByMailId(intval($mailId));
+
+        if (empty($followUp)) {
+            return;
+        }
+
+        if (empty($followUp->loop)) {
+            return;
+        }
+
+        $lastEmail = $followUpClass->getLastEmail(intval($followUp->id));
+        if (empty($lastEmail) || $lastEmail->id != $mailId) {
+            return;
+        }
+
+        $delay = 0;
+        if (!empty($followUp->loop_delay)) {
+            $delay = $followUp->loop_delay;
+        }
+
+        $mailToSkip = [];
+        if (!empty($followUp->loop_mail_skip)) {
+            $mailToSkip = json_decode($followUp->loop_mail_skip);
+        }
+
+        $followUpClass->triggerFollowUp(intval($followUp->id), intval($userId), $delay, $mailToSkip);
     }
 
     private function trackingSales($mailId, $userId)
@@ -1039,7 +1057,7 @@ class MailerHelper extends AcyMailerPhp
 
     public function statClick($mailId, $userid, $fromStat = false)
     {
-        if (!$fromStat && !in_array($this->type, $this->mailClass::TYPES_WITH_STATS)) {
+        if (!$fromStat && !in_array($this->type, MailClass::TYPES_WITH_STATS)) {
             return;
         }
 
@@ -1299,7 +1317,6 @@ class MailerHelper extends AcyMailerPhp
 
         $embedSuccess = true;
 
-        //TODO maybe handle web pictures (.webp)
         $mimetypes = [
             'bmp' => 'image/bmp',
             'gif' => 'image/gif',
@@ -1468,15 +1485,15 @@ class MailerHelper extends AcyMailerPhp
         $this->parameters[$tagName] = $value;
     }
 
-    public function overrideEmail($subject, $body, $to)
+    public function overrideEmail(array $options): bool
     {
         // 1 - Get the override
         $overrideClass = new OverrideClass();
-        $override = $overrideClass->getMailByBaseContent($subject, $body);
+        $override = $overrideClass->getMailByBaseContent($options['subject'], $options['message']);
 
         // There is no override for this email, or the override is disabled, let Joomla send the email
         if (empty($override)) {
-            return false;
+            return $this->overrideAllEmails($options);
         }
 
         // 2 - Prepare the email and params
@@ -1499,19 +1516,18 @@ class MailerHelper extends AcyMailerPhp
             $this->addParam('param'.$i, $oneParam);
         }
 
-        $this->addParam('subject', $subject);
+        $this->addParam('subject', $options['subject']);
 
         // 3 - Send the email
         $this->overrideEmailToSend = $override;
-        $statusSend = $this->sendOne($override->id, $to);
+        $statusSend = $this->sendOne($override->id, $options['to']);
         if (!$statusSend && !empty($this->reportMessage)) {
             // Something went wrong when trying to send the override, log the information in the cron logs file
             $cronHelper = new CronHelper();
-            $cronHelper->messages[] = $this->reportMessage;
-            $cronHelper->saveReport();
+            $cronHelper->saveReport($this->reportMessage);
         }
 
-        return $statusSend;
+        return $statusSend === true;
     }
 
     private function getSendSettings($type, $mailId = 0)
@@ -1537,6 +1553,133 @@ class MailerHelper extends AcyMailerPhp
         }
 
         return $setting;
+    }
+
+    private function prepareEmailContent(?int $mailId = null): void
+    {
+        $this->handleRelativeURLs($mailId);
+        $this->inlineCSS($mailId);
+        $this->finalizeHtmlStructure($mailId);
+    }
+
+    private function handleRelativeURLs(?int $mailId = null): void
+    {
+        $mail = empty($mailId) ? $this : $this->defaultMail[$mailId];
+        $mail->body = acym_absoluteURL($mail->body);
+    }
+
+    private function inlineCSS(?int $mailId = null): void
+    {
+        $mail = empty($mailId) ? $this : $this->defaultMail[$mailId];
+
+        global $emogrifiedMediaCSS;
+        $emogrifiedMediaCSS = '';
+
+        $style = $this->getEmailStylesheet($mail);
+        // Inline styles for mail client compatibility: https://www.caniemail.com/features/html-style/
+        // It also deletes the <style> tags from the body
+        $cssInliner = AcyCssInliner::fromHtml($mail->body)->inlineCss(implode('', $style));
+        $domDocument = $cssInliner->getDomDocument();
+
+        // Remove the TinyMCE ids and the trailing ; in styles
+        $mail->body = preg_replace(
+            [
+                '# id="mce_\d+"#Ui',
+                '#(style="[^"]+);"#Ui',
+            ],
+            [
+                '',
+                '$1"',
+            ],
+            HtmlPruner::fromDomDocument($domDocument)
+                      ->removeRedundantClassesAfterCssInlined($cssInliner)
+                      ->renderBodyContent()
+        );
+
+        // This character is added in the title and text blocks to prevent TinyMCE from adding an extra space when the block is empty
+        $mail->body = str_replace('&zwj;', '', $mail->body);
+
+        // Remove the extra spaces in the style attributes
+        $mail->body = preg_replace_callback(
+            '#style="([^"]+)"#Ui',
+            function ($matches) {
+                return 'style="'.str_replace(['; ', ': '], [';', ':'], $matches[1]).'"';
+            },
+            $mail->body
+        );
+    }
+
+    private function finalizeHtmlStructure(?int $mailId = null): void
+    {
+        $mail = empty($mailId) ? $this : $this->defaultMail[$mailId];
+
+        $finalContent = '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">';
+        $finalContent .= '<head>';
+        $finalContent .= '<!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->';
+        $finalContent .= '<meta http-equiv="Content-Type" content="text/html; charset='.strtolower($this->config->get('charset')).'" />'."\n";
+        $finalContent .= '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'."\n";
+        $finalContent .= '<title>'.$mail->subject.'</title>'."\n";
+
+        //TODO maybe insert this CSS to a second <head> tag?
+        // Source: https://designmodo.com/html-css-emails/#:~:text=words%20of%20wisdom-,Internal%C2%A0CSS,-Undoubtedly%2C%20one%20of
+        // Apparently only for Yahoo on Android: https://www.caniemail.com/features/html-style/
+        global $emogrifiedMediaCSS;
+        $finalContent .= '<style>'.$emogrifiedMediaCSS.'</style>';
+        $finalContent .= '<!--[if mso]><style type="text/css">#acym__wysid__template center > table { width: 580px; }</style><![endif]-->';
+        $finalContent .= '<!--[if !mso]><!--><style>#acym__wysid__template center > table { width: 100%; }</style><!--<![endif]-->';
+
+        if (!empty($mail->headers)) {
+            $finalContent .= $mail->headers;
+        }
+        $finalContent .= '</head>';
+
+        preg_match('@<[^>"t]*body[^>]*>@', $mail->body, $matches);
+        if (empty($matches[0])) {
+            $mail->body = '<body>'.$mail->body.'</body>';
+        } else {
+            preg_match('@<[^>"t]*/body[^>]*>@', $mail->body, $matches);
+            if (empty($matches[0])) {
+                $mail->body .= '</body>';
+            }
+        }
+
+        $finalContent .= $mail->body;
+        $finalContent .= '</html>';
+
+        $mail->body = $finalContent;
+    }
+
+    private function getEmailStylesheet(object $mail): array
+    {
+        $style = [];
+
+        // If this is a drag and drop mail we add foundation css for email
+        if (strpos($mail->body, 'acym__wysid__template') !== false) {
+            static $foundationCSS = null;
+            if (empty($foundationCSS)) {
+                $foundationCSS = acym_fileGetContent(ACYM_MEDIA.'css'.DS.'libraries'.DS.'foundation_email.min.css');
+                // Remove the #acym__wysid__template prefix, not needed in sent emails
+                $foundationCSS = str_replace('#acym__wysid__template ', '', $foundationCSS);
+            }
+            $style['foundation'] = $foundationCSS;
+        }
+
+        static $emailFixes = null;
+        if (empty($emailFixes)) {
+            $emailFixes = acym_getEmailCssFixes();
+        }
+        $style['fixes'] = $emailFixes;
+
+        if (!empty($mail->stylesheet)) {
+            $style['custom_stylesheet'] = $mail->stylesheet;
+        }
+
+        $settingsStyles = $this->editorHelper->getSettingsStyle($mail->settings);
+        if (!empty($settingsStyles)) {
+            $style['settings_stylesheet'] = $settingsStyles;
+        }
+
+        return $style;
     }
 
     /* * * * * * * * * * * * * * * * *
@@ -1584,5 +1727,57 @@ class MailerHelper extends AcyMailerPhp
     public static function validateAddress($address, $patternselect = null)
     {
         return true;
+    }
+
+    private function overrideAllEmails(array $options): bool
+    {
+        if ($this->config->get('send_website_emails', 0) == 0) {
+            return false;
+        }
+
+        $this->trackEmail = false;
+        $this->autoAddUser = true;
+
+        $this->addParam('subject', $options['subject']);
+        $this->addParam('body', $options['message']);
+
+        $mailClass = new MailClass();
+        $this->overrideEmailToSend = $mailClass->getOneByName('acy_notification_cms');
+
+        if (!empty($options['headers'])) {
+            if (!is_array($options['headers'])) {
+                $options['headers'] = explode("\n", str_replace("\r\n", "\n", $options['headers']));
+            }
+
+            foreach ($options['headers'] as $header) {
+                if (strpos($header, ':') === false) {
+                    continue;
+                }
+
+                [$name, $content] = explode(':', trim($header), 2);
+                $this->addCustomHeader(trim($name), trim($content));
+            }
+        }
+
+        if (!empty($options['attachments'])) {
+            if (!is_array($options['attachments'])) {
+                $options['attachments'] = explode("\n", str_replace("\r\n", "\n", $options['attachments']));
+            }
+
+            foreach ($options['attachments'] as $fileName => $attachmentUrl) {
+                $fileName = is_string($fileName) ? $fileName : '';
+                $this->addAttachment($attachmentUrl, $fileName);
+            }
+        }
+
+        $statusSend = $this->sendOne($this->overrideEmailToSend->id, $options['to']);
+        if (!$statusSend && !empty($this->reportMessage)) {
+            // Something went wrong when trying to send the override, log the information in the cron logs file
+            $cronHelper = new CronHelper();
+            $cronHelper->messages[] = $this->reportMessage;
+            $cronHelper->saveReport();
+        }
+
+        return $statusSend === true;
     }
 }

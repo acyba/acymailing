@@ -5,6 +5,12 @@
         .switch-paddle {
             margin: 0;
         }
+
+        .acym__listing__empty {
+            [data-step="action"] {
+                margin-left: auto;
+            }
+        }
     }
 }
 

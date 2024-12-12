@@ -6,8 +6,13 @@ use AcyMailing\Libraries\acymClass;
 
 class UrlClass extends acymClass
 {
-    var $table = 'url';
-    var $pkey = 'id';
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->table = 'url';
+        $this->pkey = 'id';
+    }
 
     public function save($url)
     {

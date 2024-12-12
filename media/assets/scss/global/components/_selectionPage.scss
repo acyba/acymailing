@@ -31,6 +31,31 @@
             }
         }
 
+        &.acym__selection__card__promotion {
+            padding-bottom: 50px;
+
+            .acym__selection__card__promotion__text {
+                padding: 0.2rem 0 1.3rem;
+                line-height: 1.1;
+                font-size: .7rem;
+                color: $color-palette-cyan;
+            }
+
+            .acym__selection__card__lock {
+                position: absolute;
+                background: $very-light-gray;
+                top: 0px;
+                right: 1rem;
+                border: 1rem solid $very-light-gray;
+                border-radius: 0 0 4px 4px;
+            }
+
+            .acym__selection__card__lock i.acymicon-lock {
+                font-size: 20px;
+                color: #333;
+            }
+        }
+
         &:not(.acym__selection__card__disabled):hover {
             border-color: $color-palette-cyan;
         }
@@ -51,6 +76,12 @@
         .acym__selection__card__description {
             margin-bottom: 10px;
         }
+    }
+
+    .acym__selection__card-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .acym__sending__methods__choose__selection {
@@ -147,5 +178,166 @@
             }
         }
     }
+
+    .acym__campaign__selection__card {
+        border-radius: $secondary-radius;
+        transition: .3s ease-in-out;
+        transition-property: box-shadow, transform;
+        border: 0;
+        position: relative;
+        padding: 1.2rem;
+        min-width: 175px;
+        background-color: rgba($blue-light, .3);
+        align-content: space-between;
+        cursor: pointer;
+
+        &.acym__selection__card__disabled {
+            padding-bottom: 50px;
+
+            &:hover {
+                cursor: not-allowed;
+            }
+
+            .acym__selection__card__disabled__container {
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                padding: 10px 10px;
+                background-color: $dark-gray;
+                color: $very-light-gray;
+            }
+        }
+
+        &.acym__campaign__selection__card-selected, &.acym__selection__scroll.acym__selection__card-selected {
+            box-shadow: $box-shadow-card-hover;
+        }
+
+        .acym__selection__card__title {
+            font-size: 1.2rem;
+        }
+
+        .acym__selection__card__icon {
+            font-size: 35px;
+        }
+
+        .acym__selection__card__description {
+            margin-bottom: 10px;
+        }
+
+        &.acym__campaign__selection__card {
+            &:hover {
+                box-shadow: $box-shadow-card-hover;
+            }
+        }
+
+        &.acym__selection__card__promotion {
+            .acym__selection__card__promotion__text {
+                padding: 0.2rem 0 1.3rem;
+                line-height: 1.1;
+                font-size: .7rem;
+                color: $color-palette-cyan;
+            }
+
+            .acym__selection__card__lock {
+                position: absolute;
+                background: $very-light-gray;
+                top: 0px;
+                right: 1rem;
+                border: 1rem solid $very-light-gray;
+                border-radius: 0 0 4px 4px;
+            }
+
+            .acym__selection__card__lock i.acymicon-lock {
+                font-size: 20px;
+                color: #333;
+            }
+        }
+
+        .acym__promotion__disabled__button {
+            background-color: #f1f1f1 !important;
+            border: 1px solid #f1f1f1 !important;
+            color: #fefefe !important;
+            opacity: 1;
+        }
+    }
+
+    .acym__campaign__selection__card-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .acym__campaign__selection__button-select {
+        margin-top: 1rem;
+        align-self: center;
+    }
+
+    .acym__promotion__popup__container {
+        position: fixed;
+        top: 0;
+        width: 200%;
+        height: 100%;
+        z-index: 1000;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media screen and (max-width: 1256px) {
+        .acym__promotion__popup__container {
+            width: 100%;
+        }
+    }
+
+    .acym__promotion__popup__content {
+        background-color: $white;
+        padding: 2rem;
+        border-radius: $border-radius;
+        width: 90%;
+        max-width: 600px;
+        box-shadow: 0 0 0.6rem rgba(0, 0, 0, 0.1);
+    }
+
+    .acym__promotion__popup__content .acym__promotion__price {
+        font-size: 2.3rem;
+        color: $color-palette-dark-blue;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .acym__promotion__popup__content .acym__promotion__text {
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .acym__promotion__popup__content .acym__promotion__text i {
+        color: $warning-color;
+        font-size: 1.2rem;
+        vertical-align: middle;
+    }
+
+    .acym__promotion__popup__content .acym__popup__content {
+        margin-bottom: 1.25rem;
+    }
+
+    .acym__promotion__button__container {
+        display: flex;
+        gap: 1.25rem;
+    }
+
+    .popup-button {
+        min-width: 40%;
+        margin: 0;
+    }
+
+    .acym__title {
+        font-weight: normal;
+    }
 }
+
+
 

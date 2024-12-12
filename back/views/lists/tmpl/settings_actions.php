@@ -1,11 +1,13 @@
-<h5 class="cell auto medium-text-left text-center hide-for-small-only hide-for-medium-only acym__title"><?php echo acym_translation('ACYM_LIST'); ?></h5>
+<h5 class="cell auto medium-text-left text-center hide-for-small-only hide-for-medium-only acym__title margin-bottom-0"><?php echo acym_translation('ACYM_LIST'); ?></h5>
 <?php echo acym_cancelButton();
 $beforeSave = '';
-if (!empty($data['translation_languages'])) {
-    $beforeSave = 'acym-data-before="acym_helperSelectionMultilingual.changeLanguage_list(acym_helperSelectionMultilingual.mainLanguage)"';
-}
-if (!empty($data['listInformation']->id) && !empty($data['subscribersEntitySelect'])) {
-    echo $data['subscribersEntitySelect'];
+if ($data['currentTab'] === $data['tabs']['subscribers']) {
+    if (!empty($data['translation_languages'])) {
+        $beforeSave = 'acym-data-before="acym_helperSelectionMultilingual.changeLanguage_list(acym_helperSelectionMultilingual.mainLanguage)"';
+    }
+    if (!empty($data['listInformation']->id) && !empty($data['subscribersEntitySelect'])) {
+        echo $data['subscribersEntitySelect'];
+    }
 }
 ?>
 <button <?php echo $beforeSave; ?>
