@@ -28,54 +28,76 @@ trait Edition
     {
         acym_setVar('layout', 'new_email');
 
+        $data = [
+            'selectedType' => acym_getVar('string', 'email_type', ''),
+            'menuClass' => $this->menuClass,
+        ];
+
         $listClass = new ListClass();
         if (acym_isAdmin()) {
             $returnUrl = urlencode(base64_encode(acym_completeLink('campaigns')));
             $favoriteTemplate = $this->config->get('favorite_template', 0);
+            $welcomeUnsub = '&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl;
 
             if (empty($favoriteTemplate)) {
-                $data = [
-                    'lists' => $listClass->getAllForSelect(),
-                    'campaign_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=now'),
-                    'campaign_test_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=now&abtest=1'),
-                    'campaign_auto_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=auto'),
-                    'followup_link' => acym_completeLink('campaigns&task=edit&step=followupTrigger'),
-                    'campaign_scheduled_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'),
-                    'welcome_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_WELCOME.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
-                    'unsubscribe_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_UNSUBSCRIBE.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl),
-                ];
+                $data = array_merge(
+                    $data,
+                    [
+                        'lists' => $listClass->getAllForSelect(),
+                        'campaign_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=now'),
+                        'campaign_test_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=now&abtest=1'),
+                        'campaign_auto_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=auto'),
+                        'followup_link' => acym_completeLink('campaigns&task=edit&step=followupTrigger'),
+                        'campaign_scheduled_link' => acym_completeLink('campaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'),
+                        'welcome_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_WELCOME.$welcomeUnsub),
+                        'unsubscribe_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_UNSUBSCRIBE.$welcomeUnsub),
+                    ]
+                );
             } else {
-                $data = [
-                    'lists' => $listClass->getAllForSelect(),
-                    'campaign_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=now'),
-                    'campaign_test_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=now&abtest=1'),
-                    'campaign_auto_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=auto'),
-                    'followup_link' => acym_completeLink('campaigns&task=edit&step=followupTrigger'),
-                    'campaign_scheduled_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=scheduled'),
-                    'welcome_email_link' => acym_completeLink(
-                        'mails&task=edit&type='.MailClass::TYPE_WELCOME.'&from='.$favoriteTemplate.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl
-                    ),
-                    'unsubscribe_email_link' => acym_completeLink(
-                        'mails&task=edit&type='.MailClass::TYPE_UNSUBSCRIBE.'&from='.$favoriteTemplate.'&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl
-                    ),
-                ];
+                $data = array_merge(
+                    $data,
+                    [
+                        'lists' => $listClass->getAllForSelect(),
+                        'campaign_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=now'),
+                        'campaign_test_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=now&abtest=1'),
+                        'campaign_auto_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=auto'),
+                        'followup_link' => acym_completeLink('campaigns&task=edit&step=followupTrigger'),
+                        'campaign_scheduled_link' => acym_completeLink('campaigns&task=edit&step=editEmail&from='.$favoriteTemplate.'&campaign_type=scheduled'),
+                        'welcome_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_WELCOME.'&from='.$favoriteTemplate.$welcomeUnsub),
+                        'unsubscribe_email_link' => acym_completeLink('mails&task=edit&type='.MailClass::TYPE_UNSUBSCRIBE.'&from='.$favoriteTemplate.$welcomeUnsub),
+                    ]
+                );
             }
+
+            $data['extraBlocks'] = [];
+            acym_trigger('getNewEmailsTypeBlock', [&$data['extraBlocks']]);
+            $data['isNewslettersTab'] = !in_array(
+                $data['selectedType'],
+                array_merge(
+                    [
+                        MailClass::TYPE_WELCOME,
+                        MailClass::TYPE_UNSUBSCRIBE,
+                    ],
+                    array_column($data['extraBlocks'], 'email_type')
+                )
+            );
         } else {
             global $Itemid;
             $itemId = empty($Itemid) ? '' : '&Itemid='.$Itemid;
             $returnUrl = urlencode(base64_encode(acym_frontendLink('frontcampaigns'.$itemId)));
 
-            $welcomeUnsub = '&list_id={dataid}&type_editor=acyEditor'.$itemId.'&return='.$returnUrl;
-            $data = [
-                'lists' => $listClass->getAllForSelect(true, acym_currentUserId()),
-                'campaign_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=now'.$itemId.'&'.acym_getFormToken()),
-                'campaign_scheduled_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'.$itemId.'&'.acym_getFormToken()),
-                'welcome_email_link' => acym_frontendLink('frontmails&task=edit&type='.MailClass::TYPE_WELCOME.$welcomeUnsub.'&'.acym_getFormToken()),
-                'unsubscribe_email_link' => acym_frontendLink('frontmails&task=edit&type='.MailClass::TYPE_UNSUBSCRIBE.$welcomeUnsub.'&'.acym_getFormToken()),
-            ];
+            $welcomeUnsub = '&list_id={dataid}&type_editor=acyEditor&return='.$returnUrl.$itemId;
+            $data = array_merge(
+                $data,
+                [
+                    'lists' => $listClass->getAllForSelect(true, acym_currentUserId()),
+                    'campaign_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=now'.$itemId.'&'.acym_getFormToken()),
+                    'campaign_scheduled_link' => acym_frontendLink('frontcampaigns&task=edit&step=chooseTemplate&campaign_type=scheduled'.$itemId.'&'.acym_getFormToken()),
+                    'welcome_email_link' => acym_frontendLink('frontmails&task=edit&type='.MailClass::TYPE_WELCOME.$welcomeUnsub.'&'.acym_getFormToken()),
+                    'unsubscribe_email_link' => acym_frontendLink('frontmails&task=edit&type='.MailClass::TYPE_UNSUBSCRIBE.$welcomeUnsub.'&'.acym_getFormToken()),
+                ]
+            );
         }
-        $data['menuClass'] = $this->menuClass;
-        $data['selectedType'] = acym_getVar('string', 'email_type', '');
 
         parent::display($data);
     }
@@ -103,7 +125,7 @@ trait Edition
         $campaignType = $this->getVarFiltersListing('string', 'campaign_type', 'now');
         $abTest = acym_getVar('bool', 'abtest', false);
 
-        $this->setTaskListing($campaignType === 'auto' ? 'campaigns_auto' : 'campaigns');
+        $this->setTaskListing($campaignType);
 
         if (!empty($campaign)) {
             if (!$campaignClass->hasUserAccess($campaign->id)) {
@@ -202,7 +224,7 @@ trait Edition
             $editLink .= '&campaignId='.$campaignId;
 
             if (in_array($data['mailInformation']->sending_type, ['birthday', 'woocommerce_cart'])) {
-                $this->setTaskListing('specificListing', $data['mailInformation']->sending_type);
+                $this->setTaskListing($data['mailInformation']->sending_type);
             }
         }
 

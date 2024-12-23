@@ -193,6 +193,58 @@ class CronHelper extends acymObject
         $this->emailTypes = $emailTypes;
     }
 
+    public function addMessage(string $message)
+    {
+        $this->messages[] = $message;
+    }
+
+    public function handleCronReport()
+    {
+        $sendReport = $this->config->get('cron_sendreport');
+
+        if (($sendReport == 2 && $this->processed) || $sendReport == 1 || ($sendReport == 3 && $this->errorDetected)) {
+            $mailer = new MailerHelper();
+            $mailer->report = false;
+            $mailer->autoAddUser = true;
+            $mailer->addParam('report', implode('<br />', $this->messages));
+            $mailer->addParam('mainreport', $this->mainMessage);
+            $mailer->addParam('detailreport', implode('<br />', $this->detailMessages));
+
+            $receiverString = $this->config->get('cron_sendto');
+            $receivers = [];
+            if (substr_count($receiverString, '@') > 1) {
+                $receivers = explode(' ', trim(preg_replace('# +#', ' ', str_replace([';', ','], ' ', $receiverString))));
+            } else {
+                $receivers[] = trim($receiverString);
+            }
+
+            if (!empty($receivers)) {
+                foreach ($receivers as $oneReceiver) {
+                    if (empty($oneReceiver)) {
+                        continue;
+                    }
+
+                    try {
+                        $mailer->sendOne('acy_report', $oneReceiver);
+                    } catch (\Exception $e) {
+                        acym_logError('Error while sending the cron report to '.$oneReceiver.' : '.$e->getMessage());
+                    }
+                }
+            }
+        }
+
+        $this->saveReport();
+
+        $newConfig = new \stdClass();
+        $newConfig->cron_report = implode("\n", $this->messages);
+
+        if (strlen($newConfig->cron_report) > 800) {
+            $newConfig->cron_report = substr($newConfig->cron_report, 0, 795).'...';
+        }
+
+        $this->config->save($newConfig);
+    }
+
     /**
      * Call made by the API to remove the API key when the user unlinks the website from their account page on our website
      *
@@ -734,52 +786,5 @@ class CronHelper extends acymObject
             }
             acym_makeCurlCall(acym_frontendLink('cron&task=cron&external_sending_repeat=1&t='.time().$cronKey), ['verifySsl' => false]);
         }
-    }
-
-    public function handleCronReport()
-    {
-        $sendReport = $this->config->get('cron_sendreport');
-
-        if (($sendReport == 2 && $this->processed) || $sendReport == 1 || ($sendReport == 3 && $this->errorDetected)) {
-            $mailer = new MailerHelper();
-            $mailer->report = false;
-            $mailer->autoAddUser = true;
-            $mailer->addParam('report', implode('<br />', $this->messages));
-            $mailer->addParam('mainreport', $this->mainMessage);
-            $mailer->addParam('detailreport', implode('<br />', $this->detailMessages));
-
-            $receiverString = $this->config->get('cron_sendto');
-            $receivers = [];
-            if (substr_count($receiverString, '@') > 1) {
-                $receivers = explode(' ', trim(preg_replace('# +#', ' ', str_replace([';', ','], ' ', $receiverString))));
-            } else {
-                $receivers[] = trim($receiverString);
-            }
-
-            if (!empty($receivers)) {
-                foreach ($receivers as $oneReceiver) {
-                    if (empty($oneReceiver)) {
-                        continue;
-                    }
-
-                    try {
-                        $mailer->sendOne('acy_report', $oneReceiver);
-                    } catch (\Exception $e) {
-                        acym_logError('Error while sending the cron report to '.$oneReceiver.' : '.$e->getMessage());
-                    }
-                }
-            }
-        }
-
-        $this->saveReport();
-
-        $newConfig = new \stdClass();
-        $newConfig->cron_report = implode("\n", $this->messages);
-
-        if (strlen($newConfig->cron_report) > 800) {
-            $newConfig->cron_report = substr($newConfig->cron_report, 0, 795).'...';
-        }
-
-        $this->config->save($newConfig);
     }
 }

@@ -60,6 +60,7 @@ class jMail_acym extends PHPMailer
                     'subject' => $this->Subject,
                     'message' => $this->Body,
                     'to' => $this->to[0][0],
+                    'isHtml' => empty($this->ContentType) || $this->ContentType !== 'text/plain',
                 ]
             );
         }

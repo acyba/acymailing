@@ -77,6 +77,8 @@ trait Followup
             $followup = new stdClass();
         }
 
+        $this->setTaskListing('followup');
+
         $data = [
             'workflowHelper' => new WorkflowHelper(),
             'followup' => $followup,

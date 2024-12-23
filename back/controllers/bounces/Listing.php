@@ -169,7 +169,7 @@ trait Listing
 
         //Load the cron class to save the report if there is one
         $cronHelper = new CronHelper();
-        $cronHelper->saveReport($nbMessagesReport, $bounceHelper->messages);
+        $cronHelper->saveReport([$nbMessagesReport], $bounceHelper->messages);
 
         if ($this->config->get('bounce_max', 0) != 0 && $nbMessages > $this->config->get('bounce_max', 0)) {
             //We still have some messages...

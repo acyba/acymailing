@@ -1,4 +1,5 @@
 <?php
+
 $newsletters = [
     [
         'data-link' => $data['campaign_link'],
@@ -60,7 +61,7 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
 		</div>
 		<div class="cell shrink medium-4 margin-bottom-3">
 			<ul class="acym__selection__page__tabs" id="workflow">
-                <?php if ($data['selectedType'] !== 'welcome' && $data['selectedType'] !== 'unsubscribe') { ?>
+                <?php if ($data['isNewslettersTab']) { ?>
 					<li class="step current_step" data-tab="acym__campaign__selection__newsletters">
 						<a>
                             <?php echo acym_translation('ACYM_NEWSLETTERS'); ?>
@@ -88,7 +89,7 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
 		<!-- Newsletters -->
 		<div id="acym__campaign__selection__newsletters"
 			 class="cell grid-x grid-margin-x align-center margin-y"
-			 style="<?php echo ($data['selectedType'] !== 'welcome' && $data['selectedType'] !== 'unsubscribe') ? '' : 'display: none;'; ?>">
+			 style="<?php echo $data['isNewslettersTab'] ? '' : 'display: none;'; ?>">
             <?php
             foreach ($newsletters as $oneNewsletterType) {
                 $classes = '';
@@ -137,7 +138,7 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
         <?php if (acym_isAllowed('mails')) { ?>
 			<div id="acym__campaign__selection__onetime"
 				 class="cell grid-x grid-margin-x align-center margin-y"
-				 style="<?php echo ($data['selectedType'] === 'welcome' || $data['selectedType'] === 'unsubscribe') ? '' : 'display: none;'; ?>">
+				 style="<?php echo $data['isNewslettersTab'] ? 'display: none;' : ''; ?>">
                 <?php
                 $classes = $classesOneTimeEmails;
                 if ($data['selectedType'] === 'welcome') {
@@ -187,9 +188,7 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
 					</button>
 				</div>
                 <?php
-                $extraBlocks = [];
-                acym_trigger('getNewEmailsTypeBlock', [&$extraBlocks]);
-                foreach ($extraBlocks as $oneExtra) {
+                foreach ($data['extraBlocks'] as $oneExtra) {
                     if (!acym_level($oneExtra['level'])) {
                         continue;
                     }
@@ -221,6 +220,5 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
         }
         acym_formOptions();
         ?>
-
 </form>
 

@@ -37,16 +37,16 @@ trait Edition
             $return = empty($return) ? '' : urldecode(base64_decode($return));
         }
 
-        $type = acym_getVar('string', 'type');
+        $type = acym_getVar('string', 'type', '');
         $fromId = acym_getVar('int', 'from');
         $listIds = acym_getVar('int', 'list_id', []);
 
         if (in_array($type, [MailClass::TYPE_WELCOME, MailClass::TYPE_UNSUBSCRIBE])) {
             array_pop($this->breadcrumb);
             $this->breadcrumb[acym_translation('ACYM_LISTS')] = acym_completeLink('lists');
+            $campaignController->setTaskListing($type);
 
             if (!empty($listIds)) {
-                $campaignController->setTaskListing($type);
                 $listIds = [$listIds];
             }
         }

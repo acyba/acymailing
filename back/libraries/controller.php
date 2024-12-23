@@ -6,17 +6,19 @@ use AcyMailing\Helpers\HeaderHelper;
 
 class acymController extends acymObject
 {
-    var $name = '';
-    var $defaulttask = 'listing';
-    var $breadcrumb = [];
-    var $loadScripts = [];
     private $currentClass = null;
-    protected $publicFrontTasks = [];
-    protected $allowedTasks = [];
-    protected $menuAlias = [];
-    var $sessionName = '';
-    var $taskCalled = '';
-    protected $menuClass = '';
+    private string $sessionName;
+
+    protected array $breadcrumb = [];
+    protected array $loadScripts = [];
+    protected array $publicFrontTasks = [];
+    protected array $allowedTasks = [];
+    protected array $menuAlias = [];
+    protected string $taskCalled = '';
+    protected string $menuClass = '';
+
+    public string $defaulttask = 'listing';
+    var string $name = '';
 
     public function __construct()
     {
@@ -187,7 +189,7 @@ class acymController extends acymObject
         }
     }
 
-    public function setDefaultTask($task)
+    public function setDefaultTask(string $task): void
     {
         $this->defaulttask = $task;
     }

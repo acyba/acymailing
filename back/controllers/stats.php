@@ -26,12 +26,12 @@ class StatsController extends acymController
     var $selectedMailIds = [];
     var $multiLanguageMailAdded = [];
     var $generatedMailAdded = [];
-    var $defaulttask = 'globalStats';
 
     public function __construct()
     {
-        $this->defaulttask = 'globalStats';
         parent::__construct();
+
+        $this->defaulttask = 'globalStats';
         $this->breadcrumb[acym_translation('ACYM_STATISTICS')] = acym_completeLink('stats');
         $this->loadScripts = [
             'all' => ['datepicker', 'thumbnail'],

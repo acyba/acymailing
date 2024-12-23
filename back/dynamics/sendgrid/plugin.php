@@ -127,7 +127,7 @@ class plgAcymSendgrid extends acymPlugin
 
         $responseMailer = $this->callApiSendingMethod(self::SENDING_METHOD_API_URL.'mail/send', $data, $headers, 'POST');
 
-        if (is_null($responseMailer)) {
+        if (empty($responseMailer['errors'][0]['message'])) {
             $response['error'] = false;
         } else {
             $response['error'] = true;

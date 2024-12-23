@@ -6,8 +6,8 @@ use Joomla\Component\Content\Site\Helper\RouteHelper;
 
 class plgAcymArticle extends acymPlugin
 {
-    private $groupedByCategory = false;
-    private $currentCategory = null;
+    private bool $groupedByCategory = false;
+    private int $currentCategory = 0;
 
     public function __construct()
     {
@@ -86,7 +86,7 @@ class plgAcymArticle extends acymPlugin
     {
         $element = acym_getColumns('content', false);
         if (empty($element)) return;
-        foreach ($element as $key => $value) {
+        foreach ($element as $value) {
             $this->elementOptions[$value] = [$value];
         }
         $this->elementOptions['image_intro_caption'] = ['image_intro_caption'];
@@ -95,7 +95,9 @@ class plgAcymArticle extends acymPlugin
 
     public function getPossibleIntegrations()
     {
-        if (!acym_isAdmin() && $this->getParam('front', 'all') === 'hide') return null;
+        if (!acym_isAdmin() && $this->getParam('front', 'all') === 'hide') {
+            return null;
+        }
 
         return $this->pluginDescription;
     }
@@ -130,6 +132,28 @@ class plgAcymArticle extends acymPlugin
                 'options' => $this->displayOptions,
             ],
         ];
+
+        if (!acym_isMultilingual() && acym_isExtensionActive('com_falang')) {
+            $languageSelection = [
+                'default' => 'ACYM_DEFAULT',
+            ];
+            $languages = acym_loadObjectList('SELECT `lang_id`, `title_native` FROM #__languages ORDER BY `title_native`');
+            foreach ($languages as $oneLanguage) {
+                $languageSelection[$oneLanguage->lang_id] = $oneLanguage->title_native;
+            }
+
+            $displayOptions = array_merge(
+                $displayOptions,
+                [
+                    [
+                        'title' => 'ACYM_LANGUAGE',
+                        'type' => 'select',
+                        'name' => 'falang',
+                        'options' => $languageSelection,
+                    ],
+                ]
+            );
+        }
 
         // Handle joomla custom fields
         if (ACYM_J37) {
@@ -458,8 +482,12 @@ class plgAcymArticle extends acymPlugin
                         AND element.id = '.intval($tag->id);
 
         $element = $this->initIndividualContent($tag, $query);
-        if (empty($element)) return '';
+        if (empty($element)) {
+            return '';
+        }
 
+        $this->pluginHelper->contextLanguage = $this->getLanguage(null, true);
+        $this->pluginHelper->translateItem($element, $tag, 'content');
         $varFields = $this->getCustomLayoutVars($element);
 
         $completeId = $element->id;
@@ -619,8 +647,8 @@ class plgAcymArticle extends acymPlugin
         $result = '<div class="acymailing_content">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 
         $categoryTitle = '';
-        if (!empty($tag->groupbycat) && $this->currentCategory !== $element->catid) {
-            $this->currentCategory = $element->catid;
+        if (!empty($tag->groupbycat) && $this->currentCategory !== intval($element->catid)) {
+            $this->currentCategory = intval($element->catid);
 
             $categoryTitle = '<h1 class="acymailing_category_title">'.$element->category_title.'</h1>';
             $categoryLink = $this->finalizeLink('index.php?option=com_content&view=category&id='.$element->catid, $tag);

@@ -182,14 +182,14 @@ class QueueClass extends acymClass
         );
 
         $elementsPerStatus = acym_loadObjectList($queryStatus.' GROUP BY active', 'active');
-        for ($i = 0 ; $i < 2 ; $i++) {
-            $elementsPerStatus[$i] = empty($elementsPerStatus[$i]) ? 0 : $elementsPerStatus[$i]->number;
+        foreach ($elementsPerStatus as $i => $element) {
+            $elementsPerStatus[$i] = empty($element->number) ? 0 : $element->number;
         }
 
         $results['status'] = [
             'all' => array_sum($elementsPerStatus) + $automationNumber + $followupNumber,
-            'sending' => $elementsPerStatus[1],
-            'paused' => $elementsPerStatus[0],
+            'sending' => $elementsPerStatus[1] ?? 0,
+            'paused' => $elementsPerStatus[0] ?? 0,
             'automation' => $automationNumber,
             'followup' => $followupNumber,
         ];

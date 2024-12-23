@@ -12,6 +12,7 @@ class PluginHelper extends acymObject
     public $name = 'content';
     public $mailerHelper;
     public $wrappedText = '';
+    public string $contextLanguage;
 
     /*
      * Convert an array of elements into a table with multiple columns based on the $parameter variable
@@ -1381,39 +1382,53 @@ class PluginHelper extends acymObject
     }
 
     /**
-     * In Joomla we can translate elements in extensions using the FaLang or JoomFish extensions
-     *
-     * @param     $item
-     * @param     $tag
-     * @param     $referenceTable
-     * @param int $referenceId
+     * In Joomla, we can translate elements in extensions using the FaLang extension
      */
-    public function translateItem(&$item, &$tag, $referenceTable, $referenceId = 0)
+    public function translateItem(object &$item, object &$tag, string $referenceTable, int $referenceId = 0): void
     {
-        if (empty($tag->lang) || (!file_exists(ACYM_ROOT.'components'.DS.'com_falang') && !file_exists(ACYM_ROOT.'components'.DS.'com_joomfish'))) return;
-        $langid = intval(substr($tag->lang, strpos($tag->lang, ',') + 1));
+        if (!acym_isExtensionActive('com_falang')) {
+            return;
+        }
 
-        if (empty($langid)) return;
+        if (!empty($tag->falang)) {
+            $langId = $tag->falang;
+        } elseif (!empty($tag->lang)) {
+            $langId = intval(substr($tag->lang, strpos($tag->lang, ',') + 1));
+        } elseif (!empty($this->contextLanguage)) {
+            $languages = acym_loadObjectList('SELECT `lang_id`, `lang_code` FROM #__languages', 'lang_code');
+            if (!empty($languages[$this->contextLanguage])) {
+                $langId = $languages[$this->contextLanguage]->lang_id;
+            }
+        }
 
-        if (empty($referenceId)) $referenceId = $tag->id;
+        if (empty($langId)) {
+            return;
+        }
 
-        $table = file_exists(ACYM_ROOT.'components'.DS.'com_falang') ? '`#__falang_content`' : '`#__jf_content`';
+        if (empty($referenceId)) {
+            $referenceId = $tag->id;
+        }
 
-        $query = 'SELECT `reference_field`, `value` 
-					FROM '.$table.' 
-					WHERE `published` = 1 
-						AND `reference_table` = '.acym_escapeDB($referenceTable).' 
-						AND `language_id` = '.intval($langid).' 
-						AND `reference_id` = '.intval($referenceId);
-        $translations = acym_loadObjectList($query);
+        $translations = acym_loadObjectList(
+            'SELECT `reference_field`, `value` 
+            FROM `#__falang_content` 
+            WHERE `published` = 1 
+                AND `reference_table` = '.acym_escapeDB($referenceTable).' 
+                AND `language_id` = '.intval($langId).' 
+                AND `reference_id` = '.intval($referenceId)
+        );
 
-        if (empty($translations)) return;
+        if (empty($translations)) {
+            return;
+        }
 
         foreach ($translations as $oneTranslation) {
-            if (empty($oneTranslation->value)) continue;
+            if (empty($oneTranslation->value)) {
+                continue;
+            }
 
-            $translatedfield = $oneTranslation->reference_field;
-            $item->$translatedfield = $oneTranslation->value;
+            $translatedField = $oneTranslation->reference_field;
+            $item->$translatedField = $oneTranslation->value;
         }
     }
 

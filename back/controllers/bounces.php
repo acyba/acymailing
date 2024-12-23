@@ -20,13 +20,14 @@ class BouncesController extends acymController
 
     public function __construct()
     {
-        $this->defaulttask = 'bounces';
         parent::__construct();
+
+        $this->defaulttask = 'bounces';
         $this->breadcrumb[acym_translation('ACYM_MAILBOX_ACTIONS')] = acym_completeLink('bounces');
         $this->storeRedirectListing();
     }
 
-    public function storeRedirectListing($fromListing = false)
+    public function storeRedirectListing(bool $fromListing = false): void
     {
         $variableName = 'ctrl_mailboxes_stored';
         acym_session();

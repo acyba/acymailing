@@ -26,12 +26,43 @@ class CampaignsController extends acymController
     use Actions;
     use Tests;
 
-    private $stepContainerClass = '';
+    const TASK_TYPE_CAMPAIGN = 'campaigns';
+    const TASK_TYPE_CAMPAIGN_AUTO = 'campaigns_auto';
+    const TASK_TYPE_WELCOME = 'welcome';
+    const TASK_TYPE_UNSUBSCRIBE = 'unsubscribe';
+    const TASK_TYPE_FOLLOWUP = 'followup';
+    const TASK_TYPE_SPECIFIC_LISTING = 'specificListing';
+    const TASK_TYPE_MAILBOX_ACTION = 'mailbox_action';
+
+    const TASKS_TO_REMEMBER_FOR_LISTING = [
+        '',
+        self::TASK_TYPE_CAMPAIGN,
+        self::TASK_TYPE_CAMPAIGN_AUTO,
+        self::TASK_TYPE_WELCOME,
+        self::TASK_TYPE_UNSUBSCRIBE,
+        self::TASK_TYPE_FOLLOWUP,
+        self::TASK_TYPE_SPECIFIC_LISTING,
+        self::TASK_TYPE_MAILBOX_ACTION,
+    ];
+
+    const CAMPAIGN_TYPE_TO_TASK = [
+        'now' => self::TASK_TYPE_CAMPAIGN,
+        'scheduled' => self::TASK_TYPE_CAMPAIGN,
+        'auto' => self::TASK_TYPE_CAMPAIGN_AUTO,
+        'followup' => self::TASK_TYPE_FOLLOWUP,
+        'welcome' => self::TASK_TYPE_WELCOME,
+        'unsubscribe' => self::TASK_TYPE_UNSUBSCRIBE,
+        'birthday' => self::TASK_TYPE_SPECIFIC_LISTING,
+        'woocommerce_cart' => self::TASK_TYPE_SPECIFIC_LISTING,
+    ];
+
+    private string $stepContainerClass = '';
 
     public function __construct()
     {
-        $this->defaulttask = 'campaigns';
         parent::__construct();
+
+        $this->defaulttask = 'campaigns';
         $this->breadcrumb[acym_translation('ACYM_EMAILS')] = acym_completeLink('campaigns');
         $this->loadScripts = [
             'recipients' => ['vue-applications' => ['entity_select']],

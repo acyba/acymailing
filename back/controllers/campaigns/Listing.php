@@ -17,38 +17,29 @@ trait Listing
         $this->storeRedirectListing(true);
     }
 
-    public function storeRedirectListing($fromListing = false)
+    public function storeRedirectListing(bool $fromListing = false): void
     {
-        $isFrontJoomla = !acym_isAdmin() && ACYM_CMS == 'joomla';
-        $variableName = $isFrontJoomla ? 'ctrl_stored_front' : 'ctrl_stored';
         acym_session();
-        $taskToStore = [
-            '',
-            'campaigns',
-            'campaigns_auto',
-            'welcome',
-            'unsubscribe',
-            'followup',
-            'specificListing',
-            'mailbox_action',
-        ];
+        $isFrontJoomla = !acym_isAdmin() && ACYM_CMS === 'joomla';
+        $variableName = $isFrontJoomla ? 'ctrl_stored_front' : 'ctrl_stored';
+
         $currentTask = acym_getVar('string', 'task', '');
-        if (!in_array($currentTask, $taskToStore) && !$fromListing) {
+        if (!in_array($currentTask, self::TASKS_TO_REMEMBER_FOR_LISTING) && !$fromListing) {
             return;
         }
 
-        if ((empty($currentTask) || !in_array($currentTask, $taskToStore)) && !empty($_SESSION[$variableName])) {
+        if ((empty($currentTask) || !in_array($currentTask, self::TASKS_TO_REMEMBER_FOR_LISTING)) && !empty($_SESSION[$variableName])) {
             $taskToGo = is_array($_SESSION[$variableName]) ? $_SESSION[$variableName]['task'].'&type='.$_SESSION[$variableName]['type'] : $_SESSION[$variableName];
             $link = acym_completeLink(($isFrontJoomla ? 'front' : '').'campaigns&task='.$taskToGo, false, true);
             acym_redirect($link);
         } else {
-            if (empty($currentTask) || !in_array($currentTask, $taskToStore)) {
-                $currentTask = 'campaigns';
+            if (empty($currentTask) || !in_array($currentTask, self::TASKS_TO_REMEMBER_FOR_LISTING)) {
+                $currentTask = self::TASK_TYPE_CAMPAIGN;
             }
 
-            if ($currentTask === 'specificListing') {
+            if ($currentTask === self::TASK_TYPE_SPECIFIC_LISTING) {
                 $type = acym_getVar('string', 'type', '');
-                $currentTask = empty($type) ? 'campaigns' : ['task' => $currentTask, 'type' => $type];
+                $currentTask = empty($type) ? self::TASK_TYPE_CAMPAIGN : ['task' => $currentTask, 'type' => $type];
             }
 
             $_SESSION[$variableName] = $currentTask;
@@ -61,15 +52,13 @@ trait Listing
         }
     }
 
-    public function setTaskListing($task, $type = null): bool
+    public function setTaskListing(string $type): bool
     {
-        if (!in_array($task, ['campaigns', 'campaigns_auto', 'welcome', 'unsubscribe', 'specificListing'])) {
-            return false;
-        }
+        $task = self::CAMPAIGN_TYPE_TO_TASK[$type] ?? self::TASK_TYPE_CAMPAIGN;
 
-        if ($task === 'specificListing') {
+        if ($task === self::TASK_TYPE_SPECIFIC_LISTING) {
             $task = [
-                'task' => 'specificListing',
+                'task' => self::TASK_TYPE_SPECIFIC_LISTING,
                 'type' => $type,
             ];
         }
@@ -109,7 +98,7 @@ trait Listing
 
     public function campaigns()
     {
-        acym_setVar('layout', 'campaigns');
+        acym_setVar('layout', self::TASK_TYPE_CAMPAIGN);
 
         $data = [
             'campaign_type' => 'campaigns',
@@ -164,7 +153,7 @@ trait Listing
     {
         $this->getAllParamsRequest($data);
         $this->prepareEmailsListing($data, $data['campaign_type']);
-        if ($data['campaign_type'] === 'campaigns_auto') {
+        if ($data['campaign_type'] === self::TASK_TYPE_CAMPAIGN_AUTO) {
             $this->getAutoCampaignsFrequency($data);
             $this->getIsPendingGenerated($data);
         }
@@ -205,7 +194,7 @@ trait Listing
         // End pagination
         if (empty($class)) {
             $data['allStatusFilter'] = $this->getCountStatusFilter($matchingCampaigns['total'], $data['campaign_type']);
-            if ('campaigns_auto' === $data['campaign_type'] && 'generated' === $data['status']) {
+            if (self::TASK_TYPE_CAMPAIGN_AUTO === $data['campaign_type'] && 'generated' === $data['status']) {
                 $data['allStatusFilter']->all = $campaignClass->getCountCampaignType(CampaignClass::SENDING_TYPE_AUTO);
             }
             $totalElement = empty($status) ? $data['allStatusFilter']->all : $data['allStatusFilter']->$status;
@@ -220,7 +209,6 @@ trait Listing
 
     public function getCountStatusFilter($allCampaigns, $type)
     {
-        $campaignClass = new CampaignClass();
         $allCountStatus = new \stdClass();
 
         if ($type == 'campaigns') {
@@ -251,7 +239,7 @@ trait Listing
 
     public function mailbox_action()
     {
-        acym_setVar('layout', 'mailbox_action');
+        acym_setVar('layout', self::TASK_TYPE_MAILBOX_ACTION);
 
         $data = [
             'campaign_type' => 'campaigns',

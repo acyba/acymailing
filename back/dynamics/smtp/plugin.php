@@ -125,7 +125,7 @@ class plgAcymSmtp extends acymPlugin
 			</div>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings" id="acym__sending__methods__one__settings__type">
 				<label for="smtp_type" class="cell"><?php echo acym_translation('ACYM_CONNECTION_TYPE').acym_info('ACYM_CONNECTION_TYPE_DESC'); ?></label>
-				<div class="cell medium-2">
+				<div class="cell medium-6">
                     <?php
                     echo acym_select(
                         [

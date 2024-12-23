@@ -67,6 +67,7 @@ class Mail extends PHPMailer implements MailerInterface
                     'subject' => $this->Subject,
                     'message' => $this->Body,
                     'to' => $this->to[0][0],
+                    'isHtml' => empty($this->ContentType) || $this->ContentType !== 'text/plain',
                 ]
             );
         }

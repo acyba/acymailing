@@ -507,7 +507,7 @@ trait JeventsInsertion
 
         if (empty($element)) return '';
 
-        $this->pluginHelper->translateItem($element, $tag, 'jevents_vevdetail', $element->evdet_id);
+        $this->pluginHelper->translateItem($element, $tag, 'jevents_vevdetail', intval($element->evdet_id));
 
         $title = '';
         $afterTitle = '';

@@ -56,7 +56,7 @@ class MailerHelper extends AcyMailerPhp
     public $failedCounting = true;
     public $autoAddUser = false;
     public $userCreationTriggers = true;
-    public $reportMessage = '';
+    public string $reportMessage = '';
 
     // Should we track the sending of a	message (used for welcoming message)
     public $trackEmail = false;
@@ -763,7 +763,7 @@ class MailerHelper extends AcyMailerPhp
             if (empty($this->nameIdMap[$mailId])) {
                 $mail = $this->mailClass->getOneByName($mailId);
                 if (empty($mail->id)) {
-                    $this->reportMessage = 'Can not load the e-mail: '.acym_escape($mailId);
+                    $this->reportMessage = 'Can not load the email: '.acym_escape($mailId);
                     $this->errorNumber = 2;
 
                     if ($this->report) {
@@ -784,7 +784,7 @@ class MailerHelper extends AcyMailerPhp
 
         // Load the mail with global tags replaced
         if (!$this->load($mailId, $receiver)) {
-            $this->reportMessage = 'Can not load the e-mail with ID n°'.$mailId;
+            $this->reportMessage = 'Can not load the email with ID n°'.$mailId;
             $this->errorNumber = 2;
 
             if ($this->report) {
@@ -1524,7 +1524,7 @@ class MailerHelper extends AcyMailerPhp
         if (!$statusSend && !empty($this->reportMessage)) {
             // Something went wrong when trying to send the override, log the information in the cron logs file
             $cronHelper = new CronHelper();
-            $cronHelper->saveReport($this->reportMessage);
+            $cronHelper->saveReport([$this->reportMessage]);
         }
 
         return $statusSend === true;
@@ -1739,10 +1739,18 @@ class MailerHelper extends AcyMailerPhp
         $this->autoAddUser = true;
 
         $this->addParam('subject', $options['subject']);
+
+        if (isset($options['isHtml']) && !$options['isHtml']) {
+            $options['message'] = nl2br($options['message']);
+        }
         $this->addParam('body', $options['message']);
 
         $mailClass = new MailClass();
         $this->overrideEmailToSend = $mailClass->getOneByName('acy_notification_cms');
+
+        if (empty($this->overrideEmailToSend)) {
+            return false;
+        }
 
         if (!empty($options['headers'])) {
             if (!is_array($options['headers'])) {
@@ -1774,7 +1782,7 @@ class MailerHelper extends AcyMailerPhp
         if (!$statusSend && !empty($this->reportMessage)) {
             // Something went wrong when trying to send the override, log the information in the cron logs file
             $cronHelper = new CronHelper();
-            $cronHelper->messages[] = $this->reportMessage;
+            $cronHelper->addMessage($this->reportMessage);
             $cronHelper->saveReport();
         }
 

@@ -976,7 +976,7 @@ class acymPlugin extends acymObject
         return $field->value;
     }
 
-    protected function getLanguage($elementLanguage = null, $onlyValue = false)
+    protected function getLanguage(?string $elementLanguage = null, bool $onlyValue = false): string
     {
         $value = $this->emailLanguage;
         if (!empty($elementLanguage) && $elementLanguage !== '*') {
