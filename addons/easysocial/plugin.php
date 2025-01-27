@@ -1,12 +1,12 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'EasysocialAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'EasysocialAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'EasysocialInsertion.php';
 
-class plgAcymEasysocial extends acymPlugin
+class plgAcymEasysocial extends AcymPlugin
 {
     use EasysocialAutomationConditions;
     use EasysocialAutomationFilters;

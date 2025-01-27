@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'DocmanInsertion.php';
 
-class plgAcymDocman extends acymPlugin
+class plgAcymDocman extends AcymPlugin
 {
     use DocmanInsertion;
 

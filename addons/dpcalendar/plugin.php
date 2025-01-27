@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'DpcalendarInsertion.php';
 
-class plgAcymDpcalendar extends acymPlugin
+class plgAcymDpcalendar extends AcymPlugin
 {
     use DpcalendarInsertion;
 

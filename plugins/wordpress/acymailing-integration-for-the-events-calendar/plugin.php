@@ -1,12 +1,12 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'TheEventsCalendarAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'TheEventsCalendarAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'TheEventsCalendarInsertion.php';
 
-class plgAcymTheeventscalendar extends acymPlugin
+class plgAcymTheeventscalendar extends AcymPlugin
 {
     use TheEventsCalendarAutomationConditions;
     use TheEventsCalendarAutomationFilters;

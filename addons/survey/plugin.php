@@ -8,10 +8,10 @@
  */
 defined('_JEXEC') or die;
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 
-class plgAcymSurvey extends acymPlugin
+class plgAcymSurvey extends AcymPlugin
 {
     public function __construct()
     {

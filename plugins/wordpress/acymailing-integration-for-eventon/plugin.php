@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'EventOnInsertion.php';
 
-class plgAcymEventon extends acymPlugin
+class plgAcymEventon extends AcymPlugin
 {
     use EventOnInsertion;
 

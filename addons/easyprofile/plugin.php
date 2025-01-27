@@ -1,12 +1,12 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'EasyprofileAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'EasyprofileAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'EasyprofileInsertion.php';
 
-class plgAcymEasyprofile extends acymPlugin
+class plgAcymEasyprofile extends AcymPlugin
 {
     use EasyprofileAutomationConditions;
     use EasyprofileAutomationFilters;

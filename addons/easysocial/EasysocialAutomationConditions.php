@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Types\OperatorinType;
+use AcyMailing\Types\OperatorInType;
 use AcyMailing\Types\OperatorType;
 
 trait EasysocialAutomationConditions
@@ -8,7 +8,7 @@ trait EasysocialAutomationConditions
     public function onAcymDeclareConditions(&$conditions)
     {
         acym_loadLanguageFile('com_easysocial', JPATH_SITE);
-        $operatorIn = new OperatorinType();
+        $operatorIn = new OperatorInType();
         $operator = new OperatorType();
 
         // Groups filter
@@ -234,6 +234,10 @@ trait EasysocialAutomationConditions
         $conditions['user']['easysocialevent']->option .= '</div>';
 
         $conditions['user']['easysocialevent']->option .= '</div>';
+    }
+
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
     }
 
     public function onAcymProcessCondition_easysocialgroups(&$query, $options, $num, &$conditionNotValid)

@@ -166,6 +166,10 @@ const acym_helperListing = {
                         fastAction: ACYM_JS_TXT.ACYM_AUTOMATION,
                         regularAction: ACYM_JS_TXT.ACYM_AUTOMATIONS
                     },
+                    scenarios: {
+                        fastAction: ACYM_JS_TXT.ACYM_SCENARIO,
+                        regularAction: ACYM_JS_TXT.ACYM_SCENARIOS
+                    },
                     bounces: {
                         fastAction: ACYM_JS_TXT.ACYM_BOUNCE,
                         regularAction: ACYM_JS_TXT.ACYM_BOUNCES

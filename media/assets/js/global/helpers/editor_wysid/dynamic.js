@@ -142,6 +142,8 @@ const acym_editorWysidDynamic = {
             shortcode = '';
         }
 
+        const followupTrigger = jQuery('#acym__followup__trigger').val();
+
         let ajaxURL = ACYM_AJAX_URL;
         ajaxURL += '&page=acymailing_lists';
         ajaxURL += '&action=acymailing_router';
@@ -152,6 +154,9 @@ const acym_editorWysidDynamic = {
         ajaxURL += '&plugin=' + plugin;
         ajaxURL += '&shortcode=' + encodeURIComponent(shortcode);
         ajaxURL += '&campaignId=' + jQuery('#acym__campaign__recipients__form__campaign').val();
+        if (followupTrigger) {
+            ajaxURL += '&followupTrigger=' + followupTrigger;
+        }
         if (!acym_helper.empty(acym_editorWysidVersions)) {
             ajaxURL += '&language=' + acym_editorWysidVersions.selectedVersion;
         }

@@ -1,11 +1,11 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'PayplansAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'PayplansAutomationFilters.php';
 
-class plgAcymPayplans extends acymPlugin
+class plgAcymPayplans extends AcymPlugin
 {
     use PayplansAutomationConditions;
     use PayplansAutomationFilters;

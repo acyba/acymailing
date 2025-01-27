@@ -1,10 +1,10 @@
 <?php
 
 use AcyMailing\Classes\UserClass;
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 use AcyMailing\Classes\ListClass;
 
-class plgAcymGravityforms extends acymPlugin
+class plgAcymGravityforms extends AcymPlugin
 {
     private $propertyLabels;
 

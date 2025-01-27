@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Types\OperatorinType;
+use AcyMailing\Types\OperatorInType;
 
 trait ContactAutomationConditions
 {
@@ -18,7 +18,7 @@ trait ContactAutomationConditions
             acym_translation('COM_CONTACT_SUBMENU_CATEGORIES')
         );
 
-        $operatorIn = new OperatorinType();
+        $operatorIn = new OperatorInType();
         $conditions['user']['contact']->option = '<div class="intext_select_automation cell">';
         $conditions['user']['contact']->option .= $operatorIn->display('acym_condition[conditions][__numor__][__numand__][contact][type]');
         $conditions['user']['contact']->option .= '</div>';
@@ -31,6 +31,10 @@ trait ContactAutomationConditions
             ['class' => 'acym__select']
         );
         $conditions['user']['contact']->option .= '</div>';
+    }
+
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
     }
 
     public function onAcymProcessCondition_contact(&$query, $options, $num, &$conditionNotValid)

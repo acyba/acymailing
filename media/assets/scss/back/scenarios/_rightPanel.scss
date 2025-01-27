@@ -1,0 +1,250 @@
+#acym_wrapper {
+    #acym__scenario__edit__right__panel {
+        overflow: auto;
+        z-index: 100000;
+        display: flex;
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        width: 30vw;
+        background-color: $white;
+        box-shadow: $primary-box-shadow;
+        flex-direction: column;
+        padding: 2.5rem;
+        gap: 1.5rem;
+
+        &.acym__scenario__edit__right__panel__performances {
+            #acym__scenario__edit__right__panel__actions {
+                display: none;
+            }
+        }
+
+        #acym__scenario__edit__right__panel__header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            #acym__scenario__edit__right__panel__title {
+                font-size: 1.5rem;
+                flex-grow: 1;
+            }
+
+            i {
+                cursor: pointer;
+            }
+        }
+
+        .acym__scenario__edit__right__panel__separator {
+            height: 1px;
+            background-color: $light-blue;
+            width: 100%;
+        }
+
+        .acym__scenario__edit__right__panel__subtitle {
+            font-size: 1.25rem;
+        }
+
+        #acym__scenario__edit__right__panel__content {
+            flex-grow: 1;
+
+            #acym__scenario__edit__right__panel__content__loader {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-grow: 0;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #acym_scenario_settings {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .switch .switch-paddle {
+                margin-left: 0 !important;
+            }
+        }
+
+        #acym_scenario_delay {
+            display: flex;
+            flex-direction: row;
+            gap: .5rem;
+        }
+
+        #acym_scenario_triggers, #acym_scenario_condition, #acym_scenario_action {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+
+            [data-acym-action-option="acy_remove_queue"] {
+                .intext_select_automation {
+                    flex-grow: 1;
+                }
+            }
+
+            [data-acym-action-option="acy_list"] {
+                .intext_select_automation {
+                    flex-basis: 48% !important;
+                }
+            }
+
+            [data-acym-action-option="acy_user_value"] {
+                .acym__tooltip {
+                    display: none !important;
+                }
+
+                .intext_select_automation {
+                    flex-basis: 30% !important;
+                }
+            }
+
+            [data-acym-action-option="acy_send_email"] {
+                & > div {
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    gap: .5rem;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                #acym__action__send__email__saved {
+                    display: flex;
+                    flex-direction: row;
+                    gap: .5rem;
+                    align-items: center;
+
+                    .button {
+                        margin: 0 !important;
+                    }
+                }
+            }
+
+            [data-acym-condition-option], [data-acym-action-option], [data-acym-action-option] > .grid-x, [data-acym-trigger-option] {
+                display: flex;
+                flex-direction: row;
+                gap: .5rem;
+                flex-wrap: wrap;
+
+                .cell {
+                    width: auto !important;
+                }
+
+                &[data-acym-trigger-option="on_birthday"] {
+
+                    & > .grid-margin-x {
+                        width: 100%;
+                        flex-direction: column;
+
+                        & > div:first-child {
+                            display: none;
+                        }
+
+                        & > .cell {
+                            display: flex;
+                            gap: .5rem;
+                            align-items: center;
+                            margin-bottom: 0 !important;
+
+                            .acym__automation__trigger__action__birthday {
+                                width: 100% !important;
+                            }
+
+                            .select2-container {
+                                width: 25% !important;
+                            }
+                        }
+                    }
+                }
+
+                &[data-acym-condition-option="acy_group"] > .medium-3 {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+
+                    label {
+                        line-height: 1;
+                    }
+                }
+
+                &[data-acym-condition-option="acy_field"] > *, &[data-acym-condition-option="acy_cmsfield"] > * {
+                    flex-basis: 30% !important;
+                }
+
+                &[data-acym-condition-option="acy_list"] {
+                    flex-wrap: wrap;
+
+                    & > .grid-margin-x {
+                        width: 100% !important;
+                        margin: 0 !important;
+                        display: flex;
+                        flex-direction: row;
+                        gap: .5rem;
+
+                        .rs_date_field, .intext_select_automation {
+                            flex-grow: 1;
+                            width: 90px;
+                        }
+
+                        .acym__title.acym__title__secondary {
+                            margin: 0 !important;
+                        }
+                    }
+                }
+
+                &[data-acym-condition-option="wooreminder"] {
+                    & > .cell {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 5px;
+                    }
+                }
+
+                &[data-acym-condition-option="woopurchased"] {
+                    .select2-selection__clear {
+                        display: none !important;
+                    }
+
+                    .select2-search__field {
+                        width: auto !important;
+                    }
+
+                    & > .grid-margin-x {
+                        width: 100% !important;
+                        margin: 0 !important;
+                        display: flex;
+                        flex-direction: row;
+                        gap: .5rem;
+
+                        .rs_date_field, .intext_select_automation {
+                            flex-grow: 1;
+                            width: 90px !important;
+                        }
+
+                        .acym__title.acym__title__secondary {
+                            margin: 0 !important;
+                        }
+                    }
+                }
+
+                & .cell {
+                    flex: auto;
+                }
+            }
+        }
+
+        #acym__scenario__edit__right__panel__actions {
+            display: flex;
+            flex-direction: row;
+            justify-content: end;
+            gap: 1.5rem;
+
+            #acym__scenario__edit__right__panel__save__flow, #acym__scenario__edit__right__panel__save__scenario {
+                display: none;
+            }
+        }
+    }
+}

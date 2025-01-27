@@ -1,0 +1,45 @@
+.sankey_chart_container {
+    display: flex;
+    flex-direction: row;
+
+    #sankey_chart_svg_container {
+        position: absolute;
+        z-index: 1;
+
+        .sankey_chart_link {
+            transition: .2s;
+        }
+    }
+
+    .sankey_chart_node_container {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        width: 20px;
+
+        .sankey_chart_node {
+            width: 100%;
+            background-color: #00a4ff;
+            z-index: 2;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .sankey_chart_node_label {
+            position: absolute;
+            left: 100%;
+            padding-left: 5px;
+            top: 5px;
+            width: 150px;
+            transition: .2s;
+
+            &:hover {
+                font-weight: bold;
+            }
+        }
+    }
+
+    .sankey_chart_grow {
+        flex-grow: 1;
+    }
+}

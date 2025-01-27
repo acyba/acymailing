@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 use Automattic\WooCommerce\Utilities\OrderUtil;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'WooCommerceAutomationConditions.php';
@@ -13,7 +13,7 @@ require_once __DIR__.DIRECTORY_SEPARATOR.'WooCommerceInsertion.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'WooCommerceSubscription.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'WooCommerceTracking.php';
 
-class plgAcymWoocommerce extends acymPlugin
+class plgAcymWoocommerce extends AcymPlugin
 {
     use WooCommerceAutomationConditions;
     use WooCommerceAutomationFilters;

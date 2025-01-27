@@ -50,10 +50,10 @@ const acym_helperToggle = {
                 $element.removeClass('acymicon-circle-o-notch acymicon-spin');
                 let newText = '';
                 if ($element.hasClass('acymicon-circle')) {
-                    $element.removeClass('acymicon-circle').addClass('acymicon-radio_button_unchecked').attr('data-acy-task', 'subscribeOnClick');
+                    $element.removeClass('acymicon-circle').addClass('acymicon-radio-button-unchecked').attr('data-acy-task', 'subscribeOnClick');
                     newText = acym_helper.sprintf(ACYM_JS_TXT.ACYM_UNSUBSCRIBED_FROM_LIST, listname);
-                } else if ($element.hasClass('acymicon-radio_button_unchecked')) {
-                    $element.removeClass('acymicon-radio_button_unchecked').addClass('acymicon-circle').attr('data-acy-task', 'unsubscribeOnClick');
+                } else if ($element.hasClass('acymicon-radio-button-unchecked')) {
+                    $element.removeClass('acymicon-radio-button-unchecked').addClass('acymicon-circle').attr('data-acy-task', 'unsubscribeOnClick');
                     newText = acym_helper.sprintf(ACYM_JS_TXT.ACYM_SUBSCRIBED_TO_LIST, listname);
                 }
                 $element.attr('data-acy-newvalue', newvalue == 1 ? 0 : 1).parent().find('.acym__tooltip__text').text(newText);
@@ -170,7 +170,7 @@ const acym_helperToggle = {
         $showMore.off('click').on('click', function () {
             event.preventDefault();
             jQuery('#' + jQuery(this).find('[data-toggle-showmore]').attr('data-toggle-showmore')).slideToggle();
-            jQuery(this).find('i').toggleClass('acymicon-keyboard_arrow_up acymicon-keyboard_arrow_down');
+            jQuery(this).find('i').toggleClass('acymicon-keyboard-arrow-up acymicon-keyboard-arrow-down');
             jQuery(this).find('.acym__title').toggleClass('margin-bottom-0');
         });
     },
@@ -180,10 +180,10 @@ const acym_helperToggle = {
             let $textarea = jQuery(this).closest('.acym__toggle__arrow').children('.acym__toggle__arrow__contain');
             if ($textarea.is(':visible')) {
                 $textarea.hide();
-                jQuery(this).find('i').removeClass('acymicon-keyboard_arrow_up').addClass('acymicon-keyboard_arrow_down');
+                jQuery(this).find('i').removeClass('acymicon-keyboard-arrow-up').addClass('acymicon-keyboard-arrow-down');
             } else {
                 $textarea.show();
-                jQuery(this).find('i').removeClass('acymicon-keyboard_arrow_down').addClass('acymicon-keyboard_arrow_up');
+                jQuery(this).find('i').removeClass('acymicon-keyboard-arrow-down').addClass('acymicon-keyboard-arrow-up');
             }
         });
     },

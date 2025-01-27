@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 3.3
+ * Version: 3.4
  * Requires Plugins: acymailing
 */
 
@@ -65,7 +65,7 @@ class UniversalFilterForAcyMailing
     {
         $ds = DIRECTORY_SEPARATOR;
         $vendorFolder = dirname(__DIR__).$ds.'acymailing'.$ds.'vendor';
-        $helperFile = dirname(__DIR__).$ds.'acymailing'.$ds.'back'.$ds.'helpers'.$ds.'helper.php';
+        $helperFile = dirname(__DIR__).$ds.'acymailing'.$ds.'back'.$ds.'Core'.$ds.'init.php';
 
         return file_exists($vendorFolder) && include_once $helperFile;
     }

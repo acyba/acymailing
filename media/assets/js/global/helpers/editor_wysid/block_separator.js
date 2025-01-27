@@ -398,7 +398,7 @@ const acym_helperBlockSeparator = {
         for (let i = 0 ; i < $th.length ; i++) {
             html += `<div class="cell large-2 grid-x acym_vcenter">
                     <span class="cell shrink">${this.blockName[i]}:</span>
-                    <i class="acymicon-insert_photo acym__color__light-blue cursor-pointer cell shrink acym__wysid__context__block__background__columns-background" data-acym-block="${i}"></i>
+                    <i class="acymicon-insert-photo acym__color__light-blue cursor-pointer cell shrink acym__wysid__context__block__background__columns-background" data-acym-block="${i}"></i>
                     <i class="acymicon-close acym__color__red cursor-pointer" style="display: none" id="acym__wysid__context__block__column__background-image__remove" data-acym-block="${i}"></i>
                   </div>`;
         }

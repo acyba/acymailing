@@ -201,7 +201,7 @@ jQuery(function ($) {
     }
 
     function setDatabaseField() {
-        $('select[name="fieldDB[database]"]').off('change').on('change', function () {
+        $('select[name="fieldDB[database]"]').on('change', function () {
             acym_helper.post(ACYM_AJAX_URL, {
                 ctrl: 'fields',
                 task: 'ajaxGetTables',
@@ -216,7 +216,7 @@ jQuery(function ($) {
             });
         });
 
-        $('select[name="fieldDB[table]"]').off('change').on('change', function () {
+        $('select[name="fieldDB[table]"]').on('change', function () {
             acym_helper.post(ACYM_AJAX_URL, {
                 ctrl: 'fields',
                 task: 'ajaxGetColumns',

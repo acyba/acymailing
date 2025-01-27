@@ -9,6 +9,10 @@ trait WooCommerceAutomationConditions
         $this->declareSubscriptionFilter($conditions);
     }
 
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
+    }
+
     private function declarePurchaseFilter(&$conditions)
     {
         $conditions['user']['woopurchased'] = new stdClass();

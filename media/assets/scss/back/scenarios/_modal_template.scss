@@ -1,0 +1,43 @@
+#acym__scenario__choose_template {
+    position: relative;
+    overflow: hidden !important;
+
+    #acym__scenario__template__overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        h2 {
+            font-weight: bold;
+        }
+    }
+
+    padding: 2.5rem !important;
+
+    .acym__scenario__template__card {
+        border-radius: 8px;
+        padding: 1.5rem;
+        background-color: $blue-light;
+
+        img {
+            border-radius: 8px;
+        }
+
+        .acym__scenario__template__card__title {
+            font-size: 1rem;
+            color: $blue-night-primary;
+        }
+
+        i {
+            font-size: 1rem;
+            color: $blue-night-primary;
+        }
+    }
+}

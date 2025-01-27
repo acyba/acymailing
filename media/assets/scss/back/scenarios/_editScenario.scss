@@ -1,0 +1,98 @@
+@import "modal_template";
+
+#acym_wrapper {
+    @import "../../global/components/flow";
+
+    #acym__scenario__edit__container {
+        height: 80vh !important;
+        display: flex;
+        flex-direction: column;
+
+        #acym__scenario__edit__content {
+            width: 100%;
+            height: 100%;
+            flex-grow: 1;
+            overflow: hidden;
+
+            #acym__scenario__edit__right__panel__content {
+                .intext_select + .select2 {
+                    width: 100px !important;
+                }
+
+                .intext_select_larger + .select2 {
+                    max-width: 200px;
+                }
+
+                .acym__automation__trigger__action__birthday .select2-container {
+                    min-width: 30px;
+                    max-width: 50px;
+                }
+            }
+
+            #acym__scenario__edit__content__new {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+                justify-content: center;
+                align-items: center;
+
+                .button {
+                    margin: 0 !important;
+                }
+            }
+
+            #acym__scenario__edit__content__flow {
+                display: flex;
+                flex-grow: 1;
+                width: 100%;
+                height: 100%;
+
+                .acym__flow__card__content {
+                    display: flex;
+                    flex-direction: row;
+                    gap: .5rem;
+                    align-items: center;
+
+                    p {
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#acym__scenario__edit__add__overlay {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    box-shadow: $primary-box-shadow;
+    border-radius: $primary-radius;
+    background-color: #F4F9FC;
+    padding: .5rem;
+    gap: .5rem;
+
+    .acym__scenario__edit__add__overlay__item {
+        display: flex;
+        flex-direction: row;
+        gap: .5rem;
+        align-items: center;
+        cursor: pointer;
+
+        &:hover p {
+            color: $blue-primary;
+        }
+
+        i {
+            color: $blue-primary;
+        }
+
+        p {
+            margin: 0 !important;
+            color: $blue-night-primary;
+            transition: .2s color;
+        }
+    }
+}

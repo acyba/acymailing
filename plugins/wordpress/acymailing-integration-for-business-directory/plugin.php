@@ -1,15 +1,20 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'BusinessDirectoryInsertion.php';
 
-class plgAcymBusinessdirectory extends acymPlugin
+class plgAcymBusinessdirectory extends AcymPlugin
 {
     use BusinessDirectoryInsertion;
 
     private $wpbdpFields;
     private $currentHeader = '';
+
+    // The content is stored in the WordPress post table
+    private string $wpPostType = 'wpbdp_listing';
+    private string $wpCategoryType = 'wpbdp_category';
+    private string $wpTagType = 'wpbdp_tag';
 
     public function __construct()
     {
@@ -18,9 +23,6 @@ class plgAcymBusinessdirectory extends acymPlugin
         $this->installed = acym_isExtensionActive('business-directory-plugin/business-directory-plugin.php');
 
         $this->rootCategoryId = 0;
-        $this->wpPostType = 'wpbdp_listing';
-        $this->wpCategoryType = 'wpbdp_category';
-        $this->wpTagType = 'wpbdp_tag';
 
         $this->pluginDescription->name = 'Business Directory';
         $this->pluginDescription->icon = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/icon.png';

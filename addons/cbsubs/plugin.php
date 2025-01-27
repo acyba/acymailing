@@ -1,9 +1,9 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
-use AcyMailing\Types\OperatorinType;
+use AcyMailing\Core\AcymPlugin;
+use AcyMailing\Types\OperatorInType;
 
-class plgAcymCbsubs extends acymPlugin
+class plgAcymCbsubs extends AcymPlugin
 {
     public function __construct()
     {
@@ -29,7 +29,7 @@ class plgAcymCbsubs extends acymPlugin
         $conditions['user']['cbsubs']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'Community Builder', 'Subscriptions');
         $conditions['user']['cbsubs']->option = '<div class="cell grid-x grid-margin-x">';
 
-        $operatorIn = new OperatorinType();
+        $operatorIn = new OperatorInType();
 
         $conditions['user']['cbsubs']->option .= '<div class="intext_select_automation cell acym__small_select">';
         $conditions['user']['cbsubs']->option .= $operatorIn->display('acym_condition[conditions][__numor__][__numand__][cbsubs][type]');
@@ -99,6 +99,10 @@ class plgAcymCbsubs extends acymPlugin
         $conditions['user']['cbsubs']->option .= '</div>';
 
         $conditions['user']['cbsubs']->option .= '</div>';
+    }
+
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
     }
 
     public function onAcymProcessCondition_cbsubs(&$query, $options, $num, &$conditionNotValid)

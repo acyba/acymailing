@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Libraries\acymParameter;
+use AcyMailing\Core\AcymParameter;
 use AcyMailing\Helpers\TabHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -372,7 +372,7 @@ trait JeventsInsertion
 
         if (file_exists(JPATH_SITE.DS.'plugins'.DS.'jevents'.DS.'jevfiles'.DS.'jevfiles.php')) {
             $JEVplugin = PluginHelper::getPlugin('jevents', 'jevfiles');
-            $JEVparams = new acymParameter($JEVplugin->params);
+            $JEVparams = new AcymParameter($JEVplugin->params);
             $imagesFolder = ComponentHelper::getParams('com_media')->get('image_path', 'images');
             $this->imgFolder = ACYM_LIVE.$imagesFolder.'/'.trim($JEVparams->get('folder', 'jevents'), '/').'/';
         }

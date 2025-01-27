@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Types\OperatorinType;
+use AcyMailing\Types\OperatorInType;
 
 trait EventBookingAutomationConditions
 {
@@ -15,7 +15,7 @@ trait EventBookingAutomationConditions
         $conditions['user']['ebregistration']->option = '<div class="cell grid-x grid-margin-x">';
 
         $conditions['user']['ebregistration']->option .= '<div class="intext_select_automation cell">';
-        $operatorinType = new OperatorinType();
+        $operatorinType = new OperatorInType();
         $conditions['user']['ebregistration']->option .= $operatorinType->display('acym_condition[conditions][__numor__][__numand__][ebregistration][in]');
         $conditions['user']['ebregistration']->option .= '</div>';
 
@@ -83,6 +83,10 @@ trait EventBookingAutomationConditions
         $conditions['user']['ebregistration']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['ebregistration']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][ebregistration][datemax]', '', 'cell shrink');
         $conditions['user']['ebregistration']->option .= '</div>';
+    }
+
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
     }
 
     /**

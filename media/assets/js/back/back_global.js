@@ -1,5 +1,6 @@
 jQuery(function ($) {
     function BackGlobal() {
+        const isScenarioEdition = ACYM_CONTROLLER === 'scenarios' && ACYM_TASK === 'edit_scenario';
         jQuery(document).foundation();
 
         acym_helper.setSubmitButtonGlobal();
@@ -7,7 +8,9 @@ jQuery(function ($) {
         acym_helper.setMessageClose();
         acym_helper.setDeleteOptionsGlobal();
         acym_helper.setButtonRadio();
-        acym_helperSelect2.initJsSelect2();
+        if (!isScenarioEdition) {
+            acym_helperSelect2.initJsSelect2();
+        }
         acym_helperToggle.initJsToggle();
         acym_helperListing.initJsListing();
         acym_helperTab.setTab();

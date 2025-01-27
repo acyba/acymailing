@@ -219,7 +219,7 @@ trait DocmanInsertion
                 if (!empty($lastGenerated)) {
                     $where[] = '(document.publish_on > '.acym_escapeDB(
                             acym_date($lastGenerated, 'Y-m-d H:i:s', false)
-                        ).' OR (document.publish_on > 0000-00-00 00:00:00 AND created_on > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false)).'))';
+                        ).' OR (document.publish_on > "0000-00-00 00:00:00" AND document.created_on > '.acym_escapeDB(acym_date($lastGenerated, 'Y-m-d H:i:s', false)).'))';
                 }
             }
             $query .= ' WHERE ('.implode(') AND (', $where).')';

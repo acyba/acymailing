@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 use Joomla\CMS\Component\ComponentHelper;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'VirtuemartAutomationConditions.php';
@@ -9,7 +9,7 @@ require_once __DIR__.DIRECTORY_SEPARATOR.'VirtuemartAutomationTriggers.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'VirtuemartInsertion.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'VirtuemartSubscription.php';
 
-class plgAcymVirtuemart extends acymPlugin
+class plgAcymVirtuemart extends AcymPlugin
 {
     use VirtuemartAutomationConditions;
     use VirtuemartAutomationFilters;

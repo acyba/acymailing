@@ -13,7 +13,7 @@ class plgQuickiconAcymailing extends CMSPlugin
         $acymailingHelper = rtrim(
                 JPATH_ADMINISTRATOR,
                 DIRECTORY_SEPARATOR
-            ).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
+            ).DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_acym'.DIRECTORY_SEPARATOR.'Core'.DIRECTORY_SEPARATOR.'init.php';
         if (!file_exists($acymailingHelper)) return [];
 
         return [

@@ -1,4 +1,4 @@
-jQuery(function($) {
+jQuery(function ($) {
     const previousTypeTrigger = $('#acym__automation__trigger__type__input').val();
 
     function Init() {
@@ -20,10 +20,10 @@ jQuery(function($) {
             let $textarea = $('[name="automation[description]"]');
             if ($textarea.is(':visible')) {
                 $textarea.hide();
-                $(this).find('i').removeClass('acymicon-keyboard_arrow_up').addClass('acymicon-keyboard_arrow_down');
+                $(this).find('i').removeClass('acymicon-keyboard-arrow-up').addClass('acymicon-keyboard-arrow-down');
             } else {
                 $textarea.show();
-                $(this).find('i').removeClass('acymicon-keyboard_arrow_down').addClass('acymicon-keyboard_arrow_up');
+                $(this).find('i').removeClass('acymicon-keyboard-arrow-down').addClass('acymicon-keyboard-arrow-up');
             }
         });
     }

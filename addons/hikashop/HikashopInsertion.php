@@ -1,6 +1,9 @@
 <?php
 
 use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Classes\FollowupClass;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\QueueClass;
 
 trait HikashopInsertion
 {
@@ -9,6 +12,155 @@ trait HikashopInsertion
     private $imageHelper;
     private $productClass;
     private $translationHelper;
+    private $followupTrigger;
+
+    public function dynamicText($mailId)
+    {
+        $followupId = acym_getVar('int', 'followup_id');
+        if (empty($followupId)) {
+            return '';
+        }
+
+        if ($this->isHikaFollowup($followupId)) {
+            return $this->pluginDescription;
+        }
+
+        return '';
+    }
+
+    public function textPopup()
+    {
+        ?>
+		<script type="text/javascript">
+            let selectedHikaTag = '';
+
+            function applyHika(tagname, element) {
+                if (!tagname) {
+                    return;
+                }
+
+                selectedHikaTag = tagname;
+                let string = '{hikatag:' + tagname + '}';
+                setTag(string, jQuery(element));
+            }
+		</script>
+        <?php
+
+        $text = '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_ORDER').'</h1>';
+
+        $orderFields = array_intersect(
+            acym_getColumns('hikashop_order', false),
+            ['order_number', 'order_status', 'order_created', 'order_full_price']
+        );
+        $orderFields = array_merge($orderFields, ['billing_address', 'shipping_address']);
+
+        foreach ($orderFields as $orderFieldName) {
+            $text .= '<div class="cell acym__row__no-listing acym__listing__row__popup" onclick="applyHika(\''.$orderFieldName.'\', this);" >'.$orderFieldName.'</div>';
+        }
+
+        echo $text;
+    }
+
+    public function replaceOrderInformation(object &$email, &$user, bool $send = true)
+    {
+        $extractedTags = $this->pluginHelper->extractTags($email, 'hikatag');
+        if (empty($extractedTags)) {
+            return;
+        }
+
+        $mailClass = new MailClass();
+        $queueClass = new QueueClass();
+        $params = $queueClass->getQueueParams($mailClass->getMainMailId($email->id), $user->id);
+
+        if (empty($params)) {
+            return;
+        }
+
+        $orderId = $params['hika_order_id'] ?? null;
+
+        if (empty($orderId)) {
+            return;
+        }
+
+        $order = acym_loadObject('SELECT * FROM #__hikashop_order WHERE order_id = '.intval($orderId));
+        $orderProducts = acym_loadObjectList('SELECT * FROM #__hikashop_order_product WHERE order_id = '.intval($orderId));
+
+        if (empty($order) || empty($orderProducts)) {
+            return;
+        }
+
+        $tags = [];
+
+        foreach ($orderProducts as $orderProduct) {
+            $productTags = $this->processTags($order, $extractedTags);
+            $tags = array_merge($tags, $productTags);
+        }
+
+        $this->pluginHelper->replaceTags($email, $tags);
+    }
+
+    private function processTags(object $order, array $extractedTags): array
+    {
+        $this->currencyClass = hikashop_get('class.currency');
+        $tags = [];
+        foreach ($extractedTags as $oneTag) {
+            $field = $oneTag->id;
+            $value = $order->$field ?? $oneTag->default;
+
+            switch ($field) {
+                case 'billing_address':
+                    $address = acym_loadObject('SELECT * FROM #__hikashop_address WHERE address_id = '.intval($order->order_billing_address_id));
+                    $value = $this->formatAddress($address);
+                    break;
+
+                case 'shipping_address':
+                    $address = acym_loadObject('SELECT * FROM #__hikashop_address WHERE address_id = '.intval($order->order_shipping_address_id));
+                    $value = $this->formatAddress($address);
+                    break;
+
+                case 'order_created':
+                    $value = acym_date(intval($order->order_created), 'Y-m-d H:i:s');
+                    break;
+
+                case 'order_full_price':
+                    $price = $order->order_full_price;
+                    $value = @$this->currencyClass->format($price, $order->order_currency_id);
+                    break;
+
+                default:
+                    if (isset($order->$field)) {
+                        $value = $order->$field;
+                    }
+                    break;
+            }
+
+            $this->pluginHelper->formatString($value, $oneTag);
+            $tags["{hikatag:$field}"] = $value;
+        }
+
+        return $tags;
+    }
+
+    private function formatAddress(?object $address): string
+    {
+        $addressString = '';
+        if (!empty($address->address_street)) {
+            $addressString .= $address->address_street.', ';
+        }
+        if (!empty($address->address_post_code)) {
+            $addressString .= $address->address_post_code.', ';
+        }
+        if (!empty($address->address_city)) {
+            $addressString .= $address->address_city.', ';
+        }
+        if (!empty($address->address_country)) {
+            $country = acym_loadObject('SELECT zone_name FROM #__hikashop_zone WHERE zone_namekey = '.acym_escapeDB($address->address_country));
+            $country = $country->zone_name ?? '';
+            $addressString .= $country;
+        }
+
+        return rtrim($addressString, ', ');
+    }
 
     public function getStandardStructure(&$customView)
     {
@@ -320,6 +472,32 @@ trait HikashopInsertion
         echo $this->pluginHelper->displayOptions($couponOptions, $identifier, 'simple', $this->defaultValues);
 
         $tabHelper->endTab();
+        $followupTrigger = acym_getVar('string', 'followupTrigger');
+        if ($followupTrigger === 'hikashop_purchase') {
+            $identifier = 'hikashop_ordered';
+            $tabHelper->startTab(acym_translation('ACYM_BOUGHT_PRODUCT'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
+
+            $productOptions = [
+                [
+                    'title' => 'ACYM_ORDER_BY',
+                    'type' => 'select',
+                    'name' => 'order',
+                    'options' => [
+                        'product_id' => 'ACYM_ID',
+                        'product_created' => 'ACYM_DATE_CREATED',
+                        'product_modified' => 'ACYM_MODIFICATION_DATE',
+                        'product_name' => 'ACYM_TITLE',
+                        'rand' => 'ACYM_RANDOM',
+                    ],
+                ],
+            ];
+
+            $productOptions = array_merge($displayOptions, $productOptions);
+
+            echo $this->pluginHelper->displayOptions($productOptions, $identifier, 'simple', $this->defaultValues);
+
+            $tabHelper->endTab();
+        }
 
         $tabHelper->display('plugin');
     }
@@ -517,11 +695,28 @@ trait HikashopInsertion
         $finalPrice = '';
         // Tests on $tag->type are for retro compatibility since 2/2/21
         if ((empty($tag->type) && $tag->price_type === 'full') || (!empty($tag->type) && $tag->price === 'full')) {
-            $priceSource = $this->getParam('vat', '1') === '1' ? 'price_value_with_tax' : 'price_value';
-            $finalPrice = @$this->currencyClass->format(
-                $product->prices[0]->$priceSource,
-                $product->prices[0]->price_currency_id
-            );
+            if (!empty($tag->order_id)) {
+
+                $productPriceQuery = '
+					SELECT order_product_price 
+					FROM #__hikashop_order_product 
+					WHERE order_id = '.intval($tag->order_id).' 
+					  AND product_id = '.intval($tag->id);
+                $specificProductPrice = acym_loadResult($productPriceQuery);
+
+                $orderCurrencyId = acym_loadResult(
+                    'SELECT order_currency_id 
+					FROM #__hikashop_order 
+					WHERE order_id = '.intval($tag->order_id)
+                );
+                $finalPrice = @$this->currencyClass->format($specificProductPrice, $orderCurrencyId);
+            } else {
+                $priceSource = $this->getParam('vat', '1') === '1' ? 'price_value_with_tax' : 'price_value';
+                $finalPrice = @$this->currencyClass->format(
+                    $product->prices[0]->$priceSource,
+                    $product->prices[0]->price_currency_id
+                );
+            }
 
             if (!empty($product->discount)) {
                 $priceSource = $this->getParam('vat', '1') === '1' ? 'price_value_without_discount_with_tax' : 'price_value_without_discount';
@@ -640,6 +835,8 @@ trait HikashopInsertion
 
         $this->replaceAbandonedCarts($email, $user);
         $this->replaceCoupons($email, $user, $send);
+        $this->replaceOrderInformation($email, $user, $send);
+        $this->replaceOrderedProducts($email, $user);
     }
 
     public function replaceAbandonedCarts(&$email, &$user)
@@ -694,6 +891,61 @@ trait HikashopInsertion
         $myquery .= ' AND FROM_UNIXTIME(a.order_created,"%Y %d %m") = FROM_UNIXTIME('.$senddate.',"%Y %d %m")';
 
         return $this->finalizeCategoryFormat($myquery, $oneTag);
+    }
+
+    public function replaceOrderedProducts(object &$email, &$user)
+    {
+        $tags = $this->pluginHelper->extractTags($email, 'hikashop_ordered');
+        if (empty($tags)) {
+            return;
+        }
+
+        $tagsReplaced = [];
+        foreach ($tags as $i => $oneTag) {
+            if (isset($tagsReplaced[$i])) {
+                continue;
+            }
+
+            $tagsReplaced[$i] = $this->replaceOrderedProduct($oneTag, $user, $email);
+        }
+
+        $this->pluginHelper->replaceTags($email, $tagsReplaced, true);
+
+        $this->replaceOne($email);
+    }
+
+    public function replaceOrderedProduct(object $oneTag, object $user, object $email): string
+    {
+        if (empty($user->cms_id)) {
+            return '';
+        }
+
+        $queueClass = new QueueClass();
+        $mailClass = new MailClass();
+        $params = $queueClass->getQueueParams($mailClass->getMainMailId($email->id), $user->id);
+
+        $orderId = $params['hika_order_id'] ?? null;
+
+        if (empty($orderId)) {
+
+            $query = '
+			SELECT DISTINCT (p.product_id)
+			FROM #__hikashop_product AS p
+			JOIN #__hikashop_order_product AS op ON p.product_id = op.product_id
+			WHERE op.order_id IS NOT NULL';
+
+            $oneTag->max = 1;
+        } else {
+            $query = '
+			SELECT p.product_id
+			FROM #__hikashop_product AS p
+			JOIN #__hikashop_order_product AS op ON p.product_id = op.product_id
+			WHERE op.order_id = '.intval($orderId);
+
+            $oneTag->order_id = $orderId;
+        }
+
+        return $this->finalizeCategoryFormat($query, $oneTag);
     }
 
     public function replaceCoupons(&$email, &$user, $send = true)
@@ -823,5 +1075,16 @@ trait HikashopInsertion
         acym_query($query);
 
         return $code;
+    }
+
+    private function isHikaFollowup(int $followupId): bool
+    {
+        $followupClass = new FollowupClass;
+        $followup = $followupClass->getOneById($followupId);
+        if (!empty($followup->trigger) && $followup->trigger === 'hikashop_purchase') {
+            return true;
+        }
+
+        return false;
     }
 }

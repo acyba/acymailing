@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'PhocaInsertion.php';
 
-class plgAcymPhocadownload extends acymPlugin
+class plgAcymPhocadownload extends AcymPlugin
 {
     use PhocaInsertion;
 

@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Types\OperatorinType;
+use AcyMailing\Types\OperatorInType;
 
 trait MembershipProAutomationConditions
 {
@@ -19,7 +19,7 @@ trait MembershipProAutomationConditions
 
         $payments = acym_loadObjectList('SELECT name AS value, title AS text FROM `#__osmembership_plugins` ORDER BY `title` ASC');
 
-        $operatorIn = new OperatorinType();
+        $operatorIn = new OperatorInType();
         $conditions['user']['membershippro'] = new stdClass();
         $conditions['user']['membershippro']->name = 'Membership Pro';
         $conditions['user']['membershippro']->option = '<div class="cell intext_select_automation">';
@@ -83,6 +83,10 @@ trait MembershipProAutomationConditions
         $conditions['user']['membershippro']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['membershippro']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][membershippro][expiry_date_max]', '', 'cell shrink');
         $conditions['user']['membershippro']->option .= '</div>';
+    }
+
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
     }
 
     public function onAcymProcessCondition_membershippro(&$query, $options, $num, &$conditionNotValid)

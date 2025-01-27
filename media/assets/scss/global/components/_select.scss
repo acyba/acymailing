@@ -1,3 +1,5 @@
+@import "iconContent/keyboard_arrow_down";
+
 .acym_listing_sort-by {
     padding: 10px;
     text-align: right;
@@ -68,7 +70,6 @@
         border: none;
 
         &:before {
-            content: "\e913";
             font-size: 1rem;
             position: absolute;
             right: -5px;

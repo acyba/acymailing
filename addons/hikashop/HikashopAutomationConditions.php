@@ -160,6 +160,10 @@ trait HikashopAutomationConditions
         $conditions['user']['hikawishlist']->option .= '</div>';
     }
 
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
+    }
+
     /**
      * Function called with ajax to search in products
      */

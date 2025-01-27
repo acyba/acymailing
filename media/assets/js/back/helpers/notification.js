@@ -5,7 +5,7 @@ const acym_helperNotification = {
 
         if ($button.find('i').hasClass('acymicon-check-circle')) {
             setTimeout(function () {
-                $button.find('> i').attr('class', 'acymicon-bell-o');
+                $button.find('> i').attr('class', 'acymicon-bell');
                 $button.find('.acym__tooltip__text').remove();
                 $button.removeAttr('data-acym-tooltip')
                        .removeAttr('data-acym-tooltip-position')
@@ -33,7 +33,7 @@ const acym_helperNotification = {
                     .removeClass(
                         'acym__header__notification__pulse acym__header__notification__button__success acym__header__notification__button__info acym__header__notification__button__warning acym__header__notification__button__error')
                     .find('> i')
-                    .attr('class', 'acymicon-bell-o');
+                    .attr('class', 'acymicon-bell');
             });
 
             $button.off('click').on('click', function (e) {
@@ -76,7 +76,7 @@ const acym_helperNotification = {
                 res = acym_helper.parseJson(res);
                 if (!res.error) {
                     jQuery('.acym__header__notification__center').html(res.data.html);
-                    jQuery('.acym__header__notification').find('> i').attr('class', 'acymicon-bell-o');
+                    jQuery('.acym__header__notification').find('> i').attr('class', 'acymicon-bell');
                     acym_helperNotification.removeNotifications();
                 } else {
                     console.log(res.message);
@@ -127,7 +127,7 @@ const acym_helperNotification = {
                         + message
                         + '</p>'
                         + '</div>'
-                        + '<i data-id="0" class="cell shrink acym__message__close acymicon-remove"></i>'
+                        + '<i data-id="0" class="cell shrink acym__message__close acymicon-close"></i>'
                         + '</div>';
 
         return structure;

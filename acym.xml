@@ -21,11 +21,11 @@
 	</install>
 	<scriptfile>install.joomla.php</scriptfile>
 	<files folder="front">
-		<folder>controllers</folder>
-		<folder>libraries</folder>
-		<folder>views</folder>
-		<folder>params</folder>
-		<folder>router</folder>
+		<folder>FrontControllers</folder>
+		<folder>FrontViews</folder>
+		<folder>Params</folder>
+		<folder>Router</folder>
+		<folder>tmpl</folder>
 		<filename>acym.php</filename>
 		<filename>index.html</filename>
 		<filename>router.php</filename>
@@ -38,14 +38,16 @@
 	</media>
 	<administration>
 		<files folder="back">
-			<folder>classes</folder>
-			<folder>controllers</folder>
+			<folder>Classes</folder>
+			<folder>Controllers</folder>
+			<folder>Core</folder>
 			<folder>dynamics</folder>
+			<folder>Helpers</folder>
 			<folder>helpers</folder>
-			<folder>libraries</folder>
-			<folder>partial</folder>
-			<folder>types</folder>
-			<folder>views</folder>
+			<folder>Libraries</folder>
+			<folder>Partial</folder>
+			<folder>Types</folder>
+			<folder>Views</folder>
 			<folder>templates</folder>
 			<folder>vendor</folder>
 			<filename>acym.php</filename>

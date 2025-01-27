@@ -1,8 +1,8 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
-class plgAcymTableofcontents extends acymPlugin
+class plgAcymTableofcontents extends AcymPlugin
 {
     public $emailsWithNoAnchors = [];
     private $updateMail = [];

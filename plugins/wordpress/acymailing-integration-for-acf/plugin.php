@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'AcfInsertion.php';
 
-class plgAcymAcf extends acymPlugin
+class plgAcymAcf extends AcymPlugin
 {
     use AcymAcfInsertion;
 

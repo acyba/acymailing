@@ -1,9 +1,9 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 use AcyMailing\Helpers\TabHelper;
 
-class plgAcymPost extends acymPlugin
+class plgAcymPost extends AcymPlugin
 {
     private $groupedByCategory = false;
     private $currentCategory = null;

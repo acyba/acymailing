@@ -60,7 +60,7 @@ class plgSystemAcymailingAutotweet extends PlgAutotweetBase
         // The AcyMailing library isn't necessary loaded
         if (!function_exists('acym_loadResultArray')) {
             $ds = DIRECTORY_SEPARATOR;
-            $file = JPATH_ROOT.$ds.'administrator'.$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
+            $file = JPATH_ROOT.$ds.'administrator'.$ds.'components'.$ds.'com_acym'.$ds.'Core'.$ds.'init.php';
             if (!file_exists($file) || !include_once $file) {
                 return ['is_valid' => false];
             }

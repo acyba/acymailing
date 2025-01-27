@@ -228,18 +228,21 @@ const acym_editorWysidFontStyle = {
         });
 
         jQuery('.acym__wysid__social__icons__import').off('click').on('click', function () {
-            jQuery(this)
-                .closest('div')
-                .find('.acym__wysid__social__icons__import__delete')
-                .html('')
-                .attr('class', 'acymicon-circle-o-notch acymicon-spin acym__wysid__social__icons__import__delete')
-                .css('color', '#303e46');
-            let $input = jQuery(this).closest('.acym__wysid__right__toolbar__design__social__icons__one').find('input');
-            let file_data = $input.prop('files')[0];
-            let form_data = new FormData();
+            const $socialContainer = jQuery(this).closest('.acym__wysid__right__toolbar__design__social__icons__one');
+
+            $socialContainer.find('.acym__wysid__social__icons__import__delete')
+                            .html('')
+                            .attr('class', 'acymicon-circle-o-notch acymicon-spin acym__wysid__social__icons__import__delete')
+                            .css('color', '#303e46');
+
+            const $input = $socialContainer.find('input');
+            const $image = $socialContainer.find('img');
+            const file_data = $input.prop('files')[0];
+            const form_data = new FormData();
             form_data.append('file', file_data);
-            let whichIcon = $input.attr('name').replace('icon_', '');
-            let ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlMails + '&task=setNewIconShare&social=' + whichIcon;
+            const whichIcon = $input.attr('name').replace('icon_', '');
+            const ajaxUrl = ACYM_AJAX_URL + '&ctrl=' + acym_helper.ctrlMails + '&task=setNewIconShare&social=' + whichIcon;
+
             jQuery.ajax({
                 url: ajaxUrl,
                 dataType: 'text',  // what to expect back from the PHP script, if anything
@@ -251,13 +254,10 @@ const acym_editorWysidFontStyle = {
                 success: function (res) {
                     res = acym_helper.parseJson(res);
                     if (!res.error) {
-                        let img = jQuery('img').filter('[src^="' + res.data.url + '"]');
-                        let finalUrl = res.data.url + '.' + res.data.extension;
+                        const finalUrl = res.data.url + '.' + res.data.extension;
+                        const d = new Date();
 
-                        jQuery.each(img, function () {
-                            let d = new Date();
-                            jQuery(this).removeAttr('src').attr('src', finalUrl + '?d=' + d.getTime());
-                        });
+                        $image.attr('src', finalUrl + '?d=' + d.getTime());
                         acym_helperEditorWysid.socialMedia[whichIcon].src = finalUrl;
                     }
 

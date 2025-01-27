@@ -1,13 +1,13 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'MemberpressAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'MemberpressAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'MemberpressAutomationTriggers.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'MemberpressInsertion.php';
 
-class plgAcymMemberpress extends acymPlugin
+class plgAcymMemberpress extends AcymPlugin
 {
     use MemberpressAutomationConditions;
     use MemberpressAutomationFilters;

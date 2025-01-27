@@ -3,14 +3,13 @@
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\UserClass;
-use AcyMailing\Libraries\acymParameter;
+use AcyMailing\Core\AcymParameter;
 
 class acym_subscriptionform_widget extends WP_Widget
 {
     public function __construct()
     {
-        $ds = DIRECTORY_SEPARATOR;
-        require_once rtrim(dirname(dirname(__DIR__)), $ds).$ds.'back'.$ds.'helpers'.$ds.'helper.php';
+        $this->loadAcyMailing();
 
         parent::__construct(
             'acym_subscriptionform_widget',
@@ -22,8 +21,7 @@ class acym_subscriptionform_widget extends WP_Widget
     // Configuration
     public function form($instance)
     {
-        $ds = DIRECTORY_SEPARATOR;
-        require_once rtrim(dirname(dirname(__DIR__)), $ds).$ds.'back'.$ds.'helpers'.$ds.'helper.php';
+        $this->loadAcyMailing();
 
         wp_enqueue_style('select2lib', ACYM_CSS.'libraries/select2-original.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'libraries'.DS.'select2-original.min.css'));
         wp_enqueue_script('select2lib', ACYM_JS.'libraries/select2-full.min.js?v='.filemtime(ACYM_MEDIA.'js'.DS.'libraries'.DS.'select2-full.min.js'), ['jquery']);
@@ -390,10 +388,16 @@ class acym_subscriptionform_widget extends WP_Widget
     // Widget's output
     public function widget($args, $instance)
     {
-        require_once rtrim(dirname(dirname(__DIR__)), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
+        $this->loadAcyMailing();
 
-        $params = new acymParameter($instance);
+        $params = new AcymParameter($instance);
 
         echo acym_renderForm($params, $args);
+    }
+
+    private function loadAcyMailing(): void
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        require_once rtrim(dirname(dirname(__DIR__)), $ds).$ds.'back'.$ds.'Core'.$ds.'init.php';
     }
 }

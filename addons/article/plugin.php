@@ -1,10 +1,11 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 use AcyMailing\Helpers\TabHelper;
 use Joomla\Component\Content\Site\Helper\RouteHelper;
+use Joomla\CMS\HTML\HTMLHelper;
 
-class plgAcymArticle extends acymPlugin
+class plgAcymArticle extends AcymPlugin
 {
     private bool $groupedByCategory = false;
     private int $currentCategory = 0;
@@ -503,13 +504,13 @@ class plgAcymArticle extends acymPlugin
             }
         }
 
-        $link = $this->finalizeLink($link, $tag, intval($element->access) === 1 && intval($element->category_access) === 1);
-
         //Get the related menu item if specified
         $menuId = $this->getParam('itemid');
         if (!empty($menuId)) {
             $link .= (strpos($link, '?') ? '&' : '?').'Itemid='.intval($menuId);
         }
+
+        $link = $this->finalizeLink($link, $tag, acym_isAdmin() || (intval($element->access) === 1 && intval($element->category_access) === 1));
 
         $varFields['{link}'] = $link;
 
@@ -541,6 +542,12 @@ class plgAcymArticle extends acymPlugin
             }
 
             if (!empty($images[$pictVar])) {
+                if (ACYM_J40 && class_exists(HTMLHelper::class)) {
+                    $cleanedVar = HTMLHelper::_('cleanImageURL', $images[$pictVar]);
+                    if (!empty($cleanedVar->url)) {
+                        $images[$pictVar] = $cleanedVar->url;
+                    }
+                }
                 $imagePath = acym_rootURI().$images[$pictVar];
                 $altImage = empty($images[$pictVar.'_alt']) ? 'image' : $images[$pictVar.'_alt'];
                 $varFields['{picthtml}'] = '<img alt="'.acym_escape($altImage).'" class="content_main_image" src="'.acym_escape($imagePath).'" />';

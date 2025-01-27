@@ -265,7 +265,7 @@ const acym_helperMailer = {
                     return;
                 }
                 jQuery(this).closest('.acym__listing__row').remove();
-                if (!jQuery('.acym__config__acymailer__status__icon.acymicon-access_time').length) {
+                if (!jQuery('.acym__config__acymailer__status__icon.acymicon-access-time').length) {
                     jQuery('.acym__config__acymailer__warning').remove();
                 }
             });
@@ -317,7 +317,7 @@ const acym_helperMailer = {
 
                     const $currentDiv = jQuery(`div[acym-data-domain="${response.data['domain']}"]`);
                     $currentDiv.parent().find('.acymicon-spin')
-                               .replaceWith('<i class="acym__config__acymailer__status__icon acymicon-remove acym__color__red notValidated"></i>');
+                               .replaceWith('<i class="acym__config__acymailer__status__icon acymicon-close acym__color__red notValidated"></i>');
                     $currentDiv.find('.acym__tooltip__text').html(response.message);
                     return;
                 }
@@ -331,11 +331,11 @@ const acym_helperMailer = {
                             tooltip = ACYM_JS_TXT.ACYM_VALIDATED;
                             break;
                         case 'FAILED':
-                            iconClass = 'acymicon-remove acym__color__red notValidated';
+                            iconClass = 'acymicon-close acym__color__red notValidated';
                             tooltip = ACYM_JS_TXT.ACYM_APPROVAL_FAILED;
                             break;
                         default:
-                            iconClass = 'acymicon-access_time acym__color__orange notValidated';
+                            iconClass = 'acymicon-access-time acym__color__orange notValidated';
                             tooltip = ACYM_JS_TXT.ACYM_PENDING;
                     }
                     const $currentDiv = jQuery(`div[acym-data-domain="${key}"]`);

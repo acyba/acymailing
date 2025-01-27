@@ -1,12 +1,12 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'IcagendaAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'IcagendaAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'IcagendaInsertion.php';
 
-class plgAcymIcagenda extends acymPlugin
+class plgAcymIcagenda extends AcymPlugin
 {
     use IcagendaAutomationConditions;
     use IcagendaAutomationFilters;

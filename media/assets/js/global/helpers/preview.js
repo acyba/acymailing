@@ -31,7 +31,7 @@ const acym_helperPreview = {
         newContent += '<iframe id="' + idIframe + '" src="about:blank" frameborder="0" class="cell shrink" style="width: 100%"></iframe>';
         newContent += '<div class="cell auto"></div>';
         newContent += '<div class="acym__fadeout"></div>';
-        newContent += '<i class="acymicon-keyboard_arrow_down acym__preview__extend acym__preview__toggle acym__preview-toggle"></i>';
+        newContent += '<i class="acymicon-keyboard-arrow-down acym__preview__extend acym__preview__toggle acym__preview-toggle"></i>';
         newContent += '<i class="acymicon-sort acym__preview-toggle acym__preview__toggle__top"></i>';
 
         jQuery('#' + where).html(newContent);
@@ -53,18 +53,18 @@ const acym_helperPreview = {
                 jQuery('.acym__fadeout').toggle();
                 if (collapse) {
                     jQuery('.acym__preview__toggle')
-                        .removeClass('acymicon-keyboard_arrow_down')
+                        .removeClass('acymicon-keyboard-arrow-down')
                         .removeClass('acym__preview__extend')
-                        .addClass('acymicon-keyboard_arrow_up')
+                        .addClass('acymicon-keyboard-arrow-up')
                         .addClass('acym__preview__collapse');
                     $iframe.css({'height': heightIframe}).contents().find('body').css('overflow', 'auto');
                     $divIframe.css('padding-bottom', heightIframe);
                     collapse = !collapse;
                 } else {
                     jQuery('.acym__preview__toggle')
-                        .removeClass('acymicon-keyboard_arrow_up')
+                        .removeClass('acymicon-keyboard-arrow-up')
                         .removeClass('acym__preview__collapse')
-                        .addClass('acymicon-keyboard_arrow_down')
+                        .addClass('acymicon-keyboard-arrow-down')
                         .addClass('acym__preview__extend');
                     $iframe.css({'height': heightForce}).contents().find('body').css('overflow', 'hidden');
                     $divIframe.css('padding-bottom', heightForce);

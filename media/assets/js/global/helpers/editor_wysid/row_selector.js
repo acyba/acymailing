@@ -24,14 +24,14 @@ const acym_editorWysidRowSelector = {
                 if (ACYM_IS_ADMIN) {
                     zoneOverlay += '<i class="acymicon-floppy-o acym__wysid__row__toolbox__save acym__wysid__row__toolbox__actions"></i>';
                 }
-                zoneOverlay += '<i class="acymicon-content_copy acym__wysid__row__toolbox__copy acym__wysid__row__toolbox__actions"></i>';
+                zoneOverlay += '<i class="acymicon-content-copy acym__wysid__row__toolbox__copy acym__wysid__row__toolbox__actions"></i>';
                 zoneOverlay += '<i class="acymicon-arrow-up acym__wysid__row__toolbox__moveup acym__wysid__row__toolbox__actions"></i>';
                 zoneOverlay += '<i class="acymicon-arrow-down acym__wysid__row__toolbox__movedown acym__wysid__row__toolbox__actions"></i>';
                 zoneOverlay += '<i class="acymicon-arrows acym__wysid__row__element__toolbox__move acym__wysid__row__toolbox__actions"></i>';
                 zoneOverlay += '<i class="acymicon-delete acym__wysid__row__toolbox__actions acym__wysid__row__toolbox__delete__row"></i>';
                 zoneOverlay += '</div>';
                 zoneOverlay += '<div class="acym__wysid__row__height__container">';
-                zoneOverlay += '<i class="acymicon-code acym__wysid__row__toolbox__height"></i>';
+                zoneOverlay += '<i class="acymicon-unfold-more acym__wysid__row__toolbox__height"></i>';
                 zoneOverlay += '</div>';
                 zoneOverlay += '</div>';
                 $thisRow.prepend(zoneOverlay);
@@ -41,7 +41,7 @@ const acym_editorWysidRowSelector = {
             // Add overlay and action buttons on blocks
             jQuery('.acym__wysid__column__element').each(function () {
                 let blockOverlay = '<div class="acym__wysid__element__toolbox">';
-                blockOverlay += '<i class="acymicon-content_copy acym__wysid__element__toolbox__copy acym__wysid__element__toolbox__actions"></i>';
+                blockOverlay += '<i class="acymicon-content-copy acym__wysid__element__toolbox__copy acym__wysid__element__toolbox__actions"></i>';
                 blockOverlay += '<i class="acymicon-arrow-up acym__wysid__element__toolbox__moveup acym__wysid__element__toolbox__actions"></i>';
                 blockOverlay += '<i class="acymicon-arrow-down acym__wysid__element__toolbox__movedown acym__wysid__element__toolbox__actions"></i>';
                 blockOverlay += '<i class="acymicon-arrows acym__wysid__column__element__toolbox__move acym__wysid__element__toolbox__actions"></i>';

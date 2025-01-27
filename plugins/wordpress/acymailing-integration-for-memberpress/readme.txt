@@ -1,14 +1,12 @@
 === MemberPress integration - AcyMailing ===
 Contributors: acyba
 Tags: newsletter, acymailing, memberpress, subscription
-Requires at least: 4.7
-Tested up to: 6.7.1
-Stable tag: 3.0
-Requires PHP: 7.4.0
+Tested up to: 6.7
+Stable tag: 3.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Trigger AcyMailing automation when a user subscribe to your membership, filter users on their subscription, add custom value to your email
+Trigger AcyMailing automation when a user subscribes to your membership, filter users on their subscription, add custom value to your email
 
 == Description ==
 

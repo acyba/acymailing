@@ -1,11 +1,11 @@
 <?php
 
 use AcyMailing\Helpers\ImportHelper;
-use AcyMailing\Libraries\acymPlugin;
-use AcyMailing\Types\OperatorinType;
+use AcyMailing\Core\AcymPlugin;
+use AcyMailing\Types\OperatorInType;
 use AcyMailing\Types\OperatorType;
 
-class plgAcymUniversalfilter extends acymPlugin
+class plgAcymUniversalfilter extends AcymPlugin
 {
     public function __construct()
     {
@@ -177,7 +177,7 @@ class plgAcymUniversalfilter extends acymPlugin
             true
         );
         $conditions['classic']['sqladvanced']->option .= '</div>';
-        $operatorIn = new OperatorinType();
+        $operatorIn = new OperatorInType();
         $conditions['classic']['sqladvanced']->option .= '<div class="intext_select_automation">';
         $conditions['classic']['sqladvanced']->option .= $operatorIn->display('acym_condition[conditions][__numor__][__numand__][sqladvanced][type]');
         $conditions['classic']['sqladvanced']->option .= '</div>';

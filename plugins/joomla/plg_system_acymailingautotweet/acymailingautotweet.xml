@@ -18,7 +18,7 @@
 		</languages>
 	</files>
 	<config>
-		<fields name="params" addfieldpath="/components/com_acym/params">
+		<fields name="params" addfieldpath="/components/com_acym/Params">
 			<fieldset name="basic">
 				<field name="lists" type="lists" default="None" label="ACYM_LISTS" description="ACYM_PLG_SYSTEM_AUTOTWEET_LIST_DESCRIPTION"/>
 			</fieldset>

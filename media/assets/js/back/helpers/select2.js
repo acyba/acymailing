@@ -25,8 +25,8 @@ const acym_helperSelect2 = {
                 minimumResultsForSearch: Infinity
             });
     },
-    setAjaxSelect2: function () {
-        jQuery('.acym_select2_ajax').each(function () {
+    setAjaxSelect2: function (prefix = '') {
+        jQuery(`${prefix} .acym_select2_ajax`).each(function () {
             let $placeholder = jQuery(this).attr('data-placeholder');
             if (!$placeholder) $placeholder = '- - -';
 

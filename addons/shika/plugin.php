@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 use AcyMailing\Helpers\TabHelper;
 use Joomla\Component\Content\Site\Helper\RouteHelper;
 use Joomla\CMS\Factory;
@@ -9,7 +9,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 
 
-class plgAcymShika extends acymPlugin
+class plgAcymShika extends AcymPlugin
 {
     private $groupedByCategory = false;
     private $currentCategory = null;

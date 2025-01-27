@@ -15,8 +15,8 @@ jQuery(function ($) {
             }
 
             let $container = $(this).closest('.acym__listing__row');
-            if ($(this).hasClass('acymicon-keyboard_arrow_down')) {
-                $(this).removeClass('acymicon-keyboard_arrow_down').addClass('acymicon-keyboard_arrow_up');
+            if ($(this).hasClass('acymicon-keyboard-arrow-down')) {
+                $(this).removeClass('acymicon-keyboard-arrow-down').addClass('acymicon-keyboard-arrow-up');
                 $container.addClass('emails_listing_opened');
                 $container.find('.acym__followup__emails__listing__status')
                           .html('<i class="cell text-center acymicon-circle-o-notch acymicon-spin margin-top-1"></i>');
@@ -53,7 +53,7 @@ jQuery(function ($) {
                     }
                 });
             } else {
-                $(this).removeClass('acymicon-keyboard_arrow_up').addClass('acymicon-keyboard_arrow_down');
+                $(this).removeClass('acymicon-keyboard-arrow-up').addClass('acymicon-keyboard-arrow-down');
                 $(this).closest('.acym__listing__row').removeClass('emails_listing_opened');
                 $container.find('div[class^="acym__followup__emails__listing__"],div[class*=" acym__followup__emails__listing__"]').empty();
             }

@@ -9,7 +9,7 @@ class plgSystemAcymailoverride extends CMSPlugin
     public function __construct(&$subject, $config = [])
     {
         $ds = DIRECTORY_SEPARATOR;
-        $file = rtrim(JPATH_SITE, $ds).$ds.'components'.$ds.'com_acym'.$ds.'libraries'.$ds.'override'.$ds.'mail.php';
+        $file = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'Libraries'.$ds.'Override'.$ds.'Override.php';
 
         try {
             if (file_exists($file)) require_once $file;

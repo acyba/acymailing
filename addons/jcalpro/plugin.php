@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'JcalproInsertion.php';
 
-class plgAcymJcalpro extends acymPlugin
+class plgAcymJcalpro extends AcymPlugin
 {
     use JcalproInsertion;
 

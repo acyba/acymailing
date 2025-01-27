@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Types\OperatorinType;
+use AcyMailing\Types\OperatorInType;
 
 trait MemberpressAutomationConditions
 {
@@ -18,7 +18,7 @@ trait MemberpressAutomationConditions
         $conditions['user']['memberpress']->name = acym_translationSprintf('ACYM_INTEGRATION_PLUGIN_MEMBERSHIP', 'MemberPress');
         $conditions['user']['memberpress']->option = '<div class="cell grid-x grid-margin-x">';
 
-        $operatorIn = new OperatorinType();
+        $operatorIn = new OperatorInType();
 
         $conditions['user']['memberpress']->option .= '<div class="intext_select_automation cell acym__small_select">';
         $conditions['user']['memberpress']->option .= $operatorIn->display('acym_condition[conditions][__numor__][__numand__][memberpress][type]');
@@ -86,6 +86,10 @@ trait MemberpressAutomationConditions
         $conditions['user']['memberpress']->option .= '</div>';
 
         $conditions['user']['memberpress']->option .= '</div>';
+    }
+
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
     }
 
     public function onAcymProcessCondition_memberpress(&$query, $options, $num, &$conditionNotValid)

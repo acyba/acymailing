@@ -1,11 +1,176 @@
 <?php
 
 use AcyMailing\Helpers\TabHelper;
+use AcyMailing\Classes\MailClass;
+use AcyMailing\Classes\QueueClass;
+use AcyMailing\Classes\FollowupClass;
 
 trait WooCommerceInsertion
 {
     private $minProductDisplayLastPurchased = 1;
     private $maxProductDisplayLastPurchased = 3;
+
+    public function dynamicText($mailId)
+    {
+        $followupId = acym_getVar('int', 'followup_id');
+        if (empty($followupId)) {
+            return '';
+        }
+
+        if ($this->isWooCommerceFollowup($followupId)) {
+            return $this->pluginDescription;
+        }
+
+        return '';
+    }
+
+    public function textPopup()
+    {
+        ?>
+		<script type="text/javascript">
+            let selectedWooTag = '';
+
+            function applyWooTag(tagname, element) {
+                if (!tagname) {
+                    return;
+                }
+
+                selectedWooTag = tagname;
+                let string = '{wootag:' + tagname + '}';
+                setTag(string, jQuery(element));
+            }
+		</script>
+        <?php
+
+        $text = '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_ORDER').'</h1>';
+
+        $orderFields = [
+            'billing_email',
+            'status',
+            'total_amount',
+            'date_created_gmt',
+            'date_updated_gmt',
+            'date_completed',
+            'date_paid',
+            'billing_address',
+            'shipping_address',
+            'first_name',
+            'last_name',
+            'phone',
+        ];
+
+        foreach ($orderFields as $orderFieldName) {
+            $text .= '<div class="cell acym__row__no-listing acym__listing__row__popup" onclick="applyWooTag(\''.$orderFieldName.'\', this);" >'.$orderFieldName.'</div>';
+        }
+
+        echo $text;
+    }
+
+    public function replaceOrderInformation(object &$email, object &$user, bool $send = true)
+    {
+        $extractedTags = $this->pluginHelper->extractTags($email, 'wootag');
+        if (empty($extractedTags)) {
+            return;
+        }
+
+        $mailClass = new MailClass();
+        $queueClass = new QueueClass();
+        $params = $queueClass->getQueueParams($mailClass->getMainMailId($email->id), $user->id);
+
+        if (empty($params)) {
+            return;
+        }
+
+        $orderId = $params['woo_order_id'] ?? null;
+
+        if (empty($orderId)) {
+            return;
+        }
+
+        $order = wc_get_order($orderId);
+
+        if (empty($order)) {
+            return;
+        }
+
+        $tags = [];
+        $productTags = $this->processTags($order, $extractedTags);
+        $tags = array_merge($tags, $productTags);
+
+        $this->pluginHelper->replaceTags($email, $tags);
+    }
+
+    private function processTags(object $order, array $extractedTags): array
+    {
+        $tags = [];
+
+        foreach ($extractedTags as $oneTag) {
+            $field = $oneTag->id;
+            $value = $oneTag->default;
+
+            switch ($field) {
+                case 'billing_address':
+                    $value = $order->get_formatted_billing_address();
+                    break;
+
+                case 'shipping_address':
+                    $value = $order->get_formatted_shipping_address();
+                    break;
+
+                case 'date_created_gmt':
+                    $value = $order->get_date_created() ? acym_date($order->get_date_created(), 'Y-m-d H:i:s', false) : null;
+                    break;
+
+                case 'date_updated_gmt':
+                    $value = $order->get_date_modified() ? acym_date($order->get_date_modified(), 'Y-m-d H:i:s', false) : null;
+                    break;
+
+                case 'date_completed':
+                    $value = $order->get_date_completed() ? acym_date($order->get_date_completed(), 'Y-m-d H:i:s', false) : null;
+                    break;
+
+                case 'date_paid':
+                    $value = $order->get_date_paid() ? acym_date($order->get_date_paid(), 'Y-m-d H:i:s', false) : null;
+                    break;
+
+                case 'billing_email':
+                    $value = $order->get_billing_email();
+                    break;
+
+                case 'status':
+                    $value = $order->get_status();
+                    break;
+
+                case 'total_amount':
+                    $currency = $order->get_currency();
+                    $value = wc_price($order->get_total(), $currency);
+                    break;
+
+                case 'first_name':
+                    $value = $order->get_billing_first_name();
+                    break;
+
+                case 'last_name':
+                    $value = $order->get_billing_last_name();
+                    break;
+
+                case 'phone':
+                    $value = $order->get_billing_phone();
+                    break;
+
+                default:
+                    if (method_exists($order, "get_{$field}")) {
+                        $value = $order->{"get_{$field}"}();
+                    }
+                    break;
+            }
+
+            $this->pluginHelper->formatString($value, $oneTag);
+            $tags["{wootag:$field}"] = $value;
+        }
+
+        return $tags;
+    }
 
     public function getStandardStructure(&$customView)
     {
@@ -292,6 +457,62 @@ trait WooCommerceInsertion
 
         $tabHelper->endTab();
 
+        $followupTrigger = acym_getVar('string', 'followupTrigger');
+        if ($followupTrigger === 'woocommerce_purchase') {
+            $identifier = 'woocommerce_ordered';
+            $tabHelper->startTab(acym_translation('ACYM_BOUGHT_PRODUCT'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
+            $boughtOptions = [
+                [
+                    'title' => 'ACYM_DISPLAY',
+                    'type' => 'checkbox',
+                    'name' => 'display',
+                    'options' => $this->displayOptions,
+                ],
+                [
+                    'title' => 'ACYM_CLICKABLE_TITLE',
+                    'type' => 'boolean',
+                    'name' => 'clickable',
+                    'default' => true,
+                ],
+                [
+                    'title' => 'ACYM_CLICKABLE_IMAGE',
+                    'type' => 'boolean',
+                    'name' => 'clickableimg',
+                    'default' => false,
+                ],
+                [
+                    'title' => 'ACYM_TRUNCATE',
+                    'type' => 'intextfield',
+                    'isNumber' => 1,
+                    'name' => 'wrap',
+                    'text' => 'ACYM_TRUNCATE_AFTER',
+                    'default' => 0,
+                ],
+                [
+                    'title' => 'ACYM_DISPLAY_PICTURES',
+                    'type' => 'pictures',
+                    'name' => 'pictures',
+                ],
+                [
+                    'title' => 'ACYM_ORDER_BY',
+                    'type' => 'select',
+                    'name' => 'order',
+                    'options' => [
+                        'ID' => 'ACYM_ID',
+                        'post_date' => 'ACYM_PUBLISHING_DATE',
+                        'post_modified' => 'ACYM_MODIFICATION_DATE',
+                        'post_title' => 'ACYM_TITLE',
+                        'menu_order' => 'ACYM_MENU_ORDER',
+                        'rand' => 'ACYM_RANDOM',
+                    ],
+                ],
+            ];
+
+            echo $this->pluginHelper->displayOptions($boughtOptions, $identifier, 'grouped', $this->defaultValues);
+
+            $tabHelper->endTab();
+        }
+
         // Products in cart
         $identifier = 'cart'.$this->name;
         $tabHelper->startTab(
@@ -395,11 +616,11 @@ trait WooCommerceInsertion
     public function prepareListing()
     {
         $this->querySelect = 'SELECT product.ID, product.post_title, product.post_date ';
-        $this->query = 'FROM #__posts AS product ';
+        $this->query = 'FROM #__posts AS product LEFT JOIN #__postmeta AS product_sku ON product.ID = product_sku.post_id AND product_sku.meta_key = "_sku" ';
         $this->filters = [];
         $this->filters[] = 'product.post_type = "product"';
         $this->filters[] = 'product.post_status = "publish"';
-        $this->searchFields = ['product.ID', 'product.post_title'];
+        $this->searchFields = ['product.ID', 'product.post_title', 'product_sku.meta_value'];
         $this->pageInfo->order = 'product.ID';
         $this->elementIdTable = 'product';
         $this->elementIdColumn = 'ID';
@@ -592,6 +813,8 @@ trait WooCommerceInsertion
     {
         if (empty($user)) return;
         $this->_replaceCoupons($email, $user, $send);
+        $this->replaceOrderInformation($email, $user, $send);
+        $this->replaceOrderedProducts($email, $user);
         $generated = $this->replaceLastPurchased($email, $user, $send);
         if ($generated === '' && (!isset($email->isTest) || $email->isTest !== true)) {
             return [
@@ -748,6 +971,60 @@ trait WooCommerceInsertion
         $this->replaceOne($email);
 
         return 1;
+    }
+
+    private function replaceOrderedProducts(object &$email, object &$user)
+    {
+        $tags = $this->pluginHelper->extractTags($email, 'woocommerce_ordered');
+        if (empty($tags)) {
+            return;
+        }
+
+        $tagsReplaced = [];
+        foreach ($tags as $i => $oneTag) {
+            if (isset($tagsReplaced[$i])) {
+                continue;
+            }
+
+            $tagsReplaced[$i] = $this->replaceOrderedProduct($oneTag, $user, $email);
+        }
+
+        $this->pluginHelper->replaceTags($email, $tagsReplaced, true);
+
+        $this->replaceOne($email);
+    }
+
+    private function replaceOrderedProduct(object $oneTag, object $user, object $email): string
+    {
+        if (empty($user->cms_id)) {
+            return '';
+        }
+
+        $queueClass = new QueueClass();
+        $mailClass = new MailClass();
+        $params = $queueClass->getQueueParams($mailClass->getMainMailId($email->id), $user->id);
+
+        $orderId = $params['woo_order_id'] ?? null;
+
+        if (empty($orderId)) {
+            //We get one random product
+            $query = 'SELECT product.`ID` FROM #__posts AS product WHERE product.post_type = "product" AND product.post_status = "publish" AND product.`ID` IS NOT NULL';
+
+            $oneTag->max = 1;
+        } else {
+            //We get the products from the orders
+            $product_ids = [];
+            $order = wc_get_order($orderId);
+            foreach ($order->get_items() as $item_id => $item) {
+                $product_id = $item->get_product_id();
+                $product_ids[] = $product_id;
+            }
+
+            $query = 'SELECT DISTINCT product.`ID` FROM #__posts AS product ';
+            $query .= ' WHERE product.ID IN ('.implode(',', $product_ids).')';
+        }
+
+        return $this->finalizeCategoryFormat($query, $oneTag, 'product');
     }
 
     private function replaceCart(&$email, $user, $send)
@@ -938,5 +1215,16 @@ trait WooCommerceInsertion
         }
 
         return $elements;
+    }
+
+    private function isWooCommerceFollowup(int $followupId): bool
+    {
+        $followupClass = new FollowupClass();
+        $followup = $followupClass->getOneById($followupId);
+        if (!empty($followup->trigger) && $followup->trigger === 'woocommerce_purchase') {
+            return true;
+        }
+
+        return false;
     }
 }

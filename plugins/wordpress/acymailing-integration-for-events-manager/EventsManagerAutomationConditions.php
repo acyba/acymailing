@@ -78,6 +78,10 @@ trait EventsManagerAutomationConditions
         $conditions['user']['eventsmanager']->option .= '</div>';
     }
 
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
+    }
+
     /**
      * Function called with ajax to search in events
      */

@@ -1,18 +1,18 @@
 <?php
 
-include_once __DIR__.DIRECTORY_SEPARATOR.'router'.DIRECTORY_SEPARATOR.'router.php';
+include_once __DIR__.DIRECTORY_SEPARATOR.'Router'.DIRECTORY_SEPARATOR.'AcymRouter.php';
 
 // We keep these old SEF functions as they may be used by SEF extensions
 function AcymBuildRoute(&$query)
 {
-    $router = new AcymRouter();
+    $router = new AcyMailing\Router\AcymRouter();
 
     return $router->build($query);
 }
 
-function AcymParseRoute($segments)
+function AcymParseRoute(&$segments)
 {
-    $router = new AcymRouter();
+    $router = new AcyMailing\Router\AcymRouter();
 
     return $router->parse($segments);
 }

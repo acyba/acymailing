@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'ZooInsertion.php';
 
-class plgAcymZoo extends acymPlugin
+class plgAcymZoo extends AcymPlugin
 {
     use ZooInsertion;
 

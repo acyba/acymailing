@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Types\OperatorinType;
+use AcyMailing\Types\OperatorInType;
 
 trait PayplansAutomationConditions
 {
@@ -15,7 +15,7 @@ trait PayplansAutomationConditions
         $conditions['user']['payplans']->name = 'Payplans';
         $conditions['user']['payplans']->option = '<div class="cell grid-x grid-margin-x">';
 
-        $operatorIn = new OperatorinType();
+        $operatorIn = new OperatorInType();
 
         $conditions['user']['payplans']->option .= '<div class="intext_select_automation cell">';
         $conditions['user']['payplans']->option .= $operatorIn->display('acym_condition[conditions][__numor__][__numand__][payplans][type]');
@@ -68,6 +68,10 @@ trait PayplansAutomationConditions
         $conditions['user']['payplans']->option .= '</div>';
 
         $conditions['user']['payplans']->option .= '</div>';
+    }
+
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
     }
 
     public function onAcymProcessCondition_payplans(&$query, $options, $num, &$conditionNotValid)

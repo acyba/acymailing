@@ -2,6 +2,7 @@
 
 use AcyMailing\Classes\AutomationClass;
 use AcyMailing\Classes\UserClass;
+use AcyMailing\Helpers\ScenarioHelper;
 
 trait MemberpressAutomationTriggers
 {
@@ -21,6 +22,9 @@ trait MemberpressAutomationTriggers
 
         $automationClass = new AutomationClass();
         $automationClass->trigger('member_transaction_complete', ['userId' => $user->id, 'subscription_id' => $subscription->product_id]);
+
+        $scenarioHelper = new ScenarioHelper();
+        $scenarioHelper->trigger('member_transaction_complete', ['userId' => $user->id, 'subscription_id' => $subscription->product_id]);
     }
 
     public function onAcymDeclareTriggers(&$triggers, &$defaultValues)
@@ -47,6 +51,11 @@ trait MemberpressAutomationTriggers
                 ['data-class' => 'acym__select']
             ).'</div>';
         $triggers['user']['member_transaction_complete']->option .= '</div>';
+    }
+
+    public function onAcymDeclareTriggersScenario(&$triggers, &$defaultValues)
+    {
+        $this->onAcymDeclareTriggers($triggers, $defaultValues);
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)

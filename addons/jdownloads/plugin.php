@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'JdownloadsInsertion.php';
 
-class plgAcymJdownloads extends acymPlugin
+class plgAcymJdownloads extends AcymPlugin
 {
     use JdownloadsInsertion;
 

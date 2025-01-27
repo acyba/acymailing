@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'JswcrmInsertion.php';
 
-class plgAcymJswcrm extends acymPlugin
+class plgAcymJswcrm extends AcymPlugin
 {
     use JswcrmInsertion;
 

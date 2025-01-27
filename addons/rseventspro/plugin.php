@@ -1,12 +1,12 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'RseventsproAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'RseventsproAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'RseventsproInsertion.php';
 
-class plgAcymRseventspro extends acymPlugin
+class plgAcymRseventspro extends AcymPlugin
 {
     use RseventsproAutomationConditions;
     use RseventsproAutomationFilters;

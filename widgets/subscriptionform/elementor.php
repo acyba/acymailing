@@ -2,7 +2,7 @@
 
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\ListClass;
-use AcyMailing\Libraries\acymParameter;
+use AcyMailing\Core\AcymParameter;
 
 class acySubscriptionFormWidget extends \Elementor\Widget_Base
 {
@@ -283,7 +283,7 @@ class acySubscriptionFormWidget extends \Elementor\Widget_Base
     protected function render()
     {
         $settings = $this->get_settings_for_display();
-        $params = new acymParameter($settings);
+        $params = new AcymParameter($settings);
         $render = acym_renderForm($params);
 
         echo $render;

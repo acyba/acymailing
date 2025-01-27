@@ -1,13 +1,13 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'EventBookingAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'EventBookingAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'EventBookingAutomationTriggers.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'EventBookingInsertion.php';
 
-class plgAcymEventbooking extends acymPlugin
+class plgAcymEventbooking extends AcymPlugin
 {
     use EventBookingAutomationConditions;
     use EventBookingAutomationFilters;

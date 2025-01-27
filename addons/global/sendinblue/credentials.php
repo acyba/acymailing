@@ -1,0 +1,165 @@
+<?php
+
+use AcyMailing\Types\DelayType;
+
+class SendinblueCredentials extends SendinblueClass
+{
+    /**
+     * @param array $credentials
+     * @param string $sendingMethod
+     * @param array $sendingMethodListParams this parameter is only used for the plugin sending method list
+     *
+     * @return void
+     */
+    public function onAcymGetCredentialsSendingMethod(array &$credentials, string $sendingMethod, array $sendingMethodListParams = [])
+    {
+        if ($sendingMethod != plgAcymSendinblue::SENDING_METHOD_ID) return;
+
+        $key = plgAcymSendinblue::SENDING_METHOD_ID.'_api_key';
+
+        $credentials = [
+            $key => $sendingMethodListParams[$key] ?? $this->config->get($key, ''),
+        ];
+    }
+
+    public function getHeadersSendingMethod($sendingMethod, $credentials = []): array
+    {
+        if (empty($credentials)) {
+            $this->onAcymGetCredentialsSendingMethod($credentials, $sendingMethod);
+        }
+
+        return [
+            'api-key:'.$credentials[plgAcymSendinblue::SENDING_METHOD_ID.'_api_key'],
+            'accept: application/json',
+            'content-type: application/json',
+        ];
+    }
+
+    public function getSendingMethodsHtmlSetting(&$data)
+    {
+        $needValidation = $this->config->get('sendinblue_validation', 0);
+        $remindMe = json_decode($this->config->get('remindme', '[]'), true);
+
+        if (intval($needValidation) === 1 && !in_array('sendinblue_validation', $remindMe)) {
+            $docUrl = ACYM_DOCUMENTATION.'external-sending-method/sendinblue#my-account-needs-validation';
+
+            $message = acym_translation('ACYM_SENDINBLUE_VALIDATION_NEEDED');
+            $message .= '<br/><a href="'.$docUrl.'" target="_blank">'.$docUrl.'</a>';
+            $message .= ' <a href="#" class="acym__do__not__remindme acym__do__not__remindme__info" title="sendinblue_validation">';
+            $message .= acym_translation('ACYM_DO_NOT_REMIND_ME');
+            $message .= '</a>';
+
+            acym_enqueueMessage($message, 'info');
+        }
+
+        $delayType = new DelayType();
+        $config = empty($data['tab']) ? $this->config : $data['tab']->config;
+        $defaultApiKey = $config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_api_key');
+        ob_start();
+        ?>
+		<div class="send_settings cell grid-x acym_vcenter" id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings">
+			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
+				<label class="cell shrink margin-right-1" for="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings_api-key">
+                    <?php echo acym_translationSprintf('ACYM_SENDING_METHOD_API_KEY', plgAcymSendinblue::SENDING_METHOD_NAME); ?>
+				</label>
+                <?php echo $this->getLinks('https://get.brevo.com/hbvmwg6onvve'); ?>
+				<input type="text"
+					   id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_settings_api-key"
+					   value="<?php echo empty($defaultApiKey) ? $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_api_key') : $defaultApiKey; ?>"
+					   name="config[<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>_api_key]"
+					   class="cell margin-right-1 acym__configuration__mail__settings__text">
+                <?php echo $this->getTestCredentialsSendingMethodButton(plgAcymSendinblue::SENDING_METHOD_ID); ?>
+                <?php echo $this->getCopySettingsButton($data, plgAcymSendinblue::SENDING_METHOD_ID, 'wp_mail_smtp'); ?>
+				<div class="cell grid-x margin-top-1 acym__sending__methods__synch">
+					<button type="button"
+							sending-method-id="<?php echo plgAcymSendinblue::SENDING_METHOD_ID; ?>"
+							class="acym__configuration__sending__synch__users cell shrink button button-secondary">
+                        <?php echo acym_translation('ACYM_SYNCHRO_EXISTING_USERS'); ?>
+					</button>
+					<span class="acym__configuration__sending__method-icon cell shrink margin-left-1 acym_vcenter"></span>
+					<span class="acym__configuration__sending__method-synch__message cell shrink margin-left-1 acym_vcenter"></span>
+				</div>
+                <?php if (!$this->plugin->isLogFileEmpty()) { ?>
+					<div class="cell grid-x margin-top-1 acym__sending__methods__log">
+                        <?php
+                        echo acym_modal(
+                            acym_translation('ACYM_REPORT_SEE'),
+                            '',
+                            null,
+                            '',
+                            [
+                                'class' => 'button',
+                                'data-ajax' => 'true',
+                                'data-iframe' => '&ctrl=configuration&task=seeLogs&filename='.$this->plugin->logFilename,
+                            ]
+                        );
+                        ?>
+					</div>
+                <?php } ?>
+				<div class="cell grid-x margin-top-1 acym_vcenter acym__sending__methods__clean__data">
+                    <?php echo acym_translationSprintf(
+                        'ACYM_CLEAN_DATA_ON_X_X',
+                        plgAcymSendinblue::SENDING_METHOD_NAME,
+                        $delayType->display(
+                            'config['.plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency]',
+                            $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_clean_frequency', 604800), // one week
+                            4
+                        )
+                    ); ?>
+				</div>
+			</div>
+		</div>
+        <?php
+        $data['sendingMethodsHtmlSettings'][plgAcymSendinblue::SENDING_METHOD_ID] = ob_get_clean();
+    }
+
+    public function testCredentialSendingMethod($sendingMethod, $credentials)
+    {
+        if ($sendingMethod == plgAcymSendinblue::SENDING_METHOD_ID) {
+            $headers = $this->getHeadersSendingMethod(plgAcymSendinblue::SENDING_METHOD_ID, $credentials);
+            $response = $this->callApiSendingMethod('account', [], $headers);
+            if (!empty($response['error_curl'])) {
+                acym_sendAjaxResponse(acym_translationSprintf('ACYM_ERROR_OCCURRED_WHILE_CALLING_API', $response['error_curl']), [], false);
+            } elseif (!empty($response['code'])) {
+                $message = $response['code'] == 'unauthorized'
+                    ? acym_translation('ACYM_AUTHENTICATION_FAILS_WITH_API_KEY')
+                    : acym_translationSprintf(
+                        'ACYM_API_RETURN_THIS_ERROR',
+                        $response['message']
+                    );
+                acym_sendAjaxResponse($message, [], false);
+            } else {
+                acym_sendAjaxResponse(acym_translation('ACYM_API_KEY_CORRECT'));
+            }
+        }
+    }
+
+    public function getCreditRemainingSendingMethod(&$html)
+    {
+        $sendingMethod = $this->config->get('mailer_method', '');
+        if (empty($sendingMethod) || $sendingMethod != plgAcymSendinblue::SENDING_METHOD_ID) return;
+        $apiKey = $this->config->get(plgAcymSendinblue::SENDING_METHOD_ID.'_api_key', '');
+        if (empty($apiKey)) return;
+
+        $headers = $this->getHeadersSendingMethod(plgAcymSendinblue::SENDING_METHOD_ID);
+        $response = $this->callApiSendingMethod('account', [], $headers);
+
+        if (!empty($response['code']) || empty($response['plan'])) {
+            $html = acym_translationSprintf(
+                'ACYM_SENDING_METHOD_ERROR_WHILE_ACTION',
+                plgAcymSendinblue::SENDING_METHOD_NAME,
+                acym_translation('ACYM_GETTING_REMAINING_CREDITS'),
+                $response['message']
+            );
+
+            return;
+        }
+
+        $html = acym_translationSprintf(
+            'ACYM_SENDING_METHOD_X_UNITY',
+            plgAcymSendinblue::SENDING_METHOD_NAME,
+            $response['plan'][0]['credits'],
+            '<span class="acym_not_bold">'.acym_translation('ACYM_CREDITS_REMAINING').'</span>'
+        );
+    }
+}

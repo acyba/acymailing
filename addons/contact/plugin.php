@@ -1,12 +1,12 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'ContactAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'ContactAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'ContactRegistration.php';
 
-class plgAcymContact extends acymPlugin
+class plgAcymContact extends AcymPlugin
 {
     use ContactAutomationConditions;
     use ContactAutomationFilters;

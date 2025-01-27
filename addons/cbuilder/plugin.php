@@ -1,12 +1,12 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'CbuilderAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'CbuilderAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'CbuilderInsertion.php';
 
-class plgAcymCbuilder extends acymPlugin
+class plgAcymCbuilder extends AcymPlugin
 {
     use CbuilderAutomationConditions;
     use CbuilderAutomationFilters;

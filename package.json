@@ -5,6 +5,7 @@
     "main": "gulpfile.js",
     "dependencies": {
         "@babel/polyfill": "7.7.0",
+        "@roumi/svg-to-icon-font": "^0.0.7",
         "axios": "^0.27.2",
         "dateformat": "^3.0.3",
         "fs": "^0.0.1-security",
@@ -41,16 +42,23 @@
         "cypress-file-upload": "5.0.2",
         "file-saver": "^2.0.0",
         "gulp-babel": "8.0.0",
-        "gulp-remove-code": "3.0.4"
+        "gulp-remove-code": "3.0.4",
+        "path": "^0.12.7",
+        "svg2ttf": "^6.0.3",
+        "svgicons2svgfont": "^15.0.0",
+        "ttf2woff": "^3.0.0",
+        "ttf2woff2": "^6.0.1",
+        "unzipper": "^0.12.3"
     },
     "scripts": {
         "test": "echo $JETDOCKER_DOMAIN_NAME",
         "cypress:open": "export CYPRESS_DOMAIN_NAME=$JETDOCKER_DOMAIN_NAME && cypress open",
-        "cypress:run": "export CYPRESS_DOMAIN_NAME=$JETDOCKER_DOMAIN_NAME && cypress run",
+        "cypress:run": "export CYPRESS_DOMAIN_NAME=$JETDOCKER_DOMAIN_NAME && cypress run --spec \"tools/cypress/integration/joomla4,tools/cypress/integration/wordpress\"",
         "cypress:run:joomla": "export CYPRESS_DOMAIN_NAME=$JETDOCKER_DOMAIN_NAME && cypress run --spec tools/cypress/integration/joomla",
         "cypress:run:joomla4": "export CYPRESS_DOMAIN_NAME=$JETDOCKER_DOMAIN_NAME && cypress run --spec tools/cypress/integration/joomla4",
         "cypress:run:wordpress": "export CYPRESS_DOMAIN_NAME=$JETDOCKER_DOMAIN_NAME && cypress run --spec tools/cypress/integration/wordpress",
-        "sync_package_cypress": "node tools/cypress/settings/synch_packages.js"
+        "sync_package_cypress": "node tools/cypress/settings/synch_packages.js",
+        "generate:icons": "node tools/icons/index.mjs"
     },
     "repository": {
         "type": "git",

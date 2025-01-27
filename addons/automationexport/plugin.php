@@ -1,11 +1,11 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Helpers\EncodingHelper;
 use AcyMailing\Helpers\ExportHelper;
 
-class plgAcymAutomationexport extends acymPlugin
+class plgAcymAutomationexport extends AcymPlugin
 {
     public function __construct()
     {

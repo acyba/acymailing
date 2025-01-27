@@ -28,7 +28,7 @@ class plgSearchAcymailing extends CMSPlugin
 
         // Load Acy library
         $ds = DIRECTORY_SEPARATOR;
-        $helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
+        $helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'Core'.$ds.'init.php';
         if (!file_exists($helperFile) || !include_once $helperFile) return [];
 
 

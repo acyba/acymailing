@@ -1,9 +1,9 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 use AcyMailing\Classes\ListClass;
 
-class plgAcymContactform7 extends acymPlugin
+class plgAcymContactform7 extends AcymPlugin
 {
     var $propertyLabels;
 

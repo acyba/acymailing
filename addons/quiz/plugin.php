@@ -9,9 +9,9 @@
 defined('_JEXEC') or die;
 
 use AcyMailing\Helpers\TabHelper;
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
-class plgAcymQuiz extends acymPlugin
+class plgAcymQuiz extends AcymPlugin
 {
     public function __construct()
     {

@@ -1,3 +1,57 @@
+.acym__workflow {
+    display: flex;
+    flex-direction: row;
+    border-radius: $border-radius;
+    border: 1px solid $light-blue;
+    width: fit-content;
+    cursor: pointer;
+
+    .acym__workflow__step {
+        padding: .75rem 1.5rem;
+        border-radius: $border-radius;
+        transition: .2s;
+
+        &:not(.acym__workflow__step__disabled):hover {
+            background-color: $light-blue;
+        }
+
+        &.acym__workflow__step__hover__right {
+            border-bottom-right-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        &.acym__workflow__step__hover__left {
+            border-bottom-left-radius: 0;
+            border-top-left-radius: 0;
+        }
+
+        a {
+            transition: .2s;
+
+            &:hover, &:focus {
+                color: $font-primary !important;
+            }
+        }
+
+        &.acym__workflow__step__active {
+            background-color: $light-blue;
+            font-weight: bold;
+
+            a {
+                color: $blue-primary;
+            }
+        }
+
+        &.acym__workflow__step__disabled {
+            color: $medium-gray;
+        }
+
+        a :hover {
+            color: $font-primary;
+        }
+    }
+}
+
 button[data-task="save"] i.acymicon-chevron-right {
     font-size: 15px;
     margin-left: 5px;
@@ -5,6 +59,8 @@ button[data-task="save"] i.acymicon-chevron-right {
 }
 
 ul#workflow {
+    display: flex;
+    align-items: center;
     overflow-x: auto;
     white-space: nowrap;
     text-align: left;
@@ -19,6 +75,7 @@ ul#workflow {
         color: $light-gray;
         display: inline-block;
         margin: 0 .2rem;
+        line-height: 1;
     }
 
     li.step {

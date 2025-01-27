@@ -58,6 +58,10 @@ trait TheEventsCalendarAutomationConditions
         $conditions['user']['eventscalendar']->option .= '</div>';
     }
 
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
+    }
+
     public function getTicketsSelection()
     {
         $id = acym_getVar('int', 'event', 0);

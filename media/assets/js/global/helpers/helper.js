@@ -77,7 +77,7 @@ const acym_helper = {
             }
 
             if (jQuery(this).attr('acym-data-before')) {
-                let result = eval(jQuery(this).attr('acym-data-before'));
+                const result = eval(jQuery(this).attr('acym-data-before'));
                 if (result === false) {
                     return false;
                 }
@@ -139,7 +139,7 @@ const acym_helper = {
         return confirm(text.replace('<br />', '\n'));
     },
     setMessageClose: function () {
-        jQuery('.acym_message i.acymicon-remove').off('click').on('click', function () {
+        jQuery('.acym_message i.acymicon-close').off('click').on('click', function () {
             jQuery(this).parent().remove();
         });
     },

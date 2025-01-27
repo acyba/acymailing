@@ -1,21 +1,16 @@
+@import "iconContent/calendar";
+@import "iconContent/access_time";
+
 /* Date picker icons on after */
-.acymicon-grid_on {
+.acymicon-calendar {
     &:before {
         content: "" !important;
-    }
-
-    &:after {
-        content: "\e92a";
     }
 }
 
-.acymicon-access_time {
+.acymicon-access-time {
     &:before {
         content: "" !important;
-    }
-
-    &:after {
-        content: "\e92b";
     }
 }
 

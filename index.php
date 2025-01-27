@@ -5,14 +5,30 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 9.11.1
+ * Version: 10.0.0
  * Text Domain: acymailing
  * Domain Path: /language
  * Requires at least: 5.0
  * Requires PHP: 7.4
  */
 
-use AcyMailing\Init\acyActivation;
+use AcyMailing\WpInit\Activation;
+use AcyMailing\WpInit\Addons;
+use AcyMailing\WpInit\Beaver;
+use AcyMailing\WpInit\Menu;
+use AcyMailing\WpInit\Cron;
+use AcyMailing\WpInit\Deactivate;
+use AcyMailing\WpInit\Elementor;
+use AcyMailing\WpInit\Forms;
+use AcyMailing\WpInit\Gutenberg;
+use AcyMailing\WpInit\Message;
+use AcyMailing\WpInit\Oauth;
+use AcyMailing\WpInit\OverrideEmail;
+use AcyMailing\WpInit\Router;
+use AcyMailing\WpInit\Security;
+use AcyMailing\WpInit\Update;
+use AcyMailing\WpInit\UserSync;
+use AcyMailing\WpInit\WpRocket;
 
 defined('ABSPATH') || die('Restricted Access');
 
@@ -38,10 +54,10 @@ class acymailingLoader
     public function activation()
     {
         // Load Acy library
-        $helperFile = __DIR__.DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
+        $helperFile = __DIR__.DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'Core'.DIRECTORY_SEPARATOR.'init.php';
         if (file_exists($helperFile) && include_once $helperFile) {
-            $acyActivation = new acyActivation();
-            $acyActivation->install();
+            $activation = new Activation();
+            $activation->install();
         }
     }
 
@@ -84,7 +100,7 @@ class acymailingLoader
 
     private function loadAcyMailingLibrary()
     {
-        $helperFile = __DIR__.DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'helper.php';
+        $helperFile = __DIR__.DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'Core'.DIRECTORY_SEPARATOR.'init.php';
 
         return file_exists($helperFile) && include_once $helperFile;
     }
@@ -100,22 +116,22 @@ class acymailingLoader
         acym_query('SET SESSION query_cache_type=0;');
         //__END__development_
 
-        include_once __DIR__.DS.'wpinit'.DS.'update.php';
-        include_once __DIR__.DS.'wpinit'.DS.'router.php';
-        include_once __DIR__.DS.'wpinit'.DS.'menu.php';
-        include_once __DIR__.DS.'wpinit'.DS.'usersynch.php';
-        include_once __DIR__.DS.'wpinit'.DS.'message.php';
-        include_once __DIR__.DS.'wpinit'.DS.'elementor.php';
-        include_once __DIR__.DS.'wpinit'.DS.'beaver.php';
-        include_once __DIR__.DS.'wpinit'.DS.'wprocket.php';
-        include_once __DIR__.DS.'wpinit'.DS.'addons.php';
-        include_once __DIR__.DS.'wpinit'.DS.'forms.php';
-        include_once __DIR__.DS.'wpinit'.DS.'override_email.php';
-        include_once __DIR__.DS.'wpinit'.DS.'cron.php';
-        include_once __DIR__.DS.'wpinit'.DS.'gutenberg.php';
-        include_once __DIR__.DS.'wpinit'.DS.'security.php';
-        include_once __DIR__.DS.'wpinit'.DS.'deactivate.php';
-        include_once __DIR__.DS.'wpinit'.DS.'Oauth.php';
+        new Update();
+        $router = new Router();
+        new Menu($router);
+        new UserSync();
+        new Message();
+        new Elementor();
+        new Beaver();
+        new WpRocket();
+        new Addons();
+        new Forms();
+        new OverrideEmail();
+        new Cron();
+        new Gutenberg();
+        new Security();
+        new Deactivate();
+        new Oauth();
     }
 
     private function isCurrentlyOnAcyPage(): bool

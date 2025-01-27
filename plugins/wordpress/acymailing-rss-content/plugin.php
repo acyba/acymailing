@@ -1,8 +1,8 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
-class plgAcymRss extends acymPlugin
+class plgAcymRss extends AcymPlugin
 {
     public function __construct()
     {

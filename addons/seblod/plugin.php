@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'SeblodInsertion.php';
 
-class plgAcymSeblod extends acymPlugin
+class plgAcymSeblod extends AcymPlugin
 {
     use SeblodInsertion;
 

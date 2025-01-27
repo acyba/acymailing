@@ -44,6 +44,10 @@ trait ModernEventsCalendarAutomationConditions
         $conditions['user']['moderneventscalendar']->option .= '</div>';
     }
 
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
+    }
+
     public function searchEvent()
     {
         $id = acym_getVar('int', 'id');

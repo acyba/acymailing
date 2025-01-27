@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'FlexicontentInsertion.php';
 
-class plgAcymFlexicontent extends acymPlugin
+class plgAcymFlexicontent extends AcymPlugin
 {
     use FlexicontentInsertion;
 

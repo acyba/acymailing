@@ -1,12 +1,12 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'ModernEventsCalendarAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'ModernEventsCalendarAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'ModernEventsCalendarInsertion.php';
 
-class plgAcymModerneventscalendar extends acymPlugin
+class plgAcymModerneventscalendar extends AcymPlugin
 {
     use ModernEventsCalendarAutomationConditions;
     use ModernEventsCalendarAutomationFilters;

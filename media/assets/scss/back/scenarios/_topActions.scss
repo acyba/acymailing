@@ -1,0 +1,43 @@
+#acym__scenario__top__actions {
+    #acym__scenario__top__actions__back {
+        display: flex;
+        flex-direction: row;
+        gap: .5rem;
+
+        .acymicon-chevron-left {
+            font-size: 12px;
+        }
+    }
+
+    .acym__scenario__workflow__container {
+        display: flex;
+        justify-content: center;
+    }
+
+    #acym__scenario__top__actions__configuration {
+        border-radius: $primary-radius;
+        background-color: $blue-light;
+        transition: .3s background-color;
+        color: $blue-night-primary;
+        padding: 4px;
+        cursor: pointer;
+        height: 44px;
+        width: 44px;
+
+        i {
+            color: $blue-night-primary;
+            transition: .3s color;
+        }
+
+        &:hover {
+            transition: .3s background-color;
+            color: $white;
+            background-color: $blue-primary;
+
+            > i {
+                color: $white;
+                transition: .3s color;
+            }
+        }
+    }
+}

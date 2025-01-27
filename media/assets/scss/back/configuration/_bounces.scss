@@ -1,4 +1,8 @@
 .acym__mailbox__edition__configuration__test {
+    #acym__mailbox__edition__configuration__test-loader {
+        font-size: 15px;
+    }
+
     .acymicon-spin {
         display: none;
     }
@@ -7,5 +11,9 @@
         display: none;
         margin-left: .5rem;
         font-size: 15px;
+    }
+
+    #acym__mailbox__edition__configuration__test-result {
+        font-size: 1rem;
     }
 }

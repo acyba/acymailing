@@ -3,6 +3,7 @@
 use AcyMailing\Classes\AutomationClass;
 use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\UserClass;
+use AcyMailing\Helpers\ScenarioHelper;
 
 trait HikashopAutomationTriggers
 {
@@ -44,6 +45,11 @@ trait HikashopAutomationTriggers
             $selectedValue,
             ['data-class' => 'acym__select']
         );
+    }
+
+    public function onAcymDeclareTriggersScenario(&$triggers, &$defaultValues)
+    {
+        $this->onAcymDeclareTriggers($triggers, $defaultValues);
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)
@@ -113,6 +119,7 @@ trait HikashopAutomationTriggers
             'hika_order_status' => $orderStatus,
             'hika_order_product_ids' => $productIds,
             'hika_order_cat_ids' => $categoriesIds,
+            'hika_order_id' => $order->order_id,
         ];
 
         $followupClass = new FollowupClass();
@@ -125,6 +132,17 @@ trait HikashopAutomationTriggers
             'order' => $order,
         ]);
         $automationClass->trigger('hikashoporder', [
+            'userId' => $user->id,
+            'order' => $order,
+        ]);
+
+        $scenarioHelper = new ScenarioHelper();
+
+        $scenarioHelper->trigger('hikashopNewOrder', [
+            'userId' => $user->id,
+            'order' => $order,
+        ]);
+        $scenarioHelper->trigger('hikashoporder', [
             'userId' => $user->id,
             'order' => $order,
         ]);
@@ -150,6 +168,12 @@ trait HikashopAutomationTriggers
 
         $automationClass = new AutomationClass();
         $automationClass->trigger('hikashopWishlistUpdated', [
+            'userId' => $user->id,
+            'cart_type' => $element->cart_type,
+        ]);
+
+        $scenarioHelper = new ScenarioHelper();
+        $scenarioHelper->trigger('hikashopWishlistUpdated', [
             'userId' => $user->id,
             'cart_type' => $element->cart_type,
         ]);

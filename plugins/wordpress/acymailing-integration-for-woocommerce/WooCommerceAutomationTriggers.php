@@ -3,6 +3,7 @@
 use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\AutomationClass;
+use AcyMailing\Helpers\ScenarioHelper;
 
 trait WooCommerceAutomationTriggers
 {
@@ -30,6 +31,11 @@ trait WooCommerceAutomationTriggers
                 ['data-class' => 'acym__select']
             ).'</div>';
         $triggers['user']['woocommerce_order_change']->option .= '</div>';
+    }
+
+    public function onAcymDeclareTriggersScenario(&$triggers, &$defaultValues)
+    {
+        $this->onAcymDeclareTriggers($triggers, $defaultValues);
     }
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)
@@ -106,6 +112,15 @@ trait WooCommerceAutomationTriggers
 
         $automationClass = new AutomationClass();
         $automationClass->trigger(
+            'woocommerce_order_change',
+            [
+                'userId' => $acyUser->id,
+                'statusFrom' => $statusFrom,
+                'statusTo' => $statusTo,
+            ]
+        );
+        $scenarioHelper = new ScenarioHelper();
+        $scenarioHelper->trigger(
             'woocommerce_order_change',
             [
                 'userId' => $acyUser->id,

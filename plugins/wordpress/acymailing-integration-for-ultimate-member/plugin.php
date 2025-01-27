@@ -1,8 +1,8 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
-class plgAcymUltimatemember extends acymPlugin
+class plgAcymUltimatemember extends AcymPlugin
 {
     public function __construct()
     {

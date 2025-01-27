@@ -101,6 +101,12 @@
 .acym__listing {
     margin-top: .4rem;
 
+    &.acym__listing__no-checkbox {
+        .acym__listing__header__title__container, .acym__listing__title__container {
+            margin-left: 0 !important;
+        }
+    }
+
     .acym__listing__row {
         background-color: $white;
 

@@ -1,10 +1,8 @@
 === Easy Digital Downloads integration - AcyMailing ===
 Contributors: acyba
 Tags: newsletter, integration, acymailing, e-commerce, digital store
-Requires at least: 4.7
-Tested up to: 6.7.1
-Stable tag: 3.0
-Requires PHP: 7.4.0
+Tested up to: 6.7
+Stable tag: 3.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

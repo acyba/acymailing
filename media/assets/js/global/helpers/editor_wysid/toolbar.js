@@ -6,15 +6,7 @@ const acym_editorWysidToolbar = {
 
         jQuery('.acym__wysid__right__toolbar--menu .acym__wysid__right__toolbar__p').off('click').on('click', function () {
             jQuery(this).next().slideToggle(200);
-
-            if (jQuery(this).hasClass('acym__wysid__right__toolbar__p__open')) {
-                jQuery(this).removeClass('acym__wysid__right__toolbar__p__open');
-                jQuery(this).find('i').removeClass('acymicon-keyboard_arrow_up').addClass('acymicon-keyboard_arrow_down');
-            } else {
-                jQuery(this).addClass('acym__wysid__right__toolbar__p__open');
-                jQuery(this).find('i').removeClass('acymicon-keyboard_arrow_down').addClass('acymicon-keyboard_arrow_up');
-            }
-
+            jQuery(this).toggleClass('acym__wysid__right__toolbar__p__open');
             jQuery(this).toggleClass('acym__wysid__right__toolbar__last--text');
         });
     },

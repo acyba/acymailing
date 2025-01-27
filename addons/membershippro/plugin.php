@@ -1,11 +1,11 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'MembershipProAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'MembershipProAutomationFilters.php';
 
-class plgAcymMembershippro extends acymPlugin
+class plgAcymMembershippro extends AcymPlugin
 {
     use MembershipProAutomationConditions;
     use MembershipProAutomationFilters;

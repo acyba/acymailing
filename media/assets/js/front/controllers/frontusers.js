@@ -171,6 +171,11 @@ function updateFieldStyle(field, isValid) {
 }
 
 function handleDisplayedCheckedLists() {
+    const hiddenCheckedLists = document.getElementById('displayed_checked_lists');
+    if (!hiddenCheckedLists) {
+        return;
+    }
+
     const displayedCheckedList = [];
     const displayedLists = document.querySelectorAll('.acym__unsubscribe__list__switch input.switch-input');
 
@@ -188,7 +193,7 @@ function handleDisplayedCheckedLists() {
         }
     });
 
-    document.getElementById('displayed_checked_lists').value = displayedCheckedList.join(',');
+    hiddenCheckedLists.value = displayedCheckedList.join(',');
 }
 
 function handleLanguageChange() {

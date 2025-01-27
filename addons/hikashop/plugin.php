@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'HikashopAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'HikashopAutomationFilters.php';
@@ -9,7 +9,7 @@ require_once __DIR__.DIRECTORY_SEPARATOR.'HikashopFollowup.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'HikashopInsertion.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'HikashopSubscription.php';
 
-class plgAcymHikashop extends acymPlugin
+class plgAcymHikashop extends AcymPlugin
 {
     use HikashopAutomationConditions;
     use HikashopAutomationFilters;

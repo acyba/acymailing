@@ -1,13 +1,13 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'JeventsAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'JeventsAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'JeventsAutomationTriggers.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'JeventsInsertion.php';
 
-class plgAcymJevents extends acymPlugin
+class plgAcymJevents extends AcymPlugin
 {
     use JeventsAutomationConditions;
     use JeventsAutomationFilters;

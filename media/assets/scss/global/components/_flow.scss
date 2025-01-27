@@ -1,0 +1,130 @@
+#flow__tree__container {
+    position: absolute;
+}
+
+#flow__toolbox {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 25px;
+    border-radius: 8px;
+    display: flex;
+    box-shadow: $primary-box-shadow;
+    flex-direction: column;
+    background-color: $white;
+    padding: 4px;
+
+    .flow__toolbox__item {
+        display: flex;
+        border-radius: 4px;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: .2s;
+        padding: 4px;
+        gap: 2px;
+
+        &:hover {
+            background-color: $light-gray;
+        }
+
+        i {
+            font-size: 15px;
+        }
+    }
+}
+
+.flow__container__branch {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#flow__svg__container {
+    z-index: -1;
+    position: absolute;
+}
+
+.flow__step__container {
+    flex: 1 1 300px;
+    padding: 0;
+
+    &.flow__step__container__end {
+        width: 300px;
+    }
+
+    .flow__step__card__container {
+        text-align: center;
+        margin: 60px;
+        position: relative;
+
+        &.flow__step__card__container__condition__end {
+            margin-bottom: 0;
+            height: 0;
+        }
+
+        .flow__step__card {
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 0 !important;
+            background-color: #E5F6FE;
+        }
+
+        & .flow__step__card__container__end {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            cursor: default;
+        }
+
+        .flow__step__card__condition__yes, .flow__step__card__condition__no {
+            position: absolute;
+            padding: 2px 7px;
+            bottom: -68px !important;
+            background-color: $white;
+            line-height: 1;
+            border-radius: $primary-radius;
+            font-size: .7rem;
+
+            &.flow__step__card__condition__yes {
+                background-color: $green-light;
+                color: $green;
+                left: 33.5%;
+            }
+
+            &.flow__step__card__condition__no {
+                background: $red-light;
+                color: $red;
+                left: 63.5%;
+            }
+        }
+
+        .flow__step__card__add {
+            position: absolute;
+            border: 1px solid #A6A6A6;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            bottom: calc(-60px / 2);
+            left: 50%;
+            transform: translate(-50%, 50%);
+            background-color: white;
+            cursor: pointer;
+            box-sizing: initial;
+
+            &.flow__step__card__add--straight {
+                bottom: -60px !important;
+            }
+
+            &.flow__step__card__add--condition {
+                bottom: 0 !important;
+            }
+
+            &:hover {
+                border-color: $primary-color;
+            }
+        }
+    }
+}

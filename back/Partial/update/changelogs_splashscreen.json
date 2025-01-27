@@ -1,0 +1,107 @@
+{
+    "max_version": "10.0.0",
+    "splash_content": [
+        {
+            "menu_title": "Top feature 🔥",
+            "title": "DISCOVER THE BEST FEATURE OF THIS VERSION",
+            "articles": [
+                {
+                    "title": "🔥 New scenario feature",
+                    "desc": "(Enterprise only) Create scenarios to set up a series of actions to be executed when a subscriber performs a specific action. You could for example automatically resend a confirmation email if the user is not confirmed after a certain time."
+                }
+            ]
+        },
+        {
+            "menu_title": "Miscellaneous 🎁",
+            "title": "SEE THE GENERAL CHANGES",
+            "articles": [
+                {
+                    "title": "🎁 New icons",
+                    "desc": "All icons have been updated to a new design, more modern and consistent with the AcyMailing brand."
+                },
+                {
+                    "title": "🎁 Improved code structure",
+                    "desc": "We updated the code structure to comply with PSR-4 standards. This change improves compatibility and overall maintainability."
+                },
+                {
+                    "title": "🎁 Sendgrid new API",
+                    "desc": "Our integration in AcyMailing now handles the new result sent by Sendgrid when an email is sent through their API."
+                }
+            ]
+        },
+        {
+            "menu_title": "Joomla 🧩",
+            "title": "WHAT CHANGED FOR JOOMLA",
+            "articles": [
+                {
+                    "title": "🧩 Cloudflare captcha",
+                    "desc": "We added the compatibility with the Cloudflare captcha plugin to our captcha option in the configuration."
+                },
+                {
+                    "title": "🧩 More HikaShop dynamic content",
+                    "desc": "It is now possible to add dynamic information through dynamic text/content about an order in a follow-up email based on HikaShop purchase."
+                },
+                {
+                    "title": "🧩 Fixed user creation from front-end",
+                    "desc": "If the option 'Allow non-logged in users' was disabled, it was impossible for admins to create users from the front-end user management menu."
+                },
+                {
+                    "title": "🧩 Outlook images",
+                    "desc": "We fixed the display of images on Outlook for Joomla 4 and 5 websites, when an inserted article contains an image from the Joomla media manager."
+                },
+                {
+                    "title": "🧩 Articles SEF links",
+                    "desc": "When inserting Joomla articles, the menu ID option is now used when generating a SEF link."
+                },
+                {
+                    "title": "🧩 Docman integration fix",
+                    "desc": "We fixed the Docman insertion by category for automatic campaigns when the option to only insert new content is active."
+                }
+            ]
+        },
+        {
+            "menu_title": "WordPress 🧩",
+            "title": "WHAT CHANGED FOR WORDPRESS",
+            "articles": [
+                {
+                    "title": "🧩 New integration with Learndash",
+                    "desc": "A new plugin lets you filter AcyMailing users by Learndash groups and courses."
+                },
+                {
+                    "title": "🧩 Easier WooCommerce product insertion",
+                    "desc": "WooCommerce products can now be searched by SKU when inserting them in emails."
+                },
+                {
+                    "title": "🧩 More WooCommerce dynamic content",
+                    "desc": "It is now possible to add dynamic information through dynamic text/content about an order in a follow-up email based on WooCommerce purchase."
+                }
+            ]
+        },
+        {
+            "menu_title": "Bug fixes 🛠",
+            "title": "THE FIXES INCLUDED IN THIS VERSION",
+            "articles": [
+                {
+                    "title": "🛠 User confirmation status",
+                    "desc": "Specific parts like the filter by email confirmation status are not shown anymore on the users listing when the double opt-in is disabled."
+                },
+                {
+                    "title": "🛠 Automatic bounce handling",
+                    "desc": "The bounce handling could generate errors on some servers, preventing the automatic execution of the bounce handling process."
+                },
+                {
+                    "title": "🛠 Queue listing",
+                    "desc": "A warning has been fixed on the queue listing when only follow-up campaigns were queued"
+                },
+                {
+                    "title": "🛠 Website emails",
+                    "desc": "The option to send website emails using AcyMailing now correctly handles plain text emails."
+                },
+                {
+                    "title": "🛠 Editor social icons",
+                    "desc": "The image of the social icon is now refreshed immediately when uploading a new icon in the editor."
+                }
+            ]
+        }
+    ]
+}

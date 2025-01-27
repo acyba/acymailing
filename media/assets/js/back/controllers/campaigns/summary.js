@@ -25,7 +25,7 @@ jQuery(function ($) {
                 campaignId: parseInt($('input[name="campaignId"]').val())
             }).then(response => {
                 if (response.error) {
-                    let errorMessage = '<i class="acymicon-remove acym__color__red"></i>';
+                    let errorMessage = '<i class="acymicon-close acym__color__red"></i>';
                     if (response.message) {
                         errorMessage += '<div>' + response.message + '</div>';
                     }

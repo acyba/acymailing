@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'EasyblogInsertion.php';
 
-class plgAcymEasyblog extends acymPlugin
+class plgAcymEasyblog extends AcymPlugin
 {
     use EasyblogInsertion;
 

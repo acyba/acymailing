@@ -1,10 +1,10 @@
 <?php
 
-use AcyMailing\Libraries\acymPlugin;
+use AcyMailing\Core\AcymPlugin;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'K2Insertion.php';
 
-class plgAcymK2 extends acymPlugin
+class plgAcymK2 extends AcymPlugin
 {
     use K2Insertion;
 

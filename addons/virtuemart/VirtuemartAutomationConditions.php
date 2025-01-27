@@ -1,6 +1,6 @@
 <?php
 
-use AcyMailing\Types\OperatorinType;
+use AcyMailing\Types\OperatorInType;
 use AcyMailing\Types\OperatorType;
 
 trait VirtuemartAutomationConditions
@@ -22,7 +22,7 @@ trait VirtuemartAutomationConditions
                 $groups[$i]->text = acym_translation($oneGroup->text);
             }
 
-            $operatorIn = new OperatorinType();
+            $operatorIn = new OperatorInType();
 
             $conditions['user']['vmgroups'] = new stdClass();
             $conditions['user']['vmgroups']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'VirtueMart', acym_translation('ACYM_GROUP'));
@@ -156,6 +156,10 @@ trait VirtuemartAutomationConditions
         $conditions['user']['vmpurchased']->option .= '</div>';
 
         $conditions['user']['vmpurchased']->option .= '</div>';
+    }
+
+    public function onAcymDeclareConditionsScenario(&$conditions){
+        $this->onAcymDeclareConditions($conditions);
     }
 
     /**

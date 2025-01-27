@@ -7,7 +7,7 @@ if (version_compare(PHP_VERSION, '7.4.0', '<')) {
     $app->enqueueMessage('This version of AcyMailing requires at least PHP 7.4.0, it is time to update the PHP version of your server!', 'error');
 } else {
     $ds = DIRECTORY_SEPARATOR;
-    $helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
+    $helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'Core'.$ds.'init.php';
     if (!include_once $helperFile) {
         $app = Factory::getApplication();
         $app->enqueueMessage('Could not load AcyMailing helper file', 'error');

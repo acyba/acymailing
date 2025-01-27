@@ -8,6 +8,7 @@ use AcyMailing\Helpers\RegacyHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
+use AcyMailing\Helpers\ScenarioHelper;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -219,6 +220,9 @@ class plgSystemAcymtriggers extends CMSPlugin
 
         $automationClass = new AutomationClass();
         $automationClass->trigger('vmorder', ['userId' => $userID]);
+
+        $scenarioHelper = new ScenarioHelper();
+        $scenarioHelper->trigger('vmorder', ['userId' => $userID]);
     }
 
     // Hikashop trigger after an order is created
@@ -361,7 +365,7 @@ class plgSystemAcymtriggers extends CMSPlugin
         }
 
         $ds = DIRECTORY_SEPARATOR;
-        $helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'helpers'.$ds.'helper.php';
+        $helperFile = rtrim(JPATH_ADMINISTRATOR, $ds).$ds.'components'.$ds.'com_acym'.$ds.'Core'.$ds.'init.php';
         if (!file_exists($helperFile) || !include_once $helperFile) {
             return false;
         }

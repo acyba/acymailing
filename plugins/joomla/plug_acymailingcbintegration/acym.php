@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 
 if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 
-if (!@include_once rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_acym'.DS.'helpers'.DS.'helper.php') return;
+if (!@include_once rtrim(JPATH_ADMINISTRATOR, DS).DS.'components'.DS.'com_acym'.DS.'Core'.DS.'init.php') return;
 
 global $_PLUGINS;
 if (!class_exists('cbTabHandler') || !method_exists($_PLUGINS, 'registerFunction') || class_exists('getAcymTab')) return;

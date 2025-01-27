@@ -11,7 +11,7 @@
 }
 
 .acym__color__green {
-    color: map-get($foundation-palette, success);
+    color: $green;
 }
 
 .acym__color__orange {
@@ -19,7 +19,7 @@
 }
 
 .acym__color__red {
-    color: map-get($foundation-palette, alert);
+    color: $red;
 }
 
 .acym__color__dark-red {
