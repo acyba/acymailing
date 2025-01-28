@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 2.5
+ * Version: 2.6
  * Requires Plugins: acymailing, business-directory-plugin
 */
 
@@ -48,7 +48,7 @@ class AcyMailingIntegrationForBusinessDirectory
 
     public function register(array &$integrations, string $acyVersion): void
     {
-        if (version_compare($acyVersion, '7.9.7', '>=')) {
+        if (version_compare($acyVersion, '10.0.0', '>=')) {
             $integrations[] = [
                 'path' => __DIR__,
                 'className' => self::INTEGRATION_PLUGIN_NAME,

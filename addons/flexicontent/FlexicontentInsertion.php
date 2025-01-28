@@ -10,8 +10,6 @@ trait FlexicontentInsertion
     {
         $fields = acym_loadObjectList('SELECT * FROM #__flexicontent_fields WHERE `published` = 1 ORDER BY `iscore` DESC, `ordering` ASC');
         foreach ($fields as $field) {
-            if ($field->field_type == 'title' && empty($this->mainFields['title'])) $this->mainFields['title'] = $field->id;
-            if ($field->field_type == 'maintext' && empty($this->mainFields['maintext'])) $this->mainFields['maintext'] = $field->id;
             $this->displayOptions[$field->id] = [$field->label, in_array($field->field_type, ['title', 'maintext'])];
         }
     }

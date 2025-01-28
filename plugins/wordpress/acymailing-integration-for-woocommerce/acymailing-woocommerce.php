@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 6.2
+ * Version: 6.3
  * Requires Plugins: acymailing, woocommerce
 */
 
@@ -51,7 +51,7 @@ class AcyMailingIntegrationForWooCommerce
 
     public function register(array &$integrations, string $acyVersion): void
     {
-        if (version_compare($acyVersion, '9.5.1', '>=')) {
+        if (version_compare($acyVersion, '10.0.0', '>=')) {
             $integrations[] = [
                 'path' => __DIR__,
                 'className' => self::INTEGRATION_PLUGIN_NAME,

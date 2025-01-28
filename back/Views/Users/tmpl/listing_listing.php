@@ -36,6 +36,7 @@
                         'creation_date' => acym_translation('ACYM_DATE_CREATED'),
                         'active' => acym_translation('ACYM_ACTIVE'),
                         'confirmed' => acym_translation('ACYM_CONFIRMED'),
+                        'cms_id' => acym_translation('ACYM_USER_CMSID'),
                     ],
                     'users',
                     $data['ordering']

@@ -40,17 +40,28 @@ trait WooCommerceAutomationTriggers
 
     public function onAcymExecuteTrigger(&$step, &$execute, &$data)
     {
+        $data = is_array($data) ? $data : [];
         $triggers = $step->triggers;
         $from = false;
         $to = false;
-        if (!empty($triggers['woocommerce_order_change'])) {
-            // Woocommerce removes the "wc-" prefix on the native order statuses that are sent in the hook
-            $fromStatus = 'wc-'.$data['statusFrom'];
-            $toStatus = 'wc-'.$data['statusTo'];
-            if ($fromStatus === $triggers['woocommerce_order_change']['from'] || $triggers['woocommerce_order_change']['from'] === '0') $from = true;
-            if ($toStatus === $triggers['woocommerce_order_change']['to'] || $triggers['woocommerce_order_change']['to'] === '0') $to = true;
 
-            if ($from && $to) $execute = true;
+        if (!empty($triggers['woocommerce_order_change']) && is_array($triggers['woocommerce_order_change'])) {
+            $fromStatus = 'wc-'.(isset($data['statusFrom']) ? $data['statusFrom'] : '');
+            $toStatus = 'wc-'.(isset($data['statusTo']) ? $data['statusTo'] : '');
+
+            if (isset($triggers['woocommerce_order_change']['from']) &&
+                ($fromStatus === $triggers['woocommerce_order_change']['from'] || $triggers['woocommerce_order_change']['from'] === '0')) {
+                $from = true;
+            }
+
+            if (isset($triggers['woocommerce_order_change']['to']) &&
+                ($toStatus === $triggers['woocommerce_order_change']['to'] || $triggers['woocommerce_order_change']['to'] === '0')) {
+                $to = true;
+            }
+
+            if ($from && $to) {
+                $execute = true;
+            }
         }
     }
 

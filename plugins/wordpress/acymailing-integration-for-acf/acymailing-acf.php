@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 1.2
+ * Version: 1.3
  * Requires Plugins: acymailing, advanced-custom-fields
 */
 
@@ -48,7 +48,7 @@ class AcyMailingIntegrationForAcf
 
     public function register(array &$integrations, string $acyVersion): void
     {
-        if (version_compare($acyVersion, '9.8.0', '>=')) {
+        if (version_compare($acyVersion, '10.0.0', '>=')) {
             $integrations[] = [
                 'path' => __DIR__,
                 'className' => self::INTEGRATION_PLUGIN_NAME,

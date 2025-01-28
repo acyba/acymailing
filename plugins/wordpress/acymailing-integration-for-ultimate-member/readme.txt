@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, newsletter form, acymailing, form, subscription, ultimate member
 Tested up to: 6.7
-Stable tag: 3.3
+Stable tag: 3.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

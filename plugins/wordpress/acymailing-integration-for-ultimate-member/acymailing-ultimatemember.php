@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 3.3
+ * Version: 3.4
  * Requires Plugins: acymailing, ultimate-member
 */
 
@@ -50,7 +50,7 @@ class AcyMailingIntegrationForUltimateMember
 
     public function register(array &$integrations, string $acyVersion): void
     {
-        if (version_compare($acyVersion, '7.5.11', '>=')) {
+        if (version_compare($acyVersion, '10.0.0', '>=')) {
             $integrations[] = [
                 'path' => __DIR__,
                 'className' => self::INTEGRATION_PLUGIN_NAME,

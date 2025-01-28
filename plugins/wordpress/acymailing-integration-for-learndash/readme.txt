@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, acymailing, learndash, subscription
 Tested up to: 6.7
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

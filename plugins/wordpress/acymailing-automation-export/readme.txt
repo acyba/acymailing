@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, automation, automatic newsletter, export
 Tested up to: 6.7
-Stable tag: 3.2
+Stable tag: 3.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 3.4
+ * Version: 3.5
  * Requires Plugins: acymailing, contact-form-7
 */
 
@@ -48,7 +48,7 @@ class AcyMailingIntegrationForContactForm7
 
     public function register(array &$integrations, string $acyVersion): void
     {
-        if (version_compare($acyVersion, '7.5.11', '>=')) {
+        if (version_compare($acyVersion, '10.0.0', '>=')) {
             $integrations[] = [
                 'path' => __DIR__,
                 'className' => self::INTEGRATION_PLUGIN_NAME,

@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 3.1
+ * Version: 3.2
  * Requires Plugins: acymailing, easy-digital-downloads
 */
 
@@ -48,7 +48,7 @@ class AcyMailingIntegrationForEasyDigitalDownloads
 
     public function register(array &$integrations, string $acyVersion): void
     {
-        if (version_compare($acyVersion, '7.7.4', '>=')) {
+        if (version_compare($acyVersion, '10.0.0', '>=')) {
             $integrations[] = [
                 'path' => __DIR__,
                 'className' => self::INTEGRATION_PLUGIN_NAME,
