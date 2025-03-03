@@ -7,7 +7,7 @@ use AcyMailing\Helpers\WorkflowHelper;
 
 trait Installed
 {
-    public function installed()
+    public function installed(): void
     {
         acym_setVar('layout', 'installed');
 
@@ -22,15 +22,13 @@ trait Installed
         parent::display($data);
     }
 
-    public function checkUpdates()
+    public function checkUpdates(): void
     {
         acym_checkPluginsVersion();
         $this->installed();
-
-        return true;
     }
 
-    public function saveSettings()
+    public function saveSettings(): void
     {
         $pluginFolderName = acym_getVar('string', 'plugin__folder_name', '');
 
@@ -76,7 +74,7 @@ trait Installed
         $this->installed();
     }
 
-    private function isLatestAcyMailingVersion()
+    private function isLatestAcyMailingVersion(): void
     {
         $currentVersion = $this->config->get('version', '');
         $latestVersion = $this->config->get('latestversion', '');
@@ -85,7 +83,7 @@ trait Installed
         }
     }
 
-    public function update()
+    public function update(): void
     {
         $this->isLatestAcyMailingVersion();
 
@@ -100,7 +98,7 @@ trait Installed
         }
     }
 
-    public function deletePlugin()
+    public function deletePlugin(): void
     {
         $pluginClass = new PluginClass();
         $id = acym_getVar('int', 'id');
@@ -122,7 +120,7 @@ trait Installed
         acym_sendAjaxResponse(acym_translation('ACYM_ADD_ON_NOT_FOUND'), [], false);
     }
 
-    public function toggleActivate()
+    public function toggleActivate(): void
     {
         $pluginClass = new PluginClass();
         $id = acym_getVar('int', 'id');
@@ -143,20 +141,7 @@ trait Installed
         acym_sendAjaxResponse();
     }
 
-    private function getPluginClassAjaxCustomView()
-    {
-        $return = [];
-        $return['folderName'] = acym_getVar('string', 'plugin');
-        $return['className'] = acym_getVar('string', 'plugin_class');
-
-        if (empty($return['folderName']) && empty($return['className'])) {
-            acym_sendAjaxResponse(acym_translation('ACYM_CUSTOM_VIEW_NOT_FOUND'), [], false);
-        }
-
-        return $return;
-    }
-
-    public function getCustomViewPlugin()
+    public function getCustomViewPlugin(): void
     {
         $plugin = $this->getPluginClassAjaxCustomView();
 
@@ -170,7 +155,7 @@ trait Installed
         acym_sendAjaxResponse('', ['content' => $customView]);
     }
 
-    public function saveCustomViewPlugin()
+    public function saveCustomViewPlugin(): void
     {
         $plugin = $this->getPluginClassAjaxCustomView();
         $pluginCustomView = acym_getVar('string', 'custom_view', '');
@@ -187,7 +172,7 @@ trait Installed
         }
     }
 
-    public function deleteCustomViewPlugin()
+    public function deleteCustomViewPlugin(): void
     {
         $plugin = $this->getPluginClassAjaxCustomView();
 
@@ -201,5 +186,18 @@ trait Installed
         acym_trigger('getStandardStructure', [&$customView], $plugin['className']);
 
         acym_sendAjaxResponse(acym_translation('ACYM_CUSTOM_VIEW_WELL_DELETED'), ['content' => $customView]);
+    }
+
+    private function getPluginClassAjaxCustomView(): array
+    {
+        $return = [];
+        $return['folderName'] = acym_getVar('string', 'plugin');
+        $return['className'] = acym_getVar('string', 'plugin_class');
+
+        if (empty($return['folderName']) && empty($return['className'])) {
+            acym_sendAjaxResponse(acym_translation('ACYM_CUSTOM_VIEW_NOT_FOUND'), [], false);
+        }
+
+        return $return;
     }
 }

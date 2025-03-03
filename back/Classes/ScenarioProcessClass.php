@@ -47,8 +47,8 @@ class ScenarioProcessClass extends AcymClass
     {
         $results = [];
 
-        $query = 'SELECT DISTINCT scenario_process.*, user.email  FROM #__acym_scenario_process AS `scenario_process`';
-        $queryCount = 'SELECT COUNT(DISTINCT scenario_process.id) FROM #__acym_scenario_process AS scenario_process';
+        $query = 'SELECT DISTINCT scenario_process.*, user.email FROM #__acym_scenario_process AS `scenario_process`';
+        $queryCount = 'SELECT COUNT(DISTINCT scenario_process.id) AS total FROM #__acym_scenario_process AS scenario_process';
         $filters = [];
 
         $joins = [
@@ -86,7 +86,7 @@ class ScenarioProcessClass extends AcymClass
         }
 
         $results['elements'] = acym_loadObjectList($query, 'id', $settings['offset'], $settings['elementsPerPage']);
-        $results['total'] = acym_loadResult($queryCount);
+        $results['total'] = acym_loadObject($queryCount);
 
         return $results;
     }

@@ -9,7 +9,7 @@ use AcyMailing\Helpers\WorkflowHelper;
 
 trait Condition
 {
-    public function condition()
+    public function condition(): void
     {
         if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
@@ -17,7 +17,7 @@ trait Condition
 
     }
 
-    private function _saveConditions($isMassAction = false)
+    private function _saveConditions(bool $isMassAction = false): array
     {
         $automationID = acym_getVar('int', 'id');
         $conditionId = acym_getVar('int', 'conditionId');
@@ -25,10 +25,6 @@ trait Condition
         $conditionClass = new ConditionClass();
 
         $stepAutomationId = acym_getVar('int', 'stepAutomationId');
-
-        if (!empty($stepAutomationId)) {
-            $stepAutomation['id'] = $stepAutomationId;
-        }
 
         if (!empty($conditionId)) {
             $condition['id'] = $conditionId;
@@ -40,7 +36,7 @@ trait Condition
             acym_session();
             $_SESSION['massAction']['conditions'] = $condition['conditions'];
 
-            return true;
+            return [];
         }
 
         $condition['conditions'] = json_encode($condition['conditions']);
@@ -63,26 +59,18 @@ trait Condition
         ];
     }
 
-    public function saveExitConditions()
+    public function saveExitConditions(): void
     {
-        $ids = $this->_saveConditions();
-
-        if (empty($ids)) {
-            return;
-        }
+        $this->_saveConditions();
 
         acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
 
         $this->listing();
     }
 
-    public function saveConditions()
+    public function saveConditions(): void
     {
         $ids = $this->_saveConditions();
-
-        if (empty($ids)) {
-            return;
-        }
 
         acym_setVar('id', $ids['automationId']);
         acym_setVar('stepId', $ids['stepId']);

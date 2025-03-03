@@ -26,7 +26,7 @@ trait SubscriberAutomationFilters
         $numberOfUsers = intval($options['number']);
         if (empty($numberOfUsers)) return;
 
-        $query->limit = $numberOfUsers;
+        $query->limit = (string)$numberOfUsers;
         $query->orderBy = 'RAND()';
     }
 

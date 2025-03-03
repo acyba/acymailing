@@ -6,7 +6,7 @@ use AcyMailing\Core\AcymObject;
 
 class HeaderHelper extends AcymObject
 {
-    public function display($breadcrumb)
+    public function display(array $breadcrumb): string
     {
         $header = '<div class="cell large-6 xlarge-7 xxlarge-8 grid-x acym_vcenter">';
         $header .= $this->getBreadcrumb($breadcrumb);
@@ -34,7 +34,7 @@ class HeaderHelper extends AcymObject
         return $this->getLastNews().$header;
     }
 
-    private function getLastNews()
+    private function getLastNews(): string
     {
         $lastNewsCheck = $this->config->get('last_news_check', 0);
         if ($lastNewsCheck < time() - 7200) {
@@ -51,10 +51,14 @@ class HeaderHelper extends AcymObject
             $news = $this->config->get('last_news', '');
             if (!empty($news)) $news = base64_decode($news);
         }
-        if (empty($news)) return '';
+        if (empty($news)) {
+            return '';
+        }
 
         $news = @simplexml_load_string($news);
-        if (empty($news->news)) return '';
+        if (empty($news->news)) {
+            return '';
+        }
 
         $currentLanguage = acym_getLanguageTag();
         $latestNews = null;
@@ -95,20 +99,18 @@ class HeaderHelper extends AcymObject
             $latestNews = $oneNews;
         }
 
-        if (empty($latestNews)) return '';
-
-        $newsDisplay = '<div id="acym__header__banner__news" data-news="'.acym_escape($latestNews->name).'">';
-
-        if (!empty($latestNews)) {
-            $newsDisplay .= $latestNews->content;
+        if (empty($latestNews)) {
+            return '';
         }
 
+        $newsDisplay = '<div id="acym__header__banner__news" data-news="'.acym_escape($latestNews->name).'">';
+        $newsDisplay .= $latestNews->content;
         $newsDisplay .= '</div>';
 
         return $newsDisplay;
     }
 
-    private function getBreadcrumb($breadcrumb)
+    private function getBreadcrumb(array $breadcrumb): string
     {
         $links = [];
         foreach ($breadcrumb as $oneLevel => $link) {
@@ -132,7 +134,7 @@ class HeaderHelper extends AcymObject
         return $header;
     }
 
-    public function checkVersionArea($reloading = false): string
+    public function checkVersionArea(bool $reloading = false): string
     {
         $currentLevel = $this->config->get('level', '');
         $currentVersion = $this->config->get('version', '');
@@ -211,9 +213,12 @@ class HeaderHelper extends AcymObject
         return $version;
     }
 
-    private function getCheckVersionButton()
+    private function getCheckVersionButton(): string
     {
-        if (ACYM_CMS == 'wordpress' && !acym_level(ACYM_ESSENTIAL)) return '';
+        if (ACYM_CMS == 'wordpress' && !acym_level(ACYM_ESSENTIAL)) {
+            return '';
+        }
+
         $lastLicenseCheck = $this->config->get('lastlicensecheck', 0);
         $time = time();
         $checking = ($time > $lastLicenseCheck + 604800) ? $checking = '1' : '0';
@@ -229,7 +234,7 @@ class HeaderHelper extends AcymObject
         );
     }
 
-    private function getDocumentationButton()
+    private function getDocumentationButton(): string
     {
         return acym_tooltip(
             [
@@ -239,16 +244,18 @@ class HeaderHelper extends AcymObject
         );
     }
 
-    private function getHelpWedButton()
+    private function getHelpWedButton(): string
     {
-        if (ACYM_CMS != 'wordpress' || acym_level(ACYM_ESSENTIAL)) return '';
+        if (ACYM_CMS != 'wordpress' || acym_level(ACYM_ESSENTIAL)) {
+            return '';
+        }
 
         return '<a type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" target="_blank" href="https://wordpress.org/support/plugin/acymailing/">
                     <i class="cell shrink acymicon-book"></i>
                 </a>';
     }
 
-    public function getNotificationCenter()
+    public function getNotificationCenter(): string
     {
         $notifications = json_decode($this->config->get('notifications', '{}'), true);
         $message = '';
@@ -311,7 +318,7 @@ class HeaderHelper extends AcymObject
         return $notificationCenter;
     }
 
-    public function getNotificationCenterInner($notifications)
+    public function getNotificationCenterInner(array $notifications): string
     {
         $notificationCenter = '';
         if (empty($notifications)) {
@@ -329,12 +336,12 @@ class HeaderHelper extends AcymObject
                     $tag = new \stdClass();
                     $tag->wrap = 150;
 
-                    $pluginHelperClass = new PluginHelper();
-                    $notif['message'] = $pluginHelperClass->wrapText($notif['message'], $tag);
+                    $pluginHelper = new PluginHelper();
+                    $notif['message'] = $pluginHelper->wrapText($notif['message'], $tag);
                 }
                 $fullMessageHover = $fullMessageHover != $notif['message'] ? 'data-acym-full="'.acym_escape($fullMessageHover).'"' : '';
 
-                $logo = $notif['level'] == 'info' ? 'acymicon-bell' : ($notif['level'] == 'warning' ? 'acymicon-exclamation-triangle' : 'acymicon-exclamation-circle');
+                $logo = $notif['level'] === 'info' ? 'acymicon-bell' : ($notif['level'] == 'warning' ? 'acymicon-exclamation-triangle' : 'acymicon-exclamation-circle');
                 $read = $notif['read'] ? 'acym__header__notification__one__read' : '';
                 $notificationCenter .= '<div class="'.$read.' cell grid-x acym__header__notification__one acym_vcenter acym_vcenter acym__header__notification__one__'.$notif['level'].'">';
                 $notificationCenter .= '<div class="cell small-3 align-center grid-x acym__header__notification__one__icon"><i class="cell '.$logo.'"></i></div>';
@@ -348,12 +355,12 @@ class HeaderHelper extends AcymObject
         return $notificationCenter;
     }
 
-    public function addNotification($notif)
+    public function addNotification(object $notif): string
     {
-        if ($notif->level == 'success') {
+        if ($notif->level === 'success') {
             $_SESSION['acym_success'] = $notif->message;
 
-            return true;
+            return '';
         }
 
         $notifications = json_decode($this->config->get('notifications', '[]'), true);

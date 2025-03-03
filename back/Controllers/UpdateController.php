@@ -7,7 +7,7 @@ use AcyMailing\Core\AcymController;
 
 class UpdateController extends AcymController
 {
-    public function checkForNewVersion()
+    public function checkForNewVersion(): void
     {
         $lastLicenseCheck = acym_checkVersion(true);
         $headerHelper = new HeaderHelper();

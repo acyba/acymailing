@@ -8,9 +8,11 @@ use AcyMailing\Helpers\PaginationHelper;
 
 trait UserLinksDetails
 {
-    public function exportUserLinksDetails()
+    public function exportUserLinksDetails(): void
     {
-        if (!$this->prepareDefaultPageInfo($data, true)) return;
+        if (!$this->prepareDefaultPageInfo($data, true)) {
+            return;
+        }
 
         $this->prepareUserLinksDetailsListing($data);
         $exportHelper = new ExportHelper();
@@ -25,13 +27,15 @@ trait UserLinksDetails
         exit;
     }
 
-    public function userClickDetails()
+    public function userClickDetails(): void
     {
         acym_setVar('layout', 'user_links_details');
 
         $data = [];
 
-        if (!$this->prepareDefaultPageInfo($data, true)) return;
+        if (!$this->prepareDefaultPageInfo($data, true)) {
+            return;
+        }
 
         $this->prepareUserLinksDetailsListing($data);
         if (count($this->selectedMailIds) == 1) {
@@ -46,7 +50,7 @@ trait UserLinksDetails
         parent::display($data);
     }
 
-    private function prepareUserLinksDetailsListing(&$data)
+    private function prepareUserLinksDetailsListing(array &$data): void
     {
         $data['search'] = $this->getVarFiltersListing('string', 'user_links_details_search', '');
         $data['ordering'] = $this->getVarFiltersListing('string', 'user_links_details_ordering', 'user_id');
@@ -56,7 +60,9 @@ trait UserLinksDetails
             $data['search'] = base64_decode($data['search']);
         }
 
-        if (empty($this->selectedMailIds)) return;
+        if (empty($this->selectedMailIds)) {
+            return;
+        }
 
         $pagination = new PaginationHelper();
         $urlClickClass = new UrlClickClass();
@@ -78,7 +84,7 @@ trait UserLinksDetails
         $this->decode($userClicks['user_links_details']);
 
         // Prepare the pagination
-        $pagination->setStatus($userClicks['total'], $page, $detailedStatsPerPage);
+        $pagination->setStatus((int)$userClicks['total']->total, $page, $detailedStatsPerPage);
 
         $data['pagination'] = $pagination;
         $data['user_links_details'] = $userClicks['user_links_details'];

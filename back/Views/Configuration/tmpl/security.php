@@ -572,19 +572,16 @@
 			</div>
 			<div class="grid-x grid-margin-y margin-y" id="cron_security_config">
 				<div class="cell grid-x acym_vcenter">
-
 					<label class="cell large-3" for="cron_key">
                         <?php echo acym_translation('ACYM_BACKEND_URL'); ?>
 					</label>
+                    <?php $differentUrl = $this->config->get('different_admin_url_value'); ?>
 					<input class="cell large-9"
 						   id="cron_key"
 						   type="text"
 						   name="config[different_admin_url_value]"
-						   value="<?php echo $this->config->get('different_admin_url_value') === ''
-                               ? rtrim(ACYM_LIVE, '/')
-                               : acym_escape(
-                                   $this->config->get('different_admin_url_value')
-                               ); ?>" />
+						   placeholder="<?php echo acym_escape(rtrim(ACYM_LIVE, '/')); ?>"
+						   value="<?php echo acym_escape($differentUrl); ?>" />
 				</div>
 			</div>
 		</div>

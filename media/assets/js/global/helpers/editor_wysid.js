@@ -198,18 +198,27 @@ const acym_helperEditorWysid = {
         jQuery('.acym__template__choose__ajax').off('DOMSubtreeModified').on('DOMSubtreeModified', function () {
             jQuery('.acym__template__choose__list .acym__templates__oneTpl').off('click').on('click', function (e) {
                 e.preventDefault();
-                let thisLink = jQuery(this).find('a').attr('href');
-                let ajaxUrl = ACYM_AJAX_URL + '&page=acymailing_mails&ctrl=' + acym_helper.ctrlMails + '&task=getMailContent&from=' + jQuery(this)
-                    .attr('id');
+                const thisLink = jQuery(this).find('a').attr('href');
 
-                jQuery.post(ajaxUrl, function (response) {
-                    if (response === 'error') {
-                        alert(ACYM_JS_TXT.ACYM_ERROR);
-                        return false;
+                jQuery.ajax({
+                    type: 'POST',
+                    url: ACYM_AJAX_URL,
+                    data: {
+                        page: 'acymailing_mails',
+                        ctrl: acym_helper.ctrlMails,
+                        task: 'getMailContent',
+                        from: jQuery(this).attr('id')
+                    },
+                    success: function (response) {
+                        response = acym_helper.parseJson(response);
+
+                        if (response.error) {
+                            alert(response.message);
+                            return;
+                        }
+
+                        window.location.href = thisLink;
                     }
-
-                    window.location.href = thisLink;
-                    return false;
                 });
             });
         });

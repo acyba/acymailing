@@ -213,8 +213,8 @@ function acym_importFile($file, $uploadPath, $onlyPict, $maxwidth = '')
             $message = 'ACYM_IMAGE_RESIZED';
             $imageHelper->destination = $uploadPath;
             $thumb = $imageHelper->generateThumbnail(rtrim($uploadPath, DS).DS.$file['name']);
-            $resize = acym_moveFile($thumb['file'], $uploadPath.DS.$file['name']);
-            if ($thumb) {
+            if (!empty($thumb)) {
+                acym_moveFile($thumb['file'], $uploadPath.DS.$file['name']);
                 $additionalMsg .= '<br />'.acym_translation($message);
             }
         }
@@ -732,16 +732,20 @@ function acym_createArchive($name, $files)
     return acym_writeFile($name.'.zip', $buffer);
 }
 
-function acym_loaderLogo($wrap = true)
+function acym_loaderLogo(bool $wrap = true): string
 {
     $loader = '';
-    if ($wrap) $loader .= '<div class="cell shrink acym_loader_logo">';
+    if ($wrap) {
+        $loader .= '<div class="cell shrink acym_loader_logo">';
+    }
 
     $loader .= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 1024 1024">
 	                <path class="acym__svg__loader" fill="#a6a9ab" d="M553.074 174.168c-12.201 7.319-26.84 10.573-40.668 10.573s-27.655-3.253-40.668-10.573l-242.376-139.081-229.362 132.575v732.011l254.576 143.963v-430.26l219.602 124.442c11.388 6.507 24.401 9.76 37.415 9.76 0 0 0 0 0 0s0 0 0 0c12.201 0 25.214-3.253 36.6-9.76l221.23-124.442v430.26l254.576-144.775v-732.011l-229.362-131.762-241.563 139.081zM491.261 701.215l-217.164-122.815-61.001-34.161v430.26l-173.243-97.601v-662.063l422.94 245.629c0 0 0 0 0 0 8.947 4.881 17.895 8.135 27.655 10.573v230.178zM983.334 876.086l-173.243 98.416v-431.073l-61.001 34.161-217.164 122.815v-229.362c9.76-2.441 18.707-5.694 27.655-10.573l423.753-246.444v662.063zM539.246 425.493c-17.080 9.76-38.227 9.76-55.307 0 0 0 0 0 0 0l-422.94-245.629 168.362-97.601 222.043 127.696c18.707 10.573 39.853 16.267 61.001 16.267s42.294-5.694 61.001-16.267l222.043-127.696 168.362 97.601-424.566 245.629z"></path>
                 </svg>';
 
-    if ($wrap) $loader .= '</div>';
+    if ($wrap) {
+        $loader .= '</div>';
+    }
 
     return $loader;
 }

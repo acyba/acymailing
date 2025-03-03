@@ -15,8 +15,8 @@ class BouncesController extends AcymController
     use MailboxActionsListing;
     use MailboxActionsEdition;
 
-    private $runBounce = false;
-    private $mailboxReport = [];
+    private bool $runBounce = false;
+    private array $mailboxReport = [];
 
     public function __construct()
     {
@@ -62,7 +62,7 @@ class BouncesController extends AcymController
         }
     }
 
-    private function getAllParamsRequest(&$data)
+    private function getAllParamsRequest(array &$data): void
     {
         $data['search'] = $this->getVarFiltersListing('string', 'mailboxes_search', '');
         $data['status'] = $this->getVarFiltersListing('string', 'mailboxes_status', '');

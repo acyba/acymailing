@@ -126,7 +126,7 @@ function acym_boolean($name, $selected = null, $id = null, $attributes = [], $ye
     );
 }
 
-function acym_select($data, $name, $selected = null, $attribs = null, $optKey = 'value', $optText = 'text', $idtag = false, $translate = false)
+function acym_select($data, $name, $selected = null, $attribs = null, $optKey = 'value', $optText = 'text', $idtag = false, $translate = false): string
 {
     $idtag = str_replace(['[', ']', ' '], '', empty($idtag) ? $name : $idtag);
 
@@ -833,8 +833,6 @@ function acym_cancelButton(string $text = 'ACYM_CANCEL', string $url = '', strin
 }
 
 /**
- * @param array $options
- *
  * Options:
  *    classContainer      => Classes applied on the main container
  *    hoveredText         => Text shown on the page
@@ -843,8 +841,6 @@ function acym_cancelButton(string $text = 'ACYM_CANCEL', string $url = '', strin
  *    textShownInTooltip  => Text shown inside the tooltip box
  *    link                => URL to redirect on click to the hovered text
  *    classLink           => Classes applied on the link element if any
- *
- * @return string
  */
 function acym_tooltip(array $options): string
 {

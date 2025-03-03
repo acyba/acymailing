@@ -21,7 +21,7 @@ class FronturlController extends AcymController
         ];
     }
 
-    public function click()
+    public function click(): void
     {
         $urlId = acym_getVar('int', 'urlid');
         $mailId = acym_getVar('int', 'mailid');
@@ -34,27 +34,24 @@ class FronturlController extends AcymController
             acym_raiseError(404, acym_translation('ACYM_PAGE_NOT_FOUND'));
         }
 
+        $urlObject->url = preg_replace(
+            [
+                '#&idU=[0-9]+#Ui',
+                '#idU=[0-9]+&#Ui',
+                '#\?idU=[0-9]+#Ui',
+            ],
+            '',
+            $urlObject->url
+        );
+
         $mailClass = new MailClass();
         $mail = $mailClass->getOneById($mailId);
 
         $userStatClass = new UserStatClass();
         $userStat = $userStatClass->getOneByMailAndUserId($mailId, $userId);
 
-        // The mail has been deleted, or we didn't send this email to this user, something is wrong
-        if (empty($mail) || empty($userStat)) {
-            $urlObject->url = preg_replace(
-                [
-                    '#&idU=[0-9]+#Uis',
-                    '#idU=[0-9]+&#Uis',
-                    '#\?idU=[0-9]+#Uis',
-                ],
-                '',
-                $urlObject->url
-            );
-            acym_redirect($urlObject->url);
-        }
-
-        if (acym_isRobot()) {
+        // The mail has been deleted, or we didn't send this email to this user, or it's a bot
+        if (empty($mail) || empty($userStat) || acym_isRobot()) {
             acym_redirect($urlObject->url);
         }
 

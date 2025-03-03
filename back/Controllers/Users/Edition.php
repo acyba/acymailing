@@ -12,7 +12,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait Edition
 {
-    public function edit()
+    public function edit(): void
     {
         acym_setVar('layout', 'edit');
 
@@ -33,7 +33,7 @@ trait Edition
         parent::display($data);
     }
 
-    private function prepareUserEdit(&$data, $userId)
+    private function prepareUserEdit(array &$data, int $userId): bool
     {
         if (empty($userId)) {
             $data['user-information'] = new \stdClass();
@@ -67,7 +67,7 @@ trait Edition
         return true;
     }
 
-    private function prepareEntitySelectEdit(&$data, $userId)
+    private function prepareEntitySelectEdit(array &$data, int $userId): void
     {
         if (empty($userId)) return;
 
@@ -84,7 +84,7 @@ trait Edition
         );
     }
 
-    private function prepareUserFieldsEdit(&$data, $userId)
+    private function prepareUserFieldsEdit(array &$data, int $userId): void
     {
         $data['fieldsValues'] = [];
 
@@ -97,7 +97,7 @@ trait Edition
         }
     }
 
-    private function prepareSubscriptionsEdit(&$data, $userId)
+    private function prepareSubscriptionsEdit(array &$data, int $userId): void
     {
         $data['subscriptionsIds'] = [];
         $data['subscriptions'] = [];
@@ -128,7 +128,7 @@ trait Edition
         }
     }
 
-    private function prepareStatsEdit(&$data, $userId)
+    private function prepareStatsEdit(array &$data, int $userId): void
     {
         $data['percentageOpen'] = 0;
         $data['percentageClick'] = 0;
@@ -166,7 +166,7 @@ trait Edition
         $data['percentageClick'] = number_format($userStat->percentageClick, 2);
     }
 
-    private function prepareMailHistory(&$data, $userId)
+    private function prepareMailHistory(array &$data, int $userId): void
     {
         if (empty($userId)) {
             return;
@@ -184,7 +184,7 @@ trait Edition
         }
     }
 
-    private function prepareHistoryEdit(&$data, $userId)
+    private function prepareHistoryEdit(array &$data, int $userId): void
     {
         if (empty($userId)) return;
 
@@ -254,7 +254,7 @@ trait Edition
         }
     }
 
-    protected function prepareFieldsEdit(&$data, $fieldVisibility = 'backend_edition')
+    protected function prepareFieldsEdit(array &$data, string $fieldVisibility = 'backend_edition'): void
     {
         $data['allFields'] = [];
 
@@ -310,12 +310,12 @@ trait Edition
         }
     }
 
-    public function save()
+    public function save(): void
     {
         $this->apply(true);
     }
 
-    public function apply($listing = false)
+    public function apply(bool $listing = false): void
     {
         $userInformation = acym_getVar('array', 'user');
         $userId = acym_getVar('int', 'userId');

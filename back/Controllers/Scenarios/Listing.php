@@ -8,7 +8,7 @@ use AcyMailing\Helpers\ToolbarHelper;
 
 trait Listing
 {
-    function listing()
+    function listing(): void
     {
         if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
@@ -16,9 +16,9 @@ trait Listing
 
         acym_setVar('layout', 'listing');
 
-        $data = [];
-
-        $data['pagination'] = new PaginationHelper();
+        $data = [
+            'pagination' => new PaginationHelper(),
+        ];
 
         $this->prepareListingFilters($data);
         $this->prepareListingElements($data);
@@ -27,7 +27,7 @@ trait Listing
         parent::display($data);
     }
 
-    private function prepareListingFilters(&$data)
+    private function prepareListingFilters(array &$data): void
     {
         $data['search'] = $this->getVarFiltersListing('string', 'scenario_search', '');
         $data['status'] = $this->getVarFiltersListing('string', 'scenarios_status', '');
@@ -36,7 +36,7 @@ trait Listing
         $data['page'] = $this->getVarFiltersListing('int', 'scenarios_pagination_page', 1);
     }
 
-    private function prepareListingElements(&$data)
+    private function prepareListingElements(array &$data): void
     {
         // Prepare the pagination
         $scenarioPerPage = $data['pagination']->getListLimit();
@@ -54,14 +54,14 @@ trait Listing
             $data['page']
         );
 
-        $data['pagination']->setStatus($matchingScenarios['total'], $data['page'], $scenarioPerPage);
+        $data['pagination']->setStatus($matchingScenarios['total']->total, $data['page'], $scenarioPerPage);
 
         $data['scenarios'] = $matchingScenarios['elements'];
         $data['totalOverall'] = $matchingScenarios['totalOverall'];
         $data['scenariosNumberStatus'] = $matchingScenarios['scenariosNumberStatus'];
     }
 
-    protected function prepareToolbar(&$data)
+    protected function prepareToolbar(array &$data): void
     {
         $data['toolbar'] = new ToolbarHelper();
         $data['toolbar']->addSearchBar($data['search'], 'scenario_search');
@@ -69,7 +69,7 @@ trait Listing
         $data['toolbar']->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit', 'data-step' => 'editScenario'], 'add', true);
     }
 
-    public function duplicate()
+    public function duplicate(): void
     {
         acym_checkToken();
 

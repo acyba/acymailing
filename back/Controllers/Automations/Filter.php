@@ -11,7 +11,7 @@ use AcyMailing\Helpers\WorkflowHelper;
 
 trait Filter
 {
-    public function filter()
+    public function filter(): void
     {
 
         if (!acym_level(ACYM_ENTERPRISE)) {
@@ -19,7 +19,7 @@ trait Filter
         }
     }
 
-    private function _saveFilters($isMassAction = false)
+    private function _saveFilters(bool $isMassAction = false): array
     {
         $automationID = acym_getVar('int', 'id');
         $actionId = acym_getVar('int', 'actionId');
@@ -47,7 +47,7 @@ trait Filter
             acym_session();
             $_SESSION['massAction']['filters'] = $action['filters'];
 
-            return true;
+            return [];
         }
 
         $action['filters'] = json_encode($action['filters']);
@@ -70,26 +70,18 @@ trait Filter
         ];
     }
 
-    public function saveExitFilters()
+    public function saveExitFilters(): void
     {
-        $ids = $this->_saveFilters();
-
-        if (empty($ids)) {
-            return;
-        }
+        $this->_saveFilters();
 
         acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
 
         $this->listing();
     }
 
-    public function saveFilters()
+    public function saveFilters(): void
     {
         $ids = $this->_saveFilters();
-
-        if (empty($ids)) {
-            return;
-        }
 
         acym_setVar('id', $ids['automationId']);
         acym_setVar('stepId', $ids['stepId']);
@@ -97,7 +89,7 @@ trait Filter
         $this->summary();
     }
 
-    public function countresults()
+    public function countresults(): void
     {
         $or = acym_getVar('int', 'or');
         $and = acym_getVar('int', 'and');
@@ -116,7 +108,7 @@ trait Filter
         acym_sendAjaxResponse(implode(' | ', $messages));
     }
 
-    public function countResultsOrTotal()
+    public function countResultsOrTotal(): void
     {
         $or = acym_getVar('int', 'or');
         $stepAutomation = acym_getVar('array', 'acym_action');

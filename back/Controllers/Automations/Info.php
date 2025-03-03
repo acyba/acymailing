@@ -10,7 +10,7 @@ use AcyMailing\Helpers\WorkflowHelper;
 
 trait Info
 {
-    public function info()
+    public function info(): void
     {
         if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
@@ -18,12 +18,8 @@ trait Info
 
     }
 
-    private function _saveInfos($isMassAction = false)
+    private function saveInfos(): array
     {
-        if ($isMassAction) {
-            acym_session();
-        }
-
         $automationId = acym_getVar('int', 'id');
         $automation = acym_getVar('array', 'automation');
         $automationClass = new AutomationClass();
@@ -63,7 +59,9 @@ trait Info
         }
 
         if (empty($automation['admin'])) {
-            if (empty($automation['name'])) return false;
+            if (empty($automation['name'])) {
+                return [];
+            }
 
             $automation['admin'] = 0;
         }
@@ -73,7 +71,7 @@ trait Info
 
             $this->info();
 
-            return false;
+            return [];
         }
 
         $stepAutomation['triggers'][$typeTrigger]['type_trigger'] = $typeTrigger;
@@ -98,38 +96,36 @@ trait Info
         $stepAutomation->id = $stepClass->save($stepAutomation);
 
         $returnIds = [
-            "automationId" => $automation->id,
-            "stepId" => $stepAutomation->id,
-            "typeTrigger" => $typeTrigger,
+            'automationId' => $automation->id,
+            'stepId' => $stepAutomation->id,
+            'typeTrigger' => $typeTrigger,
         ];
 
-        if ($isMassAction) {
-            return true;
-        } elseif (!empty($returnIds['automationId']) && !empty($returnIds['stepId'])) {
+        if (!empty($returnIds['automationId']) && !empty($returnIds['stepId'])) {
             return $returnIds;
         } else {
-            return false;
+            return [];
         }
     }
 
-    public function saveExitInfo()
+    public function saveExitInfo(): void
     {
-        $ids = $this->_saveInfos();
+        $ids = $this->saveInfos();
 
         if (empty($ids)) {
             return;
         }
 
-        acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
+        acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
 
         acym_setVar('id', $ids['automationId']);
         acym_setVar('stepId', $ids['stepId']);
         $this->listing();
     }
 
-    public function saveInfo()
+    public function saveInfo(): void
     {
-        $ids = $this->_saveInfos();
+        $ids = $this->saveInfos();
 
         if (empty($ids)) {
             return;

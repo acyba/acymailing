@@ -6,22 +6,27 @@ use AcyMailing\Classes\MailClass;
 
 trait Automation
 {
-    public function deleteMailAutomation()
+    public function deleteMailAutomation(): void
     {
         $mailClass = new MailClass();
         $mailId = acym_getVar('int', 'id', 0);
 
-        if (!empty($mailId)) $mailClass->delete($mailId);
+        if (!empty($mailId)) {
+            $mailClass->delete($mailId);
+        }
+
         exit;
     }
 
-    public function duplicateMailAutomation()
+    public function duplicateMailAutomation(): void
     {
         $mailClass = new MailClass();
         $mailId = acym_getVar('int', 'id', 0);
         $prevMail = acym_getVar('int', 'previousId');
 
-        if (!empty($prevMail)) $mailClass->delete($prevMail);
+        if (!empty($prevMail)) {
+            $mailClass->delete($prevMail);
+        }
 
         if (empty($mailId)) {
             acym_sendAjaxResponse(acym_translationSprintf('ACYM_NOT_FOUND', acym_translation('ACYM_ID')), [], false);

@@ -6,7 +6,7 @@ use AcyMailing\Core\AcymObject;
 
 class CharsetType extends AcymObject
 {
-    var $charsets = [];
+    public array $charsets = [];
     var $values = [];
 
     public function __construct()

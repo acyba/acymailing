@@ -64,11 +64,9 @@ class plgAcymElasticemail extends AcymPlugin
         }
 
         $response = $this->callApiSendingMethod(
-            self::SENDING_METHOD_API_URL.'files',
-            [
-                'limit' => 1,
-            ],
-            $this->getAuthenticationHeaders($credentials)
+            self::SENDING_METHOD_API_URL.'files?limit=1',
+            [],
+            $this->getAuthenticationHeaders($credentials),
         );
 
         if (!empty($response['error_curl'])) {
@@ -97,7 +95,7 @@ class plgAcymElasticemail extends AcymPlugin
                      $sendingMethodListParams = []
     ): void {
         // https://elasticemail.com/developers/api-documentation/rest-api#operation/emailsTransactionalPost
-        if ($mailerHelper->externalMailer != self::SENDING_METHOD_ID) {
+        if ($mailerHelper->externalMailer !== self::SENDING_METHOD_ID) {
             return;
         }
 
@@ -180,10 +178,8 @@ class plgAcymElasticemail extends AcymPlugin
 
             // Uploaded attachments expire after 35 days by default, so 1000 should be more than enough
             $uploadedAttachments = $this->callApiSendingMethod(
-                self::SENDING_METHOD_API_URL.'files',
-                [
-                    'limit' => 1000,
-                ],
+                self::SENDING_METHOD_API_URL.'files?limit=1000',
+                [],
                 $this->getAuthenticationHeaders()
             );
 

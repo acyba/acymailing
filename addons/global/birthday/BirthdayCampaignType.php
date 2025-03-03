@@ -260,7 +260,7 @@ trait BirthdayCampaignType
 
     public function onAcymCampaignDataSpecificListing(&$data, $type)
     {
-        if ($type == $this->mailType) {
+        if ($type === $this->mailType) {
             $data['typeWorkflowTab'] = 'specificListing&type='.$this->mailType;
             $data['element_to_display'] = acym_translation('ACYM_BIRTHDAY_EMAIL');
             $campaignController = new CampaignsController();

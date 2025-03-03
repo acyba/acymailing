@@ -233,9 +233,6 @@ trait FollowUp
         }
     }
 
-    /**
-     * @return void
-     */
     public function getFollowUpById(): void
     {
         $followUpId = acym_getVar('int', 'followUpId', 0);

@@ -6,13 +6,13 @@ use AcyMailing\Helpers\UpdatemeHelper;
 
 trait License
 {
-    public function unlinkLicense()
+    public function unlinkLicense(): void
     {
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             $this->listing();
 
-            return true;
+            return;
         }
         //__END__demo_
         $config = acym_getVar('array', 'config', []);
@@ -30,31 +30,28 @@ trait License
 
         //Display the configuration
         $this->listing();
-
-        return true;
     }
 
-    public function attachLicense()
+    public function attachLicense(): void
     {
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             $this->listing();
 
-            return true;
+            return;
         }
         //__END__demo_
-        $config = acym_getVar('array', 'config', []);
-        $licenseKey = $config['license_key'];
 
-        if (empty($licenseKey)) {
+        $config = acym_getVar('array', 'config', []);
+        if (empty($config['license_key'])) {
             $this->displayMessage(acym_translation('ACYM_PLEASE_SET_A_LICENSE_KEY'));
             $this->listing();
 
-            return true;
+            return;
         }
 
         //We save the license key
-        $this->config->save(['license_key' => $licenseKey]);
+        $this->config->save(['license_key' => $config['license_key']]);
 
         //We call updateme to attach the website to the license
         $resultAttachLicenseOnUpdateMe = $this->attachLicenseOnUpdateMe();
@@ -68,17 +65,15 @@ trait License
         }
 
         $this->listing();
-
-        return true;
     }
 
-    public function attachLicenseOnUpdateMe($licenseKey = null)
+    public function attachLicenseOnUpdateMe(?string $licenseKey = null): array
     {
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             $this->listing();
 
-            return true;
+            return ['success' => false];
         }
         //__END__demo_
 
@@ -108,16 +103,10 @@ trait License
 
         acym_checkVersion();
 
-        //If it's not the result well formatted => don't save the license key and out
-        if (empty($resultAttach)) {
-            $return['message'] = empty($resultAttach['message']) ? '' : $resultAttach['message'];
-
+        // If it's not the result well formatted => don't save the license key and out
+        // If there is an error when the website has been attached => don't save the license key in the configuration
+        if (empty($resultAttach) || !$resultAttach['success']) {
             return $return;
-        }
-
-        //If there is an error when the website has been attached => don't save the license key in the configuration
-        if (!$resultAttach['success']) {
-            return $resultAttach;
         }
 
         acym_trigger('onAcymAttachLicense', [&$licenseKey]);
@@ -125,18 +114,18 @@ trait License
         return $resultAttach;
     }
 
-    private function unlinkLicenseOnUpdateMe($licenseKey = null)
+    private function unlinkLicenseOnUpdateMe(?string $licenseKey = null): array
     {
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             $this->listing();
 
-            return true;
+            return ['success' => false];
         }
         //__END__demo_
         //We get the license key saved
         if (is_null($licenseKey)) {
-            $licenseKey = $this->config->get('license_key', '');
+            $licenseKey = $this->config->get('license_key');
         }
 
         $return = [
@@ -163,14 +152,8 @@ trait License
         acym_checkVersion();
 
         //If it's not the result well formated => out
-        if (empty($resultUnlink)) {
-            $return['message'] = empty($resultUnlink['message']) ? '' : $resultUnlink['message'];
-
+        if (empty($resultUnlink) || !$resultUnlink['success']) {
             return $return;
-        }
-
-        if (!$resultUnlink['success']) {
-            return $resultUnlink;
         }
 
         acym_trigger('onAcymDetachLicense');
@@ -178,43 +161,49 @@ trait License
         return $resultUnlink;
     }
 
-    public function activateCron($licenseKey = null)
+    public function activateCron(): void
     {
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             $this->listing();
 
-            return true;
+            return;
         }
         //__END__demo_
-        $result = $this->modifyCron('activateCron', $licenseKey);
-        //If everything went ok we save config with an active_cron to true
-        if ($result !== false && $this->displayMessage($result['message'])) $this->config->save(['active_cron' => 1]);
-        $this->listing();
 
-        return true;
+        $result = $this->modifyCron('activateCron');
+        //If everything went ok we save config with an active_cron to true
+        if (!empty($result) && !empty($this->displayMessage($result['message']))) {
+            $this->config->save(['active_cron' => 1]);
+        }
+
+        $this->listing();
     }
 
     //The listing parameter allows us to know if we need to display the listing or not
-    public function deactivateCron($listing = true, $licenseKey = null)
+    public function deactivateCron(bool $listing = true, ?string $licenseKey = null): void
     {
         //__START__demo_
         if (!ACYM_PRODUCTION) {
             $this->listing();
 
-            return true;
+            return;
         }
         //__END__demo_
+
         $result = $this->modifyCron('deactivateCron', $licenseKey);
         //If everything went ok we save config with an active_cron to false
-        if ($result !== false && $this->displayMessage($result['message'])) $this->config->save(['active_cron' => 0]);
-        if ($listing) $this->listing();
+        if (!empty($result) && !empty($this->displayMessage($result['message']))) {
+            $this->config->save(['active_cron' => 0]);
+        }
 
-        return true;
+        if ($listing) {
+            $this->listing();
+        }
     }
 
     //The listing parameter allows us to know if we need to display the listing or not
-    public function modifyCron(string $functionToCall, ?string $licenseKey = null)
+    public function modifyCron(string $functionToCall, ?string $licenseKey = null): array
     {
         if (is_null($licenseKey)) {
             $config = acym_getVar('array', 'config', []);
@@ -225,7 +214,7 @@ trait License
         if (empty($licenseKey)) {
             $this->displayMessage('LICENSE_NOT_FOUND');
 
-            return false;
+            return [];
         }
 
         $data = [
@@ -244,37 +233,30 @@ trait License
         if (empty($result['success'])) {
             $this->displayMessage(empty($result['message']) ? 'CRON_NOT_SAVED' : $result['message']);
 
-            return false;
+            return [];
         }
 
         return $result;
     }
 
-    public function call($task, $allowedTasks = [])
+    public function attachLicenseAcymailer(): void
     {
-        $allowedTasks[] = 'markNotificationRead';
-        $allowedTasks[] = 'removeNotification';
-        $allowedTasks[] = 'getAjax';
-        $allowedTasks[] = 'addNotification';
-
-        parent::call($task, $allowedTasks);
-    }
-
-    public function attachLicenseAcymailer()
-    {
-        $acyMailerLicenseKey = $this->config->get('acymailer_apikey', '');
-        $acyMailingKey = $this->config->get('license_key', '');
+        $acyMailerLicenseKey = $this->config->get('acymailer_apikey');
+        $acyMailingKey = $this->config->get('license_key');
         if (empty($acyMailerLicenseKey) && !empty($acyMailingKey)) {
             acym_trigger('onAcymAttachLicense', [&$acyMailingKey]);
         }
+
         $this->config->load();
-        $acyMailerLicenseKey = $this->config->get('acymailer_apikey', '');
+        $acyMailerLicenseKey = $this->config->get('acymailer_apikey');
+
         if (empty($acyMailerLicenseKey)) {
             acym_enqueueMessage(acym_translation('ACYM_LICENCE_NO_SENDING_SERVICE'), 'error');
         } else {
             $this->config->save(['mailer_method' => 'acymailer']);
             acym_enqueueMessage(acym_translation('ACYM_SENDING_SERVICE_ACTIVATED'), 'success', false);
         }
+
         $this->listing();
     }
 }

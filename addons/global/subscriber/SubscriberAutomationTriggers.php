@@ -103,10 +103,6 @@ trait SubscriberAutomationTriggers
             return;
         }
 
-        if (empty($fieldsToExport)) {
-            return;
-        }
-
         $fieldsToExport = explode(',', $fieldsToExport);
         $fieldClass = new FieldClass();
         $fields = $fieldClass->getByIds($fieldsToExport);

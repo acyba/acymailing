@@ -9,8 +9,6 @@ use AcyMailing\Controllers\Dashboard\Migration;
 
 class DashboardController extends AcymController
 {
-    var $errorMailer;
-
     use Listing;
     use Walkthrough;
     use Migration;
@@ -25,7 +23,7 @@ class DashboardController extends AcymController
         ];
     }
 
-    public function upgrade()
+    public function upgrade(): void
     {
         acym_setVar('layout', 'upgrade');
 
@@ -36,7 +34,7 @@ class DashboardController extends AcymController
         parent::display($data);
     }
 
-    public function features()
+    public function features(): void
     {
         if (!file_exists(ACYM_NEW_FEATURES_SPLASHSCREEN_JSON)) {
             $this->listing();
@@ -70,7 +68,7 @@ class DashboardController extends AcymController
         parent::display($data);
     }
 
-    public function acychecker()
+    public function acychecker(): void
     {
         acym_setVar('layout', 'acychecker');
 

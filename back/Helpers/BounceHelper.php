@@ -14,51 +14,51 @@ use AcyMailing\Types\CharsetType;
 class BounceHelper extends AcymObject
 {
     // Needed information for the connection
-    private $server;
-    private $username;
-    private $password;
-    private $port;
-    private $connectMethod;
-    private $secureMethod;
-    private $selfSigned;
-    private $timeout;
-    private $oAuthToken;
-    private $imapConnectionMethod;
+    private string $server;
+    private string $username;
+    private string $password;
+    private string $port;
+    private string $connectMethod;
+    private string $secureMethod;
+    private bool $selfSigned;
+    private int $timeout;
+    private string $oAuthToken;
+    private string $imapConnectionMethod;
 
     // Allowed extensions for uploaded files (attachments)
-    private $allowed_extensions = [];
-    public $nbMessages = 0;
-    public $report = false;
-    private $mailer;
+    private array $allowed_extensions = [];
+    protected int $nbMessages = 0;
+    public bool $report = false;
+    private MailerHelper $mailer;
     private $mailbox;
     public $_message;
-    private $userClass;
-    private $blockedUsers = [];
-    var $deletedUsers = [];
-    private $bounceMessages = [];
-    private $usePear = false;
-    private $detectEmail;
-    private $detectEmail2 = '/(([a-z0-9\-]+\.)+[a-z0-9]{2,8})\/([a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*)/i';
-    public $messages = [];
+    private UserClass $userClass;
+    private array $blockedUsers = [];
+    private array $deletedUsers = [];
+    private array $bounceMessages = [];
+    private bool $usePear = false;
+    private string $detectEmail;
+    private string $detectEmail2 = '/(([a-z0-9\-]+\.)+[a-z0-9]{2,8})\/([a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*)/i';
+    public array $messages = [];
     //Max execution time minus 4 seconds... we need to stop the process before this date.
-    public $stoptime = 0;
+    public int $stoptime = 0;
     //Check apache module "mod_security" to avoid flush issue
-    public $mod_security2 = false;
+    protected bool $mod_security2 = false;
     //Number of ob_end_flush used in the process...
-    public $obend = 0;
+    public int $obend = 0;
     // Correspond to mailbox entity in database
-    public $action;
-    public $attachments = [];
-    private $inlineImages = [];
+    public object $action;
+    public array $attachments = [];
+    private array $inlineImages = [];
 
-    private $allCharsets;
+    private array $allCharsets;
 
-    private $ruleClass;
-    private $mailClass;
-    private $historyClass;
-    private $encodingHelper;
+    private RuleClass $ruleClass;
+    private MailClass $mailClass;
+    private HistoryClass $historyClass;
+    private EncodingHelper $encodingHelper;
 
-    public $allLists;
+    private array $allLists;
 
     public function __construct()
     {
@@ -81,19 +81,19 @@ class BounceHelper extends AcymObject
         $this->detectEmail = '/'.acym_getEmailRegex(false, true).'/i';
     }
 
-    public function init($config = [])
+    public function init(array $config = []): bool
     {
         if (empty($config)) {
             $config = [
                 'server' => $this->config->get('bounce_server'),
                 'username' => $this->config->get('bounce_username'),
                 'password' => $this->config->get('bounce_password'),
-                'port' => $this->config->get('bounce_port', ''),
+                'port' => $this->config->get('bounce_port'),
                 'connect_method' => $this->config->get('bounce_connection'),
-                'secure_method' => $this->config->get('bounce_secured', ''),
+                'secure_method' => $this->config->get('bounce_secured'),
                 'self_signed' => $this->config->get('bounce_certif', false),
-                'timeout' => $this->config->get('bounce_timeout'),
-                'bounce_token' => $this->config->get('bounce_token', ''),
+                'timeout' => $this->config->get('bounce_timeout', 10),
+                'bounce_token' => $this->config->get('bounce_token'),
                 'imap_connection_method' => $this->config->get('imap_connection_method', 'classic'),
             ];
         }
@@ -105,11 +105,11 @@ class BounceHelper extends AcymObject
         $this->connectMethod = $config['connect_method'];
         $this->secureMethod = $config['secure_method'];
         $this->selfSigned = $config['self_signed'];
-        $this->timeout = $config['timeout'];
+        $this->timeout = intval($config['timeout']);
         $this->oAuthToken = str_replace('Bearer ', '', $config['bounce_token']);
         $this->imapConnectionMethod = $config['imap_connection_method'];
 
-        if ($this->connectMethod == 'pear') {
+        if ($this->connectMethod === 'pear') {
             $this->usePear = true;
             include_once ACYM_LIBRARIES.'Pear'.DS.'Pop3.php';
 
@@ -151,7 +151,7 @@ class BounceHelper extends AcymObject
         return false;
     }
 
-    public function connect()
+    public function connect(): bool
     {
         if ($this->usePear) {
             return $this->connectPear();
@@ -160,7 +160,7 @@ class BounceHelper extends AcymObject
         return $this->connectImap();
     }
 
-    private function connectPear()
+    private function connectPear(): bool
     {
         ob_start();
 
@@ -218,7 +218,7 @@ class BounceHelper extends AcymObject
         return true;
     }
 
-    private function connectImap()
+    private function connectImap(): bool
     {
         if (empty($this->server)) {
             acym_enqueueMessage(acym_translation('ACYM_CONFIGURE_BOUNCE'), 'warning');
@@ -298,18 +298,18 @@ class BounceHelper extends AcymObject
         return (bool)$this->mailbox;
     }
 
-    public function getNBMessages()
+    public function getNBMessages(): int
     {
         if ($this->usePear) {
-            $this->nbMessages = $this->mailbox->numMsg();
+            $this->nbMessages = intval($this->mailbox->numMsg());
         } else {
-            $this->nbMessages = $this->callImapFunction('imap_num_msg', [$this->mailbox]);
+            $this->nbMessages = intval($this->callImapFunction('imap_num_msg', [$this->mailbox]));
         }
 
         return $this->nbMessages;
     }
 
-    public function getMessage($msgNB)
+    protected function getMessage(int $msgNB)
     {
         if ($this->usePear) {
             $message = new \stdClass();
@@ -324,7 +324,7 @@ class BounceHelper extends AcymObject
         return $message;
     }
 
-    public function deleteMessage($msgNB)
+    protected function deleteMessage($msgNB): void
     {
         if ($this->usePear) {
             $this->mailbox->deleteMsg($msgNB);
@@ -334,7 +334,7 @@ class BounceHelper extends AcymObject
         }
     }
 
-    public function close()
+    public function close(): void
     {
         if ($this->usePear) {
             $this->mailbox->disconnect();
@@ -343,7 +343,7 @@ class BounceHelper extends AcymObject
         }
     }
 
-    public function decodeMessage($attachments = false)
+    public function decodeMessage(bool $attachments = false): bool
     {
         if ($this->usePear) {
             return $this->decodeMessagePear($attachments);
@@ -352,7 +352,7 @@ class BounceHelper extends AcymObject
         }
     }
 
-    private function decodeMessagePear($attachments)
+    private function decodeMessagePear(bool $attachments): bool
     {
         $this->_message->headerinfo = $this->mailbox->getParsedHeaders($this->_message->messageNB);
         if (empty($this->_message->headerinfo['subject'])) {
@@ -499,7 +499,7 @@ class BounceHelper extends AcymObject
         return true;
     }
 
-    private function decodeMessageImap($attachments)
+    private function decodeMessageImap(bool $attachments): bool
     {
 
         $this->_message->structure = $this->callImapFunction('imap_fetchstructure', [$this->mailbox, $this->_message->messageNB]);
@@ -573,7 +573,7 @@ class BounceHelper extends AcymObject
         return true;
     }
 
-    private function uploadAttachment($attachment, $num)
+    private function uploadAttachment($attachment, $num): void
     {
         // It may be a real attachment, or an inline image
         if (!isset($attachment->disposition) || (strtolower($attachment->disposition) !== 'attachment' && strtolower($attachment->disposition) !== 'inline')) {
@@ -643,7 +643,7 @@ class BounceHelper extends AcymObject
         }
     }
 
-    public function handleMessages()
+    public function handleMessages(): void
     {
         $maxMessages = min($this->nbMessages, $this->config->get('bounce_max', 0));
         //500 messages maximum at once
@@ -687,7 +687,10 @@ class BounceHelper extends AcymObject
         }
 
         //We load all the published rules
-        $rules = $this->ruleClass->getAll(null, true);
+        $rules = $this->ruleClass->getAll();
+        $rules = array_filter($rules, function ($rule) {
+            return $rule->active;
+        });
 
         $msgNB = $maxMessages;
         $listClass = new ListClass();
@@ -823,10 +826,9 @@ class BounceHelper extends AcymObject
 
     /**
      * Execute actions on the subscriber... and record the statistics
-     * We group them to not have performances issues
-     *
+     * We group them to not have performance issues
      */
-    private function userActions()
+    private function userActions(): void
     {
         if (!empty($this->deletedUsers)) {
             acym_arrayToInteger($this->deletedUsers);
@@ -901,7 +903,7 @@ class BounceHelper extends AcymObject
         }
     }
 
-    private function handleRule(&$oneRule)
+    private function handleRule(object &$oneRule): bool
     {
         $regex = $oneRule->regex;
         if (empty($regex)) {
@@ -943,12 +945,12 @@ class BounceHelper extends AcymObject
         $message .= $this->actionUser($oneRule);
         $message .= $this->actionMessage($oneRule);
 
-        $this->display($message, true);
+        $this->display($message);
 
         return true;
     }
 
-    private function actionUser(&$oneRule)
+    private function actionUser(object &$oneRule): string
     {
         $commonListsMailUser = [];
         $message = '';
@@ -1145,7 +1147,7 @@ class BounceHelper extends AcymObject
         return $message;
     }
 
-    private function actionMessage(&$oneRule)
+    private function actionMessage(object &$oneRule): string
     {
         $message = '';
 
@@ -1258,13 +1260,13 @@ class BounceHelper extends AcymObject
         return $message;
     }
 
-    private function decodeAddressImap($type)
+    private function decodeAddressImap(string $type): void
     {
         $address = $type.'address';
         $name = $type.'_name';
         $email = $type.'_email';
         if (empty($this->_message->$type)) {
-            return false;
+            return;
         }
 
         $var = $this->_message->$type;
@@ -1280,19 +1282,12 @@ class BounceHelper extends AcymObject
         }
 
         $this->_message->header->$email = $var[0]->mailbox.'@'.@$var[0]->host;
-
-        return true;
     }
-
 
     /**
      * If num is empty then it's a message otherwise it's a send status
-     *
-     * @param string  $message
-     * @param boolean $success
-     * @param string  $num
      */
-    protected function display($message, $success = true, $num = '')
+    protected function display(string $message, bool $success = true, string $num = ''): void
     {
         $this->messages[] = $message;
 
@@ -1315,7 +1310,7 @@ class BounceHelper extends AcymObject
         }
     }
 
-    public function decodeHeader($input)
+    public function decodeHeader(string $input): string
     {
         // Remove white space between encoded-words
         $input = preg_replace('/(=\?[^?]+\?(q|b)\?[^?]*\?=)(\s)+=\?/i', '\1=?', $input);
@@ -1354,7 +1349,7 @@ class BounceHelper extends AcymObject
         return $input;
     }
 
-    private function explodeBodyMixed($struct, $path = "1")
+    private function explodeBodyMixed(object $struct, string $path = '1'): array
     {
         $allParts = [];
 
@@ -1362,7 +1357,7 @@ class BounceHelper extends AcymObject
             return $allParts;
         }
 
-        $pathPrefix = ($struct->subtype == "MIXED" && $path == '1') ? '' : $path.'.';
+        $pathPrefix = ($struct->subtype === 'MIXED' && $path === '1') ? '' : $path.'.';
         foreach ($struct->parts as $i => $part) {
             $partPath = $pathPrefix.($i + 1);
             if ($part->type == 1) {
@@ -1375,7 +1370,7 @@ class BounceHelper extends AcymObject
         return $allParts;
     }
 
-    private function explodeBody($struct, $path = "0", $inline = 0)
+    private function explodeBody(object $struct, string $path = '0', bool $inline = false): array
     {
         $allParts = [];
 
@@ -1387,23 +1382,23 @@ class BounceHelper extends AcymObject
         foreach ($struct->parts as $part) {
             if ($part->type == 1) {
                 //There are more parts....:
-                if ($part->subtype == "MIXED") { //Mixed:
-                    $path = $this->incPath($path, 1); //refreshing current path
-                    $newpath = $path.".0"; //create a new path-id (ex.:2.0)
+                if ($part->subtype === 'MIXED') { //Mixed:
+                    $path = $this->incPath($path); //refreshing current path
+                    $newpath = $path.'.0'; //create a new path-id (ex.:2.0)
                     $allParts = array_merge($this->explodeBody($part, $newpath), $allParts); //fetch new parts
                 } else { //Alternativ / rfc / signed
-                    $newpath = $this->incPath($path, 1);
-                    $path = $this->incPath($path, 1);
-                    $allParts = array_merge($this->explodeBody($part, $newpath, 1), $allParts);
+                    $newpath = $this->incPath($path);
+                    $path = $this->incPath($path);
+                    $allParts = array_merge($this->explodeBody($part, $newpath, true), $allParts);
                 }
             } else {
                 $c++;
                 //creating new tree if this is part of a alternativ or rfc message:
                 if ($c == 1 && $inline) {
-                    $path = $path.".0";
+                    $path = $path.'.0';
                 }
                 //saving content:
-                $path = $this->incPath($path, 1);
+                $path = $this->incPath($path);
                 //print "<br>  Content ".$path."<br>";        //debug information
                 $allParts[$path] = $part;
             }
@@ -1413,14 +1408,14 @@ class BounceHelper extends AcymObject
     }
 
     //Increases the Path to the parts:
-    private function incPath($path, $inc)
+    private function incPath(string $path): string
     {
         $newPath = '';
-        $path_elements = explode(".", $path);
+        $path_elements = explode('.', $path);
         $limit = count($path_elements);
         for ($i = 0 ; $i < $limit ; $i++) {
             if ($i == $limit - 1) { //last element
-                $newPath .= $path_elements[$i] + $inc; // new Part-Number
+                $newPath .= $path_elements[$i] + 1; // new Part-Number
             } else {
                 $newPath .= $path_elements[$i]."."; //rebuild "1.2.2"-Chronology
             }
@@ -1429,7 +1424,7 @@ class BounceHelper extends AcymObject
         return $newPath;
     }
 
-    private function decodeContent($content, $structure)
+    private function decodeContent(string $content, object $structure): string
     {
         $encoding = $structure->encoding;
 
@@ -1437,7 +1432,7 @@ class BounceHelper extends AcymObject
         if ($encoding == 2) {
             $content = imap_binary($content);
         } elseif ($encoding == 3) {
-            $content = imap_base64($content);
+            $content = base64_decode($content, true);
         } elseif ($encoding == 4) {
             $content = imap_qprint($content);
         }
@@ -1445,8 +1440,8 @@ class BounceHelper extends AcymObject
 
         // Now we convert into utf-8! only for distribution lists
         if (!empty($this->action)) {
-            $charset = $this->getMailParam($structure, 'charset');
-            if (!empty($charset) && strtoupper($charset) != 'UTF-8') {
+            $charset = $this->getMailParam($structure);
+            if (!empty($charset) && strtoupper($charset) !== 'UTF-8') {
                 $content = $this->encodingHelper->change($content, $charset, 'UTF-8');
             }
 
@@ -1457,7 +1452,7 @@ class BounceHelper extends AcymObject
         return substr($content, 0, 100000);
     }
 
-    private function getMailParam($params, $name)
+    private function getMailParam(object $params): string
     {
         $searchIn = [];
 
@@ -1469,17 +1464,19 @@ class BounceHelper extends AcymObject
         }
 
         if (empty($searchIn)) {
-            return false;
+            return '';
         }
 
-        foreach ($searchIn as $num => $values) {
-            if (strtolower($values->attribute) == $name) {
+        foreach ($searchIn as $values) {
+            if (strtolower($values->attribute) === 'charset') {
                 return $values->value;
             }
         }
+
+        return '';
     }
 
-    public function getErrors()
+    public function getErrors(): array
     {
         $return = [];
         if (!$this->usePear) {
@@ -1488,8 +1485,8 @@ class BounceHelper extends AcymObject
 
                 return $return;
             }
-            $alerts = $this->callImapFunction('imap_alerts', []);
-            $errors = $this->callImapFunction('imap_errors', []);
+            $alerts = $this->callImapFunction('imap_alerts');
+            $errors = $this->callImapFunction('imap_errors');
             if (!empty($alerts)) {
                 $return = array_merge($return, $alerts);
             }
@@ -1501,9 +1498,6 @@ class BounceHelper extends AcymObject
         return $return;
     }
 
-    /**
-     * @return void
-     */
     private function refreshToken(): void
     {
         // Test if we need to refresh the token
@@ -1548,7 +1542,7 @@ class BounceHelper extends AcymObject
         }
     }
 
-    private function callImapFunction($functionName, $params = [])
+    private function callImapFunction(string $functionName, array $params = [])
     {
         if ($this->imapConnectionMethod === 'oauth') {
             $functionName = str_replace('imap_', 'imap2_', $functionName);

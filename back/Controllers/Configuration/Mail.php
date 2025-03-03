@@ -6,7 +6,7 @@ use AcyMailing\Helpers\ExportHelper;
 
 trait Mail
 {
-    public function ports()
+    public function ports(): void
     {
         if (!function_exists('fsockopen')) {
             echo '<span style="color:red">'.acym_translation('ACYM_FSOCKOPEN').'</span>';
@@ -33,7 +33,7 @@ trait Mail
         exit;
     }
 
-    public function testCredentialsSendingMethod()
+    public function testCredentialsSendingMethod(): void
     {
         $sendingMethod = acym_getVar('string', 'sendingMethod', '');
         $config = acym_getVar('array', 'config', []);
@@ -42,17 +42,19 @@ trait Mail
         acym_trigger('onAcymTestCredentialSendingMethod', [$sendingMethod, $config]);
     }
 
-    public function copySettingsSendingMethod()
+    public function copySettingsSendingMethod(): void
     {
         $plugin = acym_getVar('string', 'plugin', '');
         $method = acym_getVar('string', 'method', '');
 
-        if (empty($plugin) || empty($method)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);
+        if (empty($plugin) || empty($method)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);
+        }
 
         $data = [];
 
-        if ($method == 'from_options') {
-            $wpMailSmtpSetting = get_option('wp_mail_smtp', '');
+        if ($method === 'from_options') {
+            $wpMailSmtpSetting = acym_getCMSConfig('wp_mail_smtp', '');
             if (!empty($wpMailSmtpSetting) && !empty($wpMailSmtpSetting['mail'])) {
                 $mailSettings = $wpMailSmtpSetting['mail'];
 
@@ -65,20 +67,25 @@ trait Mail
             acym_trigger('onAcymGetSettingsSendingMethodFromPlugin', [&$data, $plugin, $method]);
         }
 
-        if (empty($data)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);
+        if (empty($data)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);
+        }
 
         acym_sendAjaxResponse('', $data);
     }
 
-    public function synchronizeExistingUsers()
+    public function synchronizeExistingUsers(): void
     {
         $sendingMethod = acym_getVar('string', 'sendingMethod', '');
 
-        if (empty($sendingMethod)) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_FIND_SENDING_METHOD'), [], false);
+        if (empty($sendingMethod)) {
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_FIND_SENDING_METHOD'), [], false);
+        }
+
         acym_trigger('onAcymSynchronizeExistingUsers', [$sendingMethod]);
     }
 
-    public function downloadExportChangesFile()
+    public function downloadExportChangesFile(): void
     {
         $current = acym_getVar('boolean', 'export_changes_file_current', true);
         $dateTime = $current ? 'now' : '1 month ago';
@@ -87,7 +94,7 @@ trait Mail
 
         $filenameToSearch = $exportHelper->getExportChangesFileName(acym_date($dateTime, 'Y'), acym_date($dateTime, 'm'), false);
 
-        $exportFolder = acym_getLogPath('');
+        $exportFolder = acym_getLogPath();
         $files = scandir($exportFolder);
         if (empty($files)) {
             acym_enqueueMessage(acym_translation('ACYM_NO_FILE_TO_EXPORT'), 'info');
@@ -125,12 +132,12 @@ trait Mail
         exit;
     }
 
-    public function loginForOAuth2Bounce()
+    public function loginForOAuth2Bounce(): void
     {
         $this->loginForOAuth2(false);
     }
 
-    public function loginForOAuth2Smtp()
+    public function loginForOAuth2Smtp(): void
     {
         $this->loginForOAuth2();
     }

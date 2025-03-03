@@ -7,9 +7,9 @@ use AcyMailing\Helpers\UpdateHelper;
 
 trait Migration
 {
-    public function preMigration()
+    public function preMigration(): void
     {
-        $elementToMigrate = acym_getVar('string', 'element');
+        $elementToMigrate = acym_getVar('string', 'element', '');
         $helperMigration = new MigrationHelper();
 
         $result = $helperMigration->preMigration($elementToMigrate);
@@ -17,26 +17,12 @@ trait Migration
         if (!empty($result['isOk'])) {
             echo $result['count'];
         } else {
-            echo 'ERROR : ';
-            if (!empty($result['errorInsert'])) {
-                echo strtoupper(acym_translation('ACYM_INSERT_ERROR'));
-            }
-            if (!empty($result['errorClean'])) {
-                echo strtoupper(acym_translation('ACYM_CLEAN_ERROR'));
-            }
-
-            if (!empty($result['errors'])) {
-                echo '<br>';
-
-                foreach ($result['errors'] as $key => $oneError) {
-                    echo '<br>'.$key.' : '.$oneError;
-                }
-            }
+            $this->errorHandling($result);
         }
         exit;
     }
 
-    public function migrate()
+    public function migrate(): void
     {
         $elementToMigrate = acym_getVar('string', 'element');
         $helperMigration = new MigrationHelper();
@@ -47,26 +33,12 @@ trait Migration
         if (!empty($result['isOk'])) {
             echo json_encode($result);
         } else {
-            echo 'ERROR : ';
-            if (!empty($result['errorInsert'])) {
-                echo strtoupper(acym_translation('ACYM_INSERT_ERROR'));
-            }
-            if (!empty($result['errorClean'])) {
-                echo strtoupper(acym_translation('ACYM_CLEAN_ERROR'));
-            }
-
-            if (!empty($result['errors'])) {
-                echo '<br>';
-
-                foreach ($result['errors'] as $key => $oneError) {
-                    echo '<br>'.$key.' : '.$oneError;
-                }
-            }
+            $this->errorHandling($result);
         }
         exit;
     }
 
-    public function migrationDone()
+    public function migrationDone(): void
     {
         $newConfig = new \stdClass();
         $newConfig->migration = '1';
@@ -80,7 +52,26 @@ trait Migration
         $this->listing();
     }
 
-    private function acym_existsAcyMailing59()
+    private function errorHandling(array $result): void
+    {
+        echo 'ERROR : ';
+        if (!empty($result['errorInsert'])) {
+            echo strtoupper(acym_translation('ACYM_INSERT_ERROR'));
+        }
+        if (!empty($result['errorClean'])) {
+            echo strtoupper(acym_translation('ACYM_CLEAN_ERROR'));
+        }
+
+        if (!empty($result['errors'])) {
+            echo '<br>';
+
+            foreach ($result['errors'] as $key => $oneError) {
+                echo '<br>'.$key.' : '.$oneError;
+            }
+        }
+    }
+
+    private function acym_existsAcyMailing59(): bool
     {
         $allTables = acym_getTables();
 
@@ -97,7 +88,7 @@ trait Migration
         return false;
     }
 
-    public function migration()
+    public function migration(): bool
     {
         if ($this->config->get('migration') == 0 && acym_existsAcyMailing59()) {
             acym_setVar('layout', 'migrate');

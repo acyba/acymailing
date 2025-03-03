@@ -6,7 +6,7 @@ use AcyMailing\Core\AcymObject;
 
 class CaptchaHelper extends AcymObject
 {
-    public function display($formName = '', $loadJsModule = false)
+    public function display(string $formName = '', bool $loadJsModule = false): string
     {
         if (!acym_level(ACYM_ESSENTIAL)) {
             return '';
@@ -55,7 +55,7 @@ class CaptchaHelper extends AcymObject
         }
     }
 
-    public function check()
+    public function check(): bool
     {
         if (!acym_level(ACYM_ESSENTIAL)) {
             return true;

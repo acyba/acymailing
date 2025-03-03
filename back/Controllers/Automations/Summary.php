@@ -10,7 +10,7 @@ use AcyMailing\Helpers\WorkflowHelper;
 
 trait Summary
 {
-    public function summary()
+    public function summary(): void
     {
 
         if (!acym_level(ACYM_ENTERPRISE)) {
@@ -18,14 +18,14 @@ trait Summary
         }
     }
 
-    public function activeAutomation()
+    public function activeAutomation(): void
     {
         $automationClass = new AutomationClass();
         $automation = $automationClass->getOneById(acym_getVar('int', 'id'));
         $automation->active = 1;
         $saved = $automationClass->save($automation);
         if (!empty($saved)) {
-            acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
+            acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
             $this->listing();
         } else {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');

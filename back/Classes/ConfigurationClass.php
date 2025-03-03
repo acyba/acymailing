@@ -43,11 +43,13 @@ class ConfigurationClass extends AcymClass
         $params = [];
         foreach ($newConfig as $name => $value) {
             //If it's a password containing only * then we just consider the user saved again the config but there is no modification on the password
-            if (strpos($name, 'password') !== false && !empty($value) && trim($value, '*') == '') {
-                continue;
-            }
-            if (strpos($name, 'key') !== false && !empty($value) && strpos($value, '**********') !== false) {
-                continue;
+            if (!empty($value)) {
+                if (strpos($name, 'password') !== false && trim($value, '*') === '') {
+                    continue;
+                }
+                if (strpos($name, 'key') !== false && strpos($value, '**********') !== false) {
+                    continue;
+                }
             }
 
             if ($name === 'multilingual' && $value === '1') {
@@ -69,7 +71,7 @@ class ConfigurationClass extends AcymClass
             $this->values[$name]->value = $value;
 
             // We do a strip tags to avoid HTML injections
-            if ($escape) {
+            if ($escape && !is_null($value)) {
                 $params[] = '('.acym_escapeDB(strip_tags($name)).','.acym_escapeDB(strip_tags($value)).')';
             } else {
                 $params[] = '('.acym_escapeDB($name).','.acym_escapeDB($value).')';
@@ -82,7 +84,8 @@ class ConfigurationClass extends AcymClass
         // Handle cron key activation or modification while automated tasks are active
         if (!empty($activeCron) && !empty($newCronSecurity) && (empty($previousCronSecurity) || $previousCronSecurityKey !== $newCronSecurityKey)) {
             $configurationController = new ConfigurationController();
-            if ($configurationController->modifyCron('deactivateCron') !== false) {
+            $deactivationResult = $configurationController->modifyCron('deactivateCron');
+            if (!empty($deactivationResult)) {
                 $configurationController->modifyCron('activateCron');
             }
         }

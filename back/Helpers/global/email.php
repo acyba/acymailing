@@ -1,6 +1,6 @@
 <?php
 
-function acym_getEmailRegex($secureJS = false, $forceRegex = false)
+function acym_getEmailRegex(bool $secureJS = false, bool $forceRegex = false): string
 {
     $config = acym_config();
     if ($forceRegex || $config->get('special_chars', 0) == 0) {
@@ -16,7 +16,7 @@ function acym_getEmailRegex($secureJS = false, $forceRegex = false)
     return $regex;
 }
 
-function acym_isValidEmail($email, $extended = false)
+function acym_isValidEmail($email, bool $extended = false): bool
 {
     if (empty($email) || !is_string($email)) {
         return false;
@@ -75,17 +75,17 @@ function acym_isValidEmail($email, $extended = false)
     return true;
 }
 
-function acym_isPunycode($email)
+function acym_isPunycode(string $email): bool
 {
     return strpos($email, '@xn--') !== false;
 }
 
-function acym_getDomain($email)
+function acym_getDomain(string $email): string
 {
-    if (!is_string($email)) return '';
-
     $aPos = strrpos($email, '@');
-    if (empty($aPos)) return '';
+    if (empty($aPos)) {
+        return '';
+    }
 
     return substr($email, $aPos + 1);
 }

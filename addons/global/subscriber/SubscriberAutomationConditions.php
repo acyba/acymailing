@@ -2,6 +2,7 @@
 
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Classes\FieldClass;
+use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Types\OperatorType;
 
 trait SubscriberAutomationConditions
@@ -84,7 +85,8 @@ trait SubscriberAutomationConditions
         $conditions['user']['acy_field']->option = ob_get_clean();
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 
@@ -107,12 +109,16 @@ trait SubscriberAutomationConditions
             $fieldClass = new FieldClass();
             $field = $fieldClass->getOneById($options['field']);
 
-            $type = 'phone' == $field->type ? 'phone' : '';
-
             $query->leftjoin['userfield'.$num] = ' #__acym_user_has_field as userfield'.$num.' ON userfield'.$num.'.user_id = user.id AND userfield'.$num.'.field_id = '.intval(
                     $options['field']
                 );
-            $query->where[] = $query->convertQuery('userfield'.$num, 'value', $options['operator'], $options['value'], $type);
+            $query->where[] = $query->convertQuery(
+                'userfield'.$num,
+                'value',
+                $options['operator'],
+                $options['value'],
+                'phone' === $field->type ? AutomationHelper::TYPE_PHONE : ''
+            );
         } else {
             if (in_array($options['field'], ['creation_date', 'confirmation_date', 'last_sent_date', 'last_open_date', 'last_click_date'])) {
                 $options['value'] = acym_replaceDate($options['value']);

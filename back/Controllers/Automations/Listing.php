@@ -7,13 +7,12 @@ use AcyMailing\Classes\AutomationClass;
 use AcyMailing\Classes\ConditionClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\StepClass;
-use AcyMailing\Classes\TagClass;
 use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Helpers\ToolbarHelper;
 
 trait Listing
 {
-    public function listing()
+    public function listing(): void
     {
         if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
@@ -21,7 +20,7 @@ trait Listing
 
     }
 
-    public function prepareToolbar(&$data)
+    public function prepareToolbar(array &$data): void
     {
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'automation_search', 'ACYM_SEARCH');
@@ -31,7 +30,7 @@ trait Listing
         $data['toolbar'] = $toolbarHelper;
     }
 
-    public function duplicate()
+    public function duplicate(): void
     {
         acym_checkToken();
 

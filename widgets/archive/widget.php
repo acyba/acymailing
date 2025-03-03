@@ -115,12 +115,12 @@ class acym_archive_widget extends WP_Widget
         if (!empty($searchs[$args['widget_id']])) $search = $searchs[$args['widget_id']];
 
         $viewParams = [
-            'listsSent' => isset($instance['lists']) ? $instance['lists'] : [],
-            'popup' => isset($instance['popup']) ? $instance['popup'] : '1',
-            'displayUserListOnly' => isset($instance['displayUserListOnly']) ? $instance['displayUserListOnly'] : '1',
+            'listsSent' => $instance['lists'] ?? [],
+            'popup' => $instance['popup'] ?? '1',
+            'displayUserListOnly' => $instance['displayUserListOnly'] ?? '1',
             'paramsCMS' => ['widget_id' => $args['widget_id'], 'suffix' => ''],
             'search' => $search,
-            'nbNewslettersPerPage' => isset($instance['nbNewslettersPerPage']) ? $instance['nbNewslettersPerPage'] : '',
+            'nbNewslettersPerPage' => $instance['nbNewslettersPerPage'] ?? '',
         ];
 
         $archiveController = new ArchiveController();

@@ -63,7 +63,7 @@
                             <?php } ?>
 							<div class="acym__unsubscribe__reason__section cell margin-bottom-1">
 								<div class="acym__unsubscribe__reason__label">
-									<p class="acym__unsubscribe__reason"><?php echo acym_translation('ACYM_WHY_ARE_YOU_UNSUBSCRIBING'); ?></p>
+									<p class="acym__unsubscribe__reason"><?php echo acym_translation('ACYM_SHARE_YOUR_REASONS'); ?></p>
 									<span class="acym__optional"><?php echo acym_translation('ACYM_OPTIONAL'); ?></span>
 								</div>
                                 <?php if (!empty($data['surveyAnswers'])) {

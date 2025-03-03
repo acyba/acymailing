@@ -49,7 +49,7 @@ const acym_editorWysidDynamic = {
                               + '">';
         insertedContent += '<td class="large-12 acym__wysid__column__element__td">' + previewTooltip;
         insertedContent += previewContent;
-        insertedContent += '<div class="plugin_loader" style="display: none;"><i class="fa acymicon-spin acymicon-circle-o-notch">&zwj;</i></div>';
+        insertedContent += '<div class="plugin_loader" style="display: none;"><i class="acymicon-spin acymicon-circle-o-notch">&zwj;</i></div>';
         insertedContent += '<i style="display: none;">&zwj;</i></td></tr>';
 
         $focusedElement.replaceWith(insertedContent);

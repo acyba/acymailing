@@ -10,6 +10,7 @@ class CronController extends AcymController
     public function __construct()
     {
         parent::__construct();
+
         acym_setNoTemplate();
         $this->setDefaultTask('cron');
 
@@ -18,15 +19,10 @@ class CronController extends AcymController
         ];
     }
 
-    public function isSecureCronUrl(): bool
+    public function cron(): void
     {
-        $cronKey = acym_getVar('string', 'cronKey', '');
+        acym_addMetadata('robots', 'noindex,nofollow');
 
-        return $cronKey === $this->config->get('cron_key', '');
-    }
-
-    public function cron()
-    {
         //We check if the cron security is enabled
         if (!empty($this->config->get('cron_security', 0)) && !$this->isSecureCronUrl()) {
             die(acym_translation('ACYM_SECURITY_KEY_CRON_MISSING'));
@@ -39,7 +35,9 @@ class CronController extends AcymController
         //__END__demo_
 
         // Starter versions shouldn't have access to the cron
-        if (!acym_level(ACYM_ESSENTIAL)) exit;
+        if (!acym_level(ACYM_ESSENTIAL)) {
+            exit;
+        }
 
         acym_header('Content-type:text/html; charset=utf-8');
         //We block the cron if there is no domain specified... it can happen if you created your own cron with a wrong command.
@@ -67,5 +65,12 @@ class CronController extends AcymController
         echo '</body></html>';
 
         exit;
+    }
+
+    private function isSecureCronUrl(): bool
+    {
+        $cronKey = acym_getVar('string', 'cronKey', '');
+
+        return $cronKey === $this->config->get('cron_key');
     }
 }

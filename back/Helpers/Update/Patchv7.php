@@ -6,6 +6,7 @@ use AcyMailing\Classes\ActionClass;
 use AcyMailing\Classes\AutomationClass;
 use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\ConditionClass;
+use AcyMailing\Classes\ConfigurationClass;
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\FormClass;
 use AcyMailing\Classes\MailClass;
@@ -16,7 +17,7 @@ use AcyMailing\Controllers\ConfigurationController;
 
 trait Patchv7
 {
-    private function updateFor700($config)
+    private function updateFor700(ConfigurationClass $config): void
     {
         if ($this->isPreviousVersionAtLeast('7.0.0')) {
             return;
@@ -56,7 +57,7 @@ trait Patchv7
         $segmentClass->updateSegments();
     }
 
-    private function updateFor710()
+    private function updateFor710(): void
     {
         if ($this->isPreviousVersionAtLeast('7.1.0')) {
             return;
@@ -76,7 +77,7 @@ trait Patchv7
         $fieldClass->insertLanguageField();
     }
 
-    private function updateFor720($config)
+    private function updateFor720(ConfigurationClass $config): void
     {
         if ($this->isPreviousVersionAtLeast('7.2.0')) {
             return;
@@ -93,7 +94,7 @@ trait Patchv7
         $this->updateQuery('ALTER TABLE #__acym_mail ADD `translation` TEXT NULL');
     }
 
-    private function updateFor721()
+    private function updateFor721(): void
     {
         if ($this->isPreviousVersionAtLeast('7.2.1')) {
             return;
@@ -102,7 +103,7 @@ trait Patchv7
         $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `translation` `translation` TEXT NULL');
     }
 
-    private function updateFor740($config)
+    private function updateFor740(ConfigurationClass $config): void
     {
         if ($this->isPreviousVersionAtLeast('7.4.0')) {
             return;
@@ -187,7 +188,7 @@ trait Patchv7
         $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `reply_to_email` `reply_to_email` VARCHAR(100) NULL');
     }
 
-    private function updateFor750($config)
+    private function updateFor750(ConfigurationClass $config): void
     {
         if ($this->isPreviousVersionAtLeast('7.5.0')) {
             return;
@@ -217,7 +218,7 @@ trait Patchv7
         $mailStatsClass->migrateTrackingSale();
     }
 
-    private function updateFor755()
+    private function updateFor755(): void
     {
         if ($this->isPreviousVersionAtLeast('7.5.5')) {
             return;
@@ -247,7 +248,7 @@ trait Patchv7
         }
     }
 
-    private function updateFor759()
+    private function updateFor759(): void
     {
         if ($this->isPreviousVersionAtLeast('7.5.9')) {
             return;
@@ -270,7 +271,7 @@ trait Patchv7
         }
     }
 
-    private function updateFor7510()
+    private function updateFor7510(): void
     {
         if ($this->isPreviousVersionAtLeast('7.5.10') || ACYM_CMS !== 'joomla') {
             return;
@@ -293,7 +294,7 @@ trait Patchv7
         }
     }
 
-    private function updateFor760()
+    private function updateFor760(): void
     {
         if ($this->isPreviousVersionAtLeast('7.6.0')) {
             return;
@@ -304,7 +305,7 @@ trait Patchv7
         $this->updateQuery('ALTER TABLE #__acym_user_has_list ADD `unsubscribe_reason` TEXT NULL');
     }
 
-    private function updateFor761()
+    private function updateFor761(): void
     {
         if ($this->isPreviousVersionAtLeast('7.6.1')) {
             return;
@@ -357,7 +358,7 @@ trait Patchv7
         $this->updateQuery('ALTER TABLE #__acym_user CHANGE `automation` `automation` VARCHAR(50) NOT NULL DEFAULT ""');
     }
 
-    private function updateFor762()
+    private function updateFor762(): void
     {
         if ($this->isPreviousVersionAtLeast('7.6.2')) {
             return;
@@ -368,7 +369,7 @@ trait Patchv7
         $this->updateQuery('ALTER TABLE `#__acym_user` CHANGE `confirmation_ip` `confirmation_ip` VARCHAR(50)');
     }
 
-    private function updateFor776()
+    private function updateFor776(): void
     {
         if ($this->isPreviousVersionAtLeast('7.7.6')) {
             return;
@@ -377,7 +378,7 @@ trait Patchv7
         $this->updateQuery('ALTER TABLE `#__acym_list` ADD `display_name` VARCHAR(255) NULL');
     }
 
-    private function updateFor781()
+    private function updateFor781(): void
     {
         if ($this->isPreviousVersionAtLeast('7.8.1')) {
             return;
@@ -403,7 +404,7 @@ trait Patchv7
         );
     }
 
-    private function updateFor792()
+    private function updateFor792(): void
     {
         if ($this->isPreviousVersionAtLeast('7.9.2')) {
             return;
@@ -418,7 +419,7 @@ trait Patchv7
         }
     }
 
-    private function updateFor793()
+    private function updateFor793(): void
     {
         if ($this->isPreviousVersionAtLeast('7.9.3')) {
             return;
@@ -438,7 +439,7 @@ trait Patchv7
         }
     }
 
-    private function updateFor794()
+    private function updateFor794(): void
     {
         if ($this->isPreviousVersionAtLeast('7.9.4')) {
             return;
@@ -447,7 +448,7 @@ trait Patchv7
         $this->updateQuery('ALTER TABLE `#__acym_custom_zone` ADD `image` VARCHAR(255) NULL');
     }
 
-    private function updateFor796()
+    private function updateFor796(): void
     {
         if ($this->isPreviousVersionAtLeast('7.9.6') || !file_exists(ACYM_ADDONS_FOLDER_PATH.'couryeah')) {
             return;
@@ -457,7 +458,7 @@ trait Patchv7
         $this->updateQuery('UPDATE #__acym_configuration SET `name` = "acymailer_domains" WHERE `name` = "couryeah_domains"');
     }
 
-    private function replaceHikaReminder($matches): string
+    private function replaceHikaReminder(array $matches): string
     {
         $val = (int)$matches[1] * 86400;
 

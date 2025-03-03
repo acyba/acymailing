@@ -9,7 +9,7 @@ use AcyMailing\Helpers\WorkflowHelper;
 
 trait Edition
 {
-    public function editScenario()
+    public function editScenario(): void
     {
         acym_setVar('layout', 'edit_scenario');
         acym_setVar('step', 'editScenario');
@@ -37,7 +37,7 @@ trait Edition
         parent::display($data);
     }
 
-    private function prepareTemplateModal(&$data)
+    private function prepareTemplateModal(array &$data): void
     {
         $data['defaultTemplates'] = [
             [
@@ -63,7 +63,7 @@ trait Edition
         $data['modalTemplate'] = ob_get_clean();
     }
 
-    private function prepareReturnFromMailCreation(&$data)
+    private function prepareReturnFromMailCreation(array &$data): void
     {
         $mailId = acym_getVar('int', 'mailId', 0);
         $stepId = acym_getVar('string', 'stepId', '');
@@ -77,7 +77,7 @@ trait Edition
         $this->changeMailIdInFlowByStepId($data['flow'], $stepId, $mailId);
     }
 
-    private function changeMailIdInFlowByStepId(&$node, $stepId, $mailId)
+    private function changeMailIdInFlowByStepId(array &$node, string $stepId, int $mailId): void
     {
         if (!empty($node['slug']) && $node['slug'] === $stepId) {
             $node['params']['option'] = [
@@ -94,12 +94,12 @@ trait Edition
         }
     }
 
-    private function prepareSendEmailAction(&$data)
+    private function prepareSendEmailAction(array &$data): void
     {
         $this->searchForSendEmailAction($data['flow']);
     }
 
-    private function searchForSendEmailAction(&$node)
+    private function searchForSendEmailAction(array &$node): void
     {
         if (!empty($node['params']['action']) && $node['params']['action'] === 'acy_send_email') {
             $mailId = !empty($node['params']['option']['acym_action[actions][__and__][acy_send_email][mail_id]'])
@@ -121,7 +121,7 @@ trait Edition
         }
     }
 
-    private function prepareScenario(&$data)
+    private function prepareScenario(array &$data): void
     {
         $scenarioId = acym_getVar('int', 'scenarioId', 0);
 
@@ -136,7 +136,7 @@ trait Edition
         $data['scenario'] = $scenario;
     }
 
-    private function prepareFlow(&$data)
+    private function prepareFlow(array &$data): void
     {
         if (empty($data['scenario']->id)) {
             return;
@@ -178,7 +178,7 @@ trait Edition
         $data['flow'] = $flow;
     }
 
-    private function prepareTriggers(&$data)
+    private function prepareTriggers(array &$data): void
     {
         $defaultValues = [];
         $triggers = ['classic' => [], 'user' => []];
@@ -194,7 +194,7 @@ trait Edition
         $data['triggers'] = $triggersFormatted;
     }
 
-    private function prepareConditions(&$data)
+    private function prepareConditions(array &$data): void
     {
         $conditions = ['user' => [], 'classic' => []];
         acym_trigger('onAcymDeclareConditionsScenario', [&$conditions]);
@@ -209,7 +209,7 @@ trait Edition
         $data['conditions'] = $conditionsFormatted;
     }
 
-    private function prepareActions(&$data)
+    private function prepareActions(array &$data): void
     {
         $actions = [];
         acym_trigger('onAcymDeclareActionsScenario', [&$actions]);
@@ -248,14 +248,13 @@ trait Edition
         return $scenarioClass->save($scenario);
     }
 
-    public function saveExit()
+    public function saveExit(): void
     {
         $this->saveInner();
-
         $this->listing();
     }
 
-    public function save()
+    public function save(): void
     {
         $scenarioId = $this->saveInner();
 
@@ -264,7 +263,7 @@ trait Edition
         $this->performances();
     }
 
-    public function createMail()
+    public function createMail(): void
     {
         $options = acym_getVar('array', 'send_mail', []);
 
@@ -300,8 +299,6 @@ trait Edition
     public function prepareStepIds(array &$data): void
     {
         $scenarioStepClass = new ScenarioStepClass();
-
-        $allScenarioStepIds = $scenarioStepClass->getAllStepIds();
-        $data['allScenarioStepIds'] = $allScenarioStepIds ?? [];
+        $data['allScenarioStepIds'] = $scenarioStepClass->getAllStepIds();
     }
 }

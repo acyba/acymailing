@@ -414,10 +414,10 @@ class FormClass extends AcymClass
             $settings['elementsPerPage'] = $pagination->getListLimit();
         }
 
-        $results['elements'] = acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']);
-        $results['total'] = acym_loadObject($queryCount);
-
-        return $results;
+        return [
+            'elements' => acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']),
+            'total' => acym_loadObject($queryCount),
+        ];
     }
 
     public function getTranslatedTypes(): array

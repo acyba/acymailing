@@ -61,7 +61,6 @@
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                 <?php
                 echo acym_roundChart(
-                    '',
                     $data['mail']->percentageSent,
                     'delivery',
                     '',
@@ -76,7 +75,6 @@
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                 <?php
                 echo acym_roundChart(
-                    '',
                     $data['mail']->percentageOpen,
                     'open',
                     '',
@@ -91,7 +89,6 @@
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                 <?php
                 echo acym_roundChart(
-                    '',
                     $data['mail']->percentageClick,
                     'click',
                     '',
@@ -106,7 +103,6 @@
 			<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                 <?php
                 echo acym_roundChart(
-                    '',
                     $data['mail']->percentageBounce,
                     'bounce',
                     '',
@@ -122,7 +118,6 @@
 				<div class="acym__stats__donut__one-chart cell large-2 medium-4 small-12">
                     <?php
                     echo acym_roundChart(
-                        '',
                         $data['mail']->percentageUnsub,
                         'unsubscribe',
                         '',
@@ -151,10 +146,10 @@
             <?php } else { ?>
 				<div class="cell large-3 hide-for-small-only hide-for-medium-only"></div>
 				<div class="acym__stats__pie__one-chart cell large-3 medium-6">
-                    <?php echo acym_pieChart('', $data['devices'], 'devices', acym_translation('ACYM_DEVICES')); ?>
+                    <?php echo acym_pieChart($data['devices'], 'devices', acym_translation('ACYM_DEVICES')); ?>
 				</div>
 				<div class="acym__stats__pie__one-chart cell large-3 medium-6">
-                    <?php echo acym_pieChart('', $data['openedWith'], 'opened_with', acym_translation('ACYM_OPENED_WITH')); ?>
+                    <?php echo acym_pieChart($data['openedWith'], 'opened_with', acym_translation('ACYM_OPENED_WITH')); ?>
 				</div>
 				<div class="cell large-3 hide-for-small-only hide-for-medium-only"></div>
             <?php } ?>
@@ -207,7 +202,7 @@
 					</div>
                 <?php } ?>
 				<div id="acym__stats__chart__line__canvas" class="cell">
-                    <?php echo acym_lineChart('', $data['mail']->month, $data['mail']->day, $data['mail']->hour); ?>
+                    <?php echo acym_lineChart($data['mail']->month, $data['mail']->day, $data['mail']->hour); ?>
 				</div>
             <?php } ?>
 		</div>

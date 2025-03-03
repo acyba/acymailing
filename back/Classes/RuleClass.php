@@ -6,7 +6,7 @@ use AcyMailing\Core\AcymClass;
 
 class RuleClass extends AcymClass
 {
-    const FINAL_RULE_ID = 17;
+    public const FINAL_RULE_ID = 17;
 
     public function __construct()
     {
@@ -16,9 +16,9 @@ class RuleClass extends AcymClass
         $this->pkey = 'id';
     }
 
-    public function getAll($key = null, $active = false)
+    public function getAll(?string $key = null): array
     {
-        $rules = acym_loadObjectList('SELECT * FROM `#__acym_rule` '.($active ? 'WHERE active = 1' : '').' ORDER BY `ordering` ASC');
+        $rules = acym_loadObjectList('SELECT * FROM `#__acym_rule` ORDER BY `ordering` ASC');
 
         foreach ($rules as $i => $rule) {
             $rules[$i] = $this->_prepareRule($rule);

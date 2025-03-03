@@ -107,7 +107,7 @@ trait ManagetextInsertion
 
     private function _replaceRandom(&$email)
     {
-        $randTag = $this->pluginHelper->extractTags($email, "rand");
+        $randTag = $this->pluginHelper->extractTags($email, 'rand');
         if (empty($randTag)) {
             return;
         }

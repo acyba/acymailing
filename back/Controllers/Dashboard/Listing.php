@@ -8,7 +8,7 @@ use AcyMailing\Controllers\StatsController;
 
 trait Listing
 {
-    public function listing()
+    public function listing(): void
     {
         acym_setVar('layout', 'listing');
 

@@ -4,7 +4,7 @@ namespace AcyMailing\Controllers\Configuration;
 
 trait Queue
 {
-    public function deletereport()
+    public function deletereport(): void
     {
         $path = trim(html_entity_decode($this->config->get('cron_savepath')));
         if (!preg_match('#^[a-z0-9/_\-{}]*\.log$#i', $path)) {
@@ -27,10 +27,10 @@ trait Queue
             acym_enqueueMessage(acym_translation('ACYM_EXIST_LOG'), 'info');
         }
 
-        return $this->listing();
+        $this->listing();
     }
 
-    public function seereport()
+    public function seereport(): void
     {
         acym_noCache();
 

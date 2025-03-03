@@ -38,13 +38,10 @@ class UserClass extends AcymClass
 
     /**
      * Get users depending on filters (search, status, pagination)
-     *
-     * @param $settings
-     *
-     * @return mixed
      */
     public function getMatchingElements(array $settings = []): array
     {
+        $results = [];
         // Initialize the queries
         $columns = '`user`.*';
         if (!empty($settings['columns'])) {
@@ -55,7 +52,7 @@ class UserClass extends AcymClass
         }
 
         $query = $columns.' FROM #__acym_user AS `user`';
-        $queryCount = 'SELECT COUNT(DISTINCT user.id) FROM #__acym_user AS user';
+        $queryCount = 'SELECT COUNT(DISTINCT user.id) AS total FROM #__acym_user AS user';
         $queryStatus = 'SELECT COUNT(DISTINCT user.id) AS number, user.confirmed + user.active*2 AS score FROM #__acym_user AS user';
         $filters = [];
 
@@ -93,7 +90,7 @@ class UserClass extends AcymClass
         acym_query('SET SQL_BIG_SELECTS=1');
         // The beginning of $query can be modified in handleSearchFilter, don't move the SELECT up
         $results['elements'] = acym_loadObjectList('SELECT DISTINCT '.$query, '', $settings['offset'], $settings['elementsPerPage']);
-        $results['total'] = acym_loadResult($queryCount);
+        $results['total'] = acym_loadObject($queryCount);
 
         // Get CMS username separately if needed
         if (!empty($results['elements']) && !empty($settings['cms_username'])) {
@@ -1198,7 +1195,7 @@ class UserClass extends AcymClass
         }
 
         $mailerHelper = new MailerHelper();
-        $mailerHelper->report = $this->config->get('confirm_message', 0);
+        $mailerHelper->report = (bool)$this->config->get('confirm_message', 0);
 
         //TODO $mailerHelper->addParam('user:subscription', implode('<br/>', $subscription));
         $mailClass = new MailClass();
@@ -1253,12 +1250,13 @@ class UserClass extends AcymClass
         $listClass->sendWelcome($userId, $listIDs);
     }
 
-    public function getOneByIdWithCustomFields($id)
+    public function getOneByIdWithCustomFields($id): array
     {
         $user = $this->getOneById($id);
         if (empty($user)) {
             return [];
         }
+
         $user = get_object_vars($user);
 
         $fieldsValue = acym_loadObjectList(
@@ -1591,15 +1589,15 @@ class UserClass extends AcymClass
         $notifyUsers = explode(',', $this->config->get($notification));
         if (acym_isAdmin() || empty($notifyUsers)) return;
 
-        $mailer = new MailerHelper();
-        $mailer->report = false;
-        $mailer->autoAddUser = true;
+        $mailerHelper = new MailerHelper();
+        $mailerHelper->report = false;
+        $mailerHelper->autoAddUser = true;
 
         $user = $this->getOneById($userId);
         $userField = $this->getAllUserFields($user);
         if (!empty($userField)) {
             foreach ($userField as $map => $value) {
-                $mailer->addParam('user:'.$map, $value);
+                $mailerHelper->addParam('user:'.$map, $value);
             }
         }
 
@@ -1615,11 +1613,11 @@ class UserClass extends AcymClass
             }
             $subscription[] = $currentList;
         }
-        $mailer->addParam('user:subscription', implode('<br/>', $subscription));
+        $mailerHelper->addParam('user:subscription', implode('<br/>', $subscription));
 
         if (!empty($params)) {
             foreach ($params as $name => $value) {
-                $mailer->addParam($name, $value);
+                $mailerHelper->addParam($name, $value);
             }
         }
 
@@ -1631,7 +1629,7 @@ class UserClass extends AcymClass
 
             $notificationEmail = $mailClass->getOneByName($notification);
             if (!empty($notificationEmail)) {
-                $mailer->sendOne($notificationEmail->id, $oneUser);
+                $mailerHelper->sendOne($notificationEmail->id, $oneUser);
             }
         }
     }

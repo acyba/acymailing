@@ -39,7 +39,7 @@ abstract class AcymController extends AcymObject
         $this->breadcrumb['AcyMailing'] = acym_completeLink('dashboard');
     }
 
-    private function initSession()
+    private function initSession(): void
     {
         acym_session();
         if (empty($_SESSION[$this->sessionName])) {
@@ -85,7 +85,7 @@ abstract class AcymController extends AcymObject
         $this->call($taskToCall);
     }
 
-    public function call($task)
+    public function call(string $task): void
     {
         // If not authorized, display message and redirect to dashboard
         if (!in_array($task, ['countResultsTotal', 'countGlobalBySegmentId', 'countResults']) && strpos($task, 'Ajax') === false && !acym_isAllowed($this->name, $task)) {
@@ -203,7 +203,7 @@ abstract class AcymController extends AcymObject
         return $this->name;
     }
 
-    public function display($data = [])
+    public function display(array $data = []): void
     {
         if (acym_isAdmin()) {
             if (!acym_isNoTemplate()) {
@@ -234,7 +234,7 @@ abstract class AcymController extends AcymObject
         $this->display();
     }
 
-    public function edit()
+    public function edit(): void
     {
         $nextstep = acym_getVar('string', 'nextstep', '');
         $step = acym_getVar('string', 'step', '');
@@ -249,7 +249,7 @@ abstract class AcymController extends AcymObject
         } else {
             acym_setVar('step', $nextstep);
 
-            return $this->$nextstep();
+            $this->$nextstep();
         }
     }
 
@@ -265,7 +265,7 @@ abstract class AcymController extends AcymObject
         acym_setVar('cid', []);
         acym_setVar('layout', 'form');
 
-        return $this->display();
+        $this->display();
     }
 
     public function save()
@@ -283,7 +283,7 @@ abstract class AcymController extends AcymObject
 
         if (method_exists($this, 'store')) $this->store();
 
-        return $this->listing();
+        $this->listing();
     }
 
     public function delete()
@@ -296,12 +296,14 @@ abstract class AcymController extends AcymObject
 
         if (!empty($ids) && !empty($this->currentClass)) {
             $this->currentClass->delete($ids);
-            if ($allChecked == 'on') {
+            if ($allChecked === 'on') {
                 $this->setVarFiltersListing(end($currentPage).'_pagination_page', $pageNumber - 1);
             }
         }
 
-        if (!acym_getVar('bool', 'no_listing', false)) $this->listing();
+        if (!acym_getVar('bool', 'no_listing', false)) {
+            $this->listing();
+        }
     }
 
     public function setActive()
@@ -348,6 +350,8 @@ abstract class AcymController extends AcymObject
 
             $matchingElement = $classElement->getMatchingElements($requestData);
         }
+
+        $matchingElement['total']->total = intval($matchingElement['total']->total);
 
         return $matchingElement;
     }

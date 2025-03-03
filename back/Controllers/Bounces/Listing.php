@@ -12,12 +12,12 @@ use AcyMailing\Helpers\WorkflowHelper;
 
 trait Listing
 {
-    public function listing()
+    public function listing(): void
     {
         $this->storeRedirectListing(true);
     }
 
-    public function prepareToolbar(&$data, $element = 'bounces')
+    public function prepareToolbar(array &$data, string $element = 'bounces'): void
     {
         $toolbarHelper = new ToolbarHelper();
         if ($element === 'bounces') {
@@ -64,7 +64,7 @@ trait Listing
         $data['toolbar'] = $toolbarHelper;
     }
 
-    public function bounces()
+    public function bounces(): void
     {
         $data = [];
 
@@ -81,7 +81,7 @@ trait Listing
     }
 
     // When one of the raw of the listing is moved we set the ordering
-    public function ajaxSetOrdering()
+    public function ajaxSetOrdering(): void
     {
         $order = json_decode(acym_getVar('string', 'order'));
         $i = 1;
@@ -96,7 +96,7 @@ trait Listing
     }
 
     // Click on the button Run Bounce Handling
-    public function test()
+    public function test(): void
     {
         $ruleClass = new RuleClass();
 
@@ -120,7 +120,7 @@ trait Listing
                 if (!empty($errors)) {
                     acym_enqueueMessage($errors, 'error');
                     $errorString = implode(' ', $errors);
-                    $port = $this->config->get('bounce_port', '');
+                    $port = $this->config->get('bounce_port');
                     if (preg_match('#certificate#i', $errorString) && !$this->config->get('bounce_certif', false)) {
                         //Self signed certificate issue
                         acym_enqueueMessage(acym_translationSprintf('ACYM_YOU_MAY_TURN_ON_OPTION', '<i>'.acym_translation('ACYM_SELF_SIGNED_CERTIFICATE').'</i>'), 'warning');
@@ -136,7 +136,7 @@ trait Listing
     }
 
     // Process bounce handling after clicking on the button Run Bounce Handling
-    public function process()
+    public function process(): void
     {
         acym_increasePerf();
 
@@ -192,7 +192,7 @@ trait Listing
     }
 
     // Click on the button Reset to default rules
-    public function reinstall()
+    public function reinstall(): void
     {
         $ruleClass = new RuleClass();
         $ruleClass->cleanTable();
@@ -200,16 +200,16 @@ trait Listing
         $updateHelper = new UpdateHelper();
         $updateHelper->installBounceRules();
 
-        return $this->listing();
+        $this->listing();
     }
 
     // Click on the button configuration
-    public function config()
+    public function config(): void
     {
         acym_redirect(acym_completeLink('configuration', false, true));
     }
 
-    public function delete()
+    public function delete(): void
     {
         $rulesSelected = acym_getVar('array', 'elements_checked');
 
@@ -228,7 +228,7 @@ trait Listing
         $this->listing();
     }
 
-    public function setInactive()
+    public function setInactive(): void
     {
         $rulesSelected = acym_getVar('array', 'elements_checked');
         $ruleClass = new RuleClass();
@@ -237,7 +237,7 @@ trait Listing
         $this->listing();
     }
 
-    public function setActive()
+    public function setActive(): void
     {
         $rulesSelected = acym_getVar('array', 'elements_checked');
         $ruleClass = new RuleClass();

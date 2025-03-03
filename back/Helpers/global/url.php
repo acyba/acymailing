@@ -1,6 +1,6 @@
 <?php
 
-function acym_absoluteURL($text)
+function acym_absoluteURL(string $text): string
 {
     static $mainurl = '';
     if (empty($mainurl)) {
@@ -134,7 +134,7 @@ function acym_isLocalWebsite(): bool
     return strpos(ACYM_LIVE, 'localhost') !== false || strpos(ACYM_LIVE, '127.0.0.1') !== false;
 }
 
-function acym_internalUrlToPath($url)
+function acym_internalUrlToPath(string $url): string
 {
     $base = str_replace(['http://www.', 'https://www.', 'http://', 'https://'], '', ACYM_LIVE);
     $replacements = ['https://www.'.$base, 'http://www.'.$base, 'https://'.$base, 'http://'.$base];
@@ -142,8 +142,8 @@ function acym_internalUrlToPath($url)
         if (strpos($url, $oneReplacement) === false) {
             continue;
         }
-        $url = str_replace([$oneReplacement, '/'], [ACYM_ROOT, DS], urldecode($url));
-        break;
+
+        return str_replace([$oneReplacement, '/'], [ACYM_ROOT, DS], urldecode($url));
     }
 
     return $url;

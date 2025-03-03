@@ -45,8 +45,6 @@ abstract class AcymView extends AcymObject
         $name = $this->getName();
         $view = $this->getLayout();
 
-        acym_prepareFrontViewDisplay($name, $view);
-
         if (method_exists($this, $view)) $this->$view();
 
         $viewFolder = acym_isAdmin() ? ACYM_VIEW : ACYM_VIEW_FRONT;

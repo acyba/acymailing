@@ -7,7 +7,7 @@ use AcyMailing\Classes\MailClass;
 
 trait ListEmails
 {
-    public function welcome()
+    public function welcome(): void
     {
         acym_setVar('layout', 'welcome');
         $data = [
@@ -25,7 +25,7 @@ trait ListEmails
         parent::display($data);
     }
 
-    public function unsubscribe()
+    public function unsubscribe(): void
     {
         acym_setVar('layout', 'unsubscribe');
         $data = [
@@ -43,7 +43,7 @@ trait ListEmails
         parent::display($data);
     }
 
-    private function prepareWelcomeUnsubListing(&$data)
+    private function prepareWelcomeUnsubListing(array &$data): void
     {
         $this->getAllParamsRequest($data);
         $this->prepareEmailsListing($data, $data['email_type'], 'Mail');

@@ -462,7 +462,7 @@ class plgSystemAcymtriggers extends CMSPlugin
             return;
         }
 
-        $this->includeRegacyLists($components[$option], $regacyHelper->label, $regacyHelper->lists);
+        $this->includeRegacyLists($components[$option], $regacyHelper->label, $regacyHelper->listsHtml);
     }
 
     private function getVar($type, $name)
@@ -490,7 +490,7 @@ class plgSystemAcymtriggers extends CMSPlugin
         return $result;
     }
 
-    private function includeRegacyLists($options, $label, $lists)
+    private function includeRegacyLists($options, string $label, string $lists): void
     {
         $config = acym_config();
         if (ACYM_J40) {

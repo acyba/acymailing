@@ -7,7 +7,7 @@ use AcyMailing\Helpers\ToolbarHelper;
 
 trait Listing
 {
-    public function listing()
+    public function listing(): void
     {
         $data = [];
 
@@ -18,7 +18,7 @@ trait Listing
         parent::display($data);
     }
 
-    protected function prepareToolbar(&$data)
+    protected function prepareToolbar(array &$data): void
     {
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addButton(acym_translation('ACYM_CREATE'), ['data-task' => 'edit'], 'add', true);
@@ -26,7 +26,7 @@ trait Listing
         $data['toolbar'] = $toolbarHelper;
     }
 
-    public function ajaxSetOrdering()
+    public function ajaxSetOrdering(): void
     {
         $order = json_decode(acym_getVar('string', 'order'));
         $i = 1;
@@ -40,7 +40,7 @@ trait Listing
         acym_sendAjaxResponse('', [], !$error);
     }
 
-    public function delete()
+    public function delete(): void
     {
         $fieldClass = new FieldClass();
         $ids = acym_getVar('cmd', 'elements_checked');

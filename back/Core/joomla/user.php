@@ -54,7 +54,7 @@ function acym_getGroups()
     );
 }
 
-function acym_punycode($email, $method = 'emailToPunycode')
+function acym_punycode(string $email, string $method = 'emailToPunycode')
 {
     if (empty($email) || acym_isPunycode($email) || version_compare(ACYM_CMSV, '3.1.2', '<')) {
         return $email;
@@ -83,17 +83,11 @@ function acym_currentUserName($userid = null)
     return $acymy->name;
 }
 
-function acym_currentUserEmail($userid = null)
+function acym_currentUserEmail(int $userid = 0): string
 {
-    if (!empty($userid)) {
-        $special = Factory::getUser($userid);
+    $user = empty($userid) ? Factory::getUser() : Factory::getUser($userid);
 
-        return $special->email;
-    }
-
-    $acymy = Factory::getUser();
-
-    return $acymy->email;
+    return empty($user->email) ? '' : $user->email;
 }
 
 function acym_replaceGroupTags($uploadFolder)

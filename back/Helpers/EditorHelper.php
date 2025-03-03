@@ -11,36 +11,34 @@ use Joomla\CMS\Factory;
 
 class EditorHelper extends AcymObject
 {
-    var $width = '95%';
-    var $height = '600';
+    private string $width = '95%';
+    private string $height = '600';
 
-    var $cols = 100;
-    var $rows = 30;
+    private int $cols = 100;
+    private int $rows = 30;
 
-    var $myEditor;
-    var $editor = '';
-    var $name = 'editor_content';
-    var $settings = 'editor_settings';
-    var $stylesheet = 'editor_stylesheet';
-    var $thumbnail = 'editor_thumbnail';
-    var $content = '';
-    var $editorContent = '';
-    var $editorConfig = [];
-    var $mailId = 0;
-    var $automation = false;
-    var $walkThrough = false;
-    var $emailsTest;
+    private $myEditor;
+    public string $editor = '';
+
+    private string $editorContent = '';
+    private array $editorConfig = [];
+    private array $emailsTest;
+    private string $name = 'editor_content';
+
+    public string $settings = 'editor_settings';
+    public string $stylesheet = 'editor_stylesheet';
+    public string $content = '';
+    public int $mailId = 0;
+    public bool $automation = false;
+    public bool $walkThrough = false;
 
     // Used in the d&d
-    var $data = [];
-    var $defaultTemplate = '';
+    public array $data = [];
+    private string $defaultTemplate = '';
 
-    public $autoSave;
+    public string $autoSave;
 
-    /**
-     * Function to display the editor
-     */
-    public function display()
+    public function display(): void
     {
         if ($this->isDragAndDrop()) {
             ob_start();
@@ -96,12 +94,12 @@ class EditorHelper extends AcymObject
         }
     }
 
-    public function isDragAndDrop()
+    public function isDragAndDrop(): bool
     {
-        return strpos($this->content, 'acym__wysid__template') !== false || $this->editor == 'acyEditor';
+        return strpos($this->content, 'acym__wysid__template') !== false || $this->editor === 'acyEditor';
     }
 
-    private function displayJoomla()
+    private function displayJoomla(): void
     {
         $dtextType = new DtextType();
         $dtextType->displayButton(
@@ -197,7 +195,7 @@ class EditorHelper extends AcymObject
         echo $this->editorContent;
     }
 
-    private function displayWordPress()
+    private function displayWordPress(): void
     {
         add_filter('mce_external_plugins', [$this, 'addPlugins']);
         add_filter('mce_buttons', [$this, 'addButtons']);
@@ -228,7 +226,7 @@ class EditorHelper extends AcymObject
         wp_editor($this->content, $this->name, $options);
     }
 
-    public function addDtextButton($editor_id = 'content')
+    public function addDtextButton(string $editor_id = 'content'): void
     {
         static $instance = 0;
         ++$instance;
@@ -308,29 +306,17 @@ class EditorHelper extends AcymObject
         return empty($stylesheet) ? '' : $stylesheet;
     }
 
-    private function isResetCampaign()
+    private function isResetCampaign(): bool
     {
         $fromId = acym_getVar('int', 'from', 0);
 
-        return -1 == $fromId;
-    }
-
-    private function getWYSIDThumbnail()
-    {
-        if ($this->thumbnail != 'editor_thumbnail') return $this->thumbnail;
-
-        $id = acym_getVar('int', 'id');
-        if (empty($id)) return null;
-
-        $thumbnail = acym_loadResult('SELECT thumbnail FROM #__acym_mail WHERE id = '.intval($id));
-
-        return empty($thumbnail) ? '' : $thumbnail;
+        return -1 === $fromId;
     }
 
     /**
      * Methods used to add buttons to the WordPress editor
      */
-    private function addButtonAtPosition(&$buttons, $newButton, $after)
+    private function addButtonAtPosition(array &$buttons, string $newButton, string $after): void
     {
         $position = array_search($after, $buttons);
 
@@ -341,14 +327,14 @@ class EditorHelper extends AcymObject
         }
     }
 
-    public function addPlugins($plugins)
+    public function addPlugins(array $plugins): array
     {
         $plugins['table'] = ACYM_JS.'tinymce/table.min.js';
 
         return $plugins;
     }
 
-    public function addButtons($buttons)
+    public function addButtons(array $buttons): array
     {
         $position = array_search('wp_more', $buttons);
         if ($position !== false) {
@@ -366,7 +352,7 @@ class EditorHelper extends AcymObject
         return $buttons;
     }
 
-    public function addButtonsToolbar($buttons)
+    public function addButtonsToolbar(array $buttons): array
     {
         $position = array_search('strikethrough', $buttons);
         if ($position !== false) {
@@ -377,14 +363,19 @@ class EditorHelper extends AcymObject
         return $buttons;
     }
 
-    public function getSettingsStyle($settings)
+    public function getSettingsStyle($settings): string
     {
-        if (empty($settings)) return '';
+        if (empty($settings)) {
+            return '';
+        }
+
         if (is_string($settings) && substr($settings, 0, 2) === '{"') {
             $settings = json_decode($settings, true);
         }
 
-        if (!is_array($settings)) return '';
+        if (!is_array($settings)) {
+            return '';
+        }
 
         $styles = '';
         foreach ($settings as $element => $rules) {
@@ -405,7 +396,7 @@ class EditorHelper extends AcymObject
         return $styles;
     }
 
-    private function getDefaultColors()
+    private function getDefaultColors(): string
     {
         $mailSettings = new \stdClass();
         if (isset($this->data['mail']->mail_settings) && !empty($this->data['mail']->mail_settings)) {

@@ -1,105 +1,135 @@
 {
-    "max_version": "10.0.0",
+    "max_version": "10.1.0",
     "splash_content": [
         {
-            "menu_title": "Top feature 🔥",
-            "title": "DISCOVER THE BEST FEATURE OF THIS VERSION",
-            "articles": [
-                {
-                    "title": "🔥 New scenario feature",
-                    "desc": "(Enterprise only) Create scenarios to set up a series of actions to be executed when a subscriber performs a specific action. You could for example automatically resend a confirmation email if the user is not confirmed after a certain time."
-                }
-            ]
-        },
-        {
-            "menu_title": "Miscellaneous 🎁",
+            "menu_title": "General",
+            "menu_icon": "acymicon-star",
             "title": "SEE THE GENERAL CHANGES",
             "articles": [
                 {
-                    "title": "🎁 New icons",
-                    "desc": "All icons have been updated to a new design, more modern and consistent with the AcyMailing brand."
+                    "title": "Campaigns sorting",
+                    "desc": "It is now possible to sort campaigns by their visibility status."
                 },
                 {
-                    "title": "🎁 Improved code structure",
-                    "desc": "We updated the code structure to comply with PSR-4 standards. This change improves compatibility and overall maintainability."
+                    "title": "Segments duplication",
+                    "desc": "A new duplication option has been added on the segments listing page."
                 },
                 {
-                    "title": "🎁 Sendgrid new API",
-                    "desc": "Our integration in AcyMailing now handles the new result sent by Sendgrid when an email is sent through their API."
+                    "title": "A/B campaigns testing",
+                    "desc": "(Enterprise) You can now send a test email for the version B of an A/B test campaign."
+                },
+                {
+                    "title": "Better custom fields detection",
+                    "desc": "When importing users by file, columns containing custom fields are now detected better."
+                },
+                {
+                    "title": "Creation date display",
+                    "desc": "The way the creation date is shown in the templates listing has been improved to avoid confusion with the name."
+                },
+                {
+                    "title": "Easier user search",
+                    "desc": "We added the possibility to sort the subscribers by their user account ID."
                 }
             ]
         },
         {
-            "menu_title": "Joomla 🧩",
+            "menu_title": "Joomla",
+            "menu_icon": "acymicon-joomla",
             "title": "WHAT CHANGED FOR JOOMLA",
             "articles": [
                 {
-                    "title": "🧩 Cloudflare captcha",
-                    "desc": "We added the compatibility with the Cloudflare captcha plugin to our captcha option in the configuration."
+                    "title": "FLEXIcontent articles",
+                    "desc": "The Read more link can now be inserted for FLEXIcontent articles."
                 },
                 {
-                    "title": "🧩 More HikaShop dynamic content",
-                    "desc": "It is now possible to add dynamic information through dynamic text/content about an order in a follow-up email based on HikaShop purchase."
+                    "title": "Joomla articles menu",
+                    "desc": "When inserting Joomla articles in an email, you can now specify the menu to use for this article's link."
                 },
                 {
-                    "title": "🧩 Fixed user creation from front-end",
-                    "desc": "If the option 'Allow non-logged in users' was disabled, it was impossible for admins to create users from the front-end user management menu."
+                    "title": "Article tracking URLs",
+                    "desc": "We fixed the tracking URLs in some cases for inserted articles."
                 },
                 {
-                    "title": "🧩 Outlook images",
-                    "desc": "We fixed the display of images on Outlook for Joomla 4 and 5 websites, when an inserted article contains an image from the Joomla media manager."
+                    "title": "Joomla 3 menu items",
+                    "desc": "The AcyMailing menu items can now be created on Joomla 3 websites."
                 },
                 {
-                    "title": "🧩 Articles SEF links",
-                    "desc": "When inserting Joomla articles, the menu ID option is now used when generating a SEF link."
+                    "title": "Better iCagenda integration",
+                    "desc": "We fixed an issue for iCagenda with the daylight saving time in some cases, and improved the translations for custom views."
                 },
                 {
-                    "title": "🧩 Docman integration fix",
-                    "desc": "We fixed the Docman insertion by category for automatic campaigns when the option to only insert new content is active."
+                    "title": "Unsubscribe all link",
+                    "desc": "We fixed the unsubscribe all link when the Joomla SEF option is active."
+                },
+                {
+                    "title": "Module creation",
+                    "desc": "The module creation has been fixed, all fields were not correctly displayed"
                 }
             ]
         },
         {
-            "menu_title": "WordPress 🧩",
+            "menu_title": "WordPress",
+            "menu_icon": "acymicon-wordpress",
             "title": "WHAT CHANGED FOR WORDPRESS",
             "articles": [
                 {
-                    "title": "🧩 New integration with Learndash",
-                    "desc": "A new plugin lets you filter AcyMailing users by Learndash groups and courses."
+                    "title": "Confirmation messages",
+                    "desc": "The confirmation messages have been improved when an email is sent to a user or when they click the confirmation link."
                 },
                 {
-                    "title": "🧩 Easier WooCommerce product insertion",
-                    "desc": "WooCommerce products can now be searched by SKU when inserting them in emails."
+                    "title": "System messages",
+                    "desc": "System messages could be shown on the front-end when overriding website emails. This has been disabled."
                 },
                 {
-                    "title": "🧩 More WooCommerce dynamic content",
-                    "desc": "It is now possible to add dynamic information through dynamic text/content about an order in a follow-up email based on WooCommerce purchase."
+                    "title": "List owner information",
+                    "desc": "The insertion of list owner information in the emails now works correctly."
+                },
+                {
+                    "title": "WooCommerce prices",
+                    "desc": "An issue has been fixed when displaying prices with discounts in WooCommerce dynamic content when sending campaigns."
                 }
             ]
         },
         {
-            "menu_title": "Bug fixes 🛠",
+            "menu_title": "Bug fixes",
+            "menu_icon": "acymicon-tools",
             "title": "THE FIXES INCLUDED IN THIS VERSION",
             "articles": [
                 {
-                    "title": "🛠 User confirmation status",
-                    "desc": "Specific parts like the filter by email confirmation status are not shown anymore on the users listing when the double opt-in is disabled."
+                    "title": "Birthday campaigns",
+                    "desc": "Birthday campaigns could still be sent to the receivers when the birthday field was deleted after activating the campaign."
                 },
                 {
-                    "title": "🛠 Automatic bounce handling",
-                    "desc": "The bounce handling could generate errors on some servers, preventing the automatic execution of the bounce handling process."
+                    "title": "Automatic sending",
+                    "desc": "The automatic sending process could send only a few emails on some servers, this has been fixed."
                 },
                 {
-                    "title": "🛠 Queue listing",
-                    "desc": "A warning has been fixed on the queue listing when only follow-up campaigns were queued"
+                    "title": "Automated tasks report",
+                    "desc": "The cron email report is no longer sent when no action was triggered."
                 },
                 {
-                    "title": "🛠 Website emails",
-                    "desc": "The option to send website emails using AcyMailing now correctly handles plain text emails."
+                    "title": "ElasticEmail integration",
+                    "desc": "The verification of ElasticEmail API key now works correctly."
                 },
                 {
-                    "title": "🛠 Editor social icons",
-                    "desc": "The image of the social icon is now refreshed immediately when uploading a new icon in the editor."
+                    "title": "Unsubscribe page",
+                    "desc": "The website main content could be shown above the unsubscribe page in some cases, it has been fixed now."
+                },
+                {
+                    "title": "Bounce handling",
+                    "desc": "We fixed an issue that could happen on bounce handling if the IMAP extension isn't active on the server."
+                },
+                {
+                    "title": "Multilingual lists",
+                    "desc": "Saving a list when the multilingual is active no longer changes the list name to the currently viewed language."
+                },
+                {
+                    "title": "BCC addresses",
+                    "desc": "You can now use addresses in BCC that aren't in the AcyMailing users yet."
+                },
+                {
+                    "title": "Add-ons compatibility",
+                    "desc": "We fixed an error message happening for users with old versions of some add-ons like the ones for Community Builder and Event Booking."
                 }
             ]
         }

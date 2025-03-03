@@ -7,20 +7,17 @@ use AcyMailing\Core\AcymObject;
 
 class PluginHelper extends AcymObject
 {
-    //Did we wrap the text?
-    public $wraped = false;
-    public $name = 'content';
-    public $mailerHelper;
-    public $wrappedText = '';
+    private MailerHelper $mailerHelper;
+    public string $name = 'content';
+    public string $wrappedText = '';
     public string $contextLanguage;
 
     /*
      * Convert an array of elements into a table with multiple columns based on the $parameter variable
      * $parameter->displaytype = table by default
      * $parameter->cols = 1 by default
-     *
      */
-    public function getFormattedResult($elements, $parameter)
+    public function getFormattedResult(array $elements, object $parameter): string
     {
         //We do not add an extra table or whatever when there is a single element...
         if (count($elements) < 2) {
@@ -116,15 +113,13 @@ class PluginHelper extends AcymObject
 
         $equalwidth = intval(100 / $cols).'%';
 
-        $string = str_replace(['{equalwidth}'], [$equalwidth], $string);
-
-        return $string;
+        return str_replace(['{equalwidth}'], [$equalwidth], $string);
     }
 
     /**
-     * This function will apply extra paramters such as part:first, ucfirst, strtolower to the $string
+     * This function will apply extra parameters such as part:first, ucfirst, strtolower to the $string
      */
-    public function formatString(&$replaceme, $mytag)
+    public function formatString(&$replaceme, object $mytag): void
     {
         if (!empty($mytag->part)) {
             $parts = explode(' ', $replaceme);
@@ -203,7 +198,7 @@ class PluginHelper extends AcymObject
         }
     }
 
-    public function replaceVideos(&$text)
+    public function replaceVideos(string &$text): void
     {
         //Youtube videos
         $text = preg_replace(
@@ -270,7 +265,7 @@ class PluginHelper extends AcymObject
     /**
      * Convert pictures base64 code into a real picture
      */
-    private function _convertbase64pictures(&$html)
+    private function convertbase64pictures(string &$html): void
     {
         if (!preg_match_all('#<img[^>]*src=("data:image/([^;]{1,5});base64[^"]*")([^>]*)>#Uis', $html, $resultspictures)) {
             return;
@@ -348,9 +343,9 @@ class PluginHelper extends AcymObject
     }
 
     //This function will remove or replace code we should not have in an html view.
-    public function cleanHtml(&$html)
+    public function cleanHtml(string &$html): void
     {
-        $this->_convertbase64pictures($html);
+        $this->convertbase64pictures($html);
 
         //add line-height: 0px; in the TR style when there is only images in the cell, not extra text (new issue with gmail)
         //handle a line-height automatically for <tr> <td> <img...></td></tr>
@@ -379,13 +374,13 @@ class PluginHelper extends AcymObject
             $html = $newbody;
         }
 
-        $body = preg_replace_callback('/src="([^"]* [^"]*)"/Ui', [$this, '_convertSpaces'], $html);
+        $body = preg_replace_callback('/src="([^"]* [^"]*)"/Ui', [$this, 'convertSpaces'], $html);
         if (!empty($body)) $html = $body;
 
         $html = acym_cmsCleanHtml($html);
     }
 
-    public function _convertSpaces($matches)
+    public function convertSpaces(array $matches): string
     {
         return "src='".str_replace(' ', '%20', $matches[1])."'";
     }
@@ -393,7 +388,7 @@ class PluginHelper extends AcymObject
     /*
      * Replace tags in all the email variables where it is possible, in text version or html version
      */
-    public function replaceTags(&$email, $tags, $html = false)
+    public function replaceTags(object &$email, array $tags, bool $html = false): void
     {
         if (empty($tags)) return;
 
@@ -425,7 +420,7 @@ class PluginHelper extends AcymObject
             $textreplace = [];
             foreach ($tags as $i => $replacement) {
                 if (isset($textreplace[$i])) continue;
-                $textreplace[$i] = $this->mailerHelper->textVersion($replacement, true);
+                $textreplace[$i] = $this->mailerHelper->textVersion($replacement);
             }
         } else {
             $textreplace = $tags;
@@ -440,7 +435,7 @@ class PluginHelper extends AcymObject
     public function replaceDText($text, $replacement)
     {
         if (is_array($text)) {
-            foreach ($text as $i => &$oneCell) {
+            foreach ($text as &$oneCell) {
                 if (empty($oneCell)) continue;
                 $oneCell = $this->replaceDText($oneCell, $replacement);
             }
@@ -477,11 +472,10 @@ class PluginHelper extends AcymObject
     }
 
     /**
-     * This function extract tags from the mail by checking the subject,body and altbody and returns an array of tag objects
+     * This function extracts tags from the mail by checking the subject,body and altbody and returns an array of tag objects
      * tagfamily is "vmproduct" for example to handle tags such as {vmproduct:23|file|price}
-     * Function added since Acy 4.3.0 so please make your check in the plugin!
      */
-    public function extractTags($email, $tagfamily)
+    public function extractTags(object $email, string $tagfamily): array
     {
         $results = [];
 
@@ -549,9 +543,9 @@ class PluginHelper extends AcymObject
     }
 
     /**
-     * Convert a tag 23|file:myfile|price into an object.
+     * Converts a tag 23|file:myfile|price into an object.
      */
-    public function extractTag($oneTag)
+    public function extractTag(string $oneTag): \stdClass
     {
         $oneTag = str_replace(['[time]+', '[time]-'], [urlencode('[time]+'), urlencode('[time]-')], $oneTag);
         $arguments = explode('|', strip_tags(urldecode($oneTag)));
@@ -580,13 +574,13 @@ class PluginHelper extends AcymObject
     /**
      * Wrap the text using the wrapValue
      */
-    public function wrapText($text, $tag)
+    public function wrapText(string $text, object $tag): string
     {
-        $this->wraped = false;
+        if (empty($tag->wrap)) {
+            return $text;
+        }
 
-        // check the wrap value
-        if (!empty($tag->wrap)) $tag->wrap = intval($tag->wrap);
-        if (empty($tag->wrap)) return $text;
+        $tag->wrap = intval($tag->wrap);
 
         $allowedTags = [
             'b',
@@ -625,8 +619,6 @@ class PluginHelper extends AcymObject
         if ($numCharStrip <= $tag->wrap) {
             return $newText;
         }
-
-        $this->wraped = true;
 
         // we will need it to close unclosed tags at the end
         $open = [];
@@ -706,15 +698,13 @@ class PluginHelper extends AcymObject
      * TOP_IMG : image on top, then title and description
      * COL_LEFT : image on left column, title and description on right column
      * COL_RIGHT : image on right column, title and description on left column
-     *
-     * @param object $format
-     *
-     * @return string
      */
-    public function getStandardDisplay($format)
+    public function getStandardDisplay(object $format): string
     {
         // By default, put float left on the picture
-        if (empty($format->tag->format)) $format->tag->format = 'TOP_LEFT';
+        if (empty($format->tag->format)) {
+            $format->tag->format = 'TOP_LEFT';
+        }
         if (!in_array($format->tag->format, ['TOP_LEFT', 'TOP_RIGHT', 'TITLE_IMG', 'TITLE_IMG_RIGHT', 'CENTER_IMG', 'TOP_IMG', 'COL_LEFT', 'COL_RIGHT'])) {
             $format->tag->format = 'TOP_LEFT';
         }
@@ -894,7 +884,7 @@ class PluginHelper extends AcymObject
     /**
      * Resizes or removes the pictures according to the parameters
      */
-    public function managePicts($tag, $result)
+    public function managePicts(object $tag, string $result): string
     {
         if (!isset($tag->pict)) {
             return $result;
@@ -1430,7 +1420,7 @@ class PluginHelper extends AcymObject
         }
     }
 
-    public function createDummyEmailObject(int $mailId, string $code, string $previewBody)
+    public function createDummyEmailObject(int $mailId, string $code, string $previewBody): object
     {
         if (!empty($mailId)) {
             $mailClass = new MailClass();

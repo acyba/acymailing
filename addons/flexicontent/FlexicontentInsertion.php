@@ -64,7 +64,7 @@ trait FlexicontentInsertion
             WHERE extension = "com_content"'
         );
 
-        $optionsFields['readmore'] = ['ACYM_READ_MORE', true];
+        $this->displayOptions['readmore'] = ['ACYM_READ_MORE', true];
 
         $tabHelper = new TabHelper();
         $identifier = $this->name;

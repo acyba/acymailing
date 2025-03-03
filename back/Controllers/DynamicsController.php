@@ -2,14 +2,13 @@
 
 namespace AcyMailing\Controllers;
 
-use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\PluginHelper;
 use AcyMailing\Core\AcymController;
 
 class DynamicsController extends AcymController
 {
-    public function replaceDummy()
+    public function replaceDummy(): void
     {
         $mailId = acym_getVar('int', 'mailId', 0);
         $code = acym_getVar('string', 'code', '', '', ACYM_ALLOWRAW);
@@ -47,7 +46,7 @@ class DynamicsController extends AcymController
         );
     }
 
-    public function trigger()
+    public function trigger(): void
     {
         $plugin = acym_getVar('cmd', 'plugin', '');
         $trigger = acym_getVar('cmd', 'trigger', '');

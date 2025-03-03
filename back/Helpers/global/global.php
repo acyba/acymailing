@@ -42,7 +42,7 @@ function acym_debug(bool $file = false, bool $indent = true)
     acydump(implode("\n", $takenPath), $file, ['indent' => $indent]);
 }
 
-function acym_config($reload = false)
+function acym_config(bool $reload = false): ConfigurationClass
 {
     static $configClass = null;
     if ($configClass === null || $reload) {
@@ -102,7 +102,7 @@ function acym_session()
     }
 }
 
-function acym_getCID($field = '')
+function acym_getCID(string $field = ''): int
 {
     $oneResult = acym_getVar('array', 'cid', [], '');
     $oneResult = intval(reset($oneResult));

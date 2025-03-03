@@ -14,16 +14,18 @@ class ActionClass extends AcymClass
         $this->pkey = 'id';
     }
 
-    public function getActionsByStepId($stepId)
+    public function getActionsByStepId($stepId): array
     {
-        $query = 'SELECT action.* FROM #__acym_action AS action LEFT JOIN #__acym_condition AS conditionT ON action.condition_id = conditionT.id WHERE conditionT.step_id = '.intval(
-                $stepId
-            ).' ORDER BY action.order';
-
-        return acym_loadObjectList($query);
+        return acym_loadObjectList(
+            'SELECT `action`.* 
+            FROM #__acym_action AS `action` 
+            LEFT JOIN #__acym_condition AS `conditionT` ON `action`.condition_id = `conditionT`.id 
+            WHERE `conditionT`.step_id = '.intval($stepId).' 
+            ORDER BY `action`.order'
+        );
     }
 
-    public function getActionsByConditionId($id)
+    public function getActionsByConditionId($id): array
     {
         return acym_loadObjectList(
             'SELECT action.* 

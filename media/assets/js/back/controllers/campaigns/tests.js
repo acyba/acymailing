@@ -10,17 +10,28 @@ jQuery(function ($) {
     function sendTestAjax() {
         $('#acym__campaign__send-test').off('click').on('click', function () {
             $('#acym__campaigns__send-test__spinner').show();
-            let test = $(this);
-            test.attr('disabled', 'true');
-            let url = ACYM_AJAX_URL
+            const $test = $(this);
+            $test.attr('disabled', 'true');
+
+            const $multipleMailSelect = $('#mail_id_test');
+            let mailId = 0;
+
+            if ($multipleMailSelect.length) {
+                mailId = $multipleMailSelect.val();
+            }
+
+            const url = ACYM_AJAX_URL
                       + '&page=acymailing_campaigns&ctrl=campaigns&task=test&campaignId='
                       + $('input[name="campaignId"]').val()
+                      + '&mailId='
+                      + mailId
                       + '&test_note='
                       + encodeURIComponent(jQuery('#acym__wysid__send__test__note').val())
                       + '&test_emails='
                       + encodeURIComponent($('.acym__multiselect__email').val().join(','));
+
             $.post(url, function (res) {
-                test.removeAttr('disabled');
+                $test.removeAttr('disabled');
                 $('#acym__campaigns__send-test__spinner').hide();
                 res = acym_helper.parseJson(res);
                 acym_helperNotification.addNotification(res.message, res.error ? 'error' : 'info');

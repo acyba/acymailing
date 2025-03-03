@@ -12,7 +12,7 @@ use AcyMailing\Helpers\WorkflowHelper;
 
 trait Listing
 {
-    public function listing()
+    public function listing(): void
     {
         $this->storeRedirectListing(true);
     }
@@ -71,12 +71,12 @@ trait Listing
         return true;
     }
 
-    private function prepareListingClasses(&$data)
+    private function prepareListingClasses(array &$data): void
     {
         $data['workflowHelper'] = new WorkflowHelper();
     }
 
-    public function specificListing()
+    public function specificListing(): void
     {
         acym_setVar('layout', 'specific_listing');
 
@@ -96,7 +96,7 @@ trait Listing
         parent::display($data);
     }
 
-    public function campaigns()
+    public function campaigns(): void
     {
         acym_setVar('layout', self::TASK_TYPE_CAMPAIGN);
 
@@ -113,7 +113,7 @@ trait Listing
         parent::display($data);
     }
 
-    public function prepareToolbar(&$data)
+    public function prepareToolbar(array &$data): void
     {
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'campaigns_search');
@@ -125,7 +125,7 @@ trait Listing
         $data['toolbar'] = $toolbarHelper;
     }
 
-    private function getAllParamsRequest(&$data)
+    private function getAllParamsRequest(array &$data): void
     {
         $tagClass = new TagClass();
         $data['search'] = $this->getVarFiltersListing('string', 'campaigns_search', '');
@@ -149,7 +149,7 @@ trait Listing
         }
     }
 
-    private function prepareAllCampaignsListing(&$data)
+    private function prepareAllCampaignsListing(array &$data): void
     {
         $this->getAllParamsRequest($data);
         $this->prepareEmailsListing($data, $data['campaign_type']);
@@ -159,7 +159,7 @@ trait Listing
         }
     }
 
-    public function prepareEmailsListing(&$data, $campaignType = '', $class = '')
+    public function prepareEmailsListing(array &$data, string $campaignType = '', string $class = ''): void
     {
         // Prepare the pagination
         $campaignsPerPage = $data['pagination']->getListLimit();
@@ -167,7 +167,6 @@ trait Listing
         $status = $data['status'];
 
         // Get the matching campaigns
-        $campaignClass = new CampaignClass();
         $matchingCampaigns = $this->getMatchingElementsFromData(
             [
                 'element_tab' => $campaignType,
@@ -179,6 +178,8 @@ trait Listing
                 'ordering_sort_order' => $data['orderingSortOrder'],
                 'status' => $data['status'],
                 'creator_id' => acym_isAdmin() ? 0 : acym_currentUserId(),
+                'campaign_type' => $data['campaign_type'] ?? '',
+                'advanced_total' => empty($class)
             ],
             $status,
             $page,
@@ -187,57 +188,21 @@ trait Listing
 
         if (empty($class)) {
             foreach ($matchingCampaigns['elements'] as $key => $campaign) {
-                $matchingCampaigns['elements'][$key]->scheduled = CampaignClass::SENDING_TYPE_SCHEDULED == $campaign->sending_type;
+                $matchingCampaigns['elements'][$key]->scheduled = CampaignClass::SENDING_TYPE_SCHEDULED === $campaign->sending_type;
             }
-        }
 
-        // End pagination
-        if (empty($class)) {
-            $data['allStatusFilter'] = $this->getCountStatusFilter($matchingCampaigns['total'], $data['campaign_type']);
-            if (self::TASK_TYPE_CAMPAIGN_AUTO === $data['campaign_type'] && 'generated' === $data['status']) {
-                $data['allStatusFilter']->all = $campaignClass->getCountCampaignType(CampaignClass::SENDING_TYPE_AUTO);
-            }
+            $data['allStatusFilter'] = $matchingCampaigns['total'];
             $totalElement = empty($status) ? $data['allStatusFilter']->all : $data['allStatusFilter']->$status;
             $data['statusAuto'] = CampaignClass::SENDING_TYPE_AUTO;
         } else {
-            $totalElement = $matchingCampaigns['total'];
+            $totalElement = $matchingCampaigns['total']->total;
         }
 
-        $data['pagination']->setStatus($totalElement, $page, $campaignsPerPage);
+        $data['pagination']->setStatus((int)$totalElement, $page, $campaignsPerPage);
         $data['allCampaigns'] = $matchingCampaigns['elements'];
     }
 
-    public function getCountStatusFilter($allCampaigns, $type)
-    {
-        $allCountStatus = new \stdClass();
-
-        if ($type == 'campaigns') {
-            $this->getCountStatusFilterCampaigns($allCampaigns, $allCountStatus);
-        } else {
-            $this->getCountStatusFilterCampaignsAuto($allCampaigns, $allCountStatus);
-        }
-
-        return $allCountStatus;
-    }
-
-    private function getCountStatusFilterCampaigns($allCampaigns, &$allCountStatus)
-    {
-        $allCountStatus->all = 0;
-        $allCountStatus->scheduled = 0;
-        $allCountStatus->sent = 0;
-        $allCountStatus->draft = 0;
-
-        foreach ($allCampaigns as $campaign) {
-            if (empty($campaign->parent_id)) {
-                $allCountStatus->all += 1;
-                if (CampaignClass::SENDING_TYPE_SCHEDULED == $campaign->sending_type) $allCountStatus->scheduled += 1;
-                $allCountStatus->sent += $campaign->sent;
-                $allCountStatus->draft += $campaign->draft;
-            }
-        }
-    }
-
-    public function mailbox_action()
+    public function mailbox_action(): void
     {
         acym_setVar('layout', self::TASK_TYPE_MAILBOX_ACTION);
 

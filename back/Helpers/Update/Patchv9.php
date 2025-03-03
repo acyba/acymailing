@@ -2,11 +2,12 @@
 
 namespace AcyMailing\Helpers\Update;
 
+use AcyMailing\Classes\ConfigurationClass;
 use AcyMailing\Classes\UrlClickClass;
 
 trait Patchv9
 {
-    private function updateFor920($config)
+    private function updateFor920(ConfigurationClass $config): void
     {
         if ($this->isPreviousVersionAtLeast('9.2.0')) {
             return;
@@ -37,7 +38,7 @@ trait Patchv9
         }
     }
 
-    private function updateFor930()
+    private function updateFor930(): void
     {
         if ($this->isPreviousVersionAtLeast('9.3.0')) {
             return;
@@ -46,7 +47,7 @@ trait Patchv9
         $this->updateQuery('ALTER TABLE #__acym_rule ADD COLUMN `description` VARCHAR(250) NULL AFTER `name`');
     }
 
-    private function updateFor931()
+    private function updateFor931(): void
     {
         if ($this->isPreviousVersionAtLeast('9.3.1')) {
             return;
@@ -56,7 +57,7 @@ trait Patchv9
         $this->updateQuery('UPDATE #__acym_rule SET `ordering` = '.intval($maxOrdering + 1).' WHERE `id` = 17');
     }
 
-    private function updateFor940($config)
+    private function updateFor940(ConfigurationClass $config): void
     {
         if ($this->isPreviousVersionAtLeast('9.4.0')) {
             return;
@@ -87,7 +88,7 @@ trait Patchv9
         $this->updateQuery('ALTER TABLE `#__acym_field` DROP COLUMN `access`');
     }
 
-    private function updateFor961()
+    private function updateFor961(): void
     {
         if ($this->isPreviousVersionAtLeast('9.6.1')) {
             return;
@@ -96,7 +97,7 @@ trait Patchv9
         $this->updateQuery('ALTER TABLE `#__acym_mail` ADD INDEX `#__index_acym_mail2` (`type`)');
     }
 
-    private function updateFor970()
+    private function updateFor970(): void
     {
         if ($this->isPreviousVersionAtLeast('9.7.0')) {
             return;
@@ -108,7 +109,7 @@ trait Patchv9
         $this->updateQuery('ALTER TABLE #__acym_followup ADD COLUMN `loop_mail_skip` VARCHAR(255) NULL');
     }
 
-    private function updateFor980()
+    private function updateFor980(): void
     {
         if ($this->isPreviousVersionAtLeast('9.8.0')) {
             return;
@@ -118,7 +119,7 @@ trait Patchv9
         $this->updateQuery('ALTER TABLE #__acym_mail ADD COLUMN `bounce_email` VARCHAR(100) NULL');
     }
 
-    private function updateFor990()
+    private function updateFor990(): void
     {
         if ($this->isPreviousVersionAtLeast('9.9.0')) {
             return;
@@ -137,7 +138,7 @@ trait Patchv9
         );
     }
 
-    private function updateFor9101()
+    private function updateFor9101(): void
     {
         if ($this->isPreviousVersionAtLeast('9.10.1')) {
             return;
@@ -181,7 +182,7 @@ trait Patchv9
         $this->updateQuery('TRUNCATE TABLE #__acym_mail_archive');
     }
 
-    private function updateFor9102()
+    private function updateFor9102(): void
     {
         if ($this->isPreviousVersionAtLeast('9.10.2')) {
             return;
@@ -216,7 +217,7 @@ trait Patchv9
         $this->updateQuery('ALTER TABLE #__acym_user ADD UNIQUE INDEX `email_UNIQUE` (`email`(191) ASC)');
     }
 
-    private function updateFor9110()
+    private function updateFor9110(): void
     {
         if ($this->isPreviousVersionAtLeast('9.11.0')) {
             return;

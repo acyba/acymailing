@@ -47,10 +47,6 @@ function acym_addStyle(bool $raw, string $style)
     }
 }
 
-function acym_prepareFrontViewDisplay($ctrl, $task)
-{
-}
-
 function acym_loadCmsScripts()
 {
     $toggleController = acym_isAdmin() ? 'toggle' : 'fronttoggle';

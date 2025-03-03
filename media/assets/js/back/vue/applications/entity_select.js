@@ -248,7 +248,7 @@ jQuery(function () {
                                 return true;
                             }
 
-                            numberOfEntities = res.data.results.data.total;
+                            numberOfEntities = res.data.results.data.total.total;
                             this.handleEntities(res.data.results.data.elements);
                             if (entityNumber > numberOfEntities) {
                                 this.loading = false;

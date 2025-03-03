@@ -2,8 +2,8 @@
 
 namespace AcyMailing\Helpers;
 
-
 use AcyMailing\Classes\CampaignClass;
+use AcyMailing\Classes\ConfigurationClass;
 use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\MailArchiveClass;
 use AcyMailing\Classes\MailClass;
@@ -17,99 +17,96 @@ use Pelago\Emogrifier\HtmlProcessor\HtmlPruner;
 
 class MailerHelper extends Mailer
 {
-    // The DKIM fails when the X-Mailer is added and the user uses their own keys, it makes no sense D:
-    public $XMailer = ' ';
+    const NEW_TRY_ERRORS = [1, 6];
 
-    // We remove default values
-    public $SMTPAutoTLS = false;
-
-    // We need these attributes to be public for our tag system
+    // Redefine PHPMailer protected attributes for dynamic texts system
     public $to = [];
     public $cc = [];
     public $bcc = [];
     public $ReplyTo = [];
     public $attachment = [];
     public $CustomHeader = [];
-    public $preheader;
-    public $replyname;
-    public $replyemail;
-    public $body;
-    public $altbody;
-    public $subject;
-    public $from;
-    public $fromName;
-    public $replyto;
-    public $custom_view;
 
-    private $encodingHelper;
-    private $editorHelper;
-    private $userClass;
-    private $mailClass;
-    private $mailArchiveClass;
-    public $config;
+    public string $preheader;
+    public string $replyname;
+    public string $replyemail;
+    public string $body;
+    public string $altbody;
+    public string $subject;
+    public string $from;
+    public string $fromName;
+    public array $replyto;
+    public bool $custom_view;
 
-    public $report = true;
-    public $alreadyCheckedAddresses = false;
-    public $errorNumber = 0;
-    //Error number which induct a new try soon
-    public $errorNewTry = [1, 6];
+    private EncodingHelper $encodingHelper;
+    private EditorHelper $editorHelper;
+    private UserClass $userClass;
+    private MailClass $mailClass;
+    private MailArchiveClass $mailArchiveClass;
+    public ConfigurationClass $config;
+
+    public bool $report = true;
+    public bool $alreadyCheckedAddresses = false;
+    public int $errorNumber = 0;
     // Can be used when our sending method is temporary unavailable to not count it as a "real" failed
-    public $failedCounting = true;
-    public $autoAddUser = false;
-    public $userCreationTriggers = true;
+    public bool $failedCounting = true;
+
+    // Used by external code
+    public bool $autoAddUser = false;
+    public bool $userCreationTriggers = true;
+
     public string $reportMessage = '';
     public bool $dtextsFailed = false;
 
     // Should we track the sending of a	message (used for welcoming message)
-    public $trackEmail = false;
+    public bool $trackEmail = false;
 
     // Sending method used in the configuration
-    public $externalMailer;
+    public string $externalMailer;
 
     // To import custom stylesheet from user
-    public $stylesheet = '';
-    public $settings;
+    public string $stylesheet = '';
+    public array $settings;
 
     // Used to store special dynamic text content
-    public $parameters = [];
+    public array $parameters = [];
 
-    public $userLanguage = '';
-    public $receiverEmail;
+    private string $userLanguage = '';
+    private string $receiverEmail;
 
     // Special send statuses
-    public $overrideEmailToSend = '';
+    private object $overrideEmailToSend;
     public bool $isTest = false;
-    public $isSpamTest = false;
-    public $isForward = false;
+    public bool $isSpamTest = false;
+    public bool $isForward = false;
 
     // OAuth fields
-    public $clientId = '';
-    public $clientSecret = '';
-    public $refreshToken = '';
-    public $oauthToken = '';
-    public $expiredIn = '';
-    public $mailId = null;
-    public $creator_id;
-    public $type;
-    public $links_language;
-    public $id = null;
-    public $mail = null;
+    public int $mailId = 0;
+    public int $creator_id;
+    public string $type;
+    public string $links_language;
+    public int $id = 0;
+    public ?object $mail = null;
     // Mail objects with replaceContent ran
-    public $defaultMail = [];
+    private array $defaultMail = [];
 
     // Sending method list plugin
-    public $listsIds = [];
-    private $currentMethodSetting = [];
+    public array $listsIds = [];
+    private string $currentSendingMethod = '';
+    private array $currentMethodSetting = [];
 
-    public $isAbTest = false;
-    public $isTransactional = false;
-    public $isOneTimeMail = false;
-    private $currentSendingMethod = '';
-    public $isSendingMethodByListActive = false;
+    public bool $isAbTest = false;
+    public bool $isTransactional = false;
+    public bool $isOneTimeMail = false;
+    public bool $isSendingMethodByListActive = false;
 
     public function __construct()
     {
         parent::__construct();
+
+        // The DKIM fails when the X-Mailer is added and the user uses their own keys, it makes no sense D:
+        $this->XMailer = ' ';
+        $this->SMTPAutoTLS = false;
 
         $this->encodingHelper = new EncodingHelper();
         $this->editorHelper = new EditorHelper();
@@ -117,6 +114,7 @@ class MailerHelper extends Mailer
         $this->mailClass = new MailClass();
         $this->mailArchiveClass = new MailArchiveClass();
         $this->config = acym_config();
+
         $this->setFrom($this->getSendSettings('from_email'), $this->getSendSettings('from_name'));
         $this->Sender = $this->cleanText($this->config->get('bounce_email'));
         if (empty($this->Sender)) {
@@ -163,57 +161,6 @@ class MailerHelper extends Mailer
         $this->addParamInfo();
     }
 
-    private function getSendingMethodSettings($settingName, $default = ''): string
-    {
-        if (empty($this->currentMethodSetting)) {
-            return $this->config->get($settingName, $default);
-        }
-
-        return $this->currentMethodSetting[$settingName] ?? $default;
-    }
-
-    /**
-     * @return string
-     */
-    private function getSendingMethod(): string
-    {
-        $this->currentMethodSetting = [];
-
-        $sendingMethods = $this->config->get('sending_method_list', '{}');
-        $sendingMethods = json_decode($sendingMethods, true);
-        $sendingMethodsByList = $this->config->get('sending_method_list_by_list', '{}');
-        $sendingMethodsByList = json_decode($sendingMethodsByList, true);
-
-        if (empty($this->listsIds) || empty($sendingMethods) || empty($sendingMethodsByList) || empty($sendingMethodsByList[$this->listsIds[0]])) {
-            return $this->config->get('mailer_method', 'phpmail');
-        }
-
-        $sendingMethodIds = [];
-
-        foreach ($this->listsIds as $listId) {
-            if (!empty($sendingMethodsByList[$listId])) {
-                $sendingMethodIds[] = $sendingMethodsByList[$listId];
-            }
-        }
-
-        if (count($sendingMethodIds) !== count($this->listsIds) || count(array_unique($sendingMethodIds)) !== 1) {
-            return $this->config->get('mailer_method', 'phpmail');
-        }
-
-        $sendingMethodId = $sendingMethodIds[0];
-
-        if (empty($sendingMethods[$sendingMethodId])) {
-            return $this->config->get('mailer_method', 'phpmail');
-        }
-
-        $this->currentMethodSetting = $sendingMethods[$sendingMethodId];
-
-        return $sendingMethods[$sendingMethodId]['mailer_method'];
-    }
-
-    /**
-     * @return void
-     */
     public function setSendingMethodSetting(): void
     {
         $externalSendingMethod = [];
@@ -235,7 +182,7 @@ class MailerHelper extends Mailer
             if (!empty($port)) {
                 $this->Host .= ':'.$port;
             }
-            $this->SMTPAuth = (bool)$this->getSendingMethodSettings('smtp_auth', true);
+            $this->SMTPAuth = (bool)$this->getSendingMethodSettings('smtp_auth', '1');
             $this->Username = trim($this->getSendingMethodSettings('smtp_username'));
             $connectionType = $this->getSendingMethodSettings('smtp_type');
             $hostName = explode(':', $this->Host)[0];
@@ -243,20 +190,20 @@ class MailerHelper extends Mailer
             if (OAuth::hostRequireOauth($hostName, $connectionType)) {
                 $this->AuthType = 'XOAUTH2';
 
-                $this->clientSecret = trim($this->getSendingMethodSettings('smtp_secret'));
-                $this->clientId = trim($this->getSendingMethodSettings('smtp_clientId'));
-                $this->refreshToken = trim($this->getSendingMethodSettings('smtp_refresh_token'));
-                $this->oauthToken = trim($this->getSendingMethodSettings('smtp_token'));
-                $this->expiredIn = trim($this->getSendingMethodSettings('smtp_token_expireIn'));
+                $clientSecret = trim($this->getSendingMethodSettings('smtp_secret'));
+                $clientId = trim($this->getSendingMethodSettings('smtp_clientId'));
+                $refreshToken = trim($this->getSendingMethodSettings('smtp_refresh_token'));
+                $oauthToken = trim($this->getSendingMethodSettings('smtp_token'));
+                $expiredIn = trim($this->getSendingMethodSettings('smtp_token_expireIn'));
 
                 $oauth = new OAuth(
                     [
                         'userName' => $this->Username,
-                        'clientSecret' => $this->clientSecret,
-                        'oauthToken' => $this->oauthToken,
-                        'clientId' => $this->clientId,
-                        'refreshToken' => $this->refreshToken,
-                        'expiredIn' => $this->expiredIn,
+                        'clientSecret' => $clientSecret,
+                        'oauthToken' => $oauthToken,
+                        'clientId' => $clientId,
+                        'refreshToken' => $refreshToken,
+                        'expiredIn' => $expiredIn,
                         'host' => $hostName,
                     ]
                 );
@@ -311,15 +258,9 @@ class MailerHelper extends Mailer
     }
 
     /**
-     * Send messages using SMTP.
+     * Dynamically called from PHPMailer
      */
-    public function isExternal($method)
-    {
-        $this->Mailer = 'external';
-        $this->externalMailer = $method;
-    }
-
-    protected function externalSend($MIMEHeader, $MIMEBody)
+    protected function externalSend(string $MIMEHeader, string $MIMEBody): bool
     {
         $fromName = empty($this->FromName) ? $this->config->get('from_name') : $this->FromName;
         $reply_to = array_shift($this->ReplyTo);
@@ -355,7 +296,7 @@ class MailerHelper extends Mailer
         return true;
     }
 
-    public function send()
+    public function send(): bool
     {
         if (!file_exists(ACYM_LIBRARIES.'Mailer'.DS.'Mailer.php')) {
             $this->reportMessage = acym_translationSprintf('ACYM_X_FILE_MISSING', 'Mailer', ACYM_LIBRARIES.'Mailer'.DS);
@@ -398,7 +339,7 @@ class MailerHelper extends Mailer
                 $replyToName = $this->getSendSettings('replyto_name');
             }
 
-            $this->_addReplyTo($replyToEmail, $replyToName);
+            $this->acymAddReplyTo($replyToEmail, $replyToName);
         }
 
         // Embed images if there are images to embed
@@ -555,20 +496,20 @@ class MailerHelper extends Mailer
             } else {
                 $this->reportMessage = acym_translationSprintf('ACYM_SEND_SUCCESS', '<b>'.$this->Subject.'</b>', '<b>'.implode(' , ', $receivers).'</b>');
             }
+
             if (!empty($warnings)) {
                 $this->reportMessage .= " \n\n ".$warnings;
             }
-            if ($this->report) {
-                if (acym_isAdmin()) {
-                    acym_enqueueMessage(preg_replace('#(<br( ?/)?>){2}#', '<br />', nl2br($this->reportMessage)), 'info');
-                }
+
+            if ($this->report && acym_isAdmin()) {
+                acym_enqueueMessage(preg_replace('#(<br( ?/)?>){2}#', '<br />', nl2br($this->reportMessage)), 'info');
             }
         }
 
         return $result;
     }
 
-    public function clearAll()
+    public function clearAll(): void
     {
         $this->Subject = '';
         $this->Body = '';
@@ -583,7 +524,7 @@ class MailerHelper extends Mailer
         $this->setFrom($this->getSendSettings('from_email'), $this->getSendSettings('from_name'));
     }
 
-    public function load(int $mailId, $user = null)
+    public function load(int $mailId, ?object $user = null): ?object
     {
         // If it's already loaded return the email
         if (isset($this->defaultMail[$mailId])) {
@@ -601,7 +542,7 @@ class MailerHelper extends Mailer
             $defaultLanguage = $this->config->get('multilingual_default', ACYM_DEFAULT_LANGUAGE);
             $mails = $this->mailClass->getMultilingualMails($mailId);
 
-            $this->userLanguage = $user != null && !empty($user->language) ? $user->language : $defaultLanguage;
+            $this->userLanguage = !empty($user->language) ? $user->language : $defaultLanguage;
 
             if (!empty($mails)) {
                 $languages = array_keys($mails);
@@ -619,7 +560,7 @@ class MailerHelper extends Mailer
             } else {
                 unset($this->defaultMail[$mailId]);
 
-                return false;
+                return null;
             }
 
             $acymLanguages['userLanguage'] = $this->userLanguage;
@@ -630,7 +571,7 @@ class MailerHelper extends Mailer
         if (empty($this->defaultMail[$mailId]->id)) {
             unset($this->defaultMail[$mailId]);
 
-            return false;
+            return null;
         }
 
         if (!empty($this->defaultMail[$mailId]->attachments)) {
@@ -658,81 +599,6 @@ class MailerHelper extends Mailer
         }
 
         return $this->defaultMail[$mailId];
-    }
-
-    private function storeArchiveVersion($mailId)
-    {
-        $mailId = intval($mailId);
-        if (empty($mailId) || $this->defaultMail[$mailId]->type !== MailClass::TYPE_STANDARD) {
-            return;
-        }
-
-        $mailArchive = new \stdClass();
-
-        $alreadyExisting = $this->mailArchiveClass->getOneByMailId($mailId);
-        if (!empty($alreadyExisting)) {
-            $mailArchive->id = $alreadyExisting->id;
-        }
-
-        $mailArchive->mail_id = $mailId;
-        $mailArchive->date = time();
-        $mailArchive->body = $this->defaultMail[$mailId]->body;
-        $mailArchive->subject = $this->defaultMail[$mailId]->subject;
-        $mailArchive->settings = $this->defaultMail[$mailId]->settings;
-        $mailArchive->stylesheet = $this->defaultMail[$mailId]->stylesheet;
-        $mailArchive->attachments = $this->defaultMail[$mailId]->attachments;
-        $this->mailArchiveClass->save($mailArchive);
-    }
-
-    private function canTrack(int $mailId, object $user): bool
-    {
-        if ($this->isTest || empty($mailId) || empty($user) || !isset($user->tracking) || $user->tracking != 1) {
-            return false;
-        }
-
-        $mail = $this->mailClass->getOneById($mailId);
-        if (!empty($mail) && $mail->tracking != 1) {
-            return false;
-        }
-
-        $lists = $this->mailClass->getAllListsByMailIdAndUserId($mailId, $user->id);
-
-        foreach ($lists as $list) {
-            if ($list->tracking != 1) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private function loadUser($user)
-    {
-        if (is_string($user) && strpos($user, '@')) {
-            $receiver = $this->userClass->getOneByEmail($user);
-
-            //If we send notifications or tests, we will automatically add the user in order to have the links working fine
-            if (empty($receiver) && $this->autoAddUser && acym_isValidEmail($user)) {
-                //We directly add the user and send and load him.
-                $newUser = new \stdClass();
-                $newUser->email = $user;
-                $this->userClass->checkVisitor = false;
-                $this->userClass->sendConf = false;
-                acym_setVar('acy_source', 'When sending a test');
-                $this->userClass->triggers = $this->userCreationTriggers;
-                $userId = $this->userClass->save($newUser);
-                $receiver = $this->userClass->getOneById($userId);
-            }
-        } elseif (is_object($user)) {
-            $receiver = $user;
-        } else {
-            $receiver = $this->userClass->getOneById($user);
-        }
-
-        $this->userLanguage = empty($receiver->language) ? acym_getLanguageTag() : $receiver->language;
-        $this->receiverEmail = $receiver->email;
-
-        return $receiver;
     }
 
     /**
@@ -790,7 +656,7 @@ class MailerHelper extends Mailer
 
             return false;
         }
-        $status = (bool)$this->send();
+        $status = $this->send();
 
         $this->initStatistics($status, $receiver->id);
 
@@ -832,281 +698,7 @@ class MailerHelper extends Mailer
         $followUpClass->triggerFollowUp(intval($followUp->id), intval($userId), $delay, $mailToSkip);
     }
 
-    private function prepareContent(int $mailId, array $options): void
-    {
-        $this->isHTML();
-
-        if (!empty($this->defaultMail[$mailId]->stylesheet)) {
-            $this->stylesheet = $this->defaultMail[$mailId]->stylesheet;
-        }
-        $this->settings = empty($this->defaultMail[$mailId]->settings) ? [] : json_decode($this->defaultMail[$mailId]->settings, true);
-
-        $this->Subject = $this->defaultMail[$mailId]->subject;
-        $this->Body = $this->defaultMail[$mailId]->body;
-        if ($this->isTest && !empty($options['testNote'])) {
-            $this->Body = '<div style="text-align: center; padding: 25px; font-family: Poppins; font-size: 20px">'.$options['testNote'].'</div>'.$this->Body;
-        }
-
-        //We add the intro text at the top of the body
-        if (!empty($this->introtext)) {
-            $this->Body = $this->introtext.$this->Body;
-        }
-
-        if (!empty($this->defaultMail[$mailId]->preheader)) {
-            $preHeader = '<!--[if !mso 9]><!--><div style="visibility:hidden;mso-hide:all;font-size:0;color:transparent;height:0;line-height:0;max-height:0;max-width:0;opacity:0;overflow:hidden;">';
-            $preHeader .= $this->defaultMail[$mailId]->preheader.str_repeat('&nbsp;&zwnj;', 100);
-            $preHeader .= '</div><!--<![endif]-->';
-
-            //We want to insert the preview at the start of the body so we match the start of the mail
-            preg_match('#(<(.*)<body(.*)>)#Uis', $this->Body, $matches);
-            if (empty($matches) || empty($matches[1])) {
-                $this->Body = $preHeader.$this->Body;
-            } else {
-                $this->Body = $matches[1].$preHeader.str_replace($matches[1], '', $this->Body);
-            }
-        }
-
-        if (ACYM_CMS === 'wordpress') {
-            ob_start();
-            $this->Body = do_shortcode($this->Body);
-            ob_end_clean();
-        }
-    }
-
-    private function prepareHeaders(int $mailId, int $receiverId, array $options): void
-    {
-        // Specify a messageID which will be kept by most mail clients and in the feedback loop
-        $subject = base64_encode(rand(0, 9999999)).'AC'.$receiverId.'Y'.$this->defaultMail[$mailId]->id.'BA'.base64_encode(time().rand(0, 99999));
-        $this->MessageID = '<'.preg_replace('|[^a-z0-9+_]|i', '', $subject).'@'.$this->serverHostname().'>';
-        $this->addCustomHeader('Feedback-ID', $this->defaultMail[$mailId]->id.':'.$receiverId.':'.$this->defaultMail[$mailId]->type.':'.base64_encode(ACYM_ROOT));
-
-        if (!empty($this->defaultMail[$mailId]->headers)) {
-            $this->mailHeader = $this->defaultMail[$mailId]->headers;
-        }
-
-        if (!empty($options['headers'])) {
-            foreach ($options['headers'] as $headerName => $headerValue) {
-                $this->addCustomHeader(trim($headerName), trim($headerValue));
-            }
-        }
-    }
-
-    private function prepareAddresses(int $mailId, object $receiver): void
-    {
-        $receiverName = '';
-        if ($this->config->get('add_names', true)) {
-            $receiverName = $this->cleanText($receiver->name);
-            //We do not set a name if the name is the same as the email address, it prevents the email from being sent with some mail servers
-            if ($receiverName == $this->cleanText($receiver->email)) {
-                $receiverName = '';
-            }
-        }
-        $this->addAddress($this->cleanText($receiver->email), $receiverName);
-
-        $this->setFrom($this->getSendSettings('from_email', $mailId), $this->getSendSettings('from_name', $mailId));
-        $this->_addReplyTo($this->defaultMail[$mailId]->reply_to_email, $this->defaultMail[$mailId]->reply_to_name);
-
-        // This is the bounce email address
-        if (!empty($this->defaultMail[$mailId]->bounce_email)) {
-            $this->Sender = $this->cleanText($this->defaultMail[$mailId]->bounce_email);
-        } else {
-            $this->Sender = $this->cleanText($this->config->get('bounce_email'));
-        }
-    }
-
-    private function prepareBcc(int $mailId, array $options): void
-    {
-        $bccAddresses = [];
-
-        if (!empty($options['bcc'])) {
-            $bccAddresses = $options['bcc'];
-        }
-
-        if (!empty($this->defaultMail[$mailId]->bcc)) {
-            $emailBccAddresses = explode(';', trim(str_replace([',', ' '], ';', $this->defaultMail[$mailId]->bcc)));
-            $bccAddresses = array_unique(array_merge($bccAddresses, $emailBccAddresses));
-        }
-
-        if (!empty($bccAddresses)) {
-            $bccAddresses = array_filter($bccAddresses);
-            foreach ($bccAddresses as $oneBccAddress) {
-                $this->loadUser($oneBccAddress);
-                $this->addBCC($oneBccAddress);
-            }
-        }
-    }
-
-    private function prepareAttachments(int $mailId, array $options): void
-    {
-        $attachments = [];
-
-        if (!empty($this->defaultMail[$mailId]->attach)) {
-            $attachments = $this->defaultMail[$mailId]->attach;
-        }
-
-        if (!empty($options['attachments'])) {
-            $attachments = array_merge($attachments, $options['attachments']);
-        }
-
-        if (empty($attachments)) {
-            return;
-        }
-
-        if ($this->config->get('embed_files')) {
-            foreach ($attachments as $attachment) {
-                $this->addAttachment($attachment->filename, $attachment->name);
-            }
-        } else {
-            $attachStringHTML = '<fieldset><legend>'.acym_translation('ACYM_ATTACHMENTS').'</legend><table>';
-            foreach ($attachments as $attachment) {
-                $attachStringHTML .= '<tr><td><a href="'.$attachment->url.'" target="_blank">'.$attachment->name.'</a></td></tr>';
-            }
-            $attachStringHTML .= '</table></fieldset>';
-
-            if ($this->config->get('attachments_position', 'bottom') === 'top') {
-                $this->Body = $attachStringHTML.'<br />'.$this->Body;
-            } else {
-                $this->Body .= '<br />'.$attachStringHTML;
-            }
-        }
-    }
-
-    private function replaceDynamicContent(int $mailId): void
-    {
-        $this->replaceParams();
-
-        // Left side are mail columns on which we replace the short codes
-        $this->body = &$this->Body;
-        $this->altbody = &$this->AltBody;
-        $this->subject = &$this->Subject;
-        $this->from = &$this->From;
-        $this->fromName = &$this->FromName;
-        $this->replyto = &$this->ReplyTo;
-        $this->replyname = $this->defaultMail[$mailId]->reply_to_name;
-        $this->replyemail = $this->defaultMail[$mailId]->reply_to_email;
-        $this->mailId = $this->defaultMail[$mailId]->id;
-        $this->id = $this->mailId;
-        $this->creator_id = $this->defaultMail[$mailId]->creator_id;
-        $this->type = $this->defaultMail[$mailId]->type;
-        $this->stylesheet = &$this->stylesheet;
-        $this->links_language = $this->defaultMail[$mailId]->links_language;
-    }
-
-    private function prepareTracking(int $mailId, object $receiver): void
-    {
-        if ($this->canTrack($mailId, $receiver)) {
-            $this->statPicture($this->mailId, $receiver->id);
-            $this->body = acym_absoluteURL($this->body);
-            $this->statClick($this->mailId, $receiver->id);
-            if (acym_isTrackingSalesActive()) {
-                $this->trackingSales($this->mailId, $receiver->id);
-            }
-        }
-    }
-
-    private function handleDtexts(object $receiver): bool
-    {
-        $this->replaceParams();
-
-        // Sending a spam-test, use the current user instead
-        if (strpos($receiver->email, '@mt.acyba.com') !== false) {
-            $currentUser = $this->userClass->getOneByEmail(acym_currentUserEmail());
-            if (empty($currentUser)) {
-                $currentUser = $receiver;
-            }
-            $result = acym_trigger('replaceUserInformation', [&$this, &$currentUser, true]);
-        } else {
-            $result = acym_trigger('replaceUserInformation', [&$this, &$receiver, true]);
-            if (!empty($result)) {
-                foreach ($result as $oneResult) {
-                    if (!empty($oneResult) && !$oneResult['send']) {
-                        $this->reportMessage = $oneResult['message'];
-
-                        return false;
-                    }
-                }
-            }
-        }
-
-        global $acymLanguages;
-        if (!empty($acymLanguages['userLanguage'])) {
-            unset($acymLanguages['userLanguage']);
-        }
-
-        // A user based dtext may have inserted HTML content, we need to re-inline the CSS to it
-        foreach ($result as $oneResult) {
-            if (!empty($oneResult['emogrifier'])) {
-                $this->prepareEmailContent();
-                break;
-            }
-        }
-
-        if ($this->config->get('multiple_part', false)) {
-            $this->altbody = $this->textVersion($this->Body);
-        }
-
-        $this->replaceParams();
-
-        return true;
-    }
-
-    private function initStatistics(bool $status, int $receiverId): void
-    {
-        if ($this->trackEmail) {
-            $statsAdd = [];
-            $statsAdd[$this->mailId][intval($status)][] = $receiverId;
-
-            $queueHelper = new QueueHelper();
-            $queueHelper->statsAdd($statsAdd);
-            $this->trackEmail = false;
-        }
-    }
-
-    private function trackingSales($mailId, $userId)
-    {
-        preg_match_all('#href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:|tel:)([^"]+)"#Ui', $this->body, $results);
-        if (empty($results)) return;
-
-        foreach ($results[1] as $key => $url) {
-            $simplifiedUrl = str_replace(['https://', 'http://', 'www.'], '', $url);
-            $simplifiedWebsite = str_replace(['https://', 'http://', 'www.'], '', ACYM_LIVE);
-            if (strpos($simplifiedUrl, rtrim($simplifiedWebsite, '/')) === false || strpos($url, 'task=unsub')) continue;
-
-            $toAddUrl = (strpos($url, '?') === false ? '?' : '&').'linkReferal='.$mailId.'-'.$userId;
-
-            $posHash = strpos($url, '#');
-            if ($posHash !== false) {
-                $newURL = substr($url, 0, $posHash).$toAddUrl.substr($url, $posHash);
-            } else {
-                $newURL = $url.$toAddUrl;
-            }
-
-            $this->body = preg_replace('#href="('.preg_quote($url, '#').')"#Uis', 'href="'.$newURL.'"', $this->body);
-        }
-    }
-
-    public function statPicture($mailId, $userId)
-    {
-        $pictureLink = acym_frontendLink('frontstats&task=openStats&id='.$mailId.'&userid='.$userId, true, false);
-
-        //we will add the stat picture...
-        //We use some parameters so that we can define another height/width and even change the blank image into something else...
-        //Why not generate the header this way??
-        $widthsize = 50;
-        $heightsize = 1;
-        $width = empty($widthsize) ? '' : ' width="'.$widthsize.'" ';
-        $height = empty($heightsize) ? '' : ' height="'.$heightsize.'" ';
-
-        $statPicture = '<img class="spict" alt="Statistics image" src="'.$pictureLink.'"  border="0" '.$height.$width.'/>';
-
-        if (strpos($this->body, '</body>')) {
-            $this->body = str_replace('</body>', $statPicture.'</body>', $this->body);
-        } else {
-            $this->body .= $statPicture;
-        }
-    }
-
-    public function statClick($mailId, $userid, $fromStat = false)
+    public function statClick(int $mailId, int $userid, bool $fromStat = false): void
     {
         if (!$fromStat && !in_array($this->type, MailClass::TYPES_WITH_STATS)) {
             return;
@@ -1296,7 +888,7 @@ class MailerHelper extends Mailer
         $this->body = str_replace(array_keys($urls), $urls, $this->body);
     }
 
-    public function textVersion($html, $fullConvert = true)
+    public function textVersion(string $html, bool $fullConvert = true): string
     {
         //Replace relative links into absolute before replacing the text version so that we keep correct urls
         $html = acym_absoluteURL($html);
@@ -1358,7 +950,7 @@ class MailerHelper extends Mailer
     /**
      * @throws Exception
      */
-    protected function embedImages()
+    protected function embedImages(): bool
     {
         preg_match_all('/(src|background)=[\'|"]([^"\']*)[\'|"]/Ui', $this->Body, $images);
 
@@ -1425,90 +1017,12 @@ class MailerHelper extends Mailer
         return $embedSuccess;
     }
 
-    private function removeAdditionalParams($url)
-    {
-        $additionalParamsPos = strpos($url, '?');
-        if (!empty($additionalParamsPos)) {
-            $url = substr($url, 0, $additionalParamsPos);
-        }
-
-        return $url;
-    }
-
-    public function cleanText($text)
+    public function cleanText(string $text): string
     {
         return trim(preg_replace('/(%0A|%0D|\n+|\r+)/i', '', (string)$text));
     }
 
-    protected function _addReplyTo($email, $name)
-    {
-        if (empty($email)) {
-            return;
-        }
-        $replyToName = $this->config->get('add_names', true) ? $this->cleanText(trim($name)) : '';
-        $replyToEmail = trim($email);
-        if (substr_count($replyToEmail, '@') > 1) {
-            //We have more than one reply to...
-            $replyToEmailArray = explode(';', str_replace([';', ','], ';', $replyToEmail));
-            $replyToNameArray = explode(';', str_replace([';', ','], ';', $replyToName));
-            foreach ($replyToEmailArray as $i => $oneReplyTo) {
-                $this->addReplyTo($this->cleanText($oneReplyTo), @$replyToNameArray[$i]);
-            }
-        } else {
-            $this->addReplyTo($this->cleanText($replyToEmail), $replyToName);
-        }
-    }
-
-    private function replaceParams()
-    {
-        if (empty($this->parameters)) return;
-
-        $helperPlugin = new PluginHelper();
-
-        //We create an extra tag which contains all possible parameters...
-        $this->generateAllParams();
-
-        $vars = [
-            'Subject',
-            'Body',
-            'From',
-            'FromName',
-            'replyname',
-            'replyemail',
-        ];
-
-        foreach ($vars as $oneVar) {
-            if (!empty($this->$oneVar)) {
-                $this->$oneVar = $helperPlugin->replaceDText($this->$oneVar, $this->parameters);
-            }
-        }
-
-        if (!empty($this->ReplyTo)) {
-            foreach ($this->ReplyTo as $i => $replyto) {
-                foreach ($replyto as $a => $oneval) {
-                    $this->ReplyTo[$i][$a] = $helperPlugin->replaceDText($this->ReplyTo[$i][$a], $this->parameters);
-                }
-            }
-        }
-    }
-
-    /**
-     * Create a new parameter called {alltags} which will include all the others
-     */
-    private function generateAllParams()
-    {
-        $result = '<table style="border:1px solid;border-collapse:collapse;" border="1" cellpadding="10"><tr><td>Tag</td><td>Value</td></tr>';
-        foreach ($this->parameters as $name => $value) {
-            //Just in case of...
-            if (!is_string($value)) continue;
-
-            $result .= '<tr><td>'.trim($name, '{}').'</td><td>'.$value.'</td></tr>';
-        }
-        $result .= '</table>';
-        $this->addParam('allshortcodes', $result);
-    }
-
-    public function addParamInfo()
+    public function addParamInfo(): void
     {
         if (!empty($_SERVER)) {
             $serverinfo = [];
@@ -1528,9 +1042,9 @@ class MailerHelper extends Mailer
     }
 
     /**
-     * Function to add params which will be sent to the tag system
+     * Adds shortcodes available in the email content
      */
-    public function addParam($name, $value)
+    public function addParam(string $name, $value): void
     {
         $tagName = '{'.$name.'}';
         $this->parameters[$tagName] = $value;
@@ -1560,6 +1074,471 @@ class MailerHelper extends Mailer
 
             return $this->sendOverride($override, $options);
         }
+    }
+
+    private function getSendingMethodSettings(string $settingName, string $default = ''): string
+    {
+        if (empty($this->currentMethodSetting)) {
+            return $this->config->get($settingName, $default);
+        }
+
+        return $this->currentMethodSetting[$settingName] ?? $default;
+    }
+
+    private function getSendingMethod(): string
+    {
+        $this->currentMethodSetting = [];
+
+        $sendingMethods = $this->config->get('sending_method_list', '{}');
+        $sendingMethods = json_decode($sendingMethods, true);
+        $sendingMethodsByList = $this->config->get('sending_method_list_by_list', '{}');
+        $sendingMethodsByList = json_decode($sendingMethodsByList, true);
+
+        if (empty($this->listsIds) || empty($sendingMethods) || empty($sendingMethodsByList) || empty($sendingMethodsByList[$this->listsIds[0]])) {
+            return $this->config->get('mailer_method', 'phpmail');
+        }
+
+        $sendingMethodIds = [];
+
+        foreach ($this->listsIds as $listId) {
+            if (!empty($sendingMethodsByList[$listId])) {
+                $sendingMethodIds[] = $sendingMethodsByList[$listId];
+            }
+        }
+
+        if (count($sendingMethodIds) !== count($this->listsIds) || count(array_unique($sendingMethodIds)) !== 1) {
+            return $this->config->get('mailer_method', 'phpmail');
+        }
+
+        $sendingMethodId = $sendingMethodIds[0];
+
+        if (empty($sendingMethods[$sendingMethodId])) {
+            return $this->config->get('mailer_method', 'phpmail');
+        }
+
+        $this->currentMethodSetting = $sendingMethods[$sendingMethodId];
+
+        return $sendingMethods[$sendingMethodId]['mailer_method'];
+    }
+
+    private function isExternal(string $method): void
+    {
+        $this->Mailer = 'external';
+        $this->externalMailer = $method;
+    }
+
+    private function storeArchiveVersion(int $mailId): void
+    {
+        if ($this->defaultMail[$mailId]->type !== MailClass::TYPE_STANDARD) {
+            return;
+        }
+
+        $mailArchive = new \stdClass();
+
+        $alreadyExisting = $this->mailArchiveClass->getOneByMailId($mailId);
+        if (!empty($alreadyExisting)) {
+            $mailArchive->id = $alreadyExisting->id;
+        }
+
+        $mailArchive->mail_id = $mailId;
+        $mailArchive->date = time();
+        $mailArchive->body = $this->defaultMail[$mailId]->body;
+        $mailArchive->subject = $this->defaultMail[$mailId]->subject;
+        $mailArchive->settings = $this->defaultMail[$mailId]->settings;
+        $mailArchive->stylesheet = $this->defaultMail[$mailId]->stylesheet;
+        $mailArchive->attachments = $this->defaultMail[$mailId]->attachments;
+        $this->mailArchiveClass->save($mailArchive);
+    }
+
+    private function canTrack(int $mailId, object $user): bool
+    {
+        if ($this->isTest || empty($mailId) || empty($user) || !isset($user->tracking) || $user->tracking != 1) {
+            return false;
+        }
+
+        $mail = $this->mailClass->getOneById($mailId);
+        if (!empty($mail) && $mail->tracking != 1) {
+            return false;
+        }
+
+        $lists = $this->mailClass->getAllListsByMailIdAndUserId($mailId, $user->id);
+
+        foreach ($lists as $list) {
+            if ($list->tracking != 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function loadUser($user, bool $force = false): object
+    {
+        if (is_string($user) && strpos($user, '@')) {
+            $receiver = $this->userClass->getOneByEmail($user);
+
+            //If we send notifications or tests, we will automatically add the user in order to have the links working fine
+            if (empty($receiver)) {
+                if (($force || $this->autoAddUser) && acym_isValidEmail($user)) {
+                    //We directly add the user and send and load him.
+                    $newUser = new \stdClass();
+                    $newUser->email = $user;
+                    $this->userClass->checkVisitor = false;
+                    $this->userClass->sendConf = false;
+                    acym_setVar('acy_source', 'When sending a test');
+                    $this->userClass->triggers = $this->userCreationTriggers;
+                    $userId = $this->userClass->save($newUser);
+                    $receiver = $this->userClass->getOneById($userId);
+                } else {
+                    throw new Exception(acym_translation('ACYM_USER_NOT_FOUND'));
+                }
+            }
+        } elseif (is_object($user)) {
+            $receiver = $user;
+        } else {
+            $receiver = $this->userClass->getOneById($user);
+        }
+
+        $this->userLanguage = empty($receiver->language) ? acym_getLanguageTag() : $receiver->language;
+        $this->receiverEmail = $receiver->email;
+
+        return $receiver;
+    }
+
+    private function prepareContent(int $mailId, array $options): void
+    {
+        $this->isHTML();
+
+        if (!empty($this->defaultMail[$mailId]->stylesheet)) {
+            $this->stylesheet = $this->defaultMail[$mailId]->stylesheet;
+        }
+        $this->settings = empty($this->defaultMail[$mailId]->settings) ? [] : json_decode($this->defaultMail[$mailId]->settings, true);
+
+        $this->Subject = $this->defaultMail[$mailId]->subject;
+        $this->Body = $this->defaultMail[$mailId]->body;
+        if ($this->isTest && !empty($options['testNote'])) {
+            $this->Body = '<div style="text-align: center; padding: 25px; font-family: Poppins; font-size: 20px">'.$options['testNote'].'</div>'.$this->Body;
+        }
+
+        //We add the intro text at the top of the body
+        if (!empty($this->introtext)) {
+            $this->Body = $this->introtext.$this->Body;
+        }
+
+        if (!empty($this->defaultMail[$mailId]->preheader)) {
+            $preHeader = '<!--[if !mso 9]><!--><div style="visibility:hidden;mso-hide:all;font-size:0;color:transparent;height:0;line-height:0;max-height:0;max-width:0;opacity:0;overflow:hidden;">';
+            $preHeader .= $this->defaultMail[$mailId]->preheader.str_repeat('&nbsp;&zwnj;', 100);
+            $preHeader .= '</div><!--<![endif]-->';
+
+            //We want to insert the preview at the start of the body so we match the start of the mail
+            preg_match('#(<(.*)<body(.*)>)#Uis', $this->Body, $matches);
+            if (empty($matches) || empty($matches[1])) {
+                $this->Body = $preHeader.$this->Body;
+            } else {
+                $this->Body = $matches[1].$preHeader.str_replace($matches[1], '', $this->Body);
+            }
+        }
+
+        if (ACYM_CMS === 'wordpress') {
+            ob_start();
+            $this->Body = do_shortcode($this->Body);
+            ob_end_clean();
+        }
+    }
+
+    private function prepareHeaders(int $mailId, int $receiverId, array $options): void
+    {
+        // Specify a messageID which will be kept by most mail clients and in the feedback loop
+        $subject = base64_encode(rand(0, 9999999)).'AC'.$receiverId.'Y'.$this->defaultMail[$mailId]->id.'BA'.base64_encode(time().rand(0, 99999));
+        $this->MessageID = '<'.preg_replace('|[^a-z0-9+_]|i', '', $subject).'@'.$this->serverHostname().'>';
+        $this->addCustomHeader('Feedback-ID', $this->defaultMail[$mailId]->id.':'.$receiverId.':'.$this->defaultMail[$mailId]->type.':'.base64_encode(ACYM_ROOT));
+
+        if (!empty($this->defaultMail[$mailId]->headers)) {
+            $this->mailHeader = $this->defaultMail[$mailId]->headers;
+        }
+
+        if (!empty($options['headers'])) {
+            foreach ($options['headers'] as $headerName => $headerValue) {
+                $this->addCustomHeader(trim($headerName), trim($headerValue));
+            }
+        }
+    }
+
+    private function prepareAddresses(int $mailId, object $receiver): void
+    {
+        $receiverName = '';
+        if ($this->config->get('add_names', true)) {
+            $receiverName = $this->cleanText($receiver->name);
+            //We do not set a name if the name is the same as the email address, it prevents the email from being sent with some mail servers
+            if ($receiverName == $this->cleanText($receiver->email)) {
+                $receiverName = '';
+            }
+        }
+        $this->addAddress($this->cleanText($receiver->email), $receiverName);
+
+        $this->setFrom($this->getSendSettings('from_email', $mailId), $this->getSendSettings('from_name', $mailId));
+        $this->acymAddReplyTo($this->defaultMail[$mailId]->reply_to_email ?? '', $this->defaultMail[$mailId]->reply_to_name ?? '');
+
+        // This is the bounce email address
+        if (!empty($this->defaultMail[$mailId]->bounce_email)) {
+            $this->Sender = $this->cleanText($this->defaultMail[$mailId]->bounce_email);
+        } else {
+            $this->Sender = $this->cleanText($this->config->get('bounce_email'));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function prepareBcc(int $mailId, array $options): void
+    {
+        $bccAddresses = [];
+
+        if (!empty($options['bcc'])) {
+            $bccAddresses = $options['bcc'];
+        }
+
+        if (!empty($this->defaultMail[$mailId]->bcc)) {
+            $emailBccAddresses = explode(';', trim(str_replace([',', ' '], ';', $this->defaultMail[$mailId]->bcc)));
+            $bccAddresses = array_unique(array_merge($bccAddresses, $emailBccAddresses));
+        }
+
+        if (!empty($bccAddresses)) {
+            $bccAddresses = array_filter($bccAddresses);
+            foreach ($bccAddresses as $oneBccAddress) {
+                $this->loadUser($oneBccAddress, true);
+                $this->addBCC($oneBccAddress);
+            }
+        }
+    }
+
+    private function prepareAttachments(int $mailId, array $options): void
+    {
+        $attachments = [];
+
+        if (!empty($this->defaultMail[$mailId]->attach)) {
+            $attachments = $this->defaultMail[$mailId]->attach;
+        }
+
+        if (!empty($options['attachments'])) {
+            $attachments = array_merge($attachments, $options['attachments']);
+        }
+
+        if (empty($attachments)) {
+            return;
+        }
+
+        if ($this->config->get('embed_files')) {
+            foreach ($attachments as $attachment) {
+                $this->addAttachment($attachment->filename, $attachment->name);
+            }
+        } else {
+            $attachStringHTML = '<fieldset><legend>'.acym_translation('ACYM_ATTACHMENTS').'</legend><table>';
+            foreach ($attachments as $attachment) {
+                $attachStringHTML .= '<tr><td><a href="'.$attachment->url.'" target="_blank">'.$attachment->name.'</a></td></tr>';
+            }
+            $attachStringHTML .= '</table></fieldset>';
+
+            if ($this->config->get('attachments_position', 'bottom') === 'top') {
+                $this->Body = $attachStringHTML.'<br />'.$this->Body;
+            } else {
+                $this->Body .= '<br />'.$attachStringHTML;
+            }
+        }
+    }
+
+    private function replaceDynamicContent(int $mailId): void
+    {
+        $this->replaceParams();
+
+        // Left side are mail columns on which we replace the short codes
+        $this->body = &$this->Body;
+        $this->altbody = &$this->AltBody;
+        $this->subject = &$this->Subject;
+        $this->from = &$this->From;
+        $this->fromName = &$this->FromName;
+        $this->replyto = &$this->ReplyTo;
+        $this->replyname = $this->defaultMail[$mailId]->reply_to_name ?? '';
+        $this->replyemail = $this->defaultMail[$mailId]->reply_to_email ?? '';
+        $this->mailId = intval($this->defaultMail[$mailId]->id);
+        $this->id = $this->mailId;
+        $this->creator_id = intval($this->defaultMail[$mailId]->creator_id);
+        $this->type = $this->defaultMail[$mailId]->type;
+        $this->stylesheet = &$this->stylesheet;
+        $this->links_language = $this->defaultMail[$mailId]->links_language;
+    }
+
+    private function prepareTracking(int $mailId, object $receiver): void
+    {
+        if ($this->canTrack($mailId, $receiver)) {
+            $receiver->id = intval($receiver->id);
+            $this->statPicture($this->mailId, $receiver->id);
+            $this->body = acym_absoluteURL($this->body);
+            $this->statClick($this->mailId, $receiver->id);
+            if (acym_isTrackingSalesActive()) {
+                $this->trackingSales($this->mailId, $receiver->id);
+            }
+        }
+    }
+
+    private function handleDtexts(object $receiver): bool
+    {
+        $this->replaceParams();
+
+        // Sending a spam-test, use the current user instead
+        if (strpos($receiver->email, '@mt.acyba.com') !== false) {
+            $currentUser = $this->userClass->getOneByEmail(acym_currentUserEmail());
+            if (empty($currentUser)) {
+                $currentUser = $receiver;
+            }
+            $result = acym_trigger('replaceUserInformation', [&$this, &$currentUser, true]);
+        } else {
+            $result = acym_trigger('replaceUserInformation', [&$this, &$receiver, true]);
+            if (!empty($result)) {
+                foreach ($result as $oneResult) {
+                    if (!empty($oneResult) && !$oneResult['send']) {
+                        $this->reportMessage = $oneResult['message'];
+
+                        return false;
+                    }
+                }
+            }
+        }
+
+        global $acymLanguages;
+        if (!empty($acymLanguages['userLanguage'])) {
+            unset($acymLanguages['userLanguage']);
+        }
+
+        // A user based dtext may have inserted HTML content, we need to re-inline the CSS to it
+        foreach ($result as $oneResult) {
+            if (!empty($oneResult['emogrifier'])) {
+                $this->prepareEmailContent();
+                break;
+            }
+        }
+
+        if ($this->config->get('multiple_part', false)) {
+            $this->altbody = $this->textVersion($this->Body);
+        }
+
+        $this->replaceParams();
+
+        return true;
+    }
+
+    private function initStatistics(bool $status, int $receiverId): void
+    {
+        if ($this->trackEmail) {
+            $statsAdd = [];
+            $statsAdd[$this->mailId][intval($status)][] = $receiverId;
+
+            $queueHelper = new QueueHelper();
+            $queueHelper->statsAdd($statsAdd);
+            $this->trackEmail = false;
+        }
+    }
+
+    private function trackingSales(int $mailId, int $userId): void
+    {
+        preg_match_all('#href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:|tel:)([^"]+)"#Ui', $this->body, $results);
+        if (empty($results)) {
+            return;
+        }
+
+        foreach ($results[1] as $url) {
+            $simplifiedUrl = str_replace(['https://', 'http://', 'www.'], '', $url);
+            $simplifiedWebsite = str_replace(['https://', 'http://', 'www.'], '', ACYM_LIVE);
+            if (strpos($simplifiedUrl, rtrim($simplifiedWebsite, '/')) === false || strpos($url, 'task=unsub')) continue;
+
+            $toAddUrl = (strpos($url, '?') === false ? '?' : '&').'linkReferal='.$mailId.'-'.$userId;
+
+            $posHash = strpos($url, '#');
+            if ($posHash !== false) {
+                $newURL = substr($url, 0, $posHash).$toAddUrl.substr($url, $posHash);
+            } else {
+                $newURL = $url.$toAddUrl;
+            }
+
+            $this->body = preg_replace('#href="('.preg_quote($url, '#').')"#Uis', 'href="'.$newURL.'"', $this->body);
+        }
+    }
+
+    private function statPicture(int $mailId, int $userId): void
+    {
+        $pictureLink = acym_frontendLink('frontstats&task=openStats&id='.$mailId.'&userid='.$userId, true, false);
+
+        $statPicture = '<img class="spict" alt="Statistics image" src="'.$pictureLink.'"  border="0" width="50" height="1" />';
+
+        if (strpos($this->body, '</body>')) {
+            $this->body = str_replace('</body>', $statPicture.'</body>', $this->body);
+        } else {
+            $this->body .= $statPicture;
+        }
+    }
+
+    private function removeAdditionalParams(string $url): string
+    {
+        $additionalParamsPos = strpos($url, '?');
+        if (!empty($additionalParamsPos)) {
+            $url = substr($url, 0, $additionalParamsPos);
+        }
+
+        return $url;
+    }
+
+    private function replaceParams(): void
+    {
+        if (empty($this->parameters)) {
+            return;
+        }
+
+        $pluginHelper = new PluginHelper();
+
+        //We create an extra tag which contains all possible parameters...
+        $this->generateAllParams();
+
+        $vars = [
+            'Subject',
+            'Body',
+            'From',
+            'FromName',
+            'replyname',
+            'replyemail',
+        ];
+
+        foreach ($vars as $oneVar) {
+            if (!empty($this->$oneVar)) {
+                $this->$oneVar = $pluginHelper->replaceDText($this->$oneVar, $this->parameters);
+            }
+        }
+
+        if (!empty($this->ReplyTo)) {
+            foreach ($this->ReplyTo as $i => $replyto) {
+                foreach ($replyto as $a => $oneval) {
+                    $this->ReplyTo[$i][$a] = $pluginHelper->replaceDText($this->ReplyTo[$i][$a], $this->parameters);
+                }
+            }
+        }
+    }
+
+    /**
+     * Create a new parameter called {alltags} which will include all the others
+     */
+    private function generateAllParams(): void
+    {
+        $result = '<table style="border:1px solid;border-collapse:collapse;" border="1" cellpadding="10"><tr><td>Tag</td><td>Value</td></tr>';
+        foreach ($this->parameters as $name => $value) {
+            //Just in case of...
+            if (!is_string($value)) continue;
+
+            $result .= '<tr><td>'.trim($name, '{}').'</td><td>'.$value.'</td></tr>';
+        }
+        $result .= '</table>';
+        $this->addParam('allshortcodes', $result);
     }
 
     private function sendOverride(object $override, array $options): bool
@@ -1597,18 +1576,20 @@ class MailerHelper extends Mailer
         return $statusSend;
     }
 
-    private function getSendSettings($type, $mailId = 0)
+    private function getSendSettings(string $type, int $mailId = 0): string
     {
-        if (!in_array($type, ['from_name', 'from_email', 'replyto_name', 'replyto_email'])) return false;
+        if (!in_array($type, ['from_name', 'from_email', 'replyto_name', 'replyto_email'])) {
+            return '';
+        }
 
         $mailType = strpos($type, 'replyto') !== false ? str_replace('replyto', 'reply_to', $type) : $type;
 
-        if (!empty($mailId) && !empty($this->defaultMail[$mailId]) && !empty($this->defaultMail[$mailId]->$mailType)) return $this->defaultMail[$mailId]->$mailType;
+        if (!empty($mailId) && !empty($this->defaultMail[$mailId]) && !empty($this->defaultMail[$mailId]->$mailType)) {
+            return $this->defaultMail[$mailId]->$mailType;
+        }
 
         $lang = empty($this->userLanguage) ? acym_getLanguageTag() : $this->userLanguage;
-
         $setting = $this->config->get($type);
-
         $translation = $this->config->get('sender_info_translation');
 
         if (!empty($translation)) {
@@ -1622,20 +1603,20 @@ class MailerHelper extends Mailer
         return $setting;
     }
 
-    private function prepareEmailContent(?int $mailId = null): void
+    private function prepareEmailContent(int $mailId = 0): void
     {
         $this->handleRelativeURLs($mailId);
         $this->inlineCSS($mailId);
         $this->finalizeHtmlStructure($mailId);
     }
 
-    private function handleRelativeURLs(?int $mailId = null): void
+    private function handleRelativeURLs(int $mailId): void
     {
         $mail = empty($mailId) ? $this : $this->defaultMail[$mailId];
         $mail->body = acym_absoluteURL($mail->body);
     }
 
-    private function inlineCSS(?int $mailId = null): void
+    private function inlineCSS(int $mailId): void
     {
         $mail = empty($mailId) ? $this : $this->defaultMail[$mailId];
 
@@ -1676,7 +1657,7 @@ class MailerHelper extends Mailer
         );
     }
 
-    private function finalizeHtmlStructure(?int $mailId = null): void
+    private function finalizeHtmlStructure(int $mailId): void
     {
         $mail = empty($mailId) ? $this : $this->defaultMail[$mailId];
 
@@ -1749,11 +1730,64 @@ class MailerHelper extends Mailer
         return $style;
     }
 
+    private function overrideAllEmails(array $options): bool
+    {
+        $this->trackEmail = false;
+
+        $this->addParam('subject', $options['subject']);
+
+        if (isset($options['isHtml']) && !$options['isHtml']) {
+            $options['message'] = nl2br($options['message']);
+        }
+        $this->addParam('body', $options['message']);
+
+        $mailClass = new MailClass();
+        $this->overrideEmailToSend = $mailClass->getOneByName('acy_notification_cms');
+
+        if (empty($this->overrideEmailToSend)) {
+            return false;
+        }
+
+        $statusSend = $this->sendOne($this->overrideEmailToSend->id, $options['to'], $options);
+        if (!$statusSend && !empty($this->reportMessage)) {
+            // Something went wrong when trying to send the override, log the information in the cron logs file
+            $cronHelper = new CronHelper();
+            $cronHelper->addMessage($this->reportMessage);
+            $cronHelper->saveReport();
+        }
+
+        return $statusSend;
+    }
+
     /* * * * * * * * * * * * * * * * *
-     *
-     * Override PHPMailer's methods
-     *
+     *                               *
+     * Override PHPMailer's methods  *
+     *                               *
      * * * * * * * * * * * * * * * * */
+
+    /**
+     * @throws Exception
+     */
+    private function acymAddReplyTo(string $email, string $name): void
+    {
+        if (empty($email)) {
+            return;
+        }
+
+        $replyToName = $this->config->get('add_names', true) ? $this->cleanText(trim($name)) : '';
+        $replyToEmail = trim($email);
+
+        if (substr_count($replyToEmail, '@') > 1) {
+            //We have more than one reply to...
+            $replyToEmailArray = explode(';', str_replace([';', ','], ';', $replyToEmail));
+            $replyToNameArray = explode(';', str_replace([';', ','], ';', $replyToName));
+            foreach ($replyToEmailArray as $i => $oneReplyTo) {
+                $this->addReplyTo($this->cleanText($oneReplyTo), @$replyToNameArray[$i]);
+            }
+        } else {
+            $this->addReplyTo($this->cleanText($replyToEmail), $replyToName);
+        }
+    }
 
     public function setFrom($email, $name = '', $auto = false)
     {
@@ -1794,34 +1828,5 @@ class MailerHelper extends Mailer
     public static function validateAddress($address, $patternselect = null)
     {
         return true;
-    }
-
-    private function overrideAllEmails(array $options): bool
-    {
-        $this->trackEmail = false;
-
-        $this->addParam('subject', $options['subject']);
-
-        if (isset($options['isHtml']) && !$options['isHtml']) {
-            $options['message'] = nl2br($options['message']);
-        }
-        $this->addParam('body', $options['message']);
-
-        $mailClass = new MailClass();
-        $this->overrideEmailToSend = $mailClass->getOneByName('acy_notification_cms');
-
-        if (empty($this->overrideEmailToSend)) {
-            return false;
-        }
-
-        $statusSend = $this->sendOne($this->overrideEmailToSend->id, $options['to'], $options);
-        if (!$statusSend && !empty($this->reportMessage)) {
-            // Something went wrong when trying to send the override, log the information in the cron logs file
-            $cronHelper = new CronHelper();
-            $cronHelper->addMessage($this->reportMessage);
-            $cronHelper->saveReport();
-        }
-
-        return $statusSend;
     }
 }

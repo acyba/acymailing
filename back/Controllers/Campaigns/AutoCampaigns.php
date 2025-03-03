@@ -8,21 +8,21 @@ use AcyMailing\Classes\MailClass;
 
 trait AutoCampaigns
 {
-    public function campaigns_auto()
+    public function campaigns_auto(): void
     {
         if (!acym_level(ACYM_ENTERPRISE)) {
             $this->campaigns();
         }
     }
 
-    private function getIsPendingGenerated(&$data)
+    private function getIsPendingGenerated(array &$data): void
     {
         $campaignClass = new CampaignClass();
         $campaingsGenerated = $campaignClass->getAllCampaignsGeneratedWaiting();
         $data['generatedPending'] = !empty($campaingsGenerated);
     }
 
-    private function getAutoCampaignsFrequency(&$data)
+    private function getAutoCampaignsFrequency(array &$data): void
     {
         foreach ($data['allCampaigns'] as $key => $campaign) {
             if (empty($campaign->sending_params)) continue;
@@ -38,30 +38,16 @@ trait AutoCampaigns
         }
     }
 
-    private function getCountStatusFilterCampaignsAuto($allCampaigns, &$allCountStatus)
-    {
-        $allCountStatus->all = 0;
-        $allCountStatus->generated = 0;
-
-        if (!empty($allCampaigns)) $allCountStatus->all = count($allCampaigns);
-
-        $campaignClass = new CampaignClass();
-        $generatedCampaigns = $campaignClass->getAllCampaignsGenerated();
-        if (!empty($generatedCampaigns)) {
-            $allCountStatus->generated = count($generatedCampaigns);
-        }
-    }
-
-    public function summaryGenerated()
+    public function summaryGenerated(): void
     {
         $campaignId = acym_getVar('int', 'campaignId', 0);
         $mailClass = new MailClass();
 
         acym_setVar('layout', 'summary_generated');
 
-        $generatedCampaign = $this->_loadCampaignMail($campaignId);
+        $generatedCampaign = $this->loadCampaignMail($campaignId);
 
-        if (!$generatedCampaign) {
+        if (empty($generatedCampaign)) {
             acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_LOAD_CAMPAIGN'), 'error');
             $this->listing();
 
@@ -79,9 +65,12 @@ trait AutoCampaigns
             return;
         }
 
-        $parentCampaign = $this->_loadCampaignMail($campaign->parent_id);
-        if (!$parentCampaign) {
-            $parentCampaign = ['campaign' => false, 'mail' => false];
+        $parentCampaign = $this->loadCampaignMail((int)$campaign->parent_id);
+        if (empty($parentCampaign)) {
+            $parentCampaign = [
+                'campaign' => false,
+                'mail' => false,
+            ];
         }
 
         //if campaign wait for confirmation
@@ -112,14 +101,14 @@ trait AutoCampaigns
         parent::display($data);
     }
 
-    protected function changeStatusGeneratedCampaign($statusToApply = 'disable')
+    protected function changeStatusGeneratedCampaign(string $statusToApply = 'disable'): void
     {
         $campaignId = acym_getVar('int', 'campaignId', 0);
         $campaignClass = new CampaignClass();
 
-        $campaign = $this->_loadCampaignMail($campaignId);
+        $campaign = $this->loadCampaignMail($campaignId);
 
-        if (!$campaign) {
+        if (empty($campaign)) {
             acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_LOAD_CAMPAIGN'), 'error');
             $this->listing();
 
@@ -154,35 +143,43 @@ trait AutoCampaigns
         }
     }
 
-    public function disableGeneratedCampaign()
+    public function disableGeneratedCampaign(): void
     {
         $this->changeStatusGeneratedCampaign();
     }
 
-    public function enableGeneratedCampaign()
+    public function enableGeneratedCampaign(): void
     {
         $this->changeStatusGeneratedCampaign('enable');
     }
 
-    private function _loadCampaignMail($campaignId)
+    private function loadCampaignMail(int $campaignId): array
     {
-        if (empty($campaignId)) return false;
+        if (empty($campaignId)) {
+            return [];
+        }
 
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
 
         $campaign = $campaignClass->getOneById($campaignId);
-        if (empty($campaign)) return false;
+        if (empty($campaign)) {
+            return [];
+        }
 
         $mail = $mailClass->getOneById($campaign->mail_id);
-        if (empty($mail)) return false;
-
+        if (empty($mail)) {
+            return [];
+        }
 
         if (empty($mail->from_name)) $mail->from_name = $this->config->get('from_name');
         if (empty($mail->from_email)) $mail->from_email = $this->config->get('from_email');
         if (empty($mail->reply_to_name)) $mail->reply_to_name = $this->config->get('replyto_name');
         if (empty($mail->reply_to_email)) $mail->reply_to_email = $this->config->get('replyto_email');
 
-        return ['campaign' => $campaign, 'mail' => $mail];
+        return [
+            'campaign' => $campaign,
+            'mail' => $mail,
+        ];
     }
 }

@@ -33,7 +33,7 @@ class ConfigurationController extends AcymController
         ];
     }
 
-    public function getAjax()
+    public function getAjax(): void
     {
         acym_checkToken();
 
@@ -62,7 +62,7 @@ class ConfigurationController extends AcymController
         }
     }
 
-    public function displayMessage($message, $ajax = false)
+    public function displayMessage(string $message, bool $ajax = false): array
     {
         $correspondences = [
             'WEBSITE_NOT_FOUND' => ['message' => 'ACYM_WEBSITE_NOT_FOUND', 'type' => 'error'],
@@ -86,12 +86,12 @@ class ConfigurationController extends AcymController
 
                 if (!empty($message)) acym_enqueueMessage(acym_translationSprintf('ACYM_CURL_ERROR_MESSAGE', $message), 'error');
 
-                return false;
+                return [];
             }
 
             acym_enqueueMessage(acym_translation($correspondences[$message]['message']), $correspondences[$message]['type']);
 
-            return $correspondences[$message]['type'] == 'info';
+            return $correspondences[$message]['type'] === 'info' ? $correspondences[$message] : [];
         } else {
             if (empty($message) || empty($correspondences[$message])) {
                 $response = ['message' => acym_translation('ACYM_ERROR_ON_CALL_ACYBA_WEBSITE'), 'type' => 'error'];
@@ -108,7 +108,7 @@ class ConfigurationController extends AcymController
         }
     }
 
-    function seeLogs()
+    function seeLogs(): void
     {
         $filename = acym_getVar('string', 'filename');
 
@@ -132,12 +132,7 @@ class ConfigurationController extends AcymController
         exit;
     }
 
-    /**
-     * @param bool $isSmtp
-     *
-     * @return void
-     */
-    private function loginForOAuth2(bool $isSmtp = true)
+    private function loginForOAuth2(bool $isSmtp = true): void
     {
         $auth2Smtp = [
             'smtp.gmail.com' => [
@@ -202,10 +197,7 @@ class ConfigurationController extends AcymController
         acym_redirect($redirectLink);
     }
 
-    /**
-     * @return void
-     */
-    public function getAccessToken()
+    public function getAccessToken(): void
     {
         $isBounce = $this->config->get('oauth_auth_type', 'bounce') == 'bounce';
         $code = acym_getVar('string', 'code');

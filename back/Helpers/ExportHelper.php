@@ -8,11 +8,11 @@ use AcyMailing\Core\AcymObject;
 
 class ExportHelper extends AcymObject
 {
-    var $eol = "\r\n";
-    var $before = '"';
-    var $after = '"';
+    private string $eol = "\r\n";
+    private string $before = '"';
+    private string $after = '"';
 
-    public function setDownloadHeaders($filename = 'export', $extension = 'csv')
+    public function setDownloadHeaders(string $filename = 'export', string $extension = 'csv'): void
     {
         // Fix for IE catching
         acym_header('Pragma: public');
@@ -29,7 +29,7 @@ class ExportHelper extends AcymObject
         acym_header('Content-Transfer-Encoding: binary');
     }
 
-    public function exportTemplate($template)
+    public function exportTemplate(object $template): void
     {
         // 1 - Create a folder with the data to export
         $name = preg_replace('#[^a-z0-9]#Uis', '_', $template->name);
@@ -150,14 +150,14 @@ class ExportHelper extends AcymObject
         exit;
     }
 
-    public function exportStatsFormattedCSV($mailName, $globalDonutsData, $globaline, $timeLinechart)
+    public function exportStatsFormattedCSV(string $mailName, array $globalDonutsData, array $globaline, string $timeLinechart): void
     {
         $nbExport = $this->getExportLimit();
         acym_displayErrors();
 
-        if ($timeLinechart == 'month') {
+        if ($timeLinechart === 'month') {
             $timeLinechart = acym_translation('ACYM_MONTHLY_STATS');
-        } elseif ($timeLinechart == 'week') {
+        } elseif ($timeLinechart === 'week') {
             $timeLinechart = acym_translation('ACYM_WEEKLY_STATS');
         } else {
             $timeLinechart = acym_translation('ACYM_DAILY_STATS');
@@ -195,7 +195,7 @@ class ExportHelper extends AcymObject
         $this->finishStatsExport($csvLines);
     }
 
-    public function exportStatsFullCSV($query, $columns, $type = 'global')
+    public function exportStatsFullCSV(string $query, array $columns, string $type = 'global'): void
     {
         $mailsStats = acym_loadObjectList($query);
         $mailClass = new MailClass();
@@ -243,16 +243,16 @@ class ExportHelper extends AcymObject
         $this->finishStatsExport($csvLines, $type);
     }
 
-    private function finishStatsExport($csvLines, $type = 'global')
+    private function finishStatsExport(array $csvLines, string $type = 'global'): void
     {
         $final = implode($this->eol, $csvLines);
 
-        if (ACYM_CMS === 'wordpress') @ob_get_clean();
+        if (ACYM_CMS === 'wordpress') {
+            @ob_get_clean();
+        }
         $filename = 'export_stats_'.$type.'_'.date('Y-m-d');
         $this->setDownloadHeaders($filename);
         echo $final;
-
-        return '';
     }
 
     private function getLists(): array
@@ -266,8 +266,16 @@ class ExportHelper extends AcymObject
         return $lists;
     }
 
-    public function exportCSV($query, $fieldsToExport, $customFieldsToExport, $specialFieldsToExport, $separator = ',', $charset = 'UTF-8', $exportFile = null, $flagToRemove = 0)
-    {
+    public function exportCSV(
+        string $query,
+        array  $fieldsToExport,
+        array  $customFieldsToExport,
+        array  $specialFieldsToExport,
+        string $separator = ',',
+        string $charset = 'UTF-8',
+        string $exportFile = '',
+        int    $flagToRemove = 0
+    ): string {
         $nbExport = $this->getExportLimit();
         acym_displayErrors();
         $encodingClass = new EncodingHelper();
@@ -461,7 +469,7 @@ class ExportHelper extends AcymObject
         return '';
     }
 
-    private function getExportLimit()
+    private function getExportLimit(): int
     {
         // Getting X users per batch based on the memory limit
         $serverLimit = acym_bytes(ini_get('memory_limit'));
@@ -474,23 +482,25 @@ class ExportHelper extends AcymObject
         }
     }
 
-    public function getExportChangesFileName($year, $month, $extension = true)
+    public function getExportChangesFileName(string $year, string $month, bool $extension = true): string
     {
         $filename = 'export_changes_'.$year.'_'.$month;
 
-        if ($extension) $filename .= '.csv';
+        if ($extension) {
+            $filename .= '.csv';
+        }
 
         return $filename;
     }
 
-    public function getExportChangesFilePath()
+    public function getExportChangesFilePath(): string
     {
         $filename = $this->getExportChangesFileName(acym_date('now', 'Y'), acym_date('now', 'm'));
 
         return acym_getLogPath($filename);
     }
 
-    public function generateExportChangesFilePathConfigChanges()
+    public function generateExportChangesFilePathConfigChanges(): string
     {
         $filename = $this->getExportChangesFileName(acym_date('now', 'Y'), acym_date('now', 'm'), false);
 
@@ -506,9 +516,11 @@ class ExportHelper extends AcymObject
         return acym_getLogPath($newFilename);
     }
 
-    public function exportChanges($user, $fieldsToExport, $fieldName, $newValue, $oldValue)
+    public function exportChanges(array $user, array $fieldsToExport, string $fieldName, $newValue, $oldValue): void
     {
-        if (empty($user) || empty($fieldName)) return;
+        if (empty($user) || empty($fieldName)) {
+            return;
+        }
 
         $exportFullPath = $this->getExportChangesFilePath();
 
@@ -559,15 +571,20 @@ class ExportHelper extends AcymObject
         );
     }
 
-    public function cleanExportChangesFile()
+    public function cleanExportChangesFile(): void
     {
-        $exportFolder = acym_getLogPath('');
+        $exportFolder = acym_getLogPath();
         $files = scandir($exportFolder);
-        if (empty($files)) return;
+        if (empty($files)) {
+            return;
+        }
 
         $filenameToSearch = $this->getExportChangesFileName(acym_date('2 month ago', 'Y'), acym_date('2 month ago', 'm'), false);
         foreach ($files as $file) {
-            if (strpos($file, $filenameToSearch) === false) continue;
+            if (strpos($file, $filenameToSearch) === false) {
+                continue;
+            }
+
             @unlink(acym_getLogPath($file));
         }
     }

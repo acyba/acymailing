@@ -7,9 +7,9 @@ use AcyMailing\Classes\ZoneClass;
 
 class ZonesController extends AcymController
 {
-    const ZONE_IMAGE_FOLDER = ACYM_UPLOAD_FOLDER.'zones'.DS;
+    private const ZONE_IMAGE_FOLDER = ACYM_UPLOAD_FOLDER.'zones'.DS;
 
-    public function save()
+    public function save(): void
     {
         acym_checkToken();
 
@@ -47,7 +47,7 @@ class ZonesController extends AcymController
         acym_sendAjaxResponse('', $dataResponse);
     }
 
-    private function getZoneData()
+    private function getZoneData(): array
     {
         acym_checkToken();
         $zoneId = acym_getVar('int', 'zoneId', 0);
@@ -68,14 +68,14 @@ class ZonesController extends AcymController
         ];
     }
 
-    public function getForInsertion()
+    public function getForInsertion(): void
     {
         $zoneData = $this->getZoneData();
 
         acym_sendAjaxResponse('', ['content' => $zoneData['zone']->content]);
     }
 
-    public function delete()
+    public function delete(): void
     {
         $zoneData = $this->getZoneData();
         $zoneData['zoneClass']->delete($zoneData['zoneId']);

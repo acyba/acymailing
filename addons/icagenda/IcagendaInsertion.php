@@ -58,7 +58,6 @@ trait IcagendaInsertion
     {
         $this->defaultValues = $defaultValues;
 
-        acym_loadLanguageFile('com_icagenda', JPATH_SITE);
         $this->categories = acym_loadObjectList('SELECT `id`, 0 AS `parent_id`, `title` FROM `#__icagenda_category` WHERE state = 1', 'id');
 
         $tabHelper = new TabHelper();
@@ -70,20 +69,7 @@ trait IcagendaInsertion
                 'title' => 'ACYM_DISPLAY',
                 'type' => 'checkbox',
                 'name' => 'display',
-                'options' => [
-                    'title' => ['ACYM_TITLE', true],
-                    'image' => ['ACYM_IMAGE', true],
-                    'date' => ['COM_ICAGENDA_EVENT_DATE_FUTUR', true],
-                    'venue' => ['COM_ICAGENDA_EVENT_PLACE', true],
-                    'short' => ['ACYM_SHORT_DESCRIPTION', true],
-                    'desc' => ['ACYM_DESCRIPTION', false],
-                    'email' => ['COM_ICAGENDA_EVENT_MAIL', false],
-                    'phone' => ['COM_ICAGENDA_EVENT_PHONE', false],
-                    'availableseats' => ['COM_ICAGENDA_EVENT_NUMBER_OF_SEATS_AVAILABLE', true],
-                    'totalseats' => ['COM_ICAGENDA_EVENT_NUMBER_OF_SEATS', false],
-                    'website' => ['COM_ICAGENDA_EVENT_WEBSITE', false],
-                    'cat' => ['ACYM_CATEGORY', false],
-                ],
+                'options' => $this->displayOptions,
             ],
         ];
 
@@ -192,8 +178,6 @@ trait IcagendaInsertion
 
     public function prepareListing()
     {
-        acym_loadLanguageFile('com_icagenda', JPATH_SITE);
-
         $this->querySelect = 'SELECT event.* ';
         $this->query = 'FROM `#__icagenda_events` AS event ';
         $this->filters = [];
@@ -247,13 +231,6 @@ trait IcagendaInsertion
     {
         $this->replaceMultiple($email);
         $this->replaceOne($email);
-    }
-
-    protected function loadLibraries($email)
-    {
-        acym_loadLanguageFile('com_icagenda', JPATH_SITE);
-
-        return true;
     }
 
     public function generateByCategory(&$email)
@@ -361,7 +338,7 @@ trait IcagendaInsertion
         $varFields['{date}'] = '';
         if (!empty($element->next) && $element->next != '0000-00-00 00:00:00') {
             $varFields['{date}'] = acym_getDate(
-                acym_getTime($element->next),
+                strtotime($element->next.' UTC'),
                 acym_translation('ACYM_DATE_FORMAT_LC1')
             );
         }

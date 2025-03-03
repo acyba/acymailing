@@ -12,12 +12,8 @@ class QueueClass extends AcymClass
 
     /**
      * Get campaigns depending on filters (search, status, pagination)
-     *
-     * @param $settings
-     *
-     * @return array|void
      */
-    public function getMatchingCampaigns($settings)
+    public function getMatchingCampaigns(array $settings): array
     {
         $campaignClass = new CampaignClass();
         $mailStatClass = new MailStatClass();
@@ -69,14 +65,14 @@ class QueueClass extends AcymClass
             $query .= ' WHERE ('.implode(') AND (', $filters).')';
         }
 
-        $queryCount = 'SELECT COUNT(DISTINCT mail.id) '.$query;
+        $queryCount = 'SELECT COUNT(DISTINCT mail.id) AS total '.$query;
         $query .= ' GROUP BY mail.id';
 
         $query = 'SELECT mail.name, mail.subject, mail.type, mail.id, campaign.id AS campaign, IF(campaign.sending_date IS NULL, queue.sending_date, campaign.sending_date) AS sending_date, campaign.sending_type, campaign.active, campaign.sending_params AS sending_params, COUNT(queue.mail_id) AS nbqueued, mail.language, mail.parent_id '.$query.' ORDER BY queue.sending_date ASC';
 
         acym_query('SET SQL_BIG_SELECTS=1;');
         $results['elements'] = $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['campaignsPerPage']));
-        $results['total'] = acym_loadResult($queryCount);
+        $results['total'] = acym_loadObject($queryCount);
 
         $isMultilingual = acym_isMultilingual();
         $campaignRecipientsMultilingual = [];
@@ -199,12 +195,8 @@ class QueueClass extends AcymClass
 
     /**
      * Get campaigns depending on filters (search, status, pagination)
-     *
-     * @param $settings
-     *
-     * @return array|void
      */
-    public function getMatchingScheduledCampaigns($settings)
+    public function getMatchingScheduledCampaigns(array $settings): array
     {
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
@@ -218,7 +210,7 @@ class QueueClass extends AcymClass
         $filters = [
             'campaign.draft = 0',
             'campaign.sent = 0',
-            'campaign.sending_type = '.acym_escapeDB($campaignClass->getConstScheduled()),
+            'campaign.sending_type = '.acym_escapeDB(CampaignClass::SENDING_TYPE_SCHEDULED),
         ];
 
         if (!empty($settings['search'])) {
@@ -229,12 +221,12 @@ class QueueClass extends AcymClass
             $query .= ' WHERE ('.implode(') AND (', $filters).')';
         }
 
-        $queryCount = 'SELECT COUNT(DISTINCT mail.id) '.$query;
+        $queryCount = 'SELECT COUNT(DISTINCT mail.id) AS total '.$query;
         $query = 'SELECT mail.name, mail.subject, mail.id, campaign.sending_date, campaign.sending_params, mail.language, mail.parent_id '.$query.' GROUP BY mail.id ORDER BY campaign.sending_date ASC';
 
         acym_query('SET SQL_BIG_SELECTS=1;');
         $results['elements'] = $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['campaignsPerPage']));
-        $results['total'] = acym_loadResult($queryCount);
+        $results['total'] = acym_loadObject($queryCount);
 
         foreach ($results['elements'] as $i => $oneMail) {
             $results['elements'][$i]->sending_params = empty($oneMail->sending_params) ? [] : json_decode($oneMail->sending_params, true);
@@ -253,12 +245,8 @@ class QueueClass extends AcymClass
 
     /**
      * Get mails depending on filters (search, status, pagination)
-     *
-     * @param $settings
-     *
-     * @return mixed
      */
-    public function getMatchingResults($settings)
+    public function getMatchingResults(array $settings): array
     {
         $query = 'FROM #__acym_queue AS queue 
                     JOIN #__acym_mail AS mail ON mail.id = queue.mail_id 
@@ -289,14 +277,15 @@ class QueueClass extends AcymClass
             $query .= ' GROUP BY queue.mail_id, queue.user_id';
         }
 
-        $queryCount = 'SELECT COUNT(queue.mail_id) '.$query;
+        $queryCount = 'SELECT COUNT(queue.mail_id) AS total '.$query;
         $query = 'SELECT mail.id, queue.sending_date, mail.name, mail.subject, user.email, user.name AS user_name, queue.user_id, queue.try '.$query.' ORDER BY queue.sending_date ASC';
 
         $mailClass = new MailClass();
-        $results['elements'] = $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage']));
-        $results['total'] = acym_loadResult($queryCount);
 
-        return $results;
+        return [
+            'elements' => $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['elementsPerPage'])),
+            'total' => acym_loadObject($queryCount),
+        ];
     }
 
     public function scheduleReady()
@@ -314,7 +303,7 @@ class QueueClass extends AcymClass
             FROM #__acym_campaign AS campaign 
             JOIN #__acym_mail AS mail 
                 ON campaign.mail_id = mail.id '.$multilingualQuery.'
-            WHERE campaign.sending_type = '.acym_escapeDB($campaignClass->getConstScheduled()).' 
+            WHERE campaign.sending_type = '.acym_escapeDB(CampaignClass::SENDING_TYPE_SCHEDULED).' 
                 AND campaign.draft = 0
                 AND campaign.sending_date <= '.acym_escapeDB(acym_date('now', 'Y-m-d H:i:s', false)).'  
                 AND campaign.sent = 0',

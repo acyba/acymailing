@@ -25,7 +25,7 @@
 		<folder>FrontViews</folder>
 		<folder>Params</folder>
 		<folder>Router</folder>
-		<folder>tmpl</folder>
+		<folder>views</folder>
 		<filename>acym.php</filename>
 		<filename>index.html</filename>
 		<filename>router.php</filename>

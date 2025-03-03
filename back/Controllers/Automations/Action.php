@@ -12,7 +12,7 @@ use AcyMailing\Helpers\WorkflowHelper;
 
 trait Action
 {
-    public function action()
+    public function action(): void
     {
 
         if (!acym_level(ACYM_ENTERPRISE)) {
@@ -20,7 +20,7 @@ trait Action
         }
     }
 
-    private function _saveActions($isMassAction = false)
+    private function _saveActions(bool $isMassAction = false): array
     {
         if ($isMassAction) {
             acym_session();
@@ -48,7 +48,7 @@ trait Action
         if ($isMassAction) {
             $_SESSION['massAction']['actions'] = $action['actions'];
 
-            return true;
+            return [];
         }
 
         $action['actions'] = json_encode($action['actions']);
@@ -69,26 +69,18 @@ trait Action
         ];
     }
 
-    public function saveExitActions()
+    public function saveExitActions(): void
     {
-        $ids = $this->_saveActions();
+        $this->_saveActions();
 
-        if (empty($ids)) {
-            return;
-        }
-
-        acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
+        acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
 
         $this->listing();
     }
 
-    public function saveActions()
+    public function saveActions(): void
     {
         $ids = $this->_saveActions();
-
-        if (empty($ids)) {
-            return;
-        }
 
         acym_setVar('id', $ids['automationId']);
         acym_setVar('stepId', $ids['stepId']);
@@ -96,7 +88,7 @@ trait Action
         $this->filter();
     }
 
-    public function createMail()
+    public function createMail(): void
     {
         $id = acym_getVar('int', 'id');
         $idAdmin = acym_getVar('boolean', 'automation_admin');

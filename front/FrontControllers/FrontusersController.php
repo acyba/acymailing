@@ -45,7 +45,7 @@ class FrontusersController extends UsersController
     }
 
 
-    private function displayMessage($message, $ajax, $type = 'error')
+    private function displayMessage(string $message, bool $ajax, string $type = 'error'): void
     {
         if ($ajax) {
             echo '{"message":"'.acym_translation($message, true).'","type":"'.$type.'","code":"1"}';
@@ -56,7 +56,7 @@ class FrontusersController extends UsersController
         exit;
     }
 
-    public function subscribe()
+    public function subscribe(): void
     {
         acym_checkRobots();
 
@@ -190,7 +190,7 @@ class FrontusersController extends UsersController
         acym_redirect($redirectUrl, '', 'message', true);
     }
 
-    private function unsubscribeDirectly($alreadyExists, $ajax)
+    private function unsubscribeDirectly(object $alreadyExists, bool $ajax): void
     {
         $userClass = new UserClass();
         if ($this->config->get('allow_modif', 'data') === 'none') {
@@ -224,7 +224,7 @@ class FrontusersController extends UsersController
         $this->endUnsubscribe($msg, $ajax);
     }
 
-    private function endUnsubscribe($msg, $ajax, $type = 'success')
+    private function endUnsubscribe(string $msg, bool $ajax, string $type = 'success'): void
     {
         $msg = acym_translation($msg);
 
@@ -242,7 +242,7 @@ class FrontusersController extends UsersController
         acym_redirect($redirectUrl);
     }
 
-    public function unsubscribe()
+    public function unsubscribe(): void
     {
         acym_checkRobots();
         $userClass = new UserClass();
@@ -306,7 +306,7 @@ class FrontusersController extends UsersController
         }
     }
 
-    private function getUserFromUnsubPage()
+    private function getUserFromUnsubPage(): object
     {
         $userID = acym_getVar('int', 'user_id');
         $userClass = new UserClass();
@@ -322,7 +322,7 @@ class FrontusersController extends UsersController
         return $user;
     }
 
-    private function unsubscribeAllInner($update = false)
+    private function unsubscribeAllInner(bool $update = false): void
     {
         $userClass = new UserClass();
         $user = $this->getUserFromUnsubPage();
@@ -347,7 +347,7 @@ class FrontusersController extends UsersController
         $userClass->unsubscribe($user->id, $lists);
     }
 
-    private function redirectUnsubWorked()
+    private function redirectUnsubWorked(): void
     {
         acym_enqueueMessage(acym_translation('ACYM_SUBSCRIPTION_UPDATED_OK'));
         $redirectUrl = $this->config->get('unsub_redirect_url');
@@ -358,7 +358,7 @@ class FrontusersController extends UsersController
         }
     }
 
-    public function unsubscribeAll()
+    public function unsubscribeAll(): void
     {
         $userClass = new UserClass();
         if ($userClass->identify(true, 'user_id', 'user_key') === false) {
@@ -381,13 +381,12 @@ class FrontusersController extends UsersController
         }
     }
 
-    public function saveSubscriptions()
+    public function saveSubscriptions(): void
     {
         $userClass = new UserClass();
         if ($userClass->identify(true, 'user_id', 'user_key') === false) {
             $this->displayMessage('ACYM_USER_NOT_FOUND', false);
         }
-
 
         // Get the user
         $user = $this->getUserFromUnsubPage();
@@ -420,7 +419,7 @@ class FrontusersController extends UsersController
         $this->redirectUnsubWorked();
     }
 
-    public function unsubscribePage($alreadyExists)
+    public function unsubscribePage(object $alreadyExists): void
     {
         $userClass = new UserClass();
         $lang = acym_getVar('string', 'language', acym_getLanguageTag());
@@ -486,7 +485,7 @@ class FrontusersController extends UsersController
         parent::display($data);
     }
 
-    public function getSVGImage($unsubscribeColor, $hoverColor)
+    private function getSVGImage(string $unsubscribeColor, string $hoverColor): string
     {
         if ($this->config->get('display_unsub_image') === '1') {
             $svgPath = ACYM_IMAGES.'unsubscribe/unsub_image.svg';
@@ -503,7 +502,7 @@ class FrontusersController extends UsersController
         return '';
     }
 
-    public function hexToRGB($hexColor)
+    public function hexToRGB(string $hexColor): array
     {
         $hexColor = ltrim($hexColor, '#');
 
@@ -518,7 +517,7 @@ class FrontusersController extends UsersController
         return [$r, $g, $b];
     }
 
-    public function darkenRGBColor($hexColor, $percent)
+    public function darkenRGBColor(string $hexColor, int $percent): string
     {
         $rgbValues = $this->hexToRGB($hexColor);
 
@@ -529,7 +528,7 @@ class FrontusersController extends UsersController
         return sprintf('rgb(%d, %d, %d)', $darkenedRGB[0], $darkenedRGB[1], $darkenedRGB[2]);
     }
 
-    public function confirm()
+    public function confirm(): void
     {
         if (acym_isRobot()) {
             return;
@@ -575,7 +574,7 @@ class FrontusersController extends UsersController
         acym_redirect(acym_rootURI());
     }
 
-    public function profile()
+    public function profile(): void
     {
         $userClass = new UserClass();
         $user = $userClass->identify(true);
@@ -648,8 +647,9 @@ class FrontusersController extends UsersController
         parent::display($data);
     }
 
-    public function prepareParams($values): array
+    public function prepareParams(object $values): array
     {
+        //TODO problem with the types throughout the entire method
         if (!isset($values->lists)) {
             $values->lists = 'none';
         }
@@ -690,7 +690,12 @@ class FrontusersController extends UsersController
         $user = $userClass->identify(true);
         if (empty($user)) {
             $listClass = new ListClass();
-            $subscription = $listClass->getAll('id', true);
+            $subscription = $listClass->getAll('id');
+
+            if (acym_isMultilingual()) {
+                $subscription = $listClass->getTranslatedNameDescription($subscription);
+            }
+
             $user = new \stdClass();
             $user->id = 0;
             $user->key = 0;
@@ -819,7 +824,7 @@ class FrontusersController extends UsersController
         return $data;
     }
 
-    public function savechanges()
+    public function savechanges(): void
     {
         acym_checkToken();
         acym_checkRobots();
@@ -847,7 +852,7 @@ class FrontusersController extends UsersController
         exit;
     }
 
-    public function exportdata()
+    public function exportdata(): void
     {
         acym_checkToken();
 
@@ -859,10 +864,10 @@ class FrontusersController extends UsersController
         }
 
         $userHelper = new UserHelper();
-        $userHelper->exportdata($user->id);
+        $userHelper->exportdata((int)$user->id);
     }
 
-    public function gdprDelete()
+    public function gdprDelete(): void
     {
         acym_checkToken();
         $userClass = new UserClass();
@@ -870,7 +875,7 @@ class FrontusersController extends UsersController
         $userClass->delete($user->id);
     }
 
-    public function ajaxGetEnqueuedMessages()
+    public function ajaxGetEnqueuedMessages(): void
     {
         acym_session();
 
@@ -885,7 +890,7 @@ class FrontusersController extends UsersController
             }
 
             $output .= '<div class="acym_callout acym__callout__front__'.$type.'" role="alert">';
-            $output .= implode(' ', $messages);
+            $output .= '<div>'.implode(' ', $messages).'</div>';
             $output .= '<button class="acym_callout_close" aria-label="'.acym_escape(acym_translation('ACYM_CLOSE_NOTIFICATION')).'">x</button></div>';
 
             unset($_SESSION['acymessage'.$type]);

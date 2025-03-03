@@ -35,14 +35,13 @@ class UserSync
         ?>
 		<div class="acym__regacy">
 			<label class="acym__regacy__label"><?php echo $regacyHelper->label; ?></label>
-			<div class="acym__regacy__values"><?php echo $regacyHelper->lists; ?></div>
+			<div class="acym__regacy__values"><?php echo $regacyHelper->listsHtml; ?></div>
 		</div>
         <?php
     }
 
     public function addProfileFields()
     {
-
         $config = acym_config();
         if (!$config->get('regacy', 0)) return;
 
@@ -58,9 +57,11 @@ class UserSync
                     $checked = $oneList['checked'] ? 'checked="checked"' : '';
                     ?>
 					<tr>
-						<th scope="row"><label class="acym__regacy__lists__label" for="acym__regacy__lists-<?php echo intval($listId); ?>"><?php echo acym_escape(
-                                    $oneList['name']
-                                ); ?></label></th>
+						<th scope="row">
+							<label class="acym__regacy__lists__label" for="acym__regacy__lists-<?php echo intval($listId); ?>">
+								<?php echo acym_escape($oneList['name']); ?>
+							</label>
+						</th>
 						<td>
 							<input name="regacy_visible_lists_checked[]"
 								   type="checkbox"

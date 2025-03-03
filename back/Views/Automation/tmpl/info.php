@@ -51,11 +51,19 @@
 						   value="<?php echo !empty($data['type_trigger']) ? $data['type_trigger'] : 'classic'; ?>"
 						   id="acym__automation__trigger__type__input">
 					<div class="cell auto"></div>
+                    <?php
+                    $class = '';
+                    if (!empty($data['type_trigger']) && $data['type_trigger'] == 'classic') {
+                        $class = 'selected-trigger';
+                    } elseif (empty($data['type_trigger'])) {
+                        $class = 'selected-trigger';
+                    }
+                    ?>
 					<p id="acym__automation__info__group"
 					   data-trigger-type="classic"
-					   class="shrink cell <?php echo (!empty($data['type_trigger']) && $data['type_trigger'] == 'classic') ? 'selected-trigger' : (empty($data['type_trigger']) ? 'selected-trigger' : ''); ?> margin-right-2"><?php echo acym_translation(
-                            'ACYM_CLASSIC_TRIGGER'
-                        ); ?></p>
+					   class="shrink cell <?php echo $class; ?> margin-right-2">
+                        <?php echo acym_translation('ACYM_CLASSIC_TRIGGER'); ?>
+					</p>
 					<p id="acym__automation__info__one-user"
 					   data-trigger-type="user"
 					   class="shrink cell <?php echo (!empty($data['type_trigger']) && $data['type_trigger'] == 'user') ? 'selected-trigger' : ''; ?>"><?php echo acym_translation(
@@ -64,8 +72,9 @@
 					<div class="cell auto"></div>
 				</div>
 				<div class="acym__automation__info__choose__trigger cell grid-x grid-margin-x grid-margin-y"
-					 id="acym__automation__info__choose__trigger__classic" <?php echo (!empty($data['type_trigger']) && $data['type_trigger'] == 'classic') ? '' : (empty($data['type_trigger']) ? '' : 'style="display: none"'); ?>>
-					<div class="cell large-6 acym__content acym_noshadow grid-x acym__automation__draggable">
+					 id="acym__automation__info__choose__trigger__classic" <?php echo (!empty($data['type_trigger']) && $data['type_trigger'] == 'classic') ? ''
+                    : (empty($data['type_trigger']) ? '' : 'style="display: none"'); ?>>
+					<div class="cell large-6 acym__content grid-x acym__automation__draggable">
 						<h6 class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_ALL_TRIGGER'); ?></h6>
 						<div class="cell acym__automation__all-trigger__classic grid-x">
                             <?php foreach ($data['classic'] as $key => $classic) {
@@ -79,7 +88,7 @@
 						</div>
 					</div>
 
-					<div class="cell large-6 acym__content acym_noshadow grid-x acym__automation__droppable__classic">
+					<div class="cell large-6 acym__content grid-x acym__automation__droppable__classic">
 						<h6 class="acym__title acym__title__secondary cell"><?php echo acym_translation('ACYM_EXECUTE_AUTOMATION'); ?></h6>
 						<div class="cell acym__automation__user-trigger__classic acym__automation__trigger__sortable">
                             <?php
@@ -104,7 +113,8 @@
 					</div>
 				</div>
 				<div class="acym__automation__info__choose__trigger cell grid-x grid-margin-x grid-margin-y"
-					 id="acym__automation__info__choose__trigger__user" <?php echo (!empty($data['type_trigger']) && $data['type_trigger'] == 'user') ? '' : 'style="display: none"'; ?>>
+					 id="acym__automation__info__choose__trigger__user" <?php echo (!empty($data['type_trigger']) && $data['type_trigger'] == 'user') ? ''
+                    : 'style="display: none"'; ?>>
 					<div class="cell large-6 acym__content grid-x acym__automation__draggable">
 						<h6 class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_ALL_TRIGGER'); ?></h6>
 						<div class="cell acym__automation__all-trigger__action grid-x">

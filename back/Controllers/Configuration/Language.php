@@ -4,7 +4,7 @@ namespace AcyMailing\Controllers\Configuration;
 
 trait Language
 {
-    public function multilingual()
+    public function multilingual(): void
     {
         $remindme = json_decode($this->config->get('remindme', '[]'), true);
         $remindme[] = 'multilingual';

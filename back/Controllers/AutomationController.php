@@ -34,7 +34,7 @@ class AutomationController extends AcymController
         acym_setVar('edition', '1');
     }
 
-    public function switches($matches)
+    public function switches(array $matches): string
     {
         return '__numand__'.$matches[1].$matches[2].'__numand__'.$matches[3].'__numand__'.$matches[4].'__numand__'.$matches[5];
     }

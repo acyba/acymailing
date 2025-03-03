@@ -8,7 +8,7 @@ use AcyMailing\Helpers\ToolbarHelper;
 
 trait Listing
 {
-    public function listing()
+    public function listing(): void
     {
         acym_setVar('layout', 'listing');
         $pagination = new PaginationHelper();
@@ -62,7 +62,7 @@ trait Listing
         parent::display($data);
     }
 
-    public function prepareToolbar(&$data)
+    public function prepareToolbar(array &$data): void
     {
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'forms_search', 'ACYM_SEARCH');

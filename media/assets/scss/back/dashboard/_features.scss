@@ -65,6 +65,10 @@
                     margin-right: 12px;
                     width: auto;
                 }
+
+                i {
+                    vertical-align: middle;
+                }
             }
         }
 
@@ -75,6 +79,26 @@
             height: 100%;
             width: 80%;
             margin: auto;
+
+            i {
+                font-size: 1rem;
+
+                &.acymicon-star {
+                    color: $gold;
+                }
+
+                &.acymicon-joomla {
+                    color: $blue;
+                }
+
+                &.acymicon-wordpress {
+                    color: $dark-blue;
+                }
+
+                &.acymicon-tools {
+                    color: $dark-gray;
+                }
+            }
         }
 
         .acym__splashscreen__body {

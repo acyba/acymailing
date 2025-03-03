@@ -56,6 +56,8 @@ class AcymRouter extends RouterBase
             'userId',
             'campaignId',
             'userKey',
+            'user_id',
+            'user_key'
         ];
     }
 

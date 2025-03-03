@@ -6,13 +6,15 @@ use AcyMailing\Helpers\ExportHelper;
 
 trait LinksDetails
 {
-    public function linksDetails()
+    public function linksDetails(): void
     {
         acym_setVar('layout', 'links_details');
 
         $data = [];
 
-        if (!$this->prepareDefaultPageInfo($data, true)) return;
+        if (!$this->prepareDefaultPageInfo($data, true)) {
+            return;
+        }
 
         $this->prepareLinksDetailsListing($data);
         if (count($this->selectedMailIds) == 1) {
@@ -27,9 +29,11 @@ trait LinksDetails
         parent::display($data);
     }
 
-    public function exportLinksDetails()
+    public function exportLinksDetails(): void
     {
-        if (!$this->prepareDefaultPageInfo($data, true)) return;
+        if (!$this->prepareDefaultPageInfo($data, true)) {
+            return;
+        }
 
         $this->prepareLinksDetailsListing($data);
         $exportHelper = new ExportHelper();

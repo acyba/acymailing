@@ -18,7 +18,7 @@
 
 				<div v-for="menu in menus" :key="menu.menu_title" @click="toggleMenu(menu)">
 					<h3 :class="{ acym__splashscreen__menu__active: activeMenu==menu }" class="acym__splashscreen__menu__container">
-						<span class="acym__splashscreen__menu__span"> ></span> {{ menu.menu_title }}</h3>
+						<span class="acym__splashscreen__menu__span"> ></span> {{ menu.menu_title }} <i :class="menu.menu_icon"></i></h3>
 				</div>
 			</div>
 
@@ -41,7 +41,7 @@
 					<h2 class="acym__splashscreen__title">{{activeMenu.title}}</h2>
 
 					<div v-for="article in activeMenu.articles" :key="article.title" class="acym__splashscreen__body__content">
-						<h3>{{ article.title }}</h3>
+						<h3><i :class="activeMenu.menu_icon"></i> {{ article.title }}</h3>
 						<p>{{ article.desc }}</p>
 					</div>
 					<button v-if="this.menus.indexOf(this.activeMenu)+1 === this.menus.length"

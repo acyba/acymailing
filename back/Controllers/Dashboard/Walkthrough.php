@@ -198,19 +198,19 @@ trait Walkthrough
             }
         }
 
-        $editor = new EditorHelper();
-        $editor->content = $mail->body;
-        $editor->autoSave = '';
-        $editor->settings = $mail->settings;
-        $editor->stylesheet = $mail->stylesheet;
-        $editor->editor = 'acyEditor';
-        $editor->mailId = $mail->id;
-        $editor->walkThrough = true;
+        $editorHelper = new EditorHelper();
+        $editorHelper->content = $mail->body;
+        $editorHelper->autoSave = '';
+        $editorHelper->settings = $mail->settings;
+        $editorHelper->stylesheet = $mail->stylesheet;
+        $editorHelper->editor = 'acyEditor';
+        $editorHelper->mailId = $mail->id;
+        $editorHelper->walkThrough = true;
 
         $data = [
             'mail' => $mail,
             'social_icons' => $this->config->get('social_icons', '{}'),
-            'editor' => $editor,
+            'editor' => $editorHelper,
         ];
 
         parent::display($data);
@@ -219,10 +219,10 @@ trait Walkthrough
     public function saveAjax(): void
     {
         $mailController = new MailsController();
-        $result = $mailController->store(true);
+        $mailId = $mailController->store(true);
 
-        if ($result) {
-            acym_sendAjaxResponse('', ['result' => $result]);
+        if (!empty($mailId)) {
+            acym_sendAjaxResponse('', ['result' => $mailId]);
         } else {
             acym_sendAjaxResponse(acym_translation('ACYM_ERROR_SAVING'), [], false);
         }

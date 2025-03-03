@@ -11,7 +11,7 @@ use AcyMailing\Helpers\TabHelper;
 
 trait Import
 {
-    public function import()
+    public function import(): void
     {
         acym_setVar('layout', 'import');
 
@@ -53,7 +53,7 @@ trait Import
     }
 
     //__START__wordpress_
-    private function prepareMailPoetList(&$data)
+    private function prepareMailPoetList(array &$data): void
     {
         $mailpoetClass = new MailpoetClass();
         $data['mailpoet_list'] = $mailpoetClass->getAllLists();
@@ -61,7 +61,7 @@ trait Import
     //__END__wordpress_
 
     //__START__joomla_
-    private function prepareContacts(&$data)
+    private function prepareContacts(array &$data): void
     {
         $data['nbUsersContact'] = acym_loadResult('SELECT COUNT(*) FROM #__contact_details');
         $data['contactCategories'] = acym_loadObjectList('SELECT `id` AS `value`, `title` AS `text` FROM #__categories WHERE `extension` = "com_contact"');
@@ -69,7 +69,7 @@ trait Import
 
     //__END__joomla_
 
-    public function doImport()
+    public function doImport(): void
     {
         acym_checkToken();
 
@@ -106,7 +106,7 @@ trait Import
         }
     }
 
-    public function ajaxEncoding()
+    public function ajaxEncoding(): void
     {
         acym_setVar('layout', 'ajaxencoding');
 
@@ -122,7 +122,7 @@ trait Import
         acym_sendAjaxResponse('', $data);
     }
 
-    public function finalizeImport()
+    public function finalizeImport(): void
     {
         $importHelper = new ImportHelper();
         $importHelper->finalizeImport();
@@ -130,7 +130,7 @@ trait Import
         $this->listing();
     }
 
-    public function downloadImport()
+    public function downloadImport(): void
     {
         $filename = acym_getVar('cmd', 'filename');
         if (!file_exists(ACYM_MEDIA.'import'.DS.$filename.'.csv')) {
@@ -142,7 +142,7 @@ trait Import
         exit;
     }
 
-    public function getColumnsFromTable()
+    public function getColumnsFromTable(): void
     {
         $tableName = acym_secureDBColumn(acym_getVar('string', 'tablename', ''));
         if (empty($tableName)) {

@@ -105,7 +105,7 @@ $classesOneTimeEmails = 'acym__campaign__selection__card acym__selection__select
                 if ($oneNewsletterType['type'] === 'scheduled') {
                     $classes .= ' scheduled ';
                 } ?>
-				<div class="<?php echo $classes; ?> acym__campaign__selection__card-container">
+				<div class="<?php echo $classes; ?> acym__campaign__selection__card-container" data-email-type="<?php echo acym_escape($oneNewsletterType['type']); ?>">
                     <?php if (!acym_level($oneNewsletterType['level'])) { ?>
 						<div class="acym__selection__card__lock">
 							<i class="acymicon-lock"></i>

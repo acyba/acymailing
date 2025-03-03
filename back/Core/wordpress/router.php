@@ -34,16 +34,6 @@ function acym_addStyle(bool $raw, string $style)
     }
 }
 
-function acym_prepareFrontViewDisplay($ctrl, $task)
-{
-    if (acym_isAdmin()) return;
-
-    $config = acym_config();
-    if ($ctrl === 'frontusers' && $task === 'unsubscribepage' && $config->get('unsubpage_header', 0) == 1) {
-        get_header();
-    }
-}
-
 function acym_loadCmsScripts()
 {
     $toggleController = acym_isAdmin() ? 'toggle' : 'fronttoggle';

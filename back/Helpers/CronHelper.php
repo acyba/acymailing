@@ -136,7 +136,7 @@ class CronHelper extends AcymObject
         $this->handleCronReport();
     }
 
-    public function saveReport(array $messages = [], array $detailMessages = [])
+    public function saveReport(array $messages = [], array $detailMessages = []): void
     {
         $saveReport = $this->config->get('cron_savereport');
         $reportPath = $this->config->get('cron_savepath');
@@ -187,32 +187,28 @@ class CronHelper extends AcymObject
 
     /**
      * Sets the types of emails that will be sent by the cron
-     *
-     * @param array $emailTypes
-     *
-     * @return void
      */
     public function setEmailTypes(array $emailTypes): void
     {
         $this->emailTypes = $emailTypes;
     }
 
-    public function addMessage(string $message)
+    public function addMessage(string $message): void
     {
         $this->messages[] = $message;
     }
 
-    public function handleCronReport()
+    public function handleCronReport(): void
     {
         $sendReport = $this->config->get('cron_sendreport');
 
         if (($sendReport == 2 && $this->processed) || $sendReport == 1 || ($sendReport == 3 && $this->errorDetected)) {
-            $mailer = new MailerHelper();
-            $mailer->report = false;
-            $mailer->autoAddUser = true;
-            $mailer->addParam('report', implode('<br />', $this->messages));
-            $mailer->addParam('mainreport', $this->mainMessage);
-            $mailer->addParam('detailreport', implode('<br />', $this->detailMessages));
+            $mailerHelper = new MailerHelper();
+            $mailerHelper->report = false;
+            $mailerHelper->autoAddUser = true;
+            $mailerHelper->addParam('report', implode('<br />', $this->messages));
+            $mailerHelper->addParam('mainreport', $this->mainMessage);
+            $mailerHelper->addParam('detailreport', implode('<br />', $this->detailMessages));
 
             $receiverString = $this->config->get('cron_sendto');
             $receivers = [];
@@ -232,7 +228,7 @@ class CronHelper extends AcymObject
                     try {
                         $reportEmail = $mailClass->getOneByName('acy_report');
                         if (!empty($reportEmail)) {
-                            $mailer->sendOne($reportEmail->id, $oneReceiver);
+                            $mailerHelper->sendOne($reportEmail->id, $oneReceiver);
                         }
                     } catch (\Exception $e) {
                         acym_logError('Error while sending the cron report to '.$oneReceiver.' : '.$e->getMessage());
@@ -255,8 +251,6 @@ class CronHelper extends AcymObject
 
     /**
      * Call made by the API to remove the API key when the user unlinks the website from their account page on our website
-     *
-     * @return void
      */
     private function handleUnlinkLicenseCalls(): void
     {
@@ -276,8 +270,6 @@ class CronHelper extends AcymObject
 
     /**
      * Displays the message shown on the cron URL page
-     *
-     * @return void
      */
     private function triggeredMessage(): void
     {
@@ -288,8 +280,6 @@ class CronHelper extends AcymObject
 
     /**
      * Checks the cron frequency in the configuration to make sure the call is wanted
-     *
-     * @return bool
      */
     private function checkCronFrequency(): bool
     {
@@ -344,8 +334,6 @@ class CronHelper extends AcymObject
 
     /**
      * Adds the scheduled emails to the queue when the date is reached
-     *
-     * @return void
      */
     private function queueScheduledCampaigns(): void
     {
@@ -364,8 +352,6 @@ class CronHelper extends AcymObject
 
     /**
      * Cleans the emails that are stuck in the queue for too long (disabled/unconfirmed recipients)
-     *
-     * @return void
      */
     private function cleanQueue(): void
     {
@@ -384,8 +370,6 @@ class CronHelper extends AcymObject
 
     /**
      * Sends the emails that are queued and ready to be sent
-     *
-     * @return void
      */
     private function sendQueuedEmails(): void
     {
@@ -432,7 +416,7 @@ class CronHelper extends AcymObject
         $queueHelper = new QueueHelper();
         $queueHelper->send_limit = (int)$this->config->get('queue_nbmail_auto');
         $queueHelper->report = false;
-        $queueHelper->emailtypes = $this->emailTypes;
+        $queueHelper->emailTypes = $this->emailTypes;
         $queueHelper->process();
 
         if (!empty($queueHelper->messages)) {
@@ -459,8 +443,6 @@ class CronHelper extends AcymObject
 
     /**
      * Makes sure the current process doesn't reach the server time limit
-     *
-     * @return void
      */
     private function checkTimeRemaining(): void
     {
@@ -476,8 +458,6 @@ class CronHelper extends AcymObject
 
     /**
      * If the configuration is set to send multiple batches of emails at the same time
-     *
-     * @return void
      */
     private function handleMultiCron(): void
     {
@@ -508,7 +488,7 @@ class CronHelper extends AcymObject
     private function handleBounceMessages(): void
     {
         $time = time();
-        $autoBounceHandlingActive = $this->config->get('auto_bounce', 0) != 0;
+        $autoBounceHandlingActive = (int)$this->config->get('auto_bounce', 0) === 1;
         $autoBounceHandlingNextTime = (int)$this->config->get('auto_bounce_next', 0);
         $autoBounceHandlingFrequency = (int)$this->config->get('auto_bounce_frequency', 0);
         $isEnterprise = acym_level(ACYM_ENTERPRISE);
@@ -555,8 +535,6 @@ class CronHelper extends AcymObject
 
     /**
      * Triggers the automations based on time frequency
-     *
-     * @return void
      */
     private function handleAutomations(): void
     {
@@ -596,8 +574,6 @@ class CronHelper extends AcymObject
 
     /**
      * Sends special emails such as birthday or WooCommerce reminders
-     *
-     * @return void
      */
     private function handleSpecificEmails(): void
     {
@@ -622,8 +598,6 @@ class CronHelper extends AcymObject
 
     /**
      * Sends follow-ups based on time frequency like birthdays
-     *
-     * @return void
      */
     private function handleFollowups(): void
     {
@@ -657,8 +631,6 @@ class CronHelper extends AcymObject
 
     /**
      * Checks messages received on mailboxes and triggers actions accordingly
-     *
-     * @return void
      */
     private function handleMailboxActions(): void
     {
@@ -793,8 +765,6 @@ class CronHelper extends AcymObject
 
     /**
      * We reached the maximum time allowed so the tasks are not finished, we begin a new process to finish it up
-     *
-     * @return void
      */
     private function continueCronCall(): void
     {

@@ -162,7 +162,7 @@ trait Campaigns
         return $unitSecondMatching[$unit];
     }
 
-    public function getCampaignById()
+    public function getCampaignById(): void
     {
         $campaignId = acym_getVar('string', 'campaignId', '');
 
@@ -180,7 +180,7 @@ trait Campaigns
         $this->sendJsonResponse([$campaign]);
     }
 
-    public function deleteCampaign()
+    public function deleteCampaign(): void
     {
         $campaignId = acym_getVar('string', 'campaignId', '');
 
@@ -209,7 +209,7 @@ trait Campaigns
         $this->sendJsonResponse(['message' => 'Campaign deleted successfully.']);
     }
 
-    public function sendCampaign()
+    public function sendCampaign(): void
     {
         $campaignId = acym_getVar('int', 'campaignId', 0);
 

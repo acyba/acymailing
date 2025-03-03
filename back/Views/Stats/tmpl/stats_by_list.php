@@ -33,21 +33,21 @@
 					<h2 class="cell acym__title acym__title__secondary"><?php echo acym_translation('ACYM_EMAIL_STATISTICS'); ?></h2>
 					<div class="grid-x padding-top-3">
 						<div class="cell small-12 medium-6">
-                            <?php echo acym_pieChart('', $data['emailsSent'], '', acym_translation('ACYM_EMAILS_SENT'), true, true); ?>
+                            <?php echo acym_pieChart($data['emailsSent'], '', acym_translation('ACYM_EMAILS_SENT'), true, true); ?>
 						</div>
 						<div class="cell small-12 medium-6">
-                            <?php echo acym_barChart('', $data['emailsOpen'], '', acym_translation('ACYM_EMAILS_OPENED')); ?>
+                            <?php echo acym_barChart($data['emailsOpen'], acym_translation('ACYM_EMAILS_OPENED')); ?>
 						</div>
 					</div>
 					<div class="grid-x padding-top-3">
 						<div class="cell small-12 medium-4">
-                            <?php echo acym_barChart('', $data['click'], '', acym_translation('ACYM_CLICKED_ON_LINK').' (%)'); ?>
+                            <?php echo acym_barChart($data['click'], acym_translation('ACYM_CLICKED_ON_LINK').' (%)'); ?>
 						</div>
 						<div class="cell small-12 medium-4">
-                            <?php echo acym_barChart('', $data['bounces'], '', acym_translation('ACYM_BOUNCES').' (%)'); ?>
+                            <?php echo acym_barChart($data['bounces'], acym_translation('ACYM_BOUNCES').' (%)'); ?>
 						</div>
 						<div class="cell small-12 medium-4">
-                            <?php echo acym_barChart('', $data['unsubscribed'], '', acym_translation('ACYM_ACTION_UNSUBSCRIBED').' (%)'); ?>
+                            <?php echo acym_barChart($data['unsubscribed'], acym_translation('ACYM_ACTION_UNSUBSCRIBED').' (%)'); ?>
 						</div>
 					</div>
 				</div>

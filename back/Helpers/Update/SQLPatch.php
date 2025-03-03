@@ -6,7 +6,7 @@ use AcyMailing\Controllers\ConfigurationController;
 
 trait SQLPatch
 {
-    public function updateSQL()
+    public function updateSQL(): void
     {
         if (!$this->isUpdating) {
             return;
@@ -88,10 +88,10 @@ trait SQLPatch
         $this->updateFor1000();
     }
 
-    public function checkDB()
+    public function checkDB(): void
     {
         $configController = new ConfigurationController();
-        $messages = $configController->checkDB('report', false);
+        $messages = $configController->checkDB(false);
 
         if (empty($messages)) {
             return;

@@ -7,7 +7,7 @@ use AcyMailing\Types\OperatorType;
 
 trait Edition
 {
-    public function edit()
+    public function edit(): void
     {
         acym_setVar('layout', 'edit');
         $fieldId = acym_getVar('int', 'fieldId');
@@ -104,10 +104,10 @@ trait Edition
 
         $this->prepareMultilingualOption($data);
 
-        return parent::display($data);
+        parent::display($data);
     }
 
-    public function ajaxGetTables()
+    public function ajaxGetTables(): void
     {
         $database = acym_getVar('string', 'database');
         $allTables = acym_loadResultArray('SHOW TABLES FROM `'.$database.'`');
@@ -115,7 +115,7 @@ trait Edition
         acym_sendAjaxResponse('', ['tables' => $allTables]);
     }
 
-    public function ajaxGetColumns()
+    public function ajaxGetColumns(): void
     {
         $table = acym_getVar('string', 'table');
         $database = acym_getVar('string', 'database');
@@ -126,23 +126,23 @@ trait Edition
         acym_sendAjaxResponse('', ['columns' => $columns]);
     }
 
-    public function apply()
+    public function apply(): void
     {
         $this->saveField();
         $this->edit();
     }
 
-    public function save()
+    public function save(): void
     {
         $this->saveField();
         $this->listing();
     }
 
-    protected function saveField()
+    protected function saveField(): void
     {
         $fieldClass = new FieldClass();
         $newField = $this->setFieldToSave();
-        $fieldId = $fieldClass->save($newField);
+        $fieldId = empty($newField->name) ? null : $fieldClass->save($newField);
         if (!empty($fieldId)) {
             acym_setVar('fieldId', $fieldId);
             acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
@@ -151,7 +151,7 @@ trait Edition
         }
     }
 
-    private function setFieldToSave()
+    private function setFieldToSave(): object
     {
         $fieldClass = new FieldClass();
         $languageFieldId = $fieldClass->getLanguageFieldId();
@@ -161,8 +161,10 @@ trait Edition
         if (in_array($fieldId, [2, $languageFieldId])) {
             $field['required'] = 1;
         }
+
+        $newField = new \stdClass();
         if (empty($field['name'])) {
-            return false;
+            return $newField;
         }
 
         if (in_array($fieldId, [1, 2])) {
@@ -203,7 +205,6 @@ trait Edition
             $field['option']['format'] = preg_replace('/\%[^ymd]/', '', $field['option']['format']);
         }
 
-        $newField = new \stdClass();
         $newField->name = $field['name'];
         $newField->active = $field['active'];
         $newField->namekey = $field['namekey'];

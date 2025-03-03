@@ -10,10 +10,11 @@ class FileController extends AcymController
     public function __construct()
     {
         parent::__construct();
+
         $this->setDefaultTask('select');
     }
 
-    public function select()
+    public function select(): void
     {
         acym_setVar('layout', 'select');
 

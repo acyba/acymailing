@@ -109,7 +109,7 @@ trait Subscription
         $this->sendJsonResponse($users);
     }
 
-    public function subscribeUsers()
+    public function subscribeUsers(): void
     {
         $decodedData = acym_getJsonData();
 

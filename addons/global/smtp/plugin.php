@@ -214,13 +214,12 @@ class plgAcymSmtp extends AcymPlugin
         $data['sendingMethodsHtmlSettings'][self::SENDING_METHOD_ID] = ob_get_clean();
     }
 
-
     public function onAcymGetSettingsSendingMethodFromPlugin(&$data, $plugin, $method)
     {
         if ($method != self::SENDING_METHOD_ID) return;
 
         //__START__wordpress_
-        if (ACYM_CMS == 'wordpress' && $plugin == 'wp_mail_smtp') {
+        if (ACYM_CMS === 'wordpress' && $plugin === 'wp_mail_smtp') {
             $wpMailSmtpSetting = get_option('wp_mail_smtp', '');
             if (empty($wpMailSmtpSetting) || empty($wpMailSmtpSetting['smtp'])) {
                 return;

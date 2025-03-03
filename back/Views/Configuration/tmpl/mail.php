@@ -197,7 +197,7 @@
                     echo $encodingHelper->charsetField(
                         'config[charset]',
                         $this->config->get('charset'),
-                        'class="acym__select"'
+                        ['class' => 'acym__select']
                     );
                     ?>
 				</div>

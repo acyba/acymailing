@@ -20,6 +20,7 @@ class ScenariosController extends AcymController
     public function __construct()
     {
         parent::__construct();
+
         $this->breadcrumb[acym_translation('ACYM_SCENARIO')] = acym_completeLink('scenarios');
 
         $this->loadScripts = [

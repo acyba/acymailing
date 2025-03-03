@@ -437,22 +437,24 @@ trait SubscriptionInsertion
         if (empty($user->id)) {
             return '';
         }
+
+        if (!in_array($parameter->field, ['username', 'name', 'email'])) {
+            return 'Field not found : '.$parameter->field;
+        }
+
         $listid = $this->_getAttachedListid($email, $user->id);
         if (empty($listid)) {
-            return "";
+            return '';
         }
 
         global $acymCmsUserVars;
         if (!isset($this->listsowner[$listid])) {
             $this->listsowner[$listid] = acym_loadObject(
-                'SELECT user.* FROM #__acym_list AS list JOIN '.$acymCmsUserVars->table.' AS user ON user.'.$acymCmsUserVars->id.' = list.cms_user_id WHERE list.id = '.intval(
-                    $listid
-                )
+                'SELECT `user`.* FROM #__acym_list AS `list` 
+				JOIN '.$acymCmsUserVars->table.' AS `user` 
+					ON `user`.'.$acymCmsUserVars->id.' = `list`.cms_user_id 
+				WHERE `list`.id = '.intval($listid)
             );
-        }
-
-        if (!in_array($parameter->field, [$acymCmsUserVars->username, $acymCmsUserVars->name, $acymCmsUserVars->email])) {
-            return 'Field not found : '.$parameter->field;
         }
 
         return @$this->listsowner[$listid]->{$acymCmsUserVars->{$parameter->field}};
@@ -598,9 +600,7 @@ trait SubscriptionInsertion
             $baseLink = 'frontusers'.$lang.'&mail_id='.$email->id;
             if ($parameters->id === 'unsubscribe') {
                 $unsubscribeLink = $baseLink.'&task=unsubscribe&userId={subscriber:id}&userKey={subscriber:key|urlencode}';
-                if ($this->config->get('unsubpage_header') != 1) {
-                    $unsubscribeLink .= '&'.acym_noTemplate();
-                }
+				$unsubscribeLink .= '&'.acym_noTemplate();
                 $unsubClass = 'acym_unsubscribe';
             } else {
                 $unsubscribeLink = $baseLink.'&task=unsubscribeAll&user_id={subscriber:id}&user_key={subscriber:key|urlencode}';

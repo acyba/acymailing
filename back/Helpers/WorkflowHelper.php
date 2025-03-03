@@ -7,22 +7,14 @@ use AcyMailing\Core\AcymObject;
 class WorkflowHelper extends AcymObject
 {
     // Disable all the steps after this one
-    var $disabledAfter = null;
+    public string $disabledAfter = '';
 
     /**
      * Call this helper in an element with the class acym__content
-     * The steps are defined in the view.html.php
+     * The steps are defined in the Main view class
      * Put acym_formOptions(true, 'edit', 'CURRENT STEP') at the end of each step
-     *
-     * @param array   $steps       => array('task' => 'ACYM_TITLE_TAB'). It is set in the view.html.php
-     * @param string  $currentStep => The current step, you shouldn't have anything to do for this
-     * @param boolean $edition     => are we in editing mode or in creation mode?
-     * @param bool    $needTabs
-     * @param string  $linkParameters
-     *
-     * @return string
      */
-    public function display($steps, $currentStep, $edition = true, $needTabs = false, $linkParameters = '', $idName = 'id'): string
+    public function display(array $steps, string $currentStep, bool $editionMode = true, bool $needTabs = false, string $linkParameters = '', string $idName = 'id'): string
     {
         $ctrl = acym_getVar('cmd', 'ctrl');
         $id = acym_getVar('int', $idName, 0);
@@ -37,7 +29,7 @@ class WorkflowHelper extends AcymObject
             if ($currentStep === $task) $class .= ' current_step';
 
             if (!$disableTabs) {
-                if ($edition) {
+                if ($editionMode) {
                     $link = $ctrl.'&task=edit&step='.$task.'&'.$idName.'='.$id;
                 } else {
                     $link = $ctrl.'&task='.$task;
@@ -48,7 +40,7 @@ class WorkflowHelper extends AcymObject
             $workflow[] = '<li class="'.$class.'">'.$title.'</li>';
             $workflow[] = '<li class="step_separator '.($needTabs ? '' : 'acymicon-keyboard-arrow-right').'"></li>';
 
-            if ($task == $this->disabledAfter) {
+            if ($task === $this->disabledAfter) {
                 $disableTabs = true;
             }
         }
@@ -92,7 +84,7 @@ class WorkflowHelper extends AcymObject
 
             $workflow[] = $step;
 
-            if ($task == $this->disabledAfter) {
+            if ($task === $this->disabledAfter) {
                 $disableTabs = true;
             }
         }
@@ -104,7 +96,7 @@ class WorkflowHelper extends AcymObject
         return $result;
     }
 
-    public function displayTabs($steps, $currentStep, $options = [])
+    public function displayTabs(array $steps, string $currentStep, array $options = []): string
     {
         $ctrl = acym_getVar('cmd', 'ctrl');
 
@@ -127,7 +119,7 @@ class WorkflowHelper extends AcymObject
 
             $title = acym_translation($title);
 
-            $linkAttribute = $currentStep == $task ? 'aria-selected="true"' : '';
+            $linkAttribute = $currentStep === $task ? 'aria-selected="true"' : '';
 
             if (!empty($options['query'])) {
                 $link = $ctrl.$options['query'].$task;

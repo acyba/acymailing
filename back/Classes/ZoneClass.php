@@ -46,7 +46,7 @@ class ZoneClass extends AcymClass
         return $element;
     }
 
-    public function getAll($key = null)
+    public function getAll(?string $key = null): array
     {
         $elements = parent::getAll();
         if (empty($elements)) return $elements;

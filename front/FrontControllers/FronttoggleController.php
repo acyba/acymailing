@@ -22,7 +22,7 @@ class FronttoggleController extends ToggleController
         ];
     }
 
-    protected function defineToggles()
+    protected function defineToggles(): void
     {
         $currentMenu = acym_getMenu();
         if (empty($currentMenu)) {
@@ -56,17 +56,19 @@ class FronttoggleController extends ToggleController
         }
     }
 
-    protected function listGlobal($id, $table, $field, $newValue)
+    protected function listGlobal(int $id, string $table, string $field, int $newValue): void
     {
         $listClass = new ListClass();
         $lists = $listClass->getManageableLists();
 
-        if (!in_array($id, $lists)) exit;
+        if (!in_array($id, $lists)) {
+            exit;
+        }
 
         $this->doToggle($id, $table, $field, $newValue);
     }
 
-    protected function userGlobal($id, $table, $field, $newValue)
+    protected function userGlobal(int $id, string $table, string $field, int $newValue): void
     {
         $arrayVersion = [$id];
         $userClass = new UserClass();

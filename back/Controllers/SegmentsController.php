@@ -13,13 +13,14 @@ class SegmentsController extends AcymController
     use Edition;
     use Campaign;
 
-    const FLAG_USERS = -1;
-    const FLAG_EXPORT_USERS = -2;
-    const FLAG_COUNT = -3;
+    public const FLAG_USERS = -1;
+    public const FLAG_EXPORT_USERS = -2;
+    public const FLAG_COUNT = -3;
 
     public function __construct()
     {
         parent::__construct();
+
         $this->breadcrumb[acym_translation('ACYM_SEGMENTS')] = acym_completeLink('segments');
         $this->loadScripts = [
             'edit' => ['datepicker', 'vue-applications' => ['modal_users_summary']],

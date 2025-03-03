@@ -43,7 +43,7 @@ class ScenarioHistoryLineClass extends AcymClass
         $results = [];
 
         $query = 'SELECT history_line.*, `user`.email, `user`.id AS user_id FROM #__acym_scenario_history_line AS history_line';
-        $queryCount = 'SELECT COUNT(history_line.id) FROM #__acym_scenario_history_line AS history_line';
+        $queryCount = 'SELECT COUNT(history_line.id) AS total FROM #__acym_scenario_history_line AS history_line';
         $filters = [];
 
         $joins = [
@@ -82,7 +82,7 @@ class ScenarioHistoryLineClass extends AcymClass
         }
 
         $results['elements'] = acym_loadObjectList($query, 'id', $settings['offset'], $settings['elementsPerPage']);
-        $results['total'] = acym_loadResult($queryCount);
+        $results['total'] = acym_loadObject($queryCount);
 
         return $results;
     }

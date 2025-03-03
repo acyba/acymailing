@@ -80,7 +80,7 @@ class CampaignsController extends AcymController
         $this->storeRedirectListing();
     }
 
-    public function cancelDashboardAndGetCampaignsAjax()
+    public function cancelDashboardAndGetCampaignsAjax(): void
     {
         $campaignId = acym_getVar('int', 'campaignId');
         $campaignClass = new CampaignClass();
@@ -137,7 +137,7 @@ class CampaignsController extends AcymController
         acym_sendAjaxResponse('', ['recipients' => $listClass->getTotalSubCount($listsSelected)]);
     }
 
-    public function deleteAttachmentAjax()
+    public function deleteAttachmentAjax(): void
     {
         $mailId = acym_getVar('int', 'mail', 0);
         $attachmentId = acym_getVar('int', 'id', 0);
@@ -157,9 +157,10 @@ class CampaignsController extends AcymController
         acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_DELETE_ATTACHMENT'), [], false);
     }
 
-    public function test()
+    public function test(): void
     {
         $campaignId = acym_getVar('int', 'campaignId', 0);
+        $specificMailId = acym_getVar('int', 'mailId', 0);
 
         $campaignClass = new CampaignClass();
         $campaign = $campaignClass->getOneById($campaignId);
@@ -171,6 +172,9 @@ class CampaignsController extends AcymController
         $mailerHelper = new MailerHelper();
         $mailerHelper->autoAddUser = true;
         $mailerHelper->report = false;
+        if (!empty($specificMailId)) {
+            $mailerHelper->isAbTest = $campaignClass->isAbTestMail($specificMailId);
+        }
 
         $report = [];
         $success = true;
@@ -183,19 +187,23 @@ class CampaignsController extends AcymController
             $translatedMails = $mailClass->getTranslationsById($campaign->mail_id, true, true);
         }
         $testEmails = explode(',', acym_getVar('string', 'test_emails'));
+
         foreach ($testEmails as $oneAddress) {
-            if (acym_isMultilingual()) {
-                $user = $userClass->getOneById($oneAddress);
-                if (empty($user)) {
-                    $user = $userClass->getOneByEmail($oneAddress);
-                }
-                if (empty($user)) {
-                    $mailId = $campaign->mail_id;
+            $mailId = $specificMailId;
+            if (empty($mailId)) {
+                if (acym_isMultilingual()) {
+                    $user = $userClass->getOneById($oneAddress);
+                    if (empty($user)) {
+                        $user = $userClass->getOneByEmail($oneAddress);
+                    }
+                    if (empty($user)) {
+                        $mailId = $campaign->mail_id;
+                    } else {
+                        $mailId = empty($translatedMails[$user->language]) ? $campaign->mail_id : $translatedMails[$user->language]->id;
+                    }
                 } else {
-                    $mailId = empty($translatedMails[$user->language]) ? $campaign->mail_id : $translatedMails[$user->language]->id;
+                    $mailId = $campaign->mail_id;
                 }
-            } else {
-                $mailId = $campaign->mail_id;
             }
 
             $options = [
@@ -214,31 +222,31 @@ class CampaignsController extends AcymController
         acym_sendAjaxResponse(implode('<br/>', $report), [], $success);
     }
 
-    public function saveAjax()
+    public function saveAjax(): void
     {
         $result = $this->saveEditEmail(true);
-        if ($result) {
+        if (!empty($result)) {
             acym_sendAjaxResponse('', ['result' => $result]);
         } else {
             acym_sendAjaxResponse(acym_translation('ACYM_ERROR_SAVING'), [], false);
         }
     }
 
-    public function saveAsTmplAjax()
+    public function saveAsTmplAjax(): void
     {
         if (!acym_isAdmin()) {
             die('Access denied');
         }
 
         $mailController = new MailsController();
-        $isWellSaved = $mailController->store(true);
-        acym_sendAjaxResponse($isWellSaved ? '' : acym_translation('ACYM_ERROR_SAVING'), ['result' => $isWellSaved], $isWellSaved);
+        $mailId = $mailController->store(true);
+        acym_sendAjaxResponse(!empty($mailId) ? '' : acym_translation('ACYM_ERROR_SAVING'), ['result' => $mailId], !empty($mailId));
     }
 
     /**
      * Search user emails to suggest (autocomplete on send a test)
      */
-    public function searchTestReceiversAjax()
+    public function searchTestReceiversAjax(): void
     {
         $search = acym_getVar('string', 'search', '');
         $userClass = new UserClass();

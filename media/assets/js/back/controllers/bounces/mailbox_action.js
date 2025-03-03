@@ -123,44 +123,33 @@ jQuery(function ($) {
             $iconResult.removeClass('acymicon-check-circle acym__color__green acymicon-times-circle acym__color__red');
             $iconResult.hide();
 
-            const formData = $(this).closest('form').serializeArray();
-
-            const dataToKeep = [
-                'id',
-                'server',
-                'username',
-                'password',
-                'connection_method',
-                'secure_method',
-                'self_signed',
-                'port'
-            ].map((name) => `mailbox[${name}]`);
-
-            const data = formData.filter((data) => dataToKeep.includes(data.name));
-            data.push({
-                name: 'ctrl',
-                value: 'bounces'
-            });
-            data.push({
-                name: 'task',
-                value: 'testMailboxAction'
-            });
+            const data = {
+                ctrl: 'bounces',
+                task: 'testMailboxAction',
+                mailbox: {
+                    id: $('[name="mailbox[id]"]').val(),
+                    server: $('[name="mailbox[server]"]').val(),
+                    username: $('[name="mailbox[username]"]').val(),
+                    password: $('[name="mailbox[password]"]').val(),
+                    connection_method: $('[name="mailbox[connection_method]"]').val(),
+                    secure_method: $('[name="mailbox[secure_method]"]').val(),
+                    self_signed: $('[name="mailbox[self_signed]"]').val(),
+                    port: $('[name="mailbox[port]"]').val()
+                }
+            };
 
             acym_helper.post(ACYM_AJAX_URL, data)
-                       .then(({
-                                  error,
-                                  message,
-                                  data
-                              }) => {
+                       .then(response => {
                            $loader.hide();
-                           $result.html(message);
-                           if (error) {
-                               if (!!data.report.length) {
-                                   $result.attr('data-acym-tooltip', data.report.join('<br>'));
-                                   acym_helperTooltip.setTooltip();
-                               }
-                               $iconResult.addClass('acymicon-times-circle acym__color__red');
-                           } else {
+                           $result.html(response.message);
+
+                           if (response.error) {
+                        if (response.data.report && response.data.report.length > 0) {
+                            $result.attr('data-acym-tooltip', data.report.join('<br>'));
+                            acym_helperTooltip.setTooltip();
+                        }
+                        $iconResult.addClass('acymicon-times-circle acym__color__red');
+                    } else {
                                $iconResult.addClass('acymicon-check-circle acym__color__green');
                            }
                            $iconResult.css('display', 'flex');

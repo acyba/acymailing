@@ -21,6 +21,7 @@ class UsersController extends AcymController
     public function __construct()
     {
         parent::__construct();
+
         $this->breadcrumb[acym_translation('ACYM_SUBSCRIBERS')] = acym_completeLink('users');
         $this->loadScripts = [
             'edit' => ['datepicker'],
@@ -28,13 +29,14 @@ class UsersController extends AcymController
         ];
     }
 
-    public function getAll()
+    public function getAll(): array
     {
         $userClass = new UserClass();
+
         return $userClass->getAll();
     }
 
-    public function clean()
+    public function clean(): void
     {
         if (acym_isAcyCheckerInstalled()) {
             if (ACYM_CMS === 'joomla') {
@@ -47,7 +49,7 @@ class UsersController extends AcymController
         }
     }
 
-    public function getUserInfoAjax()
+    public function getUserInfoAjax(): void
     {
         $userId = acym_getVar('int', 'userId', 0);
 

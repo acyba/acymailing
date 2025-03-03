@@ -8,7 +8,7 @@ use AcyMailing\Helpers\ToolbarHelper;
 
 trait Listing
 {
-    public function listing()
+    public function listing(): void
     {
         acym_setVar('layout', 'listing');
 
@@ -34,7 +34,7 @@ trait Listing
         parent::display($data);
     }
 
-    protected function prepareToolbar(&$data)
+    protected function prepareToolbar(array &$data): void
     {
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'lists_search', 'ACYM_SEARCH');
@@ -60,7 +60,7 @@ trait Listing
         $data['toolbar'] = $toolbarHelper;
     }
 
-    public function clean()
+    public function clean(): void
     {
         if (acym_isAcyCheckerInstalled()) {
             if (ACYM_CMS === 'joomla') {
@@ -73,7 +73,7 @@ trait Listing
         }
     }
 
-    protected function prepareListsListing(&$data)
+    protected function prepareListsListing(array &$data): void
     {
         // Prepare the pagination
         $listsPerPage = $data['pagination']->getListLimit();
@@ -93,7 +93,7 @@ trait Listing
             $data['status'],
             $page
         );
-        $data['pagination']->setStatus($matchingLists['total'], $page, $listsPerPage);
+        $data['pagination']->setStatus($matchingLists['total']->total, $page, $listsPerPage);
 
         $data['lists'] = $matchingLists['elements'];
         $data['listNumberPerStatus'] = $matchingLists['status'];

@@ -7,28 +7,11 @@ use AcyMailing\Classes\UserClass;
 
 trait Security
 {
-    private $messagesNoHtml = [];
+    private array $messagesNoHtml = [];
 
-    /**
-     * Check database integrity button in the security tab
-     */
-    public function checkDB($returnMode = '', $fromConfiguration = true)
+    public function checkDBAjax(): void
     {
-        // Get the structure that the AcyMailing tables should have in the database
-        $correctTablesStructure = $this->getCorrectTablesStructure();
-        // Get the current structure of the AcyMailing tables and tries to repair/create them if needed
-        $currentTablesStructure = $this->getCurrentTablesStructure($correctTablesStructure);
-        // Adds missing columns in AcyMailing tables and missing indexes / primary keys / constraints on the tables
-        $this->fixCurrentStructure($correctTablesStructure, $currentTablesStructure);
-
-        // Clean the duplicates in the acym_url table, caused by a bug before the 12/04/19
-        $this->cleanDuplicatedUrls($fromConfiguration);
-        // Fills the key column in the users table when missing
-        $this->addMissingUserKeys();
-
-        if ($returnMode === 'report') {
-            return $this->messagesNoHtml;
-        }
+        $this->checkDB();
 
         if (empty($this->messagesNoHtml)) {
             echo '<i class="acymicon-check-circle acym__color__green"></i>';
@@ -47,9 +30,27 @@ trait Security
     }
 
     /**
+     * Check database integrity button in the security tab
+     */
+    public function checkDB(bool $fromConfiguration = true): array
+    {
+        // Get the structure that the AcyMailing tables should have in the database
+        $correctTablesStructure = $this->getCorrectTablesStructure();
+        // Get the current structure of the AcyMailing tables and tries to repair/create them if needed
+        $currentTablesStructure = $this->getCurrentTablesStructure($correctTablesStructure);
+        // Adds missing columns in AcyMailing tables and missing indexes / primary keys / constraints on the tables
+        $this->fixCurrentStructure($correctTablesStructure, $currentTablesStructure);
+
+        // Clean the duplicates in the acym_url table, caused by a bug before the 12/04/19
+        $this->cleanDuplicatedUrls($fromConfiguration);
+        // Fills the key column in the users table when missing
+        $this->addMissingUserKeys();
+
+        return $this->messagesNoHtml;
+    }
+
+    /**
      * Returns the structure that the AcyMailing tables should have in the database
-     *
-     * @return array
      */
     private function getCorrectTablesStructure(): array
     {
@@ -118,10 +119,6 @@ trait Security
 
     /**
      * Returns the current structure of the AcyMailing tables and tries to repair/create them if needed
-     *
-     * @param array $correctTablesStructure
-     *
-     * @return array
      */
     private function getCurrentTablesStructure(array $correctTablesStructure): array
     {
@@ -201,13 +198,8 @@ trait Security
 
     /**
      * Adds missing columns in AcyMailing tables and missing indexes / primary keys on the tables
-     *
-     * @param array $correctTablesStructure
-     * @param array $currentTablesStructure
-     *
-     * @return void
      */
-    private function fixCurrentStructure(array $correctTablesStructure, array $currentTablesStructure)
+    private function fixCurrentStructure(array $correctTablesStructure, array $currentTablesStructure): void
     {
         foreach ($correctTablesStructure['tableNames'] as $oneTableName) {
             if (empty($currentTablesStructure[$oneTableName])) {
@@ -224,14 +216,8 @@ trait Security
 
     /**
      * Add missing columns in an AcyMailing table
-     *
-     * @param array  $correctTableColumns
-     * @param array  $currentTableColumnNames
-     * @param string $oneTableName
-     *
-     * @return void
      */
-    private function addMissingColumns(array $correctTableColumns, array $currentTableColumnNames, string $oneTableName)
+    private function addMissingColumns(array $correctTableColumns, array $currentTableColumnNames, string $oneTableName): void
     {
         $idealColumnNames = array_keys($correctTableColumns);
         $missingColumns = array_diff($idealColumnNames, $currentTableColumnNames);
@@ -270,7 +256,7 @@ trait Security
         }
     }
 
-    private function removeExtraColumns(array $correctTableColumns, array $currentTableColumnNames, string $oneTableName)
+    private function removeExtraColumns(array $correctTableColumns, array $currentTableColumnNames, string $oneTableName): void
     {
         $idealColumnNames = array_keys($correctTableColumns);
         $extraColumns = array_diff($currentTableColumnNames, $idealColumnNames);
@@ -309,7 +295,7 @@ trait Security
         }
     }
 
-    private function fixDefaultValues($correctTableColumns, $oneTableName)
+    private function fixDefaultValues(array $correctTableColumns, string $oneTableName): void
     {
         $oneTableName = str_replace('#__', acym_getPrefix(), $oneTableName);
         try {
@@ -411,13 +397,8 @@ trait Security
 
     /**
      * Adds the missing indexes / primary keys on an AcyMailing table
-     *
-     * @param array  $correctTableIndexes
-     * @param string $oneTableName
-     *
-     * @return void
      */
-    private function addMissingTableKeys(array $correctTableIndexes, string $oneTableName)
+    private function addMissingTableKeys(array $correctTableIndexes, string $oneTableName): void
     {
         // Add missing index and primary keys
         $results = acym_loadObjectList('SHOW INDEX FROM '.$oneTableName, 'Key_name');
@@ -466,13 +447,8 @@ trait Security
 
     /**
      * Adds or fixes the table's foreign keys
-     *
-     * @param array  $correctTableConstraints
-     * @param string $oneTableName
-     *
-     * @return void
      */
-    private function addMissingTableConstraints(array $correctTableConstraints, string $oneTableName)
+    private function addMissingTableConstraints(array $correctTableConstraints, string $oneTableName): void
     {
         if (empty($correctTableConstraints)) {
             return;
@@ -553,10 +529,8 @@ trait Security
 
     /**
      * Clean the duplicates in the acym_url table, caused by a bug before the 12/04/19
-     *
-     * @return void
      */
-    private function cleanDuplicatedUrls(bool $fromConfiguration)
+    private function cleanDuplicatedUrls(bool $fromConfiguration): void
     {
         if (!$fromConfiguration) {
             return;
@@ -614,10 +588,8 @@ trait Security
 
     /**
      * Fills the key column in the users table when missing
-     *
-     * @return void
      */
-    private function addMissingUserKeys()
+    private function addMissingUserKeys(): void
     {
         $userClass = new UserClass();
         $nbAddedKeys = $userClass->addMissingKeys();
@@ -631,7 +603,7 @@ trait Security
         }
     }
 
-    public function redomigration()
+    public function redomigration(): void
     {
         $newConfig = new \stdClass();
         $newConfig->migration = 0;
@@ -640,7 +612,7 @@ trait Security
         acym_redirect(acym_completeLink('dashboard', false, true));
     }
 
-    public function scanSiteFiles()
+    public function scanSiteFiles(): void
     {
         $maliciousFiles = [];
         $siteFiles = acym_getFiles(ACYM_ROOT, '.', true, true);

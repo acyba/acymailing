@@ -6,20 +6,19 @@ use AcyMailing\Classes\AutomationClass;
 
 trait MassAction
 {
-    public function setFilterMassAction()
+    public function setFilterMassAction(): void
     {
         $this->_saveFilters(true);
         $this->summary();
     }
 
-    public function setActionMassAction()
+    public function setActionMassAction(): void
     {
-        $res = $this->_saveActions(true);
-        if (!$res) return false;
+        $this->_saveActions(true);
         $this->filter();
     }
 
-    public function processMassAction()
+    public function processMassAction(): void
     {
         acym_session();
         $automationClass = new AutomationClass();

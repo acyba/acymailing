@@ -14,6 +14,7 @@ class FieldsController extends AcymController
     public function __construct()
     {
         parent::__construct();
+
         $this->breadcrumb[acym_translation('ACYM_CUSTOM_FIELDS')] = acym_completeLink('fields');
     }
 }

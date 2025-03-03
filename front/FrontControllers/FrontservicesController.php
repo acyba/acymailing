@@ -19,12 +19,12 @@ class FrontservicesController extends AcymController
         ];
     }
 
-    public function listing()
+    public function listing(): void
     {
         exit;
     }
 
-    public function sendinblue()
+    public function sendinblue(): void
     {
         // Check security key
         $securityKey = acym_getVar('string', 'seckey');

@@ -15,6 +15,7 @@ class plgAcymIcagenda extends AcymPlugin
     public function __construct()
     {
         parent::__construct();
+
         $this->cms = 'Joomla';
         $this->addonDefinition = [
             'name' => 'iCagenda',
@@ -30,27 +31,35 @@ class plgAcymIcagenda extends AcymPlugin
         $this->pluginDescription->icon = ACYM_DYNAMICS_URL.basename(__DIR__).'/icon.png';
 
         if ($this->installed) {
+            acym_loadLanguageFile('com_icagenda', JPATH_SITE);
             $this->displayOptions = [
                 'title' => ['ACYM_TITLE', true],
                 'image' => ['ACYM_IMAGE', true],
-                'date' => ['COM_ICAGENDA_EVENT_DATE_FUTUR', true],
-                'venue' => ['COM_ICAGENDA_EVENT_PLACE', true],
+                'date' => [acym_translation('COM_ICAGENDA_EVENT_DATE_FUTUR'), true],
+                'venue' => [acym_translation('COM_ICAGENDA_EVENT_PLACE'), true],
                 'short' => ['ACYM_SHORT_DESCRIPTION', true],
                 'desc' => ['ACYM_DESCRIPTION', false],
-                'email' => ['COM_ICAGENDA_EVENT_MAIL', false],
-                'phone' => ['COM_ICAGENDA_EVENT_PHONE', false],
-                'availableseats' => ['COM_ICAGENDA_EVENT_NUMBER_OF_SEATS_AVAILABLE', true],
-                'totalseats' => ['COM_ICAGENDA_EVENT_NUMBER_OF_SEATS', false],
-                'website' => ['COM_ICAGENDA_EVENT_WEBSITE', false],
+                'email' => [acym_translation('COM_ICAGENDA_EVENT_MAIL'), false],
+                'phone' => [acym_translation('COM_ICAGENDA_EVENT_PHONE'), false],
+                'availableseats' => [acym_translation('COM_ICAGENDA_EVENT_NUMBER_OF_SEATS_AVAILABLE'), true],
+                'totalseats' => [acym_translation('COM_ICAGENDA_EVENT_NUMBER_OF_SEATS'), false],
+                'website' => [acym_translation('COM_ICAGENDA_EVENT_WEBSITE'), false],
                 'cat' => ['ACYM_CATEGORY', false],
             ];
 
             $this->initCustomView(true);
 
+            $tags = array_merge($this->displayOptions, $this->replaceOptions, $this->customOptions);
+            foreach ($this->elementOptions as $key => $value) {
+                if (!isset($tags[$key])) {
+                    $tags[$key] = $value;
+                }
+            }
+
             $this->settings = [
                 'custom_view' => [
                     'type' => 'custom_view',
-                    'tags' => array_merge($this->displayOptions, $this->replaceOptions, $this->customOptions, $this->elementOptions),
+                    'tags' => $tags,
                 ],
                 'front' => [
                     'type' => 'select',

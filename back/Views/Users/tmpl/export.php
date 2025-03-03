@@ -52,7 +52,7 @@
                         echo $data['encodingHelper']->charsetField(
                             'export_charset',
                             $this->config->get('export_charset', 'UTF-8'),
-                            'class="acym__select"'
+                            ['class' => 'acym__select']
                         );
                         ?>
 					</label>

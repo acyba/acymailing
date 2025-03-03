@@ -23,7 +23,7 @@ class FrontdynamicsController extends DynamicsController
         ];
     }
 
-    public function replaceDummy()
+    public function replaceDummy(): void
     {
         // Make sure the current user has access to the specified email
         $mailId = acym_getVar('int', 'mailId', 0);

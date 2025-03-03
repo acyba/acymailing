@@ -7,7 +7,7 @@ use AcyMailing\Helpers\AutomationHelper;
 
 trait Campaign
 {
-    public function countSegmentById($segmentId, $listsIds, $ajax = true, $exclude = false): int
+    public function countSegmentById(int $segmentId, array $listsIds, bool $ajax = true, bool $exclude = false): int
     {
         acym_arrayToInteger($listsIds);
 
@@ -72,11 +72,11 @@ trait Campaign
         }
     }
 
-    public function countGlobalBySegmentId()
+    public function countGlobalBySegmentId(): void
     {
         $segmentId = acym_getVar('int', 'segmentId', 0);
         $isExclude = acym_getVar('boolean', 'exclude', false);
-        $listsIds = json_decode(acym_getVar('string', 'lists', '[]'));
+        $listsIds = json_decode(acym_getVar('string', 'lists', '[]'), true);
 
         if (empty($segmentId)) {
             acym_sendAjaxResponse('', ['count' => $this->countSegmentByParams([], $listsIds, $isExclude)]);
@@ -84,7 +84,7 @@ trait Campaign
         acym_sendAjaxResponse('', ['count' => $this->countSegmentById($segmentId, $listsIds, true, $isExclude)]);
     }
 
-    public function saveFromCampaign()
+    public function saveFromCampaign(): void
     {
         $name = acym_getVar('string', 'segment_name', '');
         $filters = acym_getVar('array', 'acym_action', []);

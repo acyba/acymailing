@@ -14,7 +14,7 @@ use AcyMailing\Helpers\WorkflowHelper;
 
 trait Performance
 {
-    public function performances()
+    public function performances(): void
     {
         acym_setVar('layout', 'performances');
         acym_setVar('step', 'performances');
@@ -40,7 +40,7 @@ trait Performance
         parent::display($data);
     }
 
-    private function prepareScenarioPerformance(&$data)
+    private function prepareScenarioPerformance(array &$data): void
     {
         if (empty($data['scenarioId'])) {
             return;
@@ -50,7 +50,7 @@ trait Performance
         $data['scenario'] = $scenarioClass->getOneById($data['scenarioId']);
     }
 
-    private function prepareStepsPerformance(&$data)
+    private function prepareStepsPerformance(array &$data): void
     {
         $scenarioStepClass = new ScenarioStepClass();
         $scenarioProcessClass = new ScenarioProcessClass();
@@ -141,7 +141,6 @@ trait Performance
         return $triggerNames;
     }
 
-
     private function getConditionNames(): array
     {
         $conditions = ['user' => [], 'classic' => []];
@@ -231,7 +230,7 @@ trait Performance
 
         $matchingElements = $scenarioProcessClass->getMatchingElements($listingSettings);
 
-        $pagination->setStatus($matchingElements['total'], $page, $listingSettings['elementsPerPage']);
+        $pagination->setStatus((int)$matchingElements['total']->total, $page, $listingSettings['elementsPerPage']);
 
         $data = [
             'numberOfTrigger' => $scenarioProcessClass->getNumberOfTriggerByScenarioId($scenarioId),
@@ -265,7 +264,7 @@ trait Performance
         $scenarioHistoryLineClass = new ScenarioHistoryLineClass();
         $matchingElements = $scenarioHistoryLineClass->getMatchingElements($listingSettings);
 
-        $pagination->setStatus($matchingElements['total'], $page, $listingSettings['elementsPerPage']);
+        $pagination->setStatus((int)$matchingElements['total']->total, $page, $listingSettings['elementsPerPage']);
 
         $data = [
             'historyLines' => $matchingElements['elements'],
@@ -282,7 +281,7 @@ trait Performance
         return ob_get_clean();
     }
 
-    public function getUserInfo()
+    public function getUserInfo(): void
     {
         $userId = acym_getVar('int', 'userId', 0);
         $processId = acym_getVar('int', 'processId', 0);

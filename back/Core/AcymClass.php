@@ -25,17 +25,18 @@ abstract class AcymClass extends AcymObject
     {
         if (!empty($this->table) && !empty($this->pkey)) {
             $query = 'SELECT * FROM #__acym_'.acym_secureDBColumn($this->table);
-            $queryCount = 'SELECT COUNT(*) FROM #__acym_'.acym_secureDBColumn($this->table);
+            $queryCount = 'SELECT COUNT(*) AS total FROM #__acym_'.acym_secureDBColumn($this->table);
 
             if (empty($settings['ordering'])) $settings['ordering'] = $this->pkey;
             $query .= ' ORDER BY `'.acym_secureDBColumn($settings['ordering']).'`';
             if (!empty($settings['ordering_sort_order'])) $query .= ' '.acym_secureDBColumn(strtoupper($settings['ordering_sort_order']));
 
             $elements = acym_loadObjectList($query);
-            $total = acym_loadResult($queryCount);
+            $total = acym_loadObject($queryCount);
         } else {
             $elements = [];
-            $total = '0';
+            $total = new \stdClass();
+            $total->total = 0;
         }
 
         return [
@@ -70,9 +71,11 @@ abstract class AcymClass extends AcymObject
         return acym_loadObjectList('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table).' WHERE `'.acym_secureDBColumn($this->pkey).'` IN ("'.implode('","', $ids).'")');
     }
 
-    public function getAll($key = null)
+    public function getAll(?string $key = null): array
     {
-        if (empty($key)) $key = $this->pkey;
+        if (empty($key)) {
+            $key = $this->pkey;
+        }
 
         return acym_loadObjectList('SELECT * FROM #__acym_'.acym_secureDBColumn($this->table), $key);
     }

@@ -5,11 +5,10 @@
 	</a>
 	<div class="cell medium-8 text-center acym__scenario__workflow__container">
         <?php
-        $workflow = $data['workflowHelper'];
         if (empty($data['scenario']->id)) {
-            $workflow->disabledAfter = 'editScenario';
+            $data['workflowHelper']->disabledAfter = 'editScenario';
         }
-        echo $workflow->displayNew($this->steps, $this->step, true, '', 'scenarioId');
+        echo $data['workflowHelper']->displayNew($this->steps, $this->step, true, '', 'scenarioId');
         ?>
 	</div>
 	<div class="cell medium-2 text-right">

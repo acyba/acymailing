@@ -11,7 +11,7 @@ use AcyMailing\Helpers\UpdatemeHelper;
 
 trait Tests
 {
-    public function checkContent()
+    public function checkContent(): void
     {
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
@@ -225,7 +225,7 @@ trait Tests
         acym_sendAjaxResponse('', ['result' => $result]);
     }
 
-    public function checkLinks()
+    public function checkLinks(): void
     {
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
@@ -280,7 +280,7 @@ trait Tests
         acym_sendAjaxResponse('', ['result' => $result]);
     }
 
-    public function checkSPAM()
+    public function checkSPAM(): void
     {
         $message = '';
         $data = [];

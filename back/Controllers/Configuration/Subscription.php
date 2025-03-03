@@ -6,7 +6,7 @@ use AcyMailing\Helpers\HeaderHelper;
 
 trait Subscription
 {
-    public function removeNotification()
+    public function removeNotification(): void
     {
         $whichNotification = acym_getVar('string', 'id');
 
@@ -27,7 +27,7 @@ trait Subscription
         acym_sendAjaxResponse('', ['html' => $helperHeader->getNotificationCenterInner($notifications)]);
     }
 
-    public function markNotificationRead()
+    public function markNotificationRead(): void
     {
         $which = acym_getVar('string', 'id');
 
@@ -53,7 +53,7 @@ trait Subscription
         acym_sendAjaxResponse('', []);
     }
 
-    public function addNotification()
+    public function addNotification(): void
     {
         $message = acym_getVar('string', 'message');
         $level = acym_getVar('string', 'level');
@@ -75,7 +75,7 @@ trait Subscription
         acym_sendAjaxResponse('', ['notificationCenter' => $helperHeader->getNotificationCenter()]);
     }
 
-    private function loadSurveyAnswers(&$data)
+    private function loadSurveyAnswers(array &$data): void
     {
         $surveyTexts = $this->config->get('unsub_survey', '{}');
         $data['surveyAnswers'] = json_decode($surveyTexts, true);

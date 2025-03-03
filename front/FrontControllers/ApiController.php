@@ -201,8 +201,6 @@ class ApiController extends AcymController
 
     /**
      * Send a JSON success response and exit.
-     *
-     * @param mixed $data The data to include in the response.
      */
     private function sendJsonResponse(array $data, int $statusCode = 200): void
     {
@@ -214,11 +212,6 @@ class ApiController extends AcymController
 
     /**
      * Removes any extra columns from objects returned by the API on GET routes
-     *
-     * @param string $type
-     * @param object $element
-     *
-     * @return object
      */
     private function removeExtraColumns(string $type, object $element): object
     {

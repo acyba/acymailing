@@ -60,15 +60,15 @@ trait Emails
             $this->sendJsonResponse(['message' => 'Receiver email address not provided in the request body.'], 422);
         }
 
-        $mailer = new MailerHelper();
-        $mailer->report = false;
+        $mailerHelper = new MailerHelper();
+        $mailerHelper->report = false;
 
         $email = $decodedData['email'];
         $userClass = new UserClass();
         $user = $userClass->getOneByEmail($email);
         if (empty($user)) {
             if (!empty($decodedData['autoAddUser'])) {
-                $mailer->autoAddUser = true;
+                $mailerHelper->autoAddUser = true;
             } else {
                 $this->sendJsonResponse(['message' => 'User doesn\'t exist'], 404);
             }
@@ -88,17 +88,17 @@ trait Emails
         }
 
         if (isset($decodedData['trackEmail'])) {
-            $mailer->trackEmail = $decodedData['trackEmail'];
+            $mailerHelper->trackEmail = (bool)$decodedData['trackEmail'];
         }
 
         if (!empty($decodedData['params'])) {
             foreach ($decodedData['params'] as $key => $value) {
-                $mailer->addParam($key, $value);
+                $mailerHelper->addParam($key, $value);
             }
         }
 
         try {
-            $success = $mailer->sendOne($emailId, $email);
+            $success = $mailerHelper->sendOne($emailId, $email);
             if ($success) {
                 $this->sendJsonResponse(['message' => 'Email sent successfully.']);
             }

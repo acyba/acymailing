@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 3.4
+ * Version: 3.5
  * Requires Plugins: acymailing, ultimate-member
 */
 
@@ -50,7 +50,7 @@ class AcyMailingIntegrationForUltimateMember
 
     public function register(array &$integrations, string $acyVersion): void
     {
-        if (version_compare($acyVersion, '10.0.0', '>=')) {
+        if (version_compare($acyVersion, '10.1.0', '>=')) {
             $integrations[] = [
                 'path' => __DIR__,
                 'className' => self::INTEGRATION_PLUGIN_NAME,
@@ -79,7 +79,7 @@ class AcyMailingIntegrationForUltimateMember
         ?>
 		<div class="acym__regacy">
 			<label class="acym__regacy__label"><?php echo $regacyHelper->label; ?></label>
-			<div class="acym__regacy__values"><?php echo $regacyHelper->lists; ?></div>
+			<div class="acym__regacy__values"><?php echo $regacyHelper->listsHtml; ?></div>
 		</div>
         <?php
     }

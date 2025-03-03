@@ -2,23 +2,20 @@
 
 namespace AcyMailing\Controllers;
 
-use AcyMailing\Helpers\EntitySelectHelper;
 use AcyMailing\Core\AcymController;
 
 class EntitySelectController extends AcymController
 {
-    var $entitySelectHelper;
-
     public function __construct()
     {
         parent::__construct();
-        $this->entitySelectHelper = new EntitySelectHelper();
+
         $this->loadScripts = [
             'all' => ['vue-applications' => ['entity_select']],
         ];
     }
 
-    public function loadEntityFront()
+    public function loadEntityFront(): void
     {
         $entity = acym_getVar('string', 'entity');
         $offset = acym_getVar('int', 'offset');
@@ -38,7 +35,7 @@ class EntitySelectController extends AcymController
         }
     }
 
-    private function loadEntityBack($entity, $offset, $perCalls, $join, $columnsToDisplay): array
+    private function loadEntityBack(string $entity, int $offset, int $perCalls, string $join, array $columnsToDisplay): array
     {
         if (empty($entity) || (empty($offset) && 0 !== $offset) || empty($perCalls)) {
             return ['error' => acym_translation('ACYM_MISSING_PARAMETERS')];
@@ -70,14 +67,16 @@ class EntitySelectController extends AcymController
         return ['data' => empty($availableEntity) ? 'end' : $availableEntity];
     }
 
-    private function formatEntites(&$availableEntity, $entity)
+    private function formatEntites(array &$availableEntity, string $entity): void
     {
-        if ($entity == 'list') {
+        if ($entity === 'list') {
             foreach ($availableEntity['elements'] as $key => $element) {
                 $availableEntity['elements'][$key]->color = '<i style="color: '.$element->color.'" class="acym_subscription acymicon-circle">';
-                if (!empty($element->description)) $availableEntity['elements'][$key]->name = $element->name.acym_info($element->description);
+                if (!empty($element->description)) {
+                    $availableEntity['elements'][$key]->name = $element->name.acym_info($element->description);
+                }
             }
-        } elseif ($entity == 'user') {
+        } elseif ($entity === 'user') {
             foreach ($availableEntity['elements'] as $key => $element) {
                 $availableEntity['elements'][$key]->email = $element->email.'<span class="acym__hover__user_info" data-id="'.$availableEntity['elements'][$key]->id.'">
                 '.acym_info('<i class="acymicon-circle-o-notch acymicon-spin"></i>').'

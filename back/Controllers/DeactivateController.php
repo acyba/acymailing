@@ -7,8 +7,7 @@ use AcyMailing\Core\AcymController;
 
 class DeactivateController extends AcymController
 {
-    //Function called in Ajax that's why we exit
-    public function saveFeedback()
+    public function saveFeedbackAjax(): void
     {
         $data = [
             'reason' => acym_getVar('string', 'reason', ''),

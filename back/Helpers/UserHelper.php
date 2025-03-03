@@ -8,7 +8,7 @@ use AcyMailing\Core\AcymObject;
 
 class UserHelper extends AcymObject
 {
-    public function exportdata($id)
+    public function exportdata(int $id): void
     {
         if (empty($id)) {
             die(acym_translation('ACYM_USER_NOT_FOUND'));

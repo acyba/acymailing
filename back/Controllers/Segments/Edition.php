@@ -8,7 +8,7 @@ use AcyMailing\Helpers\AutomationHelper;
 
 trait Edition
 {
-    public function edit()
+    public function edit(): void
     {
         if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));
@@ -16,27 +16,27 @@ trait Edition
 
     }
 
-    public function apply()
+    public function apply(): void
     {
         $segmentId = $this->store();
-        if (!$segmentId) {
+        if (empty($segmentId)) {
             acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_SAVE_SEGMENT'), 'error');
             $this->listing();
         } else {
-            acym_enqueueMessage(acym_translation('ACYM_SEGMENT_WELL_SAVE'), 'success');
+            acym_enqueueMessage(acym_translation('ACYM_SEGMENT_WELL_SAVE'));
             acym_setVar('segmentId', $segmentId);
             $this->edit();
         }
     }
 
-    public function save()
+    public function save(): void
     {
         $segmentId = $this->store();
-        acym_enqueueMessage(acym_translation($segmentId ? 'ACYM_SEGMENT_WELL_SAVE' : 'ACYM_COULD_NOT_SAVE_SEGMENT'), $segmentId ? 'success' : 'error');
+        acym_enqueueMessage(acym_translation(empty($segmentId) ? 'ACYM_COULD_NOT_SAVE_SEGMENT' : 'ACYM_SEGMENT_WELL_SAVE'), empty($segmentId) ? 'error' : 'success');
         $this->listing();
     }
 
-    private function store()
+    private function store(): int
     {
         $segmentId = acym_getVar('int', 'segmentId');
         $filters = acym_getVar('array', 'acym_action');
@@ -49,21 +49,25 @@ trait Edition
             $segment->creation_date = acym_date('now', 'Y-m-d H:i:s');
         } else {
             $segment = $segmentClass->getOneById($segmentId);
-            if (empty($segment)) return false;
+            if (empty($segment)) {
+                return 0;
+            }
         }
 
         $segment->name = $segmentRequest['name'];
         $segment->active = $segmentRequest['active'];
         $segment->filters = json_encode($filters['filters'], JSON_FORCE_OBJECT);
 
-        return $segmentClass->save($segment);
+        $segmentId = $segmentClass->save($segment);
+
+        return empty($segmentId) ? 0 : $segmentId;
     }
 
-    public function countResultsTotal()
+    public function countResultsTotal(): void
     {
         $segmentSelected = acym_getVar('int', 'segment_selected');
         if (empty($segmentSelected)) {
-            $stepAutomation = acym_getVar('array', 'acym_action');
+            $stepAutomation = acym_getVar('array', 'acym_action', []);
         } else {
             $segmentClass = new SegmentClass();
             $segment = $segmentClass->getOneById($segmentSelected);
@@ -75,16 +79,14 @@ trait Edition
         }
 
         //if we are in the campaign edition
-        $listsIds = acym_getVar('string', 'list_selected', '');
-        if (!empty($listsIds)) {
-            $listsIds = json_decode($listsIds);
-        }
+        $listsIds = acym_getVar('string', 'list_selected', '[]');
+        $listsIds = empty($listsIds) ? [] : json_decode($listsIds, true);
 
         $isExclude = acym_getVar('boolean', 'exclude', false);
         acym_sendAjaxResponse($this->countSegmentByParams($stepAutomation, $listsIds, $isExclude));
     }
 
-    public function countSegmentByParams($segment, $listsIds, $exclude = false)
+    public function countSegmentByParams(array $segment, array $listsIds, bool $exclude = false): int
     {
         $automationHelpers = [];
 
@@ -136,7 +138,7 @@ trait Edition
         }
     }
 
-    public function countResults()
+    public function countResults(): void
     {
         $and = acym_getVar('int', 'and');
         $or = acym_getVar('int', 'or');
@@ -171,7 +173,7 @@ trait Edition
         acym_sendAjaxResponse($messages);
     }
 
-    public function usersSummary()
+    public function usersSummary(): void
     {
         $offset = acym_getVar('int', 'offset', 0);
         $limit = acym_getVar('int', 'limit', 50);
@@ -181,7 +183,9 @@ trait Edition
         $or = acym_getVar('int', 'or');
         $stepAutomation = acym_getVar('array', 'acym_action');
 
-        if (empty($stepAutomation['filters'][$or][$and])) acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);
+        if (empty($stepAutomation['filters'][$or][$and])) {
+            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_RETRIEVE_DATA'), [], false);
+        }
 
         $automationHelper = new AutomationHelper();
 

@@ -561,8 +561,8 @@ class plgAcymUniversalfilter extends AcymPlugin
             return;
         }
 
-        $import = new ImportHelper();
-        $import->tableName = acym_secureDBColumn($options['conn_table']);
+        $importHelper = new ImportHelper();
+        $importHelper->tableName = acym_secureDBColumn($options['conn_table']);
 
         // Filter the imported users in case the user selected some actions
         $newFilter = [];
@@ -574,7 +574,7 @@ class plgAcymUniversalfilter extends AcymPlugin
         if (!empty($options['wherefield']) && in_array($options['wherefield'], $columns)) {
             $options['wherevalue'] = acym_replaceDate($options['wherevalue']);
             $newFilter['query'] .= ' AND '.$query->convertQuery('import', $options['wherefield'], $options['operator'], $options['wherevalue']);
-            $import->dbWhere[] = $query->convertQuery('', $options['wherefield'], $options['operator'], $options['wherevalue']);
+            $importHelper->dbWhere[] = $query->convertQuery('', $options['wherefield'], $options['operator'], $options['wherevalue']);
         }
 
         // Only keep the fields mapping options
@@ -582,9 +582,9 @@ class plgAcymUniversalfilter extends AcymPlugin
         unset($options['wherefield']);
         unset($options['operator']);
         unset($options['wherevalue']);
-        $import->fieldsMap = $options;
+        $importHelper->fieldsMap = $options;
 
-        if (!$import->database(true)) {
+        if (!$importHelper->database(true)) {
             $query->where[] = '1 = 0';
 
             return;

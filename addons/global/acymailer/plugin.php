@@ -477,7 +477,7 @@ class plgAcymAcymailer extends AcymPlugin
 
     public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $replyTo, $bcc = [], $attachments = [], $sendingMethodListParams = [])
     {
-        if ($mailerHelper->externalMailer != self::SENDING_METHOD_ID) {
+        if ($mailerHelper->externalMailer !== self::SENDING_METHOD_ID) {
             return;
         }
 
@@ -898,7 +898,7 @@ class plgAcymAcymailer extends AcymPlugin
         if (empty($credits['remaining_credits'])) {
             $creditsLeft = 0;
         } else {
-            $creditsLeft = $credits['remaining_credits'];
+            $creditsLeft = (int)$credits['remaining_credits'];
         }
     }
 

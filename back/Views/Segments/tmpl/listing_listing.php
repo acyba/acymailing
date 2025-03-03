@@ -7,6 +7,7 @@
             $actions = [
                 'setActive' => acym_translation('ACYM_ENABLE'),
                 'setInactive' => acym_translation('ACYM_DISABLE'),
+                'duplicate' => acym_translation('ACYM_DUPLICATE'),
                 'delete' => acym_translation('ACYM_DELETE'),
             ];
             echo acym_listingActions($actions);

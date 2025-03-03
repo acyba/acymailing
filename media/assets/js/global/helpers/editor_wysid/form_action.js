@@ -137,7 +137,11 @@ const acym_editorWysidFormAction = {
                         'level': 'success'
                     }, 3000, false);
                 }
-                if (fromSendTest) acym_editorWysidTest.sendTest(res.data.result);
+
+                if (fromSendTest) {
+                    acym_editorWysidTest.sendTest(res.data.result);
+                }
+
                 jQuery('#acym__wysid__warning__thumbnail').toggle();
             }
             jQuery('#acym__wysid__save__button').removeAttr('disabled');

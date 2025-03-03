@@ -7,7 +7,7 @@ use AcyMailing\Classes\UserClass;
 
 trait Subscription
 {
-    public function resetSubscription()
+    public function resetSubscription(): void
     {
         $userId = acym_getVar('int', 'userId');
 
@@ -28,7 +28,7 @@ trait Subscription
         $this->edit();
     }
 
-    public function unsubscribeUser()
+    public function unsubscribeUser(): void
     {
         $userId = acym_getVar('int', 'userId');
         if (empty($userId)) {
@@ -52,7 +52,7 @@ trait Subscription
         $this->edit();
     }
 
-    public function unsubscribeUserFromAll()
+    public function unsubscribeUserFromAll(): void
     {
         $userId = acym_getVar('int', 'userId');
 
@@ -80,7 +80,7 @@ trait Subscription
         $this->edit();
     }
 
-    public function resubscribeUserToAll()
+    public function resubscribeUserToAll(): void
     {
         $userId = acym_getVar('int', 'userId');
         if (empty($userId)) {
@@ -107,7 +107,7 @@ trait Subscription
         $this->edit();
     }
 
-    public function subscribeUser($returnOnEdit = true, $frontCreation = false)
+    public function subscribeUser(bool $returnOnEdit = true, bool $frontCreation = false): void
     {
         $userId = acym_getVar('int', 'userId');
         $lists = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));

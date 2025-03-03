@@ -6,22 +6,25 @@ use AcyMailing\Core\AcymObject;
 
 class TabHelper extends AcymObject
 {
-    var $titles = [];
-    var $content = [];
-    var $tabNumber = 0;
-    var $opened = false;
-    var $identifier;
-    var $inBarElements = [];
+    private array $titles = [];
+    private array $content = [];
+    private array $inBarElements = [];
+    private int $tabNumber = 0;
+    private bool $opened = false;
+    private string $identifier;
 
     public function __construct()
     {
         parent::__construct();
-        $this->identifier = rand(1000, 9000);
+
+        $this->identifier = (string)rand(1000, 9000);
     }
 
-    public function startTab($title, $selected = false, $attributes = '', $clickable = true)
+    public function startTab(string $title, bool $selected = false, string $attributes = '', bool $clickable = true): string
     {
-        if ($this->opened) $this->endTab();
+        if ($this->opened) {
+            $this->endTab();
+        }
         $this->opened = true;
 
         $attributes .= $clickable ? '' : 'data-empty="true"';
@@ -37,16 +40,18 @@ class TabHelper extends AcymObject
         return $this->identifier;
     }
 
-    public function endTab()
+    public function endTab(): void
     {
-        if (!$this->opened) return;
+        if (!$this->opened) {
+            return;
+        }
 
         $this->opened = false;
         $this->content[] = '<div class="tabs-panel" id="tab_'.$this->identifier.'_'.$this->tabNumber.'">'.ob_get_clean().'</div>';
         $this->tabNumber++;
     }
 
-    public function addElementInBar($element, $identifier = '')
+    public function addElementInBar(string $element, string $identifier = ''): void
     {
         $this->inBarElements[] = [
             'element' => $element,
@@ -54,13 +59,13 @@ class TabHelper extends AcymObject
         ];
     }
 
-    public function display($id)
+    public function display(string $tabId): void
     {
         if ($this->opened) {
             $this->endTab();
         }
 
-        $tabSystem = '<ul class="tabs" data-tabs id="'.acym_escape($id).'">';
+        $tabSystem = '<ul class="tabs" data-tabs id="'.acym_escape($tabId).'">';
         $tabSystem .= implode('', $this->titles);
 
         if (!empty($this->inBarElements)) {
@@ -77,7 +82,7 @@ class TabHelper extends AcymObject
 
         $tabSystem .= '</ul>';
 
-        $tabSystem .= '<div class="tabs-content margin-bottom-1" data-tabs-content="'.acym_escape($id).'">';
+        $tabSystem .= '<div class="tabs-content margin-bottom-1" data-tabs-content="'.acym_escape($tabId).'">';
         $tabSystem .= implode('', $this->content);
         $tabSystem .= '</div>';
 

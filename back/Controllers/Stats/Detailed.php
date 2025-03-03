@@ -8,7 +8,7 @@ use AcyMailing\Helpers\PaginationHelper;
 
 trait Detailed
 {
-    public function detailedStats()
+    public function detailedStats(): void
     {
         acym_setVar('layout', 'detailed_stats');
 
@@ -29,14 +29,16 @@ trait Detailed
         parent::display($data);
     }
 
-    public function exportDetailed()
+    public function exportDetailed(): void
     {
         $exportHelper = new ExportHelper();
         $data = [];
         $this->prepareDefaultPageInfo($data);
 
         $where = '';
-        if (!empty($this->selectedMailIds)) $where = 'WHERE userstat.`mail_id` IN ('.implode(',', $this->selectedMailIds).')';
+        if (!empty($this->selectedMailIds)) {
+            $where = 'WHERE userstat.`mail_id` IN ('.implode(',', $this->selectedMailIds).')';
+        }
 
         $groupBy = ' GROUP BY userstat.mail_id, userstat.user_id ';
 
@@ -64,13 +66,15 @@ trait Detailed
         exit;
     }
 
-    private function prepareDetailedListing(&$data)
+    private function prepareDetailedListing(array &$data): void
     {
         $data['search'] = $this->getVarFiltersListing('string', 'detailed_stats_search', '');
         $data['ordering'] = $this->getVarFiltersListing('string', 'detailed_stats_ordering', 'send_date');
         $data['orderingSortOrder'] = $this->getVarFiltersListing('string', 'detailed_stats_ordering_sort_order', 'desc');
 
-        if (empty($this->selectedMailIds)) return;
+        if (empty($this->selectedMailIds)) {
+            return;
+        }
 
         $userStatClass = new UserStatClass();
         $pagination = new PaginationHelper();
@@ -90,7 +94,7 @@ trait Detailed
         );
 
         // Prepare the pagination
-        $pagination->setStatus($matchingDetailedStats['total'], $page, $detailedStatsPerPage);
+        $pagination->setStatus((int)$matchingDetailedStats['total']->total, $page, $detailedStatsPerPage);
 
         $data['pagination'] = $pagination;
         $data['detailed_stats'] = $matchingDetailedStats['detailed_stats'];

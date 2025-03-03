@@ -6,7 +6,7 @@ use AcyMailing\Classes\UserClass;
 
 class MailboxHelper extends BounceHelper
 {
-    public $mailboxConfig = [];
+    private array $mailboxConfig = [];
     public $conditions;
 
     public function buildConfigFromMailbox(): bool
@@ -42,7 +42,7 @@ class MailboxHelper extends BounceHelper
         return !$error;
     }
 
-    public function isConnectionValid($mailbox, $close = true): bool
+    public function isConnectionValid(object $mailbox, bool $close = true): bool
     {
         $this->action = $mailbox;
         if (!$this->buildConfigFromMailbox()) {
@@ -156,7 +156,7 @@ class MailboxHelper extends BounceHelper
         return true;
     }
 
-    public function handleAction()
+    public function handleAction(): void
     {
         if (empty($this->action)) {
             return;
@@ -290,7 +290,7 @@ class MailboxHelper extends BounceHelper
         return $allActionsExecuted;
     }
 
-    public function getAttachments()
+    public function getAttachments(): string
     {
         $newAttachments = [];
         foreach ($this->attachments as $attachment) {

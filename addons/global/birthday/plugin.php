@@ -21,7 +21,12 @@ class plgAcymBirthday extends AcymPlugin
 
         $fieldClass = new FieldClass();
         $birthdayField = $fieldClass->getOneById($options['field']);
-        if (empty($birthdayField)) return;
+        if (empty($birthdayField)) {
+            // Prevent the campaign from being sent to everyone
+            $query->where[] = '0 = 1';
+
+            return;
+        }
 
         $query->join['birthday_field'.$num] = '#__acym_user_has_field AS uf'.$num.' ON uf'.$num.'.user_id = user.id';
         $query->where[] = 'uf'.$num.'.field_id = '.intval($birthdayField->id);

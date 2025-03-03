@@ -425,6 +425,9 @@ if (typeof submitAcymForm !== 'function') {
                 } catch {
                     message = xhr.responseText;
                 }
+            } else {
+                console.log(xhr.status);
+                console.log(xhr.responseText);
             }
             acymDisplayAjaxResponse(message, type, acyformName);
         };

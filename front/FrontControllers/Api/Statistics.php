@@ -11,7 +11,7 @@ use AcyMailing\Classes\UserStatClass;
 
 trait Statistics
 {
-    public function getCampaignStatistics()
+    public function getCampaignStatistics(): void
     {
         $campaignId = acym_getVar('int', 'campaignId', 0);
 
@@ -33,7 +33,7 @@ trait Statistics
         $this->sendJsonResponse(array_values($statistics));
     }
 
-    public function getCampaignStatisticsDetailed()
+    public function getCampaignStatisticsDetailed(): void
     {
         $campaignId = acym_getVar('int', 'campaignId', 0);
 
@@ -61,7 +61,7 @@ trait Statistics
         $this->sendJsonResponse(array_values($statistics));
     }
 
-    public function getCampaignStatisticsClicks()
+    public function getCampaignStatisticsClicks(): void
     {
         $campaignId = acym_getVar('int', 'campaignId', 0);
 
@@ -83,7 +83,7 @@ trait Statistics
         $this->sendJsonResponse(array_merge_recursive(...$statistics));
     }
 
-    public function getCampaignStatisticsLinks()
+    public function getCampaignStatisticsLinks(): void
     {
         $campaignId = acym_getVar('int', 'campaignId', 0);
 
@@ -112,8 +112,7 @@ trait Statistics
         $this->sendJsonResponse(array_values($statistics['links_details']));
     }
 
-
-    public function getFollowupStatistics()
+    public function getFollowupStatistics(): void
     {
         $followupId = acym_getVar('int', 'followupId', 0);
 

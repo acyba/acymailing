@@ -2,11 +2,12 @@
 <?php echo acym_cancelButton();
 $beforeSave = '';
 if ($data['currentTab'] === $data['tabs']['subscribers']) {
-    if (!empty($data['translation_languages'])) {
-        $beforeSave = 'acym-data-before="acym_helperSelectionMultilingual.changeLanguage_list(acym_helperSelectionMultilingual.mainLanguage)"';
-    }
     if (!empty($data['listInformation']->id) && !empty($data['subscribersEntitySelect'])) {
         echo $data['subscribersEntitySelect'];
+    }
+} elseif ($data['currentTab'] !== $data['tabs']['unsubscriptions']) {
+    if (!empty($data['translation_languages'])) {
+        $beforeSave = 'acym-data-before="acym_helperSelectionMultilingual.changeLanguage_list(acym_helperSelectionMultilingual.mainLanguage)"';
     }
 }
 ?>

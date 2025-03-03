@@ -41,8 +41,7 @@ class FollowupClass extends AcymClass
                 LEFT JOIN #__acym_followup_has_mail AS mails 
                     ON followup.id = mails.followup_id';
 
-        $queryCount = 'SELECT COUNT(*) 
-                FROM #__acym_followup AS followup ';
+        $queryCount = 'SELECT COUNT(*) AS total FROM #__acym_followup AS followup ';
 
         $filters = [];
 
@@ -78,7 +77,7 @@ class FollowupClass extends AcymClass
             $this->getGlobalStats($results['elements'][$key], $urlClickClass);
         }
 
-        $results['total'] = acym_loadResult($queryCount);
+        $results['total'] = acym_loadObject($queryCount);
 
         return $results;
     }

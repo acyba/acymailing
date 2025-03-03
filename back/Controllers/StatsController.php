@@ -23,9 +23,9 @@ class StatsController extends AcymController
     use UserLinksDetails;
     use Lists;
 
-    var $selectedMailIds = [];
-    var $multiLanguageMailAdded = [];
-    var $generatedMailAdded = [];
+    private array $selectedMailIds = [];
+    private array $multiLanguageMailAdded = [];
+    private array $generatedMailAdded = [];
 
     public function __construct()
     {
@@ -38,13 +38,13 @@ class StatsController extends AcymController
         ];
     }
 
-    public function call($task)
+    public function call(string $task): void
     {
         $task = $this->storeAndGetTask($task);
         parent::call($task);
     }
 
-    private function storeAndGetTask($task)
+    private function storeAndGetTask(string $task): string
     {
         acym_session();
 
@@ -57,11 +57,11 @@ class StatsController extends AcymController
             'statsByList',
         ];
 
-        if ($this->taskCalled == 'listing' && empty($_SESSION['stats_task'])) {
+        if ($this->taskCalled === 'listing' && empty($_SESSION['stats_task'])) {
             return 'globalStats';
         }
 
-        if ((empty($this->taskCalled) || $this->taskCalled == 'listing') && !empty($_SESSION['stats_task']) && in_array($_SESSION['stats_task'], $tasksToStore)) {
+        if ((empty($this->taskCalled) || $this->taskCalled === 'listing') && !empty($_SESSION['stats_task']) && in_array($_SESSION['stats_task'], $tasksToStore)) {
             return $_SESSION['stats_task'];
         }
 
@@ -78,7 +78,7 @@ class StatsController extends AcymController
         }
     }
 
-    public function searchSentMail()
+    public function searchSentMail(): void
     {
         $idsSelected = acym_getVar('string', 'id', '');
         if (!empty($idsSelected)) {
@@ -114,7 +114,7 @@ class StatsController extends AcymController
         exit;
     }
 
-    public function prepareDefaultPageInfo(&$data, $needMailId = false)
+    public function prepareDefaultPageInfo(array &$data, bool $needMailId = false): bool
     {
         $data['workflowHelper'] = new WorkflowHelper();
 

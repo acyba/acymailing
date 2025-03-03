@@ -100,12 +100,12 @@ trait ForwardMailboxAction
         }
 
         $receivers = explode(',', $action['addresses']);
-        $mailHelper = new MailerHelper();
-        $mailHelper->autoAddUser = true;
-        $mailHelper->isForward = true;
+        $mailerHelper = new MailerHelper();
+        $mailerHelper->autoAddUser = true;
+        $mailerHelper->isForward = true;
         $mailInfo = $newMail->subject.' ('.$newMail->id.')';
         foreach ($receivers as $oneReceiver) {
-            if ($mailHelper->sendOne($newMail->id, $oneReceiver)) {
+            if ($mailerHelper->sendOne($newMail->id, $oneReceiver)) {
                 $report[] = [
                     'message' => acym_translationSprintf('ACYM_SEND_SUCCESS', $mailInfo, acym_escape($oneReceiver)),
                     'success' => true,

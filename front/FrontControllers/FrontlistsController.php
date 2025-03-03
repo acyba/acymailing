@@ -49,7 +49,7 @@ class FrontlistsController extends ListsController
         ];
     }
 
-    protected function prepareListsListing(&$data)
+    protected function prepareListsListing(array &$data): void
     {
         // Prepare the pagination
         $listsPerPage = $data['pagination']->getListLimit();
@@ -73,14 +73,14 @@ class FrontlistsController extends ListsController
             $data['status'],
             $page
         );
-        $data['pagination']->setStatus($matchingLists['total'], $page, $listsPerPage);
+        $data['pagination']->setStatus($matchingLists['total']->total, $page, $listsPerPage);
 
         $data['menuClass'] = $this->menuClass;
         $data['lists'] = $matchingLists['elements'];
         $data['listNumberPerStatus'] = $matchingLists['status'];
     }
 
-    protected function prepareToolbar(&$data)
+    protected function prepareToolbar(array &$data): void
     {
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'lists_search', 'ACYM_SEARCH');
@@ -89,7 +89,7 @@ class FrontlistsController extends ListsController
         $data['toolbar'] = $toolbarHelper;
     }
 
-    protected function prepareWelcomeUnsubData(&$data)
+    protected function prepareWelcomeUnsubData(array &$data): void
     {
         $data['tmpls'] = [];
         $data['menuClass'] = $this->menuClass;
@@ -126,7 +126,7 @@ class FrontlistsController extends ListsController
         }
     }
 
-    public function delete()
+    public function delete(): void
     {
         acym_checkToken();
         $ids = acym_getVar('array', 'elements_checked', []);
@@ -143,7 +143,7 @@ class FrontlistsController extends ListsController
         parent::delete();
     }
 
-    public function setInactive()
+    public function setInactive(): void
     {
         acym_checkToken();
         $ids = acym_getVar('array', 'elements_checked', []);
@@ -158,7 +158,7 @@ class FrontlistsController extends ListsController
         $this->listing();
     }
 
-    public function setActive()
+    public function setActive(): void
     {
         acym_checkToken();
         $ids = acym_getVar('array', 'elements_checked', []);

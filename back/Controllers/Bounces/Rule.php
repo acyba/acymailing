@@ -7,7 +7,7 @@ use AcyMailing\Classes\RuleClass;
 
 trait Rule
 {
-    public function rule()
+    public function rule(): void
     {
         $ruleClass = new RuleClass();
         acym_setVar('layout', 'rule');
@@ -39,19 +39,19 @@ trait Rule
         parent::display($data);
     }
 
-    public function applyRule()
+    public function applyRule(): void
     {
         $this->storeRule();
         $this->rule();
     }
 
-    public function saveRule()
+    public function saveRule(): void
     {
         $this->storeRule();
         $this->listing();
     }
 
-    public function storeRule()
+    public function storeRule(): void
     {
         $rule = acym_getVar('array', 'bounce');
 
@@ -94,7 +94,7 @@ trait Rule
         if (!$res) {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
         } else {
-            acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
+            acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
             acym_setVar('ruleId', $res);
         }
     }

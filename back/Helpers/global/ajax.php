@@ -1,6 +1,6 @@
 <?php
 
-function acym_getAllHeaders()
+function acym_getAllHeaders(): array
 {
     if (function_exists('getallheaders')) {
         return getallheaders();
@@ -19,7 +19,7 @@ function acym_getAllHeaders()
     return $headers;
 }
 
-function acym_getHeader($headerName)
+function acym_getHeader(string $headerName): string
 {
     $allHeaders = acym_getAllHeaders();
 
@@ -30,7 +30,7 @@ function acym_getHeader($headerName)
     return '';
 }
 
-function acym_isAjax()
+function acym_isAjax(): bool
 {
     $allHeaders = acym_getAllHeaders();
 

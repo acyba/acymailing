@@ -3,7 +3,6 @@
 namespace AcyMailing\FrontControllers\Api;
 
 use AcyMailing\Classes\ListClass;
-use AcyMailing\Classes\UserClass;
 
 trait Lists
 {

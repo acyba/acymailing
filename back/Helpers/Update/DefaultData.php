@@ -16,7 +16,7 @@ use AcyMailing\Classes\UserClass;
 
 trait DefaultData
 {
-    public function installBounceRules()
+    public function installBounceRules(): void
     {
         $ruleClass = new RuleClass();
         if ($ruleClass->getOrderingNumber() > 0) {
@@ -57,7 +57,7 @@ trait DefaultData
         $this->config->save(['bounceVersion' => self::BOUNCE_VERSION]);
     }
 
-    public function installFields()
+    public function installFields(): void
     {
         $query = "INSERT IGNORE INTO #__acym_field (`id`, `name`, `type`, `value`, `active`, `default_value`, `required`, `ordering`, `option`, `core`, `backend_edition`, `backend_listing`, `frontend_edition`, `frontend_listing`, `namekey`) VALUES 
     (1, 'ACYM_NAME', 'text', NULL, 1, NULL, 0, 1, '{\"error_message\":\"\",\"error_message_invalid\":\"\",\"size\":\"\",\"rows\":\"\",\"columns\":\"\",\"format\":\"\",\"custom_text\":\"\",\"css_class\":\"\",\"authorized_content\":{\"0\":\"all\",\"regex\":\"\"}}', 1, 1, 1, 1, 1, 'acym_name'), 
@@ -68,7 +68,7 @@ trait DefaultData
         $fieldClass->insertLanguageField();
     }
 
-    public function installTemplates()
+    public function installTemplates(): void
     {
         $mailClass = new MailClass();
         $installedTemplates = 0;
@@ -94,13 +94,13 @@ trait DefaultData
         }
     }
 
-    public function installDefaultAutomations()
+    public function installDefaultAutomations(): void
     {
         $this->newAutomationAdmin('ACYM_ADMIN_USER_CREATE');
         $this->newAutomationAdmin('ACYM_ADMIN_USER_MODIFICATION');
     }
 
-    public function installList()
+    public function installList(): void
     {
         $listClass = new ListClass();
         $listClass->addDefaultList();
@@ -195,7 +195,7 @@ trait DefaultData
                     <p>'.acym_translation('ACYM_NOTIFICATION_SUBFORM_BODY').'</p>
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{user:name}', 'Julia').'</p>
                     <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{user:email}', 'julia@example.com').'</p>
-                    <p>'.acym_translation('ACYM_SUBSCRIPTION').': '.$this->getDTextDisplay('{user:subscription}', 'Newsletters - 2020-11-02 14:38:24').'</p>'
+                    <p>'.acym_translation('ACYM_SUBSCRIPTION').': '.$this->getDTextDisplay('{user:subscription}', 'Newsletters - 2025-11-02 14:38:24').'</p>'
                 ),
             ];
         }
@@ -209,7 +209,7 @@ trait DefaultData
                     <p>'.acym_translation('ACYM_NOTIFICATION_PROFILE_BODY').'</p>
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{user:name}', 'Julia').'</p>
                     <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{user:email}', 'julia@example.com').'</p>
-                    <p>'.acym_translation('ACYM_SUBSCRIPTION').': '.$this->getDTextDisplay('{user:subscription}', 'Newsletters - 2020-11-02 14:38:24').'</p>'
+                    <p>'.acym_translation('ACYM_SUBSCRIPTION').': '.$this->getDTextDisplay('{user:subscription}', 'Newsletters - 2025-11-02 14:38:24').'</p>'
                 ),
             ];
         }
@@ -224,7 +224,7 @@ trait DefaultData
                     <p>'.acym_translation('ACYM_NAME').': '.$this->getDTextDisplay('{user:name}', 'Julia').'</p>
                     <p>'.acym_translation('ACYM_EMAIL').': '.$this->getDTextDisplay('{user:email}', 'julia@example.com').'</p>
                     <p>'.acym_translation('ACYM_IP').': '.$this->getDTextDisplay('{user:confirmation_ip}', '127.0.0.1').'</p>
-                    <p>'.acym_translation('ACYM_SUBSCRIPTION').': '.$this->getDTextDisplay('{user:subscription}', 'Newsletters - 2020-11-02 14:38:24').'</p>'
+                    <p>'.acym_translation('ACYM_SUBSCRIPTION').': '.$this->getDTextDisplay('{user:subscription}', 'Newsletters - 2025-11-02 14:38:24').'</p>'
                 ),
             ];
         }
@@ -313,20 +313,22 @@ trait DefaultData
         return true;
     }
 
-    public function installAddons()
+    public function installAddons(): void
     {
         $pluginClass = new PluginClass();
         $installedAddons = array_keys($pluginClass->getAll('folder_name'));
         $coreAddons = acym_coreAddons();
 
         foreach ($coreAddons as $oneAddon) {
-            if (in_array($oneAddon->folder_name, $installedAddons)) continue;
+            if (in_array($oneAddon->folder_name, $installedAddons)) {
+                continue;
+            }
 
             $pluginClass->save($oneAddon);
         }
     }
 
-    public function installOverrideEmails()
+    public function installOverrideEmails(): void
     {
         $overrideClass = new OverrideClass();
         $mailClass = new MailClass();
@@ -337,7 +339,9 @@ trait DefaultData
         $existingOverrides = $existingOverrides['mails'];
 
         foreach ($emailOverrides as $oneOverride) {
-            if (!empty($existingOverrides[$oneOverride['name']])) continue;
+            if (!empty($existingOverrides[$oneOverride['name']])) {
+                continue;
+            }
 
             $mail = new \stdClass();
             $mail->name = $oneOverride['name'];
@@ -349,7 +353,9 @@ trait DefaultData
             $mail->creator_id = $currentUserId;
             $mailId = $mailClass->save($mail);
 
-            if (empty($mailId)) continue;
+            if (empty($mailId)) {
+                continue;
+            }
 
             $override = new \stdClass();
             $override->mail_id = $mailId;
@@ -363,7 +369,7 @@ trait DefaultData
         }
     }
 
-    private function newAutomationAdmin($title)
+    private function newAutomationAdmin(string $title): void
     {
         $automationClass = new AutomationClass();
         $stepClass = new StepClass();
@@ -447,7 +453,7 @@ trait DefaultData
         $newAction->id = $actionClass->save($newAction);
     }
 
-    private function getDTextDisplay($dtext, $preview)
+    private function getDTextDisplay(string $dtext, string $preview): string
     {
         $display = '<span class="acym_dynamic mceNonEditable" contenteditable="false" data-dynamic="'.acym_escape($dtext).'" data-mce-selected="1">';
         $display .= $preview;
@@ -457,12 +463,12 @@ trait DefaultData
         return $display;
     }
 
-    private function getFormatedNotification($content)
+    private function getFormatedNotification(string $content): string
     {
-        $begining = '<div id="acym__wysid__template" class="cell"><table class="body"><tbody><tr><td align="center" class="center acym__wysid__template__content" valign="top" style="background-color: rgb(239, 239, 239); padding: 40px 0 120px 0;"><center><table align="center" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="acym__wysid__row ui-droppable ui-sortable" style="min-height: 0px; display: table-cell;"><table class="row acym__wysid__row__element" bgcolor="#dadada" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: rgb(218,218,218);" bgcolor="#ffffff"><tr><th class="small-12 medium-12 large-12 columns acym__wysid__row__element__th"><table class="acym__wysid__column" style="min-height: 0px; display: table;" border="0" cellpadding="0" cellspacing="0"><tbody class="ui-sortable" style="min-height: 0px; display: table-row-group;"><tr class="acym__wysid__column__element ui-draggable" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;"><td class="large-12 acym__wysid__column__element__td" style="outline: rgb(0,163,254) dashed 0px; outline-offset: -1px;"><span class="acy-editor__space acy-editor__space--focus" style="display: block; padding: 0px; margin: 0px; height: 10px;"></span></td></tr></tbody></table></th></tr></tbody></table><table class="row acym__wysid__row__element" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: transparent;" bgcolor="#ffffff"><tr><th class="small-12 medium-12 large-12 columns"><table class="acym__wysid__column" style="min-height: 0px; display: table;" border="0" cellpadding="0" cellspacing="0"><tbody class="ui-sortable" style="min-height: 0px; display: table-row-group;"><tr class="acym__wysid__column__element ui-draggable" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;"><td class="large-12 acym__wysid__column__element__td" style="outline: rgb(0, 163, 254) dashed 0px; outline-offset: -1px;"><div class="acym__wysid__tinymce--text mce-content-body" style="position: relative;" spellcheck="false">';
+        $beginning = '<div id="acym__wysid__template" class="cell"><table class="body"><tbody><tr><td align="center" class="center acym__wysid__template__content" valign="top" style="background-color: rgb(239, 239, 239); padding: 40px 0 120px 0;"><center><table align="center" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="acym__wysid__row ui-droppable ui-sortable" style="min-height: 0px; display: table-cell;"><table class="row acym__wysid__row__element" bgcolor="#dadada" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: rgb(218,218,218);" bgcolor="#ffffff"><tr><th class="small-12 medium-12 large-12 columns acym__wysid__row__element__th"><table class="acym__wysid__column" style="min-height: 0px; display: table;" border="0" cellpadding="0" cellspacing="0"><tbody class="ui-sortable" style="min-height: 0px; display: table-row-group;"><tr class="acym__wysid__column__element ui-draggable" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;"><td class="large-12 acym__wysid__column__element__td" style="outline: rgb(0,163,254) dashed 0px; outline-offset: -1px;"><span class="acy-editor__space acy-editor__space--focus" style="display: block; padding: 0px; margin: 0px; height: 10px;"></span></td></tr></tbody></table></th></tr></tbody></table><table class="row acym__wysid__row__element" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: transparent;" bgcolor="#ffffff"><tr><th class="small-12 medium-12 large-12 columns"><table class="acym__wysid__column" style="min-height: 0px; display: table;" border="0" cellpadding="0" cellspacing="0"><tbody class="ui-sortable" style="min-height: 0px; display: table-row-group;"><tr class="acym__wysid__column__element ui-draggable" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;"><td class="large-12 acym__wysid__column__element__td" style="outline: rgb(0, 163, 254) dashed 0px; outline-offset: -1px;"><div class="acym__wysid__tinymce--text mce-content-body" style="position: relative;" spellcheck="false">';
         $ending = '</div></td></tr></tbody></table></th></tr></tbody></table><table class="row acym__wysid__row__element" bgcolor="#dadada" style="position: relative; z-index: 100; top: 0; left: 0;" border="0" cellpadding="0" cellspacing="0"><tbody style="background-color: rgb(218, 218, 218);" bgcolor="#ffffff"><tr><th class="small-12 medium-12 large-12 columns acym__wysid__row__element__th"><table class="acym__wysid__column" style="min-height: 0px; display: table;" border="0" cellpadding="0" cellspacing="0"><tbody class="ui-sortable" style="min-height: 0px; display: table-row-group;"><tr class="acym__wysid__column__element ui-draggable" style="position: relative; top: inherit; left: inherit; right: inherit; bottom: inherit; height: auto;"><td class="large-12 acym__wysid__column__element__td" style="outline: rgb(0, 163, 254) dashed 0px; outline-offset: -1px;"><span class="acy-editor__space acy-editor__space--focus" style="display: block; padding: 0px; margin: 0px; height: 10px;"></span></td></tr></tbody></table></th></tr></tbody></table></td></tr></tbody></table></center></td></tr></tbody></table></div>';
 
-        return $begining.$content.$ending;
+        return $beginning.$content.$ending;
     }
 
     private function getCurrentUser()

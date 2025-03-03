@@ -17,17 +17,13 @@ class MailsController extends AcymController
     public function __construct()
     {
         parent::__construct();
-        $type = acym_getVar('string', 'type');
+
+        $type = acym_getVar('string', 'type', '');
         $this->setBreadcrumb($type);
         acym_header('X-XSS-Protection:0');
     }
 
-    /**
-     * Define the mails breadcrumb
-     *
-     * @param $type
-     */
-    protected function setBreadcrumb($type)
+    protected function setBreadcrumb(string $type): void
     {
         switch ($type) {
             case MailClass::TYPE_AUTOMATION:
@@ -46,4 +42,3 @@ class MailsController extends AcymController
         $this->breadcrumb[acym_translation($breadcrumbTitle)] = $breadcrumbUrl;
     }
 }
-

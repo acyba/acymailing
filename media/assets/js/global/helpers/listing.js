@@ -29,7 +29,8 @@ const acym_helperListing = {
             });
         };
 
-        jQuery('.acym__sortable__listing').sortable({
+        const $sortableRows = jQuery('.acym__sortable__listing');
+        $sortableRows.sortable({
             items: '.acym__listing__row',
             handle: '.acym__sortable__listing__handle',
             animation: 150,
@@ -38,7 +39,9 @@ const acym_helperListing = {
             }
         });
 
-        updateOrder();
+        if ($sortableRows.length) {
+            updateOrder();
+        }
     },
     setCheckAll: function () {
         jQuery('#checkbox_all').off('change').on('change', function () {

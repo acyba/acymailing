@@ -148,7 +148,7 @@ trait WooCommerceCampaignType
 
     public function onAcymCampaignDataSpecificListing(&$data, $type)
     {
-        if ($type == $this->mailType) {
+        if ($type === $this->mailType) {
             $data['typeWorkflowTab'] = 'specificListing&type='.$this->mailType;
             $data['element_to_display'] = acym_translation('ACYM_WOOCOMMERCE_ABANDONED_CART_CAMPAIGN');
             $data['type'] = $this->mailType;

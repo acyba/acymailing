@@ -53,7 +53,7 @@ function acym_getGroups()
     return $groups;
 }
 
-function acym_punycode($email, $method = 'emailToPunycode')
+function acym_punycode(string $email, string $method = 'emailToPunycode')
 {
     if (empty($email) || acym_isPunycode($email)) {
         return $email;
@@ -97,17 +97,11 @@ function acym_currentUserName($userid = null)
     return $current_user->display_name;
 }
 
-function acym_currentUserEmail($userid = null)
+function acym_currentUserEmail(int $userid = 0): string
 {
-    if (!empty($userid)) {
-        $special = get_user_by('id', $userid);
+    $user = empty($userid) ? wp_get_current_user() : get_user_by('id', $userid);
 
-        return $special->user_email;
-    }
-
-    $current_user = wp_get_current_user();
-
-    return $current_user->user_email;
+    return empty($user->user_email) ? '' : $user->user_email;
 }
 
 function acym_replaceGroupTags($uploadFolder)

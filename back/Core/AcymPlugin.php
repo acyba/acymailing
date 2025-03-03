@@ -64,6 +64,7 @@ class AcymPlugin extends AcymObject
 
         $this->elementOptions = ['wrappedText' => [acym_translation('ACYM_WRAPPED_TEXT')]];
 
+        //TODO only load this helper once even if 50 plugins are loaded
         $this->pluginHelper = new PluginHelper();
         $this->pageInfo = new \stdClass();
 
@@ -610,7 +611,7 @@ class AcymPlugin extends AcymObject
         return $this->pluginHelper->getFormattedResult($arrayElements, $parameter);
     }
 
-    protected function buildIndividualTags($elements, $parameter)
+    protected function buildIndividualTags($elements, $parameter): array
     {
         $arrayElements = [];
         unset($parameter->id);
@@ -1429,10 +1430,12 @@ class AcymPlugin extends AcymObject
             CURLOPT_SSL_VERIFYPEER => 0,
         ];
 
-        if (empty($dataDecoded)) {
-            $optionsArray[CURLOPT_POSTFIELDS] = json_encode($data);
-        } elseif ($dataDecoded === true) {
-            $optionsArray[CURLOPT_POSTFIELDS] = $data;
+        if (!empty($data)) {
+            if (empty($dataDecoded)) {
+                $optionsArray[CURLOPT_POSTFIELDS] = json_encode($data);
+            } elseif ($dataDecoded === true) {
+                $optionsArray[CURLOPT_POSTFIELDS] = $data;
+            }
         }
 
         if (!empty($authentication)) {
@@ -1454,7 +1457,7 @@ class AcymPlugin extends AcymObject
         } else {
             $response = json_decode($response, true);
 
-            return empty($response) ? ['error_curl' => 'Malformed response'] : $response;
+            return $response === null ? ['error_curl' => 'Malformed response'] : $response;
         }
     }
 

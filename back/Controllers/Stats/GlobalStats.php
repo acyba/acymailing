@@ -11,10 +11,11 @@ use AcyMailing\Helpers\ExportHelper;
 use AcyMailing\Helpers\MailerHelper;
 use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Helpers\WorkflowHelper;
+use AcyMailing\Libraries\Browser\BrowserDetection;
 
 trait GlobalStats
 {
-    public function globalStats()
+    public function globalStats(): void
     {
         acym_setVar('layout', 'global_stats');
 
@@ -41,7 +42,7 @@ trait GlobalStats
         parent::display($data);
     }
 
-    private function prepareMailFilter(&$data)
+    private function prepareMailFilter(array &$data): void
     {
         $data['input_mail_ids'] = '';
 
@@ -67,7 +68,9 @@ trait GlobalStats
             'id' => 'mail_ids',
         ];
 
-        if (!empty($this->selectedMailIds)) $attributes['data-selected'] = implode(',', $this->selectedMailIds);
+        if (!empty($this->selectedMailIds)) {
+            $attributes['data-selected'] = implode(',', $this->selectedMailIds);
+        }
 
         $data['mail_filter'] = acym_selectMultiple(
             [],
@@ -100,9 +103,11 @@ trait GlobalStats
         }
     }
 
-    private function prepareClickStats(&$data)
+    private function prepareClickStats(array &$data): void
     {
-        if (empty($data['selectedMailid'])) return;
+        if (empty($data['selectedMailid'])) {
+            return;
+        }
 
         $urlClickClass = new UrlClickClass();
         $allClickInfo = $urlClickClass->getAllLinkFromEmail($this->selectedMailIds[0]);
@@ -125,7 +130,7 @@ trait GlobalStats
         $helperMailer = new MailerHelper();
         if (!empty($data['mailInformation'])) {
             $helperMailer->body = $data['mailInformation']->body;
-            $helperMailer->statClick($data['mailInformation']->id, 0, true);
+            $helperMailer->statClick(intval($data['mailInformation']->id), 0, true);
             $data['mailInformation']->body = preg_replace('#&(amp;)?autoSubId=[^"]+"#Uis', '"', $helperMailer->body);
         }
 
@@ -151,7 +156,7 @@ trait GlobalStats
         $data['url_click_map_email'] = ACYM_CSS.'click_map.min.css?v='.filemtime(ACYM_MEDIA.'css'.DS.'click_map.min.css');
     }
 
-    public function prepareDefaultRoundCharts(&$data)
+    public function prepareDefaultRoundCharts(array &$data): void
     {
         $charts = [
             'delivery' => [
@@ -181,7 +186,6 @@ trait GlobalStats
             if ($type == 'unsub' && empty($this->selectedMailIds)) continue;
             $data['example_round_chart'] .= '<div class="cell acym__stats__donut__one-chart">';
             $data['example_round_chart'] .= acym_roundChart(
-                '',
                 $oneChart['percentage'],
                 $type,
                 '',
@@ -191,7 +195,7 @@ trait GlobalStats
         }
     }
 
-    public function prepareDefaultLineChart(&$data)
+    public function prepareDefaultLineChart(array &$data): void
     {
         $dataMonth = [];
         $dataMonth['Jan 18'] = ['open' => '150', 'click' => '40'];
@@ -202,38 +206,38 @@ trait GlobalStats
         $dataHour['23 Jan 09:00'] = ['open' => '50', 'click' => '10'];
         $dataHour['23 Jan 10:00'] = ['open' => '16', 'click' => '10'];
         $dataHour['23 Jan 11:00'] = ['open' => '59', 'click' => '10'];
-        $data['example_line_chart'] = acym_lineChart('', $dataMonth, $dataDay, $dataHour);
+        $data['example_line_chart'] = acym_lineChart($dataMonth, $dataDay, $dataHour);
     }
 
-    public function prepareDefaultDevicesChart(&$data)
+    public function prepareDefaultDevicesChart(array &$data): void
     {
-        $allDevices = array_merge(UserStatClass::DESKTOP_DEVICES, UserStatClass::MOBILE_DEVICES);
-        $defaultData = [];
-
-        for ($i = 0 ; $i < 10 ; $i++) {
-            $oneDevice = array_rand($allDevices);
-            $defaultData[$allDevices[$oneDevice]] = rand(20, 10000);
-        }
-
-        $data['example_devices_chart'] = acym_pieChart('', $defaultData, '', acym_translation('ACYM_DEVICES'));
-    }
-
-    public function prepareDefaultBrowsersChart(&$data)
-    {
-        $exampleData = [
-            'Google Chrome' => rand(20, 10000),
-            'Firefox' => rand(20, 10000),
-            'Safari' => rand(20, 10000),
-            'Microsoft Edge' => rand(20, 10000),
-            'Outlook' => rand(20, 10000),
-            'Apple Mail' => rand(20, 10000),
-            'Thunderbird' => rand(20, 10000),
+        $defaultData = [
+            'ACYM_MOBILE' => 25662,
+            'ACYM_DESKTOP' => 12471,
+            'ACYM_OTHER' => 3548,
+            'ACYM_UNKNOWN' => 6213,
         ];
 
-        $data['example_source_chart'] = acym_pieChart('', $exampleData, '', acym_translation('ACYM_OPENED_WITH'));
+        $data['example_devices_chart'] = acym_pieChart($defaultData, '', acym_translation('ACYM_DEVICES'));
     }
 
-    public function setDataForChartLine()
+    public function prepareDefaultBrowsersChart(array &$data): void
+    {
+        $exampleData = [
+            'Apple Mail' => 15835,
+            'Google Chrome' => 13375,
+            'Safari' => 2667,
+            'Outlook' => 2458,
+            'Edge' => 1190,
+            'Firefox' => 826,
+            'ACYM_OTHER' => 4775,
+            'ACYM_UNKNOWN' => 6123,
+        ];
+
+        $data['example_source_chart'] = acym_pieChart($exampleData, '', acym_translation('ACYM_OPENED_WITH'));
+    }
+
+    public function setDataForChartLine(): void
     {
         $newStart = acym_date(acym_getVar('string', 'start'), 'Y-m-d H:i:s');
         $newEnd = acym_date(acym_getVar('string', 'end'), 'Y-m-d H:i:s');
@@ -260,11 +264,11 @@ trait GlobalStats
         $statsCampaignSelected = new \stdClass();
         $this->prepareLineChart($statsCampaignSelected, $mailIds, $newStart, $newEnd);
 
-        echo @acym_lineChart('', $statsCampaignSelected->month, $statsCampaignSelected->day, $statsCampaignSelected->hour, true);
+        echo acym_lineChart($statsCampaignSelected->month, $statsCampaignSelected->day, $statsCampaignSelected->hour, true);
         exit;
     }
 
-    private function getValues($modifier, $intervalCode, $campaignOpens, $campaignClicks, $dateCode, $hour = false)
+    private function getValues(string $modifier, string $intervalCode, array $campaignOpens, array $campaignClicks, string $dateCode, bool $hour = false): array
     {
         $opens = [];
         foreach ($campaignOpens as $one) {
@@ -299,7 +303,7 @@ trait GlobalStats
         return $result;
     }
 
-    public function prepareLineChart(&$statsCampaignSelected, $mailIdsOfCampaign, $newStart = '', $newEnd = '')
+    public function prepareLineChart(object &$statsCampaignSelected, array $mailIdsOfCampaign, string $newStart = '', string $newEnd = ''): void
     {
         $campaignClass = new CampaignClass();
         $statsCampaignSelected->hasStats = true;
@@ -332,7 +336,7 @@ trait GlobalStats
         $statsCampaignSelected->startEndDateHour['end'] = end($allHour);
     }
 
-    public function exportGlobal()
+    public function exportGlobal(): void
     {
         $exportType = acym_getVar('string', 'export_type', 'charts');
 
@@ -348,7 +352,7 @@ trait GlobalStats
         $this->$functionName();
     }
 
-    public function prepareOpenTimeChart(&$data)
+    public function prepareOpenTimeChart(array &$data): void
     {
         $userStatClass = new UserStatClass();
         $statsDB = $userStatClass->getOpenTimeStats($this->selectedMailIds);
@@ -357,7 +361,7 @@ trait GlobalStats
             $data['openTime'] = $userStatClass->getDefaultStat();
             $data['empty_open'] = true;
 
-            return true;
+            return;
         }
         $data['empty_open'] = false;
 
@@ -376,11 +380,9 @@ trait GlobalStats
         }
 
         $data['openTime'] = $stats;
-
-        return true;
     }
 
-    public function prepareStatByList(&$data)
+    public function prepareStatByList(array &$data): void
     {
         $mailid = (count(array_unique($data['selectedMailid'])) != 1) ? 0 : $data['selectedMailid'][0];
 
@@ -474,7 +476,7 @@ trait GlobalStats
         }
     }
 
-    private function prepareAbTestMails(&$data)
+    private function prepareAbTestMails(array &$data): void
     {
         if (empty($this->selectedMailIds)) return;
 
@@ -497,7 +499,7 @@ trait GlobalStats
         }
     }
 
-    private function prepareMultilingualMails(&$data)
+    private function prepareMultilingualMails(array &$data): void
     {
         if (empty($this->selectedMailIds)) return;
 
@@ -524,47 +526,61 @@ trait GlobalStats
         }
     }
 
-    private function prepareOpenSourcesStats(&$data)
+    private function prepareDevicesStats(array &$data): void
+    {
+        $campaignClass = new CampaignClass();
+        $devicesCampaign = $campaignClass->getDevicesWithCountByMailId($this->selectedMailIds);
+
+        $data['devices'] = [
+            'ACYM_MOBILE' => 0,
+            'ACYM_DESKTOP' => 0,
+            'ACYM_OTHER' => 0,
+            'ACYM_UNKNOWN' => 0,
+        ];
+
+        foreach ($devicesCampaign as $oneDevice) {
+            if (empty($oneDevice->number)) {
+                continue;
+            }
+
+            if (empty($oneDevice->device)) {
+                $device = 'ACYM_UNKNOWN';
+            } elseif (in_array($oneDevice->device, array_merge(BrowserDetection::PLATFORMS_MOBILE, BrowserDetection::LEGACY_PLATFORMS_MOBILE))) {
+                $device = 'ACYM_MOBILE';
+            } elseif (in_array($oneDevice->device, array_merge(BrowserDetection::PLATFORMS_DESKTOP, BrowserDetection::LEGACY_PLATFORMS_DESKTOP))) {
+                $device = 'ACYM_DESKTOP';
+            } else {
+                $device = 'ACYM_OTHER';
+            }
+
+            $data['devices'][$device] += $oneDevice->number;
+        }
+    }
+
+    private function prepareOpenSourcesStats(array &$data): void
     {
         $userStatClass = new UserStatClass();
         $openedFromStats = $userStatClass->getOpenSourcesStats($this->selectedMailIds);
 
-        $formattedSources = [];
+        $data['openedWith'] = [];
         foreach ($openedFromStats as $oneSource) {
-            if (empty($oneSource->number)) continue;
-
-            if (empty($oneSource->opened_with)) $oneSource->opened_with = acym_translation('ACYM_UNKNOWN');
-            $formattedSources[$oneSource->opened_with] = $oneSource->number;
-        }
-
-        $data['openedWith'] = $formattedSources;
-    }
-
-    private function prepareDevicesStats(&$data)
-    {
-        $campaignClass = new CampaignClass();
-
-        $devicesCampaign = $campaignClass->getDevicesWithCountByMailId($this->selectedMailIds);
-
-        $formattedDevices = [];
-        foreach ($devicesCampaign as $oneDevice) {
-            if (empty($oneDevice->number)) continue;
-
-            if (in_array($oneDevice->device, array_keys(UserStatClass::MOBILE_DEVICES))) {
-                $deviceName = UserStatClass::MOBILE_DEVICES[$oneDevice->device];
-            } elseif (in_array($oneDevice->device, array_keys(UserStatClass::DESKTOP_DEVICES))) {
-                $deviceName = UserStatClass::DESKTOP_DEVICES[$oneDevice->device];
-            } else {
-                $deviceName = acym_translation('ACYM_UNKNOWN');
+            if (empty($oneSource->number)) {
+                continue;
             }
 
-            $formattedDevices[$deviceName] = $oneDevice->number;
-        }
+            if (!empty($oneSource->opened_with) && isset(BrowserDetection::LEGACY_OPENED_WITH_MAP[$oneSource->opened_with])) {
+                $oneSource->opened_with = BrowserDetection::LEGACY_OPENED_WITH_MAP[$oneSource->opened_with];
+            }
 
-        $data['devices'] = $formattedDevices;
+            if (empty($oneSource->opened_with)) {
+                $oneSource->opened_with = 'ACYM_UNKNOWN';
+            }
+
+            $data['openedWith'][$oneSource->opened_with] = $oneSource->number;
+        }
     }
 
-    public function preparecharts(&$data)
+    public function preparecharts(array &$data): void
     {
         $mailStatClass = new MailStatClass();
 
@@ -636,7 +652,7 @@ trait GlobalStats
         $this->prepareLineChart($data['mail'], $this->selectedMailIds);
     }
 
-    private function decode(&$detailedStats, $columnsToDecode = ['mail_subject', 'mail_name'])
+    private function decode(array &$detailedStats, array $columnsToDecode = ['mail_subject', 'mail_name']): void
     {
         foreach ($detailedStats as $oneDetailedStat) {
             foreach ($columnsToDecode as $column) {
@@ -647,7 +663,7 @@ trait GlobalStats
         }
     }
 
-    private function prepareLinksDetailsListing(&$data)
+    private function prepareLinksDetailsListing(array &$data): void
     {
         $data['search'] = $this->getVarFiltersListing('string', 'links_details_search', '');
         $data['ordering'] = $this->getVarFiltersListing('string', 'links_details_ordering', 'id');
@@ -675,14 +691,14 @@ trait GlobalStats
         $this->decode($urlClicks['links_details']);
 
         // Prepare the pagination
-        $pagination->setStatus($urlClicks['total'], $page, $detailedStatsPerPage);
+        $pagination->setStatus((int)$urlClicks['total']->total, $page, $detailedStatsPerPage);
 
         $data['pagination'] = $pagination;
         $data['links_details'] = $urlClicks['links_details'];
         $data['query'] = $urlClicks['query'];
     }
 
-    private function prepareListReceivers(&$data)
+    private function prepareListReceivers(array &$data): void
     {
         if (empty($this->selectedMailIds)) return;
 
@@ -693,7 +709,7 @@ trait GlobalStats
         $data['lists'] = $mailClass->getAllListsByMailId($this->selectedMailIds);
     }
 
-    private function exportGlobalFormatted()
+    private function exportGlobalFormatted(): void
     {
         $exportHelper = new ExportHelper();
         $data = [];
@@ -725,14 +741,16 @@ trait GlobalStats
         exit;
     }
 
-    private function exportGlobalFull()
+    private function exportGlobalFull(): void
     {
         $exportHelper = new ExportHelper();
         $data = [];
         $this->prepareDefaultPageInfo($data);
 
         $where = '';
-        if (!empty($this->selectedMailIds)) $where = 'WHERE mail_id IN ('.implode(',', $this->selectedMailIds).')';
+        if (!empty($this->selectedMailIds)) {
+            $where = 'WHERE mail_id IN ('.implode(',', $this->selectedMailIds).')';
+        }
 
         $columnsMailStat = acym_getColumns('mail_stat');
         $columnsToExport = [];

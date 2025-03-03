@@ -12,7 +12,7 @@ use stdClass;
 
 trait Followup
 {
-    public function followup()
+    public function followup(): void
     {
         acym_setVar('layout', 'followup');
 
@@ -29,7 +29,7 @@ trait Followup
         parent::display($data);
     }
 
-    private function prepareFollowupListing(&$data)
+    private function prepareFollowupListing(array &$data): void
     {
         $followupClass = new FollowupClass();
         $triggers = [];
@@ -45,7 +45,7 @@ trait Followup
         }
     }
 
-    public function deleteFollowup()
+    public function deleteFollowup(): void
     {
         acym_checkToken();
         $ids = acym_getVar('array', 'elements_checked', []);
@@ -64,7 +64,7 @@ trait Followup
         $this->listing();
     }
 
-    public function followupTrigger()
+    public function followupTrigger(): void
     {
         acym_setVar('layout', 'followup_trigger');
 
@@ -91,7 +91,7 @@ trait Followup
         parent::display($data);
     }
 
-    public function followupCondition()
+    public function followupCondition(): void
     {
         acym_setVar('layout', 'followup_condition');
 
@@ -169,7 +169,7 @@ trait Followup
         parent::display($data);
     }
 
-    public function followupEmail()
+    public function followupEmail(): void
     {
         acym_setVar('layout', 'followup_email');
 
@@ -227,37 +227,41 @@ trait Followup
         parent::display($data);
     }
 
-    public function followupDuplicateMail()
+    public function followupDuplicateMail(): void
     {
         $mailId = acym_getVar('int', 'action_mail_id', 0);
         $id = acym_getVar('int', 'id', 0);
         $followupClass = new FollowupClass();
-        if (!$followupClass->duplicateMail($mailId, $id)) acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_DUPLICATE_MAIL'), 'error');
+        if (!$followupClass->duplicateMail($mailId, $id)) {
+            acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_DUPLICATE_MAIL'), 'error');
+        }
 
         $this->followupEmail();
     }
 
-    public function followupDeleteMail()
+    public function followupDeleteMail(): void
     {
         $mailId = acym_getVar('int', 'action_mail_id', 0);
         $followupClass = new FollowupClass();
-        if (!$followupClass->deleteMail($mailId)) acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_DELETE_MAIL'), 'error');
+        if (!$followupClass->deleteMail($mailId)) {
+            acym_enqueueMessage(acym_translation('ACYM_COULD_NOT_DELETE_MAIL'), 'error');
+        }
 
         $step = acym_getVar('cmd', 'step', 'followupEmail');
         $this->$step();
     }
 
-    public function followupDraft()
+    public function followupDraft(): void
     {
         $this->followupFinalize(0);
     }
 
-    public function followupActivate()
+    public function followupActivate(): void
     {
         $this->followupFinalize(1);
     }
 
-    public function followupFinalize($status)
+    public function followupFinalize(int $status): void
     {
         $followupId = acym_getVar('int', 'id', 0);
         $followupClass = new FollowupClass();
@@ -268,7 +272,7 @@ trait Followup
         $this->followup();
     }
 
-    public function saveFollowupCondition()
+    public function saveFollowupCondition(): void
     {
         if (!acym_isAdmin()) {
             die('Access denied for follow-ups');
@@ -295,19 +299,19 @@ trait Followup
         }
 
         $followup->id = $followupClass->save($followup);
-        if (empty($followup->id)) {
+        if (!empty($followup->id)) {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING').': '.acym_getDBError(), 'error');
             $this->listing();
 
-            return false;
+            return;
         }
 
         acym_setVar('id', $followup->id);
 
-        return $this->edit();
+        $this->edit();
     }
 
-    public function saveFollowupEmail($redirect = true)
+    public function saveFollowupEmail(bool $redirect = true): void
     {
         if (!acym_isAdmin()) {
             die('Access denied for follow-ups');
@@ -315,12 +319,16 @@ trait Followup
 
         $id = acym_getVar('int', 'id', 0);
         $followupData = acym_getVar('array', 'followup', []);
-        if (empty($id) || empty($followupData)) return false;
+        if (empty($id) || empty($followupData)) {
+            return;
+        }
 
         $followupClass = new FollowupClass();
         $followup = $followupClass->getOneById($id);
 
-        if (empty($followup)) return false;
+        if (empty($followup)) {
+            return;
+        }
 
         foreach ($followupData as $key => $data) {
             if (!isset($followup->$key)) continue;
@@ -331,13 +339,11 @@ trait Followup
         acym_setVar('id', $followup->id);
 
         if ($redirect) {
-            return $this->edit();
+            $this->edit();
         }
-
-        return true;
     }
 
-    public function followupSummary()
+    public function followupSummary(): void
     {
         acym_setVar('layout', 'followup_summary');
 
@@ -366,7 +372,7 @@ trait Followup
         parent::display($data);
     }
 
-    public function createNewFollowupMail()
+    public function createNewFollowupMail(): void
     {
         $this->saveFollowupEmail(false);
         $linkNewEmail = acym_getVar('string', 'linkNewEmail', '');

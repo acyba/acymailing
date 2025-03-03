@@ -155,9 +155,11 @@ class UrlClickClass extends AcymClass
         return acym_loadResult($query);
     }
 
-    public function getUrlsFromMailsWithDetails($params)
+    public function getUrlsFromMailsWithDetails(array $params): array
     {
-        if (empty($params['mail_ids'])) return [];
+        if (empty($params['mail_ids'])) {
+            return [];
+        }
 
         if (!is_array($params['mail_ids'])) $params['mail_ids'] = [$params['mail_ids']];
         acym_arrayToInteger($params['mail_ids']);
@@ -167,7 +169,7 @@ class UrlClickClass extends AcymClass
                   JOIN #__acym_url_click AS url_click ON url.id = url_click.url_id AND url_click.mail_id IN ('.implode(',', $params['mail_ids']).')
                   JOIN #__acym_mail AS mail ON mail.id = url_click.mail_id';
 
-        $queryCount = 'SELECT COUNT(DISTINCT url.id) FROM #__acym_url AS url
+        $queryCount = 'SELECT COUNT(DISTINCT url.id) AS total FROM #__acym_url AS url
                   JOIN #__acym_url_click AS url_click ON url.id = url_click.url_id AND url_click.mail_id IN ('.implode(',', $params['mail_ids']).')
                   JOIN #__acym_mail AS mail ON mail.id = url_click.mail_id';
 
@@ -189,17 +191,18 @@ class UrlClickClass extends AcymClass
             $query .= ' ORDER BY id DESC';
         }
 
-        $return = [];
-        $return['links_details'] = acym_loadObjectList($query, '', $params['offset'], $params['detailedStatsPerPage']);
-        $return['total'] = acym_loadResult($queryCount);
-        $return['query'] = $query;
-
-        return $return;
+        return [
+            'links_details' => acym_loadObjectList($query, '', $params['offset'], $params['detailedStatsPerPage']),
+            'total' => acym_loadObject($queryCount),
+            'query' => $query,
+        ];
     }
 
-    public function getUserUrlClicksStats($params)
+    public function getUserUrlClicksStats(array $params): array
     {
-        if (empty($params['mail_ids'])) return [];
+        if (empty($params['mail_ids'])) {
+            return [];
+        }
 
         if (!is_array($params['mail_ids'])) $params['mail_ids'] = [$params['mail_ids']];
         acym_arrayToInteger($params['mail_ids']);
@@ -218,7 +221,7 @@ class UrlClickClass extends AcymClass
                   JOIN #__acym_url AS url ON url.id = url_click.url_id
                   JOIN #__acym_mail AS mail ON mail.id = url_click.mail_id';
 
-        $queryCount = 'SELECT COUNT(DISTINCT user.id) FROM #__acym_user AS user 
+        $queryCount = 'SELECT COUNT(DISTINCT user.id) AS total FROM #__acym_user AS user 
                   JOIN #__acym_url_click AS url_click ON url_click.user_id = user.id AND url_click.mail_id IN ('.implode(',', $params['mail_ids']).')
                   JOIN #__acym_url AS url ON url.id = url_click.url_id
                   JOIN #__acym_mail AS mail ON mail.id = url_click.mail_id';
@@ -239,12 +242,11 @@ class UrlClickClass extends AcymClass
             $query .= ' ORDER BY user_id DESC';
         }
 
-        $return = [];
-        $return['user_links_details'] = acym_loadObjectList($query, '', $params['offset'], $params['detailedStatsPerPage']);
-        $return['total'] = acym_loadResult($queryCount);
-        $return['query'] = $query;
-
-        return $return;
+        return [
+            'user_links_details' => acym_loadObjectList($query, '', $params['offset'], $params['detailedStatsPerPage']),
+            'total' => acym_loadObject($queryCount),
+            'query' => $query,
+        ];
     }
 
     public function getTotalClicksPerMail(array $mailIds = [])

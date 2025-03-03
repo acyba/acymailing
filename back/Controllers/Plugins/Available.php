@@ -7,7 +7,7 @@ use AcyMailing\Helpers\WorkflowHelper;
 
 trait Available
 {
-    public function available()
+    public function available(): void
     {
         acym_setVar('layout', 'available');
         $data = [];
@@ -20,7 +20,7 @@ trait Available
         parent::display($data);
     }
 
-    public function download(bool $ajax = true, string $pluginFromUpdate = '')
+    public function download(bool $ajax = true, string $pluginFromUpdate = ''): string
     {
         $plugin = [];
 
@@ -73,7 +73,7 @@ trait Available
         return $this->handleError('ACYM_ISSUE_WHILE_INSTALLING', $ajax);
     }
 
-    public function getAllPluginsAjax()
+    public function getAllPluginsAjax(): void
     {
         acym_sendAjaxResponse('', $this->getAllPlugins());
     }
@@ -93,7 +93,7 @@ trait Available
         return $plugins['elements'];
     }
 
-    private function handleError($error, $ajax)
+    private function handleError(string $error, bool $ajax): string
     {
         if ($ajax) {
             acym_sendAjaxResponse(acym_translation($error), [], false);

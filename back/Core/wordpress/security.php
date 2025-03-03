@@ -37,7 +37,7 @@ function acym_getVar($type, $name, $default = null, $source = 'REQUEST', $mask =
 
     $result = $input[$name];
     unset($input);
-    if ($type == 'array') {
+    if ($type === 'array') {
         $result = (array)$result;
     }
 
@@ -256,12 +256,12 @@ function acym_getCmsCaptcha()
     return [];
 }
 
-function acym_loadCaptcha($captchaPluginName, $id)
+function acym_loadCaptcha(string $captchaPluginName, string $id): string
 {
     return '';
 }
 
-function acym_checkCaptcha(string $captchaPluginName, ?string $response = null)
+function acym_checkCaptcha(string $captchaPluginName, ?string $response = null): bool
 {
     return true;
 }

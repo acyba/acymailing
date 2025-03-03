@@ -10,32 +10,33 @@ class ToolbarHelper extends AcymObject
     private string $rightPart = '';
     private array $moreOptionsPart = [];
 
-    public function addButton($textContent, $attributes, $icon = '', $isPrimary = false)
+    public function addButton(string $textContent, array $attributes, string $icon = '', bool $isPrimary = false): void
     {
-        $data = [];
-        $data['icon'] = $icon;
-        $data['content'] = acym_translation($textContent);
-        $data['attributes'] = $attributes;
-        $data['isPrimary'] = $isPrimary;
+        $data = [
+            'icon' => $icon,
+            'content' => acym_translation($textContent),
+            'attributes' => $attributes,
+            'isPrimary' => $isPrimary,
+        ];
 
         ob_start();
         include acym_getPartial('toolbar', 'button_main');
         $this->rightPart .= ob_get_clean();
     }
 
-    public function addOtherContent($content, $side = 'right')
+    public function addOtherContent(string $content, string $side = 'right'): void
     {
         if (in_array($side, ['left', 'right'])) {
             $this->{$side.'Part'} .= $content;
         }
     }
 
-    public function addSearchBar($search, $name, $placeholder = 'ACYM_SEARCH', $showClearBtn = true)
+    public function addSearchBar(string $search, string $name, string $placeholder = 'ACYM_SEARCH', bool $showClearBtn = true): void
     {
         $this->leftPart .= acym_filterSearch($search, $name, $placeholder, $showClearBtn, 'acym__toolbar__search-field margin-bottom-0');
     }
 
-    public function addFilterByTag(&$data, $name, $class)
+    public function addFilterByTag(array &$data, string $name, string $class): void
     {
         $allTags = new \stdClass();
         $allTags->name = acym_translation('ACYM_ALL_TAGS');
@@ -56,17 +57,12 @@ class ToolbarHelper extends AcymObject
         );
     }
 
-    public function addOption($content)
-    {
-        $this->moreOptionsPart[] = $content;
-    }
-
-    public function addOptionSelect($title, $select)
+    public function addOptionSelect(string $title, string $select): void
     {
         $this->moreOptionsPart[] = '<div class="cell grid-x shrink acym__toolbar__filters__select"><label class="cell">'.$title.'</label>'.$select.'</div>';
     }
 
-    public function displayToolbar($data)
+    public function displayToolbar(array $data): void
     {
         $data['leftPart'] = $this->leftPart;
         $data['rightPart'] = $this->rightPart;

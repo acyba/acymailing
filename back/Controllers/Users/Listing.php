@@ -13,7 +13,7 @@ use AcyMailing\Helpers\ToolbarHelper;
 
 trait Listing
 {
-    public function listing()
+    public function listing(): void
     {
         acym_setVar('layout', 'listing');
 
@@ -32,7 +32,7 @@ trait Listing
         parent::display($data);
     }
 
-    protected function prepareSegmentField(&$data)
+    protected function prepareSegmentField(array &$data): void
     {
         $segmentClass = new SegmentClass();
         $segments = $segmentClass->getAllForSelect();
@@ -43,7 +43,7 @@ trait Listing
         }
     }
 
-    protected function prepareToolbar(&$data)
+    protected function prepareToolbar(array &$data): void
     {
         $toolbarHelper = new ToolbarHelper();
         $toolbarHelper->addSearchBar($data['search'], 'users_search');
@@ -104,7 +104,7 @@ trait Listing
         $data['toolbar'] = $toolbarHelper;
     }
 
-    protected function prepareListingFilters(&$data)
+    protected function prepareListingFilters(array &$data): void
     {
         $data['status'] = $this->getVarFiltersListing('string', 'users_status', '');
         $data['search'] = $this->getVarFiltersListing('string', 'users_search', '');
@@ -153,7 +153,7 @@ trait Listing
         }
     }
 
-    protected function prepareUsersListing(&$data)
+    protected function prepareUsersListing(array &$data): void
     {
         // Prepare the pagination
         $usersPerPage = $data['pagination']->getListLimit();
@@ -177,13 +177,13 @@ trait Listing
         );
 
         // Prepare the pagination
-        $data['pagination']->setStatus($matchingUsers['total'], $page, $usersPerPage);
+        $data['pagination']->setStatus($matchingUsers['total']->total, $page, $usersPerPage);
 
         $data['allUsers'] = $matchingUsers['elements'];
         $data['userNumberPerStatus'] = $matchingUsers['status'];
     }
 
-    protected function prepareUsersSubscriptions(&$data)
+    protected function prepareUsersSubscriptions(array &$data): void
     {
         $usersId = [];
         foreach ($data['allUsers'] as $oneUser) {
@@ -204,7 +204,7 @@ trait Listing
         $data['usersSubscriptions'] = $subscriptions;
     }
 
-    protected function prepareUsersFields(&$data)
+    protected function prepareUsersFields(array &$data): void
     {
         $data['fields'] = [];
 
@@ -236,7 +236,7 @@ trait Listing
         $data['fields'] = $fieldsToDisplay['names'];
     }
 
-    public function addToList()
+    public function addToList(): void
     {
         $listsSelected = json_decode(acym_getVar('string', 'acym__entity_select__selected', '{}'));
         $userSelected = acym_getVar('array', 'elements_checked', []);

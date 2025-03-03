@@ -218,6 +218,12 @@ class plgAcymArticle extends AcymPlugin
                     'name' => 'autologin',
                     'default' => false,
                 ],
+                [
+                    'title' => 'ACYM_MENU_ID',
+                    'type' => 'number',
+                    'name' => 'menuid',
+                    'default' => 0,
+                ],
             ]
         );
 
@@ -504,8 +510,11 @@ class plgAcymArticle extends AcymPlugin
             }
         }
 
-        //Get the related menu item if specified
-        $menuId = $this->getParam('itemid');
+        $menuId = $tag->menuid ?? '';
+        if (empty($menuId)) {
+            $menuId = $this->getParam('itemid');
+        }
+
         if (!empty($menuId)) {
             $link .= (strpos($link, '?') ? '&' : '?').'Itemid='.intval($menuId);
         }

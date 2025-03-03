@@ -1,9 +1,11 @@
 <?php
 
+use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Helpers\EncodingHelper;
 
 $encodingHelper = new EncodingHelper();
+$fieldClass = new FieldClass();
 $userClass = new UserClass();
 $filename = strtolower(acym_getVar('cmd', 'acym_import_filename', ''));
 $encoding = acym_getVar('cmd', 'encoding');
@@ -174,10 +176,21 @@ $nbLines = count($this->lines);
 
         $cleanFields = [];
         foreach ($fields as $value => $label) {
-            if (in_array($value, ['id', 'automation'])) continue;
-            if (is_numeric($value)) $value = 'cf_'.$value;
-            $fieldAssignment[] = acym_selectOption($value, $label);
-            $cleanFields[$value] = strtolower($label);
+            if (in_array($value, ['id', 'automation'])) {
+                continue;
+            }
+
+            if (is_numeric($value)) {
+                $field = $fieldClass->getOneById($value);
+
+                $value = 'cf_'.$value;
+                $fieldAssignment[] = acym_selectOption($value, $label);
+
+                $cleanFields[$value] = empty($field) ? strtolower($label) : $field->namekey;
+            } else {
+                $fieldAssignment[] = acym_selectOption($value, $label);
+                $cleanFields[$value] = strtolower($label);
+            }
         }
 
         // Add first line to assign the imported columns, also add a button to ignore all unassigned columns if there are at least 6 columns
@@ -209,7 +222,7 @@ $nbLines = count($this->lines);
                 if (!$selectedField && !empty($firstValueLine)) {
                     if (isset($firstValueLine[$key]) && strpos($firstValueLine[$key], '@')) {
                         $selectedField = 'email';
-                    } elseif ($nbColumns == 2) {
+                    } elseif ($nbColumns === 2) {
                         $selectedField = 'name';
                     }
                 }

@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Classes;
 
+use AcyMailing\Controllers\CampaignsController;
 use AcyMailing\Controllers\SegmentsController;
 use AcyMailing\Helpers\AutomationHelper;
 use AcyMailing\Helpers\PaginationHelper;
@@ -29,21 +30,6 @@ class CampaignClass extends AcymClass
         $this->pkey = 'id';
     }
 
-    public function getConstNow()
-    {
-        return self::SENDING_TYPE_NOW;
-    }
-
-    public function getConstScheduled()
-    {
-        return self::SENDING_TYPE_SCHEDULED;
-    }
-
-    public function getConstAuto()
-    {
-        return self::SENDING_TYPE_AUTO;
-    }
-
     public function decode($campaign, $decodeMail = true)
     {
         if (empty($campaign)) return $campaign;
@@ -68,7 +54,7 @@ class CampaignClass extends AcymClass
         return $campaign;
     }
 
-    public function getAll($key = null)
+    public function getAll(?string $key = null): array
     {
         $allCampaigns = parent::getAll($key);
 
@@ -81,15 +67,14 @@ class CampaignClass extends AcymClass
         $mailClass = new MailClass();
 
         $query = 'SELECT campaign.*, mail.name, SUM(mail_stat.sent) AS subscribers, mail_stat.open_unique, mail_stat.tracking_sale, mail_stat.currency FROM #__acym_campaign AS campaign';
-        $queryCount = 'SELECT campaign.* FROM #__acym_campaign AS campaign';
-
+        $queryCount = 'FROM #__acym_campaign AS campaign';
 
         $filters = [];
         $task = acym_getVar('string', 'task');
         if ($task === 'campaigns') {
-            $filters[] = 'mail.type = \'standard\'';
+            $filters[] = 'mail.type = '.acym_escapeDB(MailClass::TYPE_STANDARD);
         } elseif ($task === 'mailbox_action') {
-            $filters[] = 'mail.type = \'mailbox_action\'';
+            $filters[] = 'mail.type = '.acym_escapeDB(MailClass::TYPE_MAILBOX_ACTION);
         }
         $mailIds = [];
 
@@ -117,7 +102,7 @@ class CampaignClass extends AcymClass
             $query .= $tagJoin;
             $queryCount .= $tagJoin;
             $filters[] = 'tag.name = '.acym_escapeDB($settings['tag']);
-            $filters[] = 'tag.type = "mail"';
+            $filters[] = 'tag.type = '.acym_escapeDB(TagClass::TYPE_MAIL);
         }
 
         if (!empty($settings['search'])) {
@@ -214,7 +199,31 @@ class CampaignClass extends AcymClass
             }
         }
 
-        $results['total'] = acym_loadObjectList($queryCount);
+        if (!empty($settings['advanced_total'])) {
+            if ($settings['campaign_type'] === 'campaigns') {
+                $queryCount .= (empty($filters) ? ' WHERE ' : ' AND ').'campaign.parent_id IS NULL';
+
+                $results['total'] = acym_loadObject('SELECT COUNT(campaign.id) AS total, SUM(campaign.sent) AS sent, SUM(campaign.draft) AS draft '.$queryCount);
+                $results['total']->all = $results['total']->total;
+                $results['total']->scheduled = acym_loadResult(
+                    'SELECT COUNT(campaign.id) '.$queryCount.' AND campaign.`sending_type` = '.acym_escapeDB(self::SENDING_TYPE_SCHEDULED)
+                );
+            } else {
+                $results['total'] = acym_loadObject('SELECT COUNT(campaign.id) AS total '.$queryCount);
+                $results['total']->all = 0;
+                if (!empty($results['total']->total)) {
+                    $results['total']->all = $results['total']->total;
+                }
+
+                $results['total']->generated = $this->getNbGeneratedCampaigns();
+            }
+
+            if (CampaignsController::TASK_TYPE_CAMPAIGN_AUTO === $settings['campaign_type'] && 'generated' === $settings['status']) {
+                $results['total']->all = $this->getCountCampaignType(self::SENDING_TYPE_AUTO);
+            }
+        } else {
+            $results['total'] = acym_loadObject('SELECT COUNT(campaign.id) AS total '.$queryCount);
+        }
 
         return $results;
     }
@@ -873,7 +882,7 @@ class CampaignClass extends AcymClass
 
         $query .= $where;
         $return = [];
-        $return['count'] = acym_loadResult($queryCountSelect.$query.') AS r ');
+        $return['count'] = (int)acym_loadResult($queryCountSelect.$query.') AS r ');
 
         // Make sure we display campaigns only once
         $endQuerySelect = 'GROUP BY mail.id ';
@@ -1105,11 +1114,14 @@ class CampaignClass extends AcymClass
         );
     }
 
-    public function getAllCampaignsGenerated()
+    private function getNbGeneratedCampaigns(): int
     {
-        $query = 'SELECT id FROM #__acym_campaign WHERE parent_id IS NOT NULL AND sending_type = '.acym_escapeDB(self::SENDING_TYPE_NOW);
-
-        return acym_loadObjectList($query);
+        return (int)acym_loadResult(
+            'SELECT COUNT(*) 
+            FROM #__acym_campaign 
+            WHERE `parent_id` IS NOT NULL 
+                AND `sending_type` = '.acym_escapeDB(self::SENDING_TYPE_NOW)
+        );
     }
 
     public function getAllCampaignsGeneratedWaiting()
@@ -1215,19 +1227,19 @@ class CampaignClass extends AcymClass
         return true;
     }
 
-    public function isAbTestMail($mailId)
+    public function isAbTestMail($mailId): bool
     {
-        $query = 'SELECT * FROM #__acym_campaign WHERE mail_id = '.intval($mailId).' AND sending_params LIKE \'%"abtest":%\'';
+        $mailClass = new MailClass();
+        $mainMailId = $mailClass->getMainMailId($mailId);
 
-        if (!empty(acym_loadObject($query))) {
-            return true;
-        }
+        $campaign = acym_loadObject(
+            'SELECT * 
+            FROM #__acym_campaign 
+            WHERE mail_id = '.intval($mainMailId).' 
+                AND sending_params LIKE \'%"abtest":%\''
+        );
 
-        $query = 'SELECT * FROM #__acym_campaign AS campaign JOIN #__acym_mail AS mail ON campaign.mail_id = mail.parent_id AND mail.id = '.intval(
-                $mailId
-            ).' WHERE sending_params LIKE \'%"abtest":%\'';
-
-        return !empty(acym_loadObject($query));
+        return !empty($campaign);
     }
 
     public function resetAbTestVersion($campaignId): void

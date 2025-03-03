@@ -29,7 +29,7 @@ class ScenarioClass extends AcymClass
     public function getMatchingElements(array $settings = []): array
     {
         $query = 'SELECT DISTINCT scenario.*  FROM #__acym_scenario AS `scenario`';
-        $queryCount = 'SELECT COUNT(DISTINCT scenario.id) FROM #__acym_scenario AS scenario';
+        $queryCount = 'SELECT COUNT(DISTINCT scenario.id) AS total FROM #__acym_scenario AS scenario';
         $queryStatus = 'SELECT COUNT(DISTINCT scenario.id) AS `all`, SUM(`scenario`.`active`) AS active, SUM(IF(`scenario`.`active` = 0, 1, 0)) AS inactive FROM #__acym_scenario AS `scenario`';
         $filters = [];
 
@@ -71,12 +71,12 @@ class ScenarioClass extends AcymClass
             $settings['elementsPerPage'] = $pagination->getListLimit();
         }
 
-        $results['elements'] = acym_loadObjectList($query, 'id', $settings['offset'], $settings['elementsPerPage']);
-        $results['total'] = acym_loadResult($queryCount);
-        $results['totalOverall'] = acym_loadResult('SELECT COUNT(id) FROM #__acym_scenario');
-        $results['scenariosNumberStatus'] = acym_loadObjectList($queryStatus)[0];
-
-        return $results;
+        return [
+            'elements' => acym_loadObjectList($query, 'id', $settings['offset'], $settings['elementsPerPage']),
+            'total' => acym_loadObject($queryCount),
+            'totalOverall' => acym_loadResult('SELECT COUNT(id) FROM #__acym_scenario'),
+            'scenariosNumberStatus' => acym_loadObjectList($queryStatus)[0],
+        ];
     }
 
     public function save($element): int

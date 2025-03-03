@@ -20,14 +20,14 @@ class UpdateHelper extends AcymObject
     const FIRST_EMAIL_NAME_KEY = 'ACYM_FIRST_EMAIL_NAME';
     const BOUNCE_VERSION = 5;
 
-    private $level = '{__LEVEL__}';
-    private $version = '{__VERSION__}';
-    private $previousVersion;
-    private $isUpdating = false;
+    private string $level = '{__LEVEL__}';
+    private string $version = '{__VERSION__}';
+    private string $previousVersion;
+    private bool $isUpdating = false;
 
-    public $firstInstallation = true;
+    public bool $firstInstallation = true;
 
-    public function deleteNewSplashScreenInstall()
+    public function deleteNewSplashScreenInstall(): void
     {
         // First installation or installing the same version => don't show the splashscreen
         if (!$this->isUpdating || (!empty($this->previousVersion) && version_compare($this->previousVersion, $this->version, '='))) {
@@ -39,7 +39,7 @@ class UpdateHelper extends AcymObject
         }
     }
 
-    public function updateAddons()
+    public function updateAddons(): void
     {
         acym_checkPluginsVersion();
 

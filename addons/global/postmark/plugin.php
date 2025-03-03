@@ -110,7 +110,7 @@ class plgAcymPostmark extends AcymPlugin
     public function onAcymSendEmail(&$response, $mailerHelper, $to, $from, $reply_to, $bcc = [], $attachments = [], $sendingMethodListParams = [])
     {
         //https://postmarkapp.com/developer/api/email-api
-        if ($mailerHelper->externalMailer != self::SENDING_METHOD_ID) return;
+        if ($mailerHelper->externalMailer !== self::SENDING_METHOD_ID) return;
 
         $data = [
             'From' => $from['email'],

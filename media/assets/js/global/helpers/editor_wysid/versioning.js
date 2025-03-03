@@ -71,7 +71,15 @@ const acym_editorWysidVersioning = {
                 autoSave: $contentSave,
                 mailId: mailid
             },
-            success: function (res) {
+            success: function (response) {
+                response = acym_helper.parseJson(response);
+
+                if (response.error) {
+                    acym_editorWysidNotifications.addEditorNotification({
+                        message: '<div class="cell auto acym__autosave__notification">' + ACYM_JS_TXT.ACYM_ERROR_SAVING + '</div>',
+                        level: 'error'
+                    }, 3000, true);
+                }
             },
             error: function () {
                 acym_editorWysidNotifications.addEditorNotification({

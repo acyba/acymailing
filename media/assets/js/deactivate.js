@@ -36,7 +36,7 @@
             }
 
             if (feedbackValue.length > 0 && (feedbackValue !== 'ACYM_OTHER' || otherReason.length > 0)) {
-                ajaxUrl = ACYM_AJAX_URL + '&ctrl=deactivate&task=saveFeedback';
+                ajaxUrl = ACYM_AJAX_URL + '&ctrl=deactivate&task=saveFeedbackAjax';
                 jQuery.post(ajaxUrl, {
                     reason: feedbackValue,
                     otherReason: feedbackValue === 'ACYM_OTHER' ? otherReason : '',

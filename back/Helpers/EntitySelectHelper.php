@@ -2,13 +2,12 @@
 
 namespace AcyMailing\Helpers;
 
-use AcyMailing\Controllers\EntitySelectController;
 use AcyMailing\Core\AcymObject;
 
 class EntitySelectHelper extends AcymObject
 {
-    var $svg;
-    var $columnsHeaderNotToDisplay;
+    private string $svg;
+    private array $columnsHeaderNotToDisplay;
 
     public function __construct()
     {
@@ -17,9 +16,103 @@ class EntitySelectHelper extends AcymObject
         $this->columnsHeaderNotToDisplay = ['color'];
     }
 
-    private function _getListing($type, $allSelector, $entity, $columnsToDisplay = [], $displayedName = '')
+    public function entitySelect(
+        string $entity,
+        array  $entityParams = [],
+        array  $columnsToDisplay = ['name'],
+        array  $buttonSubmit = [
+            'text' => '',
+            'action' => '',
+            'class' => '',
+        ],
+        bool   $displaySelected = true,
+        string $additionalData = '',
+        string $displayedName = ''
+    ): string {
+        $columnJoin = '';
+        if (!empty($columnsToDisplay['join'])) {
+            $columnJoin = explode('.', $columnsToDisplay['join']);
+        }
+
+        unset($columnsToDisplay['join']);
+
+        if (empty($entityParams['elementsPerPage']) || $entityParams['elementsPerPage'] < 1) {
+            $paginationHelper = new PaginationHelper();
+            $entityParams['elementsPerPage'] = $paginationHelper->getListLimit();
+        }
+
+        if (!empty($columnJoin)) $columnJoin = 'data-column-join="'.$columnJoin[1].'" data-table-join="'.$columnJoin[0].'"';
+        $display = '<div 
+                        style="display: none;" 
+                        id="acym__entity_select" 
+                        class="acym__entity_select cell grid-x" 
+                        data-display-selected="'.($displaySelected ? 'true' : 'false').'" 
+                        data-entity="'.acym_escape($entity).'" 
+                        data-type="select" 
+                        data-columns="'.implode(',', array_keys($columnsToDisplay)).'" 
+                        data-columns-class="'.acym_escape(json_encode($columnsToDisplay)).'" 
+                        data-join="'.$entityParams['join'].'" 
+                        '.$columnJoin.'>';
+
+        $display .= $this->getListing('available', 'select', $entity, $columnsToDisplay, $displayedName);
+        $display .= '<div class="cell medium-shrink text-center grid-x acym_vcenter"><i class="acymicon-arrows-h cell"></i></div>';
+        $display .= $this->getListing('selected', 'unselect', $entity, $columnsToDisplay, $displayedName);
+        $display .= $additionalData;
+
+        if (!empty($buttonSubmit['text'])) {
+            $class = !empty($buttonSubmit['action']) ? 'acy_button_submit' : 'acym__entity_select__button__close';
+            if (!empty($buttonSubmit['class'])) $class .= ' '.$buttonSubmit['class'];
+            $buttonSubmit['action'] = !empty($buttonSubmit['action']) ? 'data-task="'.$buttonSubmit['action'].'"' : '';
+            $display .= '<div class="cell grid-x align-center margin-top-1">';
+            $display .= '<button 
+                            type="button" 
+                            id="acym__entity_select__button__submit" 
+                            class="cell shrink grid-x '.$class.' button" '.$buttonSubmit['action'].'>'.$buttonSubmit['text'].'</button>';
+            $display .= '</div>';
+        }
+
+        $display .= '<input type="hidden" class="acym__entity_select__selected" name="acym__entity_select__selected" value="">';
+        $display .= '<input type="hidden" class="acym__entity_select__unselected" name="acym__entity_select__unselected" value="">';
+        $display .= '</div>';
+
+        return $display;
+    }
+
+    public function getColumnsForList(string $join = '', bool $small = false): array
     {
-        if (empty($displayedName)) $displayedName = $entity;
+        $columns = [
+            'color' => $small ? 'small-2' : 'small-1',
+            'name' => 'auto',
+            'id' => 'small-2',
+        ];
+        if (!empty($join)) {
+            $columns['join'] = $join;
+        }
+
+        return $columns;
+    }
+
+    public function getColumnsForUser(string $join = ''): array
+    {
+        $columns = [
+            'email' => 'auto',
+            'name' => 'auto',
+            'id' => 'small-1',
+        ];
+
+        if (!empty($join)) {
+            $columns['join'] = $join;
+        }
+
+        return $columns;
+    }
+
+    private function getListing(string $type, string $allSelector, string $entity, array $columnsToDisplay = [], string $displayedName = ''): string
+    {
+        if (empty($displayedName)) {
+            $displayedName = $entity;
+        }
+
         $display = '<div class="cell medium-auto grid-x acym_area acym__entity_select__'.$type.'">
                         <h5 class="cell font-bold acym__title acym__title__secondary text-center">'.acym_translation('ACYM_'.strtoupper($type).'_'.strtoupper($displayedName)).'</h5>
                         <div class="cell grid-x">
@@ -98,94 +191,4 @@ class EntitySelectHelper extends AcymObject
 
         return $display;
     }
-
-    public function entitySelect(
-        $entity,
-        $entityParams = [],
-        $columnsToDisplay = ['name'],
-        $buttonSubmit = [
-            'text' => '',
-            'action' => '',
-            'class' => '',
-        ],
-        $displaySelected = true,
-        $additionalData = '',
-        $displayedName = ''
-    ) {
-        $columnJoin = '';
-        if (!empty($columnsToDisplay['join'])) {
-            $columnJoin = explode('.', $columnsToDisplay['join']);
-        }
-
-        unset($columnsToDisplay['join']);
-
-        if (empty($entityParams['elementsPerPage']) || $entityParams['elementsPerPage'] < 1) {
-            $paginationHelper = new PaginationHelper();
-            $entityParams['elementsPerPage'] = $paginationHelper->getListLimit();
-        }
-
-        if (!empty($columnJoin)) $columnJoin = 'data-column-join="'.$columnJoin[1].'" data-table-join="'.$columnJoin[0].'"';
-        $display = '<div 
-                        style="display: none;" 
-                        id="acym__entity_select" 
-                        class="acym__entity_select cell grid-x" 
-                        data-display-selected="'.($displaySelected ? 'true' : 'false').'" 
-                        data-entity="'.acym_escape($entity).'" 
-                        data-type="select" 
-                        data-columns="'.implode(',', array_keys($columnsToDisplay)).'" 
-                        data-columns-class="'.acym_escape(json_encode($columnsToDisplay)).'" 
-                        data-join="'.$entityParams['join'].'" 
-                        '.$columnJoin.'>';
-
-        $display .= $this->_getListing('available', 'select', $entity, $columnsToDisplay, $displayedName);
-        $display .= '<div class="cell medium-shrink text-center grid-x acym_vcenter"><i class="acymicon-arrows-h cell"></i></div>';
-        $display .= $this->_getListing('selected', 'unselect', $entity, $columnsToDisplay, $displayedName);
-        $display .= $additionalData;
-
-        if (!empty($buttonSubmit['text'])) {
-            $class = !empty($buttonSubmit['action']) ? 'acy_button_submit' : 'acym__entity_select__button__close';
-            if (!empty($buttonSubmit['class'])) $class .= ' '.$buttonSubmit['class'];
-            $buttonSubmit['action'] = !empty($buttonSubmit['action']) ? 'data-task="'.$buttonSubmit['action'].'"' : '';
-            $display .= '<div class="cell grid-x align-center margin-top-1">';
-            $display .= '<button 
-                            type="button" 
-                            id="acym__entity_select__button__submit" 
-                            class="cell shrink grid-x '.$class.' button" '.$buttonSubmit['action'].'>'.$buttonSubmit['text'].'</button>';
-            $display .= '</div>';
-        }
-
-        $display .= '<input type="hidden" class="acym__entity_select__selected" name="acym__entity_select__selected" value="">';
-        $display .= '<input type="hidden" class="acym__entity_select__unselected" name="acym__entity_select__unselected" value="">';
-        $display .= '</div>';
-
-        return $display;
-    }
-
-    public function getColumnsForList($join = '', $small = false)
-    {
-        $columns = [
-            'color' => $small ? 'small-2' : 'small-1',
-            'name' => 'auto',
-            'id' => 'small-2',
-        ];
-        if (!empty($join)) $columns['join'] = $join;
-
-        return $columns;
-    }
-
-    public function getColumnsForUser($join = '')
-    {
-        $columns = [
-            'email' => 'auto',
-            'name' => 'auto',
-            'id' => 'small-1',
-        ];
-
-        if (!empty($join)) {
-            $columns['join'] = $join;
-        }
-
-        return $columns;
-    }
-
 }

@@ -6,26 +6,23 @@ use AcyMailing\Core\AcymObject;
 
 class ImageHelper extends AcymObject
 {
-    //Handle error messages
-    var $error;
-    //New Height the picture should be
-    var $maxHeight;
-    //New Width the picture should be
-    var $maxWidth;
-    //folder where all pictures should be stored
-    var $destination;
+    public string $error = '';
+    // New Height the picture should be
+    public int $maxHeight;
+    // New Width the picture should be
+    public int $maxWidth;
+    // Folder where pictures should be stored
+    public string $destination;
 
-    public function removePictures($text)
+    public function removePictures(string $text): string
     {
-        //Remove the picture... normal process
         $return = preg_replace('#< *img((?!content_main_image)[^>])*>#Ui', '', $text);
-        //Now remove the jce_caption div if there is one...
-        $return = preg_replace('#< *div[^>]*class="jce_caption"[^>]*>[^<]*(< *div[^>]*>[^<]*<\/div>)*[^<]*<\/div>#Ui', '', $return);
 
-        return $return;
+        // Clean JCE caption
+        return preg_replace('#< *div[^>]*class="jce_caption"[^>]*>[^<]*(< *div[^>]*>[^<]*<\/div>)*[^<]*<\/div>#Ui', '', $return);
     }
 
-    public function available()
+    public function available(): bool
     {
         if (!function_exists('gd_info')) {
             $this->error = 'The GD library is not installed.';
@@ -47,7 +44,7 @@ class ImageHelper extends AcymObject
     }
 
     //This function will check all images from the input and return an output with the pictures transformed with the right size
-    public function resizePictures($input)
+    public function resizePictures(string $input): string
     {
         $this->destination = ACYM_MEDIA.'resized'.DS;
         acym_createDir($this->destination);
@@ -85,7 +82,7 @@ class ImageHelper extends AcymObject
             $newDimension = 'max-width:'.$this->maxWidth.'px;max-height:'.$this->maxHeight.'px;';
 
             //Maybe we don't need to resize anything...
-            if (!$newPicture) {
+            if (empty($newPicture)) {
                 if (strpos($onepicture, 'style="') !== false) {
                     $replace[$onepicture] = preg_replace('#style="([^"]*)"#Uis', 'style="'.$newDimension.'$1"', $onepicture);
                 } else {
@@ -130,18 +127,20 @@ class ImageHelper extends AcymObject
         return $input;
     }
 
-    public function generateThumbnail($picturePath)
+    public function generateThumbnail(string $picturePath): array
     {
         $paramsPos = strpos($picturePath, '?');
-        if ($paramsPos !== false) $picturePath = substr($picturePath, 0, $paramsPos);
+        if ($paramsPos !== false) {
+            $picturePath = substr($picturePath, 0, $paramsPos);
+        }
 
         [$currentwidth, $currentheight] = @getimagesize($picturePath);
         if (empty($currentwidth) || empty($currentheight)) {
-            return false;
+            return [];
         }
         $factor = min($this->maxWidth / $currentwidth, $this->maxHeight / $currentheight);
         if ($factor >= 1) {
-            return false;
+            return [];
         }
         $newWidth = round($currentwidth * $factor);
         $newHeight = round($currentheight * $factor);
@@ -156,7 +155,7 @@ class ImageHelper extends AcymObject
             //It's a picture in base64 encoding... we will apply an extension name and name based on the content...
             preg_match('#data:image/([^;]{1,5});#', $picturePath, $resultextension);
             if (empty($resultextension[1])) {
-                return false;
+                return [];
             }
             $extension = $resultextension[1];
             $name = md5($picturePath);
@@ -197,7 +196,7 @@ class ImageHelper extends AcymObject
             } elseif ($extension === 'webp') {
                 $imageRealType = IMAGETYPE_WEBP;
             } else {
-                return false;
+                return [];
             }
         }
 
@@ -217,11 +216,11 @@ class ImageHelper extends AcymObject
                 }
                 break;
             default:
-                return false;
+                return [];
         }
 
         if (empty($img)) {
-            return false;
+            return [];
         }
 
         $thumb = imagecreatetruecolor($newWidth, $newHeight);

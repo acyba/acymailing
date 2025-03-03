@@ -51,6 +51,10 @@
         border-radius: $primary-radius;
         border: $white;
         margin-bottom: 10px;
+
+        &.acym_radio_checked, &.acym_radio_unchecked{
+            margin-bottom: 0;
+        }
     }
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-function acym_replaceDateTags($value)
+function acym_replaceDateTags(string $value): string
 {
     $replace = ['{year}', '{month}', '{weekday}', '{day}'];
     $replaceBy = [date('Y'), date('m'), date('N'), date('d')];
@@ -18,7 +18,7 @@ function acym_replaceDateTags($value)
     return $value;
 }
 
-function acym_dateField($name, $value = '', $class = '', $attributes = '', $relativeDefault = '-')
+function acym_dateField(string $name, $value = '', string $class = '', string $attributes = '', string $relativeDefault = '-'): string
 {
     // Open container
     $result = '<div class="grid-x margin-y date_rs_selection_popup">';
@@ -115,7 +115,7 @@ function acym_dateField($name, $value = '', $class = '', $attributes = '', $rela
 /**
  * Function to display the time based on the database value as int
  */
-function acym_getDate($time = 0, $format = '%d %B %Y %H:%M')
+function acym_getDate($time = 0, string $format = '%d %B %Y %H:%M')
 {
     if (empty($time)) return '';
 
@@ -140,7 +140,9 @@ function acym_getDate($time = 0, $format = '%d %B %Y %H:%M')
 function acym_replaceDate($mydate, $display = false)
 {
     if (strpos($mydate, '[time]') === false) {
-        if (is_numeric($mydate) && $display) return acym_date($mydate, 'Y-m-d H:i:s');
+        if (is_numeric($mydate) && $display) {
+            return acym_date($mydate, 'Y-m-d H:i:s');
+        }
 
         return $mydate;
     }
@@ -171,7 +173,7 @@ function acym_replaceDate($mydate, $display = false)
     return $mydate;
 }
 
-function acym_secondsToTime($seconds)
+function acym_secondsToTime(int $seconds): string
 {
     $dtF = new \DateTime('@0');
     $dtT = new \DateTime("@$seconds");
@@ -179,7 +181,7 @@ function acym_secondsToTime($seconds)
     return $dtF->diff($dtT)->format('%a day(s) %h h, %i min');
 }
 
-function acym_displayDateFormat($format, $name = 'date', $default = '', $attributes = [], $inputMode = true)
+function acym_displayDateFormat(string $format, string $name = 'date', string $default = '', array $attributes = [], bool $returnHtml = true): string
 {
     if (empty($attributes)) {
         $attributes = [
@@ -188,11 +190,17 @@ function acym_displayDateFormat($format, $name = 'date', $default = '', $attribu
     }
 
     $return = [];
-    if ($inputMode) $return[] = '<div class="cell grid-x grid-margin-x">';
-    $days = ['' => acym_translation('ACYM_DAY')];
+    if ($returnHtml) {
+        $return[] = '<div class="cell grid-x grid-margin-x">';
+    }
+
+    $days = [
+        '' => acym_translation('ACYM_DAY'),
+    ];
     for ($i = 1 ; $i <= 31 ; $i++) {
         $days[$i < 10 ? '0'.$i : $i] = $i < 10 ? '0'.$i : $i;
     }
+
     $month = [
         '' => acym_translation('ACYM_MONTH'),
         '01' => acym_translation('ACYM_JANUARY'),
@@ -208,18 +216,21 @@ function acym_displayDateFormat($format, $name = 'date', $default = '', $attribu
         '11' => acym_translation('ACYM_NOVEMBER'),
         '12' => acym_translation('ACYM_DECEMBER'),
     ];
-    $year = ['' => acym_translation('ACYM_YEAR')];
+
+    $year = [
+        '' => acym_translation('ACYM_YEAR'),
+    ];
     for ($i = 1900 ; $i <= (acym_date('now', 'Y') + 10) ; $i++) {
         $year[$i] = $i;
     }
+
     $formatToDisplay = explode('%', $format);
     $defaultDate = empty($default) ? [] : explode('-', $default);
 
-    $i = 0;
     unset($formatToDisplay[0]);
     foreach ($formatToDisplay as $one) {
-        if ($one == 'd') {
-            if ($inputMode) {
+        if ($one === 'd') {
+            if ($returnHtml) {
                 $return[] = '<div class="medium-3 margin-left-0 cell">'.acym_select(
                         $days,
                         $name,
@@ -233,8 +244,9 @@ function acym_displayDateFormat($format, $name = 'date', $default = '', $attribu
                 $return[] = $defaultDate[2];
             }
         }
-        if ($one == 'm') {
-            if ($inputMode) {
+
+        if ($one === 'm') {
+            if ($returnHtml) {
                 $return[] = '<div class="medium-5 cell">'.acym_select(
                         $month,
                         $name,
@@ -248,8 +260,9 @@ function acym_displayDateFormat($format, $name = 'date', $default = '', $attribu
                 $return[] = $month[$defaultDate[1]];
             }
         }
-        if ($one == 'y') {
-            if ($inputMode) {
+
+        if ($one === 'y') {
+            if ($returnHtml) {
                 $return[] = '<div class="medium-4 margin-right-0 cell">'.acym_select(
                         $year,
                         $name,
@@ -263,10 +276,9 @@ function acym_displayDateFormat($format, $name = 'date', $default = '', $attribu
                 $return[] = $defaultDate[0];
             }
         }
-        $i++;
     }
 
-    if ($inputMode) {
+    if ($returnHtml) {
         $return[] = '</div>';
 
         return implode('', $return);
@@ -290,7 +302,7 @@ function acym_getTime($date)
     return acym_getTimeFromCMSDate($date);
 }
 
-function acym_date($time = 'now', $format = null, $useTz = true, $translate = true)
+function acym_date($time = 'now', $format = null, bool $useTz = true, bool $translate = true): string
 {
     if ($time === 'now') {
         $time = time();
@@ -332,7 +344,7 @@ function acym_date($time = 'now', $format = null, $useTz = true, $translate = tr
     }
 }
 
-function acym_translateDate($date)
+function acym_translateDate(string $date): string
 {
     $map = [
         'January' => 'ACYM_JANUARY',
@@ -369,7 +381,7 @@ function acym_translateDate($date)
     return $date;
 }
 
-function acym_isDateValid($date)
+function acym_isDateValid($date): bool
 {
     return $date !== '0000-00-00 00:00:00' && !empty($date);
 }

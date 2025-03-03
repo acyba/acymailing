@@ -11,7 +11,7 @@ use AcyMailing\Core\AcymController;
 
 class FollowupsController extends AcymController
 {
-    public function getEmailsListing()
+    public function getEmailsListing(): void
     {
         $id = acym_getVar('int', 'id', 0);
         if (empty($id)) {
@@ -62,7 +62,7 @@ class FollowupsController extends AcymController
         acym_sendAjaxResponse('', $data);
     }
 
-    public function addQueueAjax()
+    public function addQueueAjax(): void
     {
         acym_checkToken();
 

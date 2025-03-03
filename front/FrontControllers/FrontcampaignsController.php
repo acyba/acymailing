@@ -63,12 +63,12 @@ class FrontcampaignsController extends CampaignsController
         ];
     }
 
-    protected function setFrontEndParamsForTemplateChoose()
+    protected function setFrontEndParamsForTemplateChoose(): int
     {
         return acym_currentUserId();
     }
 
-    public function delete()
+    public function delete(): void
     {
         acym_checkToken();
         $ids = acym_getVar('array', 'elements_checked', []);
@@ -85,7 +85,7 @@ class FrontcampaignsController extends CampaignsController
         parent::delete();
     }
 
-    public function edit()
+    public function edit(): void
     {
         $nextstep = acym_getVar('string', 'nextstep', '');
         $step = acym_getVar('string', 'step', '');
@@ -106,6 +106,6 @@ class FrontcampaignsController extends CampaignsController
             die('Access denied for this campaign edition step');
         }
 
-        return parent::edit();
+        parent::edit();
     }
 }

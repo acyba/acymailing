@@ -52,12 +52,12 @@ class FrontmailsController extends MailsController
         ];
     }
 
-    protected function setFrontEndParamsForTemplateChoose()
+    protected function setFrontEndParamsForTemplateChoose(): int
     {
         return acym_currentUserId();
     }
 
-    public function delete()
+    public function delete(): void
     {
         $ids = acym_getVar('array', 'elements_checked', []);
 

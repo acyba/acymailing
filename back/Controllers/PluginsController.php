@@ -8,14 +8,17 @@ use AcyMailing\Controllers\Plugins\Available;
 
 class PluginsController extends AcymController
 {
-    var $tabs, $types, $level, $errors;
-
     use Installed;
     use Available;
+
+    private array $level;
+    private array $types;
+    private array $tabs;
 
     public function __construct()
     {
         parent::__construct();
+
         $this->breadcrumb[acym_translation('ACYM_ADD_ONS')] = acym_completeLink('plugins');
         $this->loadScripts = [
             'available' => ['vue-applications' => ['available_plugins']],
@@ -45,12 +48,6 @@ class PluginsController extends AcymController
             'starter' => 'Starter',
             'essential' => 'Essential',
             'enterprise' => 'Enterprise',
-        ];
-
-        $this->errors = [
-            'NOT_ALLOWED' => 'ACYM_NOT_ALLOWED_LEVEL',
-            'MISSING_DOMAIN' => 'ACYM_MISSING_DOMAIN',
-            'NOT_FOUND' => 'ACYM_ADD_ON_NOT_FOUND',
         ];
     }
 }

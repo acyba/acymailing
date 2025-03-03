@@ -3,7 +3,7 @@
 	<layout title="ACYM_MENU_PROFILE">
 		<message>ACYM_MENU_PROFILE_DESC</message>
 	</layout>
-	<fields name="params" addfieldpath="/components/com_acym/params">
+	<fields name="params" addfieldpath="/components/com_acym/Params">
 		<fieldset name="basic">
 			<field name="lists" type="lists" default="All" label="ACYM_VISIBLE_LISTS" description="ACYM_VISIBLE_LISTS_DESC"/>
 			<field name="listschecked" type="lists" default="All" label="ACYM_LISTS_CHECKED_DEFAULT" description="ACYM_LISTS_CHECKED_DEFAULT_DESC"/>

@@ -6,7 +6,6 @@ use AcyMailing\Classes\CampaignClass;
 use AcyMailing\Classes\MailArchiveClass;
 use AcyMailing\Classes\MailClass;
 use AcyMailing\Classes\ListClass;
-use AcyMailing\Classes\MailStatClass;
 use AcyMailing\Classes\QueueClass;
 use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Classes\TagClass;
@@ -24,7 +23,7 @@ use stdClass;
 
 trait Edition
 {
-    public function newEmail()
+    public function newEmail(): void
     {
         acym_setVar('layout', 'new_email');
 
@@ -102,13 +101,13 @@ trait Edition
         parent::display($data);
     }
 
-    private function prepareSegmentDisplay(&$data, $sendingParams)
+    private function prepareSegmentDisplay(array &$data, array $sendingParams): void
     {
         $data['menuClass'] = $this->menuClass;
         $data['displaySegmentTab'] = !empty($sendingParams) && array_key_exists('segment', $sendingParams);
     }
 
-    public function chooseTemplate()
+    public function chooseTemplate(): void
     {
         acym_setVar('layout', 'choose_email');
         acym_setVar('step', 'chooseTemplate');
@@ -155,7 +154,7 @@ trait Edition
         );
 
         // Prepare the pagination
-        $pagination->setStatus($matchingMails['total'], $page, $mailsPerPage);
+        $pagination->setStatus($matchingMails['total']->total, $page, $mailsPerPage);
 
         $tagClass = new TagClass();
 
@@ -171,19 +170,19 @@ trait Edition
             'abtest' => $abTest,
         ];
         $this->prepareListingClasses($data);
-        $this->prepareSegmentDisplay($data, empty($campaign->sending_params) ? false : $campaign->sending_params);
+        $this->prepareSegmentDisplay($data, empty($campaign->sending_params) ? [] : $campaign->sending_params);
 
         $data['menuClass'] = $this->menuClass;
 
         parent::display($data);
     }
 
-    protected function setFrontEndParamsForTemplateChoose()
+    protected function setFrontEndParamsForTemplateChoose(): int
     {
-        return '';
+        return 0;
     }
 
-    private function prepareEditCampaign(&$data)
+    private function prepareEditCampaign(array &$data): void
     {
         $campaignId = acym_getVar('int', 'campaignId', 0);
         $mailId = acym_getVar('int', 'from', 0);
@@ -281,7 +280,7 @@ trait Edition
         );
     }
 
-    private function prepareEditor(&$data)
+    private function prepareEditor(array &$data): void
     {
         $data['editor'] = new EditorHelper();
         $data['editor']->content = $data['mailInformation']->body;
@@ -316,26 +315,26 @@ trait Edition
         }
     }
 
-    public function prepareMaxUpload(&$data)
+    public function prepareMaxUpload(array &$data): void
     {
         $maxupload = ini_get('upload_max_filesize');
         $maxpost = ini_get('post_max_size');
         $data['maxupload'] = acym_bytes($maxupload) > acym_bytes($maxpost) ? $maxpost : $maxupload;
     }
 
-    private function prepareAbTest(&$data, $editor = true)
+    private function prepareAbTest(array &$data, bool $editor = true): void
     {
         $data['abtest'] = false;
 
     }
 
-    private function prepareMultilingual(&$data, $editor = true)
+    private function prepareMultilingual(array &$data, bool $editor = true): void
     {
         $data['multilingual'] = 0;
 
     }
 
-    private function prepareAllMailsForAbtest(&$data)
+    private function prepareAllMailsForAbtest(array &$data): void
     {
         $mailClass = new MailClass();
 
@@ -348,13 +347,13 @@ trait Edition
         }
 
         foreach ($mails as $key => $oneMail) {
-            $mails[$key] = $this->prepareMailDataSummary($data, $oneMail->id);
+            $mails[$key] = $this->prepareMailDataSummary($data, (int)$oneMail->id);
         }
 
         $data['abtest_mails'] = $mails;
     }
 
-    private function prepareAllMailsForMultilingual(&$data)
+    private function prepareAllMailsForMultilingual(array &$data): void
     {
         $mailClass = new MailClass();
 
@@ -367,13 +366,13 @@ trait Edition
         }
 
         foreach ($mails as $key => $oneMail) {
-            $mails[$key] = $this->prepareMailDataSummary($data, $oneMail->id);
+            $mails[$key] = $this->prepareMailDataSummary($data, (int)$oneMail->id);
         }
 
         $data['multilingual_mails'] = $mails;
     }
 
-    public function editEmail()
+    public function editEmail(): void
     {
         acym_setVar('layout', 'edit_email');
         acym_setVar('numberattachment', '0');
@@ -396,7 +395,7 @@ trait Edition
         $this->prepareAbTest($data);
         $this->prepareMultilingual($data);
         $this->prepareListingClasses($data);
-        $this->prepareSegmentDisplay($data, empty($data['mailInformation']->sending_params) ? false : $data['mailInformation']->sending_params);
+        $this->prepareSegmentDisplay($data, empty($data['mailInformation']->sending_params) ? [] : $data['mailInformation']->sending_params);
 
         $data['before-save'] = '';
 
@@ -409,7 +408,7 @@ trait Edition
         parent::display($data);
     }
 
-    public function recipients()
+    public function recipients(): void
     {
         acym_setVar('layout', 'recipients');
         acym_setVar('step', 'recipients');
@@ -443,7 +442,7 @@ trait Edition
         parent::display($campaign);
     }
 
-    public function segment()
+    public function segment(): void
     {
         acym_setVar('layout', 'segment');
         acym_setVar('step', 'segment');
@@ -474,7 +473,7 @@ trait Edition
         parent::display($data);
     }
 
-    public function sendSettings()
+    public function sendSettings(): void
     {
         acym_setVar('layout', 'send_settings');
         acym_setVar('step', 'sendSettings');
@@ -562,7 +561,7 @@ trait Edition
         parent::display($campaign);
     }
 
-    public function saveEditEmail($ajax = false)
+    public function saveEditEmail(bool $ajax = false): int
     {
         acym_checkToken();
 
@@ -675,7 +674,7 @@ trait Edition
                 $this->listing();
             }
 
-            return false;
+            return 0;
         }
 
         if (!empty($versions) && in_array($versionType, ['multilingual', 'abtest'])) {
@@ -725,16 +724,15 @@ trait Edition
         $campaign->mail_id = $mailID;
         $campaign->id = $campaignClass->save($campaign);
 
-        if ($ajax) {
-            return $campaign->id;
+        if (!$ajax) {
+            acym_setVar('campaignId', $campaign->id);
+            $this->edit();
         }
 
-        acym_setVar('campaignId', $campaign->id);
-
-        return $this->edit();
+        return (int)$campaign->id;
     }
 
-    public function saveRecipients()
+    public function saveRecipients(): void
     {
         $allLists = json_decode(acym_getVar('string', 'acym__entity_select__selected'));
         $allListsUnselected = json_decode(acym_getVar('string', 'acym__entity_select__unselected'));
@@ -775,7 +773,7 @@ trait Edition
         $this->edit();
     }
 
-    public function saveSegment()
+    public function saveSegment(): void
     {
         if (!acym_isAdmin()) {
             die('Access denied for segments');
@@ -823,7 +821,7 @@ trait Edition
         $this->edit();
     }
 
-    public function saveSendSettings()
+    public function saveSendSettings(): void
     {
         $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
@@ -838,7 +836,7 @@ trait Edition
         $sendingType = acym_getVar('string', 'sending_type', CampaignClass::SENDING_TYPE_NOW);
         $sendingParams = acym_getVar('array', 'sending_params', []);
         $specificSendingParams = [];
-        $isScheduled = CampaignClass::SENDING_TYPE_SCHEDULED == $sendingType;
+        $isScheduled = CampaignClass::SENDING_TYPE_SCHEDULED === $sendingType;
 
         $currentCampaign = $campaignClass->getOneById($campaignId);
 
@@ -850,7 +848,7 @@ trait Edition
             return;
         }
 
-        if (CampaignClass::SENDING_TYPE_AUTO == $sendingType) {
+        if (CampaignClass::SENDING_TYPE_AUTO === $sendingType) {
             $triggerType = acym_getVar('string', 'acym_triggers', '');
             if (empty($triggerType)) {
                 acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
@@ -951,12 +949,12 @@ trait Edition
     /**
      * Needed for the steps system
      */
-    public function saveSummary()
+    public function saveSummary(): void
     {
         $this->edit();
     }
 
-    public function summary()
+    public function summary(): void
     {
         acym_setVar('step', 'summary');
         acym_setVar('layout', 'summary');
@@ -975,7 +973,7 @@ trait Edition
             return;
         }
 
-        $data['mailInformation'] = $this->prepareMailDataSummary($data, $data['campaignInformation']->mail_id);
+        $data['mailInformation'] = $this->prepareMailDataSummary($data, (int)$data['campaignInformation']->mail_id);
         $this->prepareReceiversSummary($data);
         $this->prepareAbTest($data, false);
         $this->prepareAllMailsForAbtest($data);
@@ -989,9 +987,11 @@ trait Edition
         parent::display($data);
     }
 
-    private function prepareSegmentData(&$data)
+    private function prepareSegmentData(array &$data): void
     {
-        if (empty($data['campaignInformation']->sending_params['segment'])) return;
+        if (empty($data['campaignInformation']->sending_params['segment'])) {
+            return;
+        }
 
         $segmentParams = $data['campaignInformation']->sending_params['segment'];
 
@@ -1005,7 +1005,7 @@ trait Edition
 
             $data['segment'] = [
                 'name' => $segment->name,
-                'count' => $segmentController->countSegmentById($segment->id, $data['listsIds'], false, $isExcluded),
+                'count' => $segmentController->countSegmentById((int)$segment->id, $data['listsIds'], false, $isExcluded),
             ];
         } else {
             $data['segment'] = [
@@ -1015,7 +1015,7 @@ trait Edition
         }
     }
 
-    protected function prepareCurrentUserSummary(&$data)
+    private function prepareCurrentUserSummary(array &$data): void
     {
         $userClass = new UserClass();
         $currentUserEmail = acym_currentUserEmail();
@@ -1028,7 +1028,7 @@ trait Edition
         }
     }
 
-    protected function prepareCampaignSummary(&$data): bool
+    private function prepareCampaignSummary(array &$data): bool
     {
         $campaignId = acym_getVar('int', 'campaignId');
         $campaignClass = new CampaignClass();
@@ -1041,7 +1041,7 @@ trait Edition
             die('Access denied for this campaign');
         }
 
-        $campaign->isAuto = $campaign->sending_type == $campaignClass->getConstAuto();
+        $campaign->isAuto = $campaign->sending_type === CampaignClass::SENDING_TYPE_AUTO;
 
         $startDate = '';
         if ($campaign->isAuto) {
@@ -1071,7 +1071,7 @@ trait Edition
         return true;
     }
 
-    protected function prepareMailDataSummary(&$data, $mailId)
+    private function prepareMailDataSummary(array &$data, int $mailId): object
     {
         $mailArchiveClass = new MailArchiveClass();
         $data['isArchiveCached'] = !empty($mailArchiveClass->getOneByMailId($mailId));
@@ -1109,7 +1109,7 @@ trait Edition
         return $mailData;
     }
 
-    protected function prepareReceiversSummary(&$data)
+    protected function prepareReceiversSummary(array &$data): void
     {
         $nbSubscribers = 0;
         $campaignLists = $data['mailClass']->getAllListsWithCountSubscribersByMailIds([$data['campaignInformation']->mail_id]);
@@ -1146,7 +1146,7 @@ trait Edition
         }
     }
 
-    public function tests()
+    public function tests(): void
     {
         $campaignClass = new CampaignClass();
         acym_setVar('step', 'tests');
@@ -1191,7 +1191,7 @@ trait Edition
         parent::display($data);
     }
 
-    public function saveTests()
+    public function saveTests(): void
     {
         if (!acym_isAdmin()) {
             die('Access denied for tests step');

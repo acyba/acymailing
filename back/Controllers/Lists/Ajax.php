@@ -9,7 +9,7 @@ use AcyMailing\Helpers\PaginationHelper;
 
 trait Ajax
 {
-    public function ajaxCreateNewList()
+    public function ajaxCreateNewList(): void
     {
         acym_checkToken();
         $genericImport = acym_getVar('boolean', 'generic', false);
@@ -41,7 +41,7 @@ trait Ajax
         exit;
     }
 
-    public function usersSummary()
+    public function usersSummary(): void
     {
         $id = acym_getVar('int', 'list_id', 0);
         $offset = acym_getVar('int', 'offset', 0);
@@ -60,17 +60,19 @@ trait Ajax
         acym_sendAjaxResponse('', ['users' => $listClass->getUsersForSummaryModal($id, $offset, $limit, $search)]);
     }
 
-    public function setAjaxListing()
+    public function setAjaxListing(): void
     {
         $showSelected = acym_getVar('string', 'show_selected');
         $matchingListsData = new \stdClass();
         $matchingListsData->ordering = 'name';
         $matchingListsData->searchFilter = acym_getVar('string', 'search_lists');
-        $matchingListsData->listsPerPage = acym_getVar('string', 'listsPerPage');
+        $matchingListsData->listsPerPage = acym_getVar('int', 'listsPerPage', 20);
         $matchingListsData->idsSelected = json_decode(acym_getVar('string', 'selectedLists'));
         $matchingListsData->idsAlready = json_decode(acym_getVar('string', 'alreadyLists'));
         $matchingListsData->page = acym_getVar('int', 'pagination_page_ajax');
-        if (empty($matchingListsData->page)) $matchingListsData->page = 1;
+        if (empty($matchingListsData->page)) {
+            $matchingListsData->page = 1;
+        }
 
         $matchingListsData->needDisplaySub = acym_getVar('int', 'needDisplaySub');
         $matchingListsData->displayNonActive = acym_getVar('int', 'nonActive');
@@ -131,7 +133,7 @@ trait Ajax
         exit;
     }
 
-    public function loadMoreSubscribers()
+    public function loadMoreSubscribers(): void
     {
         acym_checkToken();
         $listClass = new ListClass();

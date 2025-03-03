@@ -177,7 +177,7 @@ function acym_getCmsCaptcha()
     return $results;
 }
 
-function acym_loadCaptcha($captchaPluginName, $id)
+function acym_loadCaptcha(string $captchaPluginName, string $id): string
 {
     PluginHelper::importPlugin('captcha', $captchaPluginName);
     acym_triggerCmsHook('onInit', [$id]);
@@ -186,7 +186,7 @@ function acym_loadCaptcha($captchaPluginName, $id)
     return empty($result[0]) ? '' : $result[0];
 }
 
-function acym_checkCaptcha(string $captchaPluginName, ?string $response = null)
+function acym_checkCaptcha(string $captchaPluginName, ?string $response = null): bool
 {
     PluginHelper::importPlugin('captcha', $captchaPluginName);
     try {
@@ -197,5 +197,7 @@ function acym_checkCaptcha(string $captchaPluginName, ?string $response = null)
         return false;
     }
 
-    return $result[0] ?? false;
+    $isPassing = $result[0] ?? false;
+
+    return (bool)$isPassing;
 }

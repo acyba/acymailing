@@ -4,6 +4,7 @@ namespace AcyMailing\Helpers\Update;
 
 use AcyMailing\Classes\ActionClass;
 use AcyMailing\Classes\ConditionClass;
+use AcyMailing\Classes\ConfigurationClass;
 use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\MailClass;
@@ -14,7 +15,7 @@ use AcyMailing\Helpers\UpdateHelper;
 
 trait Patchv6
 {
-    private function updateFor603()
+    private function updateFor603(): void
     {
         if ($this->isPreviousVersionAtLeast('6.0.3')) {
             return;
@@ -53,7 +54,7 @@ trait Patchv6
         }
     }
 
-    private function updateFor610()
+    private function updateFor610(): void
     {
         if ($this->isPreviousVersionAtLeast('6.1.0')) {
             return;
@@ -149,7 +150,7 @@ trait Patchv6
         }
     }
 
-    private function updateFor612()
+    private function updateFor612(): void
     {
         if ($this->isPreviousVersionAtLeast('6.1.2')) {
             return;
@@ -186,7 +187,7 @@ trait Patchv6
         }
     }
 
-    private function updateFor613()
+    private function updateFor613(): void
     {
         if ($this->isPreviousVersionAtLeast('6.1.3')) {
             return;
@@ -195,7 +196,7 @@ trait Patchv6
         $this->updateQuery('UPDATE #__acym_user_has_list SET `status` = 1 WHERE `status` = 2');
     }
 
-    private function updateFor614()
+    private function updateFor614(): void
     {
         if ($this->isPreviousVersionAtLeast('6.1.4')) {
             return;
@@ -212,7 +213,7 @@ trait Patchv6
         $this->updateQuery('ALTER TABLE #__acym_automation ADD `admin` TINYINT(3) NULL');
     }
 
-    private function updateFor615($config)
+    private function updateFor615(ConfigurationClass $config): void
     {
         if ($this->isPreviousVersionAtLeast('6.1.5')) {
             return;
@@ -264,7 +265,7 @@ trait Patchv6
         }
     }
 
-    private function updateFor616()
+    private function updateFor616(): void
     {
         if ($this->isPreviousVersionAtLeast('6.1.6')) {
             return;
@@ -284,7 +285,7 @@ trait Patchv6
         }
     }
 
-    private function updateFor617()
+    private function updateFor617(): void
     {
         if ($this->isPreviousVersionAtLeast('6.1.7')) {
             return;
@@ -306,7 +307,7 @@ trait Patchv6
         }
     }
 
-    private function updateFor622($config)
+    private function updateFor622(ConfigurationClass $config): void
     {
         if ($this->isPreviousVersionAtLeast('6.2.2')) {
             return;
@@ -333,7 +334,7 @@ trait Patchv6
         }
     }
 
-    private function updateFor640()
+    private function updateFor640(): void
     {
         if ($this->isPreviousVersionAtLeast('6.4.0')) {
             return;
@@ -356,7 +357,7 @@ trait Patchv6
         $this->updateQuery('ALTER TABLE #__acym_campaign DROP `scheduled`');
     }
 
-    private function updateFor650()
+    private function updateFor650(): void
     {
         if ($this->isPreviousVersionAtLeast('6.5.0')) {
             return;
@@ -417,7 +418,7 @@ trait Patchv6
         $this->updateQuery('ALTER TABLE #__acym_campaign CHANGE `last_trigger` `last_generated` INT DEFAULT NULL');
     }
 
-    private function updateFor660()
+    private function updateFor660(): void
     {
         if ($this->isPreviousVersionAtLeast('6.6.0')) {
             return;
@@ -483,7 +484,7 @@ trait Patchv6
         }
     }
 
-    private function updateFor670()
+    private function updateFor670(): void
     {
         if ($this->isPreviousVersionAtLeast('6.7.0')) {
             return;
@@ -497,7 +498,7 @@ trait Patchv6
         $this->updateQuery('ALTER TABLE #__acym_list ADD COLUMN `front_management` INT NULL');
     }
 
-    private function updateFor692()
+    private function updateFor692(): void
     {
         if ($this->isPreviousVersionAtLeast('6.9.2')) {
             return;
@@ -515,7 +516,7 @@ trait Patchv6
         }
     }
 
-    private function updateFor6100()
+    private function updateFor6100(): void
     {
         if ($this->isPreviousVersionAtLeast('6.10.0')) {
             return;
@@ -543,7 +544,7 @@ trait Patchv6
         }
     }
 
-    private function updateFor6102()
+    private function updateFor6102(): void
     {
         if ($this->isPreviousVersionAtLeast('6.10.2')) {
             return;
@@ -552,7 +553,7 @@ trait Patchv6
         $this->updateQuery('ALTER TABLE #__acym_mail ADD COLUMN `links_language` VARCHAR(10) NOT NULL DEFAULT ""');
     }
 
-    private function updateFor6104()
+    private function updateFor6104(): void
     {
         if ($this->isPreviousVersionAtLeast('6.10.4')) {
             return;
@@ -578,7 +579,7 @@ trait Patchv6
         $this->updateQuery('ALTER TABLE #__acym_mail CHANGE `links_language` `links_language` VARCHAR(10) NOT NULL');
     }
 
-    private function updateFor6110()
+    private function updateFor6110(): void
     {
         if ($this->isPreviousVersionAtLeast('6.11.0')) {
             return;
@@ -605,7 +606,7 @@ trait Patchv6
         $this->updateQuery('ALTER TABLE #__acym_list ADD `description` TEXT NOT NULL DEFAULT ""');
     }
 
-    private function updateFor6120()
+    private function updateFor6120(): void
     {
         if ($this->isPreviousVersionAtLeast('6.12.0')) {
             return;
@@ -617,7 +618,7 @@ trait Patchv6
         $this->updateQuery('ALTER TABLE #__acym_plugin ADD `settings` LONGTEXT NULL');
     }
 
-    private function updateFor6130()
+    private function updateFor6130(): void
     {
         if ($this->isPreviousVersionAtLeast('6.13.0')) {
             return;
@@ -627,7 +628,7 @@ trait Patchv6
         $this->updateQuery('ALTER TABLE #__acym_plugin CHANGE `latest_version` `latest_version` VARCHAR(10) NOT NULL');
     }
 
-    private function updateFor6140()
+    private function updateFor6140(): void
     {
         if ($this->isPreviousVersionAtLeast('6.14.0')) {
             return;
@@ -670,7 +671,7 @@ trait Patchv6
         $this->updateQuery('ALTER TABLE #__acym_mail ADD `parent_id` INT NULL');
     }
 
-    private function updateFor6150()
+    private function updateFor6150(): void
     {
         if ($this->isPreviousVersionAtLeast('6.15.0')) {
             return;
@@ -684,7 +685,7 @@ trait Patchv6
         $this->updateQuery('ALTER TABLE `#__acym_mail` CHANGE `preheader` `preheader` TEXT NULL');
     }
 
-    private function updateFor6160()
+    private function updateFor6160(): void
     {
         if ($this->isPreviousVersionAtLeast('6.16.0')) {
             return;
@@ -700,7 +701,7 @@ trait Patchv6
         $this->updateQuery('UPDATE `#__acym_form` SET `termspolicy_options` = "{\"termscond\":0,\"privacy\":0}" WHERE `termspolicy_options` is NULL');
     }
 
-    private function updateFor6170()
+    private function updateFor6170(): void
     {
         if ($this->isPreviousVersionAtLeast('6.17.0')) {
             return;
@@ -724,7 +725,7 @@ trait Patchv6
         $this->updateQuery('UPDATE `#__acym_form` SET `cookie` = "{\"cookie_expiration\":1}" WHERE `cookie` IS NULL');
     }
 
-    private function updateFor6180()
+    private function updateFor6180(): void
     {
         if ($this->isPreviousVersionAtLeast('6.18.0')) {
             return;
@@ -802,7 +803,7 @@ trait Patchv6
         );
     }
 
-    private function updateFor6181()
+    private function updateFor6181(): void
     {
         if ($this->isPreviousVersionAtLeast('6.18.1')) {
             return;
@@ -828,7 +829,7 @@ trait Patchv6
         }
     }
 
-    private function updateFor6190()
+    private function updateFor6190(): void
     {
         if ($this->isPreviousVersionAtLeast('6.19.0')) {
             return;

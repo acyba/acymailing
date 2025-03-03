@@ -7,31 +7,6 @@ use AcyMailing\Core\AcymClass;
 
 class UserStatClass extends AcymClass
 {
-    const DESKTOP_DEVICES = [
-        'windows' => 'Windows',
-        'macintosh' => 'Mac',
-        'linux' => 'Linux',
-    ];
-
-    const MOBILE_DEVICES = [
-        'bada' => 'Bada',
-        'ubuntu; mobile' => 'Ubuntu Mobile',
-        'ubuntu; tablet' => 'Ubuntu Tablet',
-        'tizen' => 'Tizen',
-        'palm os' => 'Palm',
-        'meego' => 'meeGo',
-        'symbian' => 'Symbian',
-        'symbos' => 'Symbian',
-        'blackberry' => 'BlackBerry',
-        'windows ce' => 'Windows Phone',
-        'windows mobile' => 'Windows Phone',
-        'windows phone' => 'Windows Phone',
-        'iphone' => 'iPhone',
-        'ipad' => 'iPad',
-        'ipod' => 'iPod',
-        'android' => 'Android',
-    ];
-
     public function __construct()
     {
         parent::__construct();
@@ -143,7 +118,7 @@ class UserStatClass extends AcymClass
         return acym_loadObjectList($query);
     }
 
-    public function getDetailedStats($settings)
+    public function getDetailedStats(array $settings): array
     {
         $mailClass = new MailClass();
 
@@ -151,7 +126,7 @@ class UserStatClass extends AcymClass
                     FROM #__acym_user_stat AS us
                     LEFT JOIN #__acym_user AS u ON us.user_id = u.id
                     INNER JOIN #__acym_mail AS m ON us.mail_id = m.id';
-        $queryCount = 'SELECT COUNT(*) FROM #__acym_user_stat as us
+        $queryCount = 'SELECT COUNT(*) AS total FROM #__acym_user_stat as us
                         LEFT JOIN #__acym_user AS u ON us.user_id = u.id
                         INNER JOIN #__acym_mail AS m ON us.mail_id = m.id';
         $where = [];
@@ -236,10 +211,10 @@ class UserStatClass extends AcymClass
             }
         }
 
-        $results['detailed_stats'] = $mailClass->decode($mails);
-        $results['total'] = acym_loadResult($queryCount);
-
-        return $results;
+        return [
+            'detailed_stats' => $mailClass->decode($mails),
+            'total' => acym_loadObject($queryCount),
+        ];
     }
 
     public function getTotalFailClickOpenByMailIds($mailIds)

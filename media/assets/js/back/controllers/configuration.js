@@ -100,7 +100,7 @@ jQuery(function ($) {
 
             $('#checkdb_report').html('<i class="acymicon-circle-o-notch acymicon-spin"></i>');
 
-            $.get(ACYM_AJAX_URL + '&ctrl=configuration&task=checkDB', function (response) {
+            $.get(ACYM_AJAX_URL + '&ctrl=configuration&task=checkDBAjax', function (response) {
                 $('#checkdb_report').html(response);
             });
         });

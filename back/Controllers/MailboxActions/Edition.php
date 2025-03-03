@@ -9,7 +9,7 @@ use AcyMailing\Types\DelayType;
 
 trait Edition
 {
-    public function mailboxAction()
+    public function mailboxAction(): void
     {
         $mailboxClass = new MailboxClass();
         acym_setVar('layout', 'mailbox_action');
@@ -93,19 +93,19 @@ trait Edition
         parent::display($data);
     }
 
-    public function applyMailboxAction()
+    public function applyMailboxAction(): void
     {
         $this->storeMailboxAction();
         $this->mailboxAction();
     }
 
-    public function saveMailboxAction()
+    public function saveMailboxAction(): void
     {
         $this->storeMailboxAction();
         $this->listing();
     }
 
-    public function storeMailboxAction()
+    public function storeMailboxAction(): void
     {
         $mailbox = acym_getVar('array', 'mailbox', []);
         $mailboxClass = new MailboxClass();
@@ -145,7 +145,7 @@ trait Edition
         }
     }
 
-    public function testMailboxAction()
+    public function testMailboxAction(): void
     {
         $mailbox = acym_getVar('array', 'mailbox', []);
 
@@ -158,11 +158,10 @@ trait Edition
         // If this is not a new mailbox or if it is not from the configuration menu, we need to get the password from the database
         if (!empty($mailbox->id)) {
             if ($mailbox->id !== 'configuration') {
-                $mailboxClass = new MailboxClass();
-                $mailboxFromDatabase = $mailboxClass->getOneById($mailbox->id);
-
                 // We check if the password has not changed
                 if (empty(trim($mailbox->password, '*'))) {
+                    $mailboxClass = new MailboxClass();
+                    $mailboxFromDatabase = $mailboxClass->getOneById($mailbox->id);
                     $mailbox->password = $mailboxFromDatabase->password;
                 }
             } elseif (empty(trim($mailbox->password, '*'))) {

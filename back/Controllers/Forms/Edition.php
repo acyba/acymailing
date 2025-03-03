@@ -6,7 +6,7 @@ use AcyMailing\Classes\FormClass;
 
 trait Edition
 {
-    public function newForm()
+    public function newForm(): void
     {
         acym_setVar('layout', 'new_form');
 
@@ -40,7 +40,7 @@ trait Edition
         parent::display($data);
     }
 
-    public function edit()
+    public function edit(): void
     {
         acym_setVar('layout', 'edit');
         $formClass = new FormClass();
@@ -91,7 +91,7 @@ trait Edition
         parent::display($data);
     }
 
-    public function updateFormPreview()
+    public function updateFormPreview(): void
     {
         $formArray = acym_getVar('array', 'form');
         if (empty($formArray)) {
@@ -100,9 +100,6 @@ trait Edition
 
         $formClass = new FormClass();
         $form = $formClass->getFormWithMissingParams($formArray);
-        if (empty($form)) {
-            acym_sendAjaxResponse(acym_translation('ACYM_COULD_NOT_GET_FORM_INFORMATION'), [], false);
-        }
 
         $data = [
             'html' => $formClass->renderForm($form, true),
@@ -115,7 +112,7 @@ trait Edition
         acym_sendAjaxResponse('', $data);
     }
 
-    public function saveAjax()
+    public function saveAjax(): void
     {
         acym_checkToken();
         $formArray = acym_getVar('array', 'form');
@@ -141,7 +138,7 @@ trait Edition
         }
     }
 
-    public function getArticles()
+    public function getArticles(): void
     {
         $searchedTerm = acym_getVar('string', 'searchedterm', '');
 
@@ -149,7 +146,7 @@ trait Edition
         exit;
     }
 
-    public function getArticlesById()
+    public function getArticlesById(): void
     {
         $id = acym_getVar('int', 'article_id', 0);
 

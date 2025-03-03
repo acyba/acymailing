@@ -9,7 +9,7 @@ use AcyMailing\Core\AcymController;
 
 class LanguageController extends AcymController
 {
-    public function saveLanguage($fromShare = false)
+    public function saveLanguage(bool $fromShare = false): bool
     {
         acym_checkToken();
 
@@ -21,7 +21,9 @@ class LanguageController extends AcymController
         $content = str_replace('</textarea>', '', $content);
 
         if (empty($code) || empty($content)) {
-            return $this->displayLanguage();
+            $this->displayLanguage();
+
+            return true;
         }
 
         // Get the custom translations
@@ -62,11 +64,13 @@ class LanguageController extends AcymController
         if ($fromShare) {
             return $result;
         } else {
-            return $this->displayLanguage();
+            $this->displayLanguage();
+
+            return true;
         }
     }
 
-    public function share()
+    public function share(): void
     {
         acym_checkToken();
 
@@ -76,13 +80,13 @@ class LanguageController extends AcymController
             $file = new \stdClass();
             $file->name = acym_getVar('cmd', 'code');
 
-            return parent::display(['file' => $file]);
+            parent::display(['file' => $file]);
         } else {
-            return $this->displayLanguage();
+            $this->displayLanguage();
         }
     }
 
-    public function send()
+    public function send(): void
     {
         acym_checkToken();
 
@@ -94,10 +98,10 @@ class LanguageController extends AcymController
             return;
         }
 
-        $mailer = new MailerHelper();
-        $mailer->Subject = '[ACYMAILING LANGUAGE FILE] '.$code;
-        $mailer->Body = 'The website '.ACYM_LIVE.' using AcyMailing '.$this->config->get('level').' '.$this->config->get('version').' sent a language file : '.$code;
-        $mailer->Body .= "\n\n\n".$bodyEmail;
+        $mailerHelper = new MailerHelper();
+        $mailerHelper->Subject = '[ACYMAILING LANGUAGE FILE] '.$code;
+        $mailerHelper->Body = 'The website '.ACYM_LIVE.' using AcyMailing '.$this->config->get('level').' '.$this->config->get('version').' sent a language file : '.$code;
+        $mailerHelper->Body .= "\n\n\n".$bodyEmail;
 
         //Include the extra language file....
         $file = acym_getLanguagePath(ACYM_ROOT, $code).DS.$code.'.com_acym.ini';
@@ -135,31 +139,31 @@ class LanguageController extends AcymController
                     }
 
                     if (!empty($newKeys)) {
-                        $mailer->Body .= "\n\n\nCustom content:\n".implode("\n", $newKeys);
+                        $mailerHelper->Body .= "\n\n\nCustom content:\n".implode("\n", $newKeys);
                     }
                 }
             }
         }
 
         // Attach the file
-        $mailer->addStringAttachment($translation, $code.'.com_acym.ini');
+        $mailerHelper->addStringAttachment($translation, $code.'.com_acym.ini');
 
-        $mailer->AddAddress(acym_currentUserEmail(), acym_currentUserName());
-        $mailer->AddAddress('translate@acyba.com', 'Acyba Translation Team');
-        $mailer->report = false;
+        $mailerHelper->AddAddress(acym_currentUserEmail(), acym_currentUserName());
+        $mailerHelper->AddAddress('translate@acyba.com', 'Acyba Translation Team');
+        $mailerHelper->report = false;
 
-        $result = $mailer->send();
+        $result = $mailerHelper->send();
 
         if ($result) {
             acym_enqueueMessage(acym_translation('ACYM_THANK_YOU_SHARING').'<br>'.acym_translation('ACYM_MESSAGE_SENT'), 'success');
         } else {
-            acym_enqueueMessage($mailer->reportMessage, 'error');
+            acym_enqueueMessage($mailerHelper->reportMessage, 'error');
         }
 
         $this->displayLanguage();
     }
 
-    public function displayLanguage()
+    public function displayLanguage(): void
     {
         acym_setVar('layout', 'default');
 
@@ -208,7 +212,7 @@ class LanguageController extends AcymController
         parent::display($data);
     }
 
-    public function getLatestTranslationAjax()
+    public function getLatestTranslationAjax(): void
     {
         $languagesContent = UpdatemeHelper::call('public/download/translations?version=latest&codes='.acym_getVar('cmd', 'code'));
 

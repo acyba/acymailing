@@ -13,7 +13,7 @@
 	<div class="cell grid-x">
 		<div class="grid-x acym__listing__actions cell auto">
             <?php
-            if ($data['campaign_type'] == 'campaigns_auto') {
+            if ($data['campaign_type'] === 'campaigns_auto') {
                 $options = [
                     '' => ['ACYM_AUTOMATICS_CAMPAIGNS', $data['allStatusFilter']->all],
                     'generated' => [
@@ -46,6 +46,7 @@
                         'draft' => acym_translation('ACYM_DRAFT'),
                         'active' => acym_translation('ACYM_ACTIVE'),
                         'sent' => acym_translation('ACYM_SENT'),
+                        'visible' => acym_translation('ACYM_VISIBLE'),
                     ],
                     $data['campaign_type'],
                     $data['ordering'],

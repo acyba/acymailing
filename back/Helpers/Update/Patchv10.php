@@ -4,7 +4,7 @@ namespace AcyMailing\Helpers\Update;
 
 trait Patchv10
 {
-    private function updateFor1000()
+    private function updateFor1000(): void
     {
         if ($this->isPreviousVersionAtLeast('10.0.0')) {
             return;
