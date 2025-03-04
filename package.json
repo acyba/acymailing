@@ -4,7 +4,7 @@
     "description": "AcyMailing module for Joomla and WordPress",
     "main": "gulpfile.js",
     "dependencies": {
-        "@acymailing/svg-to-woff": "^0.0.7",
+        "@acymailing/svg-to-woff": "^0.0.8",
         "@babel/polyfill": "7.7.0",
         "axios": "^0.27.2",
         "dateformat": "^3.0.3",

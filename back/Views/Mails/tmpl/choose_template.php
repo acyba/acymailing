@@ -4,9 +4,8 @@
     if (empty($data['allMails']) && empty($data['search']) && empty($data['tag']) && empty($data['status'])) { ?>
 		<div class="grid-x cell text-center">
 			<h1 class="acym__listing__empty__title cell"><?php echo acym_translation('ACYM_YOU_DONT_HAVE_ANY_TEMPLATE'); ?></h1>
-			<h1 class="acym__listing__empty__subtitle cell"><?php echo acym_translation('ACYM_CREATE_CAMPAIGN_EMPTY_TEMPLATE'); ?></h1>
-			<div class="medium-4"></div>
-			<div class="medium-4 small-12 cell">
+			<div class="cell medium-4"></div>
+			<div class="cell medium-4">
 				<a href="<?php echo acym_completeLink(
                     acym_getVar('cmd', 'ctrl').'&task=edit&step=editEmail&from=-1&type_editor=acyEditor&campaignId='.acym_escape(
                         $data['campaignID']
@@ -14,10 +13,9 @@
                 ); ?>"
 				   class="button expanded"
 				   id="acym__templates__choose__create__empty">
-                    <?php echo acym_translation('ACYM_CREATE_EMPTY_TEMPLATE'); ?>
+                    <?php echo acym_translation('ACYM_START_FROM_EMPTY_TEMPLATE'); ?>
 				</a>
 			</div>
-			<div class="medium-4"></div>
 		</div>
     <?php } else { ?>
 		<div class="cell grid-x margin-bottom-2 grid-margin-x">

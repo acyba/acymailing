@@ -9,13 +9,14 @@ const acym_helperToggle = {
     },
     setToggleGlobal: function () {
         jQuery('.acym_toggleable').off('click').on('click', function () {
-            let element = jQuery(this);
-            element.attr('class', 'acymicon-circle-o-notch acymicon-spin');
+            let $element = jQuery(this);
 
-            let table = element.attr('data-acy-table');
-            let field = element.attr('data-acy-field');
-            let elementid = element.attr('data-acy-elementid');
-            let newvalue = element.attr('data-acy-newvalue');
+            $element.attr('class', 'acymicon-circle-o-notch acymicon-spin');
+
+            let table = $element.attr('data-acy-table');
+            let field = $element.attr('data-acy-field');
+            let elementid = $element.attr('data-acy-elementid');
+            let newvalue = $element.attr('data-acy-newvalue');
 
             let url = ACYM_TOGGLE_URL + '&task=toggle&table=' + table + '&field=' + field + '&id=' + elementid + '&value=' + newvalue;
 
@@ -43,17 +44,25 @@ const acym_helperToggle = {
 
             const url = ACYM_TOGGLE_URL + '&task=' + task + '&userid=' + userid + '&listid=' + listid;
 
+            let isSubscribed = false;
+            if ($element.hasClass('acymicon-circle')) {
+                isSubscribed = true;
+            }
+
+            $element.removeClass('acymicon-radio-button-unchecked').removeClass('acymicon-circle');
+
             acym_helper.get(url).then(res => {
                 if (res.error) {
                     return;
                 }
+
                 $element.removeClass('acymicon-circle-o-notch acymicon-spin');
-                let newText = '';
-                if ($element.hasClass('acymicon-circle')) {
-                    $element.removeClass('acymicon-circle').addClass('acymicon-radio-button-unchecked').attr('data-acy-task', 'subscribeOnClick');
+                let newText;
+                if (isSubscribed) {
+                    $element.addClass('acymicon-radio-button-unchecked').attr('data-acy-task', 'subscribeOnClick');
                     newText = acym_helper.sprintf(ACYM_JS_TXT.ACYM_UNSUBSCRIBED_FROM_LIST, listname);
-                } else if ($element.hasClass('acymicon-radio-button-unchecked')) {
-                    $element.removeClass('acymicon-radio-button-unchecked').addClass('acymicon-circle').attr('data-acy-task', 'unsubscribeOnClick');
+                } else {
+                    $element.addClass('acymicon-circle').attr('data-acy-task', 'unsubscribeOnClick');
                     newText = acym_helper.sprintf(ACYM_JS_TXT.ACYM_SUBSCRIBED_TO_LIST, listname);
                 }
                 $element.attr('data-acy-newvalue', newvalue == 1 ? 0 : 1).parent().find('.acym__tooltip__text').text(newText);
