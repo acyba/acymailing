@@ -1017,7 +1017,7 @@ class MailerHelper extends Mailer
         return $embedSuccess;
     }
 
-    public function cleanText(string $text): string
+    public function cleanText(?string $text): string
     {
         return trim(preg_replace('/(%0A|%0D|\n+|\r+)/i', '', (string)$text));
     }
