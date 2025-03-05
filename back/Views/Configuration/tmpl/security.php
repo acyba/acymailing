@@ -572,12 +572,12 @@
 			</div>
 			<div class="grid-x grid-margin-y margin-y" id="cron_security_config">
 				<div class="cell grid-x acym_vcenter">
-					<label class="cell large-3" for="cron_key">
+					<label class="cell large-3" for="different_admin_url_value">
                         <?php echo acym_translation('ACYM_BACKEND_URL'); ?>
 					</label>
                     <?php $differentUrl = $this->config->get('different_admin_url_value'); ?>
 					<input class="cell large-9"
-						   id="cron_key"
+						   id="different_admin_url_value"
 						   type="text"
 						   name="config[different_admin_url_value]"
 						   placeholder="<?php echo acym_escape(rtrim(ACYM_LIVE, '/')); ?>"

@@ -272,6 +272,9 @@ trait Edition
         $data['campaignID'] = $data['mailInformation']->id;
 
         $pluginHelper = new PluginHelper();
+        if (empty($data['mailInformation']->body)) {
+            $data['mailInformation']->body = '';
+        }
         $pluginHelper->cleanHtml($data['mailInformation']->body);
 
         $editLink .= '&type_editor='.$data['typeEditor'];

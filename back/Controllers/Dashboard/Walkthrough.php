@@ -202,7 +202,7 @@ trait Walkthrough
         $editorHelper->content = $mail->body;
         $editorHelper->autoSave = '';
         $editorHelper->settings = $mail->settings;
-        $editorHelper->stylesheet = $mail->stylesheet;
+        $editorHelper->stylesheet = $mail->stylesheet ?? '';
         $editorHelper->editor = 'acyEditor';
         $editorHelper->mailId = $mail->id;
         $editorHelper->walkThrough = true;
