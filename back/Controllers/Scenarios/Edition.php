@@ -96,7 +96,9 @@ trait Edition
 
     private function prepareSendEmailAction(array &$data): void
     {
-        $this->searchForSendEmailAction($data['flow']);
+        if (!empty($data['flow'])) {
+            $this->searchForSendEmailAction($data['flow']);
+        }
     }
 
     private function searchForSendEmailAction(array &$node): void

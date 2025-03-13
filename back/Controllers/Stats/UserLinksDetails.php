@@ -10,6 +10,7 @@ trait UserLinksDetails
 {
     public function exportUserLinksDetails(): void
     {
+        $data = [];
         if (!$this->prepareDefaultPageInfo($data, true)) {
             return;
         }

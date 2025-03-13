@@ -214,10 +214,6 @@
                 'prevent_hyphens' => [
                     'label' => 'ACYM_PREVENT_HYPHENS',
                 ],
-                'unsubscribe_header' => [
-                    'label' => 'ACYM_ADD_UNSUBSCRIBE_HEADER_IN_MAIL',
-                    'default' => 1,
-                ],
                 'embed_images' => [
                     'label' => 'ACYM_CONFIGURATION_EMBED_IMAGES',
                     'info_disabled' => 'ACYM_CONFIGURATION_OPTION_DESC_DISABLED',

@@ -109,6 +109,8 @@ trait SubscriberAutomationConditions
             $fieldClass = new FieldClass();
             $field = $fieldClass->getOneById($options['field']);
 
+            $fieldType = empty($field->type) ? '' : $field->type;
+
             $query->leftjoin['userfield'.$num] = ' #__acym_user_has_field as userfield'.$num.' ON userfield'.$num.'.user_id = user.id AND userfield'.$num.'.field_id = '.intval(
                     $options['field']
                 );
@@ -117,7 +119,7 @@ trait SubscriberAutomationConditions
                 'value',
                 $options['operator'],
                 $options['value'],
-                'phone' === $field->type ? AutomationHelper::TYPE_PHONE : ''
+                'phone' === $fieldType ? AutomationHelper::TYPE_PHONE : ''
             );
         } else {
             if (in_array($options['field'], ['creation_date', 'confirmation_date', 'last_sent_date', 'last_open_date', 'last_click_date'])) {

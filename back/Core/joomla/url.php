@@ -47,7 +47,10 @@ function acym_frontendLink(string $link, bool $complete = true, bool $sef = true
             // sh404 generates a PHP notice when the content language is missing in Joomla
             return @Sh404sefHelperGeneral::getSefFromNonSef($link);
         } else {
-            return Route::link('site', $link, true, 0, true);
+            try {
+                return Route::link('site', $link, true, 0, true);
+            } catch (Exception $e) {
+            }
         }
     }
 

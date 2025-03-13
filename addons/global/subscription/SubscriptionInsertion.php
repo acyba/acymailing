@@ -180,7 +180,6 @@ trait SubscriptionInsertion
         $this->_replacelisttags($email, $user, $send);
 
         // Check if we should add the List-Unsubscribe header
-        if ($this->config->get('unsubscribe_header', 1) == 0) return;
         if (empty($user->id) || !empty($this->addedListUnsubscribe[$email->id][$user->id])) return;
         if (empty($this->unsubscribeLink[$email->id]) || !method_exists($email, 'addCustomHeader')) return;
 
