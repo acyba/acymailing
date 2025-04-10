@@ -1,6 +1,5 @@
 const acym_helperNotification = {
     setNotificationCenter: function () {
-        acym_helperNotification.removeNotifications();
         let $button = jQuery('.acym__header__notification');
 
         if ($button.find('i').hasClass('acymicon-check-circle')) {
@@ -68,21 +67,44 @@ const acym_helperNotification = {
         });
     },
     removeNotifications: function () {
-        jQuery('.acym__header__notification__one__delete, .acym__header__notification__toolbox__remove').off('click').on('click', function () {
-            let id = jQuery(this).hasClass('acym__header__notification__toolbox__remove') ? 'all' : jQuery(this).attr('data-id');
-            let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=removeNotification&id=' + id;
+        jQuery(
+            '.acym__header__notification__one__delete, .acym__header__notification__toolbox__remove, .acym__dashboard__notification__delete, .acym__do__not__remindme')
+            .on('click', function () {
+                let isDashboardNotif = jQuery(this).hasClass('acym__dashboard__notification__delete') || jQuery(this).hasClass('acym__do__not__remindme');
+                let id = jQuery(this).attr('data-id');
 
-            jQuery.post(ajaxUrl, function (res) {
-                res = acym_helper.parseJson(res);
-                if (!res.error) {
-                    jQuery('.acym__header__notification__center').html(res.data.html);
-                    jQuery('.acym__header__notification').find('> i').attr('class', 'acymicon-bell');
-                    acym_helperNotification.removeNotifications();
-                } else {
-                    console.log(res.message);
+                if (!id) {
+                    id = jQuery(this).attr('title');
+                }
+
+                let ajaxUrl = ACYM_AJAX_URL + '&ctrl=configuration&task=removeNotification&id=' + id;
+
+                jQuery.post(ajaxUrl, function (res) {
+                    res = acym_helper.parseJson(res);
+                    if (!res.error) {
+                        if (res.data.dashboardHtml.length > 0) {
+                            jQuery('.acym__dashboard__notifications').html(res.data.dashboardHtml);
+                        } else {
+                            jQuery('#acym__dashboard__notifications').remove();
+                        }
+
+                        if (!isDashboardNotif) {
+                            jQuery('.acym__header__notification__center').html(res.data.headerHtml);
+                            jQuery('.acym__header__notification').find('> i').attr('class', 'acymicon-bell');
+                        }
+                    } else {
+                        console.log('Error removing notification:', res.message);
+                    }
+                });
+
+                if (!isDashboardNotif) {
+                    jQuery('.acym__header__notification')
+                        .removeClass(
+                            'acym__header__notification__pulse acym__header__notification__button__success acym__header__notification__button__info acym__header__notification__button__warning acym__header__notification__button__error')
+                        .find('> i')
+                        .attr('class', 'acymicon-bell');
                 }
             });
-        });
     },
     removeNotificationsCenter: function () {
         jQuery('.acym__header__notification__center').removeClass('acym__header__notification__center__visible');

@@ -12,6 +12,7 @@ function acym_getPagesForAcl(): array
         'mails' => 'ACYM_TEMPLATES',
         'override' => 'ACYM_EMAILS_OVERRIDE',
         'automation' => 'ACYM_AUTOMATION',
+        'scenarios' => 'ACYM_SCENARIO',
         'queue' => 'ACYM_QUEUE',
         'plugins' => 'ACYM_ADD_ONS',
         'bounces' => 'ACYM_MAILBOX_ACTIONS',

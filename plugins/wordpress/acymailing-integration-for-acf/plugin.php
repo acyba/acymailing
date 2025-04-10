@@ -16,7 +16,7 @@ class plgAcymAcf extends AcymPlugin
     {
         parent::__construct();
         $this->cms = 'WordPress';
-        $this->installed = acym_isExtensionActive('advanced-custom-fields/acf.php');
+        $this->installed = acym_isExtensionActive('advanced-custom-fields/acf.php') || acym_isExtensionActive('advanced-custom-fields-pro/acf.php');
         $this->pluginDescription->name = 'ACF';
         $this->pluginDescription->icon = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/icon.svg';
         $this->pluginDescription->category = 'Content management';

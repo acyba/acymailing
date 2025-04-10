@@ -2,6 +2,9 @@
 
 namespace AcyMailing\Helpers\Update;
 
+use AcyMailing\Classes\ConfigurationClass;
+use AcyMailing\Helpers\BounceHelper;
+
 trait Patchv10
 {
     private function updateFor1000(): void
@@ -102,4 +105,73 @@ trait Patchv10
         $this->updateQuery($scenarioQueueTable);
         $this->updateQuery($scenarioHistoryLineTable);
     }
+
+    private function updateFor1020(ConfigurationClass $config): void
+    {
+        if ($this->isPreviousVersionAtLeast('10.2.0')) {
+            return;
+        }
+
+        $smtpHost = strtolower($config->get('smtp_host'));
+        if (in_array($smtpHost, ['smtp.gmail.com', 'smtp-mail.outlook.com', 'smtp.office365.com'])) {
+            $sendingMethod = $config->get('mailer_method');
+            $clientId = $config->get('smtp_clientId');
+            $clientSecret = $config->get('smtp_secret');
+            $redirectUrl = $config->get('smtp_redirectUrl');
+            $accessToken = str_replace('Bearer ', '', $config->get('smtp_token'));
+            $accessTokenExpiration = $config->get('smtp_token_expireIn');
+            $refreshToken = $config->get('smtp_refresh_token');
+
+            if ($smtpHost === 'smtp.gmail.com') {
+                $newConfig = [
+                    'mailer_method' => $sendingMethod === 'smtp' ? 'google' : $sendingMethod,
+                    'google_client_id' => $clientId,
+                    'google_client_secret' => $clientSecret,
+                    'google_redirect_url' => $redirectUrl,
+                    'google_access_token' => $accessToken,
+                    'google_access_token_expiration' => $accessTokenExpiration,
+                    'google_refresh_token' => $refreshToken,
+                    'google_refresh_token_expiration' => 0,
+                ];
+            } else {
+                $newConfig = [
+                    'mailer_method' => $sendingMethod === 'smtp' ? 'outlook' : $sendingMethod,
+                    'outlook_tenant' => $config->get('smtp_tenant'),
+                    'outlook_client_id' => $clientId,
+                    'outlook_client_secret' => $clientSecret,
+                    'outlook_redirect_url' => $redirectUrl,
+                    'outlook_access_token' => $accessToken,
+                    'outlook_access_token_expiration' => $accessTokenExpiration,
+                    'outlook_refresh_token' => $refreshToken,
+                    'outlook_refresh_token_expiration' => 0,
+                ];
+            }
+
+            if (!empty($newConfig)) {
+                $config->save($newConfig);
+            }
+        }
+
+        $bounceHost = strtolower($config->get('bounce_server'));
+        if (in_array($bounceHost, BounceHelper::HOSTS_NEEDING_OAUTH)) {
+            $config->save(
+                [
+                    'bounce_server' => $bounceHost,
+                    'bounce_access_token' => str_replace('Bearer ', '', $config->get('bounce_token')),
+                    'bounce_access_token_expiration' => $config->get('bounce_token_expireIn'),
+                    'bounce_refresh_token_expiration' => 0,
+                    'bounce_port' => 993,
+                    'bounce_connection' => 'imap',
+                    'bounce_secured' => 'ssl',
+                    'bounce_certif' => 1,
+                ]
+            );
+        }
+
+        $this->updateQuery('ALTER TABLE #__acym_list ADD COLUMN `subscribers` INT DEFAULT 0');
+        $this->updateQuery('ALTER TABLE #__acym_list ADD COLUMN `unsubscribed_users` INT DEFAULT 0');
+        $this->updateQuery('ALTER TABLE #__acym_list ADD COLUMN `new_sub` INT DEFAULT 0');
+        $this->updateQuery('ALTER TABLE #__acym_list ADD COLUMN `new_unsub` INT DEFAULT 0');
+    }
+
 }

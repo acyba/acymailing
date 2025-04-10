@@ -38,9 +38,10 @@ class UserHelper extends AcymObject
 
         // User fields and global statistics
         foreach ($user as $column => $value) {
-            if (in_array($column, $excludedFields) || strlen($value) == 0) {
+            if (in_array($column, $excludedFields) || is_null($value) || strlen($value) === 0) {
                 continue;
             }
+
             if (in_array($column, $dateFields)) {
                 if (empty($value)) {
                     continue;
@@ -82,7 +83,10 @@ class UserHelper extends AcymObject
             } elseif (in_array($fields[$column]->type, ['gravatar', 'file'])) {
                 $data = acym_fileGetContent(ACYM_ROOT.$uploadFolder.'userfiles'.DS.$value);
                 $value = str_replace('_', ' ', substr($value, strpos($value, '_')));
-                $exportFiles[] = ['name' => $value, 'data' => $data];
+                $exportFiles[] = [
+                    'name' => $value,
+                    'data' => $data,
+                ];
                 continue;
             }
 
@@ -104,7 +108,7 @@ class UserHelper extends AcymObject
 
                 $oneSubscription = get_object_vars($oneSubscription);
                 foreach ($oneSubscription as $column => $value) {
-                    if (strlen($value) == 0) {
+                    if (is_null($value) || strlen($value) === 0) {
                         continue;
                     }
                     if (in_array($column, $dateFields)) {
@@ -140,9 +144,10 @@ class UserHelper extends AcymObject
 
                 $oneStat = get_object_vars($oneStat);
                 foreach ($oneStat as $column => $value) {
-                    if (in_array($column, $excludedFields) || strlen($value) == 0) {
+                    if (in_array($column, $excludedFields) || is_null($value) || strlen($value) === 0) {
                         continue;
                     }
+
                     if (in_array($column, $dateFields)) {
                         if (empty($value)) {
                             continue;
@@ -171,9 +176,10 @@ class UserHelper extends AcymObject
 
                 $oneClick = get_object_vars($oneClick);
                 foreach ($oneClick as $column => $value) {
-                    if (strlen($value) == 0) {
+                    if (is_null($value) || strlen($value) === 0) {
                         continue;
                     }
+
                     if (in_array($column, $dateFields)) {
                         if (empty($value)) {
                             continue;
@@ -186,7 +192,10 @@ class UserHelper extends AcymObject
             }
         }
 
-        $exportFiles[] = ['name' => 'user_data.xml', 'data' => $xml->asXML()];
+        $exportFiles[] = [
+            'name' => 'user_data.xml',
+            'data' => $xml->asXML(),
+        ];
 
         // Create the zip
         $tempFolder = ACYM_MEDIA.'tmp'.DS;

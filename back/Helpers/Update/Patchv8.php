@@ -9,14 +9,11 @@ use AcyMailing\Classes\RuleClass;
 
 trait Patchv8
 {
-    private function updateFor800(ConfigurationClass $config): void
+    private function updateFor800(): void
     {
         if ($this->isPreviousVersionAtLeast('8.0.0')) {
             return;
         }
-
-        $secretKey = $config->get('smtp_secret');
-        $config->save(['smtp_type' => empty($secretKey) ? 'password' : 'oauth']);
 
         $this->updateQuery(
             'CREATE TABLE IF NOT EXISTS `#__acym_mailbox_action` (

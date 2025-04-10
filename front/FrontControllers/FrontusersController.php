@@ -870,9 +870,14 @@ class FrontusersController extends UsersController
     public function gdprDelete(): void
     {
         acym_checkToken();
+
         $userClass = new UserClass();
         $user = $userClass->identify(true, 'userId', 'userKey');
-        $userClass->delete($user->id);
+        if (empty($user->id)) {
+            acym_redirect(acym_rootURI());
+        }
+
+        $userClass->delete([$user->id], true);
     }
 
     public function ajaxGetEnqueuedMessages(): void

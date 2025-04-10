@@ -503,7 +503,7 @@ class plgAcymAcymailer extends AcymPlugin
             acym_getDomain($from['email']),
             acym_getDomain($replyTo['email']),
         ];
-        $bounceAddress = $this->config->get('bounce_email');
+        $bounceAddress = $this->getBounceAddress($mailerHelper);
         if (!empty($bounceAddress)) {
             $domainsUsed[] = acym_getDomain($bounceAddress);
         }
@@ -571,7 +571,8 @@ class plgAcymAcymailer extends AcymPlugin
     {
         if (empty($email->externalMailer) || $email->externalMailer !== self::SENDING_METHOD_ID) return;
 
-        $bounceAddress = $this->config->get('bounce_email');
+        $bounceAddress = $this->getBounceAddress($email);
+
         if (!empty($bounceAddress) && method_exists($email, 'addCustomHeader')) {
             $email->addCustomHeader('Return-Path', $bounceAddress);
         }
@@ -806,7 +807,18 @@ class plgAcymAcymailer extends AcymPlugin
 
         if (!empty($unverifiedDomains)) {
             $message = acym_translationSprintf('ACYM_UNVERIFIED_DOMAINS_PREVENTING_EMAILS_FROM_BEING_SENT_X', implode(', ', $unverifiedDomains));
-            acym_enqueueMessage($message, 'warning');
+            $notification = [
+                'name' => 'unverified_domains',
+                'removable' => 0,
+            ];
+
+            if (acym_getVar('string', 'page') === 'acymailing_dashboard' || acym_getVar('string', 'ctrl') === 'dashboard') {
+                acym_enqueueMessage($message, 'warning', false, [$notification], false);
+            } else {
+                acym_enqueueMessage($message, 'warning', true, [$notification]);
+            }
+        } else {
+            acym_removeDashboardNotification('unverified_domains');
         }
     }
 

@@ -49,8 +49,11 @@ class SendinblueUsers extends SendinblueClass
             acym_logError($message, 'sendinblue');
             if ($ajax) {
                 acym_sendAjaxResponse($message, [], false);
-            } else {
-                acym_enqueueMessage($message, 'error');
+                $notification = [
+                    'name' => 'error_creating_export_file',
+                    'removable' => 1,
+                ];
+                acym_enqueueMessage($message, 'error', false, [$notification]);
             }
 
             return;

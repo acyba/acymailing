@@ -21,7 +21,12 @@ trait Campaigns
                 $message = acym_translation('ACYM_CREATE_CRON_REMINDER');
                 $message .= ' <a id="acym__queue__configure-cron" href="'.acym_completeLink('configuration&tab=license').'">'.acym_translation('ACYM_GOTO_CONFIG').'</a>';
 
-                acym_enqueueMessage($message, 'warning');
+                $notification = [
+                    'name' => 'cron_reminder',
+                    'removable' => 1,
+                ];
+                acym_enqueueMessage($message, 'warning', true, [$notification]);
+
             }
         }
         //__END__production_

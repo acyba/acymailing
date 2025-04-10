@@ -54,7 +54,11 @@ if (version_compare(PHP_VERSION, '7.4.0', '<')) {
     }
 
     if (acym_level(ACYM_ENTERPRISE) && $ctrl === 'override' && !acym_isPluginActive('acymailoverride')) {
-        acym_enqueueMessage(acym_translation('ACYM_OVERRIDES_REQUIREMENT'), 'warning');
+        $notification = [
+            'name' => 'overrides_requirement',
+            'removable' => 1,
+        ];
+        acym_enqueueMessage(acym_translation('ACYM_OVERRIDES_REQUIREMENT'), 'warning', true, [$notification]);
     }
 
     if (empty($task)) {

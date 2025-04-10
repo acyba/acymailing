@@ -160,7 +160,8 @@ trait HikashopAutomationConditions
         $conditions['user']['hikawishlist']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 
@@ -281,9 +282,19 @@ trait HikashopAutomationConditions
             $query->where[] = 'hikaop'.$num.'.product_id = '.intval($options['product']);
         } elseif (!empty($options['category']) && $options['category'] !== 'any') {
             $query->join['hikapurchased_order_product'.$num] = '#__hikashop_order_product AS hikaop'.$num.' ON order'.$num.'.order_id = hikaop'.$num.'.order_id';
-            $query->join['hikapurchased_product'.$num] = '#__hikashop_product AS hikap'.$num.' ON hikaop'.$num.'.product_id = hikap'.$num.'.product_id';
-            $query->join['hikapurchased_order_cat'.$num] = '#__hikashop_product_category AS hikapc'.$num.' ON hikap'.$num.'.product_id = hikapc'.$num.'.product_id OR hikap'.$num.'.product_parent_id = hikapc'.$num.'.product_id';
-            $query->where[] = 'hikapc'.$num.'.category_id = '.intval($options['category']);
+
+            $productIds = acym_loadResultArray('SELECT product_id FROM #__hikashop_product_category WHERE category_id = '.intval($options['category']));
+            if (empty($productIds)) {
+                $query->where[] = '0 = 1';
+            } else {
+                acym_arrayToInteger($productIds);
+                $subProductIds = acym_loadResultArray('SELECT product_id FROM #__hikashop_product WHERE product_parent_id IN ('.implode(',', $productIds).')');
+                if (!empty($subProductIds)) {
+                    acym_arrayToInteger($subProductIds);
+                    $productIds = array_merge($productIds, $subProductIds);
+                }
+                $query->where[] = 'hikaop'.$num.'.product_id IN ('.implode(',', $productIds).')';
+            }
         }
 
         // Filter on the vendor (Hikamarket)

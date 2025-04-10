@@ -112,7 +112,6 @@ class CronHelper extends AcymObject
             return;
         }
 
-        $this->freeUpCall();
         $this->queueScheduledCampaigns();
         $this->cleanQueue();
         $this->sendQueuedEmails();
@@ -320,16 +319,6 @@ class CronHelper extends AcymObject
         $this->config->save($newConfig);
 
         return true;
-    }
-
-    /**
-     * When our API calls this cron URL, we only need to make sure the call went through, we don't need to wait for all the tasks to be done
-     */
-    private function freeUpCall(): void
-    {
-        if (function_exists('fastcgi_finish_request')) {
-            fastcgi_finish_request();
-        }
     }
 
     /**

@@ -132,13 +132,32 @@ trait Mail
         exit;
     }
 
+    public function loginForOAuth2Smtp(): void
+    {
+        $this->loginForOAuth2();
+    }
+
     public function loginForOAuth2Bounce(): void
     {
         $this->loginForOAuth2(false);
     }
 
-    public function loginForOAuth2Smtp(): void
+    public function logoutForOAuth2Smtp(): void
     {
-        $this->loginForOAuth2();
+        acym_trigger('onAcymOauthRevoke');
+
+        $this->listing();
+    }
+
+    public function logoutForOAuth2Bounce(): void
+    {
+        $this->config->save(
+            [
+                'bounce_refresh_token' => '',
+                'bounce_refresh_token_expiration' => '',
+            ]
+        );
+
+        $this->listing();
     }
 }

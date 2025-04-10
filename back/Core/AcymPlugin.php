@@ -1472,20 +1472,26 @@ class AcymPlugin extends AcymObject
                 </div>';
     }
 
-    public function getCopySettingsButton(array $data, string $sendingMethodId, string $fromPlugin): string
+    public function getCopySettingsButton(array $data, string $sendingMethodId, string $fromPlugin, bool $withContainer = true): string
     {
-        if (empty($data[$fromPlugin.'_installed'])) return '';
+        if (empty($data[$fromPlugin.'_installed'])) {
+            return '';
+        }
 
-        return '<div class="cell grid-x margin-top-1 acym__sending__methods__copy__data">
-					<button 
-					type="button"
-					class="cell shrink button button-secondary acym__configuration__copy__mail__settings" 
-					acym-data-plugin="'.acym_escape($fromPlugin).'"
-					acym-data-method="'.acym_escape($sendingMethodId).'">
+        $button = '<button
+                        type="button"
+                        class="cell shrink button button-secondary acym__configuration__copy__mail__settings"
+                        acym-data-plugin="'.acym_escape($fromPlugin).'"
+                        acym-data-method="'.acym_escape($sendingMethodId).'">
 	                    '.acym_translationSprintf('ACYM_COPY_SETTINGS_FROM', $this->sendingPlugins[$fromPlugin]).'
                     </button>
-                    <span class="acym__configuration__sending__method-icon cell shrink margin-left-1 acym_vcenter"></span>
-				</div>';
+                    <span class="acym__configuration__sending__method-icon cell shrink margin-left-1 acym_vcenter"></span>';
+
+        if ($withContainer) {
+            $button = '<div class="cell grid-x margin-top-1">'.$button.'</div>';
+        }
+
+        return $button;
     }
 
     protected function getLinks($account = '', $pricing = '')
@@ -1600,5 +1606,14 @@ class AcymPlugin extends AcymObject
         }
 
         return $text;
+    }
+
+    protected function getBounceAddress(object $mailerHelper): string
+    {
+        if (method_exists($mailerHelper, 'getSendSettings')) {
+            return $mailerHelper->getSendSettings('bounce_email');
+        } else {
+            return $this->config->get('bounce_email');
+        }
     }
 }

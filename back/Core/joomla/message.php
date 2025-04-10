@@ -6,7 +6,7 @@ use AcyMailing\Helpers\HeaderHelper;
  * @param string $message The message to display
  * @param string $type    The type (success, error, warning, info, message, notice)
  */
-function acym_enqueueMessage($message, $type = 'success', $addNotification = true)
+function acym_enqueueMessage($message, string $type = 'success', bool $addNotification = true, array $addDashboardNotification = [], bool $addHeaderNotification = true)
 {
     $type = str_replace(['notice', 'message'], ['info', 'success'], $type);
     $message = is_array($message) ? implode('<br/>', $message) : $message;
@@ -26,7 +26,36 @@ function acym_enqueueMessage($message, $type = 'success', $addNotification = tru
         $handledTypes[] = 'success';
     }
 
-    if (in_array($type, $handledTypes)) {
+    if (!empty($addDashboardNotification)) {
+        $config = acym_config();
+        $notRemindable = json_decode($config->get('remindme'), true);
+        $existingNotifications = json_decode($config->get('dashboard_notif', '[]'), true);
+
+        foreach ($addDashboardNotification as &$dashboardNotification) {
+            if (in_array($dashboardNotification['name'], $notRemindable)) {
+                continue;
+            }
+            $dashboardNotification['date'] = time();
+            $dashboardNotification['level'] = $type;
+            $dashboardNotification['message'] = $message;
+
+            $found = false;
+            foreach ($existingNotifications as &$existingNotification) {
+                if (is_array($existingNotification) && $existingNotification['name'] === $dashboardNotification['name']) {
+                    $existingNotification = $dashboardNotification;
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $existingNotifications[] = $dashboardNotification;
+            }
+        }
+
+        $config->save(['dashboard_notif' => json_encode($existingNotifications)], false);
+    }
+
+    if (in_array($type, $handledTypes) && $addHeaderNotification) {
         $acyapp = acym_getGlobal('app');
 
         // Display the translated text

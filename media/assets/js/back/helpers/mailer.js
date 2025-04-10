@@ -47,7 +47,7 @@ const acym_helperMailer = {
     setButtonCopyFromPlugin: function () {
         jQuery('.acym__configuration__copy__mail__settings').off('click').on('click', function () {
 
-            const $icon = jQuery(this).closest('.acym__sending__methods__copy__data').find('.acym__configuration__sending__method-icon');
+            const $icon = jQuery(this).closest('div').find('.acym__configuration__sending__method-icon');
             $icon.addClass('acymicon-circle-o-notch acymicon-spin');
 
             let data = {
@@ -110,64 +110,6 @@ const acym_helperMailer = {
                 $message.html(response.message);
             });
         });
-    },
-    displayOAuth2Params() {
-        const $smtpHost = jQuery('#smtp_host');
-        if ($smtpHost.length === 0) {
-            return;
-        }
-
-        const $connectionType = jQuery('#smtp_type');
-        $connectionType.on('change', function () {
-            acym_helperMailer.handleOAuth2ParamsAppearance();
-        });
-
-        $smtpHost.on('keyup', function () {
-            acym_helperMailer.handleOAuth2ParamsAppearance();
-        });
-
-        acym_helperMailer.handleOAuth2ParamsAppearance();
-    },
-    handleOAuth2ParamsAppearance() {
-        const auth2SmtpMicrosoft = [
-            'smtp-mail.outlook.com',
-            'smtp.office365.com'
-        ];
-        const auth2SmtpGmail = ['smtp.gmail.com'];
-        const auth2Smtp = [
-            ...auth2SmtpGmail,
-            ...auth2SmtpMicrosoft
-        ];
-        const $connectionTypeContainer = jQuery('#acym__sending__methods__one__settings__type');
-        const $passwordFieldContainer = jQuery('.acym__default_auth_sending_params');
-        const $oauth2FieldsContainer = jQuery('.acym__oauth2_sending_params');
-        const $tenantContainer = jQuery('#smtp_tenant_container');
-        const smtpHostValue = jQuery('#smtp_host').val().toLowerCase().trim();
-
-        // Not part of the OAuth compatible servers
-        if (!auth2Smtp.includes(smtpHostValue)) {
-            $connectionTypeContainer.hide();
-            $passwordFieldContainer.show();
-            $oauth2FieldsContainer.hide();
-
-            return;
-        }
-
-        $connectionTypeContainer.show();
-
-        if (jQuery('#smtp_type').val() === 'oauth') {
-            $passwordFieldContainer.hide();
-            $oauth2FieldsContainer.show();
-
-            if (auth2SmtpMicrosoft.includes(smtpHostValue)) {
-                $tenantContainer.show();
-            } else {
-                $tenantContainer.hide();
-            }
-        } else {
-            $passwordFieldContainer.show();
-            $oauth2FieldsContainer.hide();
-        }
     },
     acymailerAddDomains() {
         const $errorContainer = jQuery('#acym__configuration__acymailer__add__error');

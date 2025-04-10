@@ -486,15 +486,11 @@ class UserClass extends AcymClass
         return acym_loadObjectList($query);
     }
 
-    /**
-     * Get the total of users
-     * @return bool|null
-     */
-    public function getCountTotalUsers()
+    public function getCountTotalUsers(): int
     {
-        $query = 'SELECT COUNT(id) FROM #__acym_user';
+        $numberOfUsers = acym_loadResult('SELECT COUNT(id) FROM #__acym_user');
 
-        return acym_loadResult($query);
+        return empty($numberOfUsers) ? 0 : $numberOfUsers;
     }
 
     public function getSubscriptionStatus($userId, $listIds = [], $wantedStatus = null)
@@ -791,44 +787,68 @@ class UserClass extends AcymClass
         return true;
     }
 
-    public function removeSubscription($userIds, $listIds = null)
+    public function removeSubscription($userIds, $listIds = [])
     {
-        if (!is_array($userIds)) $userIds = [$userIds];
-        if (!is_array($listIds) || empty($listIds) || empty($userIds)) return false;
+        if (!is_array($userIds)) {
+            $userIds = [$userIds];
+        }
+
+        if (!is_array($listIds) || empty($listIds) || empty($userIds)) {
+            return false;
+        }
 
         acym_arrayToInteger($listIds);
-        $query = 'DELETE FROM #__acym_user_has_list WHERE user_id IN ('.implode(',', $userIds).')';
-        if (!empty($listIds)) $query .= ' AND list_id IN ('.implode(',', $listIds).')';
 
-        return acym_query($query);
+        return acym_query(
+            'DELETE FROM #__acym_user_has_list 
+            WHERE user_id IN ('.implode(',', $userIds).') 
+                AND list_id IN ('.implode(',', $listIds).')'
+        );
     }
 
     public function onlyManageableUsers(&$elements)
     {
-        if (acym_isAdmin()) return;
+        if (acym_isAdmin()) {
+            return;
+        }
 
         $listClass = new ListClass();
         $manageableLists = $listClass->getManageableLists();
-        if (empty($manageableLists)) return;
+        if (empty($manageableLists)) {
+            return;
+        }
 
+        $currentUserId = acym_currentUserId();
         acym_arrayToInteger($elements);
+
+        $selfManagement = in_array($currentUserId, $elements);
+
         $elements = acym_loadResultArray(
             'SELECT DISTINCT user_id 
             FROM #__acym_user_has_list 
             WHERE `list_id` IN ('.implode(',', $manageableLists).') 
                 AND `user_id` IN ('.implode(',', $elements).')'
         );
+
+        if ($selfManagement && !in_array($currentUserId, $elements)) {
+            $elements[] = $currentUserId;
+        }
     }
 
-    public function delete($elements, $fromAutomations = false)
+    public function delete($elements, $forceDelete = false)
     {
-        if (!is_array($elements)) $elements = [$elements];
+        if (!is_array($elements)) {
+            $elements = [$elements];
+        }
+
         acym_arrayToInteger($elements);
         $this->onlyManageableUsers($elements);
 
-        if (empty($elements)) return 0;
+        if (empty($elements)) {
+            return 0;
+        }
 
-        if (acym_isAdmin() || $fromAutomations || 'delete' === $this->config->get('frontend_delete_button', 'delete')) {
+        if (acym_isAdmin() || $forceDelete || 'delete' === $this->config->get('frontend_delete_button', 'delete')) {
             acym_query('DELETE FROM #__acym_user_has_list WHERE user_id IN ('.implode(',', $elements).')');
             acym_query('DELETE FROM #__acym_queue WHERE user_id IN ('.implode(',', $elements).')');
             acym_query('DELETE FROM #__acym_user_has_field WHERE user_id IN ('.implode(',', $elements).')');
@@ -847,15 +867,18 @@ class UserClass extends AcymClass
         } else {
             $listClass = new ListClass();
             $manageableLists = $listClass->getManageableLists();
-            $this->removeSubscription($elements, $manageableLists);
-            acym_query(
-                'DELETE queue 
-                FROM #__acym_queue AS queue 
-                JOIN #__acym_mail_has_list AS maillist 
-                    ON queue.mail_id = maillist.mail_id 
-                WHERE queue.user_id IN ('.implode(',', $elements).') 
-                    AND maillist.list_id IN ('.implode(',', $manageableLists).')'
-            );
+
+            if (!empty($manageableLists)) {
+                $this->removeSubscription($elements, $manageableLists);
+                acym_query(
+                    'DELETE queue 
+                    FROM #__acym_queue AS queue 
+                    JOIN #__acym_mail_has_list AS maillist 
+                        ON queue.mail_id = maillist.mail_id 
+                    WHERE queue.user_id IN ('.implode(',', $elements).') 
+                        AND maillist.list_id IN ('.implode(',', $manageableLists).')'
+                );
+            }
 
             return count($elements);
         }

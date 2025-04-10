@@ -1,14 +1,14 @@
 <?php
 
 use AcyMailing\Classes\SegmentClass;
-use AcyMailing\Controllers\SegmentsController;
 use AcyMailing\Helpers\AutomationHelper;
 
 trait SegmentAutomationFilters
 {
     public function onAcymDeclareFilters(&$filters)
     {
-        $segments = (new SegmentClass())->getAll();
+        $segmentClass = new SegmentClass();
+        $segments = $segmentClass->getAll();
         $selectOptionSegment = [];
         foreach ($segments as $oneSegment) {
             $selectOptionSegment[] = acym_selectOption($oneSegment->id, $oneSegment->name);
@@ -41,7 +41,7 @@ trait SegmentAutomationFilters
         $oneSegment = $segmentClass->getOneById($options['id']);
 
         $automationHelpers = [];
-        if (!empty($oneSegment) && !empty($oneSegment->filters)) {
+        if (!empty($oneSegment->filters)) {
             foreach ($oneSegment->filters as $or => $orValues) {
                 if (empty($orValues)) continue;
 

@@ -97,9 +97,13 @@
 							</div>
 						</div>
 					</div>
-					<img class="cell acym__powered__by__image"
-						 src="<?php echo ACYM_IMAGES.'editor/poweredby_black.png'; ?>"
-						 alt="Powered by AcyMailing">
+                    <?php
+                    if ($this->config->get('display_built_by', 1)) { ?>
+						<img class="cell acym__powered__by__image"
+							 src="<?php echo ACYM_IMAGES.'editor/poweredby_black.png'; ?>"
+							 alt="Powered by AcyMailing">
+                    <?php } ?>
+
 				</fieldset>
                 <?php acym_formOptions(); ?>
 				<input type="hidden" name="user_id" value="<?php echo $data['user']->id; ?>">

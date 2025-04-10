@@ -3,9 +3,7 @@ jQuery(function ($) {
     const smlSendingMethodPrefix = '#acym__configuration__sml__form';
 
     function Configuration() {
-        switchOauthFromHost();
-        switchBounceConnectionMethod();
-        switchProtocolMethodsForImap();
+        setBounceOauth();
         setSendingMethodSwitchConfiguration();
         setSmlConfiguration();
         setSendingMethodSwitchConfiguration(smlSendingMethodPrefix, 'sml');
@@ -34,7 +32,6 @@ jQuery(function ($) {
         resetSubmitButtons();
         setAllowedHostsMultipleSelect();
         setSurveyAnswerMultipleSelect();
-        acym_helperMailer.displayOAuth2Params();
         acym_helperMailer.acymailerAddDomains();
         acym_helperMailer.displayCnameRecord();
         acym_helperMailer.deleteDomain();
@@ -593,109 +590,34 @@ jQuery(function ($) {
         });
     }
 
-    function switchOauthFromHost() {
-        const $bounceHostInput = $('[name="config[bounce_server]"]');
-        const $protocolSelect = $('#acym__config__bounce__protocol');
+    function setBounceOauth() {
+        $('[name="config[bounce_server]"]').off('input').on('input', function () {
+            const host = $(this).val().toLowerCase();
 
-        const isOauthProtocol = $protocolSelect.val() === 'imap';
-        const isOauthHost = [
-            'imap.gmail.com',
-            'outlook.office365.com'
-        ].includes($bounceHostInput.val());
-
-        displayOauthForBounce(isOauthProtocol && isOauthHost, $bounceHostInput.val());
-
-        $bounceHostInput.off('input').on('input', function () {
-            const isOauthProtocol = $protocolSelect.val() === 'imap';
             const isOauthHost = [
                 'imap.gmail.com',
                 'outlook.office365.com'
-            ].includes($bounceHostInput.val());
+            ].includes(host);
 
-            displayConnectionMethodFromProtocol(isOauthProtocol && isOauthHost);
-            displayOauthForBounce(isOauthProtocol && isOauthHost, $bounceHostInput.val());
-        });
-    }
+            if (isOauthHost) {
+                $('.acym__bounce__classic__auth__params').hide();
+                $('.acym__bounce__oauth2__auth__params').show();
 
-    function displayOauthForBounce(isOauth, hostName) {
-        const imapConnectionMethod = document.getElementById('acym__oauth2_imap_connection_method');
-        const tenantContainer = document.getElementById('acym__oauth2_bounce_params__tenant');
-        if (!imapConnectionMethod) {
-            return;
-        }
+                $('[name="config[bounce_port]"]').val(993);
+                $('[name="config[bounce_connection]"]').val('imap');
+                $('[name="config[bounce_secured]"]').val('ssl');
+                $('[name="config[bounce_certif]"]').val(1);
 
-        if (hostName === 'outlook.office365.com') {
-            tenantContainer.style.display = 'flex';
-        } else {
-            tenantContainer.style.display = 'none';
-        }
-
-        if (isOauth) {
-            imapConnectionMethod.style.display = 'flex';
-        } else {
-            imapConnectionMethod.style.display = 'none';
-        }
-    }
-
-    function switchProtocolMethodsForImap() {
-        const $protocolSelect = $('#acym__config__bounce__protocol');
-        if ($protocolSelect.length === 0) {
-            return;
-        }
-
-        displayConnectionMethodFromProtocol($protocolSelect.val() === 'imap');
-
-        $protocolSelect.on('change', function () {
-            displayConnectionMethodFromProtocol(this.value === 'imap');
-        });
-    }
-
-    function displayConnectionMethodFromProtocol(isImapSelected) {
-        const imapConnectionMethod = document.getElementById('acym__oauth2_imap_connection_method');
-
-        if (!imapConnectionMethod) {
-            return;
-        }
-
-        const defaultAuth = document.getElementById('acym__default_auth_bounce_params');
-        const oauth2Auth = document.getElementById('acym__oauth2_bounce_params');
-
-        const $connectionMethodSelect = $('#acym__config__imap_connection_method');
-
-        if (isImapSelected) {
-            imapConnectionMethod.style.display = 'flex';
-            displaySelectedBounceAuth($connectionMethodSelect.val() === 'oauth');
-        } else {
-            imapConnectionMethod.style.display = 'none';
-            defaultAuth.style.display = 'block';
-            oauth2Auth.style.display = 'none';
-        }
-    }
-
-    function switchBounceConnectionMethod() {
-        const $connectionMethodSelect = $('#acym__config__imap_connection_method');
-        if ($connectionMethodSelect.length === 0) {
-            return;
-        }
-
-        displaySelectedBounceAuth($connectionMethodSelect.val() === 'oauth');
-
-        $connectionMethodSelect.on('change', function () {
-            displaySelectedBounceAuth(this.value === 'oauth');
-        });
-    }
-
-    function displaySelectedBounceAuth(isOauth2Selected = false) {
-        const defaultAuth = document.getElementById('acym__default_auth_bounce_params');
-        const oauth2Auth = document.getElementById('acym__oauth2_bounce_params');
-
-        if (isOauth2Selected) {
-            defaultAuth.style.display = 'none';
-            oauth2Auth.style.display = 'block';
-        } else {
-            defaultAuth.style.display = 'block';
-            oauth2Auth.style.display = 'none';
-        }
+                if ('outlook.office365.com' === host) {
+                    $('#acym__oauth2_bounce_params__tenant').show();
+                } else {
+                    $('#acym__oauth2_bounce_params__tenant').hide();
+                }
+            } else {
+                $('.acym__bounce__oauth2__auth__params').hide();
+                $('.acym__bounce__classic__auth__params').show();
+            }
+        }).trigger('input');
     }
 
     function setEditSml() {

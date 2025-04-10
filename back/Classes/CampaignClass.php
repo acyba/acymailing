@@ -242,6 +242,8 @@ class CampaignClass extends AcymClass
     public function getStatsCampaign(&$element, $urlClickClass, $isAbTest = false)
     {
         $element->open = 0;
+        $element->click = 0;
+
         if (!empty($element->subscribers)) {
             $element->open = number_format($element->open_unique / $element->subscribers * 100, 2);
 
@@ -1306,5 +1308,12 @@ class CampaignClass extends AcymClass
         }
 
         return $this->decode(acym_loadObjectList($query, $this->pkey, $offset, $limit));
+    }
+
+    public function getOneCampaign(): bool
+    {
+        $firstCampaign = acym_loadObject('SELECT * FROM #__acym_campaign');
+
+        return !empty($firstCampaign);
     }
 }

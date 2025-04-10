@@ -897,7 +897,7 @@ class ListClass extends AcymClass
         return $this->save($frontList);
     }
 
-    public function setWelcomeUnsubEmail($listIds, $mailId, $type)
+    public function setWelcomeUnsubEmail(array $listIds, int $mailId, string $type): bool
     {
         if (!in_array($type, [MailClass::TYPE_WELCOME, MailClass::TYPE_UNSUBSCRIBE]) || empty($mailId)) {
             return false;
@@ -905,41 +905,54 @@ class ListClass extends AcymClass
 
         $column = acym_escape($type).'_id';
         $columnsList = acym_getColumns('list');
-        if (!in_array($column, $columnsList)) return false;
-
-        if (!is_array($listIds)) {
-            if (!empty($listIds)) $listIds = [$listIds];
+        if (!in_array($column, $columnsList)) {
+            return false;
         }
 
-        if (!$this->removeWelcomeUnsubByMailId($mailId, $listIds, $column)) return false;
+        if (!$this->removeWelcomeUnsubByMailId($mailId, $listIds, $column)) {
+            return false;
+        }
 
         foreach ($listIds as $listId) {
-
             $list = $this->getOneById($listId);
-            if (empty($list)) return false;
+            if (empty($list)) {
+                return false;
+            }
 
             $list->{$column} = $mailId;
 
-            if (!$this->save($list)) return false;
+            if (!$this->save($list)) {
+                return false;
+            }
         }
 
         return true;
     }
 
-    private function removeWelcomeUnsubByMailId($mailId, $listIds, $column)
+    private function removeWelcomeUnsubByMailId(int $mailId, array $listIds, string $column): bool
     {
-        if (empty($mailId)) return false;
+        if (empty($mailId)) {
+            return false;
+        }
 
-        $where = $column.' = '.intval($mailId);
-        if (!empty($listIds)) $where .= ' AND id NOT IN ('.implode(',', $listIds).')';
+        $query = 'SELECT * FROM #__acym_list WHERE '.acym_secureDBColumn($column).' = '.$mailId;
 
-        $lists = acym_loadObjectList('SELECT * FROM #__acym_list WHERE '.$where);
-        if (empty($lists)) return true;
+        if (!empty($listIds)) {
+            acym_arrayToInteger($listIds);
+            $query .= ' AND `id` NOT IN ('.implode(',', $listIds).')';
+        }
+
+        $lists = acym_loadObjectList($query);
+        if (empty($lists)) {
+            return true;
+        }
 
         foreach ($lists as $list) {
             $list->{$column} = null;
 
-            if (!$this->save($list)) return false;
+            if (!$this->save($list)) {
+                return false;
+            }
         }
 
         return true;
@@ -1007,4 +1020,53 @@ class ListClass extends AcymClass
 
         return acym_loadObjectList($query, $this->pkey, $offset, $limit);
     }
+
+    public function getOneList(): bool
+    {
+        $firstList = acym_loadObject('SELECT * FROM #__acym_list WHERE `id` != 1');
+
+        return !empty($firstList);
+    }
+
+    public function getMostUsedLists(): array
+    {
+        return acym_loadObjectList(
+            'SELECT list_id 
+            FROM #__acym_mail_has_list
+            GROUP BY list_id 
+            ORDER BY COUNT(*) DESC 
+            LIMIT 5'
+        );
+    }
+
+    public function getListsSubscribersAndUnsubscribeUsersFromUserHasList(): array
+    {
+        $query = 'SELECT list_id,
+                SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) AS subscribers,
+                SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) AS unsubscribed_users
+              FROM `#__acym_user_has_list`
+              GROUP BY list_id';
+
+        return acym_loadObjectList($query);
+    }
+
+    public function updateListsSubscribersAndUnsubscribeUsers(int $listId, int $subscribers, int $unsubscribeUsers, int $new_sub, int $new_unsub)
+    {
+        $query = 'UPDATE `#__acym_list` SET `subscribers` = '.$subscribers.', `unsubscribed_users` = '.$unsubscribeUsers.', `new_sub` = '.$new_sub.', `new_unsub` = '.$new_unsub.' WHERE id = '.$listId;
+
+        return acym_query($query);
+    }
+
+    public function getMostUsedListsByIdsWithSubscribersData(array $ids = []): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+        acym_arrayToInteger($ids);
+        $query = 'SELECT name, subscribers, unsubscribed_users, new_sub, new_unsub FROM `#__acym_list` WHERE id IN ('.implode(', ', $ids).')';
+
+        return acym_loadObjectList($query);
+    }
+
+
 }

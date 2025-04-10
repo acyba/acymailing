@@ -12,6 +12,7 @@ use AcyMailing\Helpers\MailerHelper;
 use AcyMailing\Helpers\PaginationHelper;
 use AcyMailing\Helpers\WorkflowHelper;
 use AcyMailing\Libraries\Browser\BrowserDetection;
+use AcyMailing\Classes\UserClass;
 
 trait GlobalStats
 {
@@ -531,12 +532,13 @@ trait GlobalStats
         $campaignClass = new CampaignClass();
         $devicesCampaign = $campaignClass->getDevicesWithCountByMailId($this->selectedMailIds);
 
-        $data['devices'] = [
+        $defaultDataDevices = [
             'ACYM_MOBILE' => 0,
             'ACYM_DESKTOP' => 0,
             'ACYM_OTHER' => 0,
             'ACYM_UNKNOWN' => 0,
         ];
+        $data['devices'] = $defaultDataDevices;
 
         foreach ($devicesCampaign as $oneDevice) {
             if (empty($oneDevice->number)) {
@@ -554,6 +556,10 @@ trait GlobalStats
             }
 
             $data['devices'][$device] += $oneDevice->number;
+        }
+
+        if ($data['devices'] === $defaultDataDevices) {
+            $data['devices'] = [];
         }
     }
 
@@ -650,6 +656,7 @@ trait GlobalStats
         $this->prepareDevicesStats($data);
         $this->prepareOpenSourcesStats($data);
         $this->prepareLineChart($data['mail'], $this->selectedMailIds);
+        $this->prepareComparedStats($data);
     }
 
     private function decode(array &$detailedStats, array $columnsToDecode = ['mail_subject', 'mail_name']): void
@@ -776,5 +783,117 @@ trait GlobalStats
         $query = 'SELECT '.implode(', ', array_keys($columnsToExport)).' FROM #__acym_mail_stat AS mailstat LEFT JOIN #__acym_mail AS mail ON mail.id = mailstat.mail_id '.$where;
         $exportHelper->exportStatsFullCSV($query, $columnsToExport);
         exit;
+    }
+
+    private function prepareComparedStats(array &$data): void
+    {
+        if (empty($data['totalSubscribers']) || empty($data['mail']->percentageOpen) || empty($data['mail']->percentageClick) || empty($data['mail']->percentageBounce)) {
+            return;
+        }
+
+        $currentDate = acym_date('now', 'Y-m-d');
+
+        $newStats = [
+            'date' => $currentDate,
+            'value' => [
+                'totalSubscribers' => $data['totalSubscribers'],
+                'openRate' => $data['mail']->percentageOpen,
+                'clickRate' => $data['mail']->percentageClick,
+                'bounceRate' => $data['mail']->percentageBounce,
+                'totalNewSubscribers' => $data['totalSubscribers'],
+            ],
+        ];
+
+        $keys = [
+            'totalSubscribersHistory' => true,
+            'percentageOpenHistory' => false,
+            'percentageClickHistory' => false,
+            'percentageBounceHistory' => false,
+            'totalNewSubscribersHistory' => false,
+        ];
+
+        $oldEvolutionData = json_decode($this->config->get('statsEvolution', '{}'), true);
+
+        foreach ($keys as $key => $isPercentage) {
+            $history = json_decode($this->config->get($key, '[]'), true);
+
+            if (!empty($history) && end($history)['date'] === $currentDate) {
+                continue;
+            }
+
+            $history[] = ['date' => $currentDate, 'value' => $newStats['value'][$this->getStatKey($key)]];
+
+            if (count($history) > 30) {
+                array_shift($history);
+            }
+
+            $this->config->save([$key => json_encode($history)]);
+
+            $evolutionKey = $this->getEvolutionKey($key);
+            $oldEvolutionData[$evolutionKey] = $this->calculateEvolution($history, $isPercentage);
+        }
+
+        $this->config->save(['statsEvolution' => json_encode($oldEvolutionData)]);
+
+        if (!empty($data)) {
+            $this->updateDashboardData($data);
+        }
+    }
+
+    private function getStatKey(string $key): ?string
+    {
+        return [
+                   'totalSubscribersHistory' => 'totalSubscribers',
+                   'percentageOpenHistory' => 'openRate',
+                   'percentageClickHistory' => 'clickRate',
+                   'percentageBounceHistory' => 'bounceRate',
+                   'totalNewSubscribersHistory' => 'totalNewSubscribers',
+               ][$key] ?? null;
+    }
+
+    private function getEvolutionKey(string $key): ?string
+    {
+        return [
+                   'totalSubscribersHistory' => 'totalSubscribersEvolution',
+                   'percentageOpenHistory' => 'openRateEvolution',
+                   'percentageClickHistory' => 'clickRateEvolution',
+                   'percentageBounceHistory' => 'bounceRateEvolution',
+                   'totalNewSubscribersHistory' => 'totalNewSubscribersEvolution',
+               ][$key] ?? null;
+    }
+
+    private function calculateEvolution(array $history, bool $isPercentage = false): ?float
+    {
+        if (empty($history)) {
+            return null;
+        }
+
+        $oldValue = $history[0]['value'] ?? 0;
+        $newValue = end($history)['value'] ?? 0;
+
+        if ($oldValue === 0) {
+            return null;
+        }
+
+        if ($isPercentage) {
+            // For totalSubscribers: percentage variation
+            return round((($newValue - $oldValue) / $oldValue) * 100, 2);
+        } else {
+            // For other stats: absolute difference
+            return round($newValue - $oldValue, 2);
+        }
+    }
+
+    private function updateDashboardData(array &$data): void
+    {
+        $evolutionData = json_decode($this->config->get('statsEvolution', '{}'), true);
+
+        if (!empty($evolutionData)) {
+            $data['totalSubscribersEvolution'] = $evolutionData['totalSubscribersEvolution'] ?? null;
+            $data['openRateEvolution'] = $evolutionData['openRateEvolution'] ?? null;
+            $data['clickRateEvolution'] = $evolutionData['clickRateEvolution'] ?? null;
+            $data['bounceRateEvolution'] = $evolutionData['bounceRateEvolution'] ?? null;
+            $data['totalNewSubscribersEvolution'] = $evolutionData['totalNewSubscribersEvolution'] ?? null;
+        }
     }
 }

@@ -313,7 +313,14 @@ trait EasyblogInsertion
 
             if (empty($image)) {
                 if (strpos($element->image, 'post:') !== false) {
-                    $imagePath = $this->EBconfig->get('main_articles_path', 'images/easyblog_articles/').$element->id.'/';
+                    // Some pictures do not use the ID of the current post but from a previous post
+                    preg_match('/post:(\d*)\/.*/', $element->image, $matches);
+                    if (!empty($matches[1]) && is_numeric($matches[1])) {
+                        $idForImgPath = $matches[1];
+                    } else {
+                        $idForImgPath = $element->id;
+                    }
+                    $imagePath = $this->EBconfig->get('main_articles_path', 'images/easyblog_articles/').$idForImgPath.'/';
                 } elseif (strpos($element->image, 'user:') !== false) {
                     $imagePath = $this->EBconfig->get('main_users_path', 'images/easyblog_images/').$element->created_by.'/';
                 } else {

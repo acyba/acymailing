@@ -110,7 +110,7 @@
                 echo acym_switch(
                     'config[display_built_by]',
                     $this->config->get('display_built_by', 0),
-                    acym_translation('ACYM_ADD_BUILT_BY_FOOTER'),
+                    acym_translation('ACYM_ADD_BUILT_BY_FOOTER_UNSUB_PAGE'),
                     [],
                     'xlarge-3 medium-5 small-9'
                 );

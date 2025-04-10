@@ -20,5 +20,8 @@ class StatsView extends AcymView
 
     public function isMailSelected($mailId, $clickMap)
     {
+
+        // We track the fact that he checked the mail stats once for the beginner's steps
+        $this->config->save(['mail_stats_checked_once' => 1]);
     }
 }

@@ -61,7 +61,7 @@ trait SQLPatch
         $this->updateFor794();
         $this->updateFor796();
 
-        $this->updateFor800($config);
+        $this->updateFor800();
         $this->updateFor810();
         $this->updateFor811();
         $this->updateFor850();
@@ -86,6 +86,7 @@ trait SQLPatch
         $this->updateFor9110();
 
         $this->updateFor1000();
+        $this->updateFor1020($config);
     }
 
     public function checkDB(): void

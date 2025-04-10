@@ -153,26 +153,26 @@ class Router
 
         if (!$front) auth_redirect();
 
-        $acyActivation = new Activation();
-        if (is_multisite()) {
-            $currentBlog = get_current_blog_id();
-            $sites = function_exists('get_sites') ? get_sites() : wp_get_sites();
+        if (file_exists(ACYM_FOLDER.'update.php')) {
+            $acyActivation = new Activation();
+            if (is_multisite()) {
+                $currentBlog = get_current_blog_id();
+                $sites = function_exists('get_sites') ? get_sites() : wp_get_sites();
 
-            foreach ($sites as $site) {
-                if (is_object($site)) {
-                    $site = get_object_vars($site);
+                foreach ($sites as $site) {
+                    if (is_object($site)) {
+                        $site = get_object_vars($site);
+                    }
+                    switch_to_blog($site['blog_id']);
+                    acym_config(true);
+                    $acyActivation->updateAcym();
                 }
-                switch_to_blog($site['blog_id']);
-                acym_config(true);
+
+                switch_to_blog($currentBlog);
+            } else {
                 $acyActivation->updateAcym();
             }
 
-            switch_to_blog($currentBlog);
-        } else {
-            $acyActivation->updateAcym();
-        }
-
-        if (file_exists(ACYM_FOLDER.'update.php')) {
             unlink(ACYM_FOLDER.'update.php');
         }
 

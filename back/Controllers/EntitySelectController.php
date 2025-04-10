@@ -46,6 +46,9 @@ class EntitySelectController extends AcymController
             'elementsPerPage' => $perCalls,
             'entitySelect' => true,
         ];
+        if ($entity === 'list') {
+            $entityParams['status'] = 'active';
+        }
         if (!empty($join)) $entityParams['join'] = $join;
         if (!empty($columnsToDisplay)) $entityParams['columns'] = $columnsToDisplay;
 

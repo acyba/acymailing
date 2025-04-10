@@ -107,13 +107,20 @@
 		<div class="cell medium-1"></div>
 		<div class="cell medium-5 grid-x acym__campaign__sendsettings__bounce">
 			<label for="acym__campaign__sendsettings__bounce--input" class="cell acym__campaign__sendsettings__label-settings">
-                <?php echo acym_translation('ACYM_BOUNCE_EMAIL').' '.acym_info('ACYM_BOUNCE_ADDRESS_DESC'); ?>
+                <?php
+                echo acym_translation('ACYM_BOUNCE_EMAIL').' '.acym_info('ACYM_BOUNCE_ADDRESS_DESC');;
+                if (empty($data['config_values']->bounce_email)) {
+                    $placeholder = acym_translation('ACYM_DEFAULT_VALUE');
+                } else {
+                    $placeholder = acym_translation('ACYM_DEFAULT').' : '.acym_escape($data['config_values']->bounce_email);
+                }
+                ?>
 			</label>
 			<input type="text"
 				   class="cell"
 				   id="acym__campaign__sendsettings__bounce--input"
 				   name="senderInformation[bounce_email]"
-				   placeholder="<?php echo acym_escape($this->config->get('bounce_email', acym_translation('ACYM_TEST_ADDRESS'))); ?>"
+				   placeholder="<?php echo acym_escape($placeholder); ?>"
 				   value="<?php echo acym_escape($data['currentCampaign']->bounce_email); ?>">
 		</div>
 	</div>

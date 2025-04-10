@@ -252,4 +252,11 @@ class MailStatClass extends AcymClass
             WHERE mail_id = '.intval($mailId)
         );
     }
+
+    public function getOneSentEmail(): bool
+    {
+        $firstSentEmail = acym_loadObject('SELECT * FROM #__acym_mail_stat WHERE sent > 0');
+
+        return !empty($firstSentEmail);
+    }
 }

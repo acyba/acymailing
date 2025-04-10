@@ -326,15 +326,17 @@ class plgSystemAcymtriggers extends CMSPlugin
             acym_trigger('onRegacyAfterRoute', []);
         }
 
-        if (empty($_GET['code']) || empty($_GET['state'])) {
+        // Oauth redirection after consent is granted
+        if (empty($_GET['code']) || empty($_GET['state']) || !$this->initAcy()) {
             return;
         }
 
-        if ($_GET['state'] === 'acymailing') {
-            if (!$this->initAcy()) {
-                return;
-            }
-            acym_redirect(acym_completeLink('configuration&code='.$_GET['code'], false, true));
+        if ($_GET['state'] === 'acymailingsmtp') {
+            acym_redirect(acym_completeLink('configuration&auth_type=smtp&code='.$_GET['code'], false, true));
+        }
+
+        if ($_GET['state'] === 'acymailingbounce') {
+            acym_redirect(acym_completeLink('configuration&auth_type=bounce&code='.$_GET['code'], false, true));
         }
     }
 

@@ -49,7 +49,13 @@ class SendinblueCredentials extends SendinblueClass
             $message .= acym_translation('ACYM_DO_NOT_REMIND_ME');
             $message .= '</a>';
 
-            acym_enqueueMessage($message, 'info');
+            $notification = [
+                'name' => 'sendinblue_validation',
+                'removable' => 0,
+            ];
+            acym_enqueueMessage($message, 'info', true, [$notification]);
+        } else {
+            acym_removeDashboardNotification('sendinblue_validation');
         }
 
         $delayType = new DelayType();

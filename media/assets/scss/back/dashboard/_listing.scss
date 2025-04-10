@@ -1,139 +1,251 @@
 #acym_wrapper {
     #acym__dashboard {
-        .acym__dashboard__card {
-            margin-left: 0;
+        .community-icons {
+            padding: 21px;
+            background-color: $light-blue;
+            border-radius: 60px;
+            color: $blue-night-primary;
+            font-size: 28px;
+        }
 
-            .acym__dashboard__one-card {
-                position: relative;
-                display: flex;
-                text-align: center;
-                flex-direction: column;
-                margin-top: 20px;
+        .separator {
+            background-color: $medium-gray;
+            height: 1px;
+            border-radius: 2px;
+            display: block;
+            margin: 11px 5px;
 
-                .acym__dashboard__card__picto {
-                    border-radius: 100px;
-                    height: 100px;
-                    width: 100px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin: 0 auto;
-
-                    i {
-                        font-size: 48px;
-                        line-height: 1;
-                    }
-                }
-
-                .acym__dashboard__card__picto__audience {
-                    background-color: $blue-light;
-
-                    .acym__dashboard__card__icon__audience {
-                        color: $blue-primary;
-                    }
-                }
-
-                .acym__dashboard__card__picto__campaigns {
-                    background-color: $green-light;
-
-                    .acym__dashboard__card__icon__campaigns {
-                        color: $green-secondary;
-                    }
-                }
-
-                .acym__dashboard__card__picto__automation {
-                    background-color: $red-light;
-
-                    .acym__dashboard__card__icon__automation {
-                        color: $red-secondary;
-                    }
-                }
-
-                .acym__dashboard__card__title {
-                    font-size: 16px;
-                    margin-top: 20px;
-                    color: $color-palette-dark-blue;
-                }
-
-                hr {
-                    margin: 14px 0;
-                    width: 100%;
-                }
-
-                .acym__dashboard__card__link {
-                    display: inline-block;
-                    font-size: 14px;
-                    padding: 12px 8px 0 8px;
-                    transition: .2s;
-                    text-decoration: underline;
-                    color: $blue;
-
-                    .acym__dashboard__card__link__unclickable {
-                        user-select: none;
-                        color: $dark-gray;
-                        font-weight: $font-weight-semi-bold;
-                    }
-
-                    &:hover {
-                        color: $dark-gray;
-                    }
-                }
+            &.acym__dashboard__light__separator {
+                background-color: $light-blue;
             }
         }
 
-        .acym__dashboard__active-campaigns {
+        .beginner-stepper {
+            list-style: none;
+        }
+
+        .gap-1 {
+            gap: 1rem;
+        }
+
+        .flex {
+            flex: 1;
+        }
+
+        .acym__dashboard__title {
+            font-size: 1.3rem;
+            margin-bottom: 0;
+        }
+
+        #prevBtn, #nextBtn {
+            cursor: pointer;
+        }
+
+        .sliderCommunity {
+            overflow: hidden;
+            width: 100%;
             position: relative;
-            margin-top: 30px;
-            margin-bottom: 30px;
+        }
 
-            .acym__dashboard__active-campaigns__none {
-                text-align: center;
-                font-size: 17px;
+        .slides-wrapper {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide-group {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            flex: 0 0 auto;
+        }
+
+        .slide {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .small-icon {
+            padding-left: .3rem;
+            font-size: 1rem;
+        }
+
+        .acym__dashboard__card {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .acym__dashboard__stats__wrapper .cell {
+            flex: 1;
+            max-width: 100%;
+        }
+
+        .acym__dashboard__stats__container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 1.5rem 0.875rem;
+        }
+
+        .acym__dashboard__stats__text__container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            min-width: 70%;
+        }
+
+        .acym__dashboard__number {
+            font-size: 1.5rem;
+            display: block;
+            color: $blue-night-primary;
+            margin-bottom: 0.8rem;
+        }
+
+        .acym__dashboard__percentage {
+            font-size: 0.8rem;
+            display: block;
+        }
+
+        .acym__dashboard__stats__icon {
+            font-size: 3.5rem;
+            text-align: center;
+            color: #00A4FF;
+        }
+
+        .acym__dashboard__stats__title {
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 0.8rem;
+            line-height: 1rem;
+        }
+
+        .acym__dashboard__campaign__paused {
+            color: map-get($foundation-palette, alert-dark);
+            background-color: map-get($foundation-palette, alert-light);
+            padding: .25rem .5rem;
+            border-radius: 3rem;
+        }
+
+        .acym__dashboard__campaign__active {
+            color: $blue-night-primary;
+            background-color: $light-blue;
+            padding: .25rem .5rem;
+            border-radius: 3rem;
+        }
+
+        .skeleton {
+            width: 50%;
+            height: 20px;
+            background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+            background-size: 200% 100%;
+            border-radius: 4px;
+            animation: loading 1.5s infinite linear;
+        }
+
+        @keyframes loading {
+            from {
+                background-position: 200% 0;
             }
-
-            .acym__dashboard__active-campaigns__one-campaign {
-                padding: 20px 0 20px 0;
-
-                .acym__dashboard__active-campaigns__one-campaign__title {
-                    font-size: 16px;
-                }
-
-                .acym__dashboard__active-campaigns__one-campaign__state {
-                    border-radius: 5px;
-                    font-weight: bold;
-                    line-height: 21px;
-                    max-height: 25px;
-
-                    span {
-                        color: $white;
-                        font-weight: 500;
-                        vertical-align: sub;
-                    }
-                }
-
-                .acym__dashboard__active-campaigns__one-campaign__action {
-                    font-size: 16px;
-                    cursor: pointer;
-                }
+            to {
+                background-position: -200% 0;
             }
         }
 
-        @media screen and(max-width: 639px) {
-            .acym__dashboard__active-campaigns__one-campaign {
-                text-align: center;
-
-                .acym__dashboard__active-campaigns__one-campaign__title, .acym__dashboard__active-campaigns__one-campaign__action {
-                    padding: 20px 0 20px 0;
-                }
-            }
+        .subscibersWrapperPart {
+            align-items: center;
+            flex: 1;
+            justify-content: center;
+            display: flex;
         }
 
-        @media screen and(min-width: 639px) {
-            .acym__dashboard__active-campaigns__one-campaign__action {
-                font-size: 16px;
-                text-align: right;
-                cursor: pointer;
+        .horizontalSeparator {
+            border-right: 1px solid lightgray;
+        }
+
+        .listItemWrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+    }
+
+    @mixin notificationIcon($level) {
+        @if $level == 'warning' {
+            .acym__dashboard__notification__icon i {
+                background-color: map-get($foundation-palette, warning-light);
+                color: map-get($foundation-palette, warning);
             }
+        } @else {
+            .acym__dashboard__notification__icon i {
+                background-color: map-get($foundation-palette, alert-light);
+                color: map-get($foundation-palette, alert-dark);
+            }
+        }
+        .acym__dashboard__notification__icon i {
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+        }
+    }
+
+    .acym__dashboard__notification {
+        align-items: center;
+
+        .acym__dashboard__notification__message {
+            margin: .7rem 0;
+        }
+
+        .acym__dashboard__notification__delete {
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+
+        .acym__dashboard__notification__date {
+            font-size: .7rem;
+            color: $medium-gray;
+        }
+
+        &.acym__dashboard__notification__warning {
+            @include notificationIcon('warning');
+        }
+
+        &.acym__dashboard__notification__error {
+            @include notificationIcon('error');
+        }
+    }
+
+    .acym__do__not__remindme {
+        font-size: 14px;
+        text-decoration: underline;
+        margin-left: 0;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .acym__dashboard__empty {
+        font-size: 0.875rem;
+    }
+
+    @media screen and (max-width: 1024px) {
+        .acym__dashboard__stats__wrapper {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .acym__dashboard__small__wrapper {
+            display: flex;
+            flex-direction: column;
         }
     }
 }

@@ -574,6 +574,10 @@ class ExportHelper extends AcymObject
     public function cleanExportChangesFile(): void
     {
         $exportFolder = acym_getLogPath();
+        if (!file_exists($exportFolder)) {
+            return;
+        }
+
         $files = scandir($exportFolder);
         if (empty($files)) {
             return;

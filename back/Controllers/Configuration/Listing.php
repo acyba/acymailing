@@ -22,7 +22,7 @@ trait Listing
         acym_setVar('layout', 'listing');
 
         // We check if we have to store a token from an OAuth provider
-        $this->getAccessToken();
+        $this->handleOauthAuthentication();
 
         $data = [];
         $data['tab'] = new TabHelper();
@@ -41,7 +41,7 @@ trait Listing
         //__END__starter_
 
         //__START__wordpress_
-        if (ACYM_CMS == 'wordpress' && acym_isExtensionActive('wp-mail-smtp/wp_mail_smtp.php')) {
+        if ($data['wp_mail_smtp_installed']) {
             $pluginClass = new AcymPlugin();
             $data['button_copy_settings_from'] = $pluginClass->getCopySettingsButton($data, 'from_options', 'wp_mail_smtp');
         }
@@ -63,13 +63,26 @@ trait Listing
         $cronFrequency = $this->config->get('cron_frequency', 900);
         if ($queueType !== 'manual') {
             if (($batchesNumber > 1 || $cronFrequency < 900) && !function_exists('curl_multi_exec')) {
-                acym_enqueueMessage(acym_translation('ACYM_NEED_CURL_MULTI'), 'error');
+                $notification = [
+                    'name' => 'curl_multi_exec',
+                    'removable' => 0,
+                ];
+                acym_enqueueMessage(acym_translation('ACYM_NEED_CURL_MULTI'), 'error', true, [$notification]);
+            } elseif ($batchesNumber <= 1 && $cronFrequency >= 900) {
+                acym_removeDashboardNotification('curl_multi_exec');
             }
 
-            if ($batchesNumber > 4 || $emailsPerBatch > 300 || $cronFrequency < 300) {
+            $remindme = json_decode($this->config->get('remindme', '[]'), true);
+            if (!in_array('sendoverload', $remindme) && ($batchesNumber > 4 || $emailsPerBatch > 300 || $cronFrequency < 300)) {
                 $text = acym_translation('ACYM_SEND_CONFIGURATION_WARNING');
                 $text .= '<p class="acym__do__not__remindme" title="sendoverload">'.acym_translation('ACYM_DO_NOT_REMIND_ME').'</p>';
-                acym_enqueueMessage($text, 'warning');
+                $notification = [
+                    'name' => 'sendoverload',
+                    'removable' => 1,
+                ];
+                acym_enqueueMessage($text, 'warning', true, [$notification]);
+            } else {
+                acym_removeDashboardNotification('sendoverload');
             }
         }
     }
@@ -223,6 +236,7 @@ trait Listing
 
     private function prepareSecurity(array &$data): void
     {
+        $data['wp_mail_smtp_installed'] = ACYM_CMS === 'wordpress' && acym_isExtensionActive('wp-mail-smtp/wp_mail_smtp.php');
         $data['acychecker_installed'] = acym_isAcyCheckerInstalled();
         $data['acychecker_get_link'] = ACYM_ACYCHECKER_WEBSITE.'?utm_source=acymailing_plugin&utm_campaign=get_acychecker&utm_medium=button_configuration_security';
 

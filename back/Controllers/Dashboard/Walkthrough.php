@@ -170,7 +170,8 @@ trait Walkthrough
     public function startUsing(bool $campaigns = false): void
     {
         $this->config->save(['walk_through' => 0]);
-        $redirectUrl = $campaigns ? 'campaigns' : 'users&task=import';
+        $redirectUrl = $campaigns ? 'campaigns' : 'dashboard';
+
         acym_redirect(acym_completeLink($redirectUrl, false, true));
     }
 

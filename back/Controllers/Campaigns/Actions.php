@@ -333,7 +333,11 @@ trait Actions
                 acym_enqueueMessage(acym_translationSprintf('ACYM_CAMPAIGN_ADDED_TO_QUEUE', $campaign->name), 'info');
             } else {
                 if (empty($campaignClass->errors)) {
-                    acym_enqueueMessage(acym_translationSprintf('ACYM_ERROR_QUEUE_CAMPAIGN', $campaign->name), 'error');
+                    $notification = [
+                        'name' => 'queue_campaign_error',
+                        'removable' => 1,
+                    ];
+                    acym_enqueueMessage(acym_translationSprintf('ACYM_ERROR_QUEUE_CAMPAIGN', $campaign->name), 'error', true, [$notification]);
                 } else {
                     acym_enqueueMessage($campaignClass->errors, 'error');
                 }

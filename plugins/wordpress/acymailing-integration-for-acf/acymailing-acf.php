@@ -5,8 +5,8 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 1.4
- * Requires Plugins: acymailing, advanced-custom-fields
+ * Version: 1.5
+ * Requires Plugins: acymailing
 */
 
 use AcyMailing\Classes\PluginClass;

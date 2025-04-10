@@ -841,7 +841,9 @@ trait WooCommerceInsertion
         $tags = $this->pluginHelper->extractTags($email, 'last'.$this->name);
         $tags = array_merge($tags, $this->pluginHelper->extractTags($email, $this->name.'_tags'));
 
-        if (empty($tags)) return 0;
+        if (empty($tags)) {
+			return 0;
+        }
 
         $this->tags = [];
         foreach ($tags as $oneTag => $parameter) {
@@ -853,6 +855,9 @@ trait WooCommerceInsertion
                 $postTypesOrder = array_map('acym_escapeDB', $postTypesOrder);
 
                 $postStatusesOrder = wc_get_is_paid_statuses();
+				$postStatusesOrder = array_map(function ($status) {
+					return 'wc-'.$status;
+				}, $postStatusesOrder);
                 $postStatusesOrder = array_map('acym_escapeDB', $postStatusesOrder);
 
                 $query = 'SELECT `order`.id AS ID 
@@ -893,10 +898,15 @@ trait WooCommerceInsertion
                     );
                 }
 
+                $postStatusesOrder = wc_get_is_paid_statuses();
+                $postStatusesOrder = array_map(function ($status) {
+                    return 'wc-'.$status;
+                }, $postStatusesOrder);
+
                 $dataQuery = [
                     'numberposts' => -1,
                     'post_type' => wc_get_order_types(),
-                    'post_status' => wc_get_is_paid_statuses(),
+                    'post_status' => $postStatusesOrder,
                     'meta_query' => $userFilter,
                 ];
 

@@ -296,7 +296,7 @@ trait WooCommerceAutomationConditions
         $this->prepareOptions($options);
 
         if ($this->isHposActive()) {
-            $query->join['woopurchased_order'.$num] = '#__wc_orders AS order'.$num.' ON order'.$num.'.billing_email = user.email AND order'.$num.'.billing_email != ""';
+            $query->join['woopurchased_order'.$num] = '#__wc_orders AS order'.$num.' ON order'.$num.'.billing_email COLLATE utf8mb4_unicode_ci = user.email COLLATE utf8mb4_unicode_ci AND order'.$num.'.billing_email != ""';
             $query->where[] = 'order'.$num.'.type = "shop_order"';
             $query->where[] = 'order'.$num.'.status = "wc-completed"';
 

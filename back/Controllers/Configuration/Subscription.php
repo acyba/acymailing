@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Controllers\Configuration;
 
+use AcyMailing\Controllers\DashboardController;
 use AcyMailing\Helpers\HeaderHelper;
 
 trait Subscription
@@ -10,21 +11,43 @@ trait Subscription
     {
         $whichNotification = acym_getVar('string', 'id');
 
-        if ($whichNotification != 0 && empty($whichNotification)) {
+        if ($whichNotification !== '0' && empty($whichNotification)) {
             acym_sendAjaxResponse(acym_translation('ACYM_NOTIFICATION_NOT_FOUND'), [], false);
         }
 
+        $notifications = json_decode($this->config->get('notifications', '[]'), true) ?? [];
+        $dashboardNotifications = json_decode($this->config->get('dashboard_notif', '[]'), true) ?? [];
+
         if ('all' === $whichNotification) {
-            $this->config->save(['notifications' => '[]']);
             $notifications = [];
         } else {
-            $notifications = json_decode($this->config->get('notifications', '[]'), true);
-            unset($notifications[$whichNotification]);
-            $this->config->save(['notifications' => json_encode($notifications)]);
-        }
-        $helperHeader = new HeaderHelper();
+            $notifications = array_values(array_filter($notifications, fn($notif) => !isset($notif['id']) || $notif['id'] !== $whichNotification));
 
-        acym_sendAjaxResponse('', ['html' => $helperHeader->getNotificationCenterInner($notifications)]);
+            $dashboardNotifications = array_values(array_filter($dashboardNotifications, fn($notif) => !isset($notif['name']) || $notif['name'] !== $whichNotification));
+
+            if (is_numeric($whichNotification)) {
+                $notifications = array_values(array_filter($notifications, fn($notif, $key) => $key != $whichNotification, ARRAY_FILTER_USE_BOTH));
+            }
+        }
+
+        $this->config->save(['notifications' => json_encode($notifications)]);
+        $this->config->save(['dashboard_notif' => json_encode($dashboardNotifications)], false);
+
+        $helperHeader = new HeaderHelper();
+        $dashboardController = new DashboardController();
+
+        $data = [
+            'notifications' => $dashboardNotifications,
+        ];
+        $dashboardController->getDashboardNotifications($data);
+
+        acym_sendAjaxResponse(
+            '',
+            [
+                'headerHtml' => $helperHeader->getNotificationCenterInner($notifications),
+                'dashboardHtml' => $data['dashboardNotifications'],
+            ]
+        );
     }
 
     public function markNotificationRead(): void

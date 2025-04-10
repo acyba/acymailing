@@ -508,33 +508,42 @@ trait Edition
 
         $campaign = [];
 
-        $campaign['currentCampaign'] = $currentCampaign;
         $campaign['nbSubscribers'] = $campaignClass->countUsersCampaign($campaignId, true);
         $campaign['from'] = $from;
         $campaign['suggestedDate'] = acym_date('1534771620', 'j M Y H:i');
-        $campaign['senderInformations'] = new stdClass();
-        $campaign['config_values'] = new stdClass();
-        $campaign['currentCampaign']->send_now = $currentCampaign->sending_type == CampaignClass::SENDING_TYPE_NOW;
-        $campaign['currentCampaign']->send_scheduled = $currentCampaign->sending_type == CampaignClass::SENDING_TYPE_SCHEDULED;
-        $campaign['currentCampaign']->send_auto = $currentCampaign->sending_type == CampaignClass::SENDING_TYPE_AUTO;
         $campaign['campaignClass'] = $campaignClass;
+
+        $campaign['currentCampaign'] = $currentCampaign;
+        $campaign['currentCampaign']->send_now = $currentCampaign->sending_type === CampaignClass::SENDING_TYPE_NOW;
+        $campaign['currentCampaign']->send_scheduled = $currentCampaign->sending_type === CampaignClass::SENDING_TYPE_SCHEDULED;
+        $campaign['currentCampaign']->send_auto = $currentCampaign->sending_type === CampaignClass::SENDING_TYPE_AUTO;
 
         // Handle special emails
         $campaign['currentCampaign']->send_specific = [];
         if (!in_array($currentCampaign->sending_type, CampaignClass::SENDING_TYPES)) {
-            acym_trigger('getCampaignSpecificSendSettings', [$currentCampaign->sending_type, $currentCampaign->sending_params, &$campaign['currentCampaign']->send_specific]);
+            acym_trigger(
+                'getCampaignSpecificSendSettings',
+                [
+                    $currentCampaign->sending_type,
+                    $currentCampaign->sending_params,
+                    &$campaign['currentCampaign']->send_specific,
+                ]
+            );
         }
 
+        $campaign['senderInformations'] = new stdClass();
         $campaign['senderInformations']->from_name = empty($currentCampaign->from_name) ? '' : $currentCampaign->from_name;
         $campaign['senderInformations']->from_email = empty($currentCampaign->from_email) ? '' : $currentCampaign->from_email;
         $campaign['senderInformations']->reply_to_name = empty($currentCampaign->reply_to_name) ? '' : $currentCampaign->reply_to_name;
         $campaign['senderInformations']->reply_to_email = empty($currentCampaign->reply_to_email) ? '' : $currentCampaign->reply_to_email;
         $campaign['senderInformations']->bounce_email = empty($currentCampaign->bounce_email) ? '' : $currentCampaign->bounce_email;
 
-        $campaign['config_values']->from_name = $this->config->get('from_name', '');
-        $campaign['config_values']->from_email = $this->config->get('from_email', '');
-        $campaign['config_values']->reply_to_name = $this->config->get('replyto_name', '');
-        $campaign['config_values']->reply_to_email = $this->config->get('replyto_email', '');
+        $campaign['config_values'] = new stdClass();
+        $campaign['config_values']->from_name = $this->config->get('from_name');
+        $campaign['config_values']->from_email = $this->config->get('from_email');
+        $campaign['config_values']->reply_to_name = $this->config->get('replyto_name');
+        $campaign['config_values']->reply_to_email = $this->config->get('replyto_email');
+        $campaign['config_values']->bounce_email = $this->config->get('bounce_email');
 
         $triggers = [];
 

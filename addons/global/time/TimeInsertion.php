@@ -20,7 +20,9 @@ trait TimeInsertion
         $others['{date:m/d/Y}'] = 'm/d/Y';
         $others['{date:d/m/y}'] = 'd/m/y';
         $others['{date:l}'] = 'l';
+        $others['{date:W}'] = 'W';
         $others['{date:F}'] = 'F';
+        $others['{date:Y}'] = 'Y';
 
 
         $k = 0;

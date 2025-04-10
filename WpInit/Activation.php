@@ -14,10 +14,12 @@ class Activation
         $queries = fread($handle, filesize($file_name));
         fclose($handle);
 
-        if (is_multisite()) {
+        // If it is a network activation (activate on all websites)
+        if (is_multisite() && is_network_admin()) {
             $currentBlog = get_current_blog_id();
             $sites = function_exists('get_sites') ? get_sites() : wp_get_sites();
 
+            // Install on all websites
             foreach ($sites as $site) {
                 if (is_object($site)) {
                     $site = get_object_vars($site);
@@ -26,6 +28,7 @@ class Activation
                 $this->_sampledata($queries);
             }
 
+            // Switch back to network main site
             switch_to_blog($currentBlog);
         } else {
             $this->_sampledata($queries);
@@ -57,6 +60,11 @@ class Activation
 
     public function updateAcym()
     {
+        if (!in_array(acym_getPrefix().'acym_configuration', acym_getTables())) {
+
+            return;
+        }
+
         $config = acym_config();
         if (!file_exists(ACYM_FOLDER.'update.php') && $config->get('installcomplete', 0) != 0) {
             return;

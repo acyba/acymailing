@@ -105,9 +105,20 @@ class plgAcymAcychecker extends AcymPlugin
 
         // Perform test using CTE code API
         $apiService = new ApiService();
-        $emailOk = $apiService->testEmail($user->email, $conditions);
+
+        // Retro compatibility for AcyChecker 1.4
+        if (method_exists($apiService, 'testUser')) {
+            $testUser = new stdClass();
+            $testUser->email = $user->email;
+            $testUser->name = $user->name;
+            $emailOk = $apiService->testUser($testUser, $conditions);
+        } else {
+            $emailOk = $apiService->testEmail($user->email, $conditions);
+        }
+
         if ($emailOk !== true) {
-            acym_setVar('acychecker_error', acym_translation('ACYM_INVALID_EMAIL_ADDRESS'));
+            $message = $emailOk === 'blacklisted_name' ? 'ACYM_INVALID_NAME' : 'ACYM_INVALID_EMAIL_ADDRESS';
+            acym_setVar('acychecker_error', acym_translation($message));
 
             return false;
         }

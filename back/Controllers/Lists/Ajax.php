@@ -168,4 +168,29 @@ trait Ajax
         }
         acym_sendAjaxResponse('', ['subscribers' => $subscribers]);
     }
+
+    public function loadMostUsedLists(): void
+    {
+        $listClass = new ListClass();
+        if ($this->config->get('dashboard_last_update', 0) + 86400 < time()) {
+            $usersByList = $listClass->getListsSubscribersAndUnsubscribeUsersFromUserHasList();
+            foreach ($usersByList as $list) {
+                $subscriberEvolution = current($listClass->getSubscribersEvolutionByList($list->list_id));
+                $listClass->updateListsSubscribersAndUnsubscribeUsers(
+                    $list->list_id,
+                    $list->subscribers,
+                    $list->unsubscribed_users,
+                    $subscriberEvolution->newSub ?? 0,
+                    $subscriberEvolution->newUnsub ?? 0
+                );
+            }
+            $this->config->save(['dashboard_last_update' => time()]);
+        }
+        $mostUsedList = $listClass->getMostUsedLists();
+
+        $ids = array_map(fn($obj) => $obj->list_id, $mostUsedList);
+        $listAndSubscribersData = $listClass->getMostUsedListsByIdsWithSubscribersData($ids);
+
+        acym_sendAjaxResponse('', ['listAndSubscribersData' => $listAndSubscribersData]);
+    }
 }

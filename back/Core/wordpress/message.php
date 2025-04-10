@@ -2,7 +2,7 @@
 
 use AcyMailing\Helpers\HeaderHelper;
 
-function acym_enqueueMessage($message, $type = 'success', $addNotification = true)
+function acym_enqueueMessage($message, string $type = 'success', bool $addNotification = true, array $addDashboardNotification = [], bool $addHeaderNotification = true)
 {
     $type = str_replace(['notice', 'message'], ['info', 'success'], $type);
     $message = is_array($message) ? implode('<br/>', $message) : $message;
@@ -22,7 +22,7 @@ function acym_enqueueMessage($message, $type = 'success', $addNotification = tru
         $handledTypes[] = 'success';
     }
 
-    if (in_array($type, $handledTypes)) {
+    if (in_array($type, $handledTypes) && $addHeaderNotification) {
         acym_session();
         if (empty($_SESSION['acymessage'.$type]) || !in_array($message, $_SESSION['acymessage'.$type])) {
             if (empty($notification->id)) {
@@ -31,6 +31,35 @@ function acym_enqueueMessage($message, $type = 'success', $addNotification = tru
                 $_SESSION['acymessage'.$type][$notification->id] = $message;
             }
         }
+    }
+
+    if (!empty($addDashboardNotification)) {
+        $config = acym_config();
+        $notRemindable = json_decode($config->get('remindme'), true);
+        $existingNotifications = json_decode($config->get('dashboard_notif', '[]'), true);
+
+        foreach ($addDashboardNotification as &$dashboardNotification) {
+            if (in_array($dashboardNotification['name'], $notRemindable)) {
+                continue;
+            }
+            $dashboardNotification['date'] = time();
+            $dashboardNotification['level'] = $type;
+            $dashboardNotification['message'] = $message;
+
+            $found = false;
+            foreach ($existingNotifications as &$existingNotification) {
+                if ($existingNotification['name'] === $dashboardNotification['name']) {
+                    $existingNotification = $dashboardNotification;
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $existingNotifications[] = $dashboardNotification;
+            }
+        }
+
+        $config->save(['dashboard_notif' => json_encode($existingNotifications)], false);
     }
 
     return true;

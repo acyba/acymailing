@@ -328,7 +328,7 @@ class HeaderHelper extends AcymObject
         } else {
             $notificationCenter .= '<div class="cell grid-x acym__header__notification__toolbox"><p class="cell auto">'.acym_translation(
                     'ACYM_NOTIFICATIONS'
-                ).'</p><div class="cell shrink cursor-pointer acym__header__notification__toolbox__remove text-right">'.acym_translation('ACYM_DELETE_ALL').'</div></div>';
+                ).'</p><div class="cell shrink cursor-pointer acym__header__notification__toolbox__remove text-right" data-id="all">'.acym_translation('ACYM_DELETE_ALL').'</div></div>';
             foreach ($notifications as $key => $notif) {
                 $fullMessageHover = $notif['message'];
 

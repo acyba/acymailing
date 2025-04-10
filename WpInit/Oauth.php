@@ -8,8 +8,14 @@ class Oauth
     {
         $code = acym_getVar('string', 'code');
         $state = acym_getVar('string', 'state');
-        if (!empty($code) && !empty($state) && $state === 'acymailing') {
-            acym_redirect(acym_completeLink('configuration&code='.$_GET['code']), false, true);
+        if (!empty($code) && !empty($state)) {
+            if ($state === 'acymailingsmtp') {
+                acym_redirect(acym_completeLink('configuration&auth_type=smtp&code='.$_GET['code'], false, true));
+            }
+
+            if ($state === 'acymailingbounce') {
+                acym_redirect(acym_completeLink('configuration&auth_type=bounce&code='.$_GET['code'], false, true));
+            }
         }
     }
 }

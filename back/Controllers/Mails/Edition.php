@@ -480,7 +480,7 @@ trait Edition
             if (!empty($mail->type) && in_array($mail->type, [MailClass::TYPE_WELCOME, MailClass::TYPE_UNSUBSCRIBE])) {
                 $listIds = acym_getVar('array', 'list_ids', []);
                 $listClass = new ListClass();
-                $listClass->setWelcomeUnsubEmail($listIds, $mailID, $mail->type);
+                $listClass->setWelcomeUnsubEmail($listIds, (int)$mailID, $mail->type);
             } elseif (!empty($mail->type) && $mail->type == MailClass::TYPE_FOLLOWUP) {
                 // Pass the new email ID in the return URL to ask user if we should add it to the queue
                 acym_setVar('return', acym_getVar('string', 'return').'&newEmailId='.$mailID);
@@ -1017,7 +1017,11 @@ trait Edition
         if ($mailerHelper->sendOne($mailId, $currentEmail, $options)) {
             acym_enqueueMessage(acym_translationSprintf('ACYM_SEND_SUCCESS', $mail->name, $currentEmail), 'info');
         } else {
-            acym_enqueueMessage(acym_translationSprintf('ACYM_SEND_ERROR', $mail->name, $currentEmail), 'error');
+            $notification = [
+                'name' => 'send_error',
+                'removable' => 1,
+            ];
+            acym_enqueueMessage(acym_translationSprintf('ACYM_SEND_ERROR', $mail->name, $currentEmail), 'error', true, [$notification]);
         }
 
         $this->edit();

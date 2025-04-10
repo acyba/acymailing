@@ -208,3 +208,18 @@ function displayFreeTrialMessage()
     }
     acym_enqueueMessage('<div class="cell grid-x acym_vcenter">'.$message.$buttonFullAccess.'</div>', $type, false);
 }
+
+
+function acym_removeDashboardNotification(string $name): void
+{
+    $config = acym_config();
+    $existingNotifications = json_decode($config->get('dashboard_notif', '[]'), true) ?? [];
+
+    foreach ($existingNotifications as $key => $existingNotification) {
+        if (is_array($existingNotification) && $existingNotification['name'] === $name) {
+            unset($existingNotifications[$key]);
+        }
+    }
+
+    $config->save(['dashboard_notif' => json_encode($existingNotifications)], false);
+}

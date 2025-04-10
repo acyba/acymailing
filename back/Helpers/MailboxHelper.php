@@ -20,8 +20,7 @@ class MailboxHelper extends BounceHelper
             'secure_method' => $this->action->secure_method,
             'self_signed' => $this->action->self_signed,
             'timeout' => 10,
-            'bounce_token' => empty($this->action->bounce_token) ? '' : $this->action->bounce_token,
-            'imap_connection_method' => empty($this->action->imap_connection_method) ? 'classic' : $this->action->imap_connection_method,
+            'bounce_access_token' => empty($this->action->bounce_access_token) ? '' : $this->action->bounce_access_token,
         ];
 
         return $this->isConfigurationValid();
@@ -29,7 +28,7 @@ class MailboxHelper extends BounceHelper
 
     private function isConfigurationValid(): bool
     {
-        $keyShouldNotBeEmpty = $this->mailboxConfig['imap_connection_method'] === 'classic' ? 'password' : 'bounce_token';
+        $keyShouldNotBeEmpty = in_array($this->mailboxConfig['server'], self::HOSTS_NEEDING_OAUTH) ? 'bounce_access_token' : 'password';
 
         $error = false;
         foreach ($this->mailboxConfig as $key => $oneConfig) {

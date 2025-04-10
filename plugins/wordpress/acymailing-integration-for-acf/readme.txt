@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, integration, acymailing, acf, advanced custom fields
 Tested up to: 6.7
-Stable tag: 1.4
+Stable tag: 1.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -13,7 +13,7 @@ Automatically generate monthly newsletters including the last posts.
 
 > #### Requirements
 > [AcyMailing](https://wordpress.org/plugins/acymailing/)
-> [Advanced Custom Fields](https://wordpress.org/plugins/advanced-custom-fields/)
+> Advanced Custom Fields
 
 Insert custom posts from Advanced Custom Fields in your emails.
 Automatically generate monthly newsletters including the last posts.

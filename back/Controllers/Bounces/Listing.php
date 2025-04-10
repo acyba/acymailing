@@ -112,22 +112,20 @@ trait Listing
         $bounceHelper = new BounceHelper();
         $bounceHelper->report = true;
 
-        if ($bounceHelper->init()) {
-            if ($bounceHelper->connect()) {
-                $this->runBounce = true;
-            } else {
-                $errors = $bounceHelper->getErrors();
-                if (!empty($errors)) {
-                    acym_enqueueMessage($errors, 'error');
-                    $errorString = implode(' ', $errors);
-                    $port = $this->config->get('bounce_port');
-                    if (preg_match('#certificate#i', $errorString) && !$this->config->get('bounce_certif', false)) {
-                        //Self signed certificate issue
-                        acym_enqueueMessage(acym_translationSprintf('ACYM_YOU_MAY_TURN_ON_OPTION', '<i>'.acym_translation('ACYM_SELF_SIGNED_CERTIFICATE').'</i>'), 'warning');
-                    } elseif (!empty($port) && !in_array($port, ['993', '143', '110'])) {
-                        //Not the right port... ?
-                        acym_enqueueMessage(acym_translation('ACYM_BOUNCE_WRONG_PORT'), 'warning');
-                    }
+        if ($bounceHelper->init() && $bounceHelper->connect()) {
+            $this->runBounce = true;
+        } else {
+            $errors = $bounceHelper->getErrors();
+            if (!empty($errors)) {
+                acym_enqueueMessage($errors, 'error');
+                $errorString = implode(' ', $errors);
+                $port = $this->config->get('bounce_port');
+                if (preg_match('#certificate#i', $errorString) && !$this->config->get('bounce_certif', false)) {
+                    //Self signed certificate issue
+                    acym_enqueueMessage(acym_translationSprintf('ACYM_YOU_MAY_TURN_ON_OPTION', '<i>'.acym_translation('ACYM_SELF_SIGNED_CERTIFICATE').'</i>'), 'warning');
+                } elseif (!empty($port) && !in_array($port, ['993', '143', '110'])) {
+                    //Not the right port... ?
+                    acym_enqueueMessage(acym_translation('ACYM_BOUNCE_WRONG_PORT'), 'warning');
                 }
             }
         }
