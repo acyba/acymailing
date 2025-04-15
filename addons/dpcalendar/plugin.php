@@ -28,7 +28,8 @@ class plgAcymDpcalendar extends AcymPlugin
             $this->displayOptions = [
                 'title' => ['ACYM_TITLE', true],
                 'image' => ['ACYM_IMAGE', true],
-                'date' => ['ACYM_DATE', true],
+                'startdate' => ['ACYM_START_DATE', true],
+                'enddate' => ['ACYM_END_DATE', true],
                 'venue' => ['ACYM_LOCATION', true],
                 'intro' => ['ACYM_INTRO_TEXT', true],
                 'desc' => ['ACYM_FULL_TEXT', false],

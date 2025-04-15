@@ -59,6 +59,18 @@ function acym_frontendLink(string $link, bool $complete = true, bool $sef = true
     return $mainurl.$link;
 }
 
+function acym_backendLink(string $link): string
+{
+    $link = 'index.php?option='.ACYM_COMPONENT.'&ctrl='.$link;
+
+    try {
+        return Route::link('administrator', $link, true, 0, true);
+    } catch (Exception $e) {
+    }
+
+    return ACYM_LIVE.'administrator/'.$link;
+}
+
 function acym_getMenu()
 {
     global $Itemid;

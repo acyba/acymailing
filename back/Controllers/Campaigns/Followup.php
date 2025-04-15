@@ -299,7 +299,7 @@ trait Followup
         }
 
         $followup->id = $followupClass->save($followup);
-        if (!empty($followup->id)) {
+        if (empty($followup->id)) {
             acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING').': '.acym_getDBError(), 'error');
             $this->listing();
 

@@ -75,6 +75,11 @@ function acym_frontendLink($link, $complete = true, $sef = true)
     return acym_rootURI().acym_addPageParam($link, true, true);
 }
 
+function acym_backendLink(string $link): string
+{
+    return admin_url().acym_addPageParam($link);
+}
+
 function acym_getMenu()
 {
     return get_post();

@@ -1,7 +1,6 @@
 <div id="send_test_zone" class="cell large-6">
 	<h6 class="acym__title acym__title__secondary"><?php echo acym_translation('ACYM_SEND_TEST_TO'); ?></h6>
     <?php
-
     echo acym_selectMultiple(
         $data['test_emails'],
         'test_emails',
@@ -11,7 +10,6 @@
             'placeholder' => acym_translation('ACYM_TEST_ADDRESS'),
         ]
     );
-
     ?>
 	<label class="margin-top-1">
         <?php echo acym_translation('ACYM_TEST_NOTE'); ?>

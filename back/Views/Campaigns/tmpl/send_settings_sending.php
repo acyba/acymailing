@@ -144,13 +144,40 @@
                 <?php
                 echo acym_switch(
                     'need_confirm',
-                    isset($data['currentCampaign']->sending_params['need_confirm_to_send']) ? $data['currentCampaign']->sending_params['need_confirm_to_send'] : 1,
+                    $data['currentCampaign']->sending_params['need_confirm_to_send'] ?? 1,
                     acym_translation('ACYM_CONFIRM_AUTOCAMPAIGN'),
                     [],
                     'shrink',
-                    'shrink'
+                    'shrink',
+                    '',
+                    'acym__campaign__sendsettings__notification'
                 );
                 ?>
+			</div>
+			<div class="cell grid-x" id="acym__campaign__sendsettings__notification">
+				<div class="cell medium-6 large-5 xlarge-4 margin-top-1">
+                    <?php
+                    if (empty($data['currentCampaign']->sending_params['admin_notification_emails'])) {
+                        $selectedValues = [acym_currentUserEmail() => acym_currentUserEmail()];
+                    } else {
+                        $selectedValues = [];
+                        foreach ($data['currentCampaign']->sending_params['admin_notification_emails'] as $value) {
+                            if (acym_isValidEmail($value)) {
+                                $selectedValues[$value] = $value;
+                            }
+                        }
+                    }
+
+                    echo acym_selectMultiple(
+                        $selectedValues,
+                        'sending_params[admin_notification_emails]',
+                        $selectedValues,
+                        [
+                            'class' => 'acym__multiselect__email',
+                        ]
+                    );
+                    ?>
+				</div>
 			</div>
 		</div>
 	</div>

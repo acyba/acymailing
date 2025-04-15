@@ -506,71 +506,73 @@ trait Edition
             $currentCampaign->sending_date = '';
         }
 
-        $campaign = [];
+        $data = [
+            'nbSubscribers' => $campaignClass->countUsersCampaign($campaignId, true),
+            'from' => $from,
+            'suggestedDate' => acym_date('1534771620', 'j M Y H:i'),
+            'campaignClass' => $campaignClass,
+        ];
 
-        $campaign['nbSubscribers'] = $campaignClass->countUsersCampaign($campaignId, true);
-        $campaign['from'] = $from;
-        $campaign['suggestedDate'] = acym_date('1534771620', 'j M Y H:i');
-        $campaign['campaignClass'] = $campaignClass;
-
-        $campaign['currentCampaign'] = $currentCampaign;
-        $campaign['currentCampaign']->send_now = $currentCampaign->sending_type === CampaignClass::SENDING_TYPE_NOW;
-        $campaign['currentCampaign']->send_scheduled = $currentCampaign->sending_type === CampaignClass::SENDING_TYPE_SCHEDULED;
-        $campaign['currentCampaign']->send_auto = $currentCampaign->sending_type === CampaignClass::SENDING_TYPE_AUTO;
+        $data['currentCampaign'] = $currentCampaign;
+        $data['currentCampaign']->send_now = $currentCampaign->sending_type === CampaignClass::SENDING_TYPE_NOW;
+        $data['currentCampaign']->send_scheduled = $currentCampaign->sending_type === CampaignClass::SENDING_TYPE_SCHEDULED;
+        $data['currentCampaign']->send_auto = $currentCampaign->sending_type === CampaignClass::SENDING_TYPE_AUTO;
 
         // Handle special emails
-        $campaign['currentCampaign']->send_specific = [];
+        $data['currentCampaign']->send_specific = [];
         if (!in_array($currentCampaign->sending_type, CampaignClass::SENDING_TYPES)) {
             acym_trigger(
                 'getCampaignSpecificSendSettings',
                 [
                     $currentCampaign->sending_type,
                     $currentCampaign->sending_params,
-                    &$campaign['currentCampaign']->send_specific,
+                    &$data['currentCampaign']->send_specific,
                 ]
             );
         }
 
-        $campaign['senderInformations'] = new stdClass();
-        $campaign['senderInformations']->from_name = empty($currentCampaign->from_name) ? '' : $currentCampaign->from_name;
-        $campaign['senderInformations']->from_email = empty($currentCampaign->from_email) ? '' : $currentCampaign->from_email;
-        $campaign['senderInformations']->reply_to_name = empty($currentCampaign->reply_to_name) ? '' : $currentCampaign->reply_to_name;
-        $campaign['senderInformations']->reply_to_email = empty($currentCampaign->reply_to_email) ? '' : $currentCampaign->reply_to_email;
-        $campaign['senderInformations']->bounce_email = empty($currentCampaign->bounce_email) ? '' : $currentCampaign->bounce_email;
+        $data['senderInformations'] = new stdClass();
+        $data['senderInformations']->from_name = empty($currentCampaign->from_name) ? '' : $currentCampaign->from_name;
+        $data['senderInformations']->from_email = empty($currentCampaign->from_email) ? '' : $currentCampaign->from_email;
+        $data['senderInformations']->reply_to_name = empty($currentCampaign->reply_to_name) ? '' : $currentCampaign->reply_to_name;
+        $data['senderInformations']->reply_to_email = empty($currentCampaign->reply_to_email) ? '' : $currentCampaign->reply_to_email;
+        $data['senderInformations']->bounce_email = empty($currentCampaign->bounce_email) ? '' : $currentCampaign->bounce_email;
 
-        $campaign['config_values'] = new stdClass();
-        $campaign['config_values']->from_name = $this->config->get('from_name');
-        $campaign['config_values']->from_email = $this->config->get('from_email');
-        $campaign['config_values']->reply_to_name = $this->config->get('replyto_name');
-        $campaign['config_values']->reply_to_email = $this->config->get('replyto_email');
-        $campaign['config_values']->bounce_email = $this->config->get('bounce_email');
+        $data['config_values'] = new stdClass();
+        $data['config_values']->from_name = $this->config->get('from_name');
+        $data['config_values']->from_email = $this->config->get('from_email');
+        $data['config_values']->reply_to_name = $this->config->get('replyto_name');
+        $data['config_values']->reply_to_email = $this->config->get('replyto_email');
+        $data['config_values']->bounce_email = $this->config->get('bounce_email');
 
         $triggers = [];
 
         acym_trigger('onAcymDeclareTriggers', [&$triggers, &$currentCampaign->sending_params], 'plgAcymTime');
         $triggers = $triggers['classic'];
 
-        $campaign['triggers_select'] = [];
-        $campaign['triggers_display'] = [];
+        $data['triggers_select'] = [];
+        $data['triggers_display'] = [];
 
         foreach ($triggers as $key => $trigger) {
-            $campaign['triggers_select'][$key] = $trigger->name;
-            $campaign['triggers_display'][$key] = $trigger->option;
+            $data['triggers_select'][$key] = $trigger->name;
+            $data['triggers_display'][$key] = $trigger->option;
         }
 
-        if (!empty($campaign['currentCampaign']->sending_params) && empty($campaign['currentCampaign']->sending_params['trigger_type'])) {
+        if (!empty($data['currentCampaign']->sending_params) && empty($data['currentCampaign']->sending_params['trigger_type'])) {
             foreach (array_keys($triggers) as $oneTrigger) {
-                if (!empty($campaign['currentCampaign']->sending_params[$oneTrigger])) $campaign['currentCampaign']->sending_params['trigger_type'] = $oneTrigger;
+                if (!empty($data['currentCampaign']->sending_params[$oneTrigger])) {
+                    $data['currentCampaign']->sending_params['trigger_type'] = $oneTrigger;
+                }
             }
         }
 
-        $campaign['containerClass'] = $this->stepContainerClass;
-        $campaign['langChoice'] = acym_isMultilingual() ? '' : acym_languageOption($campaign['currentCampaign']->links_language, 'senderInformation[links_language]');
-        $this->prepareListingClasses($campaign);
-        $this->prepareSegmentDisplay($campaign, $campaign['currentCampaign']->sending_params);
-        $this->prepareMultilingualOption($campaign);
+        $data['containerClass'] = $this->stepContainerClass;
+        $data['langChoice'] = acym_isMultilingual() ? '' : acym_languageOption($data['currentCampaign']->links_language, 'senderInformation[links_language]');
+        $this->prepareListingClasses($data);
+        $this->prepareSegmentDisplay($data, $data['currentCampaign']->sending_params);
+        $this->prepareMultilingualOption($data);
 
-        parent::display($campaign);
+        parent::display($data);
     }
 
     public function saveEditEmail(bool $ajax = false): int
@@ -914,8 +916,14 @@ trait Edition
         }
 
         $currentCampaign->sending_type = $sendingType;
-        if (empty($currentCampaign->sending_params)) $currentCampaign->sending_params = [];
+        if (empty($currentCampaign->sending_params)) {
+            $currentCampaign->sending_params = [];
+        }
+
         $currentCampaign->sending_params = array_merge($currentCampaign->sending_params, $sendingParams, $specificSendingParams);
+        if (!empty($currentCampaign->sending_params['admin_notification_emails']) && empty($sendingParams['admin_notification_emails'])) {
+            $currentCampaign->sending_params['admin_notification_emails'] = [];
+        }
 
         if (empty($currentMail) || empty($senderInformation)) {
             $this->listing();

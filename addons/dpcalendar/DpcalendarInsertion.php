@@ -341,24 +341,46 @@ trait DpcalendarInsertion
         $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
         if (!in_array('image', $tag->display)) $imagePath = '';
 
-        if (!empty($element->start_date) && !empty($element->end_date)) {
+        if (!empty($element->start_date)) {
             $dateFormat = empty($element->all_day) ? 'ACYM_DATE_FORMAT_LC2' : 'ACYM_DATE_FORMAT_LC1';
 
             $varFields['{startdate}'] = acym_date($element->start_date, acym_translation($dateFormat));
-            $varFields['{enddate}'] = acym_date($element->end_date, acym_translation($dateFormat));
-
-
             $varFields['{date}'] = $varFields['{startdate}'];
-            if ($element->start_date !== $element->end_date) {
-                $varFields['{date}'] .= ' - '.$varFields['{enddate}'];
+
+            if (!empty($element->end_date)) {
+                $varFields['{enddate}'] = acym_date($element->end_date, acym_translation($dateFormat));
+
+                if ($element->start_date !== $element->end_date) {
+                    $varFields['{date}'] .= ' - '.$varFields['{enddate}'];
+                }
             }
         }
 
-        if (in_array('date', $tag->display) && !empty($element->start_date) && !empty($element->end_date)) {
-            $customFields[] = [
-                $varFields['{date}'],
-                acym_translation('ACYM_DATE'),
-            ];
+        if (in_array('startdate', $tag->display) && in_array('enddate', $tag->display)) {
+            $tag->display[] = 'date';
+        }
+
+        if (in_array('date', $tag->display)) {
+            if (!empty($varFields['{date}'])) {
+                $customFields[] = [
+                    $varFields['{date}'],
+                    acym_translation('ACYM_DATE'),
+                ];
+            }
+        } elseif (in_array('startdate', $tag->display)) {
+            if (!empty($varFields['{startdate}'])) {
+                $customFields[] = [
+                    $varFields['{startdate}'],
+                    acym_translation('ACYM_DATE'),
+                ];
+            }
+        } elseif (in_array('enddate', $tag->display)) {
+            if (!empty($varFields['{enddate}'])) {
+                $customFields[] = [
+                    $varFields['{enddate}'],
+                    acym_translation('ACYM_END_DATE'),
+                ];
+            }
         }
 
         $location = acym_loadObject(

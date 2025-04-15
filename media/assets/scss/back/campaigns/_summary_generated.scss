@@ -48,30 +48,8 @@
                     color: $font-primary;
                 }
 
-                @keyframes fly {
-                    10% {
-                        transform: translateY(3px) translateX(-3px);
-                    }
-                    40% {
-                        transform: translateY(-40px) translateX(40px);
-                    }
-                    41% {
-                        transform: translateY(40px) translateX(40px);
-                    }
-                    60% {
-                        transform: translateY(40px) translateX(-40px);
-                    }
-                    100% {
-                        transform: translateY(0px) translateX(0px);
-                    }
-                }
-
                 .button-send:hover {
                     overflow: hidden;
-
-                    i {
-                        animation: fly 1s ease-in-out;
-                    }
                 }
 
                 .acym__campaign__summary__generated__action__text {
