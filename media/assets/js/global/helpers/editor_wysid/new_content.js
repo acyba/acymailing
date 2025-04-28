@@ -308,7 +308,7 @@ const acym_editorWysidNewContent = {
                     $insertBtn.addClass('disabled').off('click');
                 } else {
                     $result.html(`<a href="${url}" target="_blank" class="acym__wysid__link__image">
-                                    <img alt="" src="${res.data.new_image_name}" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;"/>
+                                    <img alt="" src="${res.data.new_image_name}" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: inline-block; margin-left: auto; margin-right: auto; float: none;"/>
                                 </a>`);
 
                     $result.off('click').on('click', function (e) {
@@ -445,7 +445,7 @@ function showVimeoThumbnail(data) {
     let thumbnail = 'https://i.vimeocdn.com/filter/overlay?src=' + encodeURIComponent(data[0].thumbnail_large);
     thumbnail += '&src=' + encodeURIComponent('https://f.vimeocdn.com/p/images/crawler_play.png');
 
-    let styling = 'max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: block; margin-left: auto; margin-right: auto; float: none;';
+    let styling = 'max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display: inline-block; margin-left: auto; margin-right: auto; float: none;';
 
     let thumbWithLink = '<a href="https://vimeo.com/' + data[0].id + '" target="_blank" class="acym__wysid__link__image">';
     thumbWithLink += '<img alt="" src="' + thumbnail + '" style="' + styling + '"/>';

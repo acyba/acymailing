@@ -1623,7 +1623,7 @@ class MailerHelper extends Mailer
         if (!empty($translation)) {
             $translation = json_decode($translation, true);
 
-            if (!empty($translation[$lang])) {
+            if (!empty($translation[$lang][$type])) {
                 $setting = $translation[$lang][$type];
             }
         }

@@ -139,7 +139,7 @@ trait RseventsproAutomationConditions
 
     private function processConditionFilter_rseventspro(&$query, $options, $num)
     {
-        $query->join['rseventspro'.$num] = '`#__rseventspro_users` AS rseventspro'.$num.' ON rseventspro'.$num.'.email = user.email';
+        $query->join['rseventspro'.$num] = '`#__rseventspro_users` AS rseventspro'.$num.' ON rseventspro'.$num.'.email COLLATE utf8mb4_unicode_ci = user.email COLLATE utf8mb4_unicode_ci';
 
         if (!empty($options['status'])) $query->where[] = 'rseventspro'.$num.'.state = '.(intval($options['status']) - 1);
         if (!empty($options['event'])) $query->where[] = 'rseventspro'.$num.'.ide = '.intval($options['event']);

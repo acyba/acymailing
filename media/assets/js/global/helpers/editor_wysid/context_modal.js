@@ -75,13 +75,15 @@ const acym_editorWysidContextModal = {
             $selector.addClass('acym__wysid__row__selector--focus');
             $selector.closest('.acym__wysid__row__element').addClass('acym__wysid__row__element--focus');
 
-            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__block__background-color'),
+            acym_editorWysidColorPicker.setColorPickerForContextModal(
+                jQuery('#acym__wysid__context__block__background-color'),
                 'background-color',
                 $table,
                 $table,
                 'background-color'
             );
-            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__block__border__color'),
+            acym_editorWysidColorPicker.setColorPickerForContextModal(
+                jQuery('#acym__wysid__context__block__border__color'),
                 'border-color',
                 $table,
                 $table,
@@ -120,11 +122,11 @@ const acym_editorWysidContextModal = {
                 jQuery(this).off('change').on('change', function (event) {
                     $table.css('padding-' + jQuery(this).attr('data-block-padding'), jQuery(this).val() + 'px');
                     if (jQuery(this).attr('data-block-padding') === 'top' || jQuery(this).attr('data-block-padding') === 'bottom') {
-                        $selector.css('height', $table.height()
-                                                + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, ''))
-                                                + parseInt($table.css('padding-bottom')
-                                                                 .replace(/[^-\d\.]/g, ''))
-                                                + 'px');
+                        $selector.css(
+                            'height',
+                            $table.height() + parseInt($table.css('padding-top').replace(/[^-\d\.]/g, '')) + parseInt($table.css('padding-bottom')
+                                                                                                                            .replace(/[^-\d\.]/g, '')) + 'px'
+                        );
                     }
                 });
             });
@@ -282,6 +284,7 @@ const acym_editorWysidContextModal = {
         $linkInput.off('keyup').on('keyup', function () {
             let $selectedImg = jQuery('.acym__wysid__media__inserted--selected');
             let $link = $selectedImg.closest('.acym__wysid__link__image');
+            this.value = this.value.replace(/\s+/g, '');
             if (this.value.length > 0) {
                 if ($link.length === 1) {
                     $link.attr('href', this.value);
@@ -384,7 +387,8 @@ const acym_editorWysidContextModal = {
 
             let $button = jQuery(this);
 
-            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__button__background-color'),
+            acym_editorWysidColorPicker.setColorPickerForContextModal(
+                jQuery('#acym__wysid__context__button__background-color'),
                 'background-color',
                 $button,
                 $button,
@@ -392,7 +396,8 @@ const acym_editorWysidContextModal = {
                 false,
                 true
             );
-            acym_editorWysidColorPicker.setColorPickerForContextModal(jQuery('#acym__wysid__context__button__border-color'),
+            acym_editorWysidColorPicker.setColorPickerForContextModal(
+                jQuery('#acym__wysid__context__button__border-color'),
                 'border-left-color',
                 $button,
                 $button,
@@ -506,7 +511,8 @@ const acym_editorWysidContextModal = {
 
             jQuery('.acym__wysid__context__button__align').each(function () {
                 jQuery(this)
-                    .css('background-color',
+                    .css(
+                        'background-color',
                         'acym__wysid__context__button__align__' + $button.closest('div').css('text-align') === jQuery(this).attr('id') ? '' : 'inherit'
                     );
                 jQuery(this).off('click').on('click', function () {

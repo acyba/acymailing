@@ -325,11 +325,11 @@
 					   data-float="left"
 					   data-css='{"float": "left"}'></i>
 					<i class="acymicon-format-align-center cell shrink acym__wysid__context__image__align"
-					   id="acym__wysid__context__image__align__left"
+					   id="acym__wysid__context__image__align__center"
 					   data-float="none"
-					   data-css='{"marginRight": "auto", "marginLeft": "auto", "float": "none"}'></i>
+					   data-css='{"marginRight": "auto", "marginLeft": "auto", "float": "none", "display": "inline-block"}'></i>
 					<i class="acymicon-format-align-right cell shrink acym__wysid__context__image__align"
-					   id="acym__wysid__context__image__align__left"
+					   id="acym__wysid__context__image__align__right"
 					   data-float="right"
 					   data-css='{"float": "right"}'></i>
 				</div>
