@@ -26,13 +26,6 @@
 
 namespace AcyMailing\Libraries\Imap2\Roundcube;
 
-use AcyMailing\Libraries\Imap2\Auth_SASL;
-use AcyMailing\Libraries\Imap2\GSSAPIContext;
-use AcyMailing\Libraries\Imap2\KRB5CCache;
-use AcyMailing\Libraries\Imap2\rcube_message_header;
-use AcyMailing\Libraries\Imap2\rcube_result_index;
-use AcyMailing\Libraries\Imap2\rcube_result_thread;
-
 /**
  * PHP based wrapper class to connect to an IMAP server
  *
@@ -60,6 +53,7 @@ class ImapClient
 
     protected $fp;
     protected $host;
+    protected $user;
     protected $cmd_tag;
     protected $cmd_num = 0;
     protected $resourceid;
@@ -547,260 +541,23 @@ class ImapClient
     }
 
     /**
-     * DIGEST-MD5/CRAM-MD5/PLAIN Authentication
+     * Authentication
      *
-     * @param string $user Username
-     * @param string $pass Password
-     * @param string $type Authentication type (PLAIN/CRAM-MD5/DIGEST-MD5)
-     *
-     * @return resource Connection resourse on success, error code on error
+     * @return resource|string Connection resource on success, error code on error
      */
-    protected function authenticate($user, $pass, $type = 'PLAIN')
+    protected function authenticate(string $user, string $pass)
     {
-        if ($type == 'CRAM-MD5' || $type == 'DIGEST-MD5') {
-            if ($type == 'DIGEST-MD5' && !class_exists('Auth_SASL')) {
-                return $this->setError(
-                    self::ERROR_BYE,
-                    "The Auth_SASL package is required for DIGEST-MD5 authentication"
-                );
-            }
+        $auth = base64_encode("user=$user\1auth=Bearer $pass\1\1");
+        $this->putLine($this->nextTag()." AUTHENTICATE XOAUTH2 $auth", true, true);
 
-            $this->putLine($this->nextTag()." AUTHENTICATE $type");
-            $line = trim($this->readReply());
-
-            if ($line[0] == '+') {
-                $challenge = substr($line, 2);
-            } else {
-                return $this->parseResult($line);
-            }
-
-            if ($type == 'CRAM-MD5') {
-                // RFC2195: CRAM-MD5
-                $ipad = '';
-                $opad = '';
-                $xor = function ($str1, $str2) {
-                    $result = '';
-                    $size = strlen($str1);
-                    for ($i = 0 ; $i < $size ; $i++) {
-                        $result .= chr(ord($str1[$i]) ^ ord($str2[$i]));
-                    }
-
-                    return $result;
-                };
-
-                // initialize ipad, opad
-                for ($i = 0 ; $i < 64 ; $i++) {
-                    $ipad .= chr(0x36);
-                    $opad .= chr(0x5C);
-                }
-
-                // pad $pass so it's 64 bytes
-                $pass = str_pad($pass, 64, chr(0));
-
-                // generate hash
-                $hash = md5(
-                    $xor($pass, $opad).pack(
-                        "H*",
-                        md5($xor($pass, $ipad).base64_decode($challenge))
-                    )
-                );
-                $reply = base64_encode($user.' '.$hash);
-
-                // send result
-                $this->putLine($reply, true, true);
-            } else {
-                // RFC2831: DIGEST-MD5
-                // proxy authorization
-                if (!empty($this->prefs['auth_cid'])) {
-                    $authc = $this->prefs['auth_cid'];
-                    $pass = $this->prefs['auth_pw'];
-                } else {
-                    $authc = $user;
-                    $user = '';
-                }
-
-                $auth_sasl = new Auth_SASL;
-                $auth_sasl = $auth_sasl->factory('digestmd5');
-                $reply = base64_encode(
-                    $auth_sasl->getResponse(
-                        $authc,
-                        $pass,
-                        base64_decode($challenge),
-                        $this->host,
-                        'imap',
-                        $user
-                    )
-                );
-
-                // send result
-                $this->putLine($reply, true, true);
-                $line = trim($this->readReply());
-
-                if ($line[0] != '+') {
-                    return $this->parseResult($line);
-                }
-
-                // check response
-                $challenge = substr($line, 2);
-                $challenge = base64_decode($challenge);
-                if (strpos($challenge, 'rspauth=') === false) {
-                    return $this->setError(
-                        self::ERROR_BAD,
-                        "Unexpected response from server to DIGEST-MD5 response"
-                    );
-                }
-
-                $this->putLine('');
-            }
-
+        $line = trim($this->readReply());
+        if (!empty($line) && $line[0] == '+') {
+            // send empty line
+            $this->putLine('', true, true);
             $line = $this->readReply();
-            $result = $this->parseResult($line);
-        } elseif ($type == 'GSSAPI') {
-            if (!extension_loaded('krb5')) {
-                return $this->setError(
-                    self::ERROR_BYE,
-                    "The krb5 extension is required for GSSAPI authentication"
-                );
-            }
-
-            if (empty($this->prefs['gssapi_cn'])) {
-                return $this->setError(
-                    self::ERROR_BYE,
-                    "The gssapi_cn parameter is required for GSSAPI authentication"
-                );
-            }
-
-            if (empty($this->prefs['gssapi_context'])) {
-                return $this->setError(
-                    self::ERROR_BYE,
-                    "The gssapi_context parameter is required for GSSAPI authentication"
-                );
-            }
-
-            putenv('KRB5CCNAME='.$this->prefs['gssapi_cn']);
-
-            try {
-                $ccache = new KRB5CCache();
-                $ccache->open($this->prefs['gssapi_cn']);
-                $gssapicontext = new GSSAPIContext();
-                $gssapicontext->acquireCredentials($ccache);
-
-                $token = '';
-                $success = $gssapicontext->initSecContext($this->prefs['gssapi_context'], null, null, null, $token);
-                $token = base64_encode($token);
-            } catch (\Exception $e) {
-                trigger_error($e->getMessage(), E_USER_WARNING);
-
-                return $this->setError(self::ERROR_BYE, "GSSAPI authentication failed");
-            }
-
-            $this->putLine($this->nextTag()." AUTHENTICATE GSSAPI ".$token);
-            $line = trim($this->readReply());
-
-            if ($line[0] != '+') {
-                return $this->parseResult($line);
-            }
-
-            try {
-                $itoken = base64_decode(substr($line, 2));
-
-                if (!$gssapicontext->unwrap($itoken, $itoken)) {
-                    throw new \Exception("GSSAPI SASL input token unwrap failed");
-                }
-
-                if (strlen($itoken) < 4) {
-                    throw new \Exception("GSSAPI SASL input token invalid");
-                }
-
-                // Integrity/encryption layers are not supported. The first bit
-                // indicates that the server supports "no security layers".
-                // 0x00 should not occur, but support broken implementations.
-                $server_layers = ord($itoken[0]);
-                if ($server_layers && ($server_layers & 0x1) != 0x1) {
-                    throw new \Exception("Server requires GSSAPI SASL integrity/encryption");
-                }
-
-                // Construct output token. 0x01 in the first octet = SASL layer "none",
-                // zero in the following three octets = no data follows.
-                // See https://github.com/cyrusimap/cyrus-sasl/blob/e41cfb986c1b1935770de554872247453fdbb079/plugins/gssapi.c#L1284
-                if (!$gssapicontext->wrap(pack("CCCC", 0x1, 0, 0, 0), $otoken, true)) {
-                    throw new \Exception("GSSAPI SASL output token wrap failed");
-                }
-            } catch (\Exception $e) {
-                trigger_error($e->getMessage(), E_USER_WARNING);
-
-                return $this->setError(self::ERROR_BYE, "GSSAPI authentication failed");
-            }
-
-            $this->putLine(base64_encode($otoken));
-
-            $line = $this->readReply();
-            $result = $this->parseResult($line);
-        } elseif ($type == 'PLAIN') {
-            // proxy authorization
-            if (!empty($this->prefs['auth_cid'])) {
-                $authc = $this->prefs['auth_cid'];
-                $pass = $this->prefs['auth_pw'];
-            } else {
-                $authc = $user;
-                $user = '';
-            }
-
-            $reply = base64_encode($user.chr(0).$authc.chr(0).$pass);
-
-            // RFC 4959 (SASL-IR): save one round trip
-            if ($this->getCapability('SASL-IR')) {
-                [$result, $line] = $this->execute(
-                    "AUTHENTICATE PLAIN",
-                    [$reply],
-                    self::COMMAND_RAW_LASTLINE | self::COMMAND_CAPABILITY | self::COMMAND_ANONYMIZED
-                );
-            } else {
-                $this->putLine($this->nextTag()." AUTHENTICATE PLAIN");
-                $line = trim($this->readReply());
-
-                if ($line[0] != '+') {
-                    return $this->parseResult($line);
-                }
-
-                // send result, get reply and process it
-                $this->putLine($reply, true, true);
-                $line = $this->readReply();
-                $result = $this->parseResult($line);
-            }
-        } elseif ($type == 'LOGIN') {
-            $this->putLine($this->nextTag()." AUTHENTICATE LOGIN");
-
-            $line = trim($this->readReply());
-            if ($line[0] != '+') {
-                return $this->parseResult($line);
-            }
-
-            $this->putLine(base64_encode($user), true, true);
-
-            $line = trim($this->readReply());
-            if ($line[0] != '+') {
-                return $this->parseResult($line);
-            }
-
-            // send result, get reply and process it
-            $this->putLine(base64_encode($pass), true, true);
-
-            $line = $this->readReply();
-            $result = $this->parseResult($line);
-        } elseif ($type == 'XOAUTH2') {
-            $auth = base64_encode("user=$user\1auth=Bearer $pass\1\1");
-            $this->putLine($this->nextTag()." AUTHENTICATE XOAUTH2 $auth", true, true);
-
-            $line = trim($this->readReply());
-            if (!empty($line) && $line[0] == '+') {
-                // send empty line
-                $this->putLine('', true, true);
-                $line = $this->readReply();
-            }
-
-            $result = $this->parseResult($line);
         }
+
+        $result = $this->parseResult($line);
 
         if ($result === self::ERROR_OK) {
             // optional CAPABILITY response
@@ -811,7 +568,7 @@ class ImapClient
             return $this->fp;
         }
 
-        return $this->setError($result, "AUTHENTICATE $type: $line");
+        return $this->setError($result, "AUTHENTICATE XOAUTH2: $line");
     }
 
     /**
@@ -957,66 +714,9 @@ class ImapClient
             $this->data['ID'] = $this->id($this->prefs['ident']);
         }
 
-        $auth_method = $this->prefs['auth_type'];
-
-        // Switch to XOAUTH2 if password is a JWT token
-        $token = json_decode(base64_decode(str_replace('_', '/', str_replace('-', '+', @explode('.', $password)[0]))), true);
-        if (is_array($token) && isset($token['typ']) && $token['typ'] == 'JWT') {
-            $auth_method = 'XOAUTH2';
-        }
-
-        $auth_methods = [];
-        $result = null;
-
-        // check for supported auth methods
-        if (!$auth_method || $auth_method == 'CHECK') {
-            if ($auth_caps = $this->getCapability('AUTH')) {
-                $auth_methods = $auth_caps;
-            }
-
-            // Use best (for security) supported authentication method
-            $all_methods = ['DIGEST-MD5', 'CRAM-MD5', 'CRAM_MD5', 'PLAIN', 'LOGIN', 'XOAUTH2'];
-
-            if (!empty($this->prefs['gssapi_cn'])) {
-                array_unshift($all_methods, 'GSSAPI');
-            }
-
-            foreach ($all_methods as $auth_method) {
-                if (in_array($auth_method, $auth_methods)) {
-                    break;
-                }
-            }
-
-            // Prefer LOGIN over AUTHENTICATE LOGIN for performance reasons
-            if ($auth_method == 'LOGIN' && !$this->getCapability('LOGINDISABLED')) {
-                $auth_method = 'IMAP';
-            }
-        }
-
         // pre-login capabilities can be not complete
         $this->capability_readed = false;
-
-
-        // Authenticate
-        switch ($auth_method) {
-            case 'CRAM_MD5':
-                $auth_method = 'CRAM-MD5';
-            case 'CRAM-MD5':
-            case 'DIGEST-MD5':
-            case 'GSSAPI':
-            case 'PLAIN':
-            case 'LOGIN':
-            case 'XOAUTH2':
-                $result = $this->authenticate($user, $password, $auth_method);
-                break;
-
-            case 'IMAP':
-                $result = $this->login($user, $password);
-                break;
-
-            default:
-                $this->setError(self::ERROR_BAD, "Configuration error. Unknown auth method: $auth_method");
-        }
+        $result = $this->authenticate($user, $password);
 
         // Connected and authenticated
         if (is_resource($result)) {
@@ -1922,7 +1622,7 @@ class ImapClient
      * @param bool   $return_uid Enables UID SORT usage
      * @param string $encoding   Character set
      *
-     * @return rcube_result_index Response data
+     * @return ResultIndex Response data
      */
     public function sort($mailbox, $field = 'ARRIVAL', $criteria = '', $return_uid = false, $encoding = 'US-ASCII')
     {
@@ -1976,7 +1676,7 @@ class ImapClient
      * @param bool   $return_uid Enables UIDs in result instead of sequence numbers
      * @param string $encoding   Character set
      *
-     * @return rcube_result_thread Thread data
+     * @return ResultThread Thread data
      */
     public function thread($mailbox, $algorithm = 'REFERENCES', $criteria = '', $return_uid = false, $encoding = 'US-ASCII')
     {
@@ -2015,7 +1715,7 @@ class ImapClient
      * @param bool   $return_uid Enable UID in result instead of sequence ID
      * @param array  $items      Return items (MIN, MAX, COUNT, ALL)
      *
-     * @return rcube_result_index Result data
+     * @return ResultIndex Result data
      */
     public function search($mailbox, $criteria, $return_uid = false, $items = [])
     {
@@ -2073,7 +1773,7 @@ class ImapClient
      * @param bool         $uidfetch     Enables UID FETCH usage
      * @param bool         $return_uid   Enables returning UIDs instead of IDs
      *
-     * @return rcube_result_index Response data
+     * @return ResultIndex Response data
      */
     public function index(
         $mailbox,
@@ -2517,7 +2217,7 @@ class ImapClient
      * @param string $mod_seq     Modification sequence for CHANGEDSINCE (RFC4551) query
      * @param bool   $vanished    Enables VANISHED parameter (RFC5162) for CHANGEDSINCE query
      *
-     * @return array List of rcube_message_header elements, False on error
+     * @return array List of MessageHeader elements, False on error
      * @since 0.6
      */
     public function fetch(
@@ -2718,7 +2418,7 @@ class ImapClient
      * @param bool   $bodystr     Enable to add BODYSTRUCTURE data to the result
      * @param array  $add_headers List of additional headers
      *
-     * @return bool|array List of rcube_message_header elements, False on error
+     * @return bool|array List of MessageHeader elements, False on error
      */
     public function fetchHeaders($mailbox, $message_set, $is_uid = false, $bodystr = false, $add_headers = [])
     {
@@ -2759,7 +2459,7 @@ class ImapClient
      * @param bool   $bodystr     Enable to add BODYSTRUCTURE data to the result
      * @param array  $add_headers List of additional headers
      *
-     * @return bool|rcube_message_header Message data, False on error
+     * @return bool|MessageHeader Message data, False on error
      */
     public function fetchHeader($mailbox, $id, $is_uid = false, $bodystr = false, $add_headers = [])
     {
@@ -2774,7 +2474,7 @@ class ImapClient
     /**
      * Sort messages by specified header field
      *
-     * @param array  $messages Array of rcube_message_header objects
+     * @param array  $messages Array of MessageHeader objects
      * @param string $field    Name of the property to sort by
      * @param string $flag     Sorting order (ASC|DESC)
      *
@@ -3226,76 +2926,6 @@ class ImapClient
         $message[] = $fp;
 
         return $this->append($mailbox, $message, $flags, $date, $binary);
-    }
-
-    /**
-     * Returns QUOTA information
-     *
-     * @param string $mailbox Mailbox name
-     *
-     * @return array Quota information
-     */
-    public function getQuota($mailbox = null)
-    {
-        if ($mailbox === null || $mailbox === '') {
-            $mailbox = 'INBOX';
-        }
-
-        // a0001 GETQUOTAROOT INBOX
-        // * QUOTAROOT INBOX user/sample
-        // * QUOTA user/sample (STORAGE 654 9765)
-        // a0001 OK Completed
-
-        [$code, $response] = $this->execute('GETQUOTAROOT', [$this->escape($mailbox)], 0, '/^\* QUOTA /i');
-
-        $result = false;
-        $min_free = PHP_INT_MAX;
-        $all = [];
-
-        if ($code == self::ERROR_OK) {
-            foreach (explode("\n", $response) as $line) {
-                [, , $quota_root] = $this->tokenizeResponse($line, 3);
-
-                $quotas = $this->tokenizeResponse($line, 1);
-
-                if (empty($quotas)) {
-                    continue;
-                }
-
-                foreach (array_chunk($quotas, 3) as $quota) {
-                    [$type, $used, $total] = $quota;
-                    $type = strtolower($type);
-
-                    if ($type && $total) {
-                        $all[$quota_root][$type]['used'] = intval($used);
-                        $all[$quota_root][$type]['total'] = intval($total);
-                    }
-                }
-
-                if (empty($all[$quota_root]['storage'])) {
-                    continue;
-                }
-
-                $used = $all[$quota_root]['storage']['used'];
-                $total = $all[$quota_root]['storage']['total'];
-                $free = $total - $used;
-
-                // calculate lowest available space from all storage quotas
-                if ($free < $min_free) {
-                    $min_free = $free;
-                    $result['used'] = $used;
-                    $result['total'] = $total;
-                    $result['percent'] = min(100, round(($used / max(1, $total)) * 100));
-                    $result['free'] = 100 - $result['percent'];
-                }
-            }
-        }
-
-        if (!empty($result)) {
-            $result['all'] = $all;
-        }
-
-        return $result;
     }
 
     /**

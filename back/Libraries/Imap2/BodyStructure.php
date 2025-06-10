@@ -244,7 +244,7 @@ class BodyStructure
                 ++$index;
             }
 
-            if (count($body->parameters = self::extractParameters($structure[2], []))) {
+            if (isset($structure[2]) && is_array($structure[2]) && count($body->parameters = self::extractParameters($structure[2], []))) {
                 $body->ifparameters = 1;
             } else {
                 $body->parameters = (object)[];

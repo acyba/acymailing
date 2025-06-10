@@ -402,7 +402,8 @@ class UserClass extends AcymClass
             $query .= ' AND list.type = '.acym_escapeDB(ListClass::LIST_TYPE_FOLLOWUP);
         } elseif (!$includeManagement) {
             $types = [ListClass::LIST_TYPE_STANDARD, ListClass::LIST_TYPE_FOLLOWUP];
-            $query .= ' AND list.type in ("'.implode('","', $types).'")';
+            $types = array_map('acym_escapeDB', $types);
+            $query .= ' AND list.type IN ('.implode(',', $types).')';
         }
 
         if ($visible) {

@@ -843,6 +843,11 @@ if (!function_exists('imap2_headerinfo')) {
     function imap2_headerinfo($imap, $messageNum, $fromLength = 0, $subjectLength = 0, $defaultHost = null)
     {
         if (IMAP2_RETROFIT_MODE && is_resource($imap) && get_resource_type($imap) == 'imap') {
+            // PHP version === 8.0.*
+            if (PHP_VERSION_ID >= 80000) {
+                return imap_headerinfo($imap, $messageNum, $fromLength, $subjectLength);
+            }
+
             return imap_headerinfo($imap, $messageNum, $fromLength, $subjectLength, $defaultHost);
         }
 
@@ -1058,7 +1063,7 @@ if (!function_exists('imap_delete')) {
 if (!function_exists('imap2_delete')) {
     function imap2_delete($imap, $messageNums, $flags = 0)
     {
-        if (IMAP2_RETROFIT_MODE && is_resource($imap) && get_resource_type($imap) == 'imap') {
+        if (IMAP2_RETROFIT_MODE && is_resource($imap) && get_resource_type($imap) === 'imap') {
             return imap_delete($imap, $messageNums, $flags);
         }
 

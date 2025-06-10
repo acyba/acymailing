@@ -377,8 +377,12 @@ trait EventBookingInsertion
         $varFields['{sdate}'] = '';
         $varFields['{eb_sdate}'] = '';
         $varFields['{event_date}'] = '';
+        $dateFormat = $this->eventbookingconfig->event_date_format;
+        if(!empty($this->eventbookingconfig->event_time_format)){
+            $dateFormat .= ' '.$this->eventbookingconfig->event_time_format;
+        }
         if ($element->event_date > '0001-00-00') {
-            $varFields['{sdate}'] = acym_date($element->event_date, $this->eventbookingconfig->event_date_format, false);
+            $varFields['{sdate}'] = acym_date($element->event_date, $dateFormat, false);
             $varFields['{eb_sdate}'] = $varFields['{sdate}'];
             $varFields['{event_date}'] = $varFields['{sdate}'];
             if (in_array('sdate', $tag->display)) {
@@ -390,7 +394,7 @@ trait EventBookingInsertion
         $varFields['{eb_edate}'] = '';
         $varFields['{event_end_date}'] = '';
         if ($element->event_end_date > '0001-00-00') {
-            $varFields['{edate}'] = acym_date($element->event_end_date, $this->eventbookingconfig->event_date_format, false);
+            $varFields['{edate}'] = acym_date($element->event_end_date, $dateFormat, false);
             $varFields['{eb_edate}'] = $varFields['{edate}'];
             $varFields['{event_end_date}'] = $varFields['{edate}'];
             if (in_array('edate', $tag->display)) {
@@ -402,7 +406,7 @@ trait EventBookingInsertion
         if ($element->registration_start_date > '0001-00-00') {
             $varFields['{eb_regstart}'] = acym_date(
                 $element->registration_start_date,
-                $this->eventbookingconfig->event_date_format,
+                $dateFormat,
                 false
             );
             if (in_array('eb_regstart', $tag->display)) {
@@ -412,7 +416,7 @@ trait EventBookingInsertion
 
         $varFields['{eb_cut}'] = '';
         if ($element->cut_off_date > '0001-00-00') {
-            $varFields['{eb_cut}'] = acym_date($element->cut_off_date, $this->eventbookingconfig->event_date_format, false);
+            $varFields['{eb_cut}'] = acym_date($element->cut_off_date, $dateFormat, false);
             if (in_array('eb_cut', $tag->display)) {
                 $customFields[] = [$varFields['{eb_cut}'], acym_translation('EB_CUT_OFF_DATE')];
             }
@@ -420,7 +424,7 @@ trait EventBookingInsertion
 
         $varFields['{eb_created}'] = '';
         if ($element->created_date > '0001-00-00') {
-            $varFields['{eb_created}'] = acym_date($element->created_date, $this->eventbookingconfig->event_date_format, false);
+            $varFields['{eb_created}'] = acym_date($element->created_date, $dateFormat, false);
             if (in_array('eb_created', $tag->display)) {
                 $customFields[] = [$varFields['{eb_created}'], acym_translation('ACYM_DATE_CREATED')];
             }
@@ -430,7 +434,7 @@ trait EventBookingInsertion
         if ($element->early_bird_discount_date > '0001-00-00') {
             $varFields['{eb_early}'] = acym_date(
                 $element->early_bird_discount_date,
-                $this->eventbookingconfig->event_date_format,
+                $dateFormat,
                 false
             );
             if (in_array('eb_early', $tag->display)) {
@@ -442,7 +446,7 @@ trait EventBookingInsertion
         if ($element->cancel_before_date > '0001-00-00') {
             $varFields['{eb_cancel_before}'] = acym_date(
                 $element->cancel_before_date,
-                $this->eventbookingconfig->event_date_format,
+                $dateFormat,
                 false
             );
             if (in_array('eb_cancel_before', $tag->display)) {
@@ -454,7 +458,7 @@ trait EventBookingInsertion
         if ($element->registrant_edit_close_date > '0001-00-00') {
             $varFields['{eb_registrant_edit_close}'] = acym_date(
                 $element->registrant_edit_close_date,
-                $this->eventbookingconfig->event_date_format,
+                $dateFormat,
                 false
             );
             if (in_array('eb_registrant_edit_close', $tag->display)) {
@@ -464,7 +468,7 @@ trait EventBookingInsertion
 
         $varFields['{eb_max_end}'] = '';
         if ($element->max_end_date > '0001-00-00') {
-            $varFields['{eb_max_end}'] = acym_date($element->max_end_date, $this->eventbookingconfig->event_date_format, false);
+            $varFields['{eb_max_end}'] = acym_date($element->max_end_date, $dateFormat, false);
             if (in_array('eb_max_end', $tag->display)) {
                 $customFields[] = [$varFields['{eb_max_end}'], acym_translation('EB_VALIDATION_MAXIMUM').' '.acym_translation('EB_EVENT_END_DATE')];
             }
@@ -472,7 +476,7 @@ trait EventBookingInsertion
 
         $varFields['{eb_late_fee}'] = '';
         if ($element->late_fee_date > '0001-00-00') {
-            $varFields['{eb_late_fee}'] = acym_date($element->late_fee_date, $this->eventbookingconfig->event_date_format, false);
+            $varFields['{eb_late_fee}'] = acym_date($element->late_fee_date, $dateFormat, false);
             if (in_array('eb_late_fee', $tag->display)) {
                 $customFields[] = [$varFields['{eb_late_fee}'], acym_translation('EB_LATE_FEE_DATE')];
             }
@@ -482,7 +486,7 @@ trait EventBookingInsertion
         if ($element->deposit_until_date > '0001-00-00') {
             $varFields['{eb_deposit_until}'] = acym_date(
                 $element->deposit_until_date,
-                $this->eventbookingconfig->event_date_format,
+                $dateFormat,
                 false
             );
             if (in_array('eb_deposit_until', $tag->display)) {

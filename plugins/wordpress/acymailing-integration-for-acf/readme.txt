@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, integration, acymailing, acf, advanced custom fields
 Tested up to: 6.8
-Stable tag: 1.6
+Stable tag: 1.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -48,4 +48,4 @@ You can find the complete documentation here: https://docs.acymailing.com/addons
 = 1.0 - June 24, 2024 =
 * Initial release
 
-[See the whole changelog here.](https://www.acymailing.com/change-log)
+[See the whole changelog here.](https://www.acymailing.com/changelog)

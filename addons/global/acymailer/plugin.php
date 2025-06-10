@@ -522,6 +522,14 @@ class plgAcymAcymailer extends AcymPlugin
             return;
         }
 
+        $recipients = [];
+        if (!empty($mailerHelper->cc) || !empty($mailerHelper->bcc)) {
+            $recipients[] = $to['email'];
+            $recipients = array_merge($recipients, array_column($mailerHelper->cc, 0), array_column($mailerHelper->bcc, 0));
+            $mailerHelper->cc = [];
+            $mailerHelper->bcc = [];
+        }
+
         $responseMailer = $this->callApiSendingMethod(
             'send',
             [
@@ -529,6 +537,7 @@ class plgAcymAcymailer extends AcymPlugin
                 'domainsUsed' => $domainsUsed,
                 'isTransactional' => $mailerHelper->isTransactional,
                 'isOneTimeMail' => $mailerHelper->isOneTimeMail,
+                'recipients' => $recipients,
             ],
             [],
             'POST'

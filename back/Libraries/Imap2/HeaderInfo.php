@@ -13,7 +13,6 @@ namespace AcyMailing\Libraries\Imap2;
 
 class HeaderInfo
 {
-
     public static function fromMessage($message, $defaultHost)
     {
         #file_put_contents('t3.json', json_encode($message, JSON_PRETTY_PRINT));
@@ -87,7 +86,12 @@ class HeaderInfo
 
     protected static function parseAddressList($address, $defaultHost)
     {
-        $addressList = imap_rfc822_parse_adrlist($address, $defaultHost);
+        if (empty($address)) {
+            return [];
+        }
+
+        $host = empty($defaultHost) ? '' : $defaultHost;
+        $addressList = imap_rfc822_parse_adrlist($address, $host);
         $customAddressList = [];
 
         foreach ($addressList as $objectEntry) {

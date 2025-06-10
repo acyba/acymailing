@@ -21,10 +21,6 @@
 
 namespace AcyMailing\Libraries\Imap2\Roundcube;
 
-use AcyMailing\Libraries\Imap2\Offset;
-use AcyMailing\Libraries\Imap2\rcube_imap_generic;
-use AcyMailing\Libraries\Imap2\rcube_result_index;
-
 /**
  * Class for accessing IMAP's THREAD result
  *
@@ -190,7 +186,7 @@ class ResultThread
     /**
      * Slices data set.
      *
-     * @param $offset Offset (as for PHP's array_slice())
+     * @param $offset (as for PHP's array_slice())
      * @param $length Number of elements (as for PHP's array_slice())
      */
     public function slice($offset, $length)
@@ -326,20 +322,6 @@ class ResultThread
     }
 
     /**
-     * Return all messages in the result.
-     *
-     * @return array List of message identifiers
-     */
-    public function get_compressed()
-    {
-        if (empty($this->raw_data)) {
-            return '';
-        }
-
-        return rcube_imap_generic::compressMessageSet($this->get());
-    }
-
-    /**
      * Return result element at specified index (all messages, not roots)
      *
      * @param int|string $index Element's index or "FIRST" or "LAST"
@@ -434,11 +416,11 @@ class ResultThread
     /**
      * THREAD=REFS sorting implementation (based on provided index)
      *
-     * @param rcube_result_index $index Sorted message identifiers
+     * @param ResultIndex $index Sorted message identifiers
      */
     public function sort($index)
     {
-        $this->sort_order = $index->get_parameters('ORDER');
+        $this->order = $index->get_parameters('ORDER');
 
         if (empty($this->raw_data)) {
             return;

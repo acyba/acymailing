@@ -1,10 +1,9 @@
 <?php
 
-
 namespace AcyMailing\Libraries\Imap2\Roundcube;
 
 /**
- * Class for sorting an array of rcube_message_header objects in a predetermined order.
+ * Class for sorting an array of MessageHeader objects in a predetermined order.
  *
  * @package    Framework
  * @subpackage Storage
@@ -30,7 +29,7 @@ class MessageHeaderSorter
     /**
      * Sort the array of header objects
      *
-     * @param array $headers Array of rcube_message_header objects indexed by UID
+     * @param array $headers Array of MessageHeader objects indexed by UID
      */
     function sort_headers(&$headers)
     {

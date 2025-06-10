@@ -24,13 +24,8 @@ class ImapHelpers
     public static function idToUid($imap, $messageNums)
     {
         $client = $imap->getClient();
-
         $messages = $client->fetch($imap->getMailboxName(), $messageNums, false, ['UID']);
-
-        $uid = [];
-        foreach ($messages as $message) {
-            $uid[] = $message->uid;
-        }
+        $uid = array_column($messages, 'uid');
 
         return implode(',', $uid);
     }

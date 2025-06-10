@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, acymailing, learndash, subscription
 Tested up to: 6.8
-Stable tag: 1.3
+Stable tag: 1.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -49,4 +49,4 @@ You can find the complete documentation here: https://docs.acymailing.com/addons
 * Filter your users on their Learndash groups
 * Filter your users on attended courses
 
-[See the whole changelog here.](https://www.acymailing.com/change-log)
+[See the whole changelog here.](https://www.acymailing.com/changelog)

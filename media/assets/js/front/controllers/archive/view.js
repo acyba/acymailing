@@ -33,10 +33,12 @@ jQuery(function ($) {
     function setIframeContent($isolatedPreview, emailContent) {
         emailContent = emailContent.replace('</body>', '<style>.hideonline {display: none !important;}</style></body>');
         $isolatedPreview.contents().find('html').html(emailContent);
-
         $isolatedPreview.contents().find('html').find('a').each(function () {
+            const href = jQuery(this).attr('href');
             // Make sure the links open in a new tab because we place it in an iframe and it doesn't open if there is no target
-            jQuery(this).attr('target', '_blank');
+            if (href && href.indexOf('#') !== 0) {
+                jQuery(this).attr('target', '_blank');
+            }
         });
     }
 });

@@ -62,8 +62,10 @@
                         ).'</span>';
                     echo acym_translationSprintf(
                         'ACYM_SEND_X_BATCH_OF_X_EMAILS_EVERY_Y',
-                        '<input '.$disabledBatch.' class="intext_input auto_sending_input" type="number" min="1" name="config[queue_batch_auto]" value="'.$valueBatch.'" />',
-                        '<input class="intext_input auto_sending_input" type="number" min="1" name="config[queue_nbmail_auto]" value="'.intval(
+                        '<input '.$disabledBatch.' class="intext_input auto_sending_input" type="number" min="1" max="10" name="config[queue_batch_auto]" value="'.intval(
+                            $valueBatch
+                        ).'" />',
+                        '<input class="intext_input auto_sending_input" type="number" min="1" max="900" name="config[queue_nbmail_auto]" value="'.intval(
                             $this->config->get('queue_nbmail_auto')
                         ).'" />',
                         $delayHtml

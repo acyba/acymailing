@@ -189,7 +189,10 @@ class MessageHeader
      */
     public $flags = [];
 
-    // map header to rcube_message_header object property
+    public $envelope;
+    public array $bodypart = [];
+
+    // map header to MessageHeader object property
     private $obj_headers = [
         'date' => 'date',
         'from' => 'from',
@@ -260,7 +263,7 @@ class MessageHeader
      *
      * @param array Hash array with header values
      *
-     * @return object rcube_message_header instance filled with headers values
+     * @return object MessageHeader instance filled with headers values
      */
     public static function from_array($arr)
     {

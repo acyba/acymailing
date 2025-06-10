@@ -30,7 +30,7 @@ if ($listPosition == 'before') echo $listsContent;
 	<tr>
         <?php
         foreach ($fields as $field) {
-            $field->option = json_decode($field->option);
+            $field->option = !empty($field->option) ? json_decode($field->option) : new stdClass();
             $fieldDB = empty($field->option->fieldDB) ? '' : json_decode($field->option->fieldDB);
             $field->value = empty($field->value) ? '' : json_decode($field->value);
             $valuesArray = [];

@@ -19,6 +19,10 @@ class BounceHelper extends AcymObject
         'outlook.office365.com',
     ];
 
+    const MESSAGE_TYPE_SUCCESS = 0;
+    const MESSAGE_TYPE_INFO = 1;
+    const MESSAGE_TYPE_ERROR = 2;
+
     // Needed information for the connection
     private string $server;
     private string $username;
@@ -54,9 +58,10 @@ class BounceHelper extends AcymObject
     // Correspond to mailbox entity in database
     public object $action;
     public array $attachments = [];
-    private array $inlineImages = [];
 
+    private array $inlineImages = [];
     private array $allCharsets;
+    private bool $errorDuringActions = false;
 
     private RuleClass $ruleClass;
     private MailClass $mailClass;
@@ -445,7 +450,7 @@ class BounceHelper extends AcymObject
                                 }
                             } catch (\Exception $e) {
                                 $completeFilename = $filename.'.'.$extension;
-                                $this->display(acym_translationSprintf('ACYM_ERROR_UPLOADING_ATTACHMENT_X_TO_X', $completeFilename, $e->getMessage()), false);
+                                $this->display(acym_translationSprintf('ACYM_ERROR_UPLOADING_ATTACHMENT_X_TO_X', $completeFilename, $e->getMessage()), self::MESSAGE_TYPE_ERROR);
                             }
                         } else {
                             preg_match('#Content-ID: <([^>]+)>#i', $segment, $contentID);
@@ -465,7 +470,7 @@ class BounceHelper extends AcymObject
                                     $inlineImages['cid:'.$contentID] = acym_rootURI().$uploadFolder.'/'.$filename.'.'.$extension;
                                 }
                             } catch (\Exception $e) {
-                                $this->display(acym_translationSprintf('ACYM_ERROR_UPLOAD_ATTACHMENT', $filename.'.'.$extension, $e->getMessage()), false);
+                                $this->display(acym_translationSprintf('ACYM_ERROR_UPLOAD_ATTACHMENT', $filename.'.'.$extension, $e->getMessage()), self::MESSAGE_TYPE_ERROR);
                             }
                         }
                     }
@@ -521,11 +526,12 @@ class BounceHelper extends AcymObject
 
             $text = '';
             foreach ($allParts as $num => $onePart) {
-                $decodedContent = $this->decodeContent($this->callImapFunction('imap_fetchbody', [$this->mailbox, $this->_message->messageNB, $num]), $onePart);
-                if ($onePart->subtype == 'HTML') {
+                $content = $this->callImapFunction('imap_fetchbody', [$this->mailbox, $this->_message->messageNB, $num]);
+                $decodedContent = empty($content) ? '' : $this->decodeContent($content, $onePart);
+                if ($onePart->subtype === 'HTML') {
                     $this->_message->html .= $decodedContent;
                 } else {
-                    if ($onePart->subtype == 'PLAIN') {
+                    if ($onePart->subtype === 'PLAIN') {
                         $text .= $decodedContent."\n";
                     }
                     $this->_message->text .= $decodedContent."\n\n- - -\n\n";
@@ -560,7 +566,11 @@ class BounceHelper extends AcymObject
         }
 
         //Decode the subject
-        $this->_message->subject = $this->decodeHeader($this->_message->subject);
+        if (!empty($this->_message->subject)) {
+            $this->_message->subject = $this->decodeHeader($this->_message->subject);
+        } else {
+            $this->_message->subject = '';
+        }
 
         $this->decodeAddressImap('sender');
         $this->decodeAddressImap('from');
@@ -636,7 +646,7 @@ class BounceHelper extends AcymObject
             }
         } catch (\Exception $e) {
             $completeFilename = $filename.'.'.$extension;
-            $this->display(acym_translationSprintf('ACYM_ERROR_UPLOADING_ATTACHMENT_X_TO_X', $completeFilename, $e->getMessage()), false);
+            $this->display(acym_translationSprintf('ACYM_ERROR_UPLOADING_ATTACHMENT_X_TO_X', $completeFilename, $e->getMessage()), self::MESSAGE_TYPE_ERROR);
         }
     }
 
@@ -724,7 +734,7 @@ class BounceHelper extends AcymObject
 
             //We could not retrieve the message... we continue with the next message
             if (!$this->decodeMessage()) {
-                $this->display(acym_translation('ACYM_ERROR_RETRIEVING_MESSAGE'), false, $maxMessages - $this->_message->messageNB + 1);
+                $this->display(acym_translation('ACYM_ERROR_RETRIEVING_MESSAGE'), self::MESSAGE_TYPE_ERROR, $maxMessages - $this->_message->messageNB + 1);
                 continue;
             }
 
@@ -737,7 +747,11 @@ class BounceHelper extends AcymObject
             if (!empty($this->_message->header->from_email)) {
                 $this->_message->analyseText .= ' '.$this->_message->header->from_email;
             }
-            $this->display('<b>'.acym_translation('ACYM_EMAIL_SUBJECT').' : '.strip_tags($this->_message->subject).'</b>', false, $maxMessages - $this->_message->messageNB + 1);
+            $this->display(
+                '<b>'.acym_translation('ACYM_EMAIL_SUBJECT').' : '.strip_tags($this->_message->subject).'</b>',
+                self::MESSAGE_TYPE_SUCCESS,
+                $maxMessages - $this->_message->messageNB + 1
+            );
 
             //Identify the user and the e-mail...
             preg_match('#AC([0-9]+)Y([0-9]+)BA#i', $this->_message->analyseText, $resultsVars);
@@ -917,9 +931,11 @@ class BounceHelper extends AcymObject
                 $analyseText .= $this->_message->header->sender_email;
             }
         }
+
         if (in_array('subject', $oneRule->executed_on)) {
             $analyseText .= ' '.$this->_message->subject;
         }
+
         if (in_array('body', $oneRule->executed_on)) {
             if (!empty($this->_message->html)) {
                 $analyseText .= ' '.$this->_message->html;
@@ -937,10 +953,16 @@ class BounceHelper extends AcymObject
         }
 
         $message = acym_translation('ACYM_BOUNCE_RULE').' ['.acym_translation('ACYM_ID').' '.$oneRule->id.'] '.acym_translation($oneRule->name).' : ';
+        $this->errorDuringActions = false;
         $message .= $this->actionUser($oneRule);
         $message .= $this->actionMessage($oneRule);
 
-        $this->display($message);
+        $type = self::MESSAGE_TYPE_SUCCESS;
+        if ($this->errorDuringActions) {
+            $type = self::MESSAGE_TYPE_ERROR;
+        }
+
+        $this->display($message, $type);
 
         return true;
     }
@@ -1243,11 +1265,11 @@ class BounceHelper extends AcymObject
                 $message .= ' | '.acym_translationSprintf('ACYM_FORWARDED_TO_X', $oneRule->action_message['forward_to']);
             } else {
                 $message .= ' | '.acym_translationSprintf('ACYM_NOT_FORWARDED_TO_X', $oneRule->action_message['forward_to'], $this->mailer->reportMessage);
-                $donotdelete = true;
+                $this->errorDuringActions = true;
             }
         }
 
-        if (in_array('delete_message', $oneRule->action_message) && !$donotdelete) {
+        if (in_array('delete_message', $oneRule->action_message) && !$this->errorDuringActions) {
             $message .= ' | '.acym_translation('ACYM_MESSAGE_DELETED');
             $this->deleteMessage($this->_message->messageNB);
         }
@@ -1282,13 +1304,20 @@ class BounceHelper extends AcymObject
     /**
      * If num is empty then it's a message otherwise it's a send status
      */
-    protected function display(string $message, bool $success = true, string $num = ''): void
+    protected function display(string $message, int $type = self::MESSAGE_TYPE_SUCCESS, string $num = ''): void
     {
         $this->messages[] = $message;
 
         if (!$this->report) return;
 
-        $color = $success ? 'green' : 'blue';
+        if ($type === self::MESSAGE_TYPE_SUCCESS) {
+            $color = 'green';
+        } elseif ($type === self::MESSAGE_TYPE_INFO) {
+            $color = 'blue';
+        } else {
+            $color = 'red';
+        }
+
         if (!empty($num)) {
             echo '<br />'.$num.' : ';
         } else {

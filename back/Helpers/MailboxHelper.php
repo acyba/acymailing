@@ -64,10 +64,10 @@ class MailboxHelper extends BounceHelper
         $conditions = $this->action->conditions;
         $fromEmail = $this->_message->header->from_email;
 
-        if ($conditions['sender'] == 'specific') {
+        if ($conditions['sender'] === 'specific') {
             $allowedSenders = explode(',', $conditions['specific']);
             if (empty($allowedSenders) || !in_array($fromEmail, $allowedSenders)) {
-                $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X', $fromEmail));
+                $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X', $fromEmail), self::MESSAGE_TYPE_INFO);
 
                 return false;
             }
@@ -76,7 +76,7 @@ class MailboxHelper extends BounceHelper
         if ($conditions['sender'] == 'group') {
             $cmsUserId = acym_getCmsUserIdByEmail($fromEmail);
             if (empty($cmsUserId)) {
-                $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X_CMS', $fromEmail, ACYM_CMS_TITLE));
+                $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X_CMS', $fromEmail, ACYM_CMS_TITLE), self::MESSAGE_TYPE_INFO);
 
                 return false;
             }
@@ -84,7 +84,7 @@ class MailboxHelper extends BounceHelper
             $groups = acym_getGroupsByUser($cmsUserId, false);
 
             if (!in_array($conditions['groups'], $groups)) {
-                $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X_GROUP', $fromEmail, implode(', ', $conditions['groups'])));
+                $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X_GROUP', $fromEmail, implode(', ', $conditions['groups'])), self::MESSAGE_TYPE_INFO);
 
                 return false;
             }
@@ -95,7 +95,7 @@ class MailboxHelper extends BounceHelper
             $user = $userClass->getOneByEmail($fromEmail);
 
             if (empty($user)) {
-                $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X_NOT_EXISTS', $fromEmail));
+                $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X_NOT_EXISTS', $fromEmail), self::MESSAGE_TYPE_INFO);
 
                 return false;
             }
@@ -103,7 +103,7 @@ class MailboxHelper extends BounceHelper
             $subscriptions = $userClass->getSubscriptionStatus($user->id, $conditions['lists'], 1);
 
             if (empty($subscriptions)) {
-                $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X_LIST', $fromEmail));
+                $this->display(acym_translationSprintf('ACYM_SENDER_NOT_ALLOWED_X_LIST', $fromEmail), self::MESSAGE_TYPE_INFO);
 
                 return false;
             }
@@ -134,7 +134,7 @@ class MailboxHelper extends BounceHelper
         }
 
         if (!$passSubject) {
-            $this->display(acym_translation('ACYM_SUBJECT_DOESNT_MATCH'));
+            $this->display(acym_translation('ACYM_SUBJECT_DOESNT_MATCH'), self::MESSAGE_TYPE_INFO);
 
             return false;
         }
@@ -218,7 +218,7 @@ class MailboxHelper extends BounceHelper
 
             //We could not retrieve the message... we continue with the next message
             if (!$this->decodeMessage()) {
-                $this->display(acym_translation('ACYM_ERROR_RETRIEVING_MESSAGE'), false, $maxMessages - $this->_message->messageNB + 1);
+                $this->display(acym_translation('ACYM_ERROR_RETRIEVING_MESSAGE'), self::MESSAGE_TYPE_ERROR, $maxMessages - $this->_message->messageNB + 1);
                 continue;
             }
 
@@ -228,7 +228,7 @@ class MailboxHelper extends BounceHelper
             $stripedHtml = strip_tags($this->_message->html);
 
             if (strlen($stripedHtml) < 3) {
-                $this->display(acym_translation('ACYM_EMPTY_EMAIL_X', acym_escape($this->_message->subject)));
+                $this->display(acym_translation('ACYM_EMPTY_EMAIL_X', acym_escape($this->_message->subject)), self::MESSAGE_TYPE_ERROR);
                 if ($this->action->delete_wrong_emails) {
                     $this->deleteMessage($this->_message->messageNB);
                 }
@@ -236,7 +236,7 @@ class MailboxHelper extends BounceHelper
             }
 
             if (!$this->conditionsPass()) {
-                $this->display(acym_translation('ACYM_INVALID_EMAIL', $this->_message->subject));
+                $this->display(acym_translation('ACYM_INVALID_EMAIL', $this->_message->subject), self::MESSAGE_TYPE_ERROR);
                 if ($this->action->delete_wrong_emails) {
                     $this->deleteMessage($this->_message->messageNB);
                 }
@@ -260,7 +260,6 @@ class MailboxHelper extends BounceHelper
         $executedActions = [];
 
         foreach ($this->action->actions as $actionKey => $oneAction) {
-
             $this->display('<strong>'.acym_translationSprintf('ACYM_ACTION_X', intval($actionKey) + 1).'</strong>');
 
             $actionId = array_keys($oneAction)[0];
@@ -274,7 +273,7 @@ class MailboxHelper extends BounceHelper
             acym_trigger('onAcymMailboxAction_'.$actionId, [&$oneAction[$actionId], &$reportMessages, &$executedActions[$actionKey], $this]);
 
             foreach ($reportMessages as $reportMessage) {
-                $this->display($reportMessage['message'], $reportMessage['success']);
+                $this->display($reportMessage['message'], $reportMessage['success'] ? self::MESSAGE_TYPE_SUCCESS : self::MESSAGE_TYPE_ERROR);
             }
 
             $this->attachments = [];

@@ -1,5 +1,5 @@
 {
-    "max_version": "10.2.0",
+    "max_version": "10.3.0",
     "splash_content": [
         {
             "menu_title": "General",
@@ -7,28 +7,16 @@
             "title": "SEE THE GENERAL CHANGES",
             "articles": [
                 {
-                    "title": "New dashboard page",
-                    "desc": "The dashboard page has been reworked to include tips for new users and to better monitor your campaigns."
+                    "title": "Bounce handling for Microsoft mailboxes",
+                    "desc": "The compatibility with Microsoft mailboxes has been added for the bounce handling feature."
                 },
                 {
-                    "title": "Google and Microsoft accounts",
-                    "desc": "The sending of emails with Google and Microsoft accounts has been reworked to better match their new protocols. The same has also been done for the connection to the bounce address."
+                    "title": "Better anchors",
+                    "desc": "The anchors in sent emails don't open in a new tab anymore when clicked on the online version."
                 },
                 {
-                    "title": "AcyMailing watermark removal",
-                    "desc": "You can now remove the Built with AcyMailing logo in the unsubscribe page."
-                },
-                {
-                    "title": "AcyChecker integration",
-                    "desc": "The integration with AcyChecker has been updated for compatibility with the version 1.5.0."
-                },
-                {
-                    "title": "Week number in emails",
-                    "desc": "It is now possible to dynamically insert the week number and the year in an email."
-                },
-                {
-                    "title": "Better deliverability",
-                    "desc": "The List-Unsubscribe header has been activated by default to improve deliverability. This leads to lower complaints from users struggling to find the unsubscribe link."
+                    "title": "CC and BCC for our sending service",
+                    "desc": "It is now possible to send emails to CC and BCC addresses using the AcyMailing sending service."
                 }
             ]
         },
@@ -38,35 +26,12 @@
             "title": "WHAT CHANGED FOR JOOMLA",
             "articles": [
                 {
-                    "title": "Better EasyBlog images handling",
-                    "desc": "We now have a better handling of EasyBlog images in case they were already existing from a previous post."
+                    "title": "Event dates now include the hour",
+                    "desc": "[add-ons] The dates for inserted EventBooking events now include the time."
                 },
                 {
-                    "title": "Optimised HikaShop filter",
-                    "desc": "The filter on HikaShop purchases has been optimised to improve the performance in the automations and segments."
-                },
-                {
-                    "title": "Improved Joomla SEF links",
-                    "desc": "We added a security when trying to generate the SEF version of a link, in case Joomla fails to generate it."
-                }
-            ]
-        },
-        {
-            "menu_title": "WordPress",
-            "menu_icon": "acymicon-wordpress",
-            "title": "WHAT CHANGED FOR WORDPRESS",
-            "articles": [
-                {
-                    "title": "Advanced Custom Fields Pro",
-                    "desc": "It is now possible to use our ACF integration with their pro version."
-                },
-                {
-                    "title": "Improved WordPress multisite integration",
-                    "desc": "The installation on a single site of a WordPress multisite will no longer install AcyMailing on all network websites."
-                },
-                {
-                    "title": "WooCommerce last purchased products",
-                    "desc": "The last purchased products are now correctly found and inserted in emails."
+                    "title": "Community Builder integration",
+                    "desc": "[add-ons] The Community Builder integration's options are now correctly shown."
                 }
             ]
         },
@@ -76,24 +41,32 @@
             "title": "THE FIXES INCLUDED IN THIS VERSION",
             "articles": [
                 {
-                    "title": "Vulnerability patch",
-                    "desc": "We patched a vulnerability on welcome emails creation. More details available on our changelog page."
+                    "title": "Detailed statistics export",
+                    "desc": "Fixed the error when exporting the links details in the detailed statistics."
                 },
                 {
-                    "title": "Inactive lists",
-                    "desc": "Inactive lists won't appear in the recipients section anymore."
+                    "title": "Profile form display",
+                    "desc": "Fixed the error when displaying forms in the user edit profile page in the front-end."
                 },
                 {
-                    "title": "User data export and deletion",
-                    "desc": "We fixed an issue with the GDPR options (user data export and deletion) regarding custom fields."
+                    "title": "Detailed stats: link layout",
+                    "desc": "Fixed the wrong display of long links in the detailed statistics page."
                 },
                 {
-                    "title": "Custom bounce email address",
-                    "desc": "The bounce email address in the mail settings will now correctly be used over the bounce email address in the configuration."
+                    "title": "Subscriber sorting by date",
+                    "desc": "Fixed the bug affecting the sorting of subscribers by subscription date when editing a list."
                 },
                 {
-                    "title": "Scenario creation",
-                    "desc": "The creation of a new scenario has been fixed."
+                    "title": "Bounce rules",
+                    "desc": "Fixed the error that could occur when running the bounce rules."
+                },
+                {
+                    "title": "List doesn't appear unsubscribe page",
+                    "desc": "We have fixed an error that could occur in rare cases that was causing lists not to appear on the unsubscribe page."
+                },
+                {
+                    "title": "List edition",
+                    "desc": "'We have fixed the problem that when you save a list in the edition page while being on the Subscribers or Unsubscribers tab, the list's description, tags and accesses were deleted."
                 }
             ]
         }

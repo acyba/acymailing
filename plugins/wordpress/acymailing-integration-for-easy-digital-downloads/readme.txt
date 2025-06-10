@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, integration, acymailing, e-commerce, digital store
 Tested up to: 6.8
-Stable tag: 3.3
+Stable tag: 3.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -49,4 +49,4 @@ You can find the complete documentation here: https://docs.acymailing.com/addons
 = 1.0 - January 11, 2022 =
 * Initial release
 
-[See the whole changelog here.](https://www.acymailing.com/change-log)
+[See the whole changelog here.](https://www.acymailing.com/changelog)

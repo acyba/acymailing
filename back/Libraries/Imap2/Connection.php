@@ -15,6 +15,11 @@ use AcyMailing\Libraries\Imap2\Roundcube\ImapClient;
 
 class Connection
 {
+    const DEFAULT_MAILBOX = 'INBOX';
+    const DEFAULT_MAILBOX_GMAIL = '[Gmail]/All Mail';
+    const DEFAULT_OUTLOOK = 'Inbox';
+    const GMAIL_TRASH_MAILBOX = '[Gmail]/Trash';
+
     protected $mailbox;
     protected $user;
     protected $password;
@@ -143,9 +148,16 @@ class Connection
 
         if (empty($this->currentMailbox)) {
             $mailboxes = $this->client->listMailboxes('', '*');
-            if (in_array('INBOX', $mailboxes)) {
-                $this->currentMailbox = 'INBOX';
-                $this->mailbox .= 'INBOX';
+
+            if (in_array(self::DEFAULT_MAILBOX_GMAIL, $mailboxes)) {
+                $this->currentMailbox = self::DEFAULT_MAILBOX_GMAIL;
+                $this->mailbox .= self::DEFAULT_MAILBOX_GMAIL;
+            } elseif (in_array(self::DEFAULT_OUTLOOK, $mailboxes)) {
+                $this->currentMailbox = self::DEFAULT_OUTLOOK;
+                $this->mailbox .= self::DEFAULT_OUTLOOK;
+            } elseif (in_array(self::DEFAULT_MAILBOX, $mailboxes)) {
+                $this->currentMailbox = self::DEFAULT_MAILBOX;
+                $this->mailbox .= self::DEFAULT_MAILBOX;
             }
         }
 

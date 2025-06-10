@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, acymailing, uncanny, automator, integration
 Tested up to: 6.8
-Stable tag: 2.6
+Stable tag: 2.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -46,4 +46,4 @@ You can find the complete documentation here: https://docs.acymailing.com/addons
 * Added the subscribe/unsubscribe actions
 * Added the user creation/update actions
 
-[See the whole changelog here.](https://www.acymailing.com/change-log)
+[See the whole changelog here.](https://www.acymailing.com/changelog)

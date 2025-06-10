@@ -51,7 +51,8 @@ jQuery(function ($) {
             methods: {
                 loadMoreSubscriber() {
                     start += perScroll;
-                    this.displayedSubscribers = '' === this.searchSubscribers ? this.subscribed.slice(0, start) : search(this.subscribed,
+                    this.displayedSubscribers = '' === this.searchSubscribers ? this.subscribed.slice(0, start) : search(
+                        this.subscribed,
                         this.searchSubscribers,
                         columns
                     );
@@ -120,6 +121,19 @@ jQuery(function ($) {
                         this.displayedSubscribers.sort((a, b) => {
                             const nameA = String(a[this.columnOrderSelected]).toLowerCase();
                             const nameB = String(b[this.columnOrderSelected]).toLowerCase();
+                            const dateA = Date.parse(nameA);
+                            const dateB = Date.parse(nameB);
+
+                            if (!isNaN(dateA) && !isNaN(dateB)) {
+                                if (dateA < dateB) {
+                                    return 1;
+                                } else if (dateA > dateB) {
+                                    return -1;
+                                } else {
+                                    return 0;
+                                }
+                            }
+
                             if (nameA > nameB) {
                                 return -1;
                             } else if (nameA < nameB) {
@@ -137,6 +151,19 @@ jQuery(function ($) {
                     this.displayedSubscribers.sort((a, b) => {
                         const nameA = String(a[this.columnOrderSelected]).toLowerCase();
                         const nameB = String(b[this.columnOrderSelected]).toLowerCase();
+                        const dateA = Date.parse(nameA);
+                        const dateB = Date.parse(nameB);
+
+                        if (!isNaN(dateA) && !isNaN(dateB)) {
+                            if (dateA < dateB) {
+                                return -1;
+                            } else if (dateA > dateB) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        }
+
                         if (nameA < nameB) {
                             return -1;
                         } else if (nameA > nameB) {

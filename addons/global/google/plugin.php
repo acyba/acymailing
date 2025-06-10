@@ -1,6 +1,7 @@
 <?php
 
 use AcyMailing\Core\AcymPlugin;
+use AcyMailing\Helpers\MailerHelper;
 
 class plgAcymGoogle extends AcymPlugin
 {
@@ -35,9 +36,16 @@ class plgAcymGoogle extends AcymPlugin
         $refreshTokenExpiration = $this->config->get('google_refresh_token_expiration');
         $mustAuthenticate = empty($refreshToken) || (!empty($refreshTokenExpiration) && $refreshTokenExpiration < time());
 
+        $mailerHelper = new MailerHelper();
+
         ob_start();
         ?>
 		<div class="send_settings grid-x cell large-6 xlarge-5 xxlarge-4 margin-auto" id="<?php echo self::SENDING_METHOD_ID; ?>_settings">
+            <?php
+            if (!$mailerHelper->isPortOpen(465, 'ssl://smtp.gmail.com')) {
+                acym_display(acym_translation('ACYM_PORT_NEEDED'), 'error', false);
+            }
+            ?>
 			<div class="cell grid-x acym_vcenter acym__sending__methods__one__settings">
 				<label for="google_username" class="cell"><?php echo acym_translation('ACYM_SMTP_USERNAME').acym_info('ACYM_SMTP_USERNAME_DESC'); ?></label>
 				<input id="google_username"

@@ -21,9 +21,6 @@
 
 namespace AcyMailing\Libraries\Imap2\Roundcube;
 
-use AcyMailing\Libraries\Imap2\Offset;
-use AcyMailing\Libraries\Imap2\rcube_imap_generic;
-
 /**
  * Class for accessing IMAP's SORT/SEARCH/ESEARCH result
  *
@@ -177,7 +174,7 @@ class ResultIndex
 
     /**
      * Returns number of elements in the result.
-     * Alias for count() for compatibility with rcube_result_thread
+     * Alias for count() for compatibility with ResultThread
      *
      * @return int Number of elements
      */
@@ -217,7 +214,7 @@ class ResultIndex
     /**
      * Slices data set.
      *
-     * @param $offset Offset (as for PHP's array_slice())
+     * @param $offset (as for PHP's array_slice())
      * @param $length Number of elements (as for PHP's array_slice())
      */
     public function slice($offset, $length)
@@ -319,20 +316,6 @@ class ResultIndex
         }
 
         return explode(self::SEPARATOR_ELEMENT, $this->raw_data);
-    }
-
-    /**
-     * Return all messages in the result.
-     *
-     * @return array List of message IDs
-     */
-    public function get_compressed()
-    {
-        if (empty($this->raw_data)) {
-            return '';
-        }
-
-        return rcube_imap_generic::compressMessageSet($this->get());
     }
 
     /**

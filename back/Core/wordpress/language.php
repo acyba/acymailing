@@ -203,9 +203,22 @@ function acym_loadLanguageFile($extension, $basePath = null, $lang = null, $relo
 {
     global $acymLanguages;
     $currentLanguage = acym_getLanguageTag();
-    if (isset($acymLanguages[$currentLanguage][$extension]) && !$reload) return;
+    if (isset($acymLanguages[$currentLanguage][$extension]) && !$reload) {
+        return;
+    }
 
-    $base = ACYM_LANGUAGE;
+    //__START__production_
+    if (ACYM_PRODUCTION) {
+        $base = ACYM_LANGUAGE;
+    }
+    //__END__production_
+
+    //__START__demo_
+    if (!ACYM_PRODUCTION) {
+        $base = ACYM_BACK.'language'.DS;
+    }
+    //__END__demo_
+
     $language = $currentLanguage;
 
     if (!file_exists($base.$language.'.'.$extension.'.ini')) {

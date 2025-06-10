@@ -6,11 +6,13 @@ use Joomla\CMS\Factory;
 
 trait VirtuemartSubscription
 {
-    private $baseOption = 'virtuemart';
+    private string $baseOption = 'virtuemart';
 
-    public function onRegacyOptionsDisplay($lists)
+    public function onRegacyOptionsDisplay(array $lists): void
     {
-        if (!$this->installed) return;
+        if (!$this->installed) {
+            return;
+        }
 
         ?>
 		<div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
@@ -160,27 +162,38 @@ trait VirtuemartSubscription
         <?php
     }
 
-    public function onBeforeSaveConfigFields(&$formData)
+    public function onBeforeSaveConfigFields(array &$formData): void
     {
         if (empty($formData['virtuemart_lists'])) $formData['virtuemart_lists'] = [];
         if (empty($formData['virtuemart_checkedlists'])) $formData['virtuemart_checkedlists'] = [];
         if (empty($formData['virtuemart_autolists'])) $formData['virtuemart_autolists'] = [];
     }
 
-    public function onRegacyAddComponent(&$components)
+    public function onRegacyAddComponent(array &$components): void
     {
         $config = acym_config();
-        if (!$config->get('virtuemart_sub', 0) || acym_isAdmin()) return;
+        if (!$config->get('virtuemart_sub', 0) || acym_isAdmin()) {
+            return;
+        }
 
         $components['com_virtuemart'] = [
-            'view' => ['user', 'cart', 'shop.registration', 'account.billing', 'checkout.index', 'editaddresscart', 'editaddresscheckout', 'askquestion'],
+            'view' => [
+                'user',
+                'cart',
+                'shop.registration',
+                'account.billing',
+                'checkout.index',
+                'editaddresscart',
+                'editaddresscheckout',
+                'askquestion',
+            ],
             'lengthafter' => 500,
             'valueClass' => 'controls',
             'baseOption' => $this->baseOption,
         ];
     }
 
-    public function onRegacyAfterRoute()
+    public function onRegacyAfterRoute(): void
     {
         acym_session();
 
@@ -229,15 +242,57 @@ trait VirtuemartSubscription
         }
     }
 
-    private function updateVM()
+    /**
+     * Only for connected users that are already subscribed to a list when regacy is added to a VM form
+     * VirtueMart automatically submits the form using ajax when a field is changed, but we don't want to subscribe/unsubscribe the user to/from the lists directly when he checks
+     * the checkbox: it would send the confirmation/welcome/goodbye emails
+     */
+    public function onRegacyPrepareCheckedLists(array &$currentSubscription): void
+    {
+        // Task used by VirtueMart when the form is refreshed using ajax
+        $task = acym_getVar('cmd', 'task', '');
+        if ($task != 'updateCartNoMethods') {
+			return;
+        }
+
+        // If the user unchecks the checkbox, it isn't saved with the ajax call, but since the form is refreshed it automatically re-checks the checkbox
+
+        $visibleLists = acym_getVar('string', 'virtuemart_visible_lists');
+        $visibleLists = explode(',', $visibleLists);
+        acym_arrayToInteger($visibleLists);
+        if (empty($visibleLists)) {
+			return;
+        }
+
+        $visibleListsChecked = acym_getVar('array', 'virtuemart_visible_lists_checked', []);
+        acym_arrayToInteger($visibleListsChecked);
+
+        // apply the lists status in $currentSubscription based on what the user checked, to not change the checkbox on form refresh
+        foreach ($visibleLists as $oneListId) {
+            if (empty($currentSubscription[$oneListId])) {
+                $currentSubscription[$oneListId] = (object)[
+                    'status' => in_array($oneListId, $visibleListsChecked) ? '1' : '0',
+                    'list_id' => $oneListId,
+                ];
+            } else {
+                $currentSubscription[$oneListId]->status = in_array($oneListId, $visibleListsChecked) ? '1' : '0';
+            }
+        }
+    }
+
+    private function updateVM(): void
     {
         $config = acym_config();
-        if (!$config->get('virtuemart_sub', 0) || acym_isAdmin()) return;
+        if (!$config->get('virtuemart_sub', 0) || acym_isAdmin()) {
+			return;
+        }
 
         $email = $_SESSION['acym_virtuemart_user_email'] ?? null;
         if (empty($email)) {
             $user = Factory::getUser();
-            if (!empty($user)) $email = $user->get('email');
+            if (!empty($user)) {
+				$email = $user->get('email');
+            }
         }
 
         if (empty($email)) {
@@ -323,41 +378,5 @@ trait VirtuemartSubscription
 
         if (!empty($listsToSubscribe)) $userClass->subscribe($user->id, $listsToSubscribe);
         unset($_SESSION['acym_virtuemart_user_email']);
-    }
-
-    /**
-     * Only for connected users that are already subscribed to a list when regacy is added to a VM form
-     * VirtueMart automatically submits the form using ajax when a field is changed, but we don't want to subscribe/unsubscribe the user to/from the lists directly when he checks
-     * the checkbox: it would send the confirmation/welcome/goodbye emails
-     *
-     * @param array $currentSubscription
-     */
-    public function onRegacyPrepareCheckedLists(&$currentSubscription)
-    {
-        // Task used by VirtueMart when the form is refreshed using ajax
-        $task = acym_getVar('cmd', 'task', '');
-        if ($task != 'updateCartNoMethods') return;
-
-        // If the user unchecks the checkbox, it isn't saved with the ajax call, but since the form is refreshed it automatically re-checks the checkbox
-
-        $visibleLists = acym_getVar('string', 'virtuemart_visible_lists');
-        $visibleLists = explode(',', $visibleLists);
-        acym_arrayToInteger($visibleLists);
-        if (empty($visibleLists)) return;
-
-        $visibleListsChecked = acym_getVar('array', 'virtuemart_visible_lists_checked', []);
-        acym_arrayToInteger($visibleListsChecked);
-
-        // apply the lists status in $currentSubscription based on what the user checked, to not change the checkbox on form refresh
-        foreach ($visibleLists as $oneListId) {
-            if (empty($currentSubscription[$oneListId])) {
-                $currentSubscription[$oneListId] = (object)[
-                    'status' => in_array($oneListId, $visibleListsChecked) ? '1' : '0',
-                    'list_id' => $oneListId,
-                ];
-            } else {
-                $currentSubscription[$oneListId]->status = in_array($oneListId, $visibleListsChecked) ? '1' : '0';
-            }
-        }
     }
 }

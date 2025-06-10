@@ -246,12 +246,12 @@ class HeaderHelper extends AcymObject
 
     private function getHelpWedButton(): string
     {
-        if (ACYM_CMS != 'wordpress' || acym_level(ACYM_ESSENTIAL)) {
+        if (ACYM_CMS !== 'wordpress' || acym_level(ACYM_ESSENTIAL)) {
             return '';
         }
 
         return '<a type="button" class="grid-x align-center button_header medium-shrink acym_vcenter" target="_blank" href="https://wordpress.org/support/plugin/acymailing/">
-                    <i class="cell shrink acymicon-book"></i>
+                    <i class="cell shrink acymicon-wordpress"></i>
                 </a>';
     }
 

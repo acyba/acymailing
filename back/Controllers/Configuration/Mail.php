@@ -3,15 +3,13 @@
 namespace AcyMailing\Controllers\Configuration;
 
 use AcyMailing\Helpers\ExportHelper;
+use AcyMailing\Helpers\MailerHelper;
 
 trait Mail
 {
     public function ports(): void
     {
-        if (!function_exists('fsockopen')) {
-            echo '<span style="color:red">'.acym_translation('ACYM_FSOCKOPEN').'</span>';
-            exit;
-        }
+        $mailerHelper = new MailerHelper();
 
         $tests = [
             25 => 'smtp.sendgrid.com',
@@ -20,13 +18,11 @@ trait Mail
             465 => 'ssl://smtp.gmail.com',
         ];
 
-        foreach ($tests as $port => $server) {
-            $fp = @fsockopen($server, $port, $errno, $errstr, 5);
-            if ($fp) {
+        foreach ($tests as $port => $targetServer) {
+            if ($mailerHelper->isPortOpen($port, $targetServer)) {
                 echo '<span style="color:#3dea91">'.acym_translationSprintf('ACYM_SMTP_AVAILABLE_PORT', $port).'</span><br />';
-                fclose($fp);
             } else {
-                echo '<span style="color:#ff5259">'.acym_translationSprintf('ACYM_SMTP_NOT_AVAILABLE_PORT', $port, $errno.' - '.acym_utf8Encode($errstr)).'</span><br />';
+                echo '<span style="color:#ff5259">'.acym_translationSprintf('ACYM_SMTP_NOT_AVAILABLE_PORT', $port, $mailerHelper->portError).'</span><br />';
             }
         }
 

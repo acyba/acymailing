@@ -342,43 +342,47 @@ trait Edition
     {
         acym_checkToken();
 
-        $listClass = new ListClass();
-        $formData = (object)acym_getVar('array', 'list', []);
+        $step = acym_getVar('string', 'step');
+        if ($step === self::LIST_EDITION_TABS_GENERAL) {
 
-        $listId = acym_getVar('int', 'listId', 0);
-        if (!empty($listId)) {
-            $formData->id = $listId;
-        }
+            $listClass = new ListClass();
+            $formData = (object)acym_getVar('array', 'list', []);
 
-        $allowedFields = acym_getColumns('list');
-        $listInformation = new \stdClass();
-        if (empty($formData->welcome_id)) unset($formData->welcome_id);
-        if (empty($formData->unsubscribe_id)) unset($formData->unsubscribe_id);
-        foreach ($formData as $name => $data) {
-            if (!in_array($name, $allowedFields)) {
-                continue;
+            $listId = acym_getVar('int', 'listId', 0);
+            if (!empty($listId)) {
+                $formData->id = $listId;
             }
-            $listInformation->{$name} = $data;
-        }
 
-        $listInformation->tags = acym_getVar('array', 'list_tags', []);
+            $allowedFields = acym_getColumns('list');
+            $listInformation = new \stdClass();
+            if (empty($formData->welcome_id)) unset($formData->welcome_id);
+            if (empty($formData->unsubscribe_id)) unset($formData->unsubscribe_id);
+            foreach ($formData as $name => $data) {
+                if (!in_array($name, $allowedFields)) {
+                    continue;
+                }
+                $listInformation->{$name} = $data;
+            }
 
-        if (acym_isAdmin()) {
-            $listInformation->access = empty($listInformation->access) ? '' : ','.implode(',', $listInformation->access).',';
-        } elseif (!empty($formData->id) && !$listClass->hasUserAccess($formData->id)) {
-            die('Cannot save list '.acym_escape($formData->id));
-        }
+            $listInformation->tags = acym_getVar('array', 'list_tags', []);
 
-        $listId = $listClass->save($listInformation);
+            if (acym_isAdmin()) {
+                $listInformation->access = empty($listInformation->access) ? '' : ','.implode(',', $listInformation->access).',';
+            } elseif (!empty($formData->id) && !$listClass->hasUserAccess($formData->id)) {
+                die('Cannot save list '.acym_escape($formData->id));
+            }
 
-        if (!empty($listId)) {
-            acym_setVar('listId', $listId);
-            acym_enqueueMessage(acym_translationSprintf('ACYM_LIST_IS_SAVED', $listInformation->name), 'success');
-            $this->_saveSubscribersTolist();
-        } else {
-            acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
-            if (!empty($listClass->errors)) {
-                acym_enqueueMessage($listClass->errors, 'error');
+            $listId = $listClass->save($listInformation);
+
+            if (!empty($listId)) {
+                acym_setVar('listId', $listId);
+                acym_enqueueMessage(acym_translationSprintf('ACYM_LIST_IS_SAVED', $listInformation->name), 'success');
+                $this->_saveSubscribersTolist();
+            } else {
+                acym_enqueueMessage(acym_translation('ACYM_ERROR_SAVING'), 'error');
+                if (!empty($listClass->errors)) {
+                    acym_enqueueMessage($listClass->errors, 'error');
+                }
             }
         }
 

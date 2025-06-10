@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, newsletter form, acymailing, form, subscription, gravity forms
 Tested up to: 6.8
-Stable tag: 3.9
+Stable tag: 4.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -53,4 +53,4 @@ You can find the complete documentation here: https://docs.acymailing.com/addons
 * Create and subscribe AcyMailing users
 * Display AcyMailing lists in the forms
 
-[See the whole changelog here.](https://www.acymailing.com/change-log)
+[See the whole changelog here.](https://www.acymailing.com/changelog)

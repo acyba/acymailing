@@ -23,9 +23,6 @@
 
 namespace AcyMailing\Libraries\Imap2\Roundcube;
 
-use AcyMailing\Libraries\Imap2\ErrorException;
-use AcyMailing\Libraries\Imap2\rcube;
-
 /**
  * Character sets conversion functionality
  *
@@ -184,7 +181,7 @@ class Charset
      */
     public static function error_handler($errno, $errstr)
     {
-        throw new ErrorException($errstr, 0, $errno);
+        throw new \Exception($errstr, 0, $errno);
     }
 
     /**
@@ -323,7 +320,7 @@ class Charset
             #set_error_handler(array('rcube_charset', 'error_handler'), E_NOTICE);
             try {
                 $out = iconv($from, $to.$iconv_options, $str);
-            } catch (ErrorException $e) {
+            } catch (\Exception $e) {
                 $out = false;
             }
             #restore_error_handler();
@@ -356,7 +353,7 @@ class Charset
             #set_error_handler(array('rcube_charset', 'error_handler'), E_WARNING);
             try {
                 $out = mb_convert_encoding($str, $mb_to, $mb_from);
-            } catch (ErrorException $e) {
+            } catch (\Exception $e) {
                 $out = false;
             }
             #restore_error_handler();

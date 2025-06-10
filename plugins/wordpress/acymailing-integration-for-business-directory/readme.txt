@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, integration, acymailing, business
 Tested up to: 6.8
-Stable tag: 2.7
+Stable tag: 2.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -47,4 +47,4 @@ You can find the complete documentation here: https://docs.acymailing.com/addons
 = 1.0 - January 16, 2023 =
 * Add new dropable dynamic content for Business Directory
 
-[See the whole changelog here.](https://www.acymailing.com/change-log)
+[See the whole changelog here.](https://www.acymailing.com/changelog)

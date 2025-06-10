@@ -95,9 +95,6 @@ class Functions
         return implode(', ', $sanitizedAddress);
     }
 
-    /**
-     *
-     */
     public static function writeAddressFromEnvelope($addressList)
     {
         if (empty($addressList)) {
@@ -106,7 +103,8 @@ class Functions
 
         $sanitizedAddress = [];
         foreach ($addressList as $addressEntry) {
-            $parsedAddressEntry = imap_rfc822_write_address($addressEntry[2], $addressEntry[3], $addressEntry[0]);
+            $name = empty($addressEntry[0]) ? '' : $addressEntry[0];
+            $parsedAddressEntry = imap_rfc822_write_address($addressEntry[2], $addressEntry[3], $name);
             if (substr($parsedAddressEntry, -3) == '@""') {
                 $parsedAddressEntry = substr($parsedAddressEntry, 0, strlen($parsedAddressEntry) - 3).': ';
             }
@@ -116,9 +114,6 @@ class Functions
         return implode(', ', $sanitizedAddress);
     }
 
-    /**
-     *
-     */
     public static function getListAttributesValue($attributes)
     {
         $attributesValue = 0;

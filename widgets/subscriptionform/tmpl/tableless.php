@@ -26,7 +26,7 @@ if ($listPosition == 'before') echo $listsContent;
 <div class="acym_form">
     <?php
     foreach ($fields as $field) {
-        $field->option = json_decode($field->option);
+        $field->option = !empty($field->option) ? json_decode($field->option) : new stdClass();
         $fieldDB = empty($field->option->fieldDB) ? '' : json_decode($field->option->fieldDB);
         $field->value = empty($field->value) ? '' : json_decode($field->value);
         $valuesArray = [];
@@ -75,24 +75,24 @@ if ($listPosition == 'before') echo $listsContent;
 </div>
 
 <p class="acysubbuttons">
-<noscript>
-    <?php echo acym_translation('ACYM_NO_JAVASCRIPT'); ?>
-</noscript>
-<?php
-$onclickSubscribe = 'try{ return submitAcymForm("subscribe","'.$formName.'", "acymSubmitSubForm"); }catch(err){alert("The form could not be submitted "+err);return false;}';
-$onclickUnsubscribe = 'try{ return submitAcymForm("unsubscribe","'.$formName.'", "acymSubmitSubForm"); }catch(err){alert("The form could not be submitted "+err);return false;}';
-?>
-<input type="button"
-	   class="btn btn-primary button subbutton"
-	   value="<?php echo acym_translation($subscribeText, true); ?>"
-	   name="Submit"
-	   onclick="<?php echo $disableButtons ? 'return true' : acym_escape($onclickSubscribe); ?>" />
-<?php if ($unsubButton === '2' || ($unsubButton === '1' && !empty($countUnsub))) { ?>
-	<span style="display: none;"></span>
+	<noscript>
+        <?php echo acym_translation('ACYM_NO_JAVASCRIPT'); ?>
+	</noscript>
+    <?php
+    $onclickSubscribe = 'try{ return submitAcymForm("subscribe","'.$formName.'", "acymSubmitSubForm"); }catch(err){alert("The form could not be submitted "+err);return false;}';
+    $onclickUnsubscribe = 'try{ return submitAcymForm("unsubscribe","'.$formName.'", "acymSubmitSubForm"); }catch(err){alert("The form could not be submitted "+err);return false;}';
+    ?>
 	<input type="button"
-		   class="btn button unsubbutton"
-		   value="<?php echo acym_translation($unsubscribeText, true); ?>"
+		   class="btn btn-primary button subbutton"
+		   value="<?php echo acym_translation($subscribeText, true); ?>"
 		   name="Submit"
-		   onclick="<?php echo $disableButtons ? 'return true' : acym_escape($onclickUnsubscribe); ?>" />
-<?php } ?>
+		   onclick="<?php echo $disableButtons ? 'return true' : acym_escape($onclickSubscribe); ?>" />
+    <?php if ($unsubButton === '2' || ($unsubButton === '1' && !empty($countUnsub))) { ?>
+		<span style="display: none;"></span>
+		<input type="button"
+			   class="btn button unsubbutton"
+			   value="<?php echo acym_translation($unsubscribeText, true); ?>"
+			   name="Submit"
+			   onclick="<?php echo $disableButtons ? 'return true' : acym_escape($onclickUnsubscribe); ?>" />
+    <?php } ?>
 </p>

@@ -2,7 +2,7 @@
 Contributors: acyba
 Tags: newsletter, acymailing
 Tested up to: 6.8
-Stable tag: 3.3
+Stable tag: 3.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -47,4 +47,4 @@ You can find the complete documentation here: https://docs.acymailing.com/addons
 * Select which elements of your emails should be listed (h1, h2, etc)
 * Choose between two displays
 
-[See the whole changelog here.](https://www.acymailing.com/change-log)
+[See the whole changelog here.](https://www.acymailing.com/changelog)

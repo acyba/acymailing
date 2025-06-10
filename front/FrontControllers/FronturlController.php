@@ -36,9 +36,9 @@ class FronturlController extends AcymController
 
         $urlObject->url = preg_replace(
             [
-                '#&idU=[0-9]+#Ui',
-                '#idU=[0-9]+&#Ui',
-                '#\?idU=[0-9]+#Ui',
+                '#&idU=[0-9]+#i',
+                '#idU=[0-9]+&#i',
+                '#\?idU=[0-9]+#i',
             ],
             '',
             $urlObject->url

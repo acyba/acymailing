@@ -31,6 +31,7 @@ trait LinksDetails
 
     public function exportLinksDetails(): void
     {
+        $data = [];
         if (!$this->prepareDefaultPageInfo($data, true)) {
             return;
         }

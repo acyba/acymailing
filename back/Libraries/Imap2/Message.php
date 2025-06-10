@@ -199,7 +199,7 @@ class Message
             return Errors::invalidImapConnection(debug_backtrace(), 1, false);
         }
 
-        if ($messageNum <= 0) {
+        if ($messageNum <= 0 || !is_int($messageNum)) {
             trigger_error(Errors::badMessageNumber(debug_backtrace(), 1), E_USER_WARNING);
 
             return false;
@@ -383,16 +383,15 @@ class Message
             return Errors::invalidImapConnection(debug_backtrace(), 1, false);
         }
 
-        $client = $imap->getClient();
+        $mailboxName = $imap->getMailboxName();
 
-        $messages = $client->fetch($imap->getMailboxName(), $messageNums, false, ['UID']);
-
-        $uid = [];
-        foreach ($messages as $message) {
-            $uid[] = $message->uid;
+        if ($mailboxName === Connection::DEFAULT_MAILBOX_GMAIL) {
+            Mail::move($imap, $messageNums, Connection::GMAIL_TRASH_MAILBOX, $flags);
+        } else {
+            $client = $imap->getClient();
+            $uids = ImapHelpers::idToUid($imap, $messageNums);
+            $client->flag($mailboxName, $uids, $client->flags['DELETED']);
         }
-
-        $client->flag($imap->getMailboxName(), implode(',', $uid), $client->flags['DELETED']);
 
         return true;
     }
@@ -433,7 +432,7 @@ class Message
      * @param $flag
      * @param $options
      *
-     * @return bool|void
+     * @return bool
      */
     public static function setFlagFull($imap, $sequence, $flag, $options = 0)
     {
@@ -454,9 +453,7 @@ class Message
             $sequence = implode(',', $uid);
         }
 
-        $client->flag($imap->getMailboxName(), $sequence, strtoupper(substr($flag, 1)));
-
-        return false;
+        return $client->flag($imap->getMailboxName(), $sequence, strtoupper(substr($flag, 1)));
     }
 
     /**

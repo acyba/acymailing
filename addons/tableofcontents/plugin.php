@@ -106,14 +106,14 @@ class plgAcymTableofcontents extends AcymPlugin
     private function generateTable(&$email, $tag)
     {
         // 1 - Prepare types configuration
-        if ($tag->type == 'br') {
+        if ($tag->type === 'br') {
             $tag->divider = '<br />';
             $tag->subdivider = '<br /> - ';
             $tag->before = '';
             $tag->after = '';
             $tag->subbefore = '<br /> - ';
             $tag->subafter = '';
-        } elseif ($tag->type == 'li') {
+        } elseif ($tag->type === 'li') {
             $tag->divider = '</li><li>';
             $tag->subdivider = '</li><li>';
             $tag->before = '<ul><li>';
@@ -135,7 +135,9 @@ class plgAcymTableofcontents extends AcymPlugin
             }
         }
 
-        if (empty($this->level1Links)) return '';
+        if (empty($this->level1Links)) {
+            return '';
+        }
 
         // 3 - Add the anchors to the email's body
         if (!empty($this->updateMail)) {
@@ -149,8 +151,13 @@ class plgAcymTableofcontents extends AcymPlugin
                 $from = $anchorLinks['position'][$arrayPosition];
                 $to = empty($anchorLinks['position'][$arrayPosition + 1]) ? 9999999999999 : $anchorLinks['position'][$arrayPosition + 1];
                 foreach ($this->level2Links as $key => $oneSubLink) {
-                    if ($anchorsLevel2['position'][$key] > $to) break;
-                    if ($anchorsLevel2['position'][$key] > $from) $subLinksForCurrentSection[] = $oneSubLink;
+                    if ($anchorsLevel2['position'][$key] > $to) {
+                        break;
+                    }
+
+                    if ($anchorsLevel2['position'][$key] > $from) {
+                        $subLinksForCurrentSection[] = $oneSubLink;
+                    }
                 }
 
                 // The current section has sub links, add them as level 2 anchors
@@ -175,7 +182,9 @@ class plgAcymTableofcontents extends AcymPlugin
             $varLink = &$this->level1Links;
         }
 
-        if ($tag->$varType === 'none') return '';
+        if ($tag->$varType === 'none') {
+            return '';
+        }
 
         if ($tag->$varType === 'existing') {
             preg_match_all('#<a[^>]*name="([^">]*)"[^>]*>(?!</ *a>).*</ *a>#Uis', $email->$emailVariable, $anchorsDetected);
@@ -183,8 +192,9 @@ class plgAcymTableofcontents extends AcymPlugin
             preg_match_all('#<'.$tag->$varType.'[^>]*>((?!</ *'.$tag->$varType.'>).*)</ *'.$tag->$varType.'>#Uis', $email->$emailVariable, $anchorsDetected);
         }
 
-        if (empty($anchorsDetected)) return '';
-
+        if (empty($anchorsDetected)) {
+            return '';
+        }
 
         foreach ($anchorsDetected[0] as $i => $oneContent) {
             $anchorsDetected['position'][$i] = strpos($email->$emailVariable, $oneContent);

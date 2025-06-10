@@ -19,10 +19,10 @@ function acydump($arg, $ajax = false, array $options = [])
 
     if ($ajax) {
         if (($options['clear_file'] ?? false) === true) {
-            file_put_contents(ACYM_ROOT.'acydebug.txt', '');
+            file_put_contents(ACYM_BACK.'debug.log', '');
         }
 
-        file_put_contents(ACYM_ROOT.'acydebug.txt', $result, FILE_APPEND);
+        file_put_contents(ACYM_BACK.'debug.log', $result, FILE_APPEND);
     } else {
         $style = $indent ? 'margin-left: 220px;' : '';
         echo '<pre style="'.$style.'">';
