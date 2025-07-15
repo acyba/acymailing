@@ -58,7 +58,8 @@ trait TheEventsCalendarAutomationConditions
         $conditions['user']['eventscalendar']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 
@@ -83,12 +84,19 @@ trait TheEventsCalendarAutomationConditions
             $options[$oneElement->ID] = $oneElement->post_title;
         }
 
-        echo acym_select(
-            $options,
-            acym_getVar('string', 'name', ''),
-            acym_getVar('int', 'value', 0),
+        echo wp_kses(
+            acym_select(
+                $options,
+                acym_getVar('string', 'name', ''),
+                acym_getVar('int', 'value', 0),
+                [
+                    'class' => 'acym__select',
+                ]
+            ),
             [
-                'class' => 'acym__select',
+                'select' => ['class' => [], 'name' => [], 'id' => []],
+                'option' => ['value' => [], 'selected' => [], 'disabled' => []],
+                'optgroup' => ['label' => []],
             ]
         );
         exit;
@@ -182,7 +190,7 @@ trait TheEventsCalendarAutomationConditions
             $options['datemin'] = acym_replaceDate($options['datemin']);
             if (!is_numeric($options['datemin'])) $options['datemin'] = strtotime($options['datemin']);
             if (!empty($options['datemin'])) {
-                $query->where[] = $dateField.' > '.acym_escapeDB(date('Y-m-d H:i:s', $options['datemin']));
+                $query->where[] = $dateField.' > '.acym_escapeDB(gmdate('Y-m-d H:i:s', $options['datemin']));
             }
         }
 
@@ -190,7 +198,7 @@ trait TheEventsCalendarAutomationConditions
             $options['datemax'] = acym_replaceDate($options['datemax']);
             if (!is_numeric($options['datemax'])) $options['datemax'] = strtotime($options['datemax']);
             if (!empty($options['datemax'])) {
-                $query->where[] = $dateField.' < '.acym_escapeDB(date('Y-m-d H:i:s', $options['datemax']));
+                $query->where[] = $dateField.' < '.acym_escapeDB(gmdate('Y-m-d H:i:s', $options['datemax']));
             }
         }
     }

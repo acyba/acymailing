@@ -10,11 +10,10 @@ trait MemberpressInsertion
     public function textPopup()
     {
         ?>
-
 		<script type="text/javascript">
             function changeMemberPressTag(tagname, element) {
                 if (!tagname) return;
-                setTag('{<?php echo $this->name; ?>:' + tagname + '}', element);
+                setTag('{<?php echo esc_attr($this->name); ?>:' + tagname + '}', element);
             }
 		</script>
 
@@ -22,14 +21,18 @@ trait MemberpressInsertion
         $fields = $this->getMeprCustomFields();
 
         if (empty($fields)) {
-            echo '<h2 class="cell text-center acym__title__primary__color margin-top-2">'.acym_translationSprintf('ACYM_YOU_DONT_HAVE_PLUGIN_CUSTOM_FIELD', 'MemberPress').'</h2>';
+            ?>
+			<h2 class="cell text-center acym__title__primary__color margin-top-2">
+                <?php echo esc_html(acym_translationSprintf('ACYM_YOU_DONT_HAVE_PLUGIN_CUSTOM_FIELD', 'MemberPress')); ?>
+			</h2>
+            <?php
 
             return;
         }
 
         $text = '<div class="acym__popup__listing text-center grid-x">';
 
-        foreach ($fields as $key => $field) {
+        foreach ($fields as $field) {
             $text .= '<div style="cursor:pointer" class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left" onclick="changeMemberPressTag(\''.$field['field_key'].'\', jQuery(this));" >
                         <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$field['field_name'].'</div>
                         <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">'.$field['field_type'].'</div>
@@ -38,7 +41,16 @@ trait MemberpressInsertion
 
         $text .= '</div>';
 
-        echo $text;
+        echo wp_kses(
+            $text,
+            [
+                'div' => [
+                    'class' => [],
+                    'style' => [],
+                    'onclick' => [],
+                ],
+            ]
+        );
     }
 
     public function replaceUserInformation(&$email, &$user, $send = true)

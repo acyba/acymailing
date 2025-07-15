@@ -1,11 +1,11 @@
 <?php
 /*
- * Plugin Name: AcyMailing custom headers
+ * Plugin Name: AcyMailing - Custom headers in emails
  * Description: Add custom email headers to the emails sent with AcyMailing.
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 3.4
+ * Version: 3.5
  * Requires Plugins: acymailing
 */
 

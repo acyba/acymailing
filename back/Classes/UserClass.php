@@ -1370,7 +1370,7 @@ class UserClass extends AcymClass
         return $fieldReturn;
     }
 
-    public function getAllColumnsUserAndCustomField($inAction = false)
+    public function getAllColumnsUserAndCustomField($inAction = false, $withSubInfos = false): array
     {
         $return = [];
 
@@ -1390,6 +1390,20 @@ class UserClass extends AcymClass
         if (!empty($customFields)) {
             foreach ($customFields as $key => $value) {
                 $return[$key] = $value->name;
+            }
+        }
+
+        if ($withSubInfos) {
+            $listCLass = new ListClass();
+            $listFields = $listCLass->getAll('name');
+            if (!empty($listFields)) {
+                foreach ($listFields as $key => $value) {
+                    if ($value->type === ListClass::LIST_TYPE_FOLLOWUP) {
+                        continue;
+                    }
+                    $return['subscription_date_'.$value->id] = acym_translation('ACYM_SUBSCRIPTION_DATE').' '.$value->name;
+                    $return['unsubscription_date_'.$value->id] = acym_translation('ACYM_UNSUBSCRIPTION_DATE').' '.$value->name;
+                }
             }
         }
 
@@ -1423,9 +1437,9 @@ class UserClass extends AcymClass
                     $oneField->value = implode(',', $values);
                 }
             } elseif ($oneField->type === 'file' && !empty($oneField->value)) {
-                $oneField->value = json_decode($oneField->value);
-                if (!empty($oneField->value)) {
-                    $oneField->value = $oneField->value[0];
+                $tryJsonDecode = json_decode($oneField->value);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($tryJsonDecode)) {
+                    $oneField->value = !empty($tryJsonDecode) ? $tryJsonDecode[0] : null;
                 }
             } elseif ($oneField->type === 'date') {
                 if (empty($fieldOptions->format)) {

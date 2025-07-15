@@ -1,11 +1,11 @@
 <?php
 /*
- * Plugin Name: AcyMailing automation export
+ * Plugin Name: AcyMailing - Export users in automations
  * Description: Adds a new option in the AcyMailing automations to export the selected users in a file
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 3.6
+ * Version: 3.7
  * Requires Plugins: acymailing
 */
 

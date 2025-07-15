@@ -26,6 +26,8 @@ class ImportHelper extends AcymObject
     public string $tableName = '';
     public array $dbWhere = [];
     public array $fieldsMap = [];
+    public array $subscriptionHistory = [];
+    public array $importedUsersByEmail = [];
 
     public function __construct()
     {
@@ -896,6 +898,43 @@ class ImportHelper extends AcymObject
                     continue;
                 }
 
+                if (strpos($field, 'subscription_date_') === 0 || strpos($field, 'unsubscription_date_') === 0) {
+                    $value = trim($value, '"');
+                    if (strpos($field, 'subscription_date_') === 0) {
+                        $listId = (int)str_replace('subscription_date_', '', $field);
+                        $dateType = 'subscribed_date';
+                    } else {
+                        $listId = (int)str_replace('unsubscription_date_', '', $field);
+                        $dateType = 'unsubscribed_date';
+                    }
+
+                    if (!isset($this->subscriptionHistory[$listId])) {
+                        $this->subscriptionHistory[$listId] = [];
+                    }
+
+                    $email = $newUser->email;
+                    $userFound = false;
+
+                    foreach ($this->subscriptionHistory[$listId] as &$entry) {
+                        if ($entry['email'] === $email) {
+                            $entry[$dateType] = $value;
+                            $userFound = true;
+                            break;
+                        }
+                    }
+                    unset($entry);
+
+                    if (!$userFound) {
+                        $this->subscriptionHistory[$listId][] = [
+                            'email' => $email,
+                            $dateType => $value,
+                        ];
+                    }
+
+                    continue;
+                }
+
+
                 // If we assigned the data to an Acy custom field
                 if (strpos($field, 'cf_') === 0) {
                     $newUser->customfields[substr($field, 3)] = trim(strip_tags($value), '\'" 	');
@@ -966,6 +1005,8 @@ class ImportHelper extends AcymObject
             $maybeUpdated
         );
         acym_enqueueMessage($reportMsg, 'info');
+
+        $this->insertSubscriptionHistory();
 
         // All users have been added properly into the database... we will now subscribe the users
         $this->subscribeUsers();
@@ -1046,6 +1087,8 @@ class ImportHelper extends AcymObject
         acym_query($queryInsertUsers);
 
         $importedUsers = acym_loadObjectList('SELECT id, email FROM #__acym_user WHERE email IN ('.implode(',', $allemails).')', 'id');
+
+        $this->importedUsersByEmail = array_combine(array_column($importedUsers, 'email'), array_column($importedUsers, 'id'));
 
         if (!empty($customFieldsvalues)) {
             $insertValues = [];
@@ -1138,6 +1181,8 @@ class ImportHelper extends AcymObject
             $this->columns[$i] = strtolower(trim($oneColumn, '\'" '));
             if (in_array($this->columns[$i], ['listids', 'listname'])) continue;
             if (strpos($this->columns[$i], 'cf_') === 0) continue;
+            if (strpos($this->columns[$i], 'subscription_date_') === 0) continue;
+            if (strpos($this->columns[$i], 'unsubscription_date_') === 0) continue;
 
             if (!in_array($this->columns[$i], $columns) && $this->columns[$i] != 1) {
                 acym_enqueueMessage(
@@ -1289,4 +1334,76 @@ class ImportHelper extends AcymObject
             }
         }
     }
+
+    public function insertSubscriptionHistory(): void
+    {
+        if (empty($this->subscriptionHistory)) {
+            return;
+        }
+
+        $listClass = new ListClass();
+
+        $userIds = array_values($this->importedUsersByEmail);
+        $listIds = array_keys($this->subscriptionHistory);
+
+        $existingEntries = $listClass->getUserListEntries($userIds, $listIds);
+
+        foreach ($this->subscriptionHistory as $listId => $entries) {
+            foreach ($entries as $entry) {
+                if (empty($entry['subscribed_date']) && empty($entry['unsubscribed_date'])) {
+                    continue;
+                }
+
+                $userId = $this->importedUsersByEmail[$entry['email']] ?? null;
+                if (empty($userId)) {
+                    continue;
+                }
+
+                $key = $userId.'_'.$listId;
+                $existing = $existingEntries[$key] ?? null;
+
+                $subscriptionDate = !empty($entry['subscribed_date']) ? acym_escapeDB($entry['subscribed_date']) : 'NULL';
+                $unsubscribeDate = !empty($entry['unsubscribed_date']) ? acym_escapeDB($entry['unsubscribed_date']) : 'NULL';
+
+                if (!empty($existing)) {
+                    if ($existing->status === 0) {
+                        continue;
+                    }
+
+                    $fieldsToUpdate = [];
+
+                    if (empty($existing->subscription_date)) {
+                        if ($unsubscribeDate != 'NULL' && ($subscriptionDate != 'NULL' && $unsubscribeDate > $subscriptionDate)) {
+                            $fieldsToUpdate[] = 'status ='. 0;
+                            $fieldsToUpdate[] = 'unsubscribe_date ='.$unsubscribeDate;
+                        }
+
+                        $fieldsToUpdate[] = 'subscription_date ='. $subscriptionDate;
+                    } else {
+                        if ($unsubscribeDate != 'NULL' && ($existing->subscription_date != 'NULL' && $unsubscribeDate > $existing->subscription_date)) {
+                            $fieldsToUpdate[] = 'status ='. 0;
+                            $fieldsToUpdate[] = 'unsubscribe_date ='.$unsubscribeDate;
+                        }
+                    }
+
+                    if (!empty($fieldsToUpdate)) {
+                        $query = 'UPDATE #__acym_user_has_list SET '.implode(', ', $fieldsToUpdate)
+                            .' WHERE user_id = '.$userId.' AND list_id = '.$listId;
+                        acym_query($query);
+                    }
+                } else {
+                    if ($subscriptionDate === 'NULL' && $unsubscribeDate !== 'NULL') {
+                        $subscriptionDate = $unsubscribeDate;
+                    }
+
+                    $status = ($unsubscribeDate !== 'NULL') ? 0 : 1;
+
+                    $insertQuery = 'INSERT INTO #__acym_user_has_list (`list_id`, `user_id`, `subscription_date`, `status`, `unsubscribe_date`) VALUES '
+                        .'('.$listId.','.$userId.','.$subscriptionDate.','.$status.','.$unsubscribeDate.')';
+                    acym_query($insertQuery);
+                }
+            }
+        }
+    }
+
 }

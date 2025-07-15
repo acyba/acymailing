@@ -762,9 +762,9 @@ trait Edition
         $left = round(($imageWidth - $logoWidth) / 2);
         $top = round(($imageHeight - $logoHeight) / 2);
         imagecopy($imageVideo, $playButton, $left, $top, 0, 0, $logoWidth, $logoHeight);
-        imagepng($imageVideo, 'tmp.jpg', 9);
-
-        $input = imagecreatefrompng('tmp.jpg');
+        $tmpFilePath = ACYM_TMP_FOLDER.'tmp.jpg';
+        imagepng($imageVideo, $tmpFilePath, 9);
+        $input = imagecreatefrompng($tmpFilePath);
         $output = imagecreatetruecolor($imageWidth, $imageHeight);
         $white = imagecolorallocate($output, 255, 255, 255);
 
@@ -775,8 +775,12 @@ trait Edition
         $status = imagejpeg($output, null, 95);
         $imageContent = ob_get_clean();
         if ($status && acym_writeFile(ACYM_ROOT.ACYM_UPLOAD_FOLDER.$fileName, $imageContent)) {
+            unlink($tmpFilePath);
+
             return ACYM_UPLOADS_URL.$fileName;
         }
+
+        unlink($tmpFilePath);
 
         return '';
     }

@@ -40,12 +40,15 @@ function acym_upgradeTo(string $version, string $utmMedium)
           </div>';
 }
 
-function acym_existsAcyMailing59()
+function acym_existsAcyMailing59(): bool
 {
     $allTables = acym_getTables();
-    if (!in_array(acym_getPrefix().'acymailing_config', $allTables)) return false;
 
-    $version = acym_loadResult('SELECT `value` FROM #__acymailing_config WHERE `namekey` LIKE "version"');
+    if (!in_array(acym_getPrefix().'acymailing_config', $allTables)) {
+        return false;
+    }
+
+    $version = acym_loadResult('SELECT `value` FROM #__acymailing_config WHERE `namekey` = "version"');
 
     return version_compare($version, '5.9.0', '>=');
 }

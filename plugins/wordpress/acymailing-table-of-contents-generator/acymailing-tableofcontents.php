@@ -1,11 +1,11 @@
 <?php
 /*
- * Plugin Name: AcyMailing table of contents generator
+ * Plugin Name: AcyMailing - table of contents generator
  * Description: Insert a dynamic table of contents in your emails based on their contents
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 3.4
+ * Version: 3.5
  * Requires Plugins: acymailing
 */
 
@@ -48,7 +48,7 @@ class TableOfContentsForAcyMailing
 
     public function register(array &$integrations, string $acyVersion): void
     {
-        if (version_compare($acyVersion, '10.0.0', '>=')) {
+        if (version_compare($acyVersion, '10.4.0', '>=')) {
             $integrations[] = [
                 'path' => __DIR__,
                 'className' => self::INTEGRATION_PLUGIN_NAME,

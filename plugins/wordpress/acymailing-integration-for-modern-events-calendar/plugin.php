@@ -2,6 +2,10 @@
 
 use AcyMailing\Core\AcymPlugin;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 require_once __DIR__.DIRECTORY_SEPARATOR.'ModernEventsCalendarAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'ModernEventsCalendarAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'ModernEventsCalendarInsertion.php';
@@ -48,9 +52,11 @@ class plgAcymModerneventscalendar extends AcymPlugin
                 'full' => ['ACYM_FULL_TEXT', false],
                 'date' => ['ACYM_DATE', true],
                 'location' => ['ACYM_LOCATION', true],
+                // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralDomain
                 'moreinfo' => [__('More Info', $this->textDomain), false],
                 'tags' => ['ACYM_TAGS', false],
                 'cats' => ['ACYM_CATEGORIES', false],
+                // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralDomain
                 'labels' => [__('Event Labels', $this->textDomain), false],
                 'organizer' => ['ACYM_ORGANIZER', false],
                 'otherOrganizer' => ['ACYM_OTHER_ORGANIZER', false],

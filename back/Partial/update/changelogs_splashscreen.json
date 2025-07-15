@@ -1,5 +1,5 @@
 {
-    "max_version": "10.3.0",
+    "max_version": "10.4.0",
     "splash_content": [
         {
             "menu_title": "General",
@@ -7,16 +7,12 @@
             "title": "SEE THE GENERAL CHANGES",
             "articles": [
                 {
-                    "title": "Bounce handling for Microsoft mailboxes",
-                    "desc": "The compatibility with Microsoft mailboxes has been added for the bounce handling feature."
+                    "title": "Improved subscription forms",
+                    "desc": "The display of fields labels on header and footer subscription forms has been improved. When displayed outside their field, they are now more widely spaced."
                 },
                 {
-                    "title": "Better anchors",
-                    "desc": "The anchors in sent emails don't open in a new tab anymore when clicked on the online version."
-                },
-                {
-                    "title": "CC and BCC for our sending service",
-                    "desc": "It is now possible to send emails to CC and BCC addresses using the AcyMailing sending service."
+                    "title": "Better temporary images storage",
+                    "desc": "The temporary images are now stored in the upload(wordpress)/media(joomla) directory as they should be."
                 }
             ]
         },
@@ -26,12 +22,39 @@
             "title": "WHAT CHANGED FOR JOOMLA",
             "articles": [
                 {
-                    "title": "Event dates now include the hour",
-                    "desc": "[add-ons] The dates for inserted EventBooking events now include the time."
+                    "title": "EventBooking integration",
+                    "desc": "We added a security to make sure the EventBooking time isn't doubled in the date format."
                 },
                 {
-                    "title": "Community Builder integration",
-                    "desc": "[add-ons] The Community Builder integration's options are now correctly shown."
+                    "title": "EasyBlog images",
+                    "desc": "The EasyBlog images stored on users are now correctly displayed in the email editor."
+                },
+                {
+                    "title": "Front-end lists",
+                    "desc": "The lists could no longer be saved when edited from the front-end menu."
+                },
+                {
+                    "title": "RSEventsPro category filter",
+                    "desc": "A category filter of RSEventsPro integration in the editor is now correctly applied."
+                }
+            ]
+        },
+        {
+            "menu_title": "WordPress",
+            "menu_icon": "acymicon-wordpress",
+            "title": "WHAT CHANGED FOR WORDPRESS",
+            "articles": [
+                {
+                    "title": "Better integration plugins",
+                    "desc": "All the integration plugins have been updated to better follow WordPress guidelines."
+                },
+                {
+                    "title": "Multisite better compatibility",
+                    "desc": "The database tables and default values are now correctly installed when a new sub-site is created on a WordPress multisite network."
+                },
+                {
+                    "title": "Fixed EventOn integration",
+                    "desc": "The installation of the EventOn integration is fixed and does not crash anymore."
                 }
             ]
         },
@@ -41,32 +64,20 @@
             "title": "THE FIXES INCLUDED IN THIS VERSION",
             "articles": [
                 {
-                    "title": "Detailed statistics export",
-                    "desc": "Fixed the error when exporting the links details in the detailed statistics."
+                    "title": "Subscription form confirmation message",
+                    "desc": "The confirmation message when submitting a subscription form could be displayed twice, this has been fixed."
                 },
                 {
-                    "title": "Profile form display",
-                    "desc": "Fixed the error when displaying forms in the user edit profile page in the front-end."
+                    "title": "Truncated content insertion",
+                    "desc": "The lists and tables in inserted content are not removed anymore when the content is truncated after X characters."
                 },
                 {
-                    "title": "Detailed stats: link layout",
-                    "desc": "Fixed the wrong display of long links in the detailed statistics page."
+                    "title": "Deleted lists on forms",
+                    "desc": "We have corrected the error that was displayed in a form when a list that has been deleted was still selected in the form settings."
                 },
                 {
-                    "title": "Subscriber sorting by date",
-                    "desc": "Fixed the bug affecting the sorting of subscribers by subscription date when editing a list."
-                },
-                {
-                    "title": "Bounce rules",
-                    "desc": "Fixed the error that could occur when running the bounce rules."
-                },
-                {
-                    "title": "List doesn't appear unsubscribe page",
-                    "desc": "We have fixed an error that could occur in rare cases that was causing lists not to appear on the unsubscribe page."
-                },
-                {
-                    "title": "List edition",
-                    "desc": "'We have fixed the problem that when you save a list in the edition page while being on the Subscribers or Unsubscribers tab, the list's description, tags and accesses were deleted."
+                    "title": "File custom field in notifications",
+                    "desc": "The custom field type File is now correctly displayed in the notification emails."
                 }
             ]
         }

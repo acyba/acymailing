@@ -173,8 +173,8 @@ trait EasyprofileInsertion
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'auto'.$this->name;
@@ -198,8 +198,8 @@ trait EasyprofileInsertion
         $displayOptions = array_merge($displayOptions, $catOptions);
 
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 

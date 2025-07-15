@@ -1,8 +1,8 @@
-=== Uncanny Automator integration - AcyMailing ===
+=== AcyMailing integration for Uncanny Automator ===
 Contributors: acyba
 Tags: newsletter, acymailing, uncanny, automator, integration
 Tested up to: 6.8
-Stable tag: 2.7
+Stable tag: 2.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -16,9 +16,8 @@ Subscribe or unsubscribe them from dynamic lists, and set it up only once!
 > [AcyMailing](https://wordpress.org/plugins/acymailing/)
 > [Uncanny Automator](https://wordpress.org/plugins/uncanny-automator/)
 
-Trigger recipes when an AcyMailing subscriber is updated.
-Create or modify AcyMailing subscribers thanks to the new actions in Uncanny Automator recipes.
-Subscribe or unsubscribe them from dynamic lists, and set it up only once!
+Trigger recipes when a subscriber is updated.
+Create, modify, subscribe or unsubscribe users dynamically with new actions and set it up only once!
 
 
 == Installation ==

@@ -21,6 +21,7 @@ class ACYM_SAVE_USER
         $this->set_integration(self::INTEGRATION_CODE);
         $this->set_action_code(self::ACTION_CODE);
         $this->set_action_meta(self::ACTION_META);
+        // translators: %s: the trigger meta
         $this->set_sentence(sprintf(__('Save the AcyMailing subscriber {{Email address:%s}}', 'acymailing-integration-for-uncanny-automator'), $this->get_action_meta()));
         $this->set_readable_sentence(__('Save an AcyMailing {{subscriber}}', 'acymailing-integration-for-uncanny-automator'));
         $this->set_options_callback([$this, 'load_options']);
@@ -37,6 +38,7 @@ class ACYM_SAVE_USER
                         Automator()->helpers->recipe->field->text(
                             [
                                 'option_code' => 'ACYM_NAME',
+                                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                                 'label' => __('Name', 'uncanny-automator'),
                                 'input_type' => 'text',
                                 'default' => '',
@@ -46,6 +48,7 @@ class ACYM_SAVE_USER
                         Automator()->helpers->recipe->field->text(
                             [
                                 'option_code' => 'ACYM_EMAIL',
+                                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                                 'label' => __('Email address', 'uncanny-automator'),
                                 'input_type' => 'email',
                                 'default' => '',

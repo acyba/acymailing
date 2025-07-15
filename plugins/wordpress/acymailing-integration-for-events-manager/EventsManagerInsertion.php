@@ -97,8 +97,8 @@ trait EventsManagerInsertion
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'auto'.$this->name;
@@ -126,8 +126,8 @@ trait EventsManagerInsertion
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -148,7 +148,7 @@ trait EventsManagerInsertion
 
         if ($this->getParam('hidepast', '1') === '1') {
             $this->query .= 'JOIN #__postmeta AS startdate ON post.ID = startdate.post_id AND startdate.meta_key = "_event_start" ';
-            $this->filters[] = 'startdate.`meta_value` >= '.acym_escapeDB(date('Y-m-d H:i:s'));
+            $this->filters[] = 'startdate.`meta_value` >= '.acym_escapeDB(gmdate('Y-m-d H:i:s'));
         }
 
         parent::prepareListing();
@@ -202,7 +202,7 @@ trait EventsManagerInsertion
             if (isset($this->tags[$oneTag])) continue;
 
             if (empty($parameter->from)) {
-                $parameter->from = date('Y-m-d H:i:s', $time);
+                $parameter->from = gmdate('Y-m-d H:i:s', $time);
             } else {
                 $parameter->from = acym_date(acym_replaceDate($parameter->from), 'Y-m-d H:i:s');
             }
@@ -280,6 +280,7 @@ trait EventsManagerInsertion
             $imagePath = get_the_post_thumbnail_url($tag->id);
         }
         $varFields['{image}'] = $imagePath;
+        // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
         $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
         if (!in_array('image', $tag->display)) $imagePath = '';
 
@@ -385,6 +386,7 @@ trait EventsManagerInsertion
         if (in_array('cutoff', $tag->display) && !empty($properties['_event_rsvp']->value) && !empty($properties['_event_rsvp_date']->value)) {
             $customFields[] = [
                 $varFields['{cutoff}'],
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 __('Booking Cut-Off Date', 'events-manager'),
             ];
         }

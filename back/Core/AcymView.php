@@ -18,7 +18,7 @@ abstract class AcymView extends AcymObject
 
         $classname = get_class($this);
         $classname = substr($classname, strrpos($classname, '\\') + 1);
-        $this->name = strtolower(substr($classname, 0, - 4));
+        $this->name = strtolower(substr($classname, 0, -4));
         $this->step = acym_getVar('string', 'nextstep', '');
         if (empty($this->step)) {
             $this->step = acym_getVar('string', 'step', '');
@@ -141,7 +141,7 @@ abstract class AcymView extends AcymObject
         $remind = json_decode($this->config->get('remindme', '[]'));
         $installationDate = $this->config->get('install_date', time());
 
-        if (!in_array('reviews', $remind) && !in_array($controller->name, ['dashboard', 'language']) && $installationDate < time() - 7 * 86400) {
+        if (!in_array('reviews', $remind) && !in_array($controller->name, ['dashboard', 'language']) && $installationDate < time() - 7 * 86400 && !acym_isAjax()) {
             echo '<div id="acym__reviews__footer" style="margin: 0 0 30px 30px;">';
             echo acym_translationSprintf(
                 'ACYM_REVIEW_FOOTER',

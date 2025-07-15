@@ -148,8 +148,8 @@ trait EventBookingInsertion
         );
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'auto'.$this->name;
@@ -177,8 +177,8 @@ trait EventBookingInsertion
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -378,9 +378,10 @@ trait EventBookingInsertion
         $varFields['{eb_sdate}'] = '';
         $varFields['{event_date}'] = '';
         $dateFormat = $this->eventbookingconfig->event_date_format;
-        if(!empty($this->eventbookingconfig->event_time_format)){
+        if (!empty($this->eventbookingconfig->event_time_format) && strpos($dateFormat, $this->eventbookingconfig->event_time_format) === false) {
             $dateFormat .= ' '.$this->eventbookingconfig->event_time_format;
         }
+
         if ($element->event_date > '0001-00-00') {
             $varFields['{sdate}'] = acym_date($element->event_date, $dateFormat, false);
             $varFields['{eb_sdate}'] = $varFields['{sdate}'];

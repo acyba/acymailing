@@ -58,12 +58,12 @@ class plgAcymContactform7 extends AcymPlugin
     public function acymsubValidationFilter($result, $tag)
     {
         $name = $tag->name;
-        if(!$tag->is_required()){
+        if (!$tag->is_required()) {
             return $result;
         }
 
-        $value = isset($_REQUEST[$name]) ? (array)$_REQUEST[$name] : [];
-        $hiddenValue = isset($_REQUEST['acymhiddenlists_'.$name]) ? sanitize_text_field($_REQUEST['acymhiddenlists_'.$name]) : '';
+        $value = acym_getVar('array', $name, []);
+        $hiddenValue = acym_getVar('string', 'acymhiddenlists_'.$name, '');
         if (empty($value) && empty($hiddenValue)) {
             $result->invalidate($tag, wpcf7_get_message('invalid_required'));
         }
@@ -85,6 +85,7 @@ class plgAcymContactform7 extends AcymPlugin
 
         if (!empty($submitted)) return '';
 
+        // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
         $style = '<link rel="stylesheet" href="'.ACYM_PLUGINS_URL.'/'.basename(__DIR__).DS.'css'.DS.'acymcontactform.css" type="text/css">';
         $this->loadJavascript('acymcontactform', false, ACYM_PLUGINS_URL.'/'.basename(__DIR__));
 
@@ -161,6 +162,57 @@ class plgAcymContactform7 extends AcymPlugin
             'propertyLabels' => $this->propertyLabels,
         ];
 
-        echo $this->includeView('acymsubParameters', $data, __DIR__);
+        echo wp_kses(
+            $this->includeView('acymsubParameters', $data, __DIR__),
+            [
+                'div' => [
+                    'class' => [],
+                ],
+                'fieldset' => [],
+                'a' => [
+                    'href' => [],
+                    'target' => [],
+                ],
+                'legend' => [
+                    'class' => [],
+                ],
+                'table' => [
+                    'class' => [],
+                ],
+                'tbody' => [],
+                'tr' => [],
+                'th' => [
+                    'scope' => [],
+                ],
+                'td' => [],
+                'label' => [
+                    'for' => [],
+                ],
+                'input' => [
+                    'type' => [],
+                    'name' => [],
+                    'id' => [],
+                    'class' => [],
+                    'placeholder' => [],
+                    'value' => [],
+                    'data-type' => [],
+                    'readonly' => [],
+                    'onfocus' => [],
+                ],
+                'br' => [
+                    'class' => [],
+                ],
+                'p' => [
+                    'class' => [],
+                ],
+                'strong' => [],
+                'span' => [
+                    'class' => [],
+                ],
+                'select' => ['name' => [], 'id' => [], 'class' => [], 'multiple' => [], 'onchange' => []],
+                'option' => ['value' => [], 'selected' => [], 'disabled' => [], 'data-hidden' => []],
+                'optgroup' => ['label' => []],
+            ]
+        );
     }
 }

@@ -27,8 +27,8 @@ trait ModuleInsertion
 
         echo '<div><i class="acymicon-exclamation-triangle"></i>'.acym_translation('ACYM_MODULE_INSERTION_WARNING').'</div>';
         $zoneContent = $this->getFilteringZone(false).$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $this->name, 'individual', $defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $this->name, 'individual', $defaultValues);
     }
 
     public function prepareListing()

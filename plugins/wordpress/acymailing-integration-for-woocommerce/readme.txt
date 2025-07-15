@@ -1,8 +1,8 @@
-=== WooCommerce integration - AcyMailing ===
+=== AcyMailing integration for WooCommerce ===
 Contributors: acyba
 Tags: newsletter, integration, acymailing, woocommerce
 Tested up to: 6.8
-Stable tag: 6.7
+Stable tag: 6.9
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -16,7 +16,7 @@ Track your incomes from a campaign.
 > [AcyMailing](https://wordpress.org/plugins/acymailing/)
 > [WooCommerce](https://wordpress.org/plugins/woocommerce/)
 
-Add products from WooCommerce to your emails.
+Add products from WooCommerce to your AcyMailing emails.
 Execute action when a user buys a product.
 Track your incomes from a campaign.
 

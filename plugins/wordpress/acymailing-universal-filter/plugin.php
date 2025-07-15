@@ -29,13 +29,27 @@ class plgAcymUniversalfilter extends AcymPlugin
 
         $table = acym_getVar('string', 'table', '');
         if (empty($table)) {
-            echo $defaultSelect;
+            echo wp_kses(
+                $defaultSelect,
+                [
+                    'select' => ['class' => [], 'name' => [], 'id' => []],
+                    'option' => ['value' => [], 'selected' => [], 'disabled' => []],
+                    'optgroup' => ['label' => []],
+                ]
+            );
             exit;
         }
 
         $elements = acym_getColumns($table, false, false);
         if (empty($elements)) {
-            echo $defaultSelect;
+            echo wp_kses(
+                $defaultSelect,
+                [
+                    'select' => ['class' => [], 'name' => [], 'id' => []],
+                    'option' => ['value' => [], 'selected' => [], 'disabled' => []],
+                    'optgroup' => ['label' => []],
+                ]
+            );
             exit;
         }
 
@@ -45,12 +59,19 @@ class plgAcymUniversalfilter extends AcymPlugin
             $columns[$value] = $value;
         }
 
-        echo acym_select(
-            $columns,
-            acym_getVar('string', 'name', ''),
-            acym_getVar('string', 'value', 'user_id'),
+        echo wp_kses(
+            acym_select(
+                $columns,
+                acym_getVar('string', 'name', ''),
+                acym_getVar('string', 'value', 'user_id'),
+                [
+                    'class' => 'acym__select',
+                ]
+            ),
             [
-                'class' => 'acym__select',
+                'select' => ['class' => [], 'name' => [], 'id' => []],
+                'option' => ['value' => [], 'selected' => [], 'disabled' => []],
+                'optgroup' => ['label' => []],
             ]
         );
         exit;
@@ -303,21 +324,26 @@ class plgAcymUniversalfilter extends AcymPlugin
 
 
         // We need to connect to another database
+        // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_connect
         $conn = @mysqli_connect($options['conn_host'], $options['conn_login'], $options['conn_pwd'], $options['conn_db']);
         if (empty($conn)) {
+            // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_connect_error
             $this->filterError($query, $options, acym_translationSprintf('ACYM_ERROR_CONNECTING', $options['conn_host'].' '.$options['conn_db']).': '.mysqli_connect_error());
 
             return;
         }
 
+        // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_query
         $myQuery = mysqli_query($conn, $options['query']);
         if (!$myQuery) {
+            // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_error
             $this->filterError($query, $options, acym_translation('ACYM_ERROR').': '.mysqli_error($conn));
 
             return;
         }
 
         $resultArray = [];
+        // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_fetch_row
         while ($row = mysqli_fetch_row($myQuery)) {
             $resultArray[] = acym_escapeDB($row[0]);
         }

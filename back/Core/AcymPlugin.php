@@ -95,16 +95,16 @@ class AcymPlugin extends AcymObject
         $this->logFilename = acym_getErrorLogFilename(empty($this->name) ? get_class($this) : $this->name);
     }
 
-    protected function displaySelectionZone($zoneContent)
+    protected function displaySelectionZone(string $zoneContent): void
     {
-        $output = '<p class="acym__wysid__right__toolbar__p acym__wysid__right__toolbar__p__open acym__title">';
-        $output .= acym_translation('ACYM_CONTENT_TO_INSERT').'<i class="acymicon-keyboard-arrow-up"></i>';
-        $output .= '</p>';
-        $output .= '<div class="acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__context__modal__container">';
-        $output .= $zoneContent;
-        $output .= '</div>';
-
-        return $output;
+        ?>
+		<p class="acym__wysid__right__toolbar__p acym__wysid__right__toolbar__p__open acym__title">
+            <?php echo acym_escape(acym_translation('ACYM_CONTENT_TO_INSERT')); ?><i class="acymicon-keyboard-arrow-up"></i>
+		</p>
+		<div class="acym__wysid__right__toolbar__design--show acym__wysid__right__toolbar__design acym__wysid__context__modal__container">
+			<?php echo $zoneContent; ?>
+		</div>
+        <?php
     }
 
     public function displayListing()

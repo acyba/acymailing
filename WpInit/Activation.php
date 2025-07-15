@@ -7,7 +7,7 @@ use AcyMailing\Helpers\UpdateHelper;
 class Activation
 {
     // Install DB and sample data
-    public function install()
+    public function install(): void
     {
         $file_name = rtrim(dirname(__DIR__), DS).DS.'back'.DS.'tables.sql';
         $handle = fopen($file_name, 'r');
@@ -39,33 +39,32 @@ class Activation
         }
     }
 
-    private function _sampledata($queries)
+    private function _sampledata(string $queries): void
     {
         global $wpdb;
         $prefix = acym_getPrefix();
 
-        $acytables = str_replace('#__', $prefix, $queries);
-        $tables = explode('CREATE TABLE IF NOT EXISTS', $acytables);
+        $tableCreationQueries = explode('CREATE TABLE IF NOT EXISTS', str_replace('#__', $prefix, $queries));
 
-        foreach ($tables as $oneTable) {
+        foreach ($tableCreationQueries as $oneTable) {
             $oneTable = trim($oneTable);
             if (empty($oneTable)) {
                 continue;
             }
+
             $wpdb->query('CREATE TABLE IF NOT EXISTS'.$oneTable);
         }
 
         $this->updateAcym();
     }
 
-    public function updateAcym()
+    public function updateAcym(): void
     {
-        if (!in_array(acym_getPrefix().'acym_configuration', acym_getTables())) {
-
+        if (!in_array(acym_getPrefix().'acym_configuration', acym_getTables(true))) {
             return;
         }
 
-        $config = acym_config();
+        $config = acym_config(true);
         if (!file_exists(ACYM_FOLDER.'update.php') && $config->get('installcomplete', 0) != 0) {
             return;
         }

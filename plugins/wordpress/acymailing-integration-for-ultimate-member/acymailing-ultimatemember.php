@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 3.6
+ * Version: 3.7
  * Requires Plugins: acymailing, ultimate-member
 */
 
@@ -68,18 +68,38 @@ class AcyMailingIntegrationForUltimateMember
         $displayOnExternalPlugin = $config->get('regacy_use_ultimate_member', 0) == 1;
 
         if (!$config->get('regacy', 0) || !$displayOnExternalPlugin) {
-			return;
+            return;
         }
 
         $regacyHelper = new RegacyHelper();
         if (!$regacyHelper->prepareLists(['formatted' => true])) {
-			return;
+            return;
         }
 
         ?>
 		<div class="acym__regacy">
-			<label class="acym__regacy__label"><?php echo $regacyHelper->label; ?></label>
-			<div class="acym__regacy__values"><?php echo $regacyHelper->listsHtml; ?></div>
+			<label class="acym__regacy__label"><?php echo esc_html($regacyHelper->label); ?></label>
+			<div class="acym__regacy__values">
+                <?php
+                echo wp_kses(
+                    $regacyHelper->listsHtml,
+                    [
+                        'table' => ['class' => [], 'style' => []],
+                        'tr' => ['style' => []],
+                        'td' => ['style' => []],
+                        'input' => [
+                            'type' => [],
+                            'name' => [],
+                            'id' => [],
+                            'value' => [],
+                            'class' => [],
+                            'checked' => [],
+                        ],
+                        'label' => ['for' => [], 'class' => []],
+                    ]
+                );
+                ?>
+			</div>
 		</div>
         <?php
     }

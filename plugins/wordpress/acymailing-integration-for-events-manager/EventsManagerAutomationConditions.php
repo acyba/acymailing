@@ -78,7 +78,8 @@ trait EventsManagerAutomationConditions
         $conditions['user']['eventsmanager']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 
@@ -142,12 +143,19 @@ trait EventsManagerAutomationConditions
             $options[$oneElement->ticket_id] = $oneElement->ticket_name;
         }
 
-        echo acym_select(
-            $options,
-            acym_getVar('string', 'name', ''),
-            acym_getVar('int', 'value', 0),
+        echo wp_kses(
+            acym_select(
+                $options,
+                acym_getVar('string', 'name', ''),
+                acym_getVar('int', 'value', 0),
+                [
+                    'class' => 'acym__select',
+                ]
+            ),
             [
-                'class' => 'acym__select',
+                'select' => ['class' => [], 'name' => [], 'id' => []],
+                'option' => ['value' => [], 'selected' => [], 'disabled' => []],
+                'optgroup' => ['label' => []],
             ]
         );
         exit;
@@ -189,7 +197,7 @@ trait EventsManagerAutomationConditions
             $options['datemin'] = acym_replaceDate($options['datemin']);
             if (!is_numeric($options['datemin'])) $options['datemin'] = strtotime($options['datemin']);
             if (!empty($options['datemin'])) {
-                $query->where[] = $booking.'.booking_date > '.acym_escapeDB(date('Y-m-d H:i:s', $options['datemin']));
+                $query->where[] = $booking.'.booking_date > '.acym_escapeDB(gmdate('Y-m-d H:i:s', $options['datemin']));
             }
         }
 
@@ -197,7 +205,7 @@ trait EventsManagerAutomationConditions
             $options['datemax'] = acym_replaceDate($options['datemax']);
             if (!is_numeric($options['datemax'])) $options['datemax'] = strtotime($options['datemax']);
             if (!empty($options['datemax'])) {
-                $query->where[] = $booking.'.booking_date < '.acym_escapeDB(date('Y-m-d H:i:s', $options['datemax']));
+                $query->where[] = $booking.'.booking_date < '.acym_escapeDB(gmdate('Y-m-d H:i:s', $options['datemax']));
             }
         }
     }
@@ -268,11 +276,17 @@ trait EventsManagerAutomationConditions
     {
         return [
             'all' => acym_translation('ACYM_STATUS'),
+            // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
             '0' => __('Pending', 'events-manager'),
+            // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
             '1' => __('Approved', 'events-manager'),
+            // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
             '2' => __('Rejected', 'events-manager'),
+            // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
             '3' => __('Cancelled', 'events-manager'),
+            // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
             '4' => __('Awaiting Online Payment', 'events-manager'),
+            // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
             '5' => __('Awaiting Payment', 'events-manager'),
         ];
     }

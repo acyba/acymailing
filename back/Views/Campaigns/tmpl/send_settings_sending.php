@@ -154,8 +154,13 @@
                 );
                 ?>
 			</div>
-			<div class="cell grid-x" id="acym__campaign__sendsettings__notification">
-				<div class="cell medium-6 large-5 xlarge-4 margin-top-1">
+			<div class="cell grid-x margin-top-1" id="acym__campaign__sendsettings__notification">
+				<label class="cell">
+                    <?php
+                    echo acym_translation('ACYM_NOTIFICATION_AUTO_CAMPAIGN_GENERATED');
+                    ?>
+				</label>
+				<div class="cell medium-5 small-104">
                     <?php
                     if (empty($data['currentCampaign']->sending_params['admin_notification_emails'])) {
                         $selectedValues = [acym_currentUserEmail() => acym_currentUserEmail()];

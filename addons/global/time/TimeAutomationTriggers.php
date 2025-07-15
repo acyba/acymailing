@@ -296,7 +296,7 @@ trait TimeAutomationTriggers
                 $execute = true;
             } else {
                 if ($triggers['every']['type'] == 2628000) {
-                    $nextDate = new \DateTime(acym_date($step->last_execution, 'Y-m-d H:m:i'), new \DateTimeZone('UTC'));
+                    $nextDate = new \DateTime(acym_date($step->last_execution, 'Y-m-d H:m:i', false), new \DateTimeZone('UTC'));
                     $nextDate = $nextDate->add(new \DateInterval('P'.$triggers['every']['number'].'M'));
                     $nextDate = $nextDate->getTimestamp();
                 } else {

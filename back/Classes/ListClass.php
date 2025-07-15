@@ -1068,5 +1068,27 @@ class ListClass extends AcymClass
         return acym_loadObjectList($query);
     }
 
+    public function getUserListEntries(array $userIds, array $listIds): array
+    {
+        if (empty($userIds) || empty($listIds)) {
+            return [];
+        }
+
+        $userIdsStr = implode(',', array_map('intval', $userIds));
+        $listIdsStr = implode(',', array_map('intval', $listIds));
+
+        $query = 'SELECT * FROM `#__acym_user_has_list` 
+              WHERE user_id IN ('.$userIdsStr.') AND list_id IN ('.$listIdsStr.')';
+
+        $results = acym_loadObjectList($query);
+
+        $entries = [];
+        foreach ($results as $row) {
+            $key = $row->user_id.'_'.$row->list_id;
+            $entries[$key] = $row;
+        }
+
+        return $entries;
+    }
 
 }

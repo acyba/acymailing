@@ -213,8 +213,8 @@ class plgAcymPost extends AcymPlugin
         );
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'auto'.$this->name;
@@ -250,8 +250,8 @@ class plgAcymPost extends AcymPlugin
         ob_start();
         acym_display(acym_translation('ACYM_SPECIAL_CONTENT_WARNING'), 'warning', false);
         $warningMessage = ob_get_clean();
-        echo $this->displaySelectionZone($warningMessage.$this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($warningMessage.$this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 

@@ -99,11 +99,12 @@ trait EventOnInsertion
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'auto'.$this->name;
+        // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
         $tabHelper->startTab(__('Event Type', 'eventon'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
         $catOptions = [
@@ -128,8 +129,8 @@ trait EventOnInsertion
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -138,10 +139,11 @@ trait EventOnInsertion
         $this->getCategoryFilter();
 
         $identifier = 'auto2'.$this->name;
+        // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
         $tabHelper->startTab(__('Event Type 2', 'eventon'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -185,6 +187,7 @@ trait EventOnInsertion
                     'label' => 'ACYM_TITLE',
                     'size' => '7',
                 ],
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
                 'meta_value' => [
                     'label' => 'ACYM_DATE',
                     'size' => '4',
@@ -242,6 +245,7 @@ trait EventOnInsertion
                     'ID' => $oneRepeatingEvent->ID,
                     'post_title' => $oneRepeatingEvent->post_title,
                     'post_date' => $oneRepeatingEvent->post_date,
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
                     'meta_value' => $oneOccurrence[0],
                 ];
 
@@ -354,6 +358,7 @@ trait EventOnInsertion
 
                 $newEntry = (object)[
                     'ID' => $oneRepeatingEvent->ID,
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
                     'meta_value' => $oneOccurrence[0],
                     'post_title' => $oneRepeatingEvent->post_title,
                     'menu_order' => $oneRepeatingEvent->menu_order,
@@ -379,7 +384,7 @@ trait EventOnInsertion
                     $orderColumn = $ordering[0];
 
                     if ($orderColumn === 'rand') {
-                        return rand(0, 1) === 0 ? 1 : -1;
+                        return wp_rand(0, 1) === 0 ? 1 : -1;
                     }
 
                     if (strtolower($ordering[1]) === 'asc') {
@@ -418,7 +423,7 @@ trait EventOnInsertion
      *
      * @return array
      */
-    protected function buildIndividualTags($elements, $parameter)
+    protected function buildIndividualTags($elements, $parameter): array
     {
         $arrayElements = [];
         unset($parameter->id);
@@ -495,6 +500,7 @@ trait EventOnInsertion
             $imagePath = get_the_post_thumbnail_url($tag->id);
         }
         $varFields['{image}'] = $imagePath;
+        // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
         $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
         if (!in_array('image', $tag->display)) $imagePath = '';
 
@@ -623,6 +629,7 @@ trait EventOnInsertion
         if (in_array('evtype', $tag->display) && !empty($varFields['{evtype}'])) {
             $customFields[] = [
                 $varFields['{evtype}'],
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 __('Event Type', 'eventon'),
             ];
         }
@@ -631,6 +638,7 @@ trait EventOnInsertion
         if (in_array('evtype2', $tag->display) && !empty($varFields['{evtype2}'])) {
             $customFields[] = [
                 $varFields['{evtype2}'],
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 __('Event Type 2', 'eventon'),
             ];
         }

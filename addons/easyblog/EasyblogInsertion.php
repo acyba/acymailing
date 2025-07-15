@@ -129,8 +129,8 @@ trait EasyblogInsertion
         );
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'auto'.$this->name;
@@ -156,8 +156,8 @@ trait EasyblogInsertion
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -321,16 +321,20 @@ trait EasyblogInsertion
                         $idForImgPath = $element->id;
                     }
                     $imagePath = $this->EBconfig->get('main_articles_path', 'images/easyblog_articles/').$idForImgPath.'/';
+                    $imagePath .= basename($element->image);
                 } elseif (strpos($element->image, 'user:') !== false) {
-                    $imagePath = $this->EBconfig->get('main_users_path', 'images/easyblog_images/').$element->created_by.'/';
+                    $imagePath = $this->EBconfig->get('main_users_path', 'images/easyblog_images/').substr($element->image, 5);
                 } else {
                     $imagePath = $this->EBconfig->get('main_shared_path', 'images/site/shared/');
+                    $imagePath .= basename($element->image);
                 }
-                $imagePath .= basename($element->image);
             }
         }
+
         $varFields['picthtml'] = '<img alt="" src="'.$imagePath.'">';
-        if (empty($tag->pict)) $imagePath = '';
+        if (empty($tag->pict)) {
+            $imagePath = '';
+        }
 
         $contentText = '';
         $varFields['{intro}'] = $element->intro;

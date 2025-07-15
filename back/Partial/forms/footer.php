@@ -3,7 +3,8 @@
     if ($edition) {
         echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';
     } else {
-        $cookieExpirationAttr = empty($form->settings['cookie']['cookie_expiration']) ? 'acym-data-cookie="1"' : 'acym-data-cookie="'.$form->settings['cookie']['cookie_expiration'].'"';
+        $cookieExpirationAttr = empty($form->settings['cookie']['cookie_expiration']) ? 'acym-data-cookie="1"'
+            : 'acym-data-cookie="'.$form->settings['cookie']['cookie_expiration'].'"';
         echo '<form acym-data-id="'.$form->id.'" '.$cookieExpirationAttr.' action="'.$form->form_tag_action.'" id="'.$form->form_tag_name.'" name="'.$form->form_tag_name.'" enctype="multipart/form-data" onsubmit="return submitAcymForm(\'subscribe\',\''.$form->form_tag_name.'\', \'acymSubmitSubForm\')">';
     }
     $files = [
@@ -49,6 +50,11 @@
 		display: flex;
 		justify-content: center;
 		align-items: center
+	}
+
+	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>
+	.acym__users__creation__fields__title{
+		margin: 0.5rem
 	}
 </style>
 <?php if (!$edition) include acym_getPartial('forms', 'cookie'); ?>

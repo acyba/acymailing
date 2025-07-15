@@ -22,6 +22,7 @@ class ACYM_UNSUBSCRIBE_FROM_LIST
         $this->set_integration(self::INTEGRATION_CODE);
         $this->set_action_code(self::ACTION_CODE);
         $this->set_action_meta(self::ACTION_META);
+        // translators: %s: the trigger meta
         $this->set_sentence(sprintf(__('Unsubscribe a user from {{a list:%s}}', 'acymailing-integration-for-uncanny-automator'), $this->get_action_meta()));
         $this->set_readable_sentence(__('Unsubscribe a user from {{a list}}', 'acymailing-integration-for-uncanny-automator'));
         $this->set_options_callback([$this, 'load_options']);
@@ -40,6 +41,7 @@ class ACYM_UNSUBSCRIBE_FROM_LIST
                     Automator()->helpers->recipe->field->select(
                         [
                             'option_code' => $this->get_action_meta(),
+                            // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                             'label' => __('List', 'acymailing'),
                             'options' => $lists,
                         ]

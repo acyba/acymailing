@@ -1,11 +1,11 @@
 <?php
 /*
- * Plugin Name: AcyMailing RSS content
+ * Plugin Name: AcyMailing - Insert RSS content in emails
  * Description: Allows you to automatically insert RSS content in your emails
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 4.2
+ * Version: 4.3
  * Requires Plugins: acymailing
 */
 
@@ -48,7 +48,7 @@ class AcyMailingIntegrationForRss
 
     public function register(array &$integrations, string $acyVersion): void
     {
-        if (version_compare($acyVersion, '10.0.0', '>=')) {
+        if (version_compare($acyVersion, '10.4.0', '>=')) {
             $integrations[] = [
                 'path' => __DIR__,
                 'className' => self::INTEGRATION_PLUGIN_NAME,

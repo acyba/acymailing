@@ -115,8 +115,8 @@ trait BusinessDirectoryInsertion
         );
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -166,8 +166,8 @@ trait BusinessDirectoryInsertion
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -324,6 +324,7 @@ trait BusinessDirectoryInsertion
             $imagePath = get_the_post_thumbnail_url($tag->id, 'full');
         }
         $varFields['{image}'] = $imagePath;
+        // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
         $varFields['{picthtml}'] = '<img class="content_main_image" alt="" src="'.$imagePath.'">';
         if (!in_array('image', $tag->display)) {
             $imagePath = '';
@@ -392,6 +393,7 @@ trait BusinessDirectoryInsertion
                     $value = preg_replace('#\t#', ', ', $customFieldsValues[$oneField->id]);
                 } elseif ($oneField->field_type === 'phone_number') {
                     $iconSrc = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/phone.svg';
+                    // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
                     $icon = '<img alt="phone icon" src="'.esc_url($iconSrc).'" style="width: 13px;display: inline-block;margin-right: 5px;" />';
                     $value = $icon.'<a href="tel:'.$customFieldsValues[$oneField->id].'">'.$customFieldsValues[$oneField->id].'</a>';
                 } elseif ($oneField->field_type === 'date') {
@@ -411,7 +413,7 @@ trait BusinessDirectoryInsertion
                         $oneField->field_data['date_format']
                     );
 
-                    $value = date($format, strtotime($customFieldsValues[$oneField->id]));
+                    $value = gmdate($format, strtotime($customFieldsValues[$oneField->id]));
                 } elseif ($oneField->field_type === 'image') {
                     $field_value = $customFieldsValues[$oneField->id];
 
@@ -433,12 +435,14 @@ trait BusinessDirectoryInsertion
                     }
                 } elseif ($oneField->field_type === 'social-facebook') {
                     $value = sprintf(
+                    // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
                         '<a target="_blank" rel="noopener" href="%s"><img src="%s" alt="facebook" style="width: 20px;display: inline-block;margin: 0 5px;"></a>',
                         esc_url($customFieldsValues[$oneField->id]),
                         ACYM_PLUGINS_URL.'/business-directory-plugin/assets/images/social/Facebook.svg'
                     );
                 } elseif ($oneField->field_type === 'social-linkedin') {
                     $value = sprintf(
+                    // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
                         '<a target="_blank" rel="noopener" href="%s"><img src="%s" alt="linkedin" style="width: 20px;display: inline-block;margin: 0 5px;"></a>',
                         esc_url($customFieldsValues[$oneField->id]),
                         ACYM_PLUGINS_URL.'/business-directory-plugin/assets/images/social/LinkedIn.svg'
@@ -468,6 +472,7 @@ trait BusinessDirectoryInsertion
                                 }
                             } else {
                                 $socialIcon = sprintf(
+                                // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
                                     '<img src="%s" class="logo" alt="%s" style="width: 20px;display: inline-block;margin: 0 5px;">',
                                     ACYM_PLUGINS_URL.'/business-directory-plugin/assets/images/social/'.$type.'.svg',
                                     $type
@@ -494,6 +499,7 @@ trait BusinessDirectoryInsertion
 
                     if (strpos($oneField->validators, 'email') !== false) {
                         $iconSrc = ACYM_PLUGINS_URL.'/'.basename(__DIR__).'/email.svg';
+                        // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
                         $icon = '<img alt="email icon" src="'.esc_url($iconSrc).'" style="width: 13px;display: inline-block;margin-right: 5px;" />';
                         $value = $icon.$value;
                     }

@@ -112,8 +112,8 @@ trait EasyDigitalDownloadsInsertion
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'auto'.$this->name;
@@ -134,20 +134,19 @@ trait EasyDigitalDownloadsInsertion
             ],
         ];
         $this->autoContentOptions($catOptions);
-
         $this->autoCampaignOptions($catOptions);
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = $this->name.'_tags';
         $tabHelper->startTab(acym_translation('ACYM_BY_TAG'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
-        echo $this->displaySelectionZone($this->getTagListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getTagListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = $this->name.'_coupon';
@@ -168,15 +167,19 @@ trait EasyDigitalDownloadsInsertion
                 'class' => 'acym_plugin__larger_text_field',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Discount type', 'easydigitaldownloads'),
                 'type' => 'select',
                 'name' => 'type',
                 'options' => [
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'percent' => __('Percentage', 'easydigitaldownloads'),
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'flat' => __('Flat amount', 'easydigitaldownloads'),
                 ],
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Discount amount', 'easydigitaldownloads'),
                 'type' => 'number',
                 'name' => 'amount',
@@ -184,36 +187,42 @@ trait EasyDigitalDownloadsInsertion
                 'min' => '0',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Download Requirements', 'easydigitaldownloads'),
                 'type' => 'multiselect',
                 'name' => 'dlRequirements',
                 'options' => $selectDownloads,
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Condition', 'easydigitaldownloads'),
                 'type' => 'select',
                 'name' => 'condition',
                 'options' => [
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'all' => __('Cart must contain all selected Downloads', 'easydigitaldownloads'),
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'any' => __('Cart needs one or more of the selected Downloads', 'easydigitaldownloads'),
                 ],
                 'class' => 'hide',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Apply discount only to selected Downloads', 'easydigitaldownloads'),
                 'type' => 'boolean',
                 'name' => 'global',
                 'default' => false,
                 'class' => 'hide',
             ],
-
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Excluded downloads', 'easydigitaldownloads'),
                 'type' => 'multiselect',
                 'name' => 'excldownload',
                 'options' => $selectDownloads,
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Start date', 'easydigitaldownloads'),
                 'type' => 'date',
                 'name' => 'startDate',
@@ -221,6 +230,7 @@ trait EasyDigitalDownloadsInsertion
                 'relativeDate' => '+',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Expiration date', 'easydigitaldownloads'),
                 'type' => 'date',
                 'name' => 'endDate',
@@ -228,6 +238,7 @@ trait EasyDigitalDownloadsInsertion
                 'relativeDate' => '+',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Max Uses', 'easydigitaldownloads'),
                 'type' => 'number',
                 'name' => 'maxUses',
@@ -235,6 +246,7 @@ trait EasyDigitalDownloadsInsertion
                 'min' => '0',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Minimum amount', 'easydigitaldownloads'),
                 'type' => 'number',
                 'name' => 'minAmount',
@@ -242,6 +254,7 @@ trait EasyDigitalDownloadsInsertion
                 'min' => '0',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Use once per customer', 'easydigitaldownloads'),
                 'type' => 'boolean',
                 'name' => 'once',
@@ -249,7 +262,7 @@ trait EasyDigitalDownloadsInsertion
             ],
         ];
 
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'simple', $this->defaultValues);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'simple', $this->defaultValues);
 
         // Script to show more inputs if requirements are selected
         echo '<script type="text/javascript">
@@ -317,8 +330,8 @@ trait EasyDigitalDownloadsInsertion
             ],
         ];
 
-        echo $this->displaySelectionZone($this->lastOrCartContentInsert('last'));
-        echo $this->pluginHelper->displayOptions($lastPurchasedOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->lastOrCartContentInsert('last'));
+        $this->pluginHelper->displayOptions($lastPurchasedOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -328,8 +341,8 @@ trait EasyDigitalDownloadsInsertion
             acym_translation('ACYM_CART_DOWNLOADS'),
             !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab
         );
-        echo $this->displaySelectionZone($this->lastOrCartContentInsert('cart'));
-        echo $this->pluginHelper->displayOptions($lastPurchasedOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->lastOrCartContentInsert('cart'));
+        $this->pluginHelper->displayOptions($lastPurchasedOptions, $identifier, 'grouped', $this->defaultValues);
         $tabHelper->endTab();
 
         $tabHelper->display('plugin');
@@ -360,7 +373,15 @@ trait EasyDigitalDownloadsInsertion
         ?>
 		<div class="cell grid-x">
 			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMin); ?>" class="cell medium-6">
-                <?php echo acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info('ACYM_MIN_NUMBER_OF_PRODUCTS_DESC'); ?>
+                <?php
+                echo wp_kses(
+                    acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info('ACYM_MIN_NUMBER_OF_PRODUCTS_DESC'),
+                    [
+                        'span' => ['class' => []],
+                        'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
+                    ]
+                );
+                ?>
 			</label>
 			<input type="number"
 				   id="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMin); ?>"
@@ -372,7 +393,15 @@ trait EasyDigitalDownloadsInsertion
 		</div>
 		<div class="cell grid-x">
 			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMax); ?>" class="cell medium-6">
-                <?php echo acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info('ACYM_MAX_NUMBER_OF_PRODUCTS_DESC'); ?>
+                <?php
+                echo wp_kses(
+                    acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info('ACYM_MAX_NUMBER_OF_PRODUCTS_DESC'),
+                    [
+                        'span' => ['class' => []],
+                        'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
+                    ]
+                );
+                ?>
 			</label>
 			<input type="number"
 				   id="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__download__number<?php echo esc_attr($endIdMax); ?>"
@@ -384,24 +413,46 @@ trait EasyDigitalDownloadsInsertion
 		</div>
 		<div class="cell grid-x">
 			<label for="acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__cat" class="cell medium-6">
-                <?php echo acym_translation('ACYM_CATEGORY_FILTER').acym_info('ACYM_CATEGORY_FILTER_DESC'); ?>
+                <?php
+                echo wp_kses(
+                    acym_translation('ACYM_CATEGORY_FILTER').acym_info('ACYM_CATEGORY_FILTER_DESC'),
+                    [
+                        'span' => ['class' => []],
+                        'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
+                    ]
+                );
+                ?>
 			</label>
 			<div class="cell medium-6 acym__easydigitaldownloads__<?php echo esc_attr($partId); ?>__cat__container">
-                <?php echo acym_selectMultiple($this->catvalues, 'cat', $selectedArea, [
-                    'id' => 'acym__easydigitaldownloads__'.$partId.'__cat',
-                    'onchange' => '_selectedRows'.$identifier.' = {}
+                <?php
+                echo wp_kses(
+                    acym_selectMultiple(
+                        $this->catvalues,
+                        'cat',
+                        $selectedArea,
+                        [
+                            'id' => 'acym__easydigitaldownloads__'.$partId.'__cat',
+                            'onchange' => '_selectedRows'.$identifier.' = {}
                         				for(let option of this.options){
                         					if(option.selected) _selectedRows'.$identifier.'[option.value] = true;
                         				} 	
                         				updateDynamic'.$identifier.'();',
-                ]); ?>
+                        ]
+                    ),
+                    [
+                        'select' => ['name' => [], 'id' => [], 'class' => [], 'multiple' => [], 'onchange' => []],
+                        'option' => ['value' => [], 'selected' => [], 'disabled' => [], 'data-hidden' => []],
+                        'optgroup' => ['label' => []],
+                    ]
+                );
+                ?>
 			</div>
 		</div>
 		<script type="text/javascript">
-            var _additionalInfo<?php echo esc_attr($identifier); ?> = {};
+            const _additionalInfo<?php echo esc_attr($identifier); ?> = {};
             <?php
-            echo '_additionalInfo'.esc_attr($identifier).'[\'min\'] = '.intval($this->defaultValues->min).';';
-            echo '_additionalInfo'.esc_attr($identifier).'[\'max\'] = '.intval($this->defaultValues->max).';';
+            echo '_additionalInfo'.esc_attr($identifier).'.min = '.intval($this->defaultValues->min).';';
+            echo '_additionalInfo'.esc_attr($identifier).'.max = '.intval($this->defaultValues->max).';';
             ?>
 		</script>
         <?php
@@ -409,14 +460,59 @@ trait EasyDigitalDownloadsInsertion
             ?>
 			<div class="cell grid-x">
 				<label class="cell medium-6">
-                    <?php echo acym_translation('ACYM_START_DATE').acym_info('ACYM_START_DATE_PURCHASED_PRODUCT_DESC'); ?>
+                    <?php
+                    echo wp_kses(
+                        acym_translation('ACYM_START_DATE').acym_info('ACYM_START_DATE_PURCHASED_PRODUCT_DESC'),
+                        [
+                            'span' => ['class' => []],
+                            'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
+                        ]
+                    );
+                    ?>
 				</label>
-                <?php echo acym_dateField(
-                    'min_date',
-                    empty($this->defaultValues->min_date) ? '' : $this->defaultValues->min_date,
-                    'cell medium-6',
-                    'onchange="addAdditionalInfo'.esc_attr($identifier).'(\'min_date\', this.value)"'
-                ); ?>
+                <?php
+                echo wp_kses(
+                    acym_dateField(
+                        'min_date',
+                        empty($this->defaultValues->min_date) ? '' : $this->defaultValues->min_date,
+                        'cell medium-6',
+                        'onchange="addAdditionalInfo'.esc_attr($identifier).'(\'min_date\', this.value)"'
+                    ),
+                    [
+                        'div' => ['class' => [], 'style' => []],
+                        'input' => [
+                            'type' => [],
+                            'name' => [],
+                            'id' => [],
+                            'value' => [],
+                            'class' => [],
+                            'data-open' => [],
+                            'readonly' => [],
+                            'data-acym-translate' => [],
+                            'data-rs' => [],
+                            'onchange' => [],
+                            'data-reveal' => [],
+                            'data-reveal-larger' => [],
+                        ],
+                        'span' => ['class' => [], 'aria-hidden' => []],
+                        'button' => [
+                            'type' => [],
+                            'class' => [],
+                            'data-close' => [],
+                            'data-type' => [],
+                            'aria-label' => [],
+                            'data-open' => [],
+                        ],
+                        'select' => [
+                            'id' => [],
+                            'name' => [],
+                            'class' => [],
+                        ],
+                        'optgroup' => ['label' => []],
+                        'option' => ['value' => [], 'selected' => [], 'disabled' => []],
+                    ]
+                );
+                ?>
 			</div>
             <?php
         }
@@ -567,6 +663,7 @@ trait EasyDigitalDownloadsInsertion
             $posURL = strpos($imageHTML, ' src="') + 6;
             $imagePath = substr($imageHTML, $posURL, strpos($imageHTML, '"', $posURL) - $posURL);
         }
+        // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
         $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
         if (empty($tag->pict)) $imagePath = '';
 
@@ -648,7 +745,9 @@ trait EasyDigitalDownloadsInsertion
                 //We get the lastest payments
                 $dataQuery = [
                     'numberposts' => -1,
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
                     'meta_key' => '_edd_payment_customer_id',
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
                     'meta_value' => $user->cms_id,
                     // payment is a kind of list of download (like an order)
                     'post_type' => 'edd_payment',
@@ -656,6 +755,7 @@ trait EasyDigitalDownloadsInsertion
                     // So I put "publish" because it's the status "paid" for edd
                     // Maybe we can add more like "pending"
                     'post_status' => 'publish',
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                     'meta_query' => [
                         [
                             'key' => '_edd_payment_customer_id',
@@ -668,7 +768,7 @@ trait EasyDigitalDownloadsInsertion
                 if (!empty($parameter->min_date)) {
                     $minDate = acym_replaceDate($parameter->min_date);
                     $dataQuery['date_query'] = [
-                        'after' => date('Y-m-d', $minDate),
+                        'after' => gmdate('Y-m-d', $minDate),
                     ];
                 }
                 $customer_payments = get_posts($dataQuery);

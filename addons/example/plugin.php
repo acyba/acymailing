@@ -183,8 +183,8 @@ class plgAcymExample extends AcymPlugin
             ],
         ];
 
-        echo $this->displaySelectionZone($this->prepareListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $this->name, 'individual', $defaultValues);
+        $this->displaySelectionZone($this->prepareListing());
+        $this->pluginHelper->displayOptions($displayOptions, $this->name, 'individual', $defaultValues);
     }
 
     /**

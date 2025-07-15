@@ -1,8 +1,8 @@
-=== Events Manager integration - AcyMailing ===
+=== AcyMailing integration for Events Manager ===
 Contributors: acyba
 Tags: newsletter, integration, acymailing, events, events manager
 Tested up to: 6.8
-Stable tag: 4.0
+Stable tag: 4.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

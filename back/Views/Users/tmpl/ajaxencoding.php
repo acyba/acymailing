@@ -168,7 +168,7 @@ $nbLines = count($this->lines);
 
 
         // This variable will be used to re-assign columns when we change the encoding option
-        $fields = $userClass->getAllColumnsUserAndCustomField();
+        $fields = $userClass->getAllColumnsUserAndCustomField(false, true);
         if (acym_isAdmin()) {
             $fields['listids'] = 'listids';
             $fields['listname'] = 'listname';

@@ -2,6 +2,10 @@
 
 use AcyMailing\Core\AcymPlugin;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 require_once __DIR__.DIRECTORY_SEPARATOR.'EasyDigitalDownloadsInsertion.php';
 
 class plgAcymEasydigitaldownloads extends AcymPlugin

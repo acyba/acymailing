@@ -21,6 +21,7 @@ class ACYM_USER_UPDATED
         $this->set_integration(self::INTEGRATION_CODE);
         $this->set_trigger_code(self::TRIGGER_CODE);
         $this->set_trigger_meta(self::TRIGGER_META);
+        // translators: %s: the trigger meta
         $this->set_sentence(sprintf(__('An AcyMailing subscriber is {{created or modified:%s}}', 'acymailing-integration-for-uncanny-automator'), $this->get_trigger_meta()));
         $this->set_readable_sentence(__('An AcyMailing subscriber is {{created or modified}}', 'acymailing-integration-for-uncanny-automator'));
         $this->set_options_callback([$this, 'load_options']);
@@ -43,9 +44,12 @@ class ACYM_USER_UPDATED
                     Automator()->helpers->recipe->field->select(
                         [
                             'option_code' => $this->get_trigger_meta(),
+                            // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                             'label' => __('Status', 'acymailing'),
                             'options' => [
+                                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                                 'created' => __('Created', 'acymailing'),
+                                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                                 'updated' => __('Modified', 'acymailing'),
                             ],
                         ]

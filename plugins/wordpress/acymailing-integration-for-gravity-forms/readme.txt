@@ -1,8 +1,8 @@
-=== Gravity Forms integration - AcyMailing ===
+=== AcyMailing integration for Gravity Forms ===
 Contributors: acyba
-Tags: newsletter, newsletter form, acymailing, form, subscription, gravity forms
+Tags: newsletter, newsletter form, form, subscription, gravity forms
 Tested up to: 6.8
-Stable tag: 4.0
+Stable tag: 4.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

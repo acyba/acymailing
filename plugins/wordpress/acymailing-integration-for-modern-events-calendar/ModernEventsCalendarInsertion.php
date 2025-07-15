@@ -54,8 +54,8 @@ trait ModernEventsCalendarInsertion
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -84,8 +84,8 @@ trait ModernEventsCalendarInsertion
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -106,7 +106,7 @@ trait ModernEventsCalendarInsertion
 
         if ($this->getParam('hidepast', '1') === '1') {
             $this->query .= 'JOIN #__postmeta AS startdate ON post.ID = startdate.post_id AND startdate.meta_key = "mec_start_date" ';
-            $this->filters[] = 'startdate.`meta_value` >= '.acym_escapeDB(date('Y-m-d'));
+            $this->filters[] = 'startdate.`meta_value` >= '.acym_escapeDB(gmdate('Y-m-d'));
         }
 
         parent::prepareListing();
@@ -189,6 +189,8 @@ trait ModernEventsCalendarInsertion
             $imagePath = get_the_post_thumbnail_url($tag->id);
         }
         $varFields['{image}'] = $imagePath;
+
+        // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
         $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
         if (!in_array('image', $tag->display)) $imagePath = '';
 
@@ -301,6 +303,7 @@ trait ModernEventsCalendarInsertion
         if (in_array('price', $tag->display)) {
             $customFields[] = [
                 $varFields['{price}'],
+                // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralDomain
                 __('Cost', $this->textDomain),
             ];
         }
@@ -480,6 +483,7 @@ trait ModernEventsCalendarInsertion
         if (in_array('labels', $tag->display) && !empty($varFields['{labels}'])) {
             $customFields[] = [
                 $varFields['{labels}'],
+                // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralDomain
                 __('Event Labels', $this->textDomain),
             ];
         }
@@ -489,6 +493,7 @@ trait ModernEventsCalendarInsertion
         if (in_array('moreinfo', $tag->display) && !empty($properties['mec_more_info']->value)) {
             $customFields[] = [
                 $varFields['{moreinfo}'],
+                // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralDomain
                 __('More Info', $this->textDomain),
             ];
         }
@@ -534,7 +539,7 @@ trait ModernEventsCalendarInsertion
             if (isset($this->tags[$oneTag])) continue;
 
             if (empty($parameter->from)) {
-                $parameter->from = date('Y-m-d H:i:s', $time);
+                $parameter->from = gmdate('Y-m-d H:i:s', $time);
             } else {
                 $parameter->from = acym_date(acym_replaceDate($parameter->from), 'Y-m-d H:i:s');
             }

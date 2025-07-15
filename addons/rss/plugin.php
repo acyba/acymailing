@@ -133,7 +133,7 @@ class plgAcymRss extends AcymPlugin
 
         $this->autoCampaignOptions($displayOptions);
 
-        echo $this->pluginHelper->displayOptions($displayOptions, $this->name, 'simple', $this->defaultValues);
+        $this->pluginHelper->displayOptions($displayOptions, $this->name, 'simple', $this->defaultValues);
     }
 
     public function replaceContent(&$email)

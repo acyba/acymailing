@@ -315,7 +315,9 @@ function acym_date($time = 'now', $format = null, bool $useTz = true, bool $tran
     if (!$format || (strpos($format, 'ACYM_DATE_FORMAT') !== false && acym_translation($format) == $format)) {
         $format = 'ACYM_DATE_FORMAT_LC1';
     }
-    if (strpos($format, 'ACYM_DATE') !== false) $format = acym_translation($format);
+    if (strpos($format, 'ACYM_DATE') !== false) {
+        $format = acym_translation($format);
+    }
 
     //Don't use timezone
     if ($useTz === false) {
@@ -370,12 +372,12 @@ function acym_translateDate(string $date): string
 
     foreach ($map as $english => $translationKey) {
         $translation = acym_translation($translationKey);
-        if ($translation == $translationKey) {
+        if ($translation === $translationKey) {
             continue;
         }
 
-        $date = preg_replace('#'.preg_quote($english).'( |,|$)#i', $translation.'$1', $date);
-        $date = preg_replace('#'.preg_quote(substr($english, 0, 3)).'( |,|$)#i', mb_substr($translation, 0, 3).'$1', $date);
+        $date = preg_replace('#'.preg_quote($english).'#i', $translation, $date);
+        $date = preg_replace('#'.preg_quote(substr($english, 0, 3)).'#i', mb_substr($translation, 0, 3), $date);
     }
 
     return $date;

@@ -1,8 +1,8 @@
-=== Table of contents generator - AcyMailing ===
+=== AcyMailing - table of contents generator ===
 Contributors: acyba
 Tags: newsletter, acymailing
 Tested up to: 6.8
-Stable tag: 3.4
+Stable tag: 3.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

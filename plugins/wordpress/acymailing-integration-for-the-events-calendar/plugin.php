@@ -2,6 +2,10 @@
 
 use AcyMailing\Core\AcymPlugin;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 require_once __DIR__.DIRECTORY_SEPARATOR.'TheEventsCalendarAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'TheEventsCalendarAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'TheEventsCalendarInsertion.php';
@@ -38,6 +42,7 @@ class plgAcymTheeventscalendar extends AcymPlugin
                 'full' => ['ACYM_FULL_TEXT', false],
                 'date' => ['ACYM_DATE', true],
                 'location' => ['ACYM_LOCATION', true],
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'website' => [__('Event Website', 'the-events-calendar'), false],
                 'tags' => ['ACYM_TAGS', false],
                 'cats' => ['ACYM_CATEGORIES', false],

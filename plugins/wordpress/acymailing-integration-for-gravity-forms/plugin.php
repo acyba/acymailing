@@ -60,9 +60,9 @@ class plgAcymGravityforms extends AcymPlugin
         $lists = array_merge($hiddenLists, $checkedLists);
         $lists = array_unique($lists);
 
-		if (empty($lists)) {
-			return;
-		}
+        if (empty($lists)) {
+            return;
+        }
 
         $userClass = new UserClass();
         $alreadyExists = $userClass->getOneByEmail($user->email);
@@ -108,7 +108,27 @@ class plgAcymGravityforms extends AcymPlugin
             'label' => $label,
             'lists' => $lists,
         ];
-        echo $this->includeView('select_multiple', $data, __DIR__);
+
+        echo wp_kses(
+            $this->includeView('select_multiple', $data, __DIR__),
+            [
+                'li' => [
+                    'class' => [],
+                ],
+                'p' => [
+                    'class' => [],
+                    'style' => [],
+                ],
+                'select' => [
+                    'id' => [],
+                    'multiple' => [],
+                    'onchange' => [],
+                ],
+                'option' => [
+                    'value' => [],
+                ],
+            ]
+        );
     }
 
     public function subscriptionFormSettings($position, $form_id)
@@ -141,13 +161,9 @@ class plgAcymGravityforms extends AcymPlugin
             }
 
 
-            <?php
-            foreach ($this->propertyLabels as $property => $label) {
-            ?>
-            fieldSettings.acy += ', .acym_<?php echo $property; ?>_setting';
-            <?php
-            }
-            ?>
+            <?php foreach ($this->propertyLabels as $property => $label) { ?>
+            fieldSettings.acy += ', .acym_<?php echo esc_attr($property); ?>_setting';
+            <?php } ?>
 
             //adding setting to fields of type "text"
             fieldSettings.acy += ', .acym_displayed_lists_setting';
@@ -156,7 +172,7 @@ class plgAcymGravityforms extends AcymPlugin
             jQuery(document).on('gform_load_field_settings', function (event, field, form) {
                 <?php
                 foreach ($this->propertyLabels as $property => $label) {
-                    echo 'setAcymFiedsOnLoad("'.$property.'");';
+                ?>setAcymFiedsOnLoad("<?php echo esc_attr($property); ?>");<?php
                 }
                 ?>
             });

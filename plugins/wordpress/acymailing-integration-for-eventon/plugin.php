@@ -2,6 +2,10 @@
 
 use AcyMailing\Core\AcymPlugin;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 require_once __DIR__.DIRECTORY_SEPARATOR.'EventOnInsertion.php';
 
 class plgAcymEventon extends AcymPlugin
@@ -23,6 +27,7 @@ class plgAcymEventon extends AcymPlugin
         if ($this->installed) {
             $this->displayOptions = [
                 'title' => ['ACYM_TITLE', true],
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'subtitle' => [__('Event Subtitle', 'eventon'), true],
                 'price' => ['ACYM_PRICE', true],
                 'image' => ['ACYM_IMAGE', true],
@@ -32,7 +37,9 @@ class plgAcymEventon extends AcymPlugin
                 'location' => ['ACYM_LOCATION', true],
                 'organiser' => ['ACYM_ORGANIZER', false],
                 'tags' => ['ACYM_TAGS', false],
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'evtype' => [__('Event Type', 'eventon'), false],
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'evtype2' => [__('Event Type 2', 'eventon'), false],
             ];
 

@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 10.3.0
+ * Version: 10.4.0
  * Text Domain: acymailing
  * Domain Path: /language
  * Requires at least: 5.0
@@ -37,7 +37,8 @@ class acymailingLoader
     public function __construct()
     {
         // Install Acy DB and sample data on first activation (not on installation because of FTP install)
-        register_activation_hook(__DIR__.'/index.php', [$this, 'activation']);
+        register_activation_hook(__DIR__.'/'.basename(__FILE__), [$this, 'activation']);
+        add_action('wp_initialize_site', [$this, 'subsiteCreation'], 101);
 
         // Prevent bad plugins from loading on AcyMailing pages
         add_action('plugins_loaded', [$this, 'protectAcyMailingPages'], 5);
@@ -51,7 +52,14 @@ class acymailingLoader
         add_filter('wpml_show_admin_language_switcher', [$this, 'disableWpml']);
     }
 
-    public function activation()
+    public function subsiteCreation(): void
+    {
+        if (is_plugin_active_for_network(basename(__DIR__).'/'.basename(__FILE__))) {
+            $this->activation();
+        }
+    }
+
+    public function activation(): void
     {
         // Load Acy library
         $helperFile = __DIR__.DIRECTORY_SEPARATOR.'back'.DIRECTORY_SEPARATOR.'Core'.DIRECTORY_SEPARATOR.'init.php';

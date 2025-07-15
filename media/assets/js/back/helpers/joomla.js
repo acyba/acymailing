@@ -1,7 +1,7 @@
 const acym_helperJoomla = {
     setWidthJoomlaContent: function () {
         let $leftMenu = jQuery('#acym__joomla__left-menu');
-        if (!$leftMenu) return;
+        if (!$leftMenu.length) return;
 
         let menuWidth = $leftMenu.width();
         if (jQuery(window).width() < 640) {
@@ -75,6 +75,23 @@ const acym_helperJoomla = {
                 $buttonToggleLeftMenu.trigger('click');
             }
             acym_helperJoomla.setWidthJoomlaContent();
+        });
+    },
+    adjustContainerMainWidth: function () {
+        let $leftMenu = jQuery('#acym__joomla__left-menu');
+        if ($leftMenu.length) return;
+
+        console.log('coucou');
+
+        const $sidebar = jQuery('#sidebar-wrapper');
+        const $container = jQuery('.container-fluid.container-main');
+
+        if ($sidebar.length === 0 || $container.length === 0) return;
+
+        const sidebarWidth = $sidebar.outerWidth() || 0;
+
+        $container.css({
+            'max-width': `calc(100vw - ${sidebarWidth}px - 15px)`
         });
     }
 };

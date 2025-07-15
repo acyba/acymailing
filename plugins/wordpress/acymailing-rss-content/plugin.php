@@ -128,7 +128,7 @@ class plgAcymRss extends AcymPlugin
 
         $this->autoCampaignOptions($displayOptions);
 
-        echo $this->pluginHelper->displayOptions($displayOptions, $this->name, 'simple', $this->defaultValues);
+        $this->pluginHelper->displayOptions($displayOptions, $this->name, 'simple', $this->defaultValues);
     }
 
     public function replaceContent(&$email)
@@ -230,7 +230,7 @@ class plgAcymRss extends AcymPlugin
             $result = $this->pluginHelper->getFormattedResult($resultfeeds, $parameter);
 
             // Make sure there are no internal links
-            $baseURL = 'https://'.parse_url($parameter->url, PHP_URL_HOST);
+            $baseURL = 'https://'.wp_parse_url($parameter->url, PHP_URL_HOST);
             $result = str_replace(['href="/', 'src="/'], ['href="'.$baseURL.'/', 'src="'.$baseURL.'/'], $result);
 
             $this->tags[$oneTag] = $result;
@@ -295,6 +295,7 @@ class plgAcymRss extends AcymPlugin
         }
         if (!empty($imagePath)) {
             $varFields['{enclosure}'] = $imagePath;
+            // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
             $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
             if (!in_array('enclosure', $parameter->display)) {
                 $imagePath = '';

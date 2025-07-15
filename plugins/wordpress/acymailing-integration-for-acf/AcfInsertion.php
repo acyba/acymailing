@@ -171,8 +171,8 @@ trait AcymAcfInsertion
             ]
         );
 
-        echo $this->displaySelectionZone($this->getFilteringZone().$this->prepareListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($this->getFilteringZone().$this->prepareListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
         ?>
 		<script>
             jQuery(function ($) {
@@ -224,8 +224,8 @@ trait AcymAcfInsertion
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
-        echo $this->displaySelectionZone($this->getCategoryListing(false));
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing(false));
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
         ?>
 		<script>
             jQuery(function ($) {
@@ -428,6 +428,7 @@ trait AcymAcfInsertion
             $imagePath = get_the_post_thumbnail_url($tag->id, $tag->size);
         }
         $varFields['{image}'] = $imagePath;
+        // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
         $varFields['{picthtml}'] = '<img class="content_main_image" alt="" src="'.$imagePath.'">';
         if (!in_array('image', $tag->display)) {
             $imagePath = '';

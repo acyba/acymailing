@@ -595,6 +595,16 @@ class PluginHelper extends AcymObject
             'h4',
             'h5',
             'h6',
+            'ul',
+            'ol',
+            'li',
+            'table',
+            'tr',
+            'td',
+            'th',
+            'thead',
+            'tbody',
+            'tfoot',
         ];
 
         $aloneAllowedTags = [
@@ -906,7 +916,7 @@ class PluginHelper extends AcymObject
         return acym_absoluteURL($result);
     }
 
-    public function displayOptions(array $options, string $dynamicIdentifier, string $type = 'individual', $defaultValues = null): string
+    public function displayOptions(array $options, string $dynamicIdentifier, string $type = 'individual', $defaultValues = null): void
     {
         $suffix = preg_replace('[^a-zA-Z0-9]', '_', $dynamicIdentifier);
         $updateFunction = 'updateDynamic'.$suffix;
@@ -1361,12 +1371,12 @@ class PluginHelper extends AcymObject
                 }
             </script>';
 
-        if ($type == 'individual') {
+        if ($type === 'individual') {
             acym_trigger('displayCustomViewEditor', [&$output], 'plgAcym'.ucfirst($dynamicIdentifier));
             $output .= '<input type="hidden" id="acym__dynamic__update__function" value="'.$updateFunction.'">';
         }
 
-        return $output;
+        echo $output;
     }
 
     /**

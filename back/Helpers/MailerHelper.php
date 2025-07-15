@@ -1524,7 +1524,7 @@ class MailerHelper extends Mailer
     {
         $pictureLink = acym_frontendLink('frontstats&task=openStats&id='.$mailId.'&userid='.$userId, true, false);
 
-        $statPicture = '<img class="spict" alt="Statistics image" src="'.$pictureLink.'"  border="0" width="50" height="1" />';
+        $statPicture = '<img class="spict" alt="" src="'.$pictureLink.'"  border="0" width="50" height="1" />';
 
         if (strpos($this->body, '</body>')) {
             $this->body = str_replace('</body>', $statPicture.'</body>', $this->body);

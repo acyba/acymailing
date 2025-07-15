@@ -2,6 +2,7 @@
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
 
+if (!defined('ABSPATH')) exit;
 define('ACYMAILING_WC_BLOCK_VERSION', '0.1.0');
 
 /**
@@ -9,7 +10,6 @@ define('ACYMAILING_WC_BLOCK_VERSION', '0.1.0');
  */
 class AcymailingWcBlock implements IntegrationInterface
 {
-
     /**
      * The name of the integration.
      *

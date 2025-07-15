@@ -7,8 +7,8 @@ use AcyMailing\Classes\FollowupClass;
 
 trait WooCommerceInsertion
 {
-    private $minProductDisplayLastPurchased = 1;
-    private $maxProductDisplayLastPurchased = 3;
+    private int $minProductDisplayLastPurchased = 1;
+    private int $maxProductDisplayLastPurchased = 3;
 
     public function dynamicText($mailId)
     {
@@ -63,7 +63,13 @@ trait WooCommerceInsertion
             $text .= '<div class="cell acym__row__no-listing acym__listing__row__popup" onclick="applyWooTag(\''.$orderFieldName.'\', this);" >'.$orderFieldName.'</div>';
         }
 
-        echo $text;
+        echo wp_kses(
+            $text,
+            [
+                'h1' => ['class' => []],
+                'div' => ['class' => [], 'onclick' => []],
+            ]
+        );
     }
 
     public function replaceOrderInformation(object &$email, object &$user, bool $send = true)
@@ -270,8 +276,8 @@ trait WooCommerceInsertion
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'auto'.$this->name;
@@ -298,15 +304,15 @@ trait WooCommerceInsertion
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = $this->name.'_tags';
         $tabHelper->startTab(acym_translation('ACYM_BY_TAG'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
 
-        echo $this->displaySelectionZone($this->getTagListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getTagListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = $this->name.'_coupon';
@@ -321,6 +327,7 @@ trait WooCommerceInsertion
                 'class' => 'acym_plugin__larger_text_field',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Coupon expiry date', 'woocommerce'),
                 'type' => 'date',
                 'name' => 'end',
@@ -328,58 +335,70 @@ trait WooCommerceInsertion
                 'relativeDate' => '+',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Discount type', 'woocommerce'),
                 'type' => 'select',
                 'name' => 'type',
                 'options' => [
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'fixed_cart' => __('Fixed cart discount', 'woocommerce'),
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'fixed_product' => __('Fixed product discount', 'woocommerce'),
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'percent' => __('Percentage discount', 'woocommerce'),
                 ],
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Coupon amount', 'woocommerce'),
                 'type' => 'number',
                 'name' => 'amount',
                 'default' => '0',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Allow free shipping', 'woocommerce'),
                 'type' => 'boolean',
                 'name' => 'free',
                 'default' => false,
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Exclude sale items', 'woocommerce'),
                 'type' => 'boolean',
                 'name' => 'exclsale',
                 'default' => false,
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Minimum spend', 'woocommerce'),
                 'type' => 'number',
                 'name' => 'min',
                 'default' => '',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Maximum spend', 'woocommerce'),
                 'type' => 'number',
                 'name' => 'max',
                 'default' => '',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Usage limit per coupon', 'woocommerce'),
                 'type' => 'number',
                 'name' => 'use',
                 'default' => '1',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Limit usage to X items', 'woocommerce'),
                 'type' => 'number',
                 'name' => 'items',
                 'default' => '',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Products', 'woocommerce'),
                 'type' => 'text',
                 'name' => 'prod',
@@ -387,6 +406,7 @@ trait WooCommerceInsertion
                 'default' => '',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Exclude products', 'woocommerce'),
                 'type' => 'text',
                 'name' => 'exclprod',
@@ -394,12 +414,14 @@ trait WooCommerceInsertion
                 'default' => '',
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Product categories', 'woocommerce'),
                 'type' => 'multiselect',
                 'name' => 'cat',
                 'options' => $wooCategories,
             ],
             [
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'title' => __('Exclude categories', 'woocommerce'),
                 'type' => 'multiselect',
                 'name' => 'exclcat',
@@ -407,7 +429,7 @@ trait WooCommerceInsertion
             ],
         ];
 
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'simple', $this->defaultValues);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'simple', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -452,8 +474,8 @@ trait WooCommerceInsertion
             ],
         ];
 
-        echo $this->displaySelectionZone($this->lastOrCartContentInsert('last'));
-        echo $this->pluginHelper->displayOptions($lastPurchasedOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->lastOrCartContentInsert('last'));
+        $this->pluginHelper->displayOptions($lastPurchasedOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -508,7 +530,7 @@ trait WooCommerceInsertion
                 ],
             ];
 
-            echo $this->pluginHelper->displayOptions($boughtOptions, $identifier, 'grouped', $this->defaultValues);
+            $this->pluginHelper->displayOptions($boughtOptions, $identifier, 'grouped', $this->defaultValues);
 
             $tabHelper->endTab();
         }
@@ -519,8 +541,8 @@ trait WooCommerceInsertion
             acym_translation('ACYM_CART_PRODUCTS'),
             !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab
         );
-        echo $this->displaySelectionZone($this->lastOrCartContentInsert('cart'));
-        echo $this->pluginHelper->displayOptions($lastPurchasedOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->lastOrCartContentInsert('cart'));
+        $this->pluginHelper->displayOptions($lastPurchasedOptions, $identifier, 'grouped', $this->defaultValues);
         $tabHelper->endTab();
 
         $tabHelper->display('plugin');
@@ -549,63 +571,146 @@ trait WooCommerceInsertion
         }
         ob_start();
         ?>
-		<div class="cell grid-x">
-			<label for="acym__woocommerce__<?php echo $partId; ?>__product__number<?php echo $endIdMin; ?>" class="cell medium-6">
-                <?php echo acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info('ACYM_MIN_NUMBER_OF_PRODUCTS_DESC'); ?>
+		<div class="cell grid-x margin-bottom-1">
+			<label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMin); ?>" class="cell medium-6">
+                <?php
+                echo wp_kses(
+                    acym_translation('ACYM_MIN_NB_ELEMENTS').acym_info('ACYM_MIN_NUMBER_OF_PRODUCTS_DESC'),
+                    [
+                        'span' => ['class' => []],
+                        'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
+                    ]
+                );
+                ?>
 			</label>
 			<input type="number"
-				   id="acym__woocommerce__<?php echo $partId; ?>__product__number<?php echo $endIdMin; ?>"
+				   id="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMin); ?>"
 				   class="cell medium-6"
-				   value="<?php echo $this->defaultValues->min; ?>"
+				   value="<?php echo esc_attr($this->defaultValues->min); ?>"
 				   name="min"
-				   onchange="addAdditionalInfo<?php echo $identifier; ?>('min', this.value)">
+				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('min', this.value)">
 		</div>
-		<div class="cell grid-x">
-			<label for="acym__woocommerce__<?php echo $partId; ?>__product__number<?php echo $endIdMax; ?>" class="cell medium-6">
-                <?php echo acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info('ACYM_MAX_NUMBER_OF_PRODUCTS_DESC'); ?>
+		<div class="cell grid-x margin-bottom-1">
+			<label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMax); ?>" class="cell medium-6">
+                <?php
+                echo wp_kses(
+                    acym_translation('ACYM_MAX_NB_ELEMENTS').acym_info('ACYM_MAX_NUMBER_OF_PRODUCTS_DESC'),
+                    [
+                        'span' => ['class' => []],
+                        'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
+                    ]
+                );
+                ?>
 			</label>
 			<input type="number"
-				   id="acym__woocommerce__<?php echo $partId; ?>__product__number<?php echo $endIdMax; ?>"
+				   id="acym__woocommerce__<?php echo esc_attr($partId); ?>__product__number<?php echo esc_attr($endIdMax); ?>"
 				   class="cell medium-6"
-				   value="<?php echo $this->defaultValues->max; ?>"
+				   value="<?php echo esc_attr($this->defaultValues->max); ?>"
 				   name="max"
-				   onchange="addAdditionalInfo<?php echo $identifier; ?>('max', this.value)">
+				   onchange="addAdditionalInfo<?php echo esc_attr($identifier); ?>('max', this.value)">
 		</div>
-		<div class="cell grid-x">
-			<label for="acym__woocommerce__<?php echo $partId; ?>__cat" class="cell medium-6">
-                <?php echo acym_translation('ACYM_CATEGORY_FILTER').acym_info('ACYM_CATEGORY_FILTER_DESC'); ?>
+		<div class="cell grid-x margin-bottom-1">
+			<label for="acym__woocommerce__<?php echo esc_attr($partId); ?>__cat" class="cell medium-6">
+                <?php
+                echo wp_kses(
+                    acym_translation('ACYM_CATEGORY_FILTER').acym_info('ACYM_CATEGORY_FILTER_DESC'),
+                    [
+                        'span' => ['class' => []],
+                        'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
+                    ]
+                );
+                ?>
 			</label>
-			<div class="cell medium-6 acym__woocommerce__<?php echo $partId; ?>__cat__container">
-                <?php echo acym_selectMultiple($this->catvalues, 'cat', $selectedArea, [
-                    'id' => 'acym__woocommerce__'.$partId.'__cat',
-                    'onchange' => '_selectedRows'.$identifier.' = {}
+			<div class="cell medium-6 acym__woocommerce__<?php echo esc_attr($partId); ?>__cat__container">
+                <?php
+                echo wp_kses(
+                    acym_selectMultiple(
+                        $this->catvalues,
+                        'cat',
+                        $selectedArea,
+                        [
+                            'id' => 'acym__woocommerce__'.$partId.'__cat',
+                            'onchange' => '_selectedRows'.$identifier.' = {}
                         				for(let option of this.options){
                         					if(option.selected) _selectedRows'.$identifier.'[option.value] = true;
                         				} 	
                         				updateDynamic'.$identifier.'();',
-                ]); ?>
+                        ]
+                    ),
+                    [
+                        'select' => ['name' => [], 'id' => [], 'class' => [], 'multiple' => [], 'onchange' => []],
+                        'option' => ['value' => [], 'selected' => [], 'disabled' => [], 'data-hidden' => []],
+                        'optgroup' => ['label' => []],
+                    ]
+                );
+                ?>
 			</div>
 		</div>
 		<script type="text/javascript">
-            var _additionalInfo<?php echo $identifier; ?> = {};
+            const _additionalInfo<?php echo esc_html($identifier); ?> = {};
             <?php
-            echo '_additionalInfo'.$identifier.'[\'min\']='.$this->defaultValues->min.';';
-            echo '_additionalInfo'.$identifier.'[\'max\']='.$this->defaultValues->max.';';
+            echo esc_html('_additionalInfo'.$identifier.'.min = '.$this->defaultValues->min.';');
+            echo esc_html('_additionalInfo'.$identifier.'.max = '.$this->defaultValues->max.';');
             ?>
 		</script>
         <?php
-        if ($type == 'last') {
+        if ($type === 'last') {
             ?>
 			<div class="cell grid-x">
 				<label class="cell medium-6">
-                    <?php echo acym_translation('ACYM_START_DATE').acym_info('ACYM_START_DATE_PURCHASED_PRODUCT_DESC'); ?>
+                    <?php
+                    echo wp_kses(
+                        acym_translation('ACYM_START_DATE').acym_info('ACYM_START_DATE_PURCHASED_PRODUCT_DESC'),
+                        [
+                            'span' => ['class' => []],
+                            'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
+                        ]
+                    );
+                    ?>
 				</label>
-                <?php echo acym_dateField(
-                    'min_date',
-                    empty($this->defaultValues->min_date) ? '' : $this->defaultValues->min_date,
-                    'cell medium-6',
-                    'onchange="addAdditionalInfo'.$identifier.'(\'min_date\', this.value)"'
-                ); ?>
+                <?php
+                echo wp_kses(
+                    acym_dateField(
+                        'min_date',
+                        empty($this->defaultValues->min_date) ? '' : $this->defaultValues->min_date,
+                        'cell medium-6',
+                        'onchange="addAdditionalInfo'.$identifier.'(\'min_date\', this.value)"'
+                    ),
+                    [
+                        'div' => ['class' => [], 'style' => []],
+                        'input' => [
+                            'type' => [],
+                            'name' => [],
+                            'id' => [],
+                            'value' => [],
+                            'class' => [],
+                            'data-open' => [],
+                            'readonly' => [],
+                            'data-acym-translate' => [],
+                            'data-rs' => [],
+                            'onchange' => [],
+                            'data-reveal' => [],
+                            'data-reveal-larger' => [],
+                        ],
+                        'span' => ['class' => [], 'aria-hidden' => []],
+                        'button' => [
+                            'type' => [],
+                            'class' => [],
+                            'data-close' => [],
+                            'data-type' => [],
+                            'aria-label' => [],
+                            'data-open' => [],
+                        ],
+                        'select' => [
+                            'id' => [],
+                            'name' => [],
+                            'class' => [],
+                        ],
+                        'optgroup' => ['label' => []],
+                        'option' => ['value' => [], 'selected' => [], 'disabled' => []],
+                    ]
+                );
+                ?>
 			</div>
             <?php
         }
@@ -755,6 +860,7 @@ trait WooCommerceInsertion
             $posURL = strpos($imageHTML, ' src="') + 6;
             $imagePath = substr($imageHTML, $posURL, strpos($imageHTML, '"', $posURL) - $posURL);
         }
+        // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
         $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
         if (empty($tag->pict)) $imagePath = '';
 
@@ -842,7 +948,7 @@ trait WooCommerceInsertion
         $tags = array_merge($tags, $this->pluginHelper->extractTags($email, $this->name.'_tags'));
 
         if (empty($tags)) {
-			return 0;
+            return 0;
         }
 
         $this->tags = [];
@@ -855,9 +961,9 @@ trait WooCommerceInsertion
                 $postTypesOrder = array_map('acym_escapeDB', $postTypesOrder);
 
                 $postStatusesOrder = wc_get_is_paid_statuses();
-				$postStatusesOrder = array_map(function ($status) {
-					return 'wc-'.$status;
-				}, $postStatusesOrder);
+                $postStatusesOrder = array_map(function ($status) {
+                    return 'wc-'.$status;
+                }, $postStatusesOrder);
                 $postStatusesOrder = array_map('acym_escapeDB', $postStatusesOrder);
 
                 $query = 'SELECT `order`.id AS ID 
@@ -907,13 +1013,14 @@ trait WooCommerceInsertion
                     'numberposts' => -1,
                     'post_type' => wc_get_order_types(),
                     'post_status' => $postStatusesOrder,
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                     'meta_query' => $userFilter,
                 ];
 
                 if (!empty($parameter->min_date)) {
                     $minDate = acym_replaceDate($parameter->min_date);
                     $dataQuery['date_query'] = [
-                        'after' => date('Y-m-d', $minDate),
+                        'after' => gmdate('Y-m-d', $minDate),
                     ];
                 }
                 $customerOrders = get_posts($dataQuery);

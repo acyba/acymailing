@@ -2,6 +2,10 @@
 
 use AcyMailing\Core\AcymPlugin;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 require_once __DIR__.DIRECTORY_SEPARATOR.'EventsManagerAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'EventsManagerAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'EventsManagerInsertion.php';
@@ -32,10 +36,12 @@ class plgAcymEventsmanager extends AcymPlugin
                 'fulltext' => ['ACYM_FULL_TEXT', false],
                 'date' => ['ACYM_DATE', false],
                 'location' => ['ACYM_LOCATION', true],
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'cutoff' => [__('Booking Cut-Off Date', 'events-manager'), false],
                 'cats' => ['ACYM_CATEGORIES', false],
                 'tags' => ['ACYM_TAGS', false],
                 'author' => ['ACYM_AUTHOR', false],
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 'attributes' => [__('Attributes', 'events-manager'), false],
                 'customfields' => ['ACYM_CUSTOM_FIELDS', false],
                 'readmore' => ['ACYM_READ_MORE', false],

@@ -71,23 +71,6 @@ trait Migration
         }
     }
 
-    private function acym_existsAcyMailing59(): bool
-    {
-        $allTables = acym_getTables();
-
-        if (in_array(acym_getPrefix().'acymailing_config', $allTables)) {
-            $queryVersion = 'SELECT `value` FROM #__acymailing_config WHERE `namekey` LIKE "version"';
-
-            $version = acym_loadResult($queryVersion);
-
-            if (version_compare($version, '5.9.0') >= 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function migration(): bool
     {
         if ($this->config->get('migration') == 0 && acym_existsAcyMailing59()) {

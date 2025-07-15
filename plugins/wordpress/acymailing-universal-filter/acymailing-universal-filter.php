@@ -1,11 +1,11 @@
 <?php
 /*
- * Plugin Name: AcyMailing universal filter
+ * Plugin Name: AcyMailing - Filter users in automations by database query
  * Description: Adds two new filters in the AcyMailing automations to let you make your own database integration
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 3.7
+ * Version: 3.8
  * Requires Plugins: acymailing
 */
 

@@ -3,6 +3,8 @@
 use AcyMailing\Core\AcymPlugin;
 use Automattic\WooCommerce\Utilities\OrderUtil;
 
+if (!defined('ABSPATH')) exit;
+
 require_once __DIR__.DIRECTORY_SEPARATOR.'WooCommerceAutomationConditions.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'WooCommerceAutomationFilters.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'WooCommerceAutomationTriggers.php';
@@ -83,12 +85,19 @@ class plgAcymWoocommerce extends AcymPlugin
             $this->wcsInstalled = acym_isExtensionActive('woocommerce-subscriptions/woocommerce-subscriptions.php');
             if ($this->wcsInstalled) {
                 $this->orderTypes = [
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     '' => __('All orders types', 'woocommerce-subscriptions'),
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'original' => __('Original', 'woocommerce-subscriptions'),
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'parent' => __('Subscription Parent', 'woocommerce-subscriptions'),
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'renewal' => __('Subscription Renewal', 'woocommerce-subscriptions'),
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'resubscribe' => __('Subscription Resubscribe', 'woocommerce-subscriptions'),
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'switch' => __('Subscription Switch', 'woocommerce-subscriptions'),
+                    // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                     'regular' => __('Non-subscription', 'woocommerce-subscriptions'),
                 ];
             }

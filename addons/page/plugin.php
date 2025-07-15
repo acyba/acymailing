@@ -122,8 +122,8 @@ class plgAcymPage extends AcymPlugin
         ];
 
         $zoneContent = $this->getFilteringZone(false).$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $this->name, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $this->name, 'individual', $this->defaultValues);
     }
 
     public function prepareListing()

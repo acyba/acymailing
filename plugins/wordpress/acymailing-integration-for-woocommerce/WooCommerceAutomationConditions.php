@@ -9,7 +9,8 @@ trait WooCommerceAutomationConditions
         $this->declareSubscriptionFilter($conditions);
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 
@@ -118,6 +119,7 @@ trait WooCommerceAutomationConditions
         }
 
         $conditions['user']['woosubscription'] = new stdClass();
+        // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
         $conditions['user']['woosubscription']->name = acym_translationSprintf('ACYM_COMBINED_TRANSLATIONS', 'WooCommerce', __('Subscription', 'woocommerce-subscriptions'));
         $conditions['user']['woosubscription']->option = '<div class="cell grid-x grid-margin-x">';
 
@@ -202,6 +204,7 @@ trait WooCommerceAutomationConditions
         $conditions['user']['woosubscription']->option .= '<div class="cell grid-x grid-margin-x">';
         $conditions['user']['woosubscription']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][woosubscription][nextdatemin]', '', 'cell shrink');
         $conditions['user']['woosubscription']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
+        // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
         $conditions['user']['woosubscription']->option .= '<span class="acym_vcenter">'.__('Next Payment', 'woocommerce-subscriptions').'</span>';
         $conditions['user']['woosubscription']->option .= '<span class="acym__title acym__title__secondary acym_vcenter margin-bottom-0 cell shrink"><</span>';
         $conditions['user']['woosubscription']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][woosubscription][nextdatemax]', '', 'cell shrink');
@@ -255,7 +258,7 @@ trait WooCommerceAutomationConditions
                     ];
                 }
             }
-            echo json_encode($value);
+            echo wp_json_encode($value);
             exit;
         }
 
@@ -287,7 +290,7 @@ trait WooCommerceAutomationConditions
             }
         }
 
-        echo json_encode($return);
+        echo wp_json_encode($return);
         exit;
     }
 
@@ -456,7 +459,7 @@ trait WooCommerceAutomationConditions
             $query->join['wooreminder_post'.$num] = '#__posts AS post'.$num.' ON post'.$num.'.post_type = "shop_order"';
             $query->join['wooreminder_postmeta'.$num] = '#__postmeta AS postmeta'.$num.' ON postmeta'.$num.'.post_id = post'.$num.'.ID AND postmeta'.$num.'.meta_value = user.cms_id AND postmeta'.$num.'.meta_key = "_customer_user"';
             $query->where[] = 'user.cms_id != 0';
-            $query->where[] = 'SUBSTRING(post'.$num.'.post_date, 1, 10) = '.acym_escapeDB(date('Y-m-d', time() - ($options['days'] * 86400)));
+            $query->where[] = 'SUBSTRING(post'.$num.'.post_date, 1, 10) = '.acym_escapeDB(gmdate('Y-m-d', time() - ($options['days'] * 86400)));
             $query->where[] = 'post'.$num.'.post_status = '.acym_escapeDB($options['status']);
 
             if (!empty($options['payment']) && $options['payment'] !== 'any') {
@@ -778,6 +781,7 @@ trait WooCommerceAutomationConditions
 
         $dateOptions = [
             'date' => acym_translation('ACYM_START_DATE'),
+            // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
             'nextdate' => __('Next Payment', 'woocommerce-subscriptions'),
             'enddate' => acym_translation('ACYM_END_DATE'),
         ];

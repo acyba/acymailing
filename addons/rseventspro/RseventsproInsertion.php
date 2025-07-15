@@ -110,8 +110,8 @@ trait RseventsproInsertion
         );
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'auto'.$this->name;
@@ -144,8 +144,8 @@ trait RseventsproInsertion
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -174,7 +174,7 @@ trait RseventsproInsertion
         parent::prepareListing();
 
         if (!empty($this->pageInfo->filter_cat)) {
-            $this->query .= 'JOIN `#_rseventspro_taxonomy` AS catmap ON event.`id` = catmap.`ide` ';
+            $this->query .= 'JOIN `#__rseventspro_taxonomy` AS catmap ON event.`id` = catmap.`ide` ';
             $this->filters[] = 'catmap.`type` = "category" AND catmap.`id` = '.intval($this->pageInfo->filter_cat);
         }
 

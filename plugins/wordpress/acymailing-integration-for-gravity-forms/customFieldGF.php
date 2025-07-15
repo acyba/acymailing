@@ -1,7 +1,10 @@
 <?php
 
 use AcyMailing\Classes\ListClass;
-use AcyMailing\Classes\UserClass;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 class GF_Field_Acy extends GF_Field
 {

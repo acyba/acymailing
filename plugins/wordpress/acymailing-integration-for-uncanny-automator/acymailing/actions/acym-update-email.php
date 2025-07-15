@@ -21,7 +21,10 @@ class ACYM_UPDATE_EMAIL
         $this->set_integration(self::INTEGRATION_CODE);
         $this->set_action_code(self::ACTION_CODE);
         $this->set_action_meta(self::ACTION_META);
-        $this->set_sentence(sprintf(__('Change the email address for a subscriber {{Email address:%s}}', 'acymailing-integration-for-uncanny-automator'), $this->get_action_meta()));
+        $this->set_sentence(
+        // translators: %s: the trigger meta
+            sprintf(__('Change the email address for a subscriber {{Email address:%s}}', 'acymailing-integration-for-uncanny-automator'), $this->get_action_meta())
+        );
         $this->set_readable_sentence(__('Change the {{email address}} for a subscriber', 'acymailing-integration-for-uncanny-automator'));
         $this->set_options_callback([$this, 'load_options']);
 
@@ -36,6 +39,7 @@ class ACYM_UPDATE_EMAIL
                     Automator()->helpers->recipe->field->text(
                         [
                             'option_code' => $this->get_action_meta(),
+                            // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                             'label' => __('Email address', 'uncanny-automator'),
                             'input_type' => 'email',
                         ]

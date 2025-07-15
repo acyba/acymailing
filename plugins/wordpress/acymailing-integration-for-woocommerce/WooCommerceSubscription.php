@@ -11,10 +11,19 @@ trait WooCommerceSubscription
 		<div class="acym__configuration__subscription acym__content acym_area padding-vertical-1 padding-horizontal-2">
 			<div class="cell grid-x acym__configuration__showmore-head">
 				<div class="acym__title acym__title__secondary cell auto margin-bottom-0">
-                    <?php echo acym_escape(acym_translationSprintf('ACYM_XX_INTEGRATION', 'WooCommerce')); ?>
+                    <?php echo esc_attr(acym_translationSprintf('ACYM_XX_INTEGRATION', 'WooCommerce')); ?>
 				</div>
 				<div class="cell shrink">
-                    <?php echo acym_showMore('acym__configuration__subscription__integration-woocommerce'); ?>
+                    <?php
+                    echo wp_kses(
+                        acym_showMore('acym__configuration__subscription__integration-woocommerce'),
+                        [
+                            'div' => ['class' => [], 'data-toggle-showmore' => []],
+                            'label' => [],
+                            'i' => ['class' => []],
+                        ]
+                    );
+                    ?>
 				</div>
 			</div>
 
@@ -22,45 +31,89 @@ trait WooCommerceSubscription
 				<div class="cell grid-x grid-margin-x">
                     <?php
                     $subOptionTxt = acym_translationSprintf('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT', 'WooCommerce').acym_info('ACYM_SUBSCRIBE_OPTION_ON_XX_CHECKOUT_DESC');
-                    echo acym_switch(
-                        'config[woocommerce_sub]',
-                        $this->config->get('woocommerce_sub'),
-                        $subOptionTxt,
-                        [],
-                        'xlarge-3 medium-5 small-9',
-                        'auto',
-                        '',
-                        'acym__config__woocommerce_sub'
+                    echo wp_kses(
+                        acym_switch(
+                            'config[woocommerce_sub]',
+                            $this->config->get('woocommerce_sub'),
+                            $subOptionTxt,
+                            [],
+                            'xlarge-3 medium-5 small-9',
+                            'auto',
+                            '',
+                            'acym__config__woocommerce_sub'
+                        ),
+                        [
+                            'div' => ['class' => [], 'data-toggle-showmore' => []],
+                            'label' => ['for' => [], 'class' => [], 'data-acym-tooltip' => []],
+                            'i' => ['class' => []],
+                            'input' => [
+                                'type' => [],
+                                'name' => [],
+                                'id' => [],
+                                'value' => [],
+                                'checked' => [],
+                                'disabled' => [],
+                                'class' => [],
+                                'data-switch' => [],
+                                'data-toggle-switch' => [],
+                                'data-toggle-switch-open' => [],
+                                'v-model' => [],
+                            ],
+                            'span' => ['class' => [], 'aria-hidden' => []],
+                        ]
                     );
                     ?>
 				</div>
 				<div class="cell grid-x margin-y" id="acym__config__woocommerce_sub">
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__woocommerce-text">
-                            <?php echo acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info('ACYM_SUBSCRIBE_CAPTION_OPT_DESC'); ?>
+                            <?php
+                            echo wp_kses(
+                                acym_translation('ACYM_SUBSCRIBE_CAPTION').acym_info('ACYM_SUBSCRIBE_CAPTION_OPT_DESC'),
+                                [
+                                    'span' => ['class' => []],
+                                    'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
+                                ]
+                            );
+                            ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
 						<input type="text"
 							   name="config[woocommerce_text]"
 							   id="acym__config__woocommerce-text"
-							   value="<?php echo acym_escape($this->config->get('woocommerce_text')); ?>" />
+							   value="<?php echo esc_attr($this->config->get('woocommerce_text')); ?>" />
 					</div>
 					<div class="cell xlarge-5 hide-for-medium-only hide-for-small-only"></div>
 					<div class="cell xlarge-3 medium-5">
 						<label for="acym__config__woocommerce-autolists">
-                            <?php echo acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC'); ?>
+                            <?php
+                            echo wp_kses(
+                                acym_translation('ACYM_AUTO_SUBSCRIBE_TO').acym_info('ACYM_SUBSCRIBE_OPTION_AUTO_SUBSCRIBE_TO_DESC'),
+                                [
+                                    'span' => ['class' => []],
+                                    'a' => ['href' => [], 'title' => [], 'target' => [], 'class' => []],
+                                ]
+                            );
+                            ?>
 						</label>
 					</div>
 					<div class="cell xlarge-4 medium-7">
                         <?php
-                        echo acym_selectMultiple(
-                            $lists,
-                            'config[woocommerce_autolists]',
-                            explode(',', $this->config->get('woocommerce_autolists', '')),
-                            ['class' => 'acym__select', 'id' => 'acym__config__woocommerce-autolists'],
-                            'id',
-                            'name'
+                        echo wp_kses(
+                            acym_selectMultiple(
+                                $lists,
+                                'config[woocommerce_autolists]',
+                                explode(',', $this->config->get('woocommerce_autolists', '')),
+                                ['class' => 'acym__select', 'id' => 'acym__config__woocommerce-autolists'],
+                                'id',
+                                'name'
+                            ),
+                            [
+                                'select' => ['name' => [], 'id' => [], 'class' => [], 'multiple' => []],
+                                'option' => ['value' => [], 'selected' => [], 'disabled' => [], 'data-hidden' => []],
+                                'optgroup' => ['label' => []],
+                            ]
                         );
                         ?>
 					</div>
@@ -79,9 +132,9 @@ trait WooCommerceSubscription
     /**
      * Subscribe user when the WooCommerce checkout is processed
      *
-     * @param $order_id    : WooCommerce order ID
+     * @param $order_id : WooCommerce order ID
      * @param $posted_data : All data WooCommerce will get from form on checkout process
-     * @param $order       : WooCommerce order
+     * @param $order : WooCommerce order
      */
     public function subscribeUserOnCheckoutWC($order_id, $posted_data, $order)
     {

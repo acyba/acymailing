@@ -41,6 +41,7 @@
 		<input type="hidden" name="listId" value="<?php echo acym_escape($data['listInformation']->id); ?>">
 		<input type="hidden" name="list[welcome_id]" value="<?php echo acym_escape($data['listInformation']->welcome_id); ?>">
 		<input type="hidden" name="list[unsubscribe_id]" value="<?php echo acym_escape($data['listInformation']->unsubscribe_id); ?>">
+		<input type="hidden" name="step" value="<?php echo acym_escape($data['currentTab']); ?>">
         <?php acym_formOptions(true, 'settings'); ?>
 	</form>
 </div>

@@ -113,7 +113,7 @@ trait WooCommerceFollowup
                     $value[] = ['text' => $cat->name, 'value' => $cat->term_id];
                 }
             }
-            echo json_encode($value);
+            echo wp_json_encode($value);
             exit;
         }
 
@@ -124,7 +124,7 @@ trait WooCommerceFollowup
             $categories[] = [$oneCat->term_id, $oneCat->name];
         }
 
-        echo json_encode($categories);
+        echo wp_json_encode($categories);
         exit;
     }
 

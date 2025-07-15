@@ -61,9 +61,14 @@ function acym_redirect($url, $msg = '', $msgType = 'message', $safe = false)
     if (acym_isAdmin() && substr($url, 0, 4) != 'http' && substr($url, 0, 4) != 'www.') {
         $url = acym_addPageParam($url);
     }
-    @ob_get_clean();
-    if (empty($url)) $url = acym_rootURI();
+
+    if (empty($url)) {
+        $url = acym_rootURI();
+    }
+
+    $wordpressOutput = @ob_get_clean();
     if (headers_sent()) {
+        echo $wordpressOutput;
         acym_addScript(true, 'window.location.href = "'.addslashes($url).'";');
     } else {
         if ($safe) {

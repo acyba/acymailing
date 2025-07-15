@@ -1,8 +1,8 @@
-=== Business directory integration - AcyMailing ===
+=== AcyMailing integration for Business Directory ===
 Contributors: acyba
 Tags: newsletter, integration, acymailing, business
 Tested up to: 6.8
-Stable tag: 2.8
+Stable tag: 2.9
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

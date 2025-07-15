@@ -3,7 +3,8 @@
     if ($edition) {
         echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';
     } else {
-        $cookieExpirationAttr = empty($form->settings['cookie']['cookie_expiration']) ? 'acym-data-cookie="1"' : 'acym-data-cookie="'.$form->settings['cookie']['cookie_expiration'].'"';
+        $cookieExpirationAttr = empty($form->settings['cookie']['cookie_expiration']) ? 'acym-data-cookie="1"'
+            : 'acym-data-cookie="'.$form->settings['cookie']['cookie_expiration'].'"';
         echo '<form 
         		acym-data-id="'.$form->id.'" '.$cookieExpirationAttr.' 
         		action="'.$form->form_tag_action.'" 
@@ -54,6 +55,11 @@
 		display: flex;
 		justify-content: center;
 		align-items: center
+	}
+
+	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>
+	.acym__users__creation__fields__title{
+		margin: 0.5rem
 	}
 </style>
 <?php if (!$edition) { ?>

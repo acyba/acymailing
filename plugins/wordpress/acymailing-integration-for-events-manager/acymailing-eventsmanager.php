@@ -5,7 +5,7 @@
  * Author: AcyMailing Newsletter Team
  * Author URI: https://www.acymailing.com
  * License: GPLv3
- * Version: 4.0
+ * Version: 4.1
  * Requires Plugins: acymailing, events-manager
 */
 
@@ -48,7 +48,7 @@ class AcyMailingIntegrationForEventsManager
 
     public function register(array &$integrations, string $acyVersion): void
     {
-        if (version_compare($acyVersion, '10.0.0', '>=')) {
+        if (version_compare($acyVersion, '10.4.0', '>=')) {
             $integrations[] = [
                 'path' => __DIR__,
                 'className' => self::INTEGRATION_PLUGIN_NAME,

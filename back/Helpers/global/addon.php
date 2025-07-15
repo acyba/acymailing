@@ -20,7 +20,9 @@ function acym_trigger($method, $args = [], $plugin = null, $callbackOnePlugin = 
 
     global $acymPlugins;
     global $acymAddonsForSettings;
-    if (empty($acymPlugins)) acym_loadPlugins();
+    if (empty($acymPlugins)) {
+        acym_loadPlugins();
+    }
 
     $result = [];
     $listAddons = $acymPlugins;
@@ -31,7 +33,7 @@ function acym_trigger($method, $args = [], $plugin = null, $callbackOnePlugin = 
     foreach ($listAddons as $class => $onePlugin) {
         if (is_callable($callbackOnePlugin)) $callbackOnePlugin($onePlugin);
         if (!method_exists($onePlugin, $method)) continue;
-        if (!empty($plugin) && $class != $plugin) continue;
+        if (!empty($plugin) && $class !== $plugin) continue;
 
         // There may be an error here, but I don't know how to handle it. At least don't block the execution
         try {

@@ -104,8 +104,8 @@ trait TheEventsCalendarInsertion
         ];
 
         $zoneContent = $this->getFilteringZone().$this->prepareListing();
-        echo $this->displaySelectionZone($zoneContent);
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
+        $this->displaySelectionZone($zoneContent);
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'individual', $this->defaultValues);
 
         $tabHelper->endTab();
         $identifier = 'auto'.$this->name;
@@ -133,8 +133,8 @@ trait TheEventsCalendarInsertion
 
         $displayOptions = array_merge($displayOptions, $catOptions);
 
-        echo $this->displaySelectionZone($this->getCategoryListing());
-        echo $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
+        $this->displaySelectionZone($this->getCategoryListing());
+        $this->pluginHelper->displayOptions($displayOptions, $identifier, 'grouped', $this->defaultValues);
 
         $tabHelper->endTab();
 
@@ -155,7 +155,7 @@ trait TheEventsCalendarInsertion
         $this->elementIdColumn = 'ID';
 
         if ($this->getParam('hidepast', '1') === '1') {
-            $this->filters[] = 'occurrence.`start_date` >= '.acym_escapeDB(date('Y-m-d H:i:s'));
+            $this->filters[] = 'occurrence.`start_date` >= '.acym_escapeDB(gmdate('Y-m-d H:i:s'));
         }
 
         parent::prepareListing();
@@ -211,7 +211,7 @@ trait TheEventsCalendarInsertion
             }
 
             if (empty($parameter->from)) {
-                $parameter->from = date('Y-m-d H:i:s', $time);
+                $parameter->from = gmdate('Y-m-d H:i:s', $time);
             } else {
                 $parameter->from = acym_date(acym_replaceDate($parameter->from), 'Y-m-d H:i:s');
             }
@@ -304,6 +304,7 @@ trait TheEventsCalendarInsertion
             $imagePath = get_the_post_thumbnail_url($element->ID);
         }
         $varFields['{image}'] = $imagePath;
+        // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
         $varFields['{picthtml}'] = '<img alt="" src="'.$imagePath.'">';
         if (!in_array('image', $tag->display)) {
             $imagePath = '';
@@ -397,6 +398,7 @@ trait TheEventsCalendarInsertion
         if (in_array('website', $tag->display) && !empty($properties['_EventURL']->value)) {
             $customFields[] = [
                 $varFields['{website}'],
+                // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
                 __('Event Website', 'the-events-calendar'),
             ];
         }

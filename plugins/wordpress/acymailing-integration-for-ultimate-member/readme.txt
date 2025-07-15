@@ -1,8 +1,8 @@
-=== Ultimate Member integration - AcyMailing ===
+=== AcyMailing integration for Ultimate Member ===
 Contributors: acyba
-Tags: newsletter, newsletter form, acymailing, form, subscription, ultimate member
+Tags: newsletter, acymailing, form, subscription, ultimate member
 Tested up to: 6.8
-Stable tag: 3.6
+Stable tag: 3.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

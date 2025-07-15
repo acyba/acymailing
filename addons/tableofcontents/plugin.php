@@ -72,7 +72,7 @@ class plgAcymTableofcontents extends AcymPlugin
             ],
         ];
 
-        echo $this->pluginHelper->displayOptions($displayOptions, $this->name, 'simple', $this->defaultValues);
+        $this->pluginHelper->displayOptions($displayOptions, $this->name, 'simple', $this->defaultValues);
     }
 
     /**
