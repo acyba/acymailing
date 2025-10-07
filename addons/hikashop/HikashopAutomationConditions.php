@@ -436,7 +436,6 @@ trait HikashopAutomationConditions
         }
 
         if (!empty($automationCondition['hikareminder'])) {
-
             $orderStatuses = acym_loadObjectList('SELECT `orderstatus_id`, `orderstatus_name` FROM #__hikashop_orderstatus', 'orderstatus_id');
             $paymentMethods = acym_loadObjectList('SELECT `payment_id`, `payment_name` FROM #__hikashop_payment', 'payment_id');
 

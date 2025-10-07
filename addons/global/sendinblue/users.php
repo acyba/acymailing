@@ -5,7 +5,8 @@ use AcyMailing\Classes\UserClass;
 class SendinblueUsers extends SendinblueClass
 {
     const MAX_USERS_IMPORT_NB = 5000;
-    var $list;
+
+    private SendinblueList $list;
 
     public function __construct(&$plugin, $headers, $list)
     {

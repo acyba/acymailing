@@ -61,7 +61,7 @@
 				<div class="acym__listing__block__icons">
 
 					<!-- ICON DEFAULT -->
-                    <?php $icon = $data['favoriteTemplateId'] === intval($oneTemplate->id) ? 'acymicon-star' : 'acymicon-star-o' ?>
+                    <?php $icon = $data['favoriteTemplateId'] === intval($oneTemplate->id) ? 'acymicon-star' : 'acymicon-star-o'; ?>
 					<button class="acym__icon acym__listing__default_template"
 							type="button"
 							data-task="favorite"

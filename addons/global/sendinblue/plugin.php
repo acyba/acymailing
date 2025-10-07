@@ -9,14 +9,14 @@ class plgAcymSendinblue extends AcymPlugin
     const SENDING_METHOD_NAME = 'Brevo';
     const SENDING_METHOD_API_URL = 'https://api.brevo.com/v3/';
 
-    private $credentials;
-    private $integration;
-    private $transactional;
-    private $campaign;
-    private $list;
-    private $users;
-    private $sender;
-    private $webhooks;
+    private SendinblueCredentials $credentials;
+    private SendinblueIntegration $integration;
+    private SendinblueTransactional $transactional;
+    private SendinblueCampaign $campaign;
+    private SendinblueList $list;
+    private SendinblueUsers $users;
+    private SendinblueSender $sender;
+    private SendinblueWebhooks $webhooks;
 
     public function __construct()
     {

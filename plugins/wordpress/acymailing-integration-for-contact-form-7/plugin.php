@@ -5,7 +5,7 @@ use AcyMailing\Classes\ListClass;
 
 class plgAcymContactform7 extends AcymPlugin
 {
-    var $propertyLabels;
+    private array $propertyLabels;
 
     public function __construct()
     {

@@ -20,7 +20,7 @@ trait Action
         }
     }
 
-    private function _saveActions(bool $isMassAction = false): array
+    private function getSaveActions(bool $isMassAction = false): array
     {
         if ($isMassAction) {
             acym_session();
@@ -71,7 +71,7 @@ trait Action
 
     public function saveExitActions(): void
     {
-        $this->_saveActions();
+        $this->getSaveActions();
 
         acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'));
 
@@ -80,7 +80,7 @@ trait Action
 
     public function saveActions(): void
     {
-        $ids = $this->_saveActions();
+        $ids = $this->getSaveActions();
 
         acym_setVar('id', $ids['automationId']);
         acym_setVar('stepId', $ids['stepId']);
@@ -98,7 +98,7 @@ trait Action
         }
 
         $and = acym_getVar('string', 'and_action');
-        $this->_saveActions(empty($id));
+        $this->getSaveActions(empty($id));
 
         $actions = acym_getVar('array', 'acym_action');
         $mailId = $actions['actions'][$and]['acy_add_queue']['mail_id'];

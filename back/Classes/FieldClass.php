@@ -528,10 +528,13 @@ class FieldClass extends AcymClass
             $value = ' value="'.acym_escape($defaultValue).'"';
         }
 
-        if (($displayOutside && (in_array($field->id, [1, 2]) || in_array(
-                    $field->type,
-                    ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file', 'language']
-                )))) {
+        if (
+            $displayOutside
+            && (
+                in_array($field->id, [1, 2])
+                || in_array($field->type, ['text', 'textarea', 'single_dropdown', 'multiple_dropdown', 'custom_text', 'file', 'language'])
+            )
+        ) {
             $return .= '<label '.$displayIf.' class="cell margin-top-1"><span class="acym__users__creation__fields__title">'.$field->name.'</span>';
         }
         if ($displayOutside && in_array($field->type, ['date', 'radio', 'checkbox'])) {
@@ -844,4 +847,3 @@ class FieldClass extends AcymClass
         return $return;
     }
 }
-

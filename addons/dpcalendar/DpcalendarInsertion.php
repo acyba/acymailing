@@ -442,7 +442,6 @@ trait DpcalendarInsertion
         $tags = $this->getElementTags('com_dpcalendar.event', $tag->id);
         $varFields['{tags}'] = implode(', ', $tags);
         if (in_array('tags', $tag->display)) {
-
             if (!empty($varFields['{tags}'])) {
                 $customFields[] = [
                     $varFields['{tags}'],

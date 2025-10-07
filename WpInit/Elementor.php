@@ -38,5 +38,4 @@ class Elementor
         $acymailing = new ElementorForm();
         \ElementorPro\Plugin::instance()->modules_manager->get_modules('forms')->add_form_action($acymailing->get_name(), $acymailing);
     }
-
 }

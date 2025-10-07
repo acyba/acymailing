@@ -1256,7 +1256,7 @@ class MailerHelper extends Mailer
         }
 
         $this->userLanguage = empty($receiver->language) ? acym_getLanguageTag() : $receiver->language;
-        $this->receiverEmail = $receiver->email;
+        $this->receiverEmail = (string)($receiver->email ?? '');
 
         return $receiver;
     }
@@ -1597,7 +1597,7 @@ class MailerHelper extends Mailer
     private function sendOverride(object $override, array $options): bool
     {
         // 2 - Prepare the email and params
-        for ($i = 1 ; $i < count($override->parameters) ; $i++) {
+        for ($i = 1; $i < count($override->parameters); $i++) {
             $oneParam = $override->parameters[$i];
 
             // Joomla emails have links as text, convert them

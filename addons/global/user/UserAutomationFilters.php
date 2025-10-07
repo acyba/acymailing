@@ -78,7 +78,7 @@ trait UserAutomationFilters
 
     public function onAcymProcessFilter_acy_group(&$query, $options, $num)
     {
-        $this->_processAcyGroup($query, $options, $num);
+        $this->processAcyGroup($query, $options, $num);
     }
 
     public function onAcymProcessFilterCount_acy_group(&$query, $options, $num)
@@ -90,7 +90,7 @@ trait UserAutomationFilters
 
     public function onAcymProcessFilter_acy_cmsfield(&$query, $options, $num)
     {
-        $this->_processAcyCMSField($query, $options, $num);
+        $this->processAcyCMSField($query, $options, $num);
     }
 
     public function onAcymProcessFilterCount_acy_cmsfield(&$query, $options, $num)
@@ -102,7 +102,7 @@ trait UserAutomationFilters
 
     public function onAcymDeclareSummary_filters(&$automation)
     {
-        $this->_summaryGroup($automation);
+        $this->summaryGroup($automation);
 
         if (!empty($automation['acy_cmsfield'])) {
             $automation = acym_translationSprintf(

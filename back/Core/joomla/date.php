@@ -7,7 +7,6 @@ function acym_getTimeOffsetCMS()
 {
     static $timeoffset = null;
     if ($timeoffset === null) {
-
         $dateC = Factory::getDate(
             'now',
             acym_getCMSConfig('offset')

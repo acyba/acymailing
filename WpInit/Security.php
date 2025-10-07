@@ -10,7 +10,7 @@ class Security
         add_filter('allowed_redirect_hosts', [$this, 'extendsAllowedHostsList']);
     }
 
-    function extendsAllowedHostsList($hosts)
+    public function extendsAllowedHostsList($hosts)
     {
         $config = acym_config();
         $allowedHosts = $config->get('allowed_hosts', []);
@@ -24,5 +24,4 @@ class Security
 
         return $hosts;
     }
-
 }

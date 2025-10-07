@@ -174,4 +174,8 @@ trait Patchv10
         $this->updateQuery('ALTER TABLE #__acym_list ADD COLUMN `new_unsub` INT DEFAULT 0');
     }
 
+    private function updateFor1050(): void
+    {
+        $this->updateQuery('ALTER TABLE #__acym_automation CHANGE `active` `active` TINYINT(3) NOT NULL DEFAULT 0');
+    }
 }

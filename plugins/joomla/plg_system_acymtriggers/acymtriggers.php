@@ -563,7 +563,7 @@ class plgSystemAcymtriggers extends CMSPlugin
                     $formats = ['li' => ['li', 'li'], 'div' => ['div', 'div'], 'p' => ['div', 'div'], 'dd' => ['dt', 'div']];
             }
 
-            for ($j = 0 ; $j < 2 ; $j++) {
+            for ($j = 0; $j < 2; $j++) {
                 foreach ($formats as $oneFormat => $dispall) {
                     if (0 === $j) {
                         $regex = '#(name *= *"'.preg_quote($after[$i]).'".{'.$lengthAfterMin.','.$lengthAfter.'}</'.$oneFormat.'>)(?!\s*</'.$oneFormat.'>)#Uis';

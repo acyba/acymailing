@@ -22,7 +22,6 @@ trait CbuilderInsertion
             }
 		</script>
         <?php
-
         $text = '<div class="grid-x acym__popup__listing">';
 
         $typeinfo = [];

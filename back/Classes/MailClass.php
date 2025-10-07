@@ -9,14 +9,13 @@ use AcyMailing\Core\AcymClass;
 
 class MailClass extends AcymClass
 {
-    var $templateNames = [];
-
-    public $exceptKeysDecode = [];
-    public $autosave;
-    public $access;
-    public $templateId;
-
-    const FIELDS_ENCODING = ['name', 'subject', 'body', 'autosave', 'preheader'];
+    const FIELDS_ENCODING = [
+        'name',
+        'subject',
+        'body',
+        'autosave',
+        'preheader',
+    ];
 
     const TYPE_STANDARD = 'standard';
     const TYPE_NOTIFICATION = 'notification';
@@ -81,6 +80,9 @@ class MailClass extends AcymClass
         'text/plain',
         'image/vnd.microsoft.icon',
     ];
+
+    private array $templateNames = [];
+    public array $exceptKeysDecode = [];
 
     public function __construct()
     {
@@ -200,7 +202,7 @@ class MailClass extends AcymClass
 
         if (!empty($settings['element_tab'])) {
             $urlClickClass = new UrlClickClass();
-            for ($i = 0 ; $i < count($results['elements']) ; $i++) {
+            for ($i = 0; $i < count($results['elements']); $i++) {
                 $results['elements'][$i]->open = 0;
                 if (!empty($results['elements'][$i]->subscribers)) {
                     $results['elements'][$i]->open = number_format($results['elements'][$i]->open_unique / $results['elements'][$i]->subscribers * 100, 2);
@@ -234,7 +236,7 @@ class MailClass extends AcymClass
     }
 
     /**
-     * @param int     $id
+     * @param int $id
      * @param boolean $needTranslatedSettings
      *
      * @return object
@@ -823,30 +825,36 @@ class MailClass extends AcymClass
         return $extractdir;
     }
 
-    public function installExtractedTemplate($templateFolder)
+    public function installExtractedTemplate(string $templateFolder, bool $deleteFolder = true): bool
     {
-        if ($this->detecttemplates($templateFolder)) {
+        if ($this->detectTemplates($templateFolder)) {
             $messages = $this->templateNames;
             array_unshift($messages, acym_translationSprintf('ACYM_TEMPLATES_INSTALL', count($this->templateNames)));
             acym_enqueueMessage($messages);
-            if (is_dir($templateFolder)) acym_deleteFolder($templateFolder);
+            if ($deleteFolder && is_dir($templateFolder)) {
+                acym_deleteFolder($templateFolder);
+            }
 
             return true;
         }
 
         acym_enqueueMessage(acym_translationSprintf('ACYM_FILE_UPLOAD_ERROR_10'), 'error');
-        if (is_dir($templateFolder)) acym_deleteFolder($templateFolder);
+        if ($deleteFolder && is_dir($templateFolder)) {
+            acym_deleteFolder($templateFolder);
+        }
 
         return false;
     }
 
-    public function detecttemplates($folder)
+    public function detectTemplates(string $folder): bool
     {
         $allFiles = acym_getFiles($folder);
         if (!empty($allFiles)) {
             foreach ($allFiles as $oneFile) {
                 if (preg_match('#^.*(html|htm)$#i', $oneFile)) {
-                    if ($this->_installtemplate($folder.DS.$oneFile)) return true;
+                    if ($this->installTemplate($folder.DS.$oneFile)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -855,19 +863,28 @@ class MailClass extends AcymClass
         $allFolders = acym_getFolders($folder);
         if (!empty($allFolders)) {
             foreach ($allFolders as $oneFolder) {
-                $status = $this->detecttemplates($folder.DS.$oneFolder) || $status;
+                $status = $this->detectTemplates($folder.DS.$oneFolder) || $status;
             }
         }
 
         return $status;
     }
 
-    private function _installtemplate($filepath)
+    private function installTemplate(string $filepath): bool
     {
         $fileContent = acym_fileGetContent($filepath);
 
         $newTemplate = new \stdClass();
-        $newTemplate->name = trim(preg_replace('#[^a-z0-9]#i', ' ', substr(dirname($filepath), strpos($filepath, '_template'))));
+
+        if (strpos($filepath, '_template') === false) {
+            $newTemplate->name = basename(dirname($filepath));
+        } else {
+            $newTemplate->name = basename($filepath);
+            $newTemplate->name = substr($newTemplate->name, 0, strrpos($newTemplate->name, '.'));
+        }
+
+        $newTemplate->name = trim(preg_replace('#[^a-z0-9]#i', ' ', $newTemplate->name));
+
         if (preg_match('#< *title[^>]*>(.*)< */ *title *>#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->name = $results[1];
 
         if (preg_match('#< *meta *name="fromname" *content="([^"]*)"#Uis', $fileContent, $results) && !empty($results[1])) $newTemplate->fromname = $results[1];
@@ -1004,9 +1021,8 @@ class MailClass extends AcymClass
         $newTemplate->type = self::TYPE_TEMPLATE;
         $newTemplate->creation_date = acym_date('now', 'Y-m-d H:i:s', false);
 
-        $tempid = $this->save($newTemplate);
+        $this->save($newTemplate);
 
-        $this->templateId = $tempid;
         $this->templateNames[] = $newTemplate->name;
 
         return true;

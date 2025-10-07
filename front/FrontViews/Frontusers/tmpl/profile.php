@@ -22,7 +22,6 @@ $formName = acym_getModuleFormName();
 			<legend><span><?php echo acym_translation('ACYM_USER_INFORMATION'); ?></span></legend>
 			<div id="acyuserinfo">
                 <?php
-
                 foreach ($data['fields'] as $field) {
                     $field->option = !empty($field->option) ? json_decode($field->option) : new stdClass();
                     $fieldDB = empty($field->option->fieldDB) ? '' : json_decode($field->option->fieldDB);
@@ -95,7 +94,6 @@ $formName = acym_getModuleFormName();
             <?php } ?>
 		</fieldset>
         <?php
-
         if ($data['displayLists']) {
             ?>
 			<fieldset class="adminform acy_subscription_list margin-bottom-1">

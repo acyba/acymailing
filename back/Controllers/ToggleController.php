@@ -2,6 +2,7 @@
 
 namespace AcyMailing\Controllers;
 
+use AcyMailing\Classes\ListClass;
 use AcyMailing\Classes\UserClass;
 use AcyMailing\Core\AcymController;
 
@@ -172,7 +173,7 @@ class ToggleController extends AcymController
         }
 
         $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($table).'Class';
-        $elementClass = new $namespaceClass;
+        $elementClass = new $namespaceClass();
         $elementClass->$method($id);
 
         exit;
@@ -200,11 +201,17 @@ class ToggleController extends AcymController
 
     public function subscribeOnClick(): void
     {
-        $userId = acym_getVar('int', 'userid');
-        $listId = acym_getVar('int', 'listid');
+        $userId = acym_getVar('array', 'userid', []);
+        $listId = acym_getVar('array', 'listid', []);
 
         $userClass = new UserClass();
-        $result = $userClass->subscribe($userId, [$listId]);
+        $userClass->onlyManageableUsers($userId);
+
+        $listClass = new ListClass();
+        $listClass->onlyManageableLists($listId);
+
+        $userClass = new UserClass();
+        $result = $userClass->subscribe($userId, $listId);
 
         if ($result) {
             acym_sendAjaxResponse();
@@ -215,11 +222,18 @@ class ToggleController extends AcymController
 
     public function unsubscribeOnClick(): void
     {
-        $userId = acym_getVar('int', 'userid');
-        $listId = acym_getVar('int', 'listid');
+        $userId = acym_getVar('array', 'userid', []);
+        $listId = acym_getVar('array', 'listid', []);
 
         $userClass = new UserClass();
-        $result = $userClass->unsubscribe($userId, [$listId]);
+        $userClass->onlyManageableUsers($userId);
+
+        $listClass = new ListClass();
+        $listClass->onlyManageableLists($listId);
+
+        $userClass = new UserClass();
+        $result = $userClass->unsubscribe($userId, $listId);
+
 
         if ($result) {
             acym_sendAjaxResponse();

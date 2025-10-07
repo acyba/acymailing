@@ -151,19 +151,35 @@ class ImportHelper extends AcymObject
         $formattedTime = acym_date($time, 'Y-m-d H:i:s');
         $sourceImport = 'Import on '.$formattedTime;
         $query = 'INSERT IGNORE INTO #__acym_user (`name`,`email`,`creation_date`,`active`,`cms_id`, `source`) SELECT `user`.`'.$acymCmsUserVars->name.'`,`user`.`'.$acymCmsUserVars->email.'`,`user`.`'.$acymCmsUserVars->registered.'`,1 - `user`.'.$acymCmsUserVars->blocked.',`user`.`'.$acymCmsUserVars->id.'`,\''.$sourceImport.'\' FROM '.$acymCmsUserVars->table.' AS `user` ';
+
+        $queryJoin = [];
+        $queryWhere = [];
+        if (ACYM_CMS === 'wordpress' && is_multisite()) {
+            $queryJoin[] = 'JOIN #__usermeta  AS `meta` ON `user`.'.$acymCmsUserVars->id.'=`meta`.`user_id`';
+            $queryWhere[] = '`meta`.`meta_key`=\'#__capabilities\'';
+        }
         $groups = acym_getVar('array', 'groups', []);
         $this->config->save(['import_groups' => implode(',', $groups)]);
         if (!empty($groups)) {
             if (ACYM_CMS === 'joomla') {
                 acym_arrayToInteger($groups);
-                $query .= ' JOIN #__user_usergroup_map AS `map` ON map.user_id = `user`.`'.$acymCmsUserVars->id.'` WHERE `map`.`group_id` IN ('.implode(', ', $groups).')';
+                $queryJoin[] = ' JOIN #__user_usergroup_map AS `map` ON map.user_id = `user`.`'.$acymCmsUserVars->id.'`';
+                $queryWhere[] = '`map`.`group_id` IN ('.implode(', ', $groups).')';
             } else {
-                $query .= ' JOIN #__usermeta AS `meta` ON meta.user_id = `user`.`'.$acymCmsUserVars->id.'` AND `meta`.`meta_key` = "#__capabilities"';
+                if (!is_multisite()) {
+                    $queryJoin[] = 'JOIN #__usermeta AS `meta` ON meta.user_id = `user`.`'.$acymCmsUserVars->id.'` AND `meta`.`meta_key` = "#__capabilities"';
+                }
+
                 foreach ($groups as $i => $oneGroup) {
                     $groups[$i] = acym_escapeDB('%'.strlen($oneGroup).':"'.$oneGroup.'"%');
                 }
-                $query .= ' WHERE `meta`.`meta_value` LIKE '.implode(' OR `meta`.`meta_value` LIKE ', $groups);
+                $queryWhere[] = '`meta`.`meta_value` LIKE '.implode(' OR `meta`.`meta_value` LIKE ', $groups);
             }
+        }
+
+        $query .= implode(' ', $queryJoin);
+        if (!empty($queryWhere)) {
+            $query .= ' WHERE ('.implode(') AND (', $queryWhere).')';
         }
 
         $insertedUsers = acym_query($query);
@@ -711,7 +727,6 @@ class ImportHelper extends AcymObject
 
                 // Concatenate 30 lines max
                 while ($j < ($i + 30)) {
-
                     // Test if the value is encapsulated by quotes
                     $quoteOpened = substr($importLines[$i], $position + 1, 1) == '"';
 
@@ -719,13 +734,14 @@ class ImportHelper extends AcymObject
                     if ($quoteOpened) {
                         $nextQuotePosition = strpos($importLines[$i], '"', $position + 2);
                         // If quotes in the value encapsulated by quotes... find the real closing quote...
-                        while ($nextQuotePosition !== false && $nextQuotePosition + 1 != strlen($importLines[$i]) && substr(
-                                $importLines[$i],
-                                $nextQuotePosition + 1,
-                                1
-                            ) != $this->separator) {
+                        while (
+                            $nextQuotePosition !== false
+                            && $nextQuotePosition + 1 != strlen($importLines[$i])
+                            && substr($importLines[$i], $nextQuotePosition + 1, 1) != $this->separator
+                        ) {
                             $nextQuotePosition = strpos($importLines[$i], '"', $nextQuotePosition + 1);
                         }
+
                         // If we didn't find the whole value, then concatenate the current line with the next one
                         if ($nextQuotePosition === false) {
                             // If end of import file, error...
@@ -775,7 +791,7 @@ class ImportHelper extends AcymObject
 
             //We clean it... maybe there are other arguments at the end we should remove
             if (!empty($this->separatorsToRemove)) {
-                for ($b = $numberColumns + $this->separatorsToRemove - 1 ; $b >= $numberColumns ; $b--) {
+                for ($b = $numberColumns + $this->separatorsToRemove - 1; $b >= $numberColumns; $b--) {
                     if (isset($data[$b]) && (strlen($data[$b]) == 0 || $data[$b] == ' ')) {
                         unset($data[$b]);
                     }
@@ -793,21 +809,26 @@ class ImportHelper extends AcymObject
             if (count($data) > $numberColumns) {
                 $copy = $data;
                 foreach ($copy as $oneelem => $oneval) {
-                    if (!empty($oneval[0]) && $oneval[0] == '"' && $oneval[strlen($oneval) - 1] != '"' && isset($copy[$oneelem + 1]) && $copy[$oneelem + 1][strlen(
-                            $copy[$oneelem + 1]
-                        ) - 1] == '"') {
+                    if (
+                        !empty($oneval[0])
+                        && $oneval[0] === '"'
+                        && $oneval[strlen($oneval) - 1] !== '"'
+                        && isset($copy[$oneelem + 1])
+                        && $copy[$oneelem + 1][strlen($copy[$oneelem + 1]) - 1] == '"'
+                    ) {
                         //We concat both with the separator
                         $data[$oneelem] = $copy[$oneelem].$this->separator.$copy[$oneelem + 1];
                         unset($data[$oneelem + 1]);
                     }
                 }
+
                 $data = array_values($data);
             }
 
             // Not enough columns found...
             if (count($data) < $numberColumns) {
                 // If not enough info compared to the header... lets add them as empty! We don't care if the user does not specify everything...
-                for ($a = count($data) ; $a < $numberColumns ; $a++) {
+                for ($a = count($data); $a < $numberColumns; $a++) {
                     $data[$a] = '';
                 }
             }
@@ -1165,7 +1186,7 @@ class ImportHelper extends AcymObject
         $this->columns = explode($this->separator, $this->header);
 
         // Clean the headers
-        for ($i = count($this->columns) - 1 ; $i >= 0 ; $i--) {
+        for ($i = count($this->columns) - 1; $i >= 0; $i--) {
             if (strlen($this->columns[$i]) == 0) {
                 unset($this->columns[$i]);
                 $this->separatorsToRemove++;
@@ -1267,7 +1288,6 @@ class ImportHelper extends AcymObject
         }
 
         if (!empty($lists)) {
-
             //We do one query per list to avoid problem with huge queries and so in the mean time we can display info for each list
             foreach ($lists as $listid => $val) {
                 if (empty($val)) {
@@ -1378,7 +1398,7 @@ class ImportHelper extends AcymObject
                             $fieldsToUpdate[] = 'unsubscribe_date ='.$unsubscribeDate;
                         }
 
-                        $fieldsToUpdate[] = 'subscription_date ='. $subscriptionDate;
+                        $fieldsToUpdate[] = 'subscription_date ='.$subscriptionDate;
                     } else {
                         if ($unsubscribeDate != 'NULL' && ($existing->subscription_date != 'NULL' && $unsubscribeDate > $existing->subscription_date)) {
                             $fieldsToUpdate[] = 'status ='. 0;
@@ -1405,5 +1425,4 @@ class ImportHelper extends AcymObject
             }
         }
     }
-
 }

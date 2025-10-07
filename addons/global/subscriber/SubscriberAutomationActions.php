@@ -167,7 +167,6 @@ trait SubscriberAutomationActions
         unset($actions['acy_add_queue']);
     }
 
-
     public function onAcymProcessAction_acy_user(&$query, $action)
     {
         if ($action['action'] == 'delete') {

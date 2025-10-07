@@ -136,7 +136,7 @@ class EditorHelper extends AcymObject
                 if (!ACYM_J40) {
                     // Joomla broke the custom css feature in the v3.9.21 so we have to do this
                     $access = [];
-                    for ($i = 1 ; $i < 20 ; $i++) {
+                    for ($i = 1; $i < 20; $i++) {
                         $access[] = $i;
                     }
 

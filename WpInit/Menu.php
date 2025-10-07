@@ -2,11 +2,9 @@
 
 namespace AcyMailing\WpInit;
 
-use AcyMailing\Classes\PluginClass;
-
 class Menu
 {
-    var $router;
+    private Router $router;
 
     public function __construct($router)
     {

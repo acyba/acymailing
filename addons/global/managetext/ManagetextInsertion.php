@@ -8,8 +8,8 @@ trait ManagetextInsertion
 
     public function replaceContent(&$email, $send = true)
     {
-        $this->_replaceRandom($email);
-        $this->_handleAnchors($email);
+        $this->replaceRandom($email);
+        $this->handleAnchors($email);
         $this->fixPicturesOutlook($email);
     }
 
@@ -105,7 +105,7 @@ trait ManagetextInsertion
         $this->pluginHelper->replaceTags($email, $tagsReplaced, true);
     }
 
-    private function _replaceRandom(&$email)
+    private function replaceRandom(&$email)
     {
         $randTag = $this->pluginHelper->extractTags($email, 'rand');
         if (empty($randTag)) {
@@ -197,11 +197,10 @@ trait ManagetextInsertion
                 }
                 //We explode each argument of the tag
                 $allresults[1][$i] = html_entity_decode($allresults[1][$i]);
-                if (!preg_match('#^(.+)(!=|<|>|&gt;|&lt;|!~)([^=!<>~]+)$#is', $allresults[1][$i], $operators) && !preg_match(
-                        '#^(.+)(=|~)([^=!<>~]+)$#is',
-                        $allresults[1][$i],
-                        $operators
-                    )) {
+                if (
+                    !preg_match('#^(.+)(!=|<|>|&gt;|&lt;|!~)([^=!<>~]+)$#is', $allresults[1][$i], $operators)
+                    && !preg_match('#^(.+)(=|~)([^=!<>~]+)$#is', $allresults[1][$i], $operators)
+                ) {
                     if ($isAdmin) {
                         acym_enqueueMessage(acym_translationSprintf('ACYM_OPERATION_NOT_FOUND', $allresults[1][$i]), 'error');
                     }
@@ -309,7 +308,7 @@ trait ManagetextInsertion
         }
     }
 
-    private function _handleAnchors(&$email)
+    private function handleAnchors(&$email)
     {
         if (empty($email->body)) return;
 

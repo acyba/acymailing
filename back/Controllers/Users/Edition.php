@@ -209,8 +209,8 @@ trait Edition
                     if (preg_match('#^[A-Z_]*$#', $part2)) $part2 = acym_translation($part2);
                     $details .= '<b>'.acym_escape(acym_translation($part1)).' : </b>'.acym_escape($part2).'<br />';
                 }
-                if ($oneHistory->action === 'unsubscribed') {
 
+                if ($oneHistory->action === 'unsubscribed') {
                     $details .= acym_translation('ACYM_UNSUBSCRIBE_REASON');
                     if (empty(acym_escape($oneHistory->unsubscribe_reason))) {
                         $details .= ' '.acym_translation('ACYM_NO_REASON_SET_BY_USER');
@@ -296,9 +296,22 @@ trait Edition
                 $defaultValue = empty($data['user-information']->id) ? '' : $data['user-information']->email;
             } elseif ($one->id == $languageFieldId) {
                 $defaultValue = empty($data['user-information']->id) ? acym_getLanguageTag() : $data['user-information']->language;
-            } elseif (isset($data['fieldsValues'][$one->id]) && (((is_array($data['fieldsValues'][$one->id]) || $data['fieldsValues'][$one->id] instanceof Countable) && count(
-                            $data['fieldsValues'][$one->id]
-                        ) > 0) || (is_string($data['fieldsValues'][$one->id]) && strlen($data['fieldsValues'][$one->id]) > 0))) {
+            } elseif (
+                isset($data['fieldsValues'][$one->id])
+                && (
+                    (
+                        (
+                            is_array($data['fieldsValues'][$one->id])
+                            || $data['fieldsValues'][$one->id] instanceof Countable
+                        )
+                        && count($data['fieldsValues'][$one->id]) > 0
+                    )
+                    || (
+                        is_string($data['fieldsValues'][$one->id])
+                        && strlen($data['fieldsValues'][$one->id]) > 0
+                    )
+                )
+            ) {
                 $decoded = json_decode($data['fieldsValues'][$one->id]);
                 $defaultValue = is_null($decoded) ? $data['fieldsValues'][$one->id] : $decoded;
             } else {

@@ -265,7 +265,7 @@
 		<div class="cell grid-x">
 			<div class="cell grid-x medium-10 large-7 xlarge-5 margin-left-3 margin-top-1">
 				<label class="cell medium-6">
-                    <?php echo acym_translation('ACYM_POSTMARK_STREAM_ID') ?>
+                    <?php echo acym_translation('ACYM_POSTMARK_STREAM_ID'); ?>
 					<input type="text"
 						   class="cell auto"
 						   name="sending_params[message_stream_id]"

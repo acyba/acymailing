@@ -252,7 +252,7 @@ trait VirtuemartSubscription
         // Task used by VirtueMart when the form is refreshed using ajax
         $task = acym_getVar('cmd', 'task', '');
         if ($task != 'updateCartNoMethods') {
-			return;
+            return;
         }
 
         // If the user unchecks the checkbox, it isn't saved with the ajax call, but since the form is refreshed it automatically re-checks the checkbox
@@ -261,7 +261,7 @@ trait VirtuemartSubscription
         $visibleLists = explode(',', $visibleLists);
         acym_arrayToInteger($visibleLists);
         if (empty($visibleLists)) {
-			return;
+            return;
         }
 
         $visibleListsChecked = acym_getVar('array', 'virtuemart_visible_lists_checked', []);
@@ -284,14 +284,14 @@ trait VirtuemartSubscription
     {
         $config = acym_config();
         if (!$config->get('virtuemart_sub', 0) || acym_isAdmin()) {
-			return;
+            return;
         }
 
         $email = $_SESSION['acym_virtuemart_user_email'] ?? null;
         if (empty($email)) {
             $user = Factory::getUser();
             if (!empty($user)) {
-				$email = $user->get('email');
+                $email = $user->get('email');
             }
         }
 
@@ -316,7 +316,6 @@ trait VirtuemartSubscription
         $userClass = new UserClass();
         $user = $userClass->getOneByEmail($email);
         if (empty($user)) {
-
             if (!$config->get('virtuemart_save_user', 1) && empty($autoListsRaw) && empty($visibleListsChecked)) {
                 unset($_SESSION['acym_virtuemart_user_email']);
 
@@ -368,10 +367,14 @@ trait VirtuemartSubscription
             if (!$oneList->active) continue;
             if (!empty($currentSubscription[$oneList->id]) && $currentSubscription[$oneList->id]->status == 1) continue;
 
-            if (in_array($oneList->id, $visibleListsChecked) || (in_array($oneList->id, $autoLists) && !in_array(
-                        $oneList->id,
-                        $visibleLists
-                    ) && empty($currentSubscription[$oneList->id]))) {
+            if (
+                in_array($oneList->id, $visibleListsChecked)
+                || (
+                    in_array($oneList->id, $autoLists)
+                    && !in_array($oneList->id, $visibleLists)
+                    && empty($currentSubscription[$oneList->id])
+                )
+            ) {
                 $listsToSubscribe[] = $oneList->id;
             }
         }

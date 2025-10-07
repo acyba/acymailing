@@ -26,7 +26,7 @@ if (!empty($data['mailInformation'])) $data['mail'] = $data['mailInformation'];
     }
 
     $uploadfileType = $data['uploadFileType'];
-    for ($i = 0 ; $i < 10 ; $i++) {
+    for ($i = 0; $i < 10; $i++) {
         $result = '<div '.($i >= 1 ? 'style="display:none"' : '').' class="cell grid-x grid-margin-x acym__campaigns__attach__elements" id="acym__campaigns__attach__'.$i.'">';
         $result .= $uploadfileType->display('attachments', $i);
         $result .= '<div class="cell medium-auto"></div><div class="cell medium-1 text-center "><i style="display: none;" id="attachments'.$i.'suppr" data-id="'.$i.'" class="acymicon-delete acym__color__red acym__campaigns__attach__remove"></i></div>';

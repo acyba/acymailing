@@ -101,7 +101,8 @@ class plgAcymCbsubs extends AcymPlugin
         $conditions['user']['cbsubs']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 
@@ -144,9 +145,15 @@ class plgAcymCbsubs extends AcymPlugin
         }
 
         $query->leftjoin['cbsubs_'.$num] = $lj;
-        $query->where['member'] = 'user.`cms_id` > 0';
-        $operator = (empty($options['type']) || $options['type'] === 'in') ? 'IS NOT NULL' : 'IS NULL';
-        $query->where[] = 'cbsubs'.$num.'.`user_id` '.$operator;
+        if (empty($options['type']) || $options['type'] === 'in') {
+            // 'in' mode: we only want users who have a cms_id AND who match the criteria
+            $query->where['member'] = 'user.`cms_id` > 0';
+            $query->where[] = 'cbsubs'.$num.'.`user_id` IS NOT NULL';
+        } else {
+            // 'not-in' mode: we want all AcyMailing users
+            // Those who have a cms_id but do not match the criteria + those who do not have a cms_id at all
+            $query->where[] = '(cbsubs'.$num.'.`user_id` IS NULL OR user.`cms_id` IS NULL OR user.`cms_id` = 0)';
+        }
     }
 
     public function onAcymDeclareSummary_conditions(&$automationCondition)

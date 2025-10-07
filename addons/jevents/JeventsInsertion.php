@@ -7,9 +7,9 @@ use Joomla\CMS\Plugin\PluginHelper;
 
 trait JeventsInsertion
 {
-    private $imgFolder = '';
-    private $useStdTime;
-    private $ignoredCustomFields = [
+    private string $imgFolder = '';
+    private bool $useStdTime = false;
+    private array $ignoredCustomFields = [
         'jevcfuser',
         'jevcfyoutube',
         'jevcfupdatable',
@@ -374,10 +374,10 @@ trait JeventsInsertion
             $JEVplugin = PluginHelper::getPlugin('jevents', 'jevfiles');
             $JEVparams = new AcymParameter($JEVplugin->params);
             $imagesFolder = ComponentHelper::getParams('com_media')->get('image_path', 'images');
-            $this->imgFolder = ACYM_LIVE.$imagesFolder.'/'.trim($JEVparams->get('folder', 'jevents'), '/').'/';
+            $this->imgFolder = $imagesFolder.'/'.trim($JEVparams->get('folder', 'jevents'), '/').'/';
         }
 
-        $this->useStdTime = ComponentHelper::getParams("com_jevents")->get('com_calUseStdTime');
+        $this->useStdTime = !empty(ComponentHelper::getParams('com_jevents')->get('com_calUseStdTime'));
 
         return true;
     }
@@ -636,7 +636,7 @@ trait JeventsInsertion
             $endTime = '';
         }
 
-        if (!empty($this->useStdTime)) {
+        if ($this->useStdTime) {
             if (!empty($startTime)) {
                 $startTime = strtolower(date('h:iA', strtotime($element->startrepeat)));
             }
@@ -741,9 +741,9 @@ trait JeventsInsertion
             return;
         }
 
-        for ($i = 1 ; $i < 30 ; $i++) {
+        for ($i = 1; $i < 30; $i++) {
             if (!empty($filesRow->{'imagename'.$i})) {
-                $varFields['{imgpath'.$i.'}'] = $this->imgFolder.$filesRow->{'imagename'.$i};
+                $varFields['{imgpath'.$i.'}'] = $this->getImagePath($filesRow->{'imagename'.$i});
                 if (empty($imagePath)) {
                     $imagePath = $varFields['{imgpath'.$i.'}'];
                     continue;
@@ -752,7 +752,7 @@ trait JeventsInsertion
             }
 
             if (!empty($filesRow->{'filename'.$i})) {
-                $varFields['{filepath'.$i.'}'] = $this->imgFolder.$filesRow->{'filename'.$i};
+                $varFields['{filepath'.$i.'}'] = $this->getImagePath($filesRow->{'filename'.$i});
                 if (!empty($tag->pluginFields)) {
                     $files[] = '<a target="_blank" href="'.$varFields['{filepath'.$i.'}'].'">'.(empty($filesRow->{'filetitle'.$i})
                             ? : $filesRow->{'filetitle'.$i}).'</a>';
@@ -782,7 +782,7 @@ trait JeventsInsertion
         foreach ($files as $i => $oneFile) {
             if (empty($oneFile->filename)) continue;
 
-            $varFields['{imgpath'.$i.'}'] = $this->imgFolder.$oneFile->filename;
+            $varFields['{imgpath'.$i.'}'] = $this->getImagePath($oneFile->filename);
             if ($oneFile->filetype === 'file') {
                 if (!empty($tag->pluginFields)) {
                     $afterArticle .= '<br /><a target="_blank" href="'.$varFields['{imgpath'.$i.'}'].'">'.$oneFile->filetitle.'</a>';
@@ -795,6 +795,15 @@ trait JeventsInsertion
                 $afterArticle .= '<br /><a target="_blank" href="'.$varFields['{imgpath'.$i.'}'].'"><img src="'.$varFields['{imgpath'.$i.'}'].'" alt="" /></a>';
             }
         }
+    }
+
+    private function getImagePath(string $path): string
+    {
+        if (!file_exists(ACYM_ROOT.$path)) {
+            $path = $this->imgFolder.$path;
+        }
+
+        return ACYM_LIVE.$path;
     }
 
     private function handleCF($tag, $element, &$varFields, &$customFields)

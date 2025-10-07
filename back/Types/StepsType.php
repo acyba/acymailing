@@ -16,7 +16,7 @@ class StepsType extends AcymObject
 
         $html = '<div class="'.$containerClasses.' acym__steps__container">';
         $html .= '<div class="acym__steps__circles">';
-        for ($i = 1 ; $i <= $options['totalSteps'] ; $i++) {
+        for ($i = 1; $i <= $options['totalSteps']; $i++) {
             $stepClasses = 'acym__steps__circle';
             if ($i < $options['currentStep']) {
                 $stepClasses .= ' acym__steps__done';

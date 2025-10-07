@@ -9,24 +9,33 @@ use AcyMailing\Core\AcymClass;
 
 class UserClass extends AcymClass
 {
-    var $checkVisitor = true;
-    var $restrictedFields = ['id', 'key', 'confirmed', 'active', 'cms_id', 'creation_date'];
-    var $allowModif = false;
-    var $requireId = false;
-    var $sendConf = true;
-    var $forceConf = false;
+    const RESTRICTED_FIELDS = [
+        'id',
+        'key',
+        'confirmed',
+        'active',
+        'cms_id',
+        'creation_date',
+    ];
+
+    public bool $checkVisitor = true;
+    public bool $requireId = false;
+    public bool $sendConf = true;
     public bool $confirmationSentSuccess = false;
-    var $newUser = false;
-    var $blockNotifications = false;
-    var $subscribed = false;
-    var $confirmationSentError;
-    var $triggers = true;
+    public bool $newUser = false;
+    public bool $blockNotifications = false;
+    public bool $subscribed = false;
+    public string $confirmationSentError;
+    public bool $triggers = true;
 
     // For integration, for example someone is activating user subscription on membership pro on the joomla backend and he needs to send the confirmation emails
-    var $forceConfAdmin = false;
+    public bool $forceConfAdmin = false;
 
-    public $sendWelcomeEmail = true;
-    public $sendUnsubscribeEmail = true;
+    public bool $sendWelcomeEmail = true;
+    public bool $sendUnsubscribeEmail = true;
+
+    private bool $allowModif = false;
+    private bool $forceConf = false;
 
     public function __construct()
     {
@@ -211,7 +220,7 @@ class UserClass extends AcymClass
         $usersPerStatusObject = acym_loadObjectList($queryStatus.' GROUP BY score', 'score');
 
         $usersPerStatus = [];
-        for ($i = 0 ; $i < 4 ; $i++) {
+        for ($i = 0; $i < 4; $i++) {
             $usersPerStatus[$i] = empty($usersPerStatusObject[$i]) ? 0 : $usersPerStatusObject[$i]->number;
         }
 
@@ -555,7 +564,7 @@ class UserClass extends AcymClass
         return false;
     }
 
-    public function subscribe($userIds, $addLists, $trigger = true, $forceFront = false)
+    public function subscribe($userIds, $addLists, bool $trigger = true, bool $forceFront = false): bool
     {
         if (empty($addLists)) {
             return false;
@@ -572,7 +581,7 @@ class UserClass extends AcymClass
         $listClass = new ListClass();
         $historyClass = new HistoryClass();
 
-        $confirmationRequired = $this->config->get('require_confirmation', 1);
+        $confirmationRequired = !empty($this->config->get('require_confirmation', 1));
         $subscribedToLists = false;
         $historyData = acym_translationSprintf('ACYM_LISTS_NUMBERS', implode(', ', $addLists));
 
@@ -634,7 +643,7 @@ class UserClass extends AcymClass
                 acym_trigger('onAcymAfterUserSubscribe', [&$user, &$subscribedLists]);
             }
 
-            if ($this->sendWelcomeEmail && ($confirmationRequired == 0 || $user->confirmed == 1) && $user->active == 1) {
+            if ($this->sendWelcomeEmail && (!$confirmationRequired || $user->confirmed == 1) && $user->active == 1) {
                 $listClass->sendWelcome($userId, $subscribedLists, $forceFront);
             }
         }
@@ -676,9 +685,11 @@ class UserClass extends AcymClass
         $mailStatClass->save($mailStat);
     }
 
-    public function unsubscribe($userIds, $lists)
+    public function unsubscribe($userIds, $lists): bool
     {
-        if (empty($lists)) return false;
+        if (empty($lists)) {
+            return false;
+        }
 
         if (!is_array($userIds)) $userIds = [$userIds];
         if (!is_array($lists)) $lists = [$lists];
@@ -687,7 +698,10 @@ class UserClass extends AcymClass
         $unsubscribedFromLists = false;
         foreach ($userIds as $userId) {
             $user = $this->getOneById($userId);
-            if (empty($user)) continue;
+
+            if (empty($user)) {
+                continue;
+            }
 
             $currentSubscription = $this->getUserSubscriptionById($userId);
 
@@ -705,10 +719,14 @@ class UserClass extends AcymClass
             $listsNotExisting = [];
             foreach ($lists as $oneListId) {
                 // The user is already unsubscribed
-                if (empty($oneListId) || !empty($currentlyUnsubscribed[$oneListId])) continue;
+                if (empty($oneListId) || !empty($currentlyUnsubscribed[$oneListId])) {
+                    continue;
+                }
 
                 // Don't unsubscribe from non-subscribed lists
-                if (empty($currentlySubscribed[$oneListId])) continue;
+                if (empty($currentlySubscribed[$oneListId])) {
+                    continue;
+                }
 
                 $list = $listClass->getOneById($oneListId);
                 if (empty($list)) {
@@ -765,12 +783,14 @@ class UserClass extends AcymClass
             }
         }
 
-        if ($unsubscribedFromLists) $this->registerUnsubUser($userIds);
+        if ($unsubscribedFromLists) {
+            $this->registerUnsubUser($userIds);
+        }
 
         return $unsubscribedFromLists;
     }
 
-    public function unsubscribeOnSubscriptions($userId, $listIds)
+    public function unsubscribeOnSubscriptions($userId, $listIds): bool
     {
         if (empty($listIds)) {
             return false;
@@ -958,7 +978,7 @@ class UserClass extends AcymClass
             if (empty($value)) continue;
 
             $oneAttribute = trim(strtolower($oneAttribute));
-            if (!in_array($oneAttribute, $this->restrictedFields)) {
+            if (!in_array($oneAttribute, self::RESTRICTED_FIELDS)) {
                 $user->$oneAttribute = strip_tags($value);
             }
 
@@ -970,10 +990,12 @@ class UserClass extends AcymClass
                 if (mb_detect_encoding($user->$oneAttribute, 'UTF-8', true) !== 'UTF-8') {
                     $user->$oneAttribute = acym_utf8Encode($user->$oneAttribute);
                 }
-            } elseif (!preg_match(
-                '%^(?:[\x09\x0A\x0D\x20-\x7E]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})*$%xs',
-                $user->$oneAttribute
-            )) {
+            } elseif (
+                !preg_match(
+                    '%^(?:[\x09\x0A\x0D\x20-\x7E]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})*$%xs',
+                    $user->$oneAttribute
+                )
+            ) {
                 $user->$oneAttribute = acym_utf8Encode($user->$oneAttribute);
             }
         }
@@ -1561,10 +1583,13 @@ class UserClass extends AcymClass
             if (!$oneList->active) continue;
             if (!empty($currentSubscription[$oneList->id]) && $currentSubscription[$oneList->id]->status == 1) continue;
 
-            if (in_array($oneList->id, $visibleListsChecked) || (in_array($oneList->id, $autoLists) && !in_array(
-                        $oneList->id,
-                        $visibleLists
-                    ) && empty($currentSubscription[$oneList->id]))) {
+            if (
+                in_array($oneList->id, $visibleListsChecked)
+                || (
+                    in_array($oneList->id, $autoLists)
+                    && !in_array($oneList->id, $visibleLists) && empty($currentSubscription[$oneList->id])
+                )
+            ) {
                 $listsToSubscribe[] = $oneList->id;
             }
         }

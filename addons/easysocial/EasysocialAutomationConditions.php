@@ -236,7 +236,8 @@ trait EasysocialAutomationConditions
         $conditions['user']['easysocialevent']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 

@@ -126,7 +126,7 @@ class plgAcymGoogle extends AcymPlugin
     }
 
     /**
-     * https://developers.google.com/identity/protocols/oauth2/web-server#httprest_2
+     * Doc: https://developers.google.com/identity/protocols/oauth2/web-server#httprest_2
      */
     public function onAcymOauthAuthenticate(string &$consentUrl, bool $isSmtp): void
     {
@@ -163,7 +163,7 @@ class plgAcymGoogle extends AcymPlugin
     }
 
     /**
-     * https://developers.google.com/identity/protocols/oauth2/web-server#httprest_3
+     * Doc: https://developers.google.com/identity/protocols/oauth2/web-server#httprest_3
      */
     public function onAcymOauthCredentialsCreation(bool $isSmtp, string $code): void
     {

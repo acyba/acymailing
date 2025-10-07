@@ -92,7 +92,7 @@ trait SubscriberAutomationConditions
 
     public function onAcymProcessCondition_acy_field(&$query, &$options, $num, &$conditionNotValid)
     {
-        $affectedRows = $this->_processAcyField($query, $options, $num);
+        $affectedRows = $this->processAcyField($query, $options, $num);
         if (empty($affectedRows)) $conditionNotValid++;
     }
 
@@ -101,7 +101,7 @@ trait SubscriberAutomationConditions
         $this->onAcymDeclareSummary_conditionsFilters($automation, 'ACYM_CONDITION_ACY_FIELD_SUMMARY');
     }
 
-    private function _processAcyField(&$query, &$options, $num)
+    private function processAcyField(&$query, &$options, $num)
     {
         $usersColumns = acym_getColumns('user');
 

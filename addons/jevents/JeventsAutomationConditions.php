@@ -55,7 +55,8 @@ trait JeventsAutomationConditions
         $conditions['user']['jeventsregistration']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 

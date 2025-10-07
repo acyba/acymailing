@@ -128,10 +128,11 @@ class plgAcymWoocommerce extends AcymPlugin
 
     private function isHposActive(): bool
     {
-        if (class_exists('\Automattic\WooCommerce\Utilities\OrderUtil') && method_exists(
-                OrderUtil::class,
-                'custom_orders_table_usage_is_enabled'
-            ) && OrderUtil::custom_orders_table_usage_is_enabled()) {
+        if (
+            class_exists('\Automattic\WooCommerce\Utilities\OrderUtil')
+            && method_exists(OrderUtil::class, 'custom_orders_table_usage_is_enabled')
+            && OrderUtil::custom_orders_table_usage_is_enabled()
+        ) {
             return true;
         } else {
             return false;

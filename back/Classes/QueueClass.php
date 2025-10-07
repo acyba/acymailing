@@ -15,23 +15,64 @@ class QueueClass extends AcymClass
      */
     public function getMatchingCampaigns(array $settings): array
     {
+        $queuedMails = acym_loadResultArray('SELECT DISTINCT mail_id FROM #__acym_queue');
+        if (empty($queuedMails)) {
+            return [
+                'elements' => [],
+                'total' => (object)['total' => 0],
+                'status' => [
+                    'all' => 0,
+                    'sending' => 0,
+                    'paused' => 0,
+                    'automation' => 0,
+                    'followup' => 0,
+                ],
+            ];
+        }
+
         $campaignClass = new CampaignClass();
         $mailStatClass = new MailStatClass();
         $mailClass = new MailClass();
-        $query = 'FROM #__acym_mail AS mail
-                  JOIN #__acym_queue AS queue ON mail.id = queue.mail_id 
-                  LEFT JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id OR mail.parent_id = campaign.mail_id';
+
+        $queryCount = 'SELECT COUNT(DISTINCT mail.id) AS total 
+                        FROM #__acym_mail AS mail
+                        LEFT JOIN #__acym_campaign AS campaign ON campaign.mail_id = mail.id OR campaign.mail_id = mail.parent_id';
+
+        $query = 'SELECT 
+                    mail.name, 
+                    mail.subject, 
+                    mail.type, 
+                    mail.id, 
+                    campaign.id AS campaign, 
+                    COALESCE(campaign.sending_date, queue.min_sending_date) AS sending_date, 
+                    campaign.sending_type, 
+                    campaign.active, 
+                    campaign.sending_params AS sending_params, 
+                    queue.nbqueued, 
+                    mail.language, 
+                    mail.parent_id 
+                FROM #__acym_mail AS mail
+                JOIN (
+                    SELECT mail_id, COUNT(*) AS nbqueued, MIN(sending_date) AS min_sending_date
+                    FROM #__acym_queue
+                    GROUP BY mail_id
+                ) AS queue ON mail.id = queue.mail_id
+                LEFT JOIN #__acym_campaign AS campaign 
+                    ON mail.id = campaign.mail_id 
+                    OR mail.parent_id = campaign.mail_id';
 
         // This query returns an array like "number of mails" => score. cf the equivalent in the list class to understand how it works
         $queryStatus = 'SELECT COUNT(DISTINCT mail.id) AS number, campaign.active
                         FROM #__acym_mail AS mail
-                        JOIN #__acym_queue AS queue ON queue.mail_id = mail.id 
                         LEFT JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id';
 
         if (!empty($settings['tag'])) {
-            $query .= ' JOIN #__acym_tag AS tag ON (mail.id = tag.id_element OR mail.parent_id = tag.id_element) AND tag.type = "mail" AND tag.name = '.acym_escapeDB(
-                    $settings['tag']
-                );
+            $tagJoin = ' JOIN #__acym_tag AS tag 
+                            ON (mail.id = tag.id_element OR mail.parent_id = tag.id_element) 
+                            AND tag.type = "mail" 
+                            AND tag.name = '.acym_escapeDB($settings['tag']);
+            $query .= $tagJoin;
+            $queryCount .= $tagJoin;
             $queryStatus .= ' JOIN #__acym_tag AS tag ON mail.id = tag.id_element AND tag.type = "mail" AND tag.name = '.acym_escapeDB($settings['tag']);
         }
 
@@ -42,9 +83,7 @@ class QueueClass extends AcymClass
             $filters[] = 'mail.subject LIKE '.acym_escapeDB('%'.$settings['search'].'%').' OR mail.name LIKE '.acym_escapeDB('%'.$settings['search'].'%');
         }
 
-        if (!empty($filters)) {
-            $queryStatus .= ' WHERE ('.implode(') AND (', $filters).')';
-        }
+        $queryStatus .= ' WHERE ('.implode(') AND (', $filters).') AND mail.id IN ('.implode(',', $queuedMails).')';
 
         if (!empty($settings['status'])) {
             $allowedStatus = [
@@ -61,18 +100,15 @@ class QueueClass extends AcymClass
             $filters[] = $allowedStatus[$settings['status']];
         }
 
-        if (!empty($filters)) {
-            $query .= ' WHERE ('.implode(') AND (', $filters).')';
-        }
-
-        $queryCount = 'SELECT COUNT(DISTINCT mail.id) AS total '.$query;
-        $query .= ' GROUP BY mail.id';
-
-        $query = 'SELECT mail.name, mail.subject, mail.type, mail.id, campaign.id AS campaign, IF(campaign.sending_date IS NULL, queue.sending_date, campaign.sending_date) AS sending_date, campaign.sending_type, campaign.active, campaign.sending_params AS sending_params, COUNT(queue.mail_id) AS nbqueued, mail.language, mail.parent_id '.$query.' ORDER BY queue.sending_date ASC';
+        $queryCount .= ' WHERE ('.implode(') AND (', $filters).') AND mail.id IN ('.implode(',', $queuedMails).')';
+        $query .= ' WHERE ('.implode(') AND (', $filters).')';
+        $query .= ' ORDER BY queue.min_sending_date ASC';
 
         acym_query('SET SQL_BIG_SELECTS=1;');
-        $results['elements'] = $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['campaignsPerPage']));
-        $results['total'] = acym_loadObject($queryCount);
+        $results = [
+            'elements' => $mailClass->decode(acym_loadObjectList($query, '', $settings['offset'], $settings['campaignsPerPage'])),
+            'total' => acym_loadObject($queryCount),
+        ];
 
         $isMultilingual = acym_isMultilingual();
         $campaignRecipientsMultilingual = [];
@@ -178,14 +214,13 @@ class QueueClass extends AcymClass
         );
 
         $elementsPerStatus = acym_loadObjectList($queryStatus.' GROUP BY active', 'active');
-        foreach ($elementsPerStatus as $i => $element) {
-            $elementsPerStatus[$i] = empty($element->number) ? 0 : $element->number;
-        }
+        $queuedActiveCampaigns = empty($elementsPerStatus[1]->number) ? 0 : $elementsPerStatus[1]->number;
+        $queuedPausedCampaigns = empty($elementsPerStatus[0]->number) ? 0 : $elementsPerStatus[0]->number;
 
         $results['status'] = [
-            'all' => array_sum($elementsPerStatus) + $automationNumber + $followupNumber,
-            'sending' => $elementsPerStatus[1] ?? 0,
-            'paused' => $elementsPerStatus[0] ?? 0,
+            'all' => $queuedActiveCampaigns + $queuedPausedCampaigns + $automationNumber + $followupNumber,
+            'sending' => $queuedActiveCampaigns,
+            'paused' => $queuedPausedCampaigns,
             'automation' => $automationNumber,
             'followup' => $followupNumber,
         ];
@@ -198,7 +233,6 @@ class QueueClass extends AcymClass
      */
     public function getMatchingScheduledCampaigns(array $settings): array
     {
-        $campaignClass = new CampaignClass();
         $mailClass = new MailClass();
         $query = 'FROM #__acym_mail AS mail 
                   JOIN #__acym_campaign AS campaign ON mail.id = campaign.mail_id OR mail.parent_id = campaign.mail_id ';
@@ -217,9 +251,7 @@ class QueueClass extends AcymClass
             $filters[] = 'mail.subject LIKE '.acym_escapeDB('%'.$settings['search'].'%').' OR mail.name LIKE '.acym_escapeDB('%'.$settings['search'].'%');
         }
 
-        if (!empty($filters)) {
-            $query .= ' WHERE ('.implode(') AND (', $filters).')';
-        }
+        $query .= ' WHERE ('.implode(') AND (', $filters).')';
 
         $queryCount = 'SELECT COUNT(DISTINCT mail.id) AS total '.$query;
         $query = 'SELECT mail.name, mail.subject, mail.id, campaign.sending_date, campaign.sending_params, mail.language, mail.parent_id '.$query.' GROUP BY mail.id ORDER BY campaign.sending_date ASC';
@@ -606,7 +638,11 @@ class QueueClass extends AcymClass
     {
         $priority = $this->config->get('priority_newsletter', 3);
 
-        return acym_query('INSERT IGNORE INTO #__acym_queue (`mail_id`, `user_id`, `sending_date`, `priority`, `try`) VALUES ('.intval($mailId).', '.intval($userId).', '.acym_escapeDB($sendingDate).', '.intval($priority).', 0)');
+        return acym_query(
+            'INSERT IGNORE INTO #__acym_queue (`mail_id`, `user_id`, `sending_date`, `priority`, `try`) VALUES ('.intval($mailId).', '.intval($userId).', '.acym_escapeDB(
+                $sendingDate
+            ).', '.intval($priority).', 0)'
+        );
     }
 
     public function unpauseCampaign($campaignId, $active)

@@ -31,7 +31,7 @@ abstract class AcymController extends AcymObject
 
         $currentClassName = 'AcyMailing\\Classes\\'.rtrim(ucfirst(str_replace(['Front', 'front'], '', $this->name)), 's').'Class';
         if (class_exists($currentClassName)) {
-            $this->currentClass = new $currentClassName;
+            $this->currentClass = new $currentClassName();
         }
         $this->sessionName = 'acym_filters_'.$this->name;
         $this->taskCalled = acym_getVar('string', 'task', '');
@@ -217,7 +217,7 @@ abstract class AcymController extends AcymObject
 
         $viewName = ucfirst($this->getName());
         $viewNamespace .= $viewName.'\\'.$viewName.'View';
-        $view = new $viewNamespace;
+        $view = new $viewNamespace();
         $view->display($this, $data);
     }
 
@@ -237,9 +237,8 @@ abstract class AcymController extends AcymObject
     public function edit(): void
     {
         $nextstep = acym_getVar('string', 'nextstep', '');
-        $step = acym_getVar('string', 'step', '');
         if (empty($nextstep)) {
-            $nextstep = $step;
+            $nextstep = acym_getVar('string', 'step', '');
         }
 
         if (empty($nextstep)) {

@@ -75,7 +75,7 @@ class AcymPunycode
         $inp_len = self::byteLength($input);
         $mode = 'next';
         $test = 'none';
-        for ($k = 0 ; $k < $inp_len ; ++$k) {
+        for ($k = 0; $k < $inp_len; ++$k) {
             $v = ord($input[$k]); // Extract byte from input string
             if ($v < 128) { // We found an ASCII char - put into stirng as is
                 $output[$out_len] = $v;
@@ -158,7 +158,7 @@ class AcymPunycode
             if ($this->_strict_mode) {
                 return false;
             }
-            list ($email_pref, $input) = explode('@', $input, 2);
+            [$email_pref, $input] = explode('@', $input, 2);
             $arr = explode('.', $input);
             foreach ($arr as $k => $v) {
                 if (preg_match('!^'.preg_quote($this->_punycode_prefix, '!').'!', $v)) {
@@ -192,7 +192,11 @@ class AcymPunycode
                         ? ''
                         : $parsed['scheme'].(strtolower(
                             $parsed['scheme']
-                        ) == 'mailto' ? ':' : '://')).(empty($parsed['user']) ? '' : $parsed['user'].(empty($parsed['pass']) ? '' : ':'.$parsed['pass']).'@').$parsed['host'].(empty($parsed['port']) ? '' : ':'.$parsed['port']).(empty($parsed['path']) ? '' : $parsed['path']).(empty($parsed['query']) ? '' : '?'.$parsed['query']).(empty($parsed['fragment']) ? '' : '#'.$parsed['fragment']);
+                        ) == 'mailto' ? ':' : '://')).(empty($parsed['user'])
+                        ? ''
+                        : $parsed['user'].(empty($parsed['pass']) ? ''
+                            : ':'.$parsed['pass']).'@').$parsed['host'].(empty($parsed['port']) ? '' : ':'.$parsed['port']).(empty($parsed['path']) ? ''
+                        : $parsed['path']).(empty($parsed['query']) ? '' : '?'.$parsed['query']).(empty($parsed['fragment']) ? '' : '#'.$parsed['fragment']);
             } else {
                 $arr = explode('.', $input);
                 foreach ($arr as $k => $v) {
@@ -234,7 +238,7 @@ class AcymPunycode
         }
         $delim_pos = strrpos($encoded, '-');
         if ($delim_pos > self::byteLength($this->_punycode_prefix)) {
-            for ($k = self::byteLength($this->_punycode_prefix) ; $k < $delim_pos ; ++$k) {
+            for ($k = self::byteLength($this->_punycode_prefix); $k < $delim_pos; ++$k) {
                 $decoded[] = ord($encoded[$k]);
             }
         }
@@ -246,8 +250,8 @@ class AcymPunycode
         $idx = 0;
         $char = $this->_initial_n;
 
-        for ($enco_idx = ($delim_pos) ? ($delim_pos + 1) : 0 ; $enco_idx < $enco_len ; ++$deco_len) {
-            for ($old_idx = $idx, $w = 1, $k = $this->_base ; 1 ; $k += $this->_base) {
+        for ($enco_idx = ($delim_pos) ? ($delim_pos + 1) : 0; $enco_idx < $enco_len; ++$deco_len) {
+            for ($old_idx = $idx, $w = 1, $k = $this->_base; 1; $k += $this->_base) {
                 $digit = $this->_decode_digit($encoded[$enco_idx++]);
                 $idx += $digit * $w;
                 $t = ($k <= $bias) ? $this->_tmin : (($k >= $bias + $this->_tmax) ? $this->_tmax : ($k - $bias));
@@ -259,7 +263,7 @@ class AcymPunycode
             $char += (int)($idx / ($deco_len + 1));
             $idx %= ($deco_len + 1);
             if ($deco_len > 0) {
-                for ($i = $deco_len ; $i > $idx ; $i--) {
+                for ($i = $deco_len; $i > $idx; $i--) {
                     $decoded[$i] = $decoded[($i - 1)];
                 }
             }
@@ -277,6 +281,7 @@ class AcymPunycode
                 break;
             case 'ucs4_string':
                 $decoded = $this->_ucs4_string_to_ucs4($decoded);
+                break;
             case 'ucs4_array':
                 break;
             default:
@@ -295,6 +300,7 @@ class AcymPunycode
                 case 0xFF0E:
                 case 0xFF61:
                     $decoded[$k] = 0x2E;
+                    // normal I guess
                 case 0x2E:
                 case 0x2F:
                 case 0x3A:
@@ -317,7 +323,7 @@ class AcymPunycode
             }
         }
         if ($last_begin) {
-            $inp_len = sizeof($decoded);
+            $inp_len = count($decoded);
             $encoded = $this->_encode(array_slice($decoded, $last_begin, (($inp_len) - $last_begin)));
             if ($encoded) {
                 $output .= $encoded;
@@ -357,7 +363,7 @@ class AcymPunycode
         if (!$deco_len) return false; // Empty array
         $codecount = 0; // How many chars have been consumed
         $encoded = '';
-        for ($i = 0 ; $i < $deco_len ; ++$i) {
+        for ($i = 0; $i < $deco_len; ++$i) {
             $test = $decoded[$i];
             if ((0x2F < $test && $test < 0x40) || (0x40 < $test && $test < 0x5B) || (0x60 < $test && $test <= 0x7B) || (0x2D == $test)) {
                 $encoded .= chr($decoded[$i]);
@@ -373,7 +379,7 @@ class AcymPunycode
         $bias = $this->_initial_bias;
         $delta = 0;
         while ($codecount < $deco_len) {
-            for ($i = 0, $next_code = $this->_max_ucs ; $i < $deco_len ; $i++) {
+            for ($i = 0, $next_code = $this->_max_ucs; $i < $deco_len; $i++) {
                 if ($decoded[$i] >= $cur_code && $decoded[$i] <= $next_code) {
                     $next_code = $decoded[$i];
                 }
@@ -381,11 +387,11 @@ class AcymPunycode
             $delta += ($next_code - $cur_code) * ($codecount + 1);
             $cur_code = $next_code;
 
-            for ($i = 0 ; $i < $deco_len ; $i++) {
+            for ($i = 0; $i < $deco_len; $i++) {
                 if ($decoded[$i] < $cur_code) {
                     $delta++;
                 } elseif ($decoded[$i] == $cur_code) {
-                    for ($q = $delta, $k = $this->_base ; 1 ; $k += $this->_base) {
+                    for ($q = $delta, $k = $this->_base; 1; $k += $this->_base) {
                         $t = ($k <= $bias) ? $this->_tmin : (($k >= $bias + $this->_tmax) ? $this->_tmax : $k - $bias);
                         if ($q < $t) break;
                         $encoded .= $this->_encode_digit(intval($t + (($q - $t) % ($this->_base - $t)))); //v0.4.5 Changed from ceil() to intval()
@@ -409,7 +415,7 @@ class AcymPunycode
     {
         $delta = intval($is_first ? ($delta / $this->_damp) : ($delta / 2));
         $delta += intval($delta / $npoints);
-        for ($k = 0 ; $delta > (($this->_base - $this->_tmin) * $this->_tmax) / 2 ; $k += $this->_base) {
+        for ($k = 0; $delta > (($this->_base - $this->_tmin) * $this->_tmax) / 2; $k += $this->_base) {
             $delta = intval($delta / ($this->_base - $this->_tmin));
         }
 
@@ -451,7 +457,7 @@ class AcymPunycode
         $last_class = 0;
         $last_starter = 0;
         $out_len = count($output);
-        for ($i = 0 ; $i < $out_len ; ++$i) {
+        for ($i = 0; $i < $out_len; ++$i) {
             $class = $this->_get_combining_class($output[$i]);
             if ((!$last_class || $last_class > $class) && $class) {
                 $seq_len = $i - $last_starter;
@@ -459,7 +465,7 @@ class AcymPunycode
                 if ($out) {
                     $output[$last_starter] = $out;
                     if (count($out) != $seq_len) {
-                        for ($j = $i + 1 ; $j < $out_len ; ++$j) {
+                        for ($j = $i + 1; $j < $out_len; ++$j) {
                             $output[$j - 1] = $output[$j];
                         }
                         unset($output[$out_len]);
@@ -498,7 +504,7 @@ class AcymPunycode
         $last = (int)$input[0];
         $result[] = $last; // copy first char from input to output
 
-        for ($i = 1 ; $i < $inp_len ; ++$i) {
+        for ($i = 1; $i < $inp_len; ++$i) {
             $char = (int)$input[$i];
             $sindex = $last - $this->_sbase;
             $lindex = $last - $this->_lbase;
@@ -533,10 +539,10 @@ class AcymPunycode
         while ($swap) {
             $swap = false;
             $last = $this->_get_combining_class(intval($input[0]));
-            for ($i = 0 ; $i < $size - 1 ; ++$i) {
+            for ($i = 0; $i < $size - 1; ++$i) {
                 $next = $this->_get_combining_class(intval($input[$i + 1]));
                 if ($next != 0 && $last > $next) {
-                    for ($j = $i + 1 ; $j > 0 ; --$j) {
+                    for ($j = $i + 1; $j > 0; --$j) {
                         if ($this->_get_combining_class(intval($input[$j - 1])) <= $next) break;
                         $t = intval($input[$j]);
                         $input[$j] = intval($input[$j - 1]);
@@ -603,7 +609,7 @@ class AcymPunycode
             return false;
         }
         if (!$inp_len) return $output;
-        for ($i = 0, $out_len = -1 ; $i < $inp_len ; ++$i) {
+        for ($i = 0, $out_len = -1; $i < $inp_len; ++$i) {
             if (!($i % 4)) {
                 $out_len++;
                 $output[$out_len] = 0;

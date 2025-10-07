@@ -59,7 +59,8 @@ trait CbuilderAutomationConditions
         $conditions['user']['cbfield']->option .= '<input class="intext_input_automation cell" type="text" name="acym_condition[conditions][__numor__][__numand__][cbfield][value]">';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 

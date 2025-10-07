@@ -57,7 +57,7 @@ class AcymRouter extends RouterBase
             'campaignId',
             'userKey',
             'user_id',
-            'user_key'
+            'user_key',
         ];
     }
 
@@ -171,13 +171,17 @@ class AcymRouter extends RouterBase
             if (!isset($vars['task'])) {
                 $vars['task'] = $vars['layout'] ?? '';
             }
-            if (!isset($vars['step'])) $vars['step'] = '';
+            if (!isset($vars['step'])) {
+                $vars['step'] = '';
+            }
         }
 
         if (!empty($segments)) {
             if (strpos(current($segments), $this->separator) === false) {
                 $vars['task'] = array_shift($segments);
-                if (!empty($segments) && strpos(current($segments), $this->separator) === false) $vars['step'] = array_shift($segments);
+                if (!empty($segments) && strpos(current($segments), $this->separator) === false) {
+                    $vars['step'] = array_shift($segments);
+                }
             } elseif ($vars['ctrl'] === 'archive' && empty($vars['task'])) {
                 $vars['task'] = 'view';
                 $mail = array_shift($segments);

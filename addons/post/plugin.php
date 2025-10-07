@@ -5,10 +5,10 @@ use AcyMailing\Helpers\TabHelper;
 
 class plgAcymPost extends AcymPlugin
 {
-    private $groupedByCategory = false;
+    private bool $groupedByCategory = false;
     private $currentCategory = null;
-    private $acfFields = [];
-    private $handledFieldTypes = [
+    private array $acfFields = [];
+    private array $handledFieldTypes = [
         'text',
         'textarea',
         'number',

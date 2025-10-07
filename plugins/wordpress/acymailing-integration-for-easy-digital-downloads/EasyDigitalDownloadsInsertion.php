@@ -705,7 +705,7 @@ trait EasyDigitalDownloadsInsertion
     public function replaceUserInformation(&$email, &$user, $send = true)
     {
         if (empty($user)) return;
-        $this->_replaceCoupons($email, $user, $send);
+        $this->replaceCoupons($email, $user, $send);
         $generated = $this->replaceLastPurchased($email, $user, $send);
         if ($generated === '') {
             return [
@@ -931,7 +931,7 @@ trait EasyDigitalDownloadsInsertion
         return 1;
     }
 
-    private function _replaceCoupons(&$email, &$user, $send = true)
+    private function replaceCoupons(&$email, &$user, $send = true)
     {
         $tags = $this->pluginHelper->extractTags($email, 'easydigitaldownloads_coupon');
         if (empty($tags)) {

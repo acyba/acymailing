@@ -8,7 +8,7 @@ use AcyMailing\Helpers\ToolbarHelper;
 
 trait Listing
 {
-    function listing(): void
+    public function listing(): void
     {
         if (!acym_level(ACYM_ENTERPRISE)) {
             acym_redirect(acym_completeLink('dashboard&task=upgrade&version=enterprise', false, true));

@@ -1,1 +1,3 @@
-<?php include acym_getView('file', 'select', true);
+<?php
+
+include acym_getView('file', 'select', true);

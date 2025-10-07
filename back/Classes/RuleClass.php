@@ -21,7 +21,7 @@ class RuleClass extends AcymClass
         $rules = acym_loadObjectList('SELECT * FROM `#__acym_rule` ORDER BY `ordering` ASC');
 
         foreach ($rules as $i => $rule) {
-            $rules[$i] = $this->_prepareRule($rule);
+            $rules[$i] = $this->prepareRule($rule);
         }
 
         return $rules;
@@ -31,10 +31,10 @@ class RuleClass extends AcymClass
     {
         $rule = acym_loadObject('SELECT * FROM `#__acym_rule` WHERE `id` = '.intval($id));
 
-        return $this->_prepareRule($rule);
+        return $this->prepareRule($rule);
     }
 
-    private function _prepareRule($rule)
+    private function prepareRule($rule)
     {
         //We have a rule from the database, let's prepare it to be displayed nicely
         $columns = ['executed_on', 'action_message', 'action_user'];

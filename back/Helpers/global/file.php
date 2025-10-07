@@ -415,10 +415,12 @@ function acym_getItems($path, $filter, $recurse, $full, $exclude, $excludefilter
     }
 
     while (($file = readdir($handle)) !== false) {
-        if ($file == '.' || $file == '..' || in_array($file, $exclude) || (!empty($excludefilter_string) && preg_match(
-                    $excludefilter_string,
-                    $file
-                ))) {
+        if (
+            $file == '.'
+            || $file == '..'
+            || in_array($file, $exclude)
+            || (!empty($excludefilter_string) && preg_match($excludefilter_string, $file))
+        ) {
             continue;
         }
         $fullpath = rtrim($path, '/').'/'.$file;

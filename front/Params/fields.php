@@ -6,8 +6,11 @@ include_once __DIR__.DIRECTORY_SEPARATOR.'AcymJFormField.php';
 
 class JFormFieldFields extends AcymJFormField
 {
-    var $type = 'fields';
-    public $value;
+    public function __construct($form = null)
+    {
+        $this->type = 'fields';
+        parent::__construct($form);
+    }
 
     public function getInput()
     {

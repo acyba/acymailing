@@ -1,1 +1,3 @@
-<?php include acym_getView('campaigns', 'unsubscribe', true);
+<?php
+
+include acym_getView('campaigns', 'unsubscribe', true);

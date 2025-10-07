@@ -68,7 +68,8 @@ trait RseventsproAutomationConditions
         $conditions['user']['rseventspro']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 

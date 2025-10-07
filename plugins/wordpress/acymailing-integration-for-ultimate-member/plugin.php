@@ -94,5 +94,4 @@ class plgAcymUltimatemember extends AcymPlugin
         $query->where[] = 'user.cms_id != 0 ';
         $query->where[] = 'um'.$num.'.meta_value LIKE '.acym_escapeDB('%'.date_format($dateToCheck, '/m/d'));
     }
-
 }

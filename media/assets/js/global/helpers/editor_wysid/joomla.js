@@ -86,7 +86,7 @@ const acym_editorWysidJoomla = {
                 if ($link.length > 0 && parseInt(i) === 0) content += '<a href="' + $link.attr('href') + '" class="acym__wysid__link__image" target="_blank">';
                 content += '<img class="acym__wysid__media__inserted '
                            + classImage
-                           + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display:block; margin-left: auto; margin-right: auto;" src="'
+                           + '" style="max-width: 100%; height: auto; box-sizing: border-box; padding: 0 5px; display:block; margin-left: auto; margin-right: auto; vertical-align: middle;" src="'
                            + linkImage
                            + '" alt="'
                            + acym_helper.escape(alt)

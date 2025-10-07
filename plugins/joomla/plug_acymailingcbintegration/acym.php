@@ -22,8 +22,8 @@ $_PLUGINS->registerFunction('onBeforeUserBlocking', 'onBeforeUserBlocking', 'get
 
 class getAcymTab extends cbTabHandler
 {
-    var $installed = true;
-    var $errorMessage = 'This plugin can not work without the AcyMailing extension.<br/>Please download it from <a href="https://www.acymailing.com">https://www.acymailing.com</a> and install it first.';
+    private bool $installed;
+    private string $errorMessage = 'This plugin can not work without the AcyMailing extension.<br/>Please download it from <a href="https://www.acymailing.com">https://www.acymailing.com</a> and install it first.';
 
     public function __construct()
     {
@@ -431,4 +431,3 @@ class getAcymTab extends cbTabHandler
         if (!empty($css)) acym_addStyle(true, $css);
     }
 }
-

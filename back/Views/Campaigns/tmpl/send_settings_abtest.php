@@ -4,7 +4,7 @@
 </h5>
 <div class="cell grid-x align-center">
 	<div class="cell grid-x medium-11 acym__campaign__sendsettings__send-type grid-margin-x margin-top-1">
-		<span class="cell shrink"><?php echo acym_translation('ACYM_AB_TEST_CAMPAIGN_SENT_TO') ?></span>
+		<span class="cell shrink"><?php echo acym_translation('ACYM_AB_TEST_CAMPAIGN_SENT_TO'); ?></span>
 		<span id="acym__campaign__sendsettings__abtest__number-subscribers" class="cell shrink" data-acym-subscribers="<?php echo acym_escape($data['nbSubscribers']); ?>"></span>
 	</div>
 	<div class="cell grid-x medium-11 acym__campaign__sendsettings__send-type grid-margin-x margin-top-1">
@@ -12,7 +12,7 @@
 		<div class="slider cell small-10 margin-top-1 margin-bottom-1"
 			 id="acym__campaign__sendsettings__send__abtest-slider"
 			 data-slider
-			 data-initial-start="<?php echo empty($abTestParams['repartition']) ? 15 : acym_escape($abTestParams['repartition']) ?>"
+			 data-initial-start="<?php echo empty($abTestParams['repartition']) ? 15 : acym_escape($abTestParams['repartition']); ?>"
 			 data-end="50">
 			<span class="slider-handle" data-slider-handle role="slider" tabindex="1">
 				<span class="slider-value">15%</span>

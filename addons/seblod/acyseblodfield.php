@@ -8,8 +8,7 @@ defined('_JEXEC') || die('Restricted access');
 
 class AcyplgContentCCK extends plgContentCCK
 {
-
-    var $acyDisplays = [];
+    public array $acyDisplays = [];
 
     public function __construct()
     {
@@ -145,7 +144,7 @@ class AcyplgContentCCK extends plgContentCCK
             return;
         }
 
-        $article_params = null;
+        $article_params = [];
         @parent::_render($context, $article, $article_params, $tpl, $contentType, $fields, $property, $client, $cck, '');
     }
 }

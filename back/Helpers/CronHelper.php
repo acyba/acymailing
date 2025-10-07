@@ -467,7 +467,7 @@ class CronHelper extends AcymObject
         }
 
         $urls = [];
-        for ($i = 1 ; $i <= $emailsBatches - 1 ; $i++) {
+        for ($i = 1; $i <= $emailsBatches - 1; $i++) {
             $urls[] = acym_frontendLink('cron&task=cron&startqueue='.($emailsPerBatches * $i).'&t='.time().$cronKey);
         }
 

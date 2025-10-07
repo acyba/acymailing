@@ -88,9 +88,8 @@ class FrontcampaignsController extends CampaignsController
     public function edit(): void
     {
         $nextstep = acym_getVar('string', 'nextstep', '');
-        $step = acym_getVar('string', 'step', '');
         if (empty($nextstep)) {
-            $nextstep = $step;
+            $nextstep = acym_getVar('string', 'step', '');
         }
 
         $allowedSteps = [

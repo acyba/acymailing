@@ -618,10 +618,11 @@ trait Security
         $siteFiles = acym_getFiles(ACYM_ROOT, '.', true, true);
         foreach ($siteFiles as $oneFilePath) {
             $lastSlashPos = strrpos($oneFilePath, '/');
-            if (!empty($lastSlashPos) && strpos($oneFilePath, ACYM_UPLOAD_FOLDER_THUMBNAIL) !== false && preg_match(
-                    '/.*thumbnail.*php.*$/',
-                    substr($oneFilePath, $lastSlashPos + 1)
-                )) {
+            if (
+                !empty($lastSlashPos)
+                && strpos($oneFilePath, ACYM_UPLOAD_FOLDER_THUMBNAIL) !== false
+                && preg_match('/.*thumbnail.*php.*$/', substr($oneFilePath, $lastSlashPos + 1))
+            ) {
                 $maliciousFiles[] = $oneFilePath;
             } elseif (filesize($oneFilePath) < 10000) {
                 $fileContent = file_get_contents($oneFilePath);

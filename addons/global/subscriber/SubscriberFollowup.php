@@ -3,9 +3,6 @@
 use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\SegmentClass;
 use AcyMailing\Helpers\AutomationHelper;
-use AcyMailing\Helpers\ExportHelper;
-use AcyMailing\Classes\UserClass;
-use AcyMailing\Classes\FieldClass;
 use AcyMailing\Classes\AutomationClass;
 use AcyMailing\Helpers\ScenarioHelper;
 
@@ -17,7 +14,7 @@ trait SubscriberFollowup
         $automationClass->trigger('user_creation', ['userId' => $user->id]);
 
         $followupClass = new FollowupClass();
-        $followupClass->addFollowupEmailsQueue($this->followTriggerName, $user->id);
+        $followupClass->addFollowupEmailsQueue(self::FOLLOWUP_USER_CREATION, $user->id);
 
         $scenarioHelper = new ScenarioHelper();
         $scenarioHelper->trigger('user_creation', ['userId' => $user->id]);
@@ -84,7 +81,8 @@ trait SubscriberFollowup
 
     public function getFollowupTriggers(&$triggers)
     {
-        $triggers[$this->followTriggerName] = acym_translation('ACYM_SUBSCRIBER_CREATION');
+        $triggers[self::FOLLOWUP_USER_CREATION] = acym_translation('ACYM_SUBSCRIBER_CREATION');
+        $triggers[self::FOLLOWUP_USER_CONFIRMATION] = acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION');
     }
 
     public function getFollowupTriggerBlock(&$blocks)
@@ -93,9 +91,18 @@ trait SubscriberFollowup
             'name' => acym_translation('ACYM_SUBSCRIBER_CREATION'),
             'description' => acym_translation('ACYM_SUBSCRIBER_CREATION_DESC'),
             'icon' => 'acymicon-user-plus',
-            'link' => acym_completeLink('campaigns&task=edit&step=followupCondition&trigger='.$this->followTriggerName),
+            'link' => acym_completeLink('campaigns&task=edit&step=followupCondition&trigger='.self::FOLLOWUP_USER_CREATION),
             'level' => 2,
-            'alias' => $this->followTriggerName,
+            'alias' => self::FOLLOWUP_USER_CREATION,
+        ];
+
+        $blocks[] = [
+            'name' => acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION'),
+            'description' => acym_translation('ACYM_SUBSCRIPTION_CONFIRMATION_DESC'),
+            'icon' => 'acymicon-user-check',
+            'link' => acym_completeLink('campaigns&task=edit&step=followupCondition&trigger='.self::FOLLOWUP_USER_CONFIRMATION),
+            'level' => 2,
+            'alias' => self::FOLLOWUP_USER_CONFIRMATION,
         ];
     }
 }

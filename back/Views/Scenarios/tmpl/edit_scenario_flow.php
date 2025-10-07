@@ -74,5 +74,5 @@
 	<input type="hidden" id="acym__scenario__saved__flow" value="<?php echo empty($data['flow']) ? '' : acym_escape(json_encode($data['flow'])); ?>">
 	<input type="hidden"
 		   id="acym__scenario__preopen__stepid"
-		   value="<?php echo empty($data['returnFromMailCreationStepId']) ? '' : acym_escape($data['returnFromMailCreationStepId']) ?>">
+		   value="<?php echo empty($data['returnFromMailCreationStepId']) ? '' : acym_escape($data['returnFromMailCreationStepId']); ?>">
 </div>

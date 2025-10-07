@@ -22,7 +22,7 @@
                         }
                         ?>
 					</p>
-					<p> <?php echo '('.acym_externalLink('ACYM_FIND_YOUR_LICENSE', ACYM_ACYMAILING_WEBSITE.'account/license/').')' ?></p>
+					<p> <?php echo '('.acym_externalLink('ACYM_FIND_YOUR_LICENSE', ACYM_ACYMAILING_WEBSITE.'account/license/').')'; ?></p>
 				</div>
 
 				<div class="cell grid-x align-center margin-top-3 margin-bottom-3">

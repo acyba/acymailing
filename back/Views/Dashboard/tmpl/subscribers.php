@@ -19,7 +19,7 @@
 
 		</div>
 		<div class="subscibersWrapperPart listItemWrapper">
-			<p class="acym__color__light-blue"> <?php echo $data['newSubscribers'] ?> </p>
+			<p class="acym__color__light-blue"> <?php echo $data['newSubscribers']; ?> </p>
 			<p><?php echo acym_translation('ACYM_NEW_RECENT_SUB'); ?></p>
 		</div>
 	</div>

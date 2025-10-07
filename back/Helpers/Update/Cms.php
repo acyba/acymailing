@@ -112,7 +112,6 @@ trait Cms
         $siteLanguages = empty($onlyCode) ? array_keys(acym_getLanguages()) : [$onlyCode];
 
         foreach ($siteLanguages as $code) {
-
             $path = acym_getLanguagePath(ACYM_ROOT, $code).DS.$code.'.com_acym.ini';
             if (!file_exists($path)) continue;
 

@@ -33,7 +33,8 @@ trait ContactAutomationConditions
         $conditions['user']['contact']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 
@@ -66,7 +67,6 @@ trait ContactAutomationConditions
     private function summaryConditionFilters(&$automation)
     {
         if (!empty($automation['contact'])) {
-
             $category = acym_loadResult('SELECT title FROM #__categories WHERE id = '.intval($automation['contact']['category']));
             $category = empty($category) ? '' : acym_translation($category);
 

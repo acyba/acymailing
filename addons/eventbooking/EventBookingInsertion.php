@@ -555,7 +555,7 @@ trait EventBookingInsertion
         }
 
         if (!empty($tag->custom) && !empty($element->custom_fields)) {
-            $customFields = array_merge($customFields, $this->_handleCustomFields($element->custom_fields, $tag->custom));
+            $customFields = array_merge($customFields, $this->getCustomFields($element->custom_fields, $tag->custom));
         }
 
         $varFields['{regstart}'] = '';
@@ -616,7 +616,7 @@ trait EventBookingInsertion
         return $this->finalizeElementFormat($result, $tag, $varFields);
     }
 
-    private function _handleCustomFields($customFields, $selected)
+    private function getCustomFields($customFields, $selected): array
     {
         $result = [];
 

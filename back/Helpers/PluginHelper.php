@@ -311,6 +311,9 @@ class PluginHelper extends AcymObject
             }
 
             $img = $getfunction($pictCode);
+            if ($img === false) {
+                continue;
+            }
 
             if (in_array($extension, ['gif', 'png'])) {
                 imagealphablending($img, false);
@@ -552,7 +555,7 @@ class PluginHelper extends AcymObject
         $tag = new \stdClass();
         $tag->id = $arguments[0];
         $tag->default = '';
-        for ($i = 1, $a = count($arguments) ; $i < $a ; $i++) {
+        for ($i = 1, $a = count($arguments); $i < $a; $i++) {
             $args = explode(':', $arguments[$i], 2);
             $arg0 = trim($args[0]);
             if (empty($arg0)) continue;
@@ -639,13 +642,14 @@ class PluginHelper extends AcymObject
         // number of "real" characters
         $countStripChar = 0;
 
-        for ($i = 0 ; $i < $numChar ; $i++) {
+        for ($i = 0; $i < $numChar; $i++) {
             if ($newText[$i] == '<') {
                 foreach ($allowedTags as $oneAllowedTag) {
-                    if ($numChar >= ($i + strlen($oneAllowedTag) + 1) && substr($newText, $i, strlen($oneAllowedTag) + 1) == '<'.$oneAllowedTag && (in_array(
-                            $newText[$i + strlen($oneAllowedTag) + 1],
-                            [' ', '>']
-                        ))) {
+                    if (
+                        $numChar >= ($i + strlen($oneAllowedTag) + 1)
+                        && substr($newText, $i, strlen($oneAllowedTag) + 1) == '<'.$oneAllowedTag
+                        && in_array($newText[$i + strlen($oneAllowedTag) + 1], [' ', '>'])
+                    ) {
                         //if it's the <tag>, insert its </tag> in the close table
                         $write = false;
                         $open[] = '</'.$oneAllowedTag.'>';
@@ -660,10 +664,11 @@ class PluginHelper extends AcymObject
                 }
 
                 foreach ($aloneAllowedTags as $oneAllowedTag) {
-                    if ($numChar >= ($i + strlen($oneAllowedTag) + 1) && substr($newText, $i, strlen($oneAllowedTag) + 1) == '<'.$oneAllowedTag && (in_array(
-                            $newText[$i + strlen($oneAllowedTag) + 1],
-                            [' ', '/', '>']
-                        ))) {
+                    if (
+                        $numChar >= ($i + strlen($oneAllowedTag) + 1)
+                        && substr($newText, $i, strlen($oneAllowedTag) + 1) === '<'.$oneAllowedTag
+                        && in_array($newText[$i + strlen($oneAllowedTag) + 1], [' ', '/', '>'])
+                    ) {
                         $write = false;
                     }
                 }
@@ -863,12 +868,10 @@ class PluginHelper extends AcymObject
             foreach ($format->customFields as $oneField) {
                 if ($i != 0 && $i % $format->cols == 0) $result .= '</tr><tr>';
 
-                $result .= '<td nowrap="nowrap" class="cf';
-
                 if (empty($oneField[1])) {
-                    $result .= 'value" colspan="2">';
+                    $result .= '<td class="cfvalue" colspan="2">';
                 } else {
-                    $result .= 'label">'.$oneField[1].'</td><td class="cfvalue">';
+                    $result .= '<td nowrap="nowrap" class="cflabel">'.$oneField[1].'</td><td class="cfvalue">';
                 }
 
                 $result .= $oneField[0].'</td>';

@@ -17,7 +17,7 @@ trait Condition
 
     }
 
-    private function _saveConditions(bool $isMassAction = false): array
+    private function getSaveConditions(bool $isMassAction = false): array
     {
         $automationID = acym_getVar('int', 'id');
         $conditionId = acym_getVar('int', 'conditionId');
@@ -61,7 +61,7 @@ trait Condition
 
     public function saveExitConditions(): void
     {
-        $this->_saveConditions();
+        $this->getSaveConditions();
 
         acym_enqueueMessage(acym_translation('ACYM_SUCCESSFULLY_SAVED'), 'success');
 
@@ -70,7 +70,7 @@ trait Condition
 
     public function saveConditions(): void
     {
-        $ids = $this->_saveConditions();
+        $ids = $this->getSaveConditions();
 
         acym_setVar('id', $ids['automationId']);
         acym_setVar('stepId', $ids['stepId']);

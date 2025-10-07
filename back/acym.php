@@ -45,7 +45,7 @@ if (version_compare(PHP_VERSION, '7.4.0', '<')) {
         acym_raiseError(404, acym_translation('ACYM_PAGE_NOT_FOUND').': '.$ctrl);
     }
 
-    $controller = new $controllerNamespace;
+    $controller = new $controllerNamespace();
     if (empty($controller)) {
         //We redirect to the dashboard...
         acym_redirect(acym_completeLink('dashboard'));

@@ -90,13 +90,13 @@ trait UserAutomationConditions
         $res = false;
 
         switch ($option['operator']) {
-            case '=' :
+            case '=':
                 $res = $numberUsers == $option['number'];
                 break;
-            case '>' :
+            case '>':
                 $res = $numberUsers > $option['number'];
                 break;
-            case '<' :
+            case '<':
                 $res = $numberUsers < $option['number'];
                 break;
         }
@@ -106,11 +106,11 @@ trait UserAutomationConditions
 
     public function onAcymProcessCondition_acy_group(&$query, $options, $num, &$conditionNotValid)
     {
-        $affectedRows = $this->_processAcyGroup($query, $options, $num);
+        $affectedRows = $this->processAcyGroup($query, $options, $num);
         if (empty($affectedRows)) $conditionNotValid++;
     }
 
-    private function _processAcyGroup(&$query, $options, $num)
+    private function processAcyGroup(&$query, $options, $num)
     {
         if (empty($options['group'])) {
             if (ACYM_CMS === 'joomla') {
@@ -155,11 +155,11 @@ trait UserAutomationConditions
 
     public function onAcymProcessCondition_acy_cmsfield(&$query, $options, $num, &$conditionNotValid)
     {
-        $affectedRows = $this->_processAcyCMSField($query, $options, $num);
+        $affectedRows = $this->processAcyCMSField($query, $options, $num);
         if (empty($affectedRows)) $conditionNotValid++;
     }
 
-    private function _processAcyCMSField(&$query, $options, $num)
+    private function processAcyCMSField(&$query, $options, $num)
     {
         if (empty($options['field'])) {
             return;
@@ -203,7 +203,7 @@ trait UserAutomationConditions
 
     public function onAcymDeclareSummary_conditions(&$automation)
     {
-        $this->_summaryGroup($automation);
+        $this->summaryGroup($automation);
 
         if (!empty($automation['acy_cmsfield'])) {
             $automation = acym_translationSprintf(
@@ -226,7 +226,7 @@ trait UserAutomationConditions
         }
     }
 
-    private function _summaryGroup(&$automation)
+    private function summaryGroup(&$automation)
     {
         if (empty($automation['acy_group'])) return;
 

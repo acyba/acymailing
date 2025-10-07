@@ -33,6 +33,7 @@ class plgAcymSendingmethodlist extends AcymPlugin
 
     /**
      * Save the new sending method list
+     *
      * @return void
      */
     public function onConfigurationAddSml(): void

@@ -2,8 +2,6 @@
 
 class SendinblueList extends SendinblueClass
 {
-    var $headers;
-
     public function getListExternalSendingMethod(&$listId, $mailId, $createIfNotExists = true)
     {
         $brevoLists = $this->config->get('list_sendinblue', '[]');

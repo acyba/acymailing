@@ -275,17 +275,17 @@ trait Listing
     private function prepareHoursMinutes(array &$data): void
     {
         $listHours = [];
-        for ($i = 0 ; $i < 24 ; $i++) {
+        for ($i = 0; $i < 24; $i++) {
             $value = $i < 10 ? '0'.$i : $i;
             $listHours[] = acym_selectOption($value, $value);
         }
         $listMinutes = [];
-        for ($i = 0 ; $i < 60 ; $i += 5) {
+        for ($i = 0; $i < 60; $i += 5) {
             $value = $i < 10 ? '0'.$i : $i;
             $listMinutes[] = acym_selectOption($value, $value);
         }
         $listAllMinutes = [];
-        for ($i = 0 ; $i < 60 ; $i++) {
+        for ($i = 0; $i < 60; $i++) {
             $value = $i < 10 ? '0'.$i : $i;
             $listAllMinutes[] = acym_selectOption($value, $value);
         }

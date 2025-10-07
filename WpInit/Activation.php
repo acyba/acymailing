@@ -25,13 +25,13 @@ class Activation
                     $site = get_object_vars($site);
                 }
                 switch_to_blog($site['blog_id']);
-                $this->_sampledata($queries);
+                $this->sampledata($queries);
             }
 
             // Switch back to network main site
             switch_to_blog($currentBlog);
         } else {
-            $this->_sampledata($queries);
+            $this->sampledata($queries);
         }
 
         if (file_exists(ACYM_FOLDER.'update.php')) {
@@ -39,7 +39,7 @@ class Activation
         }
     }
 
-    private function _sampledata(string $queries): void
+    private function sampledata(string $queries): void
     {
         global $wpdb;
         $prefix = acym_getPrefix();

@@ -9,8 +9,9 @@ use AcyMailing\Core\AcymClass;
 class AutomationClass extends AcymClass
 {
     const ACTIONS_TO_SKIP = ['acy_send_email'];
-    var $didAnAction = false;
-    var $report = [];
+
+    public bool $didAnAction = false;
+    public array $report = [];
 
     public function __construct()
     {
@@ -128,7 +129,7 @@ class AutomationClass extends AcymClass
                 $conditions = $conditionClass->getConditionsByStepId($step->id);
                 if (!empty($conditions)) {
                     foreach ($conditions as $condition) {
-                        if (!$this->_verifyCondition($condition->conditions, $newData)) continue;
+                        if (!$this->verifyCondition($condition->conditions, $newData)) continue;
 
                         $actions = $actionClass->getActionsByStepId($step->id);
                         if (empty($actions)) continue;
@@ -230,7 +231,7 @@ class AutomationClass extends AcymClass
         return $this->didAnAction;
     }
 
-    private function _verifyCondition($conditions, $data = [])
+    private function verifyCondition($conditions, $data = [])
     {
         if (empty($conditions)) return true;
         $userTriggeringAction = empty($data['userId']) ? 0 : $data['userId'];

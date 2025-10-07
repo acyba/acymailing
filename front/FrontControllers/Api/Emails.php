@@ -48,6 +48,7 @@ trait Emails
 
     /**
      * Email a single user.
+     *
      * @throws \Exception
      */
     public function sendEmailToSingleUser(): void

@@ -174,7 +174,6 @@ class plgAcymSendgrid extends AcymPlugin
         }
 
         if (!isset($response['remain']) || !isset($response['total'])) {
-
             $html = acym_translationSprintf(
                 'ACYM_SENDING_METHOD_ERROR_WHILE_ACTION',
                 self::SENDING_METHOD_NAME,

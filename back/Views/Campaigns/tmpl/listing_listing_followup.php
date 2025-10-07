@@ -59,7 +59,7 @@
 				</div>
 
 				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_ACTIONS') ?>
+                    <?php echo acym_translation('ACYM_ACTIONS'); ?>
 				</div>
 
 				<div class="cell show-for-large large-1 acym__listing__header__title text-center">
@@ -197,8 +197,13 @@
 							  data-acy-elementid="<?php echo acym_escape($followup->id); ?>"
 							  title="<?php echo acym_translation('ACYM_DUPLICATE'); ?>"></i>
 						</a>
-						<a href="<?php echo acym_completeLink('stats&mail_ids[]='.implode('&mail_ids[]=', $followup->mail_ids));
-                        ?>"> <i class="acymicon-rectangle-bar-chart" title="<?php echo acym_translation('ACYM_STATISTICS'); ?>"></i>
+                        <?php
+                        $mailIds = (isset($followup->mail_ids) && is_array($followup->mail_ids))
+                            ? $followup->mail_ids
+                            : (isset($followup->mail_ids) ? [$followup->mail_ids]
+                                : []); ?>
+						<a href="<?php echo acym_completeLink('stats&mail_ids[]='.implode('&mail_ids[]=', $mailIds)); ?>">
+							<i class="acymicon-rectangle-bar-chart" title="<?php echo acym_translation('ACYM_STATISTICS'); ?>"></i>
 						</a>
 						<i class="cursor-pointer acymicon-delete fastActions deleteFastAction"
 						   data-action="deleteFollowup"

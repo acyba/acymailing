@@ -17,7 +17,6 @@
             $this->addSegmentStep($data['displaySegmentTab']);
             $workflow = $data['workflowHelper'];
             echo $workflow->display($this->steps, $this->step, true, false, '', 'campaignId');
-
             ?>
 			<div class="acym__campaigns__recipients__modal">
                 <?php if (!empty($data['currentCampaign']->sent) && empty($data['currentCampaign']->active)) { ?>

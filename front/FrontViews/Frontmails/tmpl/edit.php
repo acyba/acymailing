@@ -84,9 +84,9 @@
 					</div>
 					<div class="cell medium-auto">
 						<label for="acym__mail__edit__custom__header"><?php echo acym_translation('ACYM_CUSTOM_HEADERS'); ?></label>
-						<textarea id="acym__mail__edit__custom__header" name="editor_headers" cols="30" rows="15" type="text"><?php echo acym_escape(
-                                $data['mail']->headers
-                            ); ?></textarea>
+						<textarea id="acym__mail__edit__custom__header" name="editor_headers" cols="30" rows="15" type="text">
+                            <?php echo acym_escape($data['mail']->headers); ?>
+                        </textarea>
 					</div>
 				</div>
 			</div>

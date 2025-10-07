@@ -25,7 +25,6 @@ trait OverrideInsertion
             }
 		</script>
         <?php
-
         $text = '<div class="acym__popup__listing text-center grid-x">';
         $text .= '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_ORIGINAL_EMAIL_DATA').'</h1>';
 

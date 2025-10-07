@@ -41,7 +41,7 @@ if (version_compare(PHP_VERSION, '7.4.0', '<')) {
         return;
     }
 
-    $controller = new $controllerNamespace;
+    $controller = new $controllerNamespace();
     if (empty($controller)) {
         //We redirect to the homepage...
         acym_redirect(acym_rootURI());

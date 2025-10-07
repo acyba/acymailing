@@ -46,10 +46,10 @@ trait Edition
         $formClass = new FormClass();
         $id = acym_getVar('int', 'id', 0);
         $type = acym_getVar('string', 'type', ACYM_CMS === 'wordpress' ? FormClass::SUB_FORM_TYPE_SHORTCODE : FormClass::SUB_FORM_TYPE_POPUP);
-        if (!acym_level(ACYM_ENTERPRISE) && in_array(
-                $type,
-                [FormClass::SUB_FORM_TYPE_POPUP, FormClass::SUB_FORM_TYPE_HEADER, FormClass::SUB_FORM_TYPE_FOOTER]
-            )) {
+        if (
+            !acym_level(ACYM_ENTERPRISE)
+            && in_array($type, [FormClass::SUB_FORM_TYPE_POPUP, FormClass::SUB_FORM_TYPE_HEADER, FormClass::SUB_FORM_TYPE_FOOTER])
+        ) {
             acym_enqueueMessage(acym_translation('ACYM_NOT_ALLOWED_CREATE_TYPE_FORM'), 'info');
             $this->listing();
 

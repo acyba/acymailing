@@ -254,7 +254,7 @@ $nbLines = count($this->lines);
         }
 
         // For each imported line, display it so that the user can preview with the right encoding...
-        for ($i = 1 - $noHeader ; $i < 11 - $noHeader && $i < $nbLines ; $i++) {
+        for ($i = 1 - $noHeader; $i < 11 - $noHeader && $i < $nbLines; $i++) {
             $values = $this->lines[$i];
 
             echo '<tr>';

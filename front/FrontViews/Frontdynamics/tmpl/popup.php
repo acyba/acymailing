@@ -1,1 +1,3 @@
-<?php include acym_getView('dynamics', 'popup', true);
+<?php
+
+include acym_getView('dynamics', 'popup', true);

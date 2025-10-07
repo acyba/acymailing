@@ -44,7 +44,8 @@ trait IcagendaAutomationConditions
         $conditions['user']['icagenda']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 

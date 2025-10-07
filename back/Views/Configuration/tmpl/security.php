@@ -29,7 +29,7 @@
 
     <?php if (!empty($data['labelDropdownCaptcha']) && isset($data['level']) && isset($data['captchaOptions'])) { ?>
 		<div class="margin-bottom-2 cell margin-y acym__configuration__security__captcha">
-			<div class="acym__title acym__title__secondary"><?php echo $data['labelDropdownCaptcha'] ?></div>
+			<div class="acym__title acym__title__secondary"><?php echo $data['labelDropdownCaptcha']; ?></div>
 			<div class="grid-x grid-margin-x margin-y">
 				<div class="cell medium-6 grid-x">
 					<label class="cell large-3" for="security_key">
@@ -187,7 +187,7 @@
                     $score -= 10;
                     $tooltip[] = acym_translation('ACYM_EMAIL_VERIFICATION_SCORE_DESC_DOMAIN_VERIFICATION');
                 }
-                if ($this->config->get('require_confirmation') == 0) {
+                if (empty($this->config->get('require_confirmation', 1))) {
                     $score -= 30;
                     $tooltip[] = acym_translation('ACYM_EMAIL_VERIFICATION_SCORE_DESC_DOUBLE_OPT_IN');
                 }

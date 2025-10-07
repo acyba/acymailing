@@ -22,7 +22,9 @@ class plgAcymSubscriber extends AcymPlugin
     use SubscriberFollowup;
     use SubscriberInsertion;
 
-    private string $followTriggerName = 'user_creation';
+    const FOLLOWUP_USER_CREATION = 'user_creation';
+    const FOLLOWUP_USER_CONFIRMATION = 'user_confirmation';
+
     private array $triggerMail = ['user_click', 'user_open'];
     private array $triggers = [
         'user_creation' => 'ACYM_ON_USER_CREATION',

@@ -31,7 +31,6 @@ class plgAcymJdownloads extends AcymPlugin
                         $this->installed = false;
                     }
                 } catch (Exception $exception) {
-
                 }
             }
         }

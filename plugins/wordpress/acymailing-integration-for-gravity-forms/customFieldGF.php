@@ -8,13 +8,13 @@ if (!defined('ABSPATH')) {
 
 class GF_Field_Acy extends GF_Field
 {
-
     public $type = 'acy';
     public $failed_validation;
     public $validation_message;
 
     /**
      * This function allows to customize the label in the editor of the field that we insert
+     *
      * @return mixed
      */
     public function get_form_editor_field_title()
@@ -24,6 +24,7 @@ class GF_Field_Acy extends GF_Field
 
     /**
      * This function allows to place the field in the editor, here for example the field will be placed in the advanced fields
+     *
      * @return array
      */
     public function get_form_editor_button()
@@ -36,6 +37,7 @@ class GF_Field_Acy extends GF_Field
 
     /**
      * Here we can list all the parameters we want for our field, when you click on it in the editor
+     *
      * @return array
      */
     public function get_form_editor_field_settings()

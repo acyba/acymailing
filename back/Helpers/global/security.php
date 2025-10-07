@@ -1,20 +1,115 @@
 <?php
 
-function acym_escape($text, $addSlashes = true)
+/**
+ * To secure text echoed in HTML attributes or HTML content
+ */
+function acym_escape($text, bool $addSlashes = true): string
 {
     if (is_array($text) || is_object($text)) {
+        $text = json_encode($text);
+
         if ($addSlashes) {
-            $text = str_replace('\\', '\\\\', json_encode($text));
-        } else {
-            $text = json_encode($text);
+            $text = str_replace('\\', '\\\\', $text);
         }
     }
 
-    if (empty($text)) {
+    if (empty($text) && !is_numeric($text)) {
+        return '';
+    }
+
+    if (!preg_match('#[&<>"\']#', $text)) {
         return $text;
     }
 
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * To secure URLs echoed in HTML attributes
+ */
+function acym_escapeUrl(string $url): string
+{
+    if (empty($url)) {
+        return '';
+    }
+
+    $url = str_replace(' ', '%20', ltrim($url));
+    $url = preg_replace('|[^a-z0-9-~+_.?#=!&;,/:%@$\|*\'()\[\]\\x80-\\xff]|i', '', $url);
+
+    if (empty($url)) {
+        return '';
+    }
+
+    if (0 !== stripos($url, 'mailto:')) {
+        $strip = ['%0d', '%0a', '%0D', '%0A'];
+        $count = 1;
+        while ($count) {
+            $url = str_replace($strip, '', $url, $count);
+        }
+    }
+
+    $url = str_replace(';//', '://', $url);
+    if (strpos($url, ':') === false && !in_array($url[0], ['/', '#', '?'], true) && !preg_match('/^[a-z0-9-]+?\.php/i', $url)) {
+        $url = 'https://'.$url;
+    }
+
+    $url = str_replace('&amp;', '&#038;', $url);
+    $url = str_replace("'", '&#039;', $url);
+
+    if (strpos($url, '[') !== false || strpos($url, ']') !== false) {
+        $to_unset = [];
+
+        if (strpos($url, '//') === 0) {
+            $to_unset[] = 'scheme';
+            $url = 'placeholder:'.$url;
+        } elseif (strpos($url, '/') === 0) {
+            $to_unset[] = 'scheme';
+            $to_unset[] = 'host';
+            $url = 'placeholder://placeholder'.$url;
+        }
+
+        $parsed = parse_url($url);
+
+        if (!empty($parsed)) {
+            foreach ($to_unset as $key) {
+                unset($parsed[$key]);
+            }
+        }
+
+        $front = '';
+
+        if (isset($parsed['scheme'])) {
+            $front .= $parsed['scheme'].'://';
+        } elseif ('/' === $url[0]) {
+            $front .= '//';
+        }
+
+        if (isset($parsed['user'])) {
+            $front .= $parsed['user'];
+        }
+
+        if (isset($parsed['pass'])) {
+            $front .= ':'.$parsed['pass'];
+        }
+
+        if (isset($parsed['user']) || isset($parsed['pass'])) {
+            $front .= '@';
+        }
+
+        if (isset($parsed['host'])) {
+            $front .= $parsed['host'];
+        }
+
+        if (isset($parsed['port'])) {
+            $front .= ':'.$parsed['port'];
+        }
+
+        $end_dirty = str_replace($front, '', $url);
+        $end_clean = str_replace(['[', ']'], ['%5B', '%5D'], $end_dirty);
+        $url = str_replace($end_dirty, $end_clean, $url);
+    }
+
+    return $url;
 }
 
 function acym_arrayToInteger(&$array)
@@ -62,7 +157,7 @@ function acym_generateKey($length)
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $randstring = '';
     $max = strlen($characters) - 1;
-    for ($i = 0 ; $i < $length ; $i++) {
+    for ($i = 0; $i < $length; $i++) {
         $randstring .= $characters[mt_rand(0, $max)];
     }
 

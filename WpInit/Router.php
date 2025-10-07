@@ -6,8 +6,6 @@ use AcyMailing\Classes\PluginClass;
 
 class Router
 {
-    var $activation;
-
     public function __construct()
     {
         // Back router

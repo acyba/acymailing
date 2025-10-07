@@ -4,17 +4,21 @@ if (typeof submitAcymForm !== 'function') {
     blockPasteEvent();
 
     function submitAcymForm(newtask, newformName, submitFunction) {
-        if (typeof acysubmitting !== 'undefined' && acysubmitting !== undefined && acysubmitting === newformName) return;
+        if (typeof acysubmitting !== 'undefined' && acysubmitting !== undefined && acysubmitting === newformName) {
+            return;
+        }
 
         acytask = newtask;
         acyformName = newformName;
         submitFunction = submitFunction === undefined ? 'acymSubmitSubForm' : submitFunction;
 
-        let recaptchaid = 'acym-captcha';
-        if (newformName) recaptchaid = newformName + '-captcha';
+        const recaptchaid = newformName ? newformName + '-captcha' : 'acym-captcha';
+        const initRecaptcha = document.querySelector('#' + recaptchaid + '[class="acyg-recaptcha"][data-size="invisible"]');
 
-        let initRecaptcha = document.querySelector('#' + recaptchaid + '[class="acyg-recaptcha"][data-size="invisible"]');
-        if (!initRecaptcha || typeof grecaptcha != 'object') return window[submitFunction]();
+        if (!initRecaptcha || typeof grecaptcha !== 'object') {
+            return window[submitFunction]();
+        }
+
         if (initRecaptcha.getAttribute('data-captchaname') === 'acym_ireCaptcha') {
             initRecaptcha.className = 'g-recaptcha';
             let invisibleRecaptcha = document.querySelector('#' + recaptchaid + '[class="g-recaptcha"][data-size="invisible"]');
@@ -376,9 +380,7 @@ if (typeof submitAcymForm !== 'function') {
         }
 
         // If no ajax, submit the form
-        if ('shortcode'
-            == formType
-            || !varform.elements['ajax']
+        if (!varform.elements['ajax']
             || !varform.elements['ajax'].value
             || varform.elements['ajax'].value
             === '0'
@@ -393,8 +395,8 @@ if (typeof submitAcymForm !== 'function') {
             return false;
         }
 
-        let form = document.getElementById(acyformName);
-        let formData = new FormData(form);
+        const form = document.getElementById(acyformName);
+        const formData = new FormData(form);
 
         // Change the acyba form's opacity to show we are doing stuff
         form.className += ' acym_module_loading';

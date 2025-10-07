@@ -39,7 +39,6 @@ if (!empty($data['translation_languages'])) {
 
 <div class="cell large-12 grid-x margin-top-1">
     <?php
-
     $disableActiveSwitch = in_array($data['field']->id, [2, $data['languageFieldId']]);
 
     echo acym_switch(

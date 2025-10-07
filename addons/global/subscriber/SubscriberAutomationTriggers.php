@@ -1,5 +1,6 @@
 <?php
 
+use AcyMailing\Classes\FollowupClass;
 use AcyMailing\Classes\ScenarioClass;
 use AcyMailing\Helpers\ExportHelper;
 use AcyMailing\Classes\UserClass;
@@ -150,5 +151,8 @@ trait SubscriberAutomationTriggers
 
         $scenarioHelper = new ScenarioHelper();
         $scenarioHelper->trigger('user_confirmation', ['userId' => $user->id]);
+
+        $followupClass = new FollowupClass();
+        $followupClass->addFollowupEmailsQueue(self::FOLLOWUP_USER_CONFIRMATION, $user->id);
     }
 }

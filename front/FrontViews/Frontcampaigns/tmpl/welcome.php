@@ -1,1 +1,3 @@
-<?php include acym_getView('campaigns', 'welcome', true);
+<?php
+
+include acym_getView('campaigns', 'welcome', true);

@@ -198,7 +198,7 @@ const acym_editorWysidGif = {
             content += '<div style="text-align: center" data-mce-style="text-align: center">';
             content += '<img alt="" class="acym__wysid__media__inserted acym__wysid__media__inserted--focus acym__wysid__media__gif" src="'
                        + $selectedImg.attr('data-full-res-src')
-                       + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;"/>';
+                       + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto; vertical-align: middle;"/>';
             content += '</div>';
             content += '</div>';
             content += '</td>';

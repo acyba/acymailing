@@ -198,7 +198,6 @@ trait AcymAcfInsertion
             });
 		</script>
         <?php
-
         $tabHelper->endTab();
         $identifier = 'auto'.$this->name;
         $tabHelper->startTab(acym_translation('ACYM_POST_TYPE'), !empty($this->defaultValues->defaultPluginTab) && $identifier === $this->defaultValues->defaultPluginTab);
@@ -260,7 +259,6 @@ trait AcymAcfInsertion
             });
 		</script>
         <?php
-
         $tabHelper->endTab();
         $tabHelper->display('plugin');
     }

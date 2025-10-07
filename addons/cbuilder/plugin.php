@@ -12,7 +12,7 @@ class plgAcymCbuilder extends AcymPlugin
     use CbuilderAutomationFilters;
     use CbuilderInsertion;
 
-    var $sendervalues = [];
+    private array $sendervalues = [];
 
     public function __construct()
     {

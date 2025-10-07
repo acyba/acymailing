@@ -612,22 +612,18 @@ trait VirtuemartInsertion
         // Add the tax:
         if ($this->getParam('vat', '1') === '1') {
             if (!empty($element->prices['basePriceWithTax'])) $price1 = $element->prices['basePriceWithTax'];
-            if (!empty($element->prices['salesPrice']) && number_format($price1, 2, ',', ' ') != number_format(
-                    $element->prices['salesPrice'],
-                    2,
-                    ',',
-                    ' '
-                )) {
+            if (
+                !empty($element->prices['salesPrice'])
+                && number_format($price1, 2, ',', ' ') != number_format($element->prices['salesPrice'], 2, ',', ' ')
+            ) {
                 $price2 = $element->prices['salesPrice'];
             }
         } else {
             if (!empty($element->prices['basePrice'])) $price1 = $element->prices['basePrice'];
-            if (!empty($element->prices['discountedPriceWithoutTax']) && number_format($price1, 2, ',', ' ') != number_format(
-                    $element->prices['discountedPriceWithoutTax'],
-                    2,
-                    ',',
-                    ' '
-                )) {
+            if (
+                !empty($element->prices['discountedPriceWithoutTax'])
+                && number_format($price1, 2, ',', ' ') != number_format($element->prices['discountedPriceWithoutTax'], 2, ',', ' ')
+            ) {
                 $price2 = $element->prices['discountedPriceWithoutTax'];
             }
         }
@@ -643,10 +639,10 @@ trait VirtuemartInsertion
 
     public function replaceUserInformation(&$email, &$user, $send = true)
     {
-        $this->_replaceCoupons($email, $user, $send);
+        $this->replaceCoupons($email, $user, $send);
     }
 
-    private function _replaceCoupons(&$email, &$user, $send = true)
+    private function replaceCoupons(&$email, &$user, $send = true)
     {
         $tags = $this->pluginHelper->extractTags($email, $this->name.'_coupon');
         if (empty($tags)) return;
@@ -667,10 +663,15 @@ trait VirtuemartInsertion
 
     private function generateCoupon($tag, $user)
     {
-        if (empty($tag->code) || empty($tag->amount) || empty($tag->vendor) || empty($tag->type) || !in_array($tag->type, ['total', 'percent']) || empty($tag->ctype) || !in_array(
-                $tag->ctype,
-                ['permanent', 'gift']
-            )) {
+        if (
+            empty($tag->code)
+            || empty($tag->amount)
+            || empty($tag->vendor)
+            || empty($tag->type)
+            || !in_array($tag->type, ['total', 'percent'])
+            || empty($tag->ctype)
+            || !in_array($tag->ctype, ['permanent', 'gift'])
+        ) {
             return '';
         }
 

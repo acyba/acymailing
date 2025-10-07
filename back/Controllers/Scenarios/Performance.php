@@ -85,7 +85,7 @@ trait Performance
 
         foreach ($steps as $step) {
             switch ($step->type) {
-                case  ScenarioClass::TYPE_CONDITION:
+                case ScenarioClass::TYPE_CONDITION:
                     $name = ucfirst($conditionNames[$scenarioHelper->getConditionValue($step)]);
                     break;
                 case ScenarioClass::TYPE_ACTION:

@@ -1,1 +1,3 @@
-<?php include acym_getView('users', 'ajaxencoding', true);
+<?php
+
+include acym_getView('users', 'ajaxencoding', true);

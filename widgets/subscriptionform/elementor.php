@@ -6,19 +6,18 @@ use AcyMailing\Core\AcymParameter;
 
 class acySubscriptionFormWidget extends \Elementor\Widget_Base
 {
-    var $displayMode;
-    var $lists;
-    var $listsPlacement;
-    var $fields = [];
-    var $displayTextMode;
-    var $subscriberInfo;
-    var $posts;
-    var $replaceMessage;
-    var $unsubButton;
-    var $alignment;
-    var $includeJavascript;
-    var $settings;
-    var $borderTypes;
+    private array $displayMode;
+    private array $lists;
+    private array $listsPlacement;
+    private array $fields = [];
+    private array $displayTextMode;
+    private array $subscriberInfo;
+    private array $posts;
+    private array $replaceMessage;
+    private array $unsubButton;
+    private array $alignment;
+    private array $includeJavascript;
+    private array $borderTypes;
 
     public function initParams()
     {

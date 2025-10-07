@@ -632,10 +632,11 @@ class BounceHelper extends AcymObject
 
         try {
             if (acym_writeFile($pathToUpload.$filename.'.'.$extension, $data)) {
-                if (strtolower($attachment->disposition) !== 'attachment' && !empty($attachment->id) && in_array(
-                        strtolower($attachment->subtype),
-                        acym_getImageFileExtensions()
-                    )) {
+                if (
+                    strtolower($attachment->disposition) !== 'attachment'
+                    && !empty($attachment->id)
+                    && in_array(strtolower($attachment->subtype), acym_getImageFileExtensions())
+                ) {
                     $this->inlineImages['cid:'.trim($attachment->id, '<>')] = acym_rootURI().$uploadFolder.'/'.$filename.'.'.$extension;
                 } else {
                     $attachment = new \stdClass();
@@ -769,7 +770,7 @@ class BounceHelper extends AcymObject
                 //Still no result? We try to find others
                 if (empty($results[0])) {
                     preg_match_all($this->detectEmail2, $this->_message->analyseText, $results2);
-                    for ($i = 0 ; $i < count($results2[0]) ; $i++) {
+                    for ($i = 0; $i < count($results2[0]); $i++) {
                         $results[0][] = $results2[3][$i].'@'.$results2[1][$i];
                     }
                 }
@@ -982,10 +983,11 @@ class BounceHelper extends AcymObject
         }
 
         //To display nice error messages...
-        if (in_array('delete_user_subscription', $oneRule->action_user) || in_array('unsubscribe_user', $oneRule->action_user) || in_array(
-                'subscribe_user',
-                $oneRule->action_user
-            )) {
+        if (
+            in_array('delete_user_subscription', $oneRule->action_user)
+            || in_array('unsubscribe_user', $oneRule->action_user)
+            || in_array('subscribe_user', $oneRule->action_user)
+        ) {
             if (empty($this->_message->subemail)) {
                 $currentUser = $this->userClass->getOneById($this->_message->userid);
                 if (!empty($currentUser->email)) {
@@ -1027,7 +1029,6 @@ class BounceHelper extends AcymObject
         //handle this rule in the stats
         $mail = $this->mailClass->getOneById($this->_message->mailid);
         if ($oneRule->increment_stats && !empty($this->_message->mailid) && !empty($mail)) {
-
             //Init the stats...
             if (empty($this->bounceMessages[$this->_message->mailid])) {
                 $this->bounceMessages[$this->_message->mailid] = [];
@@ -1170,9 +1171,10 @@ class BounceHelper extends AcymObject
 
         //Fix the rule if needed... when the forwarded user is the same as the bounce e-mail address...
         if (!empty($oneRule->action_message['forward_to'])) {
-            if (strtolower($oneRule->action_message['forward_to']) == strtolower($this->config->get('bounce_username')) || strtolower(
-                    $oneRule->action_message['forward_to']
-                ) == strtolower($this->config->get('bounce_email'))) {
+            if (
+                strtolower($oneRule->action_message['forward_to']) === strtolower($this->config->get('bounce_username'))
+                || strtolower($oneRule->action_message['forward_to']) === strtolower($this->config->get('bounce_email'))
+            ) {
                 //We don't forward it
                 $oneRule->action_message['forward_to'] = '';
                 //We don't delete it
@@ -1342,7 +1344,6 @@ class BounceHelper extends AcymObject
 
         // For each encoded-word...
         while (preg_match('/(=\?([^?]+)\?(q|b)\?([^?]*)\?=)/i', $input, $matches)) {
-
             $encoded = $matches[1];
             $charset = $matches[2];
             $encoding = $matches[3];
@@ -1442,7 +1443,7 @@ class BounceHelper extends AcymObject
         $newPath = '';
         $path_elements = explode('.', $path);
         $limit = count($path_elements);
-        for ($i = 0 ; $i < $limit ; $i++) {
+        for ($i = 0; $i < $limit; $i++) {
             //last element
             if ($i == $limit - 1) {
                 // new Part-Number

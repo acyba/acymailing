@@ -16,7 +16,7 @@ trait UserInsertion
     public function textPopup()
     {
         ?>
-		<script type="text/javascript">
+        <script type="text/javascript">
             let selectedUserDText;
 
             function changeUserTag(tagname) {
@@ -40,10 +40,9 @@ trait UserInsertion
 
                 setTag(dText, jQuery('#' + tagname + 'option'));
             }
-		</script>
+        </script>
 
         <?php
-
         $isAutomation = acym_getVar('string', 'automation');
         echo '<div class="acym__popup__listing text-center grid-x">';
 
@@ -187,9 +186,10 @@ trait UserInsertion
                     $fieldValues = trim(implode(', ', $userFieldVals), ', ');
                     if (empty($fieldValues)) {
                         $defaultValue = acym_loadObject('SELECT default_value, type FROM #__fields WHERE id = '.intval($mytag->id));
-                        if (($defaultValue->type == 'user' && !empty($defaultValue->default_value)) || ($defaultValue->type != 'user' && strlen(
-                                    $defaultValue->default_value
-                                ) > 0)) {
+                        if (
+                            ($defaultValue->type === 'user' && !empty($defaultValue->default_value))
+                            || ($defaultValue->type !== 'user' && strlen($defaultValue->default_value) > 0)
+                        ) {
                             $userFieldVals = [$defaultValue->default_value];
                         }
                     }

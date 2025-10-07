@@ -25,10 +25,19 @@ trait Import
         }
 
         global $acymCmsUserVars;
+
+        $nbUsersCMS = acym_loadResult('SELECT count('.$acymCmsUserVars->id.') FROM '.$acymCmsUserVars->table);
+        if ('wordpress' === ACYM_CMS && is_multisite()) {
+            $nbUsersCMS = acym_loadResult(
+                'SELECT count('.$acymCmsUserVars->id.')  
+                FROM '.$acymCmsUserVars->table.' AS user JOIN #__usermeta  AS `meta` ON `user`.'.$acymCmsUserVars->id.'=`meta`.`user_id`  
+                WHERE `meta`.`meta_key`=\'#__capabilities\''
+            );
+        }
         $data = [
             'tab' => new TabHelper(),
             'nbUsersAcymailing' => $userClass->getCountTotalUsers(),
-            'nbUsersCMS' => acym_loadResult('SELECT count('.$acymCmsUserVars->id.') FROM '.$acymCmsUserVars->table),
+            'nbUsersCMS' => $nbUsersCMS,
             'tables' => $arrayTables,
             'entitySelect' => new EntitySelectHelper(),
             'importHelper' => new ImportHelper(),

@@ -30,8 +30,12 @@ class ScenarioHelper extends AcymObject
 
     public function trigger(string $trigger, array $options): void
     {
-        if (!acym_level(ACYM_ENTERPRISE) || empty($trigger)) {
-            acym_logError('ScenarioHelper::trigger - Missing trigger or not allowed, trigger: '.$trigger);
+        if (!acym_level(ACYM_ENTERPRISE)) {
+            return;
+        }
+
+        if (empty($trigger)) {
+            acym_logError('ScenarioHelper::trigger - Missing trigger for options: '.json_encode($options));
 
             return;
         }

@@ -1,5 +1,5 @@
 {
-    "max_version": "10.4.0",
+    "max_version": "10.5.0",
     "splash_content": [
         {
             "menu_title": "General",
@@ -7,12 +7,12 @@
             "title": "SEE THE GENERAL CHANGES",
             "articles": [
                 {
-                    "title": "Improved subscription forms",
-                    "desc": "The display of fields labels on header and footer subscription forms has been improved. When displayed outside their field, they are now more widely spaced."
+                    "title": "Follow-up campaigns: new trigger",
+                    "desc": "The follow-up campaigns can now be triggered when a user confirms their email address."
                 },
                 {
-                    "title": "Better temporary images storage",
-                    "desc": "The temporary images are now stored in the upload(wordpress)/media(joomla) directory as they should be."
+                    "title": "Improved security and reliability",
+                    "desc": "We improved security and reliability of our code by adding new automated tests."
                 }
             ]
         },
@@ -22,20 +22,32 @@
             "title": "WHAT CHANGED FOR JOOMLA",
             "articles": [
                 {
-                    "title": "EventBooking integration",
-                    "desc": "We added a security to make sure the EventBooking time isn't doubled in the date format."
+                    "title": "RSEventsPro: featured events first",
+                    "desc": "We added a setting in the email editor with RSEventsPro to display featured events first in the inserted events list."
                 },
                 {
-                    "title": "EasyBlog images",
-                    "desc": "The EasyBlog images stored on users are now correctly displayed in the email editor."
+                    "title": "Zoo: new field types and selection",
+                    "desc": "The Zoo integration add-on now handles more field types and lets you select which fields to insert in your emails."
                 },
                 {
-                    "title": "Front-end lists",
-                    "desc": "The lists could no longer be saved when edited from the front-end menu."
+                    "title": "Community Builder: new exclusion conditions",
+                    "desc": "The way users are filtered in the Community Builder Subscription integration has been improved to also include AcyMailing users with no subscription when you select an exclusion condition."
                 },
                 {
-                    "title": "RSEventsPro category filter",
-                    "desc": "A category filter of RSEventsPro integration in the editor is now correctly applied."
+                    "title": "RSEventsPro fix menu item",
+                    "desc": "We fixed the menu item ID option for RSEventsPro."
+                },
+                {
+                    "title": "Compatibility with SEBLOD",
+                    "desc": "We fixed a compatibility issue with SEBLOD latest version."
+                },
+                {
+                    "title": "Follow-up campaigns: fix add-on activation",
+                    "desc": "We fixed an error that blocked the display of the follow-up campaigns listing when you deactivate an add-on used in one of the follow-up campaigns."
+                },
+                {
+                    "title": "Automation: fix blank page",
+                    "desc": "We fixed an error that could occur when trying to create an automation that caused a blank page to be shown."
                 }
             ]
         },
@@ -45,16 +57,20 @@
             "title": "WHAT CHANGED FOR WORDPRESS",
             "articles": [
                 {
-                    "title": "Better integration plugins",
-                    "desc": "All the integration plugins have been updated to better follow WordPress guidelines."
+                    "title": "WordPress standards",
+                    "desc": "Default templates are now stored differently to better match WordPress standards."
                 },
                 {
-                    "title": "Multisite better compatibility",
-                    "desc": "The database tables and default values are now correctly installed when a new sub-site is created on a WordPress multisite network."
+                    "title": "Auto-update fix",
+                    "desc": "In some cases the auto-update of AcyMailing could install the free version instead of the current edition. The update process has been reworked to avoid this."
                 },
                 {
-                    "title": "Fixed EventOn integration",
-                    "desc": "The installation of the EventOn integration is fixed and does not crash anymore."
+                    "title": "AcyMailing header fix",
+                    "desc": "We fixed an issue that could occur on some new WordPress installations where the AcyMailing header caused a fatal error in the plugin."
+                },
+                {
+                    "title": "Contact Form 7 fix",
+                    "desc": "Fixed an issue with Contact Form 7 integration, preventing the subscriber creation"
                 }
             ]
         },
@@ -64,20 +80,20 @@
             "title": "THE FIXES INCLUDED IN THIS VERSION",
             "articles": [
                 {
-                    "title": "Subscription form confirmation message",
-                    "desc": "The confirmation message when submitting a subscription form could be displayed twice, this has been fixed."
+                    "title": "Subscription form: fix double display",
+                    "desc": "The subscription form in popup mode could be shown twice in some cases, this has been fixed."
                 },
                 {
-                    "title": "Truncated content insertion",
-                    "desc": "The lists and tables in inserted content are not removed anymore when the content is truncated after X characters."
+                    "title": "Security: fix base64 image loading",
+                    "desc": "We added a security when loading base64 encoded images in the editor."
                 },
                 {
-                    "title": "Deleted lists on forms",
-                    "desc": "We have corrected the error that was displayed in a form when a list that has been deleted was still selected in the form settings."
+                    "title": "Email: fix email without email address",
+                    "desc": "We have fixed the error that could occur when sending a campaign to users without an email address."
                 },
                 {
-                    "title": "File custom field in notifications",
-                    "desc": "The custom field type File is now correctly displayed in the notification emails."
+                    "title": "Editor: fix video loading",
+                    "desc": "We fixed an issue when loading videos in the editor video block."
                 }
             ]
         }

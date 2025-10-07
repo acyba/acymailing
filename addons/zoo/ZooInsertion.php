@@ -4,8 +4,24 @@ use AcyMailing\Helpers\TabHelper;
 
 trait ZooInsertion
 {
+    private array $zooTypes = [];
     private $contentTypes = [];
     private $countryNames = [];
+    private array $handledFieldTypes = [
+        'text',
+        'textpro',
+        'textarea',
+        'textareapro',
+        'date',
+        'datepro',
+        'image',
+        'imagepro',
+        'select',
+        'rating',
+        'country',
+        'link',
+        'linkpro',
+    ];
 
     public function getStandardStructure(&$customView)
     {
@@ -46,6 +62,8 @@ trait ZooInsertion
         foreach ($element as $key => $value) {
             $this->elementOptions[$key] = [$key];
         }
+
+        $this->initTypes();
     }
 
     protected function getFilteringZone($categoryFilter = true): string
@@ -58,10 +76,8 @@ trait ZooInsertion
                         <div class="cell medium-shrink">';
 
         $filterType = acym_getVar('string', 'plugin_zootype', '');
-        $allTypes = acym_loadResultArray('SELECT DISTINCT type FROM #__zoo_item');
-        sort($allTypes);
         $zooTypes = [0 => acym_translation('ACYM_ANY')];
-        foreach ($allTypes as $oneType) {
+        foreach ($this->zooTypes as $oneType => $typeFields) {
             $zooTypes[$oneType] = ucfirst($oneType);
         }
 
@@ -81,6 +97,8 @@ trait ZooInsertion
         $this->defaultValues = $defaultValues;
 
         acym_loadLanguageFile('com_zoo', JPATH_ADMINISTRATOR);
+
+        $this->initTypes();
         $this->categories = acym_loadObjectList(
             'SELECT `id`, `parent` AS `parent_id`, `name` AS `title` 
             FROM `#__zoo_category` 
@@ -98,6 +116,12 @@ trait ZooInsertion
                 'type' => 'checkbox',
                 'name' => 'display',
                 'options' => $this->displayOptions,
+            ],
+            [
+                'title' => 'ACYM_SHOW_FIELD_LABELS',
+                'type' => 'boolean',
+                'name' => 'showlabels',
+                'default' => true,
             ],
             [
                 'title' => 'ACYM_CLICKABLE_TITLE',
@@ -344,7 +368,6 @@ trait ZooInsertion
             $title = $varFields['{title}'];
         }
 
-        $varFields['{picthtml}'] = '';
         $teaserImagePath = '';
         $teaserImageKey = $this->getKeyOfProperty($element->type, 'Teaser Image');
         if (!empty($teaserImageKey) && !empty($element->elements[$teaserImageKey]['file'])) {
@@ -357,24 +380,30 @@ trait ZooInsertion
             $fullImagePath = acym_rootURI().$element->elements[$imageKey]['file'];
         }
 
-        if (in_array('teaser_image', $tag->display)) {
-            if (!empty($teaserImagePath)) {
-                $imagePath = $teaserImagePath;
-            } elseif (!empty($fullImagePath)) {
-                $imagePath = $fullImagePath;
-            }
-        } elseif (in_array('image', $tag->display)) {
-            if (!empty($fullImagePath)) {
-                $imagePath = $fullImagePath;
-            } elseif (!empty($teaserImagePath)) {
-                $imagePath = $teaserImagePath;
-            }
+        $varFields['{teaser_image}'] = '';
+        if (!empty($teaserImagePath)) {
+            $varFields['{teaser_image}'] = $teaserImagePath;
+        } elseif (!empty($fullImagePath)) {
+            $varFields['{teaser_image}'] = $fullImagePath;
         }
 
+        $varFields['{image}'] = '';
+        if (!empty($fullImagePath)) {
+            $varFields['{image}'] = $fullImagePath;
+        } elseif (!empty($teaserImagePath)) {
+            $varFields['{image}'] = $teaserImagePath;
+        }
+
+        if (in_array('teaser_image', $tag->display)) {
+            $imagePath = $varFields['{teaser_image}'];
+        } elseif (in_array('image', $tag->display)) {
+            $imagePath = $varFields['{image}'];
+        }
+
+        $varFields['{picthtml}'] = '';
         if (!empty($imagePath)) {
             $varFields['{picthtml}'] = '<img alt="" class="content_main_image" src="'.acym_escape($imagePath).'" />';
         }
-
 
         $teaserDescription = '';
         $teaserDescriptionKey = $this->getKeyOfProperty($element->type, 'Teaser Description');
@@ -424,6 +453,29 @@ trait ZooInsertion
             }
         }
 
+        foreach ($tag->display as $oneSelectedField) {
+            if (!in_array($oneSelectedField, ['title', 'teaser_desc', 'desc', 'teaser_image', 'image', 'extra'])) {
+                $varFields['{'.$oneSelectedField.'}'] = '';
+            }
+
+            if (empty($element->elements[$oneSelectedField]) || empty($this->contentTypes[$element->type][$oneSelectedField])) {
+                continue;
+            }
+
+            $varFields['{'.$oneSelectedField.'}'] = $this->formatFieldValue($this->contentTypes[$element->type][$oneSelectedField], $element->elements[$oneSelectedField]);
+
+            if (empty($varFields['{'.$oneSelectedField.'}'])) {
+                continue;
+            }
+
+            $fieldToDisplay = [$varFields['{'.$oneSelectedField.'}']];
+            if (!empty($tag->showlabels)) {
+                $fieldToDisplay[] = acym_translation($this->contentTypes[$element->type][$oneSelectedField]['name']);
+            }
+
+            $customFields[] = $fieldToDisplay;
+        }
+
         $varFields['{readmore}'] = '<a class="acymailing_readmore_link" style="text-decoration:none;" target="_blank" href="'.$link.'">';
         $varFields['{readmore}'] .= '<span class="acymailing_readmore">'.acym_escape(acym_translation('ACYM_READ_MORE')).'</span>';
         $varFields['{readmore}'] .= '</a>';
@@ -444,6 +496,51 @@ trait ZooInsertion
         $result = '<div class="acymailing_content acymailing_'.$this->name.'">'.$this->pluginHelper->getStandardDisplay($format).'</div>';
 
         return $this->finalizeElementFormat($result, $tag, $varFields);
+    }
+
+    private function initTypes(): void
+    {
+        if (!empty($this->zooTypes)) {
+            return;
+        }
+
+        $allTypes = acym_loadObjectList(
+            'SELECT app.application_group, item.type 
+            FROM #__zoo_item AS item
+            JOIN #__zoo_application AS app ON app.id = item.application_id
+            GROUP BY item.type'
+        );
+
+        usort($allTypes, function ($a, $b) {
+            return strcmp($a->type, $b->type);
+        });
+
+        foreach ($allTypes as $oneType) {
+            $configFilePath = ACYM_ROOT.'media'.DS.'zoo'.DS.'applications'.DS.$oneType->application_group.DS.'types'.DS.$oneType->type.'.config';
+            if (!file_exists($configFilePath)) {
+                continue;
+            }
+
+            $configurationFile = acym_fileGetContent($configFilePath);
+            if (empty($configurationFile)) {
+                continue;
+            }
+
+            $configurationFile = @json_decode($configurationFile, true);
+            if (empty($configurationFile['elements'])) {
+                continue;
+            }
+
+            foreach ($configurationFile['elements'] as $key => $field) {
+                if (strpos($key, '_') === 0 || !in_array($field['type'], $this->handledFieldTypes)) {
+                    continue;
+                }
+
+                $this->displayOptions[$key] = [$field['name'], false];
+            }
+
+            $this->zooTypes[$oneType->type] = $configurationFile['elements'];
+        }
     }
 
     private function initType(string $group, string $type): bool
@@ -481,7 +578,7 @@ trait ZooInsertion
 
     private function formatFieldValue(array $field, $fieldValues): string
     {
-        if (in_array($field['type'], ['text', 'textarea'])) {
+        if (in_array($field['type'], ['text', 'textpro', 'textarea', 'textareapro'])) {
             if (empty($fieldValues[0]['value'])) {
                 return '';
             }
@@ -492,7 +589,7 @@ trait ZooInsertion
             }
 
             return implode('<br />', $texts);
-        } elseif ($field['type'] === 'date') {
+        } elseif (in_array($field['type'], ['date', 'datepro'])) {
             if (empty($fieldValues[0]['value'])) {
                 return '';
             }
@@ -505,9 +602,13 @@ trait ZooInsertion
             }
 
             return implode(', ', $dates);
-        } elseif ($field['type'] === 'image') {
+        } elseif (in_array($field['type'], ['image', 'imagepro'])) {
             if (empty($fieldValues['file'])) {
-                return '';
+                if (!empty($fieldValues[0]['file'])) {
+                    $fieldValues = $fieldValues[0];
+                } else {
+                    return '';
+                }
             }
 
             return '<img alt="" src="'.acym_escape(acym_rootURI().$fieldValues['file']).'" />';
@@ -542,7 +643,7 @@ trait ZooInsertion
             }
 
             return implode(', ', $countries);
-        } elseif ($field['type'] === 'link') {
+        } elseif (in_array($field['type'], ['link', 'linkpro'])) {
             $links = [];
             foreach ($fieldValues as $oneLink) {
                 if (empty($oneLink['value'])) {

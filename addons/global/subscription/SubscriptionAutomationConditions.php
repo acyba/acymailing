@@ -70,11 +70,12 @@ trait SubscriptionAutomationConditions
         $conditions['classic']['acy_list_all']->option .= acym_dateField('acym_condition[conditions][__numor__][__numand__][acy_list_all][date-max]');
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 
-    private function _processConditionAcyLists(&$query, &$options, $num)
+    private function processConditionAcyLists(&$query, &$options, $num)
     {
         $otherConditions = '';
         if (!empty($options['date-min'])) {
@@ -111,23 +112,23 @@ trait SubscriptionAutomationConditions
 
     public function onAcymProcessCondition_acy_list(&$query, &$options, $num, &$conditionNotValid)
     {
-        $affectedRows = $this->_processConditionAcyLists($query, $options, $num);
+        $affectedRows = $this->processConditionAcyLists($query, $options, $num);
         if (empty($affectedRows)) $conditionNotValid++;
     }
 
     public function onAcymProcessCondition_acy_list_all(&$query, &$options, $num, &$conditionNotValid)
     {
-        $affectedRows = $this->_processConditionAcyLists($query, $options, $num);
+        $affectedRows = $this->processConditionAcyLists($query, $options, $num);
 
         $res = false;
         switch ($options['operator']) {
-            case '=' :
+            case '=':
                 $res = $affectedRows == $options['number'];
                 break;
-            case '>' :
+            case '>':
                 $res = $affectedRows > $options['number'];
                 break;
-            case '<' :
+            case '<':
                 $res = $affectedRows < $options['number'];
                 break;
         }
@@ -160,7 +161,7 @@ trait SubscriptionAutomationConditions
                     $automation['acy_list_all']['list']->name
                 ).' ';
 
-            $automation = $this->_summaryDate($automation['acy_list_all'], $finalText);
+            $automation = $this->summaryDate($automation['acy_list_all'], $finalText);
         }
 
         $this->onAcymDeclareSummary_conditionsFilters($automation, 'ACYM_CONDITION_ACY_LIST_SUMMARY', 'ACYM_IS_SUBSCRIBED', 'ACYM_IS_UNSUBSCRIBED', 'ACYM_IS_NOT_SUBSCRIBED');
@@ -186,7 +187,7 @@ trait SubscriptionAutomationConditions
                     $automation['acy_list']['list']->name
                 ).' ';
 
-            $automation = $this->_summaryDate($automation['acy_list'], $finalText);
+            $automation = $this->summaryDate($automation['acy_list'], $finalText);
         }
 
         if (!empty($automation['unconfirmed'])) {
@@ -194,7 +195,7 @@ trait SubscriptionAutomationConditions
         }
     }
 
-    private function _summaryDate($automation, $finalText)
+    private function summaryDate($automation, $finalText)
     {
         if (!empty($automation['date-min']) || !empty($automation['date-max'])) {
             $finalText .= acym_translationSprintf('ACYM_WHERE_DATE_ACY_LIST_SUMMARY', acym_strtolower(acym_translation('ACYM_'.strtoupper($automation['date-type']))));

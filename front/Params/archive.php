@@ -4,7 +4,11 @@ include_once __DIR__.DIRECTORY_SEPARATOR.'AcymJFormField.php';
 
 class JFormFieldArchive extends AcymJFormField
 {
-    var $type = 'archive';
+    public function __construct($form = null)
+    {
+        $this->type = 'archive';
+        parent::__construct($form);
+    }
 
     public function getInput()
     {

@@ -646,7 +646,7 @@ trait Edition
         $mail->drag_editor = strpos($mail->body, 'acym__wysid__template') === false ? 0 : 1;
         $mail->attachments = empty($mail->attachments) ? [] : json_decode($mail->attachments, true);
 
-        $mainColors = acym_getVar('string', 'main_colors', '', 'REQUEST', ACYM_ALLOWRAW);;
+        $mainColors = acym_getVar('string', 'main_colors', '', 'REQUEST', ACYM_ALLOWRAW);
         if (!empty($mail->mail_settings)) {
             $mailSettings = json_decode($mail->mail_settings, false);
         } else {

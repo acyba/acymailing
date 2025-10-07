@@ -6,8 +6,7 @@ use AcyMailing\Classes\FormClass;
 
 class Forms
 {
-    var $formToDisplay = [];
-    var $formClass;
+    private array $formToDisplay = [];
 
     public function __construct()
     {

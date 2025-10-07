@@ -197,7 +197,7 @@ function acym_displayDateFormat(string $format, string $name = 'date', string $d
     $days = [
         '' => acym_translation('ACYM_DAY'),
     ];
-    for ($i = 1 ; $i <= 31 ; $i++) {
+    for ($i = 1; $i <= 31; $i++) {
         $days[$i < 10 ? '0'.$i : $i] = $i < 10 ? '0'.$i : $i;
     }
 
@@ -220,7 +220,7 @@ function acym_displayDateFormat(string $format, string $name = 'date', string $d
     $year = [
         '' => acym_translation('ACYM_YEAR'),
     ];
-    for ($i = 1900 ; $i <= (acym_date('now', 'Y') + 10) ; $i++) {
+    for ($i = 1900; $i <= (acym_date('now', 'Y') + 10); $i++) {
         $year[$i] = $i;
     }
 
@@ -335,7 +335,7 @@ function acym_date($time = 'now', $format = null, bool $useTz = true, bool $tran
         $timezone = new DateTimeZone($cmsOffset);
 
         if (!is_numeric($cmsOffset)) {
-            $cmsOffset = $timezone->getOffset(new DateTime);
+            $cmsOffset = $timezone->getOffset(new DateTime());
         }
 
         if ($translate) {

@@ -37,7 +37,7 @@
         echo acym_translation('ACYM_REPLYTO_NAME');
         $replyToNameValue = acym_escape(empty($data['mail']->reply_to_name) ? '' : $data['mail']->reply_to_name);
         ?>
-		<input name="mail[reply_to_name]" type="text" placeholder="<?php echo acym_escape($this->config->get('replyto_name')); ?>" value="<?php echo $replyToNameValue ?>">
+		<input name="mail[reply_to_name]" type="text" placeholder="<?php echo acym_escape($this->config->get('replyto_name')); ?>" value="<?php echo $replyToNameValue; ?>">
 	</label>
 </div>
 <div class="cell xlarge-3 medium-6">

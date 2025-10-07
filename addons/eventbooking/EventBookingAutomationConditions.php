@@ -85,7 +85,8 @@ trait EventBookingAutomationConditions
         $conditions['user']['ebregistration']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 

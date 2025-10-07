@@ -8,13 +8,13 @@ trait MassAction
 {
     public function setFilterMassAction(): void
     {
-        $this->_saveFilters(true);
+        $this->setSaveFilters(true);
         $this->summary();
     }
 
     public function setActionMassAction(): void
     {
-        $this->_saveActions(true);
+        $this->getSaveActions(true);
         $this->filter();
     }
 

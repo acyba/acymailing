@@ -113,7 +113,7 @@ class OverrideClass extends AcymClass
                 $joomlaMailStyle = $params->get('mail_style', 'plaintext');
             }
         }
-       
+
         foreach ($activeOverrides as $oneOverride) {
             $parameters = [];
             $matches = true;
@@ -164,7 +164,7 @@ class OverrideClass extends AcymClass
                 if (empty($parameters)) {
                     $parameters = $params;
                 } else {
-                    for ($i = 1 ; $i < count($params) ; $i++) {
+                    for ($i = 1; $i < count($params); $i++) {
                         $parameters[] = trim($params[$i]);
                     }
                 }
@@ -179,7 +179,7 @@ class OverrideClass extends AcymClass
 
             if ($oneOverride->source == 'woocommerce' && $translatepressIsActive) {
                 $subjectTranslated = $params[0];
-                for ($i = 1 ; $i < count($params) ; $i++) {
+                for ($i = 1; $i < count($params); $i++) {
                     $pattern = '/'.$params[$i].'/i';
                     $param = '{param'.$i.'}';
                     $subjectTranslated = preg_replace($pattern, $param, $subjectTranslated);

@@ -20,7 +20,7 @@
             if (!empty($data['isSml']) && $key === 'acymailer') {
                 continue;
             }
-			
+
             $selected = isset($sendingMethod['selected']) && $sendingMethod['selected'];
             $class = !empty($sendingMethod['recommended']) ? 'acym__sending__methods__one__premium' : '';
             $class .= empty($data['step']) ? ' acym__sending__methods__one__config' : '';
@@ -28,7 +28,7 @@
             $idCheckbox = 'acym__sending__methods-'.(empty($data['isSml']) ? 'default' : 'sml').'-'.$key;
             ?>
 			<div class="cell large-3 medium-6 grid-x align-center acym_vcenter acym__sending__methods__one <?php echo $class; ?>">
-				<label for="<?php echo $idCheckbox ?>" data-acym-method="<?php echo $key; ?>"
+				<label for="<?php echo $idCheckbox; ?>" data-acym-method="<?php echo $key; ?>"
 					   class="acym__selection__card cell acym_vcenter align-center <?php echo $selected ? 'acym__selection__card-selected' : ''; ?>">
                     <?php
                     if (!empty($sendingMethod['icon'])) { ?>
@@ -36,12 +36,12 @@
                     <?php } else { ?>
 						<img src="<?php echo $sendingMethod['image']; ?>"
 							 alt=""
-							 class="cell <?php echo !empty($sendingMethod['image_class']) ? $sendingMethod['image_class'] : '' ?>">
+							 class="cell <?php echo !empty($sendingMethod['image_class']) ? $sendingMethod['image_class'] : ''; ?>">
                     <?php } ?>
 				</label>
 				<span class="cell acym__sending__methods__name"><?php echo $name; ?></span>
 				<input type="radio"
-					   name="<?php echo !empty($data['isSml']) ? 'sml' : 'config' ?>[mailer_method]"
+					   name="<?php echo !empty($data['isSml']) ? 'sml' : 'config'; ?>[mailer_method]"
                     <?php echo $selected ? 'checked' : ''; ?>
 					   id="<?php echo $idCheckbox; ?>"
 					   value="<?php echo $key; ?>"

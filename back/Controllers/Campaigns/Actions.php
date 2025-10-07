@@ -80,7 +80,7 @@ trait Actions
 
         acym_enqueueMessage(acym_translation('ACYM_CAMPAIGN_DUPLICATED_SUCCESS'));
 
-        if (count($campaignsSelected) == 1 && acym_getVar('string', 'step', '') == 'summary') {
+        if (count($campaignsSelected) == 1 && acym_getVar('string', 'step', '') === 'summary') {
             acym_setVar('campaignId', $campaignId);
             $this->editEmail();
         } else {
@@ -344,10 +344,10 @@ trait Actions
             }
         }
 
-        $this->_redirectAfterQueued();
+        $this->redirectAfterQueued();
     }
 
-    private function _redirectAfterQueued(): void
+    private function redirectAfterQueued(): void
     {
         if (acym_isAdmin() && (!acym_level(ACYM_ESSENTIAL) || $this->config->get('cron_last', 0) < (time() - 43200))) {
             acym_redirect(acym_completeLink('queue&task=campaigns', false, true));

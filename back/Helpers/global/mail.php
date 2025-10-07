@@ -6,7 +6,7 @@ function acym_getEmailCssFixes()
 
     $config = acym_config();
     if ('1' === $config->get('prevent_hyphens', '')) {
-        $emailFixes .= 'table td.acym__wysid__column__element__td, table td.acym__wysid__column__element__td p { word-break: break-word; -webkit-hyphens: none; -moz-hyphens: none; hyphens: none; }';
+        $emailFixes .= 'table td.acym__wysid__column__element__td, table td.acym__wysid__column__element__td p { word-break: break-word; -webkit-hyphens: none; -moz-hyphens: none; hyphens: none; mso-hyphenate: none; }';
     }
 
     return $emailFixes;

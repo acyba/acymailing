@@ -122,10 +122,7 @@ class MailboxHelper extends BounceHelper
             $passSubject = false;
         } elseif ($conditions['subject'] == 'begins' && strpos($subject, $conditions['subject_text']) !== 0) {
             $passSubject = false;
-        } elseif ($conditions['subject'] == 'ends' && strpos(
-                $subject,
-                $conditions['subject_text']
-            ) !== strlen($subject) - strlen($conditions['subjectvalue'])) {
+        } elseif ($conditions['subject'] == 'ends' && strpos($subject, $conditions['subject_text']) !== strlen($subject) - strlen($conditions['subjectvalue'])) {
             $passSubject = false;
         } elseif ($conditions['subject'] == 'contains' && strpos($subject, $conditions['subject_text']) === false) {
             $passSubject = false;

@@ -73,18 +73,17 @@ trait DefaultData
         $mailClass = new MailClass();
         $installedTemplates = 0;
 
-        $templates = acym_getFiles(ACYM_BACK.'templates'.DS, '.zip', false, true);
-        foreach ($templates as $oneTemplate) {
-            $templateName = substr($oneTemplate, strrpos($oneTemplate, DS) + 1);
-            $templateName = substr($templateName, 0, strrpos($templateName, '.'));
+        $templates = acym_getFolders(ACYM_BACK.'templates'.DS, '.', false, true);
+        foreach ($templates as $oneTemplateFolderPath) {
+            $templateName = substr($oneTemplateFolderPath, strrpos($oneTemplateFolderPath, DS) + 1);
+            $templateName = str_replace('_', ' ', $templateName);
 
             $oneMail = $mailClass->getOneByName($templateName, false, MailClass::TYPE_TEMPLATE);
-            if (!empty($oneMail)) continue;
+            if (!empty($oneMail)) {
+                continue;
+            }
 
-            $templateFolder = $mailClass->extractTemplate($oneTemplate, false);
-            if (empty($templateFolder)) continue;
-
-            if ($mailClass->installExtractedTemplate($templateFolder)) {
+            if ($mailClass->installExtractedTemplate($oneTemplateFolderPath, false)) {
                 $installedTemplates++;
             }
         }
@@ -118,6 +117,9 @@ trait DefaultData
         $notifications = $mailClass->getMailsByType(MailClass::TYPE_NOTIFICATION, $searchSettings);
         $notifications = $notifications['mails'];
         $user = $this->getCurrentUser();
+        if (empty($user)) {
+            return false;
+        }
 
         $addNotif = [];
 

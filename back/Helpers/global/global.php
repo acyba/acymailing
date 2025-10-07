@@ -18,11 +18,14 @@ function acydump($arg, $ajax = false, array $options = [])
     $result = ob_get_clean();
 
     if ($ajax) {
+        $logsPath = ACYM_ROOT.ACYM_LOGS_FOLDER.'debug.log';
+        acym_createDir(dirname($logsPath), true, true);
+
         if (($options['clear_file'] ?? false) === true) {
-            file_put_contents(ACYM_BACK.'debug.log', '');
+            file_put_contents($logsPath, '');
         }
 
-        file_put_contents(ACYM_BACK.'debug.log', $result, FILE_APPEND);
+        file_put_contents($logsPath, $result, FILE_APPEND);
     } else {
         $style = $indent ? 'margin-left: 220px;' : '';
         echo '<pre style="'.$style.'">';
@@ -83,16 +86,19 @@ function acym_display($messages, $type = 'success', $close = true)
     }
 }
 
-function acym_increasePerf()
+function acym_increasePerf(): int
 {
-    // Increase the max exec time to be able to handle long processes such as the send process
-    $maxExecutionTime = ini_get('max_execution_time');
-    if ($maxExecutionTime < 600) {
-        @ini_set('max_execution_time', 600);
-    }
-
     // This is for big regex, the default value is 100 000
     @ini_set('pcre.backtrack_limit', 1000000);
+
+    // Increase the max exec time to be able to handle long processes such as the send process
+    $maxExecutionTime = (int)ini_get('max_execution_time');
+
+    if (empty($maxExecutionTime) || $maxExecutionTime < 600) {
+        return set_time_limit(600) ? 600 : $maxExecutionTime;
+    }
+
+    return $maxExecutionTime;
 }
 
 function acym_session()

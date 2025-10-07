@@ -85,7 +85,8 @@ trait MembershipProAutomationConditions
         $conditions['user']['membershippro']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 

@@ -1,1 +1,3 @@
-<?php include acym_getView('users', 'genericimport', true);
+<?php
+
+include acym_getView('users', 'genericimport', true);

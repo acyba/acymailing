@@ -1,4 +1,4 @@
-<?php if (!empty($data['status_toolbar'])) echo '<input type="hidden" id="acym__toolbar__statuses-value" value="'.acym_escape(json_encode($data['status_toolbar'])).'">' ?>
+<?php if (!empty($data['status_toolbar'])) echo '<input type="hidden" id="acym__toolbar__statuses-value" value="'.acym_escape(json_encode($data['status_toolbar'])).'">'; ?>
 <div class="grid-x acym__toolbar acym__content align-justify">
 	<div class="cell">
 		<div class="grid-x grid-margin-x margin-y">

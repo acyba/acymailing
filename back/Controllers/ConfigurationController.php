@@ -114,7 +114,7 @@ class ConfigurationController extends AcymController
         }
     }
 
-    function seeLogs(): void
+    public function seeLogs(): void
     {
         $filename = acym_getVar('string', 'filename');
 

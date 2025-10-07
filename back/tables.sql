@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `#__acym_automation` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
 	`description` LONGTEXT NULL,
-	`active` TINYINT(3) NOT NULL,
+	`active` TINYINT(3) NOT NULL DEFAULT 0,
 	`report` TEXT NULL,
 	`tree` LONGTEXT NULL,
 	`admin` TINYINT(3) NULL,

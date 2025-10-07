@@ -88,7 +88,8 @@ trait MemberpressAutomationConditions
         $conditions['user']['memberpress']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 

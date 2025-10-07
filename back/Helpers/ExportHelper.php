@@ -152,7 +152,6 @@ class ExportHelper extends AcymObject
 
     public function exportStatsFormattedCSV(string $mailName, array $globalDonutsData, array $globaline, string $timeLinechart): void
     {
-        $nbExport = $this->getExportLimit();
         acym_displayErrors();
 
         if ($timeLinechart === 'month') {
@@ -167,7 +166,6 @@ class ExportHelper extends AcymObject
 
         $csvLines = [];
         $csvLines[] = $this->before.$mailName.$this->after;
-
         $csvLines[] = $this->eol;
 
         $globalDonutsTitle = [
@@ -180,16 +178,12 @@ class ExportHelper extends AcymObject
 
         $csvLines[] = $this->before.implode($separator, $globalDonutsTitle).$this->after;
         $csvLines[] = $this->before.implode($separator, $globalDonutsData).$this->after;
-
         $csvLines[] = $this->eol;
 
         $csvLines[] = $this->before.$timeLinechart.$separator.acym_translation('ACYM_OPEN').$separator.acym_translation('ACYM_CLICK').$this->after;
 
-        $i = 0;
         foreach ($globaline as $date => $value) {
-            if ($i > $nbExport) break;
             $csvLines[] = $this->before.$date.$separator.$value['open'].$separator.$value['click'].$this->after;
-            $i++;
         }
 
         $this->finishStatsExport($csvLines);
@@ -197,12 +191,12 @@ class ExportHelper extends AcymObject
 
     public function exportStatsFullCSV(string $query, array $columns, string $type = 'global'): void
     {
-        $mailsStats = acym_loadObjectList($query);
+        $nbExport = $this->getExportLimit();
+        $mailsStats = acym_loadObjectList($query.' LIMIT '.intval($nbExport));
         $mailClass = new MailClass();
         // We don't want to decode the user's name
         $mailClass->exceptKeysDecode = ['name'];
         $mailsStats = $mailClass->decode($mailsStats);
-        $nbExport = $this->getExportLimit();
         acym_displayErrors();
 
         $separator = '","';
@@ -212,9 +206,7 @@ class ExportHelper extends AcymObject
 
         $valueNeedNumber = ['click'];
 
-        $i = 0;
         foreach ($mailsStats as $mailStat) {
-            if ($i > $nbExport) break;
             $oneLine = [];
             foreach ($columns as $key => $trad) {
                 $key = strpos($key, '.') !== false ? explode('.', $key) : $key;
@@ -237,7 +229,6 @@ class ExportHelper extends AcymObject
             }
             //We delete the double quote so it won't break the CSV
             $csvLines[] = $this->before.implode($separator, $oneLine).$this->after;
-            $i++;
         }
 
         $this->finishStatsExport($csvLines, $type);
@@ -473,7 +464,9 @@ class ExportHelper extends AcymObject
     {
         // Getting X users per batch based on the memory limit
         $serverLimit = acym_bytes(ini_get('memory_limit'));
-        if ($serverLimit > 150000000) {
+        if ($serverLimit > 500000000) {
+            return 250000;
+        } elseif ($serverLimit > 150000000) {
             return 50000;
         } elseif ($serverLimit > 80000000) {
             return 15000;

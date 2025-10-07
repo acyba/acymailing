@@ -23,9 +23,9 @@
 		bottom: 0;
 		right: 0;
 		left: 0;
-		height: <?php echo $form->settings['style']['size']['height'];?>px;
-		background-color: <?php echo $form->settings['style']['background_color'];?>;
-		color: <?php echo $form->settings['style']['text_color'];?> !important;
+		height: <?php echo $form->settings['style']['size']['height']; ?>px;
+		background-color: <?php echo $form->settings['style']['background_color']; ?>;
+		color: <?php echo $form->settings['style']['text_color']; ?> !important;
 		padding: .5rem;
 		z-index: 999999;
 		text-align: center;
@@ -39,7 +39,7 @@
 		padding: .4rem !important;
 	}
 
-	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__footer <?php echo '#'.$form->form_tag_name;?>{
+	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__footer <?php echo '#'.$form->form_tag_name; ?>{
 		margin: 0;
 		display: flex;
 		justify-content: center;

@@ -189,7 +189,6 @@ trait Edition
 
                 $notifName = acym_translation('ACYM_NOTIFICATIION_'.strtoupper(substr($mail->name, 4)));
                 if (strpos($notifName, 'ACYM_NOTIFICATIION_') !== false) {
-
                     array_pop($this->breadcrumb);
                     $this->breadcrumb[acym_translation('ACYM_CONFIGURATION')] = acym_completeLink('configuration');
 
@@ -763,6 +762,7 @@ trait Edition
         $top = round(($imageHeight - $logoHeight) / 2);
         imagecopy($imageVideo, $playButton, $left, $top, 0, 0, $logoWidth, $logoHeight);
         $tmpFilePath = ACYM_TMP_FOLDER.'tmp.jpg';
+        acym_createFolder(ACYM_TMP_FOLDER);
         imagepng($imageVideo, $tmpFilePath, 9);
         $input = imagecreatefrompng($tmpFilePath);
         $output = imagecreatetruecolor($imageWidth, $imageHeight);

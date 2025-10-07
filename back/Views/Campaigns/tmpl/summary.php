@@ -79,7 +79,7 @@ $campaignController = acym_isAdmin() ? 'campaigns' : 'frontcampaigns';
                     }
                     ?>
 					<input type="hidden" class="acym__hidden__mail__content" value="<?php echo acym_escape(acym_absoluteURL($data['mailInformation']->body)); ?>">
-					<div style="display: none" class="acym__hidden__mail__stylesheet"><?php echo $data['mailInformation']->stylesheet; ?></div>
+					<input type="hidden" class="acym__hidden__mail__stylesheet" value="<?php echo acym_escape($data['mailInformation']->stylesheet); ?>">
 					<div class="cell grid-x">
 						<div id="acym__wysid__email__preview" class="acym__email__preview grid-x cell"></div>
 					</div>

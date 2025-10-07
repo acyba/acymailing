@@ -134,7 +134,7 @@ trait OnlineInsertion
     {
         if (empty($email->body)) return;
 
-        $tags = $this->_replaceInformationTags($email);
+        $tags = $this->replaceInformationTags($email);
 
         $match = '#(?:{|%7B)(modify_profile|readonline(?:\|[^}]+)?)(?:}|%7D)(.*)(?:{|%7B)/(readonline|modify_profile)(?:}|%7D)#Uis';
         $results = [];
@@ -173,7 +173,7 @@ trait OnlineInsertion
         $this->pluginHelper->replaceTags($email, $tags);
     }
 
-    private function _replaceInformationTags(&$email): array
+    private function replaceInformationTags(&$email): array
     {
         $match = '#\{info:([a-z_]+)\}(.*?)\{\/info\}#is';
         $extractedTags = [];

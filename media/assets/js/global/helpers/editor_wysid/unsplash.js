@@ -44,7 +44,7 @@ const acym_editorWysidUnsplash = {
                             <img alt="" 
                                 class="acym__wysid__media__inserted acym__wysid__media__inserted--focus acym__wysid__media__unsplash" 
                                 src="${fullResSrc}" 
-                                style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto;"
+                                style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:block; margin-left: auto; margin-right: auto; vertical-align: middle;"
                                 title="Photo by ${photographerName} on Unsplash"/>
                         </div>
                     </div>

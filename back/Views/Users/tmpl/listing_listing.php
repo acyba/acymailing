@@ -82,7 +82,7 @@
                     <?php echo acym_translation('ACYM_STATUS'); ?>
 				</div>
 				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_ACTIONS') ?>
+                    <?php echo acym_translation('ACYM_ACTIONS'); ?>
 				</div>
 				<div class="cell medium-shrink hide-for-small-only text-center acym__listing__header__title acym__listing__id">
                     <?php echo acym_translation('ACYM_ID'); ?>

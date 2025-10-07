@@ -160,7 +160,7 @@ class ListClass extends AcymClass
         $results['total'] = acym_loadObject($queryCount);
 
         $listsPerStatus = acym_loadObjectList($queryStatus.' GROUP BY score', 'score');
-        for ($i = 0 ; $i < 4 ; $i++) {
+        for ($i = 0; $i < 4; $i++) {
             $listsPerStatus[$i] = empty($listsPerStatus[$i]) ? 0 : $listsPerStatus[$i]->number;
         }
 
@@ -1090,5 +1090,4 @@ class ListClass extends AcymClass
 
         return $entries;
     }
-
 }

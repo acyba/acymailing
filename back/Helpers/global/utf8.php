@@ -9,7 +9,7 @@ function acym_utf8Encode($string)
         $string .= $string;
         $len = strlen($string);
 
-        for ($i = $len >> 1, $j = 0 ; $i < $len ; ++$i, ++$j) {
+        for ($i = $len >> 1, $j = 0; $i < $len; ++$i, ++$j) {
             if ($string[$i] < "\x80") {
                 $string[$j] = $string[$i];
             } elseif ($string[$i] < "\xC0") {
@@ -34,7 +34,7 @@ function acym_utf8Decode($string)
         $newString = (string)$string;
         $len = strlen($newString);
 
-        for ($i = 0, $j = 0 ; $i < $len ; ++$i, ++$j) {
+        for ($i = 0, $j = 0; $i < $len; ++$i, ++$j) {
             switch ($newString[$i] & "\xF0") {
                 case "\xC0":
                 case "\xD0":

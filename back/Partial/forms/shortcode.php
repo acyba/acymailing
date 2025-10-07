@@ -13,10 +13,10 @@
 </div>
 <style>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__shortcode{
-		height: <?php echo $form->settings['style']['size']['height'];?>px;
-		max-width: <?php echo $form->settings['style']['size']['width'];?>px;
-		background-color: <?php echo $form->settings['style']['background_color'];?>;
-		color: <?php echo $form->settings['style']['text_color'];?> !important;
+		height: <?php echo $form->settings['style']['size']['height']; ?>px;
+		max-width: <?php echo $form->settings['style']['size']['width']; ?>px;
+		background-color: <?php echo $form->settings['style']['background_color']; ?>;
+		color: <?php echo $form->settings['style']['text_color']; ?> !important;
 		padding: .5rem;
 		text-align: center;
 		display: flex;
@@ -30,7 +30,7 @@
 		padding: .4rem !important;
 	}
 
-	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__shortcode <?php echo '#'.$form->form_tag_name;?>{
+	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__shortcode <?php echo '#'.$form->form_tag_name; ?>{
 		margin: 0;
 	}
 
@@ -50,7 +50,7 @@
 		display: block;
 	}
 
-	<?php if (!empty($form->settings['style']['position']) && in_array($form->settings['style']['position'], ['image-right', 'image-left'])){ ?>
+	<?php if (!empty($form->settings['style']['position']) && in_array($form->settings['style']['position'], ['image-right', 'image-left'])) { ?>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__shortcode <?php echo '#'.$form->form_tag_name; ?>{
 		display: flex;
 		justify-content: center;

@@ -47,25 +47,20 @@ class QueueHelper extends AcymObject
 
         $this->send_limit = (int)$this->config->get('queue_nbmail', 40);
 
-        //We set it but it may fail... but we try anyway!
-        acym_increasePerf();
-
-        //By default this value is 60 but it's really stupid when sending e-mails and may cause BIG problems!
+        // The default is 60, which is too much for email sending as it wastes time
         @ini_set('default_socket_timeout', 10);
 
-        //We ignore the user abort as we will handle it ourself
+        // We call cron URLs but don't wait for the result, we still want the script to execute
         @ignore_user_abort(true);
 
-        $timelimit = intval(ini_get('max_execution_time'));
-        //Never more than 600, it's 10 minutes!
-        if (empty($timelimit)) {
-            $timelimit = 600;
+        // Increase the limit to have enough time to send, and prevent infinite process
+        $timeLimit = acym_increasePerf();
+        if (empty($timeLimit)) {
+            $timeLimit = 600;
         }
 
-        //4 seconds for security...
-        if (!empty($timelimit)) {
-            $this->stoptime = time() + $timelimit - 4;
-        }
+        // We keep 4 seconds to finish the process properly
+        $this->stoptime = time() + $timeLimit - 4;
     }
 
     public function process(): bool
@@ -82,6 +77,7 @@ class QueueHelper extends AcymObject
 
             return false;
         }
+
         if ($this->send_limit > $creditsLeft) {
             $this->send_limit = $creditsLeft;
         }
@@ -426,7 +422,6 @@ class QueueHelper extends AcymObject
 
             foreach ($infos as $status => $subscribers) {
                 foreach ($subscribers as $oneSubscriber) {
-
                     $oneSubscriber = intval($oneSubscriber);
 
                     $userStat = [];
@@ -591,14 +586,14 @@ class QueueHelper extends AcymObject
 
         $message = '';
         switch ($this->config->get('bounce_action_maxtry')) {
-            case 'sub' :
+            case 'sub':
                 $listId = $this->config->get('bounce_action_lists_maxtry');
                 if (!empty($listId)) {
                     $message .= ' user '.$userId.' subscribed to list n°'.$listId;
                     $this->userClass->subscribe($userId, [$listId]);
                 }
             // There is no break here as we will remove the user from the other lists...
-            case 'remove' :
+            case 'remove':
                 $unsubLists = array_diff(array_keys($subscriptions), [$listId]);
                 if (!empty($unsubLists)) {
                     $message .= ' user '.$userId.' removed from lists '.implode(',', $unsubLists);
@@ -607,7 +602,7 @@ class QueueHelper extends AcymObject
                     $message .= ' user '.$userId.' not subscribed';
                 }
                 break;
-            case 'unsub' :
+            case 'unsub':
                 $unsubLists = array_diff(array_keys($subscriptions), [$listId]);
                 if (!empty($unsubLists)) {
                     $message .= ' user '.$userId.' unsubscribed from lists '.implode(',', $unsubLists);
@@ -616,11 +611,11 @@ class QueueHelper extends AcymObject
                     $message .= ' user '.$userId.' not unsubscribed';
                 }
                 break;
-            case 'delete' :
+            case 'delete':
                 $message .= ' user '.$userId.' deleted';
                 $this->userClass->delete($userId);
                 break;
-            case 'block' :
+            case 'block':
                 $message .= ' user '.$userId.' blocked';
                 $this->userClass->deactivate($userId);
                 // We delete any other e-mail from the queue as well

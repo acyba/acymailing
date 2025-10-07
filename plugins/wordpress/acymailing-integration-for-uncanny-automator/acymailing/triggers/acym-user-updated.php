@@ -34,6 +34,7 @@ class ACYM_USER_UPDATED
 
     /**
      * Fill the "{{created of updated}}" dropdown with a select field. There are text, int and other field types too.
+     *
      * @return array
      */
     public function load_options(): array

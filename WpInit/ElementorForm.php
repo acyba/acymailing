@@ -79,9 +79,10 @@ class ElementorForm extends \ElementorPro\Modules\Forms\Classes\Action_Base
 
     public function on_export($element)
     {
-        unset(
-            $element['acym_confirmUsers'], $element['acym_selectLists'], $element['acym_nameField'], $element['acym_emailField']
-        );
+        unset($element['acym_confirmUsers']);
+        unset($element['acym_selectLists']);
+        unset($element['acym_nameField']);
+        unset($element['acym_emailField']);
     }
 
     public function run($record, $ajax_handler)

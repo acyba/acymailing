@@ -37,7 +37,7 @@
 		}
 
 		<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__fields > *{
-			margin: <?php echo in_array($form->type, [$form->formClass::SUB_FORM_TYPE_FOOTER, $form->formClass::SUB_FORM_TYPE_HEADER]) ? 'auto 10px' : '10px auto';?> !important;
+			margin: <?php echo in_array($form->type, [$form->formClass::SUB_FORM_TYPE_FOOTER, $form->formClass::SUB_FORM_TYPE_HEADER]) ? 'auto 10px' : '10px auto'; ?> !important;
 		}
 	</style>
 </div>

@@ -171,7 +171,6 @@
 							<div class="cell medium-2 small-3">
 								<div class="acym_vcenter">
                                     <?php
-
                                     // Now display the action buttons
                                     echo '<div class="acym_action_buttons">';
 

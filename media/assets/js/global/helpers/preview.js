@@ -170,7 +170,7 @@ const acym_helperPreview = {
 
         // Set content and user stylesheet for summary preview
         if ($mailContent !== '') {
-            let $mailStylesheet = jQuery('.acym__hidden__mail__stylesheet').html();
+            let $mailStylesheet = jQuery('.acym__hidden__mail__stylesheet').val();
             if ($mailStylesheet !== undefined && $mailStylesheet !== '') {
                 $iframeHead.append('<style>' + $mailStylesheet + '</style>');
             }

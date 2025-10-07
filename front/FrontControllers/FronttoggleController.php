@@ -18,6 +18,8 @@ class FronttoggleController extends ToggleController
             ],
             'index.php?option=com_acym&view=frontusers&layout=listing' => [
                 'toggle',
+                'unsubscribeOnClick',
+                'subscribeOnClick',
             ],
         ];
     }

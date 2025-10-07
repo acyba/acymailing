@@ -148,7 +148,6 @@
                                     'textShownInTooltip' => acym_translation('ACYM_EMAIL_SUBJECT').' : '.$detailed_stat->subject,
                                 ]
                             );
-
                             ?>
 						</div>
 						<div class="large-2 medium-3 small-4 cell acym__listing__detailed__stats__content">

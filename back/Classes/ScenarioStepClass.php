@@ -141,7 +141,7 @@ class ScenarioStepClass extends AcymClass
         $randomString = '';
         $length = 24;
 
-        for ($i = 0 ; $i < $length ; $i++) {
+        for ($i = 0; $i < $length; $i++) {
             $randomIndex = rand(0, strlen($letters) - 1);
             $randomString .= $letters[$randomIndex];
         }

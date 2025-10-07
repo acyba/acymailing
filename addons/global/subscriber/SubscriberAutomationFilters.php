@@ -18,7 +18,7 @@ trait SubscriberAutomationFilters
 
     public function onAcymProcessFilter_acy_field(&$query, &$options, $num)
     {
-        $this->_processAcyField($query, $options, $num);
+        $this->processAcyField($query, $options, $num);
     }
 
     public function onAcymProcessFilter_random(&$query, &$options, $num)

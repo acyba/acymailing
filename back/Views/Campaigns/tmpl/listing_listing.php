@@ -95,7 +95,7 @@
 					</div>
                 <?php } ?>
 				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
-                    <?php echo acym_translation('ACYM_ACTIONS') ?>
+                    <?php echo acym_translation('ACYM_ACTIONS'); ?>
 				</div>
 				<div class="large-1 cell hide-for-small-only hide-for-medium-only text-center acym__listing__header__title">
                     <?php echo acym_translation('ACYM_ID'); ?>
@@ -143,7 +143,6 @@
 					<div class="<?php echo $data['campaign_type'] == 'campaigns_auto' ? 'large-1' : 'large-2'; ?> acym__campaign__recipients medium-3 small-5 cell">
                         <?php
                         if (!empty($campaign->lists)) {
-
                             $subscriptionsCount = count($campaign->lists);
                             $counter = 0;
                             foreach ($campaign->lists as $list) {

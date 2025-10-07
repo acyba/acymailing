@@ -149,7 +149,7 @@ class plgAcymOutlook extends AcymPlugin
     }
 
     /**
-     * https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow#request-an-authorization-code
+     * Doc: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow#request-an-authorization-code
      */
     public function onAcymOauthAuthenticate(string &$consentUrl, bool $isSmtp): void
     {
@@ -192,7 +192,7 @@ class plgAcymOutlook extends AcymPlugin
     }
 
     /**
-     * https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow#redeem-a-code-for-an-access-token
+     * Doc: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow#redeem-a-code-for-an-access-token
      */
     public function onAcymOauthCredentialsCreation(bool $isSmtp, string $code): void
     {

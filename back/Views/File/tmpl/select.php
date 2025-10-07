@@ -47,7 +47,6 @@
 						<button type="button" id="acym__file__select__area__switch__list"><i class="acymicon-menu"></i></button>
 					</div>
                     <?php
-
                     // Display the grid view
                     echo '<div id="acym__file__select__area__grid" class="margin-top-1 cell grid-x large-up-4 medium-up-3 small-up-2 grid-margin-x align-center">';
                     foreach ($preparedFiles as $oneFile) {

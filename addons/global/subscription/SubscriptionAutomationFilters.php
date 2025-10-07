@@ -75,7 +75,7 @@ trait SubscriptionAutomationFilters
 
     public function onAcymProcessFilter_acy_list(&$query, &$options, $num)
     {
-        $this->_processConditionAcyLists($query, $options, $num);
+        $this->processConditionAcyLists($query, $options, $num);
     }
 
     public function onAcymProcessFilterCount_acy_list(&$query, $options, $num)

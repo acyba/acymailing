@@ -33,10 +33,10 @@ class UserSync
         if (!$regacyHelper->prepareLists(['formatted' => true])) return;
 
         ?>
-		<div class="acym__regacy">
-			<label class="acym__regacy__label"><?php echo $regacyHelper->label; ?></label>
-			<div class="acym__regacy__values"><?php echo $regacyHelper->listsHtml; ?></div>
-		</div>
+        <div class="acym__regacy">
+            <label class="acym__regacy__label"><?php echo $regacyHelper->label; ?></label>
+            <div class="acym__regacy__values"><?php echo $regacyHelper->listsHtml; ?></div>
+        </div>
         <?php
     }
 
@@ -47,35 +47,34 @@ class UserSync
 
         $regacyHelper = new RegacyHelper();
         if (!$regacyHelper->prepareLists([])) return;
-
         ?>
-		<h2><?php echo acym_translation('ACYM_SUBSCRIPTION'); ?></h2>
-		<table class="form-table">
-			<tbody>
+        <h2><?php echo acym_translation('ACYM_SUBSCRIPTION'); ?></h2>
+        <table class="form-table">
+            <tbody>
                 <?php
                 foreach ($regacyHelper->lists as $listId => $oneList) {
                     $checked = $oneList['checked'] ? 'checked="checked"' : '';
                     ?>
-					<tr>
-						<th scope="row">
-							<label class="acym__regacy__lists__label" for="acym__regacy__lists-<?php echo intval($listId); ?>">
-								<?php echo acym_escape($oneList['name']); ?>
-							</label>
-						</th>
-						<td>
-							<input name="regacy_visible_lists_checked[]"
-								   type="checkbox"
-								   id="acym__regacy__lists-<?php echo intval($listId); ?>"
-								   value="<?php echo intval($listId); ?>" <?php echo $checked; ?>>
-						</td>
-					</tr>
+                    <tr>
+                        <th scope="row">
+                            <label class="acym__regacy__lists__label" for="acym__regacy__lists-<?php echo intval($listId); ?>">
+                                <?php echo acym_escape($oneList['name']); ?>
+                            </label>
+                        </th>
+                        <td>
+                            <input name="regacy_visible_lists_checked[]"
+                                   type="checkbox"
+                                   id="acym__regacy__lists-<?php echo intval($listId); ?>"
+                                   value="<?php echo intval($listId); ?>" <?php echo $checked; ?>>
+                        </td>
+                    </tr>
                     <?php
                 }
                 ?>
-			</tbody>
-		</table>
-		<input type="hidden" value="<?php echo implode(',', array_keys($regacyHelper->lists)); ?>" name="regacy_visible_lists" />
-		<input type="hidden" value="WordPress user profile" name="acy_source" />
+            </tbody>
+        </table>
+        <input type="hidden" value="<?php echo implode(',', array_keys($regacyHelper->lists)); ?>" name="regacy_visible_lists" />
+        <input type="hidden" value="WordPress user profile" name="acy_source" />
         <?php
     }
 

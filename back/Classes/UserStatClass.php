@@ -255,9 +255,9 @@ class UserStatClass extends AcymClass
         $stats = [];
 
 
-        for ($day = 0 ; $day < 7 ; $day++) {
+        for ($day = 0; $day < 7; $day++) {
             $stats[$day] = [];
-            for ($hour = 0 ; $hour < 8 ; $hour++) {
+            for ($hour = 0; $hour < 8; $hour++) {
                 $hourPercentage = $this->getRandomStatOpenTime($percentageRemaining, $hour);
                 $stats[$day][$hour] = $hourPercentage;
             }

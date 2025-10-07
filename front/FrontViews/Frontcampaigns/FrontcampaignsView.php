@@ -27,6 +27,5 @@ class FrontcampaignsView extends AcymView
 
     public function addSegmentStep($data)
     {
-
     }
 }

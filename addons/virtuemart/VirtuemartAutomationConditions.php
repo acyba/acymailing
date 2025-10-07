@@ -158,7 +158,8 @@ trait VirtuemartAutomationConditions
         $conditions['user']['vmpurchased']->option .= '</div>';
     }
 
-    public function onAcymDeclareConditionsScenario(&$conditions){
+    public function onAcymDeclareConditionsScenario(&$conditions)
+    {
         $this->onAcymDeclareConditions($conditions);
     }
 

@@ -325,7 +325,6 @@ trait TimeAutomationTriggers
         if (!empty($automation->triggers['type_trigger'])) unset($automation->triggers['type_trigger']);
         if (!empty($automation->triggers['asap'])) $automation->triggers['asap'] = acym_translation('ACYM_EACH_TIME');
         if (!empty($automation->triggers['day'])) {
-
             $hour = $automation->triggers['day']['hour'];
             $minutes = $automation->triggers['day']['minutes'];
 

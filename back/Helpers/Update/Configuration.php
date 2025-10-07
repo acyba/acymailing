@@ -48,7 +48,8 @@ trait Configuration
             $allPref['smtp_secured'] = '';
         }
 
-        $allPref['social_icons'] = json_encode([
+        $allPref['social_icons'] = json_encode(
+            [
                 'facebook' => ACYM_IMAGES.'logo/facebook.png',
                 'twitter' => ACYM_IMAGES.'logo/twitter.png',
                 'x' => ACYM_IMAGES.'logo/x.png',

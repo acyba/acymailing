@@ -49,13 +49,11 @@ trait WooCommerceAutomationTriggers
             $fromStatus = 'wc-'.(isset($data['statusFrom']) ? $data['statusFrom'] : '');
             $toStatus = 'wc-'.(isset($data['statusTo']) ? $data['statusTo'] : '');
 
-            if (isset($triggers['woocommerce_order_change']['from']) &&
-                ($fromStatus === $triggers['woocommerce_order_change']['from'] || $triggers['woocommerce_order_change']['from'] === '0')) {
+            if (isset($triggers['woocommerce_order_change']['from']) && ($fromStatus === $triggers['woocommerce_order_change']['from'] || $triggers['woocommerce_order_change']['from'] === '0')) {
                 $from = true;
             }
 
-            if (isset($triggers['woocommerce_order_change']['to']) &&
-                ($toStatus === $triggers['woocommerce_order_change']['to'] || $triggers['woocommerce_order_change']['to'] === '0')) {
+            if (isset($triggers['woocommerce_order_change']['to']) && ($toStatus === $triggers['woocommerce_order_change']['to'] || $triggers['woocommerce_order_change']['to'] === '0')) {
                 $to = true;
             }
 

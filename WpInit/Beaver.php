@@ -4,7 +4,6 @@ namespace AcyMailing\WpInit;
 
 class Beaver
 {
-
     public function __construct()
     {
         add_action('fl_builder_after_render_module', [$this, 'beaverBuilderInit'], 10, 1);

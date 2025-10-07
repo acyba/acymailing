@@ -4,10 +4,10 @@ use AcyMailing\Core\AcymPlugin;
 
 class SendinblueClass extends AcymPlugin
 {
-    protected $headers;
-    public $plugin;
+    protected array $headers;
+    public plgAcymSendinblue $plugin;
 
-    public function __construct(&$plugin, $headers = null)
+    public function __construct(&$plugin, $headers = [])
     {
         parent::__construct();
         $this->plugin = &$plugin;

@@ -1014,7 +1014,6 @@ class MigrationHelper extends AcymObject
 
         $migratedRules = [];
         foreach ($rules as $oneRule) {
-
             $actionUser = unserialize($oneRule->action_user);
             $actionMessage = unserialize($oneRule->action_message);
 
@@ -1085,7 +1084,7 @@ class MigrationHelper extends AcymObject
 
         $mailboxClass = new MailboxClass();
         $listClass = new ListClass();
-        $standardLists = array_column($listClass->getAllWithoutManagement(), 'id');;
+        $standardLists = array_column($listClass->getAllWithoutManagement(), 'id');
         $groups = acym_getGroups();
         foreach ($distributionLists as $oneDistributionList) {
             $mailboxAction = new \stdClass();

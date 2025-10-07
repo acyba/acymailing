@@ -85,6 +85,7 @@ function acym_loadAssets($ctrl, $task)
 
 /**
  * Get translated error message for JS form validation
+ *
  * @return string containing texts (js object formatted)
  */
 function acym_getJSMessages()
@@ -422,6 +423,7 @@ function acym_getJSMessages()
         'ACYM_SCENARIO_ARE_YOU_SURE_DELETE_X_WITH_CHILDREN_NODES',
         'ACYM_SCENARIO',
         'ACYM_SCENARIOS',
+        'ACYM_EXTRA_INFORMATION',
     ];
 
     foreach ($keysToLoad as $oneKey) {

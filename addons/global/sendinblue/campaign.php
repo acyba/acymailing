@@ -2,10 +2,9 @@
 
 class SendinblueCampaign extends SendinblueClass
 {
-    var $sender;
-    var $user;
-    var $list;
-    var $headers;
+    private SendinblueSender $sender;
+    private SendinblueUsers $user;
+    private SendinblueList $list;
 
     public function __construct(&$plugin, $headers, $sender, $user, $list)
     {

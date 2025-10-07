@@ -61,7 +61,7 @@ class EntitySelectController extends AcymController
         }
 
         $namespaceClass = 'AcyMailing\\Classes\\'.ucfirst($entity).'Class';
-        $entityClass = new $namespaceClass;
+        $entityClass = new $namespaceClass();
 
         $availableEntity = $entityClass->getMatchingElements($entityParams);
 

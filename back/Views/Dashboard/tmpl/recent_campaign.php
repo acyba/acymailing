@@ -37,11 +37,11 @@ $openRate = $data['stats']['ACYM_OPEN_RATE']['value'];
 					</div>
 					<div class="cell small-2 ">
                         <?php echo $campaign->open; ?>%
-						<i class="acymicon-<?php echo ($campaign->open > $openRate) ? 'arrow-up-thin acym__color__green' : 'arrow-down-thin acym__color__red' ?>"></i>
+						<i class="acymicon-<?php echo ($campaign->open > $openRate) ? 'arrow-up-thin acym__color__green' : 'arrow-down-thin acym__color__red'; ?>"></i>
 					</div>
 					<div class="cell small-2 ">
                         <?php echo $campaign->click; ?>%
-						<i class="acymicon-<?php echo ($campaign->open > $openRate) ? 'arrow-up-thin acym__color__green' : 'arrow-down-thin acym__color__red' ?>"></i>
+						<i class="acymicon-<?php echo ($campaign->open > $openRate) ? 'arrow-up-thin acym__color__green' : 'arrow-down-thin acym__color__red'; ?>"></i>
 					</div>
 				</div>
             <?php } ?>

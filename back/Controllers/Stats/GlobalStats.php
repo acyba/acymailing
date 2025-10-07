@@ -368,9 +368,9 @@ trait GlobalStats
 
         $stats = [];
 
-        for ($day = 0 ; $day < 7 ; $day++) {
+        for ($day = 0; $day < 7; $day++) {
             $stats[$day] = [];
-            for ($hour = 0 ; $hour < 8 ; $hour++) {
+            for ($hour = 0; $hour < 8; $hour++) {
                 if (empty($statsDB['stats'][$day.'_'.$hour]) || empty($statsDB['total_open'])) {
                     $percentage = 0;
                 } else {

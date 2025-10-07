@@ -54,7 +54,7 @@ const acym_editorWysidWordpress = {
                                + acym_helper.escape(attachment.title)
                                + '" alt="'
                                + acym_helper.escape(attachment.alt)
-                               + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;"/>';
+                               + '" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto; vertical-align: middle;"/>';
                     if (attachment.caption !== undefined && attachment.caption.length > 0) {
                         content += acym_editorWysidContextModal.getImageCaptionDiv(attachment.caption);
                     }

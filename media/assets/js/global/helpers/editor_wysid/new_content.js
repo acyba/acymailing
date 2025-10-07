@@ -58,7 +58,7 @@ const acym_editorWysidNewContent = {
         content += '<div style="text-align: center" data-mce-style="text-align: center">';
         content += '<img class="acym__wysid__media__inserted" src="'
                    + ACYM_MEDIA_URL
-                   + 'images/editor/image_insertion/default_image.png" title="image" hspace="0" alt="" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto;"/>';
+                   + 'images/editor/image_insertion/default_image.png" title="image" hspace="0" alt="" style="max-width: 100%; height: auto;  box-sizing: border-box; padding: 0 5px;display:inline-block; margin-left: auto; margin-right: auto; vertical-align: middle;"/>';
         content += '</div>';
         content += '</div>';
         content += '</td>';

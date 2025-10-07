@@ -5,10 +5,10 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 }
 ?>
 <div id="acym_fulldiv_<?php echo $form->form_tag_name; ?>"
-	 class="acym__subscription__form__popup__overlay acym__subscription__form-erase"
+     class="acym__subscription__form__popup__overlay acym__subscription__form-erase"
     <?php echo $hideForScroll; ?>>
-	<div class="acym__subscription__form__popup">
-		<div class="acym__subscription__form__popup__close acymicon-close"></div>
+    <div class="acym__subscription__form__popup">
+        <div class="acym__subscription__form__popup__close acymicon-close"></div>
         <?php
         if ($edition) {
             echo '<form action="#" onsubmit="return false;" id="'.$form->form_tag_name.'">';
@@ -43,12 +43,12 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
         }
         include acym_getPartial('forms', 'hidden_params');
         ?>
-		</form>
-	</div>
+        </form>
+    </div>
 </div>
 <style>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name; ?>.acym__subscription__form__popup__overlay{
-		display: <?php echo $edition ? 'inline' : 'none';?>;
+		display: <?php echo $edition ? 'inline' : 'none'; ?>;
 		position: fixed;
 		top: 0;
 		bottom: 0;
@@ -72,9 +72,9 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 		left: 50%;
 		transform: translate(-50%, -50%);
 		top: 50%;
-		padding: <?php echo $form->settings['style']['padding']['height'];?>px <?php echo $form->settings['style']['padding']['width'];?>px;
-		background-color: <?php echo $form->settings['style']['background_color'];?>;
-		color: <?php echo $form->settings['style']['text_color'];?> !important;
+		padding: <?php echo $form->settings['style']['padding']['height']; ?>px <?php echo $form->settings['style']['padding']['width']; ?>px;
+		background-color: <?php echo $form->settings['style']['background_color']; ?>;
+		color: <?php echo $form->settings['style']['text_color']; ?> !important;
 		background-image: url("<?php echo $form->settings['style']['background_image']; ?>");
 		background-size: <?php echo $form->settings['style']['background_size']; ?>;
 		background-position: <?php echo str_replace('_', ' ', $form->settings['style']['background_position']); ?>;
@@ -91,7 +91,7 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 		padding: .4rem !important;
 	}
 
-	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__popup <?php echo '#'.$form->form_tag_name;?>{
+	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__popup <?php echo '#'.$form->form_tag_name; ?>{
 		margin: 0;
 	}
 
@@ -119,15 +119,15 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 		margin: auto;
 	}
 
-	<?php if(!empty($form->settings['message']['color'])) { ?>
+	<?php if (!empty($form->settings['message']['color'])) { ?>
 	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>#acym__subscription__form__popup-text{
 		color: <?php echo $form->settings['message']['color']; ?>;
 	}
 
 	<?php } ?>
 
-	<?php if (in_array($form->settings['style']['position'], ['image-right', 'image-left'])){?>
-	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__popup <?php echo '#'.$form->form_tag_name;?>{
+	<?php if (in_array($form->settings['style']['position'], ['image-right', 'image-left'])) { ?>
+	<?php echo '#acym_fulldiv_'.$form->form_tag_name.' '; ?>.acym__subscription__form__popup <?php echo '#'.$form->form_tag_name; ?>{
 		display: flex;
 		justify-content: center;
 		align-items: center
@@ -137,11 +137,11 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 		display: inline-block;
 	}
 
-	<?php }?>
+	<?php } ?>
 
 </style>
 <?php if (!$edition) { ?>
-	<script type="text/javascript">
+    <script type="text/javascript">
         const acymBackupFormTimeout<?php echo $form->form_tag_name; ?> = setTimeout(() => {
             acym_initPopupDisplay<?php echo $form->form_tag_name; ?>(true);
         }, 1000);
@@ -160,7 +160,7 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 
             const isDisplayButton = <?php echo $isButton ? 'true' : 'false'; ?>;
 
-            function acym_closePopupform<?php echo $form->form_tag_name;?>(element) {
+            function acym_closePopupform<?php echo $form->form_tag_name; ?>(element) {
                 element.style.display = 'none';
 
                 if (isDisplayButton) {
@@ -169,7 +169,7 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 
                 let expirationDate = new Date();
                 expirationDate.setDate(expirationDate.getDate() + <?php echo empty($form->settings['cookie']['cookie_expiration']) ? 1
-                    : $form->settings['cookie']['cookie_expiration'];?>);
+                    : $form->settings['cookie']['cookie_expiration']; ?>);
                 document.cookie = 'acym_form_<?php echo $form->id; ?>=' + Date.now() + ';expires=' + expirationDate.toUTCString() + ';path=/';
             }
 
@@ -189,10 +189,10 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
             }
 
             function displayByButton() {
-                const button = document.querySelector('#<?php echo $form->settings['display']['button'];?>');
+                const button = document.querySelector('#<?php echo $form->settings['display']['button']; ?>');
 
                 if (!button) {
-                    console.error('Could not find the button with the ID <?php echo $form->settings['display']['button'];?>');
+                    console.error('Could not find the button with the ID <?php echo $form->settings['display']['button']; ?>');
                     return;
                 }
 
@@ -207,9 +207,11 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
                 let windowSize;
                 let browserHeight;
                 let delayRemaining = false;
+
                 if (delayDisplay > 0) {
                     delayRemaining = true;
                 }
+
                 let scrollRemaining = false;
                 if (scrollPercentLimit > 0) {
                     scrollRemaining = true;
@@ -217,42 +219,42 @@ if (!$edition && isset($form->settings['display']['scroll']) && $form->settings[
 
                 windowSize = document.getElementsByTagName('body')[0].clientHeight;
                 browserHeight = document.documentElement.clientHeight;
-                if (windowSize <= browserHeight && !delayRemaining) {
+
+                if (!delayRemaining && (windowSize <= browserHeight || !scrollRemaining)) {
                     scrollRemaining = false;
                     acym_popupForm.style.display = 'inline';
-                }
-
-                function displayAcymPopupForm() {
-                    let scrollPercent = Math.round((window.scrollY) / (windowSize - browserHeight) * 100);
-                    if (scrollPercent >= scrollPercentLimit) {
-                        scrollRemaining = false;
-                        window.removeEventListener('scroll', displayAcymPopupForm);
-                        if (!delayRemaining) {
-                            if (acym_popupForm) {
+                } else {
+                    function displayAcymPopupForm() {
+                        let scrollPercent = Math.round((window.scrollY) / (windowSize - browserHeight) * 100);
+                        if (scrollPercent >= scrollPercentLimit) {
+                            scrollRemaining = false;
+                            window.removeEventListener('scroll', displayAcymPopupForm);
+                            if (!delayRemaining && acym_popupForm) {
                                 acym_popupForm.style.display = 'inline';
                             }
                         }
                     }
-                }
 
-                window.addEventListener('scroll', displayAcymPopupForm);
+                    window.addEventListener('scroll', displayAcymPopupForm);
 
-                let delayInMs = delayDisplay * 1000;
-                if (addedDelayForBackup && delayDisplay > 1000) {
-                    delayInMs -= 1000;
-                }
-
-                setTimeout(function () {
-                    if (acym_popupForm !== null) {
-                        delayRemaining = false;
-                        if (!scrollRemaining) {
-                            acym_popupForm.style.display = 'inline';
-                        }
+                    let delayInMs = delayDisplay * 1000;
+                    if (addedDelayForBackup && delayDisplay > 1000) {
+                        delayInMs -= 1000;
                     }
-                }, delayInMs);
+
+                    setTimeout(function () {
+                        if (acym_popupForm !== null) {
+                            delayRemaining = false;
+                            if (!scrollRemaining) {
+                                acym_popupForm.style.display = 'inline';
+                                window.removeEventListener('scroll', displayAcymPopupForm);
+                            }
+                        }
+                    }, delayInMs);
+                }
             }
         }
-	</script>
+    </script>
     <?php
     include acym_getPartial('forms', 'cookie');
 }

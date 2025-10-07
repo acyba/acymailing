@@ -179,7 +179,7 @@ trait Listing
                 'status' => $data['status'],
                 'creator_id' => acym_isAdmin() ? 0 : acym_currentUserId(),
                 'campaign_type' => $data['campaign_type'] ?? '',
-                'advanced_total' => empty($class)
+                'advanced_total' => empty($class),
             ],
             $status,
             $page,

@@ -13,7 +13,6 @@ class FakePhpMailer
 
     public function IsSMTP()
     {
-
     }
 
     public function addReplyTo($replyto, $name = '')

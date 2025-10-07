@@ -45,7 +45,6 @@ trait HikashopInsertion
             }
 		</script>
         <?php
-
         $text = '<h1 class="acym__title acym__title__secondary text-center cell">'.acym_translation('ACYM_ORDER').'</h1>';
 
         $orderFields = array_intersect(
@@ -682,7 +681,6 @@ trait HikashopInsertion
 
         $varFields = $this->getCustomLayoutVars($product);
 
-
         // Prepare the price
         $main_currency = $currency_id = (int)$this->hikaConfig->get('main_currency', 1);
         $zone_id = explode(',', $this->hikaConfig->get('main_tax_zone', 0));
@@ -696,7 +694,6 @@ trait HikashopInsertion
         // Tests on $tag->type are for retro compatibility since 2/2/21
         if ((empty($tag->type) && $tag->price_type === 'full') || (!empty($tag->type) && $tag->price === 'full')) {
             if (!empty($tag->order_id)) {
-
                 $productPriceQuery = '
 					SELECT order_product_price 
 					FROM #__hikashop_order_product 
@@ -927,7 +924,6 @@ trait HikashopInsertion
         $orderId = $params['hika_order_id'] ?? null;
 
         if (empty($orderId)) {
-
             $query = '
 			SELECT DISTINCT (p.product_id)
 			FROM #__hikashop_product AS p
@@ -1079,7 +1075,7 @@ trait HikashopInsertion
 
     private function isHikaFollowup(int $followupId): bool
     {
-        $followupClass = new FollowupClass;
+        $followupClass = new FollowupClass();
         $followup = $followupClass->getOneById($followupId);
         if (!empty($followup->trigger) && $followup->trigger === 'hikashop_purchase') {
             return true;

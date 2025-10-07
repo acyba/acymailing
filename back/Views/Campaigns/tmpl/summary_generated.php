@@ -57,7 +57,7 @@
 				</div>
 				<div class="cell grid-x acym__campaign__summary__generated__mail__one">
 					<input type="hidden" class="acym__hidden__mail__content" value="<?php echo acym_escape(acym_absoluteURL($data['mail']->body)); ?>">
-					<div style="display: none" class="acym__hidden__mail__stylesheet"><?php echo $data['mail']->stylesheet; ?></div>
+					<input type="hidden" class="acym__hidden__mail__stylesheet" value="<?php echo acym_escape($data['mail']->stylesheet); ?>">
 					<div class="cell grid-x acym__campaign__summary__generated__mail__preview">
 						<i class="acymicon-sort acym__campaign__summary__generated__mail__toogle__preview"></i>
 						<div id="acym__wysid__email__preview" class="acym__email__preview grid-x cell margin-top-1"></div>

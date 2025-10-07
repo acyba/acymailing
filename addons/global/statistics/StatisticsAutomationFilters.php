@@ -5,7 +5,6 @@ use AcyMailing\Types\DelayType;
 
 trait StatisticsAutomationFilters
 {
-
     public function searchMail()
     {
         $mailClass = new MailClass();

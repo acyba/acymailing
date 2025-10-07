@@ -4,7 +4,7 @@ use Joomla\Archive\Archive;
 use Joomla\CMS\Http\HttpFactory;
 
 /**
- * returns the url content or false if couldn't get it
+ * Returns the url content or false if couldn't get it
  *
  * @param string $url
  * @param int    $timeout
