@@ -26,7 +26,12 @@
     echo acym_radio(
         $authorizedContent,
         'field[option][authorized_content][]',
-        empty($data['field']->option->authorized_content->{'0'}) ? 'all' : $data['field']->option->authorized_content->{'0'}
+        empty($data['field']->option->authorized_content->{'0'}) ? 'all' : $data['field']->option->authorized_content->{'0'},
+        [],
+        [],
+        false,
+        [],
+        false
     );
     ?>
 </div>

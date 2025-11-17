@@ -10,7 +10,8 @@ function acym_radio(
     array  $attributes = [],
     array  $params = [],
     bool   $frontDisplay = false,
-    array  $disabledOptions = []
+    array  $disabledOptions = [],
+    bool   $escapeLabels = true
 ): string {
     $id = preg_replace(
         '#[^a-zA-Z0-9_]+#mi',
@@ -81,7 +82,11 @@ function acym_radio(
 
         $currentOption .= '<input '.$formattedAttributes.' />';
         $currentOption .= '<label for="'.acym_escape($currentId).'" id="'.acym_escape($currentId).'-lbl" class="'.acym_escape($extraClass).'">';
-        $currentOption .= acym_escape(acym_translation($label));
+        if ($escapeLabels) {
+            $currentOption .= acym_escape(acym_translation($label));
+        } else {
+            $currentOption .= acym_translation($label);
+        }
         $currentOption .= '</label>';
 
         if (!empty($disabledOptions[$value]['tooltipTxt'])) {

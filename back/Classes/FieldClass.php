@@ -420,7 +420,7 @@ class FieldClass extends AcymClass
         ?object $user = null,
         bool    $showField = true
     ): string {
-        if (intval($field->active) === 0) {
+        if (intval($field->active) === 0 && intval($field->core) !== 1) {
             return '';
         }
 
